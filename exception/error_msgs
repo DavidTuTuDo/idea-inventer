@@ -1,0 +1,8 @@
+3001, getTables
+3002, showSchema
+3003, getObjectSchemaStmt
+3004, insertRecord
+3005, dropAll
+3006, deleteRecord
+3007, dropTable
+3008, orderSQLRulesError

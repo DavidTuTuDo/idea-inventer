@@ -31,11 +31,6 @@ import GlobalConfig from "../GlobalConfig";
         headless: !GlobalConfig.INVOKE_REAL_CHROME
     });
 
-    if (GlobalConfig.USE_SAMPLES_CACHE) {
-        console.info('use sample cache');
-        return 0;
-    }
-
     const page = await browser.newPage();
     await downloadSamples(page, snycDelay);
     console.info('re-new all sample object');

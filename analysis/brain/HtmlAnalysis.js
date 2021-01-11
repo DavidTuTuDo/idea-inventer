@@ -43,7 +43,7 @@ class HtmlAnalysis {
     getSampleConfig() {
         return {
             path: GlobalConfig.PATH_SAMPLE_URL_BASE,
-            filename: GlobalConfig.SAMPLE_OBJECT_FILE_NAME_BASE,
+            filename: GlobalConfig.SAMPLE_FILE_NAME_BASE,
         }
     }
 
@@ -241,7 +241,7 @@ class HtmlAnalysis {
         await page.goto(config.path,
             {waitUntil: 'networkidle2'}
         );
-        await _delay(GlobalConfig.DELAY_OF_MILLION_SECS);
+        await _delay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
         const content = await page.content();
         this.persistedUnderObjectFolder(config.filename, content);
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)

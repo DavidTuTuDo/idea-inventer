@@ -17,7 +17,7 @@ class ToneAnalysis extends HtmlAnalysis {
     getSampleConfig() {
         return {
             path: GlobalConfig.PATH_SAMPLE_URL_TONE,
-            filename: GlobalConfig.SAMPLE_OBJECT_FILE_NAME_TONE,
+            filename: GlobalConfig.SAMPLE_FILE_NAME_TONE,
         }
     }
 
@@ -81,7 +81,7 @@ class ToneAnalysis extends HtmlAnalysis {
         fs.writeFile(`${path.join(tonePath,
             _.trim(this.getTitle()))}.txt`,
             this.printAll(), (err) => {
-                if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
+                if (GlobalConfig.MODULE_MSG.SHOW_ERROR && !_.isNull(err))
                     console.log(`error: ${err}`)
             });
     }
@@ -112,17 +112,18 @@ class ToneAnalysis extends HtmlAnalysis {
     }
 
     getNormalizeToneObject() {
-        const singers  = this.getSingers();
+        const singers = this.getSingers();
         return {
             name: this.getTitle(),
             singers,
-            singer:singers[0],
-            clickedCountOfWhole: this.getClickedCountOfWhole(),
+            singer: singers[0],
+            popularLevel: this.getClickedCountOfWhole(),
             tone: this.getEncryptedToneTexts(),
             capoLevel: this.getCapoLevel(),
             composer: this.getComposer(),
             tkInfo: this.getTkInfo(),
-            sfzf: this.getSfzf()
+            sfzf: this.getSfzf(),
+            updateTime: _.now(),
         }
     }
 

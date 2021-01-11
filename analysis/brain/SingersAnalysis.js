@@ -17,7 +17,7 @@ class SingersAnalysis extends HtmlAnalysis {
 
         return {
             path: GlobalConfig.PATH_SAMPLE_URL_SINGER,
-            filename: GlobalConfig.SAMPLE_OBJECT_FILE_NAME_SINGER,
+            filename: GlobalConfig.SAMPLE_FILE_NAME_SINGER,
         }
 
     }

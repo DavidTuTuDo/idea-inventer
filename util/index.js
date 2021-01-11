@@ -101,7 +101,7 @@ class Util {
             console.log(_.map(obj, (_obj) => this.getObjectKey(_obj)));
     }
 
-    isSingerTypeRule(constraint){
+    isSingerTypeRule(constraint) {
 
     }
 
@@ -125,14 +125,20 @@ class Util {
     }
 
 
+    startWiths(string, key = []) {
+        for (const _key of key) {
+            if (_.startsWith(string, _key)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }
 
 if (GlobalConfig.DEBUG_MODE) {
-    let rr = [1, 2, 3, 4, 5, 6, 7];
     const self = new Util();
-    rr = self.getShuffledArrayWithLimitCount(rr, 100);
-    console.log(rr);
+    console.log(self.startWiths('i have a log',['i','i have','you']));
 }
 
 const singleton = new Util();

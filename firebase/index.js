@@ -33,10 +33,10 @@ class FireBaseAdminHandler {
         for (let singer of tone.singers) {
 
             params[path.join(singer, GlobalConfig.REFERENCE_SUGGEST_TYPE)] = GlobalConfig.TYPE_SUGGEST_SINGER;
-            params[path.join(singer, GlobalConfig.REFERENCE_SUGGEST_POPULAR)] = tone.clickedCountOfWhole;
+            params[path.join(singer, GlobalConfig.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
         }
         params[path.join(tone.name, GlobalConfig.REFERENCE_SUGGEST_TYPE)] = GlobalConfig.TYPE_SUGGEST_TONE;
-        params[path.join(tone.name, GlobalConfig.REFERENCE_SUGGEST_POPULAR)] = tone.clickedCountOfWhole;
+        params[path.join(tone.name, GlobalConfig.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
 
         await this.updateValues(updatePath, params)
     }
@@ -92,7 +92,7 @@ class FireBaseAdminHandler {
                 pk);
             const params = {
                 name: tone.name,
-                clickedCountOfWhole: tone.clickedCountOfWhole,
+                popularLevel: tone.popularLevel,
                 composer: tone.composer
             }
             await this.setValues(refPath, params);
@@ -204,7 +204,7 @@ if (GlobalConfig.DEBUG_MODE) {
         const obj =
             {
                 "capoLevel": "Capo: 4 (E)",
-                "clickedCountOfWhole": 123,
+                "popularLevel": 123,
                 "composer": "詞：肆一 / 劉永輝   曲：劉永輝",
                 "name": "可不可以你也剛好喜歡我",
                 "sfzf": "参考刷法：X ↑↑↓ X ↑↑↓\n参考指法：T1 21 T1 21",
@@ -215,7 +215,7 @@ if (GlobalConfig.DEBUG_MODE) {
 
         // await handler.setTone(obj);
         // await handler.setSingerTones(obj);
-        // await handler.updateTonesChildValue(obj, obj.clickedCountOfWhole);
+        // await handler.updateTonesChildValue(obj, obj.popularLevel);
         console.log('Query Done');
     })()
 

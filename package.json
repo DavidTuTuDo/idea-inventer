@@ -13,7 +13,10 @@
     "firebase-admin": "^9.4.1",
     "himalaya": "^1.1.0",
     "lodash": "^4.17.20",
-    "puppeteer": "^5.4.1"
+    "nedb": "^1.8.0",
+    "puppeteer": "^5.4.1",
+    "sqlite": "^4.0.19",
+    "sqlite3": "^5.0.0"
   },
   "devDependencies": {
     "babel-jest": "^23.6.0",
@@ -26,4 +29,3 @@
     "@babel/register": "^7.12.1"
   }
 }
-

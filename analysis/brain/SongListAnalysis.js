@@ -24,7 +24,7 @@ class SongListAnalysis extends HtmlAnalysis {
     getSampleConfig() {
         return {
             path: GlobalConfig.PATH_SAMPLE_URL_SONG_LIST,
-            filename: GlobalConfig.SAMPLE_OBJECT_FILE_NAME_SONG_LIST,
+            filename: GlobalConfig.SAMPLE_FILE_NAME_SONG_LIST,
         }
     }
 

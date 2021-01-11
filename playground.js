@@ -39,18 +39,50 @@ function getKeys(parent, value) {
 
 const cachePath = path.join('cache', 'continued.txt');
 if (fs.existsSync(cachePath)) {
-    for(const a of [1,2,3,4,5,6,7])
-    fs.appendFileSync(cachePath,`\n${a}`, (err) => {
-        console.log('shit');
-    })
+    for (const a of [1, 2, 3, 4, 5, 6, 7])
+        fs.appendFileSync(cachePath, `\n${a}`, (err) => {
+            console.log('shit');
+        })
 } else {
     fs.writeFile(cachePath, "1", (err) => {
         console.log('shit');
     })
 }
 
-const array = fs.readFileSync(cachePath,'utf-8',(err) => {}).split('\n');
-console.log(array);
+// const array = fs.readFileSync(cachePath,'utf-8',(err) => {}).split('\n');
+// console.log(array);
+
+// const test = 1324342423784723984723894792384723.2344234231;
+// console.log(typeof test);
+
+class rrr {
+
+    constructor() {
+        this.self = this;
+        this.lang = 'lang '
+    }
+
+
+    get() {
+        this.lang += '... get ...';
+        return this.self;
+    }
+
+    shit() {
+        this.lang += '... shit ...';
+        return this.self;
+    }
+
+    run() {
+        console.log(this.lang);
+    }
+}
+
+function tttttt(...rfff) {
+    console.log(rfff);
+}
+
+tttttt('sdaasd','dsds','dsadsa');
 
 
 

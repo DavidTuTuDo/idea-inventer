@@ -9,7 +9,7 @@ import GlobalConfig from './GlobalConfig.js';
 import fs from 'fs';
 import firebaseHandler from './firebase';
 import Util from './util';
-
+import SqlHandler from './database';
 
 (async () => {
 
@@ -26,13 +26,13 @@ import Util from './util';
             {waitUntil: 'networkidle2'}
         );
         await page.click('span[sid="1"]');
-        await snycDelay(GlobalConfig.DELAY_OF_MILLION_SECS);
+        await snycDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
         /** fetch all pages */
         const _pages = [1, 2, 3, 4, 5];
         let songs = [];
         for (let _page of _pages) {
             await page.click(`a[onClick="loadWS0(${_page});"]`);
-            await snycDelay(GlobalConfig.DELAY_OF_MILLION_SECS);
+            await snycDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
             const content = await page.content();
             const songAnalysis = new rta(content);
             songs = _.concat(songs, songAnalysis.getSongList());
@@ -53,7 +53,7 @@ import Util from './util';
             {waitUntil: 'networkidle2'}
         );
         await page.click('span[sid="0"]');
-        await snycDelay(GlobalConfig.DELAY_OF_MILLION_SECS);
+        await snycDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
         const content = await page.content();
         const mSingerAnalysis = new sa(content);
         const all = mSingerAnalysis.getAllSingers(singerType);
@@ -65,14 +65,14 @@ import Util from './util';
         await page.goto(root,
             {waitUntil: 'networkidle2'}
         );
-        await snycDelay(GlobalConfig.DELAY_OF_MILLION_SECS);
+        await snycDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
         const content = await page.content();
         let mSongListAnalysis = new sla(content);
         mSongList = mSongList.concat(mSongListAnalysis.getAll());
 
         while (mSongListAnalysis.hasNextPage()) {
             await page.click(`${mSongListAnalysis.getNextPageButtonSymbol()}`);
-            await snycDelay(GlobalConfig.DELAY_OF_MILLION_SECS);
+            await snycDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
             const content = await page.content();
             mSongListAnalysis = new sla(content);
             mSongList = mSongList.concat(mSongListAnalysis.getAll());
@@ -111,10 +111,12 @@ import Util from './util';
     }
 
     async function downloadAllSong(singerType = 6, limited = undefined) {
+        const sqlHandler = new SqlHandler();
+        await sqlHandler.init();
         let allSingers = await fetchAllSinger(singerType);
         let completedSingers = [];
-        if (GlobalConfig.CONTINUE_FROM_LAST_TIME && fs.existsSync(GlobalConfig.PATH_COMPLETED_SINGERS)) {
-            completedSingers = fs.readFileSync(GlobalConfig.PATH_COMPLETED_SINGERS, 'utf-8', showError).split('\n')
+        if (GlobalConfig.CONTINUE_FROM_LAST_TIME && fs.existsSync(GlobalConfig.PATH_FILE_COMPLETED_SINGERS)) {
+            completedSingers = fs.readFileSync(GlobalConfig.PATH_FILE_COMPLETED_SINGERS, 'utf-8', showError).split('\n')
         }
 
         if (GlobalConfig.HACK_LIMITED_TESTING_MODE)
@@ -153,27 +155,36 @@ import Util from './util';
                     console.log(`取得混肴歌單 ${mSongList.map((song) => song.name)}`);
             }
 
-            await firebaseHandler.setSinger(singer);
-            await downloadTones(mRootPath, mSongList, (tone, song) => {
-
-                if (GlobalConfig.DEBUG_MODE) {
-                    tone.downloadFile(mRootPath);
-                    if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
-                        console.log(`成功下載 ${song.name} => 目錄 ${mRootPath}`);
-                } else {
+            if (GlobalConfig.USE_SQL_DATABASE) {
+                await downloadTones(mRootPath, mSongList, (tone, song) => {
                     const mToneObject = tone.getNormalizeToneObject();
-                    firebaseHandler.setTone(mToneObject);
-                    firebaseHandler.setSingerTones(mToneObject);
-                    appendFile(GlobalConfig.PATH_COMPLETED_TONES, `${mToneObject.singer}_${mToneObject.name}`);
+                    sqlHandler.insertRecord('TONE', mToneObject);
                     if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
-                        console.log(`成功儲存 ${singer.name} , ${mToneObject.name} 至 firebase`);
-                }
+                        console.log(`成功儲存 ${singer.name} , ${mToneObject.name} 至 sql-database`);
+                });
+            } else {
+                await firebaseHandler.setSinger(singer);
+                await downloadTones(mRootPath, mSongList, (tone, song) => {
 
-            });
+                    if (GlobalConfig.DEBUG_MODE) {
+                        tone.downloadFile(mRootPath);
+                        if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
+                            console.log(`成功下載 ${song.name} => 目錄 ${mRootPath}`);
+                    } else {
+                        const mToneObject = tone.getNormalizeToneObject();
+                        firebaseHandler.setTone(mToneObject);
+                        firebaseHandler.setSingerTones(mToneObject);
+                        appendFile(GlobalConfig.PATH_FILE_COMPLETED_TONES, `${mToneObject.singer}_${mToneObject.name}`);
+                        if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
+                            console.log(`成功儲存 ${singer.name} , ${mToneObject.name} 至 firebase`);
+                    }
+                });
+            }
+
             current = current + 1;
 
             if (GlobalConfig.CONTINUE_FROM_LAST_TIME) {
-                appendFile(GlobalConfig.PATH_COMPLETED_SINGERS, singer.name);
+                appendFile(GlobalConfig.PATH_FILE_COMPLETED_SINGERS, singer.name);
             }
 
             if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
@@ -198,7 +209,7 @@ import Util from './util';
                 continue
             }
 
-            if (GlobalConfig.PERMISSION_DOWNLOAD_DEPEND_ON_CLICK && song.clickTimesOfWhole < GlobalConfig.HACK_PERMISSION_CLICKED_THRESHOLD) {
+            if (GlobalConfig.PERMISSION_DOWNLOAD_DEPEND_ON_POPULAR && song.clickTimesOfWhole < GlobalConfig.HACK_PERMISSION_CLICKED_THRESHOLD) {
                 continue;
             }
 
@@ -215,7 +226,7 @@ import Util from './util';
             await page.goto(path.join(GlobalConfig.BASE_URL, song.url),
                 {waitUntil: 'networkidle2'}
             );
-            await snycDelay(GlobalConfig.DELAY_OF_MILLION_SECS);
+            await snycDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
             const tone = new ta(await page.content());
 
             callback(tone, song);

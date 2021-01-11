@@ -22,7 +22,7 @@ class RankTableAnalysis extends HtmlAnalysis {
     getSampleConfig() {
         return {
             path: GlobalConfig.PATH_SAMPLE_URL_SONG_RANK,
-            filename: GlobalConfig.SAMPLE_OBJECT_FILE_NAME_SONG_RANK,
+            filename: GlobalConfig.SAMPLE_FILE_NAME_SONG_RANK,
         }
     }
 
@@ -52,9 +52,9 @@ class RankTableAnalysis extends HtmlAnalysis {
         await page.goto(config.path,
             {waitUntil: 'networkidle2'}
         );
-        await _delay(GlobalConfig.DELAY_OF_MILLION_SECS);
+        await _delay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
         await page.click('span[sid="1"]');
-        await _delay(GlobalConfig.DELAY_OF_MILLION_SECS);
+        await _delay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
         const content = await page.content();
         this.persistedUnderObjectFolder(config.filename, content);
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
