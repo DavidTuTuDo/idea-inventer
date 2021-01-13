@@ -6,7 +6,11 @@ class ConditionBuilder {
 
     constructor() {
         this.self = this;
-        this.stmt = [];
+        this._stmt = [];
+    }
+
+    join() {
+
     }
 
     groupBy(column) {
@@ -14,8 +18,13 @@ class ConditionBuilder {
         return this.self;
     }
 
+    equal(column, value) {
+        this.concat(`${column} == ${_.isString(value) ? `'${value}'` : value}`);
+        return this.self;
+    }
+
     concat(string) {
-        this.stmt = _.concat(this.stmt, string);
+        this._stmt = _.concat(this._stmt, string);
     }
 
     contains(column, value) {
@@ -48,13 +57,17 @@ class ConditionBuilder {
     }
 
     in(column, ...values) {
-        values = _.map(values, value => { return _.isString(value)?`'${value}'`: value});
-        this.concat(`${column} IN (${_.join(values , ' ,')})`)
+        values = _.map(values, value => {
+            return _.isString(value) ? `'${value}'` : value
+        });
+        this.concat(`${column} IN (${_.join(values, ' ,')})`)
         return this.self;
     }
 
     notIn(column, ...values) {
-        values = _.map(values, value => { return _.isString(value)?`'${value}'`: value});
+        values = _.map(values, value => {
+            return _.isString(value) ? `'${value}'` : value
+        });
         this.concat(`${column} NOT IN (${_.join(values, ' ,')})`)
         return this.self;
     }
@@ -95,23 +108,23 @@ class ConditionBuilder {
         return this.self;
     }
 
-    get() {
-        return _.join(this.stmt, ' ');
+    stmt() {
+        return _.join(this._stmt, ' ');
     }
 
 }
 
-export default new ConditionBuilder();
+export default ConditionBuilder;
 
 if (GlobalConfig.DEBUG_MODE) {
     const builder = new ConditionBuilder();
 
 }
 /** 使用範例
-    console.log(await handler.fetchRecords("TONE",
-    builder.gt('popularLevel', 50000).orderBy({'popularLevel': 'DESCS'})
-        .limit(4)
-        .get(),
-    ['name', 'popularLevel', 'singer']))
+ console.log(await handler.fetchRecords("TONE",
+ builder.gt('popularLevel', 50000).orderBy({'popularLevel': 'DESCS'})
+ .limit(4)
+ .stmt(),
+ ['name', 'popularLevel', 'singer']))
 
  */

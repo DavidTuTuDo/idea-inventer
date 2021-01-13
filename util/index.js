@@ -1,6 +1,8 @@
 import CryptoJS from 'crypto-js';
 import GlobalConfig from "../GlobalConfig";
 import _ from "lodash";
+import fs from "fs";
+import EX from '../exception';
 
 class Util {
 
@@ -105,10 +107,6 @@ class Util {
 
     }
 
-    isSingerNameRule(constraint) {
-
-    }
-
     isKeywordRule(constraint) {
         if (_.isUndefined(constraint) || _.isEmpty(constraint))
             throw new Error('PARAMS CAN NOT BE EMPTY');
@@ -134,11 +132,76 @@ class Util {
         return false;
     }
 
+    appendFile(path, data) {
+        console.log(JSON.stringify(data));
+        data = `${new Date()} ${JSON.stringify(data)}`;
+        if (!fs.existsSync(path))
+            fs.writeFileSync(path, data, err => {
+                throw new EX(8001, err);
+            });
+        else
+            fs.appendFileSync(path, `\n${data}`, err => {
+                throw new EX(8001, err);
+            });
+    }
+
+    showError(reason) {
+        console.log(reason)
+    }
+
+    getRandomValue(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    deepFlat(collection) {
+        let _self = '';
+        if (_.isArray(collection)) {
+            for (const o of collection) {
+                _self += (_.isEmpty(_self) ? '' : '_') + this.deepFlat(o);
+            }
+            return _self;
+        } else if (_.isObject(collection)) {
+            for (const key in collection) {
+                _self += (_.isEmpty(_self) ? '' : '_') + key + '_' + this.deepFlat(collection[key])
+            }
+            return _self;
+        } else {
+            return collection;
+        }
+    }
+
+    joinEscapeChar(str ) {
+        return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+    }
+
+    async asyncPool(poolLimit, array, iteratorFn) {
+        const ret = [];
+        const executing = [];
+
+        for (const item of array) {
+            const p = Promise.resolve().then(() => {
+                return iteratorFn(item, array)
+            });
+            ret.push(p);
+            if (poolLimit <= array.length) {
+                const e = p.then(() => {
+                    return executing.splice(executing.indexOf(e), 1)
+                });
+                executing.push(e);
+                if (executing.length >= poolLimit) {
+                    await Promise.race(executing);
+                }
+            }
+        }
+        return Promise.all(ret);
+    }
 }
 
 if (GlobalConfig.DEBUG_MODE) {
     const self = new Util();
-    console.log(self.startWiths('i have a log',['i','i have','you']));
+    console.log(self.startWiths('i have a log', ['i', 'i have', 'you']));
 }
 
 const singleton = new Util();

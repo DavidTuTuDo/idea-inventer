@@ -5,14 +5,19 @@ const GlobalConfig =
         INVOKE_REAL_CHROME: false,
         PERMISSION_FORCE_DOWNLOAD_TONE: true,
         DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
-        CONTINUE_FROM_LAST_TIME: false,
+        CONTINUE_FROM_LAST_TIME: true,
         USE_SQL_DATABASE: true,
+        PERSIST_ERROR_LOG: true,
+        HACK_LIMITED_TESTING_MODE: false,
         PERMISSION_DOWNLOAD_DEPEND_ON_POPULAR: true,
+        SKIP_DEPEND_ON_EXIST: true,
+
+
+        THREAD_WORKER: 3,
         HACK_PERMISSION_CLICKED_THRESHOLD: 10000,
-        HACK_DELAY_OF_MILLION_SECS: 800,
+        HACK_DELAY_OF_MILLION_SECS: 1200,
         HACK_LIMITED_COUNT_OF_DOWNLOAD_SINGER: 20,
         HACK_LIMITED_COUNT_OF_SONG_LIST: 3,
-        HACK_LIMITED_TESTING_MODE: false,
 
         SINGER_TYPE_OF_ALL: 6,
         SINGER_TYPE_OF_NORTH_EAST_ASIA: 5,
@@ -21,16 +26,16 @@ const GlobalConfig =
         SINGER_TYPE_OF_FEMALE: 2,
         SINGER_TYPE_OF_MALE: 1,
 
-
         MAIN_MSG: {
             SHOW_ERROR: true,
             SHOW_SUCCEED: true,
         },
 
         MODULE_MSG: {
-            SHOW_ERROR: true,
+            SHOW_ERROR: false,
             SHOW_SUCCEED: true,
         },
+
         BASE_DATABASE_PATH: './database/secret_infos.db',
         BASE_URL: 'https://www.91pu.com.tw',
         TONES_ROOT: './Tones/',
@@ -43,6 +48,7 @@ const GlobalConfig =
         PATH_SAMPLE_URL_SINGER: 'https://www.91pu.com.tw/singer/',
         PATH_SAMPLE_URL_JEST_SAMPLE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
         PATH_SAMPLE_URL_BASE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
+        PATH_ERROR_LOG: './error_logs.txt',
 
         SAMPLE_FILE_NAME_SINGER: 'AllSingerObject.txt',
         SAMPLE_FILE_NAME_SONG_RANK: 'WeekRankObject.txt',

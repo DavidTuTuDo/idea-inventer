@@ -5,4 +5,7 @@
 3005, dropAll
 3006, deleteRecord
 3007, dropTable
-3008, orderSQLRulesError
+3008, orderBy,order SQLRules Error
+3009, createTable, create table fail
+
+8001, append file fail

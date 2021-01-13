@@ -37,7 +37,7 @@ class SongListAnalysis extends HtmlAnalysis {
             url: this.getNodeAttributeValue(this.findNodeByClass(node, 'sname'), 'href'),
             lyricist: this.getFlatTextByChildIndex(node, 1),
             composer: this.getFlatTextByChildIndex(node, 2),
-            clickTimesOfWhole: this.getFlatTextByChildIndex(node, 3),
+            popularLevel: this.getFlatTextByChildIndex(node, 3),
             createTime: this.getFlatTextByChildIndex(node, 4),
         };
         return song;

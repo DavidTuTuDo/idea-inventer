@@ -76,7 +76,7 @@ class ToneAnalysis extends HtmlAnalysis {
     downloadFile() {
         const tonePath = path.join(GlobalConfig.TONES_ROOT, this.getSingers()[0]);
         if (!fs.existsSync(tonePath)) fs.mkdirSync(tonePath);
-        /** get all tone under this singer */
+        /** stmt all tone under this singer */
 
         fs.writeFile(`${path.join(tonePath,
             _.trim(this.getTitle()))}.txt`,

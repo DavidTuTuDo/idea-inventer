@@ -6,8 +6,18 @@ import _ from 'lodash';
 import EX from "../exception";
 import builder from "./ConditionBuilder"
 import Util from '../util';
+// import SingersAnalysis from "../analysis/brain/SingersAnalysis";
 
 export default class SqliteHandler {
+
+    static Builder() {
+        return new builder();
+    }
+
+    normalizeText(str) {
+        return (str + '').replace(/\'/g,"''");
+
+    }
 
     constructor(_dbpath = GlobalConfig.BASE_DATABASE_PATH) {
         this.dbpath = _dbpath;
@@ -51,14 +61,20 @@ export default class SqliteHandler {
         }
     }
 
-    async fetchRecords(tableName, condition, columns = []) {
-
+    async fetchRecords(tableName, condition = '', ...columns) {
         try {
+            if (!_.isEqual(tableName, 'sqlite_master')) {
+                const tableNotExist = _.isEmpty(
+                    await this.fetchRecords('sqlite_master',
+                        SqliteHandler.Builder().equal('name', tableName).stmt(), 'name'));
+                if (tableNotExist) return [];
+            }
+
             let column = '*';
             if (!_.isEmpty(columns))
                 column = _.join(columns, ', ');
 
-            const needWhere = Util.startWiths(_.toUpper(condition), GlobalConfig.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
+            const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), GlobalConfig.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             const stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 console.log(stmt);
@@ -100,52 +116,75 @@ export default class SqliteHandler {
         stmt = _.concat(stmt, `\noid INTEGER PRIMARY KEY AUTOINCREMENT`);
         for (const key in content) {
             let type = '';
+            let defaultValue = 0;
             let value = content[key];
             switch (typeof value) {
                 case "boolean":
                 case "number":
                     type = 'NUMERIC';
+                    defaultValue = -32768;
                     break;
                 case "string":
                     type = 'TEXT';
+                    defaultValue = `''`;
                     break;
                 default:
-                    if (_.isArray(value)) {
+                    if (_.isArray(value) || _.isObject(value)) {
                         type = 'TEXT';
-                        value = _.join(value, ',');
+                        defaultValue = `'''`;
                         break;
                     }
                     throw new EX(3003, `unknown type of this object => key:${key}, value:${content[key]} type:${typeof content[key]}`);
             }
-            stmt = _.concat(stmt, `\n${key} ${type} NOT NULL`);
+            stmt = _.concat(stmt, `\n${key} ${type} NOT NULL DEFAULT ${defaultValue}`);
         }
         stmt = `CREATE TABLE IF NOT EXISTS ${tableName} (${stmt.join(',')})`;
+
         return stmt;
+    }
+
+    async createTable(tableName, object, ...index) {
+        try {
+            const createstmt = this.getObjectSchemaStmt(tableName, object);
+            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                console.log(createstmt);
+            await this.db.run(createstmt);
+
+            if (!_.isEmpty(index)) {
+                const stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
+                if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                    console.log(stmt);
+                await this.db.run(stmt);
+            }
+
+
+        } catch (error) {
+            throw new EX(3009, error);
+        }
     }
 
     async fetchAllRecord(tableName) {
         return await this.db.all(`select * from ${tableName}`);
     }
 
-    async insertRecord(tableName, content) {
-        /** check table exist */
-        try {
-            const stmt = this.getObjectSchemaStmt(tableName, content);
-            await this.db.run(stmt);
+    async insertRecord(tableName, content, ...index) {
 
+        try {
+            /** check table exist */
+            await this.createTable(tableName, content, ...index);
             /** check table consist of valid column */
 
             /** insertRecord */
             const contentValues = _.map(content, (value) => {
-                if (_.isArray(value)) return `'${_.join(value, ',')}'`;
-                if (_.isString(value)) return `'${value}'`;
-
+                if (_.isArray(value) || _.isObject(value))
+                    return `'${this.normalizeText(Util.deepFlat(value))}'`;
+                if (_.isString(value))
+                    return `'${this.normalizeText(Util.deepFlat(value))}'`;
                 return value;
 
             });
 
             const insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
-
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 console.log(insertStmt);
 
@@ -163,12 +202,20 @@ if (GlobalConfig.DEBUG_MODE) {
 
     (async () => {
         try {
-            const data = new ToneAnalysis();
+            // const tone = new ToneAnalysis();
             const handler = new SqliteHandler();
             await handler.init();
-            console.log(await handler.fetchRecords('TONE', builder.notIn('singer', 'GAI', 'Hush', 'Ayo97').groupBy('singer').orderBy({'sum(popularLevel)': 'DESC'}).limit(5).get(), ['singer', 'sum(popularLevel)']))
-            console.log('3157');
+            // console.log(await handler.fetchRecords('TONE',
+            //     new builder().equal('name','你的情歌').stmt()));
+            // const names = await handler.fetchRecords('SINGER', SqliteHandler.Builder()
+            //     .groupBy('name').orderBy({updateTime:'DESC'}).limit(10).stmt(), 'name');
+            await  handler.insertRecord('testing',{dddd:`dd'dsds'a'dsa`})
+            // console.log(_.isEqual(await handler.fetchRecords('sqlite_master',
+            //     new builder().equal('name', 'TONE').stmt(), 'name')))
 
+            // console.log(names.map(name=>name.name));
+            // await handler.dropTable('SINGER');
+            // await handler.dropAll();
         } catch (error) {
             console.log(error);
         }
