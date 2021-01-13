@@ -120,6 +120,9 @@ import SQL from './database';
             allSingers = Util.getShuffledArrayWithLimitCount(allSingers, limited)
         let current = 0;
         for (let singer of allSingers) {
+            const mRootPath = path.join(GlobalConfig.TONES_ROOT, singer.name);
+            let mSongList = [];
+            let mValidSongList = [];
             /** create folder */
             if (GlobalConfig.CONTINUE_FROM_LAST_TIME) {
                 if (completedSingers.includes(singer.name)) {
@@ -135,9 +138,7 @@ import SQL from './database';
                 console.log(`正在讀取 ${singer.name} 的頁面`);
             if (_.isEmpty(singer.names)) continue;
 
-            const mRootPath = path.join(GlobalConfig.TONES_ROOT, singer.name);
-            let mSongList = [];
-            let mValidSongList = [];
+
             if (!fs.existsSync(GlobalConfig.TONES_ROOT)) fs.mkdirSync(GlobalConfig.TONES_ROOT);
             mSongList = await getSongsOfSingersPage(path.join(GlobalConfig.BASE_URL, singer.url));
 
@@ -152,11 +153,9 @@ import SQL from './database';
                 if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
                     console.log(`取得混肴歌單 ${mSongList.map((song) => song.name)}`);
             }
-
             for (const song of mSongList) {
-                mValidSongList.length = 0;
 
-                if (_.isUndefined(song) || _.isEmpty(song.name)) {
+                if (!song || _.isUndefined(song) || _.isEmpty(song.name) || _.isEmpty(song.url)) {
                     if (GlobalConfig.MAIN_MSG.SHOW_ERROR) {
                         Util.appendFile(GlobalConfig.PATH_ERROR_LOG, `遇到奇怪的結構 ${JSON.stringify(singer)} ${JSON.stringify(song)}`);
                     }
@@ -189,7 +188,7 @@ import SQL from './database';
                 mValidSongList.push(song);
             }
 
-            const tones = await Util.asyncPool(GlobalConfig.THREAD_WORKER, mSongList, fetchTone);
+            const tones = await Util.asyncPool(GlobalConfig.THREAD_WORKER, mValidSongList, fetchTone);
 
             for (const tone of tones) {
                 if (!tone) continue;
@@ -222,8 +221,9 @@ import SQL from './database';
                 }
             }
             current = current + 1;
+            const totalTones = mSongList? mSongList.length:0
             try {
-                await sqlHandler.insertRecord('SINGER', {...singer, updateTime: _.now()}, 'name');
+                await sqlHandler.insertRecord('SINGER', {...singer, totalTones, updateTime: _.now()}, 'name');
             } catch (error) {
                 Util.appendFile(GlobalConfig.PATH_ERROR_LOG, `儲存歌手失敗 ${singer.name} ,  ${JSON.stringify(error)}`)
             }
