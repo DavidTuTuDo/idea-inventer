@@ -14,8 +14,8 @@ const GlobalConfig =
 
 
         THREAD_WORKER: 3,
-        HACK_PERMISSION_CLICKED_THRESHOLD: 10000,
-        HACK_DELAY_OF_MILLION_SECS: 1200,
+        HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD: 0, // 0 means all
+        HACK_DELAY_OF_MILLION_SECS: 1200,// 0 means 或出去了
         HACK_LIMITED_COUNT_OF_DOWNLOAD_SINGER: 20,
         HACK_LIMITED_COUNT_OF_SONG_LIST: 3,
 
@@ -33,7 +33,7 @@ const GlobalConfig =
 
         MODULE_MSG: {
             SHOW_ERROR: false,
-            SHOW_SUCCEED: true,
+            SHOW_SUCCEED: false,
         },
 
         BASE_DATABASE_PATH: './database/secret_infos.db',
@@ -49,6 +49,7 @@ const GlobalConfig =
         PATH_SAMPLE_URL_JEST_SAMPLE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
         PATH_SAMPLE_URL_BASE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
         PATH_ERROR_LOG: './error_logs.txt',
+        PATH_INFO_LOG: './info_logs.txt',
 
         SAMPLE_FILE_NAME_SINGER: 'AllSingerObject.txt',
         SAMPLE_FILE_NAME_SONG_RANK: 'WeekRankObject.txt',
@@ -77,6 +78,13 @@ const GlobalConfig =
 
         SQL_NEEDLESS_WHERE_START_OF: ['GROUP', 'LIMIT', 'ORDER', 'DISTINCT'],
 
+        UID: 'uid',
+
+        POOLLER_WORKER_DEFAULT: 3,
+        POOLLER_PRIORITY: ['high', 'medium', 'low'],
+        POOLLER_SLEEP_RANGE_DEFAULT: {min: 2000, max: 10000},
+        POOLLER_TASK_INTERVAL_DEFAULT: {min: 800, max: 2500},
+        POOLLER_MAX_SLEEP_DEFAULT: 100,
     };
 
 

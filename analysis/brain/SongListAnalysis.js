@@ -1,6 +1,7 @@
 import HtmlAnalysis from "./HtmlAnalysis.js";
 import GlobalConfig from "../../GlobalConfig.js";
 import _ from "lodash";
+import util from '../../util';
 import fs from "fs";
 
 
@@ -37,7 +38,7 @@ class SongListAnalysis extends HtmlAnalysis {
             url: this.getNodeAttributeValue(this.findNodeByClass(node, 'sname'), 'href'),
             lyricist: this.getFlatTextByChildIndex(node, 1),
             composer: this.getFlatTextByChildIndex(node, 2),
-            popularLevel: this.getFlatTextByChildIndex(node, 3),
+            popularLevel: util.getValueWithIntegerType(this.getFlatTextByChildIndex(node, 3)),
             createTime: this.getFlatTextByChildIndex(node, 4),
         };
         return song;
@@ -71,6 +72,8 @@ class SongListAnalysis extends HtmlAnalysis {
         const currentPageInt = Number(this.getFlatTextByNode(node, false));
         return `${node.tagName}[href="javascript:toPage(${currentPageInt + 1})"]`;
     }
+
+
 }
 
 export default SongListAnalysis;

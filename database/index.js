@@ -61,13 +61,20 @@ export default class SqliteHandler {
         }
     }
 
+    async tableNotExist(tableName) {
+        const _tableNotExist = _.isEmpty(
+            await this.fetchRecords('sqlite_master',
+                SqliteHandler.Builder().equal('name', tableName).stmt(), 'name'));
+        return _tableNotExist;
+    }
+
     async fetchRecords(tableName, condition = '', ...columns) {
+        let stmt = '';
         try {
-            if (!_.isEqual(tableName, 'sqlite_master')) {
-                const tableNotExist = _.isEmpty(
-                    await this.fetchRecords('sqlite_master',
-                        SqliteHandler.Builder().equal('name', tableName).stmt(), 'name'));
-                if (tableNotExist) return [];
+
+            if (!_.isEqual(tableName, 'sqlite_master') &&
+                await this.tableNotExist(tableName)) {
+                return [];
             }
 
             let column = '*';
@@ -75,13 +82,13 @@ export default class SqliteHandler {
                 column = _.join(columns, ', ');
 
             const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), GlobalConfig.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
-            const stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
+            stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 console.log(stmt);
             const result = await this.db.all(stmt);
             return result;
         } catch (err) {
-            throw new EX(3007, err);
+            throw new EX(3007, err, stmt);
         }
     }
 
@@ -89,7 +96,7 @@ export default class SqliteHandler {
         try {
             await this.db.run(`DROP TABLE IF EXISTS ${tableName}`);
         } catch (err) {
-            throw new EX(3007, err);
+            throw new EX(3007, err, tableName);
         }
     }
 
@@ -152,7 +159,7 @@ export default class SqliteHandler {
 
     getCreateTableStmt(tableName, content) {
         let stmt = [];
-        stmt = _.concat(stmt, `\noid INTEGER PRIMARY KEY AUTOINCREMENT`);
+        stmt = _.concat(stmt, `\n${GlobalConfig.UID} INTEGER PRIMARY KEY AUTOINCREMENT`);
 
         const attrs = this.getColumnAttributes(content);
         for (const attr of attrs) {
@@ -162,7 +169,34 @@ export default class SqliteHandler {
         return stmt;
     }
 
-    async createTable(tableName, object, ...index) {
+    async createTable(tableName, object) {
+        let stmt;
+        try {
+            const stmt = this.getCreateTableStmt(tableName, object);
+            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                console.log(stmt);
+            await this.db.run(stmt);
+        } catch (error) {
+            throw new EX(3013, error, stmt);
+        }
+    }
+
+    async createIndex(tableName, ...index) {
+        let stmt;
+        try {
+            if (!_.isEmpty(index)) {
+                stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
+                if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                    console.log(stmt);
+                await this.db.run(stmt);
+            }
+        } catch (error) {
+            throw new EX(3012, error, stmt);
+        }
+    }
+
+    async createTableAndIndex(tableName, object, ...index) {
+
         try {
             const createStmt = this.getCreateTableStmt(tableName, object);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
@@ -186,37 +220,66 @@ export default class SqliteHandler {
         return await this.db.all(`select * from ${tableName}`);
     }
 
-    async insertRecord(tableName, content, ...index) {
-
+    /** return number, which means how many record changed */
+    async updateRecords(tableName, content, condition) {
+        let updateStmt;
         try {
-            /** check table exist */
-            await this.createTable(tableName, content, ...index);
-            /** check table consist of valid column */
+            if (await this.tableNotExist(tableName)) return 0; /** check table exist */
 
             await this.alterColumnIfNeed(tableName, content);
+            /** check table consist of valid column */
 
-            /** insertRecord */
+            const pairs = [];
+            for (const key in content) {
+                pairs.push(`${key} = ${this.getValidPresentOfSQLValue(content[key])}`);
+            }
+
+            updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
+            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                console.log(updateStmt);
+            const result = await this.db.run(updateStmt);
+            return result.changes;
+
+        } catch (error) {
+            throw new EX(3011, error, updateStmt);
+        }
+    }
+
+    getValidPresentOfSQLValue(value) {
+        if (_.isArray(value) || _.isObject(value))
+            return `'${normalizeText(Util.deepFlat(value))}'`;
+        if (_.isString(value))
+            return `'${normalizeText(Util.deepFlat(value))}'`;
+        return value
+    }
+
+    /** return number, which means how many record insert */
+    async insertRecordAndCreateTableAlterColumnIfNotExist(tableName, content, ...index) {
+        let insertStmt = '';
+        try {
+            /** check table exist */
+            await this.createTableAndIndex(tableName, content, ...index);
+            /** check table consist of valid column */
+            await this.alterColumnIfNeed(tableName, content);
+
+            /** insertRecordAndCreateTableAlterColumnIfNotExist */
             const contentValues = _.map(content, (value) => {
-                if (_.isArray(value) || _.isObject(value))
-                    return `'${normalizeText(Util.deepFlat(value))}'`;
-                if (_.isString(value))
-                    return `'${normalizeText(Util.deepFlat(value))}'`;
-                return value;
-
+                return this.getValidPresentOfSQLValue(value);
             });
 
-            const insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
+            insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 console.log(insertStmt);
 
-            await this.db.run(insertStmt);
+            return await this.db.run(insertStmt);
         } catch (err) {
-            throw new EX(3004, err);
+            throw new EX(3004, err, insertStmt);
         }
-
     }
 
+
     async alterColumnIfNeed(tableName, content) {
+        let stmts;
         try {
             const differ = {}
             const host = (await this.fetchSchema(tableName)).map((obj) => obj.name);
@@ -225,7 +288,7 @@ export default class SqliteHandler {
                 differ[key] = content[key]
             });
             if (!_.isEmpty(diff)) {
-                const stmts = this.getAlterColumnStmt(tableName, differ);
+                stmts = this.getAlterColumnStmt(tableName, differ);
                 for (const stmt of stmts) {
                     if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                         console.log(stmt);
@@ -368,34 +431,10 @@ if (GlobalConfig.DEBUG_MODE) {
             // const tone = new ToneAnalysis();
             const handler = new SqliteHandler();
             await handler.init();
-            // await handler.dropTable('testing');
-            // const sample = {dddd: `dd'dsds'a'dsa`, eee: 'ddd', zzzz: 'zzz'};
-            // const current  = await handler.fetchSchema('testing');
-
-            // const host = current.map((obj) => obj.name);
-            // const guest = Object.keys(sample);
-            // console.log(_.difference(guest,host));
-
-            // console.log(await handler.fetchRecords('TONE',
-            //     new builder().equal('name','你的情歌').stmt()));
-            // const names = await handler.fetchRecords('SINGER', SqliteHandler.Builder()
-            //     .groupBy('name').orderBy({updateTime:'DESC'}).limit(10).stmt(), 'name');
-            await handler.insertRecord('testing', {
-                dddfff: 322,
-                rr: 'eee',
-                dddd: `dd'dsds'a'dsa`,
-                fff: 1,
-                drwe: 'wer',
-                ddd: 23223
-            })
-
-            // console.log(await handler.fetchRecords('testing', new ConditionBuilder().equal('oid', 1).stmt()))
-            // console.log(_.isEqual(await handler.fetchRecords('sqlite_master',
-            //     new builder().equal('name', 'TONE').stmt(), 'name')))
-
-            // console.log(names.map(name=>name.name));
-            // await handler.dropTable('SINGER');
-            // await handler.dropAll();
+            // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
+            // console.log(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
+            console.log(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
+                .stmt(), 'name'));
         } catch (error) {
             console.log(error);
         }

@@ -1,10 +1,29 @@
 import CryptoJS from 'crypto-js';
+import Crypto from 'crypto';
 import GlobalConfig from "../GlobalConfig";
 import _ from "lodash";
 import fs from "fs";
 import EX from '../exception';
 
 class Util {
+
+    async syncDelay(delayInms) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve(true);
+            }, delayInms);
+        });
+    }
+
+    async syncDelayRandom(min, max) {
+        const random = this.getRandomValue(min, max);
+        return await this.syncDelay(random);
+    }
+
+    getRandomHash() {
+        const random = Crypto.randomBytes(30).toString('hex');
+        return random;
+    }
 
     getEncryptString(texts) {
         const encrypted = CryptoJS.AES.encrypt(texts, GlobalConfig.ENCRYPT_KEY).toString();
@@ -61,6 +80,15 @@ class Util {
     getShuffledArrayWithLimitCount(arr, n) {
         let shuffled = _.shuffle(arr);
         return shuffled.slice(0, n);
+    }
+
+    getShuffledItemFromArray(arr) {
+        let shuffled = _.shuffle(arr);
+        return shuffled[0];
+    }
+    getShuffledArray(arr) {
+        let shuffled = _.shuffle(arr);
+        return shuffled;
     }
 
     isJson(item) {
@@ -172,8 +200,17 @@ class Util {
         }
     }
 
-    joinEscapeChar(str ) {
+    joinEscapeChar(str) {
         return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+    }
+
+    getValueWithIntegerType(whatever) {
+        try {
+            const value = parseInt(whatever);
+            return isNaN(value) ? 0 : value;
+        } catch (error) {
+            return 0;
+        }
     }
 
     async asyncPool(poolLimit, array, iteratorFn) {
@@ -201,7 +238,8 @@ class Util {
 
 if (GlobalConfig.DEBUG_MODE) {
     const self = new Util();
-    console.log(self.startWiths('i have a log', ['i', 'i have', 'you']));
+    console.log(self.getRandomHash())
+    // console.log(self.getValueWithIntegerType(undefined))
 }
 
 const singleton = new Util();

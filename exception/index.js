@@ -7,11 +7,12 @@ export default class MyException extends Error {
         return JSON.stringify(msg);
     }
 
-    constructor(code, error) {
+    constructor(code, error, selfInfo) {
         super(error);
         this.uid = Util.getRandomValue(0, 100000000000);
         this.code = code;
         this.error = error;
+        this.selfInfo = selfInfo;
         this.errorMsg = JSON.stringify(error);
 
         {
@@ -21,7 +22,7 @@ export default class MyException extends Error {
                 this.errorMsg = `${error.msg}, ORIGIN_ERROR:${JSON.stringify(error)}`;
             }
         }
-        this.logger = `UID:${this.uid} CODE:${this.code} REASON:${this.errorMsg}`;
+        this.logger = `UID:${this.uid} CODE:${this.code} REASON:${this.errorMsg} INFO:${this.selfInfo}`;
 
         if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
             console.log(this.log);

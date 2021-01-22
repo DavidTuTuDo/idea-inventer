@@ -233,7 +233,6 @@ class sss {
         });
 
 
-
         for (const i of tasks) {
             taskPromises.push(wrapper(this.wait(i[0], `${i[0]} ${i[1]}`)));
             if (worker === taskPromises.length) {
@@ -267,6 +266,8 @@ class sss {
         });
     }
 }
+
+// console.log(typeof true);
 // let d = new sss();
 //
 // d.asyncPool(3,[...Array(20)].map((obj,index) => {return {time:util.getRandomValue(1000,3000),symbol:index}}),d.wait).then(
@@ -284,8 +285,54 @@ class sss {
 // });
 
 
-function  joinEscapeChar(str) {
-    return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+// function  joinEscapeChar(str) {
+//     return (str + '').replace(/[\\"']/g, '\\$&').replace(/\u0000/g, '\\0');
+// }
+//
+// console.log(joinEscapeChar(`dd'dsdsadsa`));
+
+class eee {
+    constructor() {
+        this.value = 0;
+    }
+
+    async wait(obj) {
+        const symbol = obj.symbol;
+        const time = obj.time;
+
+        return new Promise(resolve => {
+            if (time != undefined)
+                console.log(`wait()......${symbol} ${time} in`);
+            setTimeout(() => {
+                if (time != undefined)
+                    console.log(`wait()......${symbol} out`);
+                resolve(symbol);
+            }, time);
+        });
+    }
+
+    async add() {
+        await this.wait(0);
+        this.value += 1;
+        return this.value;
+    }
+
+    async task() {
+        let now = _.now();
+        const key = util.getRandomValue(1010, 1099);
+        // console.log();
+        await this.wait({symbol: key, time: key})
+        console.log(`${key} task() - after wait${await this.add()}`);
+        console.log(`${key} task() - spend time:${_.now() - now}`)
+        return key;
+    }
+
+    async do() {
+        const promises = [...Array(10)].map((co, index) => this.task());
+        return await Promise.race(promises);
+    }
 }
 
-console.log(joinEscapeChar(`dd'dsdsadsa`));
+new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
+
+

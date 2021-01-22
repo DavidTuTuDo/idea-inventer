@@ -6,6 +6,16 @@
 3006, deleteRecord
 3007, dropTable
 3008, orderBy,order SQLRules Error
-3009, createTable, create table fail
-3009,
+3009, createTableAndIndex, create table fail
+3010, alter columns fail
+3011, update record fail
+3012, create index fail
+3013, create table fail
+
+4001, priority state is wrong
+4002, task type isn't function
+4003, task type isn't array
+4004, task not exist when try to delete
+
+
 8001, append file fail

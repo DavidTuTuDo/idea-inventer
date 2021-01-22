@@ -56,7 +56,7 @@ class ToneAnalysis extends HtmlAnalysis {
     getClickedCountOfWhole() {
         const stringOfCount = this.getFlatTextByNode(this.findNodeByClass(this.body, 'qrcode'), false).trim();
         const normalize = _.replace(stringOfCount, /,/g, '');
-        const toNumber = _.toNumber(normalize);
+        const toNumber = Util.getValueWithIntegerType(normalize);
         return toNumber;
     }
 
