@@ -113,7 +113,7 @@ var chord_chart = [
 function createChordStruct(key, string, shape) {
     //alert("->"+key+","+string+","+shape+"<-");
     //var string = string.toUpperCase();
-    //console.log(">"+string+">"+positions[string]);
+    //Util.appendInfo(">"+string+">"+positions[string]);
     var position;
     try{
         position= positions[string][key];

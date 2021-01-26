@@ -85,7 +85,7 @@ export default class SqliteHandler {
             const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), GlobalConfig.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                console.log(stmt);
+                Util.appendInfo(stmt);
             const result = await this.db.all(stmt);
             return result;
         } catch (err) {
@@ -175,7 +175,7 @@ export default class SqliteHandler {
         try {
             const stmt = this.getCreateTableStmt(tableName, object);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                console.log(stmt);
+                Util.appendInfo(stmt);
             await this.db.run(stmt);
         } catch (error) {
             throw new EX(3013, error, stmt);
@@ -188,7 +188,7 @@ export default class SqliteHandler {
             if (!_.isEmpty(index)) {
                 stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                    console.log(stmt);
+                    Util.appendInfo(stmt);
                 await this.db.run(stmt);
             }
         } catch (error) {
@@ -201,13 +201,13 @@ export default class SqliteHandler {
         try {
             const createStmt = this.getCreateTableStmt(tableName, object);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                console.log(createStmt);
+                Util.appendInfo(createStmt);
             await this.db.run(createStmt);
 
             if (!_.isEmpty(index)) {
                 const stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                    console.log(stmt);
+                    Util.appendInfo(stmt);
                 await this.db.run(stmt);
             }
 
@@ -237,7 +237,7 @@ export default class SqliteHandler {
 
             updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                console.log(updateStmt);
+                Util.appendInfo(updateStmt);
             const result = await this.db.run(updateStmt);
             return result.changes;
 
@@ -274,7 +274,7 @@ export default class SqliteHandler {
             const stmts = contents.map((content, index) => this.getInsertStmt(tableName, content) + ';');
             batchStmt = _.join(stmts, '\n');
             batchStmt = `${batchStmt};`;
-            console.log(batchStmt);
+            Util.appendInfo(batchStmt);
             await this.db.exec(batchStmt);
         } catch (error) {
             throw new EX(3015, error, batchStmt);
@@ -286,7 +286,7 @@ export default class SqliteHandler {
         try {
             insertStmt = this.getInsertStmt(tableName, content);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                console.log(insertStmt);
+                Util.appendInfo(insertStmt);
 
             await this.db.run(insertStmt);
         } catch (error) {
@@ -317,7 +317,7 @@ export default class SqliteHandler {
                 stmts = this.getAlterColumnStmt(tableName, differ);
                 for (const stmt of stmts) {
                     if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                        console.log(stmt);
+                        Util.appendInfo(stmt);
                     await this.db.run(stmt);
                 }
             }
@@ -441,7 +441,7 @@ class ConditionBuilder {
 
 
 /** 使用範例
- console.log(await handler.fetchRecords("TONE",
+ Util.appendInfo(await handler.fetchRecords("TONE",
  builder.gt('popularLevel', 50000).orderBy({'popularLevel': 'DESCS'})
  .limit(4)
  .stmt(),
@@ -458,15 +458,15 @@ if (GlobalConfig.DEBUG_MODE) {
             const handler = new SqliteHandler();
             await handler.init();
             // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
-            // console.log(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
-            // console.log(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
+            // Util.appendInfo(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
+            // Util.appendInfo(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
             //     .stmt(), 'name'));
             // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
             // await handler.insertRecordAndCreateTableAlterColumnIfNotExist('testing', {avc: 2121, vdd: 'asdd'});
             // console.log(await handler.fetchRecords('testing'));
-            console.log((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length);
+            Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length);
         } catch (error) {
-            console.log(error);
+            Util.appendInfo(error);
         }
     })();
 

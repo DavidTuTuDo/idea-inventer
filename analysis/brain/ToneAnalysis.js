@@ -82,7 +82,7 @@ class ToneAnalysis extends HtmlAnalysis {
             _.trim(this.getTitle()))}.txt`,
             this.printAll(), (err) => {
                 if (GlobalConfig.MODULE_MSG.SHOW_ERROR && !_.isNull(err))
-                    console.log(`error: ${err}`)
+                    Util.appendInfo(`error: ${err}`)
             });
     }
 
@@ -106,7 +106,8 @@ class ToneAnalysis extends HtmlAnalysis {
             decrypt + '\n\n';
 
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(whole);
+            Util.a
+            Util.appendInfo(whole);
 
         return whole;
     }
@@ -133,7 +134,7 @@ if (GlobalConfig.DEBUG_MODE) {
     const tone = new ToneAnalysis();
     // tone.printAll();
     tone.downloadFile();
-    console.log(JSON.stringify(tone.getNormalizeToneObject()))
+    Util.appendInfo(JSON.stringify(tone.getNormalizeToneObject()))
 }
 
 export default ToneAnalysis;

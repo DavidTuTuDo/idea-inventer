@@ -10,7 +10,7 @@ class InfinitePool {
         this.poolId = Util.getRandomValue(0, 100000000000);
         this.state = GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK
         this.sleep = GlobalConfig.POOLLER_SLEEP_RANGE_DEFAULT;
-        this.taskInterval = GlobalConfig.POOLLER_SLEEP_RANGE_DEFAULT;
+        this.taskInterval = GlobalConfig.POOLLER_TASK_INTERVAL_DEFAULT;
 
         this.maxWorker = maxWorkers;
         this.mHashNTaskMap = {};
@@ -53,7 +53,8 @@ class InfinitePool {
 
             const hash = Util.getRandomHash();
             const taskInfo = {task, hash};
-            this.mHashNTaskMap[hash] = taskInfo;
+            this.appendHashTaskMap({task, hash});
+
             this.queue[priority].push(taskInfo);
             return hash;
 
@@ -80,6 +81,16 @@ class InfinitePool {
 
     removeCompletedTaskMapByHash = (hash) => {
         delete this.mHashNTaskMap[hash];
+        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+            Util.appendInfo(`this.mHashNTaskMap ${_.size(this.mHashNTaskMap)}`)
+    }
+
+    appendHashTaskMap(taskInfo) {
+        this.mHashNTaskMap[taskInfo.hash] = taskInfo;
+    }
+
+    getTaskInfoByHash(hash) {
+        return this.mHashNTaskMap[hash];
     }
 
     /**
@@ -87,7 +98,7 @@ class InfinitePool {
      *
      * method will return true when succeed delete*/
     removeTask(hash) {
-        let taskInfo = this.mHashNTaskMap[hash];
+        let taskInfo = this.getTaskInfoByHash(hash);
         if (taskInfo) {
             for (const prior of GlobalConfig.POOLLER_PRIORITY) {
                 const _index = _.indexOf(this.queue[prior], taskInfo);
@@ -113,7 +124,7 @@ class InfinitePool {
     runByParams = async (task, params) => {
         this.add(task);
         this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS);
-        for(const param of params) {
+        for (const param of params) {
 
         }
     }
@@ -136,7 +147,7 @@ class InfinitePool {
         while (this.isRunning) {
 
         }
-        }
+    }
 
     setState(_state) {
         if (!_.has(GlobalConfig.POOLLER_STATE, _state))
@@ -149,44 +160,44 @@ class InfinitePool {
     run = async () => {
         const ret = [];
         const executing = [];
-        const keyMap = {};
-
+        let index = 0
         while (this.isRunning) {
+            index++;
             if (this.getQueueSize() <= 0) {
                 const timer = await Util.syncDelayRandom(this.sleep.min, this.sleep.max);
                 this.sleepTimes += 1;
                 Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller ${this.poolId} sleep time ${timer} million-sec`);
 
-                if (this.sleepTimes >= GlobalConfig.POOLLER_MAX_SLEEP_TIMES_DEFAULT)
-                    this.stop();
+                if (this.sleepTimes >= GlobalConfig.POOLLER_MAX_SLEEP_TIMES_DEFAULT) this.stop();
                 continue;
             }
+            const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
+            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                Util.appendInfo(`worker的周間休息了以下 ${restInInterval} million-secs`);
+
             this.sleepTimes = 0;
             const taskInfo = this.getTaskInfoDependOnPriority();
-            const p = Promise.resolve().then(() => {
-                return taskInfo.task();
-            });
-
+            const p = Promise.resolve()
+                .then(() => {
+                    return taskInfo.task();
+                })
+                .then((result) => {
+                    return {result, hash: taskInfo.hash}
+                });
             ret.push(p);
-            const e = p.then(() => {
-                const taskInfo = keyMap[e];
-                if (taskInfo !== undefined) {
-                    delete keyMap[e];
+
+            const e = p.then((result) => {
+                if (result.hash) {
                     this.removeCompletedTaskMapByHash(taskInfo.hash);
                 }
                 return executing.splice(executing.indexOf(e), 1);
             });
-
-            keyMap[e] = taskInfo;
             executing.push(e);
-
             if (executing.length >= this.maxWorker) {
-                await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
                 await Promise.race(executing);
             } else if (this.getQueueSize() === 0) {
                 await Promise.race(executing);
             }
-
         }
         return Promise.all(ret);
 
@@ -199,62 +210,72 @@ class InfinitePool {
                 return this.queue[prior].shift();
             }
         }
+        Util.appendInfo(`getTaskInfoDependOnPriority() 不能走到這裡`);
+
     }
+
+
 }
 
 
 if (GlobalConfig.DEBUG_MODE) {
-    const self = new InfinitePool();
-    const tasks = [...Array(10)].map((value, index) => async function () {
+    (async () => {
+        const self = new InfinitePool();
 
-        const randomValue = Util.getRandomValue(5000, 8000);
-        const symbol = index;
-
-        console.log(`i'm symbol of ${symbol},ready to be executed`);
-        await Util.syncDelay(randomValue);
-        console.log(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
-        return {randomValue, symbol};
-
-
-    })
-
-    const hashes = self.adds(tasks);
-    console.log(`${hashes}   ${self.removeTask(Util.getShuffledItemFromArray(hashes))}`);
-
-    setTimeout(() => {
-        self.adds([...Array(1)].map((value, index) => async function () {
-
-            const symbol = `Xman HIGH HIGH HIGH ${index}`;
-            console.log(`i'm symbol of ${symbol}, ready to be executed`);
-            const randomValue = Util.getRandomValue(1000, 5000);
+        const tasks = [...Array(10)].map((value, index) => async function () {
+            const randomValue = Util.getRandomValue(2000, 4000);
+            const symbol = index;
+            Util.appendInfo(`i'm symbol of ${symbol}, ready to be executed`);
             await Util.syncDelay(randomValue);
-            console.log(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
+            Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
             return {randomValue, symbol};
+        })
+        const hashes = self.adds(tasks);
+        await self.run();
+        // await Promise.all(tasks.map((task) => task()));
+        // Util.appendInfo(`${hashes}   ${self.removeTask(Util.getShuffledItemFromArray(hashes))}`);
 
-        }), 'high');
-    }, 5000);
+        // setTimeout(() => {
+        //     self.adds([...Array(1)].map((value, index) => async function () {
+        //
+        //         const symbol = `Xman HIGH HIGH HIGH ${index}`;
+        //         Util.appendInfo(`i'm symbol of ${symbol}, ready to be executed`);
+        //         const randomValue = Util.getRandomValue(1000, 5000);
+        //         await Util.syncDelay(randomValue);
+        //         Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
+        //         return {randomValue, symbol};
+        //
+        //     }), 'high');
+        // }, 5000);
+        //
+        //
+        // setTimeout(() => {
+        //     self.adds([...Array(10)].map((value, index) => async function () {
+        //
+        //         const symbol = `Xman ${index}`;
+        //         Util.appendInfo(`i'm symbol of ${symbol}, ready to be executed`);
+        //         const randomValue = Util.getRandomValue(1000, 5000);
+        //         await Util.syncDelay(randomValue);
+        //         Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
+        //         return {randomValue, symbol};
+        //
+        //     }));
+        // }, 15000);
+
+        // Util.appendInfo('p============???????????')
+        // try {
+        //     const result = await self.run();
+        // } catch (error){
+        //     Util.appendInfo(`error ??????${error}`)
+        // } finally {
+        //     Util.appendInfo('d============???????????')
+        // }
 
 
-    setTimeout(() => {
-        self.adds([...Array(10)].map((value, index) => async function () {
+        // self.run().then((nothing) => Util.appendInfo(`nothing is ${nothing}`));
+        // Util.appendInfo('pardon???????????')
 
-            const symbol = `Xman ${index}`;
-            console.log(`i'm symbol of ${symbol}, ready to be executed`);
-            const randomValue = Util.getRandomValue(1000, 5000);
-            await Util.syncDelay(randomValue);
-            console.log(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
-            return {randomValue, symbol};
-
-        }));
-        console.log(`self.getSize() ${self.getQueueSize()}`);
-    }, 15000);
-
-    setTimeout(() => {
-        self.pus
-    }, 20000)
-
-
-    self.run().then((nothing) => console.log(nothing));
+    })();
 
 }
 

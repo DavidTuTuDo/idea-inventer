@@ -58,7 +58,7 @@ class RankTableAnalysis extends HtmlAnalysis {
         const content = await page.content();
         this.persistedUnderObjectFolder(config.filename, content);
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`download ${config.filename} succeed`);
+            Util.appendInfo(`download ${config.filename} succeed`);
     }
 
 }

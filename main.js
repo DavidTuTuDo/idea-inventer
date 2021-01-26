@@ -65,7 +65,7 @@ import pooller from './pooller';
     async function fetchTone(song) {
         const _page = await browser.newPage();
         if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED) {
-            console.log(`正在 ${song.name} 下載頁面.... `)
+            Util.appendInfo(`正在 ${song.name} 下載頁面.... `);
         }
         await _page.goto(path.join(GlobalConfig.BASE_URL, song.url),
             {waitUntil: 'networkidle2'}

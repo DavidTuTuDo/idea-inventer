@@ -50,14 +50,14 @@ class FireBaseAdminHandler {
 
     async setValues(refPath, params) {
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`SET PATH:${refPath},PARAM:${JSON.stringify(params)}`);
+            Util.appendInfo(`SET PATH:${refPath},PARAM:${JSON.stringify(params)}`);
 
         return await this.db.ref(refPath).set(params);
     }
 
     async updateValues(refPath, params) {
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`UPDATE PATH:${refPath},PARAM:${JSON.stringify(params)}`);
+            Util.appendInfo(`UPDATE PATH:${refPath},PARAM:${JSON.stringify(params)}`);
 
         return await this.db.ref(refPath).update(params);
     }
@@ -134,7 +134,7 @@ class FireBaseAdminHandler {
         const snapshot = await ref.orderByKey().startAt(`${key.trim()}`).endAt(`${key.trim()}\uf8ff`).once("value");
 
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`FETCH PATH:${refPath},PARAM:${key}`);
+            Util.appendInfo(`FETCH PATH:${refPath},PARAM:${key}`);
 
         return snapshot;
     }
@@ -155,7 +155,7 @@ class FireBaseAdminHandler {
         const ref = this.db.ref(refPath);
 
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`FETCH PATH:${refPath}`);
+            Util.appendInfo(`FETCH PATH:${refPath}`);
 
         return await ref.once("value");
     }
@@ -166,7 +166,7 @@ class FireBaseAdminHandler {
         const ref = this.db.ref(refPath);
 
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`FETCH PATH:${refPath}`);
+            Util.appendInfo(`FETCH PATH:${refPath}`);
 
         return await ref.orderByChild(GlobalConfig.REFERENCE_TYPE).equalTo(type).once("value");
     }
@@ -174,7 +174,7 @@ class FireBaseAdminHandler {
     async getSuggestWord() {
         const refPath = path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SUGGEST_WORDS);
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`FETCH PATH:${refPath}`);
+            Util.appendInfo(`FETCH PATH:${refPath}`);
         return await this.db.ref(refPath).orderByValue().once('value');
     }
 
@@ -191,10 +191,10 @@ if (GlobalConfig.DEBUG_MODE) {
         // const snapshot = await handler.getSingerListByType(1);
         const snapshot = await handler.getSuggestWord();
         let arrays = Object.keys(snapshot.val());
-        console.log(arrays);
+        Util.appendInfo(arrays);
         fs.writeFile('./test.txt',JSON.stringify(arrays,null,2),(err) => {
             if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
-                console.log(`error: ${err}`)
+                Util.appendInfo(`error: ${err}`)
         });
 
 

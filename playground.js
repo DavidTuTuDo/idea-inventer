@@ -35,7 +35,7 @@ const aaa = {aa: {a: 3}, bb: {cc: 5}};
 function getKeys(parent, value) {
     for (let [_key, _value] of Object.entries(parent)) {
         if (value === _value) {
-            console.log(_key);
+            Util.appendInfo(_key);
 
         }
     }
@@ -45,19 +45,19 @@ const cachePath = path.join('cache', 'continued.txt');
 if (fs.existsSync(cachePath)) {
     for (const a of [1, 2, 3, 4, 5, 6, 7])
         fs.appendFileSync(cachePath, `\n${a}`, (err) => {
-            console.log('shit');
+            Util.appendInfo('shit');
         })
 } else {
     fs.writeFile(cachePath, "1", (err) => {
-        console.log('shit');
+        Util.appendInfo('shit');
     })
 }
 
 // const array = fs.readFileSync(cachePath,'utf-8',(err) => {}).split('\n');
-// console.log(array);
+// Util.appendInfo(array);
 
 // const test = 1324342423784723984723894792384723.2344234231;
-// console.log(typeof test);
+// Util.appendInfo(typeof test);
 
 class rrr {
 
@@ -78,12 +78,12 @@ class rrr {
     }
 
     run() {
-        console.log(this.lang);
+        Util.appendInfo(this.lang);
     }
 }
 
 function tttttt(...rfff) {
-    console.log(rfff);
+    Util.appendInfo(rfff);
 }
 
 // tttttt('sdaasd','dsds','dsadsa');
@@ -91,7 +91,7 @@ function tttttt(...rfff) {
 
 // const dddd = {a: 3, b: 4}
 // const eee = {...dddd, c: 'fedsd'};
-// console.log(JSON.stringify(eee));
+// Util.appendInfo(JSON.stringify(eee));
 
 const array = ['fsdfds', {a: 1, b: {ffdsf: 'sdsd'}}, {c: 2, d: 4}, {e: 'sasd', f: 'wdsas'}];
 
@@ -114,7 +114,7 @@ function decrypt(collection) {
 
 
 // const p = {ch:3,rr:[3,4],f:{ff:3}};
-// console.log(decrypt(p));
+// Util.appendInfo(decrypt(p));
 
 
 class sss {
@@ -138,7 +138,7 @@ class sss {
         const startTime = _.now();
         await this.wait();
         await this.wait();
-        console.log(startTime);
+        Util.appendInfo(startTime);
         return 2;
     }
 
@@ -270,7 +270,7 @@ class sss {
 // console.log(typeof true);
 // let d = new sss();
 //
-// d.asyncPool(3,[...Array(20)].map((obj,index) => {return {time:util.getRandomValue(1000,3000),symbol:index}}),d.wait).then(
+// d.asyncPool(3,[...Array(20)].map((obj,index) => {return {time:Util.getRandomValue(1000,3000),symbol:index}}),d.wait).then(
 //     (dd) => {
 //         console.log('get:=============>' +  JSON.stringify(dd.length) + '--------' +JSON.stringify(dd));
 //     }
@@ -317,6 +317,12 @@ class eee {
         return this.value;
     }
 
+    async rrr(){
+        return Promise.resolve().then(() => {
+            return Promise.resolve('cccc');
+        });
+    }
+
     async task() {
         let now = _.now();
         const key = util.getRandomValue(1010, 1099);
@@ -333,6 +339,10 @@ class eee {
     }
 }
 
-new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
-
+// new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
+new eee().rrr().then((result ) => {
+    result.then(result => {
+        console.log(result);
+    })
+})
 

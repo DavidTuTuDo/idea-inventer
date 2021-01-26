@@ -25,7 +25,7 @@ export default class MyException extends Error {
         this.logger = `UID:${this.uid} CODE:${this.code} REASON:${this.errorMsg} INFO:${this.selfInfo}`;
 
         if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
-            console.log(this.log);
+            Util.appendInfo(this.log);
 
         if (GlobalConfig.PERSIST_ERROR_LOG)
             this.persist();

@@ -231,7 +231,7 @@ class HtmlAnalysis {
             fs.writeFile(path.join(GlobalConfig.PATH_SAMPLE_OBJECT_ROOT, fileName),
                 JSON.stringify(jsonObj, null, 2),
                 (err) => {
-                    console.log(err)
+                    Util.appendInfo(err)
                 });
         }
     }
@@ -245,7 +245,7 @@ class HtmlAnalysis {
         const content = await page.content();
         this.persistedUnderObjectFolder(config.filename, content);
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(`download ${config.filename} succeed`);
+            Util.appendInfo(`download ${config.filename} succeed`);
     }
 
     getNodeAttributeValue(node, key) {

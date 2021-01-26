@@ -2,7 +2,7 @@ import HtmlAnalysis from "./HtmlAnalysis.js";
 import _ from "lodash";
 import fs from "fs";
 import GlobalConfig from "../../GlobalConfig.js";
-import util from "../../util";
+import Util from "../../util";
 
 
 class SingersAnalysis extends HtmlAnalysis {
@@ -10,7 +10,7 @@ class SingersAnalysis extends HtmlAnalysis {
     constructor(raw) {
         super(raw);
         this.mAllSinger = this.findNodeByAttribute(this.body, {class: 'showSingers', id: 'shbx_0'});
-        console.log();
+        Util.appendInfo();
     }
 
     getSampleConfig() {
@@ -66,7 +66,7 @@ class SingersAnalysis extends HtmlAnalysis {
     getSingerInfo(node, type) {
         let info = {};
         if (this.hasChildren(node)) {
-            const names = util.formalizeNamesToArray(this.getFlatTextByNode(node.children[1], false).trim());
+            const names = Util.formalizeNamesToArray(this.getFlatTextByNode(node.children[1], false).trim());
             info = {
                 type,
                 name: names[0], /** '黃鴻升' */
@@ -97,7 +97,7 @@ class SingersAnalysis extends HtmlAnalysis {
 
 if (GlobalConfig.DEBUG_MODE) {
     const sa = new SingersAnalysis();
-    console.log(util.getShuffledArrayWithLimitCount(sa.getAllSingers(), 10));
+    Util.appendInfo(Util.getShuffledArrayWithLimitCount(sa.getAllSingers(), 10));
 }
 
 export default SingersAnalysis

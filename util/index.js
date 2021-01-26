@@ -17,7 +17,8 @@ class Util {
 
     async syncDelayRandom(min, max) {
         const random = this.getRandomValue(min, max);
-        return await this.syncDelay(random);
+        await this.syncDelay(random);
+        return random;
     }
 
     getRandomHash() {
@@ -86,6 +87,7 @@ class Util {
         let shuffled = _.shuffle(arr);
         return shuffled[0];
     }
+
     getShuffledArray(arr) {
         let shuffled = _.shuffle(arr);
         return shuffled;
@@ -128,7 +130,7 @@ class Util {
                 console.error('object is Empty or Null');
         }
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            console.log(_.map(obj, (_obj) => this.getObjectKey(_obj)));
+            Util.appendInfo(_.map(obj, (_obj) => this.getObjectKey(_obj)));
     }
 
     isSingerTypeRule(constraint) {
@@ -160,8 +162,16 @@ class Util {
         return false;
     }
 
+    appendInfo(data) {
+        return this.appendFile(GlobalConfig.PATH_INFO_LOG, data);
+    }
+
+    appendError(data) {
+        return this.appendFile(GlobalConfig.PATH_ERROR_LOG, data);
+    }
+
     appendFile(path, data) {
-        console.log(JSON.stringify(data));
+        console.log(`LOG: ${JSON.stringify(data)}`);
         data = `${new Date()} ${JSON.stringify(data)}`;
         if (!fs.existsSync(path))
             fs.writeFileSync(path, data, err => {
@@ -174,7 +184,7 @@ class Util {
     }
 
     showError(reason) {
-        console.log(reason)
+        Util.appendInfo(reason)
     }
 
     getRandomValue(min, max) {
@@ -236,11 +246,11 @@ class Util {
     }
 }
 
-if (GlobalConfig.DEBUG_MODE) {
-    const self = new Util();
-    console.log(self.getRandomHash())
-    // console.log(self.getValueWithIntegerType(undefined))
-}
+// if (GlobalConfig.DEBUG_MODE) {
+//     const self = new Util();
+// Util.appendInfo(self.getRandomHash())
+// Util.appendInfo(self.getValueWithIntegerType(undefined))
+// }
 
 const singleton = new Util();
 export default singleton;
