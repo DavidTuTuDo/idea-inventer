@@ -1,7 +1,7 @@
 3001, getTables
 3002, showSchema
 3003, getObjectSchemaStmt
-3004, insertRecord
+3004, insertRecordAndCreateTableAlterColumnIfNotExist
 3005, dropAll
 3006, deleteRecord
 3007, dropTable
@@ -11,11 +11,12 @@
 3011, update record fail
 3012, create index fail
 3013, create table fail
+3014, insertRecord
 
 4001, priority state is wrong
 4002, task type isn't function
 4003, task type isn't array
 4004, task not exist when try to delete
-
+4005, state not valid
 
 8001, append file fail

@@ -82,9 +82,10 @@ const GlobalConfig =
 
         POOLLER_WORKER_DEFAULT: 3,
         POOLLER_PRIORITY: ['high', 'medium', 'low'],
+        POOLLER_STATE: {'RUN_BY_PARAMS': 0, 'RUN_BY_TIMES': 1, 'RUN_INFINITE': 2, 'RUN_BY_EACH_TASK': 3},
         POOLLER_SLEEP_RANGE_DEFAULT: {min: 2000, max: 10000},
         POOLLER_TASK_INTERVAL_DEFAULT: {min: 800, max: 2500},
-        POOLLER_MAX_SLEEP_DEFAULT: 100,
+        POOLLER_MAX_SLEEP_TIMES_DEFAULT: 100,
     };
 
 

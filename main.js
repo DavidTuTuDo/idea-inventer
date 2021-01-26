@@ -201,6 +201,17 @@ import pooller from './pooller';
         self.cleanInterval();
         self.adds([...Array(10000)].map((v,i) => {return factory}));
         await self.run();
+
+
+
+        /** 抓排行榜 once 1 mins */
+
+        /** 檢查歌手 once 5 mins */
+
+        /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+
+        /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+
     }
 
     const browser = await puppeteer.launch({

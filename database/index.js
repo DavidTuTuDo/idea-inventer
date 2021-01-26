@@ -5,6 +5,7 @@ import GlobalConfig from "../GlobalConfig";
 import _ from 'lodash';
 import EX from "../exception";
 import Util from '../util';
+import index from "@babel/plugin-transform-runtime/lib/get-runtime-path";
 
 // import SingersAnalysis from "../analysis/brain/SingersAnalysis";
 
@@ -255,28 +256,53 @@ export default class SqliteHandler {
 
     /** return number, which means how many record insert */
     async insertRecordAndCreateTableAlterColumnIfNotExist(tableName, content, ...index) {
-        let insertStmt = '';
         try {
             /** check table exist */
             await this.createTableAndIndex(tableName, content, ...index);
             /** check table consist of valid column */
             await this.alterColumnIfNeed(tableName, content);
 
-            /** insertRecordAndCreateTableAlterColumnIfNotExist */
-            const contentValues = _.map(content, (value) => {
-                return this.getValidPresentOfSQLValue(value);
-            });
-
-            insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                console.log(insertStmt);
-
-            return await this.db.run(insertStmt);
+            await this.insertRecord(tableName, content);
         } catch (err) {
-            throw new EX(3004, err, insertStmt);
+            throw new EX(3004, err);
         }
     }
 
+    async insertRecords(tableName, contents) {
+        let batchStmt;
+        try {
+            const stmts = contents.map((content, index) => this.getInsertStmt(tableName, content) + ';');
+            batchStmt = _.join(stmts, '\n');
+            batchStmt = `${batchStmt};`;
+            console.log(batchStmt);
+            await this.db.exec(batchStmt);
+        } catch (error) {
+            throw new EX(3015, error, batchStmt);
+        }
+    }
+
+    async insertRecord(tableName, content) {
+        let insertStmt;
+        try {
+            insertStmt = this.getInsertStmt(tableName, content);
+            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                console.log(insertStmt);
+
+            await this.db.run(insertStmt);
+        } catch (error) {
+            throw new EX(3014, error, insertStmt);
+        }
+    }
+
+
+    getInsertStmt(tableName, content) {
+        const contentValues = _.map(content, (value) => {
+            return this.getValidPresentOfSQLValue(value);
+        });
+
+        const insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
+        return insertStmt;
+    }
 
     async alterColumnIfNeed(tableName, content) {
         let stmts;
@@ -433,8 +459,12 @@ if (GlobalConfig.DEBUG_MODE) {
             await handler.init();
             // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
             // console.log(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
-            console.log(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
-                .stmt(), 'name'));
+            // console.log(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
+            //     .stmt(), 'name'));
+            // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
+            // await handler.insertRecordAndCreateTableAlterColumnIfNotExist('testing', {avc: 2121, vdd: 'asdd'});
+            // console.log(await handler.fetchRecords('testing'));
+            console.log((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length);
         } catch (error) {
             console.log(error);
         }

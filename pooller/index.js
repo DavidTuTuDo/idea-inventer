@@ -7,10 +7,13 @@ import ERROR from '../exception';
 class InfinitePool {
 
     constructor(maxWorkers = GlobalConfig.POOLLER_WORKER_DEFAULT) {
+        this.poolId = Util.getRandomValue(0, 100000000000);
+        this.state = GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK
         this.sleep = GlobalConfig.POOLLER_SLEEP_RANGE_DEFAULT;
         this.taskInterval = GlobalConfig.POOLLER_SLEEP_RANGE_DEFAULT;
+
         this.maxWorker = maxWorkers;
-        this.mHashTaskMap = {};
+        this.mHashNTaskMap = {};
         this.queue = {};
         this.sleepTimes = 0;
         this.isRunning = true;
@@ -18,6 +21,10 @@ class InfinitePool {
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
             this.queue[prior] = [];
         }
+    }
+
+    setWorker(counts) {
+        this.maxWorker = counts;
     }
 
     cleanInterval() {
@@ -46,7 +53,7 @@ class InfinitePool {
 
             const hash = Util.getRandomHash();
             const taskInfo = {task, hash};
-            this.mHashTaskMap[hash] = taskInfo;
+            this.mHashNTaskMap[hash] = taskInfo;
             this.queue[priority].push(taskInfo);
             return hash;
 
@@ -71,8 +78,8 @@ class InfinitePool {
         this.isRunning = false;
     }
 
-    removeHashTaskMapByHash = (hash) => {
-        delete this.mHashTaskMap[hash];
+    removeCompletedTaskMapByHash = (hash) => {
+        delete this.mHashNTaskMap[hash];
     }
 
     /**
@@ -80,13 +87,13 @@ class InfinitePool {
      *
      * method will return true when succeed delete*/
     removeTask(hash) {
-        let taskInfo = this.mHashTaskMap[hash];
+        let taskInfo = this.mHashNTaskMap[hash];
         if (taskInfo) {
             for (const prior of GlobalConfig.POOLLER_PRIORITY) {
                 const _index = _.indexOf(this.queue[prior], taskInfo);
                 if (_index > 0) {
                     this.queue[prior].splice(_index, 1);
-                    this.removeHashTaskMapByHash(hash);
+                    this.removeCompletedTaskMapByHash(hash);
                     return true;
                 }
             }
@@ -97,6 +104,48 @@ class InfinitePool {
         }
     }
 
+    /** run would infinite, in default, sleep over 100 times, pooller would shutdown */
+    runInInfinite = async (tasks, interval) => {
+        this.setState(GlobalConfig.POOLLER_STATE.RUN_INFINITE);
+    }
+
+    /** run time by params length */
+    runByParams = async (task, params) => {
+        this.add(task);
+        this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS);
+        for(const param of params) {
+
+        }
+    }
+
+    /** run times wound be depend on times, task would by loop and sync in given order */
+    runByTimes = async (tasks, times) => {
+        this.adds(tasks);
+        this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_TIMES);
+
+        for (let index = 0; index < times; index++) {
+
+        }
+
+    }
+
+    /** run by how many task in queue, FIFO */
+    runByEachTask = async (tasks) => {
+        this.adds(tasks);
+        this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK);
+        while (this.isRunning) {
+
+        }
+        }
+
+    setState(_state) {
+        if (!_.has(GlobalConfig.POOLLER_STATE, _state))
+            throw new ERROR(4005, `${_state} not exist in Setting`, `pooller id ${this.poolId}`);
+
+        this.state = _state;
+    }
+
+
     run = async () => {
         const ret = [];
         const executing = [];
@@ -106,8 +155,9 @@ class InfinitePool {
             if (this.getQueueSize() <= 0) {
                 const timer = await Util.syncDelayRandom(this.sleep.min, this.sleep.max);
                 this.sleepTimes += 1;
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller sleep time ${timer} million-sec`);
-                if (this.sleepTimes >= 100)
+                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller ${this.poolId} sleep time ${timer} million-sec`);
+
+                if (this.sleepTimes >= GlobalConfig.POOLLER_MAX_SLEEP_TIMES_DEFAULT)
                     this.stop();
                 continue;
             }
@@ -116,12 +166,13 @@ class InfinitePool {
             const p = Promise.resolve().then(() => {
                 return taskInfo.task();
             });
+
             ret.push(p);
             const e = p.then(() => {
                 const taskInfo = keyMap[e];
                 if (taskInfo !== undefined) {
                     delete keyMap[e];
-                    this.removeHashTaskMapByHash(taskInfo.hash);
+                    this.removeCompletedTaskMapByHash(taskInfo.hash);
                 }
                 return executing.splice(executing.indexOf(e), 1);
             });
