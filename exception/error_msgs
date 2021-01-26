@@ -18,5 +18,5 @@
 4003, task type isn't array
 4004, task not exist when try to delete
 4005, state not valid
-
+4006, task as param is ridiculous
 8001, append file fail

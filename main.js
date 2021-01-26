@@ -198,7 +198,7 @@ import pooller from './pooller';
         }
 
         const self =  new pooller(5);
-        self.cleanInterval();
+        self.cleanTaskInterval();
         self.adds([...Array(10000)].map((v,i) => {return factory}));
         await self.run();
 
