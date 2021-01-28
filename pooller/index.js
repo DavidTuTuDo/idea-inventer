@@ -9,13 +9,14 @@ class InfinitePool {
     constructor(maxWorkers = GlobalConfig.POOLLER_WORKER_DEFAULT) {
         this.poolId = Util.getRandomValue(0, 100000000000);
         this.state = GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK
-        this.sleep = GlobalConfig.POOLLER_SLEEP_RANGE_DEFAULT;
+        this.timeOfSleep = GlobalConfig.POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT;
         this.taskInterval = GlobalConfig.POOLLER_TASK_INTERVAL_DEFAULT;
+        this.maxSleepCounts = GlobalConfig.POOLLER_MAX_SLEEP_COUNTS_DEFAULT;
         this.maxWorker = maxWorkers;
         this.mHashNTaskMap = {};
         this.queue = {};
-        this.sleepTimes = 0;
-        this.isRunning = true;
+        this.currrentSleepCounts = 0;
+        this.isTaskRunning = false;
 
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
             this.queue[prior] = [];
@@ -25,11 +26,19 @@ class InfinitePool {
         this.executing = [];
     }
 
+    setMaxSleepCounts(times = GlobalConfig.POOLLER_MAX_SLEEP_COUNTS_DEFAULT) {
+        this.maxSleepCounts = times;
+    }
+
     clearCache() {
         this.ret.length = 0;
         this.executing.length = 0;
         this.mHashNTaskMap = {};
         this.queue = {};
+    }
+
+    isRunning = () => {
+        return this.isTaskRunning;
     }
 
     setWorker(counts) {
@@ -90,7 +99,7 @@ class InfinitePool {
     }
 
     stop() {
-        this.isRunning = false;
+        this.isTaskRunning = false;
     }
 
     removeCompletedTaskMapByHash = (hash) => {
@@ -127,21 +136,32 @@ class InfinitePool {
         }
     }
 
-    /** interval{min:0,max:10}
-     * run would infinite, in default, sleep over 100 times, pooller would shutdown */
-    runInInfinite = async (interval, task = []) => {
+    beforeRun = () => {
+        this.isTaskRunning = true;
+    }
 
+    afterRun = () => {
+        this.isTaskRunning = false;
+    }
+
+    /** interval{min:0,max:10}
+     * run would infinite, in default, timeOfSleep over 100 times, pooller would shutdown */
+    runInInfinite = async (task = [], interval) => {
         if (_.isFunction(task))
             this.add(task)
         else if (_.isArray(task))
             this.adds(task);
         else
-            throw new ERROR(4006, `task as param is ridiculous`, `type of task is ===>${typeof task}`)
+            throw new ERROR(4006, `task as param is ridiculous`, `type of task is ===> ${typeof task}`)
+        this.beforeRun();
         this.setTaskInterval(interval)
         this.setState(GlobalConfig.POOLLER_STATE.RUN_INFINITE);
-        while (this.isRunning) {
+
+        while (this.isTaskRunning) {
             await this.#run();
         }
+
+        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
@@ -150,11 +170,13 @@ class InfinitePool {
         if (!_.isFunction(task)) {
             throw new ERROR(4006, `run by Params only one task not ${typeof task}`);
         }
+        this.beforeRun();
         this.add(task);
         this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS);
         for (const param of params) {
             await this.#run(param);
         }
+        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
@@ -168,30 +190,42 @@ class InfinitePool {
     /** run times wound be depend on times, task would by loop and sync in given order */
     runByTimes = async (times, tasks = []) => {
         this.adds(tasks);
+        this.beforeRun();
         this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_TIMES);
 
         for (let index = 0; index < times; index++) {
             await this.#run();
         }
+        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
-    /** run by how many task in queue, FIFO */
+    runInBackGround = (_func, ...params) => {
+        this.beforeRun();
+        setTimeout(async () => {
+            await _func(...params);
+        }, 0);
+
+    }
+
+    /** run by how many task in queue, FIFO, is task completed, pool with timeOfSleep for a while,after this.maxSleepCounts, pooller would closed */
     runByEachTask = async (tasks = []) => {
+        this.currrentSleepCounts = 0;
         this.adds(tasks);
         this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK);
-        while (this.isRunning) {
+        while (this.isTaskRunning) {
             if (this.getQueueSize() <= 0) {
 
-                const timer = await Util.syncDelayRandom(this.sleep.min, this.sleep.max);
-                this.sleepTimes += 1;
+                const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
+                this.currrentSleepCounts += 1;
                 Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller ${this.poolId} sleep time ${timer} million-sec`);
 
-                if (this.sleepTimes >= GlobalConfig.POOLLER_MAX_SLEEP_TIMES_DEFAULT) this.stop();
+                if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
             }
             await this.#run();
         }
+        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
@@ -199,14 +233,13 @@ class InfinitePool {
         this.state = _state;
     }
 
-
     #run = async (param) => {
         if (this.executing.length >= this.maxWorker - 1) {
             const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`worker的周間休息了以下 ${restInInterval} million-secs`);
         }
-        this.sleepTimes = 0;
+        this.currrentSleepCounts = 0;
         const taskInfo = this.getTaskInfoDependOnPriority();
         const p = Promise.resolve()
             .then(() => {
@@ -279,12 +312,20 @@ if (GlobalConfig.DEBUG_MODE) {
         })
         // const hashes = self.adds(tasks);
 
-        const p = async (param) => {
-            Util.appendInfo('我近來惹')
-            await Util.syncDelay(500);
-            return `param is ${param}`;
+        self.setMaxSleepCounts(3);
+        self.runInBackGround(self.runByEachTask, tasks);
+
+        while (self.isRunning()) {
+            await Util.syncDelayRandom(1000,3000);
         }
-        await self.runInInfinite({min: 0, max: 10}, [p]);
+
+
+        // const p = async (param) => {
+        //     Util.appendInfo('我近來惹')
+        //     await Util.syncDelay(500);
+        //     return `param is ${param}`;
+        // }
+        // await self.runInInfinite({min: 0, max: 10}, [p]);
         // console.log(await self.runByParams([...Array(10)].map((v, index) => index), p))
         // console.log(await self.runInInfinite({min: 0, max: 0}, tasks));
 
