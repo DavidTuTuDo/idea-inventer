@@ -106,8 +106,7 @@ class ToneAnalysis extends HtmlAnalysis {
             decrypt + '\n\n';
 
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            Util.a
-            Util.appendInfo(whole);
+            Util.appendInfo('TONE:'+whole);
 
         return whole;
     }

@@ -1,5 +1,6 @@
 import GlobalConfig from "../GlobalConfig";
 import Util from '../util';
+import ERRORs from './ERRORs';
 
 export default class MyException extends Error {
 
@@ -7,32 +8,33 @@ export default class MyException extends Error {
         return JSON.stringify(msg);
     }
 
-    constructor(code, error, selfInfo) {
-        super(error);
-        this.uid = Util.getRandomValue(0, 100000000000);
-        this.code = code;
-        this.error = error;
-        this.selfInfo = selfInfo;
-        this.errorMsg = JSON.stringify(error);
-
-        {
-            if (error.message) {
-                this.errorMsg = `${error.message}, ORIGIN_ERROR:${JSON.stringify(error)}`;
-            } else if (error.msg) {
-                this.errorMsg = `${error.msg}, ORIGIN_ERROR:${JSON.stringify(error)}`;
-            }
-        }
-        this.logger = `UID:${this.uid} CODE:${this.code} REASON:${this.errorMsg} INFO:${this.selfInfo}`;
-
-        if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
-            Util.appendInfo(this.log);
-
-        if (GlobalConfig.PERSIST_ERROR_LOG)
-            this.persist();
+    getErrorCode = () => {
+        return this.code;
     }
 
-    persist() {
-        Util.appendFile(GlobalConfig.PATH_ERROR_LOG, this.logger);
+    constructor(code, ...infos) {
+        const error = ERRORs[code];
+        if (error === undefined) {
+            throw new MyException(9999, `code ''${code}'' is not define in ERRORs.js`);
+        }
+        super(`${error.message}`);
+        this.uid = Util.getRandomValue(0, 100000000000);
+        this.code = code;
+        this.infos = '';
+        this._msg = error.message;
+
+        for (const info of infos) {
+            if (info !== undefined)
+                this.infos += '\n'+infos.indexOf(info)+' '+Util.getAttrValueInSequence(info, 'message', 'msg') + ' ;';
+        }
+
+        this.message = `UID:${this.uid}  CODE:${this.code}  REASON:${this._msg}  INFO:${this.infos}`;
+
+        if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
+            Util.appendError(this.message);
+
+        // if (GlobalConfig.PERSIST_ERROR_LOG)
+        //     this.persist();
     }
 
 

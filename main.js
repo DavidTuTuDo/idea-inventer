@@ -9,221 +9,292 @@ import GlobalConfig from './GlobalConfig.js';
 import firebaseHandler from './firebase';
 import Util from './util';
 import SQL from './database';
-import pooller from './pooller';
+import Pooller from "./pooller";
+import Moment from 'moment';
 
 (async () => {
-    const sqlHandler = new SQL();
-    await sqlHandler.init();
+        const sqlHandler = new SQL();
+        await sqlHandler.init();
 
-    async function syncDelay(delayInms) {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve(true);
-            }, delayInms);
-        });
-    }
-
-    async function fetchSongTable() {
-        await mainPage.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER,
-            {waitUntil: 'networkidle2'}
-        );
-        await mainPage.click('span[sid="1"]');
-        await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-        /** fetch all pages */
-        const _pages = [1, 2, 3, 4, 5];
-        let songs = [];
-        for (let _page of _pages) {
-            await mainPage.click(`a[onClick="loadWS0(${_page});"]`);
-            await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-            const content = await mainPage.content();
-            const songAnalysis = new rta(content);
-            songs = _.concat(songs, songAnalysis.getSongList());
+        async function syncDelay(delayInms) {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve(true);
+                }, delayInms);
+            });
         }
 
-        for (let song of songs) {
-            await mainPage.goto(path.join(GlobalConfig.BASE_URL, song.url),
+        async function fetchSongTable() {
+            await mainPage.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER,
                 {waitUntil: 'networkidle2'}
             );
-            const content = await mainPage.content();
-            const tone = new ta(content);
-            tone.persistedUnderObjectFolder();
-        }
-    }
-
-    async function fetchAllSinger(singerType = 6) {
-        await mainPage.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER,
-            {waitUntil: 'networkidle2'}
-        );
-        await mainPage.click('span[sid="0"]');
-        await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-        const content = await mainPage.content();
-        const mSingerAnalysis = new sa(content);
-        const all = mSingerAnalysis.getAllSingers(singerType);
-        return all;
-    }
-
-    async function fetchTone(song) {
-        const _page = await browser.newPage();
-        if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED) {
-            Util.appendInfo(`正在 ${song.name} 下載頁面.... `);
-        }
-        await _page.goto(path.join(GlobalConfig.BASE_URL, song.url),
-            {waitUntil: 'networkidle2'}
-        );
-        await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-        const tone = new ta(await _page.content());
-        await _page.close();
-        return tone;
-    }
-
-    async function fetchSongsOfSingersPage(path) {
-        let mSongList = [];
-        const _page = await browser.newPage();
-        await _page.goto(path,
-            {waitUntil: 'networkidle2'}
-        );
-        await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-        const content = await _page.content();
-        let mSongListAnalysis = new sla(content);
-        mSongList = mSongList.concat(mSongListAnalysis.getAll());
-
-        while (mSongListAnalysis.hasNextPage()) {
-            await _page.click(`${mSongListAnalysis.getNextPageButtonSymbol()}`);
+            await mainPage.click('span[sid="1"]');
             await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-            const content = await _page.content();
-            mSongListAnalysis = new sla(content);
-            mSongList = mSongList.concat(mSongListAnalysis.getAll());
-        }
-        await _page.close();
-        return mSongList;
-    }
-
-    async function persistSongsAndSinger(singer) {
-        try {
-            const start = _.now();
-            const _db = await sqlHandler.fetchRecords('SINGER', SQL.Builder().equal('name', singer.name).stmt());
-            if (_db.length > 0) {
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `此歌手 '${singer.name}' 已在資料庫中'`);
-                return;
+            /** fetch all pages */
+            const _pages = [1, 2, 3, 4, 5];
+            let songs = [];
+            for (let _page of _pages) {
+                await mainPage.click(`a[onClick="loadWS0(${_page});"]`);
+                await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                const content = await mainPage.content();
+                const songAnalysis = new rta(content);
+                songs = _.concat(songs, songAnalysis.getSongList());
             }
-            Util.appendFile(GlobalConfig.PATH_ERROR_LOG, `正在下載歌手 ${singer.name} 的歌單們....'`);
-            const mSongList = await fetchSongsOfSingersPage(path.join(GlobalConfig.BASE_URL, singer.url));
-            for (const song of mSongList) {
-                try {
-                    await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('SONG',
-                        {...song, state: 'NOT', singer: singer.name}, 'name', 'singer');
-                    Util.appendFile(GlobalConfig.PATH_INFO_LOG, `正在儲存歌手 '${singer.name}' 的歌 '${song.name}' `);
-                } catch (error) {
-                    Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
-                        `TABLE SONG 出現錯誤了,${song.name} ${JSON.stringify(error)}`)
 
+            for (let song of songs) {
+                await mainPage.goto(path.join(GlobalConfig.BASE_URL, song.url),
+                    {waitUntil: 'networkidle2'}
+                );
+                const content = await mainPage.content();
+                const tone = new ta(content);
+                tone.persistedUnderObjectFolder();
+            }
+        }
+
+        async function fetchAllSinger(singerType = 6) {
+            await mainPage.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER,
+                {waitUntil: 'networkidle2'}
+            );
+            await mainPage.click('span[sid="0"]');
+            await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+            const content = await mainPage.content();
+            const mSingerAnalysis = new sa(content);
+            const all = mSingerAnalysis.getAllSingers(singerType);
+            return all;
+        }
+
+        async function fetchTone(song) {
+            let _page = undefined;
+            let tone = undefined;
+            try {
+                _page = await browser.newPage();
+                if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED) {
+                    Util.appendInfo(`正在 ${song.name} 下載頁面.... `);
+                }
+                await _page.goto(path.join(GlobalConfig.BASE_URL, song.url),
+                    {waitUntil: 'networkidle2'}
+                );
+                await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                tone = new ta(await _page.content());
+            } catch (error) {
+                const errorlog = ` fetchTone(${song.name})  Error: ` + error.message
+                Util.appendError(errorlog);
+                throw new Error(error);
+            } finally {
+                if (_page !== undefined) {
+                    Util.appendInfo(`已經將 ${song.name} 頁面正常關閉....`);
+                    await _page.close();
                 }
             }
-            const songCounts = _.isArray(mSongList) ? mSongList.length : 0;
-            const cost = _.now() - start;
-            await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('SINGER', {
-                ...singer,
-                songCounts,
-                cost
-            }, 'name', 'names');
-            return singer;
-        } catch (error) {
-            Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
-                `fetchSongsBySinger ${singer.name} 出現錯誤 ${JSON.stringify(error)}`)
+            return tone;
         }
-    }
 
-    async function persistTone() {
-        let tone = {};
-        try {
-            const start = _.now();
-            const records = await sqlHandler.fetchRecords('SONG',
-                SQL.Builder().gte('popularLevel', GlobalConfig.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD).and().equal('state', 'NOT').limit(5).stmt());
-            const record = Util.getShuffledArrayWithLimitCount(records, 1);
-            if (record.length > 0) {
-                const song = record[0];
-                await sqlHandler.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+        async function fetchSongsOfSingersPage(path) {
+            let mSongList = [];
+            const _page = await browser.newPage();
+            await _page.goto(path,
+                {waitUntil: 'networkidle2'}
+            );
+            await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+            const content = await _page.content();
+            let mSongListAnalysis = new sla(content);
+            mSongList = mSongList.concat(mSongListAnalysis.getAll());
 
-                const raw = await fetchTone(song);
-                tone = raw.getNormalizeToneObject();
-                const cost = _.now() - start;
-                await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('TONE', {
-                    ...tone,
-                    cost
-                }, 'name', 'singer');
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG,
-                    `成功儲存TONE '${tone.name}' .....`)
-                await sqlHandler.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
-                return true;
-            } else {
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG,
-                    `沒有TONE可以下載了....`)
-                return false;
+            while (mSongListAnalysis.hasNextPage()) {
+                await _page.click(`${mSongListAnalysis.getNextPageButtonSymbol()}`);
+                await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                const content = await _page.content();
+                mSongListAnalysis = new sla(content);
+                mSongList = mSongList.concat(mSongListAnalysis.getAll());
             }
-        } catch (error) {
-            Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
-                `persistTone ${tone ? tone.name : 'QQ沒抓到毛'} 出現錯誤 ${JSON.stringify(error)}`)
-        }
-    }
-
-    async function persist(singerType = 6) {
-        let singers = await fetchAllSinger(singerType);
-        singers = Util.getShuffledArrayWithLimitCount(singers, singers.length);
-
-        if (GlobalConfig.CONTINUE_FROM_LAST_TIME) {
-            /** 把allSinger 清除掉 DB內有的 */
-            const exists = (await sqlHandler.fetchRecords('SINGER', '', 'name')).map((exist) => exist.name);
-            Util.appendFile(GlobalConfig.PATH_INFO_LOG,
-                `在資料庫的歌手有 '${singers.length}' 個`)
-            singers = _.remove(singers, (singer) => {
-                return !exists.includes(singer.name);
-            })
+            await _page.close();
+            return mSongList;
         }
 
-        async function factory() {
-            const taskType = singers.length > 0 ? Util.getRandomValue(1, 2) : 2;
-            switch (taskType) {
-                case 1:
-                    /** singer & song */
+        async function persistSongsAndSinger(singer) {
+            try {
+                const start = _.now();
+                const _db = await sqlHandler.fetchRecords('SINGER', SQL.Builder().equal('name', singer.name).stmt());
+                if (_db.length > 0) {
+                    Util.appendFile(GlobalConfig.PATH_INFO_LOG, `此歌手 '${singer.name}' 已在資料庫中'`);
+                    return;
+                }
+                Util.appendFile(GlobalConfig.PATH_ERROR_LOG, `正在下載歌手 ${singer.name} 的歌單們....'`);
+                const mSongList = await fetchSongsOfSingersPage(path.join(GlobalConfig.BASE_URL, singer.url));
+                for (const song of mSongList) {
+                    try {
+                        await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('SONG',
+                            {...song, state: 'NOT', singer: singer.name}, 'name', 'singer');
+                        Util.appendFile(GlobalConfig.PATH_INFO_LOG, `正在儲存歌手 '${singer.name}' 的歌 '${song.name}' `);
+                    } catch (error) {
+                        Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
+                            `TABLE SONG 出現錯誤了,${song.name} ${JSON.stringify(error)}`)
+
+                    }
+                }
+                const songCounts = _.isArray(mSongList) ? mSongList.length : 0;
+                const cost = _.now() - start;
+                await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('SINGER', {
+                    ...singer,
+                    songCounts,
+                    cost
+                }, 'name', 'names');
+                return singer;
+            } catch (error) {
+                Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
+                    `fetchSongsBySinger ${singer.name} 出現錯誤 ${JSON.stringify(error)}`)
+            }
+        }
+
+        async function persistTone() {
+            let song = undefined;
+            try {
+                const start = _.now();
+                const record = Util.getRandomItemOfArray(
+                    await sqlHandler.fetchRecords('SONG', SQL.Builder()
+                        .gte('popularLevel',
+                            GlobalConfig.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD)
+                        .and().equal('state', 'NOT')
+                        .orderByRandom().limit(1).stmt())
+                );
+
+                if (record) {
+                    song = record;
+                    await sqlHandler.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+
+                    const raw = await fetchTone(song);
+                    if (raw !== undefined) {
+                        const tone = raw.getNormalizeToneObject();
+                        const cost = _.now() - start;
+                        await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('TONE', {
+                            ...tone,
+                            cost
+                        }, 'name', 'singer');
+                        await sqlHandler.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                        Util.appendInfo(`成功儲存TONE '${tone.name}' .....`)
+                        return true;
+
+                    } else {
+                        Util.appendError(
+                            `persistTone() ${song.name} 出現錯誤, tone 是 undefined`);
+                        await sqlHandler.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                        return false;
+                    }
+                } else {
+                    Util.appendInfo(`沒有TONE可以下載了....`)
+                    return false;
+                }
+            } catch (error) {
+                if (error && error.message && error.message.indexOf(`SQLITE_CONSTRAINT`) > 0) {
+                    await sqlHandler.updateRecords('SONG', {state: 'DUP'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                } else {
+                    Util.appendError(`persistTone() ${song.name} 出現錯誤？？？？？${typeof  error.message}？？？？  ${JSON.stringify(error.message)}`);
+                    await sqlHandler.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                }
+            }
+        }
+
+        async function persist(singerType = 6) {
+            let singers = [];
+
+            async function fetchSingers() {
+                let singers = await fetchAllSinger(singerType);
+                const exists = (await sqlHandler.fetchRecords('SINGER', '', 'name')).map((exist) => exist.name);
+                Util.appendFile(GlobalConfig.PATH_INFO_LOG,
+                    `在資料庫的歌手有 '${singers.length}' 個`)
+                singers = _.remove(singers, (singer) => {
+                    return !exists.includes(singer.name);
+                })
+                singers = Util.getShuffledArrayWithLimitCount(singers, singers.length);
+            }
+
+            async function fetchSongs() {
+                if (singers.length > 0) {
                     const singer = singers.pop();
                     Util.appendFile(GlobalConfig.PATH_INFO_LOG,
                         `尚未完成的歌手還有 '${singers.length}' 個`)
                     await persistSongsAndSinger(singer);
-                    break;
-                case 2:
-                    /** tone */
-                    return  persistTone();
-                    break;
+                } else {
+                    Util.appendFile(GlobalConfig.PATH_INFO_LOG,
+                        `沒有需要fetch的song了, 尚未完成的歌手還有 '${singers.length}' 個`)
+                }
             }
+
+            async function browserWatcher() {
+                if (browser !== undefined) {
+                    Util.appendInfo(`browser pages = ${((await browser.pages()).length)}`)
+                }
+            }
+
+            const poollers = [];
+            /** 抓排行榜 once 1 mins */
+
+            const errorHandler = (error) => {
+                // if (error.code === 4007) {
+                //     // ignore...
+                // }
+                Util.appendError(`Error handler 遇到問題 ${JSON.stringify(error)}`);
+
+            }
+
+            /** 檢查歌手 once 2 mins */
+            const singerFetcher = new Pooller(1);
+            const twoMin = 2 * 60 * 1000;
+            singerFetcher.runInBackGround(singerFetcher.runInInfinite, fetchSingers, {min: twoMin, max: twoMin});
+            singerFetcher.setBackgroundTaskErrorListener(errorHandler);
+            poollers.push(singerFetcher);
+
+            /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+            const songFetch = new Pooller(2);
+            const TwentySecs = 20 * 1000;
+            songFetch.runInBackGround(songFetch.runInInfinite, fetchSongs, TwentySecs);
+            songFetch.setBackgroundTaskErrorListener(errorHandler);
+            poollers.push(songFetch);
+
+            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+            const toneFetch = new Pooller(6);
+            toneFetch.cleanTaskInterval();
+            toneFetch.setPoolId("TONE FETCHER");
+            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
+            toneFetch.setBackgroundTaskErrorListener(errorHandler);
+            poollers.push(toneFetch);
+
+
+            /** 監督browser page 有沒有爆掉 */
+            const browserWatch = new Pooller(1);
+            browserWatch.runInBackGround(browserWatch.runInInfinite, browserWatcher, 20000);
+            browserWatch.setBackgroundTaskErrorListener(errorHandler);
+            poollers.push(browserWatch);
+
+
+            while (_.find(poollers.map((pooller) => pooller.isRunning()), (self) => self)) {
+                const millionSecs = await Util.syncDelayRandom(5000, 10000);
+                Util.appendInfo(`主線程還在努中工作中, ${millionSecs} mms`);
+                if ((Util.readFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO))['cancel']) {
+                    Util.appendInfo(`主線程收到關閉指令...`);
+                    for (const pooler of poollers) {
+                        Util.appendInfo(`POOLER ${pooler.getPoolId()} 正在關閉中`);
+                        await pooler.stopInBackground();
+                        Util.appendInfo(`POOLER ${pooler.getPoolId()} 關閉成功!`);
+                    }
+                }
+            }
+
         }
 
-        const self =  new pooller(5);
-        self.cleanTaskInterval();
-        self.adds([...Array(10000)].map((v,i) => {return factory}));
-        await self.run();
-
-
-
-        /** 抓排行榜 once 1 mins */
-
-        /** 檢查歌手 once 5 mins */
-
-        /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-
-        /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-
+        const browser = await puppeteer.launch({
+            headless: !GlobalConfig.INVOKE_REAL_CHROME
+        });
+        Util.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, {cancel: false, host: 'David', timeStamp: new Date()});
+        const mainPage = await browser.newPage();
+        await persist(6);
+        await browser.close();
+        if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
+            console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
+        return 0;
     }
 
-    const browser = await puppeteer.launch({
-        headless: !GlobalConfig.INVOKE_REAL_CHROME
-    });
-    const mainPage = await browser.newPage();
-    await persist(6);
-    await browser.close();
-    if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
-        console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
-    return 0;
-})();
+)();
 
 async function downloadAllSong(singerType = 6) {
     await firebaseHandler.setSinger(singer);

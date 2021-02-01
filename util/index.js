@@ -3,7 +3,7 @@ import Crypto from 'crypto';
 import GlobalConfig from "../GlobalConfig";
 import _ from "lodash";
 import fs from "fs";
-import EX from '../exception';
+import ERROR from '../exception';
 
 class Util {
 
@@ -83,6 +83,11 @@ class Util {
         return shuffled.slice(0, n);
     }
 
+    getRandomItemOfArray(array) {
+        const item = this.getShuffledArrayWithLimitCount(array,1);
+        return item.length > 0? item[0] : undefined;
+    }
+
     getShuffledItemFromArray(arr) {
         let shuffled = _.shuffle(arr);
         return shuffled[0];
@@ -130,7 +135,7 @@ class Util {
                 console.error('object is Empty or Null');
         }
         if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-            Util.appendInfo(_.map(obj, (_obj) => this.getObjectKey(_obj)));
+            this.appendInfo(JSON.stringify(_.map(obj, (_obj) => this.getObjectKey(_obj))));
     }
 
     isSingerTypeRule(constraint) {
@@ -167,24 +172,37 @@ class Util {
     }
 
     appendError(data) {
-        return this.appendFile(GlobalConfig.PATH_ERROR_LOG, data);
+        return this.appendFile(GlobalConfig.PATH_ERROR_LOG, data, true);
     }
 
-    appendFile(path, data) {
-        console.log(`LOG: ${JSON.stringify(data)}`);
+    appendFile(path, data, isError = false) {
+        console.log(`${isError ? `ERROR` : `LOG`} : ${JSON.stringify(data)}`);
         data = `${new Date()} ${JSON.stringify(data)}`;
         if (!fs.existsSync(path))
             fs.writeFileSync(path, data, err => {
-                throw new EX(8001, err);
+                throw new ERROR(8001, err);
             });
         else
             fs.appendFileSync(path, `\n${data}`, err => {
-                throw new EX(8001, err);
+                throw new ERROR(8001, err);
             });
     }
 
-    showError(reason) {
-        Util.appendInfo(reason)
+    readFileInJSON(path) {
+        try {
+            if (fs.existsSync(path)) {
+                return JSON.parse(fs.readFileSync(path, 'utf-8'))
+            }
+        } catch (error) {
+            throw new ERROR(9999, error);
+        }
+        return {};
+    }
+
+
+    writeFileInJSON(path, param) {
+        let data = JSON.stringify(param, null, 2);
+        fs.writeFileSync(path, data);
     }
 
     getRandomValue(min, max) {
@@ -244,13 +262,31 @@ class Util {
         }
         return Promise.all(ret);
     }
+
+    getAttrValueInSequence(info, ...attrs) {
+        for (const attr of attrs) {
+            if (!_.isEmpty(info[attr])) {
+                return info[attr];
+            }
+        }
+        return info;
+    }
+
 }
 
-// if (GlobalConfig.DEBUG_MODE) {
-//     const self = new Util();
-// Util.appendInfo(self.getRandomHash())
-// Util.appendInfo(self.getValueWithIntegerType(undefined))
-// }
+if (GlobalConfig.DEBUG_MODE) {
+    // const self = new Util();
+    // console.log(self.getAttrValueInSequence({msg: 'msgmsgmsgmsgmsg', message: 'messagemessage'}, 'message', 'msg'));
+    // console.log(self.getAttrValueInSequence('fdsfhsiudhuisd', 'message', 'msg'));
+    // self.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, {cancel: false, host: 'DavidCCC'});
+    // self.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, {cancel: false, host: 'David', timeStamp: new Date()});
+    // console.log((self.readFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO))["cancel"]);
+    // const info = self.readFileInJSON('./dynamic_info.js');
+
+    // console.log(info.cancel);
+    // throw new ERROR(4002);
+}
+
 
 const singleton = new Util();
 export default singleton;

@@ -26,6 +26,14 @@ class InfinitePool {
         this.executing = [];
     }
 
+    setPoolId = (id = this.poolId) => {
+        this.poolId = id;
+    }
+
+    getPoolId = () => {
+        return this.poolId;
+    }
+
     setMaxSleepCounts(times = GlobalConfig.POOLLER_MAX_SLEEP_COUNTS_DEFAULT) {
         this.maxSleepCounts = times;
     }
@@ -35,6 +43,25 @@ class InfinitePool {
         this.executing.length = 0;
         this.mHashNTaskMap = {};
         this.queue = {};
+    }
+
+    stop() {
+        this.isTaskRunning = false;
+    }
+
+    /** return true if task completed, after 15 secs, force leave */
+    stopInBackground = async () => {
+        let times = 0;
+        this.isTaskRunning = false;
+        while (this.executing.length > 0) {
+
+            await Util.syncDelay(1000);
+            times += 1;
+            if (times > 15) {
+                return false;
+            }
+        }
+        return true;
     }
 
     isRunning = () => {
@@ -93,14 +120,11 @@ class InfinitePool {
                 hashes.push(this.add(task, priority));
             }
         } else {
-            throw new ERROR(4003, `should be array, not${typeof tasks}`);
+            throw new ERROR(4003, `should be array, not ${typeof tasks}`);
         }
         return hashes;
     }
 
-    stop() {
-        this.isTaskRunning = false;
-    }
 
     removeCompletedTaskMapByHash = (hash) => {
         delete this.mHashNTaskMap[hash];
@@ -141,12 +165,15 @@ class InfinitePool {
     }
 
     afterRun = () => {
-        this.isTaskRunning = false;
+
     }
 
     /** interval{min:0,max:10}
      * run would infinite, in default, timeOfSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
+        if (_.isNumber(interval)) {
+            interval = {min: interval, max: interval}
+        }
         if (_.isFunction(task))
             this.add(task)
         else if (_.isArray(task))
@@ -161,7 +188,6 @@ class InfinitePool {
             await this.#run();
         }
 
-        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
@@ -176,7 +202,6 @@ class InfinitePool {
         for (const param of params) {
             await this.#run(param);
         }
-        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
@@ -184,6 +209,7 @@ class InfinitePool {
     #getNormalizeResult = async () => {
         const self = await Promise.all(this.ret);
         this.clearCache();
+        this.afterRun();
         return self.map((_self) => _self.result);
     }
 
@@ -196,16 +222,26 @@ class InfinitePool {
         for (let index = 0; index < times; index++) {
             await this.#run();
         }
-        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
     runInBackGround = (_func, ...params) => {
+        if (!(typeof _func === "function")) {
+            throw new ERROR(9999);
+        }
         this.beforeRun();
         setTimeout(async () => {
-            await _func(...params);
+            try {
+                await _func(...params);
+            } catch (error) {
+                this.listener(error);
+            }
         }, 0);
 
+    }
+
+    setBackgroundTaskErrorListener = (listener) => {
+        this.listener = listener;
     }
 
     /** run by how many task in queue, FIFO, is task completed, pool with timeOfSleep for a while,after this.maxSleepCounts, pooller would closed */
@@ -218,14 +254,13 @@ class InfinitePool {
 
                 const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
                 this.currrentSleepCounts += 1;
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller ${this.poolId} sleep time ${timer} million-sec`);
+                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller ${this.getPoolId()} sleep time ${timer} million-sec`);
 
                 if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
             }
             await this.#run();
         }
-        this.afterRun()
         return await this.#getNormalizeResult();
     }
 
@@ -234,11 +269,16 @@ class InfinitePool {
     }
 
     #run = async (param) => {
+
         if (this.executing.length >= this.maxWorker - 1) {
             const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`worker的周間休息了以下 ${restInInterval} million-secs`);
+            if (!this.isTaskRunning) {
+                throw new ERROR(4007,`POOLER ID ${this.getPoolId()}`);
+            }
         }
+
         this.currrentSleepCounts = 0;
         const taskInfo = this.getTaskInfoDependOnPriority();
         const p = Promise.resolve()
@@ -279,7 +319,7 @@ class InfinitePool {
                         this.queue[prior].push(task);
                         return task;
                     default:
-                        throw new ERROR(4005, ' state not valid')
+                        throw new ERROR(4005, `this.state ==> ${this.state}`)
                 }
             }
         }
@@ -316,7 +356,7 @@ if (GlobalConfig.DEBUG_MODE) {
         self.runInBackGround(self.runByEachTask, tasks);
 
         while (self.isRunning()) {
-            await Util.syncDelayRandom(1000,3000);
+            await Util.syncDelayRandom(1000, 3000);
         }
 
 

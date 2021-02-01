@@ -128,7 +128,7 @@ class FireBaseAdminHandler {
         return result;
     }
 
-    async fetchOnceByConstraint(refPath, key) {
+    fetchOnceByConstraint = async (refPath, key) => {
         this.isKeywordRule(key);
         let ref = this.db.ref(refPath);
         const snapshot = await ref.orderByKey().startAt(`${key.trim()}`).endAt(`${key.trim()}\uf8ff`).once("value");
@@ -189,17 +189,17 @@ if (GlobalConfig.DEBUG_MODE) {
         // const snapshot = await handler.getSingerListByKeyword('陳');
         // const snapshot = await handler.getToneListBySingerName('陳芳語');
         // const snapshot = await handler.getSingerListByType(1);
-        const snapshot = await handler.getSuggestWord();
-        let arrays = Object.keys(snapshot.val());
-        Util.appendInfo(arrays);
-        fs.writeFile('./test.txt',JSON.stringify(arrays,null,2),(err) => {
-            if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
-                Util.appendInfo(`error: ${err}`)
-        });
+        // const snapshot = await handler.getSuggestWord();
+        // let arrays = Object.keys(snapshot.val());
+        // Util.appendInfo(arrays);
+        // fs.writeFile('./test.txt',JSON.stringify(arrays,null,2),(err) => {
+        //     if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
+        //         Util.appendInfo(`error: ${err}`)
+        // });
 
 
-        // if (!_.isUndefined(snapshot) && snapshot.val())
-        //     console.log(Object.keys(snapshot.val()));
+        if (!_.isUndefined(snapshot) && snapshot.val())
+            console.log(Object.keys(snapshot.val()));
 
         const obj =
             {
@@ -220,4 +220,3 @@ if (GlobalConfig.DEBUG_MODE) {
     })()
 
 }
-

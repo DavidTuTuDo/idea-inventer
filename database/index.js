@@ -3,7 +3,8 @@ import {open} from 'sqlite';
 import ToneAnalysis from "../analysis/brain/ToneAnalysis";
 import GlobalConfig from "../GlobalConfig";
 import _ from 'lodash';
-import EX from "../exception";
+import ERROR from "../exception";
+
 import Util from '../util';
 import index from "@babel/plugin-transform-runtime/lib/get-runtime-path";
 
@@ -49,7 +50,7 @@ export default class SqliteHandler {
                 await this.db.run(`DROP TABLE IF EXISTS ${table.name}`);
             }
         } catch (error) {
-            throw new EX(3005, error);
+            throw new ERROR(3005, error);
         }
     }
 
@@ -58,7 +59,7 @@ export default class SqliteHandler {
             const result = await this.db.all(`DELETE FROM ${tableName} WHERE ${condition}`);
             return result;
         } catch (err) {
-            throw new EX(3006, err);
+            throw new ERROR(3006, err);
         }
     }
 
@@ -85,11 +86,11 @@ export default class SqliteHandler {
             const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), GlobalConfig.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(stmt);
+                Util.appendInfo('FETCH RECORD STMT:' + stmt);
             const result = await this.db.all(stmt);
             return result;
         } catch (err) {
-            throw new EX(3007, err, stmt);
+            throw new ERROR(3007, err, `STMT => ${stmt}`);
         }
     }
 
@@ -97,7 +98,7 @@ export default class SqliteHandler {
         try {
             await this.db.run(`DROP TABLE IF EXISTS ${tableName}`);
         } catch (err) {
-            throw new EX(3007, err, tableName);
+            throw new ERROR(3007, err, tableName);
         }
     }
 
@@ -106,7 +107,7 @@ export default class SqliteHandler {
             const result = await this.db.all(`PRAGMA table_info(${tableName})`);
             return result;
         } catch (err) {
-            throw new EX(3002, err);
+            throw new ERROR(3002, err);
         }
     }
 
@@ -115,7 +116,7 @@ export default class SqliteHandler {
             const result = await this.db.all(`SELECT name FROM sqlite_master WHERE type = "table"`);
             return result;
         } catch (error) {
-            throw new EX(3001, error);
+            throw new ERROR(3001, error);
         }
     }
 
@@ -151,7 +152,7 @@ export default class SqliteHandler {
                         defaultValue = `''`;
                         break;
                     }
-                    throw new EX(3003, `unknown type of this object => key:${key}, value:${content[key]} type:${typeof content[key]}`);
+                    throw new ERROR(3003, `unknown type of this object => key:${key}, value:${content[key]} type:${typeof content[key]}`);
             }
             attrs.push({key, type, defaultValue});
         }
@@ -175,10 +176,10 @@ export default class SqliteHandler {
         try {
             const stmt = this.getCreateTableStmt(tableName, object);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(stmt);
+                Util.appendInfo(`CREATE TABLE STMT: ${stmt}`);
             await this.db.run(stmt);
         } catch (error) {
-            throw new EX(3013, error, stmt);
+            throw new ERROR(3013, error, `STMT => ${stmt}`);
         }
     }
 
@@ -188,11 +189,11 @@ export default class SqliteHandler {
             if (!_.isEmpty(index)) {
                 stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                    Util.appendInfo(stmt);
+                    Util.appendInfo(`CREATE INDEX STMT: ${stmt}`);
                 await this.db.run(stmt);
             }
         } catch (error) {
-            throw new EX(3012, error, stmt);
+            throw new ERROR(3012, error,  `STMT => ${stmt}`);
         }
     }
 
@@ -201,19 +202,19 @@ export default class SqliteHandler {
         try {
             const createStmt = this.getCreateTableStmt(tableName, object);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(createStmt);
+                Util.appendInfo(`CREATE STMT ${createStmt}`);
             await this.db.run(createStmt);
 
             if (!_.isEmpty(index)) {
                 const stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                    Util.appendInfo(stmt);
+                    Util.appendInfo(`CREATE INDEX STMT:${stmt}`);
                 await this.db.run(stmt);
             }
 
 
         } catch (error) {
-            throw new EX(3009, error);
+            throw new ERROR(3009, error);
         }
     }
 
@@ -237,12 +238,12 @@ export default class SqliteHandler {
 
             updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(updateStmt);
+                Util.appendInfo(`UPDATE STMT: ${updateStmt}`);
             const result = await this.db.run(updateStmt);
             return result.changes;
 
         } catch (error) {
-            throw new EX(3011, error, updateStmt);
+            throw new ERROR(3011, error,  `STMT => ${updateStmt}`);
         }
     }
 
@@ -264,7 +265,7 @@ export default class SqliteHandler {
 
             await this.insertRecord(tableName, content);
         } catch (err) {
-            throw new EX(3004, err);
+            throw new ERROR(3004, err);
         }
     }
 
@@ -274,10 +275,10 @@ export default class SqliteHandler {
             const stmts = contents.map((content, index) => this.getInsertStmt(tableName, content) + ';');
             batchStmt = _.join(stmts, '\n');
             batchStmt = `${batchStmt};`;
-            Util.appendInfo(batchStmt);
+            Util.appendInfo(`BATCH STMT:${batchStmt}`);
             await this.db.exec(batchStmt);
         } catch (error) {
-            throw new EX(3015, error, batchStmt);
+            throw new ERROR(3015, error, `BATCH STMT => ${batchStmt}`);
         }
     }
 
@@ -286,11 +287,11 @@ export default class SqliteHandler {
         try {
             insertStmt = this.getInsertStmt(tableName, content);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(insertStmt);
+                Util.appendInfo(`INSERT STMT: ${insertStmt}`);
 
             await this.db.run(insertStmt);
         } catch (error) {
-            throw new EX(3014, error, insertStmt);
+            throw new ERROR(3014, error, `INSERT STMT => ${insertStmt}`);
         }
     }
 
@@ -317,12 +318,12 @@ export default class SqliteHandler {
                 stmts = this.getAlterColumnStmt(tableName, differ);
                 for (const stmt of stmts) {
                     if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                        Util.appendInfo(stmt);
+                        Util.appendInfo(`ALTER COLUMN STMT:${stmt}`);
                     await this.db.run(stmt);
                 }
             }
         } catch (error) {
-            throw new EX(3010, error);
+            throw new ERROR(3010, `ALTER COLUMNS STMT => ${stmts}`);
         }
     }
 }
@@ -368,11 +369,16 @@ class ConditionBuilder {
         let array = [];
         for (const key in rules) {
             if (!['ASC', 'DESC'].includes(_.toUpper(rules[key]))) {
-                throw new EX('3008', `${rules[key]} is not valid, should be ['ASC', 'DESC']`);
+                throw new ERROR('3008', `${rules[key]} is not valid, should be ['ASC', 'DESC']`);
             }
             array = _.concat(`${key} ${rules[key]}`);
         }
         this.concat(`ORDER BY ${_.join(array, ', ')}`);
+        return this.self;
+    }
+
+    orderByRandom(){
+        this.concat(`ORDER BY RANDOM()`);
         return this.self;
     }
 
@@ -453,21 +459,28 @@ class ConditionBuilder {
 if (GlobalConfig.DEBUG_MODE) {
 
     (async () => {
-        try {
             // const tone = new ToneAnalysis();
             const handler = new SqliteHandler();
             await handler.init();
+
             // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
             // Util.appendInfo(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
             // Util.appendInfo(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
             //     .stmt(), 'name'));
             // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
             // await handler.insertRecordAndCreateTableAlterColumnIfNotExist('testing', {avc: 2121, vdd: 'asdd'});
+            // Util.appendInfo(`update {ING x=> NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').stmt())).length);
             // console.log(await handler.fetchRecords('testing'));
-            Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length);
-        } catch (error) {
-            Util.appendInfo(error);
-        }
+            // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
+        Util.appendInfo('ING   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
+        Util.appendInfo('NOT   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
+        Util.appendInfo('DONE   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+        Util.appendInfo('DUP   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DUP').stmt())).length));
+
+        Util.appendInfo('ING   '+JSON.stringify((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt(),'name','uid'))));
+
+
+        // throw new ERROR(4001);
     })();
 
 }

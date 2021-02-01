@@ -78,13 +78,9 @@ class rrr {
     }
 
     run() {
-        Util.appendInfo(this.lang);
     }
 }
 
-function tttttt(...rfff) {
-    Util.appendInfo(rfff);
-}
 
 // tttttt('sdaasd','dsds','dsadsa');
 
@@ -317,7 +313,7 @@ class eee {
         return this.value;
     }
 
-    async rrr(){
+    async rrr() {
         return Promise.resolve().then(() => {
             return Promise.resolve('cccc');
         });
@@ -340,9 +336,35 @@ class eee {
 }
 
 // new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
-new eee().rrr().then((result ) => {
-    result.then(result => {
-        console.log(result);
-    })
-})
+// new eee().rrr().then((result ) => {
+//     result.then(result => {
+//         console.log(result);
+//     })
+// })
 
+// const array1 = [1, 2, 3, 4, 5];
+//
+// function popper(p) {
+//     const a = p.pop();
+// }
+//
+// popper(array1);
+// console.log(array1);
+function learnedSthing() {
+    try {
+        console.log('before error');
+        throw new Error('iamError');
+    } catch (error) {
+        _.ihavNoThisMethod();
+
+    }
+}
+
+try {
+    learnedSthing();
+} catch (e) {
+    /** you catch error and doing nothing,than you won't know anything here */
+}
+
+// let ff = 'jiojigg fdsff'
+// console.log(ff.indexOf('fdsff'));

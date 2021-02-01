@@ -10,7 +10,6 @@ class SingersAnalysis extends HtmlAnalysis {
     constructor(raw) {
         super(raw);
         this.mAllSinger = this.findNodeByAttribute(this.body, {class: 'showSingers', id: 'shbx_0'});
-        Util.appendInfo();
     }
 
     getSampleConfig() {

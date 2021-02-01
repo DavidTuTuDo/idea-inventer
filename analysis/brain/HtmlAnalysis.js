@@ -1,6 +1,7 @@
 import fs from 'fs';
 import _ from "lodash";
 import path from 'path';
+import Util from '../../util'
 import GlobalConfig from "../../GlobalConfig.js";
 import * as html2json from "himalaya";
 
@@ -231,7 +232,7 @@ class HtmlAnalysis {
             fs.writeFile(path.join(GlobalConfig.PATH_SAMPLE_OBJECT_ROOT, fileName),
                 JSON.stringify(jsonObj, null, 2),
                 (err) => {
-                    Util.appendInfo(err)
+                    Util.appendError('persistedUnderObjectFolder : ' + JSON.stringify(err))
                 });
         }
     }

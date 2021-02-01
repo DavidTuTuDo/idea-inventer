@@ -7,7 +7,7 @@ const GlobalConfig =
         DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
         CONTINUE_FROM_LAST_TIME: true,
         USE_SQL_DATABASE: true,
-        PERSIST_ERROR_LOG: true,
+        // PERSIST_ERROR_LOG: true,
         HACK_LIMITED_TESTING_MODE: false,
         PERMISSION_DOWNLOAD_DEPEND_ON_POPULAR: true,
         SKIP_DEPEND_ON_EXIST: true,
@@ -32,8 +32,8 @@ const GlobalConfig =
         },
 
         MODULE_MSG: {
-            SHOW_ERROR: false,
-            SHOW_SUCCEED: true,
+            SHOW_ERROR: true,
+            SHOW_SUCCEED: false,
         },
 
         BASE_DATABASE_PATH: './database/secret_infos.db',
@@ -50,6 +50,8 @@ const GlobalConfig =
         PATH_SAMPLE_URL_BASE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
         PATH_ERROR_LOG: './error_logs.txt',
         PATH_INFO_LOG: './info_logs.txt',
+        PATH_DYNAMIC_INFO: './dynamic_info.js',
+
 
         SAMPLE_FILE_NAME_SINGER: 'AllSingerObject.txt',
         SAMPLE_FILE_NAME_SONG_RANK: 'WeekRankObject.txt',
