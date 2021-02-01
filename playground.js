@@ -335,7 +335,9 @@ class eee {
     }
 }
 
-// new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
+new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
+
+
 // new eee().rrr().then((result ) => {
 //     result.then(result => {
 //         console.log(result);
@@ -350,21 +352,26 @@ class eee {
 //
 // popper(array1);
 // console.log(array1);
-function learnedSthing() {
-    try {
-        console.log('before error');
-        throw new Error('iamError');
-    } catch (error) {
-        _.ihavNoThisMethod();
-
-    }
-}
-
-try {
-    learnedSthing();
-} catch (e) {
-    /** you catch error and doing nothing,than you won't know anything here */
-}
+// function learnedSthing() {
+//     try {
+//         console.log('before error');
+//         throw new Error('iamError');
+//     } catch (error) {
+//         _.ihavNoThisMethod();
+//
+//     }
+// }
+//
+// function middleware() {
+//     learnedSthing();
+// }
+//
+// try {
+//     middleware();
+// } catch (e) {
+//     console.log('i got grandsons error');
+//     /** you catch error and doing nothing,than you won't know anything here */
+// }
 
 // let ff = 'jiojigg fdsff'
 // console.log(ff.indexOf('fdsff'));

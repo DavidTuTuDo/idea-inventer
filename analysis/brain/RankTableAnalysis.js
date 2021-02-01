@@ -1,5 +1,6 @@
 import _ from "lodash";
 import fs from "fs";
+import Util from "../../Util";
 import HtmlAnalysis from "./HtmlAnalysis.js";
 import GlobalConfig from "../../GlobalConfig.js";
 
@@ -61,7 +62,35 @@ class RankTableAnalysis extends HtmlAnalysis {
             Util.appendInfo(`download ${config.filename} succeed`);
     }
 
+    hasNextPage() {
+        const node = this.findNodeByAttributes(this.body, {'class': 'page', id: 'shbx_1_p'});
+        if (this.hasChildren(node)) {
+            const labels = node.children.map((child) => this.getFlatTextByNode(child, false))
+            return _.find(labels, (label) => label.indexOf('下一頁') >= 0);
+        }
+        return false;
+    }
+
+    // a[onClick="loadWS0(${_page});"]
+    getNextPageSymbol() {
+        const node = this.findNodeByAttributes(this.body, {'class': 'page', id: 'shbx_1_p'});
+        if (this.hasChildren(node)) {
+            const currentPageNodeIndex = _.findIndex(node.children, (child) => {
+                return this.isContainAttribute(child, {'class': 'now'})
+            });
+
+            const nextNode = node.children[currentPageNodeIndex + 1];
+            const symbol = `${nextNode.tagName}[onclick="${this.getNodeAttributeValue(nextNode, 'onclick')}"]`;
+            return symbol;
+        }
+        return 'no,no,no';
+    }
 }
 
 
 export default RankTableAnalysis
+
+if (GlobalConfig.DEBUG_MODE) {
+
+
+}

@@ -165,7 +165,7 @@ class InfinitePool {
     }
 
     afterRun = () => {
-
+        this.clearCache();
     }
 
     /** interval{min:0,max:10}
@@ -179,12 +179,12 @@ class InfinitePool {
         else if (_.isArray(task))
             this.adds(task);
         else
-            throw new ERROR(4006, `task as param is ridiculous`, `type of task is ===> ${typeof task}`)
+            throw new ERROR(4006, `type of task is ===> ${typeof task}`)
         this.beforeRun();
         this.setTaskInterval(interval)
         this.setState(GlobalConfig.POOLLER_STATE.RUN_INFINITE);
 
-        while (this.isTaskRunning) {
+        while (this.isRunning()) {
             await this.#run();
         }
 
@@ -194,7 +194,7 @@ class InfinitePool {
     /** run time by params length */
     runByParams = async (params = [], task = undefined) => {
         if (!_.isFunction(task)) {
-            throw new ERROR(4006, `run by Params only one task not ${typeof task}`);
+            throw new ERROR(4006, `runByParams error, typeof task can't be ${typeof task}`);
         }
         this.beforeRun();
         this.add(task);
@@ -208,7 +208,6 @@ class InfinitePool {
     /** needless to return info with hash string */
     #getNormalizeResult = async () => {
         const self = await Promise.all(this.ret);
-        this.clearCache();
         this.afterRun();
         return self.map((_self) => _self.result);
     }
@@ -225,23 +224,33 @@ class InfinitePool {
         return await this.#getNormalizeResult();
     }
 
-    runInBackGround = (_func, ...params) => {
-        if (!(typeof _func === "function")) {
+    /** what it means, like a thread run in background,  */
+    runInBackGround = (_asyncfunc, ...params) => {
+        if (!(typeof _asyncfunc === "function")) {
             throw new ERROR(9999);
         }
+        this.taskAllRunInBackGround = true;
+
         this.beforeRun();
         setTimeout(async () => {
             try {
-                await _func(...params);
+                await _asyncfunc(...params);
             } catch (error) {
-                this.listener(error);
+                throw new ERROR(4009, {message: `${this.getPoollerLogFormat('')}`}, error);
+            } finally {
+                Util.appendInfo(`${this.getPoollerLogFormat(`runInBackGround() 完全停止了`)} `);
+                this.stop();
             }
         }, 0);
 
     }
 
+    getPoollerLogFormat = (msg) => {
+        return `POOLLER ID: ${this.getPoolId()} , ${msg}`;
+    }
+
     setBackgroundTaskErrorListener = (listener) => {
-        this.listener = listener;
+        this.backgoundtasklistener = listener;
     }
 
     /** run by how many task in queue, FIFO, is task completed, pool with timeOfSleep for a while,after this.maxSleepCounts, pooller would closed */
@@ -249,13 +258,12 @@ class InfinitePool {
         this.currrentSleepCounts = 0;
         this.adds(tasks);
         this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK);
-        while (this.isTaskRunning) {
+        while (this.isRunning()) {
             if (this.getQueueSize() <= 0) {
 
                 const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
                 this.currrentSleepCounts += 1;
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `poller ${this.getPoolId()} sleep time ${timer} million-sec`);
-
+                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
                 if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
             }
@@ -273,9 +281,10 @@ class InfinitePool {
         if (this.executing.length >= this.maxWorker - 1) {
             const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(`worker的周間休息了以下 ${restInInterval} million-secs`);
-            if (!this.isTaskRunning) {
-                throw new ERROR(4007,`POOLER ID ${this.getPoolId()}`);
+                Util.appendInfo(`${this.getPoollerLogFormat(`的 worker的周間休息了以下 ${restInInterval} million-secs`)} `);
+            if (!this.isRunning()) {
+                Util.appendInfo(`${this.getPoollerLogFormat(`睡起來之後, 遇到this.isTaskRunning === true, 所以就結束這個run()了`)}`);
+                return;
             }
         }
 
@@ -288,14 +297,24 @@ class InfinitePool {
             .then((result) => {
                 return {result, hash: taskInfo.hash}
             });
+
         this.ret.push(p);
 
         const e = p.then((result) => {
             if (result.hash) {
                 this.removeCompletedTaskMapByHash(taskInfo.hash);
             }
-            this.executing.splice(this.executing.indexOf(e), 1);
             return result;
+
+        }).catch((error) => {
+                Util.appendInfo(`${this.getPoollerLogFormat(` 遇到了task發生 Error,但是task沒有處理好...,所以跑到這了 ${error.message}`)}`);
+                if (this.backgoundtasklistener === undefined) {
+                    throw new ERROR(4008, `${error.message}`);
+                }
+                this.backgoundtasklistener(error);
+
+        }).finally(() => {
+            this.executing.splice(this.executing.indexOf(e), 1)
         })
         this.executing.push(e);
         if (this.executing.length >= this.maxWorker) {
@@ -323,15 +342,7 @@ class InfinitePool {
                 }
             }
         }
-
-
-        for (const prior of GlobalConfig.POOLLER_PRIORITY) {
-            if (this.queue[prior].length > 0) {
-                return this.queue[prior].shift();
-            }
-        }
-        Util.appendInfo(`getTaskInfoDependOnPriority() 不能走到這裡`);
-
+        throw new ERROR(4007);
     }
 
 
@@ -398,7 +409,6 @@ if (GlobalConfig.DEBUG_MODE) {
         //
         //     }));
         // }, 15000);
-
         // Util.appendInfo('p============???????????')
         // try {
         //     const result = await self.run();
@@ -407,8 +417,6 @@ if (GlobalConfig.DEBUG_MODE) {
         // } finally {
         //     Util.appendInfo('d============???????????')
         // }
-
-
         // self.run().then((nothing) => Util.appendInfo(`nothing is ${nothing}`));
         // Util.appendInfo('pardon???????????')
 

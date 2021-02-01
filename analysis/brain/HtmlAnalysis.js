@@ -92,6 +92,9 @@ class HtmlAnalysis {
         return this.findNodeByAttributes(node, ...traits);
     }
 
+    /**
+     * <tag class=page id=text1
+     * attr obj = { id:'text1'}*/
     findNodeByAttributes(node, ...attrs) {
         let traits = [...attrs];
         let result = node;
@@ -161,10 +164,10 @@ class HtmlAnalysis {
         return this.isContainAttribute(obj, {'class': className});
     }
 
-    isContainAttribute(obj, trait) {
-        const attributes = obj.attributes;
-        if (attributes && _.isArray(attributes)) {
-            const map = this.getAttrMapArray(trait);
+    isContainAttribute(node, attrs) {
+        if (this.hasAttributes(node)) {
+            const attributes = node.attributes;
+            const map = this.getAttrMapArray(attrs);
             const hasAttribute = this.isArrayContainsArray(attributes, map);
             return hasAttribute;
         }
@@ -232,7 +235,7 @@ class HtmlAnalysis {
             fs.writeFile(path.join(GlobalConfig.PATH_SAMPLE_OBJECT_ROOT, fileName),
                 JSON.stringify(jsonObj, null, 2),
                 (err) => {
-                    Util.appendError('persistedUnderObjectFolder : ' + JSON.stringify(err))
+                    Util.appendError('persistedUnderObjectFolder : ' + JSON.stringify(err.message))
                 });
         }
     }
@@ -249,8 +252,12 @@ class HtmlAnalysis {
             Util.appendInfo(`download ${config.filename} succeed`);
     }
 
+    hasAttributes(node) {
+        return node && !_.isEmpty(node.attributes);
+    }
+
     getNodeAttributeValue(node, key) {
-        if (node && !_.isEmpty(node.attributes)) {
+        if (this.hasAttributes(node)) {
             const attribute = _.find(node.attributes, {'key': key});
             return attribute ? attribute.value : undefined;
         }

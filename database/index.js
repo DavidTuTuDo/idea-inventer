@@ -50,7 +50,7 @@ export default class SqliteHandler {
                 await this.db.run(`DROP TABLE IF EXISTS ${table.name}`);
             }
         } catch (error) {
-            throw new ERROR(3005, error);
+            throw new ERROR(3005, error.message);
         }
     }
 
@@ -59,7 +59,7 @@ export default class SqliteHandler {
             const result = await this.db.all(`DELETE FROM ${tableName} WHERE ${condition}`);
             return result;
         } catch (err) {
-            throw new ERROR(3006, err);
+            throw new ERROR(3006, err.message);
         }
     }
 
@@ -90,7 +90,7 @@ export default class SqliteHandler {
             const result = await this.db.all(stmt);
             return result;
         } catch (err) {
-            throw new ERROR(3007, err, `STMT => ${stmt}`);
+            throw new ERROR(3007, err.message, `STMT => ${stmt}`);
         }
     }
 
@@ -98,7 +98,7 @@ export default class SqliteHandler {
         try {
             await this.db.run(`DROP TABLE IF EXISTS ${tableName}`);
         } catch (err) {
-            throw new ERROR(3007, err, tableName);
+            throw new ERROR(3007, err.message, tableName);
         }
     }
 

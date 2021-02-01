@@ -2,7 +2,7 @@ const GlobalConfig =
     {
         ENCRYPT_KEY: 'davidlovemimi',
 
-        INVOKE_REAL_CHROME: false,
+        INVOKE_REAL_CHROME: true,
         PERMISSION_FORCE_DOWNLOAD_TONE: true,
         DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
         CONTINUE_FROM_LAST_TIME: true,

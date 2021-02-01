@@ -84,8 +84,8 @@ class Util {
     }
 
     getRandomItemOfArray(array) {
-        const item = this.getShuffledArrayWithLimitCount(array,1);
-        return item.length > 0? item[0] : undefined;
+        const item = this.getShuffledArrayWithLimitCount(array, 1);
+        return item.length > 0 ? item[0] : undefined;
     }
 
     getShuffledItemFromArray(arr) {
@@ -188,13 +188,18 @@ class Util {
             });
     }
 
+    deleteFile(path) {
+        if (fs.existsSync(path))
+            fs.unlinkSync(path);
+    }
+
     readFileInJSON(path) {
         try {
             if (fs.existsSync(path)) {
                 return JSON.parse(fs.readFileSync(path, 'utf-8'))
             }
         } catch (error) {
-            throw new ERROR(9999, error);
+            throw new ERROR(9999, error.message);
         }
         return {};
     }

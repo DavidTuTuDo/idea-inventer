@@ -24,30 +24,37 @@ import Moment from 'moment';
             });
         }
 
-        async function fetchSongTable() {
-            await mainPage.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER,
-                {waitUntil: 'networkidle2'}
-            );
-            await mainPage.click('span[sid="1"]');
-            await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-            /** fetch all pages */
-            const _pages = [1, 2, 3, 4, 5];
-            let songs = [];
-            for (let _page of _pages) {
-                await mainPage.click(`a[onClick="loadWS0(${_page});"]`);
+        async function fetchRankTable() {
+            let page;
+            try {
+                page = await browser.newPage();
+                await page.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
+                await page.click('span[sid="1"]');
                 await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-                const content = await mainPage.content();
-                const songAnalysis = new rta(content);
-                songs = _.concat(songs, songAnalysis.getSongList());
-            }
+                // await page.waitForNavigation({ waitUntil: 'networkidle0' })
+                /** fetch all pages */
+                    // const _pages = [1, 2, 3, 4, 5];
 
-            for (let song of songs) {
-                await mainPage.goto(path.join(GlobalConfig.BASE_URL, song.url),
-                    {waitUntil: 'networkidle2'}
-                );
-                const content = await mainPage.content();
-                const tone = new ta(content);
-                tone.persistedUnderObjectFolder();
+                let songs = [];
+                let rankPage = new rta(await page.content());
+                songs = _.concat(songs, rankPage.getSongList());
+                while (rankPage && rankPage.hasNextPage()) {
+                    await page.click(rankPage.getNextPageSymbol());
+                    await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                    /** 點擊後需要      {waitUntil: 'networkidle2'} */
+                    const content = await page.content();
+                    rankPage = new rta(content);
+                    if (rankPage) songs = _.concat(songs, rankPage.getSongList());
+                }
+
+                for (const song of songs) {
+                    console.log(song.name);
+                }
+
+            } catch (error) {
+                Util.appendError(`fetch rank tables fail, because ` + error.message);
+            } finally {
+                if (page) await page.close()
             }
         }
 
@@ -146,6 +153,10 @@ import Moment from 'moment';
             }
         }
 
+        async function persistRank() {
+
+        }
+
         async function persistTone() {
             let song = undefined;
             try {
@@ -186,9 +197,10 @@ import Moment from 'moment';
                 }
             } catch (error) {
                 if (error && error.message && error.message.indexOf(`SQLITE_CONSTRAINT`) > 0) {
+                    Util.appendInfo(`persistTone() ${song.name}, 是一首 DUP 的狀況.....`);
                     await sqlHandler.updateRecords('SONG', {state: 'DUP'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                 } else {
-                    Util.appendError(`persistTone() ${song.name} 出現錯誤？？？？？${typeof  error.message}？？？？  ${JSON.stringify(error.message)}`);
+                    Util.appendError(`persistTone() ${song.name},  ${JSON.stringify(error.message)}`);
                     await sqlHandler.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                 }
             }
@@ -196,6 +208,8 @@ import Moment from 'moment';
 
         async function persist(singerType = 6) {
             let singers = [];
+
+
 
             async function fetchSingers() {
                 let singers = await fetchAllSinger(singerType);
@@ -230,11 +244,7 @@ import Moment from 'moment';
             /** 抓排行榜 once 1 mins */
 
             const errorHandler = (error) => {
-                // if (error.code === 4007) {
-                //     // ignore...
-                // }
-                Util.appendError(`Error handler 遇到問題 ${JSON.stringify(error)}`);
-
+                Util.appendError(`Error handler 遇到問題 ${JSON.stringify(error.message)}`);
             }
 
             /** 檢查歌手 once 2 mins */
@@ -252,13 +262,20 @@ import Moment from 'moment';
             poollers.push(songFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(6);
+            const toneFetch = new Pooller(3);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
             toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
             toneFetch.setBackgroundTaskErrorListener(errorHandler);
             poollers.push(toneFetch);
 
+            /** 抓取排行版上的資訊們 */
+            const rankFetch = new Pooller(1);
+            rankFetch.cleanTaskInterval();
+            rankFetch.setPoolId("RANK FETCHER");
+            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRank);
+            rankFetch.setBackgroundTaskErrorListener(errorHandler);
+            poollers.push(rankFetch);
 
             /** 監督browser page 有沒有爆掉 */
             const browserWatch = new Pooller(1);
@@ -272,10 +289,10 @@ import Moment from 'moment';
                 Util.appendInfo(`主線程還在努中工作中, ${millionSecs} mms`);
                 if ((Util.readFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO))['cancel']) {
                     Util.appendInfo(`主線程收到關閉指令...`);
-                    for (const pooler of poollers) {
-                        Util.appendInfo(`POOLER ${pooler.getPoolId()} 正在關閉中`);
-                        await pooler.stopInBackground();
-                        Util.appendInfo(`POOLER ${pooler.getPoolId()} 關閉成功!`);
+                    for (const pooller of poollers) {
+                        Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
+                        await pooller.stopInBackground();
+                        Util.appendInfo(`POOLER ${pooller.getPoolId()} 關閉成功!`);
                     }
                 }
             }
@@ -286,8 +303,11 @@ import Moment from 'moment';
             headless: !GlobalConfig.INVOKE_REAL_CHROME
         });
         Util.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, {cancel: false, host: 'David', timeStamp: new Date()});
+        Util.deleteFile(GlobalConfig.PATH_ERROR_LOG);
+        Util.deleteFile(GlobalConfig.PATH_INFO_LOG);
         const mainPage = await browser.newPage();
         await persist(6);
+        await fetchRankTable();
         await browser.close();
         if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
             console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);

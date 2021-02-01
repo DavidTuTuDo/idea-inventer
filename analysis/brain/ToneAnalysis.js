@@ -82,7 +82,7 @@ class ToneAnalysis extends HtmlAnalysis {
             _.trim(this.getTitle()))}.txt`,
             this.printAll(), (err) => {
                 if (GlobalConfig.MODULE_MSG.SHOW_ERROR && !_.isNull(err))
-                    Util.appendInfo(`error: ${err}`)
+                    Util.appendInfo(`error: ${err.message}`)
             });
     }
 
