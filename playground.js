@@ -335,7 +335,7 @@ class eee {
     }
 }
 
-new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
+// new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
 
 
 // new eee().rrr().then((result ) => {
@@ -375,3 +375,17 @@ new eee().do().then((sdf) => console.log(`race end with ${sdf}`));
 
 // let ff = 'jiojigg fdsff'
 // console.log(ff.indexOf('fdsff'));
+
+
+function sadas(){
+    zzzzz()
+}
+
+
+function zzzzz(){
+    console.log(util.getCallersName());
+
+}
+
+
+sadas()

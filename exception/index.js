@@ -25,7 +25,7 @@ export default class MyException extends Error {
 
         for (const info of infos) {
             if (info !== undefined)
-                this.infos += '\n'+infos.indexOf(info)+' '+Util.getAttrValueInSequence(info, 'message', 'msg') + ' ;';
+                this.infos += (infos.indexOf(info) + 1) + ': ' + Util.getAttrValueInSequence(info, 'message', 'msg') + ' ;';
         }
 
         this.message = `UID:${this.uid}  CODE:${this.code}  REASON:${this._msg}  INFO:${this.infos}`;
@@ -33,8 +33,6 @@ export default class MyException extends Error {
         if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
             Util.appendError(this.message);
 
-        // if (GlobalConfig.PERSIST_ERROR_LOG)
-        //     this.persist();
     }
 
 

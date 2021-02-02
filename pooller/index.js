@@ -3,7 +3,17 @@ import Util from '../util';
 import GlobalConfig from "../GlobalConfig";
 import ERROR from '../exception';
 
-
+/**
+ *
+ Pooller 有以下特點:
+ 1.task可以設定timeout
+ 2.queue滿了的可以設定task interval
+ 3.如果是depandOntask length, queue裡面沒有task時，可以設定sleeptime, 以及Sleepcounts
+ 4.task 可以cancelled by  hash
+ 5.runByParams,runByCounts,runInInfinite,runByTask
+ 6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
+ *
+ */
 class InfinitePool {
 
     constructor(maxWorkers = GlobalConfig.POOLLER_WORKER_DEFAULT) {
@@ -22,7 +32,6 @@ class InfinitePool {
             this.queue[prior] = [];
         }
 
-        this.ret = [];
         this.executing = [];
     }
 
@@ -39,7 +48,6 @@ class InfinitePool {
     }
 
     clearCache() {
-        this.ret.length = 0;
         this.executing.length = 0;
         this.mHashNTaskMap = {};
         this.queue = {};
@@ -60,6 +68,7 @@ class InfinitePool {
             if (times > 15) {
                 return false;
             }
+
         }
         return true;
     }
@@ -80,7 +89,6 @@ class InfinitePool {
      * interval:{min: 800, max: 1000}
      *
      * */
-
     setTaskInterval(interval = GlobalConfig.POOLLER_TASK_INTERVAL_DEFAULT) {
         this.taskInterval = interval;
     }
@@ -141,7 +149,8 @@ class InfinitePool {
     /**
      * removeTask task in queue by its hash, hash was created when add to queue
      *
-     * method will return true when succeed delete*/
+     * method will return true when succeed delete
+     * */
     removeTask(hash) {
         let taskInfo = this.getTaskInfoByHash(hash);
         if (taskInfo) {
@@ -187,8 +196,6 @@ class InfinitePool {
         while (this.isRunning()) {
             await this.#run();
         }
-
-        return await this.#getNormalizeResult();
     }
 
     /** run time by params length */
@@ -202,14 +209,23 @@ class InfinitePool {
         for (const param of params) {
             await this.#run(param);
         }
-        return await this.#getNormalizeResult();
     }
 
-    /** needless to return info with hash string */
-    #getNormalizeResult = async () => {
-        const self = await Promise.all(this.ret);
-        this.afterRun();
-        return self.map((_self) => _self.result);
+    runByEachTask = async (tasks = []) => {
+        this.beforeRun();
+        this.currrentSleepCounts = 0;
+        this.adds(tasks);
+        this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK);
+        while (this.isRunning()) {
+            if (this.getQueueSize() <= 0) {
+                const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
+                this.currrentSleepCounts += 1;
+                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
+                if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
+                continue;
+            }
+            await this.#run();
+        }
     }
 
     /** run times wound be depend on times, task would by loop and sync in given order */
@@ -221,7 +237,6 @@ class InfinitePool {
         for (let index = 0; index < times; index++) {
             await this.#run();
         }
-        return await this.#getNormalizeResult();
     }
 
     /** what it means, like a thread run in background,  */
@@ -229,8 +244,6 @@ class InfinitePool {
         if (!(typeof _asyncfunc === "function")) {
             throw new ERROR(9999);
         }
-        this.taskAllRunInBackGround = true;
-
         this.beforeRun();
         setTimeout(async () => {
             try {
@@ -242,35 +255,18 @@ class InfinitePool {
                 this.stop();
             }
         }, 0);
-
     }
 
     getPoollerLogFormat = (msg) => {
-        return `POOLLER ID: ${this.getPoolId()} , ${msg}`;
+        return `POOLLER ID: ${this.getPoolId()}${_.isEmpty(msg) ? '' : ' , '}${msg}`;
     }
 
-    setBackgroundTaskErrorListener = (listener) => {
-        this.backgoundtasklistener = listener;
+    setTaskFailHandler = (listener) => {
+        this.taskFailHandler = listener;
     }
 
-    /** run by how many task in queue, FIFO, is task completed, pool with timeOfSleep for a while,after this.maxSleepCounts, pooller would closed */
-    runByEachTask = async (tasks = []) => {
-        this.currrentSleepCounts = 0;
-        this.adds(tasks);
-        this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK);
-        while (this.isRunning()) {
-            if (this.getQueueSize() <= 0) {
-
-                const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
-                this.currrentSleepCounts += 1;
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
-                if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
-                continue;
-            }
-            await this.#run();
-        }
-        return await this.#getNormalizeResult();
-    }
+    /** run by how many task in queue, FIFO, if task completed, pool with timeOfSleep for a while
+     * ,after this.maxSleepCounts, pooller would closed */
 
     setState(_state) {
         this.state = _state;
@@ -298,7 +294,6 @@ class InfinitePool {
                 return {result, hash: taskInfo.hash}
             });
 
-        this.ret.push(p);
 
         const e = p.then((result) => {
             if (result.hash) {
@@ -307,11 +302,11 @@ class InfinitePool {
             return result;
 
         }).catch((error) => {
-                Util.appendInfo(`${this.getPoollerLogFormat(` 遇到了task發生 Error,但是task沒有處理好...,所以跑到這了 ${error.message}`)}`);
-                if (this.backgoundtasklistener === undefined) {
-                    throw new ERROR(4008, `${error.message}`);
-                }
-                this.backgoundtasklistener(error);
+            Util.appendInfo(`${this.getPoollerLogFormat(`遇到了task發生 Error,但是task沒有處理好...,所以跑到這了 ${error.message}`)}`);
+            if (this.taskFailHandler === undefined) {
+                throw new ERROR(4008, `${error.message}`);
+            }
+            this.taskFailHandler(error, this.getPoollerLogFormat());
 
         }).finally(() => {
             this.executing.splice(this.executing.indexOf(e), 1)
@@ -351,7 +346,7 @@ class InfinitePool {
 
 if (GlobalConfig.DEBUG_MODE) {
     (async () => {
-        const self = new InfinitePool(4);
+        const self = new InfinitePool(2);
         // self.cleanTaskInterval();
         const tasks = [...Array(10)].map((value, index) => async function (param) {
             const randomValue = Util.getRandomValue(2000, 4000);
@@ -361,14 +356,15 @@ if (GlobalConfig.DEBUG_MODE) {
             Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
             return {randomValue, symbol, param};
         })
-        // const hashes = self.adds(tasks);
+        const hashes = self.adds(tasks);
 
-        self.setMaxSleepCounts(3);
-        self.runInBackGround(self.runByEachTask, tasks);
+        self.setMaxSleepCounts(300);
+        await self.runByEachTask();
+        // self.runInBackGround(self.runByEachTask, tasks);
 
-        while (self.isRunning()) {
-            await Util.syncDelayRandom(1000, 3000);
-        }
+        // while (self.isRunning()) {
+        //     await Util.syncDelayRandom(1000, 3000);
+        // }
 
 
         // const p = async (param) => {
@@ -376,7 +372,7 @@ if (GlobalConfig.DEBUG_MODE) {
         //     await Util.syncDelay(500);
         //     return `param is ${param}`;
         // }
-        // await self.runInInfinite({min: 0, max: 10}, [p]);
+        // await self.runInInfinite(p,2000);
         // console.log(await self.runByParams([...Array(10)].map((v, index) => index), p))
         // console.log(await self.runInInfinite({min: 0, max: 0}, tasks));
 

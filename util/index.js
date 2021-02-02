@@ -168,15 +168,15 @@ class Util {
     }
 
     appendInfo(data) {
-        return this.appendFile(GlobalConfig.PATH_INFO_LOG, data);
+        return this.appendFile(GlobalConfig.PATH_INFO_LOG, data, false);
     }
 
     appendError(data) {
         return this.appendFile(GlobalConfig.PATH_ERROR_LOG, data, true);
     }
 
-    appendFile(path, data, isError = false) {
-        console.log(`${isError ? `ERROR` : `LOG`} : ${JSON.stringify(data)}`);
+    appendFile(path, data, isError = false, caller = '') {
+        console.log(`${isError ? `ERROR` : `LOG`} : ${caller} ${this.isJson(data) ? JSON.stringify(data) : data}`);
         data = `${new Date()} ${JSON.stringify(data)}`;
         if (!fs.existsSync(path))
             fs.writeFileSync(path, data, err => {
@@ -187,6 +187,22 @@ class Util {
                 throw new ERROR(8001, err);
             });
     }
+
+    getCallersName = () => {
+        let callerName;
+        try {
+            throw new Error();
+        } catch (e) {
+            let re = /(\w+)@|at (\w+) \(/g, st = e.stack, m;
+            re.exec(st), m = re.exec(st);
+            if (!_.isNull(m))
+                callerName = m[1] || m[2];
+        }
+
+        if(_.startsWith('asyncGeneratorStep',callerName)) callerName = '';
+        return (callerName);
+    }
+
 
     deleteFile(path) {
         if (fs.existsSync(path))

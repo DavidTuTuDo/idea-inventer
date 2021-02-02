@@ -33,22 +33,27 @@ import Moment from 'moment';
                 await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
                 // await page.waitForNavigation({ waitUntil: 'networkidle0' })
                 /** fetch all pages */
-                    // const _pages = [1, 2, 3, 4, 5];
-
                 let songs = [];
-                let rankPage = new rta(await page.content());
-                songs = _.concat(songs, rankPage.getSongList());
-                while (rankPage && rankPage.hasNextPage()) {
-                    await page.click(rankPage.getNextPageSymbol());
-                    await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-                    /** 點擊後需要      {waitUntil: 'networkidle2'} */
-                    const content = await page.content();
-                    rankPage = new rta(content);
-                    if (rankPage) songs = _.concat(songs, rankPage.getSongList());
-                }
+                // let rankPage = new rta(await page.content());
+                // songs = _.concat(songs, rankPage.getSongList());
+                // while (rankPage && rankPage.hasNextPage()) {
+                //     await page.click(rankPage.getNextPageSymbol());
+                //     await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                //     /** 點擊後需要 {waitUntil: 'networkidle2'} */
+                //     const content = await page.content();
+                //     rankPage = new rta(content);
+                //     if (rankPage) songs = _.concat(songs, rankPage.getSongList());
+                // }
+                //
+                // for (const song of songs) {
+                //     console.log(song.name);
+                // }
 
-                for (const song of songs) {
-                    console.log(song.name);
+                const selectors = await page.$$('.singsort sorttype')
+                console.log(`selectors   `+JSON.stringify(selectors));
+                for(const selector of selectors) {
+                    await selector.click();
+                    await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
                 }
 
             } catch (error) {
@@ -130,7 +135,7 @@ import Moment from 'moment';
                 const mSongList = await fetchSongsOfSingersPage(path.join(GlobalConfig.BASE_URL, singer.url));
                 for (const song of mSongList) {
                     try {
-                        await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('SONG',
+                        await sqlHandler.lazyInsertRecord('SONG',
                             {...song, state: 'NOT', singer: singer.name}, 'name', 'singer');
                         Util.appendFile(GlobalConfig.PATH_INFO_LOG, `正在儲存歌手 '${singer.name}' 的歌 '${song.name}' `);
                     } catch (error) {
@@ -141,7 +146,7 @@ import Moment from 'moment';
                 }
                 const songCounts = _.isArray(mSongList) ? mSongList.length : 0;
                 const cost = _.now() - start;
-                await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('SINGER', {
+                await sqlHandler.lazyInsertRecord('SINGER', {
                     ...singer,
                     songCounts,
                     cost
@@ -177,7 +182,7 @@ import Moment from 'moment';
                     if (raw !== undefined) {
                         const tone = raw.getNormalizeToneObject();
                         const cost = _.now() - start;
-                        await sqlHandler.insertRecordAndCreateTableAlterColumnIfNotExist('TONE', {
+                        await sqlHandler.lazyInsertRecord('TONE', {
                             ...tone,
                             cost
                         }, 'name', 'singer');
@@ -214,8 +219,7 @@ import Moment from 'moment';
             async function fetchSingers() {
                 let singers = await fetchAllSinger(singerType);
                 const exists = (await sqlHandler.fetchRecords('SINGER', '', 'name')).map((exist) => exist.name);
-                Util.appendFile(GlobalConfig.PATH_INFO_LOG,
-                    `在資料庫的歌手有 '${singers.length}' 個`)
+                Util.appendInfo(`在資料庫的歌手有 '${singers.length}' 個`)
                 singers = _.remove(singers, (singer) => {
                     return !exists.includes(singer.name);
                 })
@@ -244,29 +248,31 @@ import Moment from 'moment';
             /** 抓排行榜 once 1 mins */
 
             const errorHandler = (error) => {
-                Util.appendError(`Error handler 遇到問題 ${JSON.stringify(error.message)}`);
+                Util.appendError(`TASK 遇到問題 ${JSON.stringify(error.message)}`);
             }
 
             /** 檢查歌手 once 2 mins */
             const singerFetcher = new Pooller(1);
             const twoMin = 2 * 60 * 1000;
-            singerFetcher.runInBackGround(singerFetcher.runInInfinite, fetchSingers, {min: twoMin, max: twoMin});
-            singerFetcher.setBackgroundTaskErrorListener(errorHandler);
+            singerFetcher.setPoolId("SINGER FETCHER");
+            singerFetcher.runInBackGround(singerFetcher.runInInfinite, fetchSingers, twoMin);
+            singerFetcher.setTaskFailHandler(errorHandler);
             poollers.push(singerFetcher);
 
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             const songFetch = new Pooller(2);
             const TwentySecs = 20 * 1000;
+            songFetch.setPoolId("SONG FETCHER");
             songFetch.runInBackGround(songFetch.runInInfinite, fetchSongs, TwentySecs);
-            songFetch.setBackgroundTaskErrorListener(errorHandler);
+            songFetch.setTaskFailHandler(errorHandler);
             poollers.push(songFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(3);
+            const toneFetch = new Pooller(2);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
             toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
-            toneFetch.setBackgroundTaskErrorListener(errorHandler);
+            toneFetch.setTaskFailHandler(errorHandler);
             poollers.push(toneFetch);
 
             /** 抓取排行版上的資訊們 */
@@ -274,13 +280,14 @@ import Moment from 'moment';
             rankFetch.cleanTaskInterval();
             rankFetch.setPoolId("RANK FETCHER");
             rankFetch.runInBackGround(rankFetch.runInInfinite, persistRank);
-            rankFetch.setBackgroundTaskErrorListener(errorHandler);
+            rankFetch.setTaskFailHandler(errorHandler);
             poollers.push(rankFetch);
 
             /** 監督browser page 有沒有爆掉 */
             const browserWatch = new Pooller(1);
+            browserWatch.setPoolId("BROWSER WATCHER");
             browserWatch.runInBackGround(browserWatch.runInInfinite, browserWatcher, 20000);
-            browserWatch.setBackgroundTaskErrorListener(errorHandler);
+            browserWatch.setTaskFailHandler(errorHandler);
             poollers.push(browserWatch);
 
 
@@ -306,8 +313,8 @@ import Moment from 'moment';
         Util.deleteFile(GlobalConfig.PATH_ERROR_LOG);
         Util.deleteFile(GlobalConfig.PATH_INFO_LOG);
         const mainPage = await browser.newPage();
-        await persist(6);
-        await fetchRankTable();
+        await persist(5);
+        // await fetchRankTable();
         await browser.close();
         if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
             console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);

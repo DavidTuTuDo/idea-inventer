@@ -255,8 +255,12 @@ export default class SqliteHandler {
         return value
     }
 
-    /** return number, which means how many record insert */
-    async insertRecordAndCreateTableAlterColumnIfNotExist(tableName, content, ...index) {
+    /** it can do
+     * 1.create table if not exist,
+     * 2.alter-column, if column is not exist in table
+     * 3.add index if params exist
+     **/
+    async lazyInsertRecord(tableName, content, ...index) {
         try {
             /** check table exist */
             await this.createTableAndIndex(tableName, content, ...index);
@@ -468,16 +472,15 @@ if (GlobalConfig.DEBUG_MODE) {
             // Util.appendInfo(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
             //     .stmt(), 'name'));
             // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
-            // await handler.insertRecordAndCreateTableAlterColumnIfNotExist('testing', {avc: 2121, vdd: 'asdd'});
-            // Util.appendInfo(`update {ING x=> NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').stmt())).length);
-            // console.log(await handler.fetchRecords('testing'));
+            // await handler.lazyInsertRecord('testing', {avc: 2121, vdd: 'asdd'});
+            // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').stmt())).length);
+            // console.log(await handl·er.fetchRecords('testing'));
             // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
         Util.appendInfo('ING   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
         Util.appendInfo('DUP   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DUP').stmt())).length));
-
-        Util.appendInfo('ING   '+JSON.stringify((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt(),'name','uid'))));
+        Util.appendInfo('SINGER COUNTS IN DATABASE   '+ ((await handler.fetchRecords('SINGER', '')).length));
 
 
         // throw new ERROR(4001);
