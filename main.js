@@ -2,6 +2,9 @@ import _ from "lodash"
 import path from 'path';
 import puppeteer from 'puppeteer';
 import rta from './analysis/brain/RankTableAnalysis.js';
+import frta from './analysis/brain/FavoriteRankTableAnalysis.js';
+import lrta from './analysis/brain/LatestRankTableAnalysis.js';
+
 import ta from './analysis/brain/ToneAnalysis.js';
 import sa from './analysis/brain/SingersAnalysis.js';
 import sla from './analysis/brain/SongListAnalysis.js';
@@ -10,7 +13,9 @@ import firebaseHandler from './firebase';
 import Util from './util';
 import SQL from './database';
 import Pooller from "./pooller";
+import ERROR from "./exception";
 import Moment from 'moment';
+import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
 (async () => {
         const sqlHandler = new SQL();
@@ -24,42 +29,88 @@ import Moment from 'moment';
             });
         }
 
-        async function fetchRankTable() {
+        async function persistRankTable() {
+            const tableName = GlobalConfig.RANK_TABLE_NAME;
+            await sqlHandler.dropTable(tableName);
+            for (const maintype in GlobalConfig.RANK_TABLE_TYPE) {
+                Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
+                const ranks = await fetchRankTable(GlobalConfig.RANK_TABLE_TYPE[maintype].ID, GlobalConfig.RANK_TABLE_TYPE[maintype].SORT)
+                for (const rank of ranks) {
+                    for (const each of rank.items) {
+                        const obj = {}
+                        obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
+                        await sqlHandler.lazyInsertRecord(tableName,
+                            {...obj, name: each.name, singer: each.singer.name, updateTime: _.now()}, 'name', 'singer');
+                    }
+                }
+
+            }
+        }
+
+        /** sortType sample => {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}
+         *
+         * return:[...{type:'YEAR',items:[...{name:'歌名',rank:1,singer:{name:'人名'} }]}]
+         *
+         * */
+        async function fetchRankTable(mainType = GlobalConfig.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
             let page;
             try {
                 page = await browser.newPage();
                 await page.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
-                await page.click('span[sid="1"]');
+                await page.click(`span[sid="${mainType}"]`);
                 await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-                // await page.waitForNavigation({ waitUntil: 'networkidle0' })
-                /** fetch all pages */
-                let songs = [];
-                // let rankPage = new rta(await page.content());
-                // songs = _.concat(songs, rankPage.getSongList());
-                // while (rankPage && rankPage.hasNextPage()) {
-                //     await page.click(rankPage.getNextPageSymbol());
-                //     await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
-                //     /** 點擊後需要 {waitUntil: 'networkidle2'} */
-                //     const content = await page.content();
-                //     rankPage = new rta(content);
-                //     if (rankPage) songs = _.concat(songs, rankPage.getSongList());
-                // }
-                //
-                // for (const song of songs) {
-                //     console.log(song.name);
-                // }
+                const all = [];
+                if (sortType) {
 
-                const selectors = await page.$$('.singsort sorttype')
-                console.log(`selectors   `+JSON.stringify(selectors));
-                for(const selector of selectors) {
-                    await selector.click();
-                    await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                    for (const type in sortType) {
+                        const selector = await page.$(`div[class="singsort sorttype"] > .list > span[sid="${sortType[type]}"]`);
+                        /** 上面的寫法 const eval = await page.$eval(`div[class="singsort sorttype"] > .list > span[sid="${sortType}"]`,(element => element.click())); */
+                        await selector.click();
+                        await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                        all.push({type, items: await fetchRankPageData(page)});
+                    }
+                } else {
+                    all.push({type: '', items: await fetchRankPageData(page)});
                 }
-
+                return all;
             } catch (error) {
                 Util.appendError(`fetch rank tables fail, because ` + error.message);
             } finally {
                 if (page) await page.close()
+            }
+
+            async function getRankPageInstance() {
+                let rankPage;
+                switch (mainType) {
+                    case GlobalConfig.RANK_TABLE_TYPE.POPULAR.ID:
+                        rankPage = new rta(await page.content());
+                        break;
+                    case GlobalConfig.RANK_TABLE_TYPE.FAVORITE.ID:
+                        rankPage = new frta(await page.content());
+                        break;
+                    case GlobalConfig.RANK_TABLE_TYPE.LATEST.ID:
+                        rankPage = new lrta(await page.content());
+                        break;
+                    default:
+                        throw new Error(`${mainType} not defined in GlobalConfig.RANK_TABLE_TYPE[mainType].ID`);
+                }
+                return rankPage;
+            }
+
+            async function fetchRankPageData(page) {
+                /** fetch all pages */
+                let songs = [];
+                let rankPage;
+
+                rankPage = await getRankPageInstance()
+                songs = _.concat(songs, rankPage.getSongList());
+                while (rankPage && rankPage.hasNextPage() && songs.length < GlobalConfig.MAX_COUNTS_IN_RANK) {
+                    await page.click(rankPage.getNextPageSymbol());
+                    await syncDelay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+                    rankPage = await getRankPageInstance();
+                    if (rankPage) songs = _.concat(songs, rankPage.getSongList());
+                }
+                return songs;
             }
         }
 
@@ -201,7 +252,7 @@ import Moment from 'moment';
                     return false;
                 }
             } catch (error) {
-                if (error && error.message && error.message.indexOf(`SQLITE_CONSTRAINT`) > 0) {
+                if (error instanceof ERROR && error.isConstraintError()) {
                     Util.appendInfo(`persistTone() ${song.name}, 是一首 DUP 的狀況.....`);
                     await sqlHandler.updateRecords('SONG', {state: 'DUP'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                 } else {
@@ -213,7 +264,6 @@ import Moment from 'moment';
 
         async function persist(singerType = 6) {
             let singers = [];
-
 
 
             async function fetchSingers() {
@@ -279,7 +329,8 @@ import Moment from 'moment';
             const rankFetch = new Pooller(1);
             rankFetch.cleanTaskInterval();
             rankFetch.setPoolId("RANK FETCHER");
-            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRank);
+            const fiveMin = 5 * 60 * 1000;
+            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
             rankFetch.setTaskFailHandler(errorHandler);
             poollers.push(rankFetch);
 
@@ -314,7 +365,6 @@ import Moment from 'moment';
         Util.deleteFile(GlobalConfig.PATH_INFO_LOG);
         const mainPage = await browser.newPage();
         await persist(5);
-        // await fetchRankTable();
         await browser.close();
         if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
             console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);

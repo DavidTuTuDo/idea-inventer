@@ -10,9 +10,19 @@ class Util {
     async syncDelay(delayInms) {
         return new Promise(resolve => {
             setTimeout(() => {
-                resolve(true);
+                resolve(delayInms);
             }, delayInms);
         });
+    }
+
+    /** this is used for unit test */
+    asyncUnitTask = (millionSec) => async (param) => {
+        const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
+        const symbol = randomValue;
+        console.log(`before executed ===> i'm symbol of ${symbol}, ready to be executed`);
+        await this.syncDelay(randomValue);
+        console.log(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
+        return {randomValue, symbol, param};
     }
 
     async syncDelayRandom(min, max) {
@@ -199,7 +209,7 @@ class Util {
                 callerName = m[1] || m[2];
         }
 
-        if(_.startsWith('asyncGeneratorStep',callerName)) callerName = '';
+        if (_.startsWith('asyncGeneratorStep', callerName)) callerName = '';
         return (callerName);
     }
 
@@ -226,7 +236,7 @@ class Util {
         fs.writeFileSync(path, data);
     }
 
-    getRandomValue(min, max) {
+    getRandomValue = (min, max) => {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min;

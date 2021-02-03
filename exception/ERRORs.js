@@ -51,6 +51,12 @@ const ERRORs = {
     3014: {
         message: `insertRecord`
     },
+    3015: {
+        message: `fetch indexes error`
+    },
+    3016:{
+        message: `more than 1 unique_index in table`
+    },
     4001: {
         message: `priority state is wrong`
     },
@@ -67,7 +73,7 @@ const ERRORs = {
         message: `state not valid`
     },
     4006: {
-        message: `task as param is ridiculous`
+        message: `task param should be async function`
     },
     4007: {
         message: `getTaskInfoDependOnPriority() 不能走到這裡`
@@ -78,8 +84,14 @@ const ERRORs = {
     4009: {
         message: `如果走到了這一層, 代表 runInBackGround() 在無預期的狀況下被停止了, 代表執行中的task拋出的catch()沒有自己處理好`
     },
+    4010: {
+        message: `task timeout`
+    },
     8001: {
         message: `append file fail`
+    },
+    9999: {
+        message: `super stupid error`
     }
 
 }

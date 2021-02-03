@@ -12,6 +12,10 @@ export default class MyException extends Error {
         return this.code;
     }
 
+    isConstraintError = () => {
+        return (this.message && this.message.indexOf(`SQLITE_CONSTRAINT`) > 0);
+    }
+
     constructor(code, ...infos) {
         const error = ERRORs[code];
         if (error === undefined) {
@@ -25,7 +29,7 @@ export default class MyException extends Error {
 
         for (const info of infos) {
             if (info !== undefined)
-                this.infos += (infos.indexOf(info) + 1) + ': ' + Util.getAttrValueInSequence(info, 'message', 'msg') + ' ;';
+                this.infos += ('##') + ' ' + Util.getAttrValueInSequence(info, 'message', 'msg');
         }
 
         this.message = `UID:${this.uid}  CODE:${this.code}  REASON:${this._msg}  INFO:${this.infos}`;

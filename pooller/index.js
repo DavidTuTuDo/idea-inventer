@@ -8,9 +8,9 @@ import ERROR from '../exception';
  Pooller 有以下特點:
  1.task可以設定timeout
  2.queue滿了的可以設定task interval
- 3.如果是depandOntask length, queue裡面沒有task時，可以設定sleeptime, 以及Sleepcounts
+ 3.如果是runByEachTask length, queue裡面沒有task時，可以設定sleeptime, 以及Sleepcounts
  4.task 可以cancelled by  hash
- 5.runByParams,runByCounts,runInInfinite,runByTask
+ 5.runByParams,runByCounts,runInInfinite,runByEachTask
  6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
  *
  */
@@ -22,6 +22,7 @@ class InfinitePool {
         this.timeOfSleep = GlobalConfig.POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT;
         this.taskInterval = GlobalConfig.POOLLER_TASK_INTERVAL_DEFAULT;
         this.maxSleepCounts = GlobalConfig.POOLLER_MAX_SLEEP_COUNTS_DEFAULT;
+        this.timeOfTaskTimeout = GlobalConfig.POOLLER_TASK_TIMEOUT_DEFAULT;
         this.maxWorker = maxWorkers;
         this.mHashNTaskMap = {};
         this.queue = {};
@@ -33,6 +34,10 @@ class InfinitePool {
         }
 
         this.executing = [];
+    }
+
+    setTimeout(millionSec = GlobalConfig.POOLLER_TASK_TIMEOUT_DEFAULT) {
+        this.timeOfTaskTimeout = millionSec;
     }
 
     setPoolId = (id = this.poolId) => {
@@ -108,17 +113,51 @@ class InfinitePool {
             if (GlobalConfig.POOLLER_PRIORITY.indexOf(priority) < 0) {
                 throw new ERROR(4001, `priority can't be ${priority}`);
             }
-
             const hash = Util.getRandomHash();
-            const taskInfo = {task, hash};
-            this.appendHashTaskMap({task, hash});
-
+            const wrapper = this.taskWrapper(task, hash);
+            const taskInfo = {task: wrapper, hash};
+            this.appendHashTaskMap(taskInfo);
             this.queue[priority].push(taskInfo);
             return hash;
-
         } else {
             throw new ERROR(4002, `task can't be ${typeof task}`);
         }
+    }
+
+    taskWrapper = (task, hash) => {
+
+        const func = async (params) => {
+            if (this.executing.length >= this.maxWorker - 1) {
+                const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
+                if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                    Util.appendInfo(`${this.getPoollerLogFormat(`的 worker 的周間休息了  ${restInInterval} million-secs`)} `);
+                if (!this.isRunning()) {
+                    Util.appendInfo(`${this.getPoollerLogFormat(`睡起來之後, 遇到this.isTaskRunning === true, 所以就結束這個task`)}`);
+                    return;
+                }
+            }
+            let timeout = false;
+            let taskDone = false;
+            const timeoutablePromise = new Promise(async (resolve, reject) => {
+                setTimeout(() => {
+                    if (!taskDone) {
+                        timeout = true;
+                        reject(new ERROR(4010, this.getPoollerLogFormat(`TASK HASH:${hash} IS TIMEOUT
+                        ${this.timeOfTaskTimeout}} ms ${params ? `,PARAMS IS ${JSON.stringify(params)}` : ''}`)));
+                    }
+                }, this.timeOfTaskTimeout);
+                const result = await task(params);
+                taskDone = true;
+                if (!timeout)
+                    resolve(result);
+            })
+
+            await timeoutablePromise;
+
+        }
+
+        return func;
+
     }
 
     adds = (tasks, priority = 'low') => {
@@ -128,7 +167,7 @@ class InfinitePool {
                 hashes.push(this.add(task, priority));
             }
         } else {
-            throw new ERROR(4003, `should be array, not ${typeof tasks}`);
+            throw new ERROR(4003, `should be async function array, not ${typeof tasks}`);
         }
         return hashes;
     }
@@ -219,12 +258,13 @@ class InfinitePool {
         while (this.isRunning()) {
             if (this.getQueueSize() <= 0) {
                 const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
-                this.currrentSleepCounts += 1;
+
                 Util.appendFile(GlobalConfig.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
                 if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
             }
             await this.#run();
+            this.currrentSleepCounts += 0;
         }
     }
 
@@ -273,44 +313,27 @@ class InfinitePool {
     }
 
     #run = async (param) => {
-
-        if (this.executing.length >= this.maxWorker - 1) {
-            const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                Util.appendInfo(`${this.getPoollerLogFormat(`的 worker的周間休息了以下 ${restInInterval} million-secs`)} `);
-            if (!this.isRunning()) {
-                Util.appendInfo(`${this.getPoollerLogFormat(`睡起來之後, 遇到this.isTaskRunning === true, 所以就結束這個run()了`)}`);
-                return;
-            }
-        }
-
-        this.currrentSleepCounts = 0;
         const taskInfo = this.getTaskInfoDependOnPriority();
-        const p = Promise.resolve()
+        const e = Promise.resolve()
             .then(() => {
                 return taskInfo.task(param);
             })
-            .then((result) => {
-                return {result, hash: taskInfo.hash}
-            });
+            .catch((error) => {
+                if (error.code && error.code === 4010) {
+                    Util.appendInfo(`${this.getPoollerLogFormat(`發生Timeout了,是內部設計的狀況`)}`);
+                } else {
+                    Util.appendInfo(`${this.getPoollerLogFormat(`遇到了task發生 Error,但是task沒有處理好...,所以跑到這了 ${error.message}`)}`);
+                    if (this.taskFailHandler === undefined) {
+                        throw new ERROR(4008, `${error.message}`);
+                    }
+                }
+                this.taskFailHandler(error, this.getPoollerLogFormat());
 
-
-        const e = p.then((result) => {
-            if (result.hash) {
+            })
+            .finally(() => {
                 this.removeCompletedTaskMapByHash(taskInfo.hash);
-            }
-            return result;
-
-        }).catch((error) => {
-            Util.appendInfo(`${this.getPoollerLogFormat(`遇到了task發生 Error,但是task沒有處理好...,所以跑到這了 ${error.message}`)}`);
-            if (this.taskFailHandler === undefined) {
-                throw new ERROR(4008, `${error.message}`);
-            }
-            this.taskFailHandler(error, this.getPoollerLogFormat());
-
-        }).finally(() => {
-            this.executing.splice(this.executing.indexOf(e), 1)
-        })
+                this.executing.splice(this.executing.indexOf(e), 1)
+            })
         this.executing.push(e);
         if (this.executing.length >= this.maxWorker) {
             await Promise.race(this.executing);
@@ -339,82 +362,18 @@ class InfinitePool {
         }
         throw new ERROR(4007);
     }
-
-
 }
 
 
 if (GlobalConfig.DEBUG_MODE) {
     (async () => {
-        const self = new InfinitePool(2);
+        const self = new InfinitePool(1);
         // self.cleanTaskInterval();
-        const tasks = [...Array(10)].map((value, index) => async function (param) {
-            const randomValue = Util.getRandomValue(2000, 4000);
-            const symbol = index;
-            Util.appendInfo(`i'm symbol of ${symbol}, ready to be executed`);
-            await Util.syncDelay(randomValue);
-            Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
-            return {randomValue, symbol, param};
+        self.setTaskFailHandler((error) => {
+            console.log(`TASK ERROR: ${error.message}`);
         })
-        const hashes = self.adds(tasks);
-
-        self.setMaxSleepCounts(300);
-        await self.runByEachTask();
-        // self.runInBackGround(self.runByEachTask, tasks);
-
-        // while (self.isRunning()) {
-        //     await Util.syncDelayRandom(1000, 3000);
-        // }
-
-
-        // const p = async (param) => {
-        //     Util.appendInfo('我近來惹')
-        //     await Util.syncDelay(500);
-        //     return `param is ${param}`;
-        // }
-        // await self.runInInfinite(p,2000);
-        // console.log(await self.runByParams([...Array(10)].map((v, index) => index), p))
-        // console.log(await self.runInInfinite({min: 0, max: 0}, tasks));
-
-        // await Promise.all(tasks.map((task) => task()));
-        // Util.appendInfo(`${hashes}   ${self.removeTask(Util.getShuffledItemFromArray(hashes))}`);
-
-        // setTimeout(() => {
-        //     self.adds([...Array(1)].map((value, index) => async function () {
-        //
-        //         const symbol = `Xman HIGH HIGH HIGH ${index}`;
-        //         Util.appendInfo(`i'm symbol of ${symbol}, ready to be executed`);
-        //         const randomValue = Util.getRandomValue(1000, 5000);
-        //         await Util.syncDelay(randomValue);
-        //         Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
-        //         return {randomValue, symbol};
-        //
-        //     }), 'high');
-        // }, 5000);
-        //
-        //
-        // setTimeout(() => {
-        //     self.adds([...Array(10)].map((value, index) => async function () {
-        //
-        //         const symbol = `Xman ${index}`;
-        //         Util.appendInfo(`i'm symbol of ${symbol}, ready to be executed`);
-        //         const randomValue = Util.getRandomValue(1000, 5000);
-        //         await Util.syncDelay(randomValue);
-        //         Util.appendInfo(`i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds`);
-        //         return {randomValue, symbol};
-        //
-        //     }));
-        // }, 15000);
-        // Util.appendInfo('p============???????????')
-        // try {
-        //     const result = await self.run();
-        // } catch (error){
-        //     Util.appendInfo(`error ??????${error}`)
-        // } finally {
-        //     Util.appendInfo('d============???????????')
-        // }
-        // self.run().then((nothing) => Util.appendInfo(`nothing is ${nothing}`));
-        // Util.appendInfo('pardon???????????')
+        const tasks = [...Array(10)].map((value, index) => Util.asyncUnitTask(Util.getRandomValue(0, 15000)))
+        await self.runByParams([1, 2, 3, 4, 5, 6, 7], tasks[0])
 
     })();
 

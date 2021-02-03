@@ -89,7 +89,7 @@ class rrr {
 // const eee = {...dddd, c: 'fedsd'};
 // Util.appendInfo(JSON.stringify(eee));
 
-const array = ['fsdfds', {a: 1, b: {ffdsf: 'sdsd'}}, {c: 2, d: 4}, {e: 'sasd', f: 'wdsas'}];
+// const array = ['fsdfds', {a: 1, b: {ffdsf: 'sdsd'}}, {c: 2, d: 4}, {e: 'sasd', f: 'wdsas'}];
 
 function decrypt(collection) {
     let _self = '';
@@ -376,16 +376,45 @@ class eee {
 // let ff = 'jiojigg fdsff'
 // console.log(ff.indexOf('fdsff'));
 
+// function sadas(){
+//     zzzzz()
+// }
+//
+//
+// function zzzzz(){
+//     console.log(util.getCallersName());
+//
+// }
+//
+//
+// sadas()
 
-function sadas(){
-    zzzzz()
+
+// const array222 = [...Array(10)].map((p, i) => util.asyncUnitTask(i))
+// const result222 = Promise.all(array222);
+//
+// console.log(array222);
+// console.log('first');
+// // console.log(`before => ${result222}`);
+// result222.then((re) => {
+//     // console.log(`after => ${result222}`);
+//     // console.log(re);
+//     console.log(array222);
+//     array222.push(util.asyncUnitTask(11));
+//     console.log('second');
+//     return Promise.all(array222);
+// }).then((result) => {
+//     console.log('third');
+//     console.log(array222);
+//     return array222[2];
+// }).then(
+//     (re) => console.log(re));
+
+function ssfs(dfd,...ind) {
+    console.log(ind);
 }
 
-
-function zzzzz(){
-    console.log(util.getCallersName());
-
-}
+ssfs('ddd');
 
 
-sadas()
+

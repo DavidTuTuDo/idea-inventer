@@ -21,6 +21,7 @@ export default class SqliteHandler {
         return new ConditionBuilder();
     }
 
+
     constructor(_dbpath = GlobalConfig.BASE_DATABASE_PATH) {
         this.dbpath = _dbpath;
     }
@@ -111,6 +112,25 @@ export default class SqliteHandler {
         }
     }
 
+    /**
+     * [
+     { seqno: 0, cid: 1, name: 'name' },
+     { seqno: 1, cid: 8, name: 'singer' }
+     ]
+
+     * */
+
+    async fetchIndexesOfTable(tableName) {
+        try {
+            const result = await this.db.all(`PRAGMA index_list(${tableName})`);
+            if (result.length === 1) return await this.db.all(`PRAGMA index_info(${result[0].name})`);
+            if (result.length > 1) throw new ERROR(3016, result.map((each) => each.name));
+            return result;
+        } catch (err) {
+            throw new ERROR(3015, err);
+        }
+    }
+
     async fetchTables() {
         try {
             const result = await this.db.all(`SELECT name FROM sqlite_master WHERE type = "table"`);
@@ -122,7 +142,7 @@ export default class SqliteHandler {
 
     getAlterColumnStmt(tableName, obj) {
         const stmts = [];
-        const attrs = this.getColumnAttributes(obj);
+        const attrs = this.getCreateColumnAttributes(obj);
         for (const attr of attrs) {
             stmts.push(`ALTER TABLE ${tableName} ADD COLUMN ${attr.key} ${attr.type} NOT NULL DEFAULT ${attr.defaultValue}`);
         }
@@ -130,7 +150,7 @@ export default class SqliteHandler {
     }
 
     /** [...{key:'KEY',type:'TEXT',defaultValue:''}]*/
-    getColumnAttributes(content) {
+    getCreateColumnAttributes(content) {
         const attrs = [];
         for (const key in content) {
             let value = content[key];
@@ -163,7 +183,7 @@ export default class SqliteHandler {
         let stmt = [];
         stmt = _.concat(stmt, `\n${GlobalConfig.UID} INTEGER PRIMARY KEY AUTOINCREMENT`);
 
-        const attrs = this.getColumnAttributes(content);
+        const attrs = this.getCreateColumnAttributes(content);
         for (const attr of attrs) {
             stmt = _.concat(stmt, `\n${attr.key} ${attr.type} NOT NULL DEFAULT ${attr.defaultValue}`);
         }
@@ -193,28 +213,29 @@ export default class SqliteHandler {
                 await this.db.run(stmt);
             }
         } catch (error) {
-            throw new ERROR(3012, error,  `STMT => ${stmt}`);
+            throw new ERROR(3012, error, `STMT => ${stmt}`);
         }
     }
 
     async createTableAndIndex(tableName, object, ...index) {
-
+        let indexStmt = '';
+        let createStmt = '';
         try {
-            const createStmt = this.getCreateTableStmt(tableName, object);
+            createStmt = this.getCreateTableStmt(tableName, object);
             if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`CREATE STMT ${createStmt}`);
             await this.db.run(createStmt);
 
             if (!_.isEmpty(index)) {
-                const stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
+                indexStmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
                 if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                    Util.appendInfo(`CREATE INDEX STMT:${stmt}`);
-                await this.db.run(stmt);
+                    Util.appendInfo(`CREATE INDEX STMT:${indexStmt}`);
+                await this.db.run(indexStmt);
             }
 
 
         } catch (error) {
-            throw new ERROR(3009, error);
+            throw new ERROR(3009, error, createStmt, indexStmt);
         }
     }
 
@@ -233,7 +254,7 @@ export default class SqliteHandler {
 
             const pairs = [];
             for (const key in content) {
-                pairs.push(`${key} = ${this.getValidPresentOfSQLValue(content[key])}`);
+                pairs.push(`${key} = ${this.getValidPresentOfSQLStatement(content[key])}`);
             }
 
             updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
@@ -243,11 +264,11 @@ export default class SqliteHandler {
             return result.changes;
 
         } catch (error) {
-            throw new ERROR(3011, error,  `STMT => ${updateStmt}`);
+            throw new ERROR(3011, error, `STMT => ${updateStmt}`);
         }
     }
 
-    getValidPresentOfSQLValue(value) {
+    getValidPresentOfSQLStatement(value) {
         if (_.isArray(value) || _.isObject(value))
             return `'${normalizeText(Util.deepFlat(value))}'`;
         if (_.isString(value))
@@ -256,18 +277,34 @@ export default class SqliteHandler {
     }
 
     /** it can do
-     * 1.create table if not exist,
-     * 2.alter-column, if column is not exist in table
-     * 3.add index if params exist
+     * 1.create table if not exist.
+     * 2.alter-column, if column is not exist in table.
+     * 3.add index if params exist.
+     * 3.if bump into CONSTRAINT prob, goes to updateRecords depend on index value.
      **/
-    async lazyInsertRecord(tableName, content, ...index) {
+    async lazyInsertRecord(tableName, content, ...indexes) {
         try {
             /** check table exist */
-            await this.createTableAndIndex(tableName, content, ...index);
+            await this.createTableAndIndex(tableName, content, ...indexes);
             /** check table consist of valid column */
             await this.alterColumnIfNeed(tableName, content);
 
-            await this.insertRecord(tableName, content);
+            try {
+                await this.insertRecord(tableName, content);
+            } catch (error) {
+                /** */
+                if (error instanceof ERROR && error.isConstraintError()) {
+                    Util.appendInfo(`lazyInsert 遇到 INDEX_CONSTRAINT, 會自動改成updateRecords TABLE:${tableName}, CONTENT:${Util.deepFlat(content)}`);
+                    const condition = SqliteHandler.Builder();
+                    const indexes = (await this.fetchIndexesOfTable(tableName)).map((indexes) => indexes.name);
+                    _.each(indexes, (index) => {
+                        if (!condition.isEmpty()) condition.and()
+                        condition.equal(index, content[index])
+                    });
+                    await this.updateRecords(tableName, content, condition.stmt());
+                }
+            }
+
         } catch (err) {
             throw new ERROR(3004, err);
         }
@@ -302,7 +339,7 @@ export default class SqliteHandler {
 
     getInsertStmt(tableName, content) {
         const contentValues = _.map(content, (value) => {
-            return this.getValidPresentOfSQLValue(value);
+            return this.getValidPresentOfSQLStatement(value);
         });
 
         const insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
@@ -381,7 +418,7 @@ class ConditionBuilder {
         return this.self;
     }
 
-    orderByRandom(){
+    orderByRandom() {
         this.concat(`ORDER BY RANDOM()`);
         return this.self;
     }
@@ -447,6 +484,10 @@ class ConditionBuilder {
         return _.join(this._stmt, ' ');
     }
 
+    isEmpty() {
+        return _.isEmpty(this._stmt);
+    }
+
 }
 
 
@@ -463,26 +504,27 @@ class ConditionBuilder {
 if (GlobalConfig.DEBUG_MODE) {
 
     (async () => {
-            // const tone = new ToneAnalysis();
-            const handler = new SqliteHandler();
-            await handler.init();
+        // const tone = new ToneAnalysis();
+        const handler = new SqliteHandler();
+        await handler.init();
 
-            // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
-            // Util.appendInfo(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
-            // Util.appendInfo(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
-            //     .stmt(), 'name'));
-            // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
-            // await handler.lazyInsertRecord('testing', {avc: 2121, vdd: 'asdd'});
-            // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').stmt())).length);
-            // console.log(await handl·er.fetchRecords('testing'));
-            // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
-        Util.appendInfo('ING   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
-        Util.appendInfo('NOT   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
-        Util.appendInfo('DONE   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
-        Util.appendInfo('DUP   '+((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DUP').stmt())).length));
-        Util.appendInfo('SINGER COUNTS IN DATABASE   '+ ((await handler.fetchRecords('SINGER', '')).length));
-
-
+        // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
+        // Util.appendInfo(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
+        // Util.appendInfo(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
+        //     .stmt(), 'name'));
+        // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
+        // await handler.lazyInsertRecord('testing', {avc: 2121, vdd: 'asdd'});
+        // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').stmt())).length);
+        // console.log(await handl·er.fetchRecords('testing'));
+        // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
+        Util.appendInfo('ING   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
+        Util.appendInfo('NOT   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
+        Util.appendInfo('DONE   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+        Util.appendInfo('DUP   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DUP').stmt())).length));
+        // Util.appendInfo('SINGER COUNTS IN DATABASE   ' + ((await handler.fetchRecords('SINGER', '')).length));
+        // await handler.dropTable('RANK_TABLE');
+        // await handler.dropTable('RANK');
+        // console.log(await handler.fetchIndexesOfTable('SONG'));
         // throw new ERROR(4001);
     })();
 

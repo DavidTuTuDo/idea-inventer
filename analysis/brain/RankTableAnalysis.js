@@ -7,13 +7,21 @@ import GlobalConfig from "../../GlobalConfig.js";
 
 class RankTableAnalysis extends HtmlAnalysis {
 
+    getTableId() {
+        return 'shbx_1_c';
+    }
+
+    getNextPageId() {
+        return 'shbx_1_p'
+    }
+
     constructor(raw) {
         super(raw);
     }
 
     getSongList() {
         const list = _.map(this.findNodeByAttribute(this.body,
-            {'id': 'shbx_1_c'},
+            {'id': this.getTableId()},
             'ul').children,
             (child) => this.getSongInfo(child)
         );
@@ -63,7 +71,7 @@ class RankTableAnalysis extends HtmlAnalysis {
     }
 
     hasNextPage() {
-        const node = this.findNodeByAttributes(this.body, {'class': 'page', id: 'shbx_1_p'});
+        const node = this.findNodeByAttributes(this.body, {'class': 'page', id: this.getNextPageId()});
         if (this.hasChildren(node)) {
             const labels = node.children.map((child) => this.getFlatTextByNode(child, false))
             return _.find(labels, (label) => label.indexOf('下一頁') >= 0);
@@ -73,7 +81,7 @@ class RankTableAnalysis extends HtmlAnalysis {
 
     // a[onClick="loadWS0(${_page});"]
     getNextPageSymbol() {
-        const node = this.findNodeByAttributes(this.body, {'class': 'page', id: 'shbx_1_p'});
+        const node = this.findNodeByAttributes(this.body, {'class': 'page', id: this.getNextPageId()});
         if (this.hasChildren(node)) {
             const currentPageNodeIndex = _.findIndex(node.children, (child) => {
                 return this.isContainAttribute(child, {'class': 'now'})

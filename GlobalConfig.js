@@ -11,9 +11,6 @@ const GlobalConfig =
         HACK_LIMITED_TESTING_MODE: false,
         PERMISSION_DOWNLOAD_DEPEND_ON_POPULAR: true,
         SKIP_DEPEND_ON_EXIST: true,
-
-
-        THREAD_WORKER: 3,
         HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD: 0, // 0 means all
         HACK_DELAY_OF_MILLION_SECS: 1200,// 0 means 或出去了
         HACK_LIMITED_COUNT_OF_DOWNLOAD_SINGER: 20,
@@ -32,7 +29,7 @@ const GlobalConfig =
         },
 
         MODULE_MSG: {
-            SHOW_ERROR: true,
+            SHOW_ERROR: false,
             SHOW_SUCCEED: false,
         },
 
@@ -88,6 +85,17 @@ const GlobalConfig =
         POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT: {min: 2000, max: 10000},
         POOLLER_TASK_INTERVAL_DEFAULT: {min: 800, max: 1000},
         POOLLER_MAX_SLEEP_COUNTS_DEFAULT: 100,
+        POOLLER_TASK_TIMEOUT_DEFAULT: 20000,
+
+        RANK_TABLE_TYPE: {
+            FAVORITE: {ID: 3},
+            LATEST: {ID: 2},
+            POPULAR: {ID: 1, SORT: {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}},
+
+        },
+        MAX_COUNTS_IN_RANK: 800, RANK_TABLE_NAME: 'RANK',
+
+
     };
 
 
