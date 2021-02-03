@@ -25,10 +25,13 @@ class InfinitePool {
         this.timeOfTaskTimeout = GlobalConfig.POOLLER_TASK_TIMEOUT_DEFAULT;
         this.maxWorker = maxWorkers;
         this.mHashNTaskMap = {};
+        this.mHashNPromiseMap = {};
+        this.paramQueue = [];
         this.queue = {};
         this.currrentSleepCounts = 0;
         this.isTaskRunning = false;
-
+        this.dispatchers = [];
+        this.firstTouchDone = false;
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
             this.queue[prior] = [];
         }
@@ -67,13 +70,7 @@ class InfinitePool {
         let times = 0;
         this.isTaskRunning = false;
         while (this.executingQueue.length > 0) {
-
             await Util.syncDelay(1000);
-            // times += 1;
-            // if (times > 30) {
-            //     return false;
-            // }
-
         }
         return true;
     }
@@ -100,9 +97,12 @@ class InfinitePool {
 
     getQueueSize = () => {
         let size = 0;
+        if(this.state === GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS) return this.paramQueue.length;
+
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
             size += this.queue[prior].length;
         }
+
         return size;
     }
 
@@ -125,34 +125,48 @@ class InfinitePool {
     }
 
     taskWrapper = (task, hash) => {
-        const func = async (params) => {
-            if (this.maxWorker > 1 && this.executingQueue.length >= this.maxWorker - 1) {
-                const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
-                if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
-                    Util.appendInfo(`${this.getPoollerLogFormat(`的 worker 的周間休息了  ${restInInterval} million-secs`)} `);
-                if (!this.isRunning()) {
-                    Util.appendInfo(`${this.getPoollerLogFormat(`睡起來之後, 遇到this.isTaskRunning === true, 所以就結束這個task`)}`);
-                    return;
+        const asyncfunc = async () => {
+            const self = this;
+            let taskResult;
+
+            function handleError(error) {
+                if (error.code && error.code === 4010) {
+                    Util.appendError(`${self.getPoollerLogFormat(`發生Timeout ${self.timeOfTaskTimeout} mms 了,是內部設計的狀況`)}`);
+                } else
+                    Util.appendError(`${self.getPoollerLogFormat(`您要處理的task發生 您那方的邏輯問題,...但您的try catch沒有包到,所以跑到這了 ${error.message}`)}`);
+                if (self.taskFailHandler === undefined) {
+                    throw new ERROR(4008, `${error.message}`);
                 }
+                self.taskFailHandler(error);
             }
-            let timeout = false;
-            let taskDone = false;
+
             const timeoutablePromise = new Promise(async (resolve, reject) => {
-                setTimeout(() => {
-                    if (!taskDone) {
-                        timeout = true;
-                        reject(new ERROR(4010, this.getPoollerLogFormat(`TASK HASH:${hash} IS TIMEOUT
-                        ${this.timeOfTaskTimeout}} ms ${params ? `,PARAMS IS ${JSON.stringify(params)}` : ''}`)));
-                    }
+                const params = this.paramQueue.shift();
+                const timeoutHash = setTimeout(() => {
+                    reject(new ERROR(4010, self.getPoollerLogFormat(`TASK HASH:${hash} IS TIMEOUT
+                        ${self.timeOfTaskTimeout}} ms ${params ? `,PARAMS IS ${JSON.stringify(params)}` : ''}`)));
                 }, this.timeOfTaskTimeout);
-                const result = await task(params);
-                taskDone = true;
-                if (!timeout)
-                    resolve(result);
+
+                try {
+                    taskResult = await task(params);
+                    clearTimeout(timeoutHash);
+                } catch (error) {
+                    handleError(error);
+                } finally {
+                    resolve(taskResult);
+                }
+
+            }).catch((error) => {
+                handleError(error);
+            }).finally(() => {
+                this.removeCompletedTaskMapByHash(hash);
+                this.removeResolveOrRejectPromiseByHash(hash);
             })
-            await timeoutablePromise;
+
+            return timeoutablePromise;
         }
-        return func;
+
+        return asyncfunc;
     }
 
     adds = (tasks, priority = 'low') => {
@@ -166,7 +180,6 @@ class InfinitePool {
         }
         return hashes;
     }
-
 
     removeCompletedTaskMapByHash = (hash) => {
         delete this.mHashNTaskMap[hash];
@@ -234,14 +247,18 @@ class InfinitePool {
 
     /** run time by params length */
     runByParams = async (params = [], task = undefined) => {
-        if (!_.isFunction(task)) {
-            throw new ERROR(4006, `runByParams error, typeof task can't be ${typeof task}`);
+        if (!_.isFunction(task)) throw new ERROR(4006, `runByParams error, typeof task can't be ${typeof task}`);
+        if (!_.isArray(params)) throw new ERROR(4006, `runByParams error, typeof params can't be ${typeof params}`);
+
+        for (const param of params) {
+            this.paramQueue.push(param);
         }
-        this.beforeRun();
+
         this.add(task);
         this.setState(GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS);
-        for (const param of params) {
-            await this.#run(param);
+        this.beforeRun();
+        while (this.isRunning() && !_.isEmpty(this.paramQueue)) {
+            await this.#run();
         }
     }
 
@@ -253,7 +270,6 @@ class InfinitePool {
         while (this.isRunning()) {
             if (this.getQueueSize() <= 0) {
                 const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
-
                 Util.appendFile(GlobalConfig.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
                 if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
@@ -307,34 +323,37 @@ class InfinitePool {
         this.state = _state;
     }
 
-    #run = async (param) => {
+    touchTaskDispatcher = () => {
+        console.log(`touchTaskDispatcher touch()`);
+        const dispatcher = setTimeout(async () => {
+            await this.syncTaskDispatcher();
+            this.dispatchers.splice(this.dispatchers.indexOf(dispatcher), 1);
+        }, 0);
+        this.dispatchers.push(dispatcher);
+    }
+
+    async syncTaskDispatcher(){
+        if (this.executingQueue.length >= this.maxWorker - 1) {
+            const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
+            Util.appendInfo(`${this.getPoollerLogFormat(`Dispatcher 照規矩 睡  ${restInInterval} million-secs 後才能Dispatch Task`)} `);
+            if (!this.isRunning()) {
+                Util.appendInfo(`${this.getPoollerLogFormat(` Dispatcher 睡起來之後, 遇到this.isTaskRunning === true, 所以就結束這個Dispatch`)}`);
+                return;
+            }
+        }
         const taskInfo = this.getTaskInfoDependOnPriority();
-        const e = Promise.resolve()
-            .then(() => {
-                return taskInfo.task(param);
-            })
-            .catch((error) => {
-                if (error.code && error.code === 4010) {
-                    Util.appendInfo(`${this.getPoollerLogFormat(`發生Timeout了,是內部設計的狀況`)}`);
-                } else {
-                    Util.appendInfo(`${this.getPoollerLogFormat(`遇到了task發生 Error,但是task沒有處理好...,所以跑到這了 ${error.message}`)}`);
-                    if (this.taskFailHandler === undefined) {
-                        throw new ERROR(4008, `${error.message}`);
-                    }
-                }
-                this.taskFailHandler(error, this.getPoollerLogFormat());
+        const promise = taskInfo.task();
+        this.appendHashPromiseMap(taskInfo.hash, promise);
+        this.executingQueue.push(promise);
+    }
 
-            })
-            .finally(() => {
-                this.removeCompletedTaskMapByHash(taskInfo.hash);
-                this.executingQueue.splice(this.executingQueue.indexOf(e), 1)
-            })
-        this.executingQueue.push(e);
-
+    #run = async () => {
+        await this.syncTaskDispatcher();
         if (this.executingQueue.length >= this.maxWorker) {
             await Promise.race(this.executingQueue);
-        } else if (this.getQueueSize() === 0) {
-            await Promise.all(this.executingQueue);
+        } else if (this.getQueueSize() === 0 && this.executingQueue.length > 0) {
+            await Promise.race(this.executingQueue);
+        } else {
         }
     }
 
@@ -359,6 +378,23 @@ class InfinitePool {
         throw new ERROR(4007);
     }
 
+    removeResolveOrRejectPromiseByHash = (hash) => {
+        this.executingQueue.splice(this.executingQueue.indexOf(this.getPromiseByHash(hash)), 1)
+        this.removeCompletedPromiseFromMapByHash(hash);
+    }
+
+    removeCompletedPromiseFromMapByHash = (hash) => {
+        delete this.mHashNPromiseMap[hash];
+    }
+
+    appendHashPromiseMap(hash, promise) {
+        this.mHashNPromiseMap[hash] = promise;
+    }
+
+    getPromiseByHash(hash) {
+        return this.mHashNPromiseMap[hash];
+    }
+
 }
 
 
@@ -367,10 +403,22 @@ if (GlobalConfig.DEBUG_MODE) {
         const self = new InfinitePool(1);
         // self.cleanTaskInterval();
         self.setTaskFailHandler((error) => {
-            console.log(`TASK ERROR: ${error.message}`);
+            console.error(`TASK ERROR: ${error.message}`);
         })
-        const tasks = [...Array(10)].map((value, index) => Util.asyncUnitTask(Util.getRandomValue(0, 15000)))
-        await self.runByParams([1, 2, 3, 4, 5, 6, 7], tasks[0])
+        const tasks = [...Array(10)].map((value, index) => Util.asyncUnitTaskFunction(Util.getRandomValue(1000, 5000)
+            , (param) => {
+                if (param === 4) return true
+            }))
+        // self.setTimeout(3000);
+        // await self.runByParams([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tasks[0])
+        // await self.runByTimes(4,tasks);
+
+        self.runInBackGround(self.runInInfinite,tasks,2*1000*60);
+
+
+        while (self.isRunning()) {
+            await Util.syncDelayRandom(2000,5000);
+        }
 
     })();
 

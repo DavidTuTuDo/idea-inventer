@@ -244,7 +244,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                         return false;
                     }
                 } else {
-                    Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500,3500)}`)
+                    Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500, 3500)}`)
                     return false;
                 }
             } catch (error) {
@@ -259,19 +259,17 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
         }
 
         async function latestSongPersist() {
-
             const song = await fetchRankTable(GlobalConfig.RANK_TABLE_TYPE.LATEST.ID);
-
             if (song.length < 0) {
                 Util.appendError(`latestSongPersist 抓取失敗了喔～`);
                 return;
             }
-
             Util.appendInfo(`latestSongPersist() 抓了新歌 ${song[0].items.length}`);
             for (const item of song[0].items)
                 try {
                     await sqlHandler.insertRecord('SONG',
                         {
+                            popularLevel: 10000,
                             name: item.name,
                             singer: item.singer.name,
                             url: item.url,
@@ -342,14 +340,6 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             songFetch.setTaskFailHandler(errorHandler);
             poollers.push(songFetch);
 
-            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(4);
-            toneFetch.cleanTaskInterval();
-            toneFetch.setPoolId("TONE FETCHER");
-            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
-            toneFetch.setTaskFailHandler(errorHandler);
-            poollers.push(toneFetch);
-
             /** 抓取排行版上的資訊們 */
             const rankFetch = new Pooller(1);
             rankFetch.cleanTaskInterval();
@@ -373,6 +363,14 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist, fiveMin);
             latestToneFetch.setTaskFailHandler(errorHandler);
             poollers.push(latestToneFetch);
+
+            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+            const toneFetch = new Pooller(4);
+            toneFetch.cleanTaskInterval();
+            toneFetch.setPoolId("TONE FETCHER");
+            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
+            toneFetch.setTaskFailHandler(errorHandler);
+            poollers.push(toneFetch);
 
             while (_.find(poollers.map((pooller) => pooller.isRunning()), (self) => self)) {
                 const millionSecs = await Util.syncDelayRandom(5000, 10000);

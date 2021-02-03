@@ -522,7 +522,9 @@ if (GlobalConfig.DEBUG_MODE) {
         Util.appendInfo('DONE   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
         // Util.appendInfo('SINGER COUNTS IN DATABASE   ' + ((await handler.fetchRecords('SINGER', '')).length));
         // await handler.dropTable('RANK_TABLE');
-        await handler.dropTable('testing');
+        // await handler.dropTable('testing');
+        // await handler.updateRecords('SONG',{popularLevel:100},
+        //     new ConditionBuilder().equal('state','NOT').and().lte('popularLevel',0).stmt());
         // console.log(await handler.fetchIndexesOfTable('SONG'));
         // throw new ERROR(4001);
     })();

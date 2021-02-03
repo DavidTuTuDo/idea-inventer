@@ -16,13 +16,21 @@ class Util {
     }
 
     /** this is used for unit test */
-    asyncUnitTask = (millionSec) => async (param) => {
+    asyncUnitTaskFunction = (millionSec, errorSimulator) => async (param) => {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
-        const symbol = randomValue;
-        console.log(`before executed ===> i'm symbol of ${symbol}, ready to be executed`);
-        await this.syncDelay(randomValue);
-        console.log(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
-        return {randomValue, symbol, param};
+        try {
+            const symbol = randomValue;
+            console.log(`before executed ===> i'm symbol of ${symbol}, ready to be executed`);
+            await this.syncDelay(randomValue);
+            if (_.isFunction(errorSimulator) && errorSimulator(param)) throw Error('force to made error happen');
+            console.log(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
+            return {randomValue, symbol, param};
+        } catch (error) {
+            console.error(new Error(`asyncUnitTask() catch error ${error.message}`))
+        }finally {
+            console.log(`wow.... finally got you`);
+        }
+
     }
 
     async syncDelayRandom(min, max) {

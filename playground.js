@@ -390,7 +390,7 @@ class eee {
 // sadas()
 
 
-// const array222 = [...Array(10)].map((p, i) => util.asyncUnitTask(i))
+// const array222 = [...Array(10)].map((p, i) => util.asyncUnitTaskFunction(i))
 // const result222 = Promise.all(array222);
 //
 // console.log(array222);
@@ -400,7 +400,7 @@ class eee {
 //     // console.log(`after => ${result222}`);
 //     // console.log(re);
 //     console.log(array222);
-//     array222.push(util.asyncUnitTask(11));
+//     array222.push(util.asyncUnitTaskFunction(11));
 //     console.log('second');
 //     return Promise.all(array222);
 // }).then((result) => {
@@ -413,6 +413,8 @@ class eee {
 function ssfs(dfd,...ind) {
     console.log(ind);
 }
+
+new Promise()
 
 ssfs('ddd');
 
