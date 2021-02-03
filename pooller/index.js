@@ -33,7 +33,7 @@ class InfinitePool {
             this.queue[prior] = [];
         }
 
-        this.executing = [];
+        this.executingQueue = [];
     }
 
     setTimeout(millionSec = GlobalConfig.POOLLER_TASK_TIMEOUT_DEFAULT) {
@@ -53,7 +53,7 @@ class InfinitePool {
     }
 
     clearCache() {
-        this.executing.length = 0;
+        this.executingQueue.length = 0;
         this.mHashNTaskMap = {};
         this.queue = {};
     }
@@ -66,13 +66,13 @@ class InfinitePool {
     stopInBackground = async () => {
         let times = 0;
         this.isTaskRunning = false;
-        while (this.executing.length > 0) {
+        while (this.executingQueue.length > 0) {
 
             await Util.syncDelay(1000);
-            times += 1;
-            if (times > 15) {
-                return false;
-            }
+            // times += 1;
+            // if (times > 30) {
+            //     return false;
+            // }
 
         }
         return true;
@@ -125,9 +125,8 @@ class InfinitePool {
     }
 
     taskWrapper = (task, hash) => {
-
         const func = async (params) => {
-            if (this.executing.length >= this.maxWorker - 1) {
+            if (this.maxWorker > 1 && this.executingQueue.length >= this.maxWorker - 1) {
                 const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
                 if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`${this.getPoollerLogFormat(`的 worker 的周間休息了  ${restInInterval} million-secs`)} `);
@@ -151,13 +150,9 @@ class InfinitePool {
                 if (!timeout)
                     resolve(result);
             })
-
             await timeoutablePromise;
-
         }
-
         return func;
-
     }
 
     adds = (tasks, priority = 'low') => {
@@ -216,7 +211,7 @@ class InfinitePool {
         this.clearCache();
     }
 
-    /** interval{min:0,max:10}
+    /** interval was the time between tasks when executingQueue queue is full.
      * run would infinite, in default, timeOfSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
         if (_.isNumber(interval)) {
@@ -332,13 +327,14 @@ class InfinitePool {
             })
             .finally(() => {
                 this.removeCompletedTaskMapByHash(taskInfo.hash);
-                this.executing.splice(this.executing.indexOf(e), 1)
+                this.executingQueue.splice(this.executingQueue.indexOf(e), 1)
             })
-        this.executing.push(e);
-        if (this.executing.length >= this.maxWorker) {
-            await Promise.race(this.executing);
+        this.executingQueue.push(e);
+
+        if (this.executingQueue.length >= this.maxWorker) {
+            await Promise.race(this.executingQueue);
         } else if (this.getQueueSize() === 0) {
-            await Promise.race(this.executing);
+            await Promise.all(this.executingQueue);
         }
     }
 
@@ -362,6 +358,7 @@ class InfinitePool {
         }
         throw new ERROR(4007);
     }
+
 }
 
 

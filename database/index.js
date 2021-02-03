@@ -514,16 +514,15 @@ if (GlobalConfig.DEBUG_MODE) {
         //     .stmt(), 'name'));
         // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
         // await handler.lazyInsertRecord('testing', {avc: 2121, vdd: 'asdd'});
-        // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').stmt())).length);
+        // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
         // console.log(await handl·er.fetchRecords('testing'));
         // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
         Util.appendInfo('ING   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
-        Util.appendInfo('DUP   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DUP').stmt())).length));
         // Util.appendInfo('SINGER COUNTS IN DATABASE   ' + ((await handler.fetchRecords('SINGER', '')).length));
         // await handler.dropTable('RANK_TABLE');
-        // await handler.dropTable('RANK');
+        await handler.dropTable('testing');
         // console.log(await handler.fetchIndexesOfTable('SONG'));
         // throw new ERROR(4001);
     })();

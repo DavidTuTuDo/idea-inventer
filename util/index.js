@@ -186,14 +186,15 @@ class Util {
     }
 
     appendFile(path, data, isError = false, caller = '') {
-        console.log(`${isError ? `ERROR` : `LOG`} : ${caller} ${this.isJson(data) ? JSON.stringify(data) : data}`);
-        data = `${new Date()} ${JSON.stringify(data)}`;
+        const log = `${isError ? `ERROR` : `LOG`} : ${caller} ${this.isJson(data) ? this.deepFlat(data) : data}`;
+        isError ? console.error(log) : console.log(log);
+        const persistlog = `${new Date()} ${log}`;
         if (!fs.existsSync(path))
-            fs.writeFileSync(path, data, err => {
+            fs.writeFileSync(path, persistlog, err => {
                 throw new ERROR(8001, err);
             });
         else
-            fs.appendFileSync(path, `\n${data}`, err => {
+            fs.appendFileSync(path, `\n${persistlog}`, err => {
                 throw new ERROR(8001, err);
             });
     }

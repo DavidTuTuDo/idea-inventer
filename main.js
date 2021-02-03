@@ -40,7 +40,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                         const obj = {}
                         obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
                         await sqlHandler.lazyInsertRecord(tableName,
-                            {...obj, name: each.name, singer: each.singer.name, updateTime: _.now()}, 'name', 'singer');
+                            {name: each.name, singer: each.singer.name, updateTime: _.now(), ...obj}, 'name', 'singer');
                     }
                 }
 
@@ -209,10 +209,6 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             }
         }
 
-        async function persistRank() {
-
-        }
-
         async function persistTone() {
             let song = undefined;
             try {
@@ -248,7 +244,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                         return false;
                     }
                 } else {
-                    Util.appendInfo(`沒有TONE可以下載了....`)
+                    Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500,3500)}`)
                     return false;
                 }
             } catch (error) {
@@ -262,7 +258,36 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             }
         }
 
-        async function persist(singerType = 6) {
+        async function latestSongPersist() {
+
+            const song = await fetchRankTable(GlobalConfig.RANK_TABLE_TYPE.LATEST.ID);
+
+            if (song.length < 0) {
+                Util.appendError(`latestSongPersist 抓取失敗了喔～`);
+                return;
+            }
+
+            Util.appendInfo(`latestSongPersist() 抓了新歌 ${song[0].items.length}`);
+            for (const item of song[0].items)
+                try {
+                    await sqlHandler.insertRecord('SONG',
+                        {
+                            name: item.name,
+                            singer: item.singer.name,
+                            url: item.url,
+                            state: 'NOT',
+                        });
+                } catch (error) {
+                    if (error instanceof ERROR && error.isConstraintError()) {
+                        /** ignore */
+                        Util.appendInfo(`latestSongPersist() 遇到了 CONSTRAINT ERROR ` + Util.deepFlat(error.message));
+                    } else {
+                        throw new Error(`latestSongPersist 必須注意這個問題 ${error.message}`)
+                    }
+                }
+        }
+
+        async function persist91puEveryThing(singerType = 6) {
             let singers = [];
 
 
@@ -288,7 +313,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 }
             }
 
-            async function browserWatcher() {
+            async function browserPageWatcher() {
                 if (browser !== undefined) {
                     Util.appendInfo(`browser pages = ${((await browser.pages()).length)}`)
                 }
@@ -310,7 +335,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             poollers.push(singerFetcher);
 
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            const songFetch = new Pooller(2);
+            const songFetch = new Pooller(1);
             const TwentySecs = 20 * 1000;
             songFetch.setPoolId("SONG FETCHER");
             songFetch.runInBackGround(songFetch.runInInfinite, fetchSongs, TwentySecs);
@@ -318,7 +343,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             poollers.push(songFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(2);
+            const toneFetch = new Pooller(4);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
             toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
@@ -330,17 +355,24 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             rankFetch.cleanTaskInterval();
             rankFetch.setPoolId("RANK FETCHER");
             const fiveMin = 5 * 60 * 1000;
+            rankFetch.setTimeout(fiveMin);
             rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
             rankFetch.setTaskFailHandler(errorHandler);
             poollers.push(rankFetch);
 
             /** 監督browser page 有沒有爆掉 */
-            const browserWatch = new Pooller(1);
-            browserWatch.setPoolId("BROWSER WATCHER");
-            browserWatch.runInBackGround(browserWatch.runInInfinite, browserWatcher, 20000);
-            browserWatch.setTaskFailHandler(errorHandler);
-            poollers.push(browserWatch);
+            const browserWatcher = new Pooller(1);
+            browserWatcher.setPoolId("BROWSER WATCHER");
+            browserWatcher.runInBackGround(browserWatcher.runInInfinite, browserPageWatcher, twoMin);
+            browserWatcher.setTaskFailHandler(errorHandler);
+            poollers.push(browserWatcher);
 
+            /** 猛抓LATEST TABLE的歌曲*/
+            const latestToneFetch = new Pooller(1);
+            latestToneFetch.setPoolId("LATEST SONG FETCHER");
+            latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist, fiveMin);
+            latestToneFetch.setTaskFailHandler(errorHandler);
+            poollers.push(latestToneFetch);
 
             while (_.find(poollers.map((pooller) => pooller.isRunning()), (self) => self)) {
                 const millionSecs = await Util.syncDelayRandom(5000, 10000);
@@ -364,7 +396,8 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
         Util.deleteFile(GlobalConfig.PATH_ERROR_LOG);
         Util.deleteFile(GlobalConfig.PATH_INFO_LOG);
         const mainPage = await browser.newPage();
-        await persist(5);
+        await persist91puEveryThing();
+        // await latestSongPersist();
         await browser.close();
         if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
             console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
