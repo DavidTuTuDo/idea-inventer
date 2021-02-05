@@ -2,7 +2,8 @@ import fs from "fs";
 import path from 'path';
 import _ from 'lodash';
 import util from './util';
-import nodeUtil from 'util';
+
+// import nodeUtil from 'util';
 
 
 class Playground {
@@ -410,13 +411,47 @@ class eee {
 // }).then(
 //     (re) => console.log(re));
 
-function ssfs(dfd,...ind) {
-    console.log(ind);
-}
+// function ssfs(dfd,...ind) {
+//     console.log(ind);
+// }
+//
+// new Promise()
+//
+// ssfs('ddd');
 
-new Promise()
+// console.log(util.deepFlat([ '183Club' ]) === ('183Club'));
 
-ssfs('ddd');
+// console.log(_.indexOf(,'sj'));
+
+// console.log('asjdioasjd'.indexOf('sj'))
 
 
+const sampl2 = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 7},{x: 8}];
+const sampl3 = ['aa7','aa6','aa5','aa4','aa3','aa2'];
 
+const after  = _.zipObject(sampl3,sample)
+
+
+_.zipObjectDeep(['a.b[0].c', 'a.b[1].d'], [1, 2]);
+// => { 'a': { 'b': [{ 'c': 1 }, { 'd': 2 }] } }
+_.zipWith([1, 2], [10, 20], [100, 200], function(a, b, c) {
+    return a + b + c;
+});
+const sample = [{x: 1}, {x: 2}, {x: 3}, {x: 4}, {x: 5}, {x: 7}, {x: 2}];
+const pulled = _.unionBy(sample, [{x: 2},{x: 99}], 'x');
+// const pulled = _.differenceBy(sample, [{x: 2}], (_sample) => _sample.x);
+console.log(pulled);
+// console.log(sample);
+
+console.log(_.join(_.split(sting,'\n'),' || '))
+
+var users = [
+    { 'user': 'fred',   'age': 48 },
+    { 'user': 'barney', 'age': 34 },
+    { 'user': 'fred',   'age': 40 },
+    { 'user': 'barney', 'age': 36 }
+];
+
+// Sort by `user` in ascending order and by `age` in descending order.
+_.orderBy(users, ['user', 'age'], ['asc', 'desc']);
+// => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 40]]

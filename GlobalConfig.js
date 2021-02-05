@@ -33,7 +33,7 @@ const GlobalConfig =
             SHOW_SUCCEED: false,
         },
 
-        BASE_DATABASE_PATH: './database/secret_infos.db',
+        BASE_DATABASE_PATH: './database/secret_infos_back.db',
         BASE_URL: 'https://www.91pu.com.tw',
         TONES_ROOT: './Tones/',
         PATH_SAMPLE_OBJECT_ROOT: './ObjectSamples/',
@@ -85,7 +85,7 @@ const GlobalConfig =
         POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT: {min: 2000, max: 10000},
         POOLLER_TASK_INTERVAL_DEFAULT: {min: 800, max: 1000},
         POOLLER_MAX_SLEEP_COUNTS_DEFAULT: 100,
-        POOLLER_TASK_TIMEOUT_DEFAULT: 30000,
+        POOLLER_TASK_TIMEOUT_DEFAULT: 60000,
 
         RANK_TABLE_TYPE: {
             FAVORITE: {ID: 3},
@@ -93,8 +93,8 @@ const GlobalConfig =
             POPULAR: {ID: 1, SORT: {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}},
 
         },
-        MAX_COUNTS_IN_RANK: 800, RANK_TABLE_NAME: 'RANK',
-
+        MAX_COUNTS_IN_RANK: 800, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['DONE', 'ING', 'NOT'],
+        POOLLER_ENABLE_TIMEOUT: true,
 
     };
 

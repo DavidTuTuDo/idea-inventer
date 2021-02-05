@@ -4,15 +4,19 @@ import ToneAnalysis from "../analysis/brain/ToneAnalysis";
 import GlobalConfig from "../GlobalConfig";
 import _ from 'lodash';
 import ERROR from "../exception";
-
 import Util from '../util';
-import index from "@babel/plugin-transform-runtime/lib/get-runtime-path";
-
-// import SingersAnalysis from "../analysis/brain/SingersAnalysis";
 
 function normalizeText(str) {
     return (str + '').replace(/\'/g, "''");
 
+}
+
+function getValidPresentOfSQLStatement(value) {
+    if (_.isArray(value) || _.isObject(value))
+        return `'${normalizeText(Util.deepFlat(value))}'`;
+    if (_.isString(value))
+        return `'${normalizeText(value)}'`;
+    return value;
 }
 
 export default class SqliteHandler {
@@ -22,7 +26,7 @@ export default class SqliteHandler {
     }
 
 
-    constructor(_dbpath = GlobalConfig.BASE_DATABASE_PATH) {
+    constructor({_dbpath = GlobalConfig.BASE_DATABASE_PATH}) {
         this.dbpath = _dbpath;
     }
 
@@ -69,6 +73,12 @@ export default class SqliteHandler {
             await this.fetchRecords('sqlite_master',
                 SqliteHandler.Builder().equal('name', tableName).stmt(), 'name'));
         return _tableNotExist;
+    }
+
+
+    async fetchRecord(tableName, condition = '', ...columns) {
+        const records = await this.fetchRecords(tableName, condition, ...columns);
+        return Util.getRandomItemOfArray(records);
     }
 
     async fetchRecords(tableName, condition = '', ...columns) {
@@ -254,7 +264,7 @@ export default class SqliteHandler {
 
             const pairs = [];
             for (const key in content) {
-                pairs.push(`${key} = ${this.getValidPresentOfSQLStatement(content[key])}`);
+                pairs.push(`${key} = ${getValidPresentOfSQLStatement(content[key])}`);
             }
 
             updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
@@ -266,14 +276,6 @@ export default class SqliteHandler {
         } catch (error) {
             throw new ERROR(3011, error, `STMT => ${updateStmt}`);
         }
-    }
-
-    getValidPresentOfSQLStatement(value) {
-        if (_.isArray(value) || _.isObject(value))
-            return `'${normalizeText(Util.deepFlat(value))}'`;
-        if (_.isString(value))
-            return `'${normalizeText(Util.deepFlat(value))}'`;
-        return value
     }
 
     /** it can do
@@ -310,6 +312,13 @@ export default class SqliteHandler {
         }
     }
 
+    async updateState(tableName, state, uid) {
+        if(!Util.has(GlobalConfig.DATABASE_COLUMN_STATE,state)){
+            throw ERROR(9999, `state${state} not valid`);
+        }
+        return await this.updateRecords('SINGER', {'state': state}, SqliteHandler.Builder().equal('uid', uid).stmt());
+    }
+
     async insertRecords(tableName, contents) {
         let batchStmt;
         try {
@@ -339,7 +348,7 @@ export default class SqliteHandler {
 
     getInsertStmt(tableName, content) {
         const contentValues = _.map(content, (value) => {
-            return this.getValidPresentOfSQLStatement(value);
+            return getValidPresentOfSQLStatement(value);
         });
 
         const insertStmt = `INSERT INTO ${tableName} (${_.join(_.keys(content), ', ')}) VALUES (${_.join(contentValues, ',\n')})`;
@@ -386,7 +395,7 @@ class ConditionBuilder {
     }
 
     equal(column, value) {
-        this.concat(`${column} == ${_.isString(value) ? `'${normalizeText(value)}'` : value}`);
+        this.concat(`${column} == ${getValidPresentOfSQLStatement(value)}`);
         return this.self;
     }
 
@@ -395,7 +404,7 @@ class ConditionBuilder {
     }
 
     contains(column, value) {
-        this.concat(`${column} LIKE '%${normalizeText(value)}%'`);
+        this.concat(`${column} LIKE '%${getValidPresentOfSQLStatement(value)}%'`);
         return this.self;
     }
 
@@ -424,13 +433,13 @@ class ConditionBuilder {
     }
 
     like(column, value) {
-        this.concat(`${column} LIKE '%${normalizeText(value)}'`);
+        this.concat(`${column} LIKE '%${getValidPresentOfSQLStatement(value)}'`);
         return this.self;
     }
 
     in(column, ...values) {
         values = _.map(values, value => {
-            return _.isString(value) ? `'${value}'` : value
+            return getValidPresentOfSQLStatement(value)
         });
         this.concat(`${column} IN (${_.join(values, ' ,')})`)
         return this.self;
@@ -438,7 +447,7 @@ class ConditionBuilder {
 
     notIn(column, ...values) {
         values = _.map(values, value => {
-            return _.isString(value) ? `'${value}'` : value
+            return getValidPresentOfSQLStatement(value)
         });
         this.concat(`${column} NOT IN (${_.join(values, ' ,')})`)
         return this.self;
@@ -505,7 +514,7 @@ if (GlobalConfig.DEBUG_MODE) {
 
     (async () => {
         // const tone = new ToneAnalysis();
-        const handler = new SqliteHandler();
+        const handler = new SqliteHandler({});
         await handler.init();
 
         // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
@@ -517,9 +526,14 @@ if (GlobalConfig.DEBUG_MODE) {
         // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
         // console.log(await handl·er.fetchRecords('testing'));
         // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
-        Util.appendInfo('ING   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
-        Util.appendInfo('NOT   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
-        Util.appendInfo('DONE   ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+        Util.appendInfo('ING SONG ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
+        Util.appendInfo('NOT SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
+        Util.appendInfo('DONE SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+
+        Util.appendInfo('ING SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'ING').stmt())).length));
+        Util.appendInfo('NOT SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
+        Util.appendInfo('DONE  SINGER ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+
         // Util.appendInfo('SINGER COUNTS IN DATABASE   ' + ((await handler.fetchRecords('SINGER', '')).length));
         // await handler.dropTable('RANK_TABLE');
         // await handler.dropTable('testing');
@@ -527,6 +541,16 @@ if (GlobalConfig.DEBUG_MODE) {
         //     new ConditionBuilder().equal('state','NOT').and().lte('popularLevel',0).stmt());
         // console.log(await handler.fetchIndexesOfTable('SONG'));
         // throw new ERROR(4001);
+        // const exists = (await handler.fetchRecords('SINGER', ''));
+        // console.log(exists.length);
+        // const obj = {};
+        // for (const ex of exists) {
+        //     const dup = (await handler.fetchRecords('SINGER', new ConditionBuilder().equal('names', ex.names).stmt())).length;
+        //     if (dup > 0)
+        //         console.log(ex.name);
+        // }
+        // console.log(_.size(obj));
+
     })();
 
 }

@@ -7,7 +7,7 @@ import ERROR from '../exception';
 
 class Util {
 
-    async syncDelay(delayInms) {
+    async syncDelay(delayInms = 2000) {
         return new Promise(resolve => {
             setTimeout(() => {
                 resolve(delayInms);
@@ -16,27 +16,40 @@ class Util {
     }
 
     /** this is used for unit test */
-    asyncUnitTaskFunction = (millionSec, errorSimulator) => async (param) => {
+    asyncUnitTaskFunction = (millionSec, _funparam, errorSimulator) => async (param) => {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
         try {
             const symbol = randomValue;
-            console.log(`before executed ===> i'm symbol of ${symbol}, ready to be executed`);
+            console.log(`before executed ===> i'm symbol of ${symbol}, ready to be executed, inner param = ${_funparam}`);
             await this.syncDelay(randomValue);
             if (_.isFunction(errorSimulator) && errorSimulator(param)) throw Error('force to made error happen');
             console.log(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
             return {randomValue, symbol, param};
         } catch (error) {
             console.error(new Error(`asyncUnitTask() catch error ${error.message}`))
-        }finally {
+        } finally {
             console.log(`wow.... finally got you`);
         }
 
     }
 
-    async syncDelayRandom(min, max) {
+    async syncDelayRandom(min = 3000, max = 5000) {
         const random = this.getRandomValue(min, max);
         await this.syncDelay(random);
         return random;
+    }
+
+    has(collection, item) {
+        if (_.isArray(collection)) {
+            return _.indexOf(collection, item) > -1;
+        }
+        if (_.isObject(item)) {
+            return collection[item];
+        }
+        if (_.isString(collection)) {
+            return collection.indexOf(item) > -1;
+        }
+        return false;
     }
 
     getRandomHash() {
@@ -102,6 +115,7 @@ class Util {
     }
 
     getRandomItemOfArray(array) {
+        if (!_.isArray(array)) throw new ERROR(9999, `why are you so stupid, typeof array should be array, not ==> ${array} `)
         const item = this.getShuffledArrayWithLimitCount(array, 1);
         return item.length > 0 ? item[0] : undefined;
     }
@@ -186,25 +200,31 @@ class Util {
     }
 
     appendInfo(data) {
-        return this.appendFile(GlobalConfig.PATH_INFO_LOG, data, false);
+        return this.persistInFile(GlobalConfig.PATH_INFO_LOG, data, false);
     }
 
     appendError(data) {
-        return this.appendFile(GlobalConfig.PATH_ERROR_LOG, data, true);
+        return this.persistInFile(GlobalConfig.PATH_ERROR_LOG, data, true);
     }
 
-    appendFile(path, data, isError = false, caller = '') {
+    appendLog(path, data, isError = false, caller = '') {
         const log = `${isError ? `ERROR` : `LOG`} : ${caller} ${this.isJson(data) ? this.deepFlat(data) : data}`;
         isError ? console.error(log) : console.log(log);
         const persistlog = `${new Date()} ${log}`;
-        if (!fs.existsSync(path))
-            fs.writeFileSync(path, persistlog, err => {
-                throw new ERROR(8001, err);
-            });
-        else
-            fs.appendFileSync(path, `\n${persistlog}`, err => {
-                throw new ERROR(8001, err);
-            });
+        this.persistInFile(path, persistlog);
+    }
+
+    /** if file not exist, automatic create it*/
+    persistInFile(path, data) {
+        let options = err => {
+            throw new ERROR(8001, err);
+        };
+
+        if (!fs.existsSync(path)) {
+            fs.writeFileSync(path, data, options);
+        } else {
+            fs.appendFileSync(path, `\n${data}`, options);
+        }
     }
 
     getCallersName = () => {
@@ -264,7 +284,7 @@ class Util {
             }
             return _self;
         } else {
-            return collection;
+            return _.trim(collection);
         }
     }
 
@@ -324,7 +344,7 @@ if (GlobalConfig.DEBUG_MODE) {
     // const info = self.readFileInJSON('./dynamic_info.js');
 
     // console.log(info.cancel);
-    // throw new ERROR(4002);
+    // throw new ERROR(4002)
 }
 
 

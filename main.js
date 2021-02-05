@@ -18,8 +18,8 @@ import Moment from 'moment';
 import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
 (async () => {
-        const sqlHandler = new SQL();
-        await sqlHandler.init();
+        const database = new SQL({});
+        await database.init();
 
         async function syncDelay(delayInms) {
             return new Promise(resolve => {
@@ -31,7 +31,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
         async function persistRankTable() {
             const tableName = GlobalConfig.RANK_TABLE_NAME;
-            await sqlHandler.dropTable(tableName);
+            await database.dropTable(tableName);
             for (const maintype in GlobalConfig.RANK_TABLE_TYPE) {
                 Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
                 const ranks = await fetchRankTable(GlobalConfig.RANK_TABLE_TYPE[maintype].ID, GlobalConfig.RANK_TABLE_TYPE[maintype].SORT)
@@ -39,7 +39,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                     for (const each of rank.items) {
                         const obj = {}
                         obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
-                        await sqlHandler.lazyInsertRecord(tableName,
+                        await database.lazyInsertRecord(tableName,
                             {name: each.name, singer: each.singer.name, updateTime: _.now(), ...obj}, 'name', 'singer');
                     }
                 }
@@ -115,6 +115,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
         }
 
         async function fetchAllSinger(singerType = 6) {
+
             await mainPage.goto(GlobalConfig.PATH_SAMPLE_URL_SINGER,
                 {waitUntil: 'networkidle2'}
             );
@@ -174,38 +175,29 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             return mSongList;
         }
 
-        async function persistSongsAndSinger(singer) {
-            try {
-                const start = _.now();
-                const _db = await sqlHandler.fetchRecords('SINGER', SQL.Builder().equal('name', singer.name).stmt());
-                if (_db.length > 0) {
-                    Util.appendFile(GlobalConfig.PATH_INFO_LOG, `此歌手 '${singer.name}' 已在資料庫中'`);
-                    return;
-                }
-                Util.appendFile(GlobalConfig.PATH_ERROR_LOG, `正在下載歌手 ${singer.name} 的歌單們....'`);
-                const mSongList = await fetchSongsOfSingersPage(path.join(GlobalConfig.BASE_URL, singer.url));
-                for (const song of mSongList) {
-                    try {
-                        await sqlHandler.lazyInsertRecord('SONG',
+        async function persistSongs() {
+            const start = _.now();
+            const singer = await database.fetchRecord('SINGER', SQL.Builder().equal('state', 'NOT').orderByRandom().limit(1).stmt());
+            if (singer) {
+                try {
+                    Util.appendInfo(`正在下載歌手 ${singer.name} 的歌單們....'`);
+                    await database.updateState('SINGER', 'ING', singer.uid);
+                    const songs = await fetchSongsOfSingersPage(path.join(GlobalConfig.BASE_URL, singer.url));
+                    for (const song of songs) {
+                        await database.lazyInsertRecord('SONG',
                             {...song, state: 'NOT', singer: singer.name}, 'name', 'singer');
-                        Util.appendFile(GlobalConfig.PATH_INFO_LOG, `正在儲存歌手 '${singer.name}' 的歌 '${song.name}' `);
-                    } catch (error) {
-                        Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
-                            `TABLE SONG 出現錯誤了,${song.name} ${JSON.stringify(error)}`)
-
+                        Util.appendInfo(`正在儲存歌手 '${singer.name}' 的歌 '${song.name}' `);
                     }
+                    const cost = _.now() - start;
+                    await database.updateState('SINGER', 'DONE', singer.uid);
+                    await database.updateRecords('SINGER', {cost: cost, songCounts: songs.length},
+                        SQL.Builder().equal('uid', singer.uid).stmt());
+                } catch (error) {
+                    Util.appendError(`persistSongsBySinger() 出現錯誤了, ${error.message}`)
+                    await database.updateState('SINGER', 'NOT', singer.uid);
                 }
-                const songCounts = _.isArray(mSongList) ? mSongList.length : 0;
-                const cost = _.now() - start;
-                await sqlHandler.lazyInsertRecord('SINGER', {
-                    ...singer,
-                    songCounts,
-                    cost
-                }, 'name', 'names');
-                return singer;
-            } catch (error) {
-                Util.appendFile(GlobalConfig.PATH_ERROR_LOG,
-                    `fetchSongsBySinger ${singer.name} 出現錯誤 ${JSON.stringify(error)}`)
+            } else {
+                Util.appendInfo(`沒有未完成的歌手了....睡個 ${await Util.syncDelayRandom()}`);
             }
         }
 
@@ -214,7 +206,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             try {
                 const start = _.now();
                 const record = Util.getRandomItemOfArray(
-                    await sqlHandler.fetchRecords('SONG', SQL.Builder()
+                    await database.fetchRecords('SONG', SQL.Builder()
                         .gte('popularLevel',
                             GlobalConfig.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD)
                         .and().equal('state', 'NOT')
@@ -223,24 +215,24 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
                 if (record) {
                     song = record;
-                    await sqlHandler.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                    await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
 
                     const raw = await fetchTone(song);
                     if (raw !== undefined) {
                         const tone = raw.getNormalizeToneObject();
                         const cost = _.now() - start;
-                        await sqlHandler.lazyInsertRecord('TONE', {
+                        await database.lazyInsertRecord('TONE', {
                             ...tone,
                             cost
                         }, 'name', 'singer');
-                        await sqlHandler.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                        await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                         Util.appendInfo(`成功儲存TONE '${tone.name}' .....`)
                         return true;
 
                     } else {
                         Util.appendError(
                             `persistTone() ${song.name} 出現錯誤, tone 是 undefined`);
-                        await sqlHandler.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                        await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                         return false;
                     }
                 } else {
@@ -249,11 +241,9 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 }
             } catch (error) {
                 if (error instanceof ERROR && error.isConstraintError()) {
-                    Util.appendInfo(`persistTone() ${song.name}, 是一首 DUP 的狀況.....`);
-                    await sqlHandler.updateRecords('SONG', {state: 'DUP'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                 } else {
                     Util.appendError(`persistTone() ${song.name},  ${JSON.stringify(error.message)}`);
-                    await sqlHandler.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
+                    await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(GlobalConfig.UID, song.uid).stmt());
                 }
             }
         }
@@ -267,7 +257,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             Util.appendInfo(`latestSongPersist() 抓了新歌 ${song[0].items.length}`);
             for (const item of song[0].items)
                 try {
-                    await sqlHandler.insertRecord('SONG',
+                    await database.insertRecord('SONG',
                         {
                             popularLevel: 10000,
                             name: item.name,
@@ -285,31 +275,20 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 }
         }
 
+        async function persistSingers(singerType = 6) {
+            let singers = await fetchAllSinger(singerType);
+            const exists = (await database.fetchRecords('SINGER', '', 'names')).map((singer) => singer.names);
+            Util.appendInfo(`persistSingers 在網路上歌手有 '${singers.length}' 個, 資料庫裡面有 '${exists.length}'`);
+            _.remove(singers, (singer) => {
+                return _.indexOf(exists, Util.deepFlat(singer.names)) >= 0
+            });
+            for (const singer of singers) {
+                await database.lazyInsertRecord('SINGER',
+                    {...singer, state: 'NOT'}, 'name', 'names');
+            }
+        }
+
         async function persist91puEveryThing(singerType = 6) {
-            let singers = [];
-
-
-            async function fetchSingers() {
-                let singers = await fetchAllSinger(singerType);
-                const exists = (await sqlHandler.fetchRecords('SINGER', '', 'name')).map((exist) => exist.name);
-                Util.appendInfo(`在資料庫的歌手有 '${singers.length}' 個`)
-                singers = _.remove(singers, (singer) => {
-                    return !exists.includes(singer.name);
-                })
-                singers = Util.getShuffledArrayWithLimitCount(singers, singers.length);
-            }
-
-            async function fetchSongs() {
-                if (singers.length > 0) {
-                    const singer = singers.pop();
-                    Util.appendFile(GlobalConfig.PATH_INFO_LOG,
-                        `尚未完成的歌手還有 '${singers.length}' 個`)
-                    await persistSongsAndSinger(singer);
-                } else {
-                    Util.appendFile(GlobalConfig.PATH_INFO_LOG,
-                        `沒有需要fetch的song了, 尚未完成的歌手還有 '${singers.length}' 個`)
-                }
-            }
 
             async function browserPageWatcher() {
                 if (browser !== undefined) {
@@ -321,22 +300,22 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             /** 抓排行榜 once 1 mins */
 
             const errorHandler = (error) => {
-                Util.appendError(`TASK 遇到問題 ${JSON.stringify(error.message)}`);
+                Util.appendError(`９１pu => TASK 遇到問題 ${JSON.stringify(error.message)}`);
             }
 
             /** 檢查歌手 once 2 mins */
             const singerFetcher = new Pooller(1);
             const twoMin = 2 * 60 * 1000;
             singerFetcher.setPoolId("SINGER FETCHER");
-            singerFetcher.runInBackGround(singerFetcher.runInInfinite, fetchSingers, twoMin);
+            singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers, twoMin);
             singerFetcher.setTaskFailHandler(errorHandler);
             poollers.push(singerFetcher);
 
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             const songFetch = new Pooller(1);
-            const TwentySecs = 20 * 1000;
+            const TenSecs = 10 * 1000;
             songFetch.setPoolId("SONG FETCHER");
-            songFetch.runInBackGround(songFetch.runInInfinite, fetchSongs, TwentySecs);
+            songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, TenSecs);
             songFetch.setTaskFailHandler(errorHandler);
             poollers.push(songFetch);
 
@@ -364,13 +343,6 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             latestToneFetch.setTaskFailHandler(errorHandler);
             poollers.push(latestToneFetch);
 
-            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(4);
-            toneFetch.cleanTaskInterval();
-            toneFetch.setPoolId("TONE FETCHER");
-            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone);
-            toneFetch.setTaskFailHandler(errorHandler);
-            poollers.push(toneFetch);
 
             while (_.find(poollers.map((pooller) => pooller.isRunning()), (self) => self)) {
                 const millionSecs = await Util.syncDelayRandom(5000, 10000);
@@ -380,6 +352,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                     for (const pooller of poollers) {
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
                         await pooller.stopInBackground();
+                        pooller.showState();
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 關閉成功!`);
                     }
                 }
@@ -394,8 +367,20 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
         Util.deleteFile(GlobalConfig.PATH_ERROR_LOG);
         Util.deleteFile(GlobalConfig.PATH_INFO_LOG);
         const mainPage = await browser.newPage();
-        await persist91puEveryThing();
-        // await latestSongPersist();
+        // await persist91puEveryThing();
+
+        /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+        const toneFetch = new Pooller(1);
+        toneFetch.cleanTaskInterval();
+        toneFetch.setPoolId("TONE FETCHER");
+        toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, 0);
+        toneFetch.setTaskFailHandler((error) => console.error(`.....無奈呀 ${error.message}`));
+
+        while(toneFetch.isRunning()){
+            await Util.syncDelayRandom();
+        }
+
+
         await browser.close();
         if (GlobalConfig.MAIN_MSG.SHOW_SUCCEED)
             console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
