@@ -22,12 +22,18 @@ class Playground {
 //  doingSt()
 
 
-function david(params = []) {
-    for (const i of params) {
-        console.info(i);
-    }
-    console.log(arguments);
-}
+// function david(params = []) {
+//     for (const i of params) {
+//         console.info(i);
+//     }
+//     console.log(arguments);
+// }
+
+
+
+
+
+
 
 // _([1, 2, 3, 4, 5, 6, 7]);
 
@@ -443,7 +449,7 @@ const pulled = _.unionBy(sample, [{x: 2},{x: 99}], 'x');
 console.log(pulled);
 // console.log(sample);
 
-console.log(_.join(_.split(sting,'\n'),' || '))
+// console.log(_.join(_.split(sting,'\n'),' || '))
 
 var users = [
     { 'user': 'fred',   'age': 48 },
@@ -453,5 +459,22 @@ var users = [
 ];
 
 // Sort by `user` in ascending order and by `age` in descending order.
-_.orderBy(users, ['user', 'age'], ['asc', 'desc']);
+// _.orderBy(users, ['user', 'age'], ['asc', 'desc']);
 // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 40]]
+
+
+function isGreeting(value) {
+    return /^h(?:i|ello)$/.test(value);
+}
+function customizer(objValue, othValue) {
+    if (isGreeting(objValue) && isGreeting(othValue)) {
+        return true;
+    }
+}
+var array = ['hello', 'goodbye'];
+var other = ['hi', 'goodbye'];
+_.isEqualWith(array, other, customizer);
+// => true
+const stringsss = `（
+D）6 依現行法規定，申請喪失國籍時所應檢附（（之證明文件，不包（（括下列何者？`
+console.log(util.ToCDB(stringsss));

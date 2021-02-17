@@ -90,6 +90,9 @@ const ERRORs = {
     8001: {
         message: `append file fail`
     },
+    8002: {
+        message: `open dir fail`
+    },
     9999: {
         message: `super stupid error`
     }

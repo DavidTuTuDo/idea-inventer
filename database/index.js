@@ -526,10 +526,10 @@ if (GlobalConfig.DEBUG_MODE) {
         // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
         // console.log(await handl·er.fetchRecords('testing'));
         // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
+
         Util.appendInfo('ING SONG ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
-
         Util.appendInfo('ING SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE  SINGER ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
@@ -550,6 +550,8 @@ if (GlobalConfig.DEBUG_MODE) {
         //         console.log(ex.name);
         // }
         // console.log(_.size(obj));
+        console.log();
+        // console.log(await handler.fetchRecords('SINGER',new ConditionBuilder().groupBy('type').stmt(),'type','COUNT(*)'));
 
     })();
 

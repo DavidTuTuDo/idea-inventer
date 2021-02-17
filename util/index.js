@@ -4,6 +4,9 @@ import GlobalConfig from "../GlobalConfig";
 import _ from "lodash";
 import fs from "fs";
 import ERROR from '../exception';
+import path from 'path';
+
+const pdf = require('pdf-parse');
 
 class Util {
 
@@ -200,25 +203,27 @@ class Util {
     }
 
     appendInfo(data) {
-        return this.persistInFile(GlobalConfig.PATH_INFO_LOG, data, false);
+        return this.appendLog(GlobalConfig.PATH_INFO_LOG, data, false);
     }
 
     appendError(data) {
-        return this.persistInFile(GlobalConfig.PATH_ERROR_LOG, data, true);
+        return this.appendLog(GlobalConfig.PATH_ERROR_LOG, data, true);
     }
 
     appendLog(path, data, isError = false, caller = '') {
         const log = `${isError ? `ERROR` : `LOG`} : ${caller} ${this.isJson(data) ? this.deepFlat(data) : data}`;
         isError ? console.error(log) : console.log(log);
         const persistlog = `${new Date()} ${log}`;
-        this.persistInFile(path, persistlog);
+        this.appendFile(path, persistlog);
     }
 
     /** if file not exist, automatic create it*/
-    persistInFile(path, data) {
+    appendFile(path, data, force_delete) {
         let options = err => {
             throw new ERROR(8001, err);
         };
+
+        if (force_delete) this.deleteFile(path);
 
         if (!fs.existsSync(path)) {
             fs.writeFileSync(path, data, options);
@@ -242,6 +247,9 @@ class Util {
         return (callerName);
     }
 
+    replaceAll(string, patten, to) {
+        return _.replace(string, new RegExp(`${patten}`, `g`), to); /** g就是 global */
+    }
 
     deleteFile(path) {
         if (fs.existsSync(path))
@@ -332,21 +340,73 @@ class Util {
         return info;
     }
 
+    async getPDFText(path) {
+
+        let dataBuffer = fs.readFileSync(path);
+        return pdf(dataBuffer).then((data) => {
+
+            return data;
+        });
+    }
+
+    getPathUnderDir(_path) {
+        try {
+            const files = fs.readdirSync(_path);
+            return files.map((file) => path.join(_path, file));
+        } catch (error) {
+            throw new ERROR(8002, error);
+        }
+
+    }
+
+    // 半形轉化為全形
+    toDBC(txtstring) {
+        var tmp = "";
+        for (var i = 0; i < txtstring.length; i++) {
+            if (txtstring.charCodeAt(i) == 32) {
+                tmp = tmp + String.fromCharCode(12288);
+            }
+            if (txtstring.charCodeAt(i) < 127) {
+                tmp = tmp + String.fromCharCode(txtstring.charCodeAt(i) + 65248);
+            }
+        }
+        return tmp;
+    }
+
+    // 全形轉換為半形
+    ToCDB(str) {
+        var tmp = "";
+        for (var i = 0; i < str.length; i++) {
+            if (str.charCodeAt(i) == 12288) {
+                tmp += String.fromCharCode(str.charCodeAt(i) - 12256);
+                continue;
+            }
+            if (str.charCodeAt(i) > 65280 && str.charCodeAt(i) < 65375) {
+                tmp += String.fromCharCode(str.charCodeAt(i) - 65248);
+            } else {
+                tmp += String.fromCharCode(str.charCodeAt(i));
+            }
+        }
+        return tmp
+    }
+
+    createFileByPath(path) {
+
+        const folders = _.split(path,'\/');
+        console.log(folders)
+
+    }
+
+
 }
-
-if (GlobalConfig.DEBUG_MODE) {
-    // const self = new Util();
-    // console.log(self.getAttrValueInSequence({msg: 'msgmsgmsgmsgmsg', message: 'messagemessage'}, 'message', 'msg'));
-    // console.log(self.getAttrValueInSequence('fdsfhsiudhuisd', 'message', 'msg'));
-    // self.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, {cancel: false, host: 'DavidCCC'});
-    // self.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, {cancel: false, host: 'David', timeStamp: new Date()});
-    // console.log((self.readFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO))["cancel"]);
-    // const info = self.readFileInJSON('./dynamic_info.js');
-
-    // console.log(info.cancel);
-    // throw new ERROR(4002)
-}
-
 
 const singleton = new Util();
+if (GlobalConfig.DEBUG_MODE) {
+
+
+    const self = new Util();
+    self.createFileByPath(`./a/b/c`)
+
+}
+
 export default singleton;

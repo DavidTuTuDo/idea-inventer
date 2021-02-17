@@ -33,7 +33,7 @@ const GlobalConfig =
             SHOW_SUCCEED: false,
         },
 
-        BASE_DATABASE_PATH: './database/secret_infos_back.db',
+        BASE_DATABASE_PATH: './database/secret_infos_latest.db',
         BASE_URL: 'https://www.91pu.com.tw',
         TONES_ROOT: './Tones/',
         PATH_SAMPLE_OBJECT_ROOT: './ObjectSamples/',
