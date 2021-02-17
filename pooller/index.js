@@ -27,7 +27,8 @@ class InfinitePool {
         this.maxWorker = maxWorkers;
 
         this.paramQueue = [];
-        this.queue = {};
+        this.taskQueue = {};
+        this.executingQueue = [];
         this.currrentSleepCounts = 0;
         this.isTaskRunning = false;
         this.dispatchers = [];
@@ -35,10 +36,8 @@ class InfinitePool {
             this.queue[prior] = [];
         }
         this.initialTaskKickOff = false;
-        this.executingQueue = [];
         this.mHashNTaskMap = {};
         /** 為了刪除未執行的task, 但只限於runByTask, 因為下一個run之後, hash就改變了    */
-
         this.mHashNPromiseMap = {}; /** 為了刪除執行完的promise */
     }
 
@@ -120,11 +119,11 @@ class InfinitePool {
             }
 
             const hash = Util.getRandomHash();
-            const wrapper = this.taskWrapper(task, hash);
-            const taskInfo = {task: wrapper, hash};
+            const taskInfo = {task, hash};
             this.appendHashTaskMap(taskInfo);
             this.queue[priority].push(taskInfo);
             return hash;
+
 
         } else {
             throw new ERROR(4002, `task can't be ${typeof task}`);
@@ -136,6 +135,7 @@ class InfinitePool {
 
             const self = this;
             let taskResult;
+
             function handleError(error) {
                 if (error.code && error.code === 4010) {
                     Util.appendError(`${self.getPoollerLogFormat(`發生Timeout ${self.timeOfTaskTimeout} mms 了,是內部設計的狀況`)}`);
@@ -360,8 +360,7 @@ class InfinitePool {
 
         const taskInfo = this.getTaskInfoDependOnPriority();
         if (taskInfo) {
-            const promise = taskInfo.task();
-            console.log(`加入了一個Task到executeQueue ${taskInfo.hash}`)
+            const promise = this.taskWrapper(taskInfo.task, taskInfo.hash)();
             this.removeTaskMapByHash(taskInfo.hash);
             this.appendHashPromiseMap(taskInfo.hash, promise);
             this.appendToExecuteQueue(promise);
@@ -416,7 +415,6 @@ class InfinitePool {
     }
 
     removeResolveOrRejectPromiseByHash = (hash) => {
-        console.log(`移除了這個Promise ===> ${hash} exe長度 ===> ${this.executingQueue.length}`)
         this.removePromiseFromExecutingQueue(hash);
         this.removeCompletedPromiseFromMapByHash(hash);
     }

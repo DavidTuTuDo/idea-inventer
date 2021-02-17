@@ -306,48 +306,48 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 Util.appendError(`９１pu => TASK 遇到問題 ${JSON.stringify(error.message)}`);
             }
 
-            // /** 檢查歌手 once 2 mins */
-            // const singerFetcher = new Pooller(1);
-            // const twoMin = 2 * 60 * 1000;
-            // singerFetcher.setPoolId("SINGER FETCHER");
-            // singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers, twoMin);
-            // singerFetcher.setTaskFailHandler(errorHandler);
-            // poollers.push(singerFetcher);
-            //
-            // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            // const songFetch = new Pooller(1);
-            // const TenSecs = 10 * 1000;
-            // songFetch.setPoolId("SONG FETCHER");
-            // songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, TenSecs);
-            // songFetch.setTaskFailHandler(errorHandler);
-            // poollers.push(songFetch);
-            //
-            // /** 抓取排行版上的資訊們 */
-            // const rankFetch = new Pooller(1);
-            // rankFetch.cleanTaskInterval();
-            // rankFetch.setPoolId("RANK FETCHER");
-            // const fiveMin = 5 * 60 * 1000;
-            // rankFetch.setTimeout(fiveMin);
-            // rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
-            // rankFetch.setTaskFailHandler(errorHandler);
-            // poollers.push(rankFetch);
-            //
-            // /** 監督browser page 有沒有爆掉 */
-            // const browserWatcher = new Pooller(1);
-            // browserWatcher.setPoolId("BROWSER WATCHER");
-            // browserWatcher.runInBackGround(browserWatcher.runInInfinite, browserPageWatcher, twoMin);
-            // browserWatcher.setTaskFailHandler(errorHandler);
-            // poollers.push(browserWatcher);
-            //
-            // /** 猛抓LATEST TABLE的歌曲*/
-            // const latestToneFetch = new Pooller(1);
-            // latestToneFetch.setPoolId("LATEST SONG FETCHER");
-            // latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist, fiveMin);
-            // latestToneFetch.setTaskFailHandler(errorHandler);
-            // poollers.push(latestToneFetch);
+            /** 檢查歌手 once 2 mins */
+            const singerFetcher = new Pooller(1);
+            const twoMin = 2 * 60 * 1000;
+            singerFetcher.setPoolId("SINGER FETCHER");
+            singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers, twoMin);
+            singerFetcher.setTaskFailHandler(errorHandler);
+            poollers.push(singerFetcher);
+
+            /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+            const songFetch = new Pooller(1);
+            const TenSecs = 10 * 1000;
+            songFetch.setPoolId("SONG FETCHER");
+            songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, TenSecs);
+            songFetch.setTaskFailHandler(errorHandler);
+            poollers.push(songFetch);
+
+            /** 抓取排行版上的資訊們 */
+            const rankFetch = new Pooller(1);
+            rankFetch.cleanTaskInterval();
+            rankFetch.setPoolId("RANK FETCHER");
+            const fiveMin = 5 * 60 * 1000;
+            rankFetch.setTimeout(fiveMin);
+            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
+            rankFetch.setTaskFailHandler(errorHandler);
+            poollers.push(rankFetch);
+
+            /** 監督browser page 有沒有爆掉 */
+            const browserWatcher = new Pooller(1);
+            browserWatcher.setPoolId("BROWSER WATCHER");
+            browserWatcher.runInBackGround(browserWatcher.runInInfinite, browserPageWatcher, twoMin);
+            browserWatcher.setTaskFailHandler(errorHandler);
+            poollers.push(browserWatcher);
+
+            /** 猛抓LATEST TABLE的歌曲*/
+            const latestToneFetch = new Pooller(1);
+            latestToneFetch.setPoolId("LATEST SONG FETCHER");
+            latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist, fiveMin);
+            latestToneFetch.setTaskFailHandler(errorHandler);
+            poollers.push(latestToneFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(1);
+            const toneFetch = new Pooller(5);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
             toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, 0);
