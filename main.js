@@ -308,7 +308,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
             /** 檢查歌手 once 2 mins */
             const singerFetcher = new Pooller(1);
-            const twoMin = 2 * 60 * 1000;
+            const twoMin = 15 * 60 * 1000;
             singerFetcher.setPoolId("SINGER FETCHER");
             singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers, twoMin);
             singerFetcher.setTaskFailHandler(errorHandler);
@@ -326,7 +326,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             const rankFetch = new Pooller(1);
             rankFetch.cleanTaskInterval();
             rankFetch.setPoolId("RANK FETCHER");
-            const fiveMin = 5 * 60 * 1000;
+            const fiveMin = 30 * 60 * 1000;
             rankFetch.setTimeout(fiveMin);
             rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
             rankFetch.setTaskFailHandler(errorHandler);
@@ -347,10 +347,10 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             poollers.push(latestToneFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(5);
+            const toneFetch = new Pooller(3);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
-            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, 0);
+            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, 10);
             toneFetch.setTaskFailHandler((error) => console.error(`.....無奈呀 ${error.message}`));
             poollers.push(toneFetch);
 

@@ -517,15 +517,8 @@ if (GlobalConfig.DEBUG_MODE) {
         const handler = new SqliteHandler({});
         await handler.init();
 
-        // await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').stmt())
-        // Util.appendInfo(await handler.fetchRecords('SONG',new ConditionBuilder().equal('state','ING').stmt(),'name'))
-        // Util.appendInfo(await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING')
-        //     .stmt(), 'name'));
-        // await handler.insertRecords('testing', [{avc: 2344, vdd: 'sad'}, {avc: 1384, vdd: 'sad'}]);
-        // await handler.lazyInsertRecord('testing', {avc: 2121, vdd: 'asdd'});
         // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
-        // console.log(await handl·er.fetchRecords('testing'));
-        // Util.appendInfo((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').orderByRandom().limit(1).stmt())));
+        // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SINGER',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
 
         Util.appendInfo('ING SONG ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
@@ -534,24 +527,7 @@ if (GlobalConfig.DEBUG_MODE) {
         Util.appendInfo('NOT SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE  SINGER ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
 
-        // Util.appendInfo('SINGER COUNTS IN DATABASE   ' + ((await handler.fetchRecords('SINGER', '')).length));
-        // await handler.dropTable('RANK_TABLE');
-        // await handler.dropTable('testing');
-        // await handler.updateRecords('SONG',{popularLevel:100},
-        //     new ConditionBuilder().equal('state','NOT').and().lte('popularLevel',0).stmt());
-        // console.log(await handler.fetchIndexesOfTable('SONG'));
-        // throw new ERROR(4001);
-        // const exists = (await handler.fetchRecords('SINGER', ''));
-        // console.log(exists.length);
-        // const obj = {};
-        // for (const ex of exists) {
-        //     const dup = (await handler.fetchRecords('SINGER', new ConditionBuilder().equal('names', ex.names).stmt())).length;
-        //     if (dup > 0)
-        //         console.log(ex.name);
-        // }
-        // console.log(_.size(obj));
         console.log();
-        // console.log(await handler.fetchRecords('SINGER',new ConditionBuilder().groupBy('type').stmt(),'type','COUNT(*)'));
 
     })();
 

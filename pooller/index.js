@@ -28,16 +28,17 @@ class InfinitePool {
 
         this.paramQueue = [];
         this.taskQueue = {};
-        this.executingQueue = [];
         this.currrentSleepCounts = 0;
         this.isTaskRunning = false;
         this.dispatchers = [];
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
-            this.queue[prior] = [];
+            this.taskQueue[prior] = [];
         }
         this.initialTaskKickOff = false;
+        this.executingQueue = [];
         this.mHashNTaskMap = {};
         /** 為了刪除未執行的task, 但只限於runByTask, 因為下一個run之後, hash就改變了    */
+
         this.mHashNPromiseMap = {}; /** 為了刪除執行完的promise */
     }
 
@@ -60,7 +61,7 @@ class InfinitePool {
     clearCache() {
         this.executingQueue.length = 0;
         this.mHashNTaskMap = {};
-        this.queue = {};
+        this.taskQueue = {};
     }
 
     stop() {
@@ -104,14 +105,14 @@ class InfinitePool {
         if (this.state === GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS) return this.paramQueue.length;
 
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
-            size += this.queue[prior].length;
+            size += this.taskQueue[prior].length;
         }
 
         return size;
     }
 
     /** 3:low,2:medium,1:top */
-    /** add the task into queue, return task key,once you want to remove it */
+    /** add the task into taskQueue, return task key,once you want to remove it */
     add = (task, priority = 'low') => {
         if (typeof task === "function") {
             if (GlobalConfig.POOLLER_PRIORITY.indexOf(priority) < 0) {
@@ -121,7 +122,7 @@ class InfinitePool {
             const hash = Util.getRandomHash();
             const taskInfo = {task, hash};
             this.appendHashTaskMap(taskInfo);
-            this.queue[priority].push(taskInfo);
+            this.taskQueue[priority].push(taskInfo);
             return hash;
 
 
@@ -135,7 +136,6 @@ class InfinitePool {
 
             const self = this;
             let taskResult;
-
             function handleError(error) {
                 if (error.code && error.code === 4010) {
                     Util.appendError(`${self.getPoollerLogFormat(`發生Timeout ${self.timeOfTaskTimeout} mms 了,是內部設計的狀況`)}`);
@@ -211,9 +211,9 @@ class InfinitePool {
         let taskInfo = this.getTaskInfoByHash(hash);
         if (taskInfo) {
             for (const prior of GlobalConfig.POOLLER_PRIORITY) {
-                const _index = _.indexOf(this.queue[prior], taskInfo);
+                const _index = _.indexOf(this.taskQueue[prior], taskInfo);
                 if (_index > 0) {
-                    this.queue[prior].splice(_index, 1);
+                    this.taskQueue[prior].splice(_index, 1);
                     this.removeTaskMapByHash(hash);
                     return true;
                 }
@@ -232,7 +232,7 @@ class InfinitePool {
         this.clearCache();
     }
 
-    /** interval was the time between tasks when executingQueue queue is full.
+    /** interval was the time between tasks when executingQueue is full.
      * run would infinite, in default, timeOfSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
         if (_.isNumber(interval)) {
@@ -394,14 +394,14 @@ class InfinitePool {
     /** taskInfo = { task, hash }*/
     getTaskInfoDependOnPriority = () => {
         for (const prior of GlobalConfig.POOLLER_PRIORITY) {
-            if (this.queue[prior].length > 0) {
+            if (this.taskQueue[prior].length > 0) {
                 switch (this.state) {
                     case GlobalConfig.POOLLER_STATE.RUN_BY_EACH_TASK:
-                        return this.queue[prior].shift();
+                        return this.taskQueue[prior].shift();
                     case GlobalConfig.POOLLER_STATE.RUN_BY_PARAMS:
                     case GlobalConfig.POOLLER_STATE.RUN_BY_TIMES:
                     case GlobalConfig.POOLLER_STATE.RUN_INFINITE:
-                        const taskInfo = this.queue[prior].shift();
+                        const taskInfo = this.taskQueue[prior].shift();
 
 
                         this.add(taskInfo.task);

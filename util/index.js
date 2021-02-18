@@ -390,10 +390,24 @@ class Util {
         return tmp
     }
 
-    createFileByPath(path) {
+    persistByPath(path) {
 
-        const folders = _.split(path,'\/');
-        console.log(folders)
+        const dirs = _.split(path, '\/');
+
+        for (let index = 0; index < dirs.length; index++) {
+            let currentPath = (_.join(_.take(dirs, index + 1), '/'))
+            let currentDir = _.nth(dirs, index);
+            let hasExtension = this.has(currentDir, '.') && !_.isEmpty(currentDir.split('.').pop());
+
+            if (!fs.existsSync(currentPath)) {
+                if (hasExtension) {
+                    fs.openSync(currentPath, 'wx');
+                } else {
+                    fs.mkdirSync(currentPath);
+                }
+            }
+        }
+
 
     }
 
@@ -405,7 +419,7 @@ if (GlobalConfig.DEBUG_MODE) {
 
 
     const self = new Util();
-    self.createFileByPath(`./a/b/c`)
+    self.createFileByPath(`./a/b/c/david.js`)
 
 }
 
