@@ -180,7 +180,7 @@ class Examining {
 }
 
 (async () => {
-    for (const path of _.reverse(util.getPathUnderDir('./pdfs'))) {
+    for (const path of _.reverse(util.getChildPathByPath('./pdfs'))) {
         const pdf = new Examining(path)
 
         let text = await pdf.getText();

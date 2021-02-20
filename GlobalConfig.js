@@ -7,7 +7,6 @@ const GlobalConfig =
         DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
         CONTINUE_FROM_LAST_TIME: true,
         USE_SQL_DATABASE: true,
-        // PERSIST_ERROR_LOG: true,
         HACK_LIMITED_TESTING_MODE: false,
         PERMISSION_DOWNLOAD_DEPEND_ON_POPULAR: true,
         SKIP_DEPEND_ON_EXIST: true,

@@ -4,7 +4,7 @@ import GlobalConfig from "../GlobalConfig";
 import _ from "lodash";
 import fs from "fs";
 import ERROR from '../exception';
-import path from 'path';
+import libpath from 'path';
 
 const pdf = require('pdf-parse');
 
@@ -349,14 +349,18 @@ class Util {
         });
     }
 
-    getPathUnderDir(_path) {
+    getChildPathByPath(_path) {
         try {
             const files = fs.readdirSync(_path);
-            return files.map((file) => path.join(_path, file));
+            return files.map((file) => libpath.join(_path, file));
         } catch (error) {
             throw new ERROR(8002, error);
         }
 
+    }
+
+    readRawFile(path) {
+        return fs.readFileSync(path, 'utf-8');
     }
 
     // 半形轉化為全形
@@ -407,19 +411,98 @@ class Util {
                 }
             }
         }
+    }
 
+    indexesOf(arr, val) {
+        const indexes = []
+        let i = -1;
+        while ((i = arr.indexOf(val, i + 1)) !== -1) {
+            indexes.push(i);
+        }
+        return indexes;
+    }
 
+    /**
+     * predicate: predicate(item);
+     *
+     * return [...{
+    path: 'database/index.js',
+    fileName: 'index',
+    extension: 'js',
+    dirName: database
+    absolute: '/Users/davidtu/cross-achieve/mimi19up/mimi19up-scrapy/database/index.js'}
+     ] */
+    getFilesBy = (path, predicate, ...exclude) => {
+        const list = fs.readdirSync(path)
+        const files = [];
+        for (let item of list) {
+            if (this.has(exclude, item)) {
+                continue;
+            }
+            const currentpath = libpath.join(path, item);
+            const extension = item.split('\.').pop();
+            const fileName = item.split('\.').shift();
+            const dirName = _.nth(currentpath.split('\/'), -2);
+            if (fs.lstatSync(currentpath).isDirectory()) {
+                files.push(...this.getFilesBy(currentpath, predicate, ...exclude));
+            } else if (fs.lstatSync(currentpath).isFile()) {
+
+                if (predicate(_.trim(item))) {
+                    files.push({
+                        path: currentpath,
+                        fileName,
+                        extension,
+                        dirName,
+                        absolute: libpath.resolve(currentpath)
+                    });
+                }
+            } else {
+                throw new ERROR(8002, item, currentpath)
+            }
+        }
+        return files
+
+    }
+    /** return [...{path: ,fileName: ,extension: ,absolute: ,dirName:}]*/
+    getFilesByExtension = (path, _extension = [], ...exclude) => {
+        const reg = new RegExp(`^[^\.].+.(${_.join(_extension, '|')})$`);
+        return this.getFilesBy(path, (item) => {
+            return reg.test(item);
+        }, ...exclude);
     }
 
 
+    templatify() {
+        const all = singleton.getFilesByExtension('./', ['js'], 'node_modules');
+        for (const file of all) {
+            const content = this.readRawFile(file.absolute).trim();
+            if (_.isEmpty(content)) {
+                console.log(file.fileName, file.absolute);
+
+                const utilpath = Array.from(libpath.resolve('./util'));
+                /** 例如 a/b/c.js 有兩層,import 就要 ../../ */
+                let level = _.countBy(_.dropWhile(Array.from(file.absolute),
+                    (value, index, array) => _.nth(utilpath, index) === value))['/'];
+                const className = _.isEqual(file.fileName, 'index') ? file.dirName : file.fileName;
+                this.appendFile(file.absolute, `import _util from '${level > 0 ? _.repeat('../', level) : './'}util'`);
+                this.appendFile(file.absolute, `import GlobalConfig from '${level > 0 ? _.repeat('../', level) : './'}GlobalConfig'`);
+                this.appendFile(file.absolute, `import _ from 'lodash'`);
+                this.appendFile(file.absolute, `import libpath from 'path'`);
+                this.appendFile(file.absolute, `\n`);
+                this.appendFile(file.absolute, `class ${className} {\n}`);
+                this.appendFile(file.absolute, `if (GlobalConfig.DEBUG_MODE) {}`);
+                this.appendFile(file.absolute, `export default ${className}`);
+
+            }
+        }
+    }
 }
 
 const singleton = new Util();
 if (GlobalConfig.DEBUG_MODE) {
-
-
-    const self = new Util();
-    self.createFileByPath(`./a/b/c/david.js`)
+    singleton.persistByPath('./cav/b/ccc/index.js');
+    singleton.templatify();
+    // const all = singleton.getFilesByExtension('./', ['js', 'json'], 'node_modules');
 
 }
 

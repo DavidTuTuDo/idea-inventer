@@ -93,6 +93,9 @@ const ERRORs = {
     8002: {
         message: `open dir fail`
     },
+    8003:{
+        message: `not file nor dictionary,should get it`
+    },
     9999: {
         message: `super stupid error`
     }
