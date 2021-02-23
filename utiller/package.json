@@ -1,0 +1,20 @@
+{
+  "name": "utiller",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "gen": "npx babel util.js --out-file ./lib/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto-js": "^4.0.0",
+    "del": "^6.0.0",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "pdf-parse": "^1.1.1",
+    "configer": "file:../configer"
+  }
+}
