@@ -1,62 +1,62 @@
 import * as admin from 'firebase-admin';
-import GlobalConfig from "../GlobalConfig";
+import {configer as Index} from "../configer";
 import path from 'path';
 import _ from "lodash";
-import Util from '../util';
+import Util from '../utiller';
 import fs from "fs";
 
-const serviceAccount = require(GlobalConfig.PATH_ACCOUNT_ADMIN);
+const serviceAccount = require(Index.PATH_ACCOUNT_ADMIN);
 
 class FireBaseAdminHandler {
 
     constructor() {
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
-            databaseURL: GlobalConfig.DATA_BASE_URL
+            databaseURL: Index.DATA_BASE_URL
         });
         this.db = admin.database();
     }
 
     async cleanReference() {
-        await this.db.ref(path.join(GlobalConfig.REFERENCE_ROOT)).set({});
+        await this.db.ref(path.join(Index.REFERENCE_ROOT)).set({});
     }
 
     /** methods of CREATE,UPDATE */
 
     async setTone(tone) {
         const refer = `${tone.name}_${tone.singers.join('_')}`;
-        await this.setValues(path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_TONE, `${refer}`), tone);
+        await this.setValues(path.join(Index.REFERENCE_ROOT, Index.REFERENCE_TONE, `${refer}`), tone);
 
         /** join tone and singer to SUGGEST_WORD table */
         const params = {};
-        const updatePath = path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SUGGEST_WORDS);
+        const updatePath = path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SUGGEST_WORDS);
         for (let singer of tone.singers) {
 
-            params[path.join(singer, GlobalConfig.REFERENCE_SUGGEST_TYPE)] = GlobalConfig.TYPE_SUGGEST_SINGER;
-            params[path.join(singer, GlobalConfig.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
+            params[path.join(singer, Index.REFERENCE_SUGGEST_TYPE)] = Index.TYPE_SUGGEST_SINGER;
+            params[path.join(singer, Index.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
         }
-        params[path.join(tone.name, GlobalConfig.REFERENCE_SUGGEST_TYPE)] = GlobalConfig.TYPE_SUGGEST_TONE;
-        params[path.join(tone.name, GlobalConfig.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
+        params[path.join(tone.name, Index.REFERENCE_SUGGEST_TYPE)] = Index.TYPE_SUGGEST_TONE;
+        params[path.join(tone.name, Index.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
 
         await this.updateValues(updatePath, params)
     }
 
     async setSinger(singer) {
         for (let name of singer.names) {
-            await this.setValues(path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SINGER, `${name}`, GlobalConfig.REFERENCE_INFO), singer);
-            await this.setValues(path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SINGER, `${name}`, GlobalConfig.REFERENCE_TYPE), singer.type)
+            await this.setValues(path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SINGER, `${name}`, Index.REFERENCE_INFO), singer);
+            await this.setValues(path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SINGER, `${name}`, Index.REFERENCE_TYPE), singer.type)
         }
     }
 
     async setValues(refPath, params) {
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`SET PATH:${refPath},PARAM:${JSON.stringify(params)}`);
 
         return await this.db.ref(refPath).set(params);
     }
 
     async updateValues(refPath, params) {
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`UPDATE PATH:${refPath},PARAM:${JSON.stringify(params)}`);
 
         return await this.db.ref(refPath).update(params);
@@ -75,8 +75,8 @@ class FireBaseAdminHandler {
 
     async enrichSuggestWord(word, params) {
         const ref = path.join(
-            GlobalConfig.REFERENCE_ROOT,
-            GlobalConfig.REFERENCE_SUGGEST_WORDS,
+            Index.REFERENCE_ROOT,
+            Index.REFERENCE_SUGGEST_WORDS,
             word);
         await this.setValues(ref, params);
     }
@@ -85,10 +85,10 @@ class FireBaseAdminHandler {
         const pk = this.getTonesPk(tone);
         for (let singerName of tone.singers) {
             const refPath = path.join(
-                GlobalConfig.REFERENCE_ROOT,
-                GlobalConfig.REFERENCE_SINGER,
+                Index.REFERENCE_ROOT,
+                Index.REFERENCE_SINGER,
                 `${singerName}`,
-                GlobalConfig.REFERENCE_SINGER_TONES,
+                Index.REFERENCE_SINGER_TONES,
                 pk);
             const params = {
                 name: tone.name,
@@ -104,27 +104,27 @@ class FireBaseAdminHandler {
         const updatedReference = Util.getItsKeyByValue(tone, updatingValue);
         for (let singer of tone.singers) {
             const refPath = path.join(
-                GlobalConfig.REFERENCE_ROOT,
-                GlobalConfig.REFERENCE_SINGER,
+                Index.REFERENCE_ROOT,
+                Index.REFERENCE_SINGER,
                 singer,
-                GlobalConfig.REFERENCE_SINGER_TONES,
+                Index.REFERENCE_SINGER_TONES,
                 this.getTonesPk(tone),
                 updatedReference);
             params[refPath] = updatingValue;
         }
         const refPath = path.join(
-            GlobalConfig.REFERENCE_ROOT,
-            GlobalConfig.REFERENCE_TONE,
+            Index.REFERENCE_ROOT,
+            Index.REFERENCE_TONE,
             this.getTonesPk(tone),
             updatedReference);
         params[refPath] = updatingValue;
 
-        return await this.updateValues(path.join(GlobalConfig.REFERENCE_ROOT), params)
+        return await this.updateValues(path.join(Index.REFERENCE_ROOT), params)
     }
 
     /** methods of READ */
     async getToneListByKeyword(key) {
-        const result = await this.fetchOnceByConstraint(path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_TONE), key);
+        const result = await this.fetchOnceByConstraint(path.join(Index.REFERENCE_ROOT, Index.REFERENCE_TONE), key);
         return result;
     }
 
@@ -133,7 +133,7 @@ class FireBaseAdminHandler {
         let ref = this.db.ref(refPath);
         const snapshot = await ref.orderByKey().startAt(`${key.trim()}`).endAt(`${key.trim()}\uf8ff`).once("value");
 
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath},PARAM:${key}`);
 
         return snapshot;
@@ -144,17 +144,17 @@ class FireBaseAdminHandler {
     }
 
     async getSingerListByKeyword(key) {
-        const result = await this.fetchOnceByConstraint(path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SINGER), key);
+        const result = await this.fetchOnceByConstraint(path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SINGER), key);
         return result;
     }
 
 
     async getToneListBySingerName(name) {
         Util.isKeywordRule(name);
-        const refPath = path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SINGER, name);
+        const refPath = path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SINGER, name);
         const ref = this.db.ref(refPath);
 
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath}`);
 
         return await ref.once("value");
@@ -162,18 +162,18 @@ class FireBaseAdminHandler {
 
     async getSingerListByType(type) {
         Util.isSingerTypeRule(type);
-        const refPath = path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SINGER);
+        const refPath = path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SINGER);
         const ref = this.db.ref(refPath);
 
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath}`);
 
-        return await ref.orderByChild(GlobalConfig.REFERENCE_TYPE).equalTo(type).once("value");
+        return await ref.orderByChild(Index.REFERENCE_TYPE).equalTo(type).once("value");
     }
 
     async getSuggestWord() {
-        const refPath = path.join(GlobalConfig.REFERENCE_ROOT, GlobalConfig.REFERENCE_SUGGEST_WORDS);
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        const refPath = path.join(Index.REFERENCE_ROOT, Index.REFERENCE_SUGGEST_WORDS);
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath}`);
         return await this.db.ref(refPath).orderByValue().once('value');
     }
@@ -183,7 +183,7 @@ class FireBaseAdminHandler {
 const handler = new FireBaseAdminHandler();
 export default handler;
 
-if (GlobalConfig.DEBUG_MODE) {
+if (Index.DEBUG_MODE) {
     (async () => {
         // const snapshot = await handler.getToneListByKeyword('Bedasds');
         // const snapshot = await handler.getSingerListByKeyword('陳');

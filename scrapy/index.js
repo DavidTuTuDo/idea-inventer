@@ -1,10 +1,10 @@
 import puppeteer from 'puppeteer';
-import GlobalConfig from "../GlobalConfig";
+import Index from "../configer";
 
 
 class Browser {
 
-    async constructor(headless = GlobalConfig.INVOKE_REAL_CHROME) {
+    async constructor(headless = Index.INVOKE_REAL_CHROME) {
         this.browser = await puppeteer.launch({
             headless
         });

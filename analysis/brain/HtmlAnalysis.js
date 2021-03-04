@@ -1,9 +1,9 @@
 import fs from 'fs';
 import _ from "lodash";
 import path from 'path';
-import Util from '../../util'
-import GlobalConfig from "../../GlobalConfig.js";
+import {utiller as Util} from '../../utiller'
 import * as html2json from "himalaya";
+import {configer as Index} from "../../configer";
 
 const needFormat = true;
 
@@ -15,9 +15,9 @@ class HtmlAnalysis {
     }
 
     init() {
-        if (GlobalConfig.DEBUG_MODE && _.isEmpty(this.samplingTaget)) {
+        if (Index.DEBUG_MODE && _.isEmpty(this.samplingTaget)) {
             let sample = {};
-            const mSamplePath = path.join(GlobalConfig.PATH_SAMPLE_OBJECT_ROOT, this.getSampleConfig().filename);
+            const mSamplePath = path.join(Index.PATH_SAMPLE_OBJECT_ROOT, this.getSampleConfig().filename);
             if (fs.existsSync(mSamplePath))
                 sample = JSON.parse(fs.readFileSync(mSamplePath, 'utf-8'));
             this.samplingTaget = sample ? sample : {};
@@ -43,8 +43,8 @@ class HtmlAnalysis {
 
     getSampleConfig() {
         return {
-            path: GlobalConfig.PATH_SAMPLE_URL_BASE,
-            filename: GlobalConfig.SAMPLE_FILE_NAME_BASE,
+            path: Index.PATH_SAMPLE_URL_BASE,
+            filename: Index.SAMPLE_FILE_NAME_BASE,
         }
     }
 
@@ -232,7 +232,7 @@ class HtmlAnalysis {
     persistedUnderObjectFolder(fileName, raw) {
         if (raw) {
             const jsonObj = html2json.parse(raw);
-            fs.writeFile(path.join(GlobalConfig.PATH_SAMPLE_OBJECT_ROOT, fileName),
+            fs.writeFile(path.join(Index.PATH_SAMPLE_OBJECT_ROOT, fileName),
                 JSON.stringify(jsonObj, null, 2),
                 (err) => {
                     Util.appendError('persistedUnderObjectFolder : ' + JSON.stringify(err.message))
@@ -245,10 +245,10 @@ class HtmlAnalysis {
         await page.goto(config.path,
             {waitUntil: 'networkidle2'}
         );
-        await _delay(GlobalConfig.HACK_DELAY_OF_MILLION_SECS);
+        await _delay(Index.HACK_DELAY_OF_MILLION_SECS);
         const content = await page.content();
         this.persistedUnderObjectFolder(config.filename, content);
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`download ${config.filename} succeed`);
     }
 

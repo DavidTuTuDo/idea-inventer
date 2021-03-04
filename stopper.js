@@ -1,6 +1,6 @@
-import Util from './util'
-import GlobalConfig from "./GlobalConfig";
+import {utiller as Util} from './utiller'
+import {configer as Index} from "./configer";
 
-const info = Util.readFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO);
+const info = Util.readFileInJSON(Index.PATH_DYNAMIC_INFO);
 info.cancel = !info.cancel;
-Util.writeFileInJSON(GlobalConfig.PATH_DYNAMIC_INFO, info);
+Util.writeFileInJSON(Index.PATH_DYNAMIC_INFO, info);

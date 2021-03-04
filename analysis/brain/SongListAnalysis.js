@@ -1,7 +1,8 @@
 import HtmlAnalysis from "./HtmlAnalysis.js";
-import GlobalConfig from "../../GlobalConfig.js";
+import Index from "../../configer";
 import _ from "lodash";
-import util from '../../util';
+import {utiller as util} from '../../utiller';
+
 import fs from "fs";
 
 
@@ -24,8 +25,8 @@ class SongListAnalysis extends HtmlAnalysis {
 
     getSampleConfig() {
         return {
-            path: GlobalConfig.PATH_SAMPLE_URL_SONG_LIST,
-            filename: GlobalConfig.SAMPLE_FILE_NAME_SONG_LIST,
+            path: Index.PATH_SAMPLE_URL_SONG_LIST,
+            filename: Index.SAMPLE_FILE_NAME_SONG_LIST,
         }
     }
 

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/mimi19up-scrapy.iml" filepath="$PROJECT_DIR$/.idea/mimi19up-scrapy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/idea-inventer.iml" filepath="$PROJECT_DIR$/.idea/idea-inventer.iml" />
     </modules>
   </component>
 </project>

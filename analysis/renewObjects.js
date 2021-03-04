@@ -4,7 +4,7 @@ import sla from "./brain/SongListAnalysis";
 import rta from "./brain/RankTableAnalysis";
 import sa from "./brain/SingersAnalysis";
 import puppeteer from "puppeteer";
-import GlobalConfig from "../GlobalConfig";
+import Index from "../configer";
 
 (async () => {
     async function snycDelay(delayInms) {
@@ -28,7 +28,7 @@ import GlobalConfig from "../GlobalConfig";
     }
 
     const browser = await puppeteer.launch({
-        headless: !GlobalConfig.INVOKE_REAL_CHROME
+        headless: !Index.INVOKE_REAL_CHROME
     });
 
     const page = await browser.newPage();

@@ -1,8 +1,8 @@
 import HtmlAnalysis from "./HtmlAnalysis.js";
 import _ from "lodash";
 import fs from "fs";
-import GlobalConfig from "../../GlobalConfig.js";
-import Util from "../../util";
+import {utiller as Util} from "../../utiller";
+import {configer as Index} from "../../configer";
 
 
 class SingersAnalysis extends HtmlAnalysis {
@@ -15,8 +15,8 @@ class SingersAnalysis extends HtmlAnalysis {
     getSampleConfig() {
 
         return {
-            path: GlobalConfig.PATH_SAMPLE_URL_SINGER,
-            filename: GlobalConfig.SAMPLE_FILE_NAME_SINGER,
+            path: Index.PATH_SAMPLE_URL_SINGER,
+            filename: Index.SAMPLE_FILE_NAME_SINGER,
         }
 
     }
@@ -94,7 +94,7 @@ class SingersAnalysis extends HtmlAnalysis {
     }
 }
 
-if (GlobalConfig.DEBUG_MODE) {
+if (Index.DEBUG_MODE) {
     const sa = new SingersAnalysis();
     Util.appendInfo(Util.getShuffledArrayWithLimitCount(sa.getAllSingers(), 10));
 }

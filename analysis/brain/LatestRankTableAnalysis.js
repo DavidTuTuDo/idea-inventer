@@ -1,7 +1,6 @@
 import _ from "lodash";
 import fs from "fs";
-import Util from "../../Util";
-import GlobalConfig from "../../GlobalConfig.js";
+import {configer as Index} from "../../configer";
 import RankTableAnalysis from "./RankTableAnalysis";
 
 
@@ -19,7 +18,7 @@ class LatestRankTableAnalysis extends RankTableAnalysis {
 
 export default LatestRankTableAnalysis
 
-if (GlobalConfig.DEBUG_MODE) {
+if (Index.DEBUG_MODE) {
 
 
 }

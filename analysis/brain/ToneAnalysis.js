@@ -1,9 +1,9 @@
 import _ from "lodash";
 import fs from "fs";
 import HtmlAnalysis from "./HtmlAnalysis.js";
-import GlobalConfig from "../../GlobalConfig.js";
 import path from 'path';
-import Util from '../../util';
+import {utiller as Util} from '../../utiller';
+import {configer as Index} from "../../configer";
 
 class ToneAnalysis extends HtmlAnalysis {
 
@@ -16,8 +16,8 @@ class ToneAnalysis extends HtmlAnalysis {
 
     getSampleConfig() {
         return {
-            path: GlobalConfig.PATH_SAMPLE_URL_TONE,
-            filename: GlobalConfig.SAMPLE_FILE_NAME_TONE,
+            path: Index.PATH_SAMPLE_URL_TONE,
+            filename: Index.SAMPLE_FILE_NAME_TONE,
         }
     }
 
@@ -74,14 +74,14 @@ class ToneAnalysis extends HtmlAnalysis {
     }
 
     downloadFile() {
-        const tonePath = path.join(GlobalConfig.TONES_ROOT, this.getSingers()[0]);
+        const tonePath = path.join(Index.TONES_ROOT, this.getSingers()[0]);
         if (!fs.existsSync(tonePath)) fs.mkdirSync(tonePath);
         /** stmt all tone under this singer */
 
         fs.writeFile(`${path.join(tonePath,
             _.trim(this.getTitle()))}.txt`,
             this.printAll(), (err) => {
-                if (GlobalConfig.MODULE_MSG.SHOW_ERROR && !_.isNull(err))
+                if (Index.MODULE_MSG.SHOW_ERROR && !_.isNull(err))
                     Util.appendInfo(`error: ${err.message}`)
             });
     }
@@ -105,7 +105,7 @@ class ToneAnalysis extends HtmlAnalysis {
             this.getCapoLevel() + '\n\n' +
             decrypt + '\n\n';
 
-        if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+        if (Index.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo('TONE:'+whole);
 
         return whole;
@@ -129,7 +129,7 @@ class ToneAnalysis extends HtmlAnalysis {
 
 }
 
-if (GlobalConfig.DEBUG_MODE) {
+if (Index.DEBUG_MODE) {
     const tone = new ToneAnalysis();
     // tone.printAll();
     tone.downloadFile();

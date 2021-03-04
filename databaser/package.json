@@ -1,0 +1,29 @@
+{
+  "name": "databaser",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "gen": "npx babel ./src --out-dir ./lib"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "configer": "file:../configer",
+    "utiller": "file:../utiller",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1",
+    "sqlite": "^4.0.19",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-decorators": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/register": "^7.12.1"
+  }
+}

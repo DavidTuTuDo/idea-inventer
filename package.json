@@ -9,25 +9,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "common-util": "file:util",
     "crypto-js": "^4.0.0",
     "firebase-admin": "^9.4.1",
     "himalaya": "^1.1.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "puppeteer": "^5.4.1",
-    "sqlite": "^4.0.19",
-    "sqlite3": "^5.0.0"
+    "utiller": "file:utiller"
   },
   "devDependencies": {
-    "babel-jest": "^23.6.0",
-    "jest": "^24.0.0",
-    "@babel/plugin-proposal-decorators": "^7.12.1",
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-decorators": "^7.12.1",
     "@babel/plugin-transform-runtime": "^7.12.1",
     "@babel/preset-env": "^7.12.7",
     "@babel/register": "^7.12.1",
-    "@babel/plugin-proposal-class-properties": "^7.12.1"
+    "babel-jest": "^23.6.0",
+    "jest": "^24.0.0"
   }
 }
