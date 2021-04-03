@@ -14,6 +14,4 @@ class gener {
 
 export { gener as gener }
 
-if (configer.DEBUG_MODE) {
-    Util.generatePackage('../').then();
-}
+Util.generatePackage('../').then();

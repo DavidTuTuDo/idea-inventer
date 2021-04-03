@@ -1,6 +1,6 @@
 const GlobalConfig = {
     ENCRYPT_KEY: 'davidlovemimi',
-
+    IS_NODE_ENV: process.env.is_node,
     INVOKE_REAL_CHROME: false,
     PERMISSION_FORCE_DOWNLOAD_TONE: true,
     DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
@@ -30,6 +30,8 @@ const GlobalConfig = {
         SHOW_ERROR: false,
         SHOW_SUCCEED: false,
     },
+
+    BASE_SHELL_SCRIPT: '/Users/davidtu/shell-script/webstorm_gen_command.sh',
 
     BASE_DATABASE_PATH: './secret_infos_latest.db',
     BASE_URL: 'https://www.91pu.com.tw',
@@ -68,6 +70,11 @@ const GlobalConfig = {
     REFERENCE_SINGER_TONES: 'SINGER_TONES',
     REFERENCE_SUGGEST_TYPE: 'type',
     REFERENCE_SUGGEST_POPULAR: 'popular',
+    REFERENCE_QUESTION: 'MIMI_QUESTION',
+    REFERENCE_QUESTION_REPLY_RECORD: 'MIMI_QUESTION_REPLY_RECORD',
+    REFERENCE_QUESTION_REPLY_WRONG: 'WRONG',
+    REFERENCE_QUESTION_REPLY_HISTORY: 'HISTORY',
+
 
     TYPE_SUGGEST_SINGER: 1,
     TYPE_SUGGEST_TONE: 2,

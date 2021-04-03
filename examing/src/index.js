@@ -135,7 +135,7 @@ class examing {
     }
 
     /** 先把選擇題組合成一個字串,然後用split(reg[A-D]) 切成 字串的陣列, 然後處理掉 */
-    getAllChoiceObjAfterIdentity(text, identity) {
+    getAllQuestionsObjAfterIdentity(text, identity) {
         const textlines = text.split(`\n`).map((line) => _.trim(line));
         let index = _.findIndex(textlines, (line) => {
             return Util.has(line, identity)
@@ -160,10 +160,15 @@ class examing {
                     const question = _.head(qc[idx]);
                     const cid = question.match(new RegExp(`[0-9]{1,2}`))[0];
                     qObjArray.push({
-                        answer: _.head(ac[idx]),
-                        cid:_.toNumber(cid),
-                        question:question.replace(cid,''),
-                        choice: combine(_.tail(ac[idx]), _.tail(qc[idx]))
+                        answer: _.head(ac[idx]).match(new RegExp(`[A-Ea-e]`,`g`))[0],
+                        cid: _.toNumber(cid),
+                        topic: Util.getNormalizedStringNotStartWith(
+                            Util.getNormalizedStringEndWith(_.trim(question.replace(cid, '')),
+                                '?')
+                            , ' ', ','),
+                        choice: Util.getNormalizedStringNotEndWith(
+                            _.trim(combine(_.tail(ac[idx]), _.tail(qc[idx]))),
+                            ',', ' ')
                     })
                 }
                 Util.appendInfo(`${this.#filepath} 符合`);
@@ -184,14 +189,13 @@ class examing {
 
     }
 }
-export { examing as examing }
 
-if (configer.DEBUG_MODE) {
+export {examing as examing}
+
 
 (async () => {
         const db = new databaser(`/Users/davidtu/cross-achieve/mimi/idea-inventer/databaser/secret_infos_latest.db`);
         await db.init();
-        await db.dropTable('chooser');
         await db.dropTable('CHOOSER');
 
         for (const path of _.reverse(Util.getChildPathByPath('./pdfs'))) {
@@ -203,11 +207,11 @@ if (configer.DEBUG_MODE) {
                 `--    --`,
                 `重製必究`,
                 `高分詳解`)
-            text = pdf.deleteLinesWhileEqual(text, `‧`, `高上`, `高點`,`-  -`);
+            text = pdf.deleteLinesWhileEqual(text, `‧`, `高上`, `高點`, `-  -`);
             text = pdf.deleteMarkLangs(text, `試題評析`, `答:`)
             text = pdf.deletePagePadding(text, ...(_.range(1, 20).map((_index) => `${_index}`)));
             text = pdf.deleteLinesAfterIdentity(text, `測驗題部分`, '');
-            const choiseQ = pdf.getAllChoiceObjAfterIdentity(text, `測驗題部分`);
+            const questions = pdf.getAllQuestionsObjAfterIdentity(text, `測驗題部分`);
             // const choiseQv2 = pdf.getAllChoiceObjAfterIdentityV2(text, `測驗題部分`);
 
             const examYear = _.split(path, '/').pop().substring(0, 3);//109
@@ -215,16 +219,15 @@ if (configer.DEBUG_MODE) {
             const examSubject = text.match(new RegExp(`[^《》|\.]+`, `gm`))[0];
             Util.appendFile(`./output/${libpath.basename(path)}.txt`, text, true);
 
-            for (let choise of choiseQ) {
+            for (let question of questions) {
                 await db.lazyInsertRecord('CHOOSER', {
-                    ...choise,
-                    year: examYear? _.toNumber(examYear):-1,
-                    type: examType? examType: 'unknown',
-                    subject: examSubject? examSubject: 'unknown'
-                },'question');
+                    ...question,
+                    year: examYear ? _.toNumber(examYear) : -1,
+                    type: examType ? examType : 'unknown',
+                    subject: examSubject ? examSubject : 'unknown'
+                }, 'topic');
             }
 
         }
     }
 )();
-}

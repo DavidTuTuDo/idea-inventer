@@ -10,13 +10,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bl": "^4.1.0",
     "configer": "file:../configer",
     "crypto-js": "^4.0.0",
     "del": "^6.0.0",
+    "fs-extra": "^9.1.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "pdf-parse": "^1.1.1",
-    "prompt": "^1.1.0"
+    "pdf-parse": "^1.1.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

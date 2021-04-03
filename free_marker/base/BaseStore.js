@@ -1,0 +1,9 @@
+
+
+class BaseStore {
+
+    constructor(prop) {
+
+    }
+
+}
