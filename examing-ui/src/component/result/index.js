@@ -22,8 +22,6 @@ class Index extends React.Component {
         this.App()
     }
 
-
-
     nextPath(path) {
         this.props.history.push(path);
     }

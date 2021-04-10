@@ -8,6 +8,7 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 import {configer} from 'configer';
 import {Link} from 'react-router-dom';
+import {makeAutoObservable,isObservableObject,isObservableArray} from "mobx";
 
 import {observer, inject} from "mobx-react";
 import {makeObservable, observable, computed, action} from "mobx";
@@ -107,12 +108,10 @@ class Index extends React.Component {
 
     async getValues(db, refPath) {
         return await db.ref(refPath).once('value');
-
     }
 
     async setValue(db, refPath, obj) {
         return await db.ref(refPath).set(obj);
-
     }
 
     /** self 就是你選擇的答案 */
