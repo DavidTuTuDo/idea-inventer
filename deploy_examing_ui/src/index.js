@@ -18,18 +18,18 @@ const destDir = '/Users/davidtu/cross-achieve/mimi/mimi-question/public';
 (async () => {
 
         await Util.executeCommandLine(`cd ${libpath.resolve('../examing-ui')} && npm run build`);
-        await Util.deleteChildByPath(destDir, true);
-        await Util.copyFromFolderToDestFolder(
-            '/Users/davidtu/cross-achieve/mimi/idea-inventer/examing-ui/dist',
-            destDir,
-            true,
-            true,
-            (path) => {
-                Util.appendInfo(`${path} 複製到 ${destDir}`);
-                return true;
-            }
-        )
-        await Util.executeCommandLine(`cd ${Util.getFolderPathOfSpecificPath(destDir)} && firebase deploy`);
+        // await Util.deleteChildByPath(destDir, true);
+        // await Util.copyFromFolderToDestFolder(
+        //     '/Users/davidtu/cross-achieve/mimi/idea-inventer/examing-ui/dist',
+        //     destDir,
+        //     true,
+        //     true,
+        //     (path) => {
+        //         Util.appendInfo(`${path} 複製到 ${destDir}`);
+        //         return true;
+        //     }
+        // )
+        // await Util.executeCommandLine(`cd ${Util.getFolderPathOfSpecificPath(destDir)} && firebase deploy`);
 
     }
 )();

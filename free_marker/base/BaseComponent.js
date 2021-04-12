@@ -9,6 +9,8 @@ class BaseComponent extends React.Component {
         super(props);
     }
 
+    componentDidMount() {
+    }
 }
 
 export default BaseComponent;

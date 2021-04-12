@@ -4,6 +4,7 @@
  * 4XXX pooller
  * 8XXX file IO
  * 9XXX commons
+ * 7XXX ui experience
  */
 const ERRORs = {
     3001: {
@@ -54,7 +55,7 @@ const ERRORs = {
     3015: {
         message: `fetch indexes error`
     },
-    3016:{
+    3016: {
         message: `more than 1 unique_index in table`
     },
     4001: {
@@ -94,23 +95,38 @@ const ERRORs = {
     8002: {
         message: `open dir fail`
     },
-    8003:{
+    8003: {
         message: `not file nor dictionary,should get it`
     },
-    8004:{
+    8004: {
         message: `package exist in current path`
     },
-    8005:{
+    8005: {
         message: `input name is not valid`
     },
-    8006:{
+    8006: {
         message: `file exsist when trying to copy`
     },
-    8007:{
+    8007: {
         message: `alias exist in shell script`
+    },
+    8008: {
+        message: `persist folder fail`
+    },
+    8009: {
+        message: `copy folder should be exist`
     },
     9999: {
         message: `super stupid error`
+    },
+    7001: {
+        message: `state is wrong`
+    },
+    7002: {
+        message: `initial should be override`
+    },
+    7003: {
+        message: `css style duplicated defined`
     }
 
 }

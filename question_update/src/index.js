@@ -22,6 +22,9 @@ export {question_update as question_update}
 
         const fire = new firebaser(Util.getAdminCredential());
         await fire.deleteTable(configer.REFERENCE_QUESTION);
+        await fire.deleteTable(`exam`);
+        await fire.deleteTable(`EXAM`);
+
         const qs = await db.fetchRecords('CHOOSER');
         for (const q of qs) {
             Util.appendInfo(`${JSON.stringify(q)} is uploading`);
@@ -29,6 +32,7 @@ export {question_update as question_update}
             Util.appendInfo(`${JSON.stringify(q)} is succeed`);
             await Util.syncDelay(50);
         }
+        await fire.setExam(qs);
         Util.appendInfo(`\n\n question_update is succeed`);
 
     }

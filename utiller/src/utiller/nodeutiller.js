@@ -9,6 +9,7 @@ import pdf from 'pdf-parse';
 import del from 'del';
 import fse from 'fs-extra';
 import BufferList from 'bl';
+import {utiller as Util} from "../../index";
 
 class NodeUtiller extends Utiller {
 
@@ -35,7 +36,7 @@ class NodeUtiller extends Utiller {
     }
 
     /**
-     * predicate: predicate(item);
+     * predicate: predicate(pathInfo); predicate帶的參數是 pathInfo object
      *
      * return [...{
     path: 'database/index.js',
@@ -45,6 +46,7 @@ class NodeUtiller extends Utiller {
     absolute: '/Users/davidtu/cross-achieve/mimi19up/mimi19up-scrapy/database/index.js'}
      ] */
     findFilePathBy = (path, predicate = (each) => true, ...excludes) => {
+        if (!fs.existsSync(path)) return [];
         const list = fs.readdirSync(path)
         const files = [];
         for (let item of list) {
@@ -53,8 +55,9 @@ class NodeUtiller extends Utiller {
             if (fs.lstatSync(currentpath).isDirectory()) {
                 files.push(...this.findFilePathBy(currentpath, predicate, ...excludes));
             } else if (fs.lstatSync(currentpath).isFile()) {
-                if (predicate(_.trim(item))) {
-                    files.push(this.getPathInfo(currentpath));
+                const pathInfo = this.getPathInfo(currentpath);
+                if (predicate(pathInfo)) {
+                    files.push(pathInfo);
                 }
             } else {
                 throw new ERROR(8003, item, currentpath)
@@ -63,6 +66,7 @@ class NodeUtiller extends Utiller {
         return files
     }
 
+    //todo 應該要改成class
     getPathInfo(path) {
         const absolute = libpath.resolve(path);
         const obj = {
@@ -70,6 +74,10 @@ class NodeUtiller extends Utiller {
             absolute,
             isFile: false,
             isDirectory: true,
+            dirName: undefined,
+            extension: undefined,
+            fileName: undefined,
+            fileNameExtension: undefined,
         }
 
         if (this.isFile(absolute)) {
@@ -78,6 +86,11 @@ class NodeUtiller extends Utiller {
             obj['dirName'] = _.nth(absolute.split('\/'), -2);
             obj['isFile'] = true;
             obj['isDirectory'] = false;
+            obj['fileNameExtension'] = `${obj.fileName}.${obj.extension}`;
+        }
+
+        if (this.isisDirectory(absolute)) {
+            obj['dirName'] = absolute.split('\/').pop();
         }
 
         return obj;
@@ -88,7 +101,7 @@ class NodeUtiller extends Utiller {
     findFilePathByExtension = (rootpath, _extension = [], ...exclude) => {
         const reg = new RegExp(`^[^\.].+.(${_.join(_extension, '|')})$`);
         return this.findFilePathBy(rootpath, (item) => {
-            return reg.test(item);
+            return reg.test(item.fileNameExtension);
         }, ...exclude);
     }
 
@@ -127,7 +140,7 @@ class NodeUtiller extends Utiller {
     /** 讀取檔案,用utf-8的方式 */
     getContextForRawFile(path) {
         if (!fs.existsSync(path))
-            return 'empty';
+            return '';
 
         return fs.readFileSync(path, 'utf-8');
     }
@@ -137,17 +150,26 @@ class NodeUtiller extends Utiller {
         const dirs = _.split(path, '\/');
 
         for (let index = 0; index < dirs.length; index++) {
+
             let currentPath = (_.join(_.take(dirs, index + 1), '/'))
+
+            /** 避免 /Users/davidtu/cross-achieve/ 這種狀況, 字串首是slash */
+            if (currentPath === '') continue;
+
             let currentDir = _.nth(dirs, index);
             let hasExtension = this.has(currentDir, '.') && !_.isEmpty(currentDir.split('.').pop());
-
-            if (!fs.existsSync(currentPath)) {
-                if (hasExtension) {
-                    fs.openSync(currentPath, 'wx');
-                } else {
-                    fs.mkdirSync(currentPath);
+            try {
+                if (!fs.existsSync(currentPath)) {
+                    if (hasExtension) {
+                        fs.openSync(currentPath, 'wx');
+                    } else {
+                        fs.mkdirSync(currentPath);
+                    }
                 }
+            } catch (error) {
+                throw new ERROR(8008, `currentPath => ${currentPath}`, error);
             }
+
         }
 
         return libpath.resolve(path);
@@ -159,6 +181,9 @@ class NodeUtiller extends Utiller {
      * preserveTimestamps : boolean, 要不要保留原始檔案的時間, 不然就是cp的時間,default true;
      * */
     copyFromFolderToDestFolder(from, dest, override = true, preserveTimestamps = false, filter = () => true) {
+        if (!fs.existsSync(from) || !fs.existsSync(from))
+            throw new ERROR(8009, `${from} or ${dest} is not exist!`);
+
         fse.copySync(from, dest, {preserveTimestamps, override, filter})
         this.appendInfo(`複製 ${from}/* => ${dest}/* succeed`);
     }
@@ -167,7 +192,6 @@ class NodeUtiller extends Utiller {
     /** 取得檔案的目錄, path => c://folderName/fileName.js to c://folderName */
     getFileDirPath(path, slash = true) {
         return _.join(_.initial(_.split(path, '/')), '/') + (slash ? '/' : '');
-        // return _.dropRightWhile(path,(char) => !_.isEqual(char,'/')).join('');
 
     }
 
@@ -191,7 +215,7 @@ class NodeUtiller extends Utiller {
         const ex = [...exclude, 'node_modules', 'utiller', 'configer'];
         /** utiller 不能刪掉,不然就爆了, configer是他的依賴也不能刪 */
 
-        const paths = this.findFilePathBy(path, (dir) => _.isEqual(dir, 'package.json'), ...ex)
+        const paths = this.findFilePathBy(path, (each) => _.isEqual(each.fileNameExtension, 'package.json'), ...ex)
         for (const _json of paths) {
             const path_module_root = this.getFileDirPath(_json.absolute);
             const path_gen_node_module = `${path_module_root}node_modules`;
@@ -225,10 +249,11 @@ class NodeUtiller extends Utiller {
 
     /** from :'./template/sample.babel.config.js
      *  destDir : '/template'
-     *  fileName: 'fileName.extension'
+     *  fileName: 'fileName.extension' => 如果fileName 是 empty ,dest就是直接的路徑
      * */
     copySingleFile(from, dest, fileName, force = false) {
-        const destination = libpath.join(dest, fileName);
+
+        const destination = _.isEmpty(fileName) ? dest : libpath.join(dest, fileName)
         if (fs.existsSync(destination) && !force)
             throw new ERROR(8006, destination);
 
@@ -245,21 +270,24 @@ class NodeUtiller extends Utiller {
 
     /** 把內容都抹掉each 是 fileName, ex:index.js*/
     async cleanChildFiles(path, predicate = (each) => true, ...exclude) {
-        const files = this.findFilePathBy(path, predicate, ...exclude);
-        for (const file of files) {
-            fs.truncate(file.absolute, 0, (result) => {
-                if (!_.isUndefined(result) && !_.isNull(result))
-                    this.appendInfo(result)
-            });
-            this.appendInfo(`${file.absolute} 被清的乾乾淨淨！`);
+        if (fs.existsSync(path)) {
+            const files = this.findFilePathBy(path, predicate, ...exclude);
+            for (const file of files) {
+                fs.truncate(file.absolute, 0, (result) => {
+                    if (!_.isUndefined(result) && !_.isNull(result))
+                        this.appendInfo(result)
+                });
+                this.appendInfo(`${file.absolute} 被清的乾乾淨淨！`);
+            }
+            await this.syncDelay(500);
+            return files;
         }
-        await this.syncDelay(500);
-        return files;
+        return false;
     }
 
     async syncWithExistPackage(path = '../') {
         /** 產生shell_script_腳本 */
-        const paths = this.findFilePathBy(path, (dir) => _.isEqual(dir, 'package.json'), 'node_modules');
+        const paths = this.findFilePathBy(path, (each) => _.isEqual(each.fileNameExtension, 'package.json'), 'node_modules');
         for (let path of paths) {
             try {
                 if (!_.isEqual(path.dirName, '..'))
@@ -431,6 +459,11 @@ class NodeUtiller extends Utiller {
     getAdminCredential() {
         return JSON.parse(this.getContextForRawFile(
             '/Users/davidtu/cross-achieve/mimi/idea-inventer/firebaser/key/mimi19up-firebase-adminsdk.json'))
+    }
+
+
+    isEmptyFile(path) {
+        return _.isEqual('', Util.getContextForRawFile(path).trim())
     }
 }
 

@@ -53,6 +53,25 @@ class Utiller {
         return false;
     }
 
+    isAndEquals(...predicates) {
+        for (const predicate of predicates) {
+            if (!predicate()) {
+                return false;
+            }
+        }
+        return true
+    }
+
+    /** '###string' =>  'string' */
+    getStringOfDropHeadSign(string, sign) {
+        return _.dropWhile(Array.from(string),
+            (each) => _.isEqual(each, sign)).join('')
+    }
+
+    getOneLineString(string) {
+        return string.split('\n').join('');
+    }
+
 
     isAndWith(self, predicate, ...several) {
         for (const each of several) {
@@ -67,6 +86,9 @@ class Utiller {
         return random;
     }
 
+    /** 如果是array,用 indexOf檢查each
+     *  如果是object,看有沒有這個key
+     *  如果是string, 就檢查有沒有包含 */
     has(collection, item) {
         if (_.isArray(collection)) {
             return _.indexOf(collection, item) > -1;
@@ -404,6 +426,24 @@ class Utiller {
 
     camel(...words) {
         return _.camelCase(words.join('_'));
+    }
+
+    /**
+     * [{key1:value1},{key2:values2}]
+     * =>
+     * {key1:value1,key2:value2}
+     *
+     * */
+    array2Obj(array) {
+        const obj = {};
+        for (const each of array) {
+            obj[`${this.getObjectKey(each)}`] = this.getObjectValue(each);
+        }
+        return obj;
+    }
+
+    isEmptyString(string){
+        return _.isEqual(_.trim(string),'');
     }
 
 

@@ -4,31 +4,31 @@
 set{{{functionName}}}(...param) {
     if(param !== undefined) {
         this.{{{fieldName}}}.length = 0;
-        this.{{{fieldName}}}.push(...param);
+        this.{{{fieldName}}}.push(...param.map((each) => new {{{fieldClass}}}(each)));
     } else {
         this.{{{fieldName}}} = {{{defaultValue}}};
     }
 }
 
-get{{{functionName}}}(param) {
-    if(param !== undefined) {
-        this.{{{fieldName}}} = param;
+get{{{functionName}}}() {
+    if(this.{{{fieldName}}} !== undefined) {
+        return this.{{{fieldName}}};
     } else {
-        this.{{{fieldName}}} = [];
+        return [];
     }
 }
 
 @action
-insert{{{functionName}}}(...param) {
-    if(param !== undefined) {
-        this.{{{fieldName}}}.push(...param);
+push{{{functionName}}}(...param) {
+    if(_.isArray(param)) {
+        this.{{{fieldName}}}.push(...param.map((each) => new {{{fieldClass}}}(each)));
     }
 }
 
 @action
-insert{{{functionName}}}ByIndex(index, ...param) {
+push{{{functionName}}}ByIndex(index, ...param) {
     if(param !== undefined) {
-        Util.insertToArray(this.{{{fieldName}}},index, ...param);
+        Util.insertToArray(this.{{{fieldName}}},index, ...param.map((each) => new {{{fieldClass}}}(each)));
         this.{{{fieldName}}}.push(param);
     }
 }
