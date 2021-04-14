@@ -21,18 +21,29 @@ export {question_update as question_update}
         await db.init();
 
         const fire = new firebaser(Util.getAdminCredential());
-        await fire.deleteTable(configer.REFERENCE_QUESTION);
-        await fire.deleteTable(`exam`);
-        await fire.deleteTable(`EXAM`);
+        // await fire.deleteTable(configer.REFERENCE_QUESTION);
+        // for (const q of qs) {
+        //     Util.appendInfo(`${JSON.stringify(q)} is uploading`);
+        //     await fire.setQuestion(q);
+        //     Util.appendInfo(`${JSON.stringify(q)} is succeed`);
+        //     await Util.syncDelay(50);
+        // }
+
 
         const qs = await db.fetchRecords('CHOOSER');
-        for (const q of qs) {
-            Util.appendInfo(`${JSON.stringify(q)} is uploading`);
-            await fire.setQuestion(q);
-            Util.appendInfo(`${JSON.stringify(q)} is succeed`);
-            await Util.syncDelay(50);
-        }
-        await fire.setExam(qs);
+        await fire.deleteTable(`exam`);
+
+        await fire.setExam(
+            qs.map((origin) => {
+                    const choiceStringArray = origin.choice.split(new RegExp(`\\([A-D]\\)`, `g`));
+                    choiceStringArray.shift();
+                    origin.choices = choiceStringArray.map((stmt) => {
+                            return {statement: Util.getNormalizedStringNotEndWith(stmt,',',' ')}
+                        }
+                    )
+                    return origin;
+                }
+            ));
         Util.appendInfo(`\n\n question_update is succeed`);
 
     }

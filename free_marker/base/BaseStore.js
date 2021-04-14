@@ -22,8 +22,12 @@ class BaseStore {
     @observable
     state = 'loading';
 
+    @observable
+    errorMsg = 'unknown error';
+
     @action
     setState(state) {
+        console.log(state);
         if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {
             this.state = state;
         } else {
@@ -31,8 +35,17 @@ class BaseStore {
         }
     }
 
+    @action
+    setErrorMsg(message) {
+        this.errorMsg = message;
+    }
+
     constructor(prop) {
         this.mountFirebase();
+    }
+
+    getErrorMsg(){
+        return this.errorMsg;
     }
 
     mountFirebase() {
@@ -60,8 +73,6 @@ class BaseStore {
     filter(obj){
         return obj;
     }
-
-
 
 }
 

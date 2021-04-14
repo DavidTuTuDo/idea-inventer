@@ -1,24 +1,6 @@
 /** => exam component used <= */
 
-.ExamCreateTimeTypography {
-  /** style */
-}
-
-.ExamCreateTimeTypographyWrapDiv {
-  /** style */
-}
-
 .ExamDiv {
-  /** style */
-  background-color: #f6c6ce;
-  margin: 0;
-}
-
-.ExamQuestionIndexTypography {
-  /** style */
-}
-
-.ExamQuestionIndexTypographyWrapDiv {
   /** style */
 }
 
@@ -40,8 +22,6 @@
 
 .ExamQuestionCard {
   /** style */
-  min-height: 180px;
-  margin: 10px;
 }
 
 .ExamQuestionChoiceStatementButton {
@@ -68,15 +48,4 @@
 
 .ResultCard {
   /** style */
-}
-
-/** ======== not used ========= */
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }

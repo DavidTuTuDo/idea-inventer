@@ -18,6 +18,8 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
 class CodegenNode {
 
+    props;
+    /** 用在加上view額外的props */
     node;
     struct;
     path;
@@ -38,6 +40,20 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    isView() {
+        return !!this.view;
+    }
+
+    isAttribute() {
+        return !!this.type;
+    }
+
+    getViewProps() {
+        if (!!this.props)
+            return this.props;
+        return {};
     }
 
     hasTitle() {
@@ -136,6 +152,13 @@ class CodegenNode {
         return `get${_.upperFirst(this.name)}${this.plural ? this.plural : ''}`;
     }
 
+    getFunctionNameOfSet() {
+        if (this.isArray()) {
+            return `push${_.upperFirst(this.name)}${this.plural}`;
+        }
+        return `set${_.upperFirst(this.name)}`;
+    }
+
     getArrayJSXFunctionName() {
         return Util.camel('render', this.name, 'view');
     }
@@ -151,7 +174,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** style ,extra 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'style', 'extra', 'firebase', 'parent'))
+                if (Util.isOrEquals(key, 'style', 'extra', 'firebase', 'parent', 'props'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -277,6 +300,7 @@ class ClassGenerator {
         this.hasExtends = !!extendz;
     }
 
+
     hasClass() {
         return _.size(this.classes) >= 1;
     }
@@ -308,7 +332,7 @@ class ClassGenerator {
 
     /** import `${parts}` from `${from}`*/
     appendImport(parts, from) {
-        this.appendInClassHead(`import ${parts} from '${from}'`);
+        this.appendInClassHead(`import ${parts} ${_.isEmpty(parts) ? `` : `from`} '${from}'`);
     }
 
     appendInClassHead(stmt, needSemicolon = true) {
@@ -516,7 +540,7 @@ class StoreBuilder extends BaseBuilder {
                         }));
                 propStmt.push(`if(obj && obj.${fieldName})`);
                 if (child.isArray()) {
-                    propStmt.push(`this.${fieldName}.push(...obj.${fieldName}.map(each => new ${_.upperFirst(child.name)}(each)))`);
+                    propStmt.push(`this.${child.getFunctionNameOfSet()}(...obj.${fieldName}.map(each => new ${_.upperFirst(child.name)}(each)))`);
                     baseGenerator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
                     await this.buildBaseStore(child)
                 } else if (child.isObject()) {
@@ -524,7 +548,7 @@ class StoreBuilder extends BaseBuilder {
                     propStmt.push(`this.${fieldName} = new ${_.upperFirst(child.name)}(obj.${fieldName})`);
                     await this.buildBaseStore(child)
                 } else {
-                    propStmt.push(`this.${fieldName} = obj.${fieldName}`);
+                    propStmt.push(`this.${child.getFunctionNameOfSet()}(obj.${fieldName})`);
                 }
                 propsStmt.push(...propStmt);
             }
@@ -551,7 +575,7 @@ class StoreBuilder extends BaseBuilder {
 
 class ComponentBuilder extends BaseBuilder {
 
-    hasRenderFunction = false;
+    hasRootRenderViewFunction = false;
     classNames = [];
     componentDidMountStmt = [];
 
@@ -577,14 +601,18 @@ class ComponentBuilder extends BaseBuilder {
             from: '../../base/BaseComponent'
         });
         baseGenerator.appendInClassHead(`import React from 'react'`)
+        baseGenerator.appendInClassHead(`import Style from '../../style'`)
         baseGenerator.appendInClassHead(`import {Paper, Button, Typography, Card} from '@material-ui/core'`);
-        baseGenerator.appendInClassHead(`import '../app.css'`);
         this.appendRenderViewFunctions(node.struct, baseGenerator);
 
         if (node.hasTitle()) {
             baseGenerator.appendField(`stringOfPageTitle`, `"${node.title}"`)
             this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
         }
+
+        baseGenerator.appendFunction('getStore', [], [],
+            `return this.props.${node.name}`)
+
 
         baseGenerator.appendFunction('componentDidMount',
             [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
@@ -688,8 +716,11 @@ class ComponentBuilder extends BaseBuilder {
 
         const props = {
             className,
-            style: node.style
+            ...node.getViewProps(),
+            style: `###Style.${className}`,
+
         };
+
 
         if (!_.isEmpty(keyValue)) {
             props.key = '###' + '`' + keyValue + '`';
@@ -702,10 +733,9 @@ class ComponentBuilder extends BaseBuilder {
         });
 
         if (node.wrap) {
-            props.className = `${className}WrapDiv`;
+            const props = {className: `${className}WrapDiv`,}
             if (!_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
-            delete props.style;
             return this.getJSXStrings({
                 tag: 'div',
                 props,
@@ -719,6 +749,8 @@ class ComponentBuilder extends BaseBuilder {
         const childstmt = [];
 
         for (const child of node.getChildren()) {
+            if (!child.isView()) continue;
+
             const functionName =
                 `get${_.upperFirst(node.name)}${_.upperFirst(child.name)}${child.plural ? child.plural : ''}`;
 
@@ -757,11 +789,11 @@ class ComponentBuilder extends BaseBuilder {
             return `return ( ${self.join('')})`;
         }
 
-        if (!this.hasRenderFunction) {
-            builder.appendFunction('render', [], [],
+        if (!this.hasRootRenderViewFunction) {
+            builder.appendFunction('renderView', [], [],
                 `const ${_.lowerCase(node.name)} = this.props.${_.lowerCase(node.name)};\n\n`,
                 normalize(...this.getJSXStringsByStruct(node, builder)));
-            this.hasRenderFunction = true;
+            this.hasRootRenderViewFunction = true;
         }
 
         for (const child of node.getChildren()) {
@@ -778,8 +810,7 @@ class ComponentBuilder extends BaseBuilder {
     }
 }
 
-class AppBuilder
-    extends ComponentBuilder {
+class AppBuilder extends ComponentBuilder {
 
     constructor(props) {
         super(props);
@@ -824,7 +855,7 @@ class AppBuilder
         appGenerator.appendImport(`{createBrowserHistory}`, `history`);
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
-
+        appGenerator.appendImport(``, `./css`);
         appGenerator.appendClass(`BaseApp`);
         appGenerator.appendFunction(`mount`, [], [],
             `ReactDOM.render(this.getRenderView(),
@@ -898,44 +929,99 @@ class AppBuilder
         Util.copyFromFolderToDestFolder('./base', libpath.join(this.defaultPath, `base`));
     }
 
-    /** {[...{component,names}], stubPath} */
-    async buildCSSFile(classNames, stubPath) {
+    async buildStyleFile(classNames, sourcePath) {
+        // const path = libpath.join(sourcePath, `src`, `style`, `mobile.style.js`)
+        // const obj = require(libpath.resolve(path)).default;
+        // for (const key in obj) {
+        //     console.log(key)
+        //     console.log(JSON.stringify(obj[key]))
+        // }
+
+
+        const types = [`app`, `mobile`];
+        for (const type of types) {
+            let origins = {};
+            const sourceFilePath = libpath.join(sourcePath, `src`, `style`, `${type}.style.js`)
+            if (fs.existsSync(sourceFilePath)) {
+                const obj = require(libpath.resolve(sourceFilePath)).default;
+                origins = obj;
+            }
+
+            const builder = new ClassGenerator(libpath.join(this.defaultPath, 'style', `${type}.style.js`))
+            builder.appendClass(`${_.upperFirst(type)}Style`);
+            for (const className of classNames) {
+                for (const name of className.names) {
+                    if (!!origins[name]) {
+                        builder.appendField(name, JSON.stringify(origins[name]));
+                        delete origins[name];
+                    } else {
+                        builder.appendField(name, `{}`);
+                    }
+                }
+                builder.insertBatchLinesIntoFieldSection(`\n\n/** following for ${className.component.name} */\n\n`)
+                builder.setSingleton(true);
+            }
+            if (!_.isEmpty(origins)) {
+                for (const name in origins) {
+                    builder.appendField(name, JSON.stringify(origins[name]));
+                }
+                builder.insertBatchLinesIntoFieldSection(`\n\n/** following for unknown */\n\n`)
+            }
+
+            await builder.persist();
+        }
+    }
+
+    /** {[...{component,names}], srcPath}
+     * srcPath 就是 keep file 的根目錄
+     * */
+    async buildCSSFile(classNames, srcPath) {
         /** 先把舊的整理過, 除掉 comment的字樣line */
-        const origins = [];
-        if (fs.existsSync(stubPath)) {
-            const stub = Util.getContextForRawFile(stubPath).split('\n');
-            _.remove(stub,
-                (each) => (_.startsWith(each, '/** ') ||
-                    _.isEqual(each.trim(), '')))
-            origins.push(...(stub.join('').split('}')))
-            /** 移除掉最後一個,因為split */
-            origins.pop();
-        }
+        const types = [`app`, `common`, `mobile`];
+        for (const type of types) {
+            const stubPath = libpath.join(srcPath, `src`, `css`, `${type}.css`)
+            const origins = [];
+            if (fs.existsSync(stubPath)) {
+                const stub = Util.getContextForRawFile(stubPath).split('\n');
+                _.remove(stub,
+                    (each) => (_.startsWith(each, '/** ') ||
+                        _.isEqual(each.trim(), '')))
+                origins.push(...(stub.join('').split('}')))
+                /** 移除掉最後一個,因為split */
+                origins.pop();
+            }
 
-        const generator = new ClassGenerator(libpath.join(this.defaultPath, 'component', `app.css`));
-        for (const className of classNames) {
-            generator.appendInClassTail(`/** => ${className.component.name} component used <= */\n\n`);
-            for (const name of className.names) {
-                /** 注意!! 是用 remove,會mutate 原本的 array */
-                const origin = _.remove(origins, (each) => _.startsWith(each, `.${name} {`))
+            const generator = new ClassGenerator(libpath.join(this.defaultPath, 'css', `${type}.css`));
+            for (const className of classNames) {
+                generator.appendInClassTail(`/** => ${className.component.name} component used <= */\n\n`);
+                for (const name of className.names) {
+                    /** 注意!! 是用 remove,會mutate 原本的 array */
+                    const origin = _.remove(origins, (each) => _.startsWith(each, `.${name} {`))
 
-                if (origin.length > 1)
-                    throw new ERROR(7003, `origin ==> ${Util.deepFlat(origin)}`)
+                    if (origin.length > 1)
+                        throw new ERROR(7003, `origin ==> ${Util.deepFlat(origin)}`)
 
-                generator.appendInClassTail(_.isEmpty(origin) ? `.${name} { /** style */ }\n\n` : `${origin[0]}}\n\n`);
+                    generator.appendInClassTail(_.isEmpty(origin) ? `.${name} { /** style */ }\n\n` : `${origin[0]}}\n\n`);
+                }
+            }
+
+            if (origins.length > 0) {
+                generator.appendInClassTail(`/** ======== not used ========= */\n\n`);
+                for (const lasting of origins) {
+                    generator.appendInClassTail(`${lasting} }\n\n`);
+                }
+            }
+
+            generator.needSignature(false);
+            await generator.persist();
+
+            if (!fs.existsSync(libpath.join(srcPath, 'css', 'index.js'))) {
+                this.appendMustacheFile('css.index.js',
+                    Util.persistByPath(libpath.join(this.defaultPath, 'css', 'index.js'))
+                );
+                Util.appendInfo(`persist ./css/index.js succeed`);
             }
         }
-
-        if (origins.length > 0) {
-            generator.appendInClassTail(`/** ======== not used ========= */\n\n`);
-            for (const lasting of origins) {
-                generator.appendInClassTail(`${lasting} }\n\n`);
-            }
-        }
-
-
-        generator.needSignature(false);
-        await generator.persist();
     }
 }
 
@@ -978,12 +1064,18 @@ class ProjectIndexFilePersistHandler {
 
     }
 
-    keepIndexFiles(...exclude) {
+    keepIndexAndCSSFiles(...exclude) {
         const files = Util.findFilePathBy(this.genSrcPath,
             (each) => {
-                return Util.isOrEquals(each.fileNameExtension, `index.js`, `app.css`)
+                return (
+                    _.isEqual(each.fileNameExtension, `index.js`) ||
+                    _.isEqual(each.extension, `css`) ||
+                    _.isEqual(each.fileNameExtension, `app.style.js`) ||
+                    _.isEqual(each.fileNameExtension, `mobile.style.js`)
+                )
             },
-            'node_modules')
+            'node_modules');
+
 
         for (const file of files) {
             if (_.isEqual('', Util.getContextForRawFile(file.path).trim())) {
@@ -1007,10 +1099,7 @@ class ProjectIndexFilePersistHandler {
             const dest = libpath.join(this.genSrcPath, from.split(`src`).pop());
             Util.copySingleFile(from, dest, '', true);
         }
-
     }
-
-
 }
 
 export {
@@ -1024,9 +1113,8 @@ if (configer.DEBUG_MODE) {
             const sourcePath = './src/exam';
 
 
-            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).keepIndexFiles()
+            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).keepIndexAndCSSFiles()
             new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistBaseFiles();
-
             const source = CodegenNode.enrich(require(libpath.resolve(libpath.join(sourcePath, `source.js`))).default);
             await Util.cleanChildFiles(genRootPath, (each) => true, 'node_modules');
             const totalClassNames = [];
@@ -1043,9 +1131,14 @@ if (configer.DEBUG_MODE) {
             await new AppBuilder(genRootPath).buildConfig(source);
             await new AppBuilder(genRootPath).buildWebpackNPackageJson(source);
             await new AppBuilder(genRootPath).buildBaseClasses();
-            await new AppBuilder(genRootPath).buildCSSFile(totalClassNames, libpath.join(sourcePath, 'src', 'style', 'app.css'));
+            await new AppBuilder(genRootPath).buildCSSFile(totalClassNames, sourcePath);
+            await new AppBuilder(genRootPath).buildStyleFile(totalClassNames, sourcePath);
 
-            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).overrideIndexFiles(`app.css`);
+
+            new ProjectIndexFilePersistHandler({
+                genRootPath,
+                sourcePath
+            }).overrideIndexFiles(`app.style.js`, `mobile.style.js`, `common.css`, `app.css`, `mobile.css`);
 
             if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
                 await Util.executeCommandLine(`cd ${genRootPath} && npm install`);

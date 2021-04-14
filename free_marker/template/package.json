@@ -46,6 +46,7 @@
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
+    "react-device-detect": "^1.17.0",
     "utiller": "file:../utiller"
   }
 }

@@ -82,7 +82,9 @@ class NodeUtiller extends Utiller {
 
         if (this.isFile(absolute)) {
             obj['extension'] = absolute.split('\.').pop();
-            obj['fileName'] = absolute.split('\/').pop().split('\.').shift();
+            const fileNameStrings = absolute.split('\/').pop().split('\.');
+            fileNameStrings.pop() /** 要是遇到 asd.sdsd.js 就麻煩了 */
+            obj['fileName'] = fileNameStrings.join('\.');
             obj['dirName'] = _.nth(absolute.split('\/'), -2);
             obj['isFile'] = true;
             obj['isDirectory'] = false;
