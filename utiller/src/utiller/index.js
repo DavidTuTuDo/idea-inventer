@@ -29,7 +29,7 @@ class Utiller {
 
 
     /** this is used for unit test */
-    asyncUnitTaskFunction = (millionSec, _funparam, errorSimulator) => async (param) => {
+    asyncUnitTaskFunction = (millionSec = 2000, _funparam="預設的param", errorSimulator) => async (param) => {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
         try {
             const symbol = randomValue;
@@ -446,6 +446,10 @@ class Utiller {
         return _.isEqual(_.trim(string),'');
     }
 
+    /** 放在後面的priority 越大 */
+    mergeObject(...obj) {
+        return _.merge(...obj);
+    }
 
 }
 

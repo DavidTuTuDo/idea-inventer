@@ -37,16 +37,16 @@
     "@react-firebase/database": "^0.3.11",
     "configer": "file:../configer",
     "firebase": "^8.2.10",
-    "history": "^5.0.0",
     "lodash": "^4.17.21",
     "mobx": "^6.1.8",
+    "history": "^4.10.1",
     "mobx-react": "^7.1.0",
     "mobx-react-router": "^4.1.0",
     "react": "^17.0.1",
+    "react-device-detect": "^1.17.0",
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-device-detect": "^1.17.0",
     "utiller": "file:../utiller"
   }
 }

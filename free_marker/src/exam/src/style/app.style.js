@@ -1,21 +1,25 @@
-/** this code are generated, modify is no sense.
-	author:David Tu,
-	email:freshingmoon0725@gmail.com
-	updateTime:2021-04-14-21-22-16
+/** this code are generated, modify is no sense. 
+	author:David Tu, 
+	email:freshingmoon0725@gmail.com 
+	updateTime:2021-04-26-23-47-19 
 */
 
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for unknown */
+
+  ExamQuestionAlertContentDiv = {};
+
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertOuterImg = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
+
   /** following for result */
 
-  ResultCard = {
-    height:30,
-  };
-
-  WIRED = {
-
-  }
+  ResultCard = {};
 
   ResultMessageTypography = {};
 
@@ -29,6 +33,14 @@ class AppStyle {
 
   ExamQuestionChoiceStatementButton = {};
 
+  ExamQuestionCardWrapDiv = {};
+
+  ExamQuestionAlertOuterDiv = {};
+
+  ExamQuestionAlertImageImgWrapDiv = {};
+
+  ExamQuestionAlertImageImg = {};
+
   ExamQuestionCard = {};
 
   ExamQuestionTipTypographyWrapDiv = {};
@@ -40,6 +52,28 @@ class AppStyle {
   ExamQuestionTopicTypography = {};
 
   ExamDiv = {};
+
+  ExamTailDiv = {};
+
+  ExamFunctionAreaDiv = {};
+
+  ExamFunctionAreaRestartButton = {};
+
+  ExamFunctionAreaSpaceDiv = {};
+
+  ExamFunctionAreaEndButton = {};
+
+  ExamHeadDiv = {};
+
+  /** following for main */
+
+  MainDiv = {};
+
+  MainSocialButton = {};
+
+  MainHighButton = {};
+
+  MainJuniorButton = {};
 
   /** -------------------- functions -------------------- **/
   /** -------------------- async api -------------------- **/

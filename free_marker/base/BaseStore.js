@@ -25,13 +25,23 @@ class BaseStore {
     @observable
     errorMsg = 'unknown error';
 
+    parentNode;
+
+    setParentNode(param) {
+        this.parentNode = param;
+    }
+
+    getParentNode() {
+        return this.parentNode;
+    }
+
     @action
     setState(state) {
-        console.log(state);
+        console.log(`'${this.getName()}', state is '${state}'`);
         if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {
             this.state = state;
         } else {
-            throw new ERROR(7001, `state is ${state}`);
+            throw new ERROR(7001, `'${this.getName()}', state is ${state}`);
         }
     }
 
@@ -40,11 +50,12 @@ class BaseStore {
         this.errorMsg = message;
     }
 
-    constructor(prop) {
+
+    constructor(props) {
         this.mountFirebase();
     }
 
-    getErrorMsg(){
+    getErrorMsg() {
         return this.errorMsg;
     }
 
@@ -62,15 +73,20 @@ class BaseStore {
         return await this.database.ref(refPath).once('value');
     }
 
-    fromJson(obj){
+    getName(){
+        return 'unknown store';
+    }
+
+    fromJson(obj) {
         this.initial(obj)
     }
 
-    initial(obj){
-        throw new ERROR(7002);
+    initial(props) {
+        if (props && props.parentNode)
+            this.setParentNode(props.parentNode);
     }
 
-    filter(obj){
+    filter(obj) {
         return obj;
     }
 

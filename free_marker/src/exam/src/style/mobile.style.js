@@ -1,11 +1,21 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-04-14-21-22-17 
+	updateTime:2021-04-26-23-47-19 
 */
 
 class MobileStyle {
   /** -------------------- fields -------------------- **/
+
+  /** following for unknown */
+
+  ExamQuestionAlertContentDiv = {};
+
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertOuterImg = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
 
   /** following for result */
 
@@ -21,7 +31,15 @@ class MobileStyle {
 
   ExamQuestionChoiceStatementButtonWrapDiv = {};
 
-  ExamQuestionChoiceStatementButton = {};
+  ExamQuestionChoiceStatementButton = { fontSize: "2.1rem" };
+
+  ExamQuestionCardWrapDiv = {};
+
+  ExamQuestionAlertOuterDiv = {};
+
+  ExamQuestionAlertImageImgWrapDiv = {};
+
+  ExamQuestionAlertImageImg = {};
 
   ExamQuestionCard = {};
 
@@ -31,9 +49,31 @@ class MobileStyle {
 
   ExamQuestionTopicTypographyWrapDiv = {};
 
-  ExamQuestionTopicTypography = {};
+  ExamQuestionTopicTypography = { lineHeight: 1.6, fontSize: "2.4rem" };
 
   ExamDiv = {};
+
+  ExamTailDiv = {};
+
+  ExamFunctionAreaDiv = {};
+
+  ExamFunctionAreaRestartButton = {};
+
+  ExamFunctionAreaSpaceDiv = {};
+
+  ExamFunctionAreaEndButton = {};
+
+  ExamHeadDiv = {};
+
+  /** following for main */
+
+  MainDiv = {};
+
+  MainSocialButton = {};
+
+  MainHighButton = {};
+
+  MainJuniorButton = {};
 
   /** -------------------- functions -------------------- **/
   /** -------------------- async api -------------------- **/

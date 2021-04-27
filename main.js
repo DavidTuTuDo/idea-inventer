@@ -4,22 +4,22 @@ import puppeteer from 'puppeteer';
 import rta from './analysis/brain/RankTableAnalysis.js';
 import frta from './analysis/brain/FavoriteRankTableAnalysis.js';
 import lrta from './analysis/brain/LatestRankTableAnalysis.js';
-
 import ta from './analysis/brain/ToneAnalysis.js';
 import sa from './analysis/brain/SingersAnalysis.js';
 import sla from './analysis/brain/SongListAnalysis.js';
-import {configer as Index} from './configer';
-import firebaseHandler from './firebase';
+
+import {configer as Config} from './configer';
+import firebaseHandler from './firebaser';
 import {utiller as Util, exceptioner as ERROR} from './utiller'
 import {databaser as SQL} from './databaser';
 import Pooller from "./utiller/src/pooller";
 import Moment from 'moment';
 import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
-(async () => {
-        const database = new SQL('./databaser/secret_infos_latest.db');
-        await database.init();
 
+const INVOKE_REAL_CHROME = false;
+
+(async () => {
         async function syncDelay(delayInms) {
             return new Promise(resolve => {
                 setTimeout(() => {
@@ -29,11 +29,11 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
         }
 
         async function persistRankTable() {
-            const tableName = Index.RANK_TABLE_NAME;
+            const tableName = Config.RANK_TABLE_NAME;
             await database.dropTable(tableName);
-            for (const maintype in Index.RANK_TABLE_TYPE) {
+            for (const maintype in Config.RANK_TABLE_TYPE) {
                 Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
-                const ranks = await fetchRankTable(Index.RANK_TABLE_TYPE[maintype].ID, Index.RANK_TABLE_TYPE[maintype].SORT)
+                const ranks = await fetchRankTable(Config.RANK_TABLE_TYPE[maintype].ID, Config.RANK_TABLE_TYPE[maintype].SORT)
                 for (const rank of ranks) {
                     for (const each of rank.items) {
                         const obj = {}
@@ -51,13 +51,13 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
          * return:[...{type:'YEAR',items:[...{name:'歌名',rank:1,singer:{name:'人名'} }]}]
          *
          * */
-        async function fetchRankTable(mainType = Index.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
+        async function fetchRankTable(mainType = Config.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
             let page;
             try {
                 page = await browser.newPage();
-                await page.goto(Index.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
+                await page.goto(Config.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
                 await page.click(`span[sid="${mainType}"]`);
-                await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+                await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
                 const all = [];
                 if (sortType) {
 
@@ -65,7 +65,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                         const selector = await page.$(`div[class="singsort sorttype"] > .list > span[sid="${sortType[type]}"]`);
                         /** 上面的寫法 const eval = await page.$eval(`div[class="singsort sorttype"] > .list > span[sid="${sortType}"]`,(element => element.click())); */
                         await selector.click();
-                        await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+                        await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
                         all.push({type, items: await fetchRankPageData(page)});
                     }
                 } else {
@@ -81,13 +81,13 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             async function getRankPageInstance() {
                 let rankPage;
                 switch (mainType) {
-                    case Index.RANK_TABLE_TYPE.POPULAR.ID:
+                    case Config.RANK_TABLE_TYPE.POPULAR.ID:
                         rankPage = new rta(await page.content());
                         break;
-                    case Index.RANK_TABLE_TYPE.FAVORITE.ID:
+                    case Config.RANK_TABLE_TYPE.FAVORITE.ID:
                         rankPage = new frta(await page.content());
                         break;
-                    case Index.RANK_TABLE_TYPE.LATEST.ID:
+                    case Config.RANK_TABLE_TYPE.LATEST.ID:
                         rankPage = new lrta(await page.content());
                         break;
                     default:
@@ -103,9 +103,9 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
                 rankPage = await getRankPageInstance()
                 songs = _.concat(songs, rankPage.getSongList());
-                while (rankPage && rankPage.hasNextPage() && songs.length < Index.MAX_COUNTS_IN_RANK) {
+                while (rankPage && rankPage.hasNextPage() && songs.length < Config.MAX_COUNTS_IN_RANK) {
                     await page.click(rankPage.getNextPageSymbol());
-                    await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+                    await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
                     rankPage = await getRankPageInstance();
                     if (rankPage) songs = _.concat(songs, rankPage.getSongList());
                 }
@@ -115,11 +115,11 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
 
         async function fetchAllSinger(singerType = 6) {
 
-            await mainPage.goto(Index.PATH_SAMPLE_URL_SINGER,
+            await mainPage.goto(Config.PATH_SAMPLE_URL_SINGER,
                 {waitUntil: 'networkidle2'}
             );
             await mainPage.click('span[sid="0"]');
-            await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+            await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
             const content = await mainPage.content();
             const mSingerAnalysis = new sa(content);
             const all = mSingerAnalysis.getAllSingers(singerType);
@@ -131,13 +131,14 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             let tone = undefined;
             try {
                 _page = await browser.newPage();
-                if (Index.MAIN_MSG.SHOW_SUCCEED) {
+                _page.setDefaultNavigationTimeout(60000);
+                if (Config.MAIN_MSG.SHOW_SUCCEED) {
                     Util.appendInfo(`正在 ${song.name} 下載頁面.... `);
                 }
-                await _page.goto(path.join(Index.BASE_URL, song.url),
+                await _page.goto(path.join(Config.BASE_URL, song.url),
                     {waitUntil: 'networkidle2'}
                 );
-                await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+                await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
                 tone = new ta(await _page.content());
             } catch (error) {
                 const errorlog = ` fetchTone(${song.name})  Error: ` + error.message
@@ -158,14 +159,14 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             await _page.goto(path,
                 {waitUntil: 'networkidle2'}
             );
-            await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+            await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
             const content = await _page.content();
             let mSongListAnalysis = new sla(content);
             mSongList = mSongList.concat(mSongListAnalysis.getAll());
 
             while (mSongListAnalysis.hasNextPage()) {
                 await _page.click(`${mSongListAnalysis.getNextPageButtonSymbol()}`);
-                await syncDelay(Index.HACK_DELAY_OF_MILLION_SECS);
+                await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
                 const content = await _page.content();
                 mSongListAnalysis = new sla(content);
                 mSongList = mSongList.concat(mSongListAnalysis.getAll());
@@ -181,7 +182,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 try {
                     Util.appendInfo(`正在下載歌手 ${singer.name} 的歌單們....'`);
                     await database.updateState('SINGER', 'ING', singer.uid);
-                    const songs = await fetchSongsOfSingersPage(path.join(Index.BASE_URL, singer.url));
+                    const songs = await fetchSongsOfSingersPage(path.join(Config.BASE_URL, singer.url));
                     for (const song of songs) {
                         await database.lazyInsertRecord('SONG',
                             {...song, state: 'NOT', singer: singer.name}, 'name', 'singer');
@@ -196,7 +197,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                     await database.updateState('SINGER', 'NOT', singer.uid);
                 }
             } else {
-                Util.appendInfo(`沒有未完成的歌手了....睡個 ${await Util.syncDelayRandom()}`);
+                Util.appendInfo(`沒有未完成的歌手了....睡個 ${await Util.syncDelayRandom()} mms`);
             }
         }
 
@@ -207,14 +208,14 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 const record = Util.getRandomItemOfArray(
                     await database.fetchRecords('SONG', SQL.Builder()
                         .gte('popularLevel',
-                            Index.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD)
+                            Config.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD)
                         .and().equal('state', 'NOT')
                         .orderByRandom().limit(1).stmt())
                 );
 
                 if (record) {
                     song = record;
-                    await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(Index.UID, song.uid).stmt());
+                    await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
 
                     const raw = await fetchTone(song);
                     if (raw !== undefined) {
@@ -224,14 +225,14 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                             ...tone,
                             cost
                         }, 'name', 'singer');
-                        await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(Index.UID, song.uid).stmt());
+                        await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                         Util.appendInfo(`成功儲存TONE '${tone.name}' .....`)
                         return true;
 
                     } else {
                         Util.appendError(
                             `persistTone() ${song.name} 出現錯誤, tone 是 undefined`);
-                        await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(Index.UID, song.uid).stmt());
+                        await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                         return false;
                     }
                 } else {
@@ -242,13 +243,13 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                 if (error instanceof ERROR && error.isConstraintError()) {
                 } else {
                     Util.appendError(`persistTone() ${song.name},  ${JSON.stringify(error.message)}`);
-                    await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(Index.UID, song.uid).stmt());
+                    await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                 }
             }
         }
 
         async function latestSongPersist() {
-            const song = await fetchRankTable(Index.RANK_TABLE_TYPE.LATEST.ID);
+            const song = await fetchRankTable(Config.RANK_TABLE_TYPE.LATEST.ID);
             if (song.length < 0) {
                 Util.appendError(`latestSongPersist 抓取失敗了喔～`);
                 return;
@@ -278,6 +279,7 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
         }
 
         async function persistSingers(singerType = 6) {
+            console.log('起飛了');
             let singers = await fetchAllSinger(singerType);
             const exists = (await database.fetchRecords('SINGER', '', 'names')).map((singer) => singer.names);
             Util.appendInfo(`persistSingers 在網路上歌手有 '${singers.length}' 個, 資料庫裡面有 '${exists.length}'`);
@@ -299,33 +301,39 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             }
 
             const poollers = [];
-            /** 抓排行榜 once 1 mins */
-
             const errorHandler = (error) => {
                 Util.appendError(`９１pu => TASK 遇到問題 ${JSON.stringify(error.message)}`);
             }
 
-            /** 檢查歌手 once 2 mins */
+            // /** 檢查歌手 once 2 mins */
+
+            const tenSecs = 10 * 1000;
+            const twoSecs = 2 * 1000;
+            const oneMin = 6 * tenSecs;
+            const twoMin = 2 * oneMin;
+            const fiveMin = 5 * oneMin;
+            const threeMin = 3 * oneMin;
+
             const singerFetcher = new Pooller(1);
-            const twoMin = 15 * 60 * 1000;
             singerFetcher.setPoolId("SINGER FETCHER");
-            singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers, twoMin);
+            singerFetcher.setIgnoreFirstRun();
+            singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers,
+                oneMin);
             singerFetcher.setTaskFailHandler(errorHandler);
             poollers.push(singerFetcher);
 
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             const songFetch = new Pooller(1);
-            const TenSecs = 10 * 1000;
             songFetch.setPoolId("SONG FETCHER");
-            songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, TenSecs);
+            songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, tenSecs);
             songFetch.setTaskFailHandler(errorHandler);
             poollers.push(songFetch);
 
             /** 抓取排行版上的資訊們 */
             const rankFetch = new Pooller(1);
             rankFetch.cleanTaskInterval();
+            rankFetch.setIgnoreFirstRun()
             rankFetch.setPoolId("RANK FETCHER");
-            const fiveMin = 30 * 60 * 1000;
             rankFetch.setTimeout(fiveMin);
             rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
             rankFetch.setTaskFailHandler(errorHandler);
@@ -341,7 +349,9 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             /** 猛抓LATEST TABLE的歌曲*/
             const latestToneFetch = new Pooller(1);
             latestToneFetch.setPoolId("LATEST SONG FETCHER");
-            latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist, fiveMin);
+            latestToneFetch.setIgnoreFirstRun();
+            latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist,
+                threeMin);
             latestToneFetch.setTaskFailHandler(errorHandler);
             poollers.push(latestToneFetch);
 
@@ -349,15 +359,14 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
             const toneFetch = new Pooller(2);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
-            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, 10);
+            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, twoSecs);
             toneFetch.setTaskFailHandler((error) => console.error(`.....無奈呀 ${error.message}`));
             poollers.push(toneFetch);
-
 
             while (_.find(poollers.map((pooller) => pooller.isRunning()), (self) => self)) {
                 const millionSecs = await Util.syncDelayRandom(5000, 10000);
                 Util.appendInfo(`主線程還在努中工作中, ${millionSecs} mms`);
-                if ((Util.readFileInJSON(Index.PATH_DYNAMIC_INFO))['cancel']) {
+                if ((Util.readFileInJSON(Config.PATH_DYNAMIC_INFO))['cancel']) {
                     Util.appendInfo(`主線程收到關閉指令...`);
                     for (const pooller of poollers) {
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
@@ -367,35 +376,32 @@ import {findConfigUpwards} from "@babel/core/lib/config/files/index-browser";
                     }
                 }
             }
-
         }
+        const database = new SQL('./databaser/secret_infos_latest.db');
+        await database.init();
 
         const browser = await puppeteer.launch({
-            headless: !Index.INVOKE_REAL_CHROME
+            headless: !INVOKE_REAL_CHROME
         });
-        Util.writeFileInJSON(Index.PATH_DYNAMIC_INFO, {
+        Util.writeFileInJSON(Config.PATH_DYNAMIC_INFO, {
             cancel: false,
             host: 'David',
             timeStamp: new Date(),
-            'dbName': Index.BASE_DATABASE_PATH
+            'dbName': Config.BASE_DATABASE_PATH
         });
-        Util.deleteFile(Index.PATH_ERROR_LOG);
-        Util.deleteFile(Index.PATH_INFO_LOG);
+        Util.syncDeleteFile(Config.PATH_ERROR_LOG);
+        Util.syncDeleteFile(Config.PATH_INFO_LOG);
         const mainPage = await browser.newPage();
         await persist91puEveryThing();
         // await latestSongPersist();
-        /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+        // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
 
-        await browser.close();
-        if (Index.MAIN_MSG.SHOW_SUCCEED)
+
+
+        // await browser.close();
+        if (Config.MAIN_MSG.SHOW_SUCCEED)
             console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
         return 0;
     }
 
 )();
-
-async function downloadAllSong(singerType = 6) {
-    await firebaseHandler.setSinger(singer);
-    await firebaseHandler.setTone(mToneObject);
-    await firebaseHandler.setSingerTones(mToneObject);
-}

@@ -9,7 +9,7 @@ import pdf from 'pdf-parse';
 import del from 'del';
 import fse from 'fs-extra';
 import BufferList from 'bl';
-import {utiller as Util} from "../../index";
+
 
 class NodeUtiller extends Utiller {
 
@@ -465,8 +465,10 @@ class NodeUtiller extends Utiller {
 
 
     isEmptyFile(path) {
-        return _.isEqual('', Util.getContextForRawFile(path).trim())
+        return _.isEqual('', this.getContextForRawFile(path).trim())
     }
+
+
 }
 
 if (configer.DEBUG_MODE) {

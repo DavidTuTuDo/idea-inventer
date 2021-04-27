@@ -130,10 +130,10 @@ class ToneAnalysis extends HtmlAnalysis {
 }
 
 if (Index.DEBUG_MODE) {
-    const tone = new ToneAnalysis();
+    // const tone = new ToneAnalysis();
     // tone.printAll();
-    tone.downloadFile();
-    Util.appendInfo(JSON.stringify(tone.getNormalizeToneObject()))
+    // tone.downloadFile();
+    // Util.appendInfo(JSON.stringify(tone.getNormalizeToneObject()))
 }
 
 export default ToneAnalysis;

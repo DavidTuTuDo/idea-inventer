@@ -3,7 +3,7 @@
 @action
 set{{{functionName}}}(param) {
     if(param !== undefined) {
-        this.{{{fieldName}}} = new {{{fieldClass}}}(param);
+        this.{{{fieldName}}} = new {{{fieldClass}}}({...param,parentNode:this});
     } else {
         this.{{{fieldName}}} = new {{{fieldClass}}}();
     }

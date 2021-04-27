@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {utiller as Util} from '../index';
+import {utiller as Util} from '../';
 import {configer} from "configer";
 import ERROR from '../exceptioner';
 
@@ -17,29 +17,33 @@ import ERROR from '../exceptioner';
  */
 class InfinitePool {
 
-    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT) {
-        this.poolId = Util.getRandomValue(0, 100000000000);
-        this.state = configer.POOLLER_STATE.RUN_BY_EACH_TASK
-        this.timeOfSleep = configer.POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT;
-        this.taskInterval = configer.POOLLER_TASK_INTERVAL_DEFAULT;
-        this.maxSleepCounts = configer.POOLLER_MAX_SLEEP_COUNTS_DEFAULT;
-        this.timeOfTaskTimeout = configer.POOLLER_TASK_TIMEOUT_DEFAULT;
-        this.maxWorker = maxWorkers;
+    poolId = Util.getRandomValue(0, 100000000000);
+    state = configer.POOLLER_STATE.RUN_BY_EACH_TASK
+    timeOfSleep = configer.POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT;
+    taskInterval = configer.POOLLER_TASK_INTERVAL_DEFAULT;
+    maxSleepCounts = configer.POOLLER_MAX_SLEEP_COUNTS_DEFAULT;
+    timeOfTaskTimeout = configer.POOLLER_TASK_TIMEOUT_DEFAULT;
+    maxWorker;
+    ignoreFirstRun = false
+    paramQueue = [];
+    taskQueue = {};
+    currentSleepCounts = 0;
+    isTaskRunning = false;
+    dispatchers = [];
 
-        this.paramQueue = [];
-        this.taskQueue = {};
-        this.currrentSleepCounts = 0;
-        this.isTaskRunning = false;
-        this.dispatchers = [];
+    initialTaskKickOff = false;
+    executingQueue = [];
+    mHashNTaskMap = {};
+    /** 為了刪除未執行的task, 但只限於runByTask, 因為下一個run之後, hash就改變了    */
+
+    mHashNPromiseMap = {};
+    /** 為了刪除執行完的promise */
+
+    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT) {
+        this.maxWorker = maxWorkers;
         for (const prior of configer.POOLLER_PRIORITY) {
             this.taskQueue[prior] = [];
         }
-        this.initialTaskKickOff = false;
-        this.executingQueue = [];
-        this.mHashNTaskMap = {};
-        /** 為了刪除未執行的task, 但只限於runByTask, 因為下一個run之後, hash就改變了    */
-
-        this.mHashNPromiseMap = {}; /** 為了刪除執行完的promise */
     }
 
     setTimeout(millionSec = configer.POOLLER_TASK_TIMEOUT_DEFAULT) {
@@ -94,7 +98,6 @@ class InfinitePool {
 
     /**
      * interval:{min: 800, max: 1000}
-     *
      * */
     setTaskInterval(interval = configer.POOLLER_TASK_INTERVAL_DEFAULT) {
         this.taskInterval = interval;
@@ -124,8 +127,6 @@ class InfinitePool {
             this.appendHashTaskMap(taskInfo);
             this.taskQueue[priority].push(taskInfo);
             return hash;
-
-
         } else {
             throw new ERROR(4002, `task can't be ${typeof task}`);
         }
@@ -273,18 +274,18 @@ class InfinitePool {
 
     runByEachTask = async (tasks = []) => {
         this.beforeRun();
-        this.currrentSleepCounts = 0;
+        this.currentSleepCounts = 0;
         this.adds(tasks);
         this.setState(configer.POOLLER_STATE.RUN_BY_EACH_TASK);
         while (this.isRunning()) {
             if (this.getQueueSize() <= 0) {
                 const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
                 Util.appendFile(configer.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
-                if (this.currrentSleepCounts > this.maxSleepCounts) this.stop();
+                if (this.currentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
             }
             await this.#run();
-            this.currrentSleepCounts += 0;
+            this.currentSleepCounts += 0;
         }
     }
 
@@ -340,7 +341,7 @@ class InfinitePool {
         this.dispatchers.push(dispatcher);
     }
 
-    initialTaskDone() {
+    firstTaskDone() {
         if (!this.initialTaskKickOff) {
             this.initialTaskKickOff = true;
             return false
@@ -348,8 +349,15 @@ class InfinitePool {
         return this.initialTaskKickOff;
     }
 
+    /** 如果設定interval, 第一個run不要執行的話,就設定true */
+    setIgnoreFirstRun() {
+        this.ignoreFirstRun = true;
+    }
+
     async syncTaskDispatcher() {
-        if (this.initialTaskDone() && this.executingQueue.length >= this.maxWorker - 1) {
+        const initialTaskShouldNotRun = this.ignoreFirstRun && !this.firstTaskDone()
+
+        if (initialTaskShouldNotRun || (this.firstTaskDone() && this.executingQueue.length >= this.maxWorker - 1)) {
             const restInInterval = await Util.syncDelayRandom(this.taskInterval.min, this.taskInterval.max)
             if (configer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`${this.getPoollerLogFormat(`Dispatcher 照規矩 睡  ${restInInterval} million-secs 後才能Dispatch Task`)} `);
@@ -438,20 +446,26 @@ class InfinitePool {
 
 }
 
-
 if (configer.DEBUG_MODE) {
     (async () => {
-        // const self = new InfinitePool(5);
+
+        // const pooller = new InfinitePool(1);
+        // pooller.runInBackGround(pooller.runByEachTask,
+        //     _.range(20).map((each) => Util.asyncUnitTaskFunction()));
         //
+        // while (pooller.isRunning()) {
+        //     await Util.syncDelayRandom();
+        // }
+
         // self.setTaskFailHandler((error) => {
         //     console.error(`TASK ERROR: ${error.message}`);
         // })
         // const tasks = [...Array(4)].map((value, index) => Util.asyncUnitTaskFunction(Util.getRandomValue(1000, 5000)
         //     , index
 
-            // (param) => {
-            //     if (param === 4) return true
-            // }
+        // (param) => {
+        //     if (param === 4) return true
+        // }
         // ))
         // self.setTimeout(3000);
         // await self.runByParams([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tasks[0])

@@ -21,6 +21,11 @@ class BaseComponent extends React.Component {
         return <div>出事了!阿伯...請聯絡管理員ＱＱ ${message}</div>
     }
 
+    gotoPage(path){
+        const { history } = this.props;
+        history.push(path);
+    }
+
 
     getStore() {
         return new Store();
