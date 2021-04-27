@@ -2,13 +2,14 @@
 
 .MainJuniorButton {
   /** style */
+  margin: 5px;
 }
 
-.MainHighButton {
+.MainHighButton:extend(.MainJuniorButton all) {
   /** style */
 }
 
-.MainSocialButton {
+.MainSocialButton:extend(.MainJuniorButton all) {
   /** style */
 }
 
@@ -20,30 +21,41 @@
 
 .ExamHeadDiv {
   /** style */
+  height: 1vh;
 }
 
 .ExamFunctionAreaEndButton {
   /** style */
+  width: 27vw;
+  height: 10vw;
 }
 
 .ExamFunctionAreaSpaceDiv {
   /** style */
+  width: 3vh;
 }
 
 .ExamFunctionAreaRestartButton {
   /** style */
+  width: 27vw;
+  height: 10vw;
 }
 
 .ExamFunctionAreaDiv {
-  /** style */
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: center; /** style */
 }
 
 .ExamTailDiv {
   /** style */
+  height: 1vh;
 }
 
 .ExamDiv {
   /** style */
+  background-color: #888888;
 }
 
 .ExamQuestionTopicTypography {
@@ -64,22 +76,42 @@
 
 .ExamQuestionCard {
   /** style */
+  margin-left: 1vw;
+  margin-right: 1vw;
+  margin-bottom: 2vw;
+  padding: 1vw;
 }
 
 .ExamQuestionAlertImageImg {
   /** style */
+  opacity: 0.3;
+  height: 70%;
 }
 
 .ExamQuestionAlertImageImgWrapDiv {
   /** style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .ExamQuestionAlertOuterDiv {
   /** style */
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .ExamQuestionCardWrapDiv {
   /** style */
+  position: relative;
 }
 
 .ExamQuestionChoiceStatementButton {
@@ -88,10 +120,13 @@
 
 .ExamQuestionChoiceStatementButtonWrapDiv {
   /** style */
+  margin-bottom: 1vh;
 }
 
 .ExamQuestionChoiceDiv {
   /** style */
+  margin-top: 2vh;
+  margin-bottom: 2vh;
 }
 
 /** => following for result component used <= */
@@ -110,22 +145,6 @@
 
 /** ======== following for  ========= */
 
-.ExamQuestionAlertOuterDivWrapDiv {
-  /** style */
-}
-
-.ExamQuestionAlertOuterImg {
-  /** style */
-}
-
-.ExamQuestionAlertContentDiv {
-  /** style */
-}
-
-.ExamQuestionAlertDiv {
-  /** style */
-}
-
-.ExamQuestionAlertDiv {
-  /** style */
+body {
+  margin: 0;
 }

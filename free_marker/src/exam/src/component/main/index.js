@@ -7,6 +7,7 @@ import {observer, inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {Redirect} from 'react-router-dom';
 import React from 'react';
+import Router from '../../router';
 
 @inject( "main" )
 @observer
@@ -20,6 +21,10 @@ class MainComponent extends BaseMainComponent {
     onSocialButtonClicked(param) {
         const { history } = this.props;
         history.push('/exam/');
+    }
+
+    onJuniorButtonClicked(param) {
+        Router.gotoResultPage(this,'123123','7798123123');
     }
 
     /** -------------------- functions -------------------- **/

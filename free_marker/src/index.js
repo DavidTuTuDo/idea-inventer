@@ -1,5 +1,5 @@
 import {configer} from "configer";
-import {utiller as Util, exceptioner as ERROR} from 'utiller';
+import {exceptioner as ERROR, utiller as Util} from 'utiller';
 import _ from 'lodash';
 import fs from 'fs';
 import libpath from 'path';
@@ -131,6 +131,31 @@ class CodegenNode {
         return Util.camel( `on`, this.name, this.view, 'clicked' );
     }
 
+    /** 得到 /username/${username}/id/${id} 這樣的字串 */
+    getPathOfRouterString(){
+        const params = this.getParamsOfPath();
+        const path = [];
+        for(const segment of this.path.split('/')) {
+            if(_.startsWith(segment,':'))
+                path.push(`\$\{${params.shift()}\}`);
+            else
+                path.push(segment);
+        }
+        return path.join('/');
+    }
+
+    /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
+    getParamsOfPath() {
+        if (!this.hasPath()) return [];
+
+        const params = [];
+        for (const segment of this.path.split( '/' )) {
+            if (_.startsWith( segment, ':' ))
+                params.push( Util.getNormalizedStringNotStartWith( segment, ':' ) );
+        }
+        return params;
+    }
+
     /** 會一直往上找parent 直到符合predicate,不然就回傳 undefined */
     getParentBy(predicate = (parent) => (true)) {
         let currentNode = parent;
@@ -258,6 +283,7 @@ class CodegenNode {
 class ClassGenerator {
 
     hasConstructor = false;
+    constructorStmt = [];
     hasExtends = false
     filePath = ``;
     classes = [];
@@ -323,8 +349,7 @@ class ClassGenerator {
 
     appendConstructor(...stmt) {
         this.hasConstructor = true;
-        this.appendFunction( 'constructor', ['props'],
-            [], this.hasExtends ? 'super(props)' : '', ...stmt );
+        this.constructorStmt.push(...stmt);
     }
 
     getIndexOf(stmt) {
@@ -368,24 +393,25 @@ class ClassGenerator {
 
 
     hasClass() {
-        return _.size( this.classes ) >= 1;
+        return (_.size( this.classes )) >= 1;
     }
 
     async persist() {
         const stmts = [];
         if (_.size( this.classes ) === 1) {
             if (this.isSingletonFile) {
-                stmts.push( `export default new ${this.classes.pop()}()` );
+                stmts.push( `export default new ${this.classes[0]}()` );
             } else {
-                stmts.push( `export default ${this.classes.pop()}` );
+                stmts.push( `export default ${this.classes[0]}` );
             }
 
         } else if (_.size( this.classes ) > 1) {
             stmts.push( `export { ${this.classes.map( (clazz => `${clazz} as ${clazz}`) ).join( ',' )}}` );
         }
 
-        if (!this.hasConstructor && this.hasClass()) {
-            this.appendConstructor();
+        if (this.hasClass()) {
+            this.appendFunction( 'constructor', ['props'],
+                [], this.hasExtends ? 'super(props)' : '', ...this.constructorStmt );
         }
 
         this.appendInClassTail( stmts );
@@ -460,15 +486,15 @@ class ClassGenerator {
 
 class BaseBuilder {
 
-    defaultPath;
-    /** 例如 component builder 的 defaultPath => /{genRootPath}/src/component */
-    rootPath;
+    genPath;
+    /** 例如 component builder 的 genPath => /{genRootPath}/src/component */
+    genRootPath;
     /** 很多時候要放在根目錄, 所以就在建構句 把它保留起來 */
     classGenerator;
 
     constructor(defaultPath = './gen') {
-        this.rootPath = defaultPath;
-        this.defaultPath = defaultPath;
+        this.genRootPath = defaultPath;
+        this.genPath = defaultPath;
     }
 
     appendMustacheFile(templateFileName, destFileName, param = {}) {
@@ -480,11 +506,11 @@ class BaseBuilder {
     }
 
     setDefaultPath(path) {
-        this.defaultPath = path;
+        this.genPath = path;
     }
 
     appendDefaultPath(...path) {
-        this.defaultPath = libpath.join( this.defaultPath, ...path );
+        this.genPath = libpath.join( this.genPath, ...path );
     }
 
     getStringFromMustache(templateFileName, variable) {
@@ -517,7 +543,7 @@ class BaseBuilder {
 
     /** 找到目錄下的folder,是這用來gen stores的 index file,有點偷懶, 應該要從source去組合出來 */
     getGenUnion(...folder) {
-        let path = libpath.join( this.rootPath, 'src', ...folder )
+        let path = libpath.join( this.genRootPath, 'src', ...folder )
 
         return _.filter( Util.getChildPathByPath( path ),
             each => each.isDirectory ).map( each => each.dirName );
@@ -559,7 +585,7 @@ class StoreBuilder extends BaseBuilder {
     async buildIndexFiles() {
         /** 產生 store的index file */
         const stores = this.getGenStores();
-        this.base = Util.persistByPath( libpath.join( this.defaultPath, `store.js` ) );
+        this.base = Util.persistByPath( libpath.join( this.genPath, `store.js` ) );
 
         const baseGenerator = new ClassGenerator( this.base );
         baseGenerator.appendClass( `BaseStore` );
@@ -569,7 +595,7 @@ class StoreBuilder extends BaseBuilder {
         baseGenerator.appendConstructor( ...stores.map( child => `this.${child} = new ${_.upperFirst( child )}()` ) )
         await baseGenerator.persist();
 
-        const indexGenerator = new ClassGenerator( libpath.join( this.defaultPath, `index.js` ) );
+        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, `index.js` ) );
         indexGenerator.appendClass( `Store`, {name: `BaseStore`, from: './store'} );
         indexGenerator.appendConstructor();
         await indexGenerator.persist();
@@ -580,17 +606,17 @@ class StoreBuilder extends BaseBuilder {
         const folderName = _.toLower( node.name );
         const baseClassName = 'Base' + _.upperFirst( folderName ) + 'Store';
         const indexClassName = _.upperFirst( folderName ) + 'Store';
-        const baseGenerator = new ClassGenerator( libpath.join( this.defaultPath, folderName, `${baseClassName}.js` ) );
-        const indexGenerator = new ClassGenerator( libpath.join( this.defaultPath, folderName, `index.js` ) )
+        const baseGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `${baseClassName}.js` ) );
+        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `index.js` ) )
 
         baseGenerator.appendClass( baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'} );
         baseGenerator.appendInClassHead( `import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"` )
         baseGenerator.appendInClassHead( `import {utiller as Util, exceptioner as ERROR} from 'utiller'` );
-        baseGenerator.appendFunction(`getName`,[],[],`return '${baseClassName}'`);
+        baseGenerator.appendFunction( `getName`, [], [], `return '${baseClassName}'` );
         const propsStmt = [];
         if (node.hasChildren()) {
             for (const child of node.getChildren()) {
-                if(!child.isAttribute()) continue
+                if (!child.isAttribute()) continue
                 const propStmt = [];
                 const fieldName = child.name + (child.plural ? child.plural : '');
                 const defaultValue = child.getDefaultValueByType();
@@ -653,12 +679,12 @@ class ComponentBuilder extends BaseBuilder {
         this.componentDidMountStmt.push( ...stmt );
     }
 
-    async buildBaseComponent(node) {
-        const baseClassName = `Base${_.upperFirst( node.name )}Component`;
-        const className = `${_.upperFirst( node.name )}Component`;
-        const folderName = node.name;
+    async buildBaseComponent(componentNode) {
+        const baseClassName = `Base${_.upperFirst( componentNode.name )}Component`;
+        const className = `${_.upperFirst( componentNode.name )}Component`;
+        const folderName = componentNode.name;
 
-        const baseGenerator = new ClassGenerator( libpath.join( this.defaultPath, folderName, `${baseClassName}.js` ) );
+        const baseGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `${baseClassName}.js` ) );
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
         baseGenerator.appendClass( baseClassName, {
@@ -668,26 +694,32 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendInClassHead( `import React from 'react'` )
         baseGenerator.appendInClassHead( `import Style from '../../style'` )
         baseGenerator.appendInClassHead( `import {Paper, Button, Typography, Card} from '@material-ui/core'` );
-        this.appendRenderViewFunctions( node.struct, baseGenerator );
 
-        if (node.hasTitle()) {
-            baseGenerator.appendField( `stringOfPageTitle`, `"${node.title}"` )
+        for (const param of componentNode.getParamsOfPath()) {
+            baseGenerator.appendConstructor( `this.paramOf${_.upperFirst( param )}= this.props.match.params.${param}` );
+            baseGenerator.appendConstructor( `console.log(this.paramOf${_.upperFirst( param )})` );
+        }
+
+        this.appendRenderViewFunctions( componentNode.struct, baseGenerator );
+
+        if (componentNode.hasTitle()) {
+            baseGenerator.appendField( `stringOfPageTitle`, `"${componentNode.title}"` )
             this.appendStmtIntoComponentDidMount( `document.title = this.stringOfPageTitle` );
         }
 
         baseGenerator.appendFunction( 'getStore', [], [],
-            `return this.props.${node.name}` )
+            `return this.props.${componentNode.name}` )
 
 
         baseGenerator.appendFunction( 'componentDidMount',
             [], [], `super.componentDidMount()`, ...this.componentDidMountStmt );
 
         /** index.js */
-        const indexGenerator = new ClassGenerator( libpath.join( this.defaultPath, folderName, `index.js` ) );
+        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `index.js` ) );
         indexGenerator.appendClass( className, {
             name: baseClassName,
             from: `./${baseClassName}`
-        }, `inject('${node.name}')`, `observer` );
+        }, `inject('${componentNode.name}')`, `observer` );
         indexGenerator.appendImport( `{observer, inject}`, `mobx-react` );
 
 
@@ -931,36 +963,54 @@ class AppBuilder extends ComponentBuilder {
         this.appendDefaultPath( '../' );
     }
 
-    async buildWebpackNPackageJson(obj) {
-        this.appendMustacheFile( 'package.json', libpath.join( this.rootPath, `package.json` ), {
-            projectName: obj.name,
-            projectVersion: obj.version,
-            projectDescription: obj.description
+    async buildWebpackNPackageJson(sourceObj) {
+        this.appendMustacheFile( 'package.json', libpath.join( this.genRootPath, `package.json` ), {
+            projectName: sourceObj.name,
+            projectVersion: sourceObj.version,
+            projectDescription: sourceObj.description
         } );
-        this.appendMustacheFile( 'webpack.config.js', libpath.join( this.rootPath, `webpack.config.js` ) );
-        this.appendMustacheFile( 'babel.config.js', libpath.join( this.rootPath, `babel.config.js` ) );
+        this.appendMustacheFile( 'webpack.config.js', libpath.join( this.genRootPath, `webpack.config.js` ) );
+        this.appendMustacheFile( 'babel.config.js', libpath.join( this.genRootPath, `babel.config.js` ) );
     }
 
     async buildHtmlIndexAssetsFile() {
-        const path = Util.persistByPath( libpath.join( this.rootPath, 'dist' ) );
+        const path = Util.persistByPath( libpath.join( this.genRootPath, 'dist' ) );
         this.appendMustacheFile( 'index.html', libpath.join( path, 'index.html' ) );
     }
 
-    async buildConfig(node) {
-        const baseConfigGenerator = new ClassGenerator( libpath.join( this.defaultPath, `config`, `BaseConfig.js` ) );
+    async buildRouterFile(sourceObj) {
+        const baseRouterGenerator = new ClassGenerator( libpath.join( this.genPath, `router`, `BaseRouter.js` ) );
+        baseRouterGenerator.appendClass( `BaseRouter` );
+        for(const component of sourceObj.components) {
+            if(!component.hasPath()) continue;
+            baseRouterGenerator.appendFunction( Util.camel( 'goto', component.name, 'page' ), ['component', ...component.getParamsOfPath()],
+                [],
+                'const { history } = component.props',
+                `history.push(\`${component.getPathOfRouterString()}\`)`,
+            )
+        }
+        const indexRouterGenerator = new ClassGenerator( libpath.join( this.genPath, `router`, `index.js` ) );
+        indexRouterGenerator.appendClass('Router',{name:`BaseRouter`, from:`./BaseRouter`});
+        indexRouterGenerator.setSingleton(true);
+        await indexRouterGenerator.persist();
+        await baseRouterGenerator.persist();
+    }
+
+    async buildConfig(sourceObj) {
+        const baseConfigGenerator = new ClassGenerator( libpath.join( this.genPath, `config`, `BaseConfig.js` ) );
         baseConfigGenerator.appendClass( `BaseConfig` );
-        baseConfigGenerator.appendField( `firebase`, JSON.stringify( node.firebase ) );
+        baseConfigGenerator.appendField( `firebase`, JSON.stringify( sourceObj.firebase ) );
         await baseConfigGenerator.persist();
 
-        const indexConfigGenerator = new ClassGenerator( libpath.join( this.defaultPath, `config`, `index.js` ) );
+        const indexConfigGenerator = new ClassGenerator( libpath.join( this.genPath, `config`, `index.js` ) );
         indexConfigGenerator.appendClass( `Config`, {name: `BaseConfig`, from: './BaseConfig'} );
         indexConfigGenerator.setSingleton( true );
         await indexConfigGenerator.persist();
     }
 
-    async buildAppIndexFiles(obj) {
-        const appGenerator = new ClassGenerator( libpath.join( this.defaultPath, `app.js` ) );
-        const indexGenerator = new ClassGenerator( libpath.join( this.defaultPath, `index.js` ) );
+    async buildAppIndexFiles(sourceObj) {
+        const appGenerator = new ClassGenerator( libpath.join( this.genPath, `app.js` ) );
+        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, `index.js` ) );
         appGenerator.appendImport( `{Provider}`, `mobx-react` );
         appGenerator.appendImport( ` ReactDOM`, `react-dom` );
         appGenerator.appendImport( `{Route, Router, Switch}`, `react-router-dom` );
@@ -968,7 +1018,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport( `{createBrowserHistory}`, `history` );
         appGenerator.appendImport( `React`, `react` );
         appGenerator.appendImport( `Store`, `./store` );
-        appGenerator.appendImport( ``, `./css` );
+        appGenerator.appendImport( ``, `./less` );
         appGenerator.appendClass( `BaseApp` );
         appGenerator.appendFunction( `mount`, [], [],
             `ReactDOM.render(this.getRenderView(),
@@ -984,7 +1034,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         const childrenStmt = [];
-        for (const component of obj.components) {
+        for (const component of sourceObj.components) {
             if (!component.hasPath()) continue;
 
             const renderStmts = this.getJSXStrings( {
@@ -1044,7 +1094,7 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildBaseClasses() {
-        Util.copyFromFolderToDestFolder( './base', libpath.join( this.defaultPath, `base` ) );
+        Util.copyFromFolderToDestFolder( './base', libpath.join( this.genPath, `base` ) );
     }
 
     async buildStyleFiles(classNames, sourcePath) {
@@ -1057,7 +1107,7 @@ class AppBuilder extends ComponentBuilder {
                 origins = obj;
             }
 
-            const generator = new ClassGenerator( libpath.join( this.defaultPath, 'style', `${type}.style.js` ) )
+            const generator = new ClassGenerator( libpath.join( this.genPath, 'style', `${type}.style.js` ) )
             generator.appendClass( `${_.upperFirst( type )}Style` );
             for (const className of classNames) {
                 for (const name of className.names) {
@@ -1085,39 +1135,42 @@ class AppBuilder extends ComponentBuilder {
     /** {[...{component,names}], srcPath}
      * srcPath 就是 keep file 的根目錄
      * */
-    async buildCSSFile(classNames, srcPath) {
+    async buildLessFile(classNames, srcPath) {
         /** 先把舊的整理過, 除掉 comment的字樣line */
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
-            const stubPath = libpath.join( srcPath, `src`, `css`, `${type}.css` )
-            const origins = [];
-            if (fs.existsSync( stubPath )) {
-                const stub = Util.getContextForRawFile( stubPath ).split( '\n' );
+            const srcLessPath = libpath.join( srcPath, `src`, `less`, `${type}.less` )
+            const lessAttriutesFromSrc = [];
+            if (fs.existsSync( srcLessPath )) {
+                const stub = Util.getContextForRawFile( srcLessPath ).split( '\n' );
                 _.remove( stub,
                     (each) => (_.startsWith( each, '/** ' ) ||
                         _.isEqual( each.trim(), '' )) )
-                origins.push( ...(stub.join( '' ).split( '}' )) )
+                lessAttriutesFromSrc.push( ...(stub.join( '' ).split( '}' )) )
                 /** 移除掉最後一個,因為split */
-                origins.pop();
+                lessAttriutesFromSrc.pop();
             }
 
-            const generator = new ClassGenerator( libpath.join( this.defaultPath, 'css', `${type}.css` ) );
+            const generator = new ClassGenerator( libpath.join( this.genPath, 'less', `${type}.less` ) );
             for (const className of classNames) {
                 generator.appendInClassTail( `/** => following for ${className.component.name} component used <= */\n\n` );
                 for (const name of className.names) {
                     /** 注意!! 是用 remove,會mutate 原本的 array */
-                    const origin = _.remove( origins, (each) => _.startsWith( each, `.${name} {` ) )
+                    const srcAttribute = _.remove( lessAttriutesFromSrc,
+                        (each) => {
+                            return _.startsWith( each, `.${name} {` ) || _.startsWith( each, `.${name}:` )
+                        } )
 
-                    if (origin.length > 1)
-                        throw new ERROR( 7003, `origin ==> ${Util.deepFlat( origin )}` )
+                    if (srcAttribute.length > 1)
+                        throw new ERROR( 7003, `origin ==> ${Util.deepFlat( srcAttribute )}` )
 
-                    generator.appendInClassTail( _.isEmpty( origin ) ? `.${name} { /** style */ }\n\n` : `${origin[0]}}\n\n` );
+                    generator.appendInClassTail( _.isEmpty( srcAttribute ) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n` );
                 }
             }
 
-            if (origins.length > 0) {
+            if (lessAttriutesFromSrc.length > 0) {
                 generator.appendInClassTail( `/** ======== following for  ========= */\n\n` );
-                for (const lasting of origins) {
+                for (const lasting of lessAttriutesFromSrc) {
                     generator.appendInClassTail( `${lasting} }\n\n` );
                 }
             }
@@ -1125,11 +1178,11 @@ class AppBuilder extends ComponentBuilder {
             generator.needSignature( false );
             await generator.persist();
 
-            if (!fs.existsSync( libpath.join( srcPath, 'css', 'index.js' ) )) {
-                this.appendMustacheFile( 'css.index.js',
-                    Util.persistByPath( libpath.join( this.defaultPath, 'css', 'index.js' ) )
+            if (!fs.existsSync( libpath.join( srcPath, 'less', 'index.js' ) )) {
+                this.appendMustacheFile( 'less.index.js',
+                    Util.persistByPath( libpath.join( this.genPath, 'less', 'index.js' ) )
                 );
-                Util.appendInfo( `persist ./css/index.js succeed` );
+                Util.appendInfo( `persist ./less/index.js succeed` );
             }
         }
     }
@@ -1195,7 +1248,7 @@ class ProjectIndexFilePersistHandler {
             (each) => {
                 return (
                     _.isEqual( each.fileNameExtension, `index.js` ) ||
-                    _.isEqual( each.extension, `css` ) ||
+                    _.isEqual( each.extension, `less` ) ||
                     _.isEqual( each.fileNameExtension, `app.style.js` ) ||
                     _.isEqual( each.fileNameExtension, `mobile.style.js` ) ||
                     _.isEqual( each.fileNameExtension, `common.style.js` )
@@ -1218,7 +1271,8 @@ class ProjectIndexFilePersistHandler {
         }
     }
 
-    overrideIndexFiles(...exclude) {
+    /** 就是把像是index file, 這樣的手寫檔案放到 genSrc   */
+    overrideEachFilesFromSrcFolder(...exclude) {
         for (const file of Util.findFilePathBy( this.sourceSrcPath )) {
             if (Util.has( exclude, file.fileNameExtension )) continue;
 
@@ -1261,8 +1315,9 @@ if (configer.DEBUG_MODE) {
             await new AppBuilder( genRootPath ).buildAppIndexFiles( source );
             await new AppBuilder( genRootPath ).buildConfig( source );
             await new AppBuilder( genRootPath ).buildWebpackNPackageJson( source );
+            await new AppBuilder( genRootPath ).buildRouterFile( source );
             await new AppBuilder( genRootPath ).buildBaseClasses();
-            await new AppBuilder( genRootPath ).buildCSSFile( totalClassNames, sourcePath );
+            await new AppBuilder( genRootPath ).buildLessFile( totalClassNames, sourcePath );
             await new AppBuilder( genRootPath ).buildStyleFiles( totalClassNames, sourcePath );
             await new AppBuilder( genRootPath ).buildHtmlIndexAssetsFile();
 
@@ -1270,8 +1325,9 @@ if (configer.DEBUG_MODE) {
             new ProjectIndexFilePersistHandler( {
                 genRootPath,
                 sourcePath
-            } ).overrideIndexFiles(
-                `common.style.js`, `app.style.js`, `mobile.style.js`, `common.css`, `app.css`, `mobile.css` );
+            } ).overrideEachFilesFromSrcFolder(
+                `common.style.js`, `app.style.js`, `mobile.style.js`,
+                `common.less`, `app.less`, `mobile.less` );
 
             new ProjectIndexFilePersistHandler( {
                 genRootPath,

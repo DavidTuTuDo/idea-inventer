@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-04-26-23-47-19 
+	updateTime:2021-04-27-16-17-34 
 */
 
 class CommonStyle {
@@ -76,6 +76,8 @@ class CommonStyle {
   MainJuniorButton = { fontSize: "4rem" };
 
   /** -------------------- functions -------------------- **/
+
+  constructor(props) {}
   /** -------------------- async api -------------------- **/
 }
 export default new CommonStyle();
