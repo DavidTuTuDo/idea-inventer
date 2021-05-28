@@ -24,7 +24,7 @@ const self = {
         fallback: {
             fs: false,
             child_process: false,
-            path: false,
+            path: require.resolve("path-browserify"),
             crypto: false,
             url: false,
             http: false,

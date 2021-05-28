@@ -1,5 +1,3 @@
-import firebase from 'firebase/app';
-import 'firebase/database';
 import {
     makeAutoObservable,
     makeObservable,
@@ -13,10 +11,10 @@ import {
 import {utiller as Util, ERROR} from "utiller";
 import _ from 'lodash'
 import config from '../config';
+import firebaser from './BaseFirebase';
 
 class BaseStore {
 
-    firebaseApp;
     database;
 
     @observable
@@ -52,25 +50,11 @@ class BaseStore {
 
 
     constructor(props) {
-        this.mountFirebase();
+        this.database = firebaser.db();
     }
 
     getErrorMsg() {
         return this.errorMsg;
-    }
-
-    mountFirebase() {
-        if (!firebase.apps.length) {
-            this.firebaseApp = firebase.initializeApp(config.firebase);
-        } else {
-            this.firebaseApp = firebase.app(); // if already initialized, use that one
-        }
-        this.database = this.firebaseApp.database();
-    }
-
-    async fetchValue(refPath) {
-        console.log(`fetch ${refPath}`);
-        return await this.database.ref(refPath).once('value');
     }
 
     getName(){
@@ -89,6 +73,17 @@ class BaseStore {
     filter(obj) {
         return obj;
     }
+
+    async fetchObject(refPath, filtering = (ref) => ref.once('value')) {
+        console.log(`fetch ${refPath}`);
+        return await filtering(this.database.ref(refPath))
+    }
+
+    async postObject(refPath, obj = {}) {
+        console.log(`write ${refPath}, param ${JSON.stringify(obj)}`);
+        return await this.database.ref(refPath).set(obj);
+    }
+
 
 }
 

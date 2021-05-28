@@ -8,23 +8,32 @@ import BaseMainComponent from "./BaseMainComponent";
 import {Redirect} from 'react-router-dom';
 import React from 'react';
 import Router from '../../router';
+import path from 'path';
+import Cookies from "../../cookie";
+import {utiller as Util} from 'utiller';
 
-@inject( "main" )
+@inject("userInfo")
+@inject("main")
 @observer
 class MainComponent extends BaseMainComponent {
     /** -------------------- fields -------------------- **/
     constructor(prop) {
-        super( prop );
-        this.props.main.setState( 'stable' );
+        super(prop);
+        this.props.main.setState('stable');
     }
 
     onSocialButtonClicked(param) {
-        const { history } = this.props;
-        history.push('/exam/');
+        Router.gotoExamPage(this);
+    }
+
+    onHighButtonClicked(param) {
+        const userInfo = this.props.userInfo;
+        userInfo.fetch(userInfo.uid).then((result) => console.log(result));
     }
 
     onJuniorButtonClicked(param) {
-        Router.gotoResultPage(this,'123123','7798123123');
+        const userInfo = this.props.userInfo;
+        userInfo.post(userInfo.uid).then();
     }
 
     /** -------------------- functions -------------------- **/

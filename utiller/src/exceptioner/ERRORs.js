@@ -116,6 +116,12 @@ const ERRORs = {
     8009: {
         message: `copy folder should be exist`
     },
+    8010: {
+        message: `the key can't exceed the length of 22`
+    },
+    8011: {
+        message: `beautify class fail,but let it pass`
+    },
     9999: {
         message: `super stupid error`
     },

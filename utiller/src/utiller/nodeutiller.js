@@ -83,7 +83,8 @@ class NodeUtiller extends Utiller {
         if (this.isFile(absolute)) {
             obj['extension'] = absolute.split('\.').pop();
             const fileNameStrings = absolute.split('\/').pop().split('\.');
-            fileNameStrings.pop() /** 要是遇到 asd.sdsd.js 就麻煩了 */
+            fileNameStrings.pop()
+            /** 要是遇到 asd.sdsd.js 就麻煩了 */
             obj['fileName'] = fileNameStrings.join('\.');
             obj['dirName'] = _.nth(absolute.split('\/'), -2);
             obj['isFile'] = true;
@@ -139,7 +140,7 @@ class NodeUtiller extends Utiller {
         });
     }
 
-    /** 讀取檔案,用utf-8的方式 */
+    /** 讀取path,然後用utf-8的方式 */
     getContextForRawFile(path) {
         if (!fs.existsSync(path))
             return '';
@@ -437,15 +438,18 @@ class NodeUtiller extends Utiller {
         return splited.join('/');
     }
 
-    async generatePackage(path = './') {
+    /** exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
+    async generatePackage(path = './', ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules');
         packagejsons = _.filter(packagejsons,
             (each) => _.isEqual(each.fileName, 'package') && this.has(this.getContextForRawFile(each.absolute), 'gen'));
         packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
         for (const path of packagejsons) {
-            await this.executeCommandLine(`
+            if (this.isAndEquals(... exclude.map((projectName) => () => !this.has(path, projectName)))) {
+                await this.executeCommandLine(`
             cd ${path} && npm run gen`);
-            this.appendInfo(`build ${path} succeed`);
+                this.appendInfo(`build ${path} succeed`);
+            }
         }
     }
 

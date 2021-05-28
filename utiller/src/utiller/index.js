@@ -29,7 +29,7 @@ class Utiller {
 
 
     /** this is used for unit test */
-    asyncUnitTaskFunction = (millionSec = 2000, _funparam="預設的param", errorSimulator) => async (param) => {
+    asyncUnitTaskFunction = (millionSec = 2000, _funparam = "預設的param", errorSimulator) => async (param) => {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
         try {
             const symbol = randomValue;
@@ -60,6 +60,30 @@ class Utiller {
             }
         }
         return true
+    }
+
+    or(...booleans){
+        for(const boo of booleans){
+            if(!!boo)
+                return true;
+        }
+        return false;
+    }
+
+    and(...booleans){
+        for(const boo of booleans){
+            if(!!!boo)
+                return false;
+        }
+        return true;
+    }
+
+    /** 選一個exsist的candidate回傳, 像是firebase 可以 idToken 又可以 oauthIdToken*/
+    getExistOne(...candidates) {
+        for(const candidate of candidates){
+            if(candidate)
+                return candidate;
+        }
     }
 
     /** '###string' =>  'string' */
@@ -107,14 +131,31 @@ class Utiller {
         return random;
     }
 
-    getEncryptString(texts) {
-        const encrypted = CryptoJS.AES.encrypt(texts, configer.ENCRYPT_KEY).toString();
-        return encrypted;
+    /** only 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
+    getEncryptString(texts, key = configer.ENCRYPT_KEY, only = false) {
+        const maxLengthOfKey = 22;
+        if (key.length > maxLengthOfKey)
+            throw new ERROR(8010, _.size(key))
+        /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
+        const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
+        const keyOfCrypto = only ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
+        return CryptoJS.AES.encrypt(texts, keyOfCrypto, {iv: ivOfCrypto}).toString();
     }
 
-    getDecryptString(ciphertext) {
-        const decrypted = CryptoJS.AES.decrypt(ciphertext, configer.ENCRYPT_KEY).toString(CryptoJS.enc.Utf8);
-        return decrypted;
+    getDecryptString(ciphertext, key = configer.ENCRYPT_KEY) {
+        const maxLengthOfKey = 22;
+        if (key.length > maxLengthOfKey)
+            throw new ERROR(8010, _.size(key))
+
+        const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
+        try {
+            const value = CryptoJS.AES.decrypt(ciphertext, key, {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8)
+            if (!_.isEmpty(value.trim()))
+                return value;
+        } catch (e) {
+            /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
+        }
+        return CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
     }
 
     getFirebaseFormattedString(texts) {
@@ -442,8 +483,8 @@ class Utiller {
         return obj;
     }
 
-    isEmptyString(string){
-        return _.isEqual(_.trim(string),'');
+    isEmptyString(string) {
+        return _.isEqual(_.trim(string), '');
     }
 
     /** 放在後面的priority 越大 */
@@ -453,7 +494,10 @@ class Utiller {
 
 }
 
-if (configer.DEBUG_MODE) {
-}
+(async () => {
+        if (configer.DEBUG_MODE) {
+        }
+    }
+)();
 
 export default Utiller;

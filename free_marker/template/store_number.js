@@ -5,6 +5,11 @@ get{{functionName}}() {
 }
 
 @action
+remove{{functionName}}() {
+    this.{{fieldName}} = {{{defaultValue}}};
+}
+
+@action
 set{{functionName}}(param) {
     if(param !== undefined) {
         this.{{fieldName}} = param;

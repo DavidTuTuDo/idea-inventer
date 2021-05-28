@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-04-27-16-17-33 
+	updateTime:2021-05-27-23-46-11 
 */
 
 class AppStyle {
@@ -9,13 +9,39 @@ class AppStyle {
 
   /** following for unknown */
 
-  ExamQuestionAlertContentDiv = {};
+  NavigatorGoogleloginButton = {};
 
-  ExamQuestionAlertDiv = {};
+  NavigatorGoogleloginButtonWrapDiv = {};
+
+  HeaderHomeAreaHomeImg = {};
+
+  HeaderHomeAreaAvatar = {};
+
+  HeaderFunctionDiv = {};
+
+  HeaderLoginButton = {};
+
+  HeaderLoginButtonWrapDiv = {};
+
+  HeaderDiv = {};
+
+  HeaderImageImg = {};
+
+  HeaderImageImgWrapDiv = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
 
   ExamQuestionAlertOuterImg = {};
 
-  ExamQuestionAlertOuterDivWrapDiv = {};
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertContentDiv = {};
+
+  HeaderHomeImgWrapDiv = {};
+
+  HeaderHomeImg = {};
+
+  HeaderHomeAreaHomeImgWrapDiv = {};
 
   /** following for result */
 
@@ -74,6 +100,26 @@ class AppStyle {
   MainHighButton = {};
 
   MainJuniorButton = {};
+
+  /** following for navigator */
+
+  NavigatorDiv = {};
+
+  NavigatorLoginButtonWrapDiv = {};
+
+  NavigatorLoginButton = {};
+
+  NavigatorFunctionDiv = {};
+
+  NavigatorHomeAreaAvatar = {};
+
+  NavigatorHomeAreaHomeImg = {};
+
+  /** following for login */
+
+  LoginDivWrapDiv = {};
+
+  LoginDiv = {};
 
   /** -------------------- functions -------------------- **/
 

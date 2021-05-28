@@ -20,6 +20,10 @@ class App extends BaseApp {
         super.mount();
     }
 
+    setUserInfo(userInfo){
+        this.store.userInfo.initial(userInfo);
+    }
+
     pushNewPageIntoProviderSample = () => {
         if (this.anotherExam === undefined) {
             this.anotherExam = new ExamStore();

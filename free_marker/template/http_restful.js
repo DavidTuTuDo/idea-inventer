@@ -4,7 +4,7 @@ async fetch() {
     /** this.state = loading, stable, error,   */
     try {
         this.setState(`loading`);
-        this.fromJson(this.filter(((await this.fetchValue(`{{{fieldUrl}}}`)).val())));
+        this.fromJson(this.filter(((await this.fetchObject(`{{{fieldUrl}}}`)).val())));
         this.setState(`stable`);
     } catch(error) {
         this.setErrorMsg(error.message);

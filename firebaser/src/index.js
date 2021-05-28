@@ -12,10 +12,9 @@ import path from "path";
 class firebaser {
 
     constructor(credential = Util.getContextForRawFile(configer.PATH_ACCOUNT_ADMIN)) {
-
         admin.initializeApp({
-
-            credential: admin.credential.cert(credential),
+            credential: admin.credential.cert(_.isString(credential) ?
+                JSON.parse(credential) : credential),
             databaseURL: configer.DATA_BASE_URL
         });
         this.db = admin.database();
@@ -64,21 +63,19 @@ class firebaser {
     }
 
     async setExam(questions) {
-        const refPath = path.join(configer.REFERENCE_ROOT, 'exam');
-        await this.setValues(refPath, {questions:questions});
+        const refPath = path.join(configer.REFERENCE_ROOT, 'QuestionsOfExam');
+        await this.setValues(refPath, {questions: questions});
     }
 
     async setValues(refPath, params) {
         if (configer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`SET PATH:${refPath},PARAM:${JSON.stringify(params)}`);
-
         return await this.db.ref(refPath).set(params);
     }
 
     async updateValues(refPath, params) {
         if (configer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`UPDATE PATH:${refPath},PARAM:${JSON.stringify(params)}`);
-
         return await this.db.ref(refPath).update(params);
     }
 
@@ -200,6 +197,30 @@ class firebaser {
         return await this.db.ref(refPath).orderByValue().once('value');
     }
 
+    async updatePurchasePlans() {
+        const plans = [
+            {
+                pid: 2331,
+                name: `1個月`,
+                price: 50
+            },
+            {
+                pid: 2332,
+                name: `3個月`,
+                price: 120
+            },
+            {
+                pid: 2333,
+                name: `6個月`,
+                price: 200
+            }
+        ]
+
+        for (const plan of plans) {
+            await this.setValues(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_PRICE, _.toString(plan.pid)), plan)
+        }
+    }
+
 
 }
 
@@ -208,7 +229,7 @@ export {firebaser as firebaser}
 if (configer.DEBUG_MODE) {
     (async () => {
             // const snapshot = await handler.getToneListByKeyword('Bedasds');
-            // const handler = new firebaser();
+            // const handler = new firebaser();gs();
             // const snapshot = await handler.getSingerListByKeyword('陳');
             // const snapshot = await handler.getToneListBySingerName('陳芳語');
             // const snapshot = await handler.getSingerListByType(1);

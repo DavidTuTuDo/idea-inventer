@@ -1,7 +1,14 @@
 import _ from 'lodash';
 
-const array = [1, 2];
-array.parent = {pp: 'pp'};
-console.log(_.isArray(array));
-console.log(array.length);
+
+
+function printDefault(p1,custom_Default = 123){
+    console.log(custom_Default)
+}
+function middleware(p1,third_default = undefined){
+    printDefault(p1,undefined);
+}
+middleware(12)
+
+
 

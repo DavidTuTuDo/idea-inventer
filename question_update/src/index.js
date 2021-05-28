@@ -31,7 +31,9 @@ export {question_update as question_update}
 
 
         const qs = await db.fetchRecords('CHOOSER');
+        await fire.deleteTable(`QuestionsOfExam`);
         await fire.deleteTable(`exam`);
+
 
         await fire.setExam(
             qs.map((origin) => {

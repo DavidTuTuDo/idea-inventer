@@ -9,6 +9,11 @@ set{{{functionName}}}(param) {
     }
 }
 
+@action
+remove{{functionName}}() {
+    this.{{{fieldName}}} = new {{{fieldClass}}}();
+}
+
 get{{{functionName}}}() {
     if(this.{{{fieldName}}} !== undefined) {
         return this.{{{fieldName}}};

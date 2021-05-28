@@ -14,4 +14,9 @@ class gener {
 
 export { gener as gener }
 
-Util.generatePackage('../').then();
+Util.generatePackage('../',
+    'free_marker',
+    'question_update',
+    'newp',
+    'deploy_examing_ui',
+    'testing_self').then();

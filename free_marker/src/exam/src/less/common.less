@@ -1,8 +1,70 @@
+/** => following for login component used <= */
+
+.LoginDiv {
+  /** style */
+  width: 100vw;
+  height: 20%;
+}
+
+.LoginDivWrapDiv {
+  /** style */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 70vh;
+}
+
+/** => following for navigator component used <= */
+
+.NavigatorHomeAreaHomeImg {
+  /** style */
+  width: 4vh;
+  height: 4vh;
+}
+
+.NavigatorHomeAreaAvatar {
+  /** style */
+  width: 4vh;
+  height: 4vh;
+}
+
+.NavigatorFunctionDiv {
+  /** style */
+  flex: 1;
+}
+
+.NavigatorLoginButton {
+  /** style */
+  height: 4.5vh;
+  min-width: 12vw;
+  font-size: 2.5rem;
+}
+
+.NavigatorLoginButtonWrapDiv {
+  /** style */
+  margin: 0.5%;
+}
+
+.NavigatorDiv {
+  /** style */
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  padding: 0.5%;
+  max-height: 6vh;
+}
+
 /** => following for main component used <= */
 
 .MainJuniorButton {
   /** style */
   margin: 5px;
+  min-height: 10vw;
+  min-width: 20vh;
+  font-size: 2.2em;
+  color: #0074d9;
+  border-color: #0074d9;
 }
 
 .MainHighButton:extend(.MainJuniorButton all) {
@@ -28,6 +90,7 @@
   /** style */
   width: 27vw;
   height: 10vw;
+  font-size: 2rem;
 }
 
 .ExamFunctionAreaSpaceDiv {
@@ -39,6 +102,8 @@
   /** style */
   width: 27vw;
   height: 10vw;
+  font-size: 2rem;
+  outline-width: 5px;
 }
 
 .ExamFunctionAreaDiv {
@@ -60,6 +125,8 @@
 
 .ExamQuestionTopicTypography {
   /** style */
+  font-weight: bold;
+  font-size: 2.8rem;
 }
 
 .ExamQuestionTopicTypographyWrapDiv {
@@ -116,6 +183,8 @@
 
 .ExamQuestionChoiceStatementButton {
   /** style */
+  text-align: left;
+  font-size: 2.1rem;
 }
 
 .ExamQuestionChoiceStatementButtonWrapDiv {
@@ -147,4 +216,55 @@
 
 body {
   margin: 0;
+}
+
+.firebaseui-idp-button:extend(.firebaseui-id-idp-button all) {
+}
+
+.mdl-button:extend(.firebaseui-id-idp-button all) {
+}
+
+.mdl-js-button:extend(.firebaseui-id-idp-button all) {
+}
+
+.mdl-button--raised:extend(.firebaseui-id-idp-button all) {
+}
+
+.firebaseui-idp-google:extend(.firebaseui-id-idp-button all) {
+}
+
+.firebaseui-id-idp-button {
+  max-width: unset !important;
+  min-width: unset !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 6rem;
+}
+
+.firebaseui-container {
+  max-width: 90% !important;
+}
+
+.firebaseui-idp-text:extend(.firebaseui-idp-text-short all) {
+}
+
+.firebaseui-idp-text-long:extend(.firebaseui-idp-text-short all) {
+}
+
+.firebaseui-idp-text-short {
+  font-size: 2.3rem !important;
+  font-family: var(--sec-font);
+}
+
+.firebaseui-idp-icon {
+  height: 3vmin !important;
+  width: 3vmin !important;
+}
+
+.firebaseui-tospp-full-message {
+  font-size: 2.3rem !important;
+}
+
+.firebaseui-tos:extend(.firebaseui-tospp-full-message all) {
 }

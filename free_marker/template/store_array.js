@@ -20,6 +20,11 @@ get{{{functionName}}}() {
 }
 
 @action
+remove{{{functionName}}}(){
+    this.{{{fieldName}}}.length = 0;
+}
+
+@action
 push{{{functionName}}}(...param) {
     const self = this;
     if(_.isArray(param)) {
@@ -39,10 +44,6 @@ push{{{functionName}}}ByIndex(index, ...param) {
 @action
 remove{{{functionName}}}ByIndex(index) {
 
-}
-
-remove{{{functionName}}}All() {
-    this.{{{fieldName}}}.length = 0;
 }
 
 

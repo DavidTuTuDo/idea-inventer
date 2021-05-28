@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-04-27-16-17-34 
+	updateTime:2021-05-27-23-46-12 
 */
 
 class CommonStyle {
@@ -9,13 +9,39 @@ class CommonStyle {
 
   /** following for unknown */
 
-  ExamQuestionAlertContentDiv = {};
+  NavigatorGoogleloginButton = {};
 
-  ExamQuestionAlertDiv = {};
+  NavigatorGoogleloginButtonWrapDiv = {};
+
+  HeaderHomeAreaHomeImg = {};
+
+  HeaderHomeAreaAvatar = {};
+
+  HeaderFunctionDiv = {};
+
+  HeaderLoginButton = {};
+
+  HeaderLoginButtonWrapDiv = {};
+
+  HeaderDiv = {};
+
+  HeaderImageImg = {};
+
+  HeaderImageImgWrapDiv = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
 
   ExamQuestionAlertOuterImg = {};
 
-  ExamQuestionAlertOuterDivWrapDiv = {};
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertContentDiv = {};
+
+  HeaderHomeImgWrapDiv = {};
+
+  HeaderHomeImg = {};
+
+  HeaderHomeAreaHomeImgWrapDiv = {};
 
   /** following for result */
 
@@ -31,7 +57,7 @@ class CommonStyle {
 
   ExamQuestionChoiceStatementButtonWrapDiv = {};
 
-  ExamQuestionChoiceStatementButton = { textAlign: "left", fontSize: "2.1rem" };
+  ExamQuestionChoiceStatementButton = {};
 
   ExamQuestionCardWrapDiv = {};
 
@@ -49,7 +75,7 @@ class CommonStyle {
 
   ExamQuestionTopicTypographyWrapDiv = {};
 
-  ExamQuestionTopicTypography = { fontWeight: "bold", fontSize: "2.8rem" };
+  ExamQuestionTopicTypography = {};
 
   ExamDiv = {};
 
@@ -57,11 +83,11 @@ class CommonStyle {
 
   ExamFunctionAreaDiv = {};
 
-  ExamFunctionAreaRestartButton = { outlineWidth: "5px", fontSize: "2rem" };
+  ExamFunctionAreaRestartButton = {};
 
   ExamFunctionAreaSpaceDiv = {};
 
-  ExamFunctionAreaEndButton = { fontSize: "2rem" };
+  ExamFunctionAreaEndButton = {};
 
   ExamHeadDiv = {};
 
@@ -69,11 +95,31 @@ class CommonStyle {
 
   MainDiv = {};
 
-  MainSocialButton = { fontSize: "4rem" };
+  MainSocialButton = {};
 
-  MainHighButton = { fontSize: "4rem" };
+  MainHighButton = {};
 
-  MainJuniorButton = { fontSize: "4rem" };
+  MainJuniorButton = {};
+
+  /** following for navigator */
+
+  NavigatorDiv = {};
+
+  NavigatorLoginButtonWrapDiv = {};
+
+  NavigatorLoginButton = {};
+
+  NavigatorFunctionDiv = {};
+
+  NavigatorHomeAreaAvatar = {};
+
+  NavigatorHomeAreaHomeImg = {};
+
+  /** following for login */
+
+  LoginDivWrapDiv = {};
+
+  LoginDiv = {};
 
   /** -------------------- functions -------------------- **/
 

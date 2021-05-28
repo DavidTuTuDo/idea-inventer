@@ -5,7 +5,7 @@ import React from "react";
 import moment from 'moment';
 import {utiller as Util} from "utiller";
 import firebase from 'firebase/app';
-import 'firebase/database';
+    import 'firebase/database';
 import {configer} from 'configer';
 import {Link} from 'react-router-dom';
 import {makeAutoObservable,isObservableObject,isObservableArray} from "mobx";

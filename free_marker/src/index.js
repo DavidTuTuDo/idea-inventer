@@ -20,7 +20,9 @@ const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 class CodegenNode {
 
     node;
-
+    /** 用來加密cookie的 */
+    password;
+    cookies;
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
     props;
@@ -30,6 +32,7 @@ class CodegenNode {
     contents;
     /** 放在<div>content</div>*/
     struct;
+    navigation;
     path;
     name;
     view;
@@ -52,19 +55,28 @@ class CodegenNode {
         }
     }
 
+    hasCookies() {
+        return !!this.cookies && _.size(this.cookies) > 0;
+    }
+
     needInjectStyle() {
         return !!this.injectStyle && this.injectStyle;
     }
 
     hasPath() {
-        return !!this.path && !_.isEmpty( this.path );
+        return !!this.path && !_.isEmpty(this.path);
     }
 
     getContents() {
-        if (!!this.contents && _.isArray( this.contents )) {
+        if (!!this.contents && _.isArray(this.contents)) {
             return this.contents
         }
         return [];
+    }
+
+    hasNavigation() {
+        return !!this.navigation && !!this.navigation.view
+
     }
 
     isOuter() {
@@ -92,19 +104,23 @@ class CodegenNode {
         let object = '';
         if (this.type === 'array')
             object = this.name;
-        else if (!_.isEmpty( this.getParentObject() )) {
+        else if (!_.isEmpty(this.getParentObject())) {
             object = this.getParentObject().name;
         }
 
-        if (!_.isEmpty( object )) {
+        if (!_.isEmpty(object)) {
             return `,object:${object}`;
         }
         return '';
     }
 
+    hasCookiePassword() {
+        return !!this.password && _.size(this.password) > 0;
+    }
+
 
     hasTitle() {
-        return (!_.isUndefined( this.title ));
+        return (!_.isUndefined(this.title));
     }
 
     pure() {
@@ -112,11 +128,11 @@ class CodegenNode {
     }
 
     hasChildren() {
-        return (_.isArray( this.children ) && this.children.length > 0);
+        return (_.isArray(this.children) && this.children.length > 0);
     }
 
     getChildren() {
-        return _.isArray( this.children ) ? this.children : [];
+        return _.isArray(this.children) ? this.children : [];
     }
 
     hasParent() {
@@ -128,15 +144,15 @@ class CodegenNode {
     }
 
     getFunctionNameOfClicked() {
-        return Util.camel( `on`, this.name, this.view, 'clicked' );
+        return Util.camel(`on`, this.name, this.view, 'clicked');
     }
 
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
-    getPathOfRouterString(){
+    getPathOfRouterString() {
         const params = this.getParamsOfPath();
         const path = [];
-        for(const segment of this.path.split('/')) {
-            if(_.startsWith(segment,':'))
+        for (const segment of this.path.split('/')) {
+            if (_.startsWith(segment, ':'))
                 path.push(`\$\{${params.shift()}\}`);
             else
                 path.push(segment);
@@ -149,9 +165,9 @@ class CodegenNode {
         if (!this.hasPath()) return [];
 
         const params = [];
-        for (const segment of this.path.split( '/' )) {
-            if (_.startsWith( segment, ':' ))
-                params.push( Util.getNormalizedStringNotStartWith( segment, ':' ) );
+        for (const segment of this.path.split('/')) {
+            if (_.startsWith(segment, ':'))
+                params.push(Util.getNormalizedStringNotStartWith(segment, ':'));
         }
         return params;
     }
@@ -160,7 +176,7 @@ class CodegenNode {
     getParentBy(predicate = (parent) => (true)) {
         let currentNode = parent;
         while (!!currentNode) {
-            if (predicate( currentNode )) {
+            if (predicate(currentNode)) {
                 return currentNode;
             }
             currentNode = currentNode.parent;
@@ -178,16 +194,16 @@ class CodegenNode {
                 break;
 
             if (currentNode.name)
-                names.push( currentNode.name )
+                names.push(currentNode.name)
 
             currentNode = currentNode.parent;
         }
-        return _.reverse( names );
+        return _.reverse(names);
     }
 
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
     getParentObject() {
-        if (_.isArray( this.parent )) {
+        if (_.isArray(this.parent)) {
             return this.parent.parent;
         }
         return this.parent;
@@ -203,15 +219,15 @@ class CodegenNode {
     }
 
     isRootPath() {
-        return this.path && _.isEqual( this.path, '/' )
+        return this.path && _.isEqual(this.path, '/')
     }
 
     getClassName() {
-        return _.upperFirst( this.name );
+        return _.upperFirst(this.name);
     }
 
     hasURL() {
-        return !_.isEmpty( this.url );
+        return !_.isEmpty(this.url);
     }
 
     isObject() {
@@ -220,7 +236,7 @@ class CodegenNode {
 
     getDefaultValueByType() {
         if (this.defaultValue) {
-            return JSON.stringify( this.defaultValue );
+            return JSON.stringify(this.defaultValue);
         }
 
         if (this.type === 'string') {
@@ -232,7 +248,7 @@ class CodegenNode {
         }
 
         if (this.type === 'object') {
-            return `new ${_.upperFirst( this.name )}()`;
+            return `new ${_.upperFirst(this.name)}()`;
         }
 
         if (this.type === 'number') {
@@ -241,37 +257,41 @@ class CodegenNode {
     }
 
     getFunctionName() {
-        return `get${_.upperFirst( this.name )}${this.plural ? this.plural : ''}`;
+        return `get${_.upperFirst(this.name)}${this.plural ? this.plural : ''}`;
     }
 
     getFunctionNameOfSet() {
         if (this.isArray()) {
-            return `push${_.upperFirst( this.name )}${this.plural}`;
+            return `push${_.upperFirst(this.name)}${this.plural}`;
         }
-        return `set${_.upperFirst( this.name )}`;
+        return `set${_.upperFirst(this.name)}`;
+    }
+
+    getName() {
+        return this.name;
     }
 
     getArrayJSXFunctionName() {
-        return Util.camel( 'render', this.name, 'view' );
+        return Util.camel('render', this.name, 'view');
     }
 
     static enrich(node) {
-        let involution = new CodegenNode( node );
-        if (_.isArray( node )) {
+        let involution = new CodegenNode(node);
+        if (_.isArray(node)) {
             involution = [];
             for (const child of node) {
                 child.parent = node;
-                involution.push( this.enrich( child ) );
+                involution.push(this.enrich(child));
             }
-        } else if (_.isObject( node )) {
+        } else if (_.isObject(node)) {
             for (const key in node) {
                 /** style ,extra 是個例外, 要排除掉*/
-                if (Util.isOrEquals( key, 'contents', 'style', 'extra', 'firebase', 'parent', 'props' ))
+                if (Util.isOrEquals(key, 'contents', 'style', 'extra', 'firebase', 'parent', 'props'))
                     involution[key] = node[key];
-                else if (_.isObject( node[key] ) || _.isArray( node[key] )) {
+                else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
                     obj.parent = node;
-                    involution[key] = this.enrich( obj );
+                    involution[key] = this.enrich(obj);
                 }
             }
         }
@@ -294,29 +314,29 @@ class ClassGenerator {
         this.filePath = path;
         this.classes = [];
 
-        if (!fs.existsSync( this.filePath )) {
-            Util.persistByPath( path )
+        if (!fs.existsSync(this.filePath)) {
+            Util.persistByPath(path)
         }
-        this.context = Util.getContextForRawFile( this.filePath ).split( '\n' );
+        this.context = Util.getContextForRawFile(this.filePath).split('\n');
     }
 
     appendField(fieldName, defaultValue, macros = []) {
         const stmt = [];
         for (const m of macros) {
-            stmt.push( `\n` );
-            stmt.push( `@${m}` );
+            stmt.push(`\n`);
+            stmt.push(`@${m}`);
         }
-        stmt.push( `\n` );
-        stmt.push( `${fieldName} = ${defaultValue};` );
-        stmt.push( `\n` );
-        Util.insertToArray( this.context, this.getIndexOfFieldSign(), ...stmt );
+        stmt.push(`\n`);
+        stmt.push(`${fieldName} = ${defaultValue};`);
+        stmt.push(`\n`);
+        Util.insertToArray(this.context, this.getIndexOfFieldSign(), ...stmt);
     }
 
     appendSeparator(sep) {
         const stmt = [];
-        stmt.push( '\n' );
-        stmt.push( sep );
-        Util.insertToArray( this.context, this.getIndexOfFunctionSign(), ...stmt );
+        stmt.push('\n');
+        stmt.push(sep);
+        Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmt);
     }
 
     /**
@@ -330,20 +350,20 @@ class ClassGenerator {
     appendFunction(functionName, params = [], macros = [], ...contents) {
         /** 應該要檢查file 沒有class的話, 要跳出Error提示 */
         const stmt = [];
-        stmt.push( `\n` );
+        stmt.push(`\n`);
         for (const m of macros) {
-            stmt.push( `\n` );
-            stmt.push( `@${m}` );
+            stmt.push(`\n`);
+            stmt.push(`@${m}`);
         }
-        stmt.push( `\n` );
-        stmt.push( `${functionName}(${_.isEmpty( params ) ? '' : params.join( ' ,' )}) {` );
+        stmt.push(`\n`);
+        stmt.push(`${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
         for (let content of contents) {
-            stmt.push( `\n` );
-            stmt.push( `${content}` );
+            stmt.push(`\n`);
+            stmt.push(`${content}`);
         }
-        stmt.push( `\n` );
-        stmt.push( `}` );
-        Util.insertToArray( this.context, this.getIndexOfFunctionSign(), ...stmt )
+        stmt.push(`\n`);
+        stmt.push(`}`);
+        Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmt)
     }
 
 
@@ -353,92 +373,97 @@ class ClassGenerator {
     }
 
     getIndexOf(stmt) {
-        return _.findIndex( this.context, (per) => {
-            return _.isEqual( per, stmt );
-        } );
+        return _.findIndex(this.context, (per) => {
+            return _.isEqual(per, stmt);
+        });
     }
 
     /** extendz:{name,from}*/
     appendClass(className, extendz, ...macros) {
         /** 應該要檢查file is not empty 的話, 要跳出Error提示 */
         const stmt = [];
-        stmt.push( '\n' );
-        stmt.push( '\n' );
+        stmt.push('\n');
+        stmt.push('\n');
         for (const macro of macros) {
-            stmt.push( '\n' );
-            stmt.push( `@${macro}` );
+            stmt.push('\n');
+            stmt.push(`@${macro}`);
         }
-        stmt.push( '\n' );
-        if (_.isObject( extendz )) {
-            this.appendImport( extendz.name, extendz.from );
-            stmt.push( `class ${className}${extendz ? ` extends ${extendz.name}` : ' '} {` );
+        stmt.push('\n');
+        if (_.isObject(extendz)) {
+            this.appendImport(extendz.name, extendz.from);
+            stmt.push(`class ${className}${extendz ? ` extends ${extendz.name}` : ' '} {`);
         } else {
-            stmt.push( `class ${className}${extendz ? ` extends ${extendz}` : ' '} {` );
+            stmt.push(`class ${className}${extendz ? ` extends ${extendz}` : ' '} {`);
         }
 
-        stmt.push( `\n` );
-        stmt.push( SIGN_OF_FIELD_START );
-        stmt.push( `\n` );
-        stmt.push( SIGN_OF_FUNCTION_START );
-        stmt.push( `\n` );
-        stmt.push( SIGN_OF_RESTFUL_API_START );
-        stmt.push( `\n` );
-        stmt.push( `}` );
-        stmt.push( `\n` );
+        stmt.push(`\n`);
+        stmt.push(SIGN_OF_FIELD_START);
+        stmt.push(`\n`);
+        stmt.push(SIGN_OF_FUNCTION_START);
+        stmt.push(`\n`);
+        stmt.push(SIGN_OF_RESTFUL_API_START);
+        stmt.push(`\n`);
+        stmt.push(`}`);
+        stmt.push(`\n`);
 
-        this.context.push( ...stmt );
-        this.classes.push( className );
+        this.context.push(...stmt);
+        this.classes.push(className);
         this.hasExtends = !!extendz;
     }
 
 
     hasClass() {
-        return (_.size( this.classes )) >= 1;
+        return (_.size(this.classes)) >= 1;
     }
 
     async persist() {
         const stmts = [];
-        if (_.size( this.classes ) === 1) {
+        if (_.size(this.classes) === 1) {
             if (this.isSingletonFile) {
-                stmts.push( `export default new ${this.classes[0]}()` );
+                stmts.push(`export default new ${this.classes[0]}()`);
             } else {
-                stmts.push( `export default ${this.classes[0]}` );
+                stmts.push(`export default ${this.classes[0]}`);
             }
 
-        } else if (_.size( this.classes ) > 1) {
-            stmts.push( `export { ${this.classes.map( (clazz => `${clazz} as ${clazz}`) ).join( ',' )}}` );
+        } else if (_.size(this.classes) > 1) {
+            stmts.push(`export { ${this.classes.map((clazz => `${clazz} as ${clazz}`)).join(',')}}`);
         }
 
         if (this.hasClass()) {
-            this.appendFunction( 'constructor', ['props'],
-                [], this.hasExtends ? 'super(props)' : '', ...this.constructorStmt );
+            this.appendFunction('constructor', ['props'],
+                [], this.hasExtends ? 'super(props)' : '', ...this.constructorStmt);
         }
 
-        this.appendInClassTail( stmts );
+        this.appendInClassTail(stmts);
         if (this.signature)
-            this.appendInClassHead( `/** this code are generated, modify is no sense. \n\tauthor:David Tu, \n\temail:freshingmoon0725@gmail.com \n\tupdateTime:${Util.getCurrentTimeFormat()} \n*/`, false );
+            this.appendInClassHead(`/** this code are generated, modify is no sense. \n\tauthor:David Tu, \n\temail:freshingmoon0725@gmail.com \n\tupdateTime:${Util.getCurrentTimeFormat()} \n*/`, false);
 
-        Util.appendFile( this.filePath, _.join( this.context, '' ), true, true );
-        await Util.executeCommandLine( `cd ${libpath.resolve( '.' )} &&  npx prettier --write ${libpath.resolve( this.filePath )}` )
+        Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
+        try {
+            await Util.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(this.filePath)}`)
+        } catch (error) {
+            throw new ERROR(8011, error);
+        }
+
     }
 
     /** import `${parts}` from `${from}`*/
     appendImport(parts, from) {
-        this.appendInClassHead( `import ${parts} ${_.isEmpty( parts ) ? `` : `from`} '${from}'` );
+        this.appendInClassHead(`import ${parts} ${_.isEmpty(parts) ? `` : `from`} '${from}'`);
     }
 
     appendInClassHead(stmt, needSemicolon = true) {
         const stmts = [];
-        stmts.push( `${stmt}${needSemicolon ? ';' : ''}` );
-        stmts.push( '\n' );
-        Util.insertToArray( this.context, 0, ...stmts );
+        stmts.push(`${stmt}${needSemicolon ? ';' : ''}`);
+        stmts.push('\n');
+        Util.insertToArray(this.context, 0, ...stmts);
     }
 
     appendInClassTail(stmt) {
         const stmts = [];
-        stmts.push( stmt );
-        stmts.push( '\n' );
-        this.context.push( ...stmts );
+        stmts.push(stmt);
+        stmts.push('\n');
+        this.context.push(...stmts);
     }
 
     getClasses() {
@@ -447,31 +472,31 @@ class ClassGenerator {
 
     /** this is not allow to growing */
     getIndexOfRestfulApiSign() {
-        return this.getIndexOf( SIGN_OF_RESTFUL_API_START );
+        return this.getIndexOf(SIGN_OF_RESTFUL_API_START);
     }
 
     getIndexOfFunctionSign() {
-        return this.getIndexOf( SIGN_OF_FUNCTION_START );
+        return this.getIndexOf(SIGN_OF_FUNCTION_START);
     }
 
     getIndexOfFieldSign() {
-        return this.getIndexOf( SIGN_OF_FIELD_START );
+        return this.getIndexOf(SIGN_OF_FIELD_START);
     }
 
     insertBatchLinesIntoFunctionSection(lines) {
-        Util.insertToArray( this.context, this.getIndexOfFunctionSign(), ...lines );
+        Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...lines);
     }
 
     insertBatchLinesIntoRestfulApiSection(lines) {
-        Util.insertToArray( this.context, this.getIndexOfRestfulApiSign(), ...lines );
+        Util.insertToArray(this.context, this.getIndexOfRestfulApiSign(), ...lines);
     }
 
     insertBatchLinesIntoFieldSection(lines) {
-        Util.insertToArray( this.context, this.getIndexOfFieldSign(), ...lines );
+        Util.insertToArray(this.context, this.getIndexOfFieldSign(), ...lines);
     }
 
     insertBatchLines(lines) {
-        Util.insertToArray( this.context, 0, ...lines );
+        Util.insertToArray(this.context, 0, ...lines);
     }
 
 
@@ -499,10 +524,15 @@ class BaseBuilder {
 
     appendMustacheFile(templateFileName, destFileName, param = {}) {
         Util.appendFile(
-            libpath.resolve( destFileName ),
-            this.getStringFromMustache( templateFileName, param ),
+            libpath.resolve(destFileName),
+            this.getStringFromMustache(templateFileName, param),
             true,
-            true );
+            true);
+    }
+
+    importDefault(generator) {
+        generator.appendImport('_', 'lodash');
+        generator.appendImport('{ utiller as Util, exceptioner as ERROR }', 'utiller');
     }
 
     setDefaultPath(path) {
@@ -510,11 +540,11 @@ class BaseBuilder {
     }
 
     appendDefaultPath(...path) {
-        this.genPath = libpath.join( this.genPath, ...path );
+        this.genPath = libpath.join(this.genPath, ...path);
     }
 
     getStringFromMustache(templateFileName, variable) {
-        return mustache.render( Util.getContextForRawFile( `./template/${templateFileName}` ), this.getMustacheRenderValues( variable ) );
+        return mustache.render(Util.getContextForRawFile(`./template/${templateFileName}`), this.getMustacheRenderValues(variable));
     }
 
     getMustacheRenderValues = ({
@@ -529,8 +559,8 @@ class BaseBuilder {
                                    fieldClass,
                                }) => {
         return {
-            fieldName: _.lowerFirst( fieldName ),
-            functionName: functionName ? functionName : _.upperFirst( fieldName ),
+            fieldName: _.lowerFirst(fieldName),
+            functionName: functionName ? functionName : _.upperFirst(fieldName),
             defaultValue,
             fieldUrl,
             className,
@@ -543,76 +573,74 @@ class BaseBuilder {
 
     /** 找到目錄下的folder,是這用來gen stores的 index file,有點偷懶, 應該要從source去組合出來 */
     getGenUnion(...folder) {
-        let path = libpath.join( this.genRootPath, 'src', ...folder )
+        let path = libpath.join(this.genRootPath, 'src', ...folder)
 
-        return _.filter( Util.getChildPathByPath( path ),
-            each => each.isDirectory ).map( each => each.dirName );
+        return _.filter(Util.getChildPathByPath(path),
+            each => each.isDirectory).map(each => each.dirName);
     }
 
     getGenStores() {
-        return this.getGenUnion( `store` );
+        return this.getGenUnion(`store`);
     }
 
     getGenComponent() {
-        return this.getGenUnion( `component` );
+        return this.getGenUnion(`component`);
     }
 }
 
 class StoreBuilder extends BaseBuilder {
 
     constructor(props) {
-        super( props );
-        this.appendDefaultPath( 'src', 'store' );
+        super(props);
+        this.appendDefaultPath('src', 'store');
     }
 
     getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass}) {
-        const functions = this.getStringFromMustache( `store_${type}.js`, {
+        const functions = this.getStringFromMustache(`store_${type}.js`, {
             fieldName,
             defaultValue,
             fieldClass
-        } )
+        })
         return functions;
     }
 
     getFunctionsOfRemoteApi({fieldName, type, fieldUrl}) {
-        const functions = this.getStringFromMustache( `http_restful.js`, {
+        const functions = this.getStringFromMustache(`http_restful.js`, {
             fieldName,
             fieldUrl,
-        } )
+        })
         return functions;
     }
 
     async buildIndexFiles() {
         /** 產生 store的index file */
         const stores = this.getGenStores();
-        this.base = Util.persistByPath( libpath.join( this.genPath, `store.js` ) );
-
-        const baseGenerator = new ClassGenerator( this.base );
-        baseGenerator.appendClass( `BaseStore` );
+        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genPath, `store.js`)));
+        baseGenerator.appendClass(`BaseStore`);
         for (const store of stores) {
-            baseGenerator.appendImport( _.upperFirst( store ), `./${store}` );
+            baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
         }
-        baseGenerator.appendConstructor( ...stores.map( child => `this.${child} = new ${_.upperFirst( child )}()` ) )
+        baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}()`))
         await baseGenerator.persist();
 
-        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, `index.js` ) );
-        indexGenerator.appendClass( `Store`, {name: `BaseStore`, from: './store'} );
+        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, `index.js`));
+        indexGenerator.appendClass(`Store`, {name: `BaseStore`, from: './store'});
         indexGenerator.appendConstructor();
         await indexGenerator.persist();
     }
 
     async buildBaseStore(node) {
 
-        const folderName = _.toLower( node.name );
-        const baseClassName = 'Base' + _.upperFirst( folderName ) + 'Store';
-        const indexClassName = _.upperFirst( folderName ) + 'Store';
-        const baseGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `${baseClassName}.js` ) );
-        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `index.js` ) )
+        const folderName = _.lowerFirst(node.getName());
+        const baseClassName = 'Base' + _.upperFirst(folderName) + 'Store';
+        const indexClassName = _.upperFirst(folderName) + 'Store';
+        const baseGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `${baseClassName}.js`));
+        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `index.js`))
 
-        baseGenerator.appendClass( baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'} );
-        baseGenerator.appendInClassHead( `import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"` )
-        baseGenerator.appendInClassHead( `import {utiller as Util, exceptioner as ERROR} from 'utiller'` );
-        baseGenerator.appendFunction( `getName`, [], [], `return '${baseClassName}'` );
+        baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
+        baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
+        baseGenerator.appendInClassHead(`import {utiller as Util, exceptioner as ERROR} from 'utiller'`);
+        baseGenerator.appendFunction(`getName`, [], [], `return '${baseClassName}'`);
         const propsStmt = [];
         if (node.hasChildren()) {
             for (const child of node.getChildren()) {
@@ -620,44 +648,65 @@ class StoreBuilder extends BaseBuilder {
                 const propStmt = [];
                 const fieldName = child.name + (child.plural ? child.plural : '');
                 const defaultValue = child.getDefaultValueByType();
-                baseGenerator.appendField( fieldName, defaultValue, ['observable'] );
+                baseGenerator.appendField(fieldName, defaultValue, ['observable']);
 
                 baseGenerator.insertBatchLinesIntoFunctionSection(
                     this.getFunctionsDependOnFieldType(
                         {
-                            fieldName: _.upperFirst( fieldName ),
+                            fieldName: _.upperFirst(fieldName),
                             type: child.type,
                             defaultValue,
                             fieldClass: child.getClassName(),
-                        } ) );
-                propStmt.push( `if(obj && obj.${fieldName})` );
+                        }));
+                propStmt.push(`if(obj && obj.${fieldName})`);
                 if (child.isArray()) {
-                    propStmt.push( `this.${child.getFunctionNameOfSet()}(...obj.${fieldName})` );
-                    baseGenerator.appendInClassHead( `import ${_.upperFirst( child.name )} from '../${child.name}'` )
-                    await this.buildBaseStore( child )
+                    propStmt.push(`this.${child.getFunctionNameOfSet()}(...obj.${fieldName})`);
+                    baseGenerator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
+                    await this.buildBaseStore(child)
                 } else if (child.isObject()) {
-                    baseGenerator.appendInClassHead( `import ${_.upperFirst( child.name )} from '../${child.name}'` )
-                    propStmt.push( `this.set${_.upperFirst( fieldName )}(obj.${fieldName})` );
-                    await this.buildBaseStore( child )
+                    baseGenerator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
+                    propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
+                    await this.buildBaseStore(child)
                 } else {
-                    propStmt.push( `this.${child.getFunctionNameOfSet()}(obj.${fieldName})` );
+                    propStmt.push(`this.${child.getFunctionNameOfSet()}(obj.${fieldName})`);
                 }
-                propsStmt.push( ...propStmt );
+                propsStmt.push(...propStmt);
             }
         }
+
         if (node.hasURL()) {
-            baseGenerator.insertBatchLinesIntoRestfulApiSection( this.getFunctionsOfRemoteApi( {
+            baseGenerator.insertBatchLinesIntoRestfulApiSection(this.getFunctionsOfRemoteApi({
                     fieldName: node.name,
                     type: node.type,
                     fieldUrl: node.url
-                } )
+                })
             );
         }
-        baseGenerator.appendFunction( `initial`, ['obj'], [], `super.initial(obj)`, ...propsStmt );
-        baseGenerator.appendConstructor( `makeObservable(this)`, `this.initial(props)` );
+
+        baseGenerator.appendFunction('self', [], [],
+            'return {',
+            _.filter(node.getChildren(),(child) => child.isAttribute())
+                .map((child) => `${child.getName()} : this.${child.getName()}`).join(','),
+            '}'
+        )
+
+        if (node.hasPath()) {
+            baseGenerator.appendFunction('async fetch', [...node.getParamsOfPath(), 'filter'], [],
+                `const url = \`${node.getPathOfRouterString()}\`;`,
+                ` this.fromJson((await this.fetchObject(url,filter)).val())`,
+                `return this.self()`
+            )
+
+
+            baseGenerator.appendFunction('async post', [...node.getParamsOfPath(), 'object = this.self()'], [],
+                `const url = \`${node.getPathOfRouterString()}\`;`,
+                `await this.postObject(url,object)`)
+        }
+        baseGenerator.appendFunction(`initial`, ['obj'], ['action'], `super.initial(obj)`, ...propsStmt);
+        baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
         await baseGenerator.persist();
 
-        indexGenerator.appendClass( `${indexClassName}`, {name: baseClassName, from: `./${baseClassName}`} );
+        indexGenerator.appendClass(`${indexClassName}`, {name: baseClassName, from: `./${baseClassName}`});
         await indexGenerator.persist();
 
     }
@@ -671,56 +720,64 @@ class ComponentBuilder extends BaseBuilder {
     componentDidMountStmt = [];
 
     constructor(props) {
-        super( props );
-        this.appendDefaultPath( 'src', 'component' );
+        super(props);
+        this.appendDefaultPath('src', 'component');
+    }
+
+    importComponentDefault(generator) {
+        super.importDefault(generator);
+        generator.appendImport(`Cookie`, '../../cookie');
+        generator.appendImport(`Router`, '../../router');
+        generator.appendImport(`{Application}`, '../../');
+        generator.appendImport(`React`, 'react');
     }
 
     appendStmtIntoComponentDidMount(...stmt) {
-        this.componentDidMountStmt.push( ...stmt );
+        this.componentDidMountStmt.push(...stmt);
     }
 
     async buildBaseComponent(componentNode) {
-        const baseClassName = `Base${_.upperFirst( componentNode.name )}Component`;
-        const className = `${_.upperFirst( componentNode.name )}Component`;
+        const baseClassName = `Base${_.upperFirst(componentNode.name)}Component`;
+        const className = `${_.upperFirst(componentNode.name)}Component`;
         const folderName = componentNode.name;
 
-        const baseGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `${baseClassName}.js` ) );
+        const baseGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `${baseClassName}.js`));
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
-        baseGenerator.appendClass( baseClassName, {
+        baseGenerator.appendClass(baseClassName, {
             name: 'BaseComponent',
             from: '../../base/BaseComponent'
-        } );
-        baseGenerator.appendInClassHead( `import React from 'react'` )
-        baseGenerator.appendInClassHead( `import Style from '../../style'` )
-        baseGenerator.appendInClassHead( `import {Paper, Button, Typography, Card} from '@material-ui/core'` );
+        });
+        this.importComponentDefault(baseGenerator);
+        baseGenerator.appendInClassHead(`import Style from '../../style'`)
+        baseGenerator.appendInClassHead(`import {Paper, Button, Typography, Card, Avatar} from '@material-ui/core'`);
 
         for (const param of componentNode.getParamsOfPath()) {
-            baseGenerator.appendConstructor( `this.paramOf${_.upperFirst( param )}= this.props.match.params.${param}` );
-            baseGenerator.appendConstructor( `console.log(this.paramOf${_.upperFirst( param )})` );
+            baseGenerator.appendConstructor(`this.paramOf${_.upperFirst(param)}= this.props.match.params.${param}`);
+            baseGenerator.appendConstructor(`console.log(this.paramOf${_.upperFirst(param)})`);
         }
 
-        this.appendRenderViewFunctions( componentNode.struct, baseGenerator );
+        this.appendRenderViewFunctions(componentNode.struct, baseGenerator);
 
         if (componentNode.hasTitle()) {
-            baseGenerator.appendField( `stringOfPageTitle`, `"${componentNode.title}"` )
-            this.appendStmtIntoComponentDidMount( `document.title = this.stringOfPageTitle` );
+            baseGenerator.appendField(`stringOfPageTitle`, `"${componentNode.title}"`)
+            this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
         }
 
-        baseGenerator.appendFunction( 'getStore', [], [],
-            `return this.props.${componentNode.name}` )
+        baseGenerator.appendFunction('getStore', [], [],
+            `return this.props.${componentNode.name}`)
 
 
-        baseGenerator.appendFunction( 'componentDidMount',
-            [], [], `super.componentDidMount()`, ...this.componentDidMountStmt );
+        baseGenerator.appendFunction('componentDidMount',
+            [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
 
         /** index.js */
-        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, folderName, `index.js` ) );
-        indexGenerator.appendClass( className, {
+        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `index.js`));
+        indexGenerator.appendClass(className, {
             name: baseClassName,
             from: `./${baseClassName}`
-        }, `inject('${componentNode.name}')`, `observer` );
-        indexGenerator.appendImport( `{observer, inject}`, `mobx-react` );
+        }, `inject('${componentNode.name}')`, `observer`);
+        indexGenerator.appendImport(`{observer, inject}`, `mobx-react`);
 
 
         await indexGenerator.persist();
@@ -741,7 +798,7 @@ class ComponentBuilder extends BaseBuilder {
             tag: node.view,
             props: { style: {height: 80},className:'className' }, ### means not single quatation
             contents: [`console.log()`,`console.error()`],
-            children:['children']
+            children:['children1','children2']
         }
 
      * output:
@@ -756,14 +813,14 @@ class ComponentBuilder extends BaseBuilder {
 
     getJSXStrings(param) {
         function normalize(value) {
-            if (_.isString( value ) && _.startsWith( value, `###` )) {
-                return `{${Util.getStringOfDropHeadSign( value, `#` )}}`;
+            if (_.isString(value) && _.startsWith(value, `###`)) {
+                return `{${Util.getStringOfDropHeadSign(value, `#`)}}`;
             }
 
-            if (_.isBoolean( value )) {
-                return `{${_.toString( value )}}`;
+            if (_.isBoolean(value)) {
+                return `{${_.toString(value)}}`;
             }
-            return `{${JSON.stringify( value )}}`;
+            return `{${JSON.stringify(value)}}`;
         }
 
         const props = param.props;
@@ -771,52 +828,52 @@ class ComponentBuilder extends BaseBuilder {
         const children = param.children ? param.children : [];
 
         const stmt = [];
-        stmt.push( `<${param.tag}` );
-        stmt.push( '\n' );
+        stmt.push(`<${param.tag}`);
+        stmt.push('\n');
 
         for (const child of children) {
-            stmt.push( `{...${child}}` );
-            stmt.push( '\n' );
+            stmt.push(`{...${child}}`);
+            stmt.push('\n');
         }
 
         for (const key in props) {
             if (!!!props[key]) continue
 
-            if (_.isEqual( key, 'forEachObject' ))
-                stmt.push( `{${props[key]}}` )
+            if (_.isEqual(key, 'forEachObject'))
+                stmt.push(`{${props[key]}}`)
             else
-                stmt.push( `${key}=${normalize( props[key] )}\n` );
+                stmt.push(`${key}=${normalize(props[key])}\n`);
 
             /** this is super hard-code */
-            if (_.isEqual( key, 'className' )) {
-                this.storesClassName( props[key] );
+            if (_.isEqual(key, 'className')) {
+                this.storesClassName(props[key]);
             }
         }
 
-        stmt.push( `>` );
-        stmt.push( '\n' );
+        stmt.push(`>`);
+        stmt.push('\n');
 
         for (const content of contents) {
-            stmt.push( `${content}` );
-            stmt.push( '\n' );
+            stmt.push(`${content}`);
+            stmt.push('\n');
         }
 
-        stmt.push( SIGN_OF_JSX_CONTENT );
-        stmt.push( '\n\n' );
-        stmt.push( `</${param.tag}>` );
-        stmt.push( '\n\n' );
+        stmt.push(SIGN_OF_JSX_CONTENT);
+        stmt.push('\n\n');
+        stmt.push(`</${param.tag}>`);
+        stmt.push('\n\n');
         return stmt;
     }
 
     /** this is super hard-code */
     storesClassName(name) {
-        this.classNames.push( name );
+        this.classNames.push(name);
     }
 
     getJSXStringsByNode(generator, node, ...extraContents) {
-        const keyValue = node.getChildren().map( each => `\$\{${node.name}.${each.name}\}` ).join( '' );
-        const parentName = Util.camel( ...node.getParentNames(), node.name, node.isOuter() ? 'outer' : '', node.view, );
-        const className = _.upperFirst( parentName );
+        const keyValue = node.getChildren().map(each => `\$\{${node.name}.${each.name}\}`).join('');
+        const parentName = Util.camel(...node.getParentNames(), node.name, node.isOuter() ? 'outer' : '', node.view,);
+        const className = _.upperFirst(parentName);
 
 
         const props = {
@@ -826,12 +883,12 @@ class ComponentBuilder extends BaseBuilder {
 
         if (node.needInjectStyle()) {
             const param = node.getParentObject() ? node.getParentObject().name : '';
-            props.style = `###{...this.getInjectStyleOf${_.upperFirst( node.name )}${_.upperFirst( node.view )}(${param}),...Style.${className}}`;
+            props.style = `###{...this.getInjectStyleOf${_.upperFirst(node.name)}${_.upperFirst(node.view)}(${param}),...Style.${className}}`;
         } else {
             props.style = `###Style.${className}`;
         }
 
-        if (node.isArray() && !_.isEmpty( keyValue )) {
+        if (node.isArray() && !_.isEmpty(keyValue)) {
             props.key = '###' + '`' + keyValue + '`';
         }
 
@@ -842,22 +899,22 @@ class ComponentBuilder extends BaseBuilder {
 
         const selfContent = node.getContents();
 
-        const origin = this.getJSXStrings( {
+        const origin = this.getJSXStrings({
             tag: node.view,
             props,
             contents: [...selfContent, ...extraContents],
-        } );
+        });
 
 
         if (node.wrap) {
             const props = {className: `${className}WrapDiv`,}
-            if (!_.isEmpty( keyValue ))
+            if (!_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
-            return this.getJSXStrings( {
+            return this.getJSXStrings({
                 tag: 'div',
                 props,
-                contents: [...this.getOuterChildJSXStrings( generator, node ), ...origin],
-            } )
+                contents: [...this.getOuterChildJSXStrings(generator, node), ...origin],
+            })
         }
         return origin;
     }
@@ -866,7 +923,7 @@ class ComponentBuilder extends BaseBuilder {
         const stmt = [];
         for (const child of node.getChildren()) {
             if (child.isOuter())
-                stmt.push( ...this.getJSXStringsByStruct( child, generator, false ) )
+                stmt.push(...this.getJSXStringsByStruct(child, generator, false))
         }
         return stmt;
     }
@@ -879,253 +936,337 @@ class ComponentBuilder extends BaseBuilder {
             if (notAllowOuterChild && child.isOuter()) continue;
 
             const functionName =
-                `get${_.upperFirst( node.name )}${_.upperFirst( child.name )}${child.plural ? child.plural : ''}`;
+                `get${_.upperFirst(node.name)}${_.upperFirst(child.name)}${child.plural ? child.plural : ''}`;
 
 
             if (child.hasChildren()) {
                 if (child.isArray()) {
-                    childstmt.push( `\n{this.${functionName}(${node.name})
-                .map((each) => this.${child.getArrayJSXFunctionName()}(each))}\n` );
+                    childstmt.push(`\n{this.${functionName}(${node.name})
+                .map((each) => this.${child.getArrayJSXFunctionName()}(each))}\n`);
 
-                    generator.appendFunction( functionName, [`${node.name}`], [],
-                        `return ${node.name}.${child.getFunctionName()}()` );
+                    generator.appendFunction(functionName, [`${node.name}`], [],
+                        `return ${node.name}.${child.getFunctionName()}()`);
                 } else if (child.isObject()) {
-                    childstmt.push( `\n{this.${child.getArrayJSXFunctionName()}(this.${functionName}(${node.name}))}\n` );
+                    childstmt.push(`\n{this.${child.getArrayJSXFunctionName()}(this.${functionName}(${node.name}))}\n`);
 
-                    generator.appendFunction( functionName, [`${node.name}`], [],
-                        `return ${node.name}.${child.getFunctionName()}()` );
+                    generator.appendFunction(functionName, [`${node.name}`], [],
+                        `return ${node.name}.${child.getFunctionName()}()`);
                 } else {
                     /** 當沒有type的屬性時,畫面也要可以做出結構 */
-                    childstmt.push( ...this.getJSXStringsByStruct( child, generator, notAllowOuterChild ) )
+                    childstmt.push(...this.getJSXStringsByStruct(child, generator, notAllowOuterChild))
                 }
             } else {
                 const content = [];
 
                 if (child.isAttribute()) {
-                    generator.appendFunction( functionName, [`${node.name}`], [],
-                        `return ${node.name}.${child.getFunctionName()}()` );
-                    content.push( `{this.${functionName}(${_.lowerCase( node.name )})}` );
+                    generator.appendFunction(functionName, [`${node.name}`], [],
+                        `return ${node.name}.${child.getFunctionName()}()`);
+                    content.push(`{this.${functionName}(${_.lowerCase(node.name)})}`);
                 }
-
-                childstmt.push( ...this.getJSXStringsByNode( generator, child, ...content ) );
+                childstmt.push(...this.getJSXStringsByNode(generator, child, ...content));
             }
 
 
             if (child.isClickView()) {
-                generator.appendFunction( child.getFunctionNameOfClicked(),
+                generator.appendFunction(child.getFunctionNameOfClicked(),
                     ['param'], [],
                     `console.error('${child.getFunctionNameOfClicked()} not override')`
                 )
             }
         }
 
-        return this.getJSXStringsByNode( generator, node, ...childstmt );
+        return this.getJSXStringsByNode(generator, node, ...childstmt);
     }
 
+    /** stmt:Array<String> */
     removeJSXSign(stmt) {
-        _.remove( stmt, (each) => _.isEqual( each, SIGN_OF_JSX_CONTENT ) );
+        _.remove(stmt, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
 
     appendRenderViewFunctions(node, builder) {
+        if (!node.isView()) return;
 
         function normalize(...strings) {
             const self = strings;
-            _.remove( self, (each) => _.isEqual( each, SIGN_OF_JSX_CONTENT ) );
-            return `return ( ${self.join( '' )})`;
+            _.remove(self, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
+            return `return ( ${self.join('')})`;
         }
 
         if (!this.hasRootRenderViewFunction) {
-            builder.appendFunction( 'renderView', [], [],
-                `const ${_.lowerCase( node.name )} = this.props.${_.lowerCase( node.name )};\n\n`,
-                normalize( ...this.getJSXStringsByStruct( node, builder ) ) );
+            builder.appendFunction('renderView', [], [],
+                `const ${_.lowerCase(node.name)} = this.props.${_.lowerCase(node.name)};\n\n`,
+                normalize(...this.getJSXStringsByStruct(node, builder)));
             this.hasRootRenderViewFunction = true;
         }
 
         for (const child of node.getChildren()) {
+            if (!child.isView()) continue;
             if (child.isArrayOrObject()) {
-                builder.appendFunction( child.getArrayJSXFunctionName(), [`${_.lowerCase( child.name )}`], [],
-                    normalize( ...this.getJSXStringsByStruct( child, builder ) ) );
-                this.appendRenderViewFunctions( child, builder );
+                builder.appendFunction(child.getArrayJSXFunctionName(), [`${_.lowerCase(child.name)}`], [],
+                    normalize(...this.getJSXStringsByStruct(child, builder)));
+                this.appendRenderViewFunctions(child, builder);
             }
         }
     }
 
     getComponentClassBody(className) {
-        return mustache.render( Util.getContextForRawFile( './template/component.js' ), this.getMustacheRenderValues( {className} ) )
+        return mustache.render(Util.getContextForRawFile('./template/component.js'), this.getMustacheRenderValues({className}))
     }
 }
 
 class AppBuilder extends ComponentBuilder {
 
     constructor(props) {
-        super( props );
+        super(props);
         /** 印為繼承component */
-        this.appendDefaultPath( '../' );
+        this.appendDefaultPath('../');
+    }
+
+    async buildCookieFiles(sourceObj) {
+
+        if (sourceObj.hasCookies) {
+            const baseCookieGenerator = new ClassGenerator(libpath.join(this.genPath, `cookie`, `BaseCookie.js`));
+            baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
+            baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
+            baseCookieGenerator.appendImport(`Config`, `../config`);
+            baseCookieGenerator.appendField(`cookie`, `new Cookies()`);
+            baseCookieGenerator.appendField('password', 'Config.password');
+            this.importDefault(baseCookieGenerator);
+            for (const cookie of sourceObj.cookies) {
+                baseCookieGenerator.appendField(cookie.name, JSON.stringify({
+                        key: cookie.name,
+                        defaultValue: cookie.defaultValue
+                    })
+                )
+                baseCookieGenerator.appendFunction(Util.camel(`set`, cookie.name), [`${cookie.name}`, `options`], [],
+                    `if(${cookie.name} === undefined) { this.${Util.camel(`remove`, cookie.name)}(); return }`,
+                    cookie.isObject() ? `${cookie.name} = JSON.stringify(${cookie.name})` : ``,
+                    `this.cookie.set(`,
+                    `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password),`,
+                    `Util.getEncryptString(${cookie.name}, this.password), {path: "/", ...options})`
+                )
+                baseCookieGenerator.appendFunction(Util.camel(`get`, cookie.name), ['options = {}'], [],
+                    `const value = this.cookie.get(`,
+                    `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password), options)`,
+                    `if(_.isEmpty(value)) return undefined`,
+                    `const decrypt = Util.getDecryptString(value, this.password)`,
+                    cookie.isObject() ? `return JSON.parse(decrypt)` : `return decrypt`
+                )
+
+                baseCookieGenerator.appendFunction(Util.camel(`has`, cookie.name), [], [],
+                    `return !!this.cookie.get(this.getEternalEncryptStringOfCookieName(
+                    this.${cookie.name}.key, 
+                                this.password))`,
+                )
+
+
+                baseCookieGenerator.appendFunction(Util.camel(`remove`, cookie.name), ['option'], [],
+                    `this.cookie.remove(`,
+                    `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password),{path:"/",...option})`)
+
+            }
+            baseCookieGenerator.appendFunction('getAllCookies', ['options = {}'], [], 'return this.cookie.getAll(options)')
+            const indexCookieGenerator = new ClassGenerator(libpath.join(this.genPath, `cookie`, `index.js`));
+            indexCookieGenerator.appendClass('Cookie', {name: `BaseCookie`, from: './BaseCookie'});
+            indexCookieGenerator.setSingleton(true);
+
+            await indexCookieGenerator.persist();
+            await baseCookieGenerator.persist();
+        }
     }
 
     async buildWebpackNPackageJson(sourceObj) {
-        this.appendMustacheFile( 'package.json', libpath.join( this.genRootPath, `package.json` ), {
+        this.appendMustacheFile('package.json', libpath.join(this.genRootPath,
+            `package.json`
+        ), {
             projectName: sourceObj.name,
             projectVersion: sourceObj.version,
             projectDescription: sourceObj.description
-        } );
-        this.appendMustacheFile( 'webpack.config.js', libpath.join( this.genRootPath, `webpack.config.js` ) );
-        this.appendMustacheFile( 'babel.config.js', libpath.join( this.genRootPath, `babel.config.js` ) );
+        });
+        this.appendMustacheFile('webpack.config.js', libpath.join(this.genRootPath,
+            `webpack.config.js`
+        ));
+        this.appendMustacheFile('babel.config.js', libpath.join(this.genRootPath,
+            `babel.config.js`
+        ));
     }
 
     async buildHtmlIndexAssetsFile() {
-        const path = Util.persistByPath( libpath.join( this.genRootPath, 'dist' ) );
-        this.appendMustacheFile( 'index.html', libpath.join( path, 'index.html' ) );
+        const path = Util.persistByPath(libpath.join(this.genRootPath, 'dist'));
+        this.appendMustacheFile('index.html', libpath.join(path, 'index.html'));
     }
 
     async buildRouterFile(sourceObj) {
-        const baseRouterGenerator = new ClassGenerator( libpath.join( this.genPath, `router`, `BaseRouter.js` ) );
-        baseRouterGenerator.appendClass( `BaseRouter` );
-        for(const component of sourceObj.components) {
-            if(!component.hasPath()) continue;
-            baseRouterGenerator.appendFunction( Util.camel( 'goto', component.name, 'page' ), ['component', ...component.getParamsOfPath()],
+        const baseRouterGenerator = new ClassGenerator(libpath.join(this.genPath,
+            `router`
+            ,
+            `BaseRouter.js`
+        ));
+        baseRouterGenerator.appendClass(
+            `BaseRouter`
+        );
+        for (const component of sourceObj.components) {
+            if (!component.hasPath()) continue;
+            baseRouterGenerator.appendFunction(Util.camel('goto', component.name, 'page'),
+                ['component', ...component.getParamsOfPath()],
                 [],
                 'const { history } = component.props',
-                `history.push(\`${component.getPathOfRouterString()}\`)`,
-            )
+                `history.push(\`${component.getPathOfRouterString()}\`)`)
         }
-        const indexRouterGenerator = new ClassGenerator( libpath.join( this.genPath, `router`, `index.js` ) );
-        indexRouterGenerator.appendClass('Router',{name:`BaseRouter`, from:`./BaseRouter`});
+        const indexRouterGenerator = new ClassGenerator(libpath.join(this.genPath, `router`, `index.js`));
+        indexRouterGenerator.appendClass('Router', {name: `BaseRouter`, from: `./BaseRouter`});
         indexRouterGenerator.setSingleton(true);
         await indexRouterGenerator.persist();
         await baseRouterGenerator.persist();
     }
 
     async buildConfig(sourceObj) {
-        const baseConfigGenerator = new ClassGenerator( libpath.join( this.genPath, `config`, `BaseConfig.js` ) );
-        baseConfigGenerator.appendClass( `BaseConfig` );
-        baseConfigGenerator.appendField( `firebase`, JSON.stringify( sourceObj.firebase ) );
+        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genPath, `config`, `BaseConfig.js`));
+        baseConfigGenerator.appendClass(`BaseConfig`);
+        baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
+        if (sourceObj.hasCookiePassword())
+            baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
+
         await baseConfigGenerator.persist();
 
-        const indexConfigGenerator = new ClassGenerator( libpath.join( this.genPath, `config`, `index.js` ) );
-        indexConfigGenerator.appendClass( `Config`, {name: `BaseConfig`, from: './BaseConfig'} );
-        indexConfigGenerator.setSingleton( true );
+        const indexConfigGenerator = new ClassGenerator(libpath.join(this.genPath, `config`, `index.js`));
+        indexConfigGenerator.appendClass(`Config`, {name: `BaseConfig`, from: './BaseConfig'});
+        indexConfigGenerator.setSingleton(true);
         await indexConfigGenerator.persist();
     }
 
     async buildAppIndexFiles(sourceObj) {
-        const appGenerator = new ClassGenerator( libpath.join( this.genPath, `app.js` ) );
-        const indexGenerator = new ClassGenerator( libpath.join( this.genPath, `index.js` ) );
-        appGenerator.appendImport( `{Provider}`, `mobx-react` );
-        appGenerator.appendImport( ` ReactDOM`, `react-dom` );
-        appGenerator.appendImport( `{Route, Router, Switch}`, `react-router-dom` );
-        appGenerator.appendImport( `{RouterStore, syncHistoryWithStore}`, `mobx-react-router` );
-        appGenerator.appendImport( `{createBrowserHistory}`, `history` );
-        appGenerator.appendImport( `React`, `react` );
-        appGenerator.appendImport( `Store`, `./store` );
-        appGenerator.appendImport( ``, `./less` );
-        appGenerator.appendClass( `BaseApp` );
-        appGenerator.appendFunction( `mount`, [], [],
+        const appGenerator = new ClassGenerator(libpath.join(this.genPath, `app.js`));
+        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, `index.js`));
+        appGenerator.appendImport(`{Provider}`, `mobx-react`);
+        appGenerator.appendImport(` ReactDOM`, `react-dom`);
+        appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
+        appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
+        appGenerator.appendImport(`{createBrowserHistory}`, `history`);
+        appGenerator.appendImport(`React`, `react`);
+        appGenerator.appendImport(`Store`, `./store`);
+        appGenerator.appendImport(``, `./less`);
+        appGenerator.appendClass(`BaseApp`);
+        appGenerator.appendFunction(`mount`, [], [],
             `ReactDOM.render(this.getRenderView(),
-                    document.getElementById('app'))` );
-        appGenerator.appendField( `store`, `new Store()` );
-        appGenerator.appendField( `history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())` );
-        appGenerator.appendField( `extraPages`, '[]' );
-        appGenerator.appendFunction( `pushPage`, [`page`], [], `this.extraPages.push(page)` )
-        appGenerator.appendFunction( `getExtraPages`, [], [],
-            `/** --- push <Router /> in to pages */`, `return this.extraPages` );
+                    document.getElementById('app'))`);
+        appGenerator.appendField(`store`, `new Store()`);
+        appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
+        appGenerator.appendField(`extraPages`, '[]');
+        appGenerator.appendFunction(`pushPage`, [`page`], [], `this.extraPages.push(page)`)
+        appGenerator.appendFunction(`getExtraPages`, [], [],
+            `/** --- push <Router /> in to pages */`, `return this.extraPages`);
         for (const component of this.getGenComponent()) {
-            appGenerator.appendInClassHead( `import ${_.upperFirst( component )} from './component/${component}'` );
+            appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
 
         const childrenStmt = [];
         for (const component of sourceObj.components) {
             if (!component.hasPath()) continue;
 
-            const renderStmts = this.getJSXStrings( {
-                    tag: _.upperFirst( component.name ),
+            const renderStmts = this.getJSXStrings({
+                    tag: _.upperFirst(component.name),
                     props: {...component.extra},
                     children: ['props'],
                 }
             );
-            this.removeJSXSign( renderStmts );
+            this.removeJSXSign(renderStmts);
 
-            childrenStmt.push( ...this.getJSXStrings( {
+            childrenStmt.push(...this.getJSXStrings({
                 tag: `Route`,
                 props: {
                     exact: component.isRootPath() ? true : undefined,
                     path: component.path,
                     render: `###(props) =>
-                     ${renderStmts.join( '' )}`,
+                     ${renderStmts.join('')}`,
                     /** component: `###${_.upperFirst(component.name)}`, */
                 },
-            } ) )
+            }))
         }
-        const switchStmt = this.getJSXStrings( {
+        const switchStmt = this.getJSXStrings({
             tag: 'Switch',
             contents: [...childrenStmt, `{this.getExtraPages()}`]
-        } );
+        });
 
-        const routerStmt = this.getJSXStrings( {
+        const routerStmt = this.getJSXStrings({
             tag: 'Router',
             props: {history: `###this.history`},
             contents: [...switchStmt]
-        } )
+        })
 
-        const providerStmt = this.getJSXStrings( {
+        const providerStmt = this.getJSXStrings({
             tag: 'Provider',
             props: {
                 forEachObject: '...this.getStoreObject()'
             },
-            contents: [...routerStmt]
-        } )
-
+            contents: [sourceObj.hasNavigation() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt]
+        })
 
         const whole = providerStmt;
-        this.removeJSXSign( whole );
-        appGenerator.appendFunction( 'getStoreObject', [], [],
+        this.removeJSXSign(whole);
+        if (sourceObj.hasNavigation())
+            appGenerator.appendFunction('getNavigationView', ['history'], [], `return (${this.getNavigationStmt(sourceObj.navigation).join('')})`)
+
+        appGenerator.appendFunction('getStoreObject', [], [],
             'const stores = {}',
-            ...this.getGenStores().map( store => {
+            ...this.getGenStores().map(store => {
                 return `stores['${store}'] = this.store.${store}`
-            } ),
+            }),
             'return stores'
         )
-        appGenerator.appendFunction( `getRenderView`, [], [], `return (${whole.join( '' )})` )
-        indexGenerator.appendClass( `App`, {name: `BaseApp`, from: `./app`} );
-        indexGenerator.appendInClassTail( `new App().mount()` );
-        indexGenerator.appendInClassTail( `module.hot.accept()` );
+        appGenerator.appendFunction(`getRenderView`, [], [], `return (${whole.join('')})`)
+        indexGenerator.appendClass(`App`, {name: `BaseApp`, from: `./app`});
+        indexGenerator.appendInClassTail(`new App().mount()`);
+        indexGenerator.appendInClassTail(`module.hot.accept()`);
         await indexGenerator.persist();
         await appGenerator.persist();
     }
 
+    getNavigationStmt(navigation) {
+        const stmt = [];
+        if (navigation && navigation.view) {
+            stmt.push(...this.getJSXStrings({
+                tag: navigation.view,
+                props: {history: `###history`}
+            }));
+            this.removeJSXSign(stmt);
+        }
+        return stmt;
+    }
+
     async buildBaseClasses() {
-        Util.copyFromFolderToDestFolder( './base', libpath.join( this.genPath, `base` ) );
+        Util.copyFromFolderToDestFolder('./base', libpath.join(this.genPath, `base`));
     }
 
     async buildStyleFiles(classNames, sourcePath) {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             let origins = {};
-            const sourceFilePath = libpath.join( sourcePath, `src`, `style`, `${type}.style.js` )
-            if (fs.existsSync( sourceFilePath )) {
-                const obj = require( libpath.resolve( sourceFilePath ) ).default;
+            const sourceFilePath = libpath.join(sourcePath, `src`, `style`, `${type}.style.js`)
+            if (fs.existsSync(sourceFilePath)) {
+                const obj = require(libpath.resolve(sourceFilePath)).default;
                 origins = obj;
             }
 
-            const generator = new ClassGenerator( libpath.join( this.genPath, 'style', `${type}.style.js` ) )
-            generator.appendClass( `${_.upperFirst( type )}Style` );
+            const generator = new ClassGenerator(libpath.join(this.genPath, 'style', `${type}.style.js`))
+            generator.appendClass(`${_.upperFirst(type)}Style`);
             for (const className of classNames) {
                 for (const name of className.names) {
                     if (!!origins[name]) {
-                        generator.appendField( name, JSON.stringify( origins[name] ) );
+                        generator.appendField(name, JSON.stringify(origins[name]));
                         delete origins[name];
                     } else {
-                        generator.appendField( name, `{}` );
+                        generator.appendField(name, `{}`);
                     }
                 }
-                generator.insertBatchLinesIntoFieldSection( `\n\n/** following for ${className.component.name} */\n\n` )
-                generator.setSingleton( true );
+                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for ${className.component.name} */\n\n`)
+                generator.setSingleton(true);
             }
-            if (!_.isEmpty( origins )) {
+            if (!_.isEmpty(origins)) {
                 for (const name in origins) {
-                    generator.appendField( name, JSON.stringify( origins[name] ) );
+                    generator.appendField(name, JSON.stringify(origins[name]));
                 }
-                generator.insertBatchLinesIntoFieldSection( `\n\n/** following for unknown */\n\n` )
+                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for unknown */\n\n`)
             }
 
             await generator.persist();
@@ -1139,50 +1280,50 @@ class AppBuilder extends ComponentBuilder {
         /** 先把舊的整理過, 除掉 comment的字樣line */
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
-            const srcLessPath = libpath.join( srcPath, `src`, `less`, `${type}.less` )
+            const srcLessPath = libpath.join(srcPath, `src`, `less`, `${type}.less`)
             const lessAttriutesFromSrc = [];
-            if (fs.existsSync( srcLessPath )) {
-                const stub = Util.getContextForRawFile( srcLessPath ).split( '\n' );
-                _.remove( stub,
-                    (each) => (_.startsWith( each, '/** ' ) ||
-                        _.isEqual( each.trim(), '' )) )
-                lessAttriutesFromSrc.push( ...(stub.join( '' ).split( '}' )) )
+            if (fs.existsSync(srcLessPath)) {
+                const stub = Util.getContextForRawFile(srcLessPath).split('\n');
+                _.remove(stub,
+                    (each) => (_.startsWith(each, '/** ') ||
+                        _.isEqual(each.trim(), '')))
+                lessAttriutesFromSrc.push(...(stub.join('').split('}')))
                 /** 移除掉最後一個,因為split */
                 lessAttriutesFromSrc.pop();
             }
 
-            const generator = new ClassGenerator( libpath.join( this.genPath, 'less', `${type}.less` ) );
+            const generator = new ClassGenerator(libpath.join(this.genPath, 'less', `${type}.less`));
             for (const className of classNames) {
-                generator.appendInClassTail( `/** => following for ${className.component.name} component used <= */\n\n` );
+                generator.appendInClassTail(`/** => following for ${className.component.name} component used <= */\n\n`);
                 for (const name of className.names) {
                     /** 注意!! 是用 remove,會mutate 原本的 array */
-                    const srcAttribute = _.remove( lessAttriutesFromSrc,
+                    const srcAttribute = _.remove(lessAttriutesFromSrc,
                         (each) => {
-                            return _.startsWith( each, `.${name} {` ) || _.startsWith( each, `.${name}:` )
-                        } )
+                            return _.startsWith(each, `.${name} {`) || _.startsWith(each, `.${name}:`)
+                        })
 
                     if (srcAttribute.length > 1)
-                        throw new ERROR( 7003, `origin ==> ${Util.deepFlat( srcAttribute )}` )
+                        throw new ERROR(7003, `origin ==> ${Util.deepFlat(srcAttribute)}`)
 
-                    generator.appendInClassTail( _.isEmpty( srcAttribute ) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n` );
+                    generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
                 }
             }
 
             if (lessAttriutesFromSrc.length > 0) {
-                generator.appendInClassTail( `/** ======== following for  ========= */\n\n` );
+                generator.appendInClassTail(`/** ======== following for  ========= */\n\n`);
                 for (const lasting of lessAttriutesFromSrc) {
-                    generator.appendInClassTail( `${lasting} }\n\n` );
+                    generator.appendInClassTail(`${lasting} }\n\n`);
                 }
             }
 
-            generator.needSignature( false );
+            generator.needSignature(false);
             await generator.persist();
 
-            if (!fs.existsSync( libpath.join( srcPath, 'less', 'index.js' ) )) {
-                this.appendMustacheFile( 'less.index.js',
-                    Util.persistByPath( libpath.join( this.genPath, 'less', 'index.js' ) )
+            if (!fs.existsSync(libpath.join(srcPath, 'less', 'index.js'))) {
+                this.appendMustacheFile('less.index.js',
+                    Util.persistByPath(libpath.join(this.genPath, 'less', 'index.js'))
                 );
-                Util.appendInfo( `persist ./less/index.js succeed` );
+                Util.appendInfo(`persist ./less/index.js succeed`);
             }
         }
     }
@@ -1198,34 +1339,34 @@ class ProjectIndexFilePersistHandler {
 
     constructor(props) {
         this.sourcePath = props.sourcePath;
-        this.sourceSrcPath = libpath.join( this.sourcePath, 'src' );
+        this.sourceSrcPath = libpath.join(this.sourcePath, 'src');
         this.genRootPath = props.genRootPath;
-        this.genSrcPath = libpath.join( this.genRootPath, 'src' );
+        this.genSrcPath = libpath.join(this.genRootPath, 'src');
 
     }
 
     buildDistAssetFolder() {
-        const imageSrcFolder = libpath.join( this.sourceSrcPath, 'images' );
-        if (fs.existsSync( imageSrcFolder )) {
-            Util.copyFromFolderToDestFolder( imageSrcFolder,
-                Util.persistByPath( libpath.join( this.genRootPath, 'dist', 'images' ) ) );
+        const imageSrcFolder = libpath.join(this.sourceSrcPath, 'images');
+        if (fs.existsSync(imageSrcFolder)) {
+            Util.copyFromFolderToDestFolder(imageSrcFolder,
+                Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
         }
     }
 
     persistImageFolder() {
-        const images = libpath.join( this.genSrcPath, 'images' );
-        if (fs.existsSync( images )) {
-            Util.copyFromFolderToDestFolder( images,
-                Util.persistByPath( libpath.join( this.sourceSrcPath, 'images' ) )
+        const images = libpath.join(this.genSrcPath, 'images');
+        if (fs.existsSync(images)) {
+            Util.copyFromFolderToDestFolder(images,
+                Util.persistByPath(libpath.join(this.sourceSrcPath, 'images'))
             );
         }
     }
 
     persistBaseFiles() {
         try {
-            for (const file of Util.findFilePathBy( `../gen/src/base` )) {
-                if (Util.isEmptyFile( file.absolute )) {
-                    Util.appendInfo( `${file.absolute} is empty file, do not copy` )
+            for (const file of Util.findFilePathBy(`../gen/src/base`)) {
+                if (Util.isEmptyFile(file.absolute)) {
+                    Util.appendInfo(`${file.absolute} is empty file, do not copy`)
                     return false;
                 }
             }
@@ -1235,53 +1376,53 @@ class ProjectIndexFilePersistHandler {
                 `./base`
             )
 
-            Util.appendInfo( `persist base files succeed` );
+            Util.appendInfo(`persist base files succeed`);
             return false;
         } catch (error) {
             /** 偷懶 hack */
-            console.error( error );
+            console.error(error);
         }
     }
 
-    keepIndexAndCSSFiles(...exclude) {
-        const files = Util.findFilePathBy( this.genSrcPath,
+    keepIndexAndLESSFiles(...exclude) {
+        const files = Util.findFilePathBy(this.genSrcPath,
             (each) => {
                 return (
-                    _.isEqual( each.fileNameExtension, `index.js` ) ||
-                    _.isEqual( each.extension, `less` ) ||
-                    _.isEqual( each.fileNameExtension, `app.style.js` ) ||
-                    _.isEqual( each.fileNameExtension, `mobile.style.js` ) ||
-                    _.isEqual( each.fileNameExtension, `common.style.js` )
+                    _.isEqual(each.fileNameExtension, `index.js`) ||
+                    _.isEqual(each.extension, `less`) ||
+                    _.isEqual(each.fileNameExtension, `app.style.js`) ||
+                    _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
+                    _.isEqual(each.fileNameExtension, `common.style.js`)
                 )
             },
-            'node_modules' );
+            'node_modules');
 
 
         for (const file of files) {
-            if (_.isEqual( '', Util.getContextForRawFile( file.path ).trim() )) {
-                Util.appendInfo( `path ${file.path} is empty file, file would not persist` );
+            if (_.isEqual('', Util.getContextForRawFile(file.path).trim())) {
+                Util.appendInfo(`path ${file.path} is empty file, file would not persist`);
                 return
             }
-            if (Util.has( exclude, file.fileNameExtension )) continue;
+            if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
-            const dest = libpath.join( this.sourceSrcPath, from.split( `src` ).pop() );
-            Util.persistByPath( dest );
-            Util.copySingleFile( from, dest, '', true );
-            console.log( `persist ${from} succeed` );
+            const dest = libpath.join(this.sourceSrcPath, from.split(`src`).pop());
+            Util.persistByPath(dest);
+            Util.copySingleFile(from, dest, '', true);
+            console.log(`persist ${from} succeed`);
         }
     }
 
     /** 就是把像是index file, 這樣的手寫檔案放到 genSrc   */
     overrideEachFilesFromSrcFolder(...exclude) {
-        for (const file of Util.findFilePathBy( this.sourceSrcPath )) {
-            if (Util.has( exclude, file.fileNameExtension )) continue;
+        for (const file of Util.findFilePathBy(this.sourceSrcPath)) {
+            if (Util.has(exclude, file.fileNameExtension)) continue;
 
             const from = file.absolute;
-            const dest = libpath.join( this.genSrcPath, from.split( `src` ).pop() );
-            if (fs.existsSync( dest ))
-                Util.copySingleFile( from, dest, '', true );
+            const dest = libpath.join(this.genSrcPath, from.split(`src`).pop());
+            if (fs.existsSync(dest))
+                Util.copySingleFile(from, dest, '', true);
             else {
-                Util.appendError( `overrideIndexFiles dest => ${dest}` );
+                Util.appendError(`overrideIndexFiles dest => ${dest}`);
             }
         }
     }
@@ -1297,44 +1438,45 @@ if (configer.DEBUG_MODE) {
             const genRootPath = `./../gen`;
             const sourcePath = './src/exam';
             if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-                new ProjectIndexFilePersistHandler( {genRootPath, sourcePath} ).keepIndexAndCSSFiles()
-                new ProjectIndexFilePersistHandler( {genRootPath, sourcePath} ).persistBaseFiles();
-                new ProjectIndexFilePersistHandler( {genRootPath, sourcePath} ).persistImageFolder();
+                new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).keepIndexAndLESSFiles()
+                new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistBaseFiles();
+                new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistImageFolder();
             }
-            const source = CodegenNode.enrich( require( libpath.resolve( libpath.join( sourcePath, `source.js` ) ) ).default );
-            await Util.cleanChildFiles( genRootPath, (each) => true, 'node_modules' );
+            const source = CodegenNode.enrich(require(libpath.resolve(libpath.join(sourcePath, `source.js`))).default);
+            await Util.cleanChildFiles(genRootPath, (each) => true, 'node_modules');
             const totalClassNames = [];
             for (let component of source.components) {
-                await new StoreBuilder( genRootPath ).buildBaseStore( component.struct );
-                const names = await new ComponentBuilder( genRootPath ).buildBaseComponent( component );
-                totalClassNames.push( {component, names} );
+                await new StoreBuilder(genRootPath).buildBaseStore(component.struct);
+                const names = await new ComponentBuilder(genRootPath).buildBaseComponent(component);
+                totalClassNames.push({component, names});
             }
 
             /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-            await new StoreBuilder( genRootPath ).buildIndexFiles();
-            await new AppBuilder( genRootPath ).buildAppIndexFiles( source );
-            await new AppBuilder( genRootPath ).buildConfig( source );
-            await new AppBuilder( genRootPath ).buildWebpackNPackageJson( source );
-            await new AppBuilder( genRootPath ).buildRouterFile( source );
-            await new AppBuilder( genRootPath ).buildBaseClasses();
-            await new AppBuilder( genRootPath ).buildLessFile( totalClassNames, sourcePath );
-            await new AppBuilder( genRootPath ).buildStyleFiles( totalClassNames, sourcePath );
-            await new AppBuilder( genRootPath ).buildHtmlIndexAssetsFile();
+            await new StoreBuilder(genRootPath).buildIndexFiles();
+            await new AppBuilder(genRootPath).buildAppIndexFiles(source);
+            await new AppBuilder(genRootPath).buildConfig(source);
+            await new AppBuilder(genRootPath).buildWebpackNPackageJson(source);
+            await new AppBuilder(genRootPath).buildRouterFile(source);
+            await new AppBuilder(genRootPath).buildCookieFiles(source);
 
+            await new AppBuilder(genRootPath).buildBaseClasses();
+            await new AppBuilder(genRootPath).buildLessFile(totalClassNames, sourcePath);
+            await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, sourcePath);
+            await new AppBuilder(genRootPath).buildHtmlIndexAssetsFile();
 
-            new ProjectIndexFilePersistHandler( {
+            new ProjectIndexFilePersistHandler({
                 genRootPath,
                 sourcePath
-            } ).overrideEachFilesFromSrcFolder(
+            }).overrideEachFilesFromSrcFolder(
                 `common.style.js`, `app.style.js`, `mobile.style.js`,
-                `common.less`, `app.less`, `mobile.less` );
+                `common.less`, `app.less`, `mobile.less`);
 
-            new ProjectIndexFilePersistHandler( {
+            new ProjectIndexFilePersistHandler({
                 genRootPath,
                 sourcePath
-            } ).buildDistAssetFolder()
-            if (!fs.existsSync( libpath.join( genRootPath, `node_modules` ) ))
-                await Util.executeCommandLine( `cd ${genRootPath} && npm install` );
+            }).buildDistAssetFolder()
+            if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
+                await Util.executeCommandLine(`cd ${genRootPath} && npm install`);
         }
     )();
 }
