@@ -1,13 +1,23 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-05-27-23-46-12 
+	updateTime:2021-06-02-15-57-20 
 */
 
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
   /** following for unknown */
+
+  PurchasePlanPriceTipTypography = {};
+
+  PurchaseCardArrayWrapDiv = {};
+
+  PurchaseCard = {};
+
+  PurchaseArrayWrapDiv = {};
+
+  PurchaseTitleTypography = {};
 
   NavigatorGoogleloginButton = {};
 
@@ -42,6 +52,36 @@ class MobileStyle {
   HeaderHomeImg = {};
 
   HeaderHomeAreaHomeImgWrapDiv = {};
+
+  PurchasePlanPidTypography = {};
+
+  PurchasePlanDivWrapDiv = {};
+
+  PurchasePlanSpaceOuterDiv = {};
+
+  /** following for purchase */
+
+  PurchasePlanDiv = {};
+
+  PurchasePlanBuyButtonWrapDiv = {};
+
+  PurchasePlanBuyButton = {};
+
+  PurchasePlanPriceTypographyWrapDiv = {};
+
+  PurchasePlanPricePriceTipTypography = {};
+
+  PurchasePlanPriceTypography = {};
+
+  PurchasePlanSpaceDiv = {};
+
+  PurchasePlanNameTypographyWrapDiv = {};
+
+  PurchasePlanNameTypography = {};
+
+  PurchaseDiv = {};
+
+  PurchaseDivArrayWrapDiv = {};
 
   /** following for result */
 
@@ -94,6 +134,8 @@ class MobileStyle {
   /** following for main */
 
   MainDiv = {};
+
+  MainPurchaseButton = {};
 
   MainSocialButton = {};
 

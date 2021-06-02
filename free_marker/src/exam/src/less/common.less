@@ -19,8 +19,6 @@
 
 .NavigatorHomeAreaHomeImg {
   /** style */
-  width: 4vh;
-  height: 4vh;
 }
 
 .NavigatorHomeAreaAvatar {
@@ -75,6 +73,10 @@
   /** style */
 }
 
+.MainPurchaseButton:extend(.MainJuniorButton all) {
+  /** style */
+}
+
 .MainDiv {
   /** style */
 }
@@ -83,7 +85,6 @@
 
 .ExamHeadDiv {
   /** style */
-  height: 1vh;
 }
 
 .ExamFunctionAreaEndButton {
@@ -210,6 +211,73 @@
 
 .ResultCard {
   /** style */
+}
+
+/** => following for purchase component used <= */
+
+.PurchaseDivArrayWrapDiv {
+  /** style */
+  display: flex;
+  flex-direction: row;
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+}
+
+.PurchaseDiv {
+  /** style */
+  display: flex;
+  justify-content: center;
+}
+
+.PurchasePlanNameTypography {
+  /** style */
+  font-size: 1.4rem;
+}
+
+.PurchasePlanNameTypographyWrapDiv {
+  /** style */
+  display: flex;
+  justify-content: center;
+  width: 20vw;
+  height: 6vh;
+  align-items: center;
+}
+
+.PurchasePlanSpaceDiv {
+  /** style */
+  height: 1px;
+  background-color: #111111;
+}
+
+.PurchasePlanPriceTypography:extend(.PurchasePlanNameTypography all) {
+  /** style */
+}
+
+.PurchasePlanPricePriceTipTypography {
+  /** style */
+}
+
+.PurchasePlanPriceTypographyWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv
+    all) {
+  /** style */
+  flex-direction: column;
+}
+
+.PurchasePlanBuyButton {
+  /** style */
+}
+
+.PurchasePlanBuyButtonWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv all) {
+  /** style */
+  border-style: none;
+}
+
+.PurchasePlanDiv {
+  /** style */
+  display: flex;
+  width: 20vw;
+  flex-direction: column;
 }
 
 /** ======== following for  ========= */

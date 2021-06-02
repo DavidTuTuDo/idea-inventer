@@ -8,10 +8,6 @@ import BaseExamStore from "./BaseExamStore";
 class ExamStore extends BaseExamStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
-  filter(obj) {
-      obj.questions = _.sampleSize(obj.questions,10);
-      return obj;
-  }
 
     /** -------------------- async api -------------------- **/
 }

@@ -17,8 +17,6 @@ class LoginComponent extends BaseLoginComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
-
-
     getFirebaseView() {
         return (
             <StyledFirebaseAuth

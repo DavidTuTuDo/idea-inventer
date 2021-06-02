@@ -67,6 +67,11 @@ class firebaser {
         await this.setValues(refPath, {questions: questions});
     }
 
+    async setQuestions(questions) {
+        const refPath = path.join(configer.REFERENCE_ROOT, 'Questions');
+        await this.setValues(refPath,  questions);
+    }
+
     async setValues(refPath, params) {
         if (configer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`SET PATH:${refPath},PARAM:${JSON.stringify(params)}`);

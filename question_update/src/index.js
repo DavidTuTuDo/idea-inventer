@@ -33,9 +33,21 @@ export {question_update as question_update}
         const qs = await db.fetchRecords('CHOOSER');
         await fire.deleteTable(`QuestionsOfExam`);
         await fire.deleteTable(`exam`);
-
+        await fire.deleteTable(`Questions`);
 
         await fire.setExam(
+            qs.map((origin) => {
+                    const choiceStringArray = origin.choice.split(new RegExp(`\\([A-D]\\)`, `g`));
+                    choiceStringArray.shift();
+                    origin.choices = choiceStringArray.map((stmt) => {
+                            return {statement: Util.getNormalizedStringNotEndWith(stmt,',',' ')}
+                        }
+                    )
+                    return origin;
+                }
+            ));
+
+        await fire.setQuestions(
             qs.map((origin) => {
                     const choiceStringArray = origin.choice.split(new RegExp(`\\([A-D]\\)`, `g`));
                     choiceStringArray.shift();

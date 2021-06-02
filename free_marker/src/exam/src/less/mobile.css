@@ -34,6 +34,9 @@
 .MainSocialButton {
   /** style */
 }
+.MainPurchaseButton {
+  /** style */
+}
 .MainDiv {
   /** style */
 }
@@ -107,7 +110,65 @@
   /** style */
   flex: 1;
 }
+/** => following for purchase component used <= */
+.PurchaseDivArrayWrapDiv {
+  /** style */
+}
+.PurchaseDiv {
+  /** style */
+}
+.PurchasePlanNameTypography {
+  /** style */
+}
+.PurchasePlanNameTypographyWrapDiv {
+  /** style */
+}
+.PurchasePlanSpaceDiv {
+  /** style */
+}
+.PurchasePlanPriceTypography {
+  /** style */
+}
+.PurchasePlanPricePriceTipTypography {
+  /** style */
+}
+.PurchasePlanPriceTypographyWrapDiv {
+  /** style */
+}
+.PurchasePlanBuyButton {
+  /** style */
+}
+.PurchasePlanBuyButtonWrapDiv {
+  /** style */
+}
+.PurchasePlanDiv {
+  /** style */
+}
 /** ======== following for  ========= */
+.PurchasePlanPriceTipTypography {
+  /** style */
+}
+.PurchasePlanSpaceOuterDiv {
+  /** style */
+}
+.PurchasePlanDivWrapDiv {
+  /** style */
+}
+.PurchaseCardArrayWrapDiv {
+  /** style */
+}
+.PurchaseCard {
+  /** style */
+}
+.PurchaseArrayWrapDiv {
+  /** style */
+}
+.PurchaseTitleTypography {
+  /** style */
+}
+.PurchasePlanPidTypography {
+  /** style */
+}
 .NavigatorGoogleloginButton {
   /** style */
 }

@@ -271,11 +271,17 @@ class NodeUtiller extends Utiller {
         return fs.lstatSync(path).isFile();
     }
 
+    isImageFile(file) {
+        return this.isOrEquals(file.extension, `svg`, `png`, `jpg`, `jpeg`);
+    }
+
     /** 把內容都抹掉each 是 fileName, ex:index.js*/
     async cleanChildFiles(path, predicate = (each) => true, ...exclude) {
         if (fs.existsSync(path)) {
             const files = this.findFilePathBy(path, predicate, ...exclude);
             for (const file of files) {
+                if (this.isImageFile(file)) continue;
+
                 fs.truncate(file.absolute, 0, (result) => {
                     if (!_.isUndefined(result) && !_.isNull(result))
                         this.appendInfo(result)
@@ -445,7 +451,7 @@ class NodeUtiller extends Utiller {
             (each) => _.isEqual(each.fileName, 'package') && this.has(this.getContextForRawFile(each.absolute), 'gen'));
         packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
         for (const path of packagejsons) {
-            if (this.isAndEquals(... exclude.map((projectName) => () => !this.has(path, projectName)))) {
+            if (this.isAndEquals(...exclude.map((projectName) => () => !this.has(path, projectName)))) {
                 await this.executeCommandLine(`
             cd ${path} && npm run gen`);
                 this.appendInfo(`build ${path} succeed`);

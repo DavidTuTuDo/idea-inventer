@@ -15,14 +15,21 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
 
     node;
-    /** 用來加密cookie的 */
     password;
+    path;
+    /** 用來當作Rounter的導頁網址, 如果用在strucut裡面就是當作remote fetch*/
     cookies;
+    /** 對應到web使用的cookie, 好處是cookie會加密 */
+    arrayWrap;
+    /** 主要用在array如果想改變flex,作為彈性的使用 */
+    wrap;
+    /** 在view外面包一層div,作為彈性的使用 */
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
     props;
@@ -32,17 +39,25 @@ class CodegenNode {
     contents;
     /** 放在<div>content</div>*/
     struct;
+    /** 如果是響應component的store, 就是個true*/
     navigation;
-    path;
+    /** 可以指定component為navigatorView 放置於頂部的view */
+    incest;
+    /** 支援父類是string 或是 number(非資料結構), 但是仍然有children的情形,
+     在view和store上面也會產生出same generation的概念,
+     incest只支援一層
+     */
     name;
     view;
     type;
     style;
     extra;
+    /**  extra => 用於component mount 後,其所帶入的值 */
     children;
     plural;
     title;
     url;
+    /** 如果物件有對應到資料庫,就可以指定 */
     parent;
     click;
     defaultValue;
@@ -53,6 +68,25 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    getFieldName() {
+        return this.name + (this.plural ? this.plural : '');
+    }
+
+    getType() {
+        return this.type;
+    }
+
+    getView() {
+        return this.view;
+    }
+
+    isState() {
+        return true;
+        /** 本來想區分store為 state 或是 object, 但好像還沒想齊全, 故先全部當成state
+         return !!this.state && this.state;
+         */
     }
 
     hasCookies() {
@@ -74,6 +108,10 @@ class CodegenNode {
         return [];
     }
 
+    hasWrap() {
+        return !!this.wrap && this.wrap
+    }
+
     hasNavigation() {
         return !!this.navigation && !!this.navigation.view
 
@@ -83,10 +121,72 @@ class CodegenNode {
         return !!this.outer && this.outer
     }
 
+    /**
+     支援如果物件是string 或是 number(非資料結構), 但是有children的情形,
+     使用情境就是兩個平輩的attribute,要放在同一個block
+     */
+    hasIncestAttribute() {
+        const one = !this.isArrayOrObject()
+        const two = this.hasWrap();
+        let three = false;
+        for (const child of this.getChildren()) {
+            if (this.isIncestAttribute()) {
+                three = true;
+                break;
+            }
+        }
+        return one && two && three;
+    }
+
+    /**
+     支援如果物件是string 或是 number(非資料結構), 但是有children的情形,
+     使用情境就是兩個平輩的attribute,要放在同一個block
+     */
+    isIncest() {
+        return !!this.incest && this.incest
+    }
+
+    isValue() {
+        return Util.isOrEquals(this.type, 'string', 'number');
+    }
+
+    isIncestAttribute() {
+        return this.isAttribute() &&
+            this.isIncest();
+    }
+
+    getIncestGrandson() {
+        const incest = [];
+        for (const child of this.getChildren()) {
+            for (const grandson of child.getChildren()) {
+                if (grandson.isIncestAttribute()) {
+                    incest.push(grandson);
+                }
+            }
+        }
+        return incest;
+    }
+
+    getIncestChild() {
+        const incest = [];
+        for (const child of this.getChildren()) {
+            if (child.isIncestAttribute()) {
+                incest.push(child);
+            }
+        }
+        return incest;
+    }
+
+    hasArrayMap() {
+        return !!this.arrayWrap && this.arrayWrap
+    }
+
+    /** 表示這會在component裡面產生邏輯 */
     isView() {
         return !!this.view;
     }
 
+    /** 表示這會在store裡面產生邏輯 */
     isAttribute() {
         return !!this.type;
     }
@@ -98,6 +198,7 @@ class CodegenNode {
     }
 
     getClickParamStmt() {
+        /** 不知道為什麼當初要設計成擋住 */
         if (!this.isAttribute())
             return '';
 
@@ -147,6 +248,10 @@ class CodegenNode {
         return Util.camel(`on`, this.name, this.view, 'clicked');
     }
 
+    getPath() {
+        return this.path;
+    }
+
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
     getPathOfRouterString() {
         const params = this.getParamsOfPath();
@@ -184,8 +289,8 @@ class CodegenNode {
         return undefined;
     }
 
-    /** 為了組合出 uniq 的 view className */
-    getParentNames() {
+    /** 為了組合出 uniq 的 view className,最後有加上reverse的調整 */
+    getReverseOrderOfParentNames() {
         const names = [];
         let currentNode = this.parent;
         while (!!currentNode) {
@@ -203,6 +308,10 @@ class CodegenNode {
 
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
     getParentObject() {
+        if (this.parent === undefined) {
+            return new CodegenNode({name: '我是祖先'});
+        }
+
         if (_.isArray(this.parent)) {
             return this.parent.parent;
         }
@@ -228,6 +337,10 @@ class CodegenNode {
 
     hasURL() {
         return !_.isEmpty(this.url);
+    }
+
+    getURL() {
+        return this.url;
     }
 
     isObject() {
@@ -275,27 +388,32 @@ class CodegenNode {
         return Util.camel('render', this.name, 'view');
     }
 
-    static enrich(node) {
+    static enrich(node, parent) {
         let involution = new CodegenNode(node);
         if (_.isArray(node)) {
+            /** 隨便改變物件的型態,未來會出現各種bug */
             involution = [];
             for (const child of node) {
-                child.parent = node;
-                involution.push(this.enrich(child));
+                child.parent = parent;
+                involution.push(this.enrich(child, involution));
             }
         } else if (_.isObject(node)) {
             for (const key in node) {
-                /** style ,extra 是個例外, 要排除掉*/
+                /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
                 if (Util.isOrEquals(key, 'contents', 'style', 'extra', 'firebase', 'parent', 'props'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
-                    obj.parent = node;
-                    involution[key] = this.enrich(obj);
+                    obj.parent = parent;
+                    involution[key] = this.enrich(obj, involution);
                 }
             }
         }
         return involution;
+    }
+
+    static isCodegenNode(node) {
+        return node instanceof CodegenNode;
     }
 
 }
@@ -586,6 +704,8 @@ class BaseBuilder {
     getGenComponent() {
         return this.getGenUnion(`component`);
     }
+
+
 }
 
 class StoreBuilder extends BaseBuilder {
@@ -629,6 +749,45 @@ class StoreBuilder extends BaseBuilder {
         await indexGenerator.persist();
     }
 
+    async buildFieldAttribute(generator, node) {
+        const propsStmt = [];
+        for (const child of node.getChildren()) {
+            if (!child.isAttribute()) continue
+            const propStmt = [];
+            const fieldName = child.getFieldName();
+            const defaultValue = child.getDefaultValueByType();
+            generator.appendField(fieldName, defaultValue, ['observable']);
+            generator.insertBatchLinesIntoFunctionSection(
+                this.getFunctionsDependOnFieldType(
+                    {
+                        fieldName: _.upperFirst(fieldName),
+                        type: child.type,
+                        defaultValue,
+                        fieldClass: child.getClassName(),
+                    }));
+            propStmt.push(`if(obj && obj.${fieldName})`);
+
+            if (child.isArray()) {
+                propStmt.push(`this.${child.getFunctionNameOfSet()}(...obj.${fieldName})`);
+                generator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
+                await this.buildBaseStore(child)
+            } else if (child.isObject()) {
+                generator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
+                propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
+                await this.buildBaseStore(child)
+            } else {
+                /** 支援如果物件是string 或是 number(非資料結構), 但是有children的情形,
+                 * 使用情境就是兩個平輩的attribute,要放在同一個block*/
+                if (child.hasWrap() && child.hasChildren()) {
+                    propsStmt.push(...(await this.buildFieldAttribute(generator, child)))
+                }
+                propStmt.push(`this.${child.getFunctionNameOfSet()}(obj.${fieldName})`);
+            }
+            propsStmt.push(...propStmt);
+        }
+        return propsStmt;
+    }
+
     async buildBaseStore(node) {
 
         const folderName = _.lowerFirst(node.getName());
@@ -640,68 +799,45 @@ class StoreBuilder extends BaseBuilder {
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
         baseGenerator.appendInClassHead(`import {utiller as Util, exceptioner as ERROR} from 'utiller'`);
-        baseGenerator.appendFunction(`getName`, [], [], `return '${baseClassName}'`);
+        baseGenerator.appendFunction(`getClassName`, [], [], `return '${baseClassName}'`);
         const propsStmt = [];
-        if (node.hasChildren()) {
-            for (const child of node.getChildren()) {
-                if (!child.isAttribute()) continue
-                const propStmt = [];
-                const fieldName = child.name + (child.plural ? child.plural : '');
-                const defaultValue = child.getDefaultValueByType();
-                baseGenerator.appendField(fieldName, defaultValue, ['observable']);
 
-                baseGenerator.insertBatchLinesIntoFunctionSection(
-                    this.getFunctionsDependOnFieldType(
-                        {
-                            fieldName: _.upperFirst(fieldName),
-                            type: child.type,
-                            defaultValue,
-                            fieldClass: child.getClassName(),
-                        }));
-                propStmt.push(`if(obj && obj.${fieldName})`);
-                if (child.isArray()) {
-                    propStmt.push(`this.${child.getFunctionNameOfSet()}(...obj.${fieldName})`);
-                    baseGenerator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
-                    await this.buildBaseStore(child)
-                } else if (child.isObject()) {
-                    baseGenerator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
-                    propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
-                    await this.buildBaseStore(child)
-                } else {
-                    propStmt.push(`this.${child.getFunctionNameOfSet()}(obj.${fieldName})`);
-                }
-                propsStmt.push(...propStmt);
-            }
+        if (node.hasChildren()) {
+            const propStmt = await (this.buildFieldAttribute(baseGenerator, node));
+            propsStmt.push(...propStmt);
         }
 
-        if (node.hasURL()) {
-            baseGenerator.insertBatchLinesIntoRestfulApiSection(this.getFunctionsOfRemoteApi({
-                    fieldName: node.name,
-                    type: node.type,
-                    fieldUrl: node.url
-                })
-            );
+
+        /** 這邊專門處理remote fetch 的邏輯 */
+        const method = Util.camel(`fetch`, node.getType());
+
+        if (node.isObject()) {
+            const contents = [
+                `{`,
+                node.hasPath() ? `...(await this.${method}(\`${node.getPathOfRouterString()}\`,filter)),` : `...{},`,
+                ..._.map(node.getChildren(), (child) => {
+                    return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch()` : '';
+                }),
+                `}`,
+            ]
+            baseGenerator.appendFunction(' async fetch', [...node.getParamsOfPath(), 'filter'], [],
+                ...this.getDecorateFetchStrings(node.isState(), node.isObject(), ...contents)
+            )
+        } else if (node.isArray()) {
+            if (node.hasPath()) {
+                baseGenerator.appendFunction(' async fetch', [...node.getParamsOfPath(), 'filter'], [],
+                    `const url = \`${node.getPathOfRouterString()}\`;`,
+                    `return this.filter((await this.${method}(url,filter)))`);
+            }
         }
 
         baseGenerator.appendFunction('self', [], [],
             'return {',
-            _.filter(node.getChildren(),(child) => child.isAttribute())
+            _.filter(node.getChildren(), (child) => child.isAttribute())
                 .map((child) => `${child.getName()} : this.${child.getName()}`).join(','),
             '}'
         )
 
-        if (node.hasPath()) {
-            baseGenerator.appendFunction('async fetch', [...node.getParamsOfPath(), 'filter'], [],
-                `const url = \`${node.getPathOfRouterString()}\`;`,
-                ` this.fromJson((await this.fetchObject(url,filter)).val())`,
-                `return this.self()`
-            )
-
-
-            baseGenerator.appendFunction('async post', [...node.getParamsOfPath(), 'object = this.self()'], [],
-                `const url = \`${node.getPathOfRouterString()}\`;`,
-                `await this.postObject(url,object)`)
-        }
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], `super.initial(obj)`, ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
         await baseGenerator.persist();
@@ -710,13 +846,39 @@ class StoreBuilder extends BaseBuilder {
         await indexGenerator.persist();
 
     }
+
+    getDecorateFetchStrings(isState = true, isObject = false, ...contents) {
+        let normalize = contents;
+        if (isObject) {
+            normalize = [
+                `this.fromJson(`, ...normalize, ')',
+            ]
+        }
+        if (isState) {
+            normalize = [
+                `try {`,
+                'this.setState(`loading`)',
+                ...normalize,
+                'this.setState(`stable`)',
+                `} catch (error) {`,
+                `this.setErrorMsg(error.message);`,
+                'this.setState(`error`);',
+                `}`,
+            ]
+        }
+        normalize = [
+            ...normalize,
+            'return this.self()',
+        ]
+        return normalize
+    }
 }
 
 
 class ComponentBuilder extends BaseBuilder {
 
     hasRootRenderViewFunction = false;
-    classNames = [];
+    classNames = {};
     componentDidMountStmt = [];
 
     constructor(props) {
@@ -764,12 +926,19 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
         }
 
+        if (this.containedFetchAttribute(componentNode.struct)) {
+            this.appendStmtIntoComponentDidMount(
+                `this.getStore().fetch().then()`
+            )
+        }
+
         baseGenerator.appendFunction('getStore', [], [],
             `return this.props.${componentNode.name}`)
 
 
         baseGenerator.appendFunction('componentDidMount',
             [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
+
 
         /** index.js */
         const indexGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `index.js`));
@@ -782,7 +951,22 @@ class ComponentBuilder extends BaseBuilder {
 
         await indexGenerator.persist();
         await baseGenerator.persist();
-        return this.classNames;
+
+        return _.values(this.classNames);
+    }
+
+    containedFetchAttribute(node) {
+        if (node && node instanceof CodegenNode && node.hasPath()) {
+            return true;
+        }
+
+        for (const child of node.getChildren()) {
+            const result = this.containedFetchAttribute(child)
+            if (result === true) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -796,7 +980,7 @@ class ComponentBuilder extends BaseBuilder {
      * ////////////// sample: ///////////////
      praam :{
             tag: node.view,
-            props: { style: {height: 80},className:'className' }, ### means not single quatation
+            props: { style: {height: 80},className:'className' }, ### means 不需要 single quatation
             contents: [`console.log()`,`console.error()`],
             children:['children1','children2']
         }
@@ -865,16 +1049,18 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-    /** this is super hard-code */
+    /** 把所有className儲存起來,後續要產生出less才有根據 */
     storesClassName(name) {
-        this.classNames.push(name);
+        this.classNames[name] = name;
     }
 
     getJSXStringsByNode(generator, node, ...extraContents) {
-        const keyValue = node.getChildren().map(each => `\$\{${node.name}.${each.name}\}`).join('');
-        const parentName = Util.camel(...node.getParentNames(), node.name, node.isOuter() ? 'outer' : '', node.view,);
-        const className = _.upperFirst(parentName);
+        const keyValue = node.getChildren().map(each => {
+            return each.isAttribute() ? `\$\{${this.getPrecisePraentName(each)}.${each.name}\}` : ``
+        }).join('');
 
+        const parentName = Util.camel(...node.getReverseOrderOfParentNames(), node.name, node.isOuter() ? 'outer' : '', node.view,);
+        const className = _.upperFirst(parentName);
 
         const props = {
             className,
@@ -896,13 +1082,22 @@ class ComponentBuilder extends BaseBuilder {
             props.onClick =
                 `###(param) => this.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
         }
+        const content = [];
+        if (node.isValue()) {
+            const functionName = Util.camel('get', this.getPrecisePraentName(node), node.getName());
+
+            generator.appendFunction(functionName, [`${this.getPrecisePraentName(node)}`], [],
+                `return ${this.getPrecisePraentName(node)}.${node.getFunctionName()}()`);
+            content.push(`{this.${functionName}(${this.getPrecisePraentName(node)})}`);
+        }
+
 
         const selfContent = node.getContents();
 
         const origin = this.getJSXStrings({
             tag: node.view,
             props,
-            contents: [...selfContent, ...extraContents],
+            contents: [...content, ...selfContent, ...extraContents],
         });
 
 
@@ -910,6 +1105,11 @@ class ComponentBuilder extends BaseBuilder {
             const props = {className: `${className}WrapDiv`,}
             if (!_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
+
+            for (const incest of node.getIncestChild()) {
+                origin.push(...this.getJSXStringsByNode(generator, incest));
+            }
+
             return this.getJSXStrings({
                 tag: 'div',
                 props,
@@ -928,6 +1128,18 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
+
+    /** 應該畫面時做的component 對應到的 物件, 都是根據父類再繼續點下去 例如 parent.child
+     * 但設計了incestAttribute(), 要把grandson,和child 歸為同一個generation
+     * */
+    getPrecisePraentName(node) {
+        const parent = node.getParentObject();
+        if (node.isIncestAttribute()) {
+            return _.lowerCase(parent.getParentObject().getName());
+        }
+        return _.lowerCase(parent.getName())
+    }
+
     getJSXStringsByStruct(node, generator, notAllowOuterChild = true) {
         const childstmt = [];
 
@@ -938,12 +1150,22 @@ class ComponentBuilder extends BaseBuilder {
             const functionName =
                 `get${_.upperFirst(node.name)}${_.upperFirst(child.name)}${child.plural ? child.plural : ''}`;
 
-
             if (child.hasChildren()) {
                 if (child.isArray()) {
-                    childstmt.push(`\n{this.${functionName}(${node.name})
-                .map((each) => this.${child.getArrayJSXFunctionName()}(each))}\n`);
-
+                    let stmt = [`\n{this.${functionName}(${node.name})
+                .map((each) => this.${child.getArrayJSXFunctionName()}(each))}\n`];
+                    if (child.hasArrayMap()) {
+                        const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.getView(), `ArrayWrapDiv`));
+                        stmt = this.getJSXStrings({
+                            tag: `div`,
+                            props: {
+                                className,
+                                style: `###Style.${className}`,
+                            },
+                            contents: [stmt]
+                        })
+                    }
+                    childstmt.push(...stmt);
                     generator.appendFunction(functionName, [`${node.name}`], [],
                         `return ${node.name}.${child.getFunctionName()}()`);
                 } else if (child.isObject()) {
@@ -952,20 +1174,16 @@ class ComponentBuilder extends BaseBuilder {
                     generator.appendFunction(functionName, [`${node.name}`], [],
                         `return ${node.name}.${child.getFunctionName()}()`);
                 } else {
-                    /** 當沒有type的屬性時,畫面也要可以做出結構 */
+                    /** 不是attribute,畫面也要可以做出結構, 例如 view:`avatar`, children:[{view:`img`}] */
+                    console.log('每一個child view',child.getName());
+
                     childstmt.push(...this.getJSXStringsByStruct(child, generator, notAllowOuterChild))
                 }
             } else {
-                const content = [];
-
-                if (child.isAttribute()) {
-                    generator.appendFunction(functionName, [`${node.name}`], [],
-                        `return ${node.name}.${child.getFunctionName()}()`);
-                    content.push(`{this.${functionName}(${_.lowerCase(node.name)})}`);
+                if (!child.isIncestAttribute()) {
+                    childstmt.push(...this.getJSXStringsByNode(generator, child));
                 }
-                childstmt.push(...this.getJSXStringsByNode(generator, child, ...content));
             }
-
 
             if (child.isClickView()) {
                 generator.appendFunction(child.getFunctionNameOfClicked(),
@@ -974,7 +1192,6 @@ class ComponentBuilder extends BaseBuilder {
                 )
             }
         }
-
         return this.getJSXStringsByNode(generator, node, ...childstmt);
     }
 
@@ -1238,7 +1455,7 @@ class AppBuilder extends ComponentBuilder {
         Util.copyFromFolderToDestFolder('./base', libpath.join(this.genPath, `base`));
     }
 
-    async buildStyleFiles(classNames, sourcePath) {
+    async buildStyleFiles(classNameInfos, sourcePath) {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             let origins = {};
@@ -1250,16 +1467,16 @@ class AppBuilder extends ComponentBuilder {
 
             const generator = new ClassGenerator(libpath.join(this.genPath, 'style', `${type}.style.js`))
             generator.appendClass(`${_.upperFirst(type)}Style`);
-            for (const className of classNames) {
-                for (const name of className.names) {
-                    if (!!origins[name]) {
-                        generator.appendField(name, JSON.stringify(origins[name]));
-                        delete origins[name];
+            for (const info of classNameInfos) {
+                for (const className of info.classNames) {
+                    if (!!origins[className]) {
+                        generator.appendField(className, JSON.stringify(origins[className]));
+                        delete origins[className];
                     } else {
-                        generator.appendField(name, `{}`);
+                        generator.appendField(className, `{}`);
                     }
                 }
-                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for ${className.component.name} */\n\n`)
+                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for ${info.component.name} */\n\n`)
                 generator.setSingleton(true);
             }
             if (!_.isEmpty(origins)) {
@@ -1268,7 +1485,6 @@ class AppBuilder extends ComponentBuilder {
                 }
                 generator.insertBatchLinesIntoFieldSection(`\n\n/** following for unknown */\n\n`)
             }
-
             await generator.persist();
         }
     }
@@ -1276,7 +1492,7 @@ class AppBuilder extends ComponentBuilder {
     /** {[...{component,names}], srcPath}
      * srcPath 就是 keep file 的根目錄
      * */
-    async buildLessFile(classNames, srcPath) {
+    async buildLessFile(classNameInfos, srcPath) {
         /** 先把舊的整理過, 除掉 comment的字樣line */
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
@@ -1293,19 +1509,19 @@ class AppBuilder extends ComponentBuilder {
             }
 
             const generator = new ClassGenerator(libpath.join(this.genPath, 'less', `${type}.less`));
-            for (const className of classNames) {
-                generator.appendInClassTail(`/** => following for ${className.component.name} component used <= */\n\n`);
-                for (const name of className.names) {
+            for (const info of classNameInfos) {
+                generator.appendInClassTail(`/** => following for ${info.component.name} component used <= */\n\n`);
+                for (const className of info.classNames) {
                     /** 注意!! 是用 remove,會mutate 原本的 array */
                     const srcAttribute = _.remove(lessAttriutesFromSrc,
                         (each) => {
-                            return _.startsWith(each, `.${name} {`) || _.startsWith(each, `.${name}:`)
+                            return _.startsWith(each, `.${className} {`) || _.startsWith(each, `.${className}:`)
                         })
 
                     if (srcAttribute.length > 1)
                         throw new ERROR(7003, `origin ==> ${Util.deepFlat(srcAttribute)}`)
 
-                    generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                    generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${className} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
                 }
             }
 
@@ -1412,11 +1628,32 @@ class ProjectIndexFilePersistHandler {
         }
     }
 
-    /** 就是把像是index file, 這樣的手寫檔案放到 genSrc   */
-    overrideEachFilesFromSrcFolder(...exclude) {
-        for (const file of Util.findFilePathBy(this.sourceSrcPath)) {
-            if (Util.has(exclude, file.fileNameExtension)) continue;
 
+    /** 就是把像是index file, 這樣的手寫檔案放到 genSrc,的相對位置
+     * exclude = {
+     *      type:
+     *      keyword:
+     * }
+     *
+     *
+     *     type:fileName,extension, fileNameExtension,
+     *     keyword: image, svg, image.svg
+
+     * */
+    overrideEachFilesFromSrcFolder(...excludes) {
+        for (const file of Util.findFilePathBy(this.sourceSrcPath)) {
+
+            let ignoreThisRun = false;
+            for (let exclude of excludes) {
+                if (_.isString(exclude)) {
+                    exclude = {type: 'fileNameExtension', keyword: exclude}
+                }
+                if (_.isEqual(file[exclude.type], exclude.keyword)) {
+                    ignoreThisRun = true;
+                    break;
+                }
+            }
+            if (ignoreThisRun) continue;
             const from = file.absolute;
             const dest = libpath.join(this.genSrcPath, from.split(`src`).pop());
             if (fs.existsSync(dest))
@@ -1432,51 +1669,55 @@ export {
     ClassGenerator as ClassGenerator
 }
 
-if (configer.DEBUG_MODE) {
-    (async () => {
+(async () => {
 
-            const genRootPath = `./../gen`;
-            const sourcePath = './src/exam';
-            if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-                new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).keepIndexAndLESSFiles()
-                new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistBaseFiles();
-                new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistImageFolder();
-            }
-            const source = CodegenNode.enrich(require(libpath.resolve(libpath.join(sourcePath, `source.js`))).default);
-            await Util.cleanChildFiles(genRootPath, (each) => true, 'node_modules');
-            const totalClassNames = [];
-            for (let component of source.components) {
-                await new StoreBuilder(genRootPath).buildBaseStore(component.struct);
-                const names = await new ComponentBuilder(genRootPath).buildBaseComponent(component);
-                totalClassNames.push({component, names});
-            }
-
-            /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-            await new StoreBuilder(genRootPath).buildIndexFiles();
-            await new AppBuilder(genRootPath).buildAppIndexFiles(source);
-            await new AppBuilder(genRootPath).buildConfig(source);
-            await new AppBuilder(genRootPath).buildWebpackNPackageJson(source);
-            await new AppBuilder(genRootPath).buildRouterFile(source);
-            await new AppBuilder(genRootPath).buildCookieFiles(source);
-
-            await new AppBuilder(genRootPath).buildBaseClasses();
-            await new AppBuilder(genRootPath).buildLessFile(totalClassNames, sourcePath);
-            await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, sourcePath);
-            await new AppBuilder(genRootPath).buildHtmlIndexAssetsFile();
-
-            new ProjectIndexFilePersistHandler({
-                genRootPath,
-                sourcePath
-            }).overrideEachFilesFromSrcFolder(
-                `common.style.js`, `app.style.js`, `mobile.style.js`,
-                `common.less`, `app.less`, `mobile.less`);
-
-            new ProjectIndexFilePersistHandler({
-                genRootPath,
-                sourcePath
-            }).buildDistAssetFolder()
-            if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
-                await Util.executeCommandLine(`cd ${genRootPath} && npm install`);
+        const genRootPath = `./../gen`;
+        const sourcePath = './src/exam';
+        if (SURE_TO_PERSIST_VERY_IMPORTANT) {
+            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).keepIndexAndLESSFiles()
+            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistBaseFiles();
+            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistImageFolder();
         }
-    )();
-}
+        const source = CodegenNode.enrich(require(libpath.resolve(libpath.join(sourcePath, `source.js`))).default);
+        await Util.cleanChildFiles(genRootPath, (each) => true, 'node_modules');
+        const totalClassNames = [];
+        for (let component of source.components) {
+            await new StoreBuilder(genRootPath).buildBaseStore(component.struct);
+            const classNames = await new ComponentBuilder(genRootPath).buildBaseComponent(component);
+            totalClassNames.push({component, classNames});
+        }
+        /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
+        await new StoreBuilder(genRootPath).buildIndexFiles();
+        await new AppBuilder(genRootPath).buildAppIndexFiles(source);
+        await new AppBuilder(genRootPath).buildConfig(source);
+        await new AppBuilder(genRootPath).buildWebpackNPackageJson(source);
+        await new AppBuilder(genRootPath).buildRouterFile(source);
+        await new AppBuilder(genRootPath).buildCookieFiles(source);
+
+        await new AppBuilder(genRootPath).buildBaseClasses();
+        await new AppBuilder(genRootPath).buildLessFile(totalClassNames, sourcePath);
+        await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, sourcePath);
+        await new AppBuilder(genRootPath).buildHtmlIndexAssetsFile();
+
+        new ProjectIndexFilePersistHandler({
+            genRootPath,
+            sourcePath
+        }).overrideEachFilesFromSrcFolder(
+            `common.style.js`, `app.style.js`, `mobile.style.js`,
+            `common.less`, `app.less`, `mobile.less`,
+            {
+                type: 'extension',
+                keyword: 'svg'
+            }, {
+                type: 'extension',
+                keyword: 'png'
+            });
+
+        new ProjectIndexFilePersistHandler({
+            genRootPath,
+            sourcePath
+        }).buildDistAssetFolder()
+        if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
+            await Util.executeCommandLine(`cd ${genRootPath} && npm install`);
+    }
+)();

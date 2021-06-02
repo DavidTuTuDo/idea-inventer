@@ -9,7 +9,11 @@ class QuestionStore extends BaseQuestionStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
-  initial(obj) {
+  filter(obj) {
+      return _.sampleSize(obj,10);
+  }
+
+    initial(obj) {
       super.initial(obj);
       this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}`);
   }

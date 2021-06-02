@@ -15,7 +15,7 @@ class ExamComponent extends BaseExamComponent {
     /** -------------------- functions -------------------- **/
     componentDidMount() {
         super.componentDidMount();
-        this.props.exam.fetch().then();
+        this.getStore().fetch().then();
 
     }
 

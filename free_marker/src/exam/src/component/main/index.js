@@ -36,6 +36,11 @@ class MainComponent extends BaseMainComponent {
         userInfo.post(userInfo.uid).then();
     }
 
+    onPurchaseButtonClicked(param) {
+        // super.onPurchaseButtonClicked(param);
+        Router.gotoPurchasePage(this);
+    }
+
     /** -------------------- functions -------------------- **/
     /** -------------------- async api -------------------- **/
 }

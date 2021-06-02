@@ -37,7 +37,6 @@ push{{{functionName}}}ByIndex(index, ...param) {
     const self = this;
     if(param !== undefined) {
         Util.insertToArray(this.{{{fieldName}}},index, ...param.map((each) => new {{{fieldClass}}}({...each,parentNode:self})));
-        this.{{{fieldName}}}.push(param);
     }
 }
 
