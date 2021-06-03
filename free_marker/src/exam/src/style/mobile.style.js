@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-02-16-24-33 
+	updateTime:2021-06-03-14-26-28 
 */
 
 class MobileStyle {
@@ -9,67 +9,67 @@ class MobileStyle {
 
   /** following for unknown */
 
-  PurchasePlanPriceTipTypography = {};
-
-  PurchaseCardArrayWrapDiv = {};
-
-  PurchaseCard = {};
-
-  PurchaseArrayWrapDiv = {};
-
-  PurchaseTitleTypography = {};
-
-  NavigatorGoogleloginButton = {};
-
-  NavigatorGoogleloginButtonWrapDiv = {};
-
-  HeaderHomeAreaHomeImg = {};
-
-  HeaderHomeAreaAvatar = {};
-
-  HeaderFunctionDiv = {};
-
-  HeaderLoginButton = {};
-
-  HeaderLoginButtonWrapDiv = {};
-
-  HeaderDiv = {};
-
-  HeaderImageImg = {};
-
-  HeaderImageImgWrapDiv = {};
-
-  ExamQuestionAlertOuterDivWrapDiv = {};
-
-  ExamQuestionAlertOuterImg = {};
-
-  ExamQuestionAlertDiv = {};
-
-  ExamQuestionAlertContentDiv = {};
-
-  HeaderHomeImgWrapDiv = {};
-
-  HeaderHomeImg = {};
-
-  HeaderHomeAreaHomeImgWrapDiv = {};
-
-  PurchasePlanPidTypography = {};
-
-  PurchasePlanDivWrapDiv = {};
+  PurchaseDivArrayWrapDiv = {};
 
   PurchasePlanSpaceOuterDiv = {};
 
-  /** following for purchase */
+  PurchasePlanDivWrapDiv = {};
 
-  PurchasePlanDiv = {};
+  PurchasePlanPidTypography = {};
+
+  HeaderHomeAreaHomeImgWrapDiv = {};
+
+  HeaderHomeImg = {};
+
+  HeaderHomeImgWrapDiv = {};
+
+  ExamQuestionAlertContentDiv = {};
+
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertOuterImg = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
+
+  HeaderImageImgWrapDiv = {};
+
+  HeaderImageImg = {};
+
+  HeaderDiv = {};
+
+  HeaderLoginButtonWrapDiv = {};
+
+  HeaderLoginButton = {};
+
+  HeaderFunctionDiv = {};
+
+  HeaderHomeAreaAvatar = {};
+
+  HeaderHomeAreaHomeImg = {};
+
+  NavigatorGoogleloginButtonWrapDiv = {};
+
+  NavigatorGoogleloginButton = {};
+
+  PurchaseTitleTypography = {};
+
+  PurchaseArrayWrapDiv = {};
+
+  PurchaseCard = {};
+
+  PurchaseCardArrayWrapDiv = {};
+
+  PurchasePlanPriceTipTypography = {};
+
+  /** following for purchase */
 
   PurchasePlanBuyButtonWrapDiv = {};
 
   PurchasePlanBuyButton = {};
 
-  PurchasePlanPriceTypographyWrapDiv = {};
-
   PurchasePlanPricePriceTipTypography = {};
+
+  PurchasePlanPriceTypographyWrapDiv = {};
 
   PurchasePlanPriceTypography = {};
 
@@ -79,49 +79,23 @@ class MobileStyle {
 
   PurchasePlanNameTypography = {};
 
+  PurchasePlanDivArrayWrapDiv = {};
+
+  PurchasePlanDiv = {};
+
   PurchaseDiv = {};
 
-  PurchaseDivArrayWrapDiv = {};
-
   /** following for result */
-
-  ResultCard = {};
 
   ResultMessageTypography = {};
 
   ResultScoreTypography = {};
 
+  ResultCard = {};
+
   /** following for exam */
 
-  ExamQuestionChoiceDiv = {};
-
-  ExamQuestionChoiceStatementButtonWrapDiv = {};
-
-  ExamQuestionChoiceStatementButton = { fontSize: "2.1rem" };
-
-  ExamQuestionCardWrapDiv = {};
-
-  ExamQuestionAlertOuterDiv = {};
-
-  ExamQuestionAlertImageImgWrapDiv = {};
-
-  ExamQuestionAlertImageImg = {};
-
-  ExamQuestionCard = {};
-
-  ExamQuestionTipTypographyWrapDiv = {};
-
-  ExamQuestionTipTypography = {};
-
-  ExamQuestionTopicTypographyWrapDiv = {};
-
-  ExamQuestionTopicTypography = { lineHeight: 1.6, fontSize: "2.4rem" };
-
-  ExamDiv = {};
-
   ExamTailDiv = {};
-
-  ExamFunctionAreaDiv = {};
 
   ExamFunctionAreaRestartButton = {};
 
@@ -129,11 +103,41 @@ class MobileStyle {
 
   ExamFunctionAreaEndButton = {};
 
+  ExamFunctionAreaDiv = {};
+
+  ExamQuestionTipTypographyWrapDiv = {};
+
+  ExamQuestionTipTypography = {};
+
+  ExamQuestionChoiceStatementButtonWrapDiv = {};
+
+  ExamQuestionChoiceStatementButton = { fontSize: "2.1rem" };
+
+  ExamQuestionChoiceDivArrayWrapDiv = {};
+
+  ExamQuestionChoiceDiv = {};
+
+  ExamQuestionTopicTypographyWrapDiv = {};
+
+  ExamQuestionTopicTypography = { lineHeight: 1.6, fontSize: "2.4rem" };
+
+  ExamQuestionAlertImageImgWrapDiv = {};
+
+  ExamQuestionAlertImageImg = {};
+
+  ExamQuestionCardArrayWrapDiv = {};
+
+  ExamQuestionCardWrapDiv = {};
+
+  ExamQuestionAlertOuterDiv = {};
+
+  ExamQuestionCard = {};
+
   ExamHeadDiv = {};
 
-  /** following for main */
+  ExamDiv = {};
 
-  MainDiv = {};
+  /** following for main */
 
   MainPurchaseButton = {};
 
@@ -143,9 +147,9 @@ class MobileStyle {
 
   MainJuniorButton = {};
 
-  /** following for navigator */
+  MainDiv = {};
 
-  NavigatorDiv = {};
+  /** following for navigator */
 
   NavigatorLoginButtonWrapDiv = {};
 
@@ -153,9 +157,11 @@ class MobileStyle {
 
   NavigatorFunctionDiv = {};
 
+  NavigatorHomeAreaHomeImg = {};
+
   NavigatorHomeAreaAvatar = {};
 
-  NavigatorHomeAreaHomeImg = {};
+  NavigatorDiv = {};
 
   /** following for login */
 

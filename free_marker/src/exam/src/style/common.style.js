@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-02-16-24-33 
+	updateTime:2021-06-03-14-26-27 
 */
 
 class CommonStyle {
@@ -9,67 +9,67 @@ class CommonStyle {
 
   /** following for unknown */
 
-  PurchasePlanPriceTipTypography = {};
-
-  PurchaseCardArrayWrapDiv = {};
-
-  PurchaseCard = {};
-
-  PurchaseArrayWrapDiv = {};
-
-  PurchaseTitleTypography = {};
-
-  NavigatorGoogleloginButton = {};
-
-  NavigatorGoogleloginButtonWrapDiv = {};
-
-  HeaderHomeAreaHomeImg = {};
-
-  HeaderHomeAreaAvatar = {};
-
-  HeaderFunctionDiv = {};
-
-  HeaderLoginButton = {};
-
-  HeaderLoginButtonWrapDiv = {};
-
-  HeaderDiv = {};
-
-  HeaderImageImg = {};
-
-  HeaderImageImgWrapDiv = {};
-
-  ExamQuestionAlertOuterDivWrapDiv = {};
-
-  ExamQuestionAlertOuterImg = {};
-
-  ExamQuestionAlertDiv = {};
-
-  ExamQuestionAlertContentDiv = {};
-
-  HeaderHomeImgWrapDiv = {};
-
-  HeaderHomeImg = {};
-
-  HeaderHomeAreaHomeImgWrapDiv = {};
-
-  PurchasePlanPidTypography = {};
-
-  PurchasePlanDivWrapDiv = {};
+  PurchaseDivArrayWrapDiv = {};
 
   PurchasePlanSpaceOuterDiv = {};
 
-  /** following for purchase */
+  PurchasePlanDivWrapDiv = {};
 
-  PurchasePlanDiv = {};
+  PurchasePlanPidTypography = {};
+
+  HeaderHomeAreaHomeImgWrapDiv = {};
+
+  HeaderHomeImg = {};
+
+  HeaderHomeImgWrapDiv = {};
+
+  ExamQuestionAlertContentDiv = {};
+
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertOuterImg = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
+
+  HeaderImageImgWrapDiv = {};
+
+  HeaderImageImg = {};
+
+  HeaderDiv = {};
+
+  HeaderLoginButtonWrapDiv = {};
+
+  HeaderLoginButton = {};
+
+  HeaderFunctionDiv = {};
+
+  HeaderHomeAreaAvatar = {};
+
+  HeaderHomeAreaHomeImg = {};
+
+  NavigatorGoogleloginButtonWrapDiv = {};
+
+  NavigatorGoogleloginButton = {};
+
+  PurchaseTitleTypography = {};
+
+  PurchaseArrayWrapDiv = {};
+
+  PurchaseCard = {};
+
+  PurchaseCardArrayWrapDiv = {};
+
+  PurchasePlanPriceTipTypography = {};
+
+  /** following for purchase */
 
   PurchasePlanBuyButtonWrapDiv = {};
 
   PurchasePlanBuyButton = {};
 
-  PurchasePlanPriceTypographyWrapDiv = {};
-
   PurchasePlanPricePriceTipTypography = {};
+
+  PurchasePlanPriceTypographyWrapDiv = {};
 
   PurchasePlanPriceTypography = {};
 
@@ -79,49 +79,23 @@ class CommonStyle {
 
   PurchasePlanNameTypography = {};
 
+  PurchasePlanDivArrayWrapDiv = {};
+
+  PurchasePlanDiv = {};
+
   PurchaseDiv = {};
 
-  PurchaseDivArrayWrapDiv = {};
-
   /** following for result */
-
-  ResultCard = {};
 
   ResultMessageTypography = {};
 
   ResultScoreTypography = {};
 
+  ResultCard = {};
+
   /** following for exam */
 
-  ExamQuestionChoiceDiv = {};
-
-  ExamQuestionChoiceStatementButtonWrapDiv = {};
-
-  ExamQuestionChoiceStatementButton = {};
-
-  ExamQuestionCardWrapDiv = {};
-
-  ExamQuestionAlertOuterDiv = {};
-
-  ExamQuestionAlertImageImgWrapDiv = {};
-
-  ExamQuestionAlertImageImg = {};
-
-  ExamQuestionCard = {};
-
-  ExamQuestionTipTypographyWrapDiv = {};
-
-  ExamQuestionTipTypography = {};
-
-  ExamQuestionTopicTypographyWrapDiv = {};
-
-  ExamQuestionTopicTypography = {};
-
-  ExamDiv = {};
-
   ExamTailDiv = {};
-
-  ExamFunctionAreaDiv = {};
 
   ExamFunctionAreaRestartButton = {};
 
@@ -129,11 +103,41 @@ class CommonStyle {
 
   ExamFunctionAreaEndButton = {};
 
+  ExamFunctionAreaDiv = {};
+
+  ExamQuestionTipTypographyWrapDiv = {};
+
+  ExamQuestionTipTypography = {};
+
+  ExamQuestionChoiceStatementButtonWrapDiv = {};
+
+  ExamQuestionChoiceStatementButton = {};
+
+  ExamQuestionChoiceDivArrayWrapDiv = {};
+
+  ExamQuestionChoiceDiv = {};
+
+  ExamQuestionTopicTypographyWrapDiv = {};
+
+  ExamQuestionTopicTypography = {};
+
+  ExamQuestionAlertImageImgWrapDiv = {};
+
+  ExamQuestionAlertImageImg = {};
+
+  ExamQuestionCardArrayWrapDiv = {};
+
+  ExamQuestionCardWrapDiv = {};
+
+  ExamQuestionAlertOuterDiv = {};
+
+  ExamQuestionCard = {};
+
   ExamHeadDiv = {};
 
-  /** following for main */
+  ExamDiv = {};
 
-  MainDiv = {};
+  /** following for main */
 
   MainPurchaseButton = {};
 
@@ -143,9 +147,9 @@ class CommonStyle {
 
   MainJuniorButton = {};
 
-  /** following for navigator */
+  MainDiv = {};
 
-  NavigatorDiv = {};
+  /** following for navigator */
 
   NavigatorLoginButtonWrapDiv = {};
 
@@ -153,9 +157,11 @@ class CommonStyle {
 
   NavigatorFunctionDiv = {};
 
+  NavigatorHomeAreaHomeImg = {};
+
   NavigatorHomeAreaAvatar = {};
 
-  NavigatorHomeAreaHomeImg = {};
+  NavigatorDiv = {};
 
   /** following for login */
 

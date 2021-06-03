@@ -6,10 +6,13 @@
   /** style */
 }
 /** => following for navigator component used <= */
-.NavigatorHomeAreaHomeImg {
+.NavigatorDiv {
   /** style */
 }
 .NavigatorHomeAreaAvatar {
+  /** style */
+}
+.NavigatorHomeAreaHomeImg {
   /** style */
 }
 .NavigatorFunctionDiv {
@@ -23,10 +26,10 @@
 .NavigatorLoginButtonWrapDiv {
   /** style */
 }
-.NavigatorDiv {
+/** => following for main component used <= */
+.MainDiv {
   /** style */
 }
-/** => following for main component used <= */
 .MainJuniorButton {
   /** style */
 }
@@ -39,11 +42,56 @@
 .MainPurchaseButton {
   /** style */
 }
-.MainDiv {
+/** => following for exam component used <= */
+.ExamDiv {
   /** style */
 }
-/** => following for exam component used <= */
 .ExamHeadDiv {
+  /** style */
+}
+.ExamQuestionCard {
+  /** style */
+}
+.ExamQuestionAlertOuterDiv {
+  /** style */
+}
+.ExamQuestionCardWrapDiv {
+  /** style */
+}
+.ExamQuestionCardArrayWrapDiv {
+  /** style */
+}
+.ExamQuestionAlertImageImg {
+  /** style */
+}
+.ExamQuestionAlertImageImgWrapDiv {
+  /** style */
+}
+.ExamQuestionTopicTypography {
+  /** style */
+}
+.ExamQuestionTopicTypographyWrapDiv {
+  /** style */
+}
+.ExamQuestionChoiceDiv {
+  /** style */
+}
+.ExamQuestionChoiceDivArrayWrapDiv {
+  /** style */
+}
+.ExamQuestionChoiceStatementButton {
+  /** style */
+}
+.ExamQuestionChoiceStatementButtonWrapDiv {
+  /** style */
+}
+.ExamQuestionTipTypography {
+  /** style */
+}
+.ExamQuestionTipTypographyWrapDiv {
+  /** style */
+}
+.ExamFunctionAreaDiv {
   /** style */
 }
 .ExamFunctionAreaEndButton {
@@ -55,66 +103,27 @@
 .ExamFunctionAreaRestartButton {
   /** style */
 }
-.ExamFunctionAreaDiv {
-  /** style */
-}
 .ExamTailDiv {
   /** style */
 }
-.ExamDiv {
-  /** style */
-}
-.ExamQuestionTopicTypography {
-  /** style */
-}
-.ExamQuestionTopicTypographyWrapDiv {
-  /** style */
-}
-.ExamQuestionTipTypography {
-  /** style */
-}
-.ExamQuestionTipTypographyWrapDiv {
-  /** style */
-}
-.ExamQuestionCard {
-  /** style */
-}
-.ExamQuestionAlertImageImg {
-  /** style */
-}
-.ExamQuestionAlertImageImgWrapDiv {
-  /** style */
-}
-.ExamQuestionAlertOuterDiv {
-  /** style */
-}
-.ExamQuestionCardWrapDiv {
-  /** style */
-}
-.ExamQuestionChoiceStatementButton {
-  /** style */
-}
-.ExamQuestionChoiceStatementButtonWrapDiv {
-  /** style */
-}
-.ExamQuestionChoiceDiv {
-  /** style */
-}
 /** => following for result component used <= */
+.ResultCard {
+  /** style */
+}
 .ResultScoreTypography {
   /** style */
 }
 .ResultMessageTypography {
   /** style */
 }
-.ResultCard {
-  /** style */
-}
 /** => following for purchase component used <= */
-.PurchaseDivArrayWrapDiv {
+.PurchaseDiv {
   /** style */
 }
-.PurchaseDiv {
+.PurchasePlanDiv {
+  /** style */
+}
+.PurchasePlanDivArrayWrapDiv {
   /** style */
 }
 .PurchasePlanNameTypography {
@@ -129,10 +138,10 @@
 .PurchasePlanPriceTypography {
   /** style */
 }
-.PurchasePlanPricePriceTipTypography {
+.PurchasePlanPriceTypographyWrapDiv {
   /** style */
 }
-.PurchasePlanPriceTypographyWrapDiv {
+.PurchasePlanPricePriceTipTypography {
   /** style */
 }
 .PurchasePlanBuyButton {
@@ -141,10 +150,10 @@
 .PurchasePlanBuyButtonWrapDiv {
   /** style */
 }
-.PurchasePlanDiv {
+/** ======== following for  ========= */
+.PurchaseDivArrayWrapDiv {
   /** style */
 }
-/** ======== following for  ========= */
 .PurchasePlanPriceTipTypography {
   /** style */
 }

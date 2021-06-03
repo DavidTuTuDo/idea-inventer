@@ -17,14 +17,23 @@
 
 /** => following for navigator component used <= */
 
-.NavigatorHomeAreaHomeImg {
+.NavigatorDiv {
   /** style */
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  padding: 0.5%;
+  max-height: 6vh;
 }
 
 .NavigatorHomeAreaAvatar {
   /** style */
   width: 4vh;
   height: 4vh;
+}
+
+.NavigatorHomeAreaHomeImg {
+  /** style */
 }
 
 .NavigatorFunctionDiv {
@@ -44,16 +53,11 @@
   margin: 0.5%;
 }
 
-.NavigatorDiv {
-  /** style */
-  flex-direction: row;
-  display: flex;
-  align-items: center;
-  padding: 0.5%;
-  max-height: 6vh;
-}
-
 /** => following for main component used <= */
+
+.MainDiv {
+  /** style */
+}
 
 .MainJuniorButton {
   /** style */
@@ -77,14 +81,105 @@
   /** style */
 }
 
-.MainDiv {
-  /** style */
-}
-
 /** => following for exam component used <= */
+
+.ExamDiv {
+  /** style */
+  background-color: #888888;
+}
 
 .ExamHeadDiv {
   /** style */
+}
+
+.ExamQuestionCard {
+  /** style */
+  margin-left: 1vw;
+  margin-right: 1vw;
+  margin-bottom: 2vw;
+  padding: 1vw;
+}
+
+.ExamQuestionAlertOuterDiv {
+  /** style */
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ExamQuestionCardWrapDiv {
+  /** style */
+  position: relative;
+}
+
+.ExamQuestionCardArrayWrapDiv {
+  /** style */
+}
+
+.ExamQuestionAlertImageImg {
+  /** style */
+  opacity: 0.3;
+  height: 70%;
+}
+
+.ExamQuestionAlertImageImgWrapDiv {
+  /** style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.ExamQuestionTopicTypography {
+  /** style */
+  font-weight: bold;
+  font-size: 2.8rem;
+}
+
+.ExamQuestionTopicTypographyWrapDiv {
+  /** style */
+}
+
+.ExamQuestionChoiceDiv {
+  /** style */
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+}
+
+.ExamQuestionChoiceDivArrayWrapDiv {
+  /** style */
+}
+
+.ExamQuestionChoiceStatementButton {
+  /** style */
+  text-align: left;
+  font-size: 2.1rem;
+}
+
+.ExamQuestionChoiceStatementButtonWrapDiv {
+  /** style */
+  margin-bottom: 1vh;
+}
+
+.ExamQuestionTipTypography {
+  /** style */
+}
+
+.ExamQuestionTipTypographyWrapDiv {
+  /** style */
+}
+
+.ExamFunctionAreaDiv {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: center; /** style */
 }
 
 .ExamFunctionAreaEndButton {
@@ -107,99 +202,16 @@
   outline-width: 5px;
 }
 
-.ExamFunctionAreaDiv {
-  flex-direction: row;
-  display: flex;
-  align-items: center;
-  justify-content: center; /** style */
-}
-
 .ExamTailDiv {
   /** style */
   height: 1vh;
 }
 
-.ExamDiv {
-  /** style */
-  background-color: #888888;
-}
-
-.ExamQuestionTopicTypography {
-  /** style */
-  font-weight: bold;
-  font-size: 2.8rem;
-}
-
-.ExamQuestionTopicTypographyWrapDiv {
-  /** style */
-}
-
-.ExamQuestionTipTypography {
-  /** style */
-}
-
-.ExamQuestionTipTypographyWrapDiv {
-  /** style */
-}
-
-.ExamQuestionCard {
-  /** style */
-  margin-left: 1vw;
-  margin-right: 1vw;
-  margin-bottom: 2vw;
-  padding: 1vw;
-}
-
-.ExamQuestionAlertImageImg {
-  /** style */
-  opacity: 0.3;
-  height: 70%;
-}
-
-.ExamQuestionAlertImageImgWrapDiv {
-  /** style */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.ExamQuestionAlertOuterDiv {
-  /** style */
-  position: absolute;
-  width: 90%;
-  height: 90%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  pointer-events: none;
-}
-
-.ExamQuestionCardWrapDiv {
-  /** style */
-  position: relative;
-}
-
-.ExamQuestionChoiceStatementButton {
-  /** style */
-  text-align: left;
-  font-size: 2.1rem;
-}
-
-.ExamQuestionChoiceStatementButtonWrapDiv {
-  /** style */
-  margin-bottom: 1vh;
-}
-
-.ExamQuestionChoiceDiv {
-  /** style */
-  margin-top: 2vh;
-  margin-bottom: 2vh;
-}
-
 /** => following for result component used <= */
+
+.ResultCard {
+  /** style */
+}
 
 .ResultScoreTypography {
   /** style */
@@ -209,25 +221,29 @@
   /** style */
 }
 
-.ResultCard {
-  /** style */
-}
-
 /** => following for purchase component used <= */
 
-.PurchaseDivArrayWrapDiv {
+.PurchaseDiv {
+  /** style */
+  display: flex;
+  justify-content: center;
+}
+
+.PurchasePlanDiv {
+  /** style */
+  display: flex;
+  width: 20vw;
+  flex-direction: column;
+}
+
+.PurchasePlanDivArrayWrapDiv {
+  /** style */
   /** style */
   display: flex;
   flex-direction: row;
   border-style: solid;
   border-width: 1px;
   border-radius: 10px;
-}
-
-.PurchaseDiv {
-  /** style */
-  display: flex;
-  justify-content: center;
 }
 
 .PurchasePlanNameTypography {
@@ -254,14 +270,14 @@
   /** style */
 }
 
-.PurchasePlanPricePriceTipTypography {
-  /** style */
-}
-
 .PurchasePlanPriceTypographyWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv
     all) {
   /** style */
   flex-direction: column;
+}
+
+.PurchasePlanPricePriceTipTypography {
+  /** style */
 }
 
 .PurchasePlanBuyButton {
@@ -271,13 +287,6 @@
 .PurchasePlanBuyButtonWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv all) {
   /** style */
   border-style: none;
-}
-
-.PurchasePlanDiv {
-  /** style */
-  display: flex;
-  width: 20vw;
-  flex-direction: column;
 }
 
 /** ======== following for  ========= */

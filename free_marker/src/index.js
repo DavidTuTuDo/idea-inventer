@@ -14,8 +14,8 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -26,8 +26,6 @@ class CodegenNode {
     /** 用來當作Router的導頁網址, 如果用在strucut裡面就是當作remote fetch*/
     cookies;
     /** 對應到web使用的cookie, 好處是cookie會加密 */
-    arrayWrap;
-    /** 主要用在array如果想改變flex,作為彈性的使用 */
     wrap;
     /** 在view外面包一層div,作為彈性的使用 */
     outer;
@@ -158,15 +156,17 @@ class CodegenNode {
 
     /** 應該畫面時做的component 對應到的 物件, 都是根據父類再繼續點下去 例如 parent.child
      * 但設計了incestAttribute(), 要把grandson,和child 歸為同一個generation
+     *
+     * precise代表的是正確的父子關係,例如incest value, 如果要找到正確的父類, 就要透過 Precise
      * */
     getPreciseParent() {
         let parent = this.getParentObject();
         if (this.isIncestAttribute()) {
             return parent.getParentObject();
         }
-        while(!parent.isAttribute()){
+        while (!parent.isAttribute()) {
             parent = parent.getParentObject();
-            if(parent === undefined) break;
+            if (parent === undefined) break;
         }
 
         return parent;
@@ -208,10 +208,6 @@ class CodegenNode {
             }
         }
         return incest;
-    }
-
-    hasArrayMap() {
-        return !!this.arrayWrap && this.arrayWrap
     }
 
     /** 表示這會在component裡面產生邏輯 */
@@ -403,7 +399,7 @@ class CodegenNode {
         }
     }
 
-    getFunctionName() {
+    getFunctionNameInStoreGetter() {
         return Util.camel('get', this.getFieldName());
     }
 
@@ -430,7 +426,7 @@ class CodegenNode {
 
     getStatementOfComponentKey() {
         return this.getPreciseAttributeChildren().map((child) =>
-            `\$\{${child.getPreciseParent().getName()}.${child.getName()}\}`).join('')
+            `\$\{${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()\}`).join('')
     }
 
     getName() {
@@ -1102,8 +1098,7 @@ class ComponentBuilder extends BaseBuilder {
 
     getJSXStringsByNode(generator, node, ...extraContents) {
         const keyValue = node.getStatementOfComponentKey();
-        const parentName = Util.camel(...node.getReverseOrderOfParentNames(), node.name, node.isOuter() ? 'outer' : '', node.view,);
-        const className = _.upperFirst(parentName);
+        const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.isOuter() ? 'outer' : '', node.getView()));
 
         const props = {
             className,
@@ -1130,40 +1125,60 @@ class ComponentBuilder extends BaseBuilder {
             props.onClick =
                 `###(param) => this.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
         }
+
+
         const content = [];
         if (node.isValue()) {
             const functionName = node.getFunctionNameUsingInComponentGetter();
             generator.appendFunction(functionName, [`${this.getPreciseParentName(node)}`], [],
-                `return ${this.getPreciseParentName(node)}.${node.getFunctionName()}()`);
+                `return ${this.getPreciseParentName(node)}.${node.getFunctionNameInStoreGetter()}()`);
             content.push(`{this.${functionName}(${this.getPreciseParentName(node)})}`);
         }
 
 
-        const selfContent = node.getContents();
+        const nodeProvideContent = node.getContents();
 
-        const origin = this.getJSXStrings({
+        let origin = this.getJSXStrings({
             tag: node.view,
             props,
-            contents: [...content, ...selfContent, ...extraContents],
+            contents: [...content, ...nodeProvideContent, ...extraContents],
         });
 
 
         if (node.wrap) {
-            const props = {className: `${className}WrapDiv`,}
+            const clazzName = `${className}WrapDiv`;
+            const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
             if (!_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
 
             for (const incest of node.getIncestChild()) {
-                origin.push(...this.getJSXStringsByNode(generator, incest));
+                origin.push(`{this.${incest.getFunctionNameOfRenderView()}(${incest.getPreciseParent().getName()})}`);
             }
 
-            return this.getJSXStrings({
+            origin = this.getJSXStrings({
                 tag: 'div',
                 props,
                 contents: [...this.getOuterChildJSXStrings(generator, node), ...origin],
             })
         }
-        return origin;
+
+
+
+        if (node.isArray()) {
+            const clazzName = `${className}ArrayWrapDiv`;
+            const props = {className:clazzName, style: `###Style.${clazzName}`}
+            return this.getJSXStrings({
+                tag: `div`,
+                props,
+                contents: [`{${node.getPreciseParent().getName()}.${node.getFunctionNameInStoreGetter()}().map( (${node.getName()}) => { return (` ,...origin,`)})}`]
+            })
+        } else{
+            return origin;
+        }
+
+
+
+
     }
 
     getOuterChildJSXStrings(generator, node) {
@@ -1196,33 +1211,23 @@ class ComponentBuilder extends BaseBuilder {
             const functionName = child.getFunctionNameUsingInComponentGetter();
             if (child.hasChildren()) {
                 if (child.isArray()) {
-                    let stmt = [`\n{this.${functionName}(${node.name})
-                .map((each) => this.${child.getFunctionNameOfJSX()}(each))}\n`];
-                    if (child.hasArrayMap()) {
-                        const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.getView(), `ArrayWrapDiv`));
-                        stmt = this.getJSXStrings({
-                            tag: `div`,
-                            props: {
-                                className,
-                                style: `###Style.${className}`,
-                            },
-                            contents: [stmt]
-                        })
-                    }
+                    let stmt = [`\n{this.${child.getFunctionNameOfJSX()}(${child.getPreciseParent().getName()})}\n`]
+
                     childstmt.push(...stmt);
                     generator.appendFunction(functionName, [`${node.name}`], [],
-                        `return ${child.getPreciseParent().getName()}.${child.getFunctionName()}()`);
+                        `return ${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()`);
+
                 } else if (child.isObject()) {
                     childstmt.push(`\n{this.${child.getFunctionNameOfJSX()}(this.${functionName}(${node.name}))}\n`);
 
                     generator.appendFunction(functionName, [`${node.name}`], [],
-                        `return ${child.getPreciseParent().getName()}.${child.getFunctionName()}()`);
+                        `return ${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()`);
                 } else {
                     /** 不是attribute,畫面也要可以做出結構, 例如 view:`avatar`, children:[{view:`img`}] */
                     if (child.isValueView()) {
                         childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.getPreciseParent().getName()})}\n`)
                     } else {
-                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}`:``})}\n`)
+                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}` : ``})}\n`)
                     }
                 }
             } else {
@@ -1230,7 +1235,7 @@ class ComponentBuilder extends BaseBuilder {
                     if (child.isValueView()) {
                         childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.getPreciseParent().getName()})}\n`)
                     } else {
-                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}`:``})}\n`);
+                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}` : ``})}\n`);
                     }
 
                 }
@@ -1255,7 +1260,7 @@ class ComponentBuilder extends BaseBuilder {
 
         if (!this.hasRootRenderViewFunction) {
             builder.appendFunction('renderView', [], [],
-                `const ${_.lowerCase(node.name)} = this.props.${_.lowerCase(node.name)};\n\n`,
+                `const ${_.lowerCase(node.name)} = this.getStore();\n\n`,
                 normalize(...this.getJSXStringsByStruct(node, builder)));
             this.hasRootRenderViewFunction = true;
         }
@@ -1263,21 +1268,21 @@ class ComponentBuilder extends BaseBuilder {
         for (const child of node.getChildren()) {
             if (!child.isView()) continue;
             if (child.isArrayOrObject()) {
-                builder.appendFunction(child.getFunctionNameOfJSX(), [`${_.lowerCase(child.name)}`], [],
+                builder.appendFunction(child.getFunctionNameOfJSX(), [`${child.getPreciseParent().getName()}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
                 this.appendRenderViewFunctions(child, builder);
             } else if (child.isValueView()) {
                 builder.appendFunction(child.getFunctionNameOfRenderView(),
                     [`${child.getPreciseParent().getName()}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
-                if(child.hasChildren()){
+                if (child.hasChildren()) {
                     this.appendRenderViewFunctions(child, builder);
                 }
-            } else if(child.isView()){
+            } else if (child.isView()) {
                 builder.appendFunction(child.getFunctionNameOfRenderView(),
-                    [ child.needParam ? `${child.getPreciseParent().getName()}`:``], [],
+                    [child.needParam ? `${child.getPreciseParent().getName()}` : ``], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
-                if(child.hasChildren()){
+                if (child.hasChildren()) {
                     this.appendRenderViewFunctions(child, builder);
                 }
             }
@@ -1751,7 +1756,6 @@ export {
         await new AppBuilder(genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(genRootPath).buildRouterFile(source);
         await new AppBuilder(genRootPath).buildCookieFiles(source);
-
         await new AppBuilder(genRootPath).buildBaseClasses();
         await new AppBuilder(genRootPath).buildLessFile(totalClassNames, sourcePath);
         await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, sourcePath);
