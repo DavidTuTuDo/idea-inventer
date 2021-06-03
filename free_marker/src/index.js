@@ -1261,7 +1261,6 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         for (const child of node.getChildren()) {
-            console.log(`VVVVChild`,child.getName());
             if (!child.isView()) continue;
             if (child.isArrayOrObject()) {
                 builder.appendFunction(child.getFunctionNameOfJSX(), [`${_.lowerCase(child.name)}`], [],
@@ -1271,9 +1270,9 @@ class ComponentBuilder extends BaseBuilder {
                 builder.appendFunction(child.getFunctionNameOfRenderView(),
                     [`${child.getPreciseParent().getName()}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
-                // if(child.hasChildren()){
-                //     this.appendRenderViewFunctions(child, builder);
-                // }
+                if(child.hasChildren()){
+                    this.appendRenderViewFunctions(child, builder);
+                }
             } else if(child.isView()){
                 builder.appendFunction(child.getFunctionNameOfRenderView(),
                     [ child.needParam ? `${child.getPreciseParent().getName()}`:``], [],
