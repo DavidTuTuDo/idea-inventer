@@ -47,6 +47,8 @@ class CodegenNode {
      在view和store上面也會產生出same generation的概念,
      incest只支援一層
      */
+    needParam;
+    /** 單純的view有時候會需要param作為顯示的判斷*/
     name;
     view;
     type;
@@ -125,6 +127,10 @@ class CodegenNode {
         return Util.isOrEquals(this.type, 'string', 'number');
     }
 
+    isValueView() {
+        return this.isValue() && this.isView();
+    }
+
     /**
      支援如果物件是string 或是 number(非資料結構), 但是有children的情形,
      使用情境就是兩個平輩的attribute,要放在同一個block
@@ -154,10 +160,15 @@ class CodegenNode {
      * 但設計了incestAttribute(), 要把grandson,和child 歸為同一個generation
      * */
     getPreciseParent() {
-        const parent = this.getParentObject();
+        let parent = this.getParentObject();
         if (this.isIncestAttribute()) {
             return parent.getParentObject();
         }
+        while(!parent.isAttribute()){
+            parent = parent.getParentObject();
+            if(parent === undefined) break;
+        }
+
         return parent;
     }
 
@@ -181,6 +192,11 @@ class CodegenNode {
     getPreciseAttributeChildren() {
         const incest = this.getIncestGrandson();
         return [..._.filter(this.getChildren(), (child) => child.isAttribute()), ...incest];
+    }
+
+    getPreciseViewChildren() {
+        const incest = this.getIncestChild();
+        return [..._.filter(this.getChildren(), (child) => child.isView()), ...incest];
     }
 
 
@@ -395,11 +411,11 @@ class CodegenNode {
         return Util.camel('get', this.getPreciseParent().getName(), this.getFieldName());
     }
 
-    getFunctionNameOfArrayJSX() {
+    getFunctionNameOfJSX() {
         return Util.camel('render', this.getName(), 'view');
     }
 
-    getFunctionNameOfRenderView(){
+    getFunctionNameOfRenderView() {
         return Util.camel(`render`,
             this.getPreciseParent().getName(),
             this.getName(), 'view');
@@ -1106,15 +1122,16 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.isClickView()) {
+            generator.appendFunction(node.getFunctionNameOfClicked(),
+                ['param'], [],
+                `console.error('${node.getFunctionNameOfClicked()} not override')`
+            )
+
             props.onClick =
                 `###(param) => this.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
         }
         const content = [];
         if (node.isValue()) {
-            generator.appendFunction(Util.camel(`render`,
-                this.getPreciseParentName(node),
-                node.getName(), 'view'));
-
             const functionName = node.getFunctionNameUsingInComponentGetter();
             generator.appendFunction(functionName, [`${this.getPreciseParentName(node)}`], [],
                 `return ${this.getPreciseParentName(node)}.${node.getFunctionName()}()`);
@@ -1172,7 +1189,6 @@ class ComponentBuilder extends BaseBuilder {
 
     getJSXStringsByStruct(node, generator, notAllowOuterChild = true) {
         const childstmt = [];
-
         for (const child of node.getChildren()) {
             if (!child.isView()) continue;
             if (notAllowOuterChild && child.isOuter()) continue;
@@ -1181,7 +1197,7 @@ class ComponentBuilder extends BaseBuilder {
             if (child.hasChildren()) {
                 if (child.isArray()) {
                     let stmt = [`\n{this.${functionName}(${node.name})
-                .map((each) => this.${child.getFunctionNameOfArrayJSX()}(each))}\n`];
+                .map((each) => this.${child.getFunctionNameOfJSX()}(each))}\n`];
                     if (child.hasArrayMap()) {
                         const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.getView(), `ArrayWrapDiv`));
                         stmt = this.getJSXStrings({
@@ -1197,26 +1213,27 @@ class ComponentBuilder extends BaseBuilder {
                     generator.appendFunction(functionName, [`${node.name}`], [],
                         `return ${child.getPreciseParent().getName()}.${child.getFunctionName()}()`);
                 } else if (child.isObject()) {
-                    childstmt.push(`\n{this.${child.getFunctionNameOfArrayJSX()}(this.${functionName}(${node.name}))}\n`);
+                    childstmt.push(`\n{this.${child.getFunctionNameOfJSX()}(this.${functionName}(${node.name}))}\n`);
 
                     generator.appendFunction(functionName, [`${node.name}`], [],
                         `return ${child.getPreciseParent().getName()}.${child.getFunctionName()}()`);
                 } else {
                     /** 不是attribute,畫面也要可以做出結構, 例如 view:`avatar`, children:[{view:`img`}] */
-                    childstmt.push(...this.getJSXStringsByStruct(child, generator, notAllowOuterChild))
+                    if (child.isValueView()) {
+                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.getPreciseParent().getName()})}\n`)
+                    } else {
+                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}`:``})}\n`)
+                    }
                 }
             } else {
                 if (!child.isIncestAttribute()) {
-                    // childstmt.push(`{this.${child.getFunctionNameOfRenderView()}()}`);
-                    childstmt.push(...this.getJSXStringsByNode(generator, child));
-                }
-            }
+                    if (child.isValueView()) {
+                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.getPreciseParent().getName()})}\n`)
+                    } else {
+                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}`:``})}\n`);
+                    }
 
-            if (child.isClickView()) {
-                generator.appendFunction(child.getFunctionNameOfClicked(),
-                    ['param'], [],
-                    `console.error('${child.getFunctionNameOfClicked()} not override')`
-                )
+                }
             }
         }
         return this.getJSXStringsByNode(generator, node, ...childstmt);
@@ -1244,11 +1261,26 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         for (const child of node.getChildren()) {
+            console.log(`VVVVChild`,child.getName());
             if (!child.isView()) continue;
             if (child.isArrayOrObject()) {
-                builder.appendFunction(child.getFunctionNameOfArrayJSX(), [`${_.lowerCase(child.name)}`], [],
+                builder.appendFunction(child.getFunctionNameOfJSX(), [`${_.lowerCase(child.name)}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
                 this.appendRenderViewFunctions(child, builder);
+            } else if (child.isValueView()) {
+                builder.appendFunction(child.getFunctionNameOfRenderView(),
+                    [`${child.getPreciseParent().getName()}`], [],
+                    normalize(...this.getJSXStringsByStruct(child, builder)));
+                // if(child.hasChildren()){
+                //     this.appendRenderViewFunctions(child, builder);
+                // }
+            } else if(child.isView()){
+                builder.appendFunction(child.getFunctionNameOfRenderView(),
+                    [ child.needParam ? `${child.getPreciseParent().getName()}`:``], [],
+                    normalize(...this.getJSXStringsByStruct(child, builder)));
+                if(child.hasChildren()){
+                    this.appendRenderViewFunctions(child, builder);
+                }
             }
         }
     }
