@@ -14,8 +14,8 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -125,10 +125,6 @@ class CodegenNode {
         return Util.isOrEquals(this.type, 'string', 'number');
     }
 
-    isValueView() {
-        return this.isValue() && this.isView();
-    }
-
     /**
      支援如果物件是string 或是 number(非資料結構), 但是有children的情形,
      使用情境就是兩個平輩的attribute,要放在同一個block
@@ -138,7 +134,7 @@ class CodegenNode {
         const two = this.hasWrap();
         let three = false;
         for (const child of this.getChildren()) {
-            if (this.isIncestAttribute()) {
+            if (this.isIncestAttributeAndView()) {
                 three = true;
                 break;
             }
@@ -151,6 +147,10 @@ class CodegenNode {
      使用情境就是兩個平輩的attribute,要放在同一個block
      */
     isIncest() {
+        if (!this.isView() || !this.isAttribute()) {
+            throw new ERROR(8012);
+        }
+
         return !!this.incest && this.incest
     }
 
@@ -161,27 +161,30 @@ class CodegenNode {
      * */
     getPreciseParent() {
         let parent = this.getParentObject();
-        if (this.isIncestAttribute()) {
+        if (this.isIncestAttributeAndView()) {
             return parent.getParentObject();
         }
         while (!parent.isAttribute()) {
             parent = parent.getParentObject();
             if (parent === undefined) break;
         }
-
         return parent;
     }
 
-    isIncestAttribute() {
-        return this.isAttribute() &&
-            this.isIncest();
+    getPreciseParentName() {
+        return this.getPreciseParent().getName();
     }
 
-    getIncestGrandson() {
+    /** 想要強調 incest 必須是 view,也是attribute */
+    isIncestAttributeAndView() {
+        return this.isAttribute() && this.isView() && this.isIncest();
+    }
+
+    getIncestAttributeTillGrandson() {
         const incest = [];
         for (const child of this.getChildren()) {
             for (const grandson of child.getChildren()) {
-                if (grandson.isIncestAttribute()) {
+                if (grandson.isIncestAttributeAndView()) {
                     incest.push(grandson);
                 }
             }
@@ -190,7 +193,7 @@ class CodegenNode {
     }
 
     getPreciseAttributeChildren() {
-        const incest = this.getIncestGrandson();
+        const incest = this.getIncestAttributeTillGrandson();
         return [..._.filter(this.getChildren(), (child) => child.isAttribute()), ...incest];
     }
 
@@ -203,7 +206,7 @@ class CodegenNode {
     getIncestChild() {
         const incest = [];
         for (const child of this.getChildren()) {
-            if (child.isIncestAttribute()) {
+            if (child.isIncestAttributeAndView()) {
                 incest.push(child);
             }
         }
@@ -377,6 +380,10 @@ class CodegenNode {
         return (this.type === 'object');
     }
 
+    needParentParam() {
+        return !!this.needParam && this.needParam
+    }
+
     getDefaultValueByType() {
         if (this.defaultValue) {
             return JSON.stringify(this.defaultValue);
@@ -403,18 +410,37 @@ class CodegenNode {
         return Util.camel('get', this.getFieldName());
     }
 
+    /** 這個目的就是在View這上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
     getFunctionNameUsingInComponentGetter() {
         return Util.camel('get', this.getPreciseParent().getName(), this.getFieldName());
-    }
-
-    getFunctionNameOfJSX() {
-        return Util.camel('render', this.getName(), 'view');
     }
 
     getFunctionNameOfRenderView() {
         return Util.camel(`render`,
             this.getPreciseParent().getName(),
-            this.getName(), 'view');
+            this.getFieldName(), 'view');
+    }
+
+    getParamOfRenderView() {
+        let param = '';
+
+        if (this.isAttribute() || this.needParentParam()) {
+            param = this.getPreciseParent().getName();
+        }
+        return param;
+    }
+
+    getFunctionNameOfRenderViewWithParam() {
+        const functionName = Util.camel(`render`,
+            this.getPreciseParent().getName(),
+            this.getFieldName(), 'view');
+        let param = '';
+
+        if (this.isAttribute() || this.needParentParam()) {
+            param = this.getPreciseParent().getName();
+        }
+        return `${functionName}(${param})`;
+
     }
 
     getFunctionNameOfSetter() {
@@ -990,7 +1016,6 @@ class ComponentBuilder extends BaseBuilder {
         }, `inject('${componentNode.name}')`, `observer`);
         indexGenerator.appendImport(`{observer, inject}`, `mobx-react`);
 
-
         await indexGenerator.persist();
         await baseGenerator.persist();
 
@@ -1130,9 +1155,9 @@ class ComponentBuilder extends BaseBuilder {
         const content = [];
         if (node.isValue()) {
             const functionName = node.getFunctionNameUsingInComponentGetter();
-            generator.appendFunction(functionName, [`${this.getPreciseParentName(node)}`], [],
-                `return ${this.getPreciseParentName(node)}.${node.getFunctionNameInStoreGetter()}()`);
-            content.push(`{this.${functionName}(${this.getPreciseParentName(node)})}`);
+            generator.appendFunction(functionName, [`${node.getPreciseParentName()}`], [],
+                `return ${node.getPreciseParentName()}.${node.getFunctionNameInStoreGetter()}()`);
+            content.push(`{this.${functionName}(${node.getPreciseParentName()})}`);
         }
 
 
@@ -1145,10 +1170,10 @@ class ComponentBuilder extends BaseBuilder {
         });
 
 
-        if (node.wrap) {
+        if (node.hasWrap()) {
             const clazzName = `${className}WrapDiv`;
             const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
-            if (!_.isEmpty(keyValue))
+            if (node.isArray() && !_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
 
             for (const incest of node.getIncestChild()) {
@@ -1163,21 +1188,17 @@ class ComponentBuilder extends BaseBuilder {
         }
 
 
-
         if (node.isArray()) {
             const clazzName = `${className}ArrayWrapDiv`;
-            const props = {className:clazzName, style: `###Style.${clazzName}`}
+            const props = {className: clazzName, style: `###Style.${clazzName}`}
             return this.getJSXStrings({
                 tag: `div`,
                 props,
-                contents: [`{${node.getPreciseParent().getName()}.${node.getFunctionNameInStoreGetter()}().map( (${node.getName()}) => { return (` ,...origin,`)})}`]
+                contents: [`{${node.getPreciseParent().getName()}.${node.getFunctionNameInStoreGetter()}().map( (${node.getName()}) => { return (`, ...origin, `)})}`]
             })
-        } else{
+        } else {
             return origin;
         }
-
-
-
 
     }
 
@@ -1191,53 +1212,20 @@ class ComponentBuilder extends BaseBuilder {
     }
 
 
-    /** 應該畫面時做的component 對應到的 物件, 都是根據父類再繼續點下去 例如 parent.child
-     * 但設計了incestAttribute(), 要把grandson,和child 歸為同一個generation
-     * */
-    getPreciseParentName(node) {
-        const parent = node.getParentObject();
-        if (node.isIncestAttribute()) {
-            return _.lowerCase(parent.getParentObject().getName());
-        }
-        return _.lowerCase(parent.getName())
-    }
-
     getJSXStringsByStruct(node, generator, notAllowOuterChild = true) {
         const childstmt = [];
         for (const child of node.getChildren()) {
             if (!child.isView()) continue;
             if (notAllowOuterChild && child.isOuter()) continue;
 
-            const functionName = child.getFunctionNameUsingInComponentGetter();
-            if (child.hasChildren()) {
-                if (child.isArray()) {
-                    let stmt = [`\n{this.${child.getFunctionNameOfJSX()}(${child.getPreciseParent().getName()})}\n`]
-
-                    childstmt.push(...stmt);
-                    generator.appendFunction(functionName, [`${node.name}`], [],
-                        `return ${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()`);
-
-                } else if (child.isObject()) {
-                    childstmt.push(`\n{this.${child.getFunctionNameOfJSX()}(this.${functionName}(${node.name}))}\n`);
-
-                    generator.appendFunction(functionName, [`${node.name}`], [],
-                        `return ${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()`);
-                } else {
-                    /** 不是attribute,畫面也要可以做出結構, 例如 view:`avatar`, children:[{view:`img`}] */
-                    if (child.isValueView()) {
-                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.getPreciseParent().getName()})}\n`)
-                    } else {
-                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}` : ``})}\n`)
-                    }
-                }
+            if (child.isArrayOrObject()) {
+                childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
+                generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
+                    [`${child.getPreciseParent().getName()}`], [],
+                    `return ${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()`);
             } else {
-                if (!child.isIncestAttribute()) {
-                    if (child.isValueView()) {
-                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.getPreciseParent().getName()})}\n`)
-                    } else {
-                        childstmt.push(`\n{this.${child.getFunctionNameOfRenderView()}(${child.needParam ? `${child.getPreciseParent().getName()}` : ``})}\n`);
-                    }
-
+                if (!child.isIncestAttributeAndView()) {
+                    childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
                 }
             }
         }
@@ -1265,27 +1253,26 @@ class ComponentBuilder extends BaseBuilder {
             this.hasRootRenderViewFunction = true;
         }
 
+        const existedFunctions = {};
         for (const child of node.getChildren()) {
             if (!child.isView()) continue;
+            const functionName = child.getFunctionNameOfRenderView();
+            /** 讓重複定義的view只出現一次, 像是space這樣的狀況*/
+            if(existedFunctions[functionName]) continue;
             if (child.isArrayOrObject()) {
-                builder.appendFunction(child.getFunctionNameOfJSX(), [`${child.getPreciseParent().getName()}`], [],
+                builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
                 this.appendRenderViewFunctions(child, builder);
-            } else if (child.isValueView()) {
-                builder.appendFunction(child.getFunctionNameOfRenderView(),
-                    [`${child.getPreciseParent().getName()}`], [],
-                    normalize(...this.getJSXStringsByStruct(child, builder)));
-                if (child.hasChildren()) {
-                    this.appendRenderViewFunctions(child, builder);
-                }
-            } else if (child.isView()) {
-                builder.appendFunction(child.getFunctionNameOfRenderView(),
-                    [child.needParam ? `${child.getPreciseParent().getName()}` : ``], [],
+            } else {
+                builder.appendFunction(functionName,
+                    [`${child.getParamOfRenderView()}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
                 if (child.hasChildren()) {
                     this.appendRenderViewFunctions(child, builder);
                 }
             }
+            existedFunctions[functionName] = true;
+
         }
     }
 
@@ -1338,7 +1325,6 @@ class AppBuilder extends ComponentBuilder {
                     this.${cookie.name}.key, 
                                 this.password))`,
                 )
-
 
                 baseCookieGenerator.appendFunction(Util.camel(`remove`, cookie.name), ['option'], [],
                     `this.cookie.remove(`,
@@ -1711,10 +1697,12 @@ class ProjectIndexFilePersistHandler {
                 if (_.isString(exclude)) {
                     exclude = {type: 'fileNameExtension', keyword: exclude}
                 }
+
                 if (_.isEqual(file[exclude.type], exclude.keyword)) {
                     ignoreThisRun = true;
                     break;
                 }
+
             }
             if (ignoreThisRun) continue;
             const from = file.absolute;

@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-03-14-26-27 
+	updateTime:2021-06-03-14-58-26 
 */
 
 class AppStyle {

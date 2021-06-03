@@ -122,6 +122,9 @@ const ERRORs = {
     8011: {
         message: `beautify class fail,but let it pass`
     },
+    8012: {
+        message: `incest props should define view,type either`
+    },
     9999: {
         message: `super stupid error`
     },
