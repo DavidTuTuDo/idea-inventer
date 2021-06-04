@@ -125,6 +125,9 @@ const ERRORs = {
     8012: {
         message: `incest props should define view,type either`
     },
+    8013: {
+        message: `render view type is out of condition, check why`
+    },
     9999: {
         message: `super stupid error`
     },

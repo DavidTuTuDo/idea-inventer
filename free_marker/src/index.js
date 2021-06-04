@@ -25,9 +25,11 @@ class CodegenNode {
     path;
     /** 用來當作Router的導頁網址, 如果用在strucut裡面就是當作remote fetch*/
     cookies;
-    /** 對應到web使用的cookie, 好處是cookie會加密 */
+    /** {name,type:object|string }對應到web使用的cookie, 好處是cookie會加密 */
     wrap;
     /** 在view外面包一層div,作為彈性的使用 */
+    wrapContents;
+    /** 當view有被wrap包住時,可以用wrapContent加上 ['{this.getTailView()}']*/
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
     props;
@@ -51,16 +53,24 @@ class CodegenNode {
     view;
     type;
     style;
+    wrapView;
+    /**  可以指定wrap的type default是div*/
     extra;
     /**  extra => 用於component mount 後,其所帶入的值 */
     children;
     plural;
+    /** 用於產出合理的function name,可以有 object,array,number,string 如果type是 array, 就必些要有 plural */
     title;
     url;
     /** 如果物件有對應到資料庫,就可以指定 */
     parent;
     click;
     defaultValue;
+    /** 可以指定attribute的default value */
+
+
+    /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 都不會被包成CodeGenNode */
+
 
     constructor(node) {
         this.node = node;
@@ -72,6 +82,13 @@ class CodegenNode {
 
     getFieldName() {
         return this.name + (this.plural ? this.plural : '');
+    }
+
+    getWrapView(){
+        if(this.wrapView) {
+            return this.wrapView;
+        }
+        return 'div';
     }
 
     getType() {
@@ -108,6 +125,13 @@ class CodegenNode {
         return [];
     }
 
+    getWrapContents(){
+        if (!!this.wrapContents && _.isArray(this.wrapContents)) {
+            return this.wrapContents
+        }
+        return [];
+    }
+
     hasWrap() {
         return !!this.wrap && this.wrap
     }
@@ -121,8 +145,9 @@ class CodegenNode {
         return !!this.outer && this.outer
     }
 
-    isValue() {
-        return Util.isOrEquals(this.type, 'string', 'number');
+    isViewValue() {
+        // return Util.isOrEquals(this.type, 'string', 'number');
+       return this.isView() && this.isAttribute() && !this.isArrayOrObject();
     }
 
     /**
@@ -134,7 +159,7 @@ class CodegenNode {
         const two = this.hasWrap();
         let three = false;
         for (const child of this.getChildren()) {
-            if (this.isIncestAttributeAndView()) {
+            if (child.isIncestAttributeAndView()) {
                 three = true;
                 break;
             }
@@ -410,7 +435,7 @@ class CodegenNode {
         return Util.camel('get', this.getFieldName());
     }
 
-    /** 這個目的就是在View這上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
+    /** 這個目的就是在View再運用store的值可以上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
     getFunctionNameUsingInComponentGetter() {
         return Util.camel('get', this.getPreciseParent().getName(), this.getFieldName());
     }
@@ -472,7 +497,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'contents', 'style', 'extra', 'firebase', 'parent', 'props'))
+                if (Util.isOrEquals(key, 'wrapContents','contents', 'style', 'extra', 'firebase', 'parent', 'props'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -1153,46 +1178,44 @@ class ComponentBuilder extends BaseBuilder {
 
 
         const content = [];
-        if (node.isValue()) {
+        if (node.isViewValue()) {
             const functionName = node.getFunctionNameUsingInComponentGetter();
             generator.appendFunction(functionName, [`${node.getPreciseParentName()}`], [],
                 `return ${node.getPreciseParentName()}.${node.getFunctionNameInStoreGetter()}()`);
             content.push(`{this.${functionName}(${node.getPreciseParentName()})}`);
         }
 
-
-        const nodeProvideContent = node.getContents();
-
         let origin = this.getJSXStrings({
             tag: node.view,
             props,
-            contents: [...content, ...nodeProvideContent, ...extraContents],
+            contents: [...content, ...node.getContents(), ...extraContents],
         });
 
-
+        const wrapView = node.getWrapView();
         if (node.hasWrap()) {
-            const clazzName = `${className}WrapDiv`;
+            const clazzName = `${className}Wrap${_.upperFirst(wrapView)}`;
             const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
             if (node.isArray() && !_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
 
             for (const incest of node.getIncestChild()) {
+                origin.push(`/** ${incest.getName()}, incest attribute */`);
                 origin.push(`{this.${incest.getFunctionNameOfRenderView()}(${incest.getPreciseParent().getName()})}`);
             }
 
             origin = this.getJSXStrings({
-                tag: 'div',
+                tag: wrapView,
                 props,
-                contents: [...this.getOuterChildJSXStrings(generator, node), ...origin],
+                contents: [...origin,...this.getOuterChildJSXStrings(generator, node), ...node.getWrapContents()],
             })
         }
 
-
+        /** type是array就必須的包上一成ListWrap,可以調整物件方向 */
         if (node.isArray()) {
-            const clazzName = `${className}ArrayWrapDiv`;
+            const clazzName = `${className}ListWrap${_.upperFirst(wrapView)}`;
             const props = {className: clazzName, style: `###Style.${clazzName}`}
             return this.getJSXStrings({
-                tag: `div`,
+                tag: wrapView,
                 props,
                 contents: [`{${node.getPreciseParent().getName()}.${node.getFunctionNameInStoreGetter()}().map( (${node.getName()}) => { return (`, ...origin, `)})}`]
             })
@@ -1221,8 +1244,8 @@ class ComponentBuilder extends BaseBuilder {
             if (child.isArrayOrObject()) {
                 childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
                 generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
-                    [`${child.getPreciseParent().getName()}`], [],
-                    `return ${child.getPreciseParent().getName()}.${child.getFunctionNameInStoreGetter()}()`);
+                    [`${child.getPreciseParentName()}`], [],
+                    `return ${child.getPreciseParentName()}.${child.getFunctionNameInStoreGetter()}()`);
             } else {
                 if (!child.isIncestAttributeAndView()) {
                     childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
