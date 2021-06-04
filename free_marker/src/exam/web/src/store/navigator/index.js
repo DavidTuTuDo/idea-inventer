@@ -17,7 +17,7 @@ import BaseNavigatorStore from "./BaseNavigatorStore";
 import Cookie from '../../cookie';
 import firebaser from '../../base/BaseFirebase';
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import { Application } from '../../'
+import { Application } from '../../index'
 
 class NavigatorStore extends BaseNavigatorStore {
     /** -------------------- fields -------------------- **/

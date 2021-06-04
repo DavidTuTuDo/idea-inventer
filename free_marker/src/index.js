@@ -14,8 +14,8 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -66,6 +66,7 @@ class CodegenNode {
     parent;
     click;
     defaultValue;
+
     /** 可以指定attribute的default value */
 
 
@@ -84,8 +85,8 @@ class CodegenNode {
         return this.name + (this.plural ? this.plural : '');
     }
 
-    getWrapView(){
-        if(this.wrapView) {
+    getWrapView() {
+        if (this.wrapView) {
             return this.wrapView;
         }
         return 'div';
@@ -125,7 +126,7 @@ class CodegenNode {
         return [];
     }
 
-    getWrapContents(){
+    getWrapContents() {
         if (!!this.wrapContents && _.isArray(this.wrapContents)) {
             return this.wrapContents
         }
@@ -147,7 +148,7 @@ class CodegenNode {
 
     isViewValue() {
         // return Util.isOrEquals(this.type, 'string', 'number');
-       return this.isView() && this.isAttribute() && !this.isArrayOrObject();
+        return this.isView() && this.isAttribute() && !this.isArrayOrObject();
     }
 
     /**
@@ -497,7 +498,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'wrapContents','contents', 'style', 'extra', 'firebase', 'parent', 'props'))
+                if (Util.isOrEquals(key, 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -1159,7 +1160,7 @@ class ComponentBuilder extends BaseBuilder {
             const param = node.getPreciseParentName();
             const injectFunctionName = `getInjectStyleOf${_.upperFirst(node.name)}${_.upperFirst(node.view)}`;
             props.style = `###{...this.${injectFunctionName}(${param}),...Style.${className}}`;
-            generator.appendFunction(injectFunctionName,[param]);
+            generator.appendFunction(injectFunctionName, [param]);
 
         } else {
             props.style = `###Style.${className}`;
@@ -1209,7 +1210,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [...origin,...this.getOuterChildJSXStrings(generator, node), ...node.getWrapContents()],
+                contents: [...origin, ...this.getOuterChildJSXStrings(generator, node), ...node.getWrapContents()],
             })
         }
 
@@ -1284,7 +1285,7 @@ class ComponentBuilder extends BaseBuilder {
             if (!child.isView()) continue;
             const functionName = child.getFunctionNameOfRenderView();
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況*/
-            if(existedFunctions[functionName]) continue;
+            if (existedFunctions[functionName]) continue;
             if (child.isArrayOrObject()) {
                 builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [],
                     normalize(...this.getJSXStringsByStruct(child, builder)));
@@ -1628,10 +1629,9 @@ class ProjectIndexFilePersistHandler {
     sourcePath;
     sourceSrcPath;
 
-    constructor(props) {
-        this.sourcePath = props.sourcePath;
-        this.sourceSrcPath = libpath.join(this.sourcePath, 'src');
-        this.genRootPath = props.genRootPath;
+    constructor(props,platform = 'web') {
+        this.sourceSrcPath = libpath.join(props.sourcePath, platform, 'src');
+        this.genRootPath = libpath.join(props.genRootPath);
         this.genSrcPath = libpath.join(this.genRootPath, 'src');
 
     }
@@ -1733,27 +1733,31 @@ class ProjectIndexFilePersistHandler {
             if (ignoreThisRun) continue;
             const from = file.absolute;
             const dest = libpath.join(this.genSrcPath, from.split(`src`).pop());
-            if (fs.existsSync(dest))
+
+            if (fs.existsSync(Util.getFileDirPath(dest)))
                 Util.copySingleFile(from, dest, '', true);
             else {
-                Util.appendError(`overrideIndexFiles dest => ${dest}`);
+                Util.appendError(`overrideIndexFiles fail ,dest,${dest};;;   ||   from,${from}`);
             }
         }
     }
+
 }
 
-export {
-    ClassGenerator as ClassGenerator
-}
+class ProjectGenerator {
 
-(async () => {
+    constructor(type = 'web') {
+        this.platform = type;
+    }
 
-        const genRootPath = `./../gen`;
-        const sourcePath = './src/exam';
+    async execute() {
+        const genRootPath = libpath.resolve(`./../gen/${this.platform}`);
+        const sourcePath = libpath.resolve(`./src/exam`);
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).keepIndexAndLESSFiles()
-            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistBaseFiles();
-            new ProjectIndexFilePersistHandler({genRootPath, sourcePath}).persistImageFolder();
+            const persistent = new ProjectIndexFilePersistHandler({genRootPath, sourcePath},this.platform);
+            persistent.keepIndexAndLESSFiles()
+            persistent.persistBaseFiles();
+            persistent.persistImageFolder();
         }
         const source = CodegenNode.enrich(require(libpath.resolve(libpath.join(sourcePath, `source.js`))).default);
         await Util.cleanChildFiles(genRootPath, (each) => true, 'node_modules');
@@ -1771,8 +1775,8 @@ export {
         await new AppBuilder(genRootPath).buildRouterFile(source);
         await new AppBuilder(genRootPath).buildCookieFiles(source);
         await new AppBuilder(genRootPath).buildBaseClasses();
-        await new AppBuilder(genRootPath).buildLessFile(totalClassNames, sourcePath);
-        await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, sourcePath);
+        await new AppBuilder(genRootPath).buildLessFile(totalClassNames, libpath.join(sourcePath, `${this.platform}`));
+        await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, libpath.join(sourcePath, `${this.platform}`));
         await new AppBuilder(genRootPath).buildHtmlIndexAssetsFile();
 
         new ProjectIndexFilePersistHandler({
@@ -1795,5 +1799,18 @@ export {
         }).buildDistAssetFolder()
         if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
             await Util.executeCommandLine(`cd ${genRootPath} && npm install`);
+    }
+
+}
+
+
+export {
+    ClassGenerator as ClassGenerator
+}
+
+(async () => {
+        const web = new ProjectGenerator('web');
+        await web.execute();
+        console.log(`web done`);
     }
 )();
