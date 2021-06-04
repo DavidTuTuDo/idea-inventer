@@ -18,6 +18,11 @@ class firebaser {
             databaseURL: configer.DATA_BASE_URL
         });
         this.db = admin.database();
+        this.firestore = admin.firestore();
+    }
+
+    getFireStore(){
+        return this.firestore;
     }
 
     async deleteAll() {
@@ -236,6 +241,21 @@ export {firebaser as firebaser}
 
 if (configer.DEBUG_MODE) {
     (async () => {
+
+            const handler = new firebaser();
+            const fire = handler.getFireStore();
+            // const result = await  fire.collection("user").doc("david").set({
+            //     name: "Los Angeles",
+            //     state: "CA",
+            //     country: 12,
+            //     names:[12,23,342]
+            // })
+            // const result = await fire.collection('user').doc('david').collection(`prouducts`).doc('hat').get()
+            // const result = await fire.collection('products').doc('hat').get()
+            // console.log(result);
+            // result.forEach((doc) => {console.log(doc.data())})
+
+            console.log(result.data());
             // const snapshot = await handler.getToneListByKeyword('Bedasds');
             // const handler = new firebaser();gs();
             // const snapshot = await handler.getSingerListByKeyword('陳');

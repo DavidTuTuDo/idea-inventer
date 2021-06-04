@@ -14,8 +14,8 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -1156,8 +1156,11 @@ class ComponentBuilder extends BaseBuilder {
         };
 
         if (node.needInjectStyle()) {
-            const param = node.getParentObject() ? node.getParentObject().name : '';
-            props.style = `###{...this.getInjectStyleOf${_.upperFirst(node.name)}${_.upperFirst(node.view)}(${param}),...Style.${className}}`;
+            const param = node.getPreciseParentName();
+            const injectFunctionName = `getInjectStyleOf${_.upperFirst(node.name)}${_.upperFirst(node.view)}`;
+            props.style = `###{...this.${injectFunctionName}(${param}),...Style.${className}}`;
+            generator.appendFunction(injectFunctionName,[param]);
+
         } else {
             props.style = `###Style.${className}`;
         }
@@ -1199,7 +1202,7 @@ class ComponentBuilder extends BaseBuilder {
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
 
             for (const incest of node.getIncestChild()) {
-                origin.push(`/** ${incest.getName()}, incest attribute */`);
+                origin.push(`{/* ${incest.getName()}, incest attribute */}`);
                 origin.push(`{this.${incest.getFunctionNameOfRenderView()}(${incest.getPreciseParent().getName()})}`);
             }
 

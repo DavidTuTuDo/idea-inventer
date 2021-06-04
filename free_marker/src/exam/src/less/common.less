@@ -117,7 +117,7 @@
   position: relative;
 }
 
-.ExamQuestionCardArrayWrapDiv {
+.ExamQuestionCardListWrapDiv {
   /** style */
 }
 
@@ -152,7 +152,7 @@
   margin-bottom: 2vh;
 }
 
-.ExamQuestionChoiceDivArrayWrapDiv {
+.ExamQuestionChoiceDivListWrapDiv {
   /** style */
 }
 
@@ -226,22 +226,36 @@
 .PurchaseDiv {
   /** style */
   display: flex;
+  flex-direction: column;
   justify-content: center;
+}
+
+.PurchaseBannerImg {
+  /** style */
+  width: 90vw;
+}
+
+.PurchaseBannerImgWrapDiv {
+  /** style */
+  display: flex;
+  justify-content: center;
+  margin: 10px;
 }
 
 .PurchasePlanDiv {
   /** style */
   display: flex;
-  width: 20vw;
+  width: 90vw;
   flex-direction: column;
 }
 
-.PurchasePlanDivArrayWrapDiv {
-  /** style */ /** style */
+.PurchasePlanDivListWrapDiv {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   border-style: solid;
   border-width: 1px;
+  margin: 10px;
   border-radius: 10px;
 }
 
@@ -279,8 +293,40 @@
   /** style */
 }
 
+.PurchasePlanMathTypography {
+  /** style */
+  font-size: 1.2rem;
+}
+
+.PurchasePlanMathTypographyWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv
+    all) {
+  /** style */
+}
+
+.PurchasePlanMusicTypography {
+  /** style */
+  font-size: 1.2rem;
+}
+
+.PurchasePlanMusicTypographyWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv
+    all) {
+  /** style */
+}
+
+.PurchasePlanSweetTypography {
+  /** style */
+  font-size: 1.2rem;
+
+}
+
+.PurchasePlanSweetTypographyWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv
+    all) {
+  /** style */
+}
+
 .PurchasePlanBuyButton {
   /** style */
+  font-size: 1rem;
 }
 
 .PurchasePlanBuyButtonWrapDiv:extend(.PurchasePlanNameTypographyWrapDiv all) {

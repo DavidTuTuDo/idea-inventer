@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
- updateTime:2021-05-31-15-09-13
+ updateTime:2021-06-04-15-31-08
  */
 import {observer, inject} from "mobx-react";
 import BasePurchaseComponent from "./BasePurchaseComponent";
@@ -16,14 +16,43 @@ class PurchaseComponent extends BasePurchaseComponent {
         super(props);
     }
 
-    getInjectStyleOfBuyButton(plan) {
-        console.log(plan.getPid(),plan.isTitle());
-        return {visibility: plan.isTitle() ? 'hidden' : 'visible'}
+    getBannerImageSrc() {
+        return 'images/IMG_9348.jpg';
     }
 
-    onBuyButtonClicked(param) {
-        console.log(param.object.pid)
+    getPlanPrice(plan) {
+        const origin = super.getPlanPrice(plan);
+        if(!plan.isTitle())
+            return `${origin} 元`;
+        return origin;
     }
+
+    getPlanPriceTip(plan) {
+        const tip = super.getPlanPriceTip(plan);
+        return `${tip} ${this.getDiscount(plan)} 元`
+    }
+
+    getDiscount(plan){
+        return Math.round(plan.getPrice()/(Number.parseInt(plan.getName().substring(0,1))));
+    }
+
+    getInjectStyleOfBuyButton(plan) {
+        return { display : plan.isTitle() ? 'none':'visible' };
+    }
+
+    getInjectStyleOfPriceTipTypography(plan) {
+        return { display : plan.isTitle() ? 'none':'visible' };
+    }
+
+
+    // getPlanPriceTip(plan) {
+    //     return + ''+ ${plan.getPrice()}+' 元';
+    // }
+    //
+    // getPlanPrice(plan) {
+    //     return super.getPlanPrice(plan)+ '元';
+    // }
+
 
     /** -------------------- async api -------------------- **/
 }
