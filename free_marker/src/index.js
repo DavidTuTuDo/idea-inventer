@@ -14,8 +14,8 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -1629,7 +1629,7 @@ class ProjectIndexFilePersistHandler {
     sourcePath;
     sourceSrcPath;
 
-    constructor(props,platform = 'web') {
+    constructor(props, platform = 'web') {
         this.sourceSrcPath = libpath.join(props.sourcePath, platform, 'src');
         this.genRootPath = libpath.join(props.genRootPath);
         this.genSrcPath = libpath.join(this.genRootPath, 'src');
@@ -1655,7 +1655,7 @@ class ProjectIndexFilePersistHandler {
 
     persistBaseFiles() {
         try {
-            for (const file of Util.findFilePathBy(`../gen/src/base`)) {
+            for (const file of Util.findFilePathBy(libpath.join(this.genSrcPath, 'base'))) {
                 if (Util.isEmptyFile(file.absolute)) {
                     Util.appendInfo(`${file.absolute} is empty file, do not copy`)
                     return false;
@@ -1663,8 +1663,8 @@ class ProjectIndexFilePersistHandler {
             }
 
             Util.copyFromFolderToDestFolder(
-                `../gen/src/base`,
-                `./base`
+                `${libpath.join(this.genSrcPath, 'base')}`,
+                `${libpath.join(this.sourceSrcPath, 'base')}`
             )
 
             Util.appendInfo(`persist base files succeed`);
@@ -1753,8 +1753,8 @@ class ProjectGenerator {
     async execute() {
         const genRootPath = libpath.resolve(`./../gen/${this.platform}`);
         const sourcePath = libpath.resolve(`./src/exam`);
+        const persistent = new ProjectIndexFilePersistHandler({genRootPath, sourcePath}, this.platform);
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            const persistent = new ProjectIndexFilePersistHandler({genRootPath, sourcePath},this.platform);
             persistent.keepIndexAndLESSFiles()
             persistent.persistBaseFiles();
             persistent.persistImageFolder();
@@ -1779,10 +1779,7 @@ class ProjectGenerator {
         await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, libpath.join(sourcePath, `${this.platform}`));
         await new AppBuilder(genRootPath).buildHtmlIndexAssetsFile();
 
-        new ProjectIndexFilePersistHandler({
-            genRootPath,
-            sourcePath
-        }).overrideEachFilesFromSrcFolder(
+        persistent.overrideEachFilesFromSrcFolder(
             `common.style.js`, `app.style.js`, `mobile.style.js`,
             `common.less`, `app.less`, `mobile.less`,
             {
@@ -1793,10 +1790,7 @@ class ProjectGenerator {
                 keyword: 'png'
             });
 
-        new ProjectIndexFilePersistHandler({
-            genRootPath,
-            sourcePath
-        }).buildDistAssetFolder()
+        persistent.buildDistAssetFolder()
         if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
             await Util.executeCommandLine(`cd ${genRootPath} && npm install`);
     }
