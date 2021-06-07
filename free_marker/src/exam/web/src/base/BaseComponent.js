@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import React from "react";
 import moment from 'moment';
-import {utiller as Util} from "utiller";
+import {utiller as Util, exceptioner as ERROR} from "utiller";
 import Store from "./BaseStore";
 
 class BaseComponent extends React.Component {
@@ -25,7 +25,6 @@ class BaseComponent extends React.Component {
         const { history } = this.props;
         history.push(path);
     }
-
 
     getStore() {
         return new Store();

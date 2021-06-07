@@ -15,6 +15,7 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
@@ -22,6 +23,7 @@ class CodegenNode {
 
     node;
     password;
+    components;
     path;
     /** 用來當作Router的導頁網址, 如果用在strucut裡面就是當作remote fetch*/
     cookies;
@@ -38,8 +40,6 @@ class CodegenNode {
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
     contents;
     /** 放在<div>content</div>*/
-    struct;
-    /** 如果是響應component的store, 就是個true*/
     navigation;
     /** 可以指定component為navigatorView 放置於頂部的view */
     incest;
@@ -66,9 +66,8 @@ class CodegenNode {
     parent;
     click;
     defaultValue;
-
     /** 可以指定attribute的default value */
-
+    struct;
 
     /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 都不會被包成CodeGenNode */
 
@@ -485,6 +484,13 @@ class CodegenNode {
         return this.name;
     }
 
+    getComponents() {
+        if (this.components && _.isArray(this.components))
+            return this.components
+        else
+            return [];
+    }
+
 
     static enrich(node, parent) {
         let involution = new CodegenNode(node);
@@ -508,6 +514,10 @@ class CodegenNode {
             }
         }
         return involution;
+    }
+
+    getStruct() {
+        return this.struct;
     }
 
     static isCodegenNode(node) {
@@ -1029,10 +1039,8 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendFunction('getStore', [], [],
             `return this.props.${componentNode.name}`)
 
-
         baseGenerator.appendFunction('componentDidMount',
             [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
-
 
         /** index.js */
         const indexGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `index.js`));
@@ -1621,23 +1629,27 @@ class AppBuilder extends ComponentBuilder {
     }
 }
 
-class ProjectIndexFilePersistHandler {
+class ProjectFileHandler {
 
     genRootPath;
-    genSrcPath;
+    genSourcePath;
 
-    sourcePath;
-    sourceSrcPath;
+    projectRootPath;
+    projectSourcePath;
 
     constructor(props, platform = 'web') {
-        this.sourceSrcPath = libpath.join(props.sourcePath, platform, 'src');
-        this.genRootPath = libpath.join(props.genRootPath);
-        this.genSrcPath = libpath.join(this.genRootPath, 'src');
+        this.projectRootPath = props.projectRootPath;
+        this.projectSourcePath = libpath.join(this.projectRootPath, platform, 'src');
+        this.genRootPath = libpath.join(props.genRootPath, platform);
+        this.genSourcePath = libpath.join(this.genRootPath, 'src');
+        this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
+        this.platform = platform;
+        /** 這就是 source.js 的進入點 */
 
     }
 
     buildDistAssetFolder() {
-        const imageSrcFolder = libpath.join(this.sourceSrcPath, 'images');
+        const imageSrcFolder = libpath.join(this.projectSourcePath, 'images');
         if (fs.existsSync(imageSrcFolder)) {
             Util.copyFromFolderToDestFolder(imageSrcFolder,
                 Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
@@ -1645,17 +1657,17 @@ class ProjectIndexFilePersistHandler {
     }
 
     persistImageFolder() {
-        const images = libpath.join(this.genSrcPath, 'images');
+        const images = libpath.join(this.genSourcePath, 'images');
         if (fs.existsSync(images)) {
             Util.copyFromFolderToDestFolder(images,
-                Util.persistByPath(libpath.join(this.sourceSrcPath, 'images'))
+                Util.persistByPath(libpath.join(this.projectSourcePath, 'images'))
             );
         }
     }
 
     persistBaseFiles() {
         try {
-            for (const file of Util.findFilePathBy(libpath.join(this.genSrcPath, 'base'))) {
+            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'base'))) {
                 if (Util.isEmptyFile(file.absolute)) {
                     Util.appendInfo(`${file.absolute} is empty file, do not copy`)
                     return false;
@@ -1663,8 +1675,8 @@ class ProjectIndexFilePersistHandler {
             }
 
             Util.copyFromFolderToDestFolder(
-                `${libpath.join(this.genSrcPath, 'base')}`,
-                `${libpath.join(this.sourceSrcPath, 'base')}`
+                `${libpath.join(this.genSourcePath, 'base')}`,
+                `${libpath.join(this.projectSourcePath, 'base')}`
             )
 
             Util.appendInfo(`persist base files succeed`);
@@ -1676,7 +1688,7 @@ class ProjectIndexFilePersistHandler {
     }
 
     keepIndexAndLESSFiles(...exclude) {
-        const files = Util.findFilePathBy(this.genSrcPath,
+        const files = Util.findFilePathBy(this.genSourcePath,
             (each) => {
                 return (
                     _.isEqual(each.fileNameExtension, `index.js`) ||
@@ -1696,7 +1708,7 @@ class ProjectIndexFilePersistHandler {
             }
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
-            const dest = libpath.join(this.sourceSrcPath, from.split(`src`).pop());
+            const dest = libpath.join(this.projectSourcePath, from.split(`src`).pop());
             Util.persistByPath(dest);
             Util.copySingleFile(from, dest, '', true);
             console.log(`persist ${from} succeed`);
@@ -1716,7 +1728,7 @@ class ProjectIndexFilePersistHandler {
 
      * */
     overrideEachFilesFromSrcFolder(...excludes) {
-        for (const file of Util.findFilePathBy(this.sourceSrcPath)) {
+        for (const file of Util.findFilePathBy(this.projectSourcePath)) {
 
             let ignoreThisRun = false;
             for (let exclude of excludes) {
@@ -1732,7 +1744,7 @@ class ProjectIndexFilePersistHandler {
             }
             if (ignoreThisRun) continue;
             const from = file.absolute;
-            const dest = libpath.join(this.genSrcPath, from.split(`src`).pop());
+            const dest = libpath.join(this.genSourcePath, from.split(`src`).pop());
 
             if (fs.existsSync(Util.getFileDirPath(dest)))
                 Util.copySingleFile(from, dest, '', true);
@@ -1742,44 +1754,48 @@ class ProjectIndexFilePersistHandler {
         }
     }
 
-}
+    async forAdmin() {
+        const genAdminRootPath = libpath.resolve(libpath.join(this.genRootPath, platform));
+        const sourceRootPath = this.projectRootPath;
+        console.log(genAdminRootPath)
+        Util.persistByPath(genAdminRootPath);
+        const generator = new ClassGenerator(libpath.join(genAdminRootPath, `index.js`));
+        for (const component of this.nodeOfAncestor.getComponents()) {
+            for (const child of component.getStruct().getChildren()) {
+                console.log(child.getPreciseAttributeChildren())
+                // generator.appendFunction('')
 
-class ProjectGenerator {
-
-    constructor(type = 'web') {
-        this.platform = type;
+            }
+        }
     }
 
-    async execute() {
-        const genRootPath = libpath.resolve(`./../gen/${this.platform}`);
-        const sourcePath = libpath.resolve(`./src/exam`);
-        const persistent = new ProjectIndexFilePersistHandler({genRootPath, sourcePath}, this.platform);
+    async forWeb() {
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            persistent.keepIndexAndLESSFiles()
-            persistent.persistBaseFiles();
-            persistent.persistImageFolder();
+            this.keepIndexAndLESSFiles()
+            this.persistBaseFiles();
+            this.persistImageFolder();
         }
-        const source = CodegenNode.enrich(require(libpath.resolve(libpath.join(sourcePath, `source.js`))).default);
-        await Util.cleanChildFiles(genRootPath, (each) => true, 'node_modules');
+        const source = this.nodeOfAncestor;
+        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         const totalClassNames = [];
         for (let component of source.components) {
-            await new StoreBuilder(genRootPath).buildBaseStore(component.struct);
-            const classNames = await new ComponentBuilder(genRootPath).buildBaseComponent(component);
+            await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
+            const classNames = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
             totalClassNames.push({component, classNames});
         }
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-        await new StoreBuilder(genRootPath).buildIndexFiles();
-        await new AppBuilder(genRootPath).buildAppIndexFiles(source);
-        await new AppBuilder(genRootPath).buildConfig(source);
-        await new AppBuilder(genRootPath).buildWebpackNPackageJson(source);
-        await new AppBuilder(genRootPath).buildRouterFile(source);
-        await new AppBuilder(genRootPath).buildCookieFiles(source);
-        await new AppBuilder(genRootPath).buildBaseClasses();
-        await new AppBuilder(genRootPath).buildLessFile(totalClassNames, libpath.join(sourcePath, `${this.platform}`));
-        await new AppBuilder(genRootPath).buildStyleFiles(totalClassNames, libpath.join(sourcePath, `${this.platform}`));
-        await new AppBuilder(genRootPath).buildHtmlIndexAssetsFile();
+        await new StoreBuilder(this.genRootPath).buildIndexFiles();
+        await new AppBuilder(this.genRootPath).buildAppIndexFiles(source);
+        await new AppBuilder(this.genRootPath).buildConfig(source);
+        await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
+        await new AppBuilder(this.genRootPath).buildRouterFile(source);
+        await new AppBuilder(this.genRootPath).buildCookieFiles(source);
+        await new AppBuilder(this.genRootPath).buildBaseClasses();
+        await new AppBuilder(this.genRootPath).buildLessFile(totalClassNames, this.projectSourcePath);
+        await new AppBuilder(this.genRootPath).buildStyleFiles(totalClassNames, this.projectSourcePath);
+        await new AppBuilder(this.genRootPath).buildHtmlIndexAssetsFile();
 
-        persistent.overrideEachFilesFromSrcFolder(
+        this.overrideEachFilesFromSrcFolder(
             `common.style.js`, `app.style.js`, `mobile.style.js`,
             `common.less`, `app.less`, `mobile.less`,
             {
@@ -1790,9 +1806,23 @@ class ProjectGenerator {
                 keyword: 'png'
             });
 
-        persistent.buildDistAssetFolder()
-        if (!fs.existsSync(libpath.join(genRootPath, `node_modules`)))
-            await Util.executeCommandLine(`cd ${genRootPath} && npm install`);
+        this.buildDistAssetFolder()
+        if (!fs.existsSync(libpath.join(this.genRootPath, `node_modules`)))
+            await Util.executeCommandLine(`cd ${this.genRootPath} && npm install`);
+    }
+
+    async execute() {
+        switch (this.platform) {
+            case 'web':
+                await this.forWeb();
+                break;
+            case 'admin':
+                await this.forAdmin();
+                break
+            default:
+                throw new ERROR(8014, `type ==> ${this.platform}`)
+                break;
+        }
     }
 
 }
@@ -1803,8 +1833,14 @@ export {
 }
 
 (async () => {
-        const web = new ProjectGenerator('web');
+        const genRootPath = libpath.resolve(`./../gen`);
+        const projectRootPath = libpath.resolve(`./src/exam`);
+
+        const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
         await web.execute();
         console.log(`web done`);
+        // await generator.forAdmin();
+        // console.log(`admin done`);
+
     }
 )();
