@@ -527,6 +527,8 @@ class CodegenNode {
 
 class ClassGenerator {
 
+    /** 為了讓import 不用擔心複數宣告 就用Object,empty 裡面放不需要變數宣告的import 例如 import from Firebase/database, 最後再一次gen*/
+    imports = {all: {}, empty: []};
     hasConstructor = false;
     constructorStmt = [];
     hasExtends = false
@@ -534,7 +536,13 @@ class ClassGenerator {
     classes = [];
     isSingletonFile = false;
     signature = true;
+
+
     needCreatedIndexFile = false;
+    indexFileName = 'Index';
+    indexFileMacros = [];
+    indexFileSingleton = false;
+    indexFileTailStmts = [];
 
     constructor(path) {
         this.filePath = path;
@@ -643,9 +651,11 @@ class ClassGenerator {
     }
 
     /** 產出index.js 他會繼承當前的class */
-    needIndexFile(indexFileName = 'index.js', indexFileMacro = []) {
+    needIndexFile(indexFileName = 'Index', indexFileMacro = [], singleton = false, extraTailStmts = []) {
         this.indexFileName = indexFileName;
-        this.indexFileMacro = indexFileMacro;
+        this.indexFileMacros = indexFileMacro;
+        this.indexFileSingleton = singleton;
+        this.indexFileTailStmts = extraTailStmts;
         this.needCreatedIndexFile = true;
     }
 
@@ -676,9 +686,31 @@ class ClassGenerator {
 
         if (this.needCreatedIndexFile) {
             const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
-            index.appendClass(this.indexFileName, {name: this.getClassName()}, ...this.indexFileMacro);
-            index.persist();
+            index.appendClass(this.indexFileName, {name: this.getClassName()}, ...this.indexFileMacros);
+            index.setSingleton(this.indexFileSingleton);
 
+            /** 有marco,就要配搭相對應的import */
+            for (const macro of this.indexFileMacros) {
+                if (Util.has(macro, 'inject')) {
+                    index.appendImport(`{inject}`, `mobx-react`)
+                } else if (Util.has(macro, 'observer')) {
+                    index.appendImport(`{observer}`, `mobx-react`);
+                }
+            }
+
+            for (const tail of this.indexFileTailStmts) {
+                index.appendInClassTail(tail);
+            }
+
+            await index.persist();
+
+        }
+
+        for (const key in this.imports.all) {
+            this.appendInClassHead(`import ${key} from '${this.imports.all[key]}'`);
+        }
+        for (const name of this.imports.empty) {
+            this.appendInClassHead(`import '${name}'`);
         }
 
         this.appendInClassTail(stmts);
@@ -694,9 +726,16 @@ class ClassGenerator {
 
     }
 
-    /** import `${parts}` from `${from}`*/
+    /** import `${parts}` from `${from}`,如果parts是{name}, 記得括號內不要有空格*/
     appendImport(parts, from) {
-        this.appendInClassHead(`import ${parts} ${_.isEmpty(parts) ? `` : `from`} '${from}'`);
+        if (_.isEmpty(parts)) {
+            this.imports.empty.push(from);
+        } else {
+            this.imports.all[parts] = from;
+        }
+
+        /** 因為import 可以支援沒有變數的宣告 例如 => import from Firebase/firestore */
+
     }
 
     appendInClassHead(stmt, needSemicolon = true) {
@@ -865,8 +904,8 @@ class StoreBuilder extends BaseBuilder {
     }
 
 
-    async buildIndexFiles() {
-        /** 產生 store的index file */
+    async buildStoreIndexFiles() {
+        /** 產生 store再project的index file */
         const stores = this.getGenStores();
         const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genSourcePath, `store.js`)));
         baseGenerator.appendClass(`BaseStore`);
@@ -874,12 +913,8 @@ class StoreBuilder extends BaseBuilder {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
         }
         baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}()`))
+        baseGenerator.needIndexFile('Store')
         await baseGenerator.persist();
-
-        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `index.js`));
-        indexGenerator.appendClass(`Store`, {name: `BaseStore`, from: './store'});
-        indexGenerator.appendConstructor();
-        await indexGenerator.persist();
     }
 
     async buildFieldAttribute(generator, node) {
@@ -921,7 +956,6 @@ class StoreBuilder extends BaseBuilder {
         const baseClassName = 'Base' + _.upperFirst(folderName) + 'Store';
         const indexClassName = _.upperFirst(folderName) + 'Store';
         const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
-        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `index.js`))
 
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
@@ -967,11 +1001,8 @@ class StoreBuilder extends BaseBuilder {
 
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], `super.initial(obj)`, ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
+        baseGenerator.needIndexFile(`${indexClassName}`);
         await baseGenerator.persist();
-
-        indexGenerator.appendClass(`${indexClassName}`, {name: baseClassName, from: `./${baseClassName}`});
-        await indexGenerator.persist();
-
     }
 
     getDecorateFetchStrings(isState = true, isObject = false, ...contents) {
@@ -1066,14 +1097,8 @@ class ComponentBuilder extends BaseBuilder {
             [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
 
         /** index.js */
-        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `index.js`));
-        indexGenerator.appendClass(className, {
-            name: baseClassName,
-            from: `./${baseClassName}`
-        }, `inject('${componentNode.name}')`, `observer`);
-        indexGenerator.appendImport(`{observer, inject}`, `mobx-react`);
 
-        await indexGenerator.persist();
+        baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         await baseGenerator.persist();
 
         return _.values(this.classNames);
@@ -1450,18 +1475,12 @@ class AppBuilder extends ComponentBuilder {
         baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
         if (sourceObj.hasCookiePassword())
             baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
-
+        await baseConfigGenerator.needIndexFile('Config', [], true);
         await baseConfigGenerator.persist();
-
-        const indexConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `index.js`));
-        indexConfigGenerator.appendClass(`Config`, {name: `BaseConfig`, from: './BaseConfig'});
-        indexConfigGenerator.setSingleton(true);
-        await indexConfigGenerator.persist();
     }
 
     async buildAppIndexFiles(sourceObj) {
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `app.js`));
-        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `index.js`));
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(` ReactDOM`, `react-dom`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
@@ -1539,10 +1558,8 @@ class AppBuilder extends ComponentBuilder {
             'return stores'
         )
         appGenerator.appendFunction(`getRenderView`, [], [], `return (${whole.join('')})`)
-        indexGenerator.appendClass(`App`, {name: `BaseApp`, from: `./app`});
-        indexGenerator.appendInClassTail(`new App().mount()`);
-        indexGenerator.appendInClassTail(`module.hot.accept()`);
-        await indexGenerator.persist();
+
+        await appGenerator.needIndexFile('App', [], false, [`new App().mount()`, `module.hot.accept()`]);
         await appGenerator.persist();
     }
 
@@ -1806,7 +1823,7 @@ class ProjectFileHandler {
         Util.copySingleFile('./template/babel.config.js', this.genRootPath, 'babel.config.js', true);
 
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, `remote`, `BaseRemoteApi.js`));
-        generator.appendClass('BaseRemoteApi',{name:'BaseApi',from:'../base/BaseApi'});
+        generator.appendClass('BaseRemoteApi', {name: 'BaseApi', from: '../base/BaseApi'});
         generator.needIndexFile('RemoteApi');
 
         function buildFireStore(node) {
@@ -1839,7 +1856,7 @@ class ProjectFileHandler {
             totalClassNames.push({component, classNames});
         }
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-        await new StoreBuilder(this.genRootPath).buildIndexFiles();
+        await new StoreBuilder(this.genRootPath).buildStoreIndexFiles();
         await new AppBuilder(this.genRootPath).buildAppIndexFiles(source);
         await new AppBuilder(this.genRootPath).buildConfig(source);
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
