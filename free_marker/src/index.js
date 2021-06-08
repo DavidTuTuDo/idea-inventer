@@ -1,4 +1,3 @@
-import {configer} from "configer";
 import {exceptioner as ERROR, utiller as Util} from 'utiller';
 import _ from 'lodash';
 import fs from 'fs';
@@ -14,9 +13,9 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -535,6 +534,7 @@ class ClassGenerator {
     classes = [];
     isSingletonFile = false;
     signature = true;
+    needCreatedIndexFile = false;
 
     constructor(path) {
         this.filePath = path;
@@ -604,7 +604,7 @@ class ClassGenerator {
         });
     }
 
-    /** extendz:{name,from}*/
+    /** extendz:{name,from} 如果沒有from, 就會直接 './{extendz.name}' */
     appendClass(className, extendz, ...macros) {
         /** 應該要檢查file is not empty 的話, 要跳出Error提示 */
         const stmt = [];
@@ -616,7 +616,7 @@ class ClassGenerator {
         }
         stmt.push('\n');
         if (_.isObject(extendz)) {
-            this.appendImport(extendz.name, extendz.from);
+            this.appendImport(extendz.name, extendz.from ? extendz.from : `.\/${extendz.name}`);
             stmt.push(`class ${className}${extendz ? ` extends ${extendz.name}` : ' '} {`);
         } else {
             stmt.push(`class ${className}${extendz ? ` extends ${extendz}` : ' '} {`);
@@ -642,6 +642,20 @@ class ClassGenerator {
         return (_.size(this.classes)) >= 1;
     }
 
+    /** 產出index.js 他會繼承當前的class */
+    needIndexFile(indexFileName = 'index.js', indexFileMacro = []) {
+        this.indexFileName = indexFileName;
+        this.indexFileMacro = indexFileMacro;
+        this.needCreatedIndexFile = true;
+    }
+
+    getClassName() {
+        if (this.classes.length > 0) {
+            return this.classes[0];
+        }
+        return 'empty';
+    }
+
     async persist() {
         const stmts = [];
         if (_.size(this.classes) === 1) {
@@ -658,6 +672,13 @@ class ClassGenerator {
         if (this.hasClass()) {
             this.appendFunction('constructor', ['props'],
                 [], this.hasExtends ? 'super(props)' : '', ...this.constructorStmt);
+        }
+
+        if (this.needCreatedIndexFile) {
+            const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
+            index.appendClass(this.indexFileName, {name: this.getClassName()}, ...this.indexFileMacro);
+            index.persist();
+
         }
 
         this.appendInClassTail(stmts);
@@ -734,19 +755,21 @@ class ClassGenerator {
     needSignature(need) {
         this.signature = need;
     }
+
+
 }
 
 class BaseBuilder {
 
-    genPath;
-    /** 例如 component builder 的 genPath => /{genRootPath}/src/component */
-    genRootPath;
+    genSourcePath; // gen/web/src
+    /** 例如 component builder 的 genSourcePath => /{genRootPath}/src/component */
+    genRootPath; // gen/web
     /** 很多時候要放在根目錄, 所以就在建構句 把它保留起來 */
     classGenerator;
 
     constructor(defaultPath = './gen') {
         this.genRootPath = defaultPath;
-        this.genPath = defaultPath;
+        this.genSourcePath = defaultPath;
     }
 
     appendMustacheFile(templateFileName, destFileName, param = {}) {
@@ -763,11 +786,11 @@ class BaseBuilder {
     }
 
     setDefaultPath(path) {
-        this.genPath = path;
+        this.genSourcePath = path;
     }
 
     appendDefaultPath(...path) {
-        this.genPath = libpath.join(this.genPath, ...path);
+        this.genSourcePath = libpath.join(this.genSourcePath, ...path);
     }
 
     getStringFromMustache(templateFileName, variable) {
@@ -845,7 +868,7 @@ class StoreBuilder extends BaseBuilder {
     async buildIndexFiles() {
         /** 產生 store的index file */
         const stores = this.getGenStores();
-        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genPath, `store.js`)));
+        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genSourcePath, `store.js`)));
         baseGenerator.appendClass(`BaseStore`);
         for (const store of stores) {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
@@ -853,7 +876,7 @@ class StoreBuilder extends BaseBuilder {
         baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}()`))
         await baseGenerator.persist();
 
-        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, `index.js`));
+        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `index.js`));
         indexGenerator.appendClass(`Store`, {name: `BaseStore`, from: './store'});
         indexGenerator.appendConstructor();
         await indexGenerator.persist();
@@ -897,8 +920,8 @@ class StoreBuilder extends BaseBuilder {
         const folderName = _.lowerFirst(node.getName());
         const baseClassName = 'Base' + _.upperFirst(folderName) + 'Store';
         const indexClassName = _.upperFirst(folderName) + 'Store';
-        const baseGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `${baseClassName}.js`));
-        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `index.js`))
+        const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
+        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `index.js`))
 
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
@@ -1007,7 +1030,7 @@ class ComponentBuilder extends BaseBuilder {
         const className = `${_.upperFirst(componentNode.name)}Component`;
         const folderName = componentNode.name;
 
-        const baseGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `${baseClassName}.js`));
+        const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
         baseGenerator.appendClass(baseClassName, {
@@ -1043,7 +1066,7 @@ class ComponentBuilder extends BaseBuilder {
             [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
 
         /** index.js */
-        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, folderName, `index.js`));
+        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `index.js`));
         indexGenerator.appendClass(className, {
             name: baseClassName,
             from: `./${baseClassName}`
@@ -1327,7 +1350,7 @@ class AppBuilder extends ComponentBuilder {
     async buildCookieFiles(sourceObj) {
 
         if (sourceObj.hasCookies) {
-            const baseCookieGenerator = new ClassGenerator(libpath.join(this.genPath, `cookie`, `BaseCookie.js`));
+            const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`));
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
@@ -1367,7 +1390,7 @@ class AppBuilder extends ComponentBuilder {
 
             }
             baseCookieGenerator.appendFunction('getAllCookies', ['options = {}'], [], 'return this.cookie.getAll(options)')
-            const indexCookieGenerator = new ClassGenerator(libpath.join(this.genPath, `cookie`, `index.js`));
+            const indexCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `index.js`));
             indexCookieGenerator.appendClass('Cookie', {name: `BaseCookie`, from: './BaseCookie'});
             indexCookieGenerator.setSingleton(true);
 
@@ -1398,7 +1421,7 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildRouterFile(sourceObj) {
-        const baseRouterGenerator = new ClassGenerator(libpath.join(this.genPath,
+        const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
             `router`
             ,
             `BaseRouter.js`
@@ -1414,7 +1437,7 @@ class AppBuilder extends ComponentBuilder {
                 'const { history } = component.props',
                 `history.push(\`${component.getPathOfRouterString()}\`)`)
         }
-        const indexRouterGenerator = new ClassGenerator(libpath.join(this.genPath, `router`, `index.js`));
+        const indexRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `router`, `index.js`));
         indexRouterGenerator.appendClass('Router', {name: `BaseRouter`, from: `./BaseRouter`});
         indexRouterGenerator.setSingleton(true);
         await indexRouterGenerator.persist();
@@ -1422,7 +1445,7 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildConfig(sourceObj) {
-        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genPath, `config`, `BaseConfig.js`));
+        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
         baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
         if (sourceObj.hasCookiePassword())
@@ -1430,15 +1453,15 @@ class AppBuilder extends ComponentBuilder {
 
         await baseConfigGenerator.persist();
 
-        const indexConfigGenerator = new ClassGenerator(libpath.join(this.genPath, `config`, `index.js`));
+        const indexConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `index.js`));
         indexConfigGenerator.appendClass(`Config`, {name: `BaseConfig`, from: './BaseConfig'});
         indexConfigGenerator.setSingleton(true);
         await indexConfigGenerator.persist();
     }
 
     async buildAppIndexFiles(sourceObj) {
-        const appGenerator = new ClassGenerator(libpath.join(this.genPath, `app.js`));
-        const indexGenerator = new ClassGenerator(libpath.join(this.genPath, `index.js`));
+        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `app.js`));
+        const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `index.js`));
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(` ReactDOM`, `react-dom`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
@@ -1535,21 +1558,17 @@ class AppBuilder extends ComponentBuilder {
         return stmt;
     }
 
-    async buildBaseClasses() {
-        Util.copyFromFolderToDestFolder('./base', libpath.join(this.genPath, `base`));
-    }
-
     async buildStyleFiles(classNameInfos, sourcePath) {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             let origins = {};
-            const sourceFilePath = libpath.join(sourcePath, `src`, `style`, `${type}.style.js`)
+            const sourceFilePath = libpath.join(sourcePath, `style`, `${type}.style.js`)
             if (fs.existsSync(sourceFilePath)) {
                 const obj = require(libpath.resolve(sourceFilePath)).default;
                 origins = obj;
             }
 
-            const generator = new ClassGenerator(libpath.join(this.genPath, 'style', `${type}.style.js`))
+            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'style', `${type}.style.js`))
             generator.appendClass(`${_.upperFirst(type)}Style`);
             for (const info of classNameInfos) {
                 for (const className of info.classNames) {
@@ -1580,7 +1599,7 @@ class AppBuilder extends ComponentBuilder {
         /** 先把舊的整理過, 除掉 comment的字樣line */
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
-            const srcLessPath = libpath.join(srcPath, `src`, `less`, `${type}.less`)
+            const srcLessPath = libpath.join(srcPath, `less`, `${type}.less`)
             const lessAttriutesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
                 const stub = Util.getContextForRawFile(srcLessPath).split('\n');
@@ -1592,7 +1611,7 @@ class AppBuilder extends ComponentBuilder {
                 lessAttriutesFromSrc.pop();
             }
 
-            const generator = new ClassGenerator(libpath.join(this.genPath, 'less', `${type}.less`));
+            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`));
             for (const info of classNameInfos) {
                 generator.appendInClassTail(`/** => following for ${info.component.name} component used <= */\n\n`);
                 for (const className of info.classNames) {
@@ -1621,7 +1640,7 @@ class AppBuilder extends ComponentBuilder {
 
             if (!fs.existsSync(libpath.join(srcPath, 'less', 'index.js'))) {
                 this.appendMustacheFile('less.index.js',
-                    Util.persistByPath(libpath.join(this.genPath, 'less', 'index.js'))
+                    Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
                 );
                 Util.appendInfo(`persist ./less/index.js succeed`);
             }
@@ -1629,13 +1648,23 @@ class AppBuilder extends ComponentBuilder {
     }
 }
 
+
+class AdminFunctionHandler {
+
+    buildFunction() {
+
+    }
+
+
+}
+
 class ProjectFileHandler {
 
-    genRootPath;
-    genSourcePath;
+    genRootPath; // gen/web
+    genSourcePath; // gen/web/src
 
-    projectRootPath;
-    projectSourcePath;
+    projectRootPath; // exam/
+    projectSourcePath; // exam/web/src
 
     constructor(props, platform = 'web') {
         this.projectRootPath = props.projectRootPath;
@@ -1665,8 +1694,25 @@ class ProjectFileHandler {
         }
     }
 
+    buildBaseClasses() {
+        const from = libpath.join(this.projectSourcePath, 'base');
+        const to = libpath.join(this.genSourcePath, 'base');
+
+        if (!fs.existsSync(from)) {
+            Util.appendInfo(`${from} is not exist, /src/base ignore this run`);
+        }
+        Util.persistByPath(to);
+        Util.copyFromFolderToDestFolder(libpath.join(this.projectSourcePath, 'base'), libpath.join(this.genSourcePath, `base`));
+    }
+
     persistBaseFiles() {
         try {
+
+            if (!fs.existsSync(this.genSourcePath)) {
+                Util.appendInfo(`${this.genSourcePath} is note created, ignore`);
+                return
+            }
+
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'base'))) {
                 if (Util.isEmptyFile(file.absolute)) {
                     Util.appendInfo(`${file.absolute} is empty file, do not copy`)
@@ -1755,28 +1801,37 @@ class ProjectFileHandler {
     }
 
     async forAdmin() {
-        const genAdminRootPath = libpath.resolve(libpath.join(this.genRootPath, platform));
-        const sourceRootPath = this.projectRootPath;
-        console.log(genAdminRootPath)
-        Util.persistByPath(genAdminRootPath);
-        const generator = new ClassGenerator(libpath.join(genAdminRootPath, `index.js`));
-        for (const component of this.nodeOfAncestor.getComponents()) {
-            for (const child of component.getStruct().getChildren()) {
-                console.log(child.getPreciseAttributeChildren())
-                // generator.appendFunction('')
+        Util.persistByPath(this.genRootPath);
+        Util.copySingleFile('./template/admin.package.json', this.genRootPath, 'package.json', true);
+        Util.copySingleFile('./template/babel.config.js', this.genRootPath, 'babel.config.js', true);
 
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath, `remote`, `BaseRemoteApi.js`));
+        generator.appendClass('BaseRemoteApi',{name:'BaseApi',from:'../base/BaseApi'});
+        generator.needIndexFile('RemoteApi');
+
+        function buildFireStore(node) {
+            if (node.isArrayOrObject()) {
+                const contents = [];
+                const children = [];
+                for (const child of node.getPreciseAttributeChildren()) {
+                    contents.push(`const ${child.getName()} = ${child.getDefaultValueByType()};\/\/${child.getType()}`);
+                    children.push(child.getName());
+                    if (child.hasChildren()) buildFireStore(child);
+                }
+                contents.push(`return \{${children.join(',')}\}`);
+                generator.appendFunction(Util.camel(node.isArray() ? 'push' : 'set', node.getFieldName()), ['object'], [], ...contents);
             }
+
         }
+
+        for (const component of this.nodeOfAncestor.getComponents()) {
+            buildFireStore(component.getStruct())
+        }
+        await generator.persist();
     }
 
     async forWeb() {
-        if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            this.keepIndexAndLESSFiles()
-            this.persistBaseFiles();
-            this.persistImageFolder();
-        }
         const source = this.nodeOfAncestor;
-        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         const totalClassNames = [];
         for (let component of source.components) {
             await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
@@ -1790,11 +1845,9 @@ class ProjectFileHandler {
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(this.genRootPath).buildRouterFile(source);
         await new AppBuilder(this.genRootPath).buildCookieFiles(source);
-        await new AppBuilder(this.genRootPath).buildBaseClasses();
         await new AppBuilder(this.genRootPath).buildLessFile(totalClassNames, this.projectSourcePath);
         await new AppBuilder(this.genRootPath).buildStyleFiles(totalClassNames, this.projectSourcePath);
         await new AppBuilder(this.genRootPath).buildHtmlIndexAssetsFile();
-
         this.overrideEachFilesFromSrcFolder(
             `common.style.js`, `app.style.js`, `mobile.style.js`,
             `common.less`, `app.less`, `mobile.less`,
@@ -1807,11 +1860,18 @@ class ProjectFileHandler {
             });
 
         this.buildDistAssetFolder()
-        if (!fs.existsSync(libpath.join(this.genRootPath, `node_modules`)))
-            await Util.executeCommandLine(`cd ${this.genRootPath} && npm install`);
+
     }
 
     async execute() {
+        if (SURE_TO_PERSIST_VERY_IMPORTANT) {
+            this.keepIndexAndLESSFiles()
+            this.persistBaseFiles();
+            this.persistImageFolder();
+        }
+        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
+        this.buildBaseClasses();
+
         switch (this.platform) {
             case 'web':
                 await this.forWeb();
@@ -1823,8 +1883,13 @@ class ProjectFileHandler {
                 throw new ERROR(8014, `type ==> ${this.platform}`)
                 break;
         }
+        await this.runInstallIfNeed();
     }
 
+    async runInstallIfNeed() {
+        if (!fs.existsSync(libpath.join(this.genRootPath, `node_modules`)))
+            await Util.executeCommandLine(`cd ${this.genRootPath} && npm install`);
+    }
 }
 
 
@@ -1839,8 +1904,10 @@ export {
         const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
         await web.execute();
         console.log(`web done`);
-        // await generator.forAdmin();
-        // console.log(`admin done`);
+
+        const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
+        await admin.execute();
+        console.log(`admin done`);
 
     }
 )();
