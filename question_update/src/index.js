@@ -17,8 +17,7 @@ class question_update {
 export {question_update as question_update}
 
 (async () => {
-        const db = new databaser(`/Users/davidtu/cross-achieve/mimi/idea-inventer/databaser/secret_infos_latest.db`);
-        await db.init();
+
 
         const fire = new firebaser(Util.getAdminCredential());
         // await fire.deleteTable(configer.REFERENCE_QUESTION);
@@ -28,7 +27,8 @@ export {question_update as question_update}
         //     Util.appendInfo(`${JSON.stringify(q)} is succeed`);
         //     await Util.syncDelay(50);
         // }
-
+        const db = new databaser(`/Users/davidtu/cross-achieve/mimi/idea-inventer/databaser/secret_infos_latest.db`);
+        await db.init();
 
         const qs = await db.fetchRecords('CHOOSER');
         await fire.deleteTable(`QuestionsOfExam`);

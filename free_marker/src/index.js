@@ -13,9 +13,9 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -24,51 +24,78 @@ class CodegenNode {
     password;
     components;
     path;
-    /** 用來當作Router的導頁網址, 如果用在strucut裡面就是當作remote fetch*/
+    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote fetch*/
+
     cookies;
     /** {name,type:object|string }對應到web使用的cookie, 好處是cookie會加密 */
+
     wrap;
     /** 在view外面包一層div,作為彈性的使用 */
+
     wrapContents;
     /** 當view有被wrap包住時,可以用wrapContent加上 ['{this.getTailView()}']*/
+
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
+
     props;
     /** 用在加上view額外的props,<div ...props/> */
+
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
+
     contents;
     /** 放在<div>content</div>*/
+
     navigation;
     /** 可以指定component為navigatorView 放置於頂部的view */
+
     incest;
     /** 支援父類是string 或是 number(非資料結構), 但是仍然有children的情形,
      在view和store上面也會產生出same generation的概念,
      incest只支援一層
      */
+
     needParam;
     /** 單純的view有時候會需要param作為顯示的判斷*/
+
     name;
+
     view;
+
     type;
+
     style;
+
     wrapView;
     /**  可以指定wrap的type default是div*/
     extra;
     /**  extra => 用於component mount 後,其所帶入的值 */
+
     children;
+
     plural;
     /** 用於產出合理的function name,可以有 object,array,number,string 如果type是 array, 就必些要有 plural */
+
     title;
+
     url;
     /** 如果物件有對應到資料庫,就可以指定 */
+
     parent;
+
     click;
+
     defaultValue;
     /** 可以指定attribute的default value */
+
     struct;
 
-    /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 都不會被包成CodeGenNode */
+    admin;
+
+    /** 放admin的json file*/
+
+    /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin','server' 都不會被包成CodeGenNode */
 
 
     constructor(node) {
@@ -311,14 +338,17 @@ class CodegenNode {
 
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
     getPathOfRouterString() {
+        if (!this.hasPath()) return '';
+
         const params = this.getParamsOfPath();
         const path = [];
-        for (const segment of this.path.split('/')) {
+        for (const segment of this.getPath().split('/')) {
             if (_.startsWith(segment, ':'))
                 path.push(`\$\{${params.shift()}\}`);
             else
                 path.push(segment);
         }
+
         return path.join('/');
     }
 
@@ -361,6 +391,10 @@ class CodegenNode {
             currentNode = currentNode.parent;
         }
         return _.reverse(names);
+    }
+
+    isStructChildren() {
+        return (this.getPreciseParent().struct);
     }
 
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
@@ -503,7 +537,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props'))
+                if (Util.isOrEquals(key, 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin', 'server'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -1425,7 +1459,7 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildWebpackNPackageJson(sourceObj) {
-        this.appendMustacheFile('package.json', libpath.join(this.genRootPath,
+        this.appendMustacheFile('web.package.json', libpath.join(this.genRootPath,
             `package.json`
         ), {
             projectName: sourceObj.name,
@@ -1462,21 +1496,9 @@ class AppBuilder extends ComponentBuilder {
                 'const { history } = component.props',
                 `history.push(\`${component.getPathOfRouterString()}\`)`)
         }
-        const indexRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `router`, `index.js`));
-        indexRouterGenerator.appendClass('Router', {name: `BaseRouter`, from: `./BaseRouter`});
-        indexRouterGenerator.setSingleton(true);
-        await indexRouterGenerator.persist();
-        await baseRouterGenerator.persist();
-    }
 
-    async buildConfig(sourceObj) {
-        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
-        baseConfigGenerator.appendClass(`BaseConfig`);
-        baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
-        if (sourceObj.hasCookiePassword())
-            baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
-        await baseConfigGenerator.needIndexFile('Config', [], true);
-        await baseConfigGenerator.persist();
+        baseRouterGenerator.needIndexFile('Router', [], true);
+        await baseRouterGenerator.persist();
     }
 
     async buildAppIndexFiles(sourceObj) {
@@ -1665,16 +1687,6 @@ class AppBuilder extends ComponentBuilder {
     }
 }
 
-
-class AdminFunctionHandler {
-
-    buildFunction() {
-
-    }
-
-
-}
-
 class ProjectFileHandler {
 
     genRootPath; // gen/web
@@ -1683,6 +1695,7 @@ class ProjectFileHandler {
     projectRootPath; // exam/
     projectSourcePath; // exam/web/src
 
+    platform; // web, admin, app
     constructor(props, platform = 'web') {
         this.projectRootPath = props.projectRootPath;
         this.projectSourcePath = libpath.join(this.projectRootPath, platform, 'src');
@@ -1711,15 +1724,35 @@ class ProjectFileHandler {
         }
     }
 
+    async buildConfig(sourceObj) {
+        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
+        baseConfigGenerator.appendClass(`BaseConfig`);
+        switch (this.platform) {
+            case 'admin':
+                baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
+                baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
+                break;
+            case 'web':
+                baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
+                if (sourceObj.hasCookiePassword())
+                    baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
+                break;
+        }
+        await baseConfigGenerator.needIndexFile('Config', [], true);
+        await baseConfigGenerator.persist();
+    }
+
     buildBaseClasses() {
         const from = libpath.join(this.projectSourcePath, 'base');
         const to = libpath.join(this.genSourcePath, 'base');
 
         if (!fs.existsSync(from)) {
-            Util.appendInfo(`${from} is not exist, /src/base ignore this run`);
+            Util.appendInfo(`from:${from} is not existed, /src/base ignore this run`);
+            return;
         }
+
         Util.persistByPath(to);
-        Util.copyFromFolderToDestFolder(libpath.join(this.projectSourcePath, 'base'), libpath.join(this.genSourcePath, `base`));
+        Util.copyFromFolderToDestFolder(from, to);
     }
 
     persistBaseFiles() {
@@ -1784,8 +1817,6 @@ class ProjectFileHandler {
      *      type:
      *      keyword:
      * }
-     *
-     *
      *     type:fileName,extension, fileNameExtension,
      *     keyword: image, svg, image.svg
 
@@ -1812,7 +1843,7 @@ class ProjectFileHandler {
             if (fs.existsSync(Util.getFileDirPath(dest)))
                 Util.copySingleFile(from, dest, '', true);
             else {
-                Util.appendError(`overrideIndexFiles fail ,dest,${dest};;;   ||   from,${from}`);
+                Util.appendError(`overrideIndexFiles fail ,dest,${dest};;; || from,${from}`);
             }
         }
     }
@@ -1830,20 +1861,51 @@ class ProjectFileHandler {
             if (node.isArrayOrObject()) {
                 const contents = [];
                 const children = [];
-                for (const child of node.getPreciseAttributeChildren()) {
-                    contents.push(`const ${child.getName()} = ${child.getDefaultValueByType()};\/\/${child.getType()}`);
-                    children.push(child.getName());
-                    if (child.hasChildren()) buildFireStore(child);
-                }
-                contents.push(`return \{${children.join(',')}\}`);
-                generator.appendFunction(Util.camel(node.isArray() ? 'push' : 'set', node.getFieldName()), ['object'], [], ...contents);
-            }
 
+                for (const child of node.getPreciseAttributeChildren()) {
+                    if (_.isEqual(child, 'updateTime')) continue;
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType()};\/\/${child.getType()}`);
+                    children.push(child.getFieldName());
+                    if (child.hasPath() && child.hasChildren()) buildFireStore(child);
+                }
+
+                contents.push(`const _updateTime = this.getServerTime()`);
+                children.push(`updateTime`);
+                contents.push(`const commitment = \{${children.map(child => `_${child}`).join(',')}\}`);
+                contents.push(`const path = \`${node.getPathOfRouterString()}\``);
+
+                if (node.hasPath()) {
+                    /** 有path 才代表 這是一個遠端也有的物件 */
+                    const defaultParam = node.getParamsOfPath();
+                    if (node.isArray()) {
+                        generator.appendFunction(`async ${Util.camel(`fetch`, node.getFieldName())}`, defaultParam, [],
+                            `return this.getAll('${node.getFieldName()}')`)
+
+                        generator.appendFunction(`async ${Util.camel(`delete`, node.getFieldName())}`, defaultParam, [],
+                            `return this.deleteAll('${node.getFieldName()}')`)
+
+                        contents.push(`await this.push(path, commitment);`);
+                        generator.appendFunction(`async ${Util.camel('push', node.getFieldName())}`, [...defaultParam, 'object'], [], ...contents)
+                    } else if (node.isObject()) {
+                        contents.push(`await this.set(path, commitment,'${node.getName()}');`);
+                        generator.appendFunction(`async ${Util.camel('set', node.getFieldName())}`, [...defaultParam, 'object'], [], ...contents);
+
+                        generator.appendFunction(`async ${Util.camel('get', node.getFieldName())}`, [...defaultParam,], [],
+                            `const path = \`${node.getPathOfRouterString()}\``,
+                            `return this.get(path,'${node.getName()}')`
+                        );
+                    } else {
+                        throw new ERROR(8015, node.getType());
+                    }
+
+                }
+            }
         }
 
         for (const component of this.nodeOfAncestor.getComponents()) {
             buildFireStore(component.getStruct())
         }
+
         await generator.persist();
     }
 
@@ -1855,76 +1917,99 @@ class ProjectFileHandler {
             const classNames = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
             totalClassNames.push({component, classNames});
         }
+
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(this.genRootPath).buildStoreIndexFiles();
         await new AppBuilder(this.genRootPath).buildAppIndexFiles(source);
-        await new AppBuilder(this.genRootPath).buildConfig(source);
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(this.genRootPath).buildRouterFile(source);
         await new AppBuilder(this.genRootPath).buildCookieFiles(source);
         await new AppBuilder(this.genRootPath).buildLessFile(totalClassNames, this.projectSourcePath);
         await new AppBuilder(this.genRootPath).buildStyleFiles(totalClassNames, this.projectSourcePath);
         await new AppBuilder(this.genRootPath).buildHtmlIndexAssetsFile();
-        this.overrideEachFilesFromSrcFolder(
-            `common.style.js`, `app.style.js`, `mobile.style.js`,
-            `common.less`, `app.less`, `mobile.less`,
-            {
-                type: 'extension',
-                keyword: 'svg'
-            }, {
-                type: 'extension',
-                keyword: 'png'
-            });
-
-        this.buildDistAssetFolder()
-
+        this.buildDistAssetFolder();
     }
 
     async execute() {
+
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            this.keepIndexAndLESSFiles()
+            this.keepIndexAndLESSFiles();
             this.persistBaseFiles();
             this.persistImageFolder();
         }
-        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
-        this.buildBaseClasses();
 
+        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         switch (this.platform) {
             case 'web':
                 await this.forWeb();
                 break;
             case 'admin':
                 await this.forAdmin();
-                break
+                break;
             default:
-                throw new ERROR(8014, `type ==> ${this.platform}`)
+                throw new ERROR(8014, `type ==> ${this.platform}`
+                )
                 break;
         }
+        this.buildBaseClasses();
+        await this.buildConfig(this.nodeOfAncestor);
+        this.overrideEachFilesFromSrcFolder(
+            `common.style.js`
+            ,
+            `app.style.js`
+            ,
+            `mobile.style.js`
+            ,
+            `common.less`
+            ,
+            `app.less`
+            ,
+            `mobile.less`
+            ,
+            {
+                type: 'extension',
+                keyword: 'svg'
+            },
+            {
+                type: 'extension',
+                keyword: 'png'
+            }
+        );
         await this.runInstallIfNeed();
     }
 
     async runInstallIfNeed() {
-        if (!fs.existsSync(libpath.join(this.genRootPath, `node_modules`)))
-            await Util.executeCommandLine(`cd ${this.genRootPath} && npm install`);
+        if (!fs.existsSync(libpath.join(this.genRootPath,
+            `node_modules`
+        )))
+            await Util.executeCommandLine(
+                `cd ${this.genRootPath} && npm install`
+            );
     }
 }
-
 
 export {
     ClassGenerator as ClassGenerator
 }
 
 (async () => {
-        const genRootPath = libpath.resolve(`./../gen`);
-        const projectRootPath = libpath.resolve(`./src/exam`);
+    const genRootPath = libpath.resolve(
+        `./../gen`
+    );
+    const projectRootPath = libpath.resolve(
+        `./src/exam`
+    );
 
-        const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
-        await web.execute();
-        console.log(`web done`);
+    // const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
+    // await web.execute();
+    // console.log(
+    //     `web done`
+    // );
 
-        const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
-        await admin.execute();
-        console.log(`admin done`);
+    const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
+    await admin.execute();
+    console.log(
+        `admin done`
+    );
 
-    }
-)();
+})();

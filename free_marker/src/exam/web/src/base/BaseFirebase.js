@@ -2,6 +2,7 @@ import _ from "lodash";
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
+import 'firebase/firestore';
 import React from 'react';
 import config from "../config";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
@@ -10,6 +11,7 @@ class BaseFirebase {
 
     app;
     database;
+    firestore;
     authentication;
 
     constructor(props) {
@@ -18,6 +20,10 @@ class BaseFirebase {
 
     db() {
         return this.database;
+    }
+
+    fire(){
+        return this.firestore;
     }
 
     auth() {
@@ -37,6 +43,7 @@ class BaseFirebase {
         }
         this.authentication = this.app.auth();
         this.database = this.app.database();
+        this.firestore = this.app.firestore();
     }
 
     async authByCredential(credential) {

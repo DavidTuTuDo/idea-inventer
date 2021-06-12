@@ -126,8 +126,8 @@ class Utiller {
         return false;
     }
 
-    getRandomHash() {
-        const random = Crypto.randomBytes(30).toString('hex');
+    getRandomHash(size = 30) {
+        const random = Crypto.randomBytes(size).toString('hex');
         return random;
     }
 

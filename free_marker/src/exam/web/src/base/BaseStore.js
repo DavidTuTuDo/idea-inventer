@@ -16,6 +16,7 @@ import firebaser from './BaseFirebase';
 class BaseStore {
 
     database;
+    fire;
 
     @observable
     state = 'loading';
@@ -51,6 +52,7 @@ class BaseStore {
 
     constructor(props) {
         this.database = firebaser.db();
+        this.fire = firebaser.fire();
     }
 
     getErrorMsg() {
@@ -74,22 +76,28 @@ class BaseStore {
         return obj;
     }
 
+
     async fetchObject(refPath, filtering = (ref) => ref.once('value')) {
         console.log(`fetch object => ${refPath}`);
         const result = await filtering(this.database.ref(refPath));
         return result.val();
     }
 
+
     async postObject(refPath, obj = {}) {
         console.log(`write ${refPath}, param ${JSON.stringify(obj)}`);
         return await this.database.ref(refPath).set(obj);
     }
 
-    async fetchArray(refPath, filtering = (ref) => ref.once('value')) {
+
+    async fetchArray(refPath, filtering = (ref) => ref.get()) {
         console.log(`fetch array => ${refPath}`);
-        const result = await filtering(this.database.ref(refPath));
-        const value = result.val();
-        return _.isArray(value) ? value : _.values(value);
+        const querySnapshot = await filtering(this.fire.collection(refPath));
+        const all = [];
+        querySnapshot.forEach((doc) => {
+            all.push(doc.data());
+        })
+        return all;
     }
 
 

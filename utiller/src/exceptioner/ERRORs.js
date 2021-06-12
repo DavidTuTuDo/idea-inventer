@@ -131,6 +131,9 @@ const ERRORs = {
     8014: {
         message: `type is not supported`
     },
+    8015: {
+        message: `build firestore error`
+    },
     9999: {
         message: `super stupid error`
     },
