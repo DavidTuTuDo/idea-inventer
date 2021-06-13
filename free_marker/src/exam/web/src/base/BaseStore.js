@@ -11,9 +11,9 @@ import {
 import {utiller as Util, ERROR} from "utiller";
 import _ from 'lodash';
 import config from '../config';
-import firebaser from './BaseFirebase';
+import CommonRemoteApi from './CommonRemoteApi';
 
-class BaseStore {
+class BaseStore extends CommonRemoteApi {
 
     database;
     fire;
@@ -49,17 +49,15 @@ class BaseStore {
         this.errorMsg = message;
     }
 
-
     constructor(props) {
-        this.database = firebaser.db();
-        this.fire = firebaser.fire();
+        super(props);
     }
 
     getErrorMsg() {
         return this.errorMsg;
     }
 
-    getClassName(){
+    getClassName() {
         return 'unknown store';
     }
 
@@ -75,31 +73,6 @@ class BaseStore {
     filter(obj) {
         return obj;
     }
-
-
-    async fetchObject(refPath, filtering = (ref) => ref.once('value')) {
-        console.log(`fetch object => ${refPath}`);
-        const result = await filtering(this.database.ref(refPath));
-        return result.val();
-    }
-
-
-    async postObject(refPath, obj = {}) {
-        console.log(`write ${refPath}, param ${JSON.stringify(obj)}`);
-        return await this.database.ref(refPath).set(obj);
-    }
-
-
-    async fetchArray(refPath, filtering = (ref) => ref.get()) {
-        console.log(`fetch array => ${refPath}`);
-        const querySnapshot = await filtering(this.fire.collection(refPath));
-        const all = [];
-        querySnapshot.forEach((doc) => {
-            all.push(doc.data());
-        })
-        return all;
-    }
-
 
 }
 

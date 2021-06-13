@@ -3,12 +3,11 @@ import _ from 'lodash';
 import Moment from 'moment';
 import config from '../config';
 import libpath from 'path';
-import Admin from "./Admin";
+import Client from './Client';
 
 const MAX_BATCH_COUNT = 100;
 
-
-class CommonRemoteApi extends Admin {
+class CommonRemoteApi extends Client {
 
     constructor(props) {
         super(props);
@@ -110,6 +109,27 @@ class CommonRemoteApi extends Admin {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`delete path:${path}/${objName}`);
         await this.fire().collection(path).doc(objName).delete();
+    }
+
+
+    /** realtime database method */
+    async fetchObject(refPath, filtering = (ref) => ref.once('value')) {
+        console.log(`fetch object => ${refPath}`);
+        const result = await filtering(this.database.ref(refPath));
+        return result.val();
+    }
+
+
+    async postObject(refPath, obj = {}) {
+        console.log(`write ${refPath}, param ${JSON.stringify(obj)}`);
+        return await this.database.ref(refPath).set(obj);
+    }
+
+    async fetchArray(refPath, filtering = (ref) => ref.once('value')) {
+        console.log(`fetch array => ${refPath}`);
+        const result = await filtering(this.database.ref(refPath));
+        const value = result.val();
+        return _.isArray(value) ? value : _.values(value);
     }
 
 }

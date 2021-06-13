@@ -7,7 +7,7 @@ import React from 'react';
 import config from "../config";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 
-class BaseFirebase {
+class Client {
 
     app;
     database;
@@ -34,6 +34,9 @@ class BaseFirebase {
         return this.authentication.currentUser
     }
 
+    getServerTime() {
+        return firebase.firestore.FieldValue.serverTimestamp();
+    }
 
     initFirebase() {
         if (!firebase.apps.length) {
@@ -104,4 +107,4 @@ class BaseFirebase {
 }
 
 
-export default new BaseFirebase();
+export default new Client();

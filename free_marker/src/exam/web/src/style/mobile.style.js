@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-12-22-42-07 
+	updateTime:2021-06-13-16-34-24 
 */
 
 class MobileStyle {
@@ -9,63 +9,63 @@ class MobileStyle {
 
   /** following for unknown */
 
-  ExamQuestionCardArrayWrapDiv = {};
-
-  ExamQuestionChoiceDivArrayWrapDiv = {};
-
-  PurchasePlanDivArrayWrapDiv = {};
-
-  PurchasePlanPriceTipTypography = {};
-
-  PurchaseCardArrayWrapDiv = {};
-
-  PurchaseCard = {};
-
-  PurchaseArrayWrapDiv = {};
-
-  PurchaseTitleTypography = {};
-
-  NavigatorGoogleloginButton = {};
-
-  NavigatorGoogleloginButtonWrapDiv = {};
-
-  HeaderHomeAreaHomeImg = {};
-
-  HeaderHomeAreaAvatar = {};
-
-  HeaderFunctionDiv = {};
-
-  HeaderLoginButton = {};
-
-  HeaderLoginButtonWrapDiv = {};
-
-  HeaderDiv = {};
-
-  HeaderImageImg = {};
-
-  HeaderImageImgWrapDiv = {};
-
-  ExamQuestionAlertOuterDivWrapDiv = {};
-
-  ExamQuestionAlertOuterImg = {};
-
-  ExamQuestionAlertDiv = {};
-
-  ExamQuestionAlertContentDiv = {};
-
-  HeaderHomeImgWrapDiv = {};
-
-  HeaderHomeImg = {};
-
-  HeaderHomeAreaHomeImgWrapDiv = {};
-
-  PurchasePlanPidTypography = {};
-
-  PurchasePlanDivWrapDiv = {};
+  PurchaseDivArrayWrapDiv = {};
 
   PurchasePlanSpaceOuterDiv = {};
 
-  PurchaseDivArrayWrapDiv = {};
+  PurchasePlanDivWrapDiv = {};
+
+  PurchasePlanPidTypography = {};
+
+  HeaderHomeAreaHomeImgWrapDiv = {};
+
+  HeaderHomeImg = {};
+
+  HeaderHomeImgWrapDiv = {};
+
+  ExamQuestionAlertContentDiv = {};
+
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertOuterImg = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
+
+  HeaderImageImgWrapDiv = {};
+
+  HeaderImageImg = {};
+
+  HeaderDiv = {};
+
+  HeaderLoginButtonWrapDiv = {};
+
+  HeaderLoginButton = {};
+
+  HeaderFunctionDiv = {};
+
+  HeaderHomeAreaAvatar = {};
+
+  HeaderHomeAreaHomeImg = {};
+
+  NavigatorGoogleloginButtonWrapDiv = {};
+
+  NavigatorGoogleloginButton = {};
+
+  PurchaseTitleTypography = {};
+
+  PurchaseArrayWrapDiv = {};
+
+  PurchaseCard = {};
+
+  PurchaseCardArrayWrapDiv = {};
+
+  PurchasePlanPriceTipTypography = {};
+
+  PurchasePlanDivArrayWrapDiv = {};
+
+  ExamQuestionChoiceDivArrayWrapDiv = {};
+
+  ExamQuestionCardArrayWrapDiv = {};
 
   /** following for purchase */
 

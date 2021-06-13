@@ -2091,16 +2091,16 @@ export {
         `./src/exam`
     );
 
-    // const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
-    // await web.execute();
-    // console.log(
-    //     `web done`
-    // );
-
-    const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
-    await admin.execute();
+    const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
+    await web.execute();
     console.log(
-        `admin done`
+        `web done`
     );
+
+    // const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
+    // await admin.execute();
+    // console.log(
+    //     `admin done`
+    // );
 
 })();
