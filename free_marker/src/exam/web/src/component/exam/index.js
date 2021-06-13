@@ -16,7 +16,6 @@ class ExamComponent extends BaseExamComponent {
     componentDidMount() {
         super.componentDidMount();
         this.getStore().fetch().then();
-
     }
 
 

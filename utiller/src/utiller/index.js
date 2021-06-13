@@ -4,6 +4,7 @@ import CryptoJS from "crypto-js";
 import {configer} from 'configer';
 import ERROR from '../exceptioner';
 import moment from "moment";
+import {utiller as Util} from "../../index";
 
 String.format = function () {
     let param = [];
@@ -18,6 +19,10 @@ String.format = function () {
 }
 
 class Utiller {
+
+    appendInfo(...logs){
+        console.log(...logs);
+    }
 
     async syncDelay(delayInms = 2000) {
         return new Promise(resolve => {

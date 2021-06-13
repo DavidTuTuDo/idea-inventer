@@ -25,5 +25,7 @@ import _ from 'lodash';
     // await remote.batchSubmitQuestionsItem(...questions);
     // await remote.submitExamObject({david:'dd'});
     // await remote.deleteExam();
-    console.log(await remote.fetchSizeOfQuestions());
+    // console.log(await remote.fetchSizeOfQuestions());
+    console.log(await remote.fetchExam());
+
 })();

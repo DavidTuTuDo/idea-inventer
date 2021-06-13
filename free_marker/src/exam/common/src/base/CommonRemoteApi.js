@@ -3,11 +3,11 @@ import _ from 'lodash';
 import Moment from 'moment';
 import config from '../config';
 import libpath from 'path';
-import Client from './Client';
+import Admin from './Admin';
 
 const MAX_BATCH_COUNT = 100;
 
-class CommonRemoteApi extends Client {
+class CommonRemoteApi extends Admin {
 
     constructor(props) {
         super(props);
@@ -66,7 +66,7 @@ class CommonRemoteApi extends Client {
 
     async fetchItems(path) {
         Util.appendInfo(`fetch items path:${path}}`);
-        const querySnapshot = await this.fire().collection(path).get();
+        const querySnapshot = await this.firestore().collection(path).get();
         const all = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
@@ -79,7 +79,7 @@ class CommonRemoteApi extends Client {
     async deleteItems(path) {
         Util.appendInfo(`delete all ${path}`);
         const batch = this.fire().batch()
-        const list = await this.fire().collection(path).listDocuments()
+        const list = await this.firestore().collection(path).listDocuments()
         list.map((doc) => batch.delete(doc));
         await batch.commit();
     }
@@ -89,43 +89,44 @@ class CommonRemoteApi extends Client {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`submit object ${path}/${objName}`);
         commitment[objName] = object
-        return await this.fire().collection(path).doc(objName).set(commitment);
+        return await this.firestore().collection(path).doc(objName).set(commitment);
     }
 
     async fetchObject(path, objName) {
         path = libpath.join(path, 'attrs');
-        Util.appendInfo(`get path:${path}/${objName}`);
-        const result = await this.fire().collection(path).doc(objName).get();
-        return result.data();
-    }
+        Util.appendInfo(`fetch object path:${path}/${objName}`);
+        const result = await this.firestore().collection(path).doc(objName).get();
+        const data  = result.data();
+        return data? data:{};
+     }
 
     async updateObject(path, updatedObject, objName) {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`update path:${path}/${objName}`);
-        await this.fire().collection(path).doc(objName).update(updatedObject);
+        await this.firestore().collection(path).doc(objName).update(updatedObject);
     }
 
     async deleteObject(path, objName) {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`delete path:${path}/${objName}`);
-        await this.fire().collection(path).doc(objName).delete();
+        await this.firestore().collection(path).doc(objName).delete();
     }
 
 
     /** realtime database method */
-    async fetchObject(refPath, filtering = (ref) => ref.once('value')) {
+    async realtimeFetchObject(refPath, filtering = (ref) => ref.once('value')) {
         console.log(`fetch object => ${refPath}`);
         const result = await filtering(this.database.ref(refPath));
         return result.val();
     }
 
 
-    async postObject(refPath, obj = {}) {
+    async realtimePostObject(refPath, obj = {}) {
         console.log(`write ${refPath}, param ${JSON.stringify(obj)}`);
         return await this.database.ref(refPath).set(obj);
     }
 
-    async fetchArray(refPath, filtering = (ref) => ref.once('value')) {
+    async realtimeFetchArray(refPath, filtering = (ref) => ref.once('value')) {
         console.log(`fetch array => ${refPath}`);
         const result = await filtering(this.database.ref(refPath));
         const value = result.val();

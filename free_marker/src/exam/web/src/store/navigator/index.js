@@ -15,7 +15,7 @@ import {
 } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import Cookie from '../../cookie';
-import firebaser from '../../base/BaseFirebase';
+import firebaser from '../../base/Firebaser.js';
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { Application } from '../../index'
 

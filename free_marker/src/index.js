@@ -14,7 +14,6 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
@@ -1005,39 +1004,36 @@ class StoreBuilder extends BaseBuilder {
         }
 
 
-        /** 這邊專門處理remote fetchObject 的邏輯 */
-        // const method = Util.camel(`fetch`, node.getType());
-
-
+        /** 這邊專門處理remote fetch 的邏輯 */
         new RemoteFunctionHandler(baseGenerator).buildFetchSubmitApi(node);
 
+        if (node.isObject()) {
+            const contents = [
+                `{`,
+                node.hasPath() ? `...(await this.${Util.camel(`fetch`,node.getFieldName())}()),` : `...{},`,
+                ..._.map(node.getChildren(), (child) => {
+                    return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch()` : '';
+                }),
+                `}`,
+            ]
+            baseGenerator.appendAsyncFunction('fetch', [], [],
+                ...this.getDecorateFetchStrings(node.isState(), node.isObject(), ...contents)
+            )
+        } else if (node.isArray()) {
+            if (node.hasPath()) {
+                baseGenerator.appendAsyncFunction('fetch', [], [],
+                    `return await this.${Util.camel(`fetch`,node.getFieldName())}()`);
+            }
+        }
+        /** ================== */
 
-        // if (node.isObject()) {
-        //     const contents = [
-        //         `{`,
-        //         node.hasPath() ? `...(await this.${method}(\`${node.getPathOfRouterString()}\`,filter)),` : `...{},`,
-        //         ..._.map(node.getChildren(), (child) => {
-        //             return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch()` : '';
-        //         }),
-        //         `}`,
-        //     ]
-        //     baseGenerator.appendFunction(' async fetchObject', [...node.getParamsOfPath(), 'filter'], [],
-        //         ...this.getDecorateFetchStrings(node.isState(), node.isObject(), ...contents)
-        //     )
-        // } else if (node.isArray()) {
-        //     if (node.hasPath()) {
-        //         baseGenerator.appendFunction(' async fetchObject', [...node.getParamsOfPath(), 'filter'], [],
-        //             `const url = \`${node.getPathOfRouterString()}\`;`,
-        //             `return this.filter((await this.${method}(url,filter)))`);
-        //     }
-        // }
-        //
-        // baseGenerator.appendFunction('self', [], [],
-        //     'return {',
-        //     _.filter(node.getChildren(), (child) => child.isAttribute())
-        //         .map((child) => `${child.getName()} : this.${child.getName()}`).join(','),
-        //     '}'
-        // )
+
+        baseGenerator.appendFunction('self', [], [],
+            'return {',
+            _.filter(node.getChildren(), (child) => child.isAttribute())
+                .map((child) => `${child.getName()} : this.${child.getName()}`).join(','),
+            '}'
+        )
 
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], `super.initial(obj)`, ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
@@ -1162,7 +1158,7 @@ class RemoteFunctionHandler {
                         `return await this.submitObject(path, commitment,'${node.getName()}')`,
                     );
 
-                    generator.appendAsyncFunction(Util.camel('get', node.getFieldName()),
+                    generator.appendAsyncFunction(Util.camel('fetch', node.getFieldName()),
                         [...defaultParam,], [],
                         `const path = \`${node.getPathOfRouterString()}\``,
                         `return await this.fetchObject(path,'${node.getName()}')`
