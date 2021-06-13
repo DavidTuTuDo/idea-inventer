@@ -105,7 +105,7 @@ const ERRORs = {
         message: `input name is not valid`
     },
     8006: {
-        message: `file exsist when trying to copy`
+        message: `file exists when trying to copy`
     },
     8007: {
         message: `alias exist in shell script`

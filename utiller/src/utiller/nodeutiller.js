@@ -252,7 +252,8 @@ class NodeUtiller extends Utiller {
 
     /** from :'./template/sample.babel.config.js
      *  destDir : '/template'
-     *  fileName: 'fileName.extension' => 如果fileName 是 empty ,dest就是直接的路徑
+     *  fileName: 'fileName.extension' => 如果fileName 是 empty ,dest就是必須包含新檔名
+     *  force 就是強制覆蓋他啦
      * */
     copySingleFile(from, dest, fileName, force = false) {
 

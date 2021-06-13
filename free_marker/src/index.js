@@ -1814,6 +1814,8 @@ class ProjectFileHandler {
 
     projectRootPath; // exam/
     projectPlatformSourcePath; // exam/web/src
+    projectCommonSourcePath; // exam/common/src
+
 
     platform; // web, admin, app
     constructor(props, platform = 'web') {
@@ -1821,6 +1823,7 @@ class ProjectFileHandler {
         this.projectPlatformSourcePath = libpath.join(this.projectRootPath, platform, 'src');
         this.genRootPath = libpath.join(props.genRootPath, platform);
         this.genSourcePath = libpath.join(this.genRootPath, 'src');
+        this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
         this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
         this.platform = platform;
         /** 這就是 source.js 的進入點 */
@@ -1887,29 +1890,22 @@ class ProjectFileHandler {
                 if (Util.isEmptyFile(file.absolute)) {
                     Util.appendInfo(`${file.absolute} is empty file, do not copy`)
                     continue;
+                }
 
-                    if (_.startsWith(_.toLower(file.fileName), 'common')) {
-                        /** back-up to common*/
-                        const projectCommonSourcePath = libpath.join(this.projectRootPath, 'common', 'src');
-                        const projectCommonSourceBasePath = libpath.join(projectCommonSourcePath, 'base');
-                        Util.persistByPath(projectCommonSourceBasePath);
-                        Util.copySingleFile(file.absolute,
-                            libpath.join(projectCommonSourceBasePath, file.fileNameExtension))
-                    } else {
-                        /** back-up to platform src*/
-                        const projectPlatformSourceBasePath = libpath.join(this.projectPlatformSourcePath,'base');
-                        Util.persistByPath(projectPlatformSourceBasePath);
-                        Util.copySingleFile(file.absolute,
-                            libpath.join(projectPlatformSourceBasePath, file.fileNameExtension))
-                    }
-
+                if (_.startsWith(_.toLower(file.fileName), 'common')) {
+                    /** back-up to common*/
+                    const projectCommonSourceBasePath = libpath.join(this.projectCommonSourcePath, 'base');
+                    Util.persistByPath(projectCommonSourceBasePath);
+                    Util.copySingleFile(file.absolute,
+                        libpath.join(projectCommonSourceBasePath, file.fileNameExtension), undefined, true)
+                } else {
+                    /** back-up to platform src*/
+                    const projectPlatformSourceBasePath = libpath.join(this.projectPlatformSourcePath, 'base');
+                    Util.persistByPath(projectPlatformSourceBasePath);
+                    Util.copySingleFile(file.absolute,
+                        libpath.join(projectPlatformSourceBasePath, file.fileNameExtension), undefined, true)
                 }
             }
-
-            Util.copyFromFolderToDestFolder(
-                `${libpath.join(this.genSourcePath, 'base')}`,
-                `${libpath.join(this.projectPlatformSourcePath, 'base')}`
-            )
 
             Util.appendInfo(`persist base files succeed`);
             return false;
@@ -1958,28 +1954,33 @@ class ProjectFileHandler {
 
      * */
     overrideEachFilesFromSrcFolder(...excludes) {
-        for (const file of Util.findFilePathBy(this.projectPlatformSourcePath)) {
+        /** 順序會影響檔案覆蓋的順序 */
+        const fromSourcePath = [this.projectPlatformSourcePath, this.projectCommonSourcePath];
 
-            let ignoreThisRun = false;
-            for (let exclude of excludes) {
-                if (_.isString(exclude)) {
-                    exclude = {type: 'fileNameExtension', keyword: exclude}
+        for (const _path of fromSourcePath) {
+            for (const file of Util.findFilePathBy(_path)) {
+
+                let ignoreThisRun = false;
+                for (let exclude of excludes) {
+                    if (_.isString(exclude)) {
+                        exclude = {type: 'fileNameExtension', keyword: exclude}
+                    }
+
+                    if (_.isEqual(file[exclude.type], exclude.keyword)) {
+                        ignoreThisRun = true;
+                        break;
+                    }
+
                 }
+                if (ignoreThisRun) continue;
+                const from = file.absolute;
+                const dest = libpath.join(this.genSourcePath, from.split(`src`).pop());
 
-                if (_.isEqual(file[exclude.type], exclude.keyword)) {
-                    ignoreThisRun = true;
-                    break;
+                if (fs.existsSync(Util.getFileDirPath(dest)))
+                    Util.copySingleFile(from, dest, '', true);
+                else {
+                    Util.appendError(`overrideIndexFiles fail ,dest,${dest};;; || from,${from}`);
                 }
-
-            }
-            if (ignoreThisRun) continue;
-            const from = file.absolute;
-            const dest = libpath.join(this.genSourcePath, from.split(`src`).pop());
-
-            if (fs.existsSync(Util.getFileDirPath(dest)))
-                Util.copySingleFile(from, dest, '', true);
-            else {
-                Util.appendError(`overrideIndexFiles fail ,dest,${dest};;; || from,${from}`);
             }
         }
     }
