@@ -97,7 +97,7 @@ const INVOKE_REAL_CHROME = false;
             }
 
             async function fetchRankPageData(page) {
-                /** fetch all pages */
+                /** fetchObject all pages */
                 let songs = [];
                 let rankPage;
 

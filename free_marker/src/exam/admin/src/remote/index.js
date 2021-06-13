@@ -3,7 +3,7 @@
 	email:freshingmoon0725@gmail.com
 	updateTime:2021-06-09-14-11-13
 */
-import BaseRemoteApi from "./BaseRemoteApi";
+import BaseRemoteApi from "./BaseAdminFetchSubmitApi";
 
 class RemoteApi extends BaseRemoteApi {
   /** -------------------- fields -------------------- **/

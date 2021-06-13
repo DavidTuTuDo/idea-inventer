@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-11-15-13-21 
+	updateTime:2021-06-12-22-42-07 
 */
 
 class MobileStyle {

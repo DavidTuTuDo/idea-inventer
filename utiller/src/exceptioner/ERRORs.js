@@ -134,6 +134,9 @@ const ERRORs = {
     8015: {
         message: `build firestore error`
     },
+    8016: {
+      message:`class generator is necessary!!!`,
+    },
     9999: {
         message: `super stupid error`
     },
