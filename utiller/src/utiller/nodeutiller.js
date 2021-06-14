@@ -78,6 +78,7 @@ class NodeUtiller extends Utiller {
             extension: undefined,
             fileName: undefined,
             fileNameExtension: undefined,
+            lastModifiedTime: undefined,
         }
 
         if (this.isFile(absolute)) {
@@ -90,6 +91,7 @@ class NodeUtiller extends Utiller {
             obj['isFile'] = true;
             obj['isDirectory'] = false;
             obj['fileNameExtension'] = `${obj.fileName}.${obj.extension}`;
+            obj['lastModifiedTime'] = this.getFileLastModifiedTime(absolute);
         }
 
         if (this.isisDirectory(absolute)) {
@@ -479,10 +481,21 @@ class NodeUtiller extends Utiller {
         return _.isEqual('', this.getContextForRawFile(path).trim())
     }
 
+    getFileLastModifiedTime(path) {
+        /**
+         * onsole.log(`File Data Last Modified: ${stats.mtime}`);
+         console.log(`File Status Last Modified: ${stats.ctime}`);
+         */
+        const stats = fs.statSync(path);
+        return stats.mtimeMs;
+    }
+
 
 }
 
 if (configer.DEBUG_MODE) {
+    // console.log(new NodeUtiller().getPathInfo('./').absolute);
+    // console.log(new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
 }
 
 export default NodeUtiller;

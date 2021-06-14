@@ -14,6 +14,7 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
@@ -1010,7 +1011,7 @@ class StoreBuilder extends BaseBuilder {
         if (node.isObject()) {
             const contents = [
                 `{`,
-                node.hasPath() ? `...(await this.${Util.camel(`fetch`,node.getFieldName())}()),` : `...{},`,
+                node.hasPath() ? `...(await this.${Util.camel(`fetch`, node.getFieldName())}()),` : `...{},`,
                 ..._.map(node.getChildren(), (child) => {
                     return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch()` : '';
                 }),
@@ -1022,7 +1023,7 @@ class StoreBuilder extends BaseBuilder {
         } else if (node.isArray()) {
             if (node.hasPath()) {
                 baseGenerator.appendAsyncFunction('fetch', [], [],
-                    `return await this.${Util.camel(`fetch`,node.getFieldName())}()`);
+                    `return await this.${Util.camel(`fetch`, node.getFieldName())}()`);
             }
         }
         /** ================== */
@@ -1892,8 +1893,17 @@ class ProjectFileHandler {
                     /** back-up to common*/
                     const projectCommonSourceBasePath = libpath.join(this.projectCommonSourcePath, 'base');
                     Util.persistByPath(projectCommonSourceBasePath);
+
+                    const existSourceFile = libpath.join(projectCommonSourceBasePath, file.fileNameExtension);
+                    if (fs.existsSync(existSourceFile) &&
+                        Util.getFileLastModifiedTime(existSourceFile) > file.lastModifiedTime) {
+                        Util.appendInfo(`${existSourceFile} is the latest, ignore this run`);
+                        continue;
+                    }
+
                     Util.copySingleFile(file.absolute,
                         libpath.join(projectCommonSourceBasePath, file.fileNameExtension), undefined, true)
+
                 } else {
                     /** back-up to platform src*/
                     const projectPlatformSourceBasePath = libpath.join(this.projectPlatformSourcePath, 'base');

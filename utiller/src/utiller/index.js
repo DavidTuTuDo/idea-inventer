@@ -24,6 +24,10 @@ class Utiller {
         console.log(...logs);
     }
 
+    appendError(...logs){
+        console.error(...logs);
+    }
+
     async syncDelay(delayInms = 2000) {
         return new Promise(resolve => {
             setTimeout(() => {
@@ -33,7 +37,8 @@ class Utiller {
     }
 
 
-    /** this is used for unit test */
+    /** this is used for unit test,
+     * param 是給 runInBackground 用的 => param */
     asyncUnitTaskFunction = (millionSec = 2000, _funparam = "預設的param", errorSimulator) => async (param) => {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
         try {
@@ -275,7 +280,6 @@ class Utiller {
     getItsKeyByValue(object, value) {
         return Object.keys(object).find(key => object[key] === value);
     }
-
 
     startWiths(string, key = []) {
         for (const _key of key) {

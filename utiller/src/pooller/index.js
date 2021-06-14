@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {utiller as Util} from '../';
+import {utiller as Util} from '../index.js';
 import {configer} from "configer";
 import ERROR from '../exceptioner';
 
@@ -10,7 +10,7 @@ import ERROR from '../exceptioner';
  1.task可以設定timeout
  2.queue滿了的可以設定task interval
  3.如果是runByEachTask length, queue裡面沒有task時，可以設定sleeptime, 以及Sleepcounts
- 4.task 可以cancelled by  hash
+ 4.task 可以cancelled by hash
  5.runByParams,runByCounts,runInInfinite,runByEachTask
  6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
  *
@@ -26,7 +26,7 @@ class InfinitePool {
     maxWorker;
     ignoreFirstRun = false
     paramQueue = [];
-    taskQueue = {};
+    taskQueue = {}; /** 裡面放 high:[], low:[], medium */
     currentSleepCounts = 0;
     isTaskRunning = false;
     dispatchers = [];
@@ -228,6 +228,7 @@ class InfinitePool {
 
     beforeRun = () => {
         this.isTaskRunning = true;
+        this.currentSleepCounts = 0;
     }
 
     afterRun = () => {
@@ -237,6 +238,7 @@ class InfinitePool {
     /** interval was the time between tasks when executingQueue is full.
      * run would infinite, in default, timeOfSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
+        this.beforeRun();
         if (_.isNumber(interval)) {
             interval = {min: interval, max: interval}
         }
@@ -246,10 +248,8 @@ class InfinitePool {
             this.adds(task);
         else
             throw new ERROR(4006, `type of task is ===> ${typeof task}`)
-        this.beforeRun();
         this.setTaskInterval(interval)
         this.setState(configer.POOLLER_STATE.RUN_INFINITE);
-
         while (this.isRunning()) {
             await this.#run();
         }
@@ -272,20 +272,25 @@ class InfinitePool {
         }
     }
 
+    runByEachTaskInBackGround(){
+        this.runInBackGround(this.runByEachTask);
+        return this;
+    }
+
     runByEachTask = async (tasks = []) => {
         this.beforeRun();
-        this.currentSleepCounts = 0;
         this.adds(tasks);
         this.setState(configer.POOLLER_STATE.RUN_BY_EACH_TASK);
         while (this.isRunning()) {
             if (this.getQueueSize() <= 0) {
                 const timer = await Util.syncDelayRandom(this.timeOfSleep.min, this.timeOfSleep.max);
-                Util.appendFile(configer.PATH_INFO_LOG, `${this.getPoollerLogFormat(` sleep time ${timer} million-sec`)}`);
+                Util.appendInfo(`${this.getPoollerLogFormat(` sleep time ${timer} million-sec, sleepCounts:${this.currentSleepCounts}`)}`);
+                this.currentSleepCounts++;
                 if (this.currentSleepCounts > this.maxSleepCounts) this.stop();
                 continue;
             }
             await this.#run();
-            this.currentSleepCounts += 0;
+
         }
     }
 
@@ -396,8 +401,11 @@ class InfinitePool {
         }
 
         if (this.executingQueue.length > this.maxWorker) {
-            console.error(`一定是改壞了！！！！ ${this.getPoollerLogFormat(`executing queue ${this.executingQueue.length} !!`)}`);
+            Util.appendError(`一定是改壞了！！！！ ${this.getPoollerLogFormat(`executing queue ${this.executingQueue.length} !!`)}`);
         }
+
+        /** 只要完成run 就要把sleepTimeCount歸零 */
+        this.currentSleepCounts = 0;
     }
 
     /** taskInfo = { task, hash }*/
@@ -411,8 +419,6 @@ class InfinitePool {
                     case configer.POOLLER_STATE.RUN_BY_TIMES:
                     case configer.POOLLER_STATE.RUN_INFINITE:
                         const taskInfo = this.taskQueue[prior].shift();
-
-
                         this.add(taskInfo.task);
                         return taskInfo;
                     default:
@@ -479,6 +485,19 @@ if (configer.DEBUG_MODE) {
         // while (self.isRunning()) {
         //     await Util.syncDelayRandom(2000, 5000);
         // }
+        // await new InfinitePool(3).runInInfinite([]);
+
+        const pool = new InfinitePool(3).runByEachTaskInBackGround();
+
+        setTimeout(() => {
+            pool.add(Util.asyncUnitTaskFunction())
+        },20000)
+
+
+        while (pool.isRunning()) {
+            console.log('pool is running');
+            await Util.syncDelay();
+        }
 
     })();
 

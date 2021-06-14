@@ -9,11 +9,11 @@ class Admin {
             credential: admin.credential.cert(credential),
             databaseURL: config.server,
         });
-        this.firestore = admin.firestore();
+        this._firestore = admin.firestore();
     }
 
-    fire() {
-        return this.firestore;
+    firestore() {
+        return this._firestore;
     }
 
     getServerTime() {

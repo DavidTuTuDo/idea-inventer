@@ -77,7 +77,7 @@ const ERRORs = {
         message: `task param should be async function`
     },
     4007: {
-        message: `getTaskInfoDependOnPriority() 不能走到這裡`
+        message: `除了runByTask以外, getTaskInfoDependOnPriority() 不能走到這裡, taskQueue裡面不能沒有Task`
     },
     4008: {
         message: `如果要用runInBackground的task發生Error,就必須設定 backgoundtasklistener,不能讓task發生錯誤而沒有紀錄`

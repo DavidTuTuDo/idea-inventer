@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-13-18-41-38 
+	updateTime:2021-06-14-18-42-49 
 */
 
 class CommonStyle {
