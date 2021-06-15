@@ -88,6 +88,9 @@ const ERRORs = {
     4010: {
         message: `task timeout`
     },
+    4011: {
+        message: `不能走到這裡, 目前被動式的機制只支援runByEachTask`,
+    },
 
     8001: {
         message: `append file fail`

@@ -11,7 +11,6 @@ import Moment from 'moment';
 class gener_util {
 
 }
-
 Util.generatePackage('../utiller').then();
 
 export { gener_util as gener_util }

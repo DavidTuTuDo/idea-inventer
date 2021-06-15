@@ -366,7 +366,7 @@ const INVOKE_REAL_CHROME = false;
             while (_.find(poollers.map((pooller) => pooller.isRunning()), (self) => self)) {
                 const millionSecs = await Util.syncDelayRandom(5000, 10000);
                 Util.appendInfo(`主線程還在努中工作中, ${millionSecs} mms`);
-                if ((Util.readFileInJSON(Config.PATH_DYNAMIC_INFO))['cancel']) {
+                if ((Util.getFileContextInJSON(Config.PATH_DYNAMIC_INFO))['cancel']) {
                     Util.appendInfo(`主線程收到關閉指令...`);
                     for (const pooller of poollers) {
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);

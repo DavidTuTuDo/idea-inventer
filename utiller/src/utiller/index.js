@@ -4,7 +4,7 @@ import CryptoJS from "crypto-js";
 import {configer} from 'configer';
 import ERROR from '../exceptioner';
 import moment from "moment";
-import {utiller as Util} from "../../index";
+import sp from 'synchronized-promise'
 
 String.format = function () {
     let param = [];
@@ -20,11 +20,11 @@ String.format = function () {
 
 class Utiller {
 
-    appendInfo(...logs){
+    appendInfo(...logs) {
         console.log(...logs);
     }
 
-    appendError(...logs){
+    appendError(...logs) {
         console.error(...logs);
     }
 
@@ -72,17 +72,17 @@ class Utiller {
         return true
     }
 
-    or(...booleans){
-        for(const boo of booleans){
-            if(!!boo)
+    or(...booleans) {
+        for (const boo of booleans) {
+            if (!!boo)
                 return true;
         }
         return false;
     }
 
-    and(...booleans){
-        for(const boo of booleans){
-            if(!!!boo)
+    and(...booleans) {
+        for (const boo of booleans) {
+            if (!!!boo)
                 return false;
         }
         return true;
@@ -90,8 +90,8 @@ class Utiller {
 
     /** 選一個exsist的candidate回傳, 像是firebase 可以 idToken 又可以 oauthIdToken*/
     getExistOne(...candidates) {
-        for(const candidate of candidates){
-            if(candidate)
+        for (const candidate of candidates) {
+            if (candidate)
                 return candidate;
         }
     }
@@ -501,12 +501,44 @@ class Utiller {
         return _.merge(...obj);
     }
 
+    syncSetTimeout(func, ms, callback) {
+        (function sync(done) {
+            if (!done) {
+                setTimeout(function () {
+                    func();
+                    sync(true);
+                }, ms);
+                return;
+            }
+            callback();
+        })();
+    }
+
+    synchronized(_function) {
+        return sp(_function);
+    }
+
+    /**
+     * mutated;
+     const arr = [0,1,2,3,4,5,6,7,8];
+     dropItemsByIndex(arr,1,3);
+     console.log(arr); [ 0, 4, 5, 6, 7, 8 ]
+     */
+    dropItemsByIndex(array, from, end) {
+        _.remove(array, (value, index, array) => (end >= index && index >= from));
+    }
+
+
+
+
 }
 
-(async () => {
-        if (configer.DEBUG_MODE) {
-        }
-    }
-)();
+if (configer.DEBUG_MODE) {
 
+    (async () => {
+
+
+        }
+    )();
+}
 export default Utiller;

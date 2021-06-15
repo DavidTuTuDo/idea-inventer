@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./src --out-dir ./lib"
+    "gen": "npx babel ./temp --out-dir ./lib"
   },
   "author": "",
   "license": "ISC",
@@ -17,7 +17,8 @@
     "fs-extra": "^9.1.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "pdf-parse": "^1.1.1"
+    "pdf-parse": "^1.1.1",
+    "synchronized-promise": "^0.3.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

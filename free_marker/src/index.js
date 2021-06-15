@@ -585,7 +585,7 @@ class ClassGenerator {
         if (!fs.existsSync(this.filePath)) {
             Util.persistByPath(path)
         }
-        this.context = Util.getContextForRawFile(this.filePath).split('\n');
+        this.context = Util.getFileContextInRaw(this.filePath).split('\n');
     }
 
     appendField(fieldName, defaultValue, macros = []) {
@@ -877,7 +877,7 @@ class BaseBuilder {
     }
 
     getStringFromMustache(templateFileName, variable) {
-        return mustache.render(Util.getContextForRawFile(`./template/${templateFileName}`), this.getMustacheRenderValues(variable));
+        return mustache.render(Util.getFileContextInRaw(`./template/${templateFileName}`), this.getMustacheRenderValues(variable));
     }
 
     getMustacheRenderValues = ({
@@ -1511,7 +1511,7 @@ class ComponentBuilder extends BaseBuilder {
     }
 
     getComponentClassBody(className) {
-        return mustache.render(Util.getContextForRawFile('./template/component.js'), this.getMustacheRenderValues({className}))
+        return mustache.render(Util.getFileContextInRaw('./template/component.js'), this.getMustacheRenderValues({className}))
     }
 }
 
@@ -1758,7 +1758,7 @@ class AppBuilder extends ComponentBuilder {
             const srcLessPath = libpath.join(srcPath, `less`, `${type}.less`)
             const lessAttriutesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
-                const stub = Util.getContextForRawFile(srcLessPath).split('\n');
+                const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
                 _.remove(stub,
                     (each) => (_.startsWith(each, '/** ') ||
                         _.isEqual(each.trim(), '')))
@@ -1936,7 +1936,7 @@ class ProjectFileHandler {
 
 
         for (const file of files) {
-            if (_.isEqual('', Util.getContextForRawFile(file.path).trim())) {
+            if (_.isEqual('', Util.getFileContextInRaw(file.path).trim())) {
                 Util.appendInfo(`path ${file.path} is empty file, file would not persist`);
                 return
             }

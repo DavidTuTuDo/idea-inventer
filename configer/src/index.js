@@ -88,10 +88,6 @@ const GlobalConfig = {
     POOLLER_WORKER_DEFAULT: 3,
     POOLLER_PRIORITY: ['high', 'medium', 'low'],
     POOLLER_STATE: {'RUN_BY_PARAMS': 0, 'RUN_BY_TIMES': 1, 'RUN_INFINITE': 2, 'RUN_BY_EACH_TASK': 3},
-    POOLLER_TIME_OF_SLEEP_RANGE_DEFAULT: {min: 2000, max: 10000},
-    POOLLER_TASK_INTERVAL_DEFAULT: {min: 800, max: 1000},
-    POOLLER_MAX_SLEEP_COUNTS_DEFAULT: 100,
-    POOLLER_TASK_TIMEOUT_DEFAULT: 60000,
 
     RANK_TABLE_TYPE: {
         FAVORITE: {ID: 3},
@@ -100,7 +96,19 @@ const GlobalConfig = {
 
     },
     MAX_COUNTS_IN_RANK: 800, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['DONE', 'ING', 'NOT'],
-    POOLLER_ENABLE_TIMEOUT: true,
+
+    /** 用來處理每一個task的timeout, 避免task處理太久卡在Queue裡面 */
+    POOLLER_ENABLE_TASK_TIMEOUT: true,
+    POOLLER_TASK_TIMEOUT_DEFAULT: 40000,
+
+    /** 用來處理 Queue 當沒有工作(TASK)時, 設定多久後讓他的while停止, 減少不必要的耗能  */
+    POOLLER_ENABLE_QUEUE_TERMINATE_BY_SLEEP_COUNT: true,
+    POOLLER_QUEUE_MAX_SLEEP_COUNTS_DEFAULT: 15,
+    POOLLER_QUEUE_TIME_OF_SLEEP_INTERVAL_DEFAULT: {min: 50, max: 200},
+
+    /** 用來處理Task的延遲,假設要偷網頁東西, 不能太頻繁, 要偽裝成手動只能透過這方式, 如果是multi thread, 延遲是針對worker滿載後,再加進去的那一個 */
+    POOLLER_ENABLE_TASK_SLEEP_BY_INTERVAL: false,
+    POOLLER_TASK_OF_INTERVAL_DEFAULT: {min: 0, max: 10},
 
 };
 

@@ -8,7 +8,6 @@ import ERROR from '../exceptioner/index';
 import pdf from 'pdf-parse';
 import del from 'del';
 import fse from 'fs-extra';
-import BufferList from 'bl';
 
 
 class NodeUtiller extends Utiller {
@@ -36,6 +35,8 @@ class NodeUtiller extends Utiller {
     }
 
     /**
+     * 遞回的去找出folder每一個child file, 預設是全部檔案, 可以透過predicate做filter, 可以exclude 指定的 'folder name'
+     *
      * predicate: predicate(pathInfo); predicate帶的參數是 pathInfo object
      *
      * return [...{
@@ -140,14 +141,6 @@ class NodeUtiller extends Utiller {
                     resolve(stdout.trim());
                 });
         });
-    }
-
-    /** 讀取path,然後用utf-8的方式 */
-    getContextForRawFile(path) {
-        if (!fs.existsSync(path))
-            return '';
-
-        return fs.readFileSync(path, 'utf-8');
     }
 
     /** '/a/b/c.js' 把它變成真的 */
@@ -326,19 +319,19 @@ class NodeUtiller extends Utiller {
         fs.copyFileSync('./template/sample.babel.config.js', `${dirPath}/babel.config.js`);
 
         /** 3.要有package,json */
-        const packagejson = this.readFileInJSON('./template/sample.package.json');
+        const packagejson = this.getFileContextInJSON('./template/sample.package.json');
         packagejson['name'] = packageName;
         this.writeFileInJSON(`${dirPath}/package.json`, packagejson);
 
         /** 4.要在 src/${index.js}, dir/index.js */
         this.persistByPath(`${dirPath}/src`);
-        const classBase = String.format(this.getContextForRawFile(`./template/sample.src.index.js`), packageName, '明悅', new Date());
+        const classBase = String.format(this.getFileContextInRaw(`./template/sample.src.index.js`), packageName, '明悅', new Date());
         fs.writeFileSync(`${dirPath}/src/index.js`, classBase);
         fs.copyFileSync(`./template/sample.index.js`, `${dirPath}/index.js`)
 
         /** 5 產生lib folder,並且產生 warning index.js */
         this.persistByPath(`${dirPath}/lib`);
-        fs.writeFileSync(`${dirPath}/lib/index.js`, String.format(this.getContextForRawFile(`./template/sample.warning.index.js`), packageName));
+        fs.writeFileSync(`${dirPath}/lib/index.js`, String.format(this.getFileContextInRaw(`./template/sample.warning.index.js`), packageName));
 
         /** 6.要產生webstorm run case? */
         const ideaWorkspacePath = `${this.findSpecificFolderByPath(dirPath, '.idea')}/workspace.xml`;
@@ -347,7 +340,7 @@ class NodeUtiller extends Utiller {
         this.insertShellCommand(configer.BASE_SHELL_SCRIPT, `cd_${packageName}`, `cd ${libpath.resolve(dirPath)}`)
 
         if (fs.existsSync(ideaWorkspacePath)) {
-            const workspace = this.getContextForRawFile(ideaWorkspacePath);
+            const workspace = this.getFileContextInRaw(ideaWorkspacePath);
             const splited = workspace.split('\n');
             const indexOfRunManager = _.findIndex(splited, (line) => this.has(line, 'name="RunManager'));
             this.insertToArray(splited, indexOfRunManager,
@@ -407,11 +400,11 @@ class NodeUtiller extends Utiller {
     singleFileTemplatify(path = './') {
         const all = this.findFilePathByExtension(path, ['js'], 'node_modules');
         for (const file of all) {
-            const content = this.getContextForRawFile(file.absolute).trim();
+            const content = this.getFileContextInRaw(file.absolute).trim();
             if (_.isEmpty(content)) {
                 console.log(file.fileName, file.absolute);
                 const className = _.isEqual(file.fileName, 'index') ? file.dirName : file.fileName;
-                fs.writeFileSync(file.absolute, String.format(this.getContextForRawFile(`.
+                fs.writeFileSync(file.absolute, String.format(this.getFileContextInRaw(`.
             /template/s
             ample.src.index.js`), className, '明悅', new Date()));
             }
@@ -423,7 +416,7 @@ class NodeUtiller extends Utiller {
             fs.unlinkSync(path);
     }
 
-    readFileInJSON(path) {
+    getFileContextInJSON(path) {
         try {
             if (fs.existsSync(path)) {
                 return JSON.parse(fs.readFileSync(path, 'utf-8'))
@@ -432,6 +425,14 @@ class NodeUtiller extends Utiller {
             throw new ERROR(9999, error.message);
         }
         return {};
+    }
+
+    /** 讀取path,然後用utf-8的方式 */
+    getFileContextInRaw(path) {
+        if (!fs.existsSync(path))
+            return '';
+
+        return fs.readFileSync(path, 'utf-8');
     }
 
 
@@ -449,12 +450,14 @@ class NodeUtiller extends Utiller {
 
     /** exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
     async generatePackage(path = './', ...exclude) {
+
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules');
         packagejsons = _.filter(packagejsons,
-            (each) => _.isEqual(each.fileName, 'package') && this.has(this.getContextForRawFile(each.absolute), 'gen'));
+            (each) => _.isEqual(each.fileName, 'package') && this.has(this.getFileContextInRaw(each.absolute), 'gen'));
         packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
         for (const path of packagejsons) {
             if (this.isAndEquals(...exclude.map((projectName) => () => !this.has(path, projectName)))) {
+                await this.generateTempFolderWithCleanSrc(path);
                 await this.executeCommandLine(`
             cd ${path} && npm run gen`);
                 this.appendInfo(`build ${path} succeed`);
@@ -463,7 +466,7 @@ class NodeUtiller extends Utiller {
     }
 
     insertShellCommand(shellPath = configer.BASE_SHELL_SCRIPT, alias, command) {
-        if (this.isStringContainInLines(this.getContextForRawFile(shellPath), alias)) {
+        if (this.isStringContainInLines(this.getFileContextInRaw(shellPath), alias)) {
             throw new ERROR(8007, `alias ${alias} is exist`);
         } else {
             const line = `alias ${alias}='${command}'`
@@ -472,13 +475,13 @@ class NodeUtiller extends Utiller {
     }
 
     getAdminCredential() {
-        return JSON.parse(this.getContextForRawFile(
+        return JSON.parse(this.getFileContextInRaw(
             '/Users/davidtu/cross-achieve/mimi/idea-inventer/firebaser/key/mimi19up-firebase-adminsdk.json'))
     }
 
 
     isEmptyFile(path) {
-        return _.isEqual('', this.getContextForRawFile(path).trim())
+        return _.isEqual('', this.getFileContextInRaw(path).trim())
     }
 
     getFileLastModifiedTime(path) {
@@ -491,11 +494,45 @@ class NodeUtiller extends Utiller {
     }
 
 
+    /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉 */
+    async generateTempFolderWithCleanSrc(path) {
+        console.log('generateTempFolderWithCleanSrc', path);
+        const sourceFile = libpath.join(path, 'src');
+        const tempFile = libpath.join(path, 'temp');
+        if (fs.existsSync(sourceFile)) {
+            console.log('generateTempFolderWithCleanSrc','source', sourceFile);
+            this.persistByPath(tempFile)
+            this.copyFromFolderToDestFolder(sourceFile, tempFile);
+            for (const file of this.findFilePathBy(tempFile)) {
+                const tempFilePath = file.absolute;
+                const stmts = this.getFileContextInRaw(tempFilePath).split(`\n`).map((line) => _.trim(line));
+                /** 找出if (configer) 當作start */
+                const indexOfStart = _.findIndex(stmts, (stmt) => _.startsWith(stmt, `if (configer.DEBUG_MODE)`));
+                /** 找出 } 當作 end */
+                const indexOfEnd = _.findLastIndex(stmts, (stmt) => _.isEqual(stmt, `}`));
+                if (indexOfEnd > 0 && indexOfStart > 0 && indexOfEnd > indexOfStart) {
+                    /** 刪除掉 if(configer.DEBUG) {...........} */
+                    this.dropItemsByIndex(stmts, indexOfStart, indexOfEnd);
+                    this.appendFile(tempFilePath, _.join(stmts, `\n`), true, true);
+                    await this.executeCommandLine(`cd ${libpath.resolve(`${this.getFileDirPath(tempFilePath)}`)} &&
+                         npx prettier --write ${tempFilePath}`)
+                }
+            }
+        }
+    }
+
+
 }
 
 if (configer.DEBUG_MODE) {
-    // console.log(new NodeUtiller().getPathInfo('./').absolute);
-    // console.log(new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
+    (async () => {
+            // console.log(new NodeUtiller().getPathInfo('./').absolute);
+            // console.log(new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
+            // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
+            await new NodeUtiller().generatePackage('./')
+
+        }
+    )();
 }
 
 export default NodeUtiller;

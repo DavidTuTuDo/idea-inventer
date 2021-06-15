@@ -11,7 +11,7 @@ import path from "path";
 
 class firebaser {
 
-    constructor(credential = Util.getContextForRawFile(configer.PATH_ACCOUNT_ADMIN)) {
+    constructor(credential = Util.getFileContextInRaw(configer.PATH_ACCOUNT_ADMIN)) {
         admin.initializeApp({
             credential: admin.credential.cert(_.isString(credential) ?
                 JSON.parse(credential) : credential),
