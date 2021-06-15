@@ -195,9 +195,12 @@ class NodeUtiller extends Utiller {
 
     /** 刪掉自己, force能夠強制刪除 自己root_dir 以外的path */
     async deleteSelfByPath(path, force) {
-        this.appendInfo(`準備刪掉 ${path},{force:${force}}`);
-        await del(path, {force});
-        this.appendInfo(`成功刪掉了 ${path}`);
+        if (fs.existsSync(path)) {
+            this.appendInfo(`準備刪掉 ${path},{force:${force}}`);
+            await del(path, {force});
+            this.appendInfo(`成功刪掉了 ${path}`);
+        }
+
     }
 
 
@@ -232,6 +235,11 @@ class NodeUtiller extends Utiller {
 
             }
         }
+    }
+
+    async deleteFileOrFolder(path) {
+        this.appendInfo(`刪掉了 ${path}`);
+        await del(path)
     }
 
 
@@ -462,6 +470,7 @@ class NodeUtiller extends Utiller {
             cd ${path} && npm run gen`);
                 this.appendInfo(`build ${path} succeed`);
             }
+            await this.deleteSelfByPath(libpath.join(path, 'temp'), true)
         }
     }
 
@@ -494,13 +503,13 @@ class NodeUtiller extends Utiller {
     }
 
 
-    /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉 */
+    /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
     async generateTempFolderWithCleanSrc(path) {
         console.log('generateTempFolderWithCleanSrc', path);
         const sourceFile = libpath.join(path, 'src');
         const tempFile = libpath.join(path, 'temp');
         if (fs.existsSync(sourceFile)) {
-            console.log('generateTempFolderWithCleanSrc','source', sourceFile);
+            console.log('generateTempFolderWithCleanSrc', 'source', sourceFile);
             this.persistByPath(tempFile)
             this.copyFromFolderToDestFolder(sourceFile, tempFile);
             for (const file of this.findFilePathBy(tempFile)) {
