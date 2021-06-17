@@ -141,14 +141,14 @@ class Utiller {
         return random;
     }
 
-    /** only 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
-    getEncryptString(texts, key = configer.ENCRYPT_KEY, only = false) {
+    /** alwaysTheSame 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
+    getEncryptString(texts, key = configer.ENCRYPT_KEY, alwaysTheSame = false) {
         const maxLengthOfKey = 22;
         if (key.length > maxLengthOfKey)
             throw new ERROR(8010, _.size(key))
         /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
-        const keyOfCrypto = only ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
+        const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
         return CryptoJS.AES.encrypt(texts, keyOfCrypto, {iv: ivOfCrypto}).toString();
     }
 
@@ -530,13 +530,12 @@ class Utiller {
 
 
 
-
 }
 
 if (configer.DEBUG_MODE) {
 
     (async () => {
-
+            console.log(new Utiller().getRandomHash())
 
         }
     )();

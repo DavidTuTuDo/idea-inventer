@@ -85,7 +85,7 @@ const GlobalConfig = {
 
     UID: 'uid',
 
-    POOLLER_WORKER_DEFAULT: 3,
+    POOLLER_WORKER_DEFAULT: 1,
     POOLLER_PRIORITY: ['high', 'medium', 'low'],
     POOLLER_STATE: {'RUN_BY_PARAMS': 0, 'RUN_BY_TIMES': 1, 'RUN_INFINITE': 2, 'RUN_BY_EACH_TASK': 3},
 

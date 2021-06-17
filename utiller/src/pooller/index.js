@@ -2,7 +2,6 @@ import _ from 'lodash';
 import {utiller as Util} from '../index.js';
 import {configer} from "configer";
 import ERROR from '../exceptioner';
-import ERRORs from "../exceptioner/ERRORs";
 
 
 /**
@@ -18,7 +17,6 @@ import ERRORs from "../exceptioner/ERRORs";
  */
 class InfinitePool {
 
-    poolId = Util.getRandomValue(0, 100000000000);
     state = configer.POOLLER_STATE.RUN_BY_EACH_TASK
 
     /** 用來處理每一個task的timeout, 避免task處理太久卡在Queue裡面 */
@@ -38,23 +36,30 @@ class InfinitePool {
     maxWorker;
     ignoreFirstRun = false
     paramQueue = [];
-    taskQueue = {};
+
+
     /** 裡面放 {high:[], low:[], medium }*/
+    taskQueue = {};
+    /** 裡面放準備要執行的Task, 這邊的task就沒辦法remove了 */
+     executingTaskQueue = [];
+
     isQueuePolling = false;
     /** 目前queue機制是while(isQueuePolling)  沒任務就睡一下, 有任務就做事情, 發現task有延遲, 就要注意是不是taskInterval*/
     dispatchers = [];
 
     initialTaskKickOff = false;
-    executingQueue = [];
     mHashNTaskMap = {};
     /** 為了刪除未執行的task, 但只限於runByTask, 因為下一個run之後, hash就改變了    */
 
     mHashNPromiseMap = {};
     /** 為了刪除執行完的promise */
     hashCallbackMapOfWaiting4Result = {}
+    poolId = ``;
 
-    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT) {
+    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT,name = Util.getRandomValue(0, 100000000000)) {
+
         this.maxWorker = maxWorkers;
+        this.setPoolId(_.toString(name));
         for (const prior of configer.POOLLER_PRIORITY) {
             this.taskQueue[prior] = [];
         }
@@ -81,9 +86,15 @@ class InfinitePool {
     }
 
     clearCache() {
-        this.executingQueue.length = 0;
+        this.executingTaskQueue.length = 0;
         this.mHashNTaskMap = {};
         this.taskQueue = {};
+    }
+
+    getTaskCounts(){
+
+
+
     }
 
     terminate() {
@@ -94,11 +105,11 @@ class InfinitePool {
     /** return true if task completed, after 15 secs, force leave */
     stopInBackground = async () => {
         this.isQueuePolling = false;
-        while (_.size(this.executingQueue) > 0) {
+        while (_.size(this.executingTaskQueue) > 0) {
             await Util.syncDelay(1000);
         }
         if (configer.MODULE_MSG.SHOW_SUCCEED) {
-            Util.appendInfo(`this.executingQueue 的長度是 ${_.size(this.executingQueue)}`)
+            Util.appendInfo(`this.executingQueue 的長度是 ${_.size(this.executingTaskQueue)}`)
         }
         return true;
     }
@@ -281,7 +292,7 @@ class InfinitePool {
         this.clearCache();
     }
 
-    /** interval was the time between tasks when executingQueue is full.
+    /** interval was the time between tasks when executingTaskQueue is full.
      * run would infinite, in default, intervalOfQueueSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
         this.beforeRun();
@@ -427,7 +438,7 @@ class InfinitePool {
     }
 
     isQueueFull() {
-        return this.executingQueue.length >= this.maxWorker - 1;
+        return this.executingTaskQueue.length >= this.maxWorker - 1;
     }
 
     async syncTaskDispatcher() {
@@ -453,11 +464,11 @@ class InfinitePool {
     }
 
     appendToExecuteQueue(promise) {
-        this.executingQueue.push(promise);
+        this.executingTaskQueue.push(promise);
     }
 
     showState = () => {
-        Util.appendInfo(this.getPoollerLogFormat(`executingQueue: ${_.size(this.executingQueue)}`));
+        Util.appendInfo(this.getPoollerLogFormat(`executingQueue: ${_.size(this.executingTaskQueue)}`));
         Util.appendInfo(this.getPoollerLogFormat(`mHashNTaskMap: ${_.size(this.mHashNTaskMap)}`));
         Util.appendInfo(this.getPoollerLogFormat(`mHashNPromiseMap: ${_.size(this.mHashNPromiseMap)}`));
     }
@@ -465,14 +476,14 @@ class InfinitePool {
     #run = async () => {
         await this.syncTaskDispatcher();
 
-        if (this.executingQueue.length >= this.maxWorker) {
-            await Promise.race(this.executingQueue);
-        } else if (this.getQueueSize() === 0 && this.executingQueue.length > 0) {
-            await Promise.race(this.executingQueue);
+        if (this.executingTaskQueue.length >= this.maxWorker) {
+            await Promise.race(this.executingTaskQueue);
+        } else if (this.getQueueSize() === 0 && this.executingTaskQueue.length > 0) {
+            await Promise.race(this.executingTaskQueue);
         }
 
-        if (this.executingQueue.length > this.maxWorker) {
-            Util.appendError(`一定是改壞了！！！！ ${this.getPoollerLogFormat(`executing queue ${this.executingQueue.length} !!`)}`);
+        if (this.executingTaskQueue.length > this.maxWorker) {
+            Util.appendError(`一定是改壞了！！！！ ${this.getPoollerLogFormat(`executing queue ${this.executingTaskQueue.length} !!`)}`);
         }
 
         /** 只要完成run 就要把sleepTimeCount歸零 */
@@ -514,7 +525,7 @@ class InfinitePool {
     }
 
     removePromiseFromExecutingQueue(hash) {
-        this.executingQueue.splice(this.executingQueue.indexOf(this.getPromiseByHash(hash)), 1);
+        this.executingTaskQueue.splice(this.executingTaskQueue.indexOf(this.getPromiseByHash(hash)), 1);
     }
 
     removeCompletedPromiseFromMapByHash = (hash) => {

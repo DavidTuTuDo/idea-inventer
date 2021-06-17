@@ -11,9 +11,8 @@ import {
 import {utiller as Util, ERROR} from "utiller";
 import _ from 'lodash';
 import config from '../config';
-import CommonRemoteApi from './CommonRemoteApi';
-
-class BaseStore extends CommonRemoteApi {
+import ClientRemoteApi from './ClientRemoteApi'
+class BaseStore extends ClientRemoteApi {
 
     database;
     fire;

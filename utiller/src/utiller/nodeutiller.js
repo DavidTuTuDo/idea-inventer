@@ -538,7 +538,7 @@ if (configer.DEBUG_MODE) {
             // console.log(new NodeUtiller().getPathInfo('./').absolute);
             // console.log(new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
             // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
-            await new NodeUtiller().generatePackage('./')
+            // await new NodeUtiller().generatePackage('./');
 
         }
     )();
