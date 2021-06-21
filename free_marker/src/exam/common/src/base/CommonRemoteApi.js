@@ -1,9 +1,10 @@
-import {utiller as Util, exceptioner as ERROR, pooller } from 'utiller';
+import {utiller as Util, exceptioner as ERROR, pooller} from 'utiller';
 import _ from 'lodash';
 import Moment from 'moment';
 import config from '../config';
 import libpath from 'path';
 import Admin from './Admin';
+
 const MAX_BATCH_COUNT = 100;
 
 class CommonRemoteApi extends Admin {
@@ -12,17 +13,8 @@ class CommonRemoteApi extends Admin {
         super(props);
     }
 
-    async submitItem(path, object) {
-        Util.appendInfo(`push path:${path}`);
-        const pk = _.toString(object.uid);
-        if (!_.isEmpty(pk))
-            return await this.fire().collection(path).doc(pk).set(object);
-        else
-            return await this.fire().collection(path).doc().set(object);
-    }
-
-    async batchSubmitItem(path, ...objects) {
-        Util.appendInfo(`batchSubmit path:{${path}}, size:${objects.length}`);
+    async submitItems(path, ...objects) {
+        Util.appendInfo(`submit path:{${path}}, size:${objects.length}`);
         let batch = this.fire().batch();
         let threshold = 0;
         while (objects.length > 0) {
@@ -50,6 +42,15 @@ class CommonRemoteApi extends Admin {
         return list.length;
     }
 
+    async submitItem(path, object) {
+        Util.appendInfo(`push path:${path}`);
+        const pk = _.toString(object.uid);
+        if (!_.isEmpty(pk))
+            return await this.fire().collection(path).doc(pk).set(object);
+        else
+            return await this.fire().collection(path).doc().set(object);
+    }
+
 
     async updateItem(path, item) {
         Util.appendInfo(`update item path:${path} uid:${item.uid}`);
@@ -63,9 +64,10 @@ class CommonRemoteApi extends Admin {
         return true;
     }
 
-    async fetchItems(path) {
+    async fetchItems(path, condition = (conditionStmt) => conditionStmt) {
         Util.appendInfo(`fetch items path:${path}}`);
-        const querySnapshot = await this.firestore().collection(path).get();
+        const query = condition(this.firestore().collection(path));
+        const querySnapshot = await query.get();
         const all = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
@@ -75,11 +77,26 @@ class CommonRemoteApi extends Admin {
         return all;
     }
 
-    async deleteItems(path) {
-        Util.appendInfo(`delete all ${path}`);
+    async fetchItem(path, uid) {
+        Util.appendInfo(`fetch item path:${path}}`);
+        const result = this.firestore().collection(path).doc(uid);
+        return result.exists ? {} : result.data();
+    }
+
+    async deleteItems(path, condition = (conditionStmt) => conditionStmt) {
+        Util.appendInfo(`delete items ${path}`);
         const batch = this.fire().batch()
-        const list = await this.firestore().collection(path).listDocuments()
-        list.map((doc) => batch.delete(doc));
+        if (condition) {
+            const query = condition(this.firestore().collection(path));
+            const querySnapshot = await query.get();
+            querySnapshot.forEach((doc) => {
+                batch.delete(doc)
+            })
+        } else {
+            const list = await this.firestore().collection(path).listDocuments()
+            list.map((doc) => batch.delete(doc));
+        }
+
         await batch.commit();
     }
 
@@ -95,9 +112,8 @@ class CommonRemoteApi extends Admin {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`fetch object path:${path}/${objName}`);
         const result = await this.firestore().collection(path).doc(objName).get();
-        const data  = result.data();
-        return data? data:{};
-     }
+        return result.exists ? {} : result.data();
+    }
 
     async updateObject(path, updatedObject, objName) {
         path = libpath.join(path, 'attrs');
@@ -109,6 +125,59 @@ class CommonRemoteApi extends Admin {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`delete path:${path}/${objName}`);
         await this.firestore().collection(path).doc(objName).delete();
+    }
+
+    /** change:{type,data,id} ;type:['added','modified','removed'], 回傳的就是function of unsubscribe*/
+    listenItems(path, callback = (changes, error) => {
+    }, condition = (stmt) => stmt) {
+        const query = condition(this.firestore().collection(path));
+        const functionOfUnsubscribe = query.onSnapshot(
+            (querySnapshot) => {
+                const _changes = [];
+                for (const change of querySnapshot.docChanges()) {
+                    _changes.push({
+                        type: change.type,
+                        id: change.doc.id,
+                        data: change.doc.data(),
+                    });
+                }
+                callback(_changes, undefined);
+            },
+            (error) => {
+                callback([], error);
+            }
+        );
+        return functionOfUnsubscribe;
+    }
+
+    listenItem(path, uid, callback = (data, error) => {
+    }) {
+        const query = this.firestore().collection(path).doc(uid);
+        const functionOfUnsubscribe = query.onSnapshot(
+            (doc) => {
+                callback(doc.data(), undefined);
+            },
+            (error) => {
+                callback(error);
+            }
+        );
+        return functionOfUnsubscribe;
+    }
+
+    listenObject(path, objName, callback = (data, error) => {
+    }) {
+        const fullpath = libpath.join(path, "attrs");
+        const query = this.firestore().collection(fullpath).doc(objName);
+
+        const functionOfUnsubscribe = query.onSnapshot(
+            (doc) => {
+                callback(doc.data(), undefined);
+            },
+            (error) => {
+                callback(error);
+            }
+        );
+        return functionOfUnsubscribe;
     }
 
 
