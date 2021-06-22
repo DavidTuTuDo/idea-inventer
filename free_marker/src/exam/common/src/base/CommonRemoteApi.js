@@ -15,22 +15,22 @@ class CommonRemoteApi extends Admin {
 
     async submitItems(path, ...objects) {
         Util.appendInfo(`submit path:{${path}}, size:${objects.length}`);
-        let batch = this.fire().batch();
+        let batch = this.firestore().batch();
         let threshold = 0;
         while (objects.length > 0) {
             const object = objects.shift();
             const pk = _.toString(object.uid);
             if (!_.isEmpty(pk)) {
-                batch.set(this.fire().collection(path).doc(pk), object)
+                batch.set(this.firestore().collection(path).doc(pk), object)
             } else {
-                batch.set(this.fire().collection(path).doc(), object)
+                batch.set(this.firestore().collection(path).doc(), object)
             }
 
             threshold++;
             if (threshold >= MAX_BATCH_COUNT) {
                 await batch.commit();
                 threshold = 0;
-                batch = this.fire().batch();
+                batch = this.firestore().batch();
             }
         }
         if (threshold > 0)
@@ -38,34 +38,35 @@ class CommonRemoteApi extends Admin {
     }
 
     async fetchSizeOfCollection(path) {
-        const list = await this.fire().collection(path).listDocuments()
+        const list = await this.firestore().collection(path).listDocuments()
         return list.length;
     }
 
     async submitItem(path, object) {
-        Util.appendInfo(`push path:${path}`);
         const pk = _.toString(object.uid);
+        Util.appendInfo(`submit path:${path}/${pk}`);
+
         if (!_.isEmpty(pk))
-            return await this.fire().collection(path).doc(pk).set(object);
+            return await this.firestore().collection(path).doc(pk).set(object);
         else
-            return await this.fire().collection(path).doc().set(object);
+            return await this.firestore().collection(path).doc().set(object);
     }
 
 
     async updateItem(path, item) {
-        Util.appendInfo(`update item path:${path} uid:${item.uid}`);
-        await this.fire().collection(path).doc(item.uid).update(item);
+        Util.appendInfo(`update item path:/${path}/${item.uid}`);
+        await this.firestore().collection(path).doc(item.uid).update(item);
         return true;
     }
 
     async deleteItem(path, item) {
-        Util.appendInfo(`delete item path:${path} uid:${item.uid}`);
-        await this.fire().collection(path).doc(item.uid).delete();
+        Util.appendInfo(`delete item path:/${path}/${item.uid}`);
+        await this.firestore().collection(path).doc(item.uid).delete();
         return true;
     }
 
     async fetchItems(path, condition = (conditionStmt) => conditionStmt) {
-        Util.appendInfo(`fetch items path:${path}}`);
+        Util.appendInfo(`fetch items path:/${path}/`);
         const query = condition(this.firestore().collection(path));
         const querySnapshot = await query.get();
         const all = [];
@@ -78,23 +79,23 @@ class CommonRemoteApi extends Admin {
     }
 
     async fetchItem(path, uid) {
-        Util.appendInfo(`fetch item path:${path}}`);
+        Util.appendInfo(`fetch item path:/${path}/${uid}`);
         const result = this.firestore().collection(path).doc(uid);
         return result.exists ? {} : result.data();
     }
 
-    async deleteItems(path, condition = (conditionStmt) => conditionStmt) {
+    async deleteItems(path, condition = (conditionStmt) => conditionStmt, all) {
         Util.appendInfo(`delete items ${path}`);
-        const batch = this.fire().batch()
-        if (condition) {
+        const batch = this.firestore().batch()
+        if (all) {
+            const list = await this.firestore().collection(path).listDocuments()
+            list.map((doc) => batch.delete(doc));
+        } else {
             const query = condition(this.firestore().collection(path));
             const querySnapshot = await query.get();
             querySnapshot.forEach((doc) => {
-                batch.delete(doc)
+                batch.delete(doc.ref)
             })
-        } else {
-            const list = await this.firestore().collection(path).listDocuments()
-            list.map((doc) => batch.delete(doc));
         }
 
         await batch.commit();
@@ -110,20 +111,21 @@ class CommonRemoteApi extends Admin {
 
     async fetchObject(path, objName) {
         path = libpath.join(path, 'attrs');
-        Util.appendInfo(`fetch object path:${path}/${objName}`);
+        Util.appendInfo(`fetch object path:/${path}/${objName}`);
         const result = await this.firestore().collection(path).doc(objName).get();
-        return result.exists ? {} : result.data();
+        console.log('exist???', result.exists);
+        return result.exists ? result.data() : {};
     }
 
     async updateObject(path, updatedObject, objName) {
         path = libpath.join(path, 'attrs');
-        Util.appendInfo(`update path:${path}/${objName}`);
+        Util.appendInfo(`update path:/${path}/${objName}`);
         await this.firestore().collection(path).doc(objName).update(updatedObject);
     }
 
     async deleteObject(path, objName) {
         path = libpath.join(path, 'attrs');
-        Util.appendInfo(`delete path:${path}/${objName}`);
+        Util.appendInfo(`delete path:/${path}/${objName}`);
         await this.firestore().collection(path).doc(objName).delete();
     }
 

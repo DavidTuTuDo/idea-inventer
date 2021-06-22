@@ -13,9 +13,9 @@ const SIGN_OF_FUNCTION_START = `\/** -------------------- functions ------------
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 
 class CodegenNode {
@@ -1157,12 +1157,12 @@ class RemoteFunctionHandler {
                 if (node.isArray()) {
                     generator.appendAsyncFunction(Util.camel(`fetch`, node.getFieldName()),
                         [...defaultParam, 'condition = (stmt) => stmt'], [], [],
-                        `return this.fetchItems('${node.getFieldName()}',condition)`)
+                        `return await this.fetchItems('${node.getFieldName()}',condition)`)
 
                     /** admins only , delete collection all */
                     generator.appendAsyncFunction(Util.camel(`delete`, node.getFieldName()),
                         [...defaultParam, 'condition = (stmt) => stmt'], [], [],
-                        `return this.deleteItems('${node.getFieldName()}',condition)`)
+                        `return await this.deleteItems('${node.getFieldName()}',condition)`)
 
                     generator.appendAsyncFunction(Util.camel('submit', node.getName(), 'item'),
                         [...defaultParam, 'item'], [], [],

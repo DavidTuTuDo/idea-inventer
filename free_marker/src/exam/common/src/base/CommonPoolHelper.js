@@ -5,9 +5,9 @@ class CommonPoolHelper {
 
     constructor() {
         this.queues = {};
-        this.queues[`default`] = new InfinitePool(1,`default`).runByEachTaskInBackGround();
-        this.queues[`fetch`] = new InfinitePool(1,`fetch`).runByEachTaskInBackGround();
-        this.queues[`submit`] = new InfinitePool(1,`submit`).runByEachTaskInBackGround();
+        this.queues[`default`] = new InfinitePool(2, `default`).runByEachTaskInBackGround();
+        this.queues[`fetch`] = new InfinitePool(2, `fetch`).runByEachTaskInBackGround();
+        this.queues[`submit`] = new InfinitePool(2, `submit`).runByEachTaskInBackGround();
     }
 
     /** 原來要做針對Queue的attr build set的情況, 就要把builder獨立成一個class, */

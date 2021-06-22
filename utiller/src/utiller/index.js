@@ -4,7 +4,6 @@ import CryptoJS from "crypto-js";
 import {configer} from 'configer';
 import ERROR from '../exceptioner';
 import moment from "moment";
-import sp from 'synchronized-promise'
 
 String.format = function () {
     let param = [];
@@ -514,10 +513,6 @@ class Utiller {
         })();
     }
 
-    synchronized(_function) {
-        return sp(_function);
-    }
-
     /**
      * mutated;
      const arr = [0,1,2,3,4,5,6,7,8];
@@ -535,7 +530,7 @@ class Utiller {
 if (configer.DEBUG_MODE) {
 
     (async () => {
-            console.log(new Utiller().getRandomHash())
+            // console.log(new Utiller().getRandomHash())
 
         }
     )();

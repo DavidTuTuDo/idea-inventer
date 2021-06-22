@@ -92,9 +92,6 @@ class InfinitePool {
     }
 
     getTaskCounts(){
-
-
-
     }
 
     terminate() {
@@ -219,7 +216,6 @@ class InfinitePool {
                     taskError = error;
                     if (!this.isWait4ResultTask(hash))
                         handleError(error);
-
                 } finally {
                     resolve(taskResult);
                 }
@@ -582,106 +578,106 @@ if (configer.DEBUG_MODE) {
         // await new InfinitePool(3).runInInfinite([]);
 
 
-        // function getNumber(num) {
-        //     return async () => {
-        //         await Util.syncDelay()
-        //         return num;
-        //     }
-        //
-        // }
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber(4), 'medium');
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 3000);
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber(3), 'high');
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 3000)
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber(2));
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 3000)
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber(1));
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 3000)
-        //
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber(8000));
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 8000)
-        //
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber( 12000));
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 12000)
-        //
-        // setTimeout(async () => {
-        //     try {
-        //         const a = await pool.addTaskAndWait4Result(getNumber( 30000));
-        //         console.log('answser => ', a);
-        //
-        //     } catch (error) {
-        //         console.log(error);
-        //     }
-        //
-        // }, 30000)
-        //
-        //
-        // const pool = new InfinitePool(1).runByEachTaskInBackGround();
-        // pool.enableQueueTerminateBySleepCount(true,{min:20,max:100},10)
-        //
-        // while (pool.isRunning()) {
-        //     console.log('pool is running');
-        //     await Util.syncDelay(100000);
-        // }
-        //
-        // while (true) {
-        //     console.log('system is running');
-        //     await Util.syncDelay(100000);
-        // }
+        function getNumber(num) {
+            return async () => {
+                await Util.syncDelay()
+                return num;
+            }
+
+        }
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber(4), 'medium');
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 3000);
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber(3), 'high');
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 3000)
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber(2));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 3000)
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber(1));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 3000)
+
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber(8000));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 8000)
+
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber( 12000));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 12000)
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber( 30000));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 30000)
+
+
+        const pool = new InfinitePool(1).runByEachTaskInBackGround();
+        pool.enableQueueTerminateBySleepCount(true,{min:20,max:100},10)
+
+        while (pool.isRunning()) {
+            console.log('pool is running');
+            await Util.syncDelay(100000);
+        }
+
+        while (true) {
+            console.log('system is running');
+            await Util.syncDelay(100000);
+        }
     })();
 
 }

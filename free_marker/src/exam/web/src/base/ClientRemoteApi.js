@@ -38,10 +38,7 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('submit', async);
     }
 
-    async fetchItems(path) {
-        const async = async () => super.fetchItems(path);
-        return await CommonPoolHelper.submitTo('fetch', async);
-    }
+
 
     async deleteItems(path) {
         const async = async () => super.deleteItems(path);
@@ -55,7 +52,12 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     async fetchObject(path, objName) {
         const async = async () => super.fetchObject(path, objName);
-        return await CommonPoolHelper.submitTo('submit', async)
+        return await CommonPoolHelper.submitTo('fetch', async)
+    }
+
+    async fetchItems(path) {
+        const asyncTask = async () => super.fetchItems(path);
+        return await CommonPoolHelper.submitTo('fetch', asyncTask);
     }
 
     async updateObject(path, updatedObject, objName) {
