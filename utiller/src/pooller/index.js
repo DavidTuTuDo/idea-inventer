@@ -92,6 +92,11 @@ class InfinitePool {
     }
 
     getTaskCounts(){
+        let count = 0;
+        for(const type in this.taskQueue){
+            count += this.taskQueue[type].length
+        }
+        return count;
     }
 
     terminate() {
@@ -281,7 +286,9 @@ class InfinitePool {
 
     beforeRun = () => {
         this.isQueuePolling = true;
-        this.currentSleepCounts = 0;
+        /** 有點多餘的設計, 本來是想要當沒有task時, 有個house-keeping的設計, 但發現只要在任務加入時, 觸發runByEachTask即可
+         this.currentSleepCounts = 0;
+         */
     }
 
     afterRun = () => {
@@ -336,6 +343,7 @@ class InfinitePool {
         this.setState(configer.POOLLER_STATE.RUN_BY_EACH_TASK);
         while (this.isRunning()) {
             if (this.getQueueSize() <= 0) {
+                /** 有點多餘的設計, 本來是想要當沒有task時, 有個house-keeping的設計, 但發現只要在任務加入時, 觸發runByEachTask即可
                 const timer = await Util.syncDelayRandom(this.intervalOfQueueSleep.min, this.intervalOfQueueSleep.max);
                 Util.appendInfo(`${this.getPoollerLogFormat(` sleep time ${timer} million-sec, sleepCounts:${this.currentSleepCounts}`)}`);
                 if (this.enableOfQueueTerminateSleepCount) {
@@ -343,6 +351,8 @@ class InfinitePool {
                     if (this.currentSleepCounts > this.queueMaxSleepCounts) this.terminate();
                     continue;
                 }
+                 */
+                this.terminate();
             }
             await this.#run();
         }
@@ -633,6 +643,18 @@ if (configer.DEBUG_MODE) {
 
         setTimeout(async () => {
             try {
+                const a = await pool.addTaskAndWait4Result(getNumber(1));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 3000)
+
+
+        setTimeout(async () => {
+            try {
                 const a = await pool.addTaskAndWait4Result(getNumber(8000));
                 console.log('answser => ', a);
 
@@ -665,8 +687,41 @@ if (configer.DEBUG_MODE) {
 
         }, 30000)
 
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber( 30000));
+                console.log('answser => ', a);
 
-        const pool = new InfinitePool(1).runByEachTaskInBackGround();
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 35000)
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber( 35000));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 35000)
+
+        setTimeout(async () => {
+            try {
+                const a = await pool.addTaskAndWait4Result(getNumber( 35000));
+                console.log('answser => ', a);
+
+            } catch (error) {
+                console.log(error);
+            }
+
+        }, 35000)
+
+
+        const pool = new InfinitePool(2).runByEachTaskInBackGround();
         pool.enableQueueTerminateBySleepCount(true,{min:20,max:100},10)
 
         while (pool.isRunning()) {
