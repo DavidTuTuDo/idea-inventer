@@ -8,6 +8,7 @@ import BaseNavigatorComponent from "./BaseNavigatorComponent";
 import Router from '../../router';
 import config from '../../config';
 import cookie from '../../cookie';
+import {utiller as Util} from "utiller";
 
 @inject("navigator")
 @observer
@@ -20,7 +21,6 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     componentDidMount() {
-        this.getStore().reAuthByCredential().then();
     }
 
     onHomeAreaAvatarClicked(param) {
@@ -29,7 +29,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
 
     onLoginButtonClicked(param) {
         if (!this.getStore().isLoginInSucceed()) {
-            console.log(window.location.href);
+            Util.appendInfo(window.location.href);
             this.getStore().setPathOfBeforeLogin(window.location.href);
             Router.gotoLoginPage(this);
         } else

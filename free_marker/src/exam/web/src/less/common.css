@@ -1,3 +1,20 @@
+/** => following for purchaseSucceed component used <= */
+.PurchaseSucceedDiv {
+  /** style */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.PurchaseSucceedSucceedTitleTypography {
+  /** style */
+  font-size: 1.8rem;
+}
+.PurchaseSucceedConfirmButton {
+  /** style */
+  font-size: 1.2rem;
+  margin-top: 30px;
+}
 /** => following for login component used <= */
 .LoginDiv {
   /** style */
@@ -200,13 +217,13 @@
   justify-content: center;
   margin: 10px;
 }
-.PurchasePlanDiv {
+.PurchasePurchasePlanDiv {
   /** style */
   display: flex;
   width: 90vw;
   flex-direction: column;
 }
-.PurchasePlanDivListWrapDiv {
+.PurchasePurchasePlanDivListWrapDiv {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -215,17 +232,14 @@
   margin: 10px;
   border-radius: 10px;
 }
-.PurchasePlanNameTypography,
-.PurchasePlanPriceTypography {
+.PurchasePurchasePlanNameTypography,
+.PurchasePurchasePlanPriceTypography {
   /** style */
   font-size: 1.4rem;
 }
-.PurchasePlanNameTypographyWrapDiv,
-.PurchasePlanPriceTypographyWrapDiv,
-.PurchasePlanMathTypographyWrapDiv,
-.PurchasePlanMusicTypographyWrapDiv,
-.PurchasePlanSweetTypographyWrapDiv,
-.PurchasePlanBuyButtonWrapDiv {
+.PurchasePurchasePlanNameTypographyWrapDiv,
+.PurchasePurchasePlanPriceTypographyWrapDiv,
+.PurchasePurchasePlanBuyButtonWrapDiv {
   /** style */
   display: flex;
   justify-content: center;
@@ -233,51 +247,33 @@
   height: 6vh;
   align-items: center;
 }
-.PurchasePlanSpaceDiv {
+.PurchasePurchasePlanSpaceDiv {
   /** style */
   height: 1px;
   background-color: #111111;
 }
-.PurchasePlanPriceTypography {
+.PurchasePurchasePlanPriceTypography {
   /** style */
 }
-.PurchasePlanPriceTypographyWrapDiv {
+.PurchasePurchasePlanPriceTypographyWrapDiv {
   /** style */
   flex-direction: column;
 }
-.PurchasePlanPricePriceTipTypography {
+.PurchasePurchasePlanPricePriceTipTypography {
   /** style */
 }
-.PurchasePlanMathTypography {
-  /** style */
-  font-size: 1.2rem;
-}
-.PurchasePlanMathTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanMusicTypography {
-  /** style */
-  font-size: 1.2rem;
-}
-.PurchasePlanMusicTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanSweetTypography {
-  /** style */
-  font-size: 1.2rem;
-}
-.PurchasePlanSweetTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanBuyButton {
+.PurchasePurchasePlanBuyButton {
   /** style */
   font-size: 1rem;
 }
-.PurchasePlanBuyButtonWrapDiv {
+.PurchasePurchasePlanBuyButtonWrapDiv {
   /** style */
   border-style: none;
 }
 /** ======== following for  ========= */
+.PurchasePlanPricePriceTipTypography {
+  /** style */
+}
 body {
   margin: 0;
 }

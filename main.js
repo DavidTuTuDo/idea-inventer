@@ -279,7 +279,7 @@ const INVOKE_REAL_CHROME = false;
         }
 
         async function persistSingers(singerType = 6) {
-            console.log('起飛了');
+            Util.appendInfo('起飛了');
             let singers = await fetchAllSinger(singerType);
             const exists = (await database.fetchRecords('SINGER', '', 'names')).map((singer) => singer.names);
             Util.appendInfo(`persistSingers 在網路上歌手有 '${singers.length}' 個, 資料庫裡面有 '${exists.length}'`);
@@ -400,7 +400,7 @@ const INVOKE_REAL_CHROME = false;
 
         // await browser.close();
         if (Config.MAIN_MSG.SHOW_SUCCEED)
-            console.log(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
+            Util.appendInfo(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
         return 0;
     }
 

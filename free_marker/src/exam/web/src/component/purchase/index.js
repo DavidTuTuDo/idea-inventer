@@ -5,7 +5,16 @@
  */
 import {observer, inject} from "mobx-react";
 import BasePurchaseComponent from "./BasePurchaseComponent";
+import Router from "../../Router";
+import PurchaseOrder from "../../store/purchaseOrder";
+import PurchaseListener from "../../store/purchaseListener";
+import {
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
 
+@inject("navigator")
 @inject("purchase")
 @observer
 class PurchaseComponent extends BasePurchaseComponent {
@@ -17,41 +26,47 @@ class PurchaseComponent extends BasePurchaseComponent {
     }
 
     getBannerImageSrc() {
-        return 'images/IMG_9348.jpg';
     }
 
-    getPlanPrice(plan) {
-        const origin = super.getPlanPrice(plan);
-        if(!plan.isTitle())
+    getPurchasePlanPrice(plan) {
+        const origin = super.getPurchasePlanPrice(plan);
+        if (!plan.isTitle())
             return `${origin} 元`;
         return origin;
     }
 
-    getPlanPriceTip(plan) {
-        const tip = super.getPlanPriceTip(plan);
-        return `${tip} ${this.getDiscount(plan)} 元`
-    }
-
-    getDiscount(plan){
-        return Math.round(plan.getPrice()/(Number.parseInt(plan.getName().substring(0,1))));
-    }
-
     getInjectStyleOfBuyButton(plan) {
-        return { display : plan.isTitle() ? 'none':'visible' };
+        return {display: plan.isTitle() ? 'none' : 'visible'};
     }
 
     getInjectStyleOfPriceTipTypography(plan) {
-        return { display : plan.isTitle() ? 'none':'visible' };
+        return {display: plan.isTitle() ? 'none' : 'visible'};
     }
 
+    onBuyButtonClicked(param) {
+        if (!this.props.navigator.isLoginInSucceed()) {
+            Router.gotoLoginPage(this);
+            return;
+        }
 
-    // getPlanPriceTip(plan) {
-    //     return + ''+ ${plan.getPrice()}+' 元';
-    // }
-    //
-    // getPlanPrice(plan) {
-    //     return super.getPlanPrice(plan)+ '元';
-    // }
+        const plan = param.object;
+        const uid = this.props.navigator.getUserInfo().uid;
+        const listenerId = Util.getRandomHash(25);
+        console.log(plan);
+        new PurchaseOrder().submitPurchaseOrderItem({
+            price: plan.price,
+            productInfos: [{pid: plan.getId(), quantity: 1}],
+            listenerId,
+            uid,
+        }).then((result) => {
+            new PurchaseListener().listenPurchaseListenerItem(uid, listenerId, (data, error) => {
+                console.log(`dataContent==> `, data, `error===> `, error);
+                if (data) {
+                    window.open(data.paymentUrl);
+                }
+            });
+        })
+    }
 
 
     /** -------------------- async api -------------------- **/

@@ -11,7 +11,7 @@ import ERROR from '../exceptioner';
  2.queue滿了的可以設定task interval
  3.如果是runByEachTask length, queue裡面沒有task時，可以設定sleeptime, 以及Sleepcounts
  4.task 可以cancelled by hash
- 5.runByParams,runByCounts,runInInfinite,runByEachTask
+ 5.runByParams,runByTimes,runInInfinite,runByEachTask
  6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
  *
  */
@@ -19,17 +19,11 @@ class InfinitePool {
 
     state = configer.POOLLER_STATE.RUN_BY_EACH_TASK
 
-    /** 用來處理每一個task的timeout, 避免task處理太久卡在Queue裡面 */
+    /** 用來處理Task的延遲,假設要偷網頁東西, 不能太頻繁, 要偽裝成手動只能透過這方式, 如果是multi thread, 延遲是針對worker滿載後,再加進去的那一個 */
     enableOfTaskSleepByInterval = configer.POOLLER_ENABLE_TASK_SLEEP_BY_INTERVAL;
     taskSleepInterval = configer.POOLLER_TASK_OF_INTERVAL_DEFAULT;
 
-    /** 目前queue機制是while(isQueuePolling)  沒任務就睡一下, 有任務就做事情, 發現task有延遲, 就要注意是不是taskInterval*/
-    enableOfQueueTerminateSleepCount = configer.POOLLER_ENABLE_QUEUE_TERMINATE_BY_SLEEP_COUNT;
-    queueMaxSleepCounts = configer.POOLLER_QUEUE_MAX_SLEEP_COUNTS_DEFAULT;
-    intervalOfQueueSleep = configer.POOLLER_QUEUE_TIME_OF_SLEEP_INTERVAL_DEFAULT;
-    currentSleepCounts = 0;
-
-    /** 用來處理Task的延遲,假設要偷網頁東西, 不能太頻繁, 要偽裝成手動只能透過這方式, 如果是multi thread, 延遲是針對worker滿載後,再加進去的那一個 */
+    /** 用來處理每一個task的timeout, 避免task處理太久卡在Queue裡面 */
     enableOfTaskTimeout = configer.POOLLER_ENABLE_TIMEOUT;
     timeOfTaskTimeout = configer.POOLLER_TASK_TIMEOUT_DEFAULT;
 
@@ -40,8 +34,9 @@ class InfinitePool {
 
     /** 裡面放 {high:[], low:[], medium }*/
     taskQueue = {};
+
     /** 裡面放準備要執行的Task, 這邊的task就沒辦法remove了 */
-     executingTaskQueue = [];
+    executingTaskQueue = [];
 
     isQueuePolling = false;
     /** 目前queue機制是while(isQueuePolling)  沒任務就睡一下, 有任務就做事情, 發現task有延遲, 就要注意是不是taskInterval*/
@@ -56,17 +51,12 @@ class InfinitePool {
     hashCallbackMapOfWaiting4Result = {}
     poolId = ``;
 
-    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT,name = Util.getRandomValue(0, 100000000000)) {
-
+    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT, name = Util.getRandomValue(0, 100000000000)) {
         this.maxWorker = maxWorkers;
         this.setPoolId(_.toString(name));
         for (const prior of configer.POOLLER_PRIORITY) {
             this.taskQueue[prior] = [];
         }
-    }
-
-    setTimeout(millionSec = configer.POOLLER_TASK_TIMEOUT_DEFAULT) {
-        this.timeOfTaskTimeout = millionSec;
     }
 
     setPoolId = (id = this.poolId) => {
@@ -77,6 +67,9 @@ class InfinitePool {
         return this.poolId;
     }
 
+    /**
+     * @deprecated there's no sleep mechanism
+     */
     enableQueueTerminateBySleepCount(enable = true,
                                      interval = configer.POOLLER_QUEUE_TIME_OF_SLEEP_INTERVAL_DEFAULT
         , times = configer.POOLLER_MAX_SLEEP_COUNTS_DEFAULT) {
@@ -91,17 +84,8 @@ class InfinitePool {
         this.taskQueue = {};
     }
 
-    getTaskCounts(){
-        let count = 0;
-        for(const type in this.taskQueue){
-            count += this.taskQueue[type].length
-        }
-        return count;
-    }
-
     terminate() {
         this.isQueuePolling = false;
-        this.currentSleepCounts = 0;
     }
 
     /** return true if task completed, after 15 secs, force leave */
@@ -109,9 +93,6 @@ class InfinitePool {
         this.isQueuePolling = false;
         while (_.size(this.executingTaskQueue) > 0) {
             await Util.syncDelay(1000);
-        }
-        if (configer.MODULE_MSG.SHOW_SUCCEED) {
-            Util.appendInfo(`this.executingQueue 的長度是 ${_.size(this.executingTaskQueue)}`)
         }
         return true;
     }
@@ -131,12 +112,21 @@ class InfinitePool {
     /**
      * interval:{min: 800, max: 1000}
      * */
-    enableTaskInterval(enable = true, interval = configer.POOLLER_TASK_OF_INTERVAL_DEFAULT) {
+    enableTaskSleepInterval(enable = true, interval = configer.POOLLER_TASK_OF_INTERVAL_DEFAULT) {
+
         this.enableOfTaskSleepByInterval = enable
+        if (_.isNumber(interval)) {
+            interval = {min: interval, max: interval};
+        }
         this.taskSleepInterval = interval;
     }
 
-    async addTaskAndWait4Result(asyncfunc, priority = 'low') {
+    enableTaskTimeout(enable = true, millionSec = configer.POOLLER_TASK_TIMEOUT_DEFAULT) {
+        this.enableOfTaskTimeout = enable;
+        this.timeOfTaskTimeout = millionSec;
+    }
+
+    async addTaskAndWait4Result(asyncTask, priority = 'low', taskName = 'noName') {
         this.trigger();
         return new Promise((resolve, reject) => {
             const callback = (result) => {
@@ -147,9 +137,8 @@ class InfinitePool {
                 if (result.reject) {
                     reject(result.reject)
                 }
-
             }
-            const hash = this.add(asyncfunc, priority);
+            const hash = this.add(asyncTask, priority);
             this.registerHash4Result(hash, callback);
         })
     }
@@ -158,7 +147,7 @@ class InfinitePool {
         this.hashCallbackMapOfWaiting4Result[hash] = callback;
     }
 
-    getQueueSize = () => {
+    getTaskQueueCount = () => {
         let size = 0;
         if (this.state === configer.POOLLER_STATE.RUN_BY_PARAMS) return this.paramQueue.length;
 
@@ -169,14 +158,13 @@ class InfinitePool {
         return size;
     }
 
-    /** 3:low,2:medium,1:top */
+    /** 3:low,2:medium,1:high */
     /** add the task into taskQueue, return task key,once you want to remove it */
     add = (task, priority = 'low') => {
         if (typeof task === "function") {
             if (configer.POOLLER_PRIORITY.indexOf(priority) < 0) {
                 throw new ERROR(4001, `priority can't be ${priority}`);
             }
-
             const hash = Util.getRandomHash();
             const taskInfo = {task, hash};
             this.appendHashTaskMap(taskInfo);
@@ -187,52 +175,47 @@ class InfinitePool {
         }
     }
 
-    taskWrapper = (task, hash) => {
+    taskWrapper = (task, hash) => () => {
         const self = this;
-        const asyncfunc = async () => {
+        let timeoutHash = '';
+        let taskResult;
+        let taskError;
+        let param = self.paramQueue.shift();
 
-            let taskResult;
-            let taskError;
-
-            function handleError(error) {
-                if (error.code && error.code === 4010) {
-                    Util.appendError(`${self.getPoollerLogFormat(`發生Timeout ${self.timeOfTaskTimeout} mms 了,是內部設計的狀況`)}`);
-                } else
-                    Util.appendError(`${self.getPoollerLogFormat(`您要處理的task發生 您那方的邏輯問題,...但您的try catch沒有包到,所以跑到這了 ${error.message}`)}`);
-                if (self.taskFailHandler === undefined) {
-                    throw new ERROR(4008, `${error.message}`);
-                }
-                self.taskFailHandler(error);
+        return new Promise((resolve, reject) => {
+            if (self.enableOfTaskTimeout) {
+                timeoutHash = setTimeout(() => {
+                    try {
+                        throw new ERROR(4010, self.getPoollerLogFormat(`TASK HASH:${hash} IS TIMEOUT ${self.timeOfTaskTimeout}} ms ${param ? `,PARAMS IS ${JSON.stringify(param)}` : ''}`))
+                    } catch (error) {
+                        reject(error);
+                    }
+                }, self.timeOfTaskTimeout);
             }
-
-            const timeoutablePromise = new Promise(async (resolve, reject) => {
-                const params = this.paramQueue.shift();
-                let timeoutHash = '';
-                if (self.enableOfTaskTimeout) {
-                    timeoutHash = setTimeout(() => {
-                        reject(new ERROR(4010, self.getPoollerLogFormat(`TASK HASH:${hash} IS TIMEOUT
-                        ${self.timeOfTaskTimeout}} ms ${params ? `,PARAMS IS ${JSON.stringify(params)}` : ''}`)));
-                    }, this.timeOfTaskTimeout);
+            /** 真正的任務是從這裡開始 */
+            console.log(self.getPoollerLogFormat('task executing'));
+            task(param).then((result) => {
+                // console.log(self.getPoollerLogFormat('task get result'));
+                taskResult = result
                 }
-                try {
-                    taskResult = await task(params);
-                    clearTimeout(timeoutHash);
-                } catch (error) {
-                    taskError = error;
-                    if (!this.isWait4ResultTask(hash))
-                        handleError(error);
-                } finally {
-                    resolve(taskResult);
+            ).catch((error) => {
+                    // console.error(self.getPoollerLogFormat('inner error'), error);
+                    taskError = error
                 }
-
-            }).catch((error) => {
-                handleError(error);
-            }).finally(() => {
-                this.removeResolveOrRejectPromiseByHash(hash, {resolve: taskResult, reject: taskError});
+            ).finally(() => {
+                clearTimeout(timeoutHash);
+                /** 要記得 resolve, reject 在這裡代表的是放在executingQueue裡面的promise, reject,resolve其中一個必須觸發, executingQueue才不會堵塞
+                 ** 而任務需要的task是透過 removeResolveOrRejectPromiseByHash() */
+                // console.info(self.getPoollerLogFormat(self.getPoollerLogFormat('inner finally')));
+                resolve(`${hash} done`);
             })
-            return timeoutablePromise;
-        }
-        return asyncfunc;
+        }).catch(error => {
+            // console.error(self.getPoollerLogFormat(self.getPoollerLogFormat('outer error')), error);
+            taskError = error;
+        }).finally(() => {
+            // console.info(self.getPoollerLogFormat(self.getPoollerLogFormat('outer finally')));
+            self.removeResolveOrRejectPromiseByHash(hash, {resolve: taskResult, reject: taskError});
+        })
     }
 
     adds = (tasks, priority = 'low') => {
@@ -299,16 +282,13 @@ class InfinitePool {
      * run would infinite, in default, intervalOfQueueSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
         this.beforeRun();
-        if (_.isNumber(interval)) {
-            interval = {min: interval, max: interval}
-        }
         if (_.isFunction(task))
             this.add(task)
         else if (_.isArray(task))
             this.adds(task);
         else
             throw new ERROR(4006, `type of task is ===> ${typeof task}`)
-        this.enableTaskInterval(interval)
+        this.enableTaskSleepInterval(!!interval, interval);
         this.setState(configer.POOLLER_STATE.RUN_INFINITE);
         while (this.isRunning()) {
             await this.#run();
@@ -333,28 +313,22 @@ class InfinitePool {
     }
 
     runByEachTaskInBackGround() {
-        this.runInBackGround(this.runByEachTask);
+        if (this.atomicBgInstance !== undefined) ;
+        clearTimeout(this.atomicBgInstance);
+        this.atomicBgInstance = this.runInBackGround(this.runByEachTask);
         return this;
     }
 
     runByEachTask = async (tasks = []) => {
+        this.id = Util.getRandomHash(3);
         this.beforeRun();
         this.adds(tasks);
         this.setState(configer.POOLLER_STATE.RUN_BY_EACH_TASK);
         while (this.isRunning()) {
-            if (this.getQueueSize() <= 0) {
-                /** 有點多餘的設計, 本來是想要當沒有task時, 有個house-keeping的設計, 但發現只要在任務加入時, 觸發runByEachTask即可
-                const timer = await Util.syncDelayRandom(this.intervalOfQueueSleep.min, this.intervalOfQueueSleep.max);
-                Util.appendInfo(`${this.getPoollerLogFormat(` sleep time ${timer} million-sec, sleepCounts:${this.currentSleepCounts}`)}`);
-                if (this.enableOfQueueTerminateSleepCount) {
-                    this.currentSleepCounts++;
-                    if (this.currentSleepCounts > this.queueMaxSleepCounts) this.terminate();
-                    continue;
-                }
-                 */
+            if (this.getTaskQueueCount() <= 0) {
                 this.terminate();
             }
-            await this.#run();
+            await this.#run(this.id);
         }
         this.terminate();
     }
@@ -373,24 +347,19 @@ class InfinitePool {
     /** what it means, like a thread run in background,  */
     runInBackGround = (_asyncfunc, ...params) => {
         if (!(typeof _asyncfunc === "function")) {
-            throw new ERROR(9999);
+            throw new ERROR(4002, `_asyncfunc can't be ${typeof _asyncfunc}`);
         }
 
-        /**
-         * 實在不知道當初為什麼要加這個鬼,以後再重複的地方加上重複的代碼,一定要寫註解
-         *this.beforeRun();
-         */
-
-        setTimeout(async () => {
+        return setTimeout(async () => {
             try {
                 await _asyncfunc(...params);
             } catch (error) {
                 throw new ERROR(4009, {message: `${this.getPoollerLogFormat('')}`}, error);
             } finally {
-                Util.appendInfo(`${this.getPoollerLogFormat(`runInBackGround() 完全停止了`)} `);
                 this.terminate();
+                Util.appendInfo(`${this.getPoollerLogFormat(`background gc after terminated`)} `);
             }
-        }, 0);
+        }, 1);
     }
 
     getPoollerLogFormat = (msg) => {
@@ -436,8 +405,7 @@ class InfinitePool {
         }
         if (this.state === configer.POOLLER_STATE.RUN_BY_EACH_TASK) {
             /** 因為不這樣做, 就會產生 race condition, 會產生出3個runInGround instance */
-            this.isQueuePolling = true;
-            this.runInBackGround(this.runByEachTask);
+            this.runByEachTaskInBackGround();
             return;
         }
         throw new ERROR(4011, `this.state is ==> ${Util.getItsKeyByValue(configer.POOLLER_STATE, this.state)}`)
@@ -462,7 +430,7 @@ class InfinitePool {
 
         const taskInfo = this.getTaskInfoDependOnPriority();
         if (taskInfo) {
-            const promise = this.taskWrapper(taskInfo.task, taskInfo.hash)();
+            const promise = this.taskWrapper(taskInfo.task, taskInfo.hash);
             this.removeTaskMapByHash(taskInfo.hash);
             this.appendHashPromiseMap(taskInfo.hash, promise);
             this.appendToExecuteQueue(promise);
@@ -474,7 +442,9 @@ class InfinitePool {
     }
 
     showState = () => {
-        Util.appendInfo(this.getPoollerLogFormat(`executingQueue: ${_.size(this.executingTaskQueue)}`));
+        Util.appendInfo(this.getPoollerLogFormat(`workerCount: ${this.maxWorker}`));
+        Util.appendInfo(this.getPoollerLogFormat(`taskQueue: ${this.getTaskQueueCount()}`));
+        Util.appendInfo(this.getPoollerLogFormat(`executingQueue: ${this.executingTaskQueue.length}`));
         Util.appendInfo(this.getPoollerLogFormat(`mHashNTaskMap: ${_.size(this.mHashNTaskMap)}`));
         Util.appendInfo(this.getPoollerLogFormat(`mHashNPromiseMap: ${_.size(this.mHashNPromiseMap)}`));
     }
@@ -483,17 +453,18 @@ class InfinitePool {
         await this.syncTaskDispatcher();
 
         if (this.executingTaskQueue.length >= this.maxWorker) {
-            await Promise.race(this.executingTaskQueue);
-        } else if (this.getQueueSize() === 0 && this.executingTaskQueue.length > 0) {
-            await Promise.race(this.executingTaskQueue);
+            await Promise.race(this.executingTaskQueue.map((asyncTask) => asyncTask()));
+        } else if (this.getTaskQueueCount() === 0 && this.executingTaskQueue.length > 0) {
+            await Promise.race(this.executingTaskQueue.map((asyncTask) => asyncTask()));
         }
 
         if (this.executingTaskQueue.length > this.maxWorker) {
             Util.appendError(`一定是改壞了！！！！ ${this.getPoollerLogFormat(`executing queue ${this.executingTaskQueue.length} !!`)}`);
         }
 
-        /** 只要完成run 就要把sleepTimeCount歸零 */
-        this.currentSleepCounts = 0;
+        /** 只要完成run 就要把sleepTimeCount歸零
+         * this.currentSleepCounts = 0;
+         */
     }
 
     /** taskInfo = { task, hash }*/
@@ -550,189 +521,71 @@ class InfinitePool {
     isWait4ResultTask(hash) {
         return this.hashCallbackMapOfWaiting4Result[hash]
     }
+
+    async exampleOfRunInBackground() {
+        const pool = new InfinitePool(1).runByEachTaskInBackGround();
+        pool.enableTaskTimeout(true, 3000);
+
+
+        function asyncTask(sign, taskSpend = 2000) {
+            return async () => {
+                await Util.syncDelay(taskSpend)
+                return sign;
+            }
+
+        }
+
+        function startTimoutTask(delayTime, taskSpendTime, sign, priority = 'low') {
+            setTimeout(async () => {
+                try {
+                    const printSign = await pool.addTaskAndWait4Result(asyncTask(sign, taskSpendTime), priority);
+                    Util.appendInfo('answser => ', printSign);
+                } catch (error) {
+                    Util.appendError(error.message);
+                }
+            }, delayTime);
+        }
+
+        startTimoutTask(0, 1000, 'A', 'low')
+        startTimoutTask(35, 1000, 'C', 'high')
+        startTimoutTask(500, 3000, 'B', 'low')
+        startTimoutTask(3000, 1000, 'D', 'medium')
+
+        while (true) {
+            Util.appendInfo('system is running');
+            await Util.syncDelay(100000);
+        }
+    }
+
+    async exampleOfRunInfinte() {
+        await new InfinitePool(2).runInInfinite(async () => {
+            console.log('1000');
+        }, 1000)
+    }
+
+    async exampleOfRunByParam() {
+        const oneToTen = _.range(1, 10);
+        const pool = new InfinitePool(1);
+        pool.enableTaskSleepInterval(true, 1000);
+        await pool.runByParams(oneToTen, async (param) => {
+            console.log(param);
+        })
+    }
+
+    async exampleOfRunByCount() {
+        const pool = new InfinitePool(1);
+        let time = 0
+        await pool.runByTimes(20, [async () => {
+            await Util.syncDelay(1000);
+            time++
+            console.log(`execute the ${time} time`)
+        }])
+    }
 }
 
 if (configer.DEBUG_MODE) {
     (async () => {
-
-        // const pooller = new InfinitePool(1);
-        // pooller.runInBackGround(pooller.runByEachTask,
-        //     _.range(20).map((each) => Util.asyncUnitTaskFunction()));
-        //
-        // while (pooller.isRunning()) {
-        //     await Util.syncDelayRandom();
-        // }
-        //
-        // self.setTaskFailHandler((error) => {
-        //     console.error(`TASK ERROR: ${error.message}`);
-        // })
-        // const tasks = [...Array(4)].map((value, index) => Util.asyncUnitTaskFunction(Util.getRandomValue(1000, 5000)
-        //     , index
-        //
-        // (param) => {
-        //     if (param === 4) return true
-        // }
-        // ))
-        // self.setTimeout(3000);
-        // await self.runByParams([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], tasks[0])
-        // await self.runByTimes(4,tasks);
-        // self.cleanTaskInterval();
-        // self.adds(tasks);
-        // self.runInBackGround(self.runInInfinite);
-        // setTimeout(() => {
-        // }, 15000,);
-        //
-        // while (self.isRunning()) {
-        //     await Util.syncDelayRandom(2000, 5000);
-        // }
-        // await new InfinitePool(3).runInInfinite([]);
-
-
-        function getNumber(num) {
-            return async () => {
-                await Util.syncDelay()
-                return num;
-            }
-
-        }
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber(4), 'medium');
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 3000);
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber(3), 'high');
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 3000)
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber(2));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 3000)
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber(1));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 3000)
-
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber(1));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 3000)
-
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber(8000));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 8000)
-
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber( 12000));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 12000)
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber( 30000));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 30000)
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber( 30000));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 35000)
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber( 35000));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 35000)
-
-        setTimeout(async () => {
-            try {
-                const a = await pool.addTaskAndWait4Result(getNumber( 35000));
-                console.log('answser => ', a);
-
-            } catch (error) {
-                console.log(error);
-            }
-
-        }, 35000)
-
-
-        const pool = new InfinitePool(2).runByEachTaskInBackGround();
-        pool.enableQueueTerminateBySleepCount(true,{min:20,max:100},10)
-
-        while (pool.isRunning()) {
-            console.log('pool is running');
-            await Util.syncDelay(100000);
-        }
-
-        while (true) {
-            console.log('system is running');
-            await Util.syncDelay(100000);
-        }
+        await new InfinitePool().exampleOfRunByCount();
     })();
 
 }

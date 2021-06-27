@@ -35,7 +35,7 @@ class BaseStore {
 
     @action
     setState(state) {
-        console.log(`'${this.getClassName()}', state is '${state}'`);
+        Util.appendInfo(`'${this.getClassName()}', state is '${state}'`);
         if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {
             this.state = state;
         } else {
@@ -75,18 +75,18 @@ class BaseStore {
     }
 
     async fetchObject(refPath, filtering = (ref) => ref.once('value')) {
-        console.log(`fetch object => ${refPath}`);
+        Util.appendInfo(`fetch object => ${refPath}`);
         const result = await filtering(this.database.ref(refPath));
         return result.val();
     }
 
     async postObject(refPath, obj = {}) {
-        console.log(`write ${refPath}, param ${JSON.stringify(obj)}`);
+        Util.appendInfo(`write ${refPath}, param ${JSON.stringify(obj)}`);
         return await this.database.ref(refPath).set(obj);
     }
 
     async fetchArray(refPath, filtering = (ref) => ref.once('value')) {
-        console.log(`fetch array => ${refPath}`);
+        Util.appendInfo(`fetch array => ${refPath}`);
         const result = await filtering(this.database.ref(refPath));
         const value = result.val();
         return _.isArray(value) ? value : _.values(value);

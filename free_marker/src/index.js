@@ -17,7 +17,6 @@ const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
-
 class CodegenNode {
 
     node;
@@ -25,6 +24,10 @@ class CodegenNode {
     components;
     path;
     /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote fetchObject*/
+    /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
+
+    host
+    /** 網域名稱啦 */
 
     cookies;
     /** {name,type:object|string }對應到web使用的cookie, 好處是cookie會加密 */
@@ -359,7 +362,7 @@ class CodegenNode {
         const params = [];
         for (const segment of this.path.split('/')) {
             if (_.startsWith(segment, ':'))
-                params.push(Util.getNormalizedStringNotStartWith(segment, ':'));
+                params.push(Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?'));
         }
         return params;
     }
@@ -537,7 +540,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin', 'server'))
+                if (Util.isOrEquals(key, 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'host'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -1027,7 +1030,7 @@ class StoreBuilder extends BaseBuilder {
                 `{`,
                 node.hasPath() ? `...(await this.${Util.camel(`fetch`, node.getFieldName())}()),` : `...{},`,
                 ..._.map(node.getChildren(), (child) => {
-                    return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch()` : '';
+                    return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(),` : '';
                 }),
                 `}`,
             ]
@@ -1045,9 +1048,13 @@ class StoreBuilder extends BaseBuilder {
 
         baseGenerator.appendFunction('self', [], [], [],
             'return {',
-            _.filter(node.getChildren(), (child) => child.isAttribute())
+            node.getPreciseAttributeChildren()
                 .map((child) => `${child.getName()} : this.${child.getName()}`).join(','),
             '}'
+        )
+
+        baseGenerator.appendFunction('clear', [], [], [],
+            ...node.getPreciseAttributeChildren().map((child) => `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`)
         )
 
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [], `super.initial(obj)`, ...propsStmt);
@@ -1107,10 +1114,10 @@ class RemoteFunctionHandler {
                         return this.listenItems(path,callback,condition);`
                 );
                 this.generator.appendFunction(Util.camel(`listen`, node.getName(), 'item'),
-                    [...defaultParam, 'uid', `callback = (data,error) => {}`]
+                    [...defaultParam, 'id', `callback = (data,error) => {}`]
                     , [], [],
                     `${pathStmt}
-                        return this.listenItem(path,uid,callback);`
+                        return this.listenItem(path,id,callback);`
                 );
             } else if (node.isObject() && node.hasPath()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
@@ -1121,7 +1128,6 @@ class RemoteFunctionHandler {
                         return this.listenObject(path,objName,callback);`
                 )
             }
-
         }
     }
 
@@ -1140,7 +1146,7 @@ class RemoteFunctionHandler {
                 if (recursively && child.hasChildren()) this.buildFetchSubmitApi(child);
             }
 
-            contents.push(`const _updateTime = this.getServerTime()`);
+            contents.push(`const _updateTime = this._firebase().getServerTimeSymbol()`);
             children.push(`updateTime`);
             contents.push(`const commitment = \{${children.map(child => `${child}: _${child}`).join(',')}\}`);
 
@@ -1159,10 +1165,15 @@ class RemoteFunctionHandler {
                         [...defaultParam, 'condition = (stmt) => stmt'], [], [],
                         `return await this.fetchItems('${node.getFieldName()}',condition)`)
 
+                    generator.appendAsyncFunction(Util.camel(`fetch`, node.getName(), 'Item'),
+                        [...defaultParam, 'id'], [], [],
+                        `return await this.fetchItem('${node.getFieldName()}', id)`)
+
                     /** admins only , delete collection all */
                     generator.appendAsyncFunction(Util.camel(`delete`, node.getFieldName()),
-                        [...defaultParam, 'condition = (stmt) => stmt'], [], [],
-                        `return await this.deleteItems('${node.getFieldName()}',condition)`)
+                        [...defaultParam, 'condition = (stmt) => stmt', 'all = false'], [], [],
+                        `${pathStmt}`,
+                        `return await this.deleteItems(path,condition,all)`)
 
                     generator.appendAsyncFunction(Util.camel('submit', node.getName(), 'item'),
                         [...defaultParam, 'item'], [], [],
@@ -1173,16 +1184,16 @@ class RemoteFunctionHandler {
 
                     generator.appendAsyncFunction(
                         Util.camel('update', node.getName(), 'item')
-                        , [...defaultParam, `updatedItem`], [], [],
+                        , [...defaultParam, 'id', `content`], [], [],
                         `${pathStmt}`,
-                        `return await this.updateItem(path, updatedItem);`,
+                        `return await this.updateItem(path, id , content);`,
                     );
 
                     generator.appendAsyncFunction(
                         Util.camel('delete', node.getName(), 'item')
-                        , [...defaultParam, `deletedItem`], [], [],
+                        , [...defaultParam, `id`], [], [],
                         `${pathStmt}`,
-                        `return await this.deleteItem(path, deletedItem)`,
+                        `return await this.deleteItem(path, id)`,
                     );
 
                     generator.appendAsyncFunction(Util.camel('submit', node.getFieldName()),
@@ -1272,8 +1283,10 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendInClassHead(`import {Paper, Button, Typography, Card, Avatar} from '@material-ui/core'`);
 
         for (const param of componentNode.getParamsOfPath()) {
-            baseGenerator.appendConstructor(`this.paramOf${_.upperFirst(param)}= this.props.match.params.${param}`);
-            baseGenerator.appendConstructor(`console.log(this.paramOf${_.upperFirst(param)})`);
+            const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
+            const paramOf = Util.camel('param', 'of', normalizeParam);
+            baseGenerator.appendConstructor(`this.${paramOf}= this.props.match.params.${normalizeParam}`);
+            baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
         }
 
         this.appendRenderViewFunctions(componentNode.struct, baseGenerator);
@@ -1329,7 +1342,7 @@ class ComponentBuilder extends BaseBuilder {
      praam :{
             tag: node.view,
             props: { style: {height: 80},className:'className' }, ### means 不需要 single quatation
-            contents: [`console.log()`,`console.error()`],
+            contents: [`Util.appendInfo()`,`Util.appendError()`],
             children:['children1','children2']
         }
 
@@ -1338,8 +1351,8 @@ class ComponentBuilder extends BaseBuilder {
      {...children}
      style={{ height: 80 }}
      className={"className"} >
-     {console.log()}
-     {console.error()}
+     {Util.appendInfo()}
+     {Util.appendError()}
      </Paper>
      */
 
@@ -1428,7 +1441,7 @@ class ComponentBuilder extends BaseBuilder {
         if (node.isClickView()) {
             generator.appendFunction(node.getFunctionNameOfClicked(),
                 ['param'], [], [],
-                `console.error('${node.getFunctionNameOfClicked()} not override')`
+                `Util.appendError('${node.getFunctionNameOfClicked()} not override')`
             )
 
             props.onClick =
@@ -1503,7 +1516,7 @@ class ComponentBuilder extends BaseBuilder {
             if (child.isArrayOrObject()) {
                 childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
                 generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
-                    [`${child.getPreciseParentName()}`], [],
+                    [`${child.getPreciseParentName()}`], [], [],
                     `return ${child.getPreciseParentName()}.${child.getFunctionNameInStoreGetter()}()`);
             } else {
                 if (!child.isIncestAttributeAndView()) {
@@ -1530,7 +1543,7 @@ class ComponentBuilder extends BaseBuilder {
 
         if (!this.hasRootRenderViewFunction) {
             builder.appendFunction('renderView', [], [], [],
-                `const ${_.lowerCase(node.name)} = this.getStore();\n\n`,
+                `const ${node.getName()} = this.getStore();\n\n`,
                 normalize(...this.getJSXStringsByStruct(node, builder)));
             this.hasRootRenderViewFunction = true;
         }
@@ -1554,7 +1567,6 @@ class ComponentBuilder extends BaseBuilder {
                 }
             }
             existedFunctions[functionName] = true;
-
         }
     }
 
@@ -1593,6 +1605,7 @@ class AppBuilder extends ComponentBuilder {
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password),`,
                     `Util.getEncryptString(${cookie.name}, this.password), {path: "/", ...options})`
                 )
+
                 baseCookieGenerator.appendFunction(Util.camel(`get`, cookie.name), ['options = {}'], [], [],
                     `const value = this.cookie.get(`,
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password), options)`,
@@ -1900,8 +1913,11 @@ class ProjectFileHandler {
             case 'admin':
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
+                baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
+
                 break;
             case 'web':
+                baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
@@ -1966,7 +1982,7 @@ class ProjectFileHandler {
             return false;
         } catch (error) {
             /** 偷懶 hack */
-            console.error(error);
+            Util.appendError(error);
         }
     }
 
@@ -1994,7 +2010,7 @@ class ProjectFileHandler {
             const dest = libpath.join(this.projectPlatformSourcePath, from.split(`src`).pop());
             Util.persistByPath(dest);
             Util.copySingleFile(from, dest, '', true);
-            console.log(`persist ${from} succeed`);
+            Util.appendInfo(`persist ${from} succeed`);
         }
     }
 
@@ -2151,19 +2167,20 @@ export {
     const genRootPath = libpath.resolve(
         `./../gen`
     );
+
     const projectRootPath = libpath.resolve(
         `./src/exam`
     );
 
     const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
     await web.execute();
-    console.log(
+    Util.appendInfo(
         `web done`
     );
 
     // const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
     // await admin.execute();
-    // console.log(
+    // Util.appendInfo(
     //     `admin done`
     // );
 

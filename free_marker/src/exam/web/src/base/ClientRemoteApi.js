@@ -13,46 +13,45 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     async submitItem(path, object) {
-        const async = async () => super.submitItem(path.object);
-        return await CommonPoolHelper.submitTo('submit', async);
+        const _async = async () => super.submitItem(path, object);
+        return await CommonPoolHelper.submitTo('submit', _async,'low','submitItem');
     }
 
     async batchSubmitItem(path, ...objects) {
-        const async = async () => super.batchSubmitItem(path, ...objects);
-        return await CommonPoolHelper.submitTo('submit', async);
+        const _async = async () => super.batchSubmitItem(path, ...objects);
+        return await CommonPoolHelper.submitTo('submit', _async);
     }
 
     async fetchSizeOfCollection(path) {
-        const async = async () => super.fetchSizeOfCollection(path);
-        return await CommonPoolHelper.submitTo('fetch', async);
+        const _async = async () => super.fetchSizeOfCollection(path);
+        return await CommonPoolHelper.submitTo('fetch', _async);
     }
 
 
     async updateItem(path, item) {
-        const async = async () => super.updateItem(path, item);
-        return await CommonPoolHelper.submitTo('submit', async);
+        const _async = async () => super.updateItem(path, item);
+        return await CommonPoolHelper.submitTo('submit', _async);
     }
 
     async deleteItem(path, item) {
-        const async =  async () => super.deleteItem(path, item);
-        return await CommonPoolHelper.submitTo('submit', async);
+        const _async = async () => super.deleteItem(path, item);
+        return await CommonPoolHelper.submitTo('submit', _async);
     }
-
 
 
     async deleteItems(path) {
-        const async = async () => super.deleteItems(path);
-        return await CommonPoolHelper.submitTo('submit', async);
+        const _async = async () => super.deleteItems(path);
+        return await CommonPoolHelper.submitTo('submit', _async);
     }
 
     async submitObject(path, object, objName) {
-        const async = async () => super.submitObject(path, object, objName);
-        return await CommonPoolHelper.submitTo('submit', async);
+        const _async = async () => super.submitObject(path, object, objName);
+        return await CommonPoolHelper.submitTo('submit', _async);
     }
 
     async fetchObject(path, objName) {
-        const async = async () => super.fetchObject(path, objName);
-        return await CommonPoolHelper.submitTo('fetch', async)
+        const _async = async () => super.fetchObject(path, objName);
+        return await CommonPoolHelper.submitTo('fetch', _async)
     }
 
     async fetchItems(path) {
@@ -61,13 +60,13 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     async updateObject(path, updatedObject, objName) {
-        const async = async () => super.updateObject(path, updatedObject, objName);
-        return await CommonPoolHelper.submitTo('submit', async)
+        const _async = async () => super.updateObject(path, updatedObject, objName);
+        return await CommonPoolHelper.submitTo('submit', _async)
     }
 
     async deleteObject(path, objName) {
-        const async = async () => super.deleteObject(path, objName);
-        return await CommonPoolHelper.submitTo('submit', async)
+        const _async = async () => super.deleteObject(path, objName);
+        return await CommonPoolHelper.submitTo('submit', _async)
 
     }
 

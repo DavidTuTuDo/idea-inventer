@@ -18,11 +18,15 @@ class Firebaser {
         return this._firestore;
     }
 
-    getServerTime() {
+    getServerTimeSymbol() {
         return admin.firestore.FieldValue.serverTimestamp();
     }
 
-
+    async getServerTimeStamp(){
+        await this.firestore().collection('public').doc('timestamp').set({serverTime:this.getServerTimeSymol()})
+        const timestamp = await this.firestore().collection('public').doc('timestamp').get();
+        return timestamp.data().serverTime;
+    }
 
 }
 

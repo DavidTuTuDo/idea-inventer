@@ -42,15 +42,15 @@ class Utiller {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
         try {
             const symbol = randomValue;
-            console.log(`before executed ===> i'm symbol of ${symbol}, ready to be executed, inner param = ${_funparam}`);
+            this.appendInfo(`before executed ===> i'm symbol of ${symbol}, ready to be executed, inner param = ${_funparam}`);
             await this.syncDelay(randomValue);
             if (_.isFunction(errorSimulator) && errorSimulator(param)) throw Error('force to made error happen');
-            console.log(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
+            this.appendInfo(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
             return {randomValue, symbol, param};
         } catch (error) {
-            console.error(new Error(`asyncUnitTask() catch error ${error.message}`))
+            this.appendError(new Error(`asyncUnitTask() catch error ${error.message}`))
         } finally {
-            console.log(`wow.... finally got you`);
+            this.appendInfo(`wow.... finally got you`);
         }
 
     }
@@ -247,6 +247,7 @@ class Utiller {
         return false;
     }
 
+
     getObjectValue(obj) {
         if (_.isObject(obj)) {
             return Object.values(obj)[0];
@@ -262,7 +263,7 @@ class Utiller {
     }
 
     printf() {
-        console.log('i can use in node.js react.js');
+        this.appendInfo('i can use in node.js react.js');
     }
 
     isKeywordRule(constraint) {
@@ -500,7 +501,7 @@ class Utiller {
         return _.merge(...obj);
     }
 
-    syncSetTimeout(func, ms, callback) {
+    syncSetTimeout(func, ms, callback = () => {}) {
         (function sync(done) {
             if (!done) {
                 setTimeout(function () {
@@ -517,7 +518,7 @@ class Utiller {
      * mutated;
      const arr = [0,1,2,3,4,5,6,7,8];
      dropItemsByIndex(arr,1,3);
-     console.log(arr); [ 0, 4, 5, 6, 7, 8 ]
+     this.appendInfo(arr); [ 0, 4, 5, 6, 7, 8 ]
      */
     dropItemsByIndex(array, from, end) {
         _.remove(array, (value, index, array) => (end >= index && index >= from));

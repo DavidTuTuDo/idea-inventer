@@ -1,0 +1,51 @@
+/** this code are generated, modify is no sense.
+ author:David Tu,
+ email:freshingmoon0725@gmail.com
+ updateTime:2021-06-24-23-20-01
+ */
+import {
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+import libpath from "path";
+import {observer} from "mobx-react";
+import {inject} from "mobx-react";
+import BasePurchaseSucceedComponent from "./BasePurchaseSucceedComponent";
+import queryString from 'query-string';
+import PurchaseReport from '../../store/purchaseReport';
+import Router from "../../router";
+import Cookie from '../../cookie';
+
+@inject("purchaseSucceed")
+@inject("userInfo")
+@observer
+class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
+
+    constructor(props) {
+        super(props);
+        this.params = queryString.parse(this.props.location.search) //console.log(params) { transactionId:2021062500677569710, orderId:Order2019101500001 };
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+        /** 開始 loading view */
+        const item = {uid: Cookie.getUser().uid, ...this.params};
+        Util.appendInfo(item);
+        new PurchaseReport().submitPurchaseReportItem(item).then((result) => {
+            Util.appendInfo(result);
+            /** 停止loading view */
+        })
+    }
+
+    onConfirmButtonClicked(param) {
+        Router.gotoMainPage(this);
+    }
+
+    /** -------------------- async api -------------------- **/
+}
+
+export default PurchaseSucceedComponent;

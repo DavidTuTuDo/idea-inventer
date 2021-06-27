@@ -42,6 +42,10 @@ class BaseComponent extends React.Component {
                 return this.renderView();
         }
     }
+
+    componentWillUnmount() {
+        this.getStore().clear();
+    }
 }
 
 export default BaseComponent;

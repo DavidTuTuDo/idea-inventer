@@ -6,7 +6,7 @@
 import {observer, inject} from "mobx-react";
 import BaseLoginComponent from "./BaseLoginComponent";
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
-import firebaser from '../../base/Firebaser';
+import firebaser from '../../base/CommonFirebaseHelper';
 import core from 'firebase';
 import React from 'react';
 

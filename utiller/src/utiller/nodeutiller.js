@@ -31,7 +31,7 @@ class NodeUtiller extends Utiller {
     }
 
     printf() {
-        console.log('i can use in node.js only');
+        this.appendInfo('i can use in node.js only');
     }
 
     /**
@@ -113,13 +113,14 @@ class NodeUtiller extends Utiller {
 
 
     syncExecuteCommandLine(command) {
+        const self = this;
         this.appendInfo(`執行腳本 ${command}`);
         process.exec(`${command}`,
             (error, stdout, stderr) => {
-                console.log(`${stdout}`);
-                console.log(`${stderr}`);
+                self.appendInfo(`${stdout}`);
+                self.appendInfo(`${stderr}`);
                 if (error !== null) {
-                    console.log(`exec error: ${error}`);
+                    self.appendError(`exec error: ${error}`);
                 }
             });
     }
@@ -131,8 +132,8 @@ class NodeUtiller extends Utiller {
         return new Promise(function (resolve, reject) {
             process.exec(command,
                 (error, stdout, stderr) => {
-                    console.log(`${stdout}`);
-                    console.log(`${stderr}`);
+                    self.appendInfo(`${stdout}`);
+                    self.appendInfo(`${stderr}`);
                     if (error) {
                         self.appendError(`執行錯誤: ${error}`);
                         reject(error);
@@ -375,19 +376,24 @@ class NodeUtiller extends Utiller {
         this.appendInfo(`build ${packageName} succeed!`);
     }
 
-    appendInfo(data) {
+    appendInfo(...data) {
         return this.appendLog(configer.PATH_INFO_LOG, data, false);
     }
 
-    appendError(data) {
+    appendError(...data) {
         return this.appendLog(configer.PATH_ERROR_LOG, data, true);
     }
 
-    appendLog(path, data, isError = false, caller = '') {
-        const log = `${isError ? `ERROR` : `LOG`} : ${caller} ${this.isJson(data) ? this.deepFlat(data) : data}`;
-        isError ? console.error(log) : console.log(log);
+    appendLog(path, datas, isError = false) {
+
+        isError ? console.error(...datas) : console.log(...datas);
+        const log = `${isError ? `ERROR` : `LOG`} : ${this.getLogString(datas)}`;
         const persistlog = `${new Date()} ${log}`;
         this.appendFile(path, persistlog);
+    }
+
+    getLogString(datas){
+        return datas.map((data) => (this.isJson(data) || _.isObject(data) || _.isArray(data)) ? this.deepFlat(data) : data).join(' ,')
     }
 
     /** 如果file不存在,就會產生file,force_delete 可以強制刪除cache file*/
@@ -410,7 +416,7 @@ class NodeUtiller extends Utiller {
         for (const file of all) {
             const content = this.getFileContextInRaw(file.absolute).trim();
             if (_.isEmpty(content)) {
-                console.log(file.fileName, file.absolute);
+                this.appendInfo(file.fileName, file.absolute);
                 const className = _.isEqual(file.fileName, 'index') ? file.dirName : file.fileName;
                 fs.writeFileSync(file.absolute, String.format(this.getFileContextInRaw(`.
             /template/s
@@ -505,11 +511,11 @@ class NodeUtiller extends Utiller {
 
     /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
     async generateTempFolderWithCleanSrc(path) {
-        console.log('generateTempFolderWithCleanSrc', path);
+        this.appendInfo('generateTempFolderWithCleanSrc', path);
         const sourceFile = libpath.join(path, 'src');
         const tempFile = libpath.join(path, 'temp');
         if (fs.existsSync(sourceFile)) {
-            console.log('generateTempFolderWithCleanSrc', 'source', sourceFile);
+            this.appendInfo('generateTempFolderWithCleanSrc', 'source', sourceFile);
             this.persistByPath(tempFile)
             this.copyFromFolderToDestFolder(sourceFile, tempFile);
             for (const file of this.findFilePathBy(tempFile)) {
@@ -535,11 +541,12 @@ class NodeUtiller extends Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            // console.log(new NodeUtiller().getPathInfo('./').absolute);
-            // console.log(new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
+            // cthis.appendInfo((new NodeUtiller().getPathInfo('./').absolute);
+            // this.appendInfo((new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
             // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
             // await new NodeUtiller().generatePackage('./');
-
+            new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
+        //
         }
     )();
 }

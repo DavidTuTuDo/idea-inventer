@@ -28,12 +28,12 @@ class MainComponent extends BaseMainComponent {
 
     onHighButtonClicked(param) {
         const userInfo = this.props.userInfo;
-        userInfo.fetch(userInfo.uid).then((result) => console.log(result));
+        userInfo.fetch(userInfo.uid).then((result) => Util.appendInfo(result));
     }
 
     onJuniorButtonClicked(param) {
         const userInfo = this.props.userInfo;
-        userInfo.post(userInfo.uid).then();
+        userInfo.submitUserInfoObject(userInfo.uid, userInfo.self()).then();
     }
 
     onPurchaseButtonClicked(param) {

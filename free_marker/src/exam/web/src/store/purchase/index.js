@@ -11,11 +11,11 @@ class PurchaseStore extends BasePurchaseStore {
 
     constructor(props) {
         super(props);
-        this.pushPlansByIndex(0,
+        this.pushPurchasePlansByIndex(0,
             {
                 name: `購買方案`,
                 price: `價格`,
-                pid: 1,
+                id: 1,
             }
         )
     }

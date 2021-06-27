@@ -15,7 +15,7 @@ import {
 } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import Cookie from '../../cookie';
-import firebaser from '../../base/Firebaser.js';
+import firebaser from '../../base/CommonFirebaseHelper';
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import { Application } from '../../index'
 
@@ -43,18 +43,41 @@ class NavigatorStore extends BaseNavigatorStore {
         Application.setUserInfo(param);
     }
 
-    async reAuthByCredential() {
+    async signInWithCredential() {
         if (Cookie.hasCredential()) {
-            await Util.syncDelay(50);
-            const result = await firebaser.authByCredential(Cookie.getCredential());
-            if (result !== undefined) {
-                this.setCredential(result.credential);
-                this.setUserInfo(result.user);
+            try {
+                const result = await firebaser.signInWithCredential(Cookie.getCredential());
+                if (result !== undefined) {
+                    this.setCredential(result.credential);
+                    this.setUserInfo(result.user);
+                }
+            } catch (error) {
+                Util.appendError(error);
+                Cookie.removeCredential();
+            }
+        }
+    }
+
+    async reAuthenticateWithCredential(){
+        Util.appendInfo(`reAuthenticateWithCredential start`);
+        if (Cookie.hasCredential()) {
+            await Util.syncDelay(10);
+            try {
+                const result = await firebaser.reAuthWithCredential(Cookie.getCredential());
+                if (result !== undefined) {
+                    this.setCredential(result.credential);
+                    this.setUserInfo(result.user);
+                }
+                Util.appendInfo(`reAuthenticateWithCredential succeed`);
+            } catch (error) {
+                Util.appendError(error);
+                Cookie.removeCredential();
             }
         }
     }
 
     async logout() {
+        await firebaser.logout();
         this.setCredential(undefined);
         this.setUserInfo(undefined);
         Cookie.removeCredential();
@@ -65,6 +88,7 @@ class NavigatorStore extends BaseNavigatorStore {
 
     constructor(props) {
         super(props);
+        this.signInWithCredential().then();
         this.setState('stable');
     }
 

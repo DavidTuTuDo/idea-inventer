@@ -1,8 +1,11 @@
 import _ from 'lodash';
+import moment from 'moment';
 
 
-
-console.log([1,2,3].map((each) => `each + ${each}`))
+const current  = moment(_.now());
+console.log(current.toDate());
+current.add(31,'days');
+console.log(current.toDate());
 
 
 
