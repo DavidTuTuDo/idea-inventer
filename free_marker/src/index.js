@@ -14,7 +14,6 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 class CodegenNode {
@@ -96,6 +95,9 @@ class CodegenNode {
 
     admin;
 
+    /** 當有些按鈕需要確認的dialog, { content:string, title:string }, 必須搭配wrap:true 使用 */
+    alertDialog;
+
     /** 放admin的json file*/
 
     /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin','server' 都不會被包成CodeGenNode */
@@ -107,6 +109,10 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    hasAlertDialog() {
+        return this.alertDialog && _.isObject(this.alertDialog);
     }
 
     getFieldName() {
@@ -135,6 +141,23 @@ class CodegenNode {
          */
     }
 
+    getAlertDialogVariable() {
+        return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref');
+    }
+
+    getViewParamVariable() {
+        return Util.camel(this.getName(), this.getView(), 'View', 'Param');
+    }
+
+    getVariableStmts() {
+        const stmt = [];
+        if (this.hasAlertDialog()) {
+            stmt.push(`const ${this.getAlertDialogVariable()} = React.createRef()`);
+            stmt.push(`let ${this.getViewParamVariable()}`);
+        }
+        return stmt;
+    }
+
     hasCookies() {
         return !!this.cookies && _.size(this.cookies) > 0;
     }
@@ -155,10 +178,21 @@ class CodegenNode {
     }
 
     getWrapContents() {
-        if (!!this.wrapContents && _.isArray(this.wrapContents)) {
-            return this.wrapContents
+        const stmt = [];
+        const wrapContents = this.wrapContents ? this.wrapContents : [];
+
+        stmt.push(...wrapContents);
+
+        if (this.hasAlertDialog()) {
+            stmt.push(`{
+            this.renderAlertDialog(
+            ${this.getAlertDialogVariable()},
+            ${JSON.stringify(this.alertDialog.title)},
+            ${JSON.stringify(this.alertDialog.content)},
+            () => this.${this.getFunctionNameOfClicked()}({view:${this.getViewParamVariable()},object:${this.getParamOfRenderView()}})
+            )}`)
         }
-        return [];
+        return stmt;
     }
 
     hasWrap() {
@@ -476,11 +510,6 @@ class CodegenNode {
         return Util.camel('get', this.getPreciseParent().getName(), this.getFieldName());
     }
 
-    getFunctionNameOfRenderView() {
-        return Util.camel(`render`,
-            this.getPreciseParent().getName(),
-            this.getFieldName(), 'view');
-    }
 
     getParamOfRenderView() {
         let param = '';
@@ -492,9 +521,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfRenderViewWithParam() {
-        const functionName = Util.camel(`render`,
-            this.getPreciseParent().getName(),
-            this.getFieldName(), 'view');
+        const functionName = this.getFunctionNameOfRenderView();
         let param = '';
 
         if (this.isAttribute() || this.needParentParam()) {
@@ -502,6 +529,12 @@ class CodegenNode {
         }
         return `${functionName}(${param})`;
 
+    }
+
+    getFunctionNameOfRenderView() {
+        return Util.camel(`render`,
+            this.getPreciseParent().getName(),
+            this.getFieldName(), 'view');
     }
 
     getFunctionNameOfSetter() {
@@ -540,7 +573,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'host'))
+                if (Util.isOrEquals(key, 'alertDialog', 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'host'))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -1439,13 +1472,22 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.isClickView()) {
+
             generator.appendFunction(node.getFunctionNameOfClicked(),
                 ['param'], [], [],
                 `Util.appendError('${node.getFunctionNameOfClicked()} not override')`
             )
 
-            props.onClick =
-                `###(param) => this.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
+            if (node.hasAlertDialog()) {
+                props.onClick =
+                    `###(param) => {
+                    ${node.getViewParamVariable()} = param;
+                    ${node.getAlertDialogVariable()}.current.open();
+                   }`
+            } else {
+                props.onClick =
+                    `###(param) => this.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
+            }
         }
 
 
@@ -1497,6 +1539,7 @@ class ComponentBuilder extends BaseBuilder {
 
     }
 
+    /** 就是把標註為 outer 的 child 放在同一個view的層級 */
     getOuterChildJSXStrings(generator, node) {
         const stmt = [];
         for (const child of node.getChildren()) {
@@ -1554,20 +1597,22 @@ class ComponentBuilder extends BaseBuilder {
             const functionName = child.getFunctionNameOfRenderView();
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況*/
             if (existedFunctions[functionName]) continue;
-            if (child.isArrayOrObject()) {
-                builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
-                    normalize(...this.getJSXStringsByStruct(child, builder)));
+            builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
+                ...this.getChildVariableStmts(node),
+                normalize(...this.getJSXStringsByStruct(child, builder)));
+            if (child.hasChildren()) {
                 this.appendRenderViewFunctions(child, builder);
-            } else {
-                builder.appendFunction(functionName,
-                    [`${child.getParamOfRenderView()}`], [], [],
-                    normalize(...this.getJSXStringsByStruct(child, builder)));
-                if (child.hasChildren()) {
-                    this.appendRenderViewFunctions(child, builder);
-                }
             }
             existedFunctions[functionName] = true;
         }
+    }
+
+    getChildVariableStmts(node) {
+        const stmt = [];
+        for (const child of node.getChildren()) {
+            stmt.push(...child.getVariableStmts())
+        }
+        return stmt;
     }
 
     getComponentClassBody(className) {

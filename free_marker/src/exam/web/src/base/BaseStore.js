@@ -14,9 +14,6 @@ import config from '../config';
 import ClientRemoteApi from './ClientRemoteApi'
 class BaseStore extends ClientRemoteApi {
 
-    database;
-    fire;
-
     @observable
     state = 'loading';
 

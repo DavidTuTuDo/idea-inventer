@@ -8,6 +8,7 @@ import BaseChoiceStore from "./BaseChoiceStore";
 class ChoiceStore extends BaseChoiceStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
+
     isReplyEqualToAnswer() {
         const question = this.getParentNode();
         if (!question.isReply()) return false;
