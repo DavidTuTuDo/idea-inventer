@@ -3,8 +3,8 @@ import React from "react";
 import moment from 'moment';
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
-import {DialogActions, Dialog, DialogContent, DialogContentText, DialogTitle, Button} from '@material-ui/core';
 import AlertDialog from './AlertDialog';
+import {Typography, LinearProgress, Button, Paper} from "@material-ui/core";
 
 class BaseComponent extends React.Component {
 
@@ -15,12 +15,54 @@ class BaseComponent extends React.Component {
     componentDidMount() {
     }
 
-    renderLoadingView() {
-        return <div>正在收集資料當中...</div>
+    renderView() {
+        return <div/>
     }
 
-    renderErrorView(message) {
-        return <div>出事了!阿伯...請聯絡管理員ＱＱ ${message}</div>
+    renderLoadingView() {
+        if (this.getStore().state === 'loading')
+            return <LinearProgress/>
+    }
+
+    isNavigationView(){
+        return false;
+    }
+
+    renderViewByStatus() {
+        switch (this.getStore().state) {
+            case "loading":
+                return this.renderLoadingView();
+            case "stable":
+                return this.renderView();
+            case "error":
+                return this.renderErrorView();
+            default:
+                return this.renderView();
+        }
+    }
+
+    renderErrorView() {
+        const errorMsg = this.getStore().getErrorMsg();
+        return (
+            <Paper
+                className={'BaseComponentErrorViewPaper'} >
+
+                <Typography
+                    className={'BaseComponentErrorViewTitleTypography'}>
+                    發生錯誤
+                </Typography>
+
+                <Typography
+                    className={'BaseComponentErrorViewContentTypography'}
+                >{errorMsg}
+                </Typography>
+
+                <Button
+                    variant={'outlined'}
+                    color={'primary'}
+                    className={'BaseComponentErrorViewRetryButton'}>重試</Button>
+            </Paper>
+        )
     }
 
     gotoPage(path) {
@@ -33,16 +75,9 @@ class BaseComponent extends React.Component {
     }
 
     render() {
-        switch (this.getStore().state) {
-            case "loading":
-                return this.renderLoadingView();
-            case "stable":
-                return this.renderView();
-            case "error":
-                return this.renderErrorView(this.getStore().getErrorMsg());
-            default:
-                return this.renderView();
-        }
+        return <div className={'RootViewDiv'}>
+            {this.renderViewByStatus()}
+        </div>
     }
 
     componentWillUnmount() {

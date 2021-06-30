@@ -4,7 +4,6 @@ import moment from 'moment';
 import {utiller as Util} from "utiller";
 import Store from "./BaseStore";
 
-
 class BaseComponent extends React.Component {
 
     constructor(props) {

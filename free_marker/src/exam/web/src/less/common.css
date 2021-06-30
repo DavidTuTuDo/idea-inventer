@@ -34,8 +34,8 @@
   /** style */
   flex-direction: row;
   display: flex;
+  width: 100%;
   align-items: center;
-  padding: 0.5%;
   max-height: 6vh;
 }
 .NavigatorHomeAreaAvatar {
@@ -271,8 +271,31 @@
   border-style: none;
 }
 /** ======== following for  ========= */
-.PurchasePlanPricePriceTipTypography {
-  /** style */
+.BaseComponentErrorViewPaper {
+  display: flex;
+  width: 70%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  margin-top: 50px;
+  padding: 30px;
+}
+.BaseComponentErrorViewTitleTypography {
+  font-size: 3rem;
+}
+.BaseComponentErrorViewContentTypography {
+  font-size: 1.2rem;
+  color: #7f7f7f;
+}
+.BaseComponentErrorViewRetryButton {
+  margin-top: 30px;
+}
+.RootViewDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 body {
   margin: 0;

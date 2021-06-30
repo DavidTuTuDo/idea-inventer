@@ -177,6 +177,14 @@ class CodegenNode {
         return [];
     }
 
+    getNavigationComponentName(){
+        let name = ''
+        if(this.hasNavigation()){
+            name = this.navigation.view;
+        }
+        return name;
+    }
+
     getWrapContents() {
         const stmt = [];
         const wrapContents = this.wrapContents ? this.wrapContents : [];
@@ -1311,6 +1319,7 @@ class ComponentBuilder extends BaseBuilder {
             name: 'BaseComponent',
             from: '../../base/BaseComponent'
         });
+
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendInClassHead(`import Style from '../../style'`)
         baseGenerator.appendInClassHead(`import {Paper, Button, Typography, Card, Avatar} from '@material-ui/core'`);
@@ -1320,6 +1329,13 @@ class ComponentBuilder extends BaseBuilder {
             const paramOf = Util.camel('param', 'of', normalizeParam);
             baseGenerator.appendConstructor(`this.${paramOf}= this.props.match.params.${normalizeParam}`);
             baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
+        }
+
+
+        if(_.isEqual(componentNode.getName(),componentNode.getParentObject().getNavigationComponentName())){
+            baseGenerator.appendFunction('isNavigationView',[],[],[],
+                `return true`
+                )
         }
 
         this.appendRenderViewFunctions(componentNode.struct, baseGenerator);
@@ -1406,7 +1422,8 @@ class ComponentBuilder extends BaseBuilder {
         const children = param.children ? param.children : [];
 
         const stmt = [];
-        stmt.push(`<${param.tag}`);
+        const tag = param.tag;
+        stmt.push(`<${tag}`);
         stmt.push('\n');
 
         for (const child of children) {
@@ -1438,7 +1455,7 @@ class ComponentBuilder extends BaseBuilder {
 
         stmt.push(SIGN_OF_JSX_CONTENT);
         stmt.push('\n\n');
-        stmt.push(`</${param.tag}>`);
+        stmt.push(`</${tag}>`);
         stmt.push('\n\n');
         return stmt;
     }
@@ -1812,7 +1829,8 @@ class AppBuilder extends ComponentBuilder {
         const stmt = [];
         if (navigation && navigation.view) {
             stmt.push(...this.getJSXStrings({
-                tag: navigation.view,
+                /** 因為import 是大寫, 所以這裡只好hack*/
+                tag: _.upperFirst(navigation.view),
                 props: {history: `###history`}
             }));
             this.removeJSXSign(stmt);

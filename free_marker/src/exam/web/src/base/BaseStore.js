@@ -15,7 +15,7 @@ import ClientRemoteApi from './ClientRemoteApi'
 class BaseStore extends ClientRemoteApi {
 
     @observable
-    state = 'loading';
+    state = 'stable';
 
     @observable
     errorMsg = 'unknown error';
