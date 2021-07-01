@@ -20,11 +20,10 @@ class BaseComponent extends React.Component {
     }
 
     renderLoadingView() {
-        if (this.getStore().state === 'loading')
-            return <LinearProgress/>
+        return <LinearProgress />
     }
 
-    isNavigationView(){
+    isNavigationView() {
         return false;
     }
 
@@ -45,7 +44,7 @@ class BaseComponent extends React.Component {
         const errorMsg = this.getStore().getErrorMsg();
         return (
             <Paper
-                className={'BaseComponentErrorViewPaper'} >
+                className={'BaseComponentErrorViewPaper'}>
 
                 <Typography
                     className={'BaseComponentErrorViewTitleTypography'}>

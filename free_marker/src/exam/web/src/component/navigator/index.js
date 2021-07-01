@@ -6,10 +6,17 @@
 import {observer, inject} from "mobx-react";
 import BaseNavigatorComponent from "./BaseNavigatorComponent";
 import Router from '../../router';
-import config from '../../config';
-import cookie from '../../cookie';
+import Config from '../../config';
+import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
+import { withStyles } from '@material-ui/core/styles';
 
+const useStyles = theme => ({
+    paper: {
+        marginTop: "50px",
+        backgroundColor: '#ff000000'
+    }
+});
 @inject("navigator")
 @observer
 class NavigatorComponent extends BaseNavigatorComponent {
@@ -24,6 +31,11 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     onHomeAreaAvatarClicked(param) {
+
+    }
+
+    onTitleTypographyClicked(param) {
+        super.onTitleTypographyClicked(param);
         Router.gotoMainPage(this);
     }
 
@@ -34,10 +46,22 @@ class NavigatorComponent extends BaseNavigatorComponent {
             Router.gotoLoginPage(this);
         } else
             this.getStore().logout().then();
-
     }
+
+    onDrawerClosed() {
+        this.getStore().setDrawerOpenStatus(false);
+    }
+
+    onMenuIconButtonClicked(param) {
+        this.getStore().setDrawerOpenStatus(true);
+    }
+
+    getDrawerOpenStatus() {
+        return this.getStore().getDrawerOpenStatus();
+    }
+
 
     /** -------------------- async api -------------------- **/
 }
 
-export default NavigatorComponent;
+export default withStyles(useStyles)(NavigatorComponent);

@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-06-30-12-59-23 
+	updateTime:2021-07-01-21-57-50 
 */
 import {
   utiller as Util,
@@ -15,6 +15,32 @@ class MobileStyle {
   /** -------------------- fields -------------------- **/
 
   /** following for unknown */
+
+  NavigatorAppBar = {};
+
+  NavigatorAppBarWrapDiv = {};
+
+  NavigatorToolBarToolbar = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarMenuIconMenuIcon = {};
+
+  NavigatorToolBarTitleTypography = {};
+
+  NavigatorToolBarLoginButton = {};
+
+  NavigatorToolBarLoginButtonWrapDiv = {};
+
+  NavigatorHomeAreaAvatar = {};
+
+  NavigatorHomeAreaHomeImg = {};
+
+  NavigatorFunctionDiv = {};
+
+  NavigatorLoginButton = {};
+
+  NavigatorLoginButtonWrapDiv = {};
 
   ExamQuestionCardArrayWrapDiv = {};
 
@@ -105,6 +131,22 @@ class MobileStyle {
   PurchasePlanDivListWrapDiv = {};
 
   PurchasePlanDiv = {};
+
+  AppBarToolBarLoginButtonWrapDiv = {};
+
+  AppBarToolBarLoginButton = {};
+
+  AppBarToolBarTitleTypography = {};
+
+  AppBarToolBarMenuIconMenuIcon = {};
+
+  AppBarToolBarMenuIconButton = {};
+
+  AppBarToolBarToolbar = {};
+
+  AppBarAppBar = {};
+
+  NavigatorToolBarToolbarListWrapDiv = {};
 
   /** following for purchase */
 
@@ -200,15 +242,21 @@ class MobileStyle {
 
   /** following for navigator */
 
-  NavigatorLoginButtonWrapDiv = {};
+  NavigatorExtraContentDiv = {};
 
-  NavigatorLoginButton = {};
+  NavigatorExtraDrawer = {};
 
-  NavigatorFunctionDiv = {};
+  NavigatorAppBarToolBarLoginButton = {};
 
-  NavigatorHomeAreaHomeImg = {};
+  NavigatorAppBarToolBarTitleTypography = {};
 
-  NavigatorHomeAreaAvatar = {};
+  NavigatorAppBarToolBarMenuIconMenuIcon = {};
+
+  NavigatorAppBarToolBarMenuIconButton = {};
+
+  NavigatorAppBarToolBarToolbar = {};
+
+  NavigatorAppBarAppBar = {};
 
   NavigatorDiv = {};
 

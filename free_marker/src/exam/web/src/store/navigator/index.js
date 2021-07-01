@@ -1,26 +1,39 @@
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
- updateTime:2021-04-28-15-15-13
+ updateTime:2021-07-01-10-54-37
  */
 import {
-    makeAutoObservable,
-    makeObservable,
-    action,
-    observable,
-    comparer,
-    computed,
-    autorun,
-    runInAction,
-} from "mobx";
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+import libpath from "path";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import Cookie from '../../cookie';
 import firebaser from '../../base/CommonFirebaseHelper';
-import { utiller as Util, exceptioner as ERROR } from "utiller";
-import { Application } from '../../index'
+import {Application} from '../../index'
+import {makeObservable, observable} from "mobx";
+import {
+    action,
+} from "mobx";
 
 class NavigatorStore extends BaseNavigatorStore {
     /** -------------------- fields -------------------- **/
+
+    @observable
+    drawerOpenStatus = false;
+
+    @action
+    setDrawerOpenStatus(status) {
+        this.drawerOpenStatus = status;
+    }
+
+    getDrawerOpenStatus() {
+        return this.drawerOpenStatus;
+    }
+
     isLoginInSucceed() {
         return (this.getCredential().exist())
     }
@@ -58,7 +71,7 @@ class NavigatorStore extends BaseNavigatorStore {
         }
     }
 
-    async reAuthenticateWithCredential(){
+    async reAuthenticateWithCredential() {
         Util.appendInfo(`reAuthenticateWithCredential start`);
         if (Cookie.hasCredential()) {
             await Util.syncDelay(10);
@@ -88,6 +101,7 @@ class NavigatorStore extends BaseNavigatorStore {
 
     constructor(props) {
         super(props);
+        makeObservable(this);
         this.signInWithCredential().then();
         this.setState('stable');
     }

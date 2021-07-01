@@ -177,9 +177,9 @@ class CodegenNode {
         return [];
     }
 
-    getNavigationComponentName(){
+    getNavigationComponentName() {
         let name = ''
-        if(this.hasNavigation()){
+        if (this.hasNavigation()) {
             name = this.navigation.view;
         }
         return name;
@@ -216,6 +216,7 @@ class CodegenNode {
         return !!this.outer && this.outer
     }
 
+    /** 就是指number, string 這類的物件啦 */
     isViewValue() {
         // return Util.isOrEquals(this.type, 'string', 'number');
         return this.isView() && this.isAttribute() && !this.isArrayOrObject();
@@ -257,10 +258,11 @@ class CodegenNode {
      * */
     getPreciseParent() {
         let parent = this.getParentObject();
+
         if (this.isIncestAttributeAndView()) {
             return parent.getParentObject();
         }
-        while (!parent.isAttribute()) {
+        while (parent && !parent.isAttribute()) {
             parent = parent.getParentObject();
             if (parent === undefined) break;
         }
@@ -518,7 +520,6 @@ class CodegenNode {
         return Util.camel('get', this.getPreciseParent().getName(), this.getFieldName());
     }
 
-
     getParamOfRenderView() {
         let param = '';
 
@@ -531,9 +532,9 @@ class CodegenNode {
     getFunctionNameOfRenderViewWithParam() {
         const functionName = this.getFunctionNameOfRenderView();
         let param = '';
-
+        let parent = this.getPreciseParent();
         if (this.isAttribute() || this.needParentParam()) {
-            param = this.getPreciseParent().getName();
+            param = parent.getName();
         }
         return `${functionName}(${param})`;
 
@@ -1321,8 +1322,10 @@ class ComponentBuilder extends BaseBuilder {
         });
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendInClassHead(`import Style from '../../style'`)
-        baseGenerator.appendInClassHead(`import {Paper, Button, Typography, Card, Avatar} from '@material-ui/core'`);
+        baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,Typography,Button,IconButton,Drawer}', '@material-ui/core')
+        baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
+        baseGenerator.appendImport('Style', '../../style')
+
 
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
@@ -1332,10 +1335,10 @@ class ComponentBuilder extends BaseBuilder {
         }
 
 
-        if(_.isEqual(componentNode.getName(),componentNode.getParentObject().getNavigationComponentName())){
-            baseGenerator.appendFunction('isNavigationView',[],[],[],
+        if (_.isEqual(componentNode.getName(), componentNode.getParentObject().getNavigationComponentName())) {
+            baseGenerator.appendFunction('isNavigationView', [], [], [],
                 `return true`
-                )
+            )
         }
 
         this.appendRenderViewFunctions(componentNode.struct, baseGenerator);
@@ -1352,7 +1355,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         baseGenerator.appendFunction('getStore', [], [], [],
-            `return this.props.${componentNode.name}`)
+            `return this.props.${componentNode.struct.getName()}`)
 
         baseGenerator.appendFunction('componentDidMount',
             [], [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
@@ -1465,6 +1468,7 @@ class ComponentBuilder extends BaseBuilder {
         this.classNames[name] = name;
     }
 
+
     getJSXStringsByNode(generator, node, ...extraContents) {
         const keyValue = node.getStatementOfComponentKey();
         const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.isOuter() ? 'outer' : '', node.getView()));
@@ -1566,7 +1570,10 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-
+    /**
+     * 要想像成針對這個節點 產生出 renderView, 如果子節點是物件或是array, 就產生出{getObjectOrArrayView(self.childName)}
+     * 否則 直些產生出 jsx statement.
+     */
     getJSXStringsByStruct(node, generator, notAllowOuterChild = true) {
         const childstmt = [];
         for (const child of node.getChildren()) {
@@ -1615,6 +1622,8 @@ class ComponentBuilder extends BaseBuilder {
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況*/
             if (existedFunctions[functionName]) continue;
             builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
+                'const classes = this.props.classes',
+                'const self = this',
                 ...this.getChildVariableStmts(node),
                 normalize(...this.getJSXStringsByStruct(child, builder)));
             if (child.hasChildren()) {
@@ -1628,7 +1637,14 @@ class ComponentBuilder extends BaseBuilder {
         const stmt = [];
         for (const child of node.getChildren()) {
             stmt.push(...child.getVariableStmts())
+
+            /** 子類的type是object, 而且孫類需要需要帶入子類當參param */
+            if (child.isView() && child.isObject()) {
+                stmt.push(`const ${child.getFieldName()} = 
+                this.${child.getFunctionNameUsingInComponentGetter()}(${node.getFieldName()})`)
+            }
         }
+
         return stmt;
     }
 
