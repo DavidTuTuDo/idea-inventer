@@ -15,7 +15,7 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-
+const CURRENT_PLATFORM = 'web';
 class CodegenNode {
 
     node;
@@ -2314,16 +2314,23 @@ export {
         `./src/exam`
     );
 
-    // const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
-    // await web.execute();
-    // Util.appendInfo(
-    //     `web done`
-    // );
+    switch (CURRENT_PLATFORM) {
+        case 'web':
+            const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
+            await web.execute();
+            Util.appendInfo(
+                `web done`
+            );
+            break;
+        case 'admin':
+            const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
+            await admin.execute();
+            Util.appendInfo(
+                `admin done`
+            );
+            break;
+    }
 
-    const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
-    await admin.execute();
-    Util.appendInfo(
-        `admin done`
-    );
+
 
 })();
