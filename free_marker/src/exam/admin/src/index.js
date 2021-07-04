@@ -21,9 +21,9 @@ import moment from 'moment';
         await api.deleteQuestions();
 
         await api.submitPurchasePlans(
-            {id:1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
-            {id:1002, name: '2個月', price: 110, priceTip: '平均一個月55元', fullName: '選擇王-2個月禮包', duration: '62d'},
-            {id:1003, name: '3個月', price: 150, priceTip: '平均一個月50元', fullName: '選擇王-3個月禮包', duration: '63d'})
+            {id: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
+            {id: 1002, name: '2個月', price: 110, priceTip: '平均一個月55元', fullName: '選擇王-2個月禮包', duration: '62d'},
+            {id: 1003, name: '3個月', price: 150, priceTip: '平均一個月50元', fullName: '選擇王-3個月禮包', duration: '63d'})
 
 
         const questions = qs.map((q) => {
@@ -137,6 +137,12 @@ import moment from 'moment';
 
         listener.listenPurchaseReports(async (changes) => {
             for (const change of changes) {
+                if (change.type !== 'added') {
+                    console.log(`listenPurchaseReports`, change.id, change.type)
+                    continue;
+                }
+
+
                 const report = change.data;
                 const reportId = change.id;
                 const updateContent = {};

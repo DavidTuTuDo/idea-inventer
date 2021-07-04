@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-07-01-21-57-50 
+	updateTime:2021-07-04-12-37-38 
 */
 import {
   utiller as Util,
@@ -16,137 +16,137 @@ class CommonStyle {
 
   /** following for unknown */
 
-  NavigatorAppBar = {};
-
-  NavigatorAppBarWrapDiv = {};
-
-  NavigatorToolBarToolbar = {};
-
-  NavigatorToolBarMenuIconButton = {};
-
-  NavigatorToolBarMenuIconMenuIcon = {};
-
-  NavigatorToolBarTitleTypography = {};
-
-  NavigatorToolBarLoginButton = {};
-
-  NavigatorToolBarLoginButtonWrapDiv = {};
-
-  NavigatorHomeAreaAvatar = {};
-
-  NavigatorHomeAreaHomeImg = {};
-
-  NavigatorFunctionDiv = {};
-
-  NavigatorLoginButton = {};
-
-  NavigatorLoginButtonWrapDiv = {};
-
-  ExamQuestionCardArrayWrapDiv = {};
-
-  ExamQuestionChoiceDivArrayWrapDiv = {};
-
-  PurchasePlanDivArrayWrapDiv = {};
-
-  PurchasePlanPriceTipTypography = {};
-
-  PurchaseCardArrayWrapDiv = {};
-
-  PurchaseCard = {};
-
-  PurchaseArrayWrapDiv = {};
-
-  PurchaseTitleTypography = {};
-
-  NavigatorGoogleloginButton = {};
-
-  NavigatorGoogleloginButtonWrapDiv = {};
-
-  HeaderHomeAreaHomeImg = {};
-
-  HeaderHomeAreaAvatar = {};
-
-  HeaderFunctionDiv = {};
-
-  HeaderLoginButton = {};
-
-  HeaderLoginButtonWrapDiv = {};
-
-  HeaderDiv = {};
-
-  HeaderImageImg = {};
-
-  HeaderImageImgWrapDiv = {};
-
-  ExamQuestionAlertOuterDivWrapDiv = {};
-
-  ExamQuestionAlertOuterImg = {};
-
-  ExamQuestionAlertDiv = {};
-
-  ExamQuestionAlertContentDiv = {};
-
-  HeaderHomeImgWrapDiv = {};
-
-  HeaderHomeImg = {};
-
-  HeaderHomeAreaHomeImgWrapDiv = {};
-
-  PurchasePlanPidTypography = {};
-
-  PurchasePlanDivWrapDiv = {};
-
-  PurchasePlanSpaceOuterDiv = {};
-
-  PurchaseDivArrayWrapDiv = {};
-
-  PurchasePlanBuyButtonWrapDiv = {};
-
-  PurchasePlanBuyButton = {};
-
-  PurchasePlanSweetTypographyWrapDiv = {};
-
-  PurchasePlanSweetTypography = {};
-
-  PurchasePlanMusicTypographyWrapDiv = {};
-
-  PurchasePlanMusicTypography = {};
-
-  PurchasePlanMathTypographyWrapDiv = {};
-
-  PurchasePlanMathTypography = {};
-
-  PurchasePlanPricePriceTipTypography = {};
-
-  PurchasePlanPriceTypographyWrapDiv = {};
-
-  PurchasePlanPriceTypography = {};
-
-  PurchasePlanSpaceDiv = {};
-
-  PurchasePlanNameTypographyWrapDiv = {};
-
-  PurchasePlanNameTypography = {};
-
-  PurchasePlanDivListWrapDiv = {};
-
-  PurchasePlanDiv = {};
-
-  AppBarToolBarLoginButtonWrapDiv = {};
-
-  AppBarToolBarLoginButton = {};
-
-  AppBarToolBarTitleTypography = {};
-
-  AppBarToolBarMenuIconMenuIcon = {};
-
-  AppBarToolBarMenuIconButton = {};
-
-  AppBarToolBarToolbar = {};
+  NavigatorToolBarToolbarListWrapDiv = {};
 
   AppBarAppBar = {};
 
-  NavigatorToolBarToolbarListWrapDiv = {};
+  AppBarToolBarToolbar = {};
+
+  AppBarToolBarMenuIconButton = {};
+
+  AppBarToolBarMenuIconMenuIcon = {};
+
+  AppBarToolBarTitleTypography = {};
+
+  AppBarToolBarLoginButton = {};
+
+  AppBarToolBarLoginButtonWrapDiv = {};
+
+  PurchasePlanDiv = {};
+
+  PurchasePlanDivListWrapDiv = {};
+
+  PurchasePlanNameTypography = {};
+
+  PurchasePlanNameTypographyWrapDiv = {};
+
+  PurchasePlanSpaceDiv = {};
+
+  PurchasePlanPriceTypography = {};
+
+  PurchasePlanPriceTypographyWrapDiv = {};
+
+  PurchasePlanPricePriceTipTypography = {};
+
+  PurchasePlanMathTypography = {};
+
+  PurchasePlanMathTypographyWrapDiv = {};
+
+  PurchasePlanMusicTypography = {};
+
+  PurchasePlanMusicTypographyWrapDiv = {};
+
+  PurchasePlanSweetTypography = {};
+
+  PurchasePlanSweetTypographyWrapDiv = {};
+
+  PurchasePlanBuyButton = {};
+
+  PurchasePlanBuyButtonWrapDiv = {};
+
+  PurchaseDivArrayWrapDiv = {};
+
+  PurchasePlanSpaceOuterDiv = {};
+
+  PurchasePlanDivWrapDiv = {};
+
+  PurchasePlanPidTypography = {};
+
+  HeaderHomeAreaHomeImgWrapDiv = {};
+
+  HeaderHomeImg = {};
+
+  HeaderHomeImgWrapDiv = {};
+
+  ExamQuestionAlertContentDiv = {};
+
+  ExamQuestionAlertDiv = {};
+
+  ExamQuestionAlertOuterImg = {};
+
+  ExamQuestionAlertOuterDivWrapDiv = {};
+
+  HeaderImageImgWrapDiv = {};
+
+  HeaderImageImg = {};
+
+  HeaderDiv = {};
+
+  HeaderLoginButtonWrapDiv = {};
+
+  HeaderLoginButton = {};
+
+  HeaderFunctionDiv = {};
+
+  HeaderHomeAreaAvatar = {};
+
+  HeaderHomeAreaHomeImg = {};
+
+  NavigatorGoogleloginButtonWrapDiv = {};
+
+  NavigatorGoogleloginButton = {};
+
+  PurchaseTitleTypography = {};
+
+  PurchaseArrayWrapDiv = {};
+
+  PurchaseCard = {};
+
+  PurchaseCardArrayWrapDiv = {};
+
+  PurchasePlanPriceTipTypography = {};
+
+  PurchasePlanDivArrayWrapDiv = {};
+
+  ExamQuestionChoiceDivArrayWrapDiv = {};
+
+  ExamQuestionCardArrayWrapDiv = {};
+
+  NavigatorLoginButtonWrapDiv = {};
+
+  NavigatorLoginButton = {};
+
+  NavigatorFunctionDiv = {};
+
+  NavigatorHomeAreaHomeImg = {};
+
+  NavigatorHomeAreaAvatar = {};
+
+  NavigatorToolBarLoginButtonWrapDiv = {};
+
+  NavigatorToolBarLoginButton = {};
+
+  NavigatorToolBarTitleTypography = {};
+
+  NavigatorToolBarMenuIconMenuIcon = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarToolbar = {};
+
+  NavigatorAppBarWrapDiv = {};
+
+  NavigatorAppBar = {};
 
   /** following for purchase */
 

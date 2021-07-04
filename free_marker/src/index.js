@@ -28,6 +28,8 @@ class CodegenNode {
     host
     /** 網域名稱啦 */
 
+    platform;
+
     cookies;
     /** {name,type:object|string }對應到web使用的cookie, 好處是cookie會加密 */
 
@@ -100,6 +102,11 @@ class CodegenNode {
 
     /** 放admin的json file*/
 
+    extraPackages;
+
+    /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
+
+
     /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin','server' 都不會被包成CodeGenNode */
 
 
@@ -109,6 +116,16 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    /** 這些屬性不可以enrich */
+    static doNotEnrichAttribute() {
+        return ['alertDialog', 'wrapContents', 'contents', 'style',
+            'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'host']
+    }
+
+    getExtraPackage() {
+        return _.isEmpty(this.extraPackages) ? [] : this.extraPackages;
     }
 
     hasAlertDialog() {
@@ -562,13 +579,17 @@ class CodegenNode {
         return this.name;
     }
 
+    getPlatform() {
+        /** */
+        return this.platform;
+    }
+
     getComponents() {
         if (this.components && _.isArray(this.components))
             return this.components
         else
             return [];
     }
-
 
     static enrich(node, parent) {
         let involution = new CodegenNode(node);
@@ -582,7 +603,7 @@ class CodegenNode {
         } else if (_.isObject(node)) {
             for (const key in node) {
                 /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
-                if (Util.isOrEquals(key, 'alertDialog', 'wrapContents', 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'host'))
+                if (Util.isOrEquals(key, ...this.doNotEnrichAttribute()))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
@@ -608,6 +629,7 @@ class ClassGenerator {
 
     /** 為了讓import 不用擔心複數宣告 就用Object,empty 裡面放不需要變數宣告的import 例如 import from Firebase/database, 最後再一次gen*/
     imports = {all: {}, empty: []};
+
     hasConstructor = false;
     constructorStmt = [];
     hasExtends = false
@@ -1661,9 +1683,22 @@ class AppBuilder extends ComponentBuilder {
         this.appendDefaultPath('../');
     }
 
+    async buildExtraPackages(currentPlatform, sourceObj) {
+        for (const _package of sourceObj.getExtraPackage()) {
+            const packageName = _package.getName();
+            const platform = _package.getPlatform();
+            if (_.isEqual(platform, currentPlatform))
+                continue;
+
+            const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, packageName, 'index.js'));
+            indexGenerator.appendClass(_.upperFirst(packageName));
+            await indexGenerator.persist();
+        }
+    }
+
     async buildCookieFiles(sourceObj) {
 
-        if (sourceObj.hasCookies) {
+        if (sourceObj.hasCookies()) {
             const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`));
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
@@ -1953,9 +1988,10 @@ class ProjectFileHandler {
     projectRootPath; // exam/
     projectPlatformSourcePath; // exam/web/src
     projectCommonSourcePath; // exam/common/src
-
+    nodeOfAncestor; //source.js
 
     platform; // web, admin, app
+
     constructor(props, platform = 'web') {
         this.projectRootPath = props.projectRootPath;
         this.projectPlatformSourcePath = libpath.join(this.projectRootPath, platform, 'src');
@@ -2056,7 +2092,6 @@ class ProjectFileHandler {
                         libpath.join(projectPlatformSourceBasePath, file.fileNameExtension), undefined, true)
                 }
             }
-
             Util.appendInfo(`persist base files succeed`);
             return false;
         } catch (error) {
@@ -2065,7 +2100,20 @@ class ProjectFileHandler {
         }
     }
 
-    keepIndexAndLESSFiles(...exclude) {
+    persistExtraPackages(sourceObj) {
+        for (const _package of sourceObj.getExtraPackage()) {
+            const packageName = _package.getName();
+            const folderPath = libpath.join(this.genSourcePath, packageName);
+            if (fs.existsSync(folderPath)) {
+                const destFolderPath = libpath.join(this.projectPlatformSourcePath, packageName);
+                Util.persistByPath(destFolderPath);
+                Util.copyFromFolderToDestFolder(folderPath, destFolderPath);
+                Util.appendInfo(`extraPackage ,persist to ${destFolderPath} succeed`);
+            }
+        }
+    }
+
+    persistIndexAndLessFiles(...exclude) {
         const files = Util.findFilePathBy(this.genSourcePath,
             (each) => {
                 return (
@@ -2135,6 +2183,19 @@ class ProjectFileHandler {
         }
     }
 
+    overrideExtraPackages(sourceObj) {
+        for (const _package of sourceObj.getExtraPackage()) {
+            const packageName = _package.getName();
+            const folderPath = libpath.join(this.projectPlatformSourcePath, packageName);
+            if (fs.existsSync(folderPath)) {
+                const destFolderPath = libpath.join(this.genSourcePath, packageName);
+                Util.persistByPath(destFolderPath);
+                Util.copyFromFolderToDestFolder(folderPath, destFolderPath);
+                Util.appendInfo(`extraPackage ,override to ${destFolderPath} succeed`);
+            }
+        }
+    }
+
     async forAdmin() {
         Util.persistByPath(this.genRootPath);
         Util.copySingleFile('./template/admin.package.json', this.genRootPath, 'package.json', true);
@@ -2182,10 +2243,10 @@ class ProjectFileHandler {
     }
 
     async execute() {
-
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            this.keepIndexAndLESSFiles();
+            this.persistIndexAndLessFiles();
             this.persistBaseFiles();
+            this.persistExtraPackages(this.nodeOfAncestor)
             this.persistImageFolder();
         }
 
@@ -2201,8 +2262,10 @@ class ProjectFileHandler {
                 throw new ERROR(8014, `type ==> ${this.platform}`)
                 break;
         }
+        await new AppBuilder(this.genRootPath).buildExtraPackages(this.platform, this.nodeOfAncestor);
         this.buildBaseClasses();
         await this.buildConfig(this.nodeOfAncestor);
+        this.overrideExtraPackages(this.nodeOfAncestor)
         this.overrideEachFilesFromSrcFolder(
             `common.style.js`
             ,
@@ -2251,16 +2314,16 @@ export {
         `./src/exam`
     );
 
-    const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
-    await web.execute();
-    Util.appendInfo(
-        `web done`
-    );
-
-    // const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
-    // await admin.execute();
+    // const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
+    // await web.execute();
     // Util.appendInfo(
-    //     `admin done`
+    //     `web done`
     // );
+
+    const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
+    await admin.execute();
+    Util.appendInfo(
+        `admin done`
+    );
 
 })();
