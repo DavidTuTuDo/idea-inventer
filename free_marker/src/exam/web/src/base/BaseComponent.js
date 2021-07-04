@@ -5,6 +5,7 @@ import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
 import AlertDialog from './AlertDialog';
 import {Typography, LinearProgress, Button, Paper} from "@material-ui/core";
+import Application from '../index.js';
 
 class BaseComponent extends React.Component {
 
@@ -20,7 +21,7 @@ class BaseComponent extends React.Component {
     }
 
     renderLoadingView() {
-        return <LinearProgress />
+        return <LinearProgress/>
     }
 
     isNavigationView() {
@@ -83,6 +84,9 @@ class BaseComponent extends React.Component {
         this.getStore().clear();
     }
 
+    getApplication() {
+        return Application;
+    }
 
     renderAlertDialog(ref, title, content, task) {
         return (<AlertDialog

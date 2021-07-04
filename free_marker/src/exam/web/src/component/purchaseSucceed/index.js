@@ -17,9 +17,9 @@ import queryString from 'query-string';
 import PurchaseReport from '../../store/purchaseReport';
 import Router from "../../router";
 import Cookie from '../../cookie';
+import UserInfo from '../../util';
 
 @inject("purchaseSucceed")
-@inject("userInfo")
 @observer
 class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
     /** -------------------- fields -------------------- **/
@@ -33,7 +33,7 @@ class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
     componentDidMount() {
         super.componentDidMount();
         /** 開始 loading view */
-        const item = {uid: Cookie.getUser().uid, ...this.params};
+        const item = {uid: UserInfo.getUid(), ...this.params};
         Util.appendInfo(item);
         new PurchaseReport().submitPurchaseReportItem(item).then((result) => {
             Util.appendInfo(result);

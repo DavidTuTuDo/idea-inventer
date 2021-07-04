@@ -16,6 +16,8 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 const CURRENT_PLATFORM = 'web';
+
+// const CURRENT_PLATFORM = 'admin';
 class CodegenNode {
 
     node;
@@ -1687,7 +1689,8 @@ class AppBuilder extends ComponentBuilder {
         for (const _package of sourceObj.getExtraPackage()) {
             const packageName = _package.getName();
             const platform = _package.getPlatform();
-            if (_.isEqual(platform, currentPlatform))
+            console.log(platform,currentPlatform)
+            if (!_.isEqual(platform, currentPlatform))
                 continue;
 
             const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, packageName, 'index.js'));
@@ -1870,8 +1873,14 @@ class AppBuilder extends ComponentBuilder {
             }),
             'return stores'
         )
-        appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
 
+        for (const storeName of this.getGenStores()) {
+            appGenerator.appendFunction(Util.camel('get', storeName, 'store'), [], [], [],
+                `return this.store.${storeName}`
+            )
+        }
+
+        appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
         await appGenerator.needIndexFile('App', [], false, [`new App().mount()`, `module.hot.accept()`]);
         await appGenerator.persist();
     }
@@ -2232,13 +2241,13 @@ class ProjectFileHandler {
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(this.genRootPath).buildStoreIndexFiles();
-        await new AppBuilder(this.genRootPath).buildAppIndexFiles(source);
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(this.genRootPath).buildRouterFile(source);
         await new AppBuilder(this.genRootPath).buildCookieFiles(source);
         await new AppBuilder(this.genRootPath).buildLessFile(totalClassNames, this.projectPlatformSourcePath);
         await new AppBuilder(this.genRootPath).buildStyleFiles(totalClassNames, this.projectPlatformSourcePath);
         await new AppBuilder(this.genRootPath).buildHtmlIndexAssetsFile();
+        await new AppBuilder(this.genRootPath).buildAppIndexFiles(source);
         this.buildDistAssetFolder();
     }
 
@@ -2262,6 +2271,7 @@ class ProjectFileHandler {
                 throw new ERROR(8014, `type ==> ${this.platform}`)
                 break;
         }
+
         await new AppBuilder(this.genRootPath).buildExtraPackages(this.platform, this.nodeOfAncestor);
         this.buildBaseClasses();
         await this.buildConfig(this.nodeOfAncestor);
@@ -2330,7 +2340,5 @@ export {
             );
             break;
     }
-
-
 
 })();

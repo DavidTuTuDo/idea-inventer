@@ -53,7 +53,6 @@ class NavigatorStore extends BaseNavigatorStore {
     setUserInfo(param) {
         super.setUserInfo(param);
         Cookie.setUser(param);
-        Application.setUserInfo(param);
     }
 
     async signInWithCredential() {

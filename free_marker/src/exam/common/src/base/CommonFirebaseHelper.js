@@ -20,6 +20,16 @@ class CommonFirebaseHelper extends BaseFirebase {
        return this.core().auth();
     }
 
+    getCurrentUser(){
+        return this.auth().currentUser;
+    }
+
+    getUid(){
+       const user = this.auth().currentUser;
+       return user? user.uid : '';
+
+    }
+
     getServerTimeSymbol() {
         return this.getFirebaseLibrary().FieldValue.serverTimestamp();
     }
