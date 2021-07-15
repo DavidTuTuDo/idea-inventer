@@ -4,7 +4,7 @@
 	updateTime:2021-04-27-16-13-47
 */
 import BaseRouter from "./BaseRouter";
-
+import Cookie from '../cookie';
 class Router extends BaseRouter {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
@@ -12,6 +12,12 @@ class Router extends BaseRouter {
   constructor(props) {
     super(props);
   }
-  /** -------------------- async api -------------------- **/
+
+  gotoLoginPage(component) {
+      Cookie.setPathBeforeLogin(window.location.href);
+      super.gotoLoginPage(component);
+  }
+
+    /** -------------------- async api -------------------- **/
 }
 export default new Router();

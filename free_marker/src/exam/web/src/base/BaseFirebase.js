@@ -3,6 +3,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/firestore';
 import config from "../config";
+import EventBus from "js-event-bus";
 import {exceptioner as ERROR, utiller as Util} from "utiller";
 import CommonPoolHelper from "./CommonPoolHelper";
 

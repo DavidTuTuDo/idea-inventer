@@ -17,7 +17,7 @@ import queryString from 'query-string';
 import PurchaseReport from '../../store/purchaseReport';
 import Router from "../../router";
 import Cookie from '../../cookie';
-import UserInfo from '../../util';
+import UserInfo from '../../userInfo';
 
 @inject("purchaseSucceed")
 @observer

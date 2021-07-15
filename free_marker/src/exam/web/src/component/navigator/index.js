@@ -9,7 +9,8 @@ import Router from '../../router';
 import Config from '../../config';
 import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
-import { withStyles } from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/core/styles';
+import UserInfo from '../../userInfo';
 
 const useStyles = theme => ({
     paper: {
@@ -17,6 +18,7 @@ const useStyles = theme => ({
         backgroundColor: '#ff000000'
     }
 });
+
 @inject("navigator")
 @observer
 class NavigatorComponent extends BaseNavigatorComponent {
@@ -35,17 +37,16 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     onTitleTypographyClicked(param) {
-        super.onTitleTypographyClicked(param);
+        // super.onTitleTypographyClicked(param);
         Router.gotoMainPage(this);
     }
 
     onLoginButtonClicked(param) {
-        if (!this.getStore().isLoginInSucceed()) {
-            Util.appendInfo(window.location.href);
-            this.getStore().setPathOfBeforeLogin(window.location.href);
-            Router.gotoLoginPage(this);
-        } else
+        if (UserInfo.isLoginInSucceed()) {
             this.getStore().logout().then();
+        } else {
+            Router.gotoLoginPage(this);
+        }
     }
 
     onDrawerClosed() {

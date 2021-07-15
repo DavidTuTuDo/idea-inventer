@@ -13,11 +13,12 @@ import libpath from "path";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import Cookie from '../../cookie';
 import firebaser from '../../base/CommonFirebaseHelper';
-import {Application} from '../../index'
 import {makeObservable, observable} from "mobx";
+import UserInfo from '../../userInfo';
 import {
     action,
 } from "mobx";
+import {AppBar} from "@material-ui/core";
 
 class NavigatorStore extends BaseNavigatorStore {
     /** -------------------- fields -------------------- **/
@@ -34,19 +35,9 @@ class NavigatorStore extends BaseNavigatorStore {
         return this.drawerOpenStatus;
     }
 
-    isLoginInSucceed() {
-        return (this.getCredential().exist())
-    }
-
-    getLogin() {
-        if (!this.isLoginInSucceed())
-            return super.getLogin();
-        else
-            return '登出';
-    }
-
     setCredential(param) {
         super.setCredential(param);
+        /** 當cookie 收到 undefined 就會清空cookie 欄位 */
         Cookie.setCredential(param);
     }
 
@@ -58,10 +49,9 @@ class NavigatorStore extends BaseNavigatorStore {
     async signInWithCredential() {
         if (Cookie.hasCredential()) {
             try {
-                const result = await firebaser.signInWithCredential(Cookie.getCredential());
+                const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
                 if (result !== undefined) {
                     this.setCredential(result.credential);
-                    this.setUserInfo(result.user);
                 }
             } catch (error) {
                 Util.appendError(error);
@@ -70,6 +60,15 @@ class NavigatorStore extends BaseNavigatorStore {
         }
     }
 
+    updateLoginButtonStatus = () => {
+        const appBar = this.getAppBar();
+        appBar.getToolBar().setLogin(UserInfo.isLoginInSucceed()? '登出':'登入');
+        this.setAppBar(appBar);
+    }
+
+    /**
+     * @deprecated 根本沒用到
+     */
     async reAuthenticateWithCredential() {
         Util.appendInfo(`reAuthenticateWithCredential start`);
         if (Cookie.hasCredential()) {
@@ -92,8 +91,7 @@ class NavigatorStore extends BaseNavigatorStore {
         await firebaser.logout();
         this.setCredential(undefined);
         this.setUserInfo(undefined);
-        Cookie.removeCredential();
-        Cookie.removeUser();
+        this.updateLoginButtonStatus();
     }
 
     /** -------------------- functions -------------------- **/

@@ -5,12 +5,13 @@ import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
 import AlertDialog from './AlertDialog';
 import {Typography, LinearProgress, Button, Paper} from "@material-ui/core";
-import Application from '../index.js';
+import {Application} from '../index.js';
 
 class BaseComponent extends React.Component {
 
     constructor(props) {
         super(props);
+        this.listOfFunctionOfUnsubscribe = [];
     }
 
     componentDidMount() {
@@ -82,6 +83,12 @@ class BaseComponent extends React.Component {
 
     componentWillUnmount() {
         this.getStore().clear();
+
+        /** 執行unsubscribe */
+        while (this.listOfFunctionOfUnsubscribe.length > 0) {
+            const unSub = this.listOfFunctionOfUnsubscribe.shift();
+            unSub();
+        }
     }
 
     getApplication() {
@@ -94,6 +101,11 @@ class BaseComponent extends React.Component {
             content={content}
             submitTask={task}
             ref={ref}/>)
+    }
+
+    /** 如果頁面有聽callback, 統一用這個method */
+    subscribe(subscribeFunction) {
+        this.listOfFunctionOfUnsubscribe.push(subscribeFunction);
     }
 
 

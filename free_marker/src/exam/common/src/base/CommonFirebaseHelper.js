@@ -1,32 +1,39 @@
-
-import { utiller as Util, exceptioner as ERROR } from "utiller";
+import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from "lodash";
 import config from "../config";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
+import EventBus from "./CommonEventBus";
 
 class CommonFirebaseHelper extends BaseFirebase {
 
-   firestore() {
-       return this.core().firestore();
-   }
-
-   database() {
-       return this.core().database();
-
-   }
-
-    auth() {
-       return this.core().auth();
+    constructor() {
+        super();
+        if (this.auth() === undefined) return;
+        this.auth().onAuthStateChanged((user) => {
+            EventBus.self().emit('onAuthStateChange');
+        })
     }
 
-    getCurrentUser(){
+    firestore() {
+        return this.core().firestore();
+    }
+
+    database() {
+        return this.core().database();
+    }
+
+    auth() {
+        return this.core().auth();
+    }
+
+    getCurrentUser() {
         return this.auth().currentUser;
     }
 
-    getUid(){
-       const user = this.auth().currentUser;
-       return user? user.uid : '';
+    getUid() {
+        const user = this.auth().currentUser;
+        return user ? user.uid : '';
 
     }
 
@@ -40,28 +47,32 @@ class CommonFirebaseHelper extends BaseFirebase {
 
     async logout() {
         await this.auth().signOut();
+        Util.appendInfo('sign out called');
     }
 
-    getTimeStampObj(millis){
-       const timestamp = this.getFirebaseLibrary().Timestamp.fromMillis(millis);
-       return  timestamp;
+    credential() {
+
     }
 
-    async getCurrentServerTimeStamp(){
-        await this.firestore().collection('public').doc('timestamp').set({serverTime:this.getServerTimeSymbol()})
+    getTimeStampObj(millis) {
+        const timestamp = this.getFirebaseLibrary().Timestamp.fromMillis(millis);
+        return timestamp;
+    }
+
+    async getCurrentServerTimeStamp() {
+        await this.firestore().collection('public').doc('timestamp').set({serverTime: this.getServerTimeSymbol()})
         const timestamp = await this.firestore().collection('public').doc('timestamp').get();
         return timestamp.data().serverTime;
     }
 
-    async signInWithCredential(credential) {
+    async signInWithExistedCredential(credential) {
         const self = this;
         const asyncTask = async () => {
-            Util.appendInfo('signInWithCredential start...');
-            await self.auth().signOut();
+            Util.appendInfo('signInWithExistedCredential start...');
             let token = self.getAuthLibrary().GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
             try {
                 const result = await self.auth().signInWithCredential(token);
-                Util.appendInfo('signInWithCredential finished...');
+                Util.appendInfo('signInWithExistedCredential finished...');
 
                 return {
                     credential: result.credential,
@@ -71,11 +82,13 @@ class CommonFirebaseHelper extends BaseFirebase {
                 throw new ERROR(error)
             }
         }
-        return await CommonPoolHelper.submitTo('submit', asyncTask, 'high','signInWithCredential');
+        return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'signInWithExistedCredential');
     }
 
 
-
+    /**
+     * @deprecated 根本沒用到
+     */
     async reAuthWithCredential(credential) {
         await this.auth().signOut();
         let token = this.getAuthLibrary().GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
@@ -113,9 +126,8 @@ class CommonFirebaseHelper extends BaseFirebase {
                      Util.appendInfo(`authResult`, authResult);
                      Util.appendInfo(`redirectUrl`, redirectUrl);
                      */
-
-                    component.props.navigator.setCredential(authResult.credential);
-                    component.props.navigator.setUserInfo(authResult.user);
+                    const Cookie = require('../cookie').default;
+                    Cookie.setCredential(authResult.credential)
                     return true;
                 },
                 /**

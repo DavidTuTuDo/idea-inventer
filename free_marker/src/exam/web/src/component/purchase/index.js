@@ -13,8 +13,8 @@ import {
     exceptioner as ERROR,
     pooller as InfinitePool,
 } from "utiller";
+import UserInfo from '../../userInfo';
 
-@inject("navigator")
 @inject("purchase")
 @observer
 class PurchaseComponent extends BasePurchaseComponent {
@@ -44,11 +44,11 @@ class PurchaseComponent extends BasePurchaseComponent {
     }
 
     onBuyButtonClicked(param) {
-        if (!this.props.navigator.isLoginInSucceed()) {
+        if (!UserInfo.isLoginInSucceed()) {
             Router.gotoLoginPage(this);
             return;
         }
-
+        const self = this;
         const plan = param.object;
         const uid = this.props.navigator.getUserInfo().uid;
         const listenerId = Util.getRandomHash(25);
@@ -58,12 +58,14 @@ class PurchaseComponent extends BasePurchaseComponent {
             listenerId,
             uid,
         }).then((result) => {
-            new PurchaseListener().listenPurchaseListenerItem(uid, listenerId, (data, error) => {
-                console.log(`dataContent==> `, data, `error===> `, error);
-                if (data) {
-                    window.open(data.paymentUrl);
-                }
-            });
+            self.subscribe(
+                new PurchaseListener().listenPurchaseListenerItem(uid, listenerId, (data, error) => {
+                    console.log(`dataContent==> `, data, `error===> `, error);
+                    if (data) {
+                        window.open(data.paymentUrl);
+                    }
+                })
+            );
         })
     }
 

@@ -9,6 +9,14 @@ import Exam from "./component/exam";
 import {Route} from "react-router-dom";
 import React from "react";
 import ExamStore from './store/exam';
+import {
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
+import EventBus from "./base/CommonEventBus";
+import UserInfo from "./userInfo";
+import Cookie from './Cookie';
 
 class App extends BaseApp {
     /** -------------------- fields -------------------- **/
@@ -34,7 +42,22 @@ class App extends BaseApp {
                 </Provider>
             }
         />
-        this.pushPage( page999 );
+        this.pushPage(page999);
+    }
+
+    registerEvent() {
+        const self = this;
+        EventBus.self().on('onAuthStateChange', async () => {
+            const store = self.getNavigatorStore()
+            if (UserInfo.isLoginInSucceed()) {
+                const user = UserInfo.getCurrentUser(false)
+                /** 應該在login 以及 signInByCrendential 就會把 crendentail 存到 cache */
+                const credential = Cookie.getCredential();
+                store.setUserInfo(user);
+                store.setCredential(credential);
+            }
+            store.updateLoginButtonStatus();
+        });
     }
 
     /** -------------------- async api -------------------- **/
@@ -42,5 +65,6 @@ class App extends BaseApp {
 }
 
 const self = new App();
+self.registerEvent();
 self.mount();
 export {self as Application} ;

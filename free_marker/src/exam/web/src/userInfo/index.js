@@ -23,7 +23,7 @@ class UserInfo {
 
     /** -------------------- async api -------------------- **/
 
-    getUserInfo() {
+    getCurrentUser(allowCache = true) {
         /**
          const displayName = user.displayName;
          const email = user.email;
@@ -31,13 +31,26 @@ class UserInfo {
          const emailVerified = user.emailVerified;
          const uid = user.uid;
          */
+
+        let user = firebaser.getCurrentUser();
+        if (!_.isUndefined(user)) return user;
+
+        if (!allowCache) return {};
+
+        user = Cookie.getUser();
+        if (!_.isUndefined(user)) return user;
         return firebaser.getCurrentUser();
     }
 
-    getUid() {
+    isLoginInSucceed() {
+        return !_.isNull(firebaser.getCurrentUser());
+    }
+
+    getUid(allowCache = true) {
         let uid = firebaser.getUid();
         if (!_.isEmpty(uid)) return uid;
 
+        if (!allowCache) return '';
         uid = Cookie.getUser().uid;
         if (!_.isEmpty(uid)) return uid;
     }
