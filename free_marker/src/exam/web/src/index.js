@@ -28,11 +28,11 @@ class App extends BaseApp {
         super.mount();
     }
 
+
     pushNewPageIntoProviderSample = () => {
         if (this.anotherExam === undefined) {
             this.anotherExam = new ExamStore();
         }
-
         const page999 = <Route
             path={"/result9981"}
             render={(props) =>
@@ -45,26 +45,11 @@ class App extends BaseApp {
         this.pushPage(page999);
     }
 
-    registerEvent() {
-        const self = this;
-        EventBus.self().on('onAuthStateChange', async () => {
-            const store = self.getNavigatorStore()
-            if (UserInfo.isLoginInSucceed()) {
-                const user = UserInfo.getCurrentUser(false)
-                /** 應該在login 以及 signInByCrendential 就會把 crendentail 存到 cache */
-                const credential = Cookie.getCredential();
-                store.setUserInfo(user);
-                store.setCredential(credential);
-            }
-            store.updateLoginButtonStatus();
-        });
-    }
 
     /** -------------------- async api -------------------- **/
 
 }
 
 const self = new App();
-self.registerEvent();
 self.mount();
 export {self as Application} ;

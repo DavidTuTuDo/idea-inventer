@@ -492,6 +492,25 @@ class Utiller {
         return obj;
     }
 
+    /**
+     *
+     * [{name:'aaa',sign:2},{name:'aaa',sign:3},{name:'b',sign:4}] =>
+     * {aaa:[{{name:'aaa',sign:2},{name:'aaa',sign:3}}], b:[{name:'b',sign:4}]}
+     */
+    arrayToObjWith(array, predicate){
+        const obj = {};
+        for(const item of array){
+            const key = predicate(item);
+            const content = obj[key];
+            if(content && _.isArray(content)){
+                content.push(item)
+            } else{
+                obj[key] = [item];
+            }
+        }
+        return obj;
+    }
+
     isEmptyString(string) {
         return _.isEqual(_.trim(string), '');
     }
@@ -525,13 +544,11 @@ class Utiller {
     }
 
 
-
 }
 
 if (configer.DEBUG_MODE) {
-
     (async () => {
-            // console.log(new Utiller().getRandomHash())
+            console.log(new Utiller().arrayToObjWith([{name:'aaa',sign:2},{name:'aaa',sign:3},{name:'b',sign:4}],(each) => each.name));
 
         }
     )();

@@ -30,6 +30,21 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     componentDidMount() {
+        super.componentDidMount();
+        this.getStore().forceToStable();
+    }
+
+    onAuthStateChangedReceive = (user) => {
+        const store = this.getStore();
+        if (UserInfo.isLoginInSucceed()) {
+            Util.appendInfo('登入成功, 所以寫入資料',user)
+            /** 應該在login 以及 signInByCrendential 就會把 crendentail 存到 cache */
+            const credential = Cookie.getCredential();
+            Cookie.setUser(user);
+            store.setUserInfo(user);
+            store.setCredential(credential);
+        }
+        store.updateLoginButtonStatus();
     }
 
     onHomeAreaAvatarClicked(param) {

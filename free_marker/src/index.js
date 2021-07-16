@@ -15,9 +15,11 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+
 const CURRENT_PLATFORM = 'web';
 
 // const CURRENT_PLATFORM = 'admin';
+
 class CodegenNode {
 
     node;
@@ -27,8 +29,14 @@ class CodegenNode {
     /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote fetchObject*/
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
+    params
+    /** 目前用來做events 帶的參數 */
+
     host
     /** 網域名稱啦 */
+
+    events;
+    /** 用來定義可以發送的event, 製造interface */
 
     platform;
 
@@ -123,11 +131,15 @@ class CodegenNode {
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
         return ['alertDialog', 'wrapContents', 'contents', 'style',
-            'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'host']
+            'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'params', 'host']
     }
 
     getExtraPackage() {
         return _.isEmpty(this.extraPackages) ? [] : this.extraPackages;
+    }
+
+    getEventParams() {
+        return this.params ? this.params : [];
     }
 
     hasAlertDialog() {
@@ -151,6 +163,10 @@ class CodegenNode {
 
     getView() {
         return this.view;
+    }
+
+    getEvents() {
+        return this.events ? this.events : [];
     }
 
     isState() {
@@ -1109,8 +1125,8 @@ class StoreBuilder extends BaseBuilder {
                     `return await this.${Util.camel(`fetch`, node.getFieldName())}()`);
             }
         }
-        /** ================== */
 
+        /** ================== */
 
         baseGenerator.appendFunction('self', [], [], [],
             'return {',
@@ -1315,6 +1331,8 @@ class ComponentBuilder extends BaseBuilder {
     hasRootRenderViewFunction = false;
     classNames = {};
     componentDidMountStmt = [];
+    componentDetachStmt = [];
+
 
     constructor(props) {
         super(props);
@@ -1330,6 +1348,10 @@ class ComponentBuilder extends BaseBuilder {
 
     appendStmtIntoComponentDidMount(...stmt) {
         this.componentDidMountStmt.push(...stmt);
+    }
+
+    appendStmtIntoComponentDetach(...stmt) {
+        this.componentDetachStmt.push(...stmt);
     }
 
     async buildBaseComponent(componentNode) {
@@ -1365,6 +1387,34 @@ class ComponentBuilder extends BaseBuilder {
             )
         }
 
+        for (const event of componentNode.getEvents()) {
+
+            baseGenerator.appendImport('EventBus', '../../base/CommonEventBus')
+            const eventName = event.getName();
+            const eventParams = event.getEventParams();
+
+            const functionNameOfImpl = Util.camel('on', eventName, 'receive');
+            const functionOfSubscribe = Util.camel('subscribe', eventName);
+            const functionOfUnsubscribe = Util.camel('unsubscribe', eventName);
+
+            baseGenerator.appendFunction(
+                functionNameOfImpl, [...eventParams], [], [],
+                `Util.appendError('${functionNameOfImpl} not implemented')`
+            )
+
+            baseGenerator.appendFunction(
+                functionOfSubscribe, [], [], [],
+                `EventBus.self().on('${eventName}', this.${functionNameOfImpl})`,
+            )
+
+            baseGenerator.appendFunction(
+                functionOfUnsubscribe, [], [], [],
+                `EventBus.self().detach('${eventName}', this.${functionNameOfImpl})`,
+            )
+            this.appendStmtIntoComponentDidMount([`this.${functionOfSubscribe}()`]);
+            this.appendStmtIntoComponentDetach([`this.${functionOfUnsubscribe}()`])
+        }
+
         this.appendRenderViewFunctions(componentNode.struct, baseGenerator);
 
         if (componentNode.hasTitle()) {
@@ -1384,12 +1434,15 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendFunction('componentDidMount',
             [], [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
 
+        baseGenerator.appendFunction('componentWillUnmount',
+            [], [], [], `super.componentWillUnmount()`, ...this.componentDetachStmt);
+
         /** index.js */
 
         baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         await baseGenerator.persist();
 
-        return _.values(this.classNames);
+        return {classNames: _.values(this.classNames), events: componentNode.getEvents()};
     }
 
     containedFetchAttribute(node) {
@@ -1689,7 +1742,7 @@ class AppBuilder extends ComponentBuilder {
         for (const _package of sourceObj.getExtraPackage()) {
             const packageName = _package.getName();
             const platform = _package.getPlatform();
-            console.log(platform,currentPlatform)
+            console.log(platform, currentPlatform)
             if (!_.isEqual(platform, currentPlatform))
                 continue;
 
@@ -1697,6 +1750,25 @@ class AppBuilder extends ComponentBuilder {
             indexGenerator.appendClass(_.upperFirst(packageName));
             await indexGenerator.persist();
         }
+    }
+
+    async buildEventFolder(events) {
+
+        const normalize = Util.arrayToObjWith(events,(event) => event.getName())
+        const baseEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `event`, `BaseComponentEvent.js`));
+        baseEventGenerator.appendImport('EventBus', '../base/CommonEventBus');
+        baseEventGenerator.appendClass('BaseComponentEvent', {name: 'BaseEvent', from: `../base/BaseEvent`});
+        for (const event in normalize) {
+            const events = normalize[event];
+            /** 用這個方式找到params數最多的 */
+            const standard = _.last(_.sortBy(events,(event) => event.getEventParams().length));
+            baseEventGenerator.appendFunction(Util.camel('emit', event),
+                [...standard.getEventParams()], [], [`event for ==> ${events.map((event) => event.getParentObject().getName()).join(' ,')}`],
+                `EventBus.emit('${standard.getName()}',${standard.getEventParams().join(' ,')})`);
+        }
+        baseEventGenerator.needIndexFile('Event', [], true)
+        await baseEventGenerator.persist();
+
     }
 
     async buildCookieFiles(sourceObj) {
@@ -1882,6 +1954,8 @@ class AppBuilder extends ComponentBuilder {
 
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
         await appGenerator.needIndexFile('App', [], false, [`new App().mount()`, `module.hot.accept()`]);
+
+
         await appGenerator.persist();
     }
 
@@ -2233,10 +2307,13 @@ class ProjectFileHandler {
     async forWeb() {
         const source = this.nodeOfAncestor;
         const totalClassNames = [];
+        const totalEvents = [];
+
         for (let component of source.components) {
             await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
-            const classNames = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
+            const {classNames, events} = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
             totalClassNames.push({component, classNames});
+            totalEvents.push(...events);
         }
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
@@ -2244,6 +2321,7 @@ class ProjectFileHandler {
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(this.genRootPath).buildRouterFile(source);
         await new AppBuilder(this.genRootPath).buildCookieFiles(source);
+        await new AppBuilder(this.genRootPath).buildEventFolder(totalEvents);
         await new AppBuilder(this.genRootPath).buildLessFile(totalClassNames, this.projectPlatformSourcePath);
         await new AppBuilder(this.genRootPath).buildStyleFiles(totalClassNames, this.projectPlatformSourcePath);
         await new AppBuilder(this.genRootPath).buildHtmlIndexAssetsFile();

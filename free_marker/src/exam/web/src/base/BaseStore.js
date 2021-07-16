@@ -31,6 +31,11 @@ class BaseStore extends ClientRemoteApi {
     }
 
     @action
+    forceToStable(){
+        this.state = 'stable';
+    }
+
+    @action
     setState(state) {
         console.log(`'${this.getClassName()}', state is '${state}'`);
         if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {

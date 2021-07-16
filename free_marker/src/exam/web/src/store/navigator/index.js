@@ -35,19 +35,8 @@ class NavigatorStore extends BaseNavigatorStore {
         return this.drawerOpenStatus;
     }
 
-    setCredential(param) {
-        super.setCredential(param);
-        /** 當cookie 收到 undefined 就會清空cookie 欄位 */
-        Cookie.setCredential(param);
-    }
-
-    setUserInfo(param) {
-        super.setUserInfo(param);
-        Cookie.setUser(param);
-    }
-
     async signInWithCredential() {
-        if (Cookie.hasCredential()) {
+        if (Cookie.hasCredential() && !UserInfo.isLoginInSucceed()) {
             try {
                 const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
                 if (result !== undefined) {
@@ -62,7 +51,7 @@ class NavigatorStore extends BaseNavigatorStore {
 
     updateLoginButtonStatus = () => {
         const appBar = this.getAppBar();
-        appBar.getToolBar().setLogin(UserInfo.isLoginInSucceed()? '登出':'登入');
+        appBar.getToolBar().setLogin(UserInfo.isLoginInSucceed() ? '登出' : '登入');
         this.setAppBar(appBar);
     }
 
@@ -76,8 +65,6 @@ class NavigatorStore extends BaseNavigatorStore {
             try {
                 const result = await firebaser.reAuthWithCredential(Cookie.getCredential());
                 if (result !== undefined) {
-                    this.setCredential(result.credential);
-                    this.setUserInfo(result.user);
                 }
                 Util.appendInfo(`reAuthenticateWithCredential succeed`);
             } catch (error) {
@@ -88,9 +75,12 @@ class NavigatorStore extends BaseNavigatorStore {
     }
 
     async logout() {
+        Util.appendInfo('logout executed');
         await firebaser.logout();
         this.setCredential(undefined);
         this.setUserInfo(undefined);
+        Cookie.removeCredential()
+        Cookie.removeUser();
         this.updateLoginButtonStatus();
     }
 

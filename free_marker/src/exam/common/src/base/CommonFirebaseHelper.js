@@ -11,7 +11,8 @@ class CommonFirebaseHelper extends BaseFirebase {
         super();
         if (this.auth() === undefined) return;
         this.auth().onAuthStateChanged((user) => {
-            EventBus.self().emit('onAuthStateChange');
+            const event = require('../event').default;
+            event.emitAuthStateChanged(user);
         })
     }
 
@@ -79,30 +80,12 @@ class CommonFirebaseHelper extends BaseFirebase {
                     user: result.user
                 }
             } catch (error) {
+                /** 如果已經是登入狀況又呼叫的話, 可能會跑進去 stale in log-in */
                 throw new ERROR(error)
             }
         }
         return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'signInWithExistedCredential');
     }
-
-
-    /**
-     * @deprecated 根本沒用到
-     */
-    async reAuthWithCredential(credential) {
-        await this.auth().signOut();
-        let token = this.getAuthLibrary().GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
-        try {
-            const result = await this.auth().reauthenticateWithCredential(token);
-            return {
-                credential: result.credential,
-                user: result.user
-            }
-        } catch (error) {
-            throw new ERROR(error)
-        }
-    }
-
 
     getLoginConfig(component, pathOfAfterSucceed = '/') {
         return {
@@ -138,6 +121,23 @@ class CommonFirebaseHelper extends BaseFirebase {
                  */
             },
         };
+    }
+
+    /**
+     * @deprecated 根本沒用到
+     */
+    async reAuthWithCredential(credential) {
+        await this.auth().signOut();
+        let token = this.getAuthLibrary().GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
+        try {
+            const result = await this.auth().reauthenticateWithCredential(token);
+            return {
+                credential: result.credential,
+                user: result.user
+            }
+        } catch (error) {
+            throw new ERROR(error)
+        }
     }
 
 }
