@@ -12,6 +12,7 @@ import {utiller as Util, ERROR} from "utiller";
 import _ from 'lodash';
 import config from '../config';
 import ClientRemoteApi from './ClientRemoteApi'
+
 class BaseStore extends ClientRemoteApi {
 
     @observable
@@ -19,6 +20,12 @@ class BaseStore extends ClientRemoteApi {
 
     @observable
     errorMsg = 'unknown error';
+
+    @observable
+    globalLoadingState = false;
+
+    @observable
+    globalLoadingTip = '正在載入中';
 
     parentNode;
 
@@ -31,7 +38,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     @action
-    forceToStable(){
+    forceToStable() {
         this.state = 'stable';
     }
 
@@ -43,6 +50,10 @@ class BaseStore extends ClientRemoteApi {
         } else {
             throw new ERROR(7001, `'${this.getClassName()}', state is ${state}`);
         }
+    }
+
+    getGlobalLoadingState() {
+        return this.globalLoadingState;
     }
 
     @action
@@ -73,6 +84,16 @@ class BaseStore extends ClientRemoteApi {
 
     filter(obj) {
         return obj;
+    }
+
+    @action
+    setGlobalLoading(loading, string) {
+        this.globalLoadingState = loading;
+        this.globalLoadingTip = string;
+    }
+
+    getGlobalLoadingTip() {
+        return this.globalLoadingTip;
     }
 
 }

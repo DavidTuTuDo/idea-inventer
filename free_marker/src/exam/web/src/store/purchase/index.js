@@ -11,6 +11,9 @@ class PurchaseStore extends BasePurchaseStore {
 
     constructor(props) {
         super(props);
+    }
+
+    async fetch() {
         this.pushPurchasePlansByIndex(0,
             {
                 name: `購買方案`,
@@ -18,6 +21,7 @@ class PurchaseStore extends BasePurchaseStore {
                 id: 1,
             }
         )
+        return super.fetch();
     }
 
 

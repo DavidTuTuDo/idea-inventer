@@ -1438,6 +1438,10 @@ class ComponentBuilder extends BaseBuilder {
             [], [], [], `super.componentWillUnmount()`, ...this.componentDetachStmt);
 
         /** index.js */
+        if(_.isEqual(componentNode.getName(),componentNode.getParentObject().getNavigationComponentName())){
+            baseGenerator.appendFunction('isNavigator',[],[],[],'return true');
+        }
+
 
         baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         await baseGenerator.persist();

@@ -4,7 +4,7 @@ import moment from 'moment';
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
 import AlertDialog from './AlertDialog';
-import {Typography, LinearProgress, Button, Paper} from "@material-ui/core";
+import {Typography, LinearProgress, CircularProgress, Button, Paper} from "@material-ui/core";
 import {Application} from '../index.js';
 
 class BaseComponent extends React.Component {
@@ -15,14 +15,26 @@ class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
+
     }
 
+    /** 每個Component 自己要實作 */
     renderView() {
         return <div/>
     }
 
     renderLoadingView() {
-        return <LinearProgress/>
+        if (this.getStore().state === 'loading') {
+            return (
+                <div className={'ErrorViewDiv'}>
+                    <LinearProgress/>
+                </div>
+            )
+        }
+    }
+
+    setLoadingViewVisibility(show = true) {
+        this.getStore().setState(show ? 'loading' : 'stable');
     }
 
     isNavigationView() {
@@ -31,8 +43,6 @@ class BaseComponent extends React.Component {
 
     renderViewByStatus() {
         switch (this.getStore().state) {
-            case "loading":
-                return this.renderLoadingView();
             case "stable":
                 return this.renderView();
             case "error":
@@ -42,7 +52,11 @@ class BaseComponent extends React.Component {
         }
     }
 
-    renderErrorView() {
+    onRetryClicked(viewParam) {
+        this.componentDidMount();
+    }
+
+    renderErrorView = () => {
         const errorMsg = this.getStore().getErrorMsg();
         return (
             <Paper
@@ -61,6 +75,7 @@ class BaseComponent extends React.Component {
                 <Button
                     variant={'outlined'}
                     color={'primary'}
+                    onClick={(viewParam) => this.onRetryClicked(viewParam)}
                     className={'BaseComponentErrorViewRetryButton'}>重試</Button>
             </Paper>
         )
@@ -76,9 +91,18 @@ class BaseComponent extends React.Component {
     }
 
     render() {
-        return <div className={'RootViewDiv'}>
-            {this.renderViewByStatus()}
-        </div>
+        return (
+            <div className={'RootViewDiv'}>
+
+                {this.renderGlobalLoadingView()}
+
+                <div className={'ComponentViewDiv'}>
+                    {this.renderViewByStatus()}
+                </div>
+
+                {this.renderLoadingView()}
+
+            </div>)
     }
 
     componentWillUnmount() {
@@ -91,9 +115,40 @@ class BaseComponent extends React.Component {
         }
     }
 
+
+    renderGlobalLoadingView() {
+        if (this.isNavigator()) {
+            return undefined;
+        }
+
+        if (this.getStore().getGlobalLoadingState()) {
+            return (
+                <div className={'BaseComponentGlobalLoadingRootDiv'}>
+                    <div className={'BaseComponentGlobalLoadingDiv'}>
+                        <CircularProgress/>
+
+                        <Typography
+                            className={'BaseComponentGlobalLoadingTypography'}>{this.getStore().getGlobalLoadingTip()}</Typography>
+                    </div>
+                </div>);
+        }
+
+        return undefined;
+    }
+
+
     getApplication() {
         return Application;
     }
+
+    isNavigator() {
+        return false;
+    }
+
+    setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = '正在載入中') {
+        this.getStore().setGlobalLoading(visibility, loadingStringTip);
+    }
+
 
     renderAlertDialog(ref, title, content, task) {
         return (<AlertDialog
@@ -102,6 +157,7 @@ class BaseComponent extends React.Component {
             submitTask={task}
             ref={ref}/>)
     }
+
 
     /** 如果頁面有聽callback, 統一用這個method */
     subscribe(subscribeFunction) {
