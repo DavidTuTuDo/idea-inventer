@@ -18,7 +18,7 @@ import UserInfo from '../../userInfo';
 import {
     action,
 } from "mobx";
-import {AppBar} from "@material-ui/core";
+import CommonPoolHelper from '../../base/CommonPoolHelper';
 
 class NavigatorStore extends BaseNavigatorStore {
     /** -------------------- fields -------------------- **/
@@ -47,6 +47,8 @@ class NavigatorStore extends BaseNavigatorStore {
                 Cookie.removeCredential();
             }
         }
+        CommonPoolHelper.enableParallelMode();
+
     }
 
     updateLoginButtonStatus = () => {

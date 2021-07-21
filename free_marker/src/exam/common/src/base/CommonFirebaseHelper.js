@@ -10,10 +10,14 @@ class CommonFirebaseHelper extends BaseFirebase {
     constructor() {
         super();
         if (this.auth() === undefined) return;
-        this.auth().onAuthStateChanged((user) => {
-            const event = require('../event').default;
-            event.emitAuthStateChanged(user);
-        })
+
+        if (_.isFunction(this.auth().onAuthStateChanged)) {
+            this.auth().onAuthStateChanged((user) => {
+                const event = require('../event').default;
+                event.emitAuthStateChanged(user);
+            })
+        }
+
     }
 
     firestore() {
@@ -34,8 +38,7 @@ class CommonFirebaseHelper extends BaseFirebase {
 
     getUid() {
         const user = this.auth().currentUser;
-        return user ? user.uid : '';
-
+        return Util.exist(user) ? user.uid : '';
     }
 
     getServerTimeSymbol() {

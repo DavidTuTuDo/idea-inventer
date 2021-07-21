@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+    match /databases/{database}/documents {
+
+        function isSelf(uid){
+            return  request.auth.uid == uid;
+        }
+
+        function isAdmin(){
+            return  request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin == true;
+        }
+
+        function isSignIn() {
+            return request.auth.uid != null;
+        }
+
+        function userInfoExist(){
+            return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+        }
+
+        function alwaysTrue() {
+            return true;
+        }
+
+        function alwaysFalse() {
+            return false;
+        }
+
+        function isPublicDocumemt() {
+            return resource.data.visibility == 'public';
+        }
+
+        /** --- documents--- **/
+
+    }
+}

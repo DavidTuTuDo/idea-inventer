@@ -50,7 +50,7 @@ class PurchaseComponent extends BasePurchaseComponent {
         }
         const self = this;
         const plan = param.object;
-        const uid = this.props.navigator.getUserInfo().uid;
+        const uid = UserInfo.getUid();
         const listenerId = Util.getRandomHash(25);
         new PurchaseOrder().submitPurchaseOrderItem({
             price: plan.price,

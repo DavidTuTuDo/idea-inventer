@@ -12,13 +12,12 @@ import mustache from 'mustache';
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
+const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-
-const CURRENT_PLATFORM = 'web';
-
-// const CURRENT_PLATFORM = 'admin';
+// const CURRENT_PLATFORM = 'web';
+const CURRENT_PLATFORM = 'admin';
 
 class CodegenNode {
 
@@ -26,14 +25,21 @@ class CodegenNode {
     password;
     components;
     path;
-    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote fetchObject*/
+    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote fetchObject */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
-    params
+    permission = {};
+    /** 當struct 裡面的物件有 path時, 就對應有一個collection/document,
+     * 用來描述 create,update,delete,read, 沒有描述就是isAdmin() */
+
+    params;
     /** 目前用來做events 帶的參數 */
 
-    host
+    host;
     /** 網域名稱啦 */
+
+    disableFetch
+    /** 有些store的field不需要在new的時候就fetch, 就設定為true*/
 
     events;
     /** 用來定義可以發送的event, 製造interface */
@@ -130,8 +136,12 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['alertDialog', 'wrapContents', 'contents', 'style',
+        return ['disableFetch', 'permission', 'alertDialog', 'wrapContents', 'contents', 'style',
             'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'params', 'host']
+    }
+
+    isDisableFetch() {
+        return this.disableFetch ? this.disableFetch : false;
     }
 
     getExtraPackage() {
@@ -167,6 +177,17 @@ class CodegenNode {
 
     getEvents() {
         return this.events ? this.events : [];
+    }
+
+    getPermission() {
+        const defaultPermission = {
+            update: 'isAdmin()',
+            delete: 'isAdmin()',
+            create: 'isAdmin()',
+            read: 'isAdmin()'
+        }
+        const customize = this.permission ? this.permission : {};
+        return {...defaultPermission, ...customize};
     }
 
     isState() {
@@ -435,13 +456,19 @@ class CodegenNode {
     }
 
     /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
-    getParamsOfPath() {
+    getParamsOfPath(platform) {
         if (!this.hasPath()) return [];
 
         const params = [];
         for (const segment of this.path.split('/')) {
-            if (_.startsWith(segment, ':'))
-                params.push(Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?'));
+            if (_.startsWith(segment, ':')) {
+                let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
+                if (_.isEqual(platform, 'web')) {
+                    param += '= UserInfoRef.getUid()';
+                }
+                params.push(param);
+            }
+
         }
         return params;
     }
@@ -1093,6 +1120,9 @@ class StoreBuilder extends BaseBuilder {
 
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendImport('_', 'lodash');
+        /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
+        baseGenerator.appendImport('UserInfoRef', '../../userInfo');
+
         baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
         const propsStmt = [];
@@ -1112,7 +1142,7 @@ class StoreBuilder extends BaseBuilder {
                 `{`,
                 node.hasPath() ? `...(await this.${Util.camel(`fetch`, node.getFieldName())}()),` : `...{},`,
                 ..._.map(node.getChildren(), (child) => {
-                    return child.hasPath() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(),` : '';
+                    return child.hasPath() && !child.isDisableFetch() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(),` : '';
                 }),
                 `}`,
             ]
@@ -1235,7 +1265,7 @@ class RemoteFunctionHandler {
             if (node.hasPath()) {
                 /** 有path 才代表 這是一個遠端也有的物件 */
                 const functionNameOfNormalize = Util.camel('normalize', node.getName());
-                const defaultParam = node.getParamsOfPath();
+                const defaultParam = node.getParamsOfPath(CURRENT_PLATFORM);
                 const pathStmt = `const path = \`${node.getPathOfRouterString()}\``;
                 generator.appendFunction(functionNameOfNormalize, ['object'], [], [],
                     ...contents,
@@ -1245,11 +1275,13 @@ class RemoteFunctionHandler {
                 if (node.isArray()) {
                     generator.appendAsyncFunction(Util.camel(`fetch`, node.getFieldName()),
                         [...defaultParam, 'condition = (stmt) => stmt'], [], [],
-                        `return await this.fetchItems('${node.getFieldName()}',condition)`)
+                        `${pathStmt}`,
+                        `return await this.fetchItems(path, condition)`)
 
                     generator.appendAsyncFunction(Util.camel(`fetch`, node.getName(), 'Item'),
                         [...defaultParam, 'id'], [], [],
-                        `return await this.fetchItem('${node.getFieldName()}', id)`)
+                        `${pathStmt}`,
+                        `return await this.fetchItem(path, id)`)
 
                     /** admins only , delete collection all */
                     generator.appendAsyncFunction(Util.camel(`delete`, node.getFieldName()),
@@ -1438,8 +1470,8 @@ class ComponentBuilder extends BaseBuilder {
             [], [], [], `super.componentWillUnmount()`, ...this.componentDetachStmt);
 
         /** index.js */
-        if(_.isEqual(componentNode.getName(),componentNode.getParentObject().getNavigationComponentName())){
-            baseGenerator.appendFunction('isNavigator',[],[],[],'return true');
+        if (_.isEqual(componentNode.getName(), componentNode.getParentObject().getNavigationComponentName())) {
+            baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
         }
 
 
@@ -1758,14 +1790,14 @@ class AppBuilder extends ComponentBuilder {
 
     async buildEventFolder(events) {
 
-        const normalize = Util.arrayToObjWith(events,(event) => event.getName())
+        const normalize = Util.arrayToObjWith(events, (event) => event.getName())
         const baseEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `event`, `BaseComponentEvent.js`));
         baseEventGenerator.appendImport('EventBus', '../base/CommonEventBus');
         baseEventGenerator.appendClass('BaseComponentEvent', {name: 'BaseEvent', from: `../base/BaseEvent`});
         for (const event in normalize) {
             const events = normalize[event];
             /** 用這個方式找到params數最多的 */
-            const standard = _.last(_.sortBy(events,(event) => event.getEventParams().length));
+            const standard = _.last(_.sortBy(events, (event) => event.getEventParams().length));
             baseEventGenerator.appendFunction(Util.camel('emit', event),
                 [...standard.getEventParams()], [], [`event for ==> ${events.map((event) => event.getParentObject().getName()).join(' ,')}`],
                 `EventBus.emit('${standard.getName()}',${standard.getEventParams().join(' ,')})`);
@@ -2283,6 +2315,45 @@ class ProjectFileHandler {
         }
     }
 
+    fetchCollection(node, stmts = []) {
+        const path = node.getPath();
+        if (!_.isEmpty(path)) {
+
+            const _stmts = [];
+            const normalize = path.split('\/')
+                .map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
+            const permission = node.getPermission();
+            for (const each in permission) {
+                _stmts.push(`allow ${each}: if ${permission[each]};`)
+            }
+
+            const wildcard = `{${node.getName()}}`;
+            if (node.isObject()) {
+                stmts.push(`match ${libpath.join('/', normalize, 'attrs', wildcard)} {`, ..._stmts, '}');
+            } else if (node.isArray()) {
+                stmts.push(`match ${libpath.join('/', normalize, wildcard)} {`, ..._stmts, '}');
+            } else {
+                throw new ERROR(9999, `cant happened this condition`);
+            }
+        }
+
+        if (node.hasChildren()) {
+            for (const child of node.getChildren())
+                this.fetchCollection(child, stmts);
+        }
+    }
+
+    async generateFireStoreRules() {
+        const path = Util.persistByPath(libpath.join(this.genRootPath, 'firebase.rules'))
+        const base = Util.getFileContextInRaw('./template/template.firebase.rules').split('\n');
+        const stmts = [];
+        for (const component of this.nodeOfAncestor.getComponents()) {
+            this.fetchCollection(component.getStruct(), stmts);
+        }
+        Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
+        Util.appendFile(path, base.join('\n'), true, true);
+    }
+
     async forAdmin() {
         Util.persistByPath(this.genRootPath);
         Util.copySingleFile('./template/admin.package.json', this.genRootPath, 'package.json', true);
@@ -2292,20 +2363,21 @@ class ProjectFileHandler {
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
         apiGenerator.needIndexFile('AdminRemoteApi');
 
-        const changeEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`));
-        changeEventGenerator.appendClass('BaseAdminListenerApi', {
+        const listenerGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`));
+        listenerGenerator.appendClass('BaseAdminListenerApi', {
             name: 'CommonRemoteApi',
             from: '../base/CommonRemoteApi'
         });
-        changeEventGenerator.needIndexFile('AdminListenerApi');
+        listenerGenerator.needIndexFile('AdminListenerApi');
 
         for (const component of this.nodeOfAncestor.getComponents()) {
             new RemoteFunctionHandler(apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
-            new RemoteFunctionHandler(changeEventGenerator).buildListenerFunction(component.getStruct(), true)
+            new RemoteFunctionHandler(listenerGenerator).buildListenerFunction(component.getStruct(), true)
         }
 
-        await changeEventGenerator.persist();
+        await listenerGenerator.persist();
         await apiGenerator.persist();
+        await this.generateFireStoreRules();
     }
 
     async forWeb() {

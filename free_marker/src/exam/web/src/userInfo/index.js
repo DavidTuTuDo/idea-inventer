@@ -33,13 +33,13 @@ class UserInfo {
          */
 
         let user = firebaser.getCurrentUser();
-        if (!_.isUndefined(user)) return user;
+        if (Util.exist(user)) return user;
 
-        if (!allowCache) return {};
-
-        user = Cookie.getUser();
-        if (!_.isUndefined(user)) return user;
-        return firebaser.getCurrentUser();
+        if (allowCache) {
+            user = Cookie.getUser();
+            if (Util.exist(user)) return user;
+        }
+        return {};
     }
 
     isLoginInSucceed() {
@@ -49,10 +49,13 @@ class UserInfo {
     getUid(allowCache = true) {
         let uid = firebaser.getUid();
         if (!_.isEmpty(uid)) return uid;
-
-        if (!allowCache) return '';
-        uid = Cookie.getUser().uid;
-        if (!_.isEmpty(uid)) return uid;
+        if (allowCache) {
+            const user = Cookie.getUser();
+            if (Util.exist(user))
+                uid = user.uid;
+            if (!_.isEmpty(uid)) return uid;
+        }
+        return 'empty';
     }
 }
 

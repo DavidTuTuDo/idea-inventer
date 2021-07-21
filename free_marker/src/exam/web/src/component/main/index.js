@@ -10,9 +10,10 @@ import React from 'react';
 import Router from '../../router';
 import path from 'path';
 import Cookies from "../../cookie";
+import UserInfo from '../../userInfo';
 import {utiller as Util} from 'utiller';
+import UserInfoStore from '../../store/userInfo';
 
-@inject("userInfo")
 @inject("main")
 @observer
 class MainComponent extends BaseMainComponent {
@@ -20,6 +21,7 @@ class MainComponent extends BaseMainComponent {
     constructor(prop) {
         super(prop);
         this.props.main.setState('stable');
+        this.userInfoStore = new UserInfoStore();
     }
 
     onSocialButtonClicked(param) {
@@ -27,13 +29,11 @@ class MainComponent extends BaseMainComponent {
     }
 
     onHighButtonClicked(param) {
-        const userInfo = this.props.userInfo;
-        userInfo.fetch(userInfo.uid).then((result) => Util.appendInfo(result));
+        this.userInfoStore.fetch(UserInfo.getUid()).then((result) => Util.appendInfo(result));
     }
 
     onJuniorButtonClicked(param) {
-        const userInfo = this.props.userInfo;
-        userInfo.submitUserInfoObject(userInfo.uid, userInfo.self()).then();
+        this.userInfoStore.submitUserInfoObject(UserInfo.getUid(), UserInfo.getCurrentUser()).then();
     }
 
     onPurchaseButtonClicked(param) {

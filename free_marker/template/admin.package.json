@@ -22,8 +22,8 @@
     "axios": "^0.21.1",
     "json-bigint": "^1.0.0",
     "uuid": "^3.3.3",
-    "crypto-js": "^3.1.9-1",
-    "js-event-bus": "^1.1.0"
+    "js-event-bus": "^1.1.0",
+    "crypto-js": "^3.1.9-1"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

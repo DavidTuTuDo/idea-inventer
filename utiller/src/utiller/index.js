@@ -429,9 +429,19 @@ class Utiller {
 
     }
 
+    getIndexOfContext(context, stmt) {
+        return _.findIndex(context, (per) => {
+            return _.isEqual(per.trim(), stmt);
+        });
+    }
+
     /** 去掉文字裡討厭的換行*/
     toOneLineString(string) {
         return _.join(_.split(string, '\n'), '');
+    }
+
+    exist(obj){
+        return !_.isNull(obj) && !_.isUndefined(obj);
     }
 
     /** 讓字串結尾必須是指定的 predicate, ex: `i'm good today?,,` => `i'm good today` */
@@ -497,14 +507,14 @@ class Utiller {
      * [{name:'aaa',sign:2},{name:'aaa',sign:3},{name:'b',sign:4}] =>
      * {aaa:[{{name:'aaa',sign:2},{name:'aaa',sign:3}}], b:[{name:'b',sign:4}]}
      */
-    arrayToObjWith(array, predicate){
+    arrayToObjWith(array, predicate) {
         const obj = {};
-        for(const item of array){
+        for (const item of array) {
             const key = predicate(item);
             const content = obj[key];
-            if(content && _.isArray(content)){
+            if (content && _.isArray(content)) {
                 content.push(item)
-            } else{
+            } else {
                 obj[key] = [item];
             }
         }
@@ -520,7 +530,8 @@ class Utiller {
         return _.merge(...obj);
     }
 
-    syncSetTimeout(func, ms, callback = () => {}) {
+    syncSetTimeout(func, ms, callback = () => {
+    }) {
         (function sync(done) {
             if (!done) {
                 setTimeout(function () {
@@ -548,7 +559,10 @@ class Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            console.log(new Utiller().arrayToObjWith([{name:'aaa',sign:2},{name:'aaa',sign:3},{name:'b',sign:4}],(each) => each.name));
+            console.log(new Utiller().arrayToObjWith([{name: 'aaa', sign: 2}, {name: 'aaa', sign: 3}, {
+                name: 'b',
+                sign: 4
+            }], (each) => each.name));
 
         }
     )();
