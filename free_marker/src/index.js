@@ -2344,8 +2344,8 @@ class ProjectFileHandler {
     }
 
     async generateFireStoreRules() {
-        const path = Util.persistByPath(libpath.join(this.genRootPath, 'firebase.rules'))
-        const base = Util.getFileContextInRaw('./template/template.firebase.rules').split('\n');
+        const path = Util.persistByPath(libpath.join(this.genRootPath, 'firestore.rules'))
+        const base = Util.getFileContextInRaw('./template/template.firestore.rules').split('\n');
         const stmts = [];
         for (const component of this.nodeOfAncestor.getComponents()) {
             this.fetchCollection(component.getStruct(), stmts);
