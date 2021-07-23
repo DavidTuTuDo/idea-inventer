@@ -32,6 +32,10 @@ class CommonFirebaseHelper extends BaseFirebase {
         return this.core().auth();
     }
 
+    storage() {
+        return this.core().storage();
+    }
+
     getCurrentUser() {
         return this.auth().currentUser;
     }

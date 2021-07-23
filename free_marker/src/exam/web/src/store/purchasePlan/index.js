@@ -21,7 +21,7 @@ class PurchasePlanStore extends BasePurchasePlanStore {
   }
 
     isTitle(){
-        return _.isEqual(this.getId(),1);
+        return _.isEqual(this.getId(),1);1
     }
   /** -------------------- async api -------------------- **/
 }

@@ -12,6 +12,7 @@ class BaseComponent extends React.Component {
     constructor(props) {
         super(props);
         this.listOfFunctionOfUnsubscribe = [];
+        this.fileChooserInputRef = React.createRef();
     }
 
     componentDidMount() {
@@ -91,30 +92,74 @@ class BaseComponent extends React.Component {
     }
 
     render() {
+        const self = this;
         return (
             <div className={'RootViewDiv'}>
 
-                {this.renderGlobalLoadingView()}
+                {self.renderGlobalLoadingView()}
 
                 <div className={'ComponentViewDiv'}>
-                    {this.renderViewByStatus()}
+                    {self.renderViewByStatus()}
                 </div>
 
-                {this.renderLoadingView()}
+                {self.renderLoadingView()}
+
+                {self.renderSelectorView()}
 
             </div>)
     }
 
+    renderSelectorView = () => {
+        const self = this;
+        const params = this.getStore().getSelectorParam();
+        return <input
+            multiple={params.multiple}
+            type={params.type}
+            accept={params.accept}
+            ref={self.fileChooserInputRef}
+            style={{display: 'none'}}
+            onChange={this.onFilesSelectedEventReceived.bind(self)}/>
+
+    }
+
+    onFilesSelectedEventReceived = (event) => {
+        const self = this;
+        event.stopPropagation();
+        event.preventDefault()
+        const files = event.target.files;
+        const array = [];
+        for (const index in files) {
+            const file = files[index];
+            if (file instanceof File)
+                /** 因為files 是 fileList 物件, 是一個object object object,可能遇到不是file的值*/
+                array.push({index: index, file: file, url: URL.createObjectURL(file)})
+        }
+        this.onFilesSelected(array);
+    }
+
+    /** 給子類別繼承用的 */
+    onFilesSelected(files) {
+        Util.appendError(`onFileSelected() is not implemented()`)
+    }
+
+    enableFileSelectView = (accept = 'file', multiple = 'false', type = 'file') => {
+        this.getStore().setSelectorParam({accept, multiple, type});
+        Util.syncDelay('10').then(() => this.fileChooserInputRef.current.click())
+    }
+
+    enableImageSelectView(multiple = false) {
+        const accepts = `image/*`;
+        this.enableFileSelectView(accepts, multiple)
+    }
+
     componentWillUnmount() {
         this.getStore().clear();
-
         /** 執行unsubscribe */
         while (this.listOfFunctionOfUnsubscribe.length > 0) {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
             unSub();
         }
     }
-
 
     renderGlobalLoadingView() {
         if (this.isNavigator()) {

@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-07-21-18-06-10 
+	updateTime:2021-07-23-15-57-25 
 */
 import {
   utiller as Util,
@@ -229,6 +229,10 @@ class CommonStyle {
   ExamDiv = {};
 
   /** following for main */
+
+  MainImageUrlImg = {};
+
+  MainUploadButton = {};
 
   MainPurchaseButton = {};
 

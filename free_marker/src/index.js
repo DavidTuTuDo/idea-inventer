@@ -14,10 +14,11 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-// const CURRENT_PLATFORM = 'web';
-const CURRENT_PLATFORM = 'admin';
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const CURRENT_PLATFORM = 'web';
+
+// const CURRENT_PLATFORM = 'admin';
 
 class CodegenNode {
 
@@ -205,12 +206,21 @@ class CodegenNode {
         return Util.camel(this.getName(), this.getView(), 'View', 'Param');
     }
 
-    getVariableStmts() {
+    getSelfVariableStmts() {
         const stmt = [];
         if (this.hasAlertDialog()) {
             stmt.push(`const ${this.getAlertDialogVariable()} = React.createRef()`);
             stmt.push(`let ${this.getViewParamVariable()}`);
         }
+
+        const parent = this.getPreciseParent();
+        /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
+        if (this.isAttribute() && this.getPreciseParent() !== undefined) {
+            /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
+            stmt.push(`const ${this.getFieldName()} = 
+            this.${this.getFunctionNameUsingInComponentGetter()}(${parent.getName()})`)
+        }
+
         return stmt;
     }
 
@@ -272,9 +282,13 @@ class CodegenNode {
         return !!this.outer && this.outer
     }
 
+    isImageView() {
+        return this.view === 'img' && this.isAttribute();
+    }
+
+
     /** 就是指number, string 這類的物件啦 */
-    isViewValue() {
-        // return Util.isOrEquals(this.type, 'string', 'number');
+    isStringOrNumberAttribute() {
         return this.isView() && this.isAttribute() && !this.isArrayOrObject();
     }
 
@@ -1165,7 +1179,7 @@ class StoreBuilder extends BaseBuilder {
             '}'
         )
 
-        baseGenerator.appendFunction('clear', [], [], [],
+        baseGenerator.appendFunction('clear', [], ['action'], [],
             ...node.getPreciseAttributeChildren().map((child) => `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`)
         )
 
@@ -1606,7 +1620,6 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.isClickView()) {
-
             generator.appendFunction(node.getFunctionNameOfClicked(),
                 ['param'], [], [],
                 `Util.appendError('${node.getFunctionNameOfClicked()} not override')`
@@ -1625,18 +1638,15 @@ class ComponentBuilder extends BaseBuilder {
         }
 
 
-        const content = [];
-        if (node.isViewValue()) {
-            const functionName = node.getFunctionNameUsingInComponentGetter();
-            generator.appendFunction(functionName, [`${node.getPreciseParentName()}`], [], [],
-                `return ${node.getPreciseParentName()}.${node.getFunctionNameInStoreGetter()}()`);
-            content.push(`{this.${functionName}(${node.getPreciseParentName()})}`);
+        /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
+        if (node.isImageView()) {
+            props['src'] = `###this.${node.getFieldName()}`;
         }
 
         let origin = this.getJSXStrings({
             tag: node.view,
             props,
-            contents: [...content, ...node.getContents(), ...extraContents],
+            contents: [...node.getContents(), ...extraContents],
         });
 
         const wrapView = node.getWrapView();
@@ -1665,7 +1675,7 @@ class ComponentBuilder extends BaseBuilder {
             return this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [`{${node.getPreciseParent().getName()}.${node.getFunctionNameInStoreGetter()}().map( (${node.getName()}) => { return (`, ...origin, `)})}`]
+                contents: [`{${node.getFieldName()}.map( (${node.getName()}) => { return (`, ...origin, `)})}`]
             })
         } else {
             return origin;
@@ -1695,15 +1705,23 @@ class ComponentBuilder extends BaseBuilder {
 
             if (child.isArrayOrObject()) {
                 childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
+            } else if (!child.isIncestAttributeAndView()) {
+                childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
+            }
+
+            /** 產生出在component裡面的store getter */
+            if (child.isAttribute()) {
                 generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
                     [`${child.getPreciseParentName()}`], [], [],
                     `return ${child.getPreciseParentName()}.${child.getFunctionNameInStoreGetter()}()`);
-            } else {
-                if (!child.isIncestAttributeAndView()) {
-                    childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
-                }
             }
         }
+
+        /** 產生出 title => <View {title} /> */
+        if (!node.isImageView() && node.isStringOrNumberAttribute()) {
+            childstmt.push(`{${node.getFieldName()}}`);
+        }
+
         return this.getJSXStringsByNode(generator, node, ...childstmt);
     }
 
@@ -1732,12 +1750,12 @@ class ComponentBuilder extends BaseBuilder {
         for (const child of node.getChildren()) {
             if (!child.isView()) continue;
             const functionName = child.getFunctionNameOfRenderView();
-            /** 讓重複定義的view只出現一次, 像是space這樣的狀況*/
+            /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
             if (existedFunctions[functionName]) continue;
             builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
                 'const classes = this.props.classes',
                 'const self = this',
-                ...this.getChildVariableStmts(node),
+                ...child.getSelfVariableStmts(),
                 normalize(...this.getJSXStringsByStruct(child, builder)));
             if (child.hasChildren()) {
                 this.appendRenderViewFunctions(child, builder);
@@ -1746,24 +1764,11 @@ class ComponentBuilder extends BaseBuilder {
         }
     }
 
-    getChildVariableStmts(node) {
-        const stmt = [];
-        for (const child of node.getChildren()) {
-            stmt.push(...child.getVariableStmts())
-
-            /** 子類的type是object, 而且孫類需要需要帶入子類當參param */
-            if (child.isView() && child.isObject()) {
-                stmt.push(`const ${child.getFieldName()} = 
-                this.${child.getFunctionNameUsingInComponentGetter()}(${node.getFieldName()})`)
-            }
-        }
-
-        return stmt;
-    }
-
     getComponentClassBody(className) {
         return mustache.render(Util.getFileContextInRaw('./template/component.js'), this.getMustacheRenderValues({className}))
     }
+
+
 }
 
 class AppBuilder extends ComponentBuilder {

@@ -14,6 +14,7 @@ class PurchaseStore extends BasePurchaseStore {
     }
 
     async fetch() {
+        this.removePurchasePlans();
         this.pushPurchasePlansByIndex(0,
             {
                 name: `購買方案`,

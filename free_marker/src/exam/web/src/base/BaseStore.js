@@ -29,6 +29,9 @@ class BaseStore extends ClientRemoteApi {
 
     parentNode;
 
+    @observable
+    selectorParams = this.getDefaultSelectorParam();
+
     setParentNode(param) {
         this.parentNode = param;
     }
@@ -94,6 +97,24 @@ class BaseStore extends ClientRemoteApi {
 
     getGlobalLoadingTip() {
         return this.globalLoadingTip;
+    }
+
+    getSelectorParam() {
+        return this.selectorParams;
+    }
+
+    getDefaultSelectorParam() {
+        return {
+            type: 'file',
+            accept: 'file',
+            multiple: 'false',
+        }
+    }
+
+    @action
+    setSelectorParam(params) {
+        const mixer = {...this.getDefaultSelectorParam(), ...params}
+        this.selectorParams = mixer;
     }
 
 }

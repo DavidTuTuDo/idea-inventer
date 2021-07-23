@@ -13,6 +13,7 @@ import Cookies from "../../cookie";
 import UserInfo from '../../userInfo';
 import {utiller as Util} from 'utiller';
 import UserInfoStore from '../../store/userInfo';
+import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 
 @inject("main")
 @observer
@@ -39,6 +40,26 @@ class MainComponent extends BaseMainComponent {
     onPurchaseButtonClicked(param) {
         // super.onPurchaseButtonClicked(param);
         Router.gotoPurchasePage(this);
+    }
+
+    // onUploadButtonClicked(param) {
+    //     const self = this;
+    //     if(this.getSelectedFile()){
+    //         const file = this.getSelectedFile();
+    //         CommonFirebaseHelper.storage().ref().child(`images/${file.name}`).put(file).then((result) => {
+    //             self.removeFile();
+    //         })
+    //     } else {
+    //         this.getInputRef().current.click();
+    //     }
+    // }
+
+    onImageUrlImgClicked(param) {
+        this.enableImageSelectView();
+    }
+
+    onFilesSelected(files) {
+        console.log(`files ====>  `,files);
     }
 
     /** -------------------- functions -------------------- **/
