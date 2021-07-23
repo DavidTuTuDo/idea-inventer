@@ -1626,7 +1626,6 @@ class ComponentBuilder extends BaseBuilder {
             contentStmts.push(`{${node.getFieldName()}}`);
         }
 
-
         const keyValue = node.getStatementOfComponentKey();
         const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.isOuter() ? 'outer' : '', node.getView()));
 
@@ -1670,7 +1669,7 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
         if (node.isImageView()) {
-            props['src'] = `###this.${node.getFieldName()}`;
+            props['src'] = `###${node.getFieldName()}`;
         }
 
         let origin = this.getJSXStrings({
