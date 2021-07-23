@@ -1596,7 +1596,37 @@ class ComponentBuilder extends BaseBuilder {
     }
 
 
-    getJSXStringsByNode(generator, node, ...extraContents) {
+    getJSXStringsByNode(generator, node, notAllowOuterChild) {
+        /**
+         contentStmts 是指 ===>  <View > {contentStmts} <View>
+         如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
+         如果子節點是string或是number, 就產生出{string}
+         **/
+        const contentStmts = [];
+        for (const child of node.getChildren()) {
+            if (!child.isView()) continue;
+            if (notAllowOuterChild && child.isOuter()) continue;
+
+            if (child.isArrayOrObject()) {
+                contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
+            } else if (!child.isIncestAttributeAndView()) {
+                contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
+            }
+
+            /** 產生出在component裡面的store getter */
+            if (child.isAttribute()) {
+                generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
+                    [`${child.getPreciseParentName()}`], [], [],
+                    `return ${child.getPreciseParentName()}.${child.getFunctionNameInStoreGetter()}()`);
+            }
+        }
+
+        /** 產生出 title, tile是指 <View >{title} </View> */
+        if (!node.isImageView() && node.isStringOrNumberAttribute()) {
+            contentStmts.push(`{${node.getFieldName()}}`);
+        }
+
+
         const keyValue = node.getStatementOfComponentKey();
         const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.isOuter() ? 'outer' : '', node.getView()));
 
@@ -1646,7 +1676,7 @@ class ComponentBuilder extends BaseBuilder {
         let origin = this.getJSXStrings({
             tag: node.view,
             props,
-            contents: [...node.getContents(), ...extraContents],
+            contents: [...contentStmts, ...node.getContents()],
         });
 
         const wrapView = node.getWrapView();
@@ -1688,41 +1718,9 @@ class ComponentBuilder extends BaseBuilder {
         const stmt = [];
         for (const child of node.getChildren()) {
             if (child.isOuter())
-                stmt.push(...this.getJSXStringsByStruct(child, generator, false))
+                stmt.push(...this.getJSXStringsByNode(generator, child, false))
         }
         return stmt;
-    }
-
-    /**
-     * 要想像成針對這個節點 產生出 renderView, 如果子節點是物件或是array, 就產生出{getObjectOrArrayView(self.childName)}
-     * 否則 直些產生出 jsx statement.
-     */
-    getJSXStringsByStruct(node, generator, notAllowOuterChild = true) {
-        const childstmt = [];
-        for (const child of node.getChildren()) {
-            if (!child.isView()) continue;
-            if (notAllowOuterChild && child.isOuter()) continue;
-
-            if (child.isArrayOrObject()) {
-                childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
-            } else if (!child.isIncestAttributeAndView()) {
-                childstmt.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
-            }
-
-            /** 產生出在component裡面的store getter */
-            if (child.isAttribute()) {
-                generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
-                    [`${child.getPreciseParentName()}`], [], [],
-                    `return ${child.getPreciseParentName()}.${child.getFunctionNameInStoreGetter()}()`);
-            }
-        }
-
-        /** 產生出 title => <View {title} /> */
-        if (!node.isImageView() && node.isStringOrNumberAttribute()) {
-            childstmt.push(`{${node.getFieldName()}}`);
-        }
-
-        return this.getJSXStringsByNode(generator, node, ...childstmt);
     }
 
     /** stmt:Array<String> */
@@ -1730,7 +1728,7 @@ class ComponentBuilder extends BaseBuilder {
         _.remove(stmt, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
 
-    appendRenderViewFunctions(node, builder) {
+    appendRenderViewFunctions(node, generator) {
         if (!node.isView()) return;
 
         function normalize(...strings) {
@@ -1740,9 +1738,9 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (!this.hasRootRenderViewFunction) {
-            builder.appendFunction('renderView', [], [], [],
+            generator.appendFunction('renderView', [], [], [],
                 `const ${node.getName()} = this.getStore();\n\n`,
-                normalize(...this.getJSXStringsByStruct(node, builder)));
+                normalize(...this.getJSXStringsByNode(generator, node)));
             this.hasRootRenderViewFunction = true;
         }
 
@@ -1752,13 +1750,13 @@ class ComponentBuilder extends BaseBuilder {
             const functionName = child.getFunctionNameOfRenderView();
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
             if (existedFunctions[functionName]) continue;
-            builder.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
+            generator.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
                 'const classes = this.props.classes',
                 'const self = this',
                 ...child.getSelfVariableStmts(),
-                normalize(...this.getJSXStringsByStruct(child, builder)));
+                normalize(...this.getJSXStringsByNode(generator, child)));
             if (child.hasChildren()) {
-                this.appendRenderViewFunctions(child, builder);
+                this.appendRenderViewFunctions(child, generator);
             }
             existedFunctions[functionName] = true;
         }
