@@ -30,10 +30,11 @@ class ExamComponent extends BaseExamComponent {
         return 'inherit';
     }
 
-    getAlertImageSrc(question) {
-        if (question.isAnswerWrong()) {
-            return 'images/question_error.png'
+    getInjectStyleOfAlertDiv(question) {
+        if(question.isAnswerWrong()){
+            return {visibility:'visible'}
         }
+        return {visibility:'hidden'}
     }
 
     onStatementButtonClicked(param) {

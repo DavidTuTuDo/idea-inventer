@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-07-23-15-57-26 
+	updateTime:2021-07-26-18-24-12 
 */
 import {
   utiller as Util,
@@ -147,6 +147,62 @@ class MobileStyle {
   NavigatorAppBarWrapDiv = {};
 
   NavigatorAppBar = {};
+
+  /** following for exam */
+
+  ExamEditorTailDiv = {};
+
+  ExamEditorFunctionAreaRestartButton = {};
+
+  ExamEditorFunctionAreaSpaceDiv = {};
+
+  ExamEditorFunctionAreaEndButton = {};
+
+  ExamEditorFunctionAreaDiv = {};
+
+  ExamEditorQuestionYearTextField = {};
+
+  ExamEditorQuestionTypeTextField = {};
+
+  ExamEditorQuestionSubjectTextField = {};
+
+  ExamEditorQuestionTipTextFieldWrapDiv = {};
+
+  ExamEditorQuestionTipTextField = {};
+
+  ExamEditorQuestionAnswerTextField = {};
+
+  ExamEditorQuestionReplyTextField = {};
+
+  ExamEditorQuestionChoiceStatementTextFieldWrapDiv = {};
+
+  ExamEditorQuestionChoiceStatementTextField = {};
+
+  ExamEditorQuestionChoiceDivListWrapDiv = {};
+
+  ExamEditorQuestionChoiceDiv = {};
+
+  ExamEditorQuestionTopicTextFieldWrapDiv = {};
+
+  ExamEditorQuestionTopicTextField = {};
+
+  ExamEditorQuestionIdTextField = {};
+
+  ExamEditorQuestionAlertImageTextFieldWrapDiv = {};
+
+  ExamEditorQuestionAlertImageTextField = {};
+
+  ExamEditorQuestionCardListWrapDiv = {};
+
+  ExamEditorQuestionCardWrapDiv = {};
+
+  ExamEditorQuestionAlertOuterDiv = {};
+
+  ExamEditorQuestionCard = {};
+
+  ExamEditorHeadDiv = {};
+
+  ExamEditorDiv = {};
 
   /** following for purchase */
 

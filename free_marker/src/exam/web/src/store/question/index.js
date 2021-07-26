@@ -4,10 +4,18 @@
 	updateTime:2021-04-14-20-30-44
 */
 import BaseQuestionStore from "./BaseQuestionStore";
+import {observable} from "mobx";
 
 class QuestionStore extends BaseQuestionStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
+
+  @observable
+  image = 'images/question_error.png';
+
+    getImage() {
+        return this.image;
+    }
 
   filter(obj) {
       return _.sampleSize(obj,10);

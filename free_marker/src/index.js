@@ -14,11 +14,18 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-const CURRENT_PLATFORM = 'web';
+
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
+const CURRENT_PLATFORM = 'web';
+
+const FAST_DEVELOP_MODE = false;
+// const FAST_DEVELOP_MODE = true;
+
+const TARGET_COMPONENT = 'exam';
+
 
 class CodegenNode {
 
@@ -26,12 +33,21 @@ class CodegenNode {
     password;
     components;
     path;
-    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote fetchObject */
+    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
     permission = {};
     /** 當struct 裡面的物件有 path時, 就對應有一個collection/document,
      * 用來描述 create,update,delete,read, 沒有描述就是isAdmin() */
+
+    edit;
+    /** 用來產生編輯頁面 */
+
+    originalName;
+    /** 當被改成editMode之後 還是要有可以找到名字 */
+
+    editPage;
+    /** 用來注意是一個editPage */
 
     params;
     /** 目前用來做events 帶的參數 */
@@ -73,12 +89,11 @@ class CodegenNode {
 
     incest;
     /** 支援父類是string 或是 number(非資料結構), 但是仍然有children的情形,
-     在view和store上面也會產生出same generation的概念,
-     incest只支援一層
+     在view和store上面也會產生出same generation的概念, incest只支援一層, 假父類必須有wrap
      */
 
     needParam;
-    /** 單純的view有時候會需要param作為顯示的判斷*/
+    /** view有時候會需要param作為顯示的判斷*/
 
     name;
 
@@ -135,10 +150,30 @@ class CodegenNode {
         }
     }
 
+    setIsEditPage(edit) {
+        this.editPage = edit;
+    }
+
+    isEditPage() {
+        return !!this.editPage;
+    }
+
+    setOriginalName(name) {
+        this.originalName = name;
+    }
+
+    getOriginalName() {
+        return this.originalName;
+    }
+
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
         return ['disableFetch', 'permission', 'alertDialog', 'wrapContents', 'contents', 'style',
             'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'params', 'host']
+    }
+
+    needEditPage() {
+        return this.edit && !!this.edit;
     }
 
     isDisableFetch() {
@@ -157,6 +192,14 @@ class CodegenNode {
         return this.alertDialog && _.isObject(this.alertDialog);
     }
 
+    setContents(contents = []) {
+        this.contents = [];
+    }
+
+    clearContents(){
+        this.contents = [];
+    }
+
     getFieldName() {
         return this.name + (this.plural ? this.plural : '');
     }
@@ -172,12 +215,20 @@ class CodegenNode {
         return this.type;
     }
 
+    setView(view) {
+        this.view = view;
+    }
+
     getView() {
         return this.view;
     }
 
     getEvents() {
         return this.events ? this.events : [];
+    }
+
+    setEvents(events) {
+        this.events = events;
     }
 
     getPermission() {
@@ -283,7 +334,11 @@ class CodegenNode {
     }
 
     isImageView() {
-        return this.view === 'img' && this.isAttribute();
+        return this.isAttribute() && _.isEqual(this.view, 'img');
+    }
+
+    isTextField() {
+        return this.isAttribute() && _.isEqual(this.view, 'TextField');
     }
 
 
@@ -365,6 +420,7 @@ class CodegenNode {
         return [..._.filter(this.getChildren(), (child) => child.isAttribute()), ...incest];
     }
 
+    /** 沒在用 */
     getPreciseViewChildren() {
         const incest = this.getIncestChild();
         return [..._.filter(this.getChildren(), (child) => child.isView()), ...incest];
@@ -397,6 +453,10 @@ class CodegenNode {
         return {};
     }
 
+    setViewProps(props = {}) {
+        this.props = props;
+    }
+
     getClickParamStmt() {
         /** 不知道為什麼當初要設計成擋住 */
         if (!this.isAttribute())
@@ -424,6 +484,14 @@ class CodegenNode {
         return (!_.isUndefined(this.title));
     }
 
+    setTitle(title) {
+        this.title = title;
+    }
+
+    getTitle() {
+        return this.title ? this.title : '';
+    }
+
     pure() {
         return this.node;
     }
@@ -445,12 +513,20 @@ class CodegenNode {
         return !!this.view && !!this.click;
     }
 
+    setClick(click) {
+        this.click = click
+    }
+
     getFunctionNameOfClicked() {
         return Util.camel(`on`, this.name, this.view, 'clicked');
     }
 
     getPath() {
         return this.path;
+    }
+
+    setPath(path) {
+        this.path = path;
     }
 
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
@@ -636,6 +712,10 @@ class CodegenNode {
 
     getName() {
         return this.name;
+    }
+
+    setName(name) {
+        this.name = name;
     }
 
     getPlatform() {
@@ -1401,9 +1481,11 @@ class ComponentBuilder extends BaseBuilder {
     }
 
     async buildBaseComponent(componentNode) {
-        const baseClassName = `Base${_.upperFirst(componentNode.name)}Component`;
-        const className = `${_.upperFirst(componentNode.name)}Component`;
-        const folderName = componentNode.name;
+
+        const baseComponentName = componentNode.getStruct().getName();
+        const baseClassName = `Base${_.upperFirst(baseComponentName)}Component`;
+        const className = `${_.upperFirst(baseComponentName)}Component`;
+        const folderName = baseComponentName;
 
         const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
@@ -1414,7 +1496,7 @@ class ComponentBuilder extends BaseBuilder {
         });
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,Typography,Button,IconButton,Drawer}', '@material-ui/core')
+        baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style')
 
@@ -1461,21 +1543,21 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDetach([`this.${functionOfUnsubscribe}()`])
         }
 
-        this.appendRenderViewFunctions(componentNode.struct, baseGenerator);
+        this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator);
 
         if (componentNode.hasTitle()) {
-            baseGenerator.appendField(`stringOfPageTitle`, `"${componentNode.title}"`)
+            baseGenerator.appendField(`stringOfPageTitle`, `"${componentNode.getTitle()}"`)
             this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
         }
 
-        if (this.containedFetchAttribute(componentNode.struct)) {
+        if (this.containedFetchAttribute(componentNode.getStruct())) {
             this.appendStmtIntoComponentDidMount(
                 `this.getStore().fetch().then()`
             )
         }
 
         baseGenerator.appendFunction('getStore', [], [], [],
-            `return this.props.${componentNode.struct.getName()}`)
+            componentNode.isEditPage() ? `return this.props.${componentNode.getStruct().getOriginalName()}` : `return this.props.${componentNode.getStruct().getName()}`)
 
         baseGenerator.appendFunction('componentDidMount',
             [], [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
@@ -1596,7 +1678,7 @@ class ComponentBuilder extends BaseBuilder {
     }
 
 
-    getJSXStringsByNode(generator, node, notAllowOuterChild) {
+    getJSXStringsByNode(generator, node, notAllowOuterChild = true) {
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
@@ -1607,7 +1689,7 @@ class ComponentBuilder extends BaseBuilder {
             if (!child.isView()) continue;
             if (notAllowOuterChild && child.isOuter()) continue;
 
-            if (child.isArrayOrObject()) {
+            if (child.hasChildren()) {
                 contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`);
             } else if (!child.isIncestAttributeAndView()) {
                 contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
@@ -1622,7 +1704,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         /** 產生出 title, tile是指 <View >{title} </View> */
-        if (!node.isImageView() && node.isStringOrNumberAttribute()) {
+        if (!node.isTextField() && !node.isImageView() && node.isStringOrNumberAttribute()) {
             contentStmts.push(`{${node.getFieldName()}}`);
         }
 
@@ -1670,6 +1752,9 @@ class ComponentBuilder extends BaseBuilder {
         /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
         if (node.isImageView()) {
             props['src'] = `###${node.getFieldName()}`;
+        } else if(node.isTextField()){
+            props['label'] = `###${node.getDefaultValueByType()}`;
+            props['defaultValue'] = `###${node.getFieldName()}`;
         }
 
         let origin = this.getJSXStrings({
@@ -1900,7 +1985,6 @@ class AppBuilder extends ComponentBuilder {
                 'const { history } = component.props',
                 `history.push(\`${component.getPathOfRouterString()}\`)`)
         }
-
         baseRouterGenerator.needIndexFile('Router', [], true);
         await baseRouterGenerator.persist();
     }
@@ -1934,7 +2018,7 @@ class AppBuilder extends ComponentBuilder {
             if (!component.hasPath()) continue;
 
             const renderStmts = this.getJSXStrings({
-                    tag: _.upperFirst(component.name),
+                    tag: _.upperFirst(component.getStruct().getName()),
                     props: {...component.extra},
                     children: ['props'],
                 }
@@ -2382,19 +2466,64 @@ class ProjectFileHandler {
         await this.generateFireStoreRules();
     }
 
+
     async forWeb() {
         const source = this.nodeOfAncestor;
         const totalClassNames = [];
         const totalEvents = [];
 
+        function toEditorPageMode(node) {
+            if (node.getType() === 'string' || node.getType() === 'number') {
+                node.setView('TextField');
+                node.setViewProps({variant: `outlined`})
+            }
+            node.clearContents();
+
+            for (const child of node.getChildren()) {
+                toEditorPageMode(child);
+            }
+        }
+
+        const editorComponents = [];
         for (let component of source.components) {
-            await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
+            if (component.needEditPage()) {
+                if (component.needEditPage()) {
+                    const editorComponent = _.cloneDeep(component);
+
+                    editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
+                    editorComponent.setEvents([]);
+                    editorComponent.setIsEditPage(true)
+                    editorComponent.setPath(editorComponent.getPath() + `editor`);
+                    editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
+                    editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
+
+                    toEditorPageMode(editorComponent.getStruct());
+                    editorComponents.push(editorComponent);
+                    /**
+                     * 1.router 加上 edit
+                     * 2.less 要專門給 edit
+                     * 3.store 只能build一次
+                     */
+                }
+            }
+        }
+
+        source.components.push(...editorComponents);
+
+        for (let component of source.components) {
+            if (FAST_DEVELOP_MODE && !_.startsWith(component.getName(), TARGET_COMPONENT))
+                continue;
+
+            if (!component.isEditPage())
+                await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
+
             const {classNames, events} = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
             totalClassNames.push({component, classNames});
             totalEvents.push(...events);
         }
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
+
         await new StoreBuilder(this.genRootPath).buildStoreIndexFiles();
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(this.genRootPath).buildRouterFile(source);

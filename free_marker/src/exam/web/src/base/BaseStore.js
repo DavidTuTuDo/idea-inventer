@@ -107,7 +107,7 @@ class BaseStore extends ClientRemoteApi {
         return {
             type: 'file',
             accept: 'file',
-            multiple: 'false',
+            multiple: false,
         }
     }
 
