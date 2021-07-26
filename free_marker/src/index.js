@@ -68,6 +68,7 @@ class CodegenNode {
 
     wrap;
     /** 在view外面包一層div,作為彈性的使用 */
+    /** 當view的種類不是container(paper,card,div之類的), 但是getPreciseViewChild()還有child時, 就自動放到 wrap 裡面*/
 
     wrapContents;
     /** 當view有被wrap包住時,可以用wrapContent加上 ['{this.getTailView()}']*/
