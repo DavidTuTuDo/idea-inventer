@@ -127,18 +127,11 @@
 .ExamQuestionCardListWrapDiv {
   /** style */
 }
-.ExamQuestionAlertImageImg {
+.ExamQuestionAlertAlertImageImg {
   /** style */
-  opacity: 0.3;
-  height: 70%;
 }
-.ExamQuestionAlertImageImgWrapDiv {
+.ExamQuestionAlertAlertImageImgWrapDiv {
   /** style */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
 }
 .ExamQuestionTopicTypography {
   /** style */
@@ -299,10 +292,10 @@
 .ExamEditorQuestionCardListWrapDiv {
   /** style */
 }
-.ExamEditorQuestionAlertImageTextField {
+.ExamEditorQuestionAlertAlertImageTextField {
   /** style */
 }
-.ExamEditorQuestionAlertImageTextFieldWrapDiv {
+.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
   /** style */
 }
 .ExamEditorQuestionIdTextField {
@@ -363,6 +356,25 @@
   /** style */
 }
 /** ======== following for  ========= */
+.ExamQuestionAlertImageImg {
+  /** style */
+  opacity: 0.3;
+  height: 70%;
+}
+.ExamQuestionAlertImageImgWrapDiv {
+  /** style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.ExamEditorQuestionAlertImageTextField {
+  /** style */
+}
+.ExamEditorQuestionAlertImageTextFieldWrapDiv {
+  /** style */
+}
 .BaseComponentErrorViewPaper {
   display: flex;
   width: 70%;

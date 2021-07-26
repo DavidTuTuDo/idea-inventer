@@ -85,10 +85,10 @@
 .ExamQuestionCardListWrapDiv {
   /** style */
 }
-.ExamQuestionAlertImageImg {
+.ExamQuestionAlertAlertImageImg {
   /** style */
 }
-.ExamQuestionAlertImageImgWrapDiv {
+.ExamQuestionAlertAlertImageImgWrapDiv {
   /** style */
 }
 .ExamQuestionTopicTypography {
@@ -200,10 +200,10 @@
 .ExamEditorQuestionCardListWrapDiv {
   /** style */
 }
-.ExamEditorQuestionAlertImageTextField {
+.ExamEditorQuestionAlertAlertImageTextField {
   /** style */
 }
-.ExamEditorQuestionAlertImageTextFieldWrapDiv {
+.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
   /** style */
 }
 .ExamEditorQuestionIdTextField {
@@ -264,6 +264,18 @@
   /** style */
 }
 /** ======== following for  ========= */
+.ExamQuestionAlertImageImg {
+  /** style */
+}
+.ExamQuestionAlertImageImgWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionAlertImageTextField {
+  /** style */
+}
+.ExamEditorQuestionAlertImageTextFieldWrapDiv {
+  /** style */
+}
 .NavigatorAppBar {
   /** style */
 }

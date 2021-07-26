@@ -10,13 +10,6 @@ class QuestionStore extends BaseQuestionStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
-  @observable
-  image = 'images/question_error.png';
-
-    getImage() {
-        return this.image;
-    }
-
   filter(obj) {
       return _.sampleSize(obj,10);
   }
