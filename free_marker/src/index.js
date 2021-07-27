@@ -1642,7 +1642,7 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         await baseGenerator.persist();
 
-        return {classNames: _.values(this.classNames), events: componentNode.getEvents()};
+        return {classNames: this.classNames, events: componentNode.getEvents()};
     }
 
     containedFetchAttribute(node) {
@@ -1864,12 +1864,13 @@ class ComponentBuilder extends BaseBuilder {
 
     /** 就是把標註為 outer 的 child 放在同一個view的層級 */
     getOuterChildJSXStrings(generator, node) {
-        const stmt = [];
+        const contentStmts = [];
         for (const child of node.getChildren()) {
-            if (child.isOuter())
-                stmt.push(...this.getJSXStringsByNode(generator, child, false))
+            if (child.isOuter()) {
+                contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
+            }
         }
-        return stmt;
+        return contentStmts;
     }
 
     /** stmt:Array<String> */
