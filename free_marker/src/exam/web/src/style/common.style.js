@@ -1,7 +1,7 @@
-/** this code are generated, modify is no sense. 
-	author:David Tu, 
-	email:freshingmoon0725@gmail.com 
-	updateTime:2021-07-26-22-18-44 
+/** this code are generated, modify is no sense.
+	author:David Tu,
+	email:freshingmoon0725@gmail.com
+	updateTime:2021-07-28-01-15-10
 */
 import {
   utiller as Util,
@@ -16,147 +16,8 @@ class CommonStyle {
 
   /** following for unknown */
 
-  ExamQuestionAlertImageImg = {};
 
-  ExamQuestionAlertImageImgWrapDiv = {};
-
-  ExamEditorQuestionAlertImageTextField = {};
-
-  ExamEditorQuestionAlertImageTextFieldWrapDiv = {};
-
-  NavigatorAppBar = {};
-
-  NavigatorAppBarWrapDiv = {};
-
-  NavigatorToolBarToolbar = {};
-
-  NavigatorToolBarMenuIconButton = {};
-
-  NavigatorToolBarMenuIconMenuIcon = {};
-
-  NavigatorToolBarTitleTypography = {};
-
-  NavigatorToolBarLoginButton = {};
-
-  NavigatorToolBarLoginButtonWrapDiv = {};
-
-  NavigatorHomeAreaAvatar = {};
-
-  NavigatorHomeAreaHomeImg = {};
-
-  NavigatorFunctionDiv = {};
-
-  NavigatorLoginButton = {};
-
-  NavigatorLoginButtonWrapDiv = {};
-
-  ExamQuestionCardArrayWrapDiv = {};
-
-  ExamQuestionChoiceDivArrayWrapDiv = {};
-
-  PurchasePlanDivArrayWrapDiv = {};
-
-  PurchasePlanPriceTipTypography = {};
-
-  PurchaseCardArrayWrapDiv = {};
-
-  PurchaseCard = {};
-
-  PurchaseArrayWrapDiv = {};
-
-  PurchaseTitleTypography = {};
-
-  NavigatorGoogleloginButton = {};
-
-  NavigatorGoogleloginButtonWrapDiv = {};
-
-  HeaderHomeAreaHomeImg = {};
-
-  HeaderHomeAreaAvatar = {};
-
-  HeaderFunctionDiv = {};
-
-  HeaderLoginButton = {};
-
-  HeaderLoginButtonWrapDiv = {};
-
-  HeaderDiv = {};
-
-  HeaderImageImg = {};
-
-  HeaderImageImgWrapDiv = {};
-
-  ExamQuestionAlertOuterDivWrapDiv = {};
-
-  ExamQuestionAlertOuterImg = {};
-
-  ExamQuestionAlertDiv = {};
-
-  ExamQuestionAlertContentDiv = {};
-
-  HeaderHomeImgWrapDiv = {};
-
-  HeaderHomeImg = {};
-
-  HeaderHomeAreaHomeImgWrapDiv = {};
-
-  PurchasePlanPidTypography = {};
-
-  PurchasePlanDivWrapDiv = {};
-
-  PurchasePlanSpaceOuterDiv = {};
-
-  PurchaseDivArrayWrapDiv = {};
-
-  PurchasePlanBuyButtonWrapDiv = {};
-
-  PurchasePlanBuyButton = {};
-
-  PurchasePlanSweetTypographyWrapDiv = {};
-
-  PurchasePlanSweetTypography = {};
-
-  PurchasePlanMusicTypographyWrapDiv = {};
-
-  PurchasePlanMusicTypography = {};
-
-  PurchasePlanMathTypographyWrapDiv = {};
-
-  PurchasePlanMathTypography = {};
-
-  PurchasePlanPricePriceTipTypography = {};
-
-  PurchasePlanPriceTypographyWrapDiv = {};
-
-  PurchasePlanPriceTypography = {};
-
-  PurchasePlanSpaceDiv = {};
-
-  PurchasePlanNameTypographyWrapDiv = {};
-
-  PurchasePlanNameTypography = {};
-
-  PurchasePlanDivListWrapDiv = {};
-
-  PurchasePlanDiv = {};
-
-  AppBarToolBarLoginButtonWrapDiv = {};
-
-  AppBarToolBarLoginButton = {};
-
-  AppBarToolBarTitleTypography = {};
-
-  AppBarToolBarMenuIconMenuIcon = {};
-
-  AppBarToolBarMenuIconButton = {};
-
-  AppBarToolBarToolbar = {};
-
-  AppBarAppBar = {};
-
-  NavigatorToolBarToolbarListWrapDiv = {};
-
-  /** following for exam */
+  /** => following for exam editor component  */
 
   ExamEditorTailDiv = {};
 
@@ -200,11 +61,13 @@ class CommonStyle {
 
   ExamEditorQuestionAlertAlertImageTextField = {};
 
+  ExamEditorQuestionAlertOuterDiv = {};
+
   ExamEditorQuestionCardListWrapDiv = {};
 
-  ExamEditorQuestionCardWrapDiv = {};
-
   ExamEditorQuestionAlertOuterDiv = {};
+
+  ExamEditorQuestionCardWrapDiv = {};
 
   ExamEditorQuestionCard = {};
 
@@ -212,7 +75,7 @@ class CommonStyle {
 
   ExamEditorDiv = {};
 
-  /** following for purchase */
+  /** => following for purchase  component  */
 
   PurchasePurchasePlanBuyButtonWrapDiv = {};
 
@@ -240,7 +103,7 @@ class CommonStyle {
 
   PurchaseDiv = {};
 
-  /** following for result */
+  /** => following for result  component  */
 
   ResultMessageTypography = {};
 
@@ -248,7 +111,7 @@ class CommonStyle {
 
   ResultCard = {};
 
-  /** following for exam */
+  /** => following for exam  component  */
 
   ExamTailDiv = {};
 
@@ -280,11 +143,13 @@ class CommonStyle {
 
   ExamQuestionAlertAlertImageImg = {};
 
+  ExamQuestionAlertOuterDiv = {};
+
   ExamQuestionCardListWrapDiv = {};
 
-  ExamQuestionCardWrapDiv = {};
-
   ExamQuestionAlertOuterDiv = {};
+
+  ExamQuestionCardWrapDiv = {};
 
   ExamQuestionCard = {};
 
@@ -292,7 +157,7 @@ class CommonStyle {
 
   ExamDiv = {};
 
-  /** following for main */
+  /** => following for main  component  */
 
   MainImageUrlImg = {};
 
@@ -308,7 +173,7 @@ class CommonStyle {
 
   MainDiv = {};
 
-  /** following for navigator */
+  /** => following for navigator  component  */
 
   NavigatorExtraContentDiv = {};
 
@@ -328,13 +193,13 @@ class CommonStyle {
 
   NavigatorDiv = {};
 
-  /** following for login */
+  /** => following for login  component  */
 
   LoginDivWrapDiv = {};
 
   LoginDiv = {};
 
-  /** following for purchaseSucceed */
+  /** => following for purchaseSucceed  component  */
 
   PurchaseSucceedConfirmButton = {};
 

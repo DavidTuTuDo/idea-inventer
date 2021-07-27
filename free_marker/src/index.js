@@ -21,11 +21,10 @@ const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
 
-const FAST_DEVELOP_MODE = false;
 // const FAST_DEVELOP_MODE = true;
+const FAST_DEVELOP_MODE = false;
 
 const TARGET_COMPONENT = 'purchase';
-
 
 class CodegenNode {
 
@@ -41,13 +40,22 @@ class CodegenNode {
      * 用來描述 create,update,delete,read, 沒有描述就是isAdmin() */
 
     edit;
-    /** 用來產生編輯頁面 */
+    /** 用來提示這個component需要產生編輯頁面 */
+
+    originalView;
+    /** 當被改成editMode之後 還是要有可以找到原始的view, 因為我會把type是string||number 強制把view改成TextField */
 
     originalName;
     /** 當被改成editMode之後 還是要有可以找到名字 */
 
+    viewModified;
+    /**  在editMode下, 如果被改過View, 這邊就會是true */
+
+    nameModified
+    /** 在editMode下, 如果被改過View, 這邊就會是true */
+
     editPage;
-    /** 用來注意是一個editPage */
+    /** 用來註記是一個editPage */
 
     params;
     /** 目前用來做events 帶的參數 */
@@ -163,8 +171,32 @@ class CodegenNode {
         return !!this.editPage;
     }
 
+    isViewModified() {
+        return !!this.viewModified;
+    }
+
+    isNameModified() {
+        return !!this.nameModified;
+    }
+
+    setViewModified(modified) {
+        this.viewModified = modified;
+    }
+
+    setNameModified(modified) {
+        this.nameModified = modified;
+    }
+
     setOriginalName(name) {
         this.originalName = name;
+    }
+
+    setOriginalView(view) {
+        this.originalView = view;
+    }
+
+    getOriginalView() {
+        return this.originalView;
     }
 
     getOriginalName() {
@@ -358,7 +390,6 @@ class CodegenNode {
      * precise代表的是正確的父子關係,例如incest value, 如果要找到正確的父類, 就要透過 Precise
      * */
 
-
     getPreciseViewParent() {
         return this.getPreciseParent((node) => node.isIncestView(), (node) => node.isView());
     }
@@ -368,7 +399,6 @@ class CodegenNode {
     }
 
     getPreciseParent(isIncest, isNode) {
-
         let parent = this.getParentObject();
 
         if (isIncest(this)) {
@@ -503,6 +533,54 @@ class CodegenNode {
         return this.parent !== undefined;
     }
 
+    /** 放在css用來做key => ExamEditorQuestionCard */
+    getClassNameOfLessUsage(type = 'default') {
+        const className = this.organizeClassNameWithParent(this.getReverseOrderOfViewParentNames())
+        return this.combineClassNameWithType(type, className);
+    }
+
+    combineClassNameWithType(type, className) {
+        const wrapView = this.getWrapView();
+        switch (type) {
+            case "default":
+                return className;
+            case 'listWrap':
+                return `${className}ListWrap${_.upperFirst(wrapView)}`
+            case 'wrap':
+                return `${className}Wrap${_.upperFirst(wrapView)}`;
+        }
+        throw new ERROR(8017, `type can't be ==> ${type}`)
+    }
+
+    /** original 就是找到hack之前的組合 */
+    organizeClassNameWithParent(parentNames, original = false) {
+        return _.upperFirst(Util.camel(...parentNames, this.getName(),
+            this.isOuter() ? 'outer' : '', !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView()))
+    }
+
+    /** 當edit mode的時候, 為了要讓editMode下的元件屬性在less可以繼承 mainMode */
+    getOriginalClassNameOfLessUsage(type = 'default') {
+        if (this.isViewModified() && _.isEmpty(this.getOriginalView())) {
+            /** 表示本來這個元件不是View, 不會有OriginalClassName */
+            return {exists: false, value: undefined};
+        }
+
+        const names = [];
+        let currentNode = this.getPreciseViewParent();
+        while (!!currentNode) {
+            /** 如果到達 struct 層級, 就停止了 */
+            if (currentNode.getStruct())
+                break;
+
+            names.push(currentNode.isNameModified() ? currentNode.getOriginalName() : currentNode.getName())
+            currentNode = currentNode.getPreciseViewParent();
+        }
+        const className = this.organizeClassNameWithParent(names, true);
+        return {
+            exists: true, value: this.combineClassNameWithType(type, className)
+        };
+    }
+
     isClickView() {
         return !!this.view && !!this.click;
     }
@@ -570,18 +648,18 @@ class CodegenNode {
     }
 
     /** 為了組合出 uniq 的 view className,最後有加上reverse的調整 */
-    getReverseOrderOfParentNames() {
+    getReverseOrderOfViewParentNames() {
         const names = [];
-        let currentNode = this.parent;
+        let currentNode = this.getPreciseViewParent();
         while (!!currentNode) {
             /** 如果到達 struct 層級, 就停止了 */
-            if (currentNode.struct)
+            if (currentNode.getStruct())
                 break;
 
-            if (currentNode.name)
-                names.push(currentNode.name)
+            if (currentNode.getName())
+                names.push(currentNode.getName())
 
-            currentNode = currentNode.parent;
+            currentNode = currentNode.getPreciseViewParent();
         }
         return _.reverse(names);
     }
@@ -907,7 +985,7 @@ class ClassGenerator {
         this.needCreatedIndexFile = true;
     }
 
-    getClassName() {
+    getMainClassName() {
         if (this.classes.length > 0) {
             return this.classes[0];
         }
@@ -961,7 +1039,7 @@ class ClassGenerator {
 
         if (this.needCreatedIndexFile) {
             const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
-            index.appendClass(this.indexClassName, {name: this.getClassName()}, ...this.indexFileMacros);
+            index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
             index.setSingleton(this.indexFileSingleton);
 
             /** 有marco,就要配搭相對應的import */
@@ -1445,7 +1523,7 @@ class RemoteFunctionHandler {
 class ComponentBuilder extends BaseBuilder {
 
     hasRootRenderViewFunction = false;
-    classNames = {};
+    classNames = [];
     componentDidMountStmt = [];
     componentDetachStmt = [];
 
@@ -1587,6 +1665,7 @@ class ComponentBuilder extends BaseBuilder {
      *      props:{...name:object},
      *      contents:['cotent1','content2']
      *      children: ['ccc'],
+     *      classNameType:['ListWrap','Wrap','Default']
      * }
      *
      * ////////////// sample: ///////////////
@@ -1640,11 +1719,6 @@ class ComponentBuilder extends BaseBuilder {
                 stmt.push(`{${props[key]}}`)
             else
                 stmt.push(`${key}=${normalize(props[key])}\n`);
-
-            /** this is super hard-code */
-            if (_.isEqual(key, 'className')) {
-                this.storesClassName(props[key]);
-            }
         }
 
         stmt.push(`>`);
@@ -1662,14 +1736,12 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-    /** 把所有className儲存起來,後續要產生出less才有根據 */
-    storesClassName(name) {
-        this.classNames[name] = name;
+    /** 把組合出className必備存起來 {node,type:className type} ,後續要產生出less style才有根據 */
+    storeClassName(className) {
+        this.classNames.push(className);
     }
 
-
     getJSXStringsByNode(generator, node, notAllowOuterChild = true) {
-
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
@@ -1694,8 +1766,8 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         const keyValue = node.getStatementOfComponentKey();
-        const className = _.upperFirst(Util.camel(...node.getReverseOrderOfParentNames(), node.getName(), node.isOuter() ? 'outer' : '', node.getView()));
-
+        const className = node.getClassNameOfLessUsage('default');
+        this.storeClassName({node, type: 'default'});
         const props = {
             className,
             ...node.getViewProps(),
@@ -1748,9 +1820,11 @@ class ComponentBuilder extends BaseBuilder {
             contents: [...contentStmts, ...node.getContents()],
         });
 
+
         const wrapView = node.getWrapView();
         if (node.hasWrap()) {
-            const clazzName = `${className}Wrap${_.upperFirst(wrapView)}`;
+            const clazzName = node.getClassNameOfLessUsage('wrap');
+            this.storeClassName({node, type: 'wrap'});
             const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
             if (node.isArray() && !_.isEmpty(keyValue))
                 props.key = '###' + '`' + keyValue + 'Wrap' + '`';
@@ -1773,7 +1847,9 @@ class ComponentBuilder extends BaseBuilder {
 
         /** type是array就必須的包上一成ListWrap,可以調整物件方向 */
         if (node.isArray()) {
-            const clazzName = `${className}ListWrap${_.upperFirst(wrapView)}`;
+            const clazzName = node.getClassNameOfLessUsage('listWrap');
+            this.storeClassName({node, type: 'listWrap'});
+
             const props = {className: clazzName, style: `###Style.${clazzName}`}
             return this.getJSXStrings({
                 tag: wrapView,
@@ -1843,7 +1919,6 @@ class ComponentBuilder extends BaseBuilder {
     getComponentClassBody(className) {
         return mustache.render(Util.getFileContextInRaw('./template/component.js'), this.getMustacheRenderValues({className}))
     }
-
 
 }
 
@@ -2101,15 +2176,20 @@ class AppBuilder extends ComponentBuilder {
             const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'style', `${type}.style.js`))
             generator.appendClass(`${_.upperFirst(type)}Style`);
             for (const info of classNameInfos) {
+
                 for (const className of info.classNames) {
-                    if (!!origins[className]) {
-                        generator.appendField(className, JSON.stringify(origins[className]));
-                        delete origins[className];
+                    const node = className.node;
+                    const type = className.type;
+                    const name = node.getClassNameOfLessUsage(type);
+                    if (!!origins[name]) {
+                        generator.appendField(name, JSON.stringify(origins[name]));
+                        delete origins[name];
                     } else {
-                        generator.appendField(className, `{}`);
+                        generator.appendField(name, `{}`);
                     }
                 }
-                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for ${info.component.name} */\n\n`)
+                const isEditPage = info.component.isEditPage();
+                generator.insertBatchLinesIntoFieldSection(`\n\n/** => following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component  */\n\n`)
                 generator.setSingleton(true);
             }
             if (!_.isEmpty(origins)) {
@@ -2130,37 +2210,49 @@ class AppBuilder extends ComponentBuilder {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             const srcLessPath = libpath.join(srcPath, `less`, `${type}.less`)
-            const lessAttriutesFromSrc = [];
+            const lessAttributesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
                 const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
                 _.remove(stub,
                     (each) => (_.startsWith(each, '/** ') ||
                         _.isEqual(each.trim(), '')))
-                lessAttriutesFromSrc.push(...(stub.join('').split('}')))
+                lessAttributesFromSrc.push(...(stub.join('').split('}')))
                 /** 移除掉最後一個,因為split */
-                lessAttriutesFromSrc.pop();
+                lessAttributesFromSrc.pop();
             }
 
             const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`));
             for (const info of classNameInfos) {
-                generator.appendInClassTail(`/** => following for ${info.component.name} component used <= */\n\n`);
+                const isEditPage = info.component.isEditPage();
+                generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
                 for (const className of info.classNames) {
                     /** 注意!! 是用 remove,會mutate 原本的 array */
-                    const srcAttribute = _.remove(lessAttriutesFromSrc,
+                    const node = className.node;
+                    const type = className.type;
+                    const name = node.getClassNameOfLessUsage(type);
+                    const srcAttribute = _.remove(lessAttributesFromSrc,
                         (each) => {
-                            return _.startsWith(each, `.${className} {`) || _.startsWith(each, `.${className}:`)
+                            return _.startsWith(each, `.${name} {`) || _.startsWith(each, `.${name}:`)
                         })
 
                     if (srcAttribute.length > 1)
                         throw new ERROR(7003, `origin ==> ${Util.deepFlat(srcAttribute)}`)
 
-                    generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${className} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                    if (isEditPage) {
+                        const original = node.getOriginalClassNameOfLessUsage(type);
+                        if (original.exists) {
+                            const extendStmt = `:extend(.${original.value} all)`;
+                            generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name}${extendStmt} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                            continue;
+                        }
+                    }
+                    generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
                 }
             }
 
-            if (lessAttriutesFromSrc.length > 0) {
+            if (lessAttributesFromSrc.length > 0) {
                 generator.appendInClassTail(`/** ======== following for  ========= */\n\n`);
-                for (const lasting of lessAttriutesFromSrc) {
+                for (const lasting of lessAttributesFromSrc) {
                     generator.appendInClassTail(`${lasting} }\n\n`);
                 }
             }
@@ -2460,7 +2552,6 @@ class ProjectFileHandler {
         await this.generateFireStoreRules();
     }
 
-
     async forWeb() {
         const source = this.nodeOfAncestor;
         const totalClassNames = [];
@@ -2468,36 +2559,33 @@ class ProjectFileHandler {
 
         function toEditorPageMode(node) {
             if (node.getType() === 'string' || node.getType() === 'number') {
+                node.setViewModified(true);
+                node.setOriginalView(node.getView());
                 node.setView('TextField');
                 node.setViewProps({variant: `outlined`})
             }
-            node.clearContents();
 
+            node.clearContents();
             for (const child of node.getChildren()) {
                 toEditorPageMode(child);
             }
         }
 
+        /** 先把edit component 做好放到components */
         const editorComponents = [];
         for (let component of source.components) {
             if (component.needEditPage()) {
                 if (component.needEditPage()) {
                     const editorComponent = _.cloneDeep(component);
-
                     editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
                     editorComponent.setEvents([]);
                     editorComponent.setIsEditPage(true)
                     editorComponent.setPath(editorComponent.getPath() + `editor`);
                     editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
+                    editorComponent.getStruct().setNameModified(true);
                     editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
-
                     toEditorPageMode(editorComponent.getStruct());
                     editorComponents.push(editorComponent);
-                    /**
-                     * 1.router 加上 edit
-                     * 2.less 要專門給 edit
-                     * 3.store 只能build一次
-                     */
                 }
             }
         }
@@ -2508,12 +2596,12 @@ class ProjectFileHandler {
             if (FAST_DEVELOP_MODE && !_.startsWith(component.getName(), TARGET_COMPONENT))
                 continue;
 
-            if (!component.isEditPage())
-                await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
-
             const {classNames, events} = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
             totalClassNames.push({component, classNames});
             totalEvents.push(...events);
+
+            if (!component.isEditPage())
+                await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
         }
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */

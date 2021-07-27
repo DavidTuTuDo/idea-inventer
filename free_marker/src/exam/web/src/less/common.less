@@ -1,4 +1,4 @@
-/** => following for purchaseSucceed component used <= */
+/** following for purchaseSucceed  component used  */
 
 .PurchaseSucceedDiv {
   /** style */
@@ -19,7 +19,7 @@
   margin-top: 30px;
 }
 
-/** => following for login component used <= */
+/** following for login  component used  */
 
 .LoginDiv {
   /** style */
@@ -36,7 +36,7 @@
   height: 70vh;
 }
 
-/** => following for navigator component used <= */
+/** following for navigator  component used  */
 
 .NavigatorDiv {
   /** style */
@@ -78,7 +78,7 @@
   /** style */
 }
 
-/** => following for main component used <= */
+/** following for main  component used  */
 
 .MainDiv {
   /** style */
@@ -116,7 +116,7 @@
   width: 50px;
 }
 
-/** => following for exam component used <= */
+/** following for exam  component used  */
 
 .ExamDiv {
   /** style */
@@ -135,6 +135,11 @@
   padding: 1vw;
 }
 
+.ExamQuestionCardWrapDiv {
+  /** style */
+  position: relative;
+}
+
 .ExamQuestionAlertOuterDiv {
   /** style */
   position: absolute;
@@ -147,21 +152,23 @@
   pointer-events: none;
 }
 
-.ExamQuestionCardWrapDiv {
-  /** style */
-  position: relative;
-}
-
 .ExamQuestionCardListWrapDiv {
   /** style */
 }
 
 .ExamQuestionAlertAlertImageImg {
   /** style */
+  opacity: 0.3;
+  height: 70%;
 }
 
 .ExamQuestionAlertAlertImageImgWrapDiv {
   /** style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 .ExamQuestionTopicTypography {
@@ -235,7 +242,7 @@
   height: 1vh;
 }
 
-/** => following for result component used <= */
+/** following for result  component used  */
 
 .ResultCard {
   /** style */
@@ -249,7 +256,7 @@
   /** style */
 }
 
-/** => following for purchase component used <= */
+/** following for purchase  component used  */
 
 .PurchaseDiv {
   /** style */
@@ -334,29 +341,29 @@
   border-style: none;
 }
 
-/** => following for exam component used <= */
+/** following for exam editor component used  */
 
-.ExamEditorDiv {
+.ExamEditorDiv:extend(.ExamDiv all) {
   /** style */
 }
 
-.ExamEditorHeadDiv {
+.ExamEditorHeadDiv:extend(.ExamHeadDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionCard {
+.ExamEditorQuestionCard:extend(.ExamQuestionCard all) {
   /** style */
 }
 
-.ExamEditorQuestionAlertOuterDiv {
+.ExamEditorQuestionCardWrapDiv:extend(.ExamQuestionCardWrapDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionCardWrapDiv {
+.ExamEditorQuestionAlertOuterDiv:extend(.ExamQuestionAlertOuterDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionCardListWrapDiv {
+.ExamEditorQuestionCardListWrapDiv:extend(.ExamQuestionCardListWrapDiv all) {
   /** style */
 }
 
@@ -380,11 +387,12 @@
   /** style */
 }
 
-.ExamEditorQuestionChoiceDiv {
+.ExamEditorQuestionChoiceDiv:extend(.ExamQuestionChoiceDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionChoiceDivListWrapDiv {
+.ExamEditorQuestionChoiceDivListWrapDiv:extend(.ExamQuestionChoiceDivListWrapDiv
+    all) {
   /** style */
 }
 
@@ -424,50 +432,28 @@
   /** style */
 }
 
-.ExamEditorFunctionAreaDiv {
+.ExamEditorFunctionAreaDiv:extend(.ExamFunctionAreaDiv all) {
   /** style */
 }
 
-.ExamEditorFunctionAreaEndButton {
+.ExamEditorFunctionAreaEndButton:extend(.ExamFunctionAreaEndButton all) {
   /** style */
 }
 
-.ExamEditorFunctionAreaSpaceDiv {
+.ExamEditorFunctionAreaSpaceDiv:extend(.ExamFunctionAreaSpaceDiv all) {
   /** style */
 }
 
-.ExamEditorFunctionAreaRestartButton {
+.ExamEditorFunctionAreaRestartButton:extend(.ExamFunctionAreaRestartButton
+    all) {
   /** style */
 }
 
-.ExamEditorTailDiv {
+.ExamEditorTailDiv:extend(.ExamTailDiv all) {
   /** style */
 }
 
 /** ======== following for  ========= */
-
-.ExamQuestionAlertImageImg {
-  /** style */
-  opacity: 0.3;
-  height: 70%;
-}
-
-.ExamQuestionAlertImageImgWrapDiv {
-  /** style */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-
-.ExamEditorQuestionAlertImageTextField {
-  /** style */
-}
-
-.ExamEditorQuestionAlertImageTextFieldWrapDiv {
-  /** style */
-}
 
 .BaseComponentErrorViewPaper {
   display: flex;

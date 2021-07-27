@@ -1,4 +1,4 @@
-/** => following for purchaseSucceed component used <= */
+/** following for purchaseSucceed  component used  */
 .PurchaseSucceedDiv {
   /** style */
 }
@@ -8,14 +8,14 @@
 .PurchaseSucceedConfirmButton {
   /** style */
 }
-/** => following for login component used <= */
+/** following for login  component used  */
 .LoginDiv {
   /** style */
 }
 .LoginDivWrapDiv {
   /** style */
 }
-/** => following for navigator component used <= */
+/** following for navigator  component used  */
 .NavigatorDiv {
   /** style */
 }
@@ -43,7 +43,7 @@
 .NavigatorExtraContentDiv {
   /** style */
 }
-/** => following for main component used <= */
+/** following for main  component used  */
 .MainDiv {
   /** style */
 }
@@ -65,7 +65,7 @@
 .MainImageUrlImg {
   /** style */
 }
-/** => following for exam component used <= */
+/** following for exam  component used  */
 .ExamDiv {
   /** style */
 }
@@ -75,10 +75,10 @@
 .ExamQuestionCard {
   /** style */
 }
-.ExamQuestionAlertOuterDiv {
+.ExamQuestionCardWrapDiv {
   /** style */
 }
-.ExamQuestionCardWrapDiv {
+.ExamQuestionAlertOuterDiv {
   /** style */
 }
 .ExamQuestionCardListWrapDiv {
@@ -129,7 +129,7 @@
 .ExamTailDiv {
   /** style */
 }
-/** => following for result component used <= */
+/** following for result  component used  */
 .ResultCard {
   /** style */
 }
@@ -139,7 +139,7 @@
 .ResultMessageTypography {
   /** style */
 }
-/** => following for purchase component used <= */
+/** following for purchase  component used  */
 .PurchaseDiv {
   /** style */
 }
@@ -179,7 +179,7 @@
 .PurchasePurchasePlanBuyButtonWrapDiv {
   /** style */
 }
-/** => following for exam component used <= */
+/** following for exam editor component used  */
 .ExamEditorDiv {
   /** style */
 }
@@ -189,13 +189,13 @@
 .ExamEditorQuestionCard {
   /** style */
 }
-.ExamEditorQuestionAlertOuterDiv {
-  /** style */
-}
 .ExamEditorQuestionCardWrapDiv {
   /** style */
 }
 .ExamEditorQuestionCardListWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
 .ExamEditorQuestionAlertAlertImageTextField {

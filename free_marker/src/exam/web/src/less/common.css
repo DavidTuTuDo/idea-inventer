@@ -1,4 +1,4 @@
-/** => following for purchaseSucceed component used <= */
+/** following for purchaseSucceed  component used  */
 .PurchaseSucceedDiv {
   /** style */
   display: flex;
@@ -15,7 +15,7 @@
   font-size: 1.2rem;
   margin-top: 30px;
 }
-/** => following for login component used <= */
+/** following for login  component used  */
 .LoginDiv {
   /** style */
   width: 100vw;
@@ -29,7 +29,7 @@
   width: 100%;
   height: 70vh;
 }
-/** => following for navigator component used <= */
+/** following for navigator  component used  */
 .NavigatorDiv {
   /** style */
   flex-grow: 1;
@@ -61,7 +61,7 @@
 .NavigatorExtraContentDiv {
   /** style */
 }
-/** => following for main component used <= */
+/** following for main  component used  */
 .MainDiv {
   /** style */
 }
@@ -94,22 +94,31 @@
   height: 50px;
   width: 50px;
 }
-/** => following for exam component used <= */
-.ExamDiv {
+/** following for exam  component used  */
+.ExamDiv,
+.ExamEditorDiv {
   /** style */
   background-color: #888888;
 }
-.ExamHeadDiv {
+.ExamHeadDiv,
+.ExamEditorHeadDiv {
   /** style */
 }
-.ExamQuestionCard {
+.ExamQuestionCard,
+.ExamEditorQuestionCard {
   /** style */
   margin-left: 1vw;
   margin-right: 1vw;
   margin-bottom: 2vw;
   padding: 1vw;
 }
-.ExamQuestionAlertOuterDiv {
+.ExamQuestionCardWrapDiv,
+.ExamEditorQuestionCardWrapDiv {
+  /** style */
+  position: relative;
+}
+.ExamQuestionAlertOuterDiv,
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
   position: absolute;
   width: 90%;
@@ -120,18 +129,22 @@
   z-index: 1;
   pointer-events: none;
 }
-.ExamQuestionCardWrapDiv {
-  /** style */
-  position: relative;
-}
-.ExamQuestionCardListWrapDiv {
+.ExamQuestionCardListWrapDiv,
+.ExamEditorQuestionCardListWrapDiv {
   /** style */
 }
 .ExamQuestionAlertAlertImageImg {
   /** style */
+  opacity: 0.3;
+  height: 70%;
 }
 .ExamQuestionAlertAlertImageImgWrapDiv {
   /** style */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 .ExamQuestionTopicTypography {
   /** style */
@@ -141,12 +154,14 @@
 .ExamQuestionTopicTypographyWrapDiv {
   /** style */
 }
-.ExamQuestionChoiceDiv {
+.ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv {
   /** style */
   margin-top: 2vh;
   margin-bottom: 2vh;
 }
-.ExamQuestionChoiceDivListWrapDiv {
+.ExamQuestionChoiceDivListWrapDiv,
+.ExamEditorQuestionChoiceDivListWrapDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
@@ -164,35 +179,40 @@
 .ExamQuestionTipTypographyWrapDiv {
   /** style */
 }
-.ExamFunctionAreaDiv {
+.ExamFunctionAreaDiv,
+.ExamEditorFunctionAreaDiv {
   flex-direction: row;
   display: flex;
   align-items: center;
   justify-content: center;
   /** style */
 }
-.ExamFunctionAreaEndButton {
+.ExamFunctionAreaEndButton,
+.ExamEditorFunctionAreaEndButton {
   /** style */
   width: 27vw;
   height: 10vw;
   font-size: 2rem;
 }
-.ExamFunctionAreaSpaceDiv {
+.ExamFunctionAreaSpaceDiv,
+.ExamEditorFunctionAreaSpaceDiv {
   /** style */
   width: 3vh;
 }
-.ExamFunctionAreaRestartButton {
+.ExamFunctionAreaRestartButton,
+.ExamEditorFunctionAreaRestartButton {
   /** style */
   width: 27vw;
   height: 10vw;
   font-size: 2rem;
   outline-width: 5px;
 }
-.ExamTailDiv {
+.ExamTailDiv,
+.ExamEditorTailDiv {
   /** style */
   height: 1vh;
 }
-/** => following for result component used <= */
+/** following for result  component used  */
 .ResultCard {
   /** style */
 }
@@ -202,7 +222,7 @@
 .ResultMessageTypography {
   /** style */
 }
-/** => following for purchase component used <= */
+/** following for purchase  component used  */
 .PurchaseDiv {
   /** style */
   display: flex;
@@ -273,7 +293,7 @@
   /** style */
   border-style: none;
 }
-/** => following for exam component used <= */
+/** following for exam editor component used  */
 .ExamEditorDiv {
   /** style */
 }
@@ -283,10 +303,10 @@
 .ExamEditorQuestionCard {
   /** style */
 }
-.ExamEditorQuestionAlertOuterDiv {
+.ExamEditorQuestionCardWrapDiv {
   /** style */
 }
-.ExamEditorQuestionCardWrapDiv {
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
 .ExamEditorQuestionCardListWrapDiv {
@@ -356,25 +376,6 @@
   /** style */
 }
 /** ======== following for  ========= */
-.ExamQuestionAlertImageImg {
-  /** style */
-  opacity: 0.3;
-  height: 70%;
-}
-.ExamQuestionAlertImageImgWrapDiv {
-  /** style */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-.ExamEditorQuestionAlertImageTextField {
-  /** style */
-}
-.ExamEditorQuestionAlertImageTextFieldWrapDiv {
-  /** style */
-}
 .BaseComponentErrorViewPaper {
   display: flex;
   width: 70%;

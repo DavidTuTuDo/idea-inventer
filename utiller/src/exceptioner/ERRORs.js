@@ -140,6 +140,10 @@ const ERRORs = {
     8016: {
       message:`class generator is necessary!!!`,
     },
+    8017: {
+        message:`className type is not valid!`,
+    },
+
     9999: {
         message: `super stupid error`
     },
