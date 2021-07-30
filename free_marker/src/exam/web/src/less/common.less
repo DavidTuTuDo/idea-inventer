@@ -140,6 +140,10 @@
   position: relative;
 }
 
+.ExamQuestionCardListWrapDiv {
+  /** style */
+}
+
 .ExamQuestionAlertOuterDiv {
   /** style */
   position: absolute;
@@ -150,10 +154,6 @@
   transform: translate(-50%, -50%);
   z-index: 1;
   pointer-events: none;
-}
-
-.ExamQuestionCardListWrapDiv {
-  /** style */
 }
 
 .ExamQuestionAlertAlertImageImg {
@@ -359,11 +359,11 @@
   /** style */
 }
 
-.ExamEditorQuestionAlertOuterDiv:extend(.ExamQuestionAlertOuterDiv all) {
+.ExamEditorQuestionCardListWrapDiv:extend(.ExamQuestionCardListWrapDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionCardListWrapDiv:extend(.ExamQuestionCardListWrapDiv all) {
+.ExamEditorQuestionAlertOuterDiv:extend(.ExamQuestionAlertOuterDiv all) {
   /** style */
 }
 
@@ -469,6 +469,21 @@
   position: absolute;
   width: 100vw;
   height: 95vh;
+}
+
+.BaseEditFunctionDiv {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.BaseEditButtonProps {
+  font-size: 1.8rem;
+  margin: 5px;
+}
+
+.BaseEditFunctionButton:extend(.BaseEditButtonProps all) {
 }
 
 .BaseComponentGlobalLoadingDiv {

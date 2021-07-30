@@ -86,7 +86,7 @@ class CommonRemoteApi  {
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
         const result = await firebase.firestore().collection(path).doc(id).get();
-        return result.exists ?  result.data(): {};
+        return result.exists ?  {...result.data(),id}: {};
     }
 
     async deleteItems(path, condition = (conditionStmt) => conditionStmt, all) {

@@ -20,11 +20,16 @@ const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
+// const CURRENT_PLATFORM = 'developer';
+
 
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
-const TARGET_COMPONENT = 'purchase';
+const TARGET_COMPONENT = 'exam';
+
+
+const AncestorString = 'NotGoingPleaseImRootOfSourceNode';
 
 class CodegenNode {
 
@@ -35,9 +40,15 @@ class CodegenNode {
     /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
+    unique;
+    /** 用來註記array裡面是pk的欄位, */
+
     permission = {};
     /** 當struct 裡面的物件有 path時, 就對應有一個collection/document,
      * 用來描述 create,update,delete,read, 沒有描述就是isAdmin() */
+
+    editIgnore;
+    /** 用來提示這個node不要被editlize給處理到 */
 
     edit;
     /** 用來提示這個component需要產生編輯頁面 */
@@ -59,6 +70,9 @@ class CodegenNode {
 
     params;
     /** 目前用來做events 帶的參數 */
+
+    description;
+    /** 目前解釋這個欄位在幹嘛的, 也能當作TextField的解釋 */
 
     host;
     /** 網域名稱啦 */
@@ -101,6 +115,9 @@ class CodegenNode {
      在view和store上面也會產生出same generation的概念, incest只支援一層, 假父類必須有wrap
      */
 
+    outerContents;
+    /** 當wrap 是 true的時候, 可以加一些content 再outer*/
+
     needParam;
     /** view有時候會需要param作為顯示的判斷*/
 
@@ -117,7 +134,7 @@ class CodegenNode {
     extra;
     /**  extra => 用於component mount 後,其所帶入的值 */
 
-    children;
+    children = [];
 
     plural;
     /** 用於產出合理的function name,可以有 object,array,number,string 如果type是 array, 就必些要有 plural */
@@ -159,12 +176,33 @@ class CodegenNode {
         }
     }
 
+    setOuterContent(contents) {
+        this.outerContents = contents;
+    }
+
+    getFunctionNameOfEditorWithParam() {
+        return `self.${this.getFunctionNameOfEditor()}(${this.getName()})`;
+    }
+
+    getFunctionNameOfEditor() {
+        const functionName = Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask');
+        return functionName;
+    }
+
     isContainer() {
         return this.view && Util.isOrEquals(_.toLower(this.view), 'div', 'card', 'paper', 'drawer', 'toolbar', 'appbar', 'iconbutton');
     }
 
     setIsEditPage(edit) {
         this.editPage = edit;
+    }
+
+    getUniqueIdStmt() {
+        if (this.hasPath()) {
+            return `${this.getName()}.getId()`;
+        } else {
+            return `_.indexOf(${this.getFieldName()},${this.getName()})`;
+        }
     }
 
     isEditPage() {
@@ -177,6 +215,22 @@ class CodegenNode {
 
     isNameModified() {
         return !!this.nameModified;
+    }
+
+    getFunctionNameOfFetchItem() {
+        return Util.camel(`fetch`, this.getName(), 'item')
+    }
+
+    getFunctionNameOfUpdateItem() {
+        return Util.camel('update', this.getName(), 'item');
+    }
+
+    getFunctionNameOfDeleteItem() {
+        return Util.camel('delete', this.getName(), 'item')
+    }
+
+    getFunctionNameOfSubmit() {
+        return Util.camel('submit', this.getName(), 'item');
     }
 
     setViewModified(modified) {
@@ -203,9 +257,17 @@ class CodegenNode {
         return this.originalName;
     }
 
+    getOuterContents() {
+        return this.outerContents ? this.outerContents : [];
+    }
+
+    getDescription() {
+        return this.description ? this.description : 'no comments';
+    }
+
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['disableFetch', 'permission', 'alertDialog', 'wrapContents', 'contents', 'style',
+        return ['outerContents', 'editIgnore', 'disableFetch', 'permission', 'alertDialog', 'wrapContents', 'contents', 'style',
             'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'params', 'host']
     }
 
@@ -231,6 +293,10 @@ class CodegenNode {
 
     setContents(contents = []) {
         this.contents = [];
+    }
+
+    setIsWrap(wrap) {
+        this.wrap = wrap
     }
 
     clearContents() {
@@ -331,6 +397,18 @@ class CodegenNode {
         return [];
     }
 
+    isNumber() {
+        return _.isEqual(this.type, 'number');
+    }
+
+    isString() {
+        return _.isEqual(this.type, 'string');
+    }
+
+    appendChildren(...child) {
+        this.children.push(...child);
+    }
+
     getNavigationComponentName() {
         let name = ''
         if (this.hasNavigation()) {
@@ -406,7 +484,7 @@ class CodegenNode {
         }
         while (parent && !isNode(parent)) {
             parent = parent.getParentObject();
-            if (parent === undefined) break;
+            if (parent === undefined || parent.name === AncestorString) break;
         }
         return parent;
     }
@@ -457,10 +535,6 @@ class CodegenNode {
         return this.getPreciseAttributeParent().getName();
     }
 
-    getIncestChildren() {
-
-    }
-
     /** 表示這會在component裡面產生邏輯 */
     isView() {
         return !!this.view;
@@ -482,15 +556,12 @@ class CodegenNode {
     }
 
     getClickParamStmt() {
-        /** 不知道為什麼當初要設計成擋住 */
-        if (!this.isAttribute())
-            return '';
 
         let object = '';
         if (this.type === 'array')
-            object = this.name;
-        else if (!_.isEmpty(this.getParentObject())) {
-            object = this.getParentObject().name;
+            object = this.getName();
+        else if (this.isAttribute() || this.needParentParam()) {
+            object = this.getPreciseAttributeParent().getName();
         }
 
         if (!_.isEmpty(object)) {
@@ -539,6 +610,10 @@ class CodegenNode {
         return this.combineClassNameWithType(type, className);
     }
 
+    getFunctionNameRemoveItems(){
+        return `remove${_.upperFirst(this.getFieldName())}`;
+    }
+
     combineClassNameWithType(type, className) {
         const wrapView = this.getWrapView();
         switch (type) {
@@ -571,7 +646,6 @@ class CodegenNode {
             /** 如果到達 struct 層級, 就停止了 */
             if (currentNode.getStruct())
                 break;
-
             names.push(currentNode.isNameModified() ? currentNode.getOriginalName() : currentNode.getName())
             currentNode = currentNode.getPreciseViewParent();
         }
@@ -650,16 +724,16 @@ class CodegenNode {
     /** 為了組合出 uniq 的 view className,最後有加上reverse的調整 */
     getReverseOrderOfViewParentNames() {
         const names = [];
-        let currentNode = this.getPreciseViewParent();
-        while (!!currentNode) {
+        let parent = this.getPreciseViewParent();
+        while (!!parent) {
             /** 如果到達 struct 層級, 就停止了 */
-            if (currentNode.getStruct())
+            if (parent.name === AncestorString || parent.getStruct())
                 break;
 
-            if (currentNode.getName())
-                names.push(currentNode.getName())
+            if (parent.getName())
+                names.push(parent.getName())
 
-            currentNode = currentNode.getPreciseViewParent();
+            parent = parent.getPreciseViewParent();
         }
         return _.reverse(names);
     }
@@ -667,7 +741,7 @@ class CodegenNode {
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
     getParentObject() {
         if (this.parent === undefined) {
-            return new CodegenNode({name: '我是祖先'});
+            return new CodegenNode({name: AncestorString});
         }
 
         if (_.isArray(this.parent)) {
@@ -752,9 +826,8 @@ class CodegenNode {
     getFunctionNameOfRenderViewWithParam() {
         const functionName = this.getFunctionNameOfRenderView();
         let param = '';
-        let parent = this.getPreciseAttributeParent();
         if (this.isAttribute() || this.needParentParam()) {
-            param = parent.getName();
+            param = this.getPreciseAttributeParent().getName();
         }
         return `${functionName}(${param})`;
 
@@ -770,7 +843,11 @@ class CodegenNode {
         if (this.isArray()) {
             return Util.camel('push', this.getFieldName());
         }
-        return Util.camel('set', this.getFieldName());
+        return Util.camel('set', this.getName());
+    }
+
+    getFunctionNameOfModifiedSetter() {
+        return Util.camel('set', `modified`, this.getName());
     }
 
     getStatementOfComponentKey() {
@@ -809,7 +886,6 @@ class CodegenNode {
             }
         } else if (_.isObject(node)) {
             for (const key in node) {
-                /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props' 是個例外, 要排除掉*/
                 if (Util.isOrEquals(key, ...this.doNotEnrichAttribute()))
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
@@ -824,6 +900,12 @@ class CodegenNode {
 
     getStruct() {
         return this.struct;
+    }
+
+    appendChildrenWithJson(obj) {
+        const child = CodegenNode.enrich(obj);
+        child.parent = this;
+        this.appendChildren(child);
     }
 
     static isCodegenNode(node) {
@@ -863,8 +945,14 @@ class ClassGenerator {
         this.context = Util.getFileContextInRaw(this.filePath).split('\n');
     }
 
-    appendField(fieldName, defaultValue, macros = []) {
+    appendField(fieldName, defaultValue, macros = [], comments = []) {
         const stmt = [];
+
+        for (const comment of comments) {
+            stmt.push(`\n`);
+            stmt.push(`/** ${comment} */`);
+        }
+
         for (const m of macros) {
             stmt.push(`\n`);
             stmt.push(`@${m}`);
@@ -1169,6 +1257,7 @@ class BaseBuilder {
     }
 
     getMustacheRenderValues = ({
+
                                    fieldName,
                                    defaultValue,
                                    fieldUrl,
@@ -1180,8 +1269,10 @@ class BaseBuilder {
                                    fieldClass,
                                }) => {
         return {
-            fieldName: _.lowerFirst(fieldName),
+            fieldName,
             functionName: functionName ? functionName : _.upperFirst(fieldName),
+            modifiedFunctionName: `Modified${_.upperFirst(fieldName)}`,
+            modifiedFieldName: `${Util.camel(`modified`, fieldName)}`,
             defaultValue,
             fieldUrl,
             className,
@@ -1250,12 +1341,13 @@ class StoreBuilder extends BaseBuilder {
             generator.insertBatchLinesIntoFunctionSection(
                 this.getFunctionsDependOnFieldType(
                     {
-                        fieldName: _.upperFirst(fieldName),
+                        fieldName,
                         type: child.type,
                         defaultValue,
                         fieldClass: child.getClassName(),
                     }));
             propStmt.push(`if(obj && obj.${fieldName})`);
+            propStmt.push(`{`);
 
             if (child.isArray()) {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
@@ -1268,6 +1360,7 @@ class StoreBuilder extends BaseBuilder {
             } else {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
+            propStmt.push(`}`);
             propsStmt.push(...propStmt);
         }
         return propsStmt;
@@ -1294,7 +1387,6 @@ class StoreBuilder extends BaseBuilder {
             propsStmt.push(...propStmt);
         }
 
-
         /** 這邊專門處理remote fetch 的邏輯 */
         new RemoteFunctionHandler(baseGenerator).buildFetchSubmitApi(node);
         new RemoteFunctionHandler(baseGenerator).buildListenerFunction(node);
@@ -1318,20 +1410,40 @@ class StoreBuilder extends BaseBuilder {
             }
         }
 
-        /** ================== */
-
-        baseGenerator.appendFunction('self', [], [], [],
+        baseGenerator.appendFunction('rawData', [], [], [],
             'return {',
-            node.getPreciseAttributeChildren()
-                .map((child) => `${child.getName()} : this.${child.getName()}`).join(','),
-            '}'
-        )
+            node.getPreciseAttributeChildren().map((child) => {
+                    const key = child.getFieldName();
+                    let value = '';
+                    if (child.isArray()) {
+                        value = `this.${child.getFieldName()}.map(each => each.rawData())`
+                    } else if (child.isObject()) {
+                        value = `this.${child.getFieldName()}.rawData()`
+                    } else {
+                        value = `this.${child.getFieldName()}`;
+                    }
+                    return `${key}:${value}`;
+
+                }
+            ).join(','), '}')
 
         baseGenerator.appendFunction('clear', [], ['action'], [],
-            ...node.getPreciseAttributeChildren().map((child) => `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`)
-        )
+            ...node.getPreciseAttributeChildren()
+                .map((child) => {
+                        if (child.isArray()) {
+                            return `this.${child.getFieldName()}.length = 0`
+                        } else if (child.isObject()) {
+                            return `this.${child.getFieldName()}.clear()`
+                        } else {
+                            return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
+                        }
+                    }
+                ))
 
-        baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [], `super.initial(obj)`, ...propsStmt);
+        baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
+            `super.initial(obj)`,
+            `this.clear()`,
+            ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
         baseGenerator.needIndexFile(`${indexClassName}`);
         await baseGenerator.persist();
@@ -1358,7 +1470,7 @@ class StoreBuilder extends BaseBuilder {
         }
         normalize = [
             ...normalize,
-            'return this.self()',
+            'return this.rawData()',
         ]
         return normalize
     }
@@ -1440,10 +1552,14 @@ class RemoteFunctionHandler {
                         `${pathStmt}`,
                         `return await this.fetchItems(path, condition)`)
 
-                    generator.appendAsyncFunction(Util.camel(`fetch`, node.getName(), 'Item'),
-                        [...defaultParam, 'id'], [], [],
+                    generator.appendAsyncFunction(
+                        node.getFunctionNameOfFetchItem(),
+                        [...defaultParam, 'id = this.getId()'], [], [],
                         `${pathStmt}`,
-                        `return await this.fetchItem(path, id)`)
+                        `const item =  await this.fetchItem(path, id)`,
+                        `this.initial(item)`,
+                        `return item`,
+                    )
 
                     /** admins only , delete collection all */
                     generator.appendAsyncFunction(Util.camel(`delete`, node.getFieldName()),
@@ -1451,25 +1567,29 @@ class RemoteFunctionHandler {
                         `${pathStmt}`,
                         `return await this.deleteItems(path,condition,all)`)
 
-                    generator.appendAsyncFunction(Util.camel('submit', node.getName(), 'item'),
-                        [...defaultParam, 'item'], [], [],
+                    generator.appendAsyncFunction(
+                        node.getFunctionNameOfSubmit(),
+                        [...defaultParam, 'item = this.rawData()'], [], [],
                         `${pathStmt}`,
                         `const commitment = this.${functionNameOfNormalize}(item)`, [],
                         `return await this.submitItem(path, commitment);`,
                     )
 
                     generator.appendAsyncFunction(
-                        Util.camel('update', node.getName(), 'item')
-                        , [...defaultParam, 'id', `content`], [], [],
+                        node.getFunctionNameOfUpdateItem()
+                        , [...defaultParam, 'id = this.getId()', `content = this.rawData()`], [], [],
                         `${pathStmt}`,
                         `return await this.updateItem(path, id , content);`,
                     );
 
                     generator.appendAsyncFunction(
-                        Util.camel('delete', node.getName(), 'item')
-                        , [...defaultParam, `id`], [], [],
+                        node.getFunctionNameOfDeleteItem()
+                        , [...defaultParam, `id = this.getId()`], [], [],
                         `${pathStmt}`,
-                        `return await this.deleteItem(path, id)`,
+                        `const result = await this.deleteItem(path, id)`,
+                        `if(this.hasParent())`,
+                        `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`,
+                        `return result`
                     );
 
                     generator.appendAsyncFunction(Util.camel('submit', node.getFieldName()),
@@ -1489,7 +1609,7 @@ class RemoteFunctionHandler {
                 } else if (node.isObject()) {
                     contents.push(`await this.submitObject(path, commitment,'${node.getName()}')`);
                     generator.appendAsyncFunction(Util.camel('submit', node.getFieldName(), 'object'),
-                        [...defaultParam, 'object'], [], [],
+                        [...defaultParam, 'object = this.rawData()'], [], [],
                         `${pathStmt}`,
                         `const commitment = this.${functionNameOfNormalize}(object)`,
                         `return await this.submitObject(path, commitment,'${node.getName()}')`,
@@ -1502,7 +1622,7 @@ class RemoteFunctionHandler {
                     );
 
                     generator.appendAsyncFunction(Util.camel('update', node.getFieldName()),
-                        [...defaultParam, 'object'], [], [],
+                        [...defaultParam, 'object = this.rawData()'], [], [],
                         `${pathStmt}`,
                         `return await this.updateObject(path, object, '${node.getName()}')`
                     );
@@ -1558,10 +1678,15 @@ class ComponentBuilder extends BaseBuilder {
         const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
-        baseGenerator.appendClass(baseClassName, {
-            name: 'BaseComponent',
-            from: '../../base/BaseComponent'
-        });
+        baseGenerator.appendClass(baseClassName,
+            componentNode.isEditPage() ? {
+                name: 'BaseEditorComponent',
+                from: '../../base/BaseEditorComponent'
+            } : {
+                name: 'BaseComponent',
+                from: '../../base/BaseComponent'
+            }
+        );
 
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer}', '@material-ui/core')
@@ -1611,7 +1736,7 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDetach([`this.${functionOfUnsubscribe}()`])
         }
 
-        this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator);
+        this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator, componentNode.isEditPage());
 
         if (componentNode.hasTitle()) {
             baseGenerator.appendField(`stringOfPageTitle`, `"${componentNode.getTitle()}"`)
@@ -1765,7 +1890,6 @@ class ComponentBuilder extends BaseBuilder {
             contentStmts.push(`{${node.getFieldName()}}`);
         }
 
-        const keyValue = node.getStatementOfComponentKey();
         const className = node.getClassNameOfLessUsage('default');
         this.storeClassName({node, type: 'default'});
         const props = {
@@ -1783,8 +1907,8 @@ class ComponentBuilder extends BaseBuilder {
             props.style = `###Style.${className}`;
         }
 
-        if (node.isArray() && !_.isEmpty(keyValue)) {
-            props.key = '###' + '`' + keyValue + '`';
+        if (node.isArray()) {
+            props.key = `###${node.getUniqueIdStmt()}`;
         }
 
         if (node.isClickView()) {
@@ -1805,13 +1929,23 @@ class ComponentBuilder extends BaseBuilder {
             }
         }
 
-
         /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
         if (node.isImageView()) {
             props['src'] = `###${node.getFieldName()}`;
         } else if (node.isTextField()) {
-            props['label'] = `###${node.getDefaultValueByType()}`;
-            props['defaultValue'] = `###${node.getFieldName()}`;
+            props['label'] = `${node.getDescription()}`;
+            props['value'] = `###${node.getFieldName()}`;
+            props['onChange'] = `###(event)=>{ 
+            ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(event.target.value)}`
+            if (node.isNumber()) {
+                props['type'] = `number`;
+                props['InputLabelProps'] = {
+                    shrink: true,
+                };
+            }
+            if (node.isString()) {
+                props['multiline'] = `###true`;
+            }
         }
 
         let origin = this.getJSXStrings({
@@ -1824,10 +1958,9 @@ class ComponentBuilder extends BaseBuilder {
         const wrapView = node.getWrapView();
         if (node.hasWrap()) {
             const clazzName = node.getClassNameOfLessUsage('wrap');
-            this.storeClassName({node, type: 'wrap'});
             const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
-            if (node.isArray() && !_.isEmpty(keyValue))
-                props.key = '###' + '`' + keyValue + 'Wrap' + '`';
+            if (node.isArray())
+                props.key = `###\`\${${node.getUniqueIdStmt()}}Wrap\``;
 
 
             const stmt = [];
@@ -1841,7 +1974,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [...origin, ...stmt, ...this.getOuterChildJSXStrings(generator, node), ...node.getWrapContents()],
+                contents: [...origin, ...stmt, ...this.getOuterChildJSXStrings(node), ...node.getWrapContents()],
             })
         }
 
@@ -1863,13 +1996,14 @@ class ComponentBuilder extends BaseBuilder {
     }
 
     /** 就是把標註為 outer 的 child 放在同一個view的層級 */
-    getOuterChildJSXStrings(generator, node) {
+    getOuterChildJSXStrings(node) {
         const contentStmts = [];
         for (const child of node.getChildren()) {
             if (child.isOuter()) {
                 contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
             }
         }
+        contentStmts.push(...node.getOuterContents());
         return contentStmts;
     }
 
@@ -1878,7 +2012,7 @@ class ComponentBuilder extends BaseBuilder {
         _.remove(stmt, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
 
-    appendRenderViewFunctions(node, generator) {
+    appendRenderViewFunctions(node, generator, isEditPage) {
         function normalize(...strings) {
             const self = strings;
             _.remove(self, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
@@ -1890,6 +2024,26 @@ class ComponentBuilder extends BaseBuilder {
                 `const ${node.getName()} = this.getStore();\n\n`,
                 normalize(...this.getJSXStringsByNode(generator, node)));
             this.hasRootRenderViewFunction = true;
+        }
+
+        if (node.isArray() && node.hasPath() && isEditPage) {
+            generator.appendFunction(node.getFunctionNameOfEditor(), [node.getName()], [], [],
+                `return  async (type) => {
+                switch (type) {`,
+                `case 'recover':`,
+                `await ${node.getName()}.${node.getFunctionNameOfFetchItem()}()`,
+                `break;`,
+                `case 'update':`,
+                `await ${node.getName()}.${node.getFunctionNameOfUpdateItem()}()`,
+                `break;`,
+                `case 'delete':`,
+                `await ${node.getName()}.${node.getFunctionNameOfDeleteItem()}()`,
+                `break;`,
+                `default:`,
+                `Util.appendError(\`3032 can't not happen this type => \${type}\`)`,
+                `}`,
+                `}`
+            )
         }
 
         const existedFunctions = {};
@@ -1911,7 +2065,7 @@ class ComponentBuilder extends BaseBuilder {
                 ...child.getSelfVariableStmts(),
                 normalize(...this.getJSXStringsByNode(generator, child)));
             if (child.hasViewChildren()) {
-                this.appendRenderViewFunctions(child, generator);
+                this.appendRenderViewFunctions(child, generator, isEditPage);
             }
             existedFunctions[functionName] = true;
         }
@@ -2566,11 +2720,20 @@ class ProjectFileHandler {
                 node.setViewProps({variant: `outlined`})
             }
 
+            if (node.hasPath() && node.isArray()) {
+                node.setIsWrap(true);
+                node.setOuterContent([`{this.renderEditFunctionView(
+                   ${node.getFunctionNameOfEditorWithParam()} 
+                )}`])
+            }
             node.clearContents();
+
             for (const child of node.getChildren()) {
-                toEditorPageMode(child);
+                if (!!!child.editIgnore)
+                    toEditorPageMode(child);
             }
         }
+
 
         /** 先把edit component 做好放到components */
         const editorComponents = [];
@@ -2592,7 +2755,6 @@ class ProjectFileHandler {
         }
 
         source.components.push(...editorComponents);
-
         for (let component of source.components) {
             if (FAST_DEVELOP_MODE && !_.startsWith(component.getName(), TARGET_COMPONENT))
                 continue;
@@ -2706,6 +2868,7 @@ export {
             Util.appendInfo(
                 `admin done`
             );
+        case 'developer':
             break;
     }
 

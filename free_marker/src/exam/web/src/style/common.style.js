@@ -1,7 +1,7 @@
-/** this code are generated, modify is no sense.
-	author:David Tu,
-	email:freshingmoon0725@gmail.com
-	updateTime:2021-07-28-01-15-10
+/** this code are generated, modify is no sense. 
+	author:David Tu, 
+	email:freshingmoon0725@gmail.com 
+	updateTime:2021-07-29-22-51-07 
 */
 import {
   utiller as Util,
@@ -13,9 +13,6 @@ import libpath from "path";
 
 class CommonStyle {
   /** -------------------- fields -------------------- **/
-
-  /** following for unknown */
-
 
   /** => following for exam editor component  */
 
@@ -64,8 +61,6 @@ class CommonStyle {
   ExamEditorQuestionAlertOuterDiv = {};
 
   ExamEditorQuestionCardListWrapDiv = {};
-
-  ExamEditorQuestionAlertOuterDiv = {};
 
   ExamEditorQuestionCardWrapDiv = {};
 
@@ -146,8 +141,6 @@ class CommonStyle {
   ExamQuestionAlertOuterDiv = {};
 
   ExamQuestionCardListWrapDiv = {};
-
-  ExamQuestionAlertOuterDiv = {};
 
   ExamQuestionCardWrapDiv = {};
 

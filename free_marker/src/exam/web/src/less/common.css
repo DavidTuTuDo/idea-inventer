@@ -117,6 +117,10 @@
   /** style */
   position: relative;
 }
+.ExamQuestionCardListWrapDiv,
+.ExamEditorQuestionCardListWrapDiv {
+  /** style */
+}
 .ExamQuestionAlertOuterDiv,
 .ExamEditorQuestionAlertOuterDiv {
   /** style */
@@ -128,10 +132,6 @@
   transform: translate(-50%, -50%);
   z-index: 1;
   pointer-events: none;
-}
-.ExamQuestionCardListWrapDiv,
-.ExamEditorQuestionCardListWrapDiv {
-  /** style */
 }
 .ExamQuestionAlertAlertImageImg {
   /** style */
@@ -306,10 +306,10 @@
 .ExamEditorQuestionCardWrapDiv {
   /** style */
 }
-.ExamEditorQuestionAlertOuterDiv {
+.ExamEditorQuestionCardListWrapDiv {
   /** style */
 }
-.ExamEditorQuestionCardListWrapDiv {
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
 .ExamEditorQuestionAlertAlertImageTextField {
@@ -389,6 +389,17 @@
   position: absolute;
   width: 100vw;
   height: 95vh;
+}
+.BaseEditFunctionDiv {
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.BaseEditButtonProps,
+.BaseEditFunctionButton {
+  font-size: 1.8rem;
+  margin: 5px;
 }
 .BaseComponentGlobalLoadingDiv {
   display: flex;

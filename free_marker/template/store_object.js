@@ -3,23 +3,19 @@
 @action
 set{{{functionName}}}(param) {
     if(param !== undefined) {
-        this.{{{fieldName}}} = new {{{fieldClass}}}({...param,parentNode:this});
+        this.{{{fieldName}}}.initial({...param,parentNode:this});
     } else {
-        this.{{{fieldName}}} = new {{{fieldClass}}}();
+        this.{{{fieldName}}}.clear();
     }
 }
 
 @action
 remove{{functionName}}() {
-    this.{{{fieldName}}} = new {{{fieldClass}}}();
+    this.{{{fieldName}}}.clear();
 }
 
 get{{{functionName}}}() {
-    if(this.{{{fieldName}}} !== undefined) {
-        return this.{{{fieldName}}};
-    } else {
-        return new {{{fieldClass}}}();
-    }
+    return this.{{{fieldName}}};
 }
 
 

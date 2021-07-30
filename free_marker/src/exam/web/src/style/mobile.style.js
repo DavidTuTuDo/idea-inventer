@@ -1,7 +1,7 @@
-/** this code are generated, modify is no sense.
-	author:David Tu,
-	email:freshingmoon0725@gmail.com
-	updateTime:2021-07-28-01-15-11
+/** this code are generated, modify is no sense. 
+	author:David Tu, 
+	email:freshingmoon0725@gmail.com 
+	updateTime:2021-07-29-22-51-08 
 */
 import {
   utiller as Util,
@@ -13,8 +13,6 @@ import libpath from "path";
 
 class MobileStyle {
   /** -------------------- fields -------------------- **/
-
-  /** following for unknown */
 
   /** => following for exam editor component  */
 
@@ -63,8 +61,6 @@ class MobileStyle {
   ExamEditorQuestionAlertOuterDiv = {};
 
   ExamEditorQuestionCardListWrapDiv = {};
-
-  ExamEditorQuestionAlertOuterDiv = {};
 
   ExamEditorQuestionCardWrapDiv = {};
 
@@ -145,8 +141,6 @@ class MobileStyle {
   ExamQuestionAlertOuterDiv = {};
 
   ExamQuestionCardListWrapDiv = {};
-
-  ExamQuestionAlertOuterDiv = {};
 
   ExamQuestionCardWrapDiv = {};
 

@@ -1,11 +1,11 @@
 {{{必須留白}}}
 {{{必須留白}}}
 @action
-set{{{functionName}}}(...param) {
+set{{{functionName}}}(...items) {
     const self = this;
     if(param !== undefined) {
         this.{{{fieldName}}}.length = 0;
-        this.{{{fieldName}}}.push(...param.map((each) => new {{{fieldClass}}}({...each,parentNode:self})));
+        this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
     } else {
         this.{{{fieldName}}} = {{{defaultValue}}};
     }
@@ -20,29 +20,42 @@ get{{{functionName}}}() {
 }
 
 @action
-remove{{{functionName}}}(){
+clean{{{functionName}}}(){
     this.{{{fieldName}}}.length = 0;
 }
 
 @action
-push{{{functionName}}}(...param) {
+push{{{functionName}}}(...item) {
     const self = this;
-    if(_.isArray(param)) {
-        this.{{{fieldName}}}.push(...param.map((each) => new {{{fieldClass}}}({...each,parentNode:self})));
-    }
+    this.{{{fieldName}}}.push(...item.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 }
 
 @action
 push{{{functionName}}}ByIndex(index, ...param) {
     const self = this;
-    if(param !== undefined) {
-        Util.insertToArray(this.{{{fieldName}}},index, ...param.map((each) => new {{{fieldClass}}}({...each,parentNode:self})));
-    }
+    Util.insertToArray(this.{{{fieldName}}},index, ...param.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 }
 
 @action
-remove{{{functionName}}}ByIndex(index) {
-
+remove{{{functionName}}}ByIndex(...indexes) {
+    for (const index of indexes) {
+        if (index < -1 && this.{{{fieldName}}}.length < index) {
+            Util.appendError(`7821, index ${index} is not valid length ==>`, this.{{{fieldName}}}.length, `index ==>`, index);
+            return;
+        }
+    }
+    _.pullAt(this.{{{fieldName}}}, indexes);
 }
+
+@action
+remove{{{functionName}}}(...items) {
+    const indexes = [];
+    for (const item of items) {
+        indexes.push(_.indexOf(this.{{{fieldName}}}, item));
+    }
+    this.remove{{{functionName}}}ByIndex(...indexes);
+}
+
+
 
 

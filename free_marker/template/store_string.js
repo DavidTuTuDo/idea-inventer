@@ -17,3 +17,5 @@ set{{functionName}}(param) {
         this.{{{fieldName}}} = {{{defaultValue}}};
     }
 }
+
+

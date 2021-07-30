@@ -40,6 +40,10 @@ class BaseStore extends ClientRemoteApi {
         return this.parentNode;
     }
 
+    hasParent() {
+        return !!this.parentNode;
+    }
+
     @action
     forceToStable() {
         this.state = 'stable';
