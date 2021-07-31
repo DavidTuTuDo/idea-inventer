@@ -95,34 +95,28 @@
   width: 50px;
 }
 /** following for exam  component used  */
-.ExamDiv,
-.ExamEditorDiv {
+.ExamDiv {
   /** style */
   background-color: #888888;
 }
-.ExamHeadDiv,
-.ExamEditorHeadDiv {
+.ExamHeadDiv {
   /** style */
 }
-.ExamQuestionCard,
-.ExamEditorQuestionCard {
+.ExamQuestionCard {
   /** style */
   margin-left: 1vw;
   margin-right: 1vw;
   margin-bottom: 2vw;
   padding: 1vw;
 }
-.ExamQuestionCardWrapDiv,
-.ExamEditorQuestionCardWrapDiv {
+.ExamQuestionCardWrapDiv {
   /** style */
   position: relative;
 }
-.ExamQuestionCardListWrapDiv,
-.ExamEditorQuestionCardListWrapDiv {
+.ExamQuestionCardListWrapDiv {
   /** style */
 }
-.ExamQuestionAlertOuterDiv,
-.ExamEditorQuestionAlertOuterDiv {
+.ExamQuestionAlertOuterDiv {
   /** style */
   position: absolute;
   width: 90%;
@@ -154,14 +148,12 @@
 .ExamQuestionTopicTypographyWrapDiv {
   /** style */
 }
-.ExamQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv {
+.ExamQuestionChoiceDiv {
   /** style */
   margin-top: 2vh;
   margin-bottom: 2vh;
 }
-.ExamQuestionChoiceDivListWrapDiv,
-.ExamEditorQuestionChoiceDivListWrapDiv {
+.ExamQuestionChoiceDivListWrapDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
@@ -179,36 +171,31 @@
 .ExamQuestionTipTypographyWrapDiv {
   /** style */
 }
-.ExamFunctionAreaDiv,
-.ExamEditorFunctionAreaDiv {
+.ExamFunctionAreaDiv {
   flex-direction: row;
   display: flex;
   align-items: center;
   justify-content: center;
   /** style */
 }
-.ExamFunctionAreaEndButton,
-.ExamEditorFunctionAreaEndButton {
+.ExamFunctionAreaEndButton {
   /** style */
   width: 27vw;
   height: 10vw;
   font-size: 2rem;
 }
-.ExamFunctionAreaSpaceDiv,
-.ExamEditorFunctionAreaSpaceDiv {
+.ExamFunctionAreaSpaceDiv {
   /** style */
   width: 3vh;
 }
-.ExamFunctionAreaRestartButton,
-.ExamEditorFunctionAreaRestartButton {
+.ExamFunctionAreaRestartButton {
   /** style */
   width: 27vw;
   height: 10vw;
   font-size: 2rem;
   outline-width: 5px;
 }
-.ExamTailDiv,
-.ExamEditorTailDiv {
+.ExamTailDiv {
   /** style */
   height: 1vh;
 }
@@ -293,88 +280,6 @@
   /** style */
   border-style: none;
 }
-/** following for exam editor component used  */
-.ExamEditorDiv {
-  /** style */
-}
-.ExamEditorHeadDiv {
-  /** style */
-}
-.ExamEditorQuestionCard {
-  /** style */
-}
-.ExamEditorQuestionCardWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionCardListWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionAlertOuterDiv {
-  /** style */
-}
-.ExamEditorQuestionAlertAlertImageTextField {
-  /** style */
-}
-.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionIdTextField {
-  /** style */
-}
-.ExamEditorQuestionTopicTextField {
-  /** style */
-}
-.ExamEditorQuestionTopicTextFieldWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.ExamEditorQuestionChoiceDivListWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionChoiceStatementTextField {
-  /** style */
-}
-.ExamEditorQuestionChoiceStatementTextFieldWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionReplyTextField {
-  /** style */
-}
-.ExamEditorQuestionAnswerTextField {
-  /** style */
-}
-.ExamEditorQuestionTipTextField {
-  /** style */
-}
-.ExamEditorQuestionTipTextFieldWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionSubjectTextField {
-  /** style */
-}
-.ExamEditorQuestionTypeTextField {
-  /** style */
-}
-.ExamEditorQuestionYearTextField {
-  /** style */
-}
-.ExamEditorFunctionAreaDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaEndButton {
-  /** style */
-}
-.ExamEditorFunctionAreaSpaceDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaRestartButton {
-  /** style */
-}
-.ExamEditorTailDiv {
-  /** style */
-}
 /** ======== following for  ========= */
 .BaseComponentErrorViewPaper {
   display: flex;
@@ -389,6 +294,9 @@
   position: absolute;
   width: 100vw;
   height: 95vh;
+}
+.BaseEditorTextField {
+  margin: 5px;
 }
 .BaseEditFunctionDiv {
   flex-direction: row;

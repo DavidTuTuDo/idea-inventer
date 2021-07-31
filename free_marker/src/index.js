@@ -40,6 +40,9 @@ class CodegenNode {
     /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
+    column;
+    /** 表示這個欄位是一個對應到遠端的欄位, 其他欄位也許是為了UI而增加的 */
+
     unique;
     /** 用來註記array裡面是pk的欄位, */
 
@@ -98,7 +101,7 @@ class CodegenNode {
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
 
-    props;
+    props = {};
     /** 用在加上view額外的props,<div ...props/> */
 
     injectStyle;
@@ -207,6 +210,10 @@ class CodegenNode {
 
     isEditPage() {
         return !!this.editPage;
+    }
+
+    isColumnAttribute() {
+        return this.hasPath() || (this.isAttribute() && !!this.column);
     }
 
     isViewModified() {
@@ -512,6 +519,11 @@ class CodegenNode {
         return this.getPreciseChildren((node) => node.isAttribute(), (node) => node.isIncestAttribute())
     }
 
+    getPreciseColumnChildren() {
+        return this.getPreciseChildren((node) => node.isColumnAttribute(), (node) => node.isIncestAttribute())
+
+    }
+
     getPreciseViewChildren() {
         return this.getPreciseChildren((node) => node.isView(), (node) => node.isIncestView())
     }
@@ -523,7 +535,7 @@ class CodegenNode {
                 children.push(child);
 
             for (const grandson of child.getChildren()) {
-                if (isIncest(grandson)) {
+                if (isIncest(grandson) && isNode(grandson)) {
                     children.push(grandson)
                 }
             }
@@ -553,6 +565,12 @@ class CodegenNode {
 
     setViewProps(props = {}) {
         this.props = props;
+    }
+
+    appendViewProps(...props) {
+        for (const prop of props) {
+            this.props[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
+        }
     }
 
     getClickParamStmt() {
@@ -610,7 +628,7 @@ class CodegenNode {
         return this.combineClassNameWithType(type, className);
     }
 
-    getFunctionNameRemoveItems(){
+    getFunctionNameRemoveItems() {
         return `remove${_.upperFirst(this.getFieldName())}`;
     }
 
@@ -1410,22 +1428,28 @@ class StoreBuilder extends BaseBuilder {
             }
         }
 
-        baseGenerator.appendFunction('rawData', [], [], [],
-            'return {',
-            node.getPreciseAttributeChildren().map((child) => {
-                    const key = child.getFieldName();
-                    let value = '';
-                    if (child.isArray()) {
-                        value = `this.${child.getFieldName()}.map(each => each.rawData())`
-                    } else if (child.isObject()) {
-                        value = `this.${child.getFieldName()}.rawData()`
-                    } else {
-                        value = `this.${child.getFieldName()}`;
-                    }
-                    return `${key}:${value}`;
+        const types = [{name: `rawData`, fetcher: (node) => node.getPreciseColumnChildren()},
+            {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}];
 
-                }
-            ).join(','), '}')
+        types.map(type => {
+            baseGenerator.appendFunction(type.name, [], [], [],
+                'return {',
+                type.fetcher(node).map((child) => {
+                        const key = child.getFieldName();
+                        let value = '';
+                        if (child.isArray()) {
+                            value = `this.${child.getFieldName()}.map(each => each.${type.name}())`
+                        } else if (child.isObject()) {
+                            value = `this.${child.getFieldName()}.${type.name}()`
+                        } else {
+                            value = `this.${child.getFieldName()}`;
+                        }
+                        return `${key}:${value}`;
+
+                    }
+                ).join(','), '}')
+        })
+
 
         baseGenerator.appendFunction('clear', [], ['action'], [],
             ...node.getPreciseAttributeChildren()
@@ -1861,7 +1885,7 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-    /** 把組合出className必備存起來 {node,type:className type} ,後續要產生出less style才有根據 */
+    /** 把組合出className必備存起來 {node,type: 'wrap'|'default'|'listWrap'} ,後續要產生出less style才有根據 */
     storeClassName(className) {
         this.classNames.push(className);
     }
@@ -1958,6 +1982,8 @@ class ComponentBuilder extends BaseBuilder {
         const wrapView = node.getWrapView();
         if (node.hasWrap()) {
             const clazzName = node.getClassNameOfLessUsage('wrap');
+            this.storeClassName({node, type: 'wrap'});
+
             const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
             if (node.isArray())
                 props.key = `###\`\${${node.getUniqueIdStmt()}}Wrap\``;
@@ -2385,6 +2411,7 @@ class AppBuilder extends ComponentBuilder {
                     const node = className.node;
                     const type = className.type;
                     const name = node.getClassNameOfLessUsage(type);
+                    /** 從file裡面找出定義過的屬性敘述*/
                     const srcAttribute = _.remove(lessAttributesFromSrc,
                         (each) => {
                             return _.startsWith(each, `.${name} {`) || _.startsWith(each, `.${name}:`)
@@ -2393,15 +2420,22 @@ class AppBuilder extends ComponentBuilder {
                     if (srcAttribute.length > 1)
                         throw new ERROR(7003, `origin ==> ${Util.deepFlat(srcAttribute)}`)
 
+                    const undefinedInFile = _.isEmpty(srcAttribute);
+
                     if (isEditPage) {
-                        const original = node.getOriginalClassNameOfLessUsage(type);
-                        if (original.exists) {
-                            const extendStmt = `:extend(.${original.value} all)`;
-                            generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name}${extendStmt} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
-                            continue;
+                        if (type === 'default' && node.isTextField()) {
+                            const extendStmt = `:extend(.BaseEditorTextField all)`;
+                            generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                        } else {
+                            const original = node.getOriginalClassNameOfLessUsage(type);
+                            if (original.exists) {
+                                const extendStmt = `:extend(.${original.value} all)`;
+                                generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                            }
                         }
-                    }
-                    generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                    } else
+                        generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+
                 }
             }
 
@@ -2713,11 +2747,24 @@ class ProjectFileHandler {
         const totalEvents = [];
 
         function toEditorPageMode(node) {
-            if (node.getType() === 'string' || node.getType() === 'number') {
+            if (node.isColumnAttribute() && !node.isCollection()) {
                 node.setViewModified(true);
                 node.setOriginalView(node.getView());
+                node.setViewProps({});
                 node.setView('TextField');
-                node.setViewProps({variant: `outlined`})
+                node.appendViewProps({variant: `outlined`});
+
+                if (node.getName() === 'id') {
+                    node.appendViewProps({
+                        InputProps: {
+                            readOnly: true,
+                        }
+                    })
+                }
+            }
+
+            if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) {
+                delete node.view;
             }
 
             if (node.hasPath() && node.isArray()) {
