@@ -35,11 +35,11 @@ class PurchaseComponent extends BasePurchaseComponent {
         return origin;
     }
 
-    getInjectStyleOfBuyButton(plan) {
+    getInjectStyleOfPurchasePlanBuyButton(plan) {
         return {display: plan.isTitle() ? 'none' : 'visible'};
     }
 
-    getInjectStyleOfPriceTipTypography(plan) {
+    getInjectStyleOfPurchasePlanPriceTipTypography(plan) {
         return {display: plan.isTitle() ? 'none' : 'visible'};
     }
 

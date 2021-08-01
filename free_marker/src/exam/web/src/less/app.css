@@ -69,9 +69,6 @@
 .ExamDiv {
   /** style */
 }
-.ExamHeadDiv {
-  /** style */
-}
 .ExamQuestionCard {
   /** style */
 }
@@ -99,6 +96,15 @@
 .ExamQuestionTopicNameTypographyWrapDiv {
   /** style */
 }
+.ExamQuestionTopicImageImg {
+  /** style */
+}
+.ExamQuestionTopicImageImgListWrapDiv {
+  /** style */
+}
+.ExamQuestionTopicImageUrlImg {
+  /** style */
+}
 .ExamQuestionChoiceDiv {
   /** style */
 }
@@ -115,21 +121,6 @@
   /** style */
 }
 .ExamQuestionTipTypographyWrapDiv {
-  /** style */
-}
-.ExamFunctionAreaDiv {
-  /** style */
-}
-.ExamFunctionAreaEndButton {
-  /** style */
-}
-.ExamFunctionAreaSpaceDiv {
-  /** style */
-}
-.ExamFunctionAreaRestartButton {
-  /** style */
-}
-.ExamTailDiv {
   /** style */
 }
 /** following for result  component used  */
@@ -190,9 +181,6 @@
 .ExamEditorDiv {
   /** style */
 }
-.ExamEditorHeadDiv {
-  /** style */
-}
 .ExamEditorQuestionCard {
   /** style */
 }
@@ -215,6 +203,15 @@
   /** style */
 }
 .ExamEditorQuestionTopicNameTextFieldWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionTopicImageImg {
+  /** style */
+}
+.ExamEditorQuestionTopicImageImgListWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionTopicImageUrlTextField {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
@@ -241,29 +238,8 @@
 .ExamEditorQuestionYearTextField {
   /** style */
 }
-.ExamEditorFunctionAreaDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaEndButton {
-  /** style */
-}
-.ExamEditorFunctionAreaSpaceDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaRestartButton {
-  /** style */
-}
-.ExamEditorTailDiv {
-  /** style */
-}
 /** following for purchase editor component used  */
 .PurchaseEditorDiv {
-  /** style */
-}
-.PurchaseEditorBannerImg {
-  /** style */
-}
-.PurchaseEditorBannerImgWrapDiv {
   /** style */
 }
 .PurchaseEditorPurchasePlanDiv {
@@ -291,6 +267,48 @@
   /** style */
 }
 /** ======== following for  ========= */
+.PurchaseEditorBannerImg {
+  /** style */
+}
+.PurchaseEditorBannerImgWrapDiv {
+  /** style */
+}
+.ExamHeadDiv {
+  /** style */
+}
+.ExamFunctionAreaDiv {
+  /** style */
+}
+.ExamFunctionAreaEndButton {
+  /** style */
+}
+.ExamFunctionAreaSpaceDiv {
+  /** style */
+}
+.ExamFunctionAreaRestartButton {
+  /** style */
+}
+.ExamTailDiv {
+  /** style */
+}
+.ExamEditorHeadDiv {
+  /** style */
+}
+.ExamEditorFunctionAreaDiv {
+  /** style */
+}
+.ExamEditorFunctionAreaEndButton {
+  /** style */
+}
+.ExamEditorFunctionAreaSpaceDiv {
+  /** style */
+}
+.ExamEditorFunctionAreaRestartButton {
+  /** style */
+}
+.ExamEditorTailDiv {
+  /** style */
+}
 .ExamQuestionTopicTypography {
   /** style */
 }

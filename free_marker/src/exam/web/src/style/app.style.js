@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-08-01-23-23-27 
+	updateTime:2021-08-02-00-39-20 
 */
 import {
   utiller as Util,
@@ -15,6 +15,30 @@ class AppStyle {
   /** -------------------- fields -------------------- **/
 
   /** following for unknown */
+
+  ExamHeadDiv = {};
+
+  ExamFunctionAreaDiv = {};
+
+  ExamFunctionAreaEndButton = {};
+
+  ExamFunctionAreaSpaceDiv = {};
+
+  ExamFunctionAreaRestartButton = {};
+
+  ExamTailDiv = {};
+
+  ExamEditorHeadDiv = {};
+
+  ExamEditorFunctionAreaDiv = {};
+
+  ExamEditorFunctionAreaEndButton = {};
+
+  ExamEditorFunctionAreaSpaceDiv = {};
+
+  ExamEditorFunctionAreaRestartButton = {};
+
+  ExamEditorTailDiv = {};
 
   ExamQuestionTopicTypography = {};
 
@@ -34,6 +58,10 @@ class AppStyle {
 
   ExamEditorQuestionTipTextFieldWrapDiv = {};
 
+  PurchaseEditorBannerImgWrapDiv = {};
+
+  PurchaseEditorBannerImg = {};
+
   /** => following for purchase editor component  */
 
   PurchaseEditorPurchasePlanDurationTextField = {};
@@ -52,23 +80,9 @@ class AppStyle {
 
   PurchaseEditorPurchasePlanDiv = {};
 
-  PurchaseEditorBannerImgWrapDiv = {};
-
-  PurchaseEditorBannerImg = {};
-
   PurchaseEditorDiv = {};
 
   /** => following for exam editor component  */
-
-  ExamEditorTailDiv = {};
-
-  ExamEditorFunctionAreaRestartButton = {};
-
-  ExamEditorFunctionAreaSpaceDiv = {};
-
-  ExamEditorFunctionAreaEndButton = {};
-
-  ExamEditorFunctionAreaDiv = {};
 
   ExamEditorQuestionYearTextField = {};
 
@@ -86,6 +100,12 @@ class AppStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
+  ExamEditorQuestionTopicImageUrlTextField = {};
+
+  ExamEditorQuestionTopicImageImgListWrapDiv = {};
+
+  ExamEditorQuestionTopicImageImg = {};
+
   ExamEditorQuestionTopicNameTextFieldWrapDiv = {};
 
   ExamEditorQuestionTopicNameTextField = {};
@@ -101,8 +121,6 @@ class AppStyle {
   ExamEditorQuestionCardWrapDiv = {};
 
   ExamEditorQuestionCard = {};
-
-  ExamEditorHeadDiv = {};
 
   ExamEditorDiv = {};
 
@@ -144,16 +162,6 @@ class AppStyle {
 
   /** => following for exam  component  */
 
-  ExamTailDiv = {};
-
-  ExamFunctionAreaRestartButton = {};
-
-  ExamFunctionAreaSpaceDiv = {};
-
-  ExamFunctionAreaEndButton = {};
-
-  ExamFunctionAreaDiv = {};
-
   ExamQuestionTipTypographyWrapDiv = {};
 
   ExamQuestionTipTypography = {};
@@ -165,6 +173,12 @@ class AppStyle {
   ExamQuestionChoiceDivListWrapDiv = {};
 
   ExamQuestionChoiceDiv = {};
+
+  ExamQuestionTopicImageUrlImg = {};
+
+  ExamQuestionTopicImageImgListWrapDiv = {};
+
+  ExamQuestionTopicImageImg = {};
 
   ExamQuestionTopicNameTypographyWrapDiv = {};
 
@@ -183,8 +197,6 @@ class AppStyle {
   ExamQuestionCardWrapDiv = {};
 
   ExamQuestionCard = {};
-
-  ExamHeadDiv = {};
 
   ExamDiv = {};
 

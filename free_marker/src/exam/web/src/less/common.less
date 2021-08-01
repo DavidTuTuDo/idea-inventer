@@ -120,11 +120,7 @@
 
 .ExamDiv {
   /** style */
-  background-color: #888888;
-}
-
-.ExamHeadDiv {
-  /** style */
+  margin: 3px;
 }
 
 .ExamQuestionCard {
@@ -142,6 +138,7 @@
 
 .ExamQuestionCardListWrapDiv {
   /** style */
+  margin-top: 10px;
 }
 
 .ExamQuestionAlertOuterDiv {
@@ -177,9 +174,22 @@
 
 .ExamQuestionTopicNameTypography {
   /** style */
+  font-size: 2.5rem;
 }
 
 .ExamQuestionTopicNameTypographyWrapDiv {
+  /** style */
+}
+
+.ExamQuestionTopicImageImg {
+  /** style */
+}
+
+.ExamQuestionTopicImageImgListWrapDiv {
+  /** style */
+}
+
+.ExamQuestionTopicImageUrlImg {
   /** style */
 }
 
@@ -210,38 +220,6 @@
 
 .ExamQuestionTipTypographyWrapDiv {
   /** style */
-}
-
-.ExamFunctionAreaDiv {
-  flex-direction: row;
-  display: flex;
-  align-items: center;
-  justify-content: center; /** style */
-}
-
-.ExamFunctionAreaEndButton {
-  /** style */
-  width: 27vw;
-  height: 10vw;
-  font-size: 2rem;
-}
-
-.ExamFunctionAreaSpaceDiv {
-  /** style */
-  width: 3vh;
-}
-
-.ExamFunctionAreaRestartButton {
-  /** style */
-  width: 27vw;
-  height: 10vw;
-  font-size: 2rem;
-  outline-width: 5px;
-}
-
-.ExamTailDiv {
-  /** style */
-  height: 1vh;
 }
 
 /** following for result  component used  */
@@ -349,10 +327,6 @@
   /** style */
 }
 
-.ExamEditorHeadDiv:extend(.ExamHeadDiv all) {
-  /** style */
-}
-
 .ExamEditorQuestionCard:extend(.ExamQuestionCard all) {
   /** style */
 }
@@ -383,6 +357,19 @@
 
 .ExamEditorQuestionTopicNameTextFieldWrapDiv:extend(.TopicQuestionExamNameTypographyWrapDiv
     all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicImageImg:extend(.TopicQuestionExamImageImg all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicImageImgListWrapDiv:extend(.TopicQuestionExamImageImgListWrapDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicImageUrlTextField:extend(.BaseEditorTextField all) {
   /** style */
 }
 
@@ -420,38 +407,9 @@
   /** style */
 }
 
-.ExamEditorFunctionAreaDiv:extend(.ExamFunctionAreaDiv all) {
-  /** style */
-}
-
-.ExamEditorFunctionAreaEndButton:extend(.FunctionAreaExamEndButton all) {
-  /** style */
-}
-
-.ExamEditorFunctionAreaSpaceDiv:extend(.FunctionAreaExamSpaceDiv all) {
-  /** style */
-}
-
-.ExamEditorFunctionAreaRestartButton:extend(.FunctionAreaExamRestartButton
-    all) {
-  /** style */
-}
-
-.ExamEditorTailDiv:extend(.ExamTailDiv all) {
-  /** style */
-}
-
 /** following for purchase editor component used  */
 
 .PurchaseEditorDiv:extend(.PurchaseEditorDiv all) {
-  /** style */
-}
-
-.PurchaseEditorBannerImg:extend(.PurchaseBannerImg all) {
-  /** style */
-}
-
-.PurchaseEditorBannerImgWrapDiv:extend(.PurchaseBannerImgWrapDiv all) {
   /** style */
 }
 
@@ -491,13 +449,11 @@
 
 /** ======== following for  ========= */
 
-.ExamQuestionTopicTypography {
+.PurchaseEditorBannerImg:extend(.PurchaseBannerImg all) {
   /** style */
-  font-weight: bold;
-  font-size: 2.8rem;
 }
 
-.ExamQuestionTopicTypographyWrapDiv {
+.PurchaseEditorBannerImgWrapDiv:extend(.PurchaseBannerImgWrapDiv all) {
   /** style */
 }
 

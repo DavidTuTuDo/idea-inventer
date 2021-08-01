@@ -97,11 +97,7 @@
 /** following for exam  component used  */
 .ExamDiv {
   /** style */
-  background-color: #888888;
-}
-.ExamHeadDiv,
-.ExamEditorHeadDiv {
-  /** style */
+  margin: 3px;
 }
 .ExamQuestionCard,
 .ExamEditorQuestionCard {
@@ -119,6 +115,7 @@
 .ExamQuestionCardListWrapDiv,
 .ExamEditorQuestionCardListWrapDiv {
   /** style */
+  margin-top: 10px;
 }
 .ExamQuestionAlertOuterDiv {
   /** style */
@@ -149,8 +146,18 @@
 }
 .ExamQuestionTopicNameTypography {
   /** style */
+  font-size: 2.5rem;
 }
 .ExamQuestionTopicNameTypographyWrapDiv {
+  /** style */
+}
+.ExamQuestionTopicImageImg {
+  /** style */
+}
+.ExamQuestionTopicImageImgListWrapDiv {
+  /** style */
+}
+.ExamQuestionTopicImageUrlImg {
   /** style */
 }
 .ExamQuestionChoiceDiv {
@@ -175,36 +182,6 @@
 }
 .ExamQuestionTipTypographyWrapDiv {
   /** style */
-}
-.ExamFunctionAreaDiv,
-.ExamEditorFunctionAreaDiv {
-  flex-direction: row;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  /** style */
-}
-.ExamFunctionAreaEndButton {
-  /** style */
-  width: 27vw;
-  height: 10vw;
-  font-size: 2rem;
-}
-.ExamFunctionAreaSpaceDiv {
-  /** style */
-  width: 3vh;
-}
-.ExamFunctionAreaRestartButton {
-  /** style */
-  width: 27vw;
-  height: 10vw;
-  font-size: 2rem;
-  outline-width: 5px;
-}
-.ExamTailDiv,
-.ExamEditorTailDiv {
-  /** style */
-  height: 1vh;
 }
 /** following for result  component used  */
 .ResultCard {
@@ -295,9 +272,6 @@
 .ExamEditorDiv {
   /** style */
 }
-.ExamEditorHeadDiv {
-  /** style */
-}
 .ExamEditorQuestionCard {
   /** style */
 }
@@ -320,6 +294,15 @@
   /** style */
 }
 .ExamEditorQuestionTopicNameTextFieldWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionTopicImageImg {
+  /** style */
+}
+.ExamEditorQuestionTopicImageImgListWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionTopicImageUrlTextField {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
@@ -346,29 +329,8 @@
 .ExamEditorQuestionYearTextField {
   /** style */
 }
-.ExamEditorFunctionAreaDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaEndButton {
-  /** style */
-}
-.ExamEditorFunctionAreaSpaceDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaRestartButton {
-  /** style */
-}
-.ExamEditorTailDiv {
-  /** style */
-}
 /** following for purchase editor component used  */
 .PurchaseEditorDiv {
-  /** style */
-}
-.PurchaseEditorBannerImg {
-  /** style */
-}
-.PurchaseEditorBannerImgWrapDiv {
   /** style */
 }
 .PurchaseEditorPurchasePlanDiv {
@@ -396,12 +358,10 @@
   /** style */
 }
 /** ======== following for  ========= */
-.ExamQuestionTopicTypography {
+.PurchaseEditorBannerImg {
   /** style */
-  font-weight: bold;
-  font-size: 2.8rem;
 }
-.ExamQuestionTopicTypographyWrapDiv {
+.PurchaseEditorBannerImgWrapDiv {
   /** style */
 }
 .BaseComponentErrorViewPaper {
@@ -421,6 +381,7 @@
 .BaseEditorTextField,
 .ExamEditorQuestionIdTextField,
 .ExamEditorQuestionTopicNameTextField,
+.ExamEditorQuestionTopicImageUrlTextField,
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,
 .ExamEditorQuestionSubjectTextField,

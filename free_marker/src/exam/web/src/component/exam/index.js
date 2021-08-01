@@ -17,7 +17,6 @@ class ExamComponent extends BaseExamComponent {
         super.componentDidMount();
     }
 
-
     getChoiceButtonColor(choice) {
         const question = choice.getParentNode();
         if (!question.isReply() || choice.isReplyEqualToAnswer()) {
@@ -30,7 +29,13 @@ class ExamComponent extends BaseExamComponent {
         return 'inherit';
     }
 
-    getInjectStyleOfAlertDiv(question) {
+    getInjectPropsOfChoiceStatementButton(choice) {
+        const props = {}
+        props.color = this.getChoiceButtonColor(choice);
+        return props;
+    }
+
+    getInjectStyleOfQuestionAlertDiv(question) {
         if(question.isAnswerWrong()){
             return {visibility:'visible'}
         }
@@ -47,22 +52,11 @@ class ExamComponent extends BaseExamComponent {
         question.setReply( reply );
     }
 
-    onEndButtonClicked(param) {
-        // super.onEndButtonClicked( param );
-    }
-
-    getInjectStyleOfStatementButton(choice) {
+    getInjectStyleOfChoiceStatementButton(choice) {
         if (choice.isReplyEqualToAnswer()) {
             return {borderWidth: '5px'}
         }
         return {borderWidth: '2px'}
-    }
-
-    getHeadView() {
-
-    }
-
-    getTailView() {
     }
 
     /** -------------------- async api -------------------- **/

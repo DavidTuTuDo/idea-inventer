@@ -107,6 +107,9 @@ class CodegenNode {
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
+    injectProps;
+    /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
+
     contents;
     /** 放在<div>content</div>*/
 
@@ -392,6 +395,12 @@ class CodegenNode {
     needInjectStyle() {
         return !!this.injectStyle && this.injectStyle;
     }
+
+    needInjectProps() {
+        return !!this.injectProps && this.injectProps;
+    }
+
+
 
     hasPath() {
         return !!this.path && !_.isEmpty(this.path);
@@ -733,6 +742,14 @@ class CodegenNode {
             currentNode = currentNode.parent;
         }
         return undefined;
+    }
+
+    getFunctionNameOfInjectStyle(){
+        return `getInjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
+    }
+
+    getFunctionNameOfInjectProps(){
+        return `getInjectPropsOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
 
     /** 為了組合出 uniq 的 view className,最後有加上reverse的調整 */
@@ -1875,7 +1892,7 @@ class ComponentBuilder extends BaseBuilder {
         for (const key in props) {
             if (!!!props[key]) continue
 
-            if (_.isEqual(key, 'forEachObject'))
+            if (_.isEqual(key, 'injectProps'))
                 stmt.push(`{${props[key]}}`)
             else
                 stmt.push(`${key}=${normalize(props[key])}\n`);
@@ -1934,12 +1951,20 @@ class ComponentBuilder extends BaseBuilder {
 
         if (node.needInjectStyle()) {
             const param = node.getPreciseAttributeParentName();
-            const injectFunctionName = `getInjectStyleOf${_.upperFirst(node.name)}${_.upperFirst(node.view)}`;
-            props.style = `###{...this.${injectFunctionName}(${param}),...Style.${className}}`;
+            const injectFunctionName = node.getFunctionNameOfInjectStyle();
+            props.style = `###{...self.${injectFunctionName}(${param}),...Style.${className}}`;
             generator.appendFunction(injectFunctionName, [param]);
 
         } else {
             props.style = `###Style.${className}`;
+        }
+
+        if(node.needInjectProps()) {
+            const param = node.getPreciseAttributeParentName();
+            const injectProps = node.getFunctionNameOfInjectProps();
+            props['injectProps'] = `...self.${node.getFunctionNameOfInjectProps()}(${param})`
+            generator.appendFunction(injectProps, [param]);
+
         }
 
         if (node.isArray()) {
@@ -1960,7 +1985,7 @@ class ComponentBuilder extends BaseBuilder {
                    }`
             } else {
                 props.onClick =
-                    `###(param) => this.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
+                    `###(param) => self.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
             }
         }
 
@@ -2311,7 +2336,7 @@ class AppBuilder extends ComponentBuilder {
         const providerStmt = this.getJSXStrings({
             tag: 'Provider',
             props: {
-                forEachObject: '...this.getStoreObject()'
+                injectProps: '...this.getStoreObject()'
             },
             contents: [sourceObj.hasNavigation() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt]
         })
