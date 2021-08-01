@@ -14,7 +14,7 @@ import {observer} from "mobx-react";
 import {inject} from "mobx-react";
 import BasePurchaseSucceedComponent from "./BasePurchaseSucceedComponent";
 import queryString from 'query-string';
-import PurchaseReport from '../../store/purchaseReport';
+import PurchaseReport from '../../store/purchaseSucceedPurchaseReport';
 import Router from "../../router";
 import Cookie from '../../cookie';
 import UserInfo from '../../userInfo';

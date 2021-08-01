@@ -90,10 +90,13 @@
 .ExamQuestionAlertAlertImageImgWrapDiv {
   /** style */
 }
-.ExamQuestionTopicTypography {
+.ExamQuestionTopicDiv {
   /** style */
 }
-.ExamQuestionTopicTypographyWrapDiv {
+.ExamQuestionTopicNameTypography {
+  /** style */
+}
+.ExamQuestionTopicNameTypographyWrapDiv {
   /** style */
 }
 .ExamQuestionChoiceDiv {
@@ -143,16 +146,20 @@
 .PurchaseDiv {
   /** style */
 }
-.PurchaseBannerImg {
+.PurchaseBannerImg,
+.PurchaseEditorBannerImg {
   /** style */
 }
-.PurchaseBannerImgWrapDiv {
+.PurchaseBannerImgWrapDiv,
+.PurchaseEditorBannerImgWrapDiv {
   /** style */
 }
-.PurchasePurchasePlanDiv {
+.PurchasePurchasePlanDiv,
+.PurchaseEditorPurchasePlanDiv {
   /** style */
 }
-.PurchasePurchasePlanDivListWrapDiv {
+.PurchasePurchasePlanDivListWrapDiv,
+.PurchaseEditorPurchasePlanDivListWrapDiv {
   /** style */
 }
 .PurchasePurchasePlanNameTypography {
@@ -198,19 +205,16 @@
 .ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
-.ExamEditorQuestionAlertAlertImageTextField {
-  /** style */
-}
-.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
-  /** style */
-}
 .ExamEditorQuestionIdTextField {
   /** style */
 }
-.ExamEditorQuestionTopicTextField {
+.ExamEditorQuestionTopicDiv {
   /** style */
 }
-.ExamEditorQuestionTopicTextFieldWrapDiv {
+.ExamEditorQuestionTopicNameTextField {
+  /** style */
+}
+.ExamEditorQuestionTopicNameTextFieldWrapDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
@@ -225,16 +229,7 @@
 .ExamEditorQuestionChoiceStatementTextFieldWrapDiv {
   /** style */
 }
-.ExamEditorQuestionReplyTextField {
-  /** style */
-}
 .ExamEditorQuestionAnswerTextField {
-  /** style */
-}
-.ExamEditorQuestionTipTextField {
-  /** style */
-}
-.ExamEditorQuestionTipTextFieldWrapDiv {
   /** style */
 }
 .ExamEditorQuestionSubjectTextField {
@@ -261,7 +256,68 @@
 .ExamEditorTailDiv {
   /** style */
 }
+/** following for purchase editor component used  */
+.PurchaseEditorDiv {
+  /** style */
+}
+.PurchaseEditorBannerImg {
+  /** style */
+}
+.PurchaseEditorBannerImgWrapDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDivWrapDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDivListWrapDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanIdTextField {
+  /** style */
+}
+.PurchaseEditorPurchasePlanSpaceDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanImageUrlTextField {
+  /** style */
+}
+.PurchaseEditorPurchasePlanFullNameTextField {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDurationTextField {
+  /** style */
+}
 /** ======== following for  ========= */
+.ExamQuestionTopicTypography {
+  /** style */
+}
+.ExamQuestionTopicTypographyWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionAlertAlertImageTextField {
+  /** style */
+}
+.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionTopicTextField {
+  /** style */
+}
+.ExamEditorQuestionTopicTextFieldWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionReplyTextField {
+  /** style */
+}
+.ExamEditorQuestionTipTextField {
+  /** style */
+}
+.ExamEditorQuestionTipTextFieldWrapDiv {
+  /** style */
+}
 .ExamQuestionAlertImageImg {
   /** style */
 }

@@ -171,13 +171,15 @@
   height: 100%;
 }
 
-.ExamQuestionTopicTypography {
+.ExamQuestionTopicDiv {
   /** style */
-  font-weight: bold;
-  font-size: 2.8rem;
 }
 
-.ExamQuestionTopicTypographyWrapDiv {
+.ExamQuestionTopicNameTypography {
+  /** style */
+}
+
+.ExamQuestionTopicNameTypographyWrapDiv {
   /** style */
 }
 
@@ -341,7 +343,163 @@
   border-style: none;
 }
 
+/** following for exam editor component used  */
+
+.ExamEditorDiv:extend(.ExamEditorDiv all) {
+  /** style */
+}
+
+.ExamEditorHeadDiv:extend(.ExamHeadDiv all) {
+  /** style */
+}
+
+.ExamEditorQuestionCard:extend(.ExamQuestionCard all) {
+  /** style */
+}
+
+.ExamEditorQuestionCardWrapDiv:extend(.ExamQuestionCardWrapDiv all) {
+  /** style */
+}
+
+.ExamEditorQuestionCardListWrapDiv:extend(.ExamQuestionCardListWrapDiv all) {
+  /** style */
+}
+
+.ExamEditorQuestionAlertOuterDiv:extend(.QuestionExamAlertOuterDiv all) {
+  /** style */
+}
+
+.ExamEditorQuestionIdTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicDiv:extend(.QuestionExamTopicDiv all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicNameTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicNameTextFieldWrapDiv:extend(.TopicQuestionExamNameTypographyWrapDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionChoiceDiv:extend(.QuestionExamChoiceDiv all) {
+  /** style */
+}
+
+.ExamEditorQuestionChoiceDivListWrapDiv:extend(.QuestionExamChoiceDivListWrapDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionChoiceStatementTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionChoiceStatementTextFieldWrapDiv:extend(.ChoiceQuestionExamStatementButtonWrapDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionAnswerTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionSubjectTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionTypeTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionYearTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorFunctionAreaDiv:extend(.ExamFunctionAreaDiv all) {
+  /** style */
+}
+
+.ExamEditorFunctionAreaEndButton:extend(.FunctionAreaExamEndButton all) {
+  /** style */
+}
+
+.ExamEditorFunctionAreaSpaceDiv:extend(.FunctionAreaExamSpaceDiv all) {
+  /** style */
+}
+
+.ExamEditorFunctionAreaRestartButton:extend(.FunctionAreaExamRestartButton
+    all) {
+  /** style */
+}
+
+.ExamEditorTailDiv:extend(.ExamTailDiv all) {
+  /** style */
+}
+
+/** following for purchase editor component used  */
+
+.PurchaseEditorDiv:extend(.PurchaseEditorDiv all) {
+  /** style */
+}
+
+.PurchaseEditorBannerImg:extend(.PurchaseBannerImg all) {
+  /** style */
+}
+
+.PurchaseEditorBannerImgWrapDiv:extend(.PurchaseBannerImgWrapDiv all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanDiv:extend(.PurchasePurchasePlanDiv all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanDivWrapDiv:extend(.PurchasePurchasePlanDivWrapDiv
+    all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanDivListWrapDiv:extend(.PurchasePurchasePlanDivListWrapDiv
+    all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanIdTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanSpaceDiv:extend(.PurchasePlanPurchaseSpaceDiv all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanImageUrlTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanFullNameTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.PurchaseEditorPurchasePlanDurationTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
 /** ======== following for  ========= */
+
+.ExamQuestionTopicTypography {
+  /** style */
+  font-weight: bold;
+  font-size: 2.8rem;
+}
+
+.ExamQuestionTopicTypographyWrapDiv {
+  /** style */
+}
 
 .BaseComponentErrorViewPaper {
   display: flex;
@@ -360,7 +518,7 @@
 }
 
 .BaseEditorTextField {
- margin: 5px;
+  margin: 5px;
 }
 
 .BaseEditFunctionDiv {

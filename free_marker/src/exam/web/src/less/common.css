@@ -99,21 +99,25 @@
   /** style */
   background-color: #888888;
 }
-.ExamHeadDiv {
+.ExamHeadDiv,
+.ExamEditorHeadDiv {
   /** style */
 }
-.ExamQuestionCard {
+.ExamQuestionCard,
+.ExamEditorQuestionCard {
   /** style */
   margin-left: 1vw;
   margin-right: 1vw;
   margin-bottom: 2vw;
   padding: 1vw;
 }
-.ExamQuestionCardWrapDiv {
+.ExamQuestionCardWrapDiv,
+.ExamEditorQuestionCardWrapDiv {
   /** style */
   position: relative;
 }
-.ExamQuestionCardListWrapDiv {
+.ExamQuestionCardListWrapDiv,
+.ExamEditorQuestionCardListWrapDiv {
   /** style */
 }
 .ExamQuestionAlertOuterDiv {
@@ -140,12 +144,13 @@
   width: 100%;
   height: 100%;
 }
-.ExamQuestionTopicTypography {
+.ExamQuestionTopicDiv {
   /** style */
-  font-weight: bold;
-  font-size: 2.8rem;
 }
-.ExamQuestionTopicTypographyWrapDiv {
+.ExamQuestionTopicNameTypography {
+  /** style */
+}
+.ExamQuestionTopicNameTypographyWrapDiv {
   /** style */
 }
 .ExamQuestionChoiceDiv {
@@ -171,7 +176,8 @@
 .ExamQuestionTipTypographyWrapDiv {
   /** style */
 }
-.ExamFunctionAreaDiv {
+.ExamFunctionAreaDiv,
+.ExamEditorFunctionAreaDiv {
   flex-direction: row;
   display: flex;
   align-items: center;
@@ -195,7 +201,8 @@
   font-size: 2rem;
   outline-width: 5px;
 }
-.ExamTailDiv {
+.ExamTailDiv,
+.ExamEditorTailDiv {
   /** style */
   height: 1vh;
 }
@@ -217,23 +224,27 @@
   flex-direction: column;
   justify-content: center;
 }
-.PurchaseBannerImg {
+.PurchaseBannerImg,
+.PurchaseEditorBannerImg {
   /** style */
   width: 90vw;
 }
-.PurchaseBannerImgWrapDiv {
+.PurchaseBannerImgWrapDiv,
+.PurchaseEditorBannerImgWrapDiv {
   /** style */
   display: flex;
   justify-content: center;
   margin: 10px;
 }
-.PurchasePurchasePlanDiv {
+.PurchasePurchasePlanDiv,
+.PurchaseEditorPurchasePlanDiv {
   /** style */
   display: flex;
   width: 90vw;
   flex-direction: column;
 }
-.PurchasePurchasePlanDivListWrapDiv {
+.PurchasePurchasePlanDivListWrapDiv,
+.PurchaseEditorPurchasePlanDivListWrapDiv {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -280,7 +291,119 @@
   /** style */
   border-style: none;
 }
+/** following for exam editor component used  */
+.ExamEditorDiv {
+  /** style */
+}
+.ExamEditorHeadDiv {
+  /** style */
+}
+.ExamEditorQuestionCard {
+  /** style */
+}
+.ExamEditorQuestionCardWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionCardListWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionAlertOuterDiv {
+  /** style */
+}
+.ExamEditorQuestionIdTextField {
+  /** style */
+}
+.ExamEditorQuestionTopicDiv {
+  /** style */
+}
+.ExamEditorQuestionTopicNameTextField {
+  /** style */
+}
+.ExamEditorQuestionTopicNameTextFieldWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceDivListWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceStatementTextField {
+  /** style */
+}
+.ExamEditorQuestionChoiceStatementTextFieldWrapDiv {
+  /** style */
+}
+.ExamEditorQuestionAnswerTextField {
+  /** style */
+}
+.ExamEditorQuestionSubjectTextField {
+  /** style */
+}
+.ExamEditorQuestionTypeTextField {
+  /** style */
+}
+.ExamEditorQuestionYearTextField {
+  /** style */
+}
+.ExamEditorFunctionAreaDiv {
+  /** style */
+}
+.ExamEditorFunctionAreaEndButton {
+  /** style */
+}
+.ExamEditorFunctionAreaSpaceDiv {
+  /** style */
+}
+.ExamEditorFunctionAreaRestartButton {
+  /** style */
+}
+.ExamEditorTailDiv {
+  /** style */
+}
+/** following for purchase editor component used  */
+.PurchaseEditorDiv {
+  /** style */
+}
+.PurchaseEditorBannerImg {
+  /** style */
+}
+.PurchaseEditorBannerImgWrapDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDivWrapDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDivListWrapDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanIdTextField {
+  /** style */
+}
+.PurchaseEditorPurchasePlanSpaceDiv {
+  /** style */
+}
+.PurchaseEditorPurchasePlanImageUrlTextField {
+  /** style */
+}
+.PurchaseEditorPurchasePlanFullNameTextField {
+  /** style */
+}
+.PurchaseEditorPurchasePlanDurationTextField {
+  /** style */
+}
 /** ======== following for  ========= */
+.ExamQuestionTopicTypography {
+  /** style */
+  font-weight: bold;
+  font-size: 2.8rem;
+}
+.ExamQuestionTopicTypographyWrapDiv {
+  /** style */
+}
 .BaseComponentErrorViewPaper {
   display: flex;
   width: 70%;
@@ -295,7 +418,18 @@
   width: 100vw;
   height: 95vh;
 }
-.BaseEditorTextField {
+.BaseEditorTextField,
+.ExamEditorQuestionIdTextField,
+.ExamEditorQuestionTopicNameTextField,
+.ExamEditorQuestionChoiceStatementTextField,
+.ExamEditorQuestionAnswerTextField,
+.ExamEditorQuestionSubjectTextField,
+.ExamEditorQuestionTypeTextField,
+.ExamEditorQuestionYearTextField,
+.PurchaseEditorPurchasePlanIdTextField,
+.PurchaseEditorPurchasePlanImageUrlTextField,
+.PurchaseEditorPurchasePlanFullNameTextField,
+.PurchaseEditorPurchasePlanDurationTextField {
   margin: 5px;
 }
 .BaseEditFunctionDiv {

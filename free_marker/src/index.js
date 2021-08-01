@@ -15,8 +15,8 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
@@ -574,7 +574,6 @@ class CodegenNode {
     }
 
     getClickParamStmt() {
-
         let object = '';
         if (this.type === 'array')
             object = this.getName();
@@ -592,6 +591,13 @@ class CodegenNode {
         return !!this.password && _.size(this.password) > 0;
     }
 
+    getStoreFolderName() {
+        return Util.camel(_.reverse(this.getPreciseAttributeGenealogyNodes()).map((node) => node.getName()));
+    }
+
+    getStoreClassName() {
+        return _.upperFirst(this.getStoreFolderName());
+    }
 
     hasTitle() {
         return (!_.isUndefined(this.title));
@@ -617,7 +623,6 @@ class CodegenNode {
         return _.isArray(this.children) ? this.children : [];
     }
 
-
     hasParent() {
         return this.parent !== undefined;
     }
@@ -631,6 +636,7 @@ class CodegenNode {
     getFunctionNameRemoveItems() {
         return `remove${_.upperFirst(this.getFieldName())}`;
     }
+
 
     combineClassNameWithType(type, className) {
         const wrapView = this.getWrapView();
@@ -657,16 +663,8 @@ class CodegenNode {
             /** 表示本來這個元件不是View, 不會有OriginalClassName */
             return {exists: false, value: undefined};
         }
-
-        const names = [];
-        let currentNode = this.getPreciseViewParent();
-        while (!!currentNode) {
-            /** 如果到達 struct 層級, 就停止了 */
-            if (currentNode.getStruct())
-                break;
-            names.push(currentNode.isNameModified() ? currentNode.getOriginalName() : currentNode.getName())
-            currentNode = currentNode.getPreciseViewParent();
-        }
+        const nodes = this.getPreciseViewGenealogyNodes(true);
+        const names = nodes.map(node => node.isNameModified() ? node.getOriginalName() : node.getName())
         const className = this.organizeClassNameWithParent(names, true);
         return {
             exists: true, value: this.combineClassNameWithType(type, className)
@@ -705,7 +703,6 @@ class CodegenNode {
             else
                 path.push(segment);
         }
-
         return path.join('/');
     }
 
@@ -722,7 +719,6 @@ class CodegenNode {
                 }
                 params.push(param);
             }
-
         }
         return params;
     }
@@ -741,19 +737,38 @@ class CodegenNode {
 
     /** 為了組合出 uniq 的 view className,最後有加上reverse的調整 */
     getReverseOrderOfViewParentNames() {
-        const names = [];
-        let parent = this.getPreciseViewParent();
-        while (!!parent) {
-            /** 如果到達 struct 層級, 就停止了 */
-            if (parent.name === AncestorString || parent.getStruct())
+        const nodes = this.getPreciseViewGenealogyNodes(true);
+        return _.reverse(nodes.map(node => node.getName()));
+    }
+
+    /** 找出祖譜 */
+    getGenealogyNodes(validate, getParent, excludeSelf = false) {
+        const nodes = [];
+        let current = this;
+
+        if (excludeSelf) {
+            current = getParent(current);
+        }
+
+        while (!!current) {
+            if (current.name === AncestorString || current.getStruct())
                 break;
 
-            if (parent.getName())
-                names.push(parent.getName())
+            if (validate(current)) {
+                nodes.push(current);
+            }
 
-            parent = parent.getPreciseViewParent();
+            current = getParent(current);
         }
-        return _.reverse(names);
+        return nodes;
+    }
+
+    getPreciseViewGenealogyNodes(excludeSelf = false) {
+        return this.getGenealogyNodes((node) => node.isView(), (node) => node.getPreciseViewParent(), excludeSelf)
+    }
+
+    getPreciseAttributeGenealogyNodes(excludeSelf = false) {
+        return this.getGenealogyNodes((node) => node.isAttribute(), (node) => node.getPreciseAttributeParent(), excludeSelf)
     }
 
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
@@ -850,6 +865,7 @@ class CodegenNode {
         return `${functionName}(${param})`;
 
     }
+
 
     getFunctionNameOfRenderView() {
         return Util.camel(`render`,
@@ -1147,7 +1163,7 @@ class ClassGenerator {
             const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
             index.setSingleton(this.indexFileSingleton);
-
+            index.needSignature(false);
             /** 有marco,就要配搭相對應的import */
             for (const macro of this.indexFileMacros) {
                 if (Util.has(macro, 'inject')) {
@@ -1183,7 +1199,6 @@ class ClassGenerator {
         stmts.push('\n');
         Util.insertToArray(this.context, 0, ...stmts);
     }
-
 
     appendInClassTail(stmt) {
         const stmts = [];
@@ -1369,10 +1384,10 @@ class StoreBuilder extends BaseBuilder {
 
             if (child.isArray()) {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
-                generator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
+                generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
                 await this.buildBaseStore(child)
             } else if (child.isObject()) {
-                generator.appendInClassHead(`import ${_.upperFirst(child.name)} from '../${child.name}'`)
+                generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
                 propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
                 await this.buildBaseStore(child)
             } else {
@@ -1385,17 +1400,15 @@ class StoreBuilder extends BaseBuilder {
     }
 
     async buildBaseStore(node) {
-
-        const folderName = _.lowerFirst(node.getName());
-        const baseClassName = 'Base' + _.upperFirst(folderName) + 'Store';
-        const indexClassName = _.upperFirst(folderName) + 'Store';
+        const folderName = node.getStoreFolderName();
+        const className = node.getStoreClassName();
+        const baseClassName = `Base${className}Store`;
+        const indexClassName = `${className}Store`;
         const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
-
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendImport('_', 'lodash');
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
         baseGenerator.appendImport('UserInfoRef', '../../userInfo');
-
         baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
         const propsStmt = [];
@@ -1449,8 +1462,6 @@ class StoreBuilder extends BaseBuilder {
                     }
                 ).join(','), '}')
         })
-
-
         baseGenerator.appendFunction('clear', [], ['action'], [],
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
@@ -2810,8 +2821,8 @@ class ProjectFileHandler {
             totalClassNames.push({component, classNames});
             totalEvents.push(...events);
 
-            if (!component.isEditPage())
-                await new StoreBuilder(this.genRootPath).buildBaseStore(component.struct);
+            if (!component.isEditPage() && component.getStruct().isAttribute())
+                await new StoreBuilder(this.genRootPath).buildBaseStore(component.getStruct());
         }
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
@@ -2848,34 +2859,41 @@ class ProjectFileHandler {
                 throw new ERROR(8014, `type ==> ${this.platform}`)
                 break;
         }
-
         await new AppBuilder(this.genRootPath).buildExtraPackages(this.platform, this.nodeOfAncestor);
         this.buildBaseClasses();
         await this.buildConfig(this.nodeOfAncestor);
         this.overrideExtraPackages(this.nodeOfAncestor)
         this.overrideEachFilesFromSrcFolder(
             `common.style.js`
-            ,
-            `app.style.js`
-            ,
-            `mobile.style.js`
-            ,
-            `common.less`
-            ,
-            `app.less`
-            ,
-            `mobile.less`
-            ,
-            {
+            , `app.style.js`
+            , `mobile.style.js`
+            , `common.less`
+            , `app.less`
+            , `mobile.less`
+            , {
                 type: 'extension',
                 keyword: 'svg'
-            },
-            {
+            }, {
                 type: 'extension',
                 keyword: 'png'
             }
         );
+        await this.removeEmptyFolder();
         await this.runInstallIfNeed();
+    }
+
+    async removeEmptyFolder() {
+        for (const file of Util.findFilePathBy(this.genSourcePath)) {
+            if (Util.isEmptyFile(file.absolute)) {
+                console.log(file.absolute);
+                const shouldDeletedFolder = Util.getFileDirPath(file.absolute);
+                if (fs.existsSync(shouldDeletedFolder)) {
+                    console.log(shouldDeletedFolder)
+                    await Util.deleteSelfByPath(shouldDeletedFolder,true);
+                }
+
+            }
+        }
     }
 
     async runInstallIfNeed() {

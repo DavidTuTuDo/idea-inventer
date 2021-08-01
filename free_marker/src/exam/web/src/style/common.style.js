@@ -1,7 +1,7 @@
 /** this code are generated, modify is no sense. 
 	author:David Tu, 
 	email:freshingmoon0725@gmail.com 
-	updateTime:2021-07-29-22-51-07 
+	updateTime:2021-08-01-23-23-28 
 */
 import {
   utiller as Util,
@@ -13,6 +13,50 @@ import libpath from "path";
 
 class CommonStyle {
   /** -------------------- fields -------------------- **/
+
+  /** following for unknown */
+
+  ExamQuestionTopicTypography = {};
+
+  ExamQuestionTopicTypographyWrapDiv = {};
+
+  ExamEditorQuestionAlertAlertImageTextField = {};
+
+  ExamEditorQuestionAlertAlertImageTextFieldWrapDiv = {};
+
+  ExamEditorQuestionTopicTextField = {};
+
+  ExamEditorQuestionTopicTextFieldWrapDiv = {};
+
+  ExamEditorQuestionReplyTextField = {};
+
+  ExamEditorQuestionTipTextField = {};
+
+  ExamEditorQuestionTipTextFieldWrapDiv = {};
+
+  /** => following for purchase editor component  */
+
+  PurchaseEditorPurchasePlanDurationTextField = {};
+
+  PurchaseEditorPurchasePlanFullNameTextField = {};
+
+  PurchaseEditorPurchasePlanImageUrlTextField = {};
+
+  PurchaseEditorPurchasePlanSpaceDiv = {};
+
+  PurchaseEditorPurchasePlanIdTextField = {};
+
+  PurchaseEditorPurchasePlanDivListWrapDiv = {};
+
+  PurchaseEditorPurchasePlanDivWrapDiv = {};
+
+  PurchaseEditorPurchasePlanDiv = {};
+
+  PurchaseEditorBannerImgWrapDiv = {};
+
+  PurchaseEditorBannerImg = {};
+
+  PurchaseEditorDiv = {};
 
   /** => following for exam editor component  */
 
@@ -32,13 +76,7 @@ class CommonStyle {
 
   ExamEditorQuestionSubjectTextField = {};
 
-  ExamEditorQuestionTipTextFieldWrapDiv = {};
-
-  ExamEditorQuestionTipTextField = {};
-
   ExamEditorQuestionAnswerTextField = {};
-
-  ExamEditorQuestionReplyTextField = {};
 
   ExamEditorQuestionChoiceStatementTextFieldWrapDiv = {};
 
@@ -48,15 +86,13 @@ class CommonStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
-  ExamEditorQuestionTopicTextFieldWrapDiv = {};
+  ExamEditorQuestionTopicNameTextFieldWrapDiv = {};
 
-  ExamEditorQuestionTopicTextField = {};
+  ExamEditorQuestionTopicNameTextField = {};
+
+  ExamEditorQuestionTopicDiv = {};
 
   ExamEditorQuestionIdTextField = {};
-
-  ExamEditorQuestionAlertAlertImageTextFieldWrapDiv = {};
-
-  ExamEditorQuestionAlertAlertImageTextField = {};
 
   ExamEditorQuestionAlertOuterDiv = {};
 
@@ -130,9 +166,11 @@ class CommonStyle {
 
   ExamQuestionChoiceDiv = {};
 
-  ExamQuestionTopicTypographyWrapDiv = {};
+  ExamQuestionTopicNameTypographyWrapDiv = {};
 
-  ExamQuestionTopicTypography = {};
+  ExamQuestionTopicNameTypography = {};
+
+  ExamQuestionTopicDiv = {};
 
   ExamQuestionAlertAlertImageImgWrapDiv = {};
 

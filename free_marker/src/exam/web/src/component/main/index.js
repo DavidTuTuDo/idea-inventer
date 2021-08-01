@@ -12,7 +12,7 @@ import path from 'path';
 import Cookies from "../../cookie";
 import UserInfo from '../../userInfo';
 import {utiller as Util} from 'utiller';
-import UserInfoStore from '../../store/userInfo';
+import UserInfoStore from '../../store/navigatorUserInfo';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 
 @inject("main")

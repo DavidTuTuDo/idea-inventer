@@ -3,7 +3,7 @@
 @action
 set{{{functionName}}}(...items) {
     const self = this;
-    if(param !== undefined) {
+    if(items !== undefined && _.isArray(items)) {
         this.{{{fieldName}}}.length = 0;
         this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
     } else {
