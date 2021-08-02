@@ -55,9 +55,9 @@ class Utiller {
 
     }
 
-    isOrEquals(self, ...several) {
+    isOrEquals(target, ...several) {
         for (const each of several) {
-            if (_.isEqual(self, each)) return true;
+            if (_.isEqual(target, each)) return true;
         }
         return false;
     }

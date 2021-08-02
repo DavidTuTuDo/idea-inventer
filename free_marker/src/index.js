@@ -15,13 +15,12 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
 // const CURRENT_PLATFORM = 'developer';
-
 
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
@@ -641,7 +640,11 @@ class CodegenNode {
     }
 
     /** original 就是找到hack之前的組合 */
-    organizeClassNameWithParent(type = 'default', parentNames, original = false,) {
+    organizeClassNameWithParent(type = 'default', original = false) {
+        const nodes = _.reverse(this.getPreciseViewGenealogyNodes());
+        const parentNames = original?
+            nodes.map((node) => node.getName()):
+            nodes.map((node) => node.isNameModified() ? node.getOriginalName() : node.getName())
         let viewName = !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView()
         let prefix = type;
 
@@ -657,15 +660,12 @@ class CodegenNode {
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
         }
-        return _.upperFirst(Util.camel(prefix, ...parentNames, this.getName(),
-            this.isOuter() ? 'outer' : '', viewName));
+        return _.upperFirst(Util.camel(prefix, ...parentNames,this.isOuter() ? 'outer' : '', viewName));
     }
 
     /** 放在css用來做key => ExamEditorQuestionCard */
     getClassNameOfLessUsage(type = 'default') {
-        return this.organizeClassNameWithParent(type,
-            _.reverse(this.getPreciseViewGenealogyNodes(true).map(node => node.getName())),
-            false)
+        return this.organizeClassNameWithParent(type, false)
     }
 
     /** 當edit mode的時候, 為了要讓editMode下的元件屬性在less可以繼承 mainMode */
@@ -674,10 +674,8 @@ class CodegenNode {
             /** 表示本來這個元件不是View, 不會有OriginalClassName */
             return {exists: false, value: undefined};
         }
-        const nodes = this.getPreciseViewGenealogyNodes(true);
-        const names = nodes.map(node => node.isNameModified() ? node.getOriginalName() : node.getName())
         return {
-            exists: true, value: this.organizeClassNameWithParent(type, names, true)
+            exists: true, value: this.organizeClassNameWithParent(type, true)
         };
     }
 
@@ -2427,19 +2425,21 @@ class AppBuilder extends ComponentBuilder {
      * */
     async buildLessFile(classNameInfos, srcPath) {
         /** 先把舊的整理過, 除掉 comment的字樣line */
+        const sign = `/** style */`;
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             const srcLessPath = libpath.join(srcPath, `less`, `${type}.less`)
             const lessAttributesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
                 const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
-                _.remove(stub,
-                    (each) => (_.startsWith(each, '/** ') ||
-                        _.isEqual(each.trim(), '')))
+                _.remove(stub, (each) => (_.startsWith(each, '/** ') || _.isEqual(each.trim(), '')))
                 lessAttributesFromSrc.push(...(stub.join('').split('}')))
                 /** 移除掉最後一個,因為split */
                 lessAttributesFromSrc.pop();
             }
+
+            /** 刪掉沒定義過less....  沒定義過的 => ' .ExamDiv { /** style */
+            _.remove(lessAttributesFromSrc, (each) => (_.isEqual(each.split(`{`)[1].trim(), sign)))
 
             const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`));
             for (const info of classNameInfos) {
@@ -2451,10 +2451,7 @@ class AppBuilder extends ComponentBuilder {
                     const type = className.type;
                     const name = node.getClassNameOfLessUsage(type);
                     /** 從file裡面找出定義過的屬性敘述*/
-                    const srcAttribute = _.remove(lessAttributesFromSrc,
-                        (each) => {
-                            return _.startsWith(each, `.${name} {`) || _.startsWith(each, `.${name}:`)
-                        })
+                    const srcAttribute = _.remove(lessAttributesFromSrc, (each) => _.startsWith(each, `.${name}`))
 
                     if (srcAttribute.length > 1)
                         throw new ERROR(7003, `origin ==> ${Util.deepFlat(srcAttribute)}`)
@@ -2464,27 +2461,23 @@ class AppBuilder extends ComponentBuilder {
                     if (isEditPage) {
                         if (type === 'default' && node.isTextField()) {
                             const extendStmt = `:extend(.BaseEditorTextField all)`;
-                            generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                            generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
                         } else {
                             const original = node.getOriginalClassNameOfLessUsage(type);
                             if (original.exists) {
                                 const extendStmt = `:extend(.${original.value} all)`;
-                                generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                                generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
                             }
                         }
                     } else
-                        generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { /** style */ }\n\n` : `${srcAttribute[0]}}\n\n`);
+                        generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
 
                 }
             }
 
             if (lessAttributesFromSrc.length > 0) {
                 generator.appendInClassTail(`/** ======== following for homeless ========= */\n\n`);
-                for (const lasting of lessAttributesFromSrc) {
-                    /** 要檢查homeless的 是不是沒定義過less.... lasting => ' .ExamDiv:extend { margin:0 ' */
-                    if (!_.isEqual(lasting.split(`{`)[1].trim(), `/** style */`))
-                        generator.appendInClassTail(`${lasting} }\n\n`);
-                }
+                lessAttributesFromSrc.map(each => generator.appendInClassTail(`${each} }\n\n`))
             }
 
             generator.needSignature(false);
@@ -2789,22 +2782,29 @@ class ProjectFileHandler {
 
         function toEditorPageMode(node) {
             if (node.isColumnAttribute() && !node.isCollection()) {
-                node.setViewModified(true);
-                node.setOriginalView(node.getView());
-                node.setViewProps({});
-                node.setView('TextField');
-                node.appendViewProps({variant: `outlined`});
+                if (node.isImageView()) {
 
-                if (node.getName() === 'id') {
-                    node.appendViewProps({
-                        InputProps: {
-                            readOnly: true,
-                        }
-                    })
+                } else {
+                    node.setViewModified(true);
+                    node.setOriginalView(node.getView());
+                    node.setViewProps({});
+                    node.setView('TextField');
+                    node.appendViewProps({variant: `outlined`});
+
+                    if (node.getName() === 'id') {
+                        node.appendViewProps({
+                            InputProps: {
+                                readOnly: true,
+                            }
+                        })
+                    }
                 }
+
+
             }
 
             if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) {
+                /** 就是把不是遠端欄位的UI給刪掉 */
                 delete node.view;
             }
 

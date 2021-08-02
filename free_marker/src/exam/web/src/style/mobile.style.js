@@ -51,7 +51,7 @@ class MobileStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
-  ExamEditorQuestionTopicImageUrlTextField = {};
+  ExamEditorQuestionTopicImageUrlImg = {};
 
   ListWrapExamEditorQuestionTopicImageDiv = {};
 
@@ -63,9 +63,9 @@ class MobileStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
-  ExamEditorQuestionIdTextField = {};
-
   ExamEditorQuestionAlertOuterDiv = {};
+
+  ExamEditorQuestionIdTextField = {};
 
   ListWrapExamEditorQuestionDiv = {};
 

@@ -186,10 +186,16 @@
 
 .ListWrapExamQuestionTopicImageDiv {
   /** style */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .ExamQuestionTopicImageUrlImg {
   /** style */
+  width: 120px;
+  height: 120px;
+  margin: 3px;
 }
 
 .ExamQuestionChoiceDiv {
@@ -337,11 +343,11 @@
   /** style */
 }
 
-.ExamEditorQuestionAlertOuterDiv:extend(.QuestionExamAlertOuterDiv all) {
+.ExamEditorQuestionIdTextField:extend(.BaseEditorTextField all) {
   /** style */
 }
 
-.ExamEditorQuestionIdTextField:extend(.BaseEditorTextField all) {
+.ExamEditorQuestionAlertOuterDiv:extend(.QuestionExamAlertOuterDiv all) {
   /** style */
 }
 
@@ -366,7 +372,7 @@
   /** style */
 }
 
-.ExamEditorQuestionTopicImageUrlTextField:extend(.BaseEditorTextField all) {
+.ExamEditorQuestionTopicImageUrlImg:extend(.ImageTopicQuestionExamUrlImg all) {
   /** style */
 }
 
@@ -445,8 +451,6 @@
 
 /** ======== following for homeless ========= */
 
-.PurchasePurchasePlanDivListWrapDiv {
-}
 
 .BaseComponentErrorViewPaper {
   display: flex;

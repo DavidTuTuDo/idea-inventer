@@ -155,9 +155,15 @@
 }
 .ListWrapExamQuestionTopicImageDiv {
   /** style */
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 .ExamQuestionTopicImageUrlImg {
   /** style */
+  width: 120px;
+  height: 120px;
+  margin: 3px;
 }
 .ExamQuestionChoiceDiv {
   /** style */
@@ -279,10 +285,10 @@
 .ListWrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamEditorQuestionAlertOuterDiv {
+.ExamEditorQuestionIdTextField {
   /** style */
 }
-.ExamEditorQuestionIdTextField {
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
 .ExamEditorQuestionTopicDiv {
@@ -300,7 +306,7 @@
 .ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageUrlTextField {
+.ExamEditorQuestionTopicImageUrlImg {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
@@ -373,7 +379,6 @@
 .BaseEditorTextField,
 .ExamEditorQuestionIdTextField,
 .ExamEditorQuestionTopicNameTextField,
-.ExamEditorQuestionTopicImageUrlTextField,
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,
 .ExamEditorQuestionSubjectTextField,

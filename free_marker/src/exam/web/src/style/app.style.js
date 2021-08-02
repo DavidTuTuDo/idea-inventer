@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for purchase editor component  */
 
   PurchaseEditorPurchasePlanDurationTextField = {};
@@ -47,7 +49,7 @@ class AppStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
-  ExamEditorQuestionTopicImageUrlTextField = {};
+  ExamEditorQuestionTopicImageUrlImg = {};
 
   ListWrapExamEditorQuestionTopicImageDiv = {};
 
@@ -59,9 +61,9 @@ class AppStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
-  ExamEditorQuestionIdTextField = {};
-
   ExamEditorQuestionAlertOuterDiv = {};
+
+  ExamEditorQuestionIdTextField = {};
 
   ListWrapExamEditorQuestionDiv = {};
 

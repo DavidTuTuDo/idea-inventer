@@ -190,10 +190,10 @@
 .ListWrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamEditorQuestionAlertOuterDiv {
+.ExamEditorQuestionIdTextField {
   /** style */
 }
-.ExamEditorQuestionIdTextField {
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
 .ExamEditorQuestionTopicDiv {
@@ -211,7 +211,7 @@
 .ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageUrlTextField {
+.ExamEditorQuestionTopicImageUrlImg {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
