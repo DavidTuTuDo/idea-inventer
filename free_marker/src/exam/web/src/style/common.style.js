@@ -1,8 +1,3 @@
-/** this code are generated, modify is no sense. 
-	author:David Tu, 
-	email:freshingmoon0725@gmail.com 
-	updateTime:2021-08-02-00-39-20 
-*/
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -13,54 +8,6 @@ import libpath from "path";
 
 class CommonStyle {
   /** -------------------- fields -------------------- **/
-
-  /** following for unknown */
-
-  ExamHeadDiv = {};
-
-  ExamFunctionAreaDiv = {};
-
-  ExamFunctionAreaEndButton = {};
-
-  ExamFunctionAreaSpaceDiv = {};
-
-  ExamFunctionAreaRestartButton = {};
-
-  ExamTailDiv = {};
-
-  ExamEditorHeadDiv = {};
-
-  ExamEditorFunctionAreaDiv = {};
-
-  ExamEditorFunctionAreaEndButton = {};
-
-  ExamEditorFunctionAreaSpaceDiv = {};
-
-  ExamEditorFunctionAreaRestartButton = {};
-
-  ExamEditorTailDiv = {};
-
-  ExamQuestionTopicTypography = {};
-
-  ExamQuestionTopicTypographyWrapDiv = {};
-
-  ExamEditorQuestionAlertAlertImageTextField = {};
-
-  ExamEditorQuestionAlertAlertImageTextFieldWrapDiv = {};
-
-  ExamEditorQuestionTopicTextField = {};
-
-  ExamEditorQuestionTopicTextFieldWrapDiv = {};
-
-  ExamEditorQuestionReplyTextField = {};
-
-  ExamEditorQuestionTipTextField = {};
-
-  ExamEditorQuestionTipTextFieldWrapDiv = {};
-
-  PurchaseEditorBannerImgWrapDiv = {};
-
-  PurchaseEditorBannerImg = {};
 
   /** => following for purchase editor component  */
 
@@ -74,9 +21,9 @@ class CommonStyle {
 
   PurchaseEditorPurchasePlanIdTextField = {};
 
-  PurchaseEditorPurchasePlanDivListWrapDiv = {};
+  ListWrapPurchaseEditorPurchasePlanDiv = {};
 
-  PurchaseEditorPurchasePlanDivWrapDiv = {};
+  WrapPurchaseEditorPurchasePlanDiv = {};
 
   PurchaseEditorPurchasePlanDiv = {};
 
@@ -92,21 +39,21 @@ class CommonStyle {
 
   ExamEditorQuestionAnswerTextField = {};
 
-  ExamEditorQuestionChoiceStatementTextFieldWrapDiv = {};
+  WrapExamEditorQuestionChoiceStatementDiv = {};
 
   ExamEditorQuestionChoiceStatementTextField = {};
 
-  ExamEditorQuestionChoiceDivListWrapDiv = {};
+  ListWrapExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionTopicImageUrlTextField = {};
 
-  ExamEditorQuestionTopicImageImgListWrapDiv = {};
+  ListWrapExamEditorQuestionTopicImageDiv = {};
 
-  ExamEditorQuestionTopicImageImg = {};
+  ExamEditorQuestionTopicImageDiv = {};
 
-  ExamEditorQuestionTopicNameTextFieldWrapDiv = {};
+  WrapExamEditorQuestionTopicNameDiv = {};
 
   ExamEditorQuestionTopicNameTextField = {};
 
@@ -116,9 +63,9 @@ class CommonStyle {
 
   ExamEditorQuestionAlertOuterDiv = {};
 
-  ExamEditorQuestionCardListWrapDiv = {};
+  ListWrapExamEditorQuestionDiv = {};
 
-  ExamEditorQuestionCardWrapDiv = {};
+  WrapExamEditorQuestionDiv = {};
 
   ExamEditorQuestionCard = {};
 
@@ -126,27 +73,27 @@ class CommonStyle {
 
   /** => following for purchase  component  */
 
-  PurchasePurchasePlanBuyButtonWrapDiv = {};
+  WrapPurchasePurchasePlanBuyDiv = {};
 
   PurchasePurchasePlanBuyButton = {};
 
   PurchasePurchasePlanPricePriceTipTypography = {};
 
-  PurchasePurchasePlanPriceTypographyWrapDiv = {};
+  WrapPurchasePurchasePlanPriceDiv = {};
 
   PurchasePurchasePlanPriceTypography = {};
 
   PurchasePurchasePlanSpaceDiv = {};
 
-  PurchasePurchasePlanNameTypographyWrapDiv = {};
+  WrapPurchasePurchasePlanNameDiv = {};
 
   PurchasePurchasePlanNameTypography = {};
 
-  PurchasePurchasePlanDivListWrapDiv = {};
+  ListWrapPurchasePurchasePlanDiv = {};
 
   PurchasePurchasePlanDiv = {};
 
-  PurchaseBannerImgWrapDiv = {};
+  WrapPurchaseBannerDiv = {};
 
   PurchaseBannerImg = {};
 
@@ -162,39 +109,39 @@ class CommonStyle {
 
   /** => following for exam  component  */
 
-  ExamQuestionTipTypographyWrapDiv = {};
+  WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};
 
-  ExamQuestionChoiceStatementButtonWrapDiv = {};
+  WrapExamQuestionChoiceStatementDiv = {};
 
   ExamQuestionChoiceStatementButton = {};
 
-  ExamQuestionChoiceDivListWrapDiv = {};
+  ListWrapExamQuestionChoiceDiv = {};
 
   ExamQuestionChoiceDiv = {};
 
   ExamQuestionTopicImageUrlImg = {};
 
-  ExamQuestionTopicImageImgListWrapDiv = {};
+  ListWrapExamQuestionTopicImageDiv = {};
 
-  ExamQuestionTopicImageImg = {};
+  ExamQuestionTopicImageDiv = {};
 
-  ExamQuestionTopicNameTypographyWrapDiv = {};
+  WrapExamQuestionTopicNameDiv = {};
 
   ExamQuestionTopicNameTypography = {};
 
   ExamQuestionTopicDiv = {};
 
-  ExamQuestionAlertAlertImageImgWrapDiv = {};
+  WrapExamQuestionAlertAlertImageDiv = {};
 
   ExamQuestionAlertAlertImageImg = {};
 
   ExamQuestionAlertOuterDiv = {};
 
-  ExamQuestionCardListWrapDiv = {};
+  ListWrapExamQuestionDiv = {};
 
-  ExamQuestionCardWrapDiv = {};
+  WrapExamQuestionDiv = {};
 
   ExamQuestionCard = {};
 
@@ -238,7 +185,7 @@ class CommonStyle {
 
   /** => following for login  component  */
 
-  LoginDivWrapDiv = {};
+  WrapLoginDiv = {};
 
   LoginDiv = {};
 

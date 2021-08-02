@@ -12,7 +12,7 @@
 .LoginDiv {
   /** style */
 }
-.LoginDivWrapDiv {
+.WrapLoginDiv {
   /** style */
 }
 /** following for navigator  component used  */
@@ -73,10 +73,12 @@
 .ExamQuestionCard {
   /** style */
 }
-.ExamQuestionCardWrapDiv {
+.WrapExamQuestionDiv,
+.WrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamQuestionCardListWrapDiv {
+.ListWrapExamQuestionDiv,
+.ListWrapExamEditorQuestionDiv {
   /** style */
 }
 .ExamQuestionAlertOuterDiv {
@@ -85,7 +87,7 @@
 .ExamQuestionAlertAlertImageImg {
   /** style */
 }
-.ExamQuestionAlertAlertImageImgWrapDiv {
+.WrapExamQuestionAlertAlertImageDiv {
   /** style */
 }
 .ExamQuestionTopicDiv {
@@ -94,13 +96,13 @@
 .ExamQuestionTopicNameTypography {
   /** style */
 }
-.ExamQuestionTopicNameTypographyWrapDiv {
+.WrapExamQuestionTopicNameDiv {
   /** style */
 }
-.ExamQuestionTopicImageImg {
+.ExamQuestionTopicImageDiv {
   /** style */
 }
-.ExamQuestionTopicImageImgListWrapDiv {
+.ListWrapExamQuestionTopicImageDiv {
   /** style */
 }
 .ExamQuestionTopicImageUrlImg {
@@ -109,19 +111,19 @@
 .ExamQuestionChoiceDiv {
   /** style */
 }
-.ExamQuestionChoiceDivListWrapDiv {
+.ListWrapExamQuestionChoiceDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
   /** style */
 }
-.ExamQuestionChoiceStatementButtonWrapDiv {
+.WrapExamQuestionChoiceStatementDiv {
   /** style */
 }
 .ExamQuestionTipTypography {
   /** style */
 }
-.ExamQuestionTipTypographyWrapDiv {
+.WrapExamQuestionTipDiv {
   /** style */
 }
 /** following for result  component used  */
@@ -139,26 +141,24 @@
 .PurchaseDiv {
   /** style */
 }
-.PurchaseBannerImg,
-.PurchaseEditorBannerImg {
+.PurchaseBannerImg {
   /** style */
 }
-.PurchaseBannerImgWrapDiv,
-.PurchaseEditorBannerImgWrapDiv {
+.WrapPurchaseBannerDiv {
   /** style */
 }
 .PurchasePurchasePlanDiv,
 .PurchaseEditorPurchasePlanDiv {
   /** style */
 }
-.PurchasePurchasePlanDivListWrapDiv,
-.PurchaseEditorPurchasePlanDivListWrapDiv {
+.ListWrapPurchasePurchasePlanDiv,
+.ListWrapPurchaseEditorPurchasePlanDiv {
   /** style */
 }
 .PurchasePurchasePlanNameTypography {
   /** style */
 }
-.PurchasePurchasePlanNameTypographyWrapDiv {
+.WrapPurchasePurchasePlanNameDiv {
   /** style */
 }
 .PurchasePurchasePlanSpaceDiv {
@@ -167,7 +167,7 @@
 .PurchasePurchasePlanPriceTypography {
   /** style */
 }
-.PurchasePurchasePlanPriceTypographyWrapDiv {
+.WrapPurchasePurchasePlanPriceDiv {
   /** style */
 }
 .PurchasePurchasePlanPricePriceTipTypography {
@@ -176,7 +176,7 @@
 .PurchasePurchasePlanBuyButton {
   /** style */
 }
-.PurchasePurchasePlanBuyButtonWrapDiv {
+.WrapPurchasePurchasePlanBuyDiv {
   /** style */
 }
 /** following for exam editor component used  */
@@ -186,10 +186,10 @@
 .ExamEditorQuestionCard {
   /** style */
 }
-.ExamEditorQuestionCardWrapDiv {
+.WrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamEditorQuestionCardListWrapDiv {
+.ListWrapExamEditorQuestionDiv {
   /** style */
 }
 .ExamEditorQuestionAlertOuterDiv {
@@ -204,13 +204,13 @@
 .ExamEditorQuestionTopicNameTextField {
   /** style */
 }
-.ExamEditorQuestionTopicNameTextFieldWrapDiv {
+.WrapExamEditorQuestionTopicNameDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageImg {
+.ExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageImgListWrapDiv {
+.ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamEditorQuestionTopicImageUrlTextField {
@@ -219,13 +219,13 @@
 .ExamEditorQuestionChoiceDiv {
   /** style */
 }
-.ExamEditorQuestionChoiceDivListWrapDiv {
+.ListWrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceStatementTextField {
   /** style */
 }
-.ExamEditorQuestionChoiceStatementTextFieldWrapDiv {
+.WrapExamEditorQuestionChoiceStatementDiv {
   /** style */
 }
 .ExamEditorQuestionAnswerTextField {
@@ -247,10 +247,10 @@
 .PurchaseEditorPurchasePlanDiv {
   /** style */
 }
-.PurchaseEditorPurchasePlanDivWrapDiv {
+.WrapPurchaseEditorPurchasePlanDiv {
   /** style */
 }
-.PurchaseEditorPurchasePlanDivListWrapDiv {
+.ListWrapPurchaseEditorPurchasePlanDiv {
   /** style */
 }
 .PurchaseEditorPurchasePlanIdTextField {
@@ -266,241 +266,6 @@
   /** style */
 }
 .PurchaseEditorPurchasePlanDurationTextField {
-  /** style */
-}
-/** ======== following for  ========= */
-.PurchaseEditorBannerImg {
-  /** style */
-}
-.PurchaseEditorBannerImgWrapDiv {
-  /** style */
-}
-.ExamHeadDiv {
-  /** style */
-}
-.ExamFunctionAreaDiv {
-  /** style */
-}
-.ExamFunctionAreaEndButton {
-  /** style */
-}
-.ExamFunctionAreaSpaceDiv {
-  /** style */
-}
-.ExamFunctionAreaRestartButton {
-  /** style */
-}
-.ExamTailDiv {
-  /** style */
-}
-.ExamEditorHeadDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaEndButton {
-  /** style */
-}
-.ExamEditorFunctionAreaSpaceDiv {
-  /** style */
-}
-.ExamEditorFunctionAreaRestartButton {
-  /** style */
-}
-.ExamEditorTailDiv {
-  /** style */
-}
-.ExamQuestionTopicTypography {
-  /** style */
-}
-.ExamQuestionTopicTypographyWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionAlertAlertImageTextField {
-  /** style */
-}
-.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionTopicTextField {
-  /** style */
-}
-.ExamEditorQuestionTopicTextFieldWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionReplyTextField {
-  /** style */
-}
-.ExamEditorQuestionTipTextField {
-  /** style */
-}
-.ExamEditorQuestionTipTextFieldWrapDiv {
-  /** style */
-}
-.ExamQuestionAlertImageImg {
-  /** style */
-}
-.ExamQuestionAlertImageImgWrapDiv {
-  /** style */
-}
-.ExamEditorQuestionAlertImageTextField {
-  /** style */
-}
-.ExamEditorQuestionAlertImageTextFieldWrapDiv {
-  /** style */
-}
-.NavigatorAppBar {
-  /** style */
-}
-.NavigatorAppBarWrapDiv {
-  /** style */
-}
-.NavigatorToolBarToolbar {
-  /** style */
-}
-.NavigatorToolBarMenuIconButton {
-  /** style */
-}
-.NavigatorToolBarMenuIconMenuIcon {
-  /** style */
-}
-.NavigatorToolBarTitleTypography {
-  /** style */
-}
-.NavigatorToolBarLoginButton {
-  /** style */
-}
-.NavigatorToolBarLoginButtonWrapDiv {
-  /** style */
-}
-.NavigatorToolBarToolbarListWrapDiv {
-  /** style */
-}
-.AppBarAppBar {
-  /** style */
-}
-.AppBarToolBarToolbar {
-  /** style */
-}
-.AppBarToolBarMenuIconButton {
-  /** style */
-}
-.AppBarToolBarMenuIconMenuIcon {
-  /** style */
-}
-.AppBarToolBarTitleTypography {
-  /** style */
-}
-.AppBarToolBarLoginButton {
-  /** style */
-}
-.AppBarToolBarLoginButtonWrapDiv {
-  /** style */
-}
-.NavigatorHomeAreaAvatar {
-  /** style */
-}
-.NavigatorHomeAreaHomeImg {
-  /** style */
-}
-.NavigatorFunctionDiv {
-  /** style */
-}
-.NavigatorLoginButton {
-  /** style */
-}
-.NavigatorLoginButtonWrapDiv {
-  /** style */
-}
-.PurchasePlanDiv {
-  /** style */
-}
-.PurchasePlanDivListWrapDiv {
-  /** style */
-}
-.PurchasePlanNameTypography {
-  /** style */
-}
-.PurchasePlanNameTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanSpaceDiv {
-  /** style */
-}
-.PurchasePlanPriceTypography {
-  /** style */
-}
-.PurchasePlanPriceTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanPricePriceTipTypography {
-  /** style */
-}
-.PurchasePlanMathTypography {
-  /** style */
-}
-.PurchasePlanMathTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanMusicTypography {
-  /** style */
-}
-.PurchasePlanMusicTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanSweetTypography {
-  /** style */
-}
-.PurchasePlanSweetTypographyWrapDiv {
-  /** style */
-}
-.PurchasePlanBuyButton {
-  /** style */
-}
-.PurchasePlanBuyButtonWrapDiv {
-  /** style */
-}
-.ExamQuestionCardArrayWrapDiv {
-  /** style */
-}
-.ExamQuestionChoiceDivArrayWrapDiv {
-  /** style */
-}
-.PurchasePlanDivArrayWrapDiv {
-  /** style */
-}
-.PurchaseDivArrayWrapDiv {
-  /** style */
-}
-.PurchasePlanPriceTipTypography {
-  /** style */
-}
-.PurchasePlanSpaceOuterDiv {
-  /** style */
-}
-.PurchasePlanDivWrapDiv {
-  /** style */
-}
-.PurchaseCardArrayWrapDiv {
-  /** style */
-}
-.PurchaseCard {
-  /** style */
-}
-.PurchaseArrayWrapDiv {
-  /** style */
-}
-.PurchaseTitleTypography {
-  /** style */
-}
-.PurchasePlanPidTypography {
-  /** style */
-}
-.NavigatorGoogleloginButton {
-  /** style */
-}
-.NavigatorGoogleloginButtonWrapDiv {
   /** style */
 }
 /*# sourceMappingURL=mobile.css.map */

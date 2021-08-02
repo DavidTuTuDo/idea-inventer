@@ -18,7 +18,7 @@
   /** style */
 }
 
-.LoginDivWrapDiv {
+.WrapLoginDiv {
   /** style */
 }
 
@@ -101,11 +101,11 @@
   /** style */
 }
 
-.ExamQuestionCardWrapDiv {
+.WrapExamQuestionDiv {
   /** style */
 }
 
-.ExamQuestionCardListWrapDiv {
+.ListWrapExamQuestionDiv {
   /** style */
 }
 
@@ -117,7 +117,7 @@
   /** style */
 }
 
-.ExamQuestionAlertAlertImageImgWrapDiv {
+.WrapExamQuestionAlertAlertImageDiv {
   /** style */
 }
 
@@ -129,15 +129,15 @@
   /** style */
 }
 
-.ExamQuestionTopicNameTypographyWrapDiv {
+.WrapExamQuestionTopicNameDiv {
   /** style */
 }
 
-.ExamQuestionTopicImageImg {
+.ExamQuestionTopicImageDiv {
   /** style */
 }
 
-.ExamQuestionTopicImageImgListWrapDiv {
+.ListWrapExamQuestionTopicImageDiv {
   /** style */
 }
 
@@ -149,7 +149,7 @@
   /** style */
 }
 
-.ExamQuestionChoiceDivListWrapDiv {
+.ListWrapExamQuestionChoiceDiv {
   /** style */
 }
 
@@ -157,7 +157,7 @@
   /** style */
 }
 
-.ExamQuestionChoiceStatementButtonWrapDiv {
+.WrapExamQuestionChoiceStatementDiv {
   /** style */
 }
 
@@ -165,7 +165,7 @@
   /** style */
 }
 
-.ExamQuestionTipTypographyWrapDiv {
+.WrapExamQuestionTipDiv {
   /** style */
 }
 
@@ -194,7 +194,7 @@
   /** style */
 }
 
-.PurchaseBannerImgWrapDiv {
+.WrapPurchaseBannerDiv {
   /** style */
 }
 
@@ -202,7 +202,7 @@
   /** style */
 }
 
-.PurchasePurchasePlanDivListWrapDiv {
+.ListWrapPurchasePurchasePlanDiv {
   /** style */
 }
 
@@ -210,7 +210,7 @@
   /** style */
 }
 
-.PurchasePurchasePlanNameTypographyWrapDiv {
+.WrapPurchasePurchasePlanNameDiv {
   /** style */
 }
 
@@ -222,7 +222,7 @@
   /** style */
 }
 
-.PurchasePurchasePlanPriceTypographyWrapDiv {
+.WrapPurchasePurchasePlanPriceDiv {
   /** style */
 }
 
@@ -234,7 +234,7 @@
   /** style */
 }
 
-.PurchasePurchasePlanBuyButtonWrapDiv {
+.WrapPurchasePurchasePlanBuyDiv {
   /** style */
 }
 
@@ -248,11 +248,11 @@
   /** style */
 }
 
-.ExamEditorQuestionCardWrapDiv {
+.WrapExamEditorQuestionDiv:extend(.WrapExamQuestionDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionCardListWrapDiv {
+.ListWrapExamEditorQuestionDiv:extend(.ListWrapExamQuestionDiv all) {
   /** style */
 }
 
@@ -272,16 +272,15 @@
   /** style */
 }
 
-.ExamEditorQuestionTopicNameTextFieldWrapDiv:extend(.TopicQuestionExamNameTypographyWrapDiv
-    all) {
+.WrapExamEditorQuestionTopicNameDiv:extend(.WrapTopicQuestionExamNameDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionTopicImageImg:extend(.TopicQuestionExamImageImg all) {
+.ExamEditorQuestionTopicImageDiv:extend(.TopicQuestionExamImageDiv all) {
   /** style */
 }
 
-.ExamEditorQuestionTopicImageImgListWrapDiv:extend(.TopicQuestionExamImageImgListWrapDiv
+.ListWrapExamEditorQuestionTopicImageDiv:extend(.ListWrapTopicQuestionExamImageDiv
     all) {
   /** style */
 }
@@ -294,7 +293,8 @@
   /** style */
 }
 
-.ExamEditorQuestionChoiceDivListWrapDiv {
+.ListWrapExamEditorQuestionChoiceDiv:extend(.ListWrapQuestionExamChoiceDiv
+    all) {
   /** style */
 }
 
@@ -302,7 +302,8 @@
   /** style */
 }
 
-.ExamEditorQuestionChoiceStatementTextFieldWrapDiv {
+.WrapExamEditorQuestionChoiceStatementDiv:extend(.WrapChoiceQuestionExamStatementDiv
+    all) {
   /** style */
 }
 
@@ -332,12 +333,11 @@
   /** style */
 }
 
-.PurchaseEditorPurchasePlanDivWrapDiv:extend(.PurchasePurchasePlanDivWrapDiv
-    all) {
+.WrapPurchaseEditorPurchasePlanDiv:extend(.WrapPurchasePurchasePlanDiv all) {
   /** style */
 }
 
-.PurchaseEditorPurchasePlanDivListWrapDiv:extend(.PurchasePurchasePlanDivListWrapDiv
+.ListWrapPurchaseEditorPurchasePlanDiv:extend(.ListWrapPurchasePurchasePlanDiv
     all) {
   /** style */
 }
@@ -359,319 +359,5 @@
 }
 
 .PurchaseEditorPurchasePlanDurationTextField:extend(.BaseEditorTextField all) {
-  /** style */
-}
-
-/** ======== following for  ========= */
-
-.PurchaseEditorBannerImg:extend(.PurchaseBannerImg all) {
-  /** style */
-}
-
-.PurchaseEditorBannerImgWrapDiv:extend(.PurchaseBannerImgWrapDiv all) {
-  /** style */
-}
-
-.ExamHeadDiv {
-  /** style */
-}
-
-.ExamFunctionAreaDiv {
-  /** style */
-}
-
-.ExamFunctionAreaEndButton {
-  /** style */
-}
-
-.ExamFunctionAreaSpaceDiv {
-  /** style */
-}
-
-.ExamFunctionAreaRestartButton {
-  /** style */
-}
-
-.ExamTailDiv {
-  /** style */
-}
-
-.ExamEditorHeadDiv {
-  /** style */
-}
-
-.ExamEditorFunctionAreaDiv {
-  /** style */
-}
-
-.ExamEditorFunctionAreaEndButton {
-  /** style */
-}
-
-.ExamEditorFunctionAreaSpaceDiv {
-  /** style */
-}
-
-.ExamEditorFunctionAreaRestartButton {
-  /** style */
-}
-
-.ExamEditorTailDiv {
-  /** style */
-}
-
-.ExamQuestionTopicTypography {
-  /** style */
-}
-
-.ExamQuestionTopicTypographyWrapDiv {
-  /** style */
-}
-
-.ExamEditorQuestionAlertAlertImageTextField {
-  /** style */
-}
-
-.ExamEditorQuestionAlertAlertImageTextFieldWrapDiv {
-  /** style */
-}
-
-.ExamEditorQuestionTopicTextField {
-  /** style */
-}
-
-.ExamEditorQuestionTopicTextFieldWrapDiv {
-  /** style */
-}
-
-.ExamEditorQuestionReplyTextField {
-  /** style */
-}
-
-.ExamEditorQuestionTipTextField {
-  /** style */
-}
-
-.ExamEditorQuestionTipTextFieldWrapDiv {
-  /** style */
-}
-
-.ExamQuestionAlertImageImg {
-  /** style */
-}
-
-.ExamQuestionAlertImageImgWrapDiv {
-  /** style */
-}
-
-.ExamEditorQuestionAlertImageTextField {
-  /** style */
-}
-
-.ExamEditorQuestionAlertImageTextFieldWrapDiv {
-  /** style */
-}
-
-.NavigatorAppBar {
-  /** style */
-}
-
-.NavigatorAppBarWrapDiv {
-  /** style */
-}
-
-.NavigatorToolBarToolbar {
-  /** style */
-}
-
-.NavigatorToolBarMenuIconButton {
-  /** style */
-}
-
-.NavigatorToolBarMenuIconMenuIcon {
-  /** style */
-}
-
-.NavigatorToolBarTitleTypography {
-  /** style */
-}
-
-.NavigatorToolBarLoginButton {
-  /** style */
-}
-
-.NavigatorToolBarLoginButtonWrapDiv {
-  /** style */
-}
-
-.NavigatorToolBarToolbarListWrapDiv {
-  /** style */
-}
-
-.AppBarAppBar {
-  /** style */
-}
-
-.AppBarToolBarToolbar {
-  /** style */
-}
-
-.AppBarToolBarMenuIconButton {
-  /** style */
-}
-
-.AppBarToolBarMenuIconMenuIcon {
-  /** style */
-}
-
-.AppBarToolBarTitleTypography {
-  /** style */
-}
-
-.AppBarToolBarLoginButton {
-  /** style */
-}
-
-.AppBarToolBarLoginButtonWrapDiv {
-  /** style */
-}
-
-.NavigatorHomeAreaAvatar {
-  /** style */
-}
-
-.NavigatorHomeAreaHomeImg {
-  /** style */
-}
-
-.NavigatorFunctionDiv {
-  /** style */
-}
-
-.NavigatorLoginButton {
-  /** style */
-}
-
-.NavigatorLoginButtonWrapDiv {
-  /** style */
-}
-
-.PurchasePlanDiv {
-  /** style */
-}
-
-.PurchasePlanDivListWrapDiv {
-  /** style */
-}
-
-.PurchasePlanNameTypography {
-  /** style */
-}
-
-.PurchasePlanNameTypographyWrapDiv {
-  /** style */
-}
-
-.PurchasePlanSpaceDiv {
-  /** style */
-}
-
-.PurchasePlanPriceTypography {
-  /** style */
-}
-
-.PurchasePlanPriceTypographyWrapDiv {
-  /** style */
-}
-
-.PurchasePlanPricePriceTipTypography {
-  /** style */
-}
-
-.PurchasePlanMathTypography {
-  /** style */
-}
-
-.PurchasePlanMathTypographyWrapDiv {
-  /** style */
-}
-
-.PurchasePlanMusicTypography {
-  /** style */
-}
-
-.PurchasePlanMusicTypographyWrapDiv {
-  /** style */
-}
-
-.PurchasePlanSweetTypography {
-  /** style */
-}
-
-.PurchasePlanSweetTypographyWrapDiv {
-  /** style */
-}
-
-.PurchasePlanBuyButton {
-  /** style */
-}
-
-.PurchasePlanBuyButtonWrapDiv {
-  /** style */
-}
-
-.ExamQuestionCardArrayWrapDiv {
-  /** style */
-}
-
-.ExamQuestionChoiceDivArrayWrapDiv {
-  /** style */
-}
-
-.PurchasePlanDivArrayWrapDiv {
-  /** style */
-}
-
-.PurchaseDivArrayWrapDiv {
-  /** style */
-}
-
-.PurchasePlanPriceTipTypography {
-  /** style */
-}
-
-.PurchasePlanSpaceOuterDiv {
-  /** style */
-}
-
-.PurchasePlanDivWrapDiv {
-  /** style */
-}
-
-.PurchaseCardArrayWrapDiv {
-  /** style */
-}
-
-.PurchaseCard {
-  /** style */
-}
-
-.PurchaseArrayWrapDiv {
-  /** style */
-}
-
-.PurchaseTitleTypography {
-  /** style */
-}
-
-.PurchasePlanPidTypography {
-  /** style */
-}
-
-.NavigatorGoogleloginButton {
-  /** style */
-}
-
-.NavigatorGoogleloginButtonWrapDiv {
   /** style */
 }

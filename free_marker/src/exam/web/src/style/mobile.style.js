@@ -1,8 +1,3 @@
-/** this code are generated, modify is no sense. 
-	author:David Tu, 
-	email:freshingmoon0725@gmail.com 
-	updateTime:2021-08-02-00-39-21 
-*/
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -14,53 +9,9 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for unknown */
-
-  ExamHeadDiv = {};
-
-  ExamFunctionAreaDiv = {};
-
-  ExamFunctionAreaEndButton = {};
-
-  ExamFunctionAreaSpaceDiv = {};
-
-  ExamFunctionAreaRestartButton = {};
-
-  ExamTailDiv = {};
-
-  ExamEditorHeadDiv = {};
-
-  ExamEditorFunctionAreaDiv = {};
-
-  ExamEditorFunctionAreaEndButton = {};
-
-  ExamEditorFunctionAreaSpaceDiv = {};
-
-  ExamEditorFunctionAreaRestartButton = {};
-
-  ExamEditorTailDiv = {};
+  /** following for homeless */
 
   ExamQuestionTopicTypography = { lineHeight: 1.6, fontSize: "2.4rem" };
-
-  ExamQuestionTopicTypographyWrapDiv = {};
-
-  ExamEditorQuestionAlertAlertImageTextField = {};
-
-  ExamEditorQuestionAlertAlertImageTextFieldWrapDiv = {};
-
-  ExamEditorQuestionTopicTextField = {};
-
-  ExamEditorQuestionTopicTextFieldWrapDiv = {};
-
-  ExamEditorQuestionReplyTextField = {};
-
-  ExamEditorQuestionTipTextField = {};
-
-  ExamEditorQuestionTipTextFieldWrapDiv = {};
-
-  PurchaseEditorBannerImgWrapDiv = {};
-
-  PurchaseEditorBannerImg = {};
 
   /** => following for purchase editor component  */
 
@@ -74,9 +25,9 @@ class MobileStyle {
 
   PurchaseEditorPurchasePlanIdTextField = {};
 
-  PurchaseEditorPurchasePlanDivListWrapDiv = {};
+  ListWrapPurchaseEditorPurchasePlanDiv = {};
 
-  PurchaseEditorPurchasePlanDivWrapDiv = {};
+  WrapPurchaseEditorPurchasePlanDiv = {};
 
   PurchaseEditorPurchasePlanDiv = {};
 
@@ -92,21 +43,21 @@ class MobileStyle {
 
   ExamEditorQuestionAnswerTextField = {};
 
-  ExamEditorQuestionChoiceStatementTextFieldWrapDiv = {};
+  WrapExamEditorQuestionChoiceStatementDiv = {};
 
   ExamEditorQuestionChoiceStatementTextField = {};
 
-  ExamEditorQuestionChoiceDivListWrapDiv = {};
+  ListWrapExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionTopicImageUrlTextField = {};
 
-  ExamEditorQuestionTopicImageImgListWrapDiv = {};
+  ListWrapExamEditorQuestionTopicImageDiv = {};
 
-  ExamEditorQuestionTopicImageImg = {};
+  ExamEditorQuestionTopicImageDiv = {};
 
-  ExamEditorQuestionTopicNameTextFieldWrapDiv = {};
+  WrapExamEditorQuestionTopicNameDiv = {};
 
   ExamEditorQuestionTopicNameTextField = {};
 
@@ -116,9 +67,9 @@ class MobileStyle {
 
   ExamEditorQuestionAlertOuterDiv = {};
 
-  ExamEditorQuestionCardListWrapDiv = {};
+  ListWrapExamEditorQuestionDiv = {};
 
-  ExamEditorQuestionCardWrapDiv = {};
+  WrapExamEditorQuestionDiv = {};
 
   ExamEditorQuestionCard = {};
 
@@ -126,27 +77,27 @@ class MobileStyle {
 
   /** => following for purchase  component  */
 
-  PurchasePurchasePlanBuyButtonWrapDiv = {};
+  WrapPurchasePurchasePlanBuyDiv = {};
 
   PurchasePurchasePlanBuyButton = {};
 
   PurchasePurchasePlanPricePriceTipTypography = {};
 
-  PurchasePurchasePlanPriceTypographyWrapDiv = {};
+  WrapPurchasePurchasePlanPriceDiv = {};
 
   PurchasePurchasePlanPriceTypography = {};
 
   PurchasePurchasePlanSpaceDiv = {};
 
-  PurchasePurchasePlanNameTypographyWrapDiv = {};
+  WrapPurchasePurchasePlanNameDiv = {};
 
   PurchasePurchasePlanNameTypography = {};
 
-  PurchasePurchasePlanDivListWrapDiv = {};
+  ListWrapPurchasePurchasePlanDiv = {};
 
   PurchasePurchasePlanDiv = {};
 
-  PurchaseBannerImgWrapDiv = {};
+  WrapPurchaseBannerDiv = {};
 
   PurchaseBannerImg = {};
 
@@ -162,39 +113,39 @@ class MobileStyle {
 
   /** => following for exam  component  */
 
-  ExamQuestionTipTypographyWrapDiv = {};
+  WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};
 
-  ExamQuestionChoiceStatementButtonWrapDiv = {};
+  WrapExamQuestionChoiceStatementDiv = {};
 
   ExamQuestionChoiceStatementButton = { fontSize: "2.1rem" };
 
-  ExamQuestionChoiceDivListWrapDiv = {};
+  ListWrapExamQuestionChoiceDiv = {};
 
   ExamQuestionChoiceDiv = {};
 
   ExamQuestionTopicImageUrlImg = {};
 
-  ExamQuestionTopicImageImgListWrapDiv = {};
+  ListWrapExamQuestionTopicImageDiv = {};
 
-  ExamQuestionTopicImageImg = {};
+  ExamQuestionTopicImageDiv = {};
 
-  ExamQuestionTopicNameTypographyWrapDiv = {};
+  WrapExamQuestionTopicNameDiv = {};
 
   ExamQuestionTopicNameTypography = {};
 
   ExamQuestionTopicDiv = {};
 
-  ExamQuestionAlertAlertImageImgWrapDiv = {};
+  WrapExamQuestionAlertAlertImageDiv = {};
 
   ExamQuestionAlertAlertImageImg = {};
 
   ExamQuestionAlertOuterDiv = {};
 
-  ExamQuestionCardListWrapDiv = {};
+  ListWrapExamQuestionDiv = {};
 
-  ExamQuestionCardWrapDiv = {};
+  WrapExamQuestionDiv = {};
 
   ExamQuestionCard = {};
 
@@ -238,7 +189,7 @@ class MobileStyle {
 
   /** => following for login  component  */
 
-  LoginDivWrapDiv = {};
+  WrapLoginDiv = {};
 
   LoginDiv = {};
 

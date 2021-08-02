@@ -21,7 +21,7 @@
   width: 100vw;
   height: 20%;
 }
-.LoginDivWrapDiv {
+.WrapLoginDiv {
   /** style */
   display: flex;
   justify-content: center;
@@ -107,15 +107,14 @@
   margin-bottom: 2vw;
   padding: 1vw;
 }
-.ExamQuestionCardWrapDiv,
-.ExamEditorQuestionCardWrapDiv {
+.WrapExamQuestionDiv,
+.WrapExamEditorQuestionDiv {
   /** style */
   position: relative;
 }
-.ExamQuestionCardListWrapDiv,
-.ExamEditorQuestionCardListWrapDiv {
+.ListWrapExamQuestionDiv,
+.ListWrapExamEditorQuestionDiv {
   /** style */
-  margin-top: 10px;
 }
 .ExamQuestionAlertOuterDiv {
   /** style */
@@ -133,7 +132,7 @@
   opacity: 0.3;
   height: 70%;
 }
-.ExamQuestionAlertAlertImageImgWrapDiv {
+.WrapExamQuestionAlertAlertImageDiv {
   /** style */
   display: flex;
   align-items: center;
@@ -148,13 +147,13 @@
   /** style */
   font-size: 2.5rem;
 }
-.ExamQuestionTopicNameTypographyWrapDiv {
+.WrapExamQuestionTopicNameDiv {
   /** style */
 }
-.ExamQuestionTopicImageImg {
+.ExamQuestionTopicImageDiv {
   /** style */
 }
-.ExamQuestionTopicImageImgListWrapDiv {
+.ListWrapExamQuestionTopicImageDiv {
   /** style */
 }
 .ExamQuestionTopicImageUrlImg {
@@ -165,7 +164,7 @@
   margin-top: 2vh;
   margin-bottom: 2vh;
 }
-.ExamQuestionChoiceDivListWrapDiv {
+.ListWrapExamQuestionChoiceDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
@@ -173,14 +172,14 @@
   text-align: left;
   font-size: 2.1rem;
 }
-.ExamQuestionChoiceStatementButtonWrapDiv {
+.WrapExamQuestionChoiceStatementDiv {
   /** style */
   margin-bottom: 1vh;
 }
 .ExamQuestionTipTypography {
   /** style */
 }
-.ExamQuestionTipTypographyWrapDiv {
+.WrapExamQuestionTipDiv {
   /** style */
 }
 /** following for result  component used  */
@@ -201,13 +200,11 @@
   flex-direction: column;
   justify-content: center;
 }
-.PurchaseBannerImg,
-.PurchaseEditorBannerImg {
+.PurchaseBannerImg {
   /** style */
   width: 90vw;
 }
-.PurchaseBannerImgWrapDiv,
-.PurchaseEditorBannerImgWrapDiv {
+.WrapPurchaseBannerDiv {
   /** style */
   display: flex;
   justify-content: center;
@@ -220,8 +217,9 @@
   width: 90vw;
   flex-direction: column;
 }
-.PurchasePurchasePlanDivListWrapDiv,
-.PurchaseEditorPurchasePlanDivListWrapDiv {
+.ListWrapPurchasePurchasePlanDiv,
+.ListWrapPurchaseEditorPurchasePlanDiv {
+  /** style */
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -230,14 +228,14 @@
   margin: 10px;
   border-radius: 10px;
 }
-.PurchasePurchasePlanNameTypography,
-.PurchasePurchasePlanPriceTypography {
+.PurchasePurchasePlanNameTypography {
   /** style */
   font-size: 1.4rem;
 }
-.PurchasePurchasePlanNameTypographyWrapDiv,
-.PurchasePurchasePlanPriceTypographyWrapDiv,
-.PurchasePurchasePlanBuyButtonWrapDiv {
+.WrapPurchasePurchasePlanNameDiv,
+.PurchasePurchasePlanPriceTypography,
+.WrapPurchasePurchasePlanPriceDiv,
+.WrapPurchasePurchasePlanBuyDiv {
   /** style */
   display: flex;
   justify-content: center;
@@ -253,7 +251,7 @@
 .PurchasePurchasePlanPriceTypography {
   /** style */
 }
-.PurchasePurchasePlanPriceTypographyWrapDiv {
+.WrapPurchasePurchasePlanPriceDiv {
   /** style */
   flex-direction: column;
 }
@@ -264,7 +262,7 @@
   /** style */
   font-size: 1rem;
 }
-.PurchasePurchasePlanBuyButtonWrapDiv {
+.WrapPurchasePurchasePlanBuyDiv {
   /** style */
   border-style: none;
 }
@@ -275,10 +273,10 @@
 .ExamEditorQuestionCard {
   /** style */
 }
-.ExamEditorQuestionCardWrapDiv {
+.WrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamEditorQuestionCardListWrapDiv {
+.ListWrapExamEditorQuestionDiv {
   /** style */
 }
 .ExamEditorQuestionAlertOuterDiv {
@@ -293,13 +291,13 @@
 .ExamEditorQuestionTopicNameTextField {
   /** style */
 }
-.ExamEditorQuestionTopicNameTextFieldWrapDiv {
+.WrapExamEditorQuestionTopicNameDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageImg {
+.ExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageImgListWrapDiv {
+.ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamEditorQuestionTopicImageUrlTextField {
@@ -308,13 +306,13 @@
 .ExamEditorQuestionChoiceDiv {
   /** style */
 }
-.ExamEditorQuestionChoiceDivListWrapDiv {
+.ListWrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceStatementTextField {
   /** style */
 }
-.ExamEditorQuestionChoiceStatementTextFieldWrapDiv {
+.WrapExamEditorQuestionChoiceStatementDiv {
   /** style */
 }
 .ExamEditorQuestionAnswerTextField {
@@ -336,10 +334,10 @@
 .PurchaseEditorPurchasePlanDiv {
   /** style */
 }
-.PurchaseEditorPurchasePlanDivWrapDiv {
+.WrapPurchaseEditorPurchasePlanDiv {
   /** style */
 }
-.PurchaseEditorPurchasePlanDivListWrapDiv {
+.ListWrapPurchaseEditorPurchasePlanDiv {
   /** style */
 }
 .PurchaseEditorPurchasePlanIdTextField {
@@ -357,13 +355,7 @@
 .PurchaseEditorPurchasePlanDurationTextField {
   /** style */
 }
-/** ======== following for  ========= */
-.PurchaseEditorBannerImg {
-  /** style */
-}
-.PurchaseEditorBannerImgWrapDiv {
-  /** style */
-}
+/** ======== following for homeless ========= */
 .BaseComponentErrorViewPaper {
   display: flex;
   width: 70%;

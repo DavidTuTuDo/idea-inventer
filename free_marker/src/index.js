@@ -207,7 +207,7 @@ class CodegenNode {
         if (this.hasPath()) {
             return `${this.getName()}.getId()`;
         } else {
-            return `_.indexOf(${this.getFieldName()},${this.getName()})`;
+            return `\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\``;
         }
     }
 
@@ -318,6 +318,7 @@ class CodegenNode {
     }
 
     getWrapView() {
+
         if (this.wrapView) {
             return this.wrapView;
         }
@@ -399,7 +400,6 @@ class CodegenNode {
     needInjectProps() {
         return !!this.injectProps && this.injectProps;
     }
-
 
 
     hasPath() {
@@ -636,34 +636,36 @@ class CodegenNode {
         return this.parent !== undefined;
     }
 
-    /** 放在css用來做key => ExamEditorQuestionCard */
-    getClassNameOfLessUsage(type = 'default') {
-        const className = this.organizeClassNameWithParent(this.getReverseOrderOfViewParentNames())
-        return this.combineClassNameWithType(type, className);
-    }
-
     getFunctionNameRemoveItems() {
         return `remove${_.upperFirst(this.getFieldName())}`;
     }
 
+    /** original 就是找到hack之前的組合 */
+    organizeClassNameWithParent(type = 'default', parentNames, original = false,) {
+        let viewName = !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView()
+        let prefix = type;
 
-    combineClassNameWithType(type, className) {
-        const wrapView = this.getWrapView();
         switch (type) {
             case "default":
-                return className;
-            case 'listWrap':
-                return `${className}ListWrap${_.upperFirst(wrapView)}`
+                prefix = '';
+                viewName = !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView();
+                break;
             case 'wrap':
-                return `${className}Wrap${_.upperFirst(wrapView)}`;
+            case 'listWrap':
+                viewName = this.getWrapView();
+                break;
+            default:
+                throw new ERROR(8017, `type can't be ==> ${type}`)
         }
-        throw new ERROR(8017, `type can't be ==> ${type}`)
+        return _.upperFirst(Util.camel(prefix, ...parentNames, this.getName(),
+            this.isOuter() ? 'outer' : '', viewName));
     }
 
-    /** original 就是找到hack之前的組合 */
-    organizeClassNameWithParent(parentNames, original = false) {
-        return _.upperFirst(Util.camel(...parentNames, this.getName(),
-            this.isOuter() ? 'outer' : '', !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView()))
+    /** 放在css用來做key => ExamEditorQuestionCard */
+    getClassNameOfLessUsage(type = 'default') {
+        return this.organizeClassNameWithParent(type,
+            _.reverse(this.getPreciseViewGenealogyNodes(true).map(node => node.getName())),
+            false)
     }
 
     /** 當edit mode的時候, 為了要讓editMode下的元件屬性在less可以繼承 mainMode */
@@ -674,9 +676,8 @@ class CodegenNode {
         }
         const nodes = this.getPreciseViewGenealogyNodes(true);
         const names = nodes.map(node => node.isNameModified() ? node.getOriginalName() : node.getName())
-        const className = this.organizeClassNameWithParent(names, true);
         return {
-            exists: true, value: this.combineClassNameWithType(type, className)
+            exists: true, value: this.organizeClassNameWithParent(type, names, true)
         };
     }
 
@@ -744,19 +745,14 @@ class CodegenNode {
         return undefined;
     }
 
-    getFunctionNameOfInjectStyle(){
+    getFunctionNameOfInjectStyle() {
         return `getInjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
 
-    getFunctionNameOfInjectProps(){
+    getFunctionNameOfInjectProps() {
         return `getInjectPropsOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
 
-    /** 為了組合出 uniq 的 view className,最後有加上reverse的調整 */
-    getReverseOrderOfViewParentNames() {
-        const nodes = this.getPreciseViewGenealogyNodes(true);
-        return _.reverse(nodes.map(node => node.getName()));
-    }
 
     /** 找出祖譜 */
     getGenealogyNodes(validate, getParent, excludeSelf = false) {
@@ -1959,7 +1955,7 @@ class ComponentBuilder extends BaseBuilder {
             props.style = `###Style.${className}`;
         }
 
-        if(node.needInjectProps()) {
+        if (node.needInjectProps()) {
             const param = node.getPreciseAttributeParentName();
             const injectProps = node.getFunctionNameOfInjectProps();
             props['injectProps'] = `...self.${node.getFunctionNameOfInjectProps()}(${param})`
@@ -1991,10 +1987,10 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
         if (node.isImageView()) {
-            props['src'] = `###${node.getFieldName()}`;
+            props['src'] = `###${node.getName()}`;
         } else if (node.isTextField()) {
             props['label'] = `${node.getDescription()}`;
-            props['value'] = `###${node.getFieldName()}`;
+            props['value'] = `###${node.getName()}`;
             props['onChange'] = `###(event)=>{ 
             ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(event.target.value)}`
             if (node.isNumber()) {
@@ -2049,7 +2045,10 @@ class ComponentBuilder extends BaseBuilder {
             return this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [`{${node.getFieldName()}.map( (${node.getName()}) => { return (`, ...origin, `)})}`]
+                contents: [`{${node.getFieldName()}.map( (${node.getName()}) => { return (`,
+                    ...origin,
+
+                    `)})}`]
             })
         } else {
             return origin;
@@ -2407,13 +2406,17 @@ class AppBuilder extends ComponentBuilder {
                 }
                 const isEditPage = info.component.isEditPage();
                 generator.insertBatchLinesIntoFieldSection(`\n\n/** => following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component  */\n\n`)
+                generator.needSignature(false);
                 generator.setSingleton(true);
             }
             if (!_.isEmpty(origins)) {
                 for (const name in origins) {
-                    generator.appendField(name, JSON.stringify(origins[name]));
+
+                    /** 要檢查homeless的每一個 是不是沒定義過, 沒定義過就會是一個空物件 */
+                    if (!_.isEqual(origins[name], {}))
+                        generator.appendField(name, JSON.stringify(origins[name]));
                 }
-                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for unknown */\n\n`)
+                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for homeless */\n\n`)
             }
             await generator.persist();
         }
@@ -2476,9 +2479,11 @@ class AppBuilder extends ComponentBuilder {
             }
 
             if (lessAttributesFromSrc.length > 0) {
-                generator.appendInClassTail(`/** ======== following for  ========= */\n\n`);
+                generator.appendInClassTail(`/** ======== following for homeless ========= */\n\n`);
                 for (const lasting of lessAttributesFromSrc) {
-                    generator.appendInClassTail(`${lasting} }\n\n`);
+                    /** 要檢查homeless的 是不是沒定義過less.... lasting => ' .ExamDiv:extend { margin:0 ' */
+                    if (!_.isEqual(lasting.split(`{`)[1].trim(), `/** style */`))
+                        generator.appendInClassTail(`${lasting} }\n\n`);
                 }
             }
 
@@ -2914,7 +2919,7 @@ class ProjectFileHandler {
                 const shouldDeletedFolder = Util.getFileDirPath(file.absolute);
                 if (fs.existsSync(shouldDeletedFolder)) {
                     console.log(shouldDeletedFolder)
-                    await Util.deleteSelfByPath(shouldDeletedFolder,true);
+                    await Util.deleteSelfByPath(shouldDeletedFolder, true);
                 }
 
             }
