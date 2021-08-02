@@ -642,9 +642,8 @@ class CodegenNode {
     /** original 就是找到hack之前的組合 */
     organizeClassNameWithParent(type = 'default', original = false) {
         const nodes = _.reverse(this.getPreciseViewGenealogyNodes());
-        const parentNames = original?
-            nodes.map((node) => node.getName()):
-            nodes.map((node) => node.isNameModified() ? node.getOriginalName() : node.getName())
+        const parentNames = original? nodes.map((node) => node.isNameModified() ? node.getOriginalName() : node.getName()) : nodes.map((node) => node.getName())
+
         let viewName = !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView()
         let prefix = type;
 
@@ -660,7 +659,7 @@ class CodegenNode {
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
         }
-        return _.upperFirst(Util.camel(prefix, ...parentNames,this.isOuter() ? 'outer' : '', viewName));
+        return _.upperFirst(Util.camel(prefix, ...parentNames, this.isOuter() ? 'outer' : '', viewName));
     }
 
     /** 放在css用來做key => ExamEditorQuestionCard */
@@ -2085,7 +2084,7 @@ class ComponentBuilder extends BaseBuilder {
             this.hasRootRenderViewFunction = true;
         }
 
-        if (node.isArray() && node.hasPath() && isEditPage) {
+        if (node.isArray() && isEditPage) {
             generator.appendFunction(node.getFunctionNameOfEditor(), [node.getName()], [], [],
                 `return  async (type) => {
                 switch (type) {`,
@@ -2450,6 +2449,7 @@ class AppBuilder extends ComponentBuilder {
                     const node = className.node;
                     const type = className.type;
                     const name = node.getClassNameOfLessUsage(type);
+                    console.log('edit:', isEditPage, 'name:', info.component.getName(), 'less:', name)
                     /** 從file裡面找出定義過的屬性敘述*/
                     const srcAttribute = _.remove(lessAttributesFromSrc, (each) => _.startsWith(each, `.${name}`))
 
@@ -2808,7 +2808,7 @@ class ProjectFileHandler {
                 delete node.view;
             }
 
-            if (node.hasPath() && node.isArray()) {
+            if (node.isArray()) {
                 node.setIsWrap(true);
                 node.setOuterContent([`{this.renderEditFunctionView(
                    ${node.getFunctionNameOfEditorWithParam()} 
