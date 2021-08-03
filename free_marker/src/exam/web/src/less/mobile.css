@@ -66,11 +66,13 @@
   /** style */
 }
 /** following for exam  component used  */
-.ExamDiv {
+.ExamDiv,
+.ExamEditorDiv {
   /** style */
   background-color: #888888;
 }
-.ExamQuestionCard {
+.ExamQuestionCard,
+.ExamEditorQuestionCard {
   /** style */
 }
 .WrapExamQuestionDiv,
@@ -81,7 +83,8 @@
 .ListWrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamQuestionAlertOuterDiv {
+.ExamQuestionAlertOuterDiv,
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
 }
 .ExamQuestionAlertAlertImageImg {
@@ -90,34 +93,42 @@
 .WrapExamQuestionAlertAlertImageDiv {
   /** style */
 }
-.ExamQuestionTopicDiv {
+.ExamQuestionTopicDiv,
+.ExamEditorQuestionTopicDiv {
   /** style */
 }
 .ExamQuestionTopicNameTypography {
   /** style */
 }
-.WrapExamQuestionTopicNameDiv {
+.WrapExamQuestionTopicNameDiv,
+.WrapExamEditorQuestionTopicNameDiv {
   /** style */
 }
-.ExamQuestionTopicImageDiv {
+.ExamQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ListWrapExamQuestionTopicImageDiv {
+.ListWrapExamQuestionTopicImageDiv,
+.ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamQuestionTopicImageUrlImg {
+.ExamQuestionTopicImageUrlImg,
+.ExamEditorQuestionTopicImageUrlImg {
   /** style */
 }
-.ExamQuestionChoiceDiv {
+.ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv {
   /** style */
 }
-.ListWrapExamQuestionChoiceDiv {
+.ListWrapExamQuestionChoiceDiv,
+.ListWrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
   /** style */
 }
-.WrapExamQuestionChoiceStatementDiv {
+.WrapExamQuestionChoiceStatementDiv,
+.WrapExamEditorQuestionChoiceStatementDiv {
   /** style */
 }
 .ExamQuestionTipTypography {
@@ -147,12 +158,10 @@
 .WrapPurchaseBannerDiv {
   /** style */
 }
-.PurchasePurchasePlanDiv,
-.PurchaseEditorPurchasePlanDiv {
+.PurchasePurchasePlanDiv {
   /** style */
 }
-.ListWrapPurchasePurchasePlanDiv,
-.ListWrapPurchaseEditorPurchasePlanDiv {
+.ListWrapPurchasePurchasePlanDiv {
   /** style */
 }
 .PurchasePurchasePlanNameTypography {
@@ -210,6 +219,9 @@
 .ExamEditorQuestionTopicImageDiv {
   /** style */
 }
+.WrapExamEditorQuestionTopicImageDiv {
+  /** style */
+}
 .ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
@@ -217,6 +229,9 @@
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
+  /** style */
+}
+.WrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ListWrapExamEditorQuestionChoiceDiv {
@@ -240,33 +255,4 @@
 .ExamEditorQuestionYearTextField {
   /** style */
 }
-/** following for purchase editor component used  */
-.PurchaseEditorDiv {
-  /** style */
-}
-.PurchaseEditorPurchasePlanDiv {
-  /** style */
-}
-.WrapPurchaseEditorPurchasePlanDiv {
-  /** style */
-}
-.ListWrapPurchaseEditorPurchasePlanDiv {
-  /** style */
-}
-.PurchaseEditorPurchasePlanIdTextField {
-  /** style */
-}
-.PurchaseEditorPurchasePlanSpaceDiv {
-  /** style */
-}
-.PurchaseEditorPurchasePlanImageUrlTextField {
-  /** style */
-}
-.PurchaseEditorPurchasePlanFullNameTextField {
-  /** style */
-}
-.PurchaseEditorPurchasePlanDurationTextField {
-  /** style */
-}
-/** ======== following for homeless ========= */
 /*# sourceMappingURL=mobile.css.map */

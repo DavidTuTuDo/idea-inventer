@@ -9,28 +9,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
-  /** => following for purchase editor component  */
-
-  PurchaseEditorPurchasePlanDurationTextField = {};
-
-  PurchaseEditorPurchasePlanFullNameTextField = {};
-
-  PurchaseEditorPurchasePlanImageUrlTextField = {};
-
-  PurchaseEditorPurchasePlanSpaceDiv = {};
-
-  PurchaseEditorPurchasePlanIdTextField = {};
-
-  ListWrapPurchaseEditorPurchasePlanDiv = {};
-
-  WrapPurchaseEditorPurchasePlanDiv = {};
-
-  PurchaseEditorPurchasePlanDiv = {};
-
-  PurchaseEditorDiv = {};
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -47,11 +25,15 @@ class CommonStyle {
 
   ListWrapExamEditorQuestionChoiceDiv = {};
 
+  WrapExamEditorQuestionChoiceDiv = {};
+
   ExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ListWrapExamEditorQuestionTopicImageDiv = {};
+
+  WrapExamEditorQuestionTopicImageDiv = {};
 
   ExamEditorQuestionTopicImageDiv = {};
 

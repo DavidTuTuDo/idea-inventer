@@ -7,7 +7,7 @@ import firebase from "./CommonFirebaseHelper";
 
 const MAX_BATCH_COUNT = 100;
 
-class CommonRemoteApi  {
+class CommonRemoteApi {
 
     _firebase() {
         return firebase;
@@ -25,7 +25,6 @@ class CommonRemoteApi  {
             } else {
                 batch.set(firebase.firestore().collection(path).doc(), object)
             }
-
             threshold++;
             if (threshold >= MAX_BATCH_COUNT) {
                 await batch.commit();
@@ -46,14 +45,19 @@ class CommonRemoteApi  {
     async submitItem(path, object) {
         const id = object.id ? object.id : '';
         Util.appendInfo(`submit item => path:${path}/${id}`);
+        let obj = object;
         if (id && !_.isEmpty(id)) {
             await firebase.firestore().collection(path).doc(id).set(object);
         } else {
-            await firebase.firestore().collection(path).doc().set(object);
+            const docRef = await firebase.firestore().collection(path).add(object);
+            obj.id = docRef.id;
         }
 
-
-        return {message: `set path:${path}/${id} succeed`}
+        return {
+            succeed: true,
+            message: `set path:${path}/${id} succeed`,
+            value: obj,
+        }
     }
 
 
@@ -86,7 +90,7 @@ class CommonRemoteApi  {
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
         const result = await firebase.firestore().collection(path).doc(id).get();
-        return result.exists ?  {...result.data(),id}: {};
+        return result.exists ? {...result.data(), id} : {};
     }
 
     async deleteItems(path, condition = (conditionStmt) => conditionStmt, all) {

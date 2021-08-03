@@ -13,26 +13,6 @@ class MobileStyle {
 
   ExamQuestionTopicTypography = { lineHeight: 1.6, fontSize: "2.4rem" };
 
-  /** => following for purchase editor component  */
-
-  PurchaseEditorPurchasePlanDurationTextField = {};
-
-  PurchaseEditorPurchasePlanFullNameTextField = {};
-
-  PurchaseEditorPurchasePlanImageUrlTextField = {};
-
-  PurchaseEditorPurchasePlanSpaceDiv = {};
-
-  PurchaseEditorPurchasePlanIdTextField = {};
-
-  ListWrapPurchaseEditorPurchasePlanDiv = {};
-
-  WrapPurchaseEditorPurchasePlanDiv = {};
-
-  PurchaseEditorPurchasePlanDiv = {};
-
-  PurchaseEditorDiv = {};
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -49,11 +29,15 @@ class MobileStyle {
 
   ListWrapExamEditorQuestionChoiceDiv = {};
 
+  WrapExamEditorQuestionChoiceDiv = {};
+
   ExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ListWrapExamEditorQuestionTopicImageDiv = {};
+
+  WrapExamEditorQuestionTopicImageDiv = {};
 
   ExamEditorQuestionTopicImageDiv = {};
 

@@ -15,10 +15,10 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 // const CURRENT_PLATFORM = 'admin';
+
 const CURRENT_PLATFORM = 'web';
 // const CURRENT_PLATFORM = 'developer';
 
@@ -28,22 +28,23 @@ const FAST_DEVELOP_MODE = false;
 const TARGET_COMPONENT = 'exam';
 
 
-const AncestorString = 'NotGoingPleaseImRootOfSourceNode';
+const SignOfInValidNode = 'SignOfInValidNode';
 
 class CodegenNode {
 
     node;
     password;
     components;
+
+    storageFolder = 'public';
+    /** 用來標記圖片上傳到storage哪個資料夾 */
+
     path;
     /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
     column;
     /** 表示這個欄位是一個對應到遠端的欄位, 其他欄位也許是為了UI而增加的 */
-
-    unique;
-    /** 用來註記array裡面是pk的欄位, */
 
     permission = {};
     /** 當struct 裡面的物件有 path時, 就對應有一個collection/document,
@@ -94,9 +95,6 @@ class CodegenNode {
     /** 在view外面包一層div,作為彈性的使用 */
     /** 當view的種類不是container(paper,card,div之類的), 但是getPreciseViewChild()還有child時, 就自動放到 wrap 裡面*/
 
-    wrapContents;
-    /** 當view有被wrap包住時,可以用wrapContent加上 ['{this.getTailView()}']*/
-
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
 
@@ -109,7 +107,7 @@ class CodegenNode {
     injectProps;
     /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    contents;
+    contents = [];
     /** 放在<div>content</div>*/
 
     navigation;
@@ -120,8 +118,10 @@ class CodegenNode {
      在view和store上面也會產生出same generation的概念, incest只支援一層, 假父類必須有wrap
      */
 
-    outerContents;
-    /** 當wrap 是 true的時候, 可以加一些content 再outer*/
+    listWrapContents = [];
+
+    wrapContents = [];
+    /** 當view有被wrap包住時,可以用wrapContent加上 ['{this.getTailView()}']*/
 
     needParam;
     /** view有時候會需要param作為顯示的判斷*/
@@ -132,7 +132,11 @@ class CodegenNode {
 
     type;
 
-    style;
+    style = {};
+
+    wrapStyle = {};
+
+    listWrapStyle = {};
 
     wrapView;
     /**  可以指定wrap的type default是div*/
@@ -169,10 +173,6 @@ class CodegenNode {
 
     /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
 
-
-    /** 'contents', 'style', 'extra', 'firebase', 'parent', 'props', 'admin','server' 都不會被包成CodeGenNode */
-
-
     constructor(node) {
         this.node = node;
         const self = this;
@@ -181,17 +181,62 @@ class CodegenNode {
         }
     }
 
-    setOuterContent(contents) {
-        this.outerContents = contents;
+    getStyle() {
+        return this.style;
     }
 
-    getFunctionNameOfEditorWithParam() {
-        return `self.${this.getFunctionNameOfEditor()}(${this.getName()})`;
+    appendStyle(style) {
+        this.style = {...this.style, ...style}
     }
 
-    getFunctionNameOfEditor() {
-        const functionName = Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask');
-        return functionName;
+    setStyle(style) {
+        this.style = style;
+    }
+
+    getWrapStyle() {
+        return this.wrapStyle;
+    }
+
+    appendWrapStyle(style) {
+        this.wrapStyle = {...this.wrapStyle, ...style}
+    }
+
+    setWrapStyle(style) {
+        this.wrapStyle = style;
+    }
+
+    getListWrapStyle() {
+        return this.listWrapStyle;
+    }
+
+    getStorageFolderName(){
+        return this.storageFolder;
+    }
+
+    setListWrapStyle(style) {
+        this.listWrapStyle = style;
+    }
+
+    appendListWrapStyle(style) {
+        this.listWrapStyle = {...this.listWrapStyle, ...style}
+    }
+
+    getFunctionNameOfItemEditorWithParam() {
+        return `self.${this.getFunctionNameOfItemEditor()}(${this.getName()})`;
+    }
+
+    getFunctionNameOfCollectionEditorWithParam() {
+        return `self.${this.getFunctionNameOfCollectionEditor()}(${this.getPreciseAttributeParent().getName()})`;
+    }
+
+    /** 像是編輯一個item, 這種屬許item等級的作業, item自己做的事情 */
+    getFunctionNameOfItemEditor() {
+        return Util.camel('on', this.getName(), 'Item', 'Editor', 'Clicked', 'AsyncTask');
+    }
+
+    /** 像是新增一個item, 這種屬許array等級的作業, 一個Array只會有一個新增 */
+    getFunctionNameOfCollectionEditor() {
+        return Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask');
     }
 
     isContainer() {
@@ -238,8 +283,12 @@ class CodegenNode {
         return Util.camel('delete', this.getName(), 'item')
     }
 
-    getFunctionNameOfSubmit() {
+    getFunctionNameOfSubmitItem() {
         return Util.camel('submit', this.getName(), 'item');
+    }
+
+    getFunctionNameOfSubmit() {
+        return Util.camel('submit', this.getName());
     }
 
     setViewModified(modified) {
@@ -266,18 +315,51 @@ class CodegenNode {
         return this.originalName;
     }
 
-    getOuterContents() {
-        return this.outerContents ? this.outerContents : [];
-    }
-
     getDescription() {
         return this.description ? this.description : 'no comments';
     }
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['outerContents', 'editIgnore', 'disableFetch', 'permission', 'alertDialog', 'wrapContents', 'contents', 'style',
+        return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableFetch', 'permission', 'alertDialog', 'wrapContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'params', 'host']
+    }
+
+    setListWrapContents(contents) {
+        this.listWrapContents = contents;
+    }
+
+    appendListWrapContents(...contents) {
+        this.listWrapContents.push(...contents);
+    }
+
+    getListWrapContents() {
+        return this.listWrapContents ? this.listWrapContents : [];
+    }
+
+    setWrapContents(contents) {
+        this.wrapContents = contents;
+    }
+
+    appendWrapContents(...contents) {
+        this.wrapContents.push(...contents);
+    }
+
+    getWrapContents() {
+        const stmt = [];
+        const wrapContents = this.wrapContents ? this.wrapContents : [];
+        stmt.push(...wrapContents);
+
+        if (this.hasAlertDialog()) {
+            stmt.push(`{
+            this.renderAlertDialog(
+            ${this.getAlertDialogVariable()},
+            ${JSON.stringify(this.alertDialog.title)},
+            ${JSON.stringify(this.alertDialog.content)},
+            () => this.${this.getFunctionNameOfClicked()}({view:${this.getViewParamVariable()},object:${this.getParamOfRenderView()}})
+            )}`)
+        }
+        return stmt;
     }
 
     needEditPage() {
@@ -432,24 +514,6 @@ class CodegenNode {
         return name;
     }
 
-    getWrapContents() {
-        const stmt = [];
-        const wrapContents = this.wrapContents ? this.wrapContents : [];
-
-        stmt.push(...wrapContents);
-
-        if (this.hasAlertDialog()) {
-            stmt.push(`{
-            this.renderAlertDialog(
-            ${this.getAlertDialogVariable()},
-            ${JSON.stringify(this.alertDialog.title)},
-            ${JSON.stringify(this.alertDialog.content)},
-            () => this.${this.getFunctionNameOfClicked()}({view:${this.getViewParamVariable()},object:${this.getParamOfRenderView()}})
-            )}`)
-        }
-        return stmt;
-    }
-
     hasWrap() {
         return !!this.wrap && this.wrap
     }
@@ -499,7 +563,7 @@ class CodegenNode {
         }
         while (parent && !isNode(parent)) {
             parent = parent.getParentObject();
-            if (parent === undefined || parent.name === AncestorString) break;
+            if (parent === undefined || parent.name === SignOfInValidNode) break;
         }
         return parent;
     }
@@ -507,6 +571,22 @@ class CodegenNode {
 
     isIncestAttribute() {
         return this.incest && this.incest.attribute;
+    }
+
+    /** parent 是 array 的意思 */
+    isChildOfArray() {
+        if (!this.hasValidParent()) return false;
+        const parent = this.getPreciseAttributeParent();
+        return _.isEqual(parent.getType(), 'array');
+    }
+
+    hasValidParent() {
+        const parent = this.getPreciseAttributeParent();
+        return this.isValidNode(parent);
+    }
+
+    isValidNode(node) {
+        return !!node && !_.isEqual(node.name, SignOfInValidNode);
     }
 
     isIncestView() {
@@ -642,7 +722,7 @@ class CodegenNode {
     /** original 就是找到hack之前的組合 */
     organizeClassNameWithParent(type = 'default', original = false) {
         const nodes = _.reverse(this.getPreciseViewGenealogyNodes());
-        const parentNames = original? nodes.map((node) => node.isNameModified() ? node.getOriginalName() : node.getName()) : nodes.map((node) => node.getName())
+        const parentNames = original ? nodes.map((node) => node.isNameModified() ? node.getOriginalName() : node.getName()) : nodes.map((node) => node.getName())
 
         let viewName = !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView()
         let prefix = type;
@@ -761,7 +841,7 @@ class CodegenNode {
         }
 
         while (!!current) {
-            if (current.name === AncestorString || current.getStruct())
+            if (!this.isValidNode(current) || current.getStruct())
                 break;
 
             if (validate(current)) {
@@ -784,7 +864,7 @@ class CodegenNode {
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
     getParentObject() {
         if (this.parent === undefined) {
-            return new CodegenNode({name: AncestorString});
+            return new CodegenNode({name: SignOfInValidNode});
         }
 
         if (_.isArray(this.parent)) {
@@ -1016,15 +1096,16 @@ class ClassGenerator {
 
     /**
      *
-     * @param functionName
+     * @param function {name:'doSomeThing',async:false}
      * @param params, string[]
      * @param macros, string[]
      * @param comments, string[]
      * @param contents, triple dot
      *
      */
-    getFunctionContent(functionName, params = [], macros = [], comments = [], ...contents) {
+    getFunctionContent(func, params = [], macros = [], comments = [], ...contents) {
         /** 應該要檢查file 沒有class的話, 要跳出Error提示 */
+        const functionName = func.name;
         const stmt = [];
         stmt.push(`\n`);
 
@@ -1038,7 +1119,16 @@ class ClassGenerator {
             stmt.push(`@${m}`);
         }
         stmt.push(`\n`);
-        stmt.push(`${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+
+
+        stmt.push(`${func.async ? 'async' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+
+        /** arrow function 不支援 super QQ 08/03 的筆記有紀錄
+         if(functionName === 'constructor') {
+             stmt.push(`${func.async ? 'async' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+        }else {
+            stmt.push(`${functionName} = ${func.async ? 'async' : ''}(${_.isEmpty(params) ? '' : params.join(' ,')}) => {`);
+        }*/
         for (let content of contents) {
             stmt.push(`\n`);
             stmt.push(`${content}`);
@@ -1049,12 +1139,18 @@ class ClassGenerator {
     }
 
     appendFunction(functionName, params = [], macros = [], comments = [], ...contents) {
-        const stmts = this.getFunctionContent(functionName, params, macros, comments, ...contents);
+        const stmts = this.getFunctionContent({
+            name: functionName,
+            async: false
+        }, params, macros, comments, ...contents);
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
 
     appendAsyncFunction(functionName, params = [], macros = [], comments, ...contents) {
-        const stmts = this.getFunctionContent(`async ${functionName}`, params, macros, comments, ...contents);
+        const stmts = this.getFunctionContent({
+            name: ` ${functionName}`,
+            async: true
+        }, params, macros, comments, ...contents);
         Util.insertToArray(this.context, this.getIndexOfRestfulApiSign(), ...stmts)
     }
 
@@ -1250,7 +1346,6 @@ class ClassGenerator {
         Util.insertToArray(this.context, 0, ...lines);
     }
 
-
     setSingleton(singleton = true) {
         this.isSingletonFile = singleton;
     }
@@ -1300,7 +1395,8 @@ class BaseBuilder {
     }
 
     getMustacheRenderValues = ({
-
+                                   hasPath,
+                                   name,
                                    fieldName,
                                    defaultValue,
                                    fieldUrl,
@@ -1312,6 +1408,8 @@ class BaseBuilder {
                                    fieldClass,
                                }) => {
         return {
+            hasPath,
+            name,
             fieldName,
             functionName: functionName ? functionName : _.upperFirst(fieldName),
             modifiedFunctionName: `Modified${_.upperFirst(fieldName)}`,
@@ -1352,8 +1450,10 @@ class StoreBuilder extends BaseBuilder {
         this.appendDefaultPath('src', 'store');
     }
 
-    getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass}) {
-        const functions = this.getStringFromMustache(`store_${type}.js`, {
+    getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass, name, hasPath}) {
+        const functions = this.getStringFromMustache(`store_${type}.mustache`, {
+            name,
+            hasPath,
             fieldName,
             defaultValue,
             fieldClass
@@ -1384,7 +1484,9 @@ class StoreBuilder extends BaseBuilder {
             generator.insertBatchLinesIntoFunctionSection(
                 this.getFunctionsDependOnFieldType(
                     {
+                        name: child.getName(),
                         fieldName,
+                        hasPath: child.hasPath(),
                         type: child.type,
                         defaultValue,
                         fieldClass: child.getClassName(),
@@ -1449,6 +1551,13 @@ class StoreBuilder extends BaseBuilder {
                 baseGenerator.appendAsyncFunction('fetch', [], [], [],
                     `return await this.${Util.camel(`fetch`, node.getFieldName())}()`);
             }
+        }
+
+        if (node.isArray()) {
+            baseGenerator.appendFunction('remove', [], [], ['type是array, 才會被gen出的method'],
+                `if(this.getParentNode())`,
+                `this.getParentNode().remove${_.upperFirst(node.getFieldName())}(this)`
+            )
         }
 
         const types = [{name: `rawData`, fetcher: (node) => node.getPreciseColumnChildren()},
@@ -1613,7 +1722,7 @@ class RemoteFunctionHandler {
                         `return await this.deleteItems(path,condition,all)`)
 
                     generator.appendAsyncFunction(
-                        node.getFunctionNameOfSubmit(),
+                        node.getFunctionNameOfSubmitItem(),
                         [...defaultParam, 'item = this.rawData()'], [], [],
                         `${pathStmt}`,
                         `const commitment = this.${functionNameOfNormalize}(item)`, [],
@@ -1911,7 +2020,7 @@ class ComponentBuilder extends BaseBuilder {
         this.classNames.push(className);
     }
 
-    getJSXStringsByNode(generator, node, notAllowOuterChild = true) {
+    getJSXStringsByNode(generator, node, isEditPage = false) {
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
@@ -1920,7 +2029,7 @@ class ComponentBuilder extends BaseBuilder {
         const contentStmts = [];
         for (const child of node.getPreciseViewChildren()) {
             if (!child.isView()) continue;
-            if (notAllowOuterChild && child.isOuter()) continue;
+            if (child.isOuter()) continue;
 
             if (node.isContainer()) {
                 if (child.isIncestView()) {
@@ -1945,11 +2054,11 @@ class ComponentBuilder extends BaseBuilder {
         if (node.needInjectStyle()) {
             const param = node.getPreciseAttributeParentName();
             const injectFunctionName = node.getFunctionNameOfInjectStyle();
-            props.style = `###{...self.${injectFunctionName}(${param}),...Style.${className}}`;
+            props.style = `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getStyle())},...Style.${className}}`;
             generator.appendFunction(injectFunctionName, [param]);
 
         } else {
-            props.style = `###Style.${className}`;
+            props.style = `###{...${JSON.stringify(node.getStyle())},...Style.${className}}`;
         }
 
         if (node.needInjectProps()) {
@@ -2013,7 +2122,10 @@ class ComponentBuilder extends BaseBuilder {
             const clazzName = node.getClassNameOfLessUsage('wrap');
             this.storeClassName({node, type: 'wrap'});
 
-            const props = {className: `${clazzName}`, style: `###Style.${clazzName}`}
+            const props = {
+                className: `${clazzName}`,
+                style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`
+            }
             if (node.isArray())
                 props.key = `###\`\${${node.getUniqueIdStmt()}}Wrap\``;
 
@@ -2029,7 +2141,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [...origin, ...stmt, ...this.getOuterChildJSXStrings(node), ...node.getWrapContents()],
+                contents: [...node.getWrapContents(), ...this.getOuterChildJSXStrings(node), ...origin, ...stmt],
             })
         }
 
@@ -2037,14 +2149,16 @@ class ComponentBuilder extends BaseBuilder {
         if (node.isArray()) {
             const clazzName = node.getClassNameOfLessUsage('listWrap');
             this.storeClassName({node, type: 'listWrap'});
+            const props = {
+                className: clazzName,
+                style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`
+            }
 
-            const props = {className: clazzName, style: `###Style.${clazzName}`}
             return this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [`{${node.getFieldName()}.map( (${node.getName()}) => { return (`,
+                contents: [...node.getListWrapContents(), `{${node.getFieldName()}.map( (${node.getName()}) => { return (`,
                     ...origin,
-
                     `)})}`]
             })
         } else {
@@ -2061,13 +2175,76 @@ class ComponentBuilder extends BaseBuilder {
                 contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
             }
         }
-        contentStmts.push(...node.getOuterContents());
         return contentStmts;
     }
 
     /** stmt:Array<String> */
     removeJSXSign(stmt) {
         _.remove(stmt, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
+    }
+
+    generateEditFunctionCallback(node, generator) {
+        if (node.isArray()) {
+            const parentName = node.getPreciseAttributeParentName();
+
+            if (node.hasPath()) {
+                generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], [],
+                    `return  async (type) => {
+                switch (type) {`,
+                    `case 'recover':`,
+                    `await ${node.getName()}.${node.getFunctionNameOfFetchItem()}()`,
+                    `break;`,
+                    `case 'update':`,
+                    `await ${node.getName()}.${node.getFunctionNameOfUpdateItem()}()`,
+                    `break;`,
+                    `case 'delete':`,
+                    `await ${node.getName()}.${node.getFunctionNameOfDeleteItem()}()`,
+                    `break;`,
+                    `default:`,
+                    `Util.appendError(\`${node.getName()}  3032 can't not happen this type => \${type}\`)`,
+                    `}`,
+                    `}`
+                )
+
+                generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], [],
+                    `return  async (type) => {`,
+                    `switch (type) {`,
+                    `case 'create':`,
+                    `await ${parentName}.${node.getFunctionNameOfSubmit()}()`,
+                    `break;`,
+                    `default:`,
+                    `Util.appendError(\`${node.getName()} 3033 can't not happen this type => \${type}\`)`,
+                    `}`,
+                    `}`
+                )
+            } else {
+
+                generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], ['因為沒有path, 所以其實只會是SyncTask'],
+                    `return  async (type) => {
+                switch (type) {`,
+                    `case 'delete':`,
+                    `${node.getName()}.remove()`,
+                    `break;`,
+                    `default:`,
+                    `Util.appendError(\`${node.getName()} 3034 can't not happen this type => \${type}\`)`,
+                    `}`,
+                    `}`
+                )
+
+                generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], ['因為沒有path, 所以其實只會是SyncTask'],
+                    `return  async (type) => {`,
+                    `switch (type) {`,
+                    `case 'create':`,
+                    `${parentName}.${Util.camel(`append`, node.getName())}()`,
+                    `break;`,
+                    `default:`,
+                    `Util.appendError(\`${node.getName()} 3035 can't not happen this type => \${type}\`)`,
+                    `}`,
+                    `}`,
+                )
+            }
+
+        }
     }
 
     appendRenderViewFunctions(node, generator, isEditPage) {
@@ -2084,24 +2261,8 @@ class ComponentBuilder extends BaseBuilder {
             this.hasRootRenderViewFunction = true;
         }
 
-        if (node.isArray() && isEditPage) {
-            generator.appendFunction(node.getFunctionNameOfEditor(), [node.getName()], [], [],
-                `return  async (type) => {
-                switch (type) {`,
-                `case 'recover':`,
-                `await ${node.getName()}.${node.getFunctionNameOfFetchItem()}()`,
-                `break;`,
-                `case 'update':`,
-                `await ${node.getName()}.${node.getFunctionNameOfUpdateItem()}()`,
-                `break;`,
-                `case 'delete':`,
-                `await ${node.getName()}.${node.getFunctionNameOfDeleteItem()}()`,
-                `break;`,
-                `default:`,
-                `Util.appendError(\`3032 can't not happen this type => \${type}\`)`,
-                `}`,
-                `}`
-            )
+        if (isEditPage) {
+            this.generateEditFunctionCallback(node, generator);
         }
 
         const existedFunctions = {};
@@ -2485,7 +2646,7 @@ class AppBuilder extends ComponentBuilder {
             await generator.persist();
 
             if (!fs.existsSync(libpath.join(srcPath, 'less', 'index.js'))) {
-                this.appendMustacheFile('less.index.js',
+                this.appendMustacheFile('less.index.mustache',
                     Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
                 );
                 Util.appendInfo(`persist ./less/index.js succeed`);
@@ -2783,7 +2944,13 @@ class ProjectFileHandler {
         function toEditorPageMode(node) {
             if (node.isColumnAttribute() && !node.isCollection()) {
                 if (node.isImageView()) {
-
+                    node.appendViewProps({
+                        onClick:`###(param) => self.onImageEditorClicked({
+                         folderName:'${node.getStorageFolderName()}',
+                         beforeSubmit:(localUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set',node.getName())}(localUrl),
+                         afterSubmit:(remoteUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set',node.getName())}(remoteUrl),
+                        })`
+                    })
                 } else {
                     node.setViewModified(true);
                     node.setOriginalView(node.getView());
@@ -2800,7 +2967,6 @@ class ProjectFileHandler {
                     }
                 }
 
-
             }
 
             if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) {
@@ -2810,9 +2976,16 @@ class ProjectFileHandler {
 
             if (node.isArray()) {
                 node.setIsWrap(true);
-                node.setOuterContent([`{this.renderEditFunctionView(
-                   ${node.getFunctionNameOfEditorWithParam()} 
-                )}`])
+                node.appendWrapContents([`{this.renderItemEditorView(
+                   ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
+                )}`]);
+                const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
+                node.appendWrapStyle({...style, borderColor: 'red'});
+                node.appendListWrapStyle({...style, borderColor: 'blue'});
+
+                node.appendListWrapContents([`{this.renderCollectionEditorView(
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
+                )}`]);
             }
             node.clearContents();
 

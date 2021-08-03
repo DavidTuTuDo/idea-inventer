@@ -1,0 +1,84 @@
+{{{name就是qustion}}}
+{{{fieldName就是qustions}}}
+{{{functionName就是Questions}}}
+{{{fieldClass就是Question}}}
+{{{hasPath就是true/flase}}}
+@action
+set{{{functionName}}}(...items) {
+    const self = this;
+    if(items !== undefined && _.isArray(items)) {
+        this.{{{fieldName}}}.length = 0;
+        this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+    } else {
+        this.{{{fieldName}}}.length = 0;
+    }
+}
+
+get{{{functionName}}}() {
+        return this.{{{fieldName}}};
+}
+
+@action
+clean{{{functionName}}}(){
+    this.{{{fieldName}}}.length = 0;
+}
+
+@action
+push{{{functionName}}}(...items) {
+    const self = this;
+    this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+}
+
+@action
+push{{{functionName}}}ByIndex(index, ...params) {
+    const self = this;
+    Util.insertToArray(this.{{{fieldName}}},index, ...params.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+}
+
+append{{{fieldClass}}} = (item = {}) => {
+    this.push{{{functionName}}}(item);
+}
+
+@action
+remove{{{functionName}}}ByIndex(...indexes) {
+    for (const index of indexes) {
+        if (index < -1 && this.{{{fieldName}}}.length < index) {
+            Util.appendError(`7821, index ${index} is not valid length ==>`, this.{{{fieldName}}}.length, `index ==>`, index);
+            return;
+        }
+    }
+    _.pullAt(this.{{{fieldName}}}, indexes);
+}
+
+@action
+remove{{{functionName}}}(...items) {
+    const indexes = [];
+    for (const item of items) {
+        indexes.push(_.indexOf(this.{{{fieldName}}}, item));
+    }
+    this.remove{{{functionName}}}ByIndex(...indexes);
+}
+
+{{#hasPath}}
+        {{{這裡就是放if的邏輯}}}
+submit{{{functionName}}} = async (...objs) => {
+    const items = [];
+    for (const obj of objs) {
+        const item = await new {{{fieldClass}}}(obj).submit{{{fieldClass}}}Item();
+        items.push(item.value);
+    }
+    this.push{{{functionName}}}(...items)
+}
+
+submit{{{fieldClass}}} = async (obj = {}) => {
+    return await this.submit{{{functionName}}}(obj);
+}
+{{/hasPath}}
+{{^hasPath}}
+    /** 嘿嘿 我被抓到了 */
+    {{{這裡就是放else的邏輯}}}
+{{/hasPath}}
+
+
+
+

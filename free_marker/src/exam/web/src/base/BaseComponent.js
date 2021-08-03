@@ -132,7 +132,7 @@ class BaseComponent extends React.Component {
             const file = files[index];
             if (file instanceof File)
                 /** 因為files 是 fileList 物件, 是一個object object object,可能遇到不是file的值*/
-                array.push({index: index, file: file, url: URL.createObjectURL(file)})
+                array.push({index: index, blob: file, url: URL.createObjectURL(file)})
         }
         this.onFilesSelected(array);
     }

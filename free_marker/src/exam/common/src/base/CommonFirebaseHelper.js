@@ -4,6 +4,7 @@ import config from "../config";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
 import EventBus from "./CommonEventBus";
+import libpath from 'path';
 
 class CommonFirebaseHelper extends BaseFirebase {
 
@@ -145,6 +146,17 @@ class CommonFirebaseHelper extends BaseFirebase {
         } catch (error) {
             throw new ERROR(error)
         }
+    }
+
+    async uploadImage(blob, folder = 'public') {
+        const asyncTask = async () => {
+            const ref = this.storage().ref();
+            const uploadPath = libpath.join('./', folder, blob.name);
+            const uploadTask = await ref.child(uploadPath).put(blob);
+            const url = await uploadTask.ref.getDownloadURL();
+            return url;
+        }
+        return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'uploadImage');
     }
 
 }

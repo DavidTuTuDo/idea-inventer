@@ -65,10 +65,7 @@
 .MainDiv {
   /** style */
 }
-.MainJuniorButton,
-.MainHighButton,
-.MainSocialButton,
-.MainPurchaseButton {
+.MainJuniorButton {
   /** style */
   margin: 5px;
   min-height: 10vw;
@@ -95,7 +92,8 @@
   width: 50px;
 }
 /** following for exam  component used  */
-.ExamDiv {
+.ExamDiv,
+.ExamEditorDiv {
   /** style */
   margin: 3px;
 }
@@ -116,7 +114,8 @@
 .ListWrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamQuestionAlertOuterDiv {
+.ExamQuestionAlertOuterDiv,
+.ExamEditorQuestionAlertOuterDiv {
   /** style */
   position: absolute;
   width: 90%;
@@ -140,37 +139,44 @@
   width: 100%;
   height: 100%;
 }
-.ExamQuestionTopicDiv {
+.ExamQuestionTopicDiv,
+.ExamEditorQuestionTopicDiv {
   /** style */
 }
 .ExamQuestionTopicNameTypography {
   /** style */
   font-size: 2.5rem;
 }
-.WrapExamQuestionTopicNameDiv {
+.WrapExamQuestionTopicNameDiv,
+.WrapExamEditorQuestionTopicNameDiv {
   /** style */
 }
-.ExamQuestionTopicImageDiv {
+.ExamQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ListWrapExamQuestionTopicImageDiv {
+.ListWrapExamQuestionTopicImageDiv,
+.ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
   display: flex;
   flex-direction: row;
   justify-content: center;
 }
-.ExamQuestionTopicImageUrlImg {
+.ExamQuestionTopicImageUrlImg,
+.ExamEditorQuestionTopicImageUrlImg {
   /** style */
   width: 120px;
   height: 120px;
   margin: 3px;
 }
-.ExamQuestionChoiceDiv {
+.ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv {
   /** style */
   margin-top: 2vh;
   margin-bottom: 2vh;
 }
-.ListWrapExamQuestionChoiceDiv {
+.ListWrapExamQuestionChoiceDiv,
+.ListWrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
@@ -178,7 +184,8 @@
   text-align: left;
   font-size: 2.1rem;
 }
-.WrapExamQuestionChoiceStatementDiv {
+.WrapExamQuestionChoiceStatementDiv,
+.WrapExamEditorQuestionChoiceStatementDiv {
   /** style */
   margin-bottom: 1vh;
 }
@@ -216,15 +223,13 @@
   justify-content: center;
   margin: 10px;
 }
-.PurchasePurchasePlanDiv,
-.PurchaseEditorPurchasePlanDiv {
+.PurchasePurchasePlanDiv {
   /** style */
   display: flex;
   width: 90vw;
   flex-direction: column;
 }
-.ListWrapPurchasePurchasePlanDiv,
-.ListWrapPurchaseEditorPurchasePlanDiv {
+.ListWrapPurchasePurchasePlanDiv {
   /** style */
   display: flex;
   flex-direction: row;
@@ -239,7 +244,6 @@
   font-size: 1.4rem;
 }
 .WrapPurchasePurchasePlanNameDiv,
-.PurchasePurchasePlanPriceTypography,
 .WrapPurchasePurchasePlanPriceDiv,
 .WrapPurchasePurchasePlanBuyDiv {
   /** style */
@@ -303,6 +307,9 @@
 .ExamEditorQuestionTopicImageDiv {
   /** style */
 }
+.WrapExamEditorQuestionTopicImageDiv {
+  /** style */
+}
 .ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
@@ -310,6 +317,9 @@
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
+  /** style */
+}
+.WrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ListWrapExamEditorQuestionChoiceDiv {
@@ -331,34 +341,6 @@
   /** style */
 }
 .ExamEditorQuestionYearTextField {
-  /** style */
-}
-/** following for purchase editor component used  */
-.PurchaseEditorDiv {
-  /** style */
-}
-.PurchaseEditorPurchasePlanDiv {
-  /** style */
-}
-.WrapPurchaseEditorPurchasePlanDiv {
-  /** style */
-}
-.ListWrapPurchaseEditorPurchasePlanDiv {
-  /** style */
-}
-.PurchaseEditorPurchasePlanIdTextField {
-  /** style */
-}
-.PurchaseEditorPurchasePlanSpaceDiv {
-  /** style */
-}
-.PurchaseEditorPurchasePlanImageUrlTextField {
-  /** style */
-}
-.PurchaseEditorPurchasePlanFullNameTextField {
-  /** style */
-}
-.PurchaseEditorPurchasePlanDurationTextField {
   /** style */
 }
 /** ======== following for homeless ========= */
@@ -383,11 +365,7 @@
 .ExamEditorQuestionAnswerTextField,
 .ExamEditorQuestionSubjectTextField,
 .ExamEditorQuestionTypeTextField,
-.ExamEditorQuestionYearTextField,
-.PurchaseEditorPurchasePlanIdTextField,
-.PurchaseEditorPurchasePlanImageUrlTextField,
-.PurchaseEditorPurchasePlanFullNameTextField,
-.PurchaseEditorPurchasePlanDurationTextField {
+.ExamEditorQuestionYearTextField {
   margin: 5px;
 }
 .BaseEditFunctionDiv {
