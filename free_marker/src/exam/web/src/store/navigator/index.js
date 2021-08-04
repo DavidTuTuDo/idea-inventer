@@ -56,10 +56,8 @@ class NavigatorStore extends BaseNavigatorStore {
         let loginStateString = UserInfo.isLoginInSucceed() ? '登出' : '登入';
         if (text !== undefined)
             loginStateString = text;
-        console.log(loginStateString);
-        Util.syncDelay(1).then(() =>{
-            self.getAppBar().getToolBar().setLogin(loginStateString);
-        })
+        self.getAppBar().getToolBar().setLogin(loginStateString);
+        console.log(`updateLoginButtonStatus>>>>`,loginStateString)
     }
 
     /**

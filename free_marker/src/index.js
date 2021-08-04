@@ -18,8 +18,8 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
-const CURRENT_PLATFORM = 'admin';
-// const CURRENT_PLATFORM = 'web';
+// const CURRENT_PLATFORM = 'admin';
+const CURRENT_PLATFORM = 'web';
 // const CURRENT_PLATFORM = 'developer';
 
 // const FAST_DEVELOP_MODE = true;
@@ -1667,7 +1667,6 @@ class StoreBuilder extends BaseBuilder {
 
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
             `super.initial(obj)`,
-            `this.clear()`,
             ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
         baseGenerator.needIndexFile(`${indexClassName}`);
