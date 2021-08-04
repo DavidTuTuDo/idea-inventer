@@ -4,8 +4,9 @@ import moment from 'moment';
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
 import AlertDialog from './AlertDialog';
-import {Typography, LinearProgress, CircularProgress, Button, Paper} from "@material-ui/core";
+import {Typography, LinearProgress, CircularProgress, Button, Paper, useScrollTrigger, Slide} from "@material-ui/core";
 import {Application} from '../index.js';
+import Config from '../config';
 
 class BaseComponent extends React.Component {
 
@@ -13,6 +14,11 @@ class BaseComponent extends React.Component {
         super(props);
         this.listOfFunctionOfUnsubscribe = [];
         this.fileChooserInputRef = React.createRef();
+        this.style = {};
+        if(!this.isNavigationView() && Config.isScrollingHide) {
+            /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
+            this.getStore().setAppBarHeight(64);
+        }
     }
 
     componentDidMount() {
@@ -95,10 +101,15 @@ class BaseComponent extends React.Component {
         return this.getEmptyStore();
     }
 
+    appendStyle(style){
+        this.style = {...this.style,...style};
+    }
+
     render() {
         const self = this;
         return (
-            <div className={'RootViewDiv'}>
+            <div className={'RootViewDiv'}
+                 style={{...this.style, marginTop:self.getStore().getAppBarHeight()}} >
 
                 {self.renderGlobalLoadingView()}
 
@@ -181,8 +192,21 @@ class BaseComponent extends React.Component {
                     </div>
                 </div>);
         }
-
         return undefined;
+    }
+
+    HideOnScroll(props) {
+        const {children, window} = props;
+        // Note that you normally won't need to set the window ref as useScrollTrigger
+        // will default to window.
+        // This is only being set here because the demo is in an iframe.
+        const trigger = useScrollTrigger({target: window ? window() : undefined});
+
+        return (
+            <Slide appear={false} direction="down" in={!trigger}>
+                {children}
+            </Slide>
+        );
     }
 
 

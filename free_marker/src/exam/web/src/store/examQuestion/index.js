@@ -25,7 +25,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
   }
 
   isReply(){
-    return this.getReply() !== -999;
+    return this.getReply() !== -32768;
   }
 
   isAnswerWrong(){

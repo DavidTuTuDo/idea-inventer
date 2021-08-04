@@ -32,8 +32,20 @@ class BaseStore extends ClientRemoteApi {
     @observable
     selectorParams = this.getDefaultSelectorParam();
 
+    @observable
+    appBarHeight = 0;
+
     constructor(props) {
         super(props);
+    }
+
+    setAppBarHeight(height) {
+        this.appBarHeight = height;
+    }
+
+    @action
+    getAppBarHeight(){
+        return this.appBarHeight;
     }
 
     setParentNode(param) {
@@ -121,7 +133,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     clear(){
-      this.setState('enable');
+        this.setState('enable');
     }
 
 }

@@ -17,15 +17,15 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
 const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 // const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-// const CURRENT_PLATFORM = 'admin';
 
-const CURRENT_PLATFORM = 'web';
+const CURRENT_PLATFORM = 'admin';
+// const CURRENT_PLATFORM = 'web';
 // const CURRENT_PLATFORM = 'developer';
 
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
-const TARGET_COMPONENT = 'exam';
+const TARGET_COMPONENT = 'navigator';
 
 
 const SignOfInValidNode = 'SignOfInValidNode';
@@ -35,6 +35,16 @@ class CodegenNode {
     node;
     password;
     components;
+
+    mother;
+    /** 註記陣列的位址, 用來獲得 indexOfCollection*/
+
+    indexOfCollection;
+    /** enrich的時候, 因為遞迴是由最小單位, 被enrich的 parent 的address還沒被產生出來, 所以先記parent的index,然後把parent指為[]  */
+
+
+    isScrollingHide;
+    /** 註記AppBar 要隨著scroll hide */
 
     readOnly = false;
     /** 用來標示這個遠端的欄位在client端只能讀取, TextField也會readOnly */
@@ -68,22 +78,22 @@ class CodegenNode {
     viewModified;
     /**  在editMode下, 如果被改過View, 這邊就會是true */
 
-    nameModified
+    nameModified;
     /** 在editMode下, 如果被改過View, 這邊就會是true */
 
-    editPage;
+    editPage = false;
     /** 用來註記是一個editPage */
 
     params;
     /** 目前用來做events 帶的參數 */
 
     description;
-    /** 目前解釋這個欄位在幹嘛的, 也能當作TextField的解釋 */
+    /** 解釋這個node欄位的意義, 也能當作TextField的解釋 */
 
     host;
     /** 網域名稱啦 */
 
-    disableFetch
+    disableFetch;
     /** 有些store的field不需要在new的時候就fetch, 就設定為true*/
 
     events;
@@ -114,7 +124,7 @@ class CodegenNode {
     /** 放在<div>content</div>*/
 
     navigation;
-    /** 可以指定component為navigatorView 放置於頂部的view */
+    /** 可以指定component為navigatorView 放置於頂部的view,以及設定是否isScrollingHide */
 
     incest = {view: false, attribute: false};
     /** 支援父類是string 或是 number(非資料結構), 但是仍然有children的情形,
@@ -192,6 +202,24 @@ class CodegenNode {
         this.style = {...this.style, ...style}
     }
 
+    getRootNode() {
+        const node = this.getParentBy((node) => node.isRootNode());
+        return node;
+    }
+
+    getStructNode() {
+        const node = this.getParentBy((node) => node.isStructNode());
+        return node;
+    }
+
+    isStructNode() {
+        return !!this.struct;
+    }
+
+    isRootNode() {
+        return !!this.components;
+    }
+
     setStyle(style) {
         this.style = style;
     }
@@ -212,7 +240,7 @@ class CodegenNode {
         return this.listWrapStyle;
     }
 
-    getStorageFolderName(){
+    getStorageFolderName() {
         return this.storageFolder;
     }
 
@@ -246,6 +274,11 @@ class CodegenNode {
         return this.view && Util.isOrEquals(_.toLower(this.view), 'div', 'card', 'paper', 'drawer', 'toolbar', 'appbar', 'iconbutton');
     }
 
+    isScrollingHideDependOnRootNode() {
+        const rootNode = this.getRootNode()
+        return rootNode.navigation && rootNode.navigation.isScrollingHide;
+    }
+
     isReadOnly() {
         return this.readOnly
     }
@@ -261,6 +294,7 @@ class CodegenNode {
             return `\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\``;
         }
     }
+
 
     isEditPage() {
         return !!this.editPage;
@@ -329,7 +363,7 @@ class CodegenNode {
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
         return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableFetch', 'permission', 'alertDialog', 'wrapContents', 'listWrapContents', 'contents', 'style',
-            'extra', 'firebase', 'parent', 'props', 'admin', 'server', 'params', 'host']
+            'extra', 'firebase', 'mother', 'parent', 'props', 'admin', 'server', 'params', 'host']
     }
 
     setListWrapContents(contents) {
@@ -459,11 +493,19 @@ class CodegenNode {
         return Util.camel(this.getName(), this.getView(), 'View', 'Param');
     }
 
+    isAppBarView() {
+        return _.isEqual(this.getView(), 'AppBar');
+    }
+
     getSelfVariableStmts() {
         const stmt = [];
         if (this.hasAlertDialog()) {
             stmt.push(`const ${this.getAlertDialogVariable()} = React.createRef()`);
             stmt.push(`let ${this.getViewParamVariable()}`);
+        }
+
+        if (this.isAppBarView() && this.isScrollingHideDependOnRootNode()) {
+            stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
         const parent = this.getPreciseAttributeParent();
@@ -785,6 +827,11 @@ class CodegenNode {
         this.path = path;
     }
 
+    isEditPageDependOnParent() {
+        const struct = this.getStructNode();
+        return struct.isEditPage();
+    }
+
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
     getPathOfRouterString() {
         if (!this.hasPath()) return '';
@@ -818,15 +865,13 @@ class CodegenNode {
     }
 
     /** 會一直往上找parent 直到符合predicate,不然就回傳 undefined */
-    getParentBy(predicate = (parent) => (true)) {
-        let currentNode = parent;
-        while (!!currentNode) {
-            if (predicate(currentNode)) {
-                return currentNode;
-            }
-            currentNode = currentNode.parent;
+    getParentBy(predicate = (node) => (true)) {
+        let currentNode = this;
+        while (this.isValidNode(currentNode)) {
+            if (predicate(currentNode)) break;
+            currentNode = currentNode.getParentObject();
         }
-        return undefined;
+        return currentNode;
     }
 
     getFunctionNameOfInjectStyle() {
@@ -836,7 +881,6 @@ class CodegenNode {
     getFunctionNameOfInjectProps() {
         return `getInjectPropsOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
-
 
     /** 找出祖譜 */
     getGenealogyNodes(validate, getParent, excludeSelf = false) {
@@ -848,7 +892,7 @@ class CodegenNode {
         }
 
         while (!!current) {
-            if (!this.isValidNode(current) || current.getStruct())
+            if (!this.isValidNode(current) || current.isStructNode())
                 break;
 
             if (validate(current)) {
@@ -875,6 +919,9 @@ class CodegenNode {
         }
 
         if (_.isArray(this.parent)) {
+            if (this.indexOfCollection > -1) {
+                return this.parent[this.indexOfCollection];
+            }
             return this.parent.parent;
         }
         return this.parent;
@@ -1006,13 +1053,26 @@ class CodegenNode {
             return [];
     }
 
+    static find(structNode, predicate) {
+        const nodes = [];
+        if (predicate(structNode)) {
+            nodes.push(structNode)
+        }
+        for (const child of structNode.getChildren()) {
+            nodes.push(...CodegenNode.find(child, predicate))
+        }
+        return nodes;
+    }
+
     static enrich(node, parent) {
         let involution = new CodegenNode(node);
         if (_.isArray(node)) {
             /** 隨便改變物件的型態,未來會出現各種bug */
             involution = [];
+            involution.parent = parent;
             for (const child of node) {
                 child.parent = parent;
+                child.mother = node;
                 involution.push(this.enrich(child, involution));
             }
         } else if (_.isObject(node)) {
@@ -1021,6 +1081,10 @@ class CodegenNode {
                     involution[key] = node[key];
                 else if (_.isObject(node[key]) || _.isArray(node[key])) {
                     const obj = node[key];
+                    if (_.isArray(parent)) {
+                        const index = _.indexOf(node.mother, node);
+                        obj.indexOfCollection = index;
+                    }
                     obj.parent = parent;
                     involution[key] = this.enrich(obj, involution);
                 }
@@ -1688,6 +1752,7 @@ class RemoteFunctionHandler {
 
             for (const child of node.getPreciseAttributeChildren()) {
                 if (_.isEqual(child, 'updateTime')) continue;
+                if (!child.isColumnAttribute()) continue;
                 contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType()};\/\/${child.getType()}`);
                 children.push(child.getFieldName());
                 if (recursively && child.hasChildren()) this.buildFetchSubmitApi(child);
@@ -2117,12 +2182,24 @@ class ComponentBuilder extends BaseBuilder {
             }
         }
 
+
+        if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
+            props['position'] = 'static';
+        }
+
         let origin = this.getJSXStrings({
             tag: node.view,
             props,
             contents: [...contentStmts, ...node.getContents()],
         });
 
+        if (node.isAppBarView() && node.isScrollingHideDependOnRootNode()) {
+            origin = this.getJSXStrings({
+                tag: 'ScrollingHideWrap',
+                props: {injectProps: '...self.props'},
+                contents: [...origin]
+            })
+        }
 
         const wrapView = node.getWrapView();
         if (node.hasWrap()) {
@@ -2718,7 +2795,11 @@ class ProjectFileHandler {
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
+                const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide
+                baseConfigGenerator.appendField(`isScrollingHide`, JSON.stringify(trueOrFalse));
                 break;
+
+
         }
         await baseConfigGenerator.needIndexFile('Config', [], true);
         await baseConfigGenerator.persist();
@@ -2952,10 +3033,10 @@ class ProjectFileHandler {
             if (node.isColumnAttribute() && !node.isCollection()) {
                 if (node.isImageView()) {
                     node.appendViewProps({
-                        onClick:`###(param) => self.onImageEditorClicked({
+                        onClick: `###(param) => self.onImageEditorClicked({
                          folderName:'${node.getStorageFolderName()}',
-                         beforeSubmit:(localUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set',node.getName())}(localUrl),
-                         afterSubmit:(remoteUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set',node.getName())}(remoteUrl),
+                         beforeSubmit:(localUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(localUrl),
+                         afterSubmit:(remoteUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrl),
                         })`
                     })
                 } else {
@@ -3144,6 +3225,9 @@ export {
                 `admin done`
             );
         case 'developer':
+            const nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(projectRootPath, `source.js`))).default, undefined);
+            const node = CodegenNode.find(nodeOfAncestor.components[4].struct, (node) => _.isEqual(node.getName(), 'url'));
+            console.log(node[0].getRootNode().getName());
             break;
     }
 

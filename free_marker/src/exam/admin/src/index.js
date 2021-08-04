@@ -16,7 +16,7 @@ import moment from 'moment';
     const api = new Api();
     const listener = new Listener();
 
-    async function beforeStartService() {
+    async function beforeStartService(efficient) {
         await api.deletePurchasePlans();
         await api.deleteQuestions();
 
@@ -26,17 +26,21 @@ import moment from 'moment';
             {id: 1003, name: '3個月', price: 150, priceTip: '平均一個月50元', fullName: '選擇王-3個月禮包', duration: '63d'})
 
 
-        const questions = qs.map((q) => {
+        let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
             const choiceStringArray = q.choice.split(new RegExp(`\\([A-D]\\)`, `g`));
             choiceStringArray.shift();
-            q.choices = choiceStringArray.map((stmt) => {
-                    return {statement: Util.getNormalizedStringNotEndWith(stmt, ',', ' ')}
-                }
-            )
+            q.topic = {name: q.topic, images: [{url: 'https://mimi19up.appspot.com/public/IMG_5633.jpg'}]},
+                q.choices = choiceStringArray.map((stmt) => {
+                        return {statement: Util.getNormalizedStringNotEndWith(stmt, ',', ' ')}
+                    }
+                )
             delete q.uid;
             return q;
         })
+        if (efficient) {
+            questions = _.sampleSize(questions, 10)
+        }
         await api.submitQuestions(...questions);
     }
 
@@ -182,8 +186,8 @@ import moment from 'moment';
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
 
-    // await beforeStartService();
-    await backgroundService();
+    await beforeStartService(true);
+    // await backgroundService();
 })();
 
 // line-pay request result sample
