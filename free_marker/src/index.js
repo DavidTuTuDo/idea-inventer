@@ -36,6 +36,9 @@ class CodegenNode {
     password;
     components;
 
+    readOnly = false;
+    /** 用來標示這個遠端的欄位在client端只能讀取, TextField也會readOnly */
+
     storageFolder = 'public';
     /** 用來標記圖片上傳到storage哪個資料夾 */
 
@@ -241,6 +244,10 @@ class CodegenNode {
 
     isContainer() {
         return this.view && Util.isOrEquals(_.toLower(this.view), 'div', 'card', 'paper', 'drawer', 'toolbar', 'appbar', 'iconbutton');
+    }
+
+    isReadOnly() {
+        return this.readOnly
     }
 
     setIsEditPage(edit) {
@@ -2958,7 +2965,7 @@ class ProjectFileHandler {
                     node.setView('TextField');
                     node.appendViewProps({variant: `outlined`});
 
-                    if (node.getName() === 'id') {
+                    if (node.isReadOnly()) {
                         node.appendViewProps({
                             InputProps: {
                                 readOnly: true,
