@@ -15,13 +15,6 @@ class NavigatorAppBarToolBarStore extends BaseNavigatorAppBarToolBarStore {
     super(props);
   }
 
-  getLogin() {
-    if (UserInfo.isLoginInSucceed())
-      return '登出';
-    else
-      return super.getLogin();
-  }
-
   /** -------------------- async api -------------------- **/
 }
 export default NavigatorAppBarToolBarStore;

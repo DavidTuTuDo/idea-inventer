@@ -8,7 +8,7 @@ import {
     autorun,
     runInAction,
 } from "mobx";
-import {utiller as Util, ERROR} from "utiller";
+import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
 import config from '../config';
 import ClientRemoteApi from './ClientRemoteApi'
@@ -32,6 +32,10 @@ class BaseStore extends ClientRemoteApi {
     @observable
     selectorParams = this.getDefaultSelectorParam();
 
+    constructor(props) {
+        super(props);
+    }
+
     setParentNode(param) {
         this.parentNode = param;
     }
@@ -51,11 +55,10 @@ class BaseStore extends ClientRemoteApi {
 
     @action
     setState(state) {
-        console.log(`'${this.getClassName()}', state is '${state}'`);
         if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {
             this.state = state;
         } else {
-            throw new ERROR(7001, `'${this.getClassName()}', state is ${state}`);
+            Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);
         }
     }
 
@@ -66,10 +69,6 @@ class BaseStore extends ClientRemoteApi {
     @action
     setErrorMsg(message) {
         this.errorMsg = message;
-    }
-
-    constructor(props) {
-        super(props);
     }
 
     getErrorMsg() {
@@ -119,6 +118,10 @@ class BaseStore extends ClientRemoteApi {
     setSelectorParam(params) {
         const mixer = {...this.getDefaultSelectorParam(), ...params}
         this.selectorParams = mixer;
+    }
+
+    clear(){
+      this.setState('enable');
     }
 
 }

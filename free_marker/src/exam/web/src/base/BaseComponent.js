@@ -19,6 +19,10 @@ class BaseComponent extends React.Component {
 
     }
 
+    getEmptyStore() {
+        return new Store();
+    }
+
     /** 每個Component 自己要實作 */
     renderView() {
         return <div/>
@@ -88,7 +92,7 @@ class BaseComponent extends React.Component {
     }
 
     getStore() {
-        return new Store();
+        return this.getEmptyStore();
     }
 
     render() {

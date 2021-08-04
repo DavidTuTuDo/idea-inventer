@@ -5,12 +5,12 @@
  */
 import {observer, inject} from "mobx-react";
 import BaseLoginComponent from "./BaseLoginComponent";
+
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth';
 import firebaser from '../../base/CommonFirebaseHelper';
 import React from 'react';
 import Cookie from '../../cookie';
 
-@inject("login")
 @observer
 class LoginComponent extends BaseLoginComponent {
     /** -------------------- fields -------------------- **/
@@ -22,6 +22,10 @@ class LoginComponent extends BaseLoginComponent {
                 uiConfig={firebaser.getLoginConfig(this, Cookie.getPathBeforeLogin())}
                 firebaseAuth={firebaser.auth()}/>
         );
+    }
+
+    getStore() {
+        return this.getEmptyStore()
     }
 
     constructor(props) {

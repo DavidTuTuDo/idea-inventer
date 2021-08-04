@@ -54,13 +54,13 @@ class CommonFirebaseHelper extends BaseFirebase {
         return this.auth().currentUser;
     }
 
+
     async logout() {
-        await this.auth().signOut();
         Util.appendInfo('sign out called');
+        await this.auth().signOut();
     }
 
     credential() {
-
     }
 
     getTimeStampObj(millis) {

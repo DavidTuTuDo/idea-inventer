@@ -5,6 +5,7 @@
 @action
 set{{{functionName}}}(param) {
     if(param !== undefined) {
+        param = param instanceof {{{fieldClass}}} ? param.data() : param
         this.{{{fieldName}}}.initial({...param,parentNode:this});
     } else {
         this.{{{fieldName}}}.clear();

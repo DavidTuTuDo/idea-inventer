@@ -6,7 +6,9 @@ import {
 import _ from "lodash";
 import libpath from "path";
 import BaseNavigatorAppBarStore from "./BaseNavigatorAppBarStore";
-
+import {
+  action,
+} from "mobx";
 class NavigatorAppBarStore extends BaseNavigatorAppBarStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
@@ -14,6 +16,7 @@ class NavigatorAppBarStore extends BaseNavigatorAppBarStore {
   constructor(props) {
     super(props);
   }
+
   /** -------------------- async api -------------------- **/
 }
 export default NavigatorAppBarStore;

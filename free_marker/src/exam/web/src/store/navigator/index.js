@@ -48,13 +48,18 @@ class NavigatorStore extends BaseNavigatorStore {
             }
         }
         CommonPoolHelper.enableParallelMode();
-
     }
 
-    updateLoginButtonStatus = () => {
-        const appBar = this.getAppBar();
-        appBar.getToolBar().setLogin(UserInfo.isLoginInSucceed() ? '登出' : '登入');
-        this.setAppBar(appBar);
+    @action
+    updateLoginButtonStatus(text) {
+        const self = this;
+        let loginStateString = UserInfo.isLoginInSucceed() ? '登出' : '登入';
+        if (text !== undefined)
+            loginStateString = text;
+        console.log(loginStateString);
+        Util.syncDelay(1).then(() =>{
+            self.getAppBar().getToolBar().setLogin(loginStateString);
+        })
     }
 
     /**
@@ -83,7 +88,6 @@ class NavigatorStore extends BaseNavigatorStore {
         this.setUserInfo(undefined);
         Cookie.removeCredential()
         Cookie.removeUser();
-        this.updateLoginButtonStatus();
     }
 
     /** -------------------- functions -------------------- **/

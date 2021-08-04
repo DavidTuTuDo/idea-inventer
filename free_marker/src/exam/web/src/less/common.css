@@ -65,7 +65,11 @@
 .MainDiv {
   /** style */
 }
-.MainJuniorButton {
+.MainJuniorButton,
+.MainHighButton,
+.MainSocialButton,
+.MainPurchaseButton,
+.MainUploadButton {
   /** style */
   margin: 5px;
   min-height: 10vw;
@@ -73,18 +77,6 @@
   font-size: 2.2em;
   color: #0074d9;
   border-color: #0074d9;
-}
-.MainHighButton {
-  /** style */
-}
-.MainSocialButton {
-  /** style */
-}
-.MainPurchaseButton {
-  /** style */
-}
-.MainUploadButton {
-  /** style */
 }
 .MainImageUrlImg {
   /** style */
