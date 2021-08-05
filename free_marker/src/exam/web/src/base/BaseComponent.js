@@ -4,7 +4,16 @@ import moment from 'moment';
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
 import AlertDialog from './AlertDialog';
-import {Typography, LinearProgress, CircularProgress, Button, Paper, useScrollTrigger, Slide} from "@material-ui/core";
+import {
+    Typography,
+    LinearProgress,
+    CircularProgress,
+    Button,
+    Paper,
+    useScrollTrigger,
+    Slide,
+    Backdrop
+} from "@material-ui/core";
 import {Application} from '../index.js';
 import Config from '../config';
 
@@ -15,9 +24,14 @@ class BaseComponent extends React.Component {
         this.listOfFunctionOfUnsubscribe = [];
         this.fileChooserInputRef = React.createRef();
         this.style = {};
-        if(!this.isNavigationView() && Config.isScrollingHide) {
+        this.componentStyle = {};
+        if (!this.isNavigationView() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
             this.getStore().setAppBarHeight(64);
+        }
+        if (!this.isNavigationView()) {
+            // this.appendStyle({height:'600px'})
+            // this.appendComponentStyle({})
         }
     }
 
@@ -37,8 +51,9 @@ class BaseComponent extends React.Component {
     renderLoadingView() {
         if (this.getStore().state === 'loading') {
             return (
-                <div className={'ErrorViewDiv'}>
-                    <LinearProgress/>
+                <div className={'BaseLoadingViewDiv'}>
+                    <LinearProgress
+                        className={`BaseLoadingLinearProgress`}/>
                 </div>
             )
         }
@@ -101,19 +116,24 @@ class BaseComponent extends React.Component {
         return this.getEmptyStore();
     }
 
-    appendStyle(style){
-        this.style = {...this.style,...style};
+    appendStyle(style) {
+        this.style = {...this.style, ...style};
+    }
+
+    appendComponentStyle(style) {
+        this.componentStyle = {...this.componentStyle, ...style};
     }
 
     render() {
         const self = this;
         return (
             <div className={'RootViewDiv'}
-                 style={{...this.style, marginTop:self.getStore().getAppBarHeight()}} >
+                 style={{...this.style, marginTop: self.getStore().getAppBarHeight()}}>
 
                 {self.renderGlobalLoadingView()}
 
-                <div className={'ComponentViewDiv'}>
+                <div className={'ComponentViewDiv'}
+                     style={{...this.componentStyle}}>
                     {self.renderViewByStatus()}
                 </div>
 
@@ -181,18 +201,17 @@ class BaseComponent extends React.Component {
             return undefined;
         }
 
-        if (this.getStore().getGlobalLoadingState()) {
-            return (
-                <div className={'BaseComponentGlobalLoadingRootDiv'}>
-                    <div className={'BaseComponentGlobalLoadingDiv'}>
-                        <CircularProgress/>
+        return (
+            <Backdrop
+                open={this.getStore().getGlobalLoadingState()}
+                className={'BaseComponentGlobalLoadingRootBackdrop'}>
+                <div className={'BaseComponentGlobalLoadingDiv'}>
+                    <CircularProgress/>
 
-                        <Typography
-                            className={'BaseComponentGlobalLoadingTypography'}>{this.getStore().getGlobalLoadingTip()}</Typography>
-                    </div>
-                </div>);
-        }
-        return undefined;
+                    <Typography
+                        className={'BaseComponentGlobalLoadingTypography'}>{this.getStore().getGlobalLoadingTip()}</Typography>
+                </div>
+            </Backdrop>);
     }
 
     HideOnScroll(props) {
@@ -219,7 +238,7 @@ class BaseComponent extends React.Component {
     }
 
     setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = '正在載入中') {
-        this.getStore().setGlobalLoading(visibility, loadingStringTip);
+        this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip: ``);
     }
 
 

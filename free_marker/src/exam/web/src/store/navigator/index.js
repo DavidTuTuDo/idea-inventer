@@ -57,7 +57,6 @@ class NavigatorStore extends BaseNavigatorStore {
         if (text !== undefined)
             loginStateString = text;
         self.getAppBar().getToolBar().setLogin(loginStateString);
-        console.log(`updateLoginButtonStatus>>>>`,loginStateString)
     }
 
     /**

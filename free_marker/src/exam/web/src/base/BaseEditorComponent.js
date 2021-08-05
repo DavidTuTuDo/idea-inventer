@@ -97,9 +97,9 @@ class BaseEditorComponent extends BaseComponent {
     }
 
     async handleAsyncFunction(onClickAsyncTask, type, processingText) {
-        this.setLoadingViewVisibility(true, processingText);
+        this.setGlobalLoadingViewVisibility(true, processingText);
         await onClickAsyncTask(type);
-        this.setLoadingViewVisibility(false);
+        this.setGlobalLoadingViewVisibility(false);
     }
 
 

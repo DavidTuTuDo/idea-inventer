@@ -451,12 +451,15 @@
 .BaseEditFunctionButton:extend(.BaseEditButtonProps all) {
 }
 
+.BaseComponentGlobalLoadingRootBackdrop {
+  z-index: 10;
+}
+
 .BaseComponentGlobalLoadingDiv {
   display: flex;
   width: 100%;
   height: 100%;
   flex-direction: column;
-  background-color: rgba(0, 0, 0, 0.8);
   align-items: center;
   justify-content: center;
 }
@@ -490,12 +493,17 @@
   position: relative;
 }
 
-.ErrorViewDiv {
-  position: absolute;
+.BaseLoadingViewDiv {
+  position: fixed;
   width: 100%;
-  top: 0;
-  z-index: 1;
+  z-index: 5;
+  bottom: 0;
+  left: 0;
   pointer-events: none;
+}
+
+.BaseLoadingLinearProgress {
+  height: 10px;
 }
 
 body {
