@@ -545,7 +545,7 @@ if (configer.DEBUG_MODE) {
             // this.appendInfo((new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
             // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
             // await new NodeUtiller().generatePackage('./');
-            new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
+            // new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
         //
         }
     )();

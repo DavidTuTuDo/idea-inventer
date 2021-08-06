@@ -34,8 +34,10 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.3",
-    "@firebase/auth": "^0.16.5",
     "@material-ui/icons": "^4.11.2",
+    "@material-ui/lab": "^4.0.0-alpha.60",
+    "notistack": "^1.0.10",
+    "@firebase/auth": "^0.16.5",
     "@firebase/database": "^0.10.7",
     "@firebase/firestore": "^2.3.8",
     "@firebase/storage": "^0.5.6",

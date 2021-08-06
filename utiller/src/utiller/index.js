@@ -559,11 +559,14 @@ class Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            console.log(new Utiller().arrayToObjWith([{name: 'aaa', sign: 2}, {name: 'aaa', sign: 3}, {
-                name: 'b',
-                sign: 4
-            }], (each) => each.name));
+            // console.log(new Utiller().arrayToObjWith([{name: 'aaa', sign: 2}, {name: 'aaa', sign: 3}, {
+            //     name: 'b',
+            //     sign: 4
+            // }], (each) => each.name));
 
+            const def = {a:2,b:{bb:1,ccc:{ccc3:3}}}
+            const obj = {a:2,b:{bb:1,ccc:{ccc1:3,ccc2:4}}}
+            console.log(_.merge(def,obj))
         }
     )();
 }

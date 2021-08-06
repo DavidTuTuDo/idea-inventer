@@ -12,31 +12,31 @@ import {
     Paper,
     useScrollTrigger,
     Slide,
-    Backdrop
+    Backdrop,
+    Snackbar,
+    IconButton,
 } from "@material-ui/core";
+import CloseIcon from '@material-ui/icons/Close';
+import MuiAlert from '@material-ui/lab/Alert';
 import {Application} from '../index.js';
 import Config from '../config';
 
+
 class BaseComponent extends React.Component {
+    listOfFunctionOfUnsubscribe = [];
+    style = {};
+    componentStyle = {}
 
     constructor(props) {
         super(props);
-        this.listOfFunctionOfUnsubscribe = [];
         this.fileChooserInputRef = React.createRef();
-        this.style = {};
-        this.componentStyle = {};
         if (!this.isNavigationView() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
             this.getStore().setAppBarHeight(64);
         }
-        if (!this.isNavigationView()) {
-            // this.appendStyle({height:'600px'})
-            // this.appendComponentStyle({})
-        }
     }
 
     componentDidMount() {
-
     }
 
     getEmptyStore() {
@@ -141,6 +141,8 @@ class BaseComponent extends React.Component {
 
                 {self.renderSelectorView()}
 
+                {self.renderSnackView()}
+
             </div>)
     }
 
@@ -238,7 +240,7 @@ class BaseComponent extends React.Component {
     }
 
     setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = '正在載入中') {
-        this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip: ``);
+        this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip : ``);
     }
 
 
@@ -255,6 +257,110 @@ class BaseComponent extends React.Component {
     subscribe(subscribeFunction) {
         this.listOfFunctionOfUnsubscribe.push(subscribeFunction);
     }
+
+    /** ↓↓↓===== SnackView 用到的field,遲早要搬運成獨立的 class =====↓↓↓ */
+    durationOfSnackVisible = 3000;
+    snackExtraTaskFunction = undefined;
+    snackMessageType = 'info';
+
+    defaultSnackExtra() {
+        return {
+            type: `info`, /** error,warning,success, info */
+            duration: 3000,
+            func: {
+                name: 'default',
+                task: async () => {
+                    await Util.syncDelay();
+                    Util.appendInfo('default snack task message!')
+                }
+            }
+        }
+    }
+
+    renderSnackView() {
+        const self = this;
+
+
+        function Alert(props) {
+            return <MuiAlert elevation={6} variant="filled" {...props} />;
+        }
+
+        function hasSnackExtraFunction() {
+            return self.snackExtraTaskFunction && self.snackExtraTaskFunction.name !== 'default'
+        }
+
+        function onSnackViewCloseClicked() {
+            self.getStore().setSnackVisibility(false);
+            self.snackExtraTaskFunction = self.defaultSnackExtra();
+        }
+
+        function renderSnackExtraFunctionView() {
+            if (hasSnackExtraFunction()) {
+                return (<Button
+                    className={'BaseSnackFuncButton'}
+                    color="secondary"
+                    size="large"
+                    onClick={() => {
+                        self.snackExtraTaskFunction.task().then();
+                        onSnackViewCloseClicked();
+                    }}>
+                    {self.snackExtraTaskFunction.name}
+                </Button>)
+            }
+            return
+        }
+
+        return (
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={this.getStore().getSnackVisibility()}
+                autoHideDuration={self.durationOfSnackVisible}
+                onClose={onSnackViewCloseClicked}
+                message={self.getStore().getSnackViewMessage()}
+            >
+                <React.Fragment>
+                    <Alert
+                        className={'BaseSnackAlert'}
+                        onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
+                        {self.getStore().getSnackViewMessage()}
+                    </Alert>
+                    {renderSnackExtraFunctionView()}
+                </React.Fragment>
+
+            </Snackbar>
+        );
+    }
+
+    /**
+     * extra.type: |'error','success','info','warning' |
+     * extra.func.tack 只能放 async task */
+    setSnackViewVisibility(visible, message, extra = this.defaultSnackExtra()) {
+        const self = this;
+
+        if(visible && this.getStore().getSnackVisibility()){
+            self.getStore().setSnackVisibility(false);
+            Util.syncDelay(10).then(() => {
+                sync();
+            })
+        } else {
+            sync()
+        }
+
+        function sync() {
+            extra = Util.mergeObject(self.defaultSnackExtra(), extra);
+            self.durationOfSnackVisible = extra.duration;
+            self.snackExtraTaskFunction = extra.func;
+            self.snackMessageType = extra.type;
+            self.getStore().setSnackVisibility(visible, message);
+        }
+
+
+    }
+
+    /** ↑↑↑===== SnackView 用到的field,遲早要搬運成獨立的 class =====↑↑↑ */
 
 
 }

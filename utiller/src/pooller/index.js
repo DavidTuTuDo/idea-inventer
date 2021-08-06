@@ -585,7 +585,7 @@ class InfinitePool {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool().exampleOfRunByCount();
+        // await new InfinitePool().exampleOfRunByCount();
     })();
 
 }

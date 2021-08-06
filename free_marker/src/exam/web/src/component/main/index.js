@@ -30,11 +30,12 @@ class MainComponent extends BaseMainComponent {
     }
 
     onHighButtonClicked(param) {
-        this.userInfoStore.fetch(UserInfo.getUid()).then((result) => Util.appendInfo(result));
+        // this.userInfoStore.fetch(UserInfo.getUid()).then((result) => Util.appendInfo(result));
     }
 
     onJuniorButtonClicked(param) {
-        this.userInfoStore.submitUserInfoObject(UserInfo.getUid(), UserInfo.getCurrentUser()).then();
+        // this.userInfoStore.submitUserInfoObject(UserInfo.getUid(), UserInfo.getCurrentUser()).then();
+        this.setSnackViewVisibility(true, '測試訊息')
     }
 
     onPurchaseButtonClicked(param) {
@@ -42,24 +43,23 @@ class MainComponent extends BaseMainComponent {
         Router.gotoPurchasePage(this);
     }
 
-    // onUploadButtonClicked(param) {
-    //     const self = this;
-    //     if(this.getSelectedFile()){
-    //         const file = this.getSelectedFile();
-    //         CommonFirebaseHelper.storage().ref().child(`images/${file.name}`).put(file).then((result) => {
-    //             self.removeFile();
-    //         })
-    //     } else {
-    //         this.getInputRef().current.click();
-    //     }
-    // }
+    onUploadButtonClicked(param) {
+        this.setSnackViewVisibility(true, '測試訊息II', {
+            type: 'success',
+            func: {
+
+                    name: '功能',
+                }
+            }
+        )
+    }
 
     onImageUrlImgClicked(param) {
         this.enableImageSelectView();
     }
 
     onFilesSelected(files) {
-        console.log(`files ====>  `,files);
+        console.log(`files ====>  `, files);
     }
 
     /** -------------------- functions -------------------- **/

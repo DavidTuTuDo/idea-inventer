@@ -1973,6 +1973,7 @@ class ComponentBuilder extends BaseBuilder {
                 `this.getStore().fetch().then()`
             )
         }
+        this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
 
         baseGenerator.appendFunction('getStore', [], [], [],
             componentNode.isEditPage() ? `return this.props.${componentNode.getStruct().getOriginalName()}` : `return this.props.${componentNode.getStruct().getName()}`)
@@ -1987,7 +1988,6 @@ class ComponentBuilder extends BaseBuilder {
         if (_.isEqual(componentNode.getName(), componentNode.getParentObject().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
         }
-
 
         baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         await baseGenerator.persist();
