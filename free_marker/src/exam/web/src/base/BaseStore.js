@@ -36,11 +36,7 @@ class BaseStore extends ClientRemoteApi {
     appBarHeight = 0;
 
     @observable
-    snackViewVisibility = false;
-
-    @observable
-    snackViewMessage = '載入成功';
-
+    snackVisibility = false;
 
     constructor(props) {
         super(props);
@@ -50,9 +46,6 @@ class BaseStore extends ClientRemoteApi {
         this.appBarHeight = height;
     }
 
-    getSnackViewMessage() {
-        return this.snackViewMessage;
-    }
 
     @action
     getAppBarHeight() {
@@ -60,14 +53,12 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getSnackVisibility() {
-        return this.snackViewVisibility;
+        return this.snackVisibility;
     }
 
     @action
-    setSnackVisibility(visible, message = `載入成功`) {
-        this.snackViewVisibility = visible;
-        if (visible)
-            this.snackViewMessage = message;
+    setSnackVisibility(visible) {
+        this.snackVisibility = visible;
     }
 
     setParentNode(param) {

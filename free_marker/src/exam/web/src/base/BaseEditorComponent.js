@@ -78,8 +78,6 @@ class BaseEditorComponent extends BaseComponent {
         await this.currentImageTask.afterSubmit(url);
         this.setLoadingViewVisibility(false);
 
-
-
     }
 
     onFilesSelected(files) {
@@ -97,9 +95,7 @@ class BaseEditorComponent extends BaseComponent {
     }
 
     async handleAsyncFunction(onClickAsyncTask, type, processingText) {
-        this.setGlobalLoadingViewVisibility(true, processingText);
         await onClickAsyncTask(type);
-        this.setGlobalLoadingViewVisibility(false);
     }
 
 

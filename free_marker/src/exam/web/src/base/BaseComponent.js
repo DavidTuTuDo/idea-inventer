@@ -262,6 +262,7 @@ class BaseComponent extends React.Component {
     durationOfSnackVisible = 3000;
     snackExtraTaskFunction = undefined;
     snackMessageType = 'info';
+    snackMessage = 'default message';
 
     defaultSnackExtra() {
         return {
@@ -318,18 +319,15 @@ class BaseComponent extends React.Component {
                 }}
                 open={this.getStore().getSnackVisibility()}
                 autoHideDuration={self.durationOfSnackVisible}
-                onClose={onSnackViewCloseClicked}
-                message={self.getStore().getSnackViewMessage()}
-            >
+                onClose={onSnackViewCloseClicked} >
                 <React.Fragment>
                     <Alert
                         className={'BaseSnackAlert'}
                         onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
-                        {self.getStore().getSnackViewMessage()}
+                        {self.snackMessage}
                     </Alert>
                     {renderSnackExtraFunctionView()}
                 </React.Fragment>
-
             </Snackbar>
         );
     }
@@ -353,8 +351,9 @@ class BaseComponent extends React.Component {
             extra = Util.mergeObject(self.defaultSnackExtra(), extra);
             self.durationOfSnackVisible = extra.duration;
             self.snackExtraTaskFunction = extra.func;
+            self.snackMessage = message;
             self.snackMessageType = extra.type;
-            self.getStore().setSnackVisibility(visible, message);
+            self.getStore().setSnackVisibility(visible);
         }
 
 

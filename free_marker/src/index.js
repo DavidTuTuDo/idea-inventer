@@ -25,7 +25,7 @@ const CURRENT_PLATFORM = 'web';
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
-const TARGET_COMPONENT = 'navigator';
+const TARGET_COMPONENT = 'exam';
 
 
 const SignOfInValidNode = 'SignOfInValidNode';
@@ -1191,7 +1191,7 @@ class ClassGenerator {
         }
         stmt.push(`\n`);
 
-
+        _.remove(params, param => Util.isEmptyString(param));
         stmt.push(`${func.async ? 'async' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
         /** arrow function 不支援 super QQ 08/03 的筆記有紀錄
@@ -1608,19 +1608,19 @@ class StoreBuilder extends BaseBuilder {
         if (node.isObject()) {
             const contents = [
                 `{`,
-                node.hasPath() ? `...(await this.${Util.camel(`fetch`, node.getFieldName())}()),` : `...{},`,
+                node.hasPath() ? `...(await this.${Util.camel(`fetch`, node.getFieldName())}(view)),` : `...{},`,
                 ..._.map(node.getChildren(), (child) => {
-                    return child.hasPath() && !child.isDisableFetch() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(),` : '';
+                    return child.hasPath() && !child.isDisableFetch() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(view),` : '';
                 }),
                 `}`,
             ]
-            baseGenerator.appendAsyncFunction('fetch', [], [], [],
+            baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
                 ...this.getDecorateFetchStrings(node.isState(), node.isObject(), ...contents)
             )
         } else if (node.isArray()) {
             if (node.hasPath()) {
-                baseGenerator.appendAsyncFunction('fetch', [], [], [],
-                    `return await this.${Util.camel(`fetch`, node.getFieldName())}()`);
+                baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
+                    `return await this.${Util.camel(`fetch`, node.getFieldName())}(view)`);
             }
         }
 
@@ -1683,12 +1683,9 @@ class StoreBuilder extends BaseBuilder {
         if (isState) {
             normalize = [
                 `try {`,
-                'this.setState(`loading`)',
                 ...normalize,
-                'this.setState(`stable`)',
                 `} catch (error) {`,
                 `this.setErrorMsg(error.message);`,
-                'this.setState(`error`);',
                 `}`,
             ]
         }
@@ -1702,8 +1699,9 @@ class StoreBuilder extends BaseBuilder {
 
 class RemoteFunctionHandler {
 
-    constructor(classGenerator) {
+    constructor(classGenerator, platform = 'web') {
         this.generator = classGenerator;
+        this.platform = platform;
     }
 
     buildListenerFunction(node, recursively = false) {
@@ -1741,11 +1739,54 @@ class RemoteFunctionHandler {
         }
     }
 
-    buildFetchSubmitApi(node, recursively = false) {
+    buildFetchSubmitApi = (node, recursively = false) => {
+        const self = this;
         if (node.isCollection()) {
             const contents = [];
             const children = [];
             const generator = this.generator;
+
+            function isWebPlatform() {
+                return self.platform === 'web';
+            }
+
+            function appendViewInParamStmt(comma = true) {
+                return isWebPlatform() ? `${comma ? ',' : ''}view` : ``;
+            }
+
+            function houseKeepingStmt() {
+                if (isWebPlatform()) {
+                    return [`if(this.hasParent())`,
+                        `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`];
+                } else
+                    return [];
+            }
+
+            function generateApiFunction(name, params = [], logicStmts = [], type) {
+                const tryStmt = `const self = this;
+                const type = '${type}';
+                try { self.handleApiExecute(path,type${appendViewInParamStmt()})`;
+
+                const defaultParam = node.getParamsOfPath(self.platform);
+                const pathStmt = `const path = \`${node.getPathOfRouterString()}\``;
+
+                const catchAndFinalStmt = `}catch(error) { 
+                self.handleApiException(path,type,error ${appendViewInParamStmt()})}
+                finally{
+                self.handleApiFinally(path,type${appendViewInParamStmt()})}`
+
+                params = params.map(param => {
+                    if (_.isEqual(param.trim(), 'id')) {
+                        return `${param} = this.getId()`;
+                    } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
+                        return `${param} = this.rawData()`;
+                    }
+                    return param;
+                })
+                generator.appendAsyncFunction(name, [...[`${appendViewInParamStmt(false)}`], ...defaultParam, ...params], [], [],
+                    ...[pathStmt, tryStmt, ...logicStmts, catchAndFinalStmt])
+            }
+
             if (generator === undefined)
                 throw new ERROR(8016)
 
@@ -1764,99 +1805,80 @@ class RemoteFunctionHandler {
             if (node.hasPath()) {
                 /** 有path 才代表 這是一個遠端也有的物件 */
                 const functionNameOfNormalize = Util.camel('normalize', node.getName());
-                const defaultParam = node.getParamsOfPath(CURRENT_PLATFORM);
-                const pathStmt = `const path = \`${node.getPathOfRouterString()}\``;
                 generator.appendFunction(functionNameOfNormalize, ['object'], [], [],
                     ...contents,
                     'return commitment'
                 )
 
                 if (node.isArray()) {
-                    generator.appendAsyncFunction(Util.camel(`fetch`, node.getFieldName()),
-                        [...defaultParam, 'condition = (stmt) => stmt'], [], [],
-                        `${pathStmt}`,
-                        `return await this.fetchItems(path, condition)`)
+                    generateApiFunction(Util.camel(`fetch`, node.getFieldName()),
+                        ['condition = (stmt) => stmt'],
+                        [`return await this.fetchItems(path, condition)`], `fetch items`);
 
-                    generator.appendAsyncFunction(
-                        node.getFunctionNameOfFetchItem(),
-                        [...defaultParam, 'id = this.getId()'], [], [],
-                        `${pathStmt}`,
-                        `const item =  await this.fetchItem(path, id)`,
-                        `this.initial(item)`,
-                        `return item`,
-                    )
+                    generateApiFunction(node.getFunctionNameOfFetchItem(),
+                        [`id`],
+                        ['const item =  await this.fetchItem(path, id)',
+                            `this.clear()`,
+                            `this.initial(item)`,
+                            `return item`], `fetch item`)
 
                     /** admins only , delete collection all */
-                    generator.appendAsyncFunction(Util.camel(`delete`, node.getFieldName()),
-                        [...defaultParam, 'condition = (stmt) => stmt', 'all = false'], [], [],
-                        `${pathStmt}`,
-                        `return await this.deleteItems(path,condition,all)`)
+                    generateApiFunction(
+                        Util.camel(`delete`, node.getFieldName()),
+                        ['condition = (stmt) => stmt', 'all = false'],
+                        [`return await this.deleteItems(path,condition,all)`], 'delete items')
 
-                    generator.appendAsyncFunction(
+                    generateApiFunction(
                         node.getFunctionNameOfSubmitItem(),
-                        [...defaultParam, 'item = this.rawData()'], [], [],
-                        `${pathStmt}`,
-                        `const commitment = this.${functionNameOfNormalize}(item)`, [],
-                        `return await this.submitItem(path, commitment);`,
-                    )
+                        [`item`],
+                        [`const commitment = this.${functionNameOfNormalize}(item)`,
+                            `return await this.submitItem(path, commitment);`], 'submit item')
 
-                    generator.appendAsyncFunction(
-                        node.getFunctionNameOfUpdateItem()
-                        , [...defaultParam, 'id = this.getId()', `content = this.rawData()`], [], [],
-                        `${pathStmt}`,
-                        `return await this.updateItem(path, id , content);`,
-                    );
+                    generateApiFunction(
+                        node.getFunctionNameOfUpdateItem(),
+                        [`id`, `item`],
+                        [`return await this.updateItem(path, id , item)`], 'update item')
 
-                    generator.appendAsyncFunction(
-                        node.getFunctionNameOfDeleteItem()
-                        , [...defaultParam, `id = this.getId()`], [], [],
-                        `${pathStmt}`,
-                        `const result = await this.deleteItem(path, id)`,
-                        `if(this.hasParent())`,
-                        `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`,
-                        `return result`
-                    );
+                    generateApiFunction(
+                        node.getFunctionNameOfDeleteItem(),
+                        [`id`],
+                        [`const result = await this.deleteItem(path, id)`,
+                            ...houseKeepingStmt(),
+                            `return result`], 'delete item')
 
-                    generator.appendAsyncFunction(Util.camel('submit', node.getFieldName()),
-                        [...defaultParam, '...objects'], [], [],
-                        `${pathStmt}`,
-                        `const commitments = objects.map((object) => this.${functionNameOfNormalize}(object))`,
-                        `return await this.submitItems(path,...commitments)`
-                    )
+                    generateApiFunction(
+                        Util.camel('submit', node.getFieldName()),
+                        ['...objects'],
+                        [`const commitments = objects.map((object) => this.${functionNameOfNormalize}(object))`,
+                            `return await this.submitItems(path,...commitments)`], `submit items`)
 
-                    generator.appendAsyncFunction(Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [...defaultParam],
-                        [], [],
-                        `${pathStmt}`,
-                        `return await this.fetchSizeOfCollection(path)`
-                    )
+                    generateApiFunction(
+                        Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
+                        [], [`return await this.fetchSizeOfCollection(path)`], `fetch size`)
 
                 } else if (node.isObject()) {
-                    contents.push(`await this.submitObject(path, commitment,'${node.getName()}')`);
-                    generator.appendAsyncFunction(Util.camel('submit', node.getFieldName(), 'object'),
-                        [...defaultParam, 'object = this.rawData()'], [], [],
-                        `${pathStmt}`,
-                        `const commitment = this.${functionNameOfNormalize}(object)`,
-                        `return await this.submitObject(path, commitment,'${node.getName()}')`,
-                    );
+                    generateApiFunction(
+                        Util.camel('submit', node.getFieldName(), 'object'),
+                        [`object`],
+                        [
+                            `const commitment = this.${functionNameOfNormalize}(object)`,
+                            `return await this.submitObject(path, commitment,'${node.getName()}')`], `submit object`)
 
-                    generator.appendAsyncFunction(Util.camel('fetch', node.getFieldName()),
-                        [...defaultParam,], [], [],
-                        `${pathStmt}`,
-                        `return await this.fetchObject(path,'${node.getName()}')`
-                    );
+                    generateApiFunction(
+                        Util.camel('fetch', node.getFieldName()),
+                        [],
+                        [`return await this.fetchObject(path,'${node.getName()}')`], `fetch object`)
 
-                    generator.appendAsyncFunction(Util.camel('update', node.getFieldName()),
-                        [...defaultParam, 'object = this.rawData()'], [], [],
-                        `${pathStmt}`,
-                        `return await this.updateObject(path, object, '${node.getName()}')`
-                    );
+                    generateApiFunction(
+                        Util.camel('update', node.getFieldName()),
+                        [`object`],
+                        [`return await this.updateObject(path, object, '${node.getName()}')`], `update object`);
 
-                    generator.appendAsyncFunction(Util.camel('delete', node.getFieldName()),
-                        [...defaultParam], [], [],
-                        `${pathStmt}`,
-                        `return await this.deleteObject(path, '${node.getName()}')`
-                    );
+                    generateApiFunction(
+                        Util.camel('delete', node.getFieldName()),
+                        [],
+                        [`return await this.deleteObject(path, '${node.getName()}')`], `delete object`);
+
                 } else {
                     throw new ERROR(8015, node.getType());
                 }
@@ -1970,7 +1992,7 @@ class ComponentBuilder extends BaseBuilder {
 
         if (this.containedFetchAttribute(componentNode.getStruct())) {
             this.appendStmtIntoComponentDidMount(
-                `this.getStore().fetch().then()`
+                `this.getStore().fetch(this).then()`
             )
         }
         this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
@@ -2272,16 +2294,17 @@ class ComponentBuilder extends BaseBuilder {
 
             if (node.hasPath()) {
                 generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], [],
+                    `const self =this`,
                     `return  async (type) => {
                 switch (type) {`,
                     `case 'recover':`,
-                    `await ${node.getName()}.${node.getFunctionNameOfFetchItem()}()`,
+                    `await ${node.getName()}.${node.getFunctionNameOfFetchItem()}(self)`,
                     `break;`,
                     `case 'update':`,
-                    `await ${node.getName()}.${node.getFunctionNameOfUpdateItem()}()`,
+                    `await ${node.getName()}.${node.getFunctionNameOfUpdateItem()}(self)`,
                     `break;`,
                     `case 'delete':`,
-                    `await ${node.getName()}.${node.getFunctionNameOfDeleteItem()}()`,
+                    `await ${node.getName()}.${node.getFunctionNameOfDeleteItem()}(self)`,
                     `break;`,
                     `default:`,
                     `Util.appendError(\`${node.getName()}  3032 can't not happen this type => \${type}\`)`,
@@ -2290,10 +2313,11 @@ class ComponentBuilder extends BaseBuilder {
                 )
 
                 generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], [],
-                    `return  async (type) => {`,
+                    `const self=this`,
+                        `return  async (type) => {`,
                     `switch (type) {`,
                     `case 'create':`,
-                    `await ${parentName}.${node.getFunctionNameOfSubmit()}()`,
+                    `await ${parentName}.${node.getFunctionNameOfSubmit()}(self)`,
                     `break;`,
                     `default:`,
                     `Util.appendError(\`${node.getName()} 3033 can't not happen this type => \${type}\`)`,
@@ -2391,7 +2415,6 @@ class AppBuilder extends ComponentBuilder {
         for (const _package of sourceObj.getExtraPackage()) {
             const packageName = _package.getName();
             const platform = _package.getPlatform();
-            console.log(platform, currentPlatform)
             if (!_.isEqual(platform, currentPlatform))
                 continue;
 
@@ -2693,7 +2716,6 @@ class AppBuilder extends ComponentBuilder {
                     const node = className.node;
                     const type = className.type;
                     const name = node.getClassNameOfLessUsage(type);
-                    console.log('edit:', isEditPage, 'name:', info.component.getName(), 'less:', name)
                     /** 從file裡面找出定義過的屬性敘述*/
                     const srcAttribute = _.remove(lessAttributesFromSrc, (each) => _.startsWith(each, `.${name}`))
 
@@ -3014,8 +3036,8 @@ class ProjectFileHandler {
         listenerGenerator.needIndexFile('AdminListenerApi');
 
         for (const component of this.nodeOfAncestor.getComponents()) {
-            new RemoteFunctionHandler(apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
-            new RemoteFunctionHandler(listenerGenerator).buildListenerFunction(component.getStruct(), true)
+            new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
+            new RemoteFunctionHandler(listenerGenerator, this.platform).buildListenerFunction(component.getStruct(), true)
         }
 
         await listenerGenerator.persist();
@@ -3175,10 +3197,8 @@ class ProjectFileHandler {
     async removeEmptyFolder() {
         for (const file of Util.findFilePathBy(this.genSourcePath)) {
             if (Util.isEmptyFile(file.absolute)) {
-                console.log(file.absolute);
                 const shouldDeletedFolder = Util.getFileDirPath(file.absolute);
                 if (fs.existsSync(shouldDeletedFolder)) {
-                    console.log(shouldDeletedFolder)
                     await Util.deleteSelfByPath(shouldDeletedFolder, true);
                 }
 
@@ -3226,7 +3246,6 @@ export {
         case 'developer':
             const nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(projectRootPath, `source.js`))).default, undefined);
             const node = CodegenNode.find(nodeOfAncestor.components[4].struct, (node) => _.isEqual(node.getName(), 'url'));
-            console.log(node[0].getRootNode().getName());
             break;
     }
 

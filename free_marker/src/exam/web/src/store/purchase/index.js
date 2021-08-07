@@ -13,7 +13,7 @@ class PurchaseStore extends BasePurchaseStore {
         super(props);
     }
 
-    async fetch() {
+    async fetch(view) {
         this.removePurchasePlans();
         this.pushPurchasePlansByIndex(0,
             {
@@ -22,7 +22,7 @@ class PurchaseStore extends BasePurchaseStore {
                 id: 1,
             }
         )
-        return super.fetch();
+        return super.fetch(view);
     }
 
 

@@ -70,6 +70,25 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     }
 
+    handleApiExecute(path, type, view) {
+        if(view !== undefined){
+            view.setLoadingViewVisibility(true);
+        }
+    }
+
+    handleApiException(path, type, error, view) {
+        if(view !== undefined){
+            const errorMsg = `${type} ${[path]}, ${error.message}`
+            view.setSnackViewVisibility(true,errorMsg,{type:`error`,duration:5000});
+        }
+    }
+
+    handleApiFinally(path, type, view) {
+        if(view !== undefined){
+            view.setLoadingViewVisibility(false);
+        }
+    }
+
 }
 
 export default ClientRemoteApi;
