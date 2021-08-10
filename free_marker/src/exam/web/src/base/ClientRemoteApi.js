@@ -70,21 +70,34 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     }
 
+    /** asyncApiTask 必須給的是async function */
+    async runUIAsyncTask(asyncApiTask, type, path, view) {
+        const self = this;
+        try {
+            self.handleApiExecute(path, type, view);
+            return await asyncApiTask();
+        } catch (error) {
+            self.handleApiException(path, type, error, view);
+        } finally {
+            self.handleApiFinally(path, type, view);
+        }
+    }
+
     handleApiExecute(path, type, view) {
-        if(view !== undefined){
+        if (view !== undefined) {
             view.setLoadingViewVisibility(true);
         }
     }
 
     handleApiException(path, type, error, view) {
-        if(view !== undefined){
+        if (view !== undefined) {
             const errorMsg = `${type} ${[path]}, ${error.message}`
-            view.setSnackViewVisibility(true,errorMsg,{type:`error`,duration:5000});
+            view.setSnackViewVisibility(true, errorMsg, {type: `error`, duration: 5000});
         }
     }
 
     handleApiFinally(path, type, view) {
-        if(view !== undefined){
+        if (view !== undefined) {
             view.setLoadingViewVisibility(false);
         }
     }

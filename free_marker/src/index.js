@@ -26,7 +26,7 @@ const CURRENT_PLATFORM = 'web';
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
-const TARGET_COMPONENT = 'purchase';
+const TARGET_COMPONENT = 'exam';
 
 
 const SignOfInValidNode = 'SignOfInValidNode';
@@ -537,7 +537,7 @@ class CodegenNode {
 
         if (this.isArray()) {
             stmt.push(`const ${this.getFunctionNameOfRenderItemView()} = self.${this.getFunctionNameOfRenderItemView()}`);
-        }else {
+        } else {
             const exist = {}
             for (const child of this.getPreciseViewChildren()) {
                 const view = child.getFunctionNameOfRenderView();
@@ -1838,18 +1838,19 @@ class RemoteFunctionHandler {
             }
 
             function generateApiFunction(name, params = [], logicStmts = [], type) {
-                const tryStmt = `const self = this;
-                const type = '${type}';
-                try { self.handleApiExecute(path,type${appendViewInParamStmt()})`;
 
                 const defaultParam = node.getParamsOfPath(self.platform);
-                const pathStmt = `const path = \`${node.getPathOfRouterString()}\``;
-
-                const catchAndFinalStmt = `}catch(error) { 
-                self.handleApiException(path,type,error ${appendViewInParamStmt()})}
-                finally{
-                self.handleApiFinally(path,type${appendViewInParamStmt()})}`
-
+                const preStmts = [
+                    `const self = this`,
+                    `const path = \`${node.getPathOfRouterString()}\``
+                ];
+                const stmts = [`const task = async () => {`];
+                stmts.push(...logicStmts);
+                stmts.push(`}`);
+                if (isWebPlatform())
+                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', path${appendViewInParamStmt()})`)
+                else
+                    stmts.push(`return await task()`);
                 params = params.map(param => {
                     if (_.isEqual(param.trim(), 'id')) {
                         return `${param} = this.getId()`;
@@ -1859,7 +1860,7 @@ class RemoteFunctionHandler {
                     return param;
                 })
                 generator.appendAsyncFunction(name, [...[`${appendViewInParamStmt(false)}`], ...defaultParam, ...params], [], [],
-                    ...[pathStmt, tryStmt, ...logicStmts, catchAndFinalStmt])
+                    ...[...preStmts, ...stmts])
             }
 
             if (generator === undefined)
@@ -1888,11 +1889,11 @@ class RemoteFunctionHandler {
                 if (node.isArray()) {
                     generateApiFunction(Util.camel(`fetch`, node.getFieldName()),
                         ['condition = (stmt) => stmt'],
-                        [`return await this.fetchItems(path, condition)`], `fetch items`);
+                        [`return await self.fetchItems(path, condition)`], `fetch items`);
 
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
-                        ['const item =  await this.fetchItem(path, id)',
+                        ['const item =  await self.fetchItem(path, id)',
                             `this.clear()`,
                             `this.initial(item)`,
                             `return item`], `fetch item`)
@@ -1901,23 +1902,23 @@ class RemoteFunctionHandler {
                     generateApiFunction(
                         Util.camel(`delete`, node.getFieldName()),
                         ['condition = (stmt) => stmt', 'all = false'],
-                        [`return await this.deleteItems(path,condition,all)`], 'delete items')
+                        [`return await self.deleteItems(path,condition,all)`], 'delete items')
 
                     generateApiFunction(
                         node.getFunctionNameOfSubmitItem(),
                         [`item`],
                         [`const commitment = this.${functionNameOfNormalize}(item)`,
-                            `return await this.submitItem(path, commitment);`], 'submit item')
+                            `return await self.submitItem(path, commitment);`], 'submit item')
 
                     generateApiFunction(
                         node.getFunctionNameOfUpdateItem(),
                         [`id`, `item`],
-                        [`return await this.updateItem(path, id , item)`], 'update item')
+                        [`return await self.updateItem(path, id , item)`], 'update item')
 
                     generateApiFunction(
                         node.getFunctionNameOfDeleteItem(),
                         [`id`],
-                        [`const result = await this.deleteItem(path, id)`,
+                        [`const result = await self.deleteItem(path, id)`,
                             ...houseKeepingStmt(),
                             `return result`], 'delete item')
 
@@ -1925,11 +1926,11 @@ class RemoteFunctionHandler {
                         Util.camel('submit', node.getFieldName()),
                         ['...objects'],
                         [`const commitments = objects.map((object) => this.${functionNameOfNormalize}(object))`,
-                            `return await this.submitItems(path,...commitments)`], `submit items`)
+                            `return await self.submitItems(path,...commitments)`], `submit items`)
 
                     generateApiFunction(
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [], [`return await this.fetchSizeOfCollection(path)`], `fetch size`)
+                        [], [`return await self.fetchSizeOfCollection(path)`], `fetch size`)
 
                 } else if (node.isObject()) {
                     generateApiFunction(
@@ -1937,22 +1938,22 @@ class RemoteFunctionHandler {
                         [`object`],
                         [
                             `const commitment = this.${functionNameOfNormalize}(object)`,
-                            `return await this.submitObject(path, commitment,'${node.getName()}')`], `submit object`)
+                            `return await self.submitObject(path, commitment,'${node.getName()}')`], `submit object`)
 
                     generateApiFunction(
                         Util.camel('fetch', node.getFieldName()),
                         [],
-                        [`return await this.fetchObject(path,'${node.getName()}')`], `fetch object`)
+                        [`return await self.fetchObject(path,'${node.getName()}')`], `fetch object`)
 
                     generateApiFunction(
                         Util.camel('update', node.getFieldName()),
                         [`object`],
-                        [`return await this.updateObject(path, object, '${node.getName()}')`], `update object`);
+                        [`return await self.updateObject(path, object, '${node.getName()}')`], `update object`);
 
                     generateApiFunction(
                         Util.camel('delete', node.getFieldName()),
                         [],
-                        [`return await this.deleteObject(path, '${node.getName()}')`], `delete object`);
+                        [`return await self.deleteObject(path, '${node.getName()}')`], `delete object`);
 
                 } else {
                     throw new ERROR(8015, node.getType());
@@ -3186,6 +3187,7 @@ class ProjectFileHandler {
                         throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
                     }
                     node.ref = _nodes[0];
+                    node.type = node.ref.type;
                 }
                 enrichNodes(...node.getChildren());
             }
