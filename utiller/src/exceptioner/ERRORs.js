@@ -143,7 +143,6 @@ const ERRORs = {
     8017: {
         message:`className type is not valid!`,
     },
-
     9999: {
         message: `super stupid error`
     },
@@ -155,6 +154,12 @@ const ERRORs = {
     },
     7003: {
         message: `css style duplicated defined`
+    },
+    7004: {
+        message: `there's no ref target`
+    },
+    7005: {
+        message: `can't happen this param type`
     }
 
 }

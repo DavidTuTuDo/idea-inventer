@@ -3,6 +3,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
+import {get} from "mobx";
 
 
 /** author:明悅
@@ -15,8 +16,8 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
@@ -25,7 +26,7 @@ const CURRENT_PLATFORM = 'web';
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
-const TARGET_COMPONENT = 'exam';
+const TARGET_COMPONENT = 'purchase';
 
 
 const SignOfInValidNode = 'SignOfInValidNode';
@@ -35,6 +36,9 @@ class CodegenNode {
     node;
     password;
     components;
+
+    ref;
+    /** 用來標記這個node的內容, 免得重複的再type一遍 */
 
     mother;
     /** 註記陣列的位址, 用來獲得 indexOfCollection*/
@@ -151,6 +155,9 @@ class CodegenNode {
 
     listWrapStyle = {};
 
+    listWrapView;
+    /**  可以指定Array的最外面包的那一層,有時候需要改變direction,需要靠這個container*/
+
     wrapView;
     /**  可以指定wrap的type default是div*/
     extra;
@@ -200,6 +207,10 @@ class CodegenNode {
 
     appendStyle(style) {
         this.style = {...this.style, ...style}
+    }
+
+    isArrayItem() {
+        return _.isEqual(this.type, 'arrayItem');
     }
 
     getRootNode() {
@@ -260,6 +271,14 @@ class CodegenNode {
         return `self.${this.getFunctionNameOfCollectionEditor()}(${this.getPreciseAttributeParent().getName()})`;
     }
 
+    hasValidViewParent() {
+        return this.isValidNode(this.getPreciseViewParent());
+    }
+
+    hasValidAttributeParent() {
+        return this.isValidNode(this.getPreciseAttributeParent());
+    }
+
     /** 像是編輯一個item, 這種屬許item等級的作業, item自己做的事情 */
     getFunctionNameOfItemEditor() {
         return Util.camel('on', this.getName(), 'Item', 'Editor', 'Clicked', 'AsyncTask');
@@ -271,7 +290,7 @@ class CodegenNode {
     }
 
     isContainer() {
-        return this.view && Util.isOrEquals(_.toLower(this.view), 'div', 'card', 'paper', 'drawer', 'toolbar', 'appbar', 'iconbutton');
+        return this.view && Util.isOrEquals(_.toLower(this.view), 'div', 'card', 'paper', 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem');
     }
 
     isScrollingHideDependOnRootNode() {
@@ -289,12 +308,14 @@ class CodegenNode {
 
     getUniqueIdStmt() {
         if (this.hasPath()) {
-            return `${this.getName()}.getId()`;
+            return `###${this.getName()}.getId()`;
         } else {
-            return `\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\``;
+            if (this.isArray())
+                return `###\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\``;
+            else
+                return `${Util.getRandomHash('20')}`
         }
     }
-
 
     isEditPage() {
         return !!this.editPage;
@@ -440,9 +461,15 @@ class CodegenNode {
     }
 
     getWrapView() {
-
         if (this.wrapView) {
             return this.wrapView;
+        }
+        return 'div';
+    }
+
+    getListWrapView() {
+        if (this.listWrapView) {
+            return this.listWrapView;
         }
         return 'div';
     }
@@ -508,9 +535,21 @@ class CodegenNode {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
+        if (this.isArray()) {
+            stmt.push(`const ${this.getFunctionNameOfRenderItemView()} = self.${this.getFunctionNameOfRenderItemView()}`);
+        }else {
+            const exist = {}
+            for (const child of this.getPreciseViewChildren()) {
+                const view = child.getFunctionNameOfRenderView();
+                if (!!!exist[view])
+                    stmt.push(`const ${view} = self.${view}`)
+                exist[view] = true;
+            }
+        }
+
         const parent = this.getPreciseAttributeParent();
         /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
-        if (this.isAttribute() && parent !== undefined) {
+        if (!this.isArrayItem() && this.isAttribute() && this.hasValidAttributeParent()) {
             /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
             stmt.push(`const ${this.getFieldName()} = 
             this.${this.getFunctionNameUsingInComponentGetter()}(${parent.getName()})`)
@@ -760,6 +799,10 @@ class CodegenNode {
         return _.isArray(this.children) ? this.children : [];
     }
 
+    setChildren(children) {
+        this.children = children;
+    }
+
     hasParent() {
         return this.parent !== undefined;
     }
@@ -782,8 +825,10 @@ class CodegenNode {
                 viewName = !original ? this.getView() : this.isViewModified() ? this.getOriginalView() : this.getView();
                 break;
             case 'wrap':
-            case 'listWrap':
                 viewName = this.getWrapView();
+                break;
+            case 'listWrap':
+                viewName = this.getListWrapView();
                 break;
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
@@ -933,7 +978,7 @@ class CodegenNode {
     }
 
     isCollection() {
-        return this.isArray() || this.isObject()
+        return this.isArray() || this.isObject() || this.isArrayItem()
     }
 
     isRootPath() {
@@ -993,28 +1038,30 @@ class CodegenNode {
 
     getParamOfRenderView() {
         let param = '';
-
-        if (this.isAttribute() || this.needParentParam()) {
+        if (this.isAttribute() && this.isArrayItem()) {
+            param = this.getName();
+        } else if (this.isAttribute() || this.needParentParam()) {
             param = this.getPreciseAttributeParent().getName();
         }
         return param;
     }
 
-    getFunctionNameOfRenderViewWithParam() {
-        const functionName = this.getFunctionNameOfRenderView();
-        let param = '';
-        if (this.isAttribute() || this.needParentParam()) {
-            param = this.getPreciseAttributeParent().getName();
+    getFunctionNameOfRenderView() {
+        let functionName = '';
+        if (this.isArray()) {
+            functionName = Util.camel(this.getPreciseAttributeParent().getName(),
+                this.getFieldName(), 'view');
+        } else {
+            functionName = Util.camel(this.getPreciseAttributeParent().getName(),
+                this.getName(), 'view');
         }
-        return `${functionName}(${param})`;
-
+        return _.upperFirst(functionName);
     }
 
-
-    getFunctionNameOfRenderView() {
-        return Util.camel(`render`,
-            this.getPreciseAttributeParent().getName(),
-            this.getFieldName(), 'view');
+    getFunctionNameOfRenderItemView() {
+        let functionName = Util.camel(this.getPreciseAttributeParent().getName(),
+            this.getName(), 'view');
+        return _.upperFirst(functionName);
     }
 
     getFunctionNameOfSetter() {
@@ -1053,13 +1100,24 @@ class CodegenNode {
             return [];
     }
 
-    static find(structNode, predicate) {
+    static find(node, predicate) {
         const nodes = [];
-        if (predicate(structNode)) {
-            nodes.push(structNode)
+        if (predicate(node)) {
+            nodes.push(node)
         }
-        for (const child of structNode.getChildren()) {
+        for (const child of node.getChildren()) {
+            if (node.isImitate)
+                continue;
+
             nodes.push(...CodegenNode.find(child, predicate))
+        }
+        return nodes;
+    }
+
+    static finds(structs, predicate) {
+        const nodes = [];
+        for (const struct of structs) {
+            nodes.push(...CodegenNode.find(struct, predicate))
         }
         return nodes;
     }
@@ -1177,6 +1235,9 @@ class ClassGenerator {
     getFunctionContent(func, params = [], macros = [], comments = [], ...contents) {
         /** 應該要檢查file 沒有class的話, 要跳出Error提示 */
         const functionName = func.name;
+        const arrow = func.arrow;
+        const async = func.async;
+        const decorator = func.decorator;
         const stmt = [];
         stmt.push(`\n`);
 
@@ -1192,39 +1253,48 @@ class ClassGenerator {
         stmt.push(`\n`);
 
         _.remove(params, param => Util.isEmptyString(param));
-        stmt.push(`${func.async ? 'async' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
-        /** arrow function 不支援 super QQ 08/03 的筆記有紀錄
-         if(functionName === 'constructor') {
-             stmt.push(`${func.async ? 'async' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
-        }else {
-            stmt.push(`${functionName} = ${func.async ? 'async' : ''}(${_.isEmpty(params) ? '' : params.join(' ,')}) => {`);
-        }*/
+        if (!!arrow || decorator) {
+            /** arrow function 不支援 super QQ 08/03 的筆記有紀錄 */
+            stmt.push(`${functionName} = ${async ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => {`);
+        } else
+            stmt.push(`${async ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
+
         for (let content of contents) {
             stmt.push(`\n`);
             stmt.push(`${content}`);
         }
+
         stmt.push(`\n`);
         stmt.push(`}`);
+
+        if (decorator) {
+            stmt.push(`)`);
+        }
         return stmt;
     }
 
-    appendFunction(functionName, params = [], macros = [], comments = [], ...contents) {
-        const stmts = this.getFunctionContent({
-            name: functionName,
-            async: false
-        }, params, macros, comments, ...contents);
+    /**
+     func = {
+        name: functionName
+        arrow: 箭頭函數, 可以省去this的領域問題
+        decorator: 有沒有需要修飾 像是observer(({store}) => ...functionStmt)
+        async: 註記是否需要非同步
+      }
+     */
+    appendFunction(func, params = [], macros = [], comments = [], ...contents) {
+        const stmts = this.getFunctionContent(
+            _.isString(func) ? {name: func} : func
+            , params, macros, comments, ...contents);
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
 
     appendAsyncFunction(functionName, params = [], macros = [], comments, ...contents) {
-        const stmts = this.getFunctionContent({
-            name: ` ${functionName}`,
+        this.appendFunction({
+            name: functionName,
             async: true
-        }, params, macros, comments, ...contents);
-        Util.insertToArray(this.context, this.getIndexOfRestfulApiSign(), ...stmts)
+        }, params, macros, comments, ...contents)
     }
-
 
     appendConstructor(...stmt) {
         this.hasConstructor = true;
@@ -1567,8 +1637,13 @@ class StoreBuilder extends BaseBuilder {
 
             if (child.isArray()) {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
-                generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
-                await this.buildBaseStore(child)
+
+                if (child.ref)
+                    generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
+                else {
+                    generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
+                    await this.buildBaseStore(child)
+                }
             } else if (child.isObject()) {
                 generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
                 propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
@@ -1936,10 +2011,10 @@ class ComponentBuilder extends BaseBuilder {
         );
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer}', '@material-ui/core')
+        baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer,ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style')
-
+        baseGenerator.appendImport('{observer}', 'mobx-react')
 
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
@@ -1995,6 +2070,7 @@ class ComponentBuilder extends BaseBuilder {
                 `this.getStore().fetch(this).then()`
             )
         }
+
         this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
 
         baseGenerator.appendFunction('getStore', [], [], [],
@@ -2034,6 +2110,7 @@ class ComponentBuilder extends BaseBuilder {
     /**
      * {
      *      tag:'tag',
+     *      contentless: 直接給 /> 做結尾,不然都會預設 </View>
      *      props:{...name:object},
      *      contents:['cotent1','content2']
      *      children: ['ccc'],
@@ -2073,7 +2150,6 @@ class ComponentBuilder extends BaseBuilder {
         const props = param.props;
         const contents = param.contents ? param.contents : [];
         const children = param.children ? param.children : [];
-
         const stmt = [];
         const tag = param.tag;
         stmt.push(`<${tag}`);
@@ -2091,6 +2167,12 @@ class ComponentBuilder extends BaseBuilder {
                 stmt.push(`{${props[key]}}`)
             else
                 stmt.push(`${key}=${normalize(props[key])}\n`);
+        }
+
+        if (_.isEmpty(contents)) {
+            stmt.push(`/>`);
+            stmt.push('\n');
+            return stmt;
         }
 
         stmt.push(`>`);
@@ -2119,7 +2201,34 @@ class ComponentBuilder extends BaseBuilder {
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
          如果子節點是string或是number, 就產生出{string}
          **/
+
+        function getJsxViewStmt(node) {
+            const props = {}
+            const param = node.getParamOfRenderView();
+            if (!_.isEmpty(param)) {
+                props[param] = `###${param}`
+            }
+
+            const viewJsxStmt = self.getJSXStrings({
+                tag: node.getFunctionNameOfRenderView(),
+                props,
+            })
+            return viewJsxStmt;
+        }
+
+        /** 就是把標註為 outer 的 child 放在同一個view的層級 */
+        function getOuterChildJSXStrings(node) {
+            const contentStmts = [];
+            for (const child of node.getChildren()) {
+                if (child.isOuter()) {
+                    contentStmts.push(...getJsxViewStmt(child))
+                }
+            }
+            return contentStmts;
+        }
+
         const contentStmts = [];
+        const self = this;
         for (const child of node.getPreciseViewChildren()) {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
@@ -2128,7 +2237,7 @@ class ComponentBuilder extends BaseBuilder {
                 if (child.isIncestView()) {
                     contentStmts.push(`{/* ${child.getName()}, incest view */}`);
                 }
-                contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
+                contentStmts.push(...getJsxViewStmt(child))
             }
         }
 
@@ -2163,7 +2272,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.isArray()) {
-            props.key = `###${node.getUniqueIdStmt()}`;
+            props.key = `${node.getUniqueIdStmt()}`;
         }
 
         if (node.isClickView()) {
@@ -2231,56 +2340,51 @@ class ComponentBuilder extends BaseBuilder {
                 className: `${clazzName}`,
                 style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`
             }
-            if (node.isArray())
-                props.key = `###\`\${${node.getUniqueIdStmt()}}Wrap\``;
-
 
             const stmt = [];
             /** 當屬性不是資料結構, 但卻還有view的child node時, 就自動放到 wrap 裡面*/
             if (!node.isCollection() && node.hasViewChildren()) {
                 for (const child of node.getPreciseViewChildren()) {
-                    stmt.push(`{this.${child.getFunctionNameOfRenderViewWithParam()}}`)
+                    stmt.push(...getJsxViewStmt(child))
                 }
             }
 
             origin = this.getJSXStrings({
                 tag: wrapView,
                 props,
-                contents: [...node.getWrapContents(), ...this.getOuterChildJSXStrings(node), ...origin, ...stmt],
+                contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin, ...stmt],
             })
         }
 
         /** type是array就必須的包上一成ListWrap,可以調整物件方向 */
         if (node.isArray()) {
+            const listWrapView = node.getListWrapView();
             const clazzName = node.getClassNameOfLessUsage('listWrap');
             this.storeClassName({node, type: 'listWrap'});
+
             const props = {
                 className: clazzName,
                 style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`
             }
 
+            const itemViewProps = {};
+            itemViewProps['key'] = node.getUniqueIdStmt();
+            itemViewProps[`${node.getName()}`] = `###${node.getName()}`
+            const ArrayItemView = this.getJSXStrings({
+                tag: `${node.getFunctionNameOfRenderItemView()}`,
+                props: itemViewProps,
+            })
+
             return this.getJSXStrings({
-                tag: wrapView,
+                tag: listWrapView,
                 props,
-                contents: [...node.getListWrapContents(), `{${node.getFieldName()}.map( (${node.getName()}) => { return (`,
-                    ...origin,
-                    `)})}`]
+                contents: [...node.getListWrapContents(), `{${node.getFieldName()}.map((${node.getName()}) => `,
+                    ...ArrayItemView, `)}`]
             })
         } else {
             return origin;
         }
 
-    }
-
-    /** 就是把標註為 outer 的 child 放在同一個view的層級 */
-    getOuterChildJSXStrings(node) {
-        const contentStmts = [];
-        for (const child of node.getChildren()) {
-            if (child.isOuter()) {
-                contentStmts.push(`\n{this.${child.getFunctionNameOfRenderViewWithParam()}}\n`)
-            }
-        }
-        return contentStmts;
     }
 
     /** stmt:Array<String> */
@@ -2314,7 +2418,7 @@ class ComponentBuilder extends BaseBuilder {
 
                 generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], [],
                     `const self=this`,
-                        `return  async (type) => {`,
+                    `return  async (type) => {`,
                     `switch (type) {`,
                     `case 'create':`,
                     `await ${parentName}.${node.getFunctionNameOfSubmit()}(self)`,
@@ -2355,16 +2459,36 @@ class ComponentBuilder extends BaseBuilder {
     }
 
     appendRenderViewFunctions(node, generator, isEditPage) {
+        const self = this;
+
         function normalize(...strings) {
             const self = strings;
             _.remove(self, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
             return `return ( ${self.join('')})`;
         }
 
+        function appendFunctionWithFields(node) {
+            generator.appendFunction({
+                    name: node.getFunctionNameOfRenderView(),
+                    arrow: true,
+                    decorator: 'observer',
+                }, [`{${node.getParamOfRenderView()}}`], [], [],
+                ...getContentStmt(node)
+            )
+        }
+
+        function getContentStmt(node) {
+            return [
+                'const classes = this.props.classes',
+                'const self = this',
+                ...node.getSelfVariableStmts(),
+                normalize(...self.getJSXStringsByNode(generator, node))];
+        }
+
         if (!this.hasRootRenderViewFunction) {
             generator.appendFunction('renderView', [], [], [],
-                `const ${node.getName()} = this.getStore();\n\n`,
-                normalize(...this.getJSXStringsByNode(generator, node)));
+                `const ${node.getName()} = this.getStore()`,
+                ...getContentStmt(node));
             this.hasRootRenderViewFunction = true;
         }
 
@@ -2374,22 +2498,25 @@ class ComponentBuilder extends BaseBuilder {
 
         const existedFunctions = {};
         for (const child of node.getPreciseViewChildren()) {
-
-            /** 產生出在component裡面的store getter */
+            /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
             if (child.isAttribute()) {
                 generator.appendFunction(child.getFunctionNameUsingInComponentGetter(),
                     [`${child.getPreciseAttributeParentName()}`], [], [],
                     `return ${child.getPreciseAttributeParentName()}.${child.getFunctionNameInStoreGetter()}()`);
             }
 
+
             const functionName = child.getFunctionNameOfRenderView();
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
             if (existedFunctions[functionName]) continue;
-            generator.appendFunction(functionName, [`${child.getParamOfRenderView()}`], [], [],
-                'const classes = this.props.classes',
-                'const self = this',
-                ...child.getSelfVariableStmts(),
-                normalize(...this.getJSXStringsByNode(generator, child)));
+
+            if (child.isArray()) {
+                /** 讓Array先產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
+                const clone = _.clone(child);
+                clone.type = 'arrayItem';
+                appendFunctionWithFields(clone);
+            }
+            appendFunctionWithFields(child);
             if (child.hasViewChildren()) {
                 this.appendRenderViewFunctions(child, generator, isEditPage);
             }
@@ -3047,8 +3174,22 @@ class ProjectFileHandler {
 
     async forWeb() {
         const source = this.nodeOfAncestor;
-        const totalClassNames = [];
-        const totalEvents = [];
+        const structs = source.getComponents().map(component => component.getStruct());
+
+        function enrichNodes(...nodes) {
+            for (const node of nodes) {
+                if (node.ref) {
+                    const targetName = node.ref;
+                    const _nodes = CodegenNode.finds(structs, (_node) => _.isEqual(targetName, _node.getName()))
+                    /** 目前先抓第一個當目標*/
+                    if (_.isEmpty(_nodes)) {
+                        throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
+                    }
+                    node.ref = _nodes[0];
+                }
+                enrichNodes(...node.getChildren());
+            }
+        }
 
         function toEditorPageMode(node) {
             if (node.isColumnAttribute() && !node.isCollection()) {
@@ -3075,7 +3216,6 @@ class ProjectFileHandler {
                         })
                     }
                 }
-
             }
 
             if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) {
@@ -3104,27 +3244,32 @@ class ProjectFileHandler {
             }
         }
 
-
-        /** 先把edit component 做好放到components */
-        const editorComponents = [];
-        for (let component of source.components) {
-            if (component.needEditPage()) {
+        function getEditorComponents() {
+            /** 先把edit component 做好放到components */
+            const editorComponents = [];
+            for (let component of source.components) {
                 if (component.needEditPage()) {
-                    const editorComponent = _.cloneDeep(component);
-                    editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
-                    editorComponent.setEvents([]);
-                    editorComponent.setIsEditPage(true)
-                    editorComponent.setPath(editorComponent.getPath() + `editor`);
-                    editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
-                    editorComponent.getStruct().setNameModified(true);
-                    editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
-                    toEditorPageMode(editorComponent.getStruct());
-                    editorComponents.push(editorComponent);
+                    if (component.needEditPage()) {
+                        const editorComponent = _.cloneDeep(component);
+                        editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
+                        editorComponent.setEvents([]);
+                        editorComponent.setIsEditPage(true)
+                        editorComponent.setPath(editorComponent.getPath() + `editor`);
+                        editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
+                        editorComponent.getStruct().setNameModified(true);
+                        editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
+                        toEditorPageMode(editorComponent.getStruct());
+                        editorComponents.push(editorComponent);
+                    }
                 }
             }
+            return editorComponents;
         }
 
-        source.components.push(...editorComponents);
+        const totalClassNames = [];
+        const totalEvents = [];
+        source.components.push(...getEditorComponents());
+        enrichNodes(...structs)
         for (let component of source.components) {
             if (FAST_DEVELOP_MODE && !_.startsWith(component.getName(), TARGET_COMPONENT))
                 continue;
@@ -3136,6 +3281,7 @@ class ProjectFileHandler {
             if (!component.isEditPage() && component.getStruct().isAttribute())
                 await new StoreBuilder(this.genRootPath).buildBaseStore(component.getStruct());
         }
+
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
 
