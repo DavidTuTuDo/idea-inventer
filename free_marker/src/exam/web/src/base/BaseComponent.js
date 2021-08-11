@@ -67,6 +67,10 @@ class BaseComponent extends React.Component {
         return false;
     }
 
+    gotoExternalUrl = (url='') => {
+        window.location.replace(url)
+    }
+
     renderViewByStatus() {
         switch (this.getStore().state) {
             case "stable":

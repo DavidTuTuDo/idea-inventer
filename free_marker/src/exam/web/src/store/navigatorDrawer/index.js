@@ -5,21 +5,15 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BasePurchasePurchasePlanStore from "./BasePurchasePurchasePlanStore";
+import BaseNavigatorDrawerStore from "./BaseNavigatorDrawerStore";
 
-class PurchasePurchasePlanStore extends BasePurchasePurchasePlanStore {
+class NavigatorDrawerStore extends BaseNavigatorDrawerStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  isTitle(){
-    console.log(`pid===> `,this.getPid())
-    return _.isEqual(this.getPid(),-1);
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default PurchasePurchasePlanStore;
+export default NavigatorDrawerStore;

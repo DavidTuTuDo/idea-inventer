@@ -25,8 +25,6 @@ class PurchaseComponent extends BasePurchaseComponent {
         super(props);
     }
 
-    getBannerImageSrc() {
-    }
 
     getPurchasePlanPrice(plan) {
         const origin = super.getPurchasePlanPrice(plan);
@@ -54,7 +52,7 @@ class PurchaseComponent extends BasePurchaseComponent {
         const listenerId = Util.getRandomHash(25);
         new PurchaseOrder().submitPurchaseOrderItem({
             price: plan.price,
-            productInfos: [{pid: plan.getId(), quantity: 1}],
+            productInfos: [{pid: plan.getPid(), quantity: 1}],
             listenerId,
             uid,
         }).then((result) => {

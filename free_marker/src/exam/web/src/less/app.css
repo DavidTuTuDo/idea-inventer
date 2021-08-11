@@ -37,10 +37,22 @@
 .NavigatorAppBarToolBarLoginButton {
   /** style */
 }
-.NavigatorExtraDrawer {
+.NavigatorDrawerDrawer {
   /** style */
 }
-.NavigatorExtraContentDiv {
+.NavigatorDrawerShortcutListItem {
+  /** style */
+}
+.NavigatorDrawerShortcutListItem {
+  /** style */
+}
+.ListWrapNavigatorDrawerShortcutList {
+  /** style */
+}
+.NavigatorDrawerShortcutTitleTypography {
+  /** style */
+}
+.NavigatorDrawerShortcutIconImg {
   /** style */
 }
 /** following for main  component used  */
@@ -71,10 +83,22 @@
   /** style */
 }
 .ExamQuestionCard,
+.ExamEditorQuestionCard,
 .ExamEditorQuestionCard {
   /** style */
 }
 .WrapExamQuestionDiv,
+.WrapExamEditorQuestionDiv,
+.WrapExamEditorQuestionDiv {
+  /** style */
+}
+.ExamQuestionCard,
+.ExamEditorQuestionCard,
+.ExamEditorQuestionCard {
+  /** style */
+}
+.WrapExamQuestionDiv,
+.WrapExamEditorQuestionDiv,
 .WrapExamEditorQuestionDiv {
   /** style */
 }
@@ -104,6 +128,12 @@
   /** style */
 }
 .ExamQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv {
+  /** style */
+}
+.ExamQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv,
 .ExamEditorQuestionTopicImageDiv {
   /** style */
 }
@@ -116,6 +146,12 @@
   /** style */
 }
 .ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv {
+  /** style */
+}
+.ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv,
 .ExamEditorQuestionChoiceDiv {
   /** style */
 }
@@ -159,6 +195,9 @@
 .PurchasePurchasePlanDiv {
   /** style */
 }
+.PurchasePurchasePlanDiv {
+  /** style */
+}
 .ListWrapPurchasePurchasePlanDiv {
   /** style */
 }
@@ -196,10 +235,13 @@
 .WrapExamEditorQuestionDiv {
   /** style */
 }
-.ListWrapExamEditorQuestionDiv {
+.ExamEditorQuestionCard {
   /** style */
 }
-.ExamEditorQuestionIdTextField {
+.WrapExamEditorQuestionDiv {
+  /** style */
+}
+.ListWrapExamEditorQuestionDiv {
   /** style */
 }
 .ExamEditorQuestionAlertOuterDiv {
@@ -220,10 +262,22 @@
 .WrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
+.ExamEditorQuestionTopicImageDiv {
+  /** style */
+}
+.WrapExamEditorQuestionTopicImageDiv {
+  /** style */
+}
 .ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamEditorQuestionTopicImageUrlImg {
+  /** style */
+}
+.ExamEditorQuestionChoiceDiv {
+  /** style */
+}
+.WrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {

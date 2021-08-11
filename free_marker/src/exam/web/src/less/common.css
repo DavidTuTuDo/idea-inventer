@@ -55,10 +55,22 @@
 .NavigatorAppBarToolBarLoginButton {
   /** style */
 }
-.NavigatorExtraDrawer {
+.NavigatorDrawerDrawer {
   /** style */
 }
-.NavigatorExtraContentDiv {
+.NavigatorDrawerShortcutListItem {
+  /** style */
+}
+.NavigatorDrawerShortcutListItem {
+  /** style */
+}
+.ListWrapNavigatorDrawerShortcutList {
+  /** style */
+}
+.NavigatorDrawerShortcutTitleTypography {
+  /** style */
+}
+.NavigatorDrawerShortcutIconImg {
   /** style */
 }
 /** following for main  component used  */
@@ -90,6 +102,7 @@
   margin: 3px;
 }
 .ExamQuestionCard,
+.ExamEditorQuestionCard,
 .ExamEditorQuestionCard {
   /** style */
   margin-left: 1vw;
@@ -98,9 +111,20 @@
   padding: 1vw;
 }
 .WrapExamQuestionDiv,
+.WrapExamEditorQuestionDiv,
 .WrapExamEditorQuestionDiv {
   /** style */
   position: relative;
+}
+.ExamQuestionCard,
+.ExamEditorQuestionCard,
+.ExamEditorQuestionCard {
+  /** style */
+}
+.WrapExamQuestionDiv,
+.WrapExamEditorQuestionDiv,
+.WrapExamEditorQuestionDiv {
+  /** style */
 }
 .ListWrapExamQuestionDiv,
 .ListWrapExamEditorQuestionDiv {
@@ -144,6 +168,12 @@
   /** style */
 }
 .ExamQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv {
+  /** style */
+}
+.ExamQuestionTopicImageDiv,
+.ExamEditorQuestionTopicImageDiv,
 .ExamEditorQuestionTopicImageDiv {
   /** style */
 }
@@ -162,10 +192,16 @@
   margin: 3px;
 }
 .ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv,
 .ExamEditorQuestionChoiceDiv {
   /** style */
   margin-top: 2vh;
   margin-bottom: 2vh;
+}
+.ExamQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv,
+.ExamEditorQuestionChoiceDiv {
+  /** style */
 }
 .ListWrapExamQuestionChoiceDiv,
 .ListWrapExamEditorQuestionChoiceDiv {
@@ -220,6 +256,9 @@
   display: flex;
   width: 90vw;
   flex-direction: column;
+}
+.PurchasePurchasePlanDiv {
+  /** style */
 }
 .ListWrapPurchasePurchasePlanDiv {
   /** style */
@@ -278,10 +317,13 @@
 .WrapExamEditorQuestionDiv {
   /** style */
 }
-.ListWrapExamEditorQuestionDiv {
+.ExamEditorQuestionCard {
   /** style */
 }
-.ExamEditorQuestionIdTextField {
+.WrapExamEditorQuestionDiv {
+  /** style */
+}
+.ListWrapExamEditorQuestionDiv {
   /** style */
 }
 .ExamEditorQuestionAlertOuterDiv {
@@ -302,10 +344,22 @@
 .WrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
+.ExamEditorQuestionTopicImageDiv {
+  /** style */
+}
+.WrapExamEditorQuestionTopicImageDiv {
+  /** style */
+}
 .ListWrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamEditorQuestionTopicImageUrlImg {
+  /** style */
+}
+.ExamEditorQuestionChoiceDiv {
+  /** style */
+}
+.WrapExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceDiv {
@@ -336,6 +390,22 @@
   /** style */
 }
 /** ======== following for homeless ========= */
+.BaseShortcutMUIconView {
+  color: white;
+  font-size: 30px;
+}
+.BaseShortcutItemAvatarView {
+  background-color: black;
+}
+.BaseShortcutItemTextView {
+  color: white;
+}
+.BaseShortcutItemIconView {
+  color: white;
+}
+.BaseShortcutNestedListView {
+  padding-left: 20px;
+}
 .BaseComponentErrorViewPaper {
   display: flex;
   width: 70%;
@@ -351,7 +421,6 @@
   height: 95vh;
 }
 .BaseEditorTextField,
-.ExamEditorQuestionIdTextField,
 .ExamEditorQuestionTopicNameTextField,
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,

@@ -18,4 +18,5 @@ a.bc = {fuc:4,dac:3};
 console.log(`a===> `, a);
 console.log(`b===> `, b);
 
+console.log('empty:?????>>> ',`${_.isEmpty('2')}`);
 

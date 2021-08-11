@@ -19,11 +19,49 @@ import moment from 'moment';
     async function beforeStartService(efficient) {
         await api.deletePurchasePlans();
         await api.deleteQuestions();
+        await api.deleteShortcuts();
+        await api.submitShortcuts(
+            {
+                title: '我的數據',
+                icon: 'path:ListAlt',
+                route: `path:https://material-ui.com/components/material-icons/`
+            }
+            , {
+                title: '我的最愛',
+                icon: 'muIcon:FavoriteBorder',
+                subs: [
+                    {
+                        title: '數學',
+                        icon: 'path:https://is4-ssl.mzstatic.com/image/thumb/Purple114/v4/f6/17/2f/f6172f86-4b1e-529a-b01b-da9b32ea809f/source/256x256bb.jpg',
+                        route: 'path:https://www.google.com/'
+                    },
+                    {
+                        title: '英文',
+                        icon: 'muIcon:Explicit',
+                        route: `route:main`,
 
+                    },
+                    {
+                        title: '國文',
+                        icon: 'muIcon:Memory',
+                        route: `route:purchase`
+                    }
+                ]
+            },
+            {
+                title: '發燒',
+                icon: 'muIcon:Whatshot',
+                route: `route:exam:31232:tedsld`
+            },
+            {
+                title: '最常錯誤',
+                icon: 'path:https://assets.mydogsname.com/images/categories/003-dog.png'
+            }
+        )
         await api.submitPurchasePlans(
-            {id: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
-            {id: 1002, name: '2個月', price: 110, priceTip: '平均一個月55元', fullName: '選擇王-2個月禮包', duration: '62d'},
-            {id: 1003, name: '3個月', price: 150, priceTip: '平均一個月50元', fullName: '選擇王-3個月禮包', duration: '63d'})
+            {pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
+            {pid: 1002, name: '2個月', price: 110, priceTip: '平均一個月55元', fullName: '選擇王-2個月禮包', duration: '62d'},
+            {pid: 1003, name: '3個月', price: 150, priceTip: '平均一個月50元', fullName: '選擇王-3個月禮包', duration: '63d'})
 
 
         let questions = qs.map((q) => {
@@ -39,7 +77,7 @@ import moment from 'moment';
             return q;
         })
         if (efficient) {
-            questions = _.sampleSize(questions, 10)
+            questions = _.sampleSize(questions, 30)
         }
         await api.submitQuestions(...questions);
     }

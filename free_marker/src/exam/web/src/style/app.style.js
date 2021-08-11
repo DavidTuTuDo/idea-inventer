@@ -29,9 +29,17 @@ class AppStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
+  WrapExamEditorQuestionChoiceDiv = {};
+
+  ExamEditorQuestionChoiceDiv = {};
+
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ListWrapExamEditorQuestionTopicImageDiv = {};
+
+  WrapExamEditorQuestionTopicImageDiv = {};
+
+  ExamEditorQuestionTopicImageDiv = {};
 
   WrapExamEditorQuestionTopicImageDiv = {};
 
@@ -45,9 +53,11 @@ class AppStyle {
 
   ExamEditorQuestionAlertOuterDiv = {};
 
-  ExamEditorQuestionIdTextField = {};
-
   ListWrapExamEditorQuestionDiv = {};
+
+  WrapExamEditorQuestionDiv = {};
+
+  ExamEditorQuestionCard = {};
 
   WrapExamEditorQuestionDiv = {};
 
@@ -74,6 +84,8 @@ class AppStyle {
   PurchasePurchasePlanNameTypography = {};
 
   ListWrapPurchasePurchasePlanDiv = {};
+
+  PurchasePurchasePlanDiv = {};
 
   PurchasePurchasePlanDiv = {};
 
@@ -105,9 +117,13 @@ class AppStyle {
 
   ExamQuestionChoiceDiv = {};
 
+  ExamQuestionChoiceDiv = {};
+
   ExamQuestionTopicImageUrlImg = {};
 
   ListWrapExamQuestionTopicImageDiv = {};
+
+  ExamQuestionTopicImageDiv = {};
 
   ExamQuestionTopicImageDiv = {};
 
@@ -124,6 +140,10 @@ class AppStyle {
   ExamQuestionAlertOuterDiv = {};
 
   ListWrapExamQuestionDiv = {};
+
+  WrapExamQuestionDiv = {};
+
+  ExamQuestionCard = {};
 
   WrapExamQuestionDiv = {};
 
@@ -149,9 +169,17 @@ class AppStyle {
 
   /** => following for navigator  component  */
 
-  NavigatorExtraContentDiv = {};
+  NavigatorDrawerShortcutIconImg = {};
 
-  NavigatorExtraDrawer = {};
+  NavigatorDrawerShortcutTitleTypography = {};
+
+  ListWrapNavigatorDrawerShortcutList = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerDrawer = {};
 
   NavigatorAppBarToolBarLoginButton = {};
 

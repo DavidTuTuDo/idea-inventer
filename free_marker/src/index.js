@@ -3,8 +3,6 @@ import _ from 'lodash';
 import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
-import {get} from "mobx";
-
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -16,8 +14,8 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
@@ -26,7 +24,7 @@ const CURRENT_PLATFORM = 'web';
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
-const TARGET_COMPONENT = 'exam';
+const TARGET_COMPONENT = 'navigator';
 
 
 const SignOfInValidNode = 'SignOfInValidNode';
@@ -97,7 +95,7 @@ class CodegenNode {
     host;
     /** 網域名稱啦 */
 
-    disableFetch;
+    disableInitFetch;
     /** 有些store的field不需要在new的時候就fetch, 就設定為true*/
 
     events;
@@ -333,6 +331,10 @@ class CodegenNode {
         return !!this.nameModified;
     }
 
+    getFunctionNameOfFetch() {
+        return Util.camel(`fetch`, this.getFieldName())
+    }
+
     getFunctionNameOfFetchItem() {
         return Util.camel(`fetch`, this.getName(), 'item')
     }
@@ -383,7 +385,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableFetch', 'permission', 'alertDialog', 'wrapContents', 'listWrapContents', 'contents', 'style',
+        return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog', 'wrapContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'props', 'admin', 'server', 'params', 'host']
     }
 
@@ -429,7 +431,7 @@ class CodegenNode {
     }
 
     isDisableFetch() {
-        return this.disableFetch ? this.disableFetch : false;
+        return this.disableInitFetch ? this.disableInitFetch : false;
     }
 
     getExtraPackage() {
@@ -1065,10 +1067,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfSetter() {
-        if (this.isArray()) {
-            return Util.camel('push', this.getFieldName());
-        }
-        return Util.camel('set', this.getName());
+        return Util.camel('set', this.getFieldName());
     }
 
     getFunctionNameOfModifiedSetter() {
@@ -1630,9 +1629,12 @@ class StoreBuilder extends BaseBuilder {
                         hasPath: child.hasPath(),
                         type: child.type,
                         defaultValue,
-                        fieldClass: child.getClassName(),
-                    }));
-            propStmt.push(`if(obj && obj.${fieldName})`);
+                            fieldClass: child.getClassName(),
+                        }));
+            if (child.isNumber())
+                propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
+            else
+                propStmt.push(`if(obj && !_.isEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
 
             if (child.isArray()) {
@@ -1683,14 +1685,15 @@ class StoreBuilder extends BaseBuilder {
         if (node.isObject()) {
             const contents = [
                 `{`,
-                node.hasPath() ? `...(await this.${Util.camel(`fetch`, node.getFieldName())}(view)),` : `...{},`,
-                ..._.map(node.getChildren(), (child) => {
-                    return child.hasPath() && !child.isDisableFetch() ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(view),` : '';
+                node.hasPath() ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
+                ..._.map(node.getPreciseAttributeChildren(), (child) => {
+                    return (child.isCollection() && !child.isDisableFetch()) ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(view),` : '';
                 }),
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
-                ...this.getDecorateFetchStrings(node.isState(), node.isObject(), ...contents)
+                `Util.appendInfo(' ${node.getName()} ',' ===> fetch 被執行 ')`,
+                ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
         } else if (node.isArray()) {
             if (node.hasPath()) {
@@ -1748,25 +1751,17 @@ class StoreBuilder extends BaseBuilder {
         await baseGenerator.persist();
     }
 
-    getDecorateFetchStrings(isState = true, isObject = false, ...contents) {
+    getDecorateFetchStrings(isObject = false, ...contents) {
         let normalize = contents;
         if (isObject) {
             normalize = [
-                `this.fromJson(`, ...normalize, ')',
-            ]
-        }
-        if (isState) {
-            normalize = [
-                `try {`,
-                ...normalize,
-                `} catch (error) {`,
-                `this.setErrorMsg(error.message);`,
-                `}`,
+                `const result = `, ...normalize,
+                `this.fromJson(result)`
             ]
         }
         normalize = [
             ...normalize,
-            'return this.rawData()',
+            'return result',
         ]
         return normalize
     }
@@ -1838,7 +1833,6 @@ class RemoteFunctionHandler {
             }
 
             function generateApiFunction(name, params = [], logicStmts = [], type) {
-
                 const defaultParam = node.getParamsOfPath(self.platform);
                 const preStmts = [
                     `const self = this`,
@@ -1871,7 +1865,6 @@ class RemoteFunctionHandler {
                 if (!child.isColumnAttribute()) continue;
                 contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType()};\/\/${child.getType()}`);
                 children.push(child.getFieldName());
-                if (recursively && child.hasChildren()) this.buildFetchSubmitApi(child);
             }
 
             contents.push(`const _updateTime = this._firebase().getServerTimeSymbol()`);
@@ -1887,7 +1880,7 @@ class RemoteFunctionHandler {
                 )
 
                 if (node.isArray()) {
-                    generateApiFunction(Util.camel(`fetch`, node.getFieldName()),
+                    generateApiFunction(node.getFunctionNameOfFetch(),
                         ['condition = (stmt) => stmt'],
                         [`return await self.fetchItems(path, condition)`], `fetch items`);
 
@@ -1941,7 +1934,7 @@ class RemoteFunctionHandler {
                             `return await self.submitObject(path, commitment,'${node.getName()}')`], `submit object`)
 
                     generateApiFunction(
-                        Util.camel('fetch', node.getFieldName()),
+                        node.getFunctionNameOfFetch(),
                         [],
                         [`return await self.fetchObject(path,'${node.getName()}')`], `fetch object`)
 
@@ -1958,6 +1951,12 @@ class RemoteFunctionHandler {
                 } else {
                     throw new ERROR(8015, node.getType());
                 }
+            }
+        }
+
+        if (recursively) {
+            for (const child of node.getChildren()) {
+                this.buildFetchSubmitApi(child, recursively);
             }
         }
     }
@@ -2455,7 +2454,6 @@ class ComponentBuilder extends BaseBuilder {
                     `}`,
                 )
             }
-
         }
     }
 
@@ -2897,6 +2895,7 @@ class ProjectFileHandler {
     projectPlatformSourcePath; // exam/web/src
     projectCommonSourcePath; // exam/common/src
     nodeOfAncestor; //source.js
+    structs;
 
     platform; // web, admin, app
 
@@ -2907,6 +2906,7 @@ class ProjectFileHandler {
         this.genSourcePath = libpath.join(this.genRootPath, 'src');
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
         this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
+        this.strcuts = this.nodeOfAncestor.components.map(component => component.struct);
         this.platform = platform;
         /** 這就是 source.js 的進入點 */
 
@@ -3163,6 +3163,7 @@ class ProjectFileHandler {
         });
         listenerGenerator.needIndexFile('AdminListenerApi');
 
+        this.enrichNodes(...this.nodeOfAncestor.getComponents().map(component => component.struct))
         for (const component of this.nodeOfAncestor.getComponents()) {
             new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
             new RemoteFunctionHandler(listenerGenerator, this.platform).buildListenerFunction(component.getStruct(), true)
@@ -3173,25 +3174,39 @@ class ProjectFileHandler {
         await this.generateFireStoreRules();
     }
 
+    enrichNodes(...nodes) {
+        for (const node of nodes) {
+            if (node.isArray() && node.hasPath()) {
+                const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
+                if (!Util.has(children, 'id')) {
+                    node.appendChildrenWithJson({
+                        name: 'id',
+                        type: 'string',
+                        column: true,
+                        description: '我是uid,不能被更改',
+                        readOnly: true,
+
+                    })
+                }
+            }
+
+            if (node.ref) {
+                const targetName = node.ref;
+                const _nodes = CodegenNode.finds(this.strcuts, (_node) => _.isEqual(targetName, _node.getName()))
+                /** 目前先抓第一個當目標*/
+                if (_.isEmpty(_nodes)) {
+                    throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
+                }
+                node.ref = _nodes[0];
+                node.type = node.ref.type;
+            }
+            this.enrichNodes(...node.getChildren());
+        }
+    }
+
     async forWeb() {
         const source = this.nodeOfAncestor;
         const structs = source.getComponents().map(component => component.getStruct());
-
-        function enrichNodes(...nodes) {
-            for (const node of nodes) {
-                if (node.ref) {
-                    const targetName = node.ref;
-                    const _nodes = CodegenNode.finds(structs, (_node) => _.isEqual(targetName, _node.getName()))
-                    /** 目前先抓第一個當目標*/
-                    if (_.isEmpty(_nodes)) {
-                        throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
-                    }
-                    node.ref = _nodes[0];
-                    node.type = node.ref.type;
-                }
-                enrichNodes(...node.getChildren());
-            }
-        }
 
         function toEditorPageMode(node) {
             if (node.isColumnAttribute() && !node.isCollection()) {
@@ -3271,7 +3286,7 @@ class ProjectFileHandler {
         const totalClassNames = [];
         const totalEvents = [];
         source.components.push(...getEditorComponents());
-        enrichNodes(...structs)
+        this.enrichNodes(...structs)
         for (let component of source.components) {
             if (FAST_DEVELOP_MODE && !_.startsWith(component.getName(), TARGET_COMPONENT))
                 continue;

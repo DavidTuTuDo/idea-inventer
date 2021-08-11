@@ -11,11 +11,28 @@ import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
 import {withStyles} from '@material-ui/core/styles';
 import UserInfo from '../../userInfo';
+import Style from "../../style";
+import React from "react";
+import {
+    List,
+    ListItemText,
+    IconButton,
+    ListItemIcon,
+    ListItem,
+    ListSubheader,
+    ListItemAvatar,
+    Avatar
+} from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import * as MUIcon from '@material-ui/icons';
+import _ from 'lodash';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 
 const useStyles = theme => ({
     paper: {
         marginTop: "50px",
-        backgroundColor: '#ff000000'
+        width: '40%',
+        backgroundColor: '#000000'
     }
 });
 
@@ -32,6 +49,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
     componentDidMount() {
         super.componentDidMount();
         this.getStore().forceToStable();
+
     }
 
     onAuthStateChangedReceive = (user) => {
@@ -61,19 +79,166 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     onDrawerClosed() {
-        this.getStore().setDrawerOpenStatus(false);
+        this.setDrawerOpenState(false);
+    }
+
+    setDrawerOpenState(open = false) {
+        this.getStore().setDrawerOpenStatus(open);
     }
 
     onMenuIconButtonClicked(param) {
-        this.getStore().setDrawerOpenStatus(true);
+        this.setDrawerOpenState(true)
     }
 
     getDrawerOpenStatus() {
         return this.getStore().getDrawerOpenStatus();
     }
 
+    DrawerShortcutView = observer(({shortcut}) => {
+        const classes = this.props.classes;
+        const self = this;
+        const DrawerShortcutCollapseView = self.DrawerShortcutCollapseView;
+        const ListItemTailIconView = self.ListItemTailIconView;
+        const ListItemIconView = self.ListItemIconView;
+        return (
+            <React.Fragment>
+                <ListItem
+                    className={'BaseShortcutItemView'}
+                    button={true}
+                    onClick={() => self.handleShortcutClicked(shortcut)}>
+                    <ListItemIconView img={shortcut.icon}/>
+                    <ListItemText
+                        className={'BaseShortcutItemTextView'}
+                        primary={shortcut.getTitle()}/>
+                    <ListItemTailIconView shortcut={shortcut}/>
+                </ListItem>
+
+                <DrawerShortcutCollapseView shortcut={shortcut}/>
+            </React.Fragment>
+        );
+    });
+
+    ListItemIconView = observer(({img = ''}) => {
+        const self = this;
+        const words = img.split(':');
+        const type = _.head(words).trim();
+        const MUIconView = self.MUIconView;
+        let content = null;
+        switch (type) {
+            case'path':
+                const iconPath = _.last(words);
+                content = <Avatar
+                    className={'BaseShortcutItemAvatarView'}
+                    src={iconPath}/>
+                break;
+            case 'muIcon':
+                const muIcon = _.last(words);
+                content = <Avatar className={'BaseShortcutItemAvatarView'}> <MUIconView name={muIcon}/> </Avatar>
+                break;
+            default:
+                content = <Avatar className={'BaseShortcutItemAvatarView'}> <MUIconView/> </Avatar>
+                break;
+        }
+        return (<ListItemIcon
+            className={'BaseShortcutItemIconView'}>
+            {content} </ListItemIcon>)
+    })
+
+    MUIconView = observer(({name}) => {
+            const CustomView = MUIcon[name];
+            if (CustomView !== undefined)
+                return <CustomView className={'BaseShortcutMUIconView'}/>
+            else {
+                const Random = _.sample(MUIcon);
+                return <Random className={'BaseShortcutMUIconView'}/>
+            }
+        }
+    )
+
+    DrawerShortcutCollapseView = observer(({shortcut}) => {
+        const classes = this.props.classes;
+        const self = this;
+        const DrawerShortcutView = self.DrawerShortcutView;
+        const subs = shortcut.getSubs();
+        if (!shortcut.hasSubItems()) return null;
+        return (
+            <Collapse
+                className={'BaseShortcutCollapseView'}
+                in={shortcut.isSubOpen()} timeout="auto" unmountOnExit>
+                <List
+                    className={'BaseShortcutNestedListView'}
+                    component="div" disablePadding>
+                    {subs.map(shortcut => <DrawerShortcutView
+                        key={`key${_.indexOf(subs, shortcut)}`}
+                        shortcut={shortcut}/>)}
+                </List>
+            </Collapse>
+
+        );
+    });
+
+    ListItemTailIconView = observer(({shortcut}) => {
+        const self = this;
+        const MUIconView = self.MUIconView;
+        if (!shortcut.hasSubItems()) return null;
+        return (
+            <ListItemSecondaryAction>
+                <IconButton
+                    className={'BaseShortcutItemIconView'}
+                    edge="end" aria-label="delete">
+                    {shortcut.isSubOpen() ? <MUIconView name={`ExpandLess`}/> : <MUIconView name={'ExpandMore'}/>}
+                </IconButton>
+            </ListItemSecondaryAction>)
+    })
+
+    handleShortcutClicked = (shortcut) =>{
+        if (shortcut.hasSubItems()) {
+            shortcut.setSubOpen(!shortcut.isSubOpen())
+        } else {
+            /** route to page or doing something */
+            this.setDrawerOpenState(false);
+            this.handleShortcutRouter(shortcut.getRoute());
+        }
+    }
+
+    handleShortcutRouter = (routeString = '') => {
+        const words = routeString.split(':')
+        const type = _.head(words);
+        switch (type) {
+            case 'path':
+                const path =_.last(words);
+                this.gotoExternalUrl(path);
+                break;
+            case 'route':
+                const routes = _.tail(words)
+                const page = routes.shift();
+                const functionName = `goto${_.upperFirst(page)}Page`;
+                const functionOfGotoPage = Router[functionName];
+                if(_.isFunction(functionOfGotoPage)) {
+                    this.setSnackViewVisibility(true,functionName)
+                    functionOfGotoPage(this,...routes);
+                } else {
+                    this.setSnackViewVisibility(true,`4097 can't handle ${page}`,{type:'error'})
+                }
+                break;
+            default:
+                if(_.isEmpty(routeString)) {
+                    /** doing nothing */
+                } else {
+                    this.setSnackViewVisibility(true,`can't handle ${routeString}`,{type:'error'})
+                }
+                break;
+        }
+
+    }
+
 
     /** -------------------- async api -------------------- **/
 }
 
-export default withStyles(useStyles)(NavigatorComponent);
+export default withStyles(useStyles)
+
+(
+    NavigatorComponent
+)
+;

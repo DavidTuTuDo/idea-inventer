@@ -33,9 +33,17 @@ class MobileStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
+  WrapExamEditorQuestionChoiceDiv = {};
+
+  ExamEditorQuestionChoiceDiv = {};
+
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ListWrapExamEditorQuestionTopicImageDiv = {};
+
+  WrapExamEditorQuestionTopicImageDiv = {};
+
+  ExamEditorQuestionTopicImageDiv = {};
 
   WrapExamEditorQuestionTopicImageDiv = {};
 
@@ -49,9 +57,11 @@ class MobileStyle {
 
   ExamEditorQuestionAlertOuterDiv = {};
 
-  ExamEditorQuestionIdTextField = {};
-
   ListWrapExamEditorQuestionDiv = {};
+
+  WrapExamEditorQuestionDiv = {};
+
+  ExamEditorQuestionCard = {};
 
   WrapExamEditorQuestionDiv = {};
 
@@ -78,6 +88,8 @@ class MobileStyle {
   PurchasePurchasePlanNameTypography = {};
 
   ListWrapPurchasePurchasePlanDiv = {};
+
+  PurchasePurchasePlanDiv = {};
 
   PurchasePurchasePlanDiv = {};
 
@@ -109,9 +121,13 @@ class MobileStyle {
 
   ExamQuestionChoiceDiv = {};
 
+  ExamQuestionChoiceDiv = {};
+
   ExamQuestionTopicImageUrlImg = {};
 
   ListWrapExamQuestionTopicImageDiv = {};
+
+  ExamQuestionTopicImageDiv = {};
 
   ExamQuestionTopicImageDiv = {};
 
@@ -128,6 +144,10 @@ class MobileStyle {
   ExamQuestionAlertOuterDiv = {};
 
   ListWrapExamQuestionDiv = {};
+
+  WrapExamQuestionDiv = {};
+
+  ExamQuestionCard = {};
 
   WrapExamQuestionDiv = {};
 
@@ -153,9 +173,17 @@ class MobileStyle {
 
   /** => following for navigator  component  */
 
-  NavigatorExtraContentDiv = {};
+  NavigatorDrawerShortcutIconImg = {};
 
-  NavigatorExtraDrawer = {};
+  NavigatorDrawerShortcutTitleTypography = {};
+
+  ListWrapNavigatorDrawerShortcutList = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerDrawer = {};
 
   NavigatorAppBarToolBarLoginButton = {};
 
