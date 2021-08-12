@@ -545,6 +545,17 @@ class Utiller {
     }
 
     /**
+     *  rootName : /free_marker/src/exam/web
+     *  pathName : /free_marker/src/exam/web/src/base/AlertDialog.js
+     *  return: /src/base/AlertDialog.js
+     * */
+    getRelativePath(pathName,rootName) {
+        return _.dropWhile(pathName, (each, index) => {
+            return _.isEqual(each, rootName[index])
+        }).join('');
+    }
+
+    /**
      * mutated;
      const arr = [0,1,2,3,4,5,6,7,8];
      dropItemsByIndex(arr,1,3);

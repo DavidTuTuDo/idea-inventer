@@ -14,8 +14,8 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const CURRENT_PLATFORM = 'admin';
 const CURRENT_PLATFORM = 'web';
@@ -187,8 +187,7 @@ class CodegenNode {
 
     /** 放admin的json file*/
 
-    extraPackages;
-
+    customizes = [];
     /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
 
     constructor(node) {
@@ -434,8 +433,8 @@ class CodegenNode {
         return this.disableInitFetch ? this.disableInitFetch : false;
     }
 
-    getExtraPackage() {
-        return _.isEmpty(this.extraPackages) ? [] : this.extraPackages;
+    getCustomizePackages() {
+        return _.isEmpty(this.customizes) ? [] : this.customizes;
     }
 
     getEventParams() {
@@ -1629,8 +1628,8 @@ class StoreBuilder extends BaseBuilder {
                         hasPath: child.hasPath(),
                         type: child.type,
                         defaultValue,
-                            fieldClass: child.getClassName(),
-                        }));
+                        fieldClass: child.getClassName(),
+                    }));
             if (child.isNumber())
                 propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
             else
@@ -2537,16 +2536,12 @@ class AppBuilder extends ComponentBuilder {
         this.appendDefaultPath('../');
     }
 
-    async buildExtraPackages(currentPlatform, sourceObj) {
-        for (const _package of sourceObj.getExtraPackage()) {
+    async buildCustomizeFiles(packages) {
+        for (const _package of packages) {
             const packageName = _package.getName();
-            const platform = _package.getPlatform();
-            if (!_.isEqual(platform, currentPlatform))
-                continue;
-
-            const indexGenerator = new ClassGenerator(libpath.join(this.genSourcePath, packageName, 'index.js'));
-            indexGenerator.appendClass(_.upperFirst(packageName));
-            await indexGenerator.persist();
+            const generator = new ClassGenerator(libpath.join(this.genRootPath, _package.root, _package.getName(), 'index.js'));
+            generator.appendClass(_.upperFirst(packageName));
+            await generator.persist();
         }
     }
 
@@ -2891,7 +2886,13 @@ class ProjectFileHandler {
     genRootPath; // gen/web
     genSourcePath; // gen/web/src
 
+    freeMarkerRootPath; // ./
+    freeMarkerSourcePath; // ./src
+    freeMarkerSourcePlatformPath; // ./src/admin
+    freeMarkerSourceCommonPath; // ./src/common
+
     projectRootPath; // exam/
+    projectPlatformPath; // exam/web
     projectPlatformSourcePath; // exam/web/src
     projectCommonSourcePath; // exam/common/src
     nodeOfAncestor; //source.js
@@ -2900,7 +2901,18 @@ class ProjectFileHandler {
     platform; // web, admin, app
 
     constructor(props, platform = 'web') {
+        if (!Util.isOrEquals(platform, 'web', 'admin')) {
+            throw new ERROR(8018, `platform ==> ''${platform}''`)
+        }
+
+        this.freeMarkerRootPath = props.freeMarkerRootPath;
+        this.freeMarkerSourcePath = libpath.join(this.freeMarkerRootPath, `src`);
+        this.freeMarkerSourcePlatformPath = libpath.join(this.freeMarkerSourcePath, platform);
+        this.freeMarkerSourceCommonPath = libpath.join(this.freeMarkerSourcePath, `common`);
+
         this.projectRootPath = props.projectRootPath;
+        this.projectPlatformPath = libpath.join(this.projectRootPath, platform); // exam/web/src
+
         this.projectPlatformSourcePath = libpath.join(this.projectRootPath, platform, 'src');
         this.genRootPath = libpath.join(props.genRootPath, platform);
         this.genSourcePath = libpath.join(this.genRootPath, 'src');
@@ -2955,7 +2967,7 @@ class ProjectFileHandler {
     }
 
     buildBaseClasses() {
-        const from = libpath.join(this.projectPlatformSourcePath, 'base');
+        const from = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base');
         const to = libpath.join(this.genSourcePath, 'base');
 
         if (!fs.existsSync(from)) {
@@ -2967,7 +2979,7 @@ class ProjectFileHandler {
         Util.copyFromFolderToDestFolder(from, to);
     }
 
-    persistBaseFiles() {
+    persistBaseFilesToFreeMarker() {
         try {
 
             if (!fs.existsSync(this.genSourcePath)) {
@@ -2983,7 +2995,7 @@ class ProjectFileHandler {
 
                 if (_.startsWith(_.toLower(file.fileName), 'common')) {
                     /** back-up to common*/
-                    const projectCommonSourceBasePath = libpath.join(this.projectCommonSourcePath, 'base');
+                    const projectCommonSourceBasePath = libpath.join(this.freeMarkerSourceCommonPath, 'src', 'base');
                     Util.persistByPath(projectCommonSourceBasePath);
 
                     const existSourceFile = libpath.join(projectCommonSourceBasePath, file.fileNameExtension);
@@ -2998,13 +3010,13 @@ class ProjectFileHandler {
 
                 } else {
                     /** back-up to platform src*/
-                    const projectPlatformSourceBasePath = libpath.join(this.projectPlatformSourcePath, 'base');
+                    const projectPlatformSourceBasePath = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base');
                     Util.persistByPath(projectPlatformSourceBasePath);
                     Util.copySingleFile(file.absolute,
                         libpath.join(projectPlatformSourceBasePath, file.fileNameExtension), undefined, true)
                 }
             }
-            Util.appendInfo(`persist base files succeed`);
+            Util.appendInfo(`persist free-marker base files succeed`);
             return false;
         } catch (error) {
             /** 偷懶 hack */
@@ -3012,14 +3024,14 @@ class ProjectFileHandler {
         }
     }
 
-    persistExtraPackages(sourceObj) {
-        for (const _package of sourceObj.getExtraPackage()) {
-            const packageName = _package.getName();
-            const folderPath = libpath.join(this.genSourcePath, packageName);
-            if (fs.existsSync(folderPath)) {
-                const destFolderPath = libpath.join(this.projectPlatformSourcePath, packageName);
+    persistCustomizePackages() {
+        const packages =this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform,this.platform));
+        for (const folder of packages) {
+            const genExtraFolderPath = libpath.join(this.genRootPath, folder.root, folder.getName());
+            if (fs.existsSync(genExtraFolderPath)) {
+                const destFolderPath = libpath.join(this.projectPlatformPath, folder.root, folder.getName());
                 Util.persistByPath(destFolderPath);
-                Util.copyFromFolderToDestFolder(folderPath, destFolderPath);
+                Util.copyFromFolderToDestFolder(genExtraFolderPath, destFolderPath);
                 Util.appendInfo(`extraPackage ,persist to ${destFolderPath} succeed`);
             }
         }
@@ -3063,12 +3075,12 @@ class ProjectFileHandler {
      *     keyword: image, svg, image.svg
 
      * */
-    overrideEachFilesFromSrcFolder(...excludes) {
-        /** 順序會影響檔案覆蓋的順序 */
-        const fromSourcePath = [this.projectPlatformSourcePath, this.projectCommonSourcePath];
-
-        for (const _path of fromSourcePath) {
-            for (const file of Util.findFilePathBy(_path)) {
+    overrideEachFilesFromFolder(...excludes) {
+        /** 順序會影響檔案的priority */
+        const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath];
+        /** exam/web/ */
+        for (const sourcePath of fromSourcePath) {
+            for (const sourceFile of Util.findFilePathBy(sourcePath)) {
 
                 let ignoreThisRun = false;
                 for (let exclude of excludes) {
@@ -3076,34 +3088,24 @@ class ProjectFileHandler {
                         exclude = {type: 'fileNameExtension', keyword: exclude}
                     }
 
-                    if (_.isEqual(file[exclude.type], exclude.keyword)) {
+                    if (_.isEqual(sourceFile[exclude.type], exclude.keyword)) {
                         ignoreThisRun = true;
                         break;
                     }
 
                 }
                 if (ignoreThisRun) continue;
-                const from = file.absolute;
-                const dest = libpath.join(this.genSourcePath, from.split(`src`).pop());
 
-                if (fs.existsSync(Util.getFileDirPath(dest)))
-                    Util.copySingleFile(from, dest, '', true);
-                else {
-                    Util.appendError(`overrideIndexFiles fail ,dest,${dest};;; || from,${from}`);
+                const from = sourceFile.path;
+                const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, sourcePath));
+
+                const destFolder = Util.getFileDirPath(dest);
+                if (!fs.existsSync(destFolder)) {
+                    Util.appendError(`overrideIndexFiles warning ,dest folder not exist 
+                    destFolder=> ''${destFolder}'' || sourceFileName=>''${from}''`);
                 }
-            }
-        }
-    }
-
-    overrideExtraPackages(sourceObj) {
-        for (const _package of sourceObj.getExtraPackage()) {
-            const packageName = _package.getName();
-            const folderPath = libpath.join(this.projectPlatformSourcePath, packageName);
-            if (fs.existsSync(folderPath)) {
-                const destFolderPath = libpath.join(this.genSourcePath, packageName);
-                Util.persistByPath(destFolderPath);
-                Util.copyFromFolderToDestFolder(folderPath, destFolderPath);
-                Util.appendInfo(`extraPackage ,override to ${destFolderPath} succeed`);
+                Util.persistByPath(Util.getFileDirPath(dest));
+                Util.copySingleFile(from, dest, '', true);
             }
         }
     }
@@ -3314,11 +3316,16 @@ class ProjectFileHandler {
         this.buildDistAssetFolder();
     }
 
+    buildCustomizePackages = async () => {
+        await new AppBuilder(this.genRootPath).buildCustomizeFiles(
+            this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
+    }
+
     async execute() {
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
             this.persistIndexAndLessFiles();
-            this.persistBaseFiles();
-            this.persistExtraPackages(this.nodeOfAncestor)
+            this.persistBaseFilesToFreeMarker();
+            this.persistCustomizePackages()
             this.persistImageFolder();
         }
 
@@ -3334,11 +3341,11 @@ class ProjectFileHandler {
                 throw new ERROR(8014, `type ==> ${this.platform}`)
                 break;
         }
-        await new AppBuilder(this.genRootPath).buildExtraPackages(this.platform, this.nodeOfAncestor);
+        await this.buildCustomizePackages();
+
         this.buildBaseClasses();
         await this.buildConfig(this.nodeOfAncestor);
-        this.overrideExtraPackages(this.nodeOfAncestor)
-        this.overrideEachFilesFromSrcFolder(
+        this.overrideEachFilesFromFolder(
             `common.style.js`
             , `app.style.js`
             , `mobile.style.js`
@@ -3392,23 +3399,29 @@ export {
         `./src/exam`
     );
 
+    const freeMarkerRootPath = libpath.resolve(`./`);
+
     switch (CURRENT_PLATFORM) {
         case 'web':
-            const web = new ProjectFileHandler({genRootPath, projectRootPath}, 'web');
+            const web = new ProjectFileHandler({freeMarkerRootPath, genRootPath, projectRootPath}, 'web');
             await web.execute();
             Util.appendInfo(
                 `web done`
             );
             break;
         case 'admin':
-            const admin = new ProjectFileHandler({genRootPath, projectRootPath}, 'admin');
+            const admin = new ProjectFileHandler({freeMarkerRootPath, genRootPath, projectRootPath}, 'admin');
             await admin.execute();
             Util.appendInfo(
                 `admin done`
             );
         case 'developer':
-            const nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(projectRootPath, `source.js`))).default, undefined);
-            const node = CodegenNode.find(nodeOfAncestor.components[4].struct, (node) => _.isEqual(node.getName(), 'url'));
+            await new ProjectFileHandler({
+                freeMarkerRootPath,
+                genRootPath,
+                projectRootPath
+            }, 'web')
+                .persistBaseFilesToFreeMarker();
             break;
     }
 

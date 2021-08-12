@@ -143,6 +143,9 @@ const ERRORs = {
     8017: {
         message:`className type is not valid!`,
     },
+    8018: {
+        message:`this platform is not supported`,
+    },
     9999: {
         message: `super stupid error`
     },
