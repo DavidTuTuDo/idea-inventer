@@ -1157,7 +1157,7 @@ class ClassGenerator {
 
     /** 為了讓import 不用擔心複數宣告 就用Object,empty 裡面放不需要變數宣告的import 例如 import from Firebase/database, 最後再一次gen*/
     imports = {all: {}, empty: []};
-
+    x
     hasConstructor = false;
     constructorStmt = [];
     hasExtends = false
@@ -1166,8 +1166,6 @@ class ClassGenerator {
     isSingletonFile = false;
     signature = true;
     needDefaultImports = true;
-
-
     needCreatedIndexFile = false;
     indexClassName = 'Index';
     indexFileMacros = [];
@@ -1488,19 +1486,57 @@ class ClassGenerator {
 
 }
 
-class BaseBuilder {
+class PathBase {
 
-    genSourcePath; // gen/web/src
-    /** 例如 component builder 的 genSourcePath => /{genRootPath}/src/component */
     genRootPath; // gen/web
-    /** 很多時候要放在根目錄, 所以就在建構句 把它保留起來 */
+    genSourcePath; // gen/web/src
+    freeMarkerRootPath; // ./template
+    freeMarkerSourcePlatformPath; // ./template/src/admin
+    freeMarkerSourceCommonPath; // ./template/src/common
+    projectRootPath; // exam/
+    projectPlatformPath; // exam/web
+    projectPlatformSourcePath; // exam/web/src
+    projectCommonSourcePath; // exam/common/src
+    nodeOfAncestor; //source.js
+    structs;
+    platform; // web, admin, app
+    genComponentRootPath; // gen/app/src/component
+    genStoreRootPath; // gen/app/src/store
+
+    constructor(props) {
+        if (!Util.isOrEquals(props.platform, 'web', 'admin')) {
+            throw new ERROR(8018, `platform ==> ''${props.platform}''`)
+        }
+        const platform = props.platform;
+        this.platform = platform;
+        this.freeMarkerRootPath = props.freeMarkerRootPath;
+        this.freeMarkerSourcePath = libpath.join(this.freeMarkerRootPath, 'src');
+        this.freeMarkerSourcePlatformPath = libpath.join(this.freeMarkerSourcePath, platform);
+        this.freeMarkerSourceCommonPath = libpath.join(this.freeMarkerSourcePath, `common`);
+
+        this.projectRootPath = props.projectRootPath;
+        this.projectPlatformPath = libpath.join(this.projectRootPath, platform); // exam/web/src
+
+        this.projectPlatformSourcePath = libpath.join(this.projectRootPath, platform, 'src');
+        this.genRootPath = libpath.join(props.genRootPath, platform);
+        this.genSourcePath = libpath.join(this.genRootPath, 'src');
+        this.genComponentRootPath = libpath.join(this.genSourcePath, 'component')
+        this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
+
+        this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
+        this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
+        this.strcuts = this.nodeOfAncestor.components.map(component => component.struct);
+        /** 這就是 source.js 的進入點 */
+    }
+
+}
+
+class BaseBuilder extends PathBase {
+
     classGenerator;
 
-    freeMarkerRootPath
-
-    constructor(defaultPath = './gen') {
-        this.genRootPath = defaultPath;
-        this.genSourcePath = defaultPath;
+    constructor(props) {
+        super(props);
     }
 
     appendMustacheFile(templateFileName, destFileName, param = {}) {
@@ -1511,16 +1547,8 @@ class BaseBuilder {
             true);
     }
 
-    setDefaultPath(path) {
-        this.genSourcePath = path;
-    }
-
-    appendDefaultPath(...path) {
-        this.genSourcePath = libpath.join(this.genSourcePath, ...path);
-    }
-
     getStringFromMustache(templateFileName, variable) {
-        return mustache.render(Util.getFileContextInRaw(libpath.join(TEMPLATE_FOLDER, templateFileName)), this.getMustacheRenderValues(variable));
+        return mustache.render(Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, templateFileName)), this.getMustacheRenderValues(variable));
     }
 
     getMustacheRenderValues = ({
@@ -1576,7 +1604,6 @@ class StoreBuilder extends BaseBuilder {
 
     constructor(props) {
         super(props);
-        this.appendDefaultPath('src', 'store');
     }
 
     getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass, name, hasPath}) {
@@ -1593,7 +1620,7 @@ class StoreBuilder extends BaseBuilder {
     async buildStoreIndexFiles() {
         /** 產生 store再project的index file */
         const stores = this.getGenStores();
-        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genSourcePath, `store.js`)));
+        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genStoreRootPath, `store.js`)));
         baseGenerator.appendClass(`BaseStore`);
         for (const store of stores) {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
@@ -1653,7 +1680,7 @@ class StoreBuilder extends BaseBuilder {
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
         const indexClassName = `${className}Store`;
-        const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
+        const baseGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${baseClassName}.js`));
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendImport('_', 'lodash');
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
@@ -1958,10 +1985,8 @@ class ComponentBuilder extends BaseBuilder {
     componentDidMountStmt = [];
     componentDetachStmt = [];
 
-
     constructor(props) {
         super(props);
-        this.appendDefaultPath('src', 'component');
     }
 
     importComponentDefault(generator) {
@@ -1986,7 +2011,7 @@ class ComponentBuilder extends BaseBuilder {
         const className = `${_.upperFirst(baseComponentName)}Component`;
         const folderName = baseComponentName;
 
-        const baseGenerator = new ClassGenerator(libpath.join(this.genSourcePath, folderName, `${baseClassName}.js`));
+        const baseGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${baseClassName}.js`));
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
         baseGenerator.appendClass(baseClassName,
@@ -2523,7 +2548,6 @@ class AppBuilder extends ComponentBuilder {
     constructor(props) {
         super(props);
         /** 印為繼承component */
-        this.appendDefaultPath('../');
     }
 
     async buildCustomizeFiles(packages) {
@@ -2536,7 +2560,6 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildEventFolder(events) {
-
         const normalize = Util.arrayToObjWith(events, (event) => event.getName())
         const baseEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `event`, `BaseComponentEvent.js`));
         baseEventGenerator.appendImport('EventBus', '../base/CommonEventBus');
@@ -2629,8 +2652,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildRouterFile(sourceObj) {
         const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
-            `router`
-            ,
+            `router`,
             `BaseRouter.js`
         ));
         baseRouterGenerator.appendClass(
@@ -2754,11 +2776,11 @@ class AppBuilder extends ComponentBuilder {
         return stmt;
     }
 
-    async buildStyleFiles(classNameInfos, sourcePath) {
+    async buildStyleFiles(classNameInfos) {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             let origins = {};
-            const sourceFilePath = libpath.join(sourcePath, `style`, `${type}.style.js`)
+            const sourceFilePath = libpath.join(this.projectPlatformSourcePath, `style`, `${type}.style.js`)
             if (fs.existsSync(sourceFilePath)) {
                 const obj = require(libpath.resolve(sourceFilePath)).default;
                 origins = obj;
@@ -2800,12 +2822,12 @@ class AppBuilder extends ComponentBuilder {
     /** {[...{component,names}], srcPath}
      * srcPath 就是 keep file 的根目錄
      * */
-    async buildLessFile(classNameInfos, srcPath) {
+    async buildLessFile(classNameInfos) {
         /** 先把舊的整理過, 除掉 comment的字樣line */
         const sign = `/** style */`;
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
-            const srcLessPath = libpath.join(srcPath, `less`, `${type}.less`)
+            const srcLessPath = libpath.join(this.projectPlatformSourcePath, `less`, `${type}.less`)
             const lessAttributesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
                 const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
@@ -2861,7 +2883,7 @@ class AppBuilder extends ComponentBuilder {
             generator.disableDefaultImports();
             await generator.persist();
 
-            if (!fs.existsSync(libpath.join(srcPath, 'less', 'index.js'))) {
+            if (!fs.existsSync(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'))) {
                 this.appendMustacheFile('less.index.mustache',
                     Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
                 );
@@ -2871,46 +2893,11 @@ class AppBuilder extends ComponentBuilder {
     }
 }
 
-class ProjectFileHandler {
+class ProjectFileHandler extends PathBase {
 
-    genRootPath; // gen/web
-    genSourcePath; // gen/web/src
-
-    freeMarkerRootPath; // ./template
-    freeMarkerSourcePlatformPath; // ./template/src/admin
-    freeMarkerSourceCommonPath; // ./template/src/common
-
-    projectRootPath; // exam/
-    projectPlatformPath; // exam/web
-    projectPlatformSourcePath; // exam/web/src
-    projectCommonSourcePath; // exam/common/src
-    nodeOfAncestor; //source.js
-    structs;
-
-    platform; // web, admin, app
-
-    constructor(props, platform = 'web') {
-        if (!Util.isOrEquals(platform, 'web', 'admin')) {
-            throw new ERROR(8018, `platform ==> ''${platform}''`)
-        }
-
-        this.freeMarkerRootPath = props.freeMarkerRootPath;
-        this.freeMarkerSourcePath = libpath.join(this.freeMarkerRootPath,'src');
-        this.freeMarkerSourcePlatformPath = libpath.join(this.freeMarkerSourcePath, platform);
-        this.freeMarkerSourceCommonPath = libpath.join(this.freeMarkerSourcePath, `common`);
-
-        this.projectRootPath = props.projectRootPath;
-        this.projectPlatformPath = libpath.join(this.projectRootPath, platform); // exam/web/src
-
-        this.projectPlatformSourcePath = libpath.join(this.projectRootPath, platform, 'src');
-        this.genRootPath = libpath.join(props.genRootPath, platform);
-        this.genSourcePath = libpath.join(this.genRootPath, 'src');
-        this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
-        this.strcuts = this.nodeOfAncestor.components.map(component => component.struct);
-        this.platform = platform;
-        /** 這就是 source.js 的進入點 */
-
+    constructor(props) {
+        super(props);
+        this.props = props;
     }
 
     buildDistAssetFolder() {
@@ -3116,7 +3103,7 @@ class ProjectFileHandler {
 
     async generateFireStoreRules() {
         const path = Util.persistByPath(libpath.join(this.genRootPath, 'firestore.rules'))
-        const base = Util.getFileContextInRaw(libpath.join(TEMPLATE_FOLDER, 'template.firestore.rules')).split('\n');
+        const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
         const stmts = [];
         for (const component of this.nodeOfAncestor.getComponents()) {
             this.fetchCollection(component.getStruct(), stmts);
@@ -3127,8 +3114,8 @@ class ProjectFileHandler {
 
     async forAdmin() {
         Util.persistByPath(this.genRootPath);
-        Util.copySingleFile(libpath.join(TEMPLATE_FOLDER, 'admin.package.json'), this.genRootPath, 'package.json', true);
-        Util.copySingleFile(libpath.join(TEMPLATE_FOLDER, 'babel.config.js'), this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'admin.package.json'), this.genRootPath, 'package.json', true);
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'babel.config.js'), this.genRootPath, 'babel.config.js', true);
 
         const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
@@ -3269,30 +3256,30 @@ class ProjectFileHandler {
             if (FAST_DEVELOP_MODE && !_.startsWith(component.getName(), TARGET_COMPONENT))
                 continue;
 
-            const {classNames, events} = await new ComponentBuilder(this.genRootPath).buildBaseComponent(component);
+            const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
             totalClassNames.push({component, classNames});
             totalEvents.push(...events);
 
             if (!component.isEditPage() && component.getStruct().isAttribute())
-                await new StoreBuilder(this.genRootPath).buildBaseStore(component.getStruct());
+                await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
         }
 
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-        await new StoreBuilder(this.genRootPath).buildStoreIndexFiles();
-        await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
-        await new AppBuilder(this.genRootPath).buildRouterFile(source);
-        await new AppBuilder(this.genRootPath).buildCookieFiles(source);
-        await new AppBuilder(this.genRootPath).buildEventFolder(totalEvents);
-        await new AppBuilder(this.genRootPath).buildLessFile(totalClassNames, this.projectPlatformSourcePath);
-        await new AppBuilder(this.genRootPath).buildStyleFiles(totalClassNames, this.projectPlatformSourcePath);
-        await new AppBuilder(this.genRootPath).buildHtmlIndexAssetsFile();
-        await new AppBuilder(this.genRootPath).buildAppIndexFiles(source);
+        await new StoreBuilder(this.props).buildStoreIndexFiles();
+        await new AppBuilder(this.props).buildWebpackNPackageJson(source);
+        await new AppBuilder(this.props).buildRouterFile(source);
+        await new AppBuilder(this.props).buildCookieFiles(source);
+        await new AppBuilder(this.props).buildEventFolder(totalEvents);
+        await new AppBuilder(this.props).buildLessFile(totalClassNames);
+        await new AppBuilder(this.props).buildStyleFiles(totalClassNames);
+        await new AppBuilder(this.props).buildHtmlIndexAssetsFile();
+        await new AppBuilder(this.props).buildAppIndexFiles(source);
         this.buildDistAssetFolder();
     }
 
     buildCustomizePackages = async () => {
-        await new AppBuilder(this.genRootPath).buildCustomizeFiles(
+        await new AppBuilder(this.props).buildCustomizeFiles(
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
 
@@ -3379,16 +3366,17 @@ class BuildApplication {
         }
     }
 
-    getBuildObject = () => {
+    getBuildObject = (platform = 'web') => {
         return {
             freeMarkerRootPath: this.freeMarkerRootPath,
             genRootPath: this.genRootPath,
-            projectRootPath: this.projectRootPath
+            projectRootPath: this.projectRootPath,
+            platform
         }
     }
 
     async buildWeb() {
-        const web = new ProjectFileHandler(this.getBuildObject(), 'web');
+        const web = new ProjectFileHandler(this.getBuildObject('web'));
         await web.execute();
         Util.appendInfo(
             `web done`
@@ -3396,15 +3384,15 @@ class BuildApplication {
     }
 
     async buildAdmin() {
-        const admin = new ProjectFileHandler(this.getBuildObject(), 'admin');
+        const admin = new ProjectFileHandler(this.getBuildObject('admin'));
         await admin.execute();
         Util.appendInfo(
             `admin done`
         );
     }
 
-    async testOverrideFunction(platform = 'web'){
-        const handler = new ProjectFileHandler(this.getBuildObject(), platform);
+    async testOverrideFunction(platform = 'web') {
+        const handler = new ProjectFileHandler(this.getBuildObject(platform));
         handler.overrideEachFilesFromFolder(
             `common.style.js`
             , `app.style.js`
@@ -3438,6 +3426,7 @@ class BuildApplication {
         Util.appendInfo('hello');
     }
 }
+
 // const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
@@ -3454,9 +3443,10 @@ if (configer.DEBUG_MODE) {
             const builder = new BuildApplication({
                 genRootPath: '../gen',
                 projectRootPath: './sample',
-                freeMarkerRootPath : TEMPLATE_FOLDER
+                freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
             await builder.buildWeb();
+            // await builder.buildAdmin();
             // await builder.testPersistent();
 
         }
