@@ -12,6 +12,7 @@ class gener_util {
 
 }
 Util.generatePackage('../utiller').then();
+Util.generatePackage('../free_marker').then();
 
 export { gener_util as gener_util }
 

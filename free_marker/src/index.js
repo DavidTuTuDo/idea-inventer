@@ -3,6 +3,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
+import {configer} from "configer";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -13,20 +14,6 @@ const SIGN_OF_FIELD_START = `\/** -------------------- fields ------------------
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
-
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-
-// const CURRENT_PLATFORM = 'admin';
-const CURRENT_PLATFORM = 'web';
-// const CURRENT_PLATFORM = 'developer';
-
-// const FAST_DEVELOP_MODE = true;
-const FAST_DEVELOP_MODE = false;
-
-const TARGET_COMPONENT = 'navigator';
-
-
 const SignOfInValidNode = 'SignOfInValidNode';
 
 class CodegenNode {
@@ -188,6 +175,7 @@ class CodegenNode {
     /** 放admin的json file*/
 
     customizes = [];
+
     /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
 
     constructor(node) {
@@ -1508,6 +1496,8 @@ class BaseBuilder {
     /** 很多時候要放在根目錄, 所以就在建構句 把它保留起來 */
     classGenerator;
 
+    freeMarkerRootPath
+
     constructor(defaultPath = './gen') {
         this.genRootPath = defaultPath;
         this.genSourcePath = defaultPath;
@@ -1530,7 +1520,7 @@ class BaseBuilder {
     }
 
     getStringFromMustache(templateFileName, variable) {
-        return mustache.render(Util.getFileContextInRaw(`./template/${templateFileName}`), this.getMustacheRenderValues(variable));
+        return mustache.render(Util.getFileContextInRaw(libpath.join(TEMPLATE_FOLDER, templateFileName)), this.getMustacheRenderValues(variable));
     }
 
     getMustacheRenderValues = ({
@@ -2886,10 +2876,9 @@ class ProjectFileHandler {
     genRootPath; // gen/web
     genSourcePath; // gen/web/src
 
-    freeMarkerRootPath; // ./
-    freeMarkerSourcePath; // ./src
-    freeMarkerSourcePlatformPath; // ./src/admin
-    freeMarkerSourceCommonPath; // ./src/common
+    freeMarkerRootPath; // ./template
+    freeMarkerSourcePlatformPath; // ./template/src/admin
+    freeMarkerSourceCommonPath; // ./template/src/common
 
     projectRootPath; // exam/
     projectPlatformPath; // exam/web
@@ -2906,7 +2895,7 @@ class ProjectFileHandler {
         }
 
         this.freeMarkerRootPath = props.freeMarkerRootPath;
-        this.freeMarkerSourcePath = libpath.join(this.freeMarkerRootPath, `src`);
+        this.freeMarkerSourcePath = libpath.join(this.freeMarkerRootPath,'src');
         this.freeMarkerSourcePlatformPath = libpath.join(this.freeMarkerSourcePath, platform);
         this.freeMarkerSourceCommonPath = libpath.join(this.freeMarkerSourcePath, `common`);
 
@@ -2966,20 +2955,7 @@ class ProjectFileHandler {
         await baseConfigGenerator.persist();
     }
 
-    buildBaseClasses() {
-        const from = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base');
-        const to = libpath.join(this.genSourcePath, 'base');
-
-        if (!fs.existsSync(from)) {
-            Util.appendInfo(`from:${from} is not existed, /src/base ignore this run`);
-            return;
-        }
-
-        Util.persistByPath(to);
-        Util.copyFromFolderToDestFolder(from, to);
-    }
-
-    persistBaseFilesToFreeMarker() {
+    persistBaseFilesToFreeMarkerTemplate() {
         try {
 
             if (!fs.existsSync(this.genSourcePath)) {
@@ -3025,7 +3001,7 @@ class ProjectFileHandler {
     }
 
     persistCustomizePackages() {
-        const packages =this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform,this.platform));
+        const packages = this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform));
         for (const folder of packages) {
             const genExtraFolderPath = libpath.join(this.genRootPath, folder.root, folder.getName());
             if (fs.existsSync(genExtraFolderPath)) {
@@ -3140,7 +3116,7 @@ class ProjectFileHandler {
 
     async generateFireStoreRules() {
         const path = Util.persistByPath(libpath.join(this.genRootPath, 'firestore.rules'))
-        const base = Util.getFileContextInRaw('./template/template.firestore.rules').split('\n');
+        const base = Util.getFileContextInRaw(libpath.join(TEMPLATE_FOLDER, 'template.firestore.rules')).split('\n');
         const stmts = [];
         for (const component of this.nodeOfAncestor.getComponents()) {
             this.fetchCollection(component.getStruct(), stmts);
@@ -3151,8 +3127,8 @@ class ProjectFileHandler {
 
     async forAdmin() {
         Util.persistByPath(this.genRootPath);
-        Util.copySingleFile('./template/admin.package.json', this.genRootPath, 'package.json', true);
-        Util.copySingleFile('./template/babel.config.js', this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(libpath.join(TEMPLATE_FOLDER, 'admin.package.json'), this.genRootPath, 'package.json', true);
+        Util.copySingleFile(libpath.join(TEMPLATE_FOLDER, 'babel.config.js'), this.genRootPath, 'babel.config.js', true);
 
         const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
@@ -3303,7 +3279,6 @@ class ProjectFileHandler {
 
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-
         await new StoreBuilder(this.genRootPath).buildStoreIndexFiles();
         await new AppBuilder(this.genRootPath).buildWebpackNPackageJson(source);
         await new AppBuilder(this.genRootPath).buildRouterFile(source);
@@ -3324,7 +3299,7 @@ class ProjectFileHandler {
     async execute() {
         if (SURE_TO_PERSIST_VERY_IMPORTANT) {
             this.persistIndexAndLessFiles();
-            this.persistBaseFilesToFreeMarker();
+            this.persistBaseFilesToFreeMarkerTemplate();
             this.persistCustomizePackages()
             this.persistImageFolder();
         }
@@ -3342,8 +3317,6 @@ class ProjectFileHandler {
                 break;
         }
         await this.buildCustomizePackages();
-
-        this.buildBaseClasses();
         await this.buildConfig(this.nodeOfAncestor);
         this.overrideEachFilesFromFolder(
             `common.style.js`
@@ -3386,43 +3359,106 @@ class ProjectFileHandler {
     }
 }
 
-export {
-    ClassGenerator as ClassGenerator
-}
 
-(async () => {
-    const genRootPath = libpath.resolve(
-        `./../gen`
-    );
+class BuildApplication {
 
-    const projectRootPath = libpath.resolve(
-        `./src/exam`
-    );
+    genRootPath;
+    projectRootPath;
+    freeMarkerRootPath;
 
-    const freeMarkerRootPath = libpath.resolve(`./`);
-
-    switch (CURRENT_PLATFORM) {
-        case 'web':
-            const web = new ProjectFileHandler({freeMarkerRootPath, genRootPath, projectRootPath}, 'web');
-            await web.execute();
-            Util.appendInfo(
-                `web done`
-            );
-            break;
-        case 'admin':
-            const admin = new ProjectFileHandler({freeMarkerRootPath, genRootPath, projectRootPath}, 'admin');
-            await admin.execute();
-            Util.appendInfo(
-                `admin done`
-            );
-        case 'developer':
-            await new ProjectFileHandler({
-                freeMarkerRootPath,
-                genRootPath,
-                projectRootPath
-            }, 'web')
-                .persistBaseFilesToFreeMarker();
-            break;
+    constructor(object = {genRootPath: './gen/', projectRootPath: './', freeMarkerRootPath: '../'}) {
+        this.genRootPath = libpath.resolve(object.genRootPath);
+        this.projectRootPath = libpath.resolve(object.projectRootPath);
+        this.freeMarkerRootPath = libpath.resolve(object.freeMarkerRootPath);
+        this.init();
     }
 
-})();
+    init() {
+        if (!fs.existsSync(libpath.join(this.projectRootPath, 'source.js'))) {
+            throw new ERROR(8019, `you should put source.js in ${libpath.resolve(this.projectRootPath)}`)
+        }
+    }
+
+    getBuildObject = () => {
+        return {
+            freeMarkerRootPath: this.freeMarkerRootPath,
+            genRootPath: this.genRootPath,
+            projectRootPath: this.projectRootPath
+        }
+    }
+
+    async buildWeb() {
+        const web = new ProjectFileHandler(this.getBuildObject(), 'web');
+        await web.execute();
+        Util.appendInfo(
+            `web done`
+        );
+    }
+
+    async buildAdmin() {
+        const admin = new ProjectFileHandler(this.getBuildObject(), 'admin');
+        await admin.execute();
+        Util.appendInfo(
+            `admin done`
+        );
+    }
+
+    async testOverrideFunction(platform = 'web'){
+        const handler = new ProjectFileHandler(this.getBuildObject(), platform);
+        handler.overrideEachFilesFromFolder(
+            `common.style.js`
+            , `app.style.js`
+            , `mobile.style.js`
+            , `common.less`
+            , `app.less`
+            , `mobile.less`
+            , {
+                type: 'extension',
+                keyword: 'svg'
+            }, {
+                type: 'extension',
+                keyword: 'png'
+            }
+        );
+        Util.appendInfo(
+            `build ${platform}/src/base/... succeed!`
+        );
+    }
+
+    async testPersistent(platform = 'web') {
+        const handler = new ProjectFileHandler(this.getBuildObject(), platform);
+        handler.persistBaseFilesToFreeMarkerTemplate();
+        handler.persistCustomizePackages()
+        handler.persistImageFolder();
+        handler.persistIndexAndLessFiles();
+
+    }
+
+    hello() {
+        Util.appendInfo('hello');
+    }
+}
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+
+// const FAST_DEVELOP_MODE = true;
+const FAST_DEVELOP_MODE = false;
+const TEMPLATE_FOLDER = '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template';
+const TARGET_COMPONENT = 'navigator';
+
+export {BuildApplication as BuildApplication};
+
+if (configer.DEBUG_MODE) {
+
+    (async () => {
+            const builder = new BuildApplication({
+                genRootPath: '../gen',
+                projectRootPath: './sample',
+                freeMarkerRootPath : TEMPLATE_FOLDER
+            })
+            await builder.buildWeb();
+            // await builder.testPersistent();
+
+        }
+    )();
+}

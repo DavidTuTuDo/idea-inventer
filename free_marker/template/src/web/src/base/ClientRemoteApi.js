@@ -1,7 +1,6 @@
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import Moment from 'moment';
-import config from '../config';
 import libpath from 'path';
 import CommonPoolHelper from "./CommonPoolHelper";
 import CommonRemoteApi from "./CommonRemoteApi";

@@ -1,6 +1,5 @@
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from "lodash";
-import config from "../config";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
 import EventBus from "./CommonEventBus";

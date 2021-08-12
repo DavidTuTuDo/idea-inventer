@@ -1,8 +1,4 @@
-/** this code are generated, modify is no sense.
- author:David Tu,
- email:freshingmoon0725@gmail.com
- updateTime:2021-07-04-15-15-22
- */
+
 import {
     utiller as Util,
     exceptioner as ERROR,

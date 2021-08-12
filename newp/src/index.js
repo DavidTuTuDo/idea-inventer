@@ -23,7 +23,7 @@ class newp {
 
     async createPackageInTerminal(path = './') {
         const result = await this.getAnswerFromPromptQ();
-        this.appendInfo(result)
+        Util.appendInfo(result)
         if (!_.isEmpty(result.name)) {
             Util.appendInfo(`${result.name} is generating`)
             await Util.packageTemplatify(path, result.name);

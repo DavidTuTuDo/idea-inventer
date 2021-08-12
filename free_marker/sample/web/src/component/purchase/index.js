@@ -5,7 +5,7 @@
  */
 import {observer, inject} from "mobx-react";
 import BasePurchaseComponent from "./BasePurchaseComponent";
-import Router from "../../Router";
+import Router from "../../router";
 import PurchaseOrder from "../../store/purchasePurchaseOrder";
 import PurchaseListener from "../../store/purchasePurchaseListener";
 import {

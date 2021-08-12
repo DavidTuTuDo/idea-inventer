@@ -16,7 +16,7 @@ import {
 } from "utiller";
 import EventBus from "./base/CommonEventBus";
 import UserInfo from "./userInfo";
-import Cookie from './Cookie';
+import Cookie from './cookie';
 
 class App extends BaseApp {
     /** -------------------- fields -------------------- **/
