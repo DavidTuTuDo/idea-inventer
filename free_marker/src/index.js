@@ -25,6 +25,9 @@ class CodegenNode {
     ref;
     /** 用來標記這個node的內容, 免得重複的再type一遍 */
 
+    independence;
+    /** 用來標記這個node的如果是ref, 而且還是獨立的一個store */
+
     mother;
     /** 註記陣列的位址, 用來獲得 indexOfCollection*/
 
@@ -50,7 +53,19 @@ class CodegenNode {
 
     permission = {};
     /** 當struct 裡面的物件有 path時, 就對應有一個collection/document,
-     * 用來描述 create,update,delete,read, 沒有描述就是isAdmin() */
+     * 用來描述 create,update,delete,read, 沒有描述就是isAdmin()
+     *
+     * isSelf(uid)
+     * isSignIn()
+     * alwaysFalse()
+     * alwaysTrue()
+     * isAdmin()
+     *
+     * 支援邏輯符號
+     *
+     * isAdmin() || isSelf(uid)
+     *
+     * */
 
     editIgnore;
     /** 用來提示這個node不要被editlize給處理到 */
@@ -1656,7 +1671,7 @@ class StoreBuilder extends BaseBuilder {
             if (child.isArray()) {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
 
-                if (child.ref)
+                if (child.ref && !child.independence)
                     generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
                 else {
                     generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
@@ -3162,8 +3177,22 @@ class ProjectFileHandler extends PathBase {
                 if (_.isEmpty(_nodes)) {
                     throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
                 }
+
                 node.ref = _nodes[0];
                 node.type = node.ref.type;
+                /** 因為還沒機上 view的關係 所以不會產出view
+                 *
+                 * node.view = node.ref.view
+                 * node.listWrapView = node.ref.listWrapView
+                 * node.wrapView = node.ref.wrapView
+                 * */
+                if(node.independence){
+                    for(const raw of node.ref.node.children){
+                        console.log(raw.name);
+                        node.appendChildrenWithJson(raw)
+                    }
+                }
+
             }
             this.enrichNodes(...node.getChildren());
         }
@@ -3427,12 +3456,17 @@ class BuildApplication {
     }
 }
 
+
+
+
+
+
 // const SURE_TO_PERSIST_VERY_IMPORTANT = true;
 const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
-// const FAST_DEVELOP_MODE = true;
-const FAST_DEVELOP_MODE = false;
-const TEMPLATE_FOLDER = '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template';
+const FAST_DEVELOP_MODE = true;
+// const FAST_DEVELOP_MODE = false;
+
 const TARGET_COMPONENT = 'navigator';
 
 export {BuildApplication as BuildApplication};
@@ -3445,7 +3479,8 @@ if (configer.DEBUG_MODE) {
                 projectRootPath: './sample',
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
-            await builder.buildWeb();
+            // await builder.buildWeb();
+            await builder.buildAdmin();
             // await builder.buildAdmin();
             // await builder.testPersistent();
 
