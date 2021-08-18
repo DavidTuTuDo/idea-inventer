@@ -70,7 +70,7 @@ class CodegenNode {
     editIgnore;
     /** 用來提示這個node不要被editlize給處理到 */
 
-    edit;
+    editor;
     /** 用來提示這個component需要產生編輯頁面 */
 
     originalView;
@@ -117,6 +117,12 @@ class CodegenNode {
 
     props = {};
     /** 用在加上view額外的props,<div ...props/> */
+
+    wrapProps = {};
+    /** 當wrap是true時,用在加上wrap額外的props,<div ...props/> */
+
+    listWrapProps = {};
+    /** 用在加上Array上 wrap額外的props,<div ...props/> */
 
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
@@ -387,8 +393,9 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog', 'wrapContents', 'listWrapContents', 'contents', 'style',
-            'extra', 'firebase', 'mother', 'parent', 'props', 'admin', 'server', 'params', 'host']
+        return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
+            'wrapContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
+            'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
 
     setListWrapContents(contents) {
@@ -429,7 +436,7 @@ class CodegenNode {
     }
 
     needEditPage() {
-        return this.edit && !!this.edit;
+        return this.editor && !!this.editor;
     }
 
     isDisableFetch() {
@@ -476,6 +483,10 @@ class CodegenNode {
             return this.listWrapView;
         }
         return 'div';
+    }
+
+    setListWrapView(view) {
+        this.listWrapView = view;
     }
 
     getType() {
@@ -740,6 +751,18 @@ class CodegenNode {
     getViewProps() {
         if (!!this.props)
             return this.props;
+        return {};
+    }
+
+    getWrapProps() {
+        if (!!this.wrapProps)
+            return this.wrapProps;
+        return {};
+    }
+
+    getListWrapProps() {
+        if (!!this.listWrapProps)
+            return this.listWrapProps;
         return {};
     }
 
@@ -2042,8 +2065,10 @@ class ComponentBuilder extends BaseBuilder {
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer,ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
-        baseGenerator.appendImport('Style', '../../style')
-        baseGenerator.appendImport('{observer}', 'mobx-react')
+        baseGenerator.appendImport('Style', '../../style');
+        baseGenerator.appendImport('{observer}', 'mobx-react');
+        baseGenerator.appendImport('{Fade}', 'react-slideshow-image');
+
 
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
@@ -2190,7 +2215,13 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         for (const key in props) {
-            if (!!!props[key]) continue
+            const value = props[key];
+
+            if (_.isBoolean(value)) {
+                /** boolean always pass, 忘繼為什麼要 continued */
+            } else {
+                if (!!!props[key]) continue
+            }
 
             if (_.isEqual(key, 'injectProps'))
                 stmt.push(`{${props[key]}}`)
@@ -2367,7 +2398,8 @@ class ComponentBuilder extends BaseBuilder {
 
             const props = {
                 className: `${clazzName}`,
-                style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`
+                style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`,
+                ...node.getWrapProps(),
             }
 
             const stmt = [];
@@ -2393,7 +2425,8 @@ class ComponentBuilder extends BaseBuilder {
 
             const props = {
                 className: clazzName,
-                style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`
+                style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
+                ...node.getListWrapProps(),
             }
 
             const itemViewProps = {};
@@ -2675,7 +2708,7 @@ class AppBuilder extends ComponentBuilder {
         );
         for (const component of sourceObj.components) {
             if (!component.hasPath()) continue;
-            baseRouterGenerator.appendFunction(Util.camel('goto', component.name, 'page'),
+            baseRouterGenerator.appendFunction(Util.camel('goto', component.name, component.isEditPage() ? 'editor' : '', 'page'),
                 ['component', ...component.getParamsOfPath()],
                 [],
                 [],
@@ -3081,8 +3114,12 @@ class ProjectFileHandler extends PathBase {
                 if (!fs.existsSync(destFolder)) {
                     Util.appendError(`overrideIndexFiles warning ,dest folder not exist 
                     destFolder=> ''${destFolder}'' || sourceFileName=>''${from}''`);
+                    Util.persistByPath(Util.getFileDirPath(dest));
+                    if (FAST_DEVELOP_MODE) {
+                        Util.appendError(`fast developer won't persist folder`)
+                        continue;
+                    }
                 }
-                Util.persistByPath(Util.getFileDirPath(dest));
                 Util.copySingleFile(from, dest, '', true);
             }
         }
@@ -3186,9 +3223,8 @@ class ProjectFileHandler extends PathBase {
                  * node.listWrapView = node.ref.listWrapView
                  * node.wrapView = node.ref.wrapView
                  * */
-                if(node.independence){
-                    for(const raw of node.ref.node.children){
-                        console.log(raw.name);
+                if (node.independence) {
+                    for (const raw of node.ref.node.children) {
                         node.appendChildrenWithJson(raw)
                     }
                 }
@@ -3219,6 +3255,7 @@ class ProjectFileHandler extends PathBase {
                     node.setView('TextField');
                     node.appendViewProps({variant: `outlined`});
 
+                    ``
                     if (node.isReadOnly()) {
                         node.appendViewProps({
                             InputProps: {
@@ -3235,6 +3272,10 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isArray()) {
+                if (_.isEqual(node.getListWrapView(), 'Fade')) {
+                    node.setListWrapView('div');
+                }
+
                 node.setIsWrap(true);
                 node.appendWrapContents([`{this.renderItemEditorView(
                    ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
@@ -3360,7 +3401,6 @@ class ProjectFileHandler extends PathBase {
                 if (fs.existsSync(shouldDeletedFolder)) {
                     await Util.deleteSelfByPath(shouldDeletedFolder, true);
                 }
-
             }
         }
     }
@@ -3456,18 +3496,13 @@ class BuildApplication {
     }
 }
 
+const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
+// const FAST_DEVELOP_MODE = true;
+const FAST_DEVELOP_MODE = false;
 
-
-
-
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-
-const FAST_DEVELOP_MODE = true;
-// const FAST_DEVELOP_MODE = false;
-
-const TARGET_COMPONENT = 'navigator';
+const TARGET_COMPONENT = 'main';
 
 export {BuildApplication as BuildApplication};
 
@@ -3479,9 +3514,8 @@ if (configer.DEBUG_MODE) {
                 projectRootPath: './sample',
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
-            // await builder.buildWeb();
+            await builder.buildWeb();
             await builder.buildAdmin();
-            // await builder.buildAdmin();
             // await builder.testPersistent();
 
         }

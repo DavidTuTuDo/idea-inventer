@@ -58,6 +58,14 @@ import moment from 'moment';
                 icon: 'path:https://assets.mydogsname.com/images/categories/003-dog.png'
             }
         )
+
+        await api.submitMyShortcuts(
+            'x1rx1Epw5MdqRwyPFjmCe4WkBLY2',
+        {
+            title: '我的數據',
+                icon: 'muIcon:AddAlarm',
+            route: 'path:https://www.google.com/'
+        })
         await api.submitPurchasePlans(
             {pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
             {pid: 1002, name: '2個月', price: 110, priceTip: '平均一個月55元', fullName: '選擇王-2個月禮包', duration: '62d'},

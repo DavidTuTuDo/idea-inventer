@@ -56,7 +56,29 @@
   /** style */
 }
 /** following for main  component used  */
-.MainDiv {
+.MainDiv,
+.MainEditorDiv {
+  /** style */
+}
+.MainViewPagerDiv,
+.MainEditorViewPagerDiv,
+.MainEditorViewPagerDiv {
+  /** style */
+}
+.MainViewPagerDiv,
+.MainEditorViewPagerDiv,
+.MainEditorViewPagerDiv {
+  /** style */
+}
+.ListWrapMainViewPagerFade {
+  /** style */
+}
+.MainViewPagerImageImg,
+.MainEditorViewPagerImageImg {
+  /** style */
+}
+.WrapMainViewPagerImagePaper,
+.WrapMainEditorViewPagerImagePaper {
   /** style */
 }
 .MainJuniorButton {
@@ -223,6 +245,34 @@
   /** style */
 }
 .WrapPurchasePurchasePlanBuyDiv {
+  /** style */
+}
+/** following for main editor component used  */
+.MainEditorDiv {
+  /** style */
+}
+.MainEditorViewPagerDiv {
+  /** style */
+}
+.WrapMainEditorViewPagerDiv {
+  /** style */
+}
+.MainEditorViewPagerDiv {
+  /** style */
+}
+.WrapMainEditorViewPagerDiv {
+  /** style */
+}
+.ListWrapMainEditorViewPagerDiv {
+  /** style */
+}
+.MainEditorViewPagerGotoUrlTextField {
+  /** style */
+}
+.MainEditorViewPagerImageImg {
+  /** style */
+}
+.WrapMainEditorViewPagerImagePaper {
   /** style */
 }
 /** following for exam editor component used  */

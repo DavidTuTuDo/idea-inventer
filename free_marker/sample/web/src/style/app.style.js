@@ -65,6 +65,26 @@ class AppStyle {
 
   ExamEditorDiv = {};
 
+  /** => following for main editor component  */
+
+  WrapMainEditorViewPagerImagePaper = {};
+
+  MainEditorViewPagerImageImg = {};
+
+  MainEditorViewPagerGotoUrlTextField = {};
+
+  ListWrapMainEditorViewPagerDiv = {};
+
+  WrapMainEditorViewPagerDiv = {};
+
+  MainEditorViewPagerDiv = {};
+
+  WrapMainEditorViewPagerDiv = {};
+
+  MainEditorViewPagerDiv = {};
+
+  MainEditorDiv = {};
+
   /** => following for purchase  component  */
 
   WrapPurchasePurchasePlanBuyDiv = {};
@@ -164,6 +184,16 @@ class AppStyle {
   MainHighButton = {};
 
   MainJuniorButton = {};
+
+  WrapMainViewPagerImagePaper = {};
+
+  MainViewPagerImageImg = {};
+
+  ListWrapMainViewPagerFade = {};
+
+  MainViewPagerDiv = {};
+
+  MainViewPagerDiv = {};
 
   MainDiv = {};
 

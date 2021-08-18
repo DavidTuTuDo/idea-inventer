@@ -47,7 +47,6 @@ class MainComponent extends BaseMainComponent {
         this.setSnackViewVisibility(true, '測試訊息II', {
             type: 'success',
             func: {
-
                     name: '功能',
                 }
             }

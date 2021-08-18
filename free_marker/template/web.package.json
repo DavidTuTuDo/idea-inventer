@@ -50,6 +50,7 @@
     "mobx": "^6.1.8",
     "mobx-react": "^7.1.0",
     "mobx-react-router": "^4.1.0",
+    "react-slideshow-image": "^3.5.0",
     "path-browserify": "^1.0.1",
     "prop-types": "^15.7.2",
     "query-string": "^7.0.1",
