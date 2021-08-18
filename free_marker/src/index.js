@@ -121,8 +121,11 @@ class CodegenNode {
     wrapProps = {};
     /** 當wrap是true時,用在加上wrap額外的props,<div ...props/> */
 
+    listProps = {};
+    /** 用在加上Array的Container額外的props,<div ...props/> */
+
     listWrapProps = {};
-    /** 用在加上Array上 wrap額外的props,<div ...props/> */
+    /** 用在加上Array Container額外再包一層的props,<div ...props/> */
 
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
@@ -141,7 +144,11 @@ class CodegenNode {
      在view和store上面也會產生出same generation的概念, incest只支援一層, 假父類必須有wrap
      */
 
+    listContents = [];
+    /** list item 之外可以再放一些stmt */
+
     listWrapContents = [];
+    /** list wrap 之外可以再放一些stmt */
 
     wrapContents = [];
     /** 當view有被wrap包住時,可以用wrapContent加上 ['{this.getTailView()}']*/
@@ -159,10 +166,15 @@ class CodegenNode {
 
     wrapStyle = {};
 
+    listStyle = {};
+
     listWrapStyle = {};
 
+    listView;
+    /**  可以指定Array的ContainerView,有時候需要改變direction,需要靠這個container*/
+
     listWrapView;
-    /**  可以指定Array的最外面包的那一層,有時候需要改變direction,需要靠這個container*/
+    /**  可以指定Array ContainerView 再包一層*/
 
     wrapView;
     /**  可以指定wrap的type default是div*/
@@ -237,6 +249,11 @@ class CodegenNode {
         return !!this.components;
     }
 
+    getStorageFolderName() {
+        return this.storageFolder;
+    }
+
+
     setStyle(style) {
         this.style = style;
     }
@@ -253,12 +270,20 @@ class CodegenNode {
         this.wrapStyle = style;
     }
 
-    getListWrapStyle() {
-        return this.listWrapStyle;
+    getListStyle() {
+        return this.listStyle;
     }
 
-    getStorageFolderName() {
-        return this.storageFolder;
+    setListStyle(style) {
+        this.listStyle = style;
+    }
+
+    appendListStyle(style) {
+        this.listStyle = {...this.listStyle, ...style}
+    }
+
+    getListWrapStyle() {
+        return this.listWrapStyle;
     }
 
     setListWrapStyle(style) {
@@ -296,7 +321,8 @@ class CodegenNode {
     }
 
     isContainer() {
-        return this.view && Util.isOrEquals(_.toLower(this.view), 'div', 'card', 'paper', 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem');
+        return this.view && Util.isOrEquals(_.toLower(this.view), 'grid', 'div', 'card', 'paper'
+            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem');
     }
 
     isScrollingHideDependOnRootNode() {
@@ -393,9 +419,21 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['listWrapStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
-            'wrapContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
-            'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
+        return ['listStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
+            'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
+            'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
+    }
+
+    setListContents(contents) {
+        this.listContents = contents;
+    }
+
+    appendListContents(...contents) {
+        this.listContents.push(...contents);
+    }
+
+    getListContents() {
+        return this.listContents ? this.listContents : [];
     }
 
     setListWrapContents(contents) {
@@ -478,6 +516,17 @@ class CodegenNode {
         return 'div';
     }
 
+    setWrapView(view){
+        this.wrapView = view;
+    }
+
+    getListView() {
+        if (this.listView) {
+            return this.listView;
+        }
+        return 'div';
+    }
+
     getListWrapView() {
         if (this.listWrapView) {
             return this.listWrapView;
@@ -485,8 +534,8 @@ class CodegenNode {
         return 'div';
     }
 
-    setListWrapView(view) {
-        this.listWrapView = view;
+    setListView(view) {
+        this.listView = view;
     }
 
     getType() {
@@ -618,7 +667,11 @@ class CodegenNode {
     }
 
     hasWrap() {
-        return !!this.wrap && this.wrap
+        return !!this.wrapView && !_.isEmpty(this.wrapView);
+    }
+
+    hasListWrap() {
+        return !!this.listWrapView && !_.isEmpty(this.listWrapView);
     }
 
     hasNavigation() {
@@ -748,16 +801,26 @@ class CodegenNode {
         return !!this.type;
     }
 
-    getViewProps() {
-        if (!!this.props)
-            return this.props;
-        return {};
-    }
-
     getWrapProps() {
         if (!!this.wrapProps)
             return this.wrapProps;
         return {};
+    }
+
+    getListProps() {
+        if (!!this.listProps)
+            return this.listProps;
+        return {};
+    }
+
+    setListProps(props = {}) {
+        this.listProps = props;
+    }
+
+    appendListProps(...props) {
+        for (const prop of props) {
+            this.listProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
+        }
     }
 
     getListWrapProps() {
@@ -766,8 +829,24 @@ class CodegenNode {
         return {};
     }
 
+    setListWrapProps(props = {}) {
+        this.listWrapProps = props;
+    }
+
+    appendListWrapProps(...props) {
+        for (const prop of props) {
+            this.listWrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
+        }
+    }
+
     setViewProps(props = {}) {
         this.props = props;
+    }
+
+    getViewProps() {
+        if (!!this.props)
+            return this.props;
+        return {};
     }
 
     appendViewProps(...props) {
@@ -854,13 +933,16 @@ class CodegenNode {
             case 'wrap':
                 viewName = this.getWrapView();
                 break;
+            case 'list':
+                viewName = this.getListView();
+                break;
             case 'listWrap':
                 viewName = this.getListWrapView();
                 break;
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
         }
-        return _.upperFirst(Util.camel(prefix, ...parentNames, this.isOuter() ? 'outer' : '', viewName));
+        return Util.upperCamel(prefix, ...parentNames, this.isOuter() ? 'outer' : '', viewName);
     }
 
     /** 放在css用來做key => ExamEditorQuestionCard */
@@ -2063,7 +2145,7 @@ class ComponentBuilder extends BaseBuilder {
         );
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('{Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer,ListItem,List}', '@material-ui/core')
+        baseGenerator.appendImport('{Grid,Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer,ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style');
         baseGenerator.appendImport('{observer}', 'mobx-react');
@@ -2168,7 +2250,7 @@ class ComponentBuilder extends BaseBuilder {
      *      props:{...name:object},
      *      contents:['cotent1','content2']
      *      children: ['ccc'],
-     *      classNameType:['ListWrap','Wrap','Default']
+     *      classNameType:['ListWrap','List','Wrap','Default']
      * }
      *
      * ////////////// sample: ///////////////
@@ -2250,7 +2332,7 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-    /** 把組合出className必備存起來 {node,type: 'wrap'|'default'|'listWrap'} ,後續要產生出less style才有根據 */
+    /** 把組合出className必備存起來 {node,type: 'wrap'|'default'|'List'|'listWrap'} ,後續要產生出less style才有根據 */
     storeClassName(className) {
         this.classNames.push(className);
     }
@@ -2287,8 +2369,57 @@ class ComponentBuilder extends BaseBuilder {
             return contentStmts;
         }
 
+
+        /** type是array就必須的包上一成List,可以調整物件方向 */
+        if (node.isArray()) {
+            const clazzName = node.getClassNameOfLessUsage('list');
+            this.storeClassName({node, type: 'list'});
+
+            const props = {
+                className: clazzName,
+                style: `###{...${JSON.stringify(node.getListStyle())},...Style.${clazzName}}`,
+                ...node.getListProps(),
+            }
+
+            const itemViewProps = {};
+            itemViewProps['key'] = node.getUniqueIdStmt();
+            itemViewProps[`${node.getName()}`] = `###${node.getName()}`
+            const ArrayItemView = this.getJSXStrings({
+                tag: `${node.getFunctionNameOfRenderItemView()}`,
+                props: itemViewProps,
+            })
+
+            const arrayStmts = this.getJSXStrings({
+                tag: node.getListView(),
+                props,
+                contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()}) => `,
+                    ...ArrayItemView, `)}`]
+            })
+
+            if (node.hasListWrap()) {
+                const clazzName = node.getClassNameOfLessUsage('listWrap');
+                this.storeClassName({node, type: 'listWrap'});
+
+                return this.getJSXStrings(
+                    {
+                        tag: node.getListWrapView(),
+                        props: {
+                            className: clazzName,
+                            style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
+                            ...node.getListWrapProps(),
+                        },
+                        contents: [...node.getListWrapContents(), ...arrayStmts]
+                    }
+                )
+            }
+            return arrayStmts;
+
+
+        }
+
         const contentStmts = [];
         const self = this;
+
         for (const child of node.getPreciseViewChildren()) {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
@@ -2360,7 +2491,9 @@ class ComponentBuilder extends BaseBuilder {
             props['label'] = `${node.getDescription()}`;
             props['value'] = `###${node.getName()}`;
             props['onChange'] = `###(event)=>{ 
-            ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(event.target.value)}`
+            ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(
+            ${node.isNumber() ? '_.toNumber(event.target.value)' : 'event.target.value'}
+            )}`
             if (node.isNumber()) {
                 props['type'] = `number`;
                 props['InputLabelProps'] = {
@@ -2371,7 +2504,6 @@ class ComponentBuilder extends BaseBuilder {
                 props['multiline'] = `###true`;
             }
         }
-
 
         if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
             props['position'] = 'static';
@@ -2391,7 +2523,6 @@ class ComponentBuilder extends BaseBuilder {
             })
         }
 
-        const wrapView = node.getWrapView();
         if (node.hasWrap()) {
             const clazzName = node.getClassNameOfLessUsage('wrap');
             this.storeClassName({node, type: 'wrap'});
@@ -2411,42 +2542,13 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             origin = this.getJSXStrings({
-                tag: wrapView,
+                tag: node.getWrapView(),
                 props,
                 contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin, ...stmt],
             })
         }
 
-        /** type是array就必須的包上一成ListWrap,可以調整物件方向 */
-        if (node.isArray()) {
-            const listWrapView = node.getListWrapView();
-            const clazzName = node.getClassNameOfLessUsage('listWrap');
-            this.storeClassName({node, type: 'listWrap'});
-
-            const props = {
-                className: clazzName,
-                style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
-                ...node.getListWrapProps(),
-            }
-
-            const itemViewProps = {};
-            itemViewProps['key'] = node.getUniqueIdStmt();
-            itemViewProps[`${node.getName()}`] = `###${node.getName()}`
-            const ArrayItemView = this.getJSXStrings({
-                tag: `${node.getFunctionNameOfRenderItemView()}`,
-                props: itemViewProps,
-            })
-
-            return this.getJSXStrings({
-                tag: listWrapView,
-                props,
-                contents: [...node.getListWrapContents(), `{${node.getFieldName()}.map((${node.getName()}) => `,
-                    ...ArrayItemView, `)}`]
-            })
-        } else {
-            return origin;
-        }
-
+        return origin;
     }
 
     /** stmt:Array<String> */
@@ -3220,7 +3322,7 @@ class ProjectFileHandler extends PathBase {
                 /** 因為還沒機上 view的關係 所以不會產出view
                  *
                  * node.view = node.ref.view
-                 * node.listWrapView = node.ref.listWrapView
+                 * node.listView = node.ref.listView
                  * node.wrapView = node.ref.wrapView
                  * */
                 if (node.independence) {
@@ -3272,19 +3374,23 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isArray()) {
-                if (_.isEqual(node.getListWrapView(), 'Fade')) {
-                    node.setListWrapView('div');
+                if (Util.isOrEquals(node.getListView(), 'Fade', 'Grid')) {
+                    node.setListView('div');
                 }
 
-                node.setIsWrap(true);
+                if (Util.isOrEquals(node.getView(), 'Fade', 'Grid')) {
+                    node.setView('div');
+                }
+
+                node.setWrapView('div');
                 node.appendWrapContents([`{this.renderItemEditorView(
                    ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
                 )}`]);
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'red'});
-                node.appendListWrapStyle({...style, borderColor: 'blue'});
+                node.appendListStyle({...style, borderColor: 'blue'});
 
-                node.appendListWrapContents([`{this.renderCollectionEditorView(
+                node.appendListContents([`{this.renderCollectionEditorView(
                    ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
                 )}`]);
             }

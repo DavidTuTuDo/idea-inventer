@@ -43,10 +43,7 @@
 .NavigatorDrawerShortcutListItem {
   /** style */
 }
-.NavigatorDrawerShortcutListItem {
-  /** style */
-}
-.ListWrapNavigatorDrawerShortcutList {
+.ListNavigatorDrawerShortcutList {
   /** style */
 }
 .NavigatorDrawerShortcutTitleTypography {
@@ -61,16 +58,10 @@
   /** style */
 }
 .MainViewPagerDiv,
-.MainEditorViewPagerDiv,
 .MainEditorViewPagerDiv {
   /** style */
 }
-.MainViewPagerDiv,
-.MainEditorViewPagerDiv,
-.MainEditorViewPagerDiv {
-  /** style */
-}
-.ListWrapMainViewPagerFade {
+.ListMainViewPagerFade {
   /** style */
 }
 .MainViewPagerImageImg,
@@ -79,6 +70,23 @@
 }
 .WrapMainViewPagerImagePaper,
 .WrapMainEditorViewPagerImagePaper {
+  /** style */
+}
+.MainEnterPointPaper,
+.MainEditorEnterPointPaper {
+  /** style */
+}
+.WrapMainEnterPointGrid {
+  /** style */
+}
+.ListMainEnterPointGrid {
+  /** style */
+}
+.ListWrapMainEnterPointCard,
+.ListWrapMainEditorEnterPointCard {
+  /** style */
+}
+.MainEnterPointTitleTypography {
   /** style */
 }
 .MainJuniorButton {
@@ -93,12 +101,6 @@
 .MainPurchaseButton {
   /** style */
 }
-.MainUploadButton {
-  /** style */
-}
-.MainImageUrlImg {
-  /** style */
-}
 /** following for exam  component used  */
 .ExamDiv,
 .ExamEditorDiv {
@@ -106,27 +108,15 @@
   background-color: #888888;
 }
 .ExamQuestionCard,
-.ExamEditorQuestionCard,
 .ExamEditorQuestionCard {
   /** style */
 }
 .WrapExamQuestionDiv,
-.WrapExamEditorQuestionDiv,
 .WrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamQuestionCard,
-.ExamEditorQuestionCard,
-.ExamEditorQuestionCard {
-  /** style */
-}
-.WrapExamQuestionDiv,
-.WrapExamEditorQuestionDiv,
-.WrapExamEditorQuestionDiv {
-  /** style */
-}
-.ListWrapExamQuestionDiv,
-.ListWrapExamEditorQuestionDiv {
+.ListExamQuestionDiv,
+.ListExamEditorQuestionDiv {
   /** style */
 }
 .ExamQuestionAlertOuterDiv,
@@ -151,17 +141,11 @@
   /** style */
 }
 .ExamQuestionTopicImageDiv,
-.ExamEditorQuestionTopicImageDiv,
 .ExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamQuestionTopicImageDiv,
-.ExamEditorQuestionTopicImageDiv,
-.ExamEditorQuestionTopicImageDiv {
-  /** style */
-}
-.ListWrapExamQuestionTopicImageDiv,
-.ListWrapExamEditorQuestionTopicImageDiv {
+.ListExamQuestionTopicImageDiv,
+.ListExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamQuestionTopicImageUrlImg,
@@ -169,17 +153,11 @@
   /** style */
 }
 .ExamQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv,
 .ExamEditorQuestionChoiceDiv {
   /** style */
 }
-.ExamQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.ListWrapExamQuestionChoiceDiv,
-.ListWrapExamEditorQuestionChoiceDiv {
+.ListExamQuestionChoiceDiv,
+.ListExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
@@ -219,10 +197,7 @@
 .PurchasePurchasePlanDiv {
   /** style */
 }
-.PurchasePurchasePlanDiv {
-  /** style */
-}
-.ListWrapPurchasePurchasePlanDiv {
+.ListPurchasePurchasePlanDiv {
   /** style */
 }
 .PurchasePurchasePlanNameTypography {
@@ -259,22 +234,37 @@
 .WrapMainEditorViewPagerDiv {
   /** style */
 }
-.MainEditorViewPagerDiv {
+.ListMainEditorViewPagerDiv {
   /** style */
 }
-.WrapMainEditorViewPagerDiv {
-  /** style */
-}
-.ListWrapMainEditorViewPagerDiv {
-  /** style */
-}
-.MainEditorViewPagerGotoUrlTextField {
+.MainEditorViewPagerRouteTextField {
   /** style */
 }
 .MainEditorViewPagerImageImg {
   /** style */
 }
 .WrapMainEditorViewPagerImagePaper {
+  /** style */
+}
+.MainEditorEnterPointPaper {
+  /** style */
+}
+.WrapMainEditorEnterPointDiv {
+  /** style */
+}
+.ListMainEditorEnterPointDiv {
+  /** style */
+}
+.ListWrapMainEditorEnterPointCard {
+  /** style */
+}
+.MainEditorEnterPointTitleTextField {
+  /** style */
+}
+.MainEditorEnterPointRouteTextField {
+  /** style */
+}
+.MainEditorEnterPointXsTextField {
   /** style */
 }
 /** following for exam editor component used  */
@@ -287,13 +277,7 @@
 .WrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamEditorQuestionCard {
-  /** style */
-}
-.WrapExamEditorQuestionDiv {
-  /** style */
-}
-.ListWrapExamEditorQuestionDiv {
+.ListExamEditorQuestionDiv {
   /** style */
 }
 .ExamEditorQuestionAlertOuterDiv {
@@ -314,13 +298,7 @@
 .WrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageDiv {
-  /** style */
-}
-.WrapExamEditorQuestionTopicImageDiv {
-  /** style */
-}
-.ListWrapExamEditorQuestionTopicImageDiv {
+.ListExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamEditorQuestionTopicImageUrlImg {
@@ -332,13 +310,7 @@
 .WrapExamEditorQuestionChoiceDiv {
   /** style */
 }
-.ExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.WrapExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.ListWrapExamEditorQuestionChoiceDiv {
+.ListExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceStatementTextField {

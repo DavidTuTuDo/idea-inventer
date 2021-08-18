@@ -27,11 +27,7 @@ class MobileStyle {
 
   ExamEditorQuestionChoiceStatementTextField = {};
 
-  ListWrapExamEditorQuestionChoiceDiv = {};
-
-  WrapExamEditorQuestionChoiceDiv = {};
-
-  ExamEditorQuestionChoiceDiv = {};
+  ListExamEditorQuestionChoiceDiv = {};
 
   WrapExamEditorQuestionChoiceDiv = {};
 
@@ -39,11 +35,7 @@ class MobileStyle {
 
   ExamEditorQuestionTopicImageUrlImg = {};
 
-  ListWrapExamEditorQuestionTopicImageDiv = {};
-
-  WrapExamEditorQuestionTopicImageDiv = {};
-
-  ExamEditorQuestionTopicImageDiv = {};
+  ListExamEditorQuestionTopicImageDiv = {};
 
   WrapExamEditorQuestionTopicImageDiv = {};
 
@@ -57,11 +49,7 @@ class MobileStyle {
 
   ExamEditorQuestionAlertOuterDiv = {};
 
-  ListWrapExamEditorQuestionDiv = {};
-
-  WrapExamEditorQuestionDiv = {};
-
-  ExamEditorQuestionCard = {};
+  ListExamEditorQuestionDiv = {};
 
   WrapExamEditorQuestionDiv = {};
 
@@ -71,17 +59,27 @@ class MobileStyle {
 
   /** => following for main editor component  */
 
+  MainEditorEnterPointXsTextField = {};
+
+  MainEditorEnterPointRouteTextField = {};
+
+  MainEditorEnterPointTitleTextField = {};
+
+  ListWrapMainEditorEnterPointCard = {};
+
+  ListMainEditorEnterPointDiv = {};
+
+  WrapMainEditorEnterPointDiv = {};
+
+  MainEditorEnterPointPaper = {};
+
   WrapMainEditorViewPagerImagePaper = {};
 
   MainEditorViewPagerImageImg = {};
 
-  MainEditorViewPagerGotoUrlTextField = {};
+  MainEditorViewPagerRouteTextField = {};
 
-  ListWrapMainEditorViewPagerDiv = {};
-
-  WrapMainEditorViewPagerDiv = {};
-
-  MainEditorViewPagerDiv = {};
+  ListMainEditorViewPagerDiv = {};
 
   WrapMainEditorViewPagerDiv = {};
 
@@ -107,9 +105,7 @@ class MobileStyle {
 
   PurchasePurchasePlanNameTypography = {};
 
-  ListWrapPurchasePurchasePlanDiv = {};
-
-  PurchasePurchasePlanDiv = {};
+  ListPurchasePurchasePlanDiv = {};
 
   PurchasePurchasePlanDiv = {};
 
@@ -137,17 +133,13 @@ class MobileStyle {
 
   ExamQuestionChoiceStatementButton = { fontSize: "2.1rem" };
 
-  ListWrapExamQuestionChoiceDiv = {};
-
-  ExamQuestionChoiceDiv = {};
+  ListExamQuestionChoiceDiv = {};
 
   ExamQuestionChoiceDiv = {};
 
   ExamQuestionTopicImageUrlImg = {};
 
-  ListWrapExamQuestionTopicImageDiv = {};
-
-  ExamQuestionTopicImageDiv = {};
+  ListExamQuestionTopicImageDiv = {};
 
   ExamQuestionTopicImageDiv = {};
 
@@ -163,11 +155,7 @@ class MobileStyle {
 
   ExamQuestionAlertOuterDiv = {};
 
-  ListWrapExamQuestionDiv = {};
-
-  WrapExamQuestionDiv = {};
-
-  ExamQuestionCard = {};
+  ListExamQuestionDiv = {};
 
   WrapExamQuestionDiv = {};
 
@@ -177,10 +165,6 @@ class MobileStyle {
 
   /** => following for main  component  */
 
-  MainImageUrlImg = {};
-
-  MainUploadButton = {};
-
   MainPurchaseButton = {};
 
   MainSocialButton = {};
@@ -189,13 +173,21 @@ class MobileStyle {
 
   MainJuniorButton = {};
 
+  MainEnterPointTitleTypography = {};
+
+  ListWrapMainEnterPointCard = {};
+
+  ListMainEnterPointGrid = {};
+
+  WrapMainEnterPointGrid = {};
+
+  MainEnterPointPaper = {};
+
   WrapMainViewPagerImagePaper = {};
 
   MainViewPagerImageImg = {};
 
-  ListWrapMainViewPagerFade = {};
-
-  MainViewPagerDiv = {};
+  ListMainViewPagerFade = {};
 
   MainViewPagerDiv = {};
 
@@ -207,9 +199,7 @@ class MobileStyle {
 
   NavigatorDrawerShortcutTitleTypography = {};
 
-  ListWrapNavigatorDrawerShortcutList = {};
-
-  NavigatorDrawerShortcutListItem = {};
+  ListNavigatorDrawerShortcutList = {};
 
   NavigatorDrawerShortcutListItem = {};
 

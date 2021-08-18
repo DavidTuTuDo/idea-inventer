@@ -4,6 +4,7 @@ import CryptoJS from "crypto-js";
 import {configer} from 'configer';
 import ERROR from '../exceptioner';
 import moment from "moment";
+import {utiller as Util} from "../../index";
 
 String.format = function () {
     let param = [];
@@ -248,6 +249,8 @@ class Utiller {
     }
 
 
+
+
     getObjectValue(obj) {
         if (_.isObject(obj)) {
             return Object.values(obj)[0];
@@ -486,6 +489,10 @@ class Utiller {
 
     camel(...words) {
         return _.camelCase(words.join('_'));
+    }
+
+    upperCamel(...words) {
+        return _.upperFirst(this.camel(...words))
     }
 
     /**

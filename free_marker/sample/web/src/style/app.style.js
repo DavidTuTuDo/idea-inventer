@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -23,11 +25,7 @@ class AppStyle {
 
   ExamEditorQuestionChoiceStatementTextField = {};
 
-  ListWrapExamEditorQuestionChoiceDiv = {};
-
-  WrapExamEditorQuestionChoiceDiv = {};
-
-  ExamEditorQuestionChoiceDiv = {};
+  ListExamEditorQuestionChoiceDiv = {};
 
   WrapExamEditorQuestionChoiceDiv = {};
 
@@ -35,11 +33,7 @@ class AppStyle {
 
   ExamEditorQuestionTopicImageUrlImg = {};
 
-  ListWrapExamEditorQuestionTopicImageDiv = {};
-
-  WrapExamEditorQuestionTopicImageDiv = {};
-
-  ExamEditorQuestionTopicImageDiv = {};
+  ListExamEditorQuestionTopicImageDiv = {};
 
   WrapExamEditorQuestionTopicImageDiv = {};
 
@@ -53,11 +47,7 @@ class AppStyle {
 
   ExamEditorQuestionAlertOuterDiv = {};
 
-  ListWrapExamEditorQuestionDiv = {};
-
-  WrapExamEditorQuestionDiv = {};
-
-  ExamEditorQuestionCard = {};
+  ListExamEditorQuestionDiv = {};
 
   WrapExamEditorQuestionDiv = {};
 
@@ -67,17 +57,27 @@ class AppStyle {
 
   /** => following for main editor component  */
 
+  MainEditorEnterPointXsTextField = {};
+
+  MainEditorEnterPointRouteTextField = {};
+
+  MainEditorEnterPointTitleTextField = {};
+
+  ListWrapMainEditorEnterPointCard = {};
+
+  ListMainEditorEnterPointDiv = {};
+
+  WrapMainEditorEnterPointDiv = {};
+
+  MainEditorEnterPointPaper = {};
+
   WrapMainEditorViewPagerImagePaper = {};
 
   MainEditorViewPagerImageImg = {};
 
-  MainEditorViewPagerGotoUrlTextField = {};
+  MainEditorViewPagerRouteTextField = {};
 
-  ListWrapMainEditorViewPagerDiv = {};
-
-  WrapMainEditorViewPagerDiv = {};
-
-  MainEditorViewPagerDiv = {};
+  ListMainEditorViewPagerDiv = {};
 
   WrapMainEditorViewPagerDiv = {};
 
@@ -103,9 +103,7 @@ class AppStyle {
 
   PurchasePurchasePlanNameTypography = {};
 
-  ListWrapPurchasePurchasePlanDiv = {};
-
-  PurchasePurchasePlanDiv = {};
+  ListPurchasePurchasePlanDiv = {};
 
   PurchasePurchasePlanDiv = {};
 
@@ -133,17 +131,13 @@ class AppStyle {
 
   ExamQuestionChoiceStatementButton = {};
 
-  ListWrapExamQuestionChoiceDiv = {};
-
-  ExamQuestionChoiceDiv = {};
+  ListExamQuestionChoiceDiv = {};
 
   ExamQuestionChoiceDiv = {};
 
   ExamQuestionTopicImageUrlImg = {};
 
-  ListWrapExamQuestionTopicImageDiv = {};
-
-  ExamQuestionTopicImageDiv = {};
+  ListExamQuestionTopicImageDiv = {};
 
   ExamQuestionTopicImageDiv = {};
 
@@ -159,11 +153,7 @@ class AppStyle {
 
   ExamQuestionAlertOuterDiv = {};
 
-  ListWrapExamQuestionDiv = {};
-
-  WrapExamQuestionDiv = {};
-
-  ExamQuestionCard = {};
+  ListExamQuestionDiv = {};
 
   WrapExamQuestionDiv = {};
 
@@ -173,10 +163,6 @@ class AppStyle {
 
   /** => following for main  component  */
 
-  MainImageUrlImg = {};
-
-  MainUploadButton = {};
-
   MainPurchaseButton = {};
 
   MainSocialButton = {};
@@ -185,13 +171,21 @@ class AppStyle {
 
   MainJuniorButton = {};
 
+  MainEnterPointTitleTypography = {};
+
+  ListWrapMainEnterPointCard = {};
+
+  ListMainEnterPointGrid = {};
+
+  WrapMainEnterPointGrid = {};
+
+  MainEnterPointPaper = {};
+
   WrapMainViewPagerImagePaper = {};
 
   MainViewPagerImageImg = {};
 
-  ListWrapMainViewPagerFade = {};
-
-  MainViewPagerDiv = {};
+  ListMainViewPagerFade = {};
 
   MainViewPagerDiv = {};
 
@@ -203,9 +197,7 @@ class AppStyle {
 
   NavigatorDrawerShortcutTitleTypography = {};
 
-  ListWrapNavigatorDrawerShortcutList = {};
-
-  NavigatorDrawerShortcutListItem = {};
+  ListNavigatorDrawerShortcutList = {};
 
   NavigatorDrawerShortcutListItem = {};
 

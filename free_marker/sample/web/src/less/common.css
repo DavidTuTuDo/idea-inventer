@@ -59,10 +59,7 @@
 .NavigatorDrawerShortcutListItem {
   /** style */
 }
-.NavigatorDrawerShortcutListItem {
-  /** style */
-}
-.ListWrapNavigatorDrawerShortcutList {
+.ListNavigatorDrawerShortcutList {
   /** style */
 }
 .NavigatorDrawerShortcutTitleTypography {
@@ -79,16 +76,10 @@
   flex-direction: column;
 }
 .MainViewPagerDiv,
-.MainEditorViewPagerDiv,
 .MainEditorViewPagerDiv {
   /** style */
 }
-.MainViewPagerDiv,
-.MainEditorViewPagerDiv,
-.MainEditorViewPagerDiv {
-  /** style */
-}
-.ListWrapMainViewPagerFade {
+.ListMainViewPagerFade {
   /** style */
   width: 95vw;
   height: 25vh;
@@ -114,11 +105,32 @@
   overflow: hidden;
   position: relative;
 }
+.MainEnterPointPaper,
+.MainEditorEnterPointPaper {
+  /** style */
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.WrapMainEnterPointGrid {
+  /** style */
+}
+.ListMainEnterPointGrid {
+  /** style */
+}
+.ListWrapMainEnterPointCard,
+.ListWrapMainEditorEnterPointCard {
+  /** style */
+  margin-top: 40px;
+}
+.MainEnterPointTitleTypography {
+  /** style */
+}
 .MainJuniorButton,
 .MainHighButton,
 .MainSocialButton,
-.MainPurchaseButton,
-.MainUploadButton {
+.MainPurchaseButton {
   /** style */
   margin: 5px;
   min-height: 10vw;
@@ -127,11 +139,6 @@
   color: #0074d9;
   border-color: #0074d9;
 }
-.MainImageUrlImg {
-  /** style */
-  height: 50px;
-  width: 50px;
-}
 /** following for exam  component used  */
 .ExamDiv,
 .ExamEditorDiv {
@@ -139,7 +146,6 @@
   margin: 3px;
 }
 .ExamQuestionCard,
-.ExamEditorQuestionCard,
 .ExamEditorQuestionCard {
   /** style */
   margin-left: 1vw;
@@ -148,23 +154,12 @@
   padding: 1vw;
 }
 .WrapExamQuestionDiv,
-.WrapExamEditorQuestionDiv,
 .WrapExamEditorQuestionDiv {
   /** style */
   position: relative;
 }
-.ExamQuestionCard,
-.ExamEditorQuestionCard,
-.ExamEditorQuestionCard {
-  /** style */
-}
-.WrapExamQuestionDiv,
-.WrapExamEditorQuestionDiv,
-.WrapExamEditorQuestionDiv {
-  /** style */
-}
-.ListWrapExamQuestionDiv,
-.ListWrapExamEditorQuestionDiv {
+.ListExamQuestionDiv,
+.ListExamEditorQuestionDiv {
   /** style */
 }
 .ExamQuestionAlertOuterDiv,
@@ -205,17 +200,11 @@
   /** style */
 }
 .ExamQuestionTopicImageDiv,
-.ExamEditorQuestionTopicImageDiv,
 .ExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamQuestionTopicImageDiv,
-.ExamEditorQuestionTopicImageDiv,
-.ExamEditorQuestionTopicImageDiv {
-  /** style */
-}
-.ListWrapExamQuestionTopicImageDiv,
-.ListWrapExamEditorQuestionTopicImageDiv {
+.ListExamQuestionTopicImageDiv,
+.ListExamEditorQuestionTopicImageDiv {
   /** style */
   display: flex;
   flex-direction: row;
@@ -229,19 +218,13 @@
   margin: 3px;
 }
 .ExamQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv,
 .ExamEditorQuestionChoiceDiv {
   /** style */
   margin-top: 2vh;
   margin-bottom: 2vh;
 }
-.ExamQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv,
-.ExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.ListWrapExamQuestionChoiceDiv,
-.ListWrapExamEditorQuestionChoiceDiv {
+.ListExamQuestionChoiceDiv,
+.ListExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamQuestionChoiceStatementButton {
@@ -294,10 +277,7 @@
   width: 90vw;
   flex-direction: column;
 }
-.PurchasePurchasePlanDiv {
-  /** style */
-}
-.ListWrapPurchasePurchasePlanDiv {
+.ListPurchasePurchasePlanDiv {
   /** style */
   display: flex;
   flex-direction: row;
@@ -354,22 +334,37 @@
 .WrapMainEditorViewPagerDiv {
   /** style */
 }
-.MainEditorViewPagerDiv {
+.ListMainEditorViewPagerDiv {
   /** style */
 }
-.WrapMainEditorViewPagerDiv {
-  /** style */
-}
-.ListWrapMainEditorViewPagerDiv {
-  /** style */
-}
-.MainEditorViewPagerGotoUrlTextField {
+.MainEditorViewPagerRouteTextField {
   /** style */
 }
 .MainEditorViewPagerImageImg {
   /** style */
 }
 .WrapMainEditorViewPagerImagePaper {
+  /** style */
+}
+.MainEditorEnterPointPaper {
+  /** style */
+}
+.WrapMainEditorEnterPointDiv {
+  /** style */
+}
+.ListMainEditorEnterPointDiv {
+  /** style */
+}
+.ListWrapMainEditorEnterPointCard {
+  /** style */
+}
+.MainEditorEnterPointTitleTextField {
+  /** style */
+}
+.MainEditorEnterPointRouteTextField {
+  /** style */
+}
+.MainEditorEnterPointXsTextField {
   /** style */
 }
 /** following for exam editor component used  */
@@ -382,13 +377,7 @@
 .WrapExamEditorQuestionDiv {
   /** style */
 }
-.ExamEditorQuestionCard {
-  /** style */
-}
-.WrapExamEditorQuestionDiv {
-  /** style */
-}
-.ListWrapExamEditorQuestionDiv {
+.ListExamEditorQuestionDiv {
   /** style */
 }
 .ExamEditorQuestionAlertOuterDiv {
@@ -409,13 +398,7 @@
 .WrapExamEditorQuestionTopicImageDiv {
   /** style */
 }
-.ExamEditorQuestionTopicImageDiv {
-  /** style */
-}
-.WrapExamEditorQuestionTopicImageDiv {
-  /** style */
-}
-.ListWrapExamEditorQuestionTopicImageDiv {
+.ListExamEditorQuestionTopicImageDiv {
   /** style */
 }
 .ExamEditorQuestionTopicImageUrlImg {
@@ -427,13 +410,7 @@
 .WrapExamEditorQuestionChoiceDiv {
   /** style */
 }
-.ExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.WrapExamEditorQuestionChoiceDiv {
-  /** style */
-}
-.ListWrapExamEditorQuestionChoiceDiv {
+.ListExamEditorQuestionChoiceDiv {
   /** style */
 }
 .ExamEditorQuestionChoiceStatementTextField {
@@ -486,7 +463,10 @@
   height: 95vh;
 }
 .BaseEditorTextField,
-.MainEditorViewPagerGotoUrlTextField,
+.MainEditorViewPagerRouteTextField,
+.MainEditorEnterPointTitleTextField,
+.MainEditorEnterPointRouteTextField,
+.MainEditorEnterPointXsTextField,
 .ExamEditorQuestionTopicNameTextField,
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,
