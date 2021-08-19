@@ -68,8 +68,8 @@
 .MainEditorViewPagerImageImg {
   /** style */
 }
-.WrapMainViewPagerImagePaper,
-.WrapMainEditorViewPagerImagePaper {
+.WrapMainViewPagerImageDiv,
+.WrapMainEditorViewPagerImageDiv {
   /** style */
 }
 .MainEnterPointPaper,
@@ -82,23 +82,15 @@
 .ListMainEnterPointGrid {
   /** style */
 }
-.ListWrapMainEnterPointCard,
-.ListWrapMainEditorEnterPointCard {
+.ListWrapMainEnterPointDiv,
+.ListWrapMainEditorEnterPointDiv {
   /** style */
 }
 .MainEnterPointTitleTypography {
   /** style */
 }
-.MainJuniorButton {
-  /** style */
-}
-.MainHighButton {
-  /** style */
-}
-.MainSocialButton {
-  /** style */
-}
-.MainPurchaseButton {
+.MainCountdownPaper,
+.MainEditorCountdownPaper {
   /** style */
 }
 /** following for exam  component used  */
@@ -241,7 +233,7 @@
 .MainEditorViewPagerImageImg {
   /** style */
 }
-.WrapMainEditorViewPagerImagePaper {
+.WrapMainEditorViewPagerImageDiv {
   /** style */
 }
 .MainEditorEnterPointPaper {
@@ -253,7 +245,7 @@
 .ListMainEditorEnterPointDiv {
   /** style */
 }
-.ListWrapMainEditorEnterPointCard {
+.ListWrapMainEditorEnterPointDiv {
   /** style */
 }
 .MainEditorEnterPointTitleTextField {
@@ -263,6 +255,9 @@
   /** style */
 }
 .MainEditorEnterPointXsTextField {
+  /** style */
+}
+.MainEditorCountdownPaper {
   /** style */
 }
 /** following for exam editor component used  */

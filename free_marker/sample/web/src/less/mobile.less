@@ -30,6 +30,9 @@
 
 .NavigatorAppBarAppBar {
   /** style */
+  height: 100px;
+  display: flex;
+  justify-content: center;
 }
 
 .NavigatorAppBarToolBarToolbar {
@@ -38,6 +41,7 @@
 
 .NavigatorAppBarToolBarMenuIconButton {
   /** style */
+  width: 60px;
 }
 
 .NavigatorAppBarToolBarMenuIconMenuIcon {
@@ -46,10 +50,12 @@
 
 .NavigatorAppBarToolBarTitleTypography {
   /** style */
+  font-size: 1.8rem;
 }
 
 .NavigatorAppBarToolBarLoginButton {
   /** style */
+  font-size: 1.8rem;
 }
 
 .NavigatorDrawerDrawer {
@@ -90,7 +96,7 @@
   /** style */
 }
 
-.WrapMainViewPagerImagePaper {
+.WrapMainViewPagerImageDiv {
   /** style */
 }
 
@@ -106,27 +112,16 @@
   /** style */
 }
 
-.ListWrapMainEnterPointCard {
+.ListWrapMainEnterPointDiv {
   /** style */
 }
 
 .MainEnterPointTitleTypography {
   /** style */
+  font-size: 2.4rem;
 }
 
-.MainJuniorButton {
-  /** style */
-}
-
-.MainHighButton {
-  /** style */
-}
-
-.MainSocialButton {
-  /** style */
-}
-
-.MainPurchaseButton {
+.MainCountdownPaper {
   /** style */
 }
 
@@ -304,7 +299,7 @@
   /** style */
 }
 
-.WrapMainEditorViewPagerImagePaper:extend(.WrapMainViewPagerImagePaper all) {
+.WrapMainEditorViewPagerImageDiv:extend(.WrapMainViewPagerImageDiv all) {
   /** style */
 }
 
@@ -320,7 +315,7 @@
   /** style */
 }
 
-.ListWrapMainEditorEnterPointCard:extend(.ListWrapMainEnterPointCard all) {
+.ListWrapMainEditorEnterPointDiv:extend(.ListWrapMainEnterPointDiv all) {
   /** style */
 }
 
@@ -333,6 +328,10 @@
 }
 
 .MainEditorEnterPointXsTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.MainEditorCountdownPaper:extend(.MainCountdownPaper all) {
   /** style */
 }
 
@@ -423,4 +422,18 @@
 
 .ExamEditorQuestionYearTextField:extend(.BaseEditorTextField all) {
   /** style */
+}
+
+/** ======== following for homeless ========= */
+
+.BaseCountdownCountTypography {
+  font-size: 3rem;
+}
+
+.BaseCountdownUnitTypography {
+  font-size: 1.8rem;
+}
+
+.BaseCountdownTitleTypography {
+  font-size: 3.5rem;
 }

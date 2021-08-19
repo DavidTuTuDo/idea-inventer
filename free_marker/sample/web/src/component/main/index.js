@@ -14,6 +14,8 @@ import UserInfo from '../../userInfo';
 import {utiller as Util} from 'utiller';
 import UserInfoStore from '../../store/navigatorUserInfo';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
+import Countdown from "react-countdown";
+import {Typography} from "@material-ui/core";
 
 @inject("main")
 @observer
@@ -25,41 +27,19 @@ class MainComponent extends BaseMainComponent {
         this.userInfoStore = new UserInfoStore();
     }
 
-    onSocialButtonClicked(param) {
-        Router.gotoExamPage(this);
+    onEnterPointPaperClicked(param) {
+        const enterPoint = param.object;
+        this.handleCustomRouter(enterPoint.route);
     }
 
-    onHighButtonClicked(param) {
-        // this.userInfoStore.fetch(UserInfo.getUid()).then((result) => Util.appendInfo(result));
+
+    renderCountdownView(){
+        const CountdownView = this.CountdownView;
+        return <CountdownView
+            title={'距離學測'}
+            date={'2022-01-22'}/>
     }
 
-    onJuniorButtonClicked(param) {
-        // this.userInfoStore.submitUserInfoObject(UserInfo.getUid(), UserInfo.getCurrentUser()).then();
-        this.setSnackViewVisibility(true, '測試訊息')
-    }
-
-    onPurchaseButtonClicked(param) {
-        // super.onPurchaseButtonClicked(param);
-        Router.gotoPurchasePage(this);
-    }
-
-    onUploadButtonClicked(param) {
-        this.setSnackViewVisibility(true, '測試訊息II', {
-            type: 'success',
-            func: {
-                    name: '功能',
-                }
-            }
-        )
-    }
-
-    onImageUrlImgClicked(param) {
-        this.enableImageSelectView();
-    }
-
-    onFilesSelected(files) {
-        console.log(`files ====>  `, files);
-    }
 
     /** -------------------- functions -------------------- **/
     /** -------------------- async api -------------------- **/

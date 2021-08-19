@@ -21,21 +21,27 @@
 }
 .NavigatorAppBarAppBar {
   /** style */
+  height: 100px;
+  display: flex;
+  justify-content: center;
 }
 .NavigatorAppBarToolBarToolbar {
   /** style */
 }
 .NavigatorAppBarToolBarMenuIconButton {
   /** style */
+  width: 60px;
 }
 .NavigatorAppBarToolBarMenuIconMenuIcon {
   /** style */
 }
 .NavigatorAppBarToolBarTitleTypography {
   /** style */
+  font-size: 1.8rem;
 }
 .NavigatorAppBarToolBarLoginButton {
   /** style */
+  font-size: 1.8rem;
 }
 .NavigatorDrawerDrawer {
   /** style */
@@ -68,8 +74,8 @@
 .MainEditorViewPagerImageImg {
   /** style */
 }
-.WrapMainViewPagerImagePaper,
-.WrapMainEditorViewPagerImagePaper {
+.WrapMainViewPagerImageDiv,
+.WrapMainEditorViewPagerImageDiv {
   /** style */
 }
 .MainEnterPointPaper,
@@ -82,23 +88,16 @@
 .ListMainEnterPointGrid {
   /** style */
 }
-.ListWrapMainEnterPointCard,
-.ListWrapMainEditorEnterPointCard {
+.ListWrapMainEnterPointDiv,
+.ListWrapMainEditorEnterPointDiv {
   /** style */
 }
 .MainEnterPointTitleTypography {
   /** style */
+  font-size: 2.4rem;
 }
-.MainJuniorButton {
-  /** style */
-}
-.MainHighButton {
-  /** style */
-}
-.MainSocialButton {
-  /** style */
-}
-.MainPurchaseButton {
+.MainCountdownPaper,
+.MainEditorCountdownPaper {
   /** style */
 }
 /** following for exam  component used  */
@@ -243,7 +242,7 @@
 .MainEditorViewPagerImageImg {
   /** style */
 }
-.WrapMainEditorViewPagerImagePaper {
+.WrapMainEditorViewPagerImageDiv {
   /** style */
 }
 .MainEditorEnterPointPaper {
@@ -255,7 +254,7 @@
 .ListMainEditorEnterPointDiv {
   /** style */
 }
-.ListWrapMainEditorEnterPointCard {
+.ListWrapMainEditorEnterPointDiv {
   /** style */
 }
 .MainEditorEnterPointTitleTextField {
@@ -265,6 +264,9 @@
   /** style */
 }
 .MainEditorEnterPointXsTextField {
+  /** style */
+}
+.MainEditorCountdownPaper {
   /** style */
 }
 /** following for exam editor component used  */
@@ -330,5 +332,15 @@
 }
 .ExamEditorQuestionYearTextField {
   /** style */
+}
+/** ======== following for homeless ========= */
+.BaseCountdownCountTypography {
+  font-size: 3rem;
+}
+.BaseCountdownUnitTypography {
+  font-size: 1.8rem;
+}
+.BaseCountdownTitleTypography {
+  font-size: 3.5rem;
 }
 /*# sourceMappingURL=mobile.css.map */

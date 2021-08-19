@@ -9,8 +9,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -57,13 +55,15 @@ class CommonStyle {
 
   /** => following for main editor component  */
 
+  MainEditorCountdownPaper = {};
+
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};
 
   MainEditorEnterPointTitleTextField = {};
 
-  ListWrapMainEditorEnterPointCard = {};
+  ListWrapMainEditorEnterPointDiv = {};
 
   ListMainEditorEnterPointDiv = {};
 
@@ -71,7 +71,7 @@ class CommonStyle {
 
   MainEditorEnterPointPaper = {};
 
-  WrapMainEditorViewPagerImagePaper = {};
+  WrapMainEditorViewPagerImageDiv = {};
 
   MainEditorViewPagerImageImg = {};
 
@@ -163,17 +163,11 @@ class CommonStyle {
 
   /** => following for main  component  */
 
-  MainPurchaseButton = {};
-
-  MainSocialButton = {};
-
-  MainHighButton = {};
-
-  MainJuniorButton = {};
+  MainCountdownPaper = {};
 
   MainEnterPointTitleTypography = {};
 
-  ListWrapMainEnterPointCard = {};
+  ListWrapMainEnterPointDiv = {};
 
   ListMainEnterPointGrid = {};
 
@@ -181,7 +175,7 @@ class CommonStyle {
 
   MainEnterPointPaper = {};
 
-  WrapMainViewPagerImagePaper = {};
+  WrapMainViewPagerImageDiv = {};
 
   MainViewPagerImageImg = {};
 

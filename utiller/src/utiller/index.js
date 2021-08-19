@@ -572,19 +572,19 @@ class Utiller {
         _.remove(array, (value, index, array) => (end >= index && index >= from));
     }
 
-
+    /** date format 2022-01-21" */
+    getMillionSecFromNow(date){
+        let now = moment(new Date()); //
+        let end = moment(date); // another date
+        let duration = moment.duration(end.diff(now));
+        let ms = duration.asMilliseconds();
+        return ms;
+    }
 }
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            // console.log(new Utiller().arrayToObjWith([{name: 'aaa', sign: 2}, {name: 'aaa', sign: 3}, {
-            //     name: 'b',
-            //     sign: 4
-            // }], (each) => each.name));
-
-            const def = {a:2,b:{bb:1,ccc:{ccc3:3}}}
-            const obj = {a:2,b:{bb:1,ccc:{ccc1:3,ccc2:4}}}
-            console.log(_.merge(def,obj))
+        console.log(new Utiller().getMillionSecFromNow('2022-01-21'));
         }
     )();
 }

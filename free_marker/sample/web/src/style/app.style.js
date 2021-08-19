@@ -9,8 +9,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -57,13 +55,15 @@ class AppStyle {
 
   /** => following for main editor component  */
 
+  MainEditorCountdownPaper = {};
+
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};
 
   MainEditorEnterPointTitleTextField = {};
 
-  ListWrapMainEditorEnterPointCard = {};
+  ListWrapMainEditorEnterPointDiv = {};
 
   ListMainEditorEnterPointDiv = {};
 
@@ -71,7 +71,7 @@ class AppStyle {
 
   MainEditorEnterPointPaper = {};
 
-  WrapMainEditorViewPagerImagePaper = {};
+  WrapMainEditorViewPagerImageDiv = {};
 
   MainEditorViewPagerImageImg = {};
 
@@ -163,17 +163,11 @@ class AppStyle {
 
   /** => following for main  component  */
 
-  MainPurchaseButton = {};
-
-  MainSocialButton = {};
-
-  MainHighButton = {};
-
-  MainJuniorButton = {};
+  MainCountdownPaper = {};
 
   MainEnterPointTitleTypography = {};
 
-  ListWrapMainEnterPointCard = {};
+  ListWrapMainEnterPointDiv = {};
 
   ListMainEnterPointGrid = {};
 
@@ -181,7 +175,7 @@ class AppStyle {
 
   MainEnterPointPaper = {};
 
-  WrapMainViewPagerImagePaper = {};
+  WrapMainViewPagerImageDiv = {};
 
   MainViewPagerImageImg = {};
 

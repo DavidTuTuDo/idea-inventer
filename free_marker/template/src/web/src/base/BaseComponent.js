@@ -13,14 +13,18 @@ import {
     useScrollTrigger,
     Slide,
     Backdrop,
+    Card,
     Snackbar,
     IconButton,
     List,
 } from "@material-ui/core";
-import CloseIcon from '@material-ui/icons/Close';
 import MuiAlert from '@material-ui/lab/Alert';
 import {Application} from '../index.js';
 import Config from '../config';
+import {observer} from "mobx-react";
+import Countdown from "react-countdown";
+import Router from "../router";
+import {isMobile} from 'react-device-detect'
 
 
 class BaseComponent extends React.Component {
@@ -33,7 +37,16 @@ class BaseComponent extends React.Component {
         this.fileChooserInputRef = React.createRef();
         if (!this.isNavigationView() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
-            this.getStore().setAppBarHeight(64);
+            this.getStore().setAppBarHeight(isMobile ? 100 : 64);
+        }
+    }
+
+    centerInParent(direction) {
+        return {
+            flexDirection: direction,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
         }
     }
 
@@ -68,7 +81,7 @@ class BaseComponent extends React.Component {
         return false;
     }
 
-    gotoExternalUrl = (url='') => {
+    gotoExternalUrl = (url = '') => {
         window.location.replace(url)
     }
 
@@ -324,7 +337,7 @@ class BaseComponent extends React.Component {
                 }}
                 open={this.getStore().getSnackVisibility()}
                 autoHideDuration={self.durationOfSnackVisible}
-                onClose={onSnackViewCloseClicked} >
+                onClose={onSnackViewCloseClicked}>
                 <React.Fragment>
                     <Alert
                         className={'BaseSnackAlert'}
@@ -343,7 +356,7 @@ class BaseComponent extends React.Component {
     setSnackViewVisibility(visible, message, extra = this.defaultSnackExtra()) {
         const self = this;
 
-        if(visible && this.getStore().getSnackVisibility()){
+        if (visible && this.getStore().getSnackVisibility()) {
             self.getStore().setSnackVisibility(false);
             Util.syncDelay(10).then(() => {
                 sync();
@@ -360,12 +373,87 @@ class BaseComponent extends React.Component {
             self.snackMessageType = extra.type;
             self.getStore().setSnackVisibility(visible);
         }
-
-
     }
 
     /** ↑↑↑===== SnackView 用到的field,遲早要搬運成獨立的 class =====↑↑↑ */
 
+    CountdownView = observer(({date, title}) => {
+        const TimeDisplayView = ({days, hours, minutes, seconds, completed}) => {
+            const UnitView = (({count, unit}) => {
+                return (
+                    <Card style={{
+                        ...this.centerInParent('column'),
+                        ...{padding: 10, margin: 10, width: '16vw'}
+                    }}>
+                        <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
+                        <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
+                    </Card>
+                )
+            });
+
+            if (completed) {
+                /** Render a completed state */
+                return undefined;
+            } else {
+                const times = [{unit: '天', count: days},
+                    {unit: '小時', count: hours},
+                    {unit: '分鐘', count: minutes},
+                    {unit: '秒', count: seconds}]
+                return (
+                    <div style={
+                        {
+                        ...this.centerInParent('column')
+                    }}>
+                        <Typography
+                            className={"BaseCountdownTitleTypography"}>{title}</Typography>
+
+                        <div/>
+                        <div
+                            style={{...this.centerInParent('row')}}>
+                            {times.map((each) =>
+                                <UnitView
+                                    key={each.unit}
+                                    count={each.count}
+                                    unit={each.unit}/>)}
+                        </div>
+                    </div>)
+            }
+        };
+
+        return <Countdown
+            renderer={TimeDisplayView}
+            date={Date.now() + Util.getMillionSecFromNow(date)}/>
+    })
+
+    /** path:'https://' or route:'pageName:...params'*/
+    handleCustomRouter = (routeString = '') => {
+        const words = routeString.split(':')
+        const type = _.head(words);
+        switch (type) {
+            case 'path':
+                const path = _.last(words);
+                this.gotoExternalUrl(path);
+                break;
+            case 'route':
+                const routes = _.tail(words)
+                const page = routes.shift();
+                const functionName = `goto${_.upperFirst(page)}Page`;
+                const functionOfGotoPage = Router[functionName];
+                if (_.isFunction(functionOfGotoPage)) {
+                    functionOfGotoPage(this, ...routes);
+                } else {
+                    this.setSnackViewVisibility(true, `4097 can't handle ${page}`, {type: 'error'})
+                }
+                break;
+            default:
+                if (_.isEmpty(routeString)) {
+                    /** doing nothing */
+                } else {
+                    this.setSnackViewVisibility(true, `can't handle ${routeString}`, {type: 'error'})
+                }
+                break;
+        }
+    }
 
 }
 

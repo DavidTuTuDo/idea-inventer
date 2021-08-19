@@ -133,9 +133,6 @@ class CodegenNode {
     injectProps;
     /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    contents = [];
-    /** 放在<div>content</div>*/
-
     navigation;
     /** 可以指定component為navigatorView 放置於頂部的view,以及設定是否isScrollingHide */
 
@@ -143,6 +140,9 @@ class CodegenNode {
     /** 支援父類是string 或是 number(非資料結構), 但是仍然有children的情形,
      在view和store上面也會產生出same generation的概念, incest只支援一層, 假父類必須有wrap
      */
+
+    contents = [];
+    /** 放在<div>content</div>*/
 
     listContents = [];
     /** list item 之外可以再放一些stmt */
@@ -857,7 +857,7 @@ class CodegenNode {
 
     getClickParamStmt() {
         let object = '';
-        if (this.type === 'array')
+        if (Util.isOrEquals(this.type,'arrayItem','array'))
             object = this.getName();
         else if (this.isAttribute() || this.needParentParam()) {
             object = this.getPreciseAttributeParent().getName();

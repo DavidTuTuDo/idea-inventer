@@ -39,11 +39,12 @@
 .NavigatorDiv {
   /** style */
   flex-grow: 1;
+
 }
 
 .NavigatorAppBarAppBar {
   /** style */
-  background-color: #7f7f7f;
+  background-color: #111111;
 }
 
 .NavigatorAppBarToolBarToolbar {
@@ -102,9 +103,8 @@
 
 .ListMainViewPagerFade {
   /** style */
-  width: 95vw;
-  height: 25vh;
-  margin-top: 10px;
+  width: 100vw;
+  height: 28vh;
 }
 
 .MainViewPagerImageImg {
@@ -119,20 +119,21 @@
   min-width: 100%;
 }
 
-.WrapMainViewPagerImagePaper {
+.WrapMainViewPagerImageDiv {
   /** style */
-  width: 95vw;
-  height: 25vh;
+  width: 100vw;
+  height: 28vh;
   overflow: hidden;
   position: relative;
 }
 
 .MainEnterPointPaper {
   /** style */
-  height: 80px;
+  height: 8vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #d3d3d3;
 }
 
 .WrapMainEnterPointGrid {
@@ -143,32 +144,22 @@
   /** style */
 }
 
-.ListWrapMainEnterPointCard {
+.ListWrapMainEnterPointDiv {
   /** style */
   margin-top: 40px;
+  padding: 5px;
 }
 
 .MainEnterPointTitleTypography {
   /** style */
+  font-size: 1.5rem;
 }
 
-.MainJuniorButton {
+.MainCountdownPaper {
   /** style */
-  margin: 5px;
-  min-height: 10vw;
-  min-width: 20vh;
-  font-size: 2.2em;
-  color: #0074d9;
-  border-color: #0074d9;
-}
-
-.MainHighButton:extend(.MainJuniorButton all) {
-}
-
-.MainSocialButton:extend(.MainJuniorButton all) {
-}
-
-.MainPurchaseButton:extend(.MainJuniorButton all) {
+  padding: 10px;
+  margin: 10px;
+  margin-top: 6vh;
 }
 
 /** following for exam  component used  */
@@ -405,7 +396,7 @@
   /** style */
 }
 
-.WrapMainEditorViewPagerImagePaper:extend(.WrapMainViewPagerImagePaper all) {
+.WrapMainEditorViewPagerImageDiv:extend(.WrapMainViewPagerImageDiv all) {
   /** style */
 }
 
@@ -421,7 +412,7 @@
   /** style */
 }
 
-.ListWrapMainEditorEnterPointCard:extend(.ListWrapMainEnterPointCard all) {
+.ListWrapMainEditorEnterPointDiv:extend(.ListWrapMainEnterPointDiv all) {
   /** style */
 }
 
@@ -434,6 +425,10 @@
 }
 
 .MainEditorEnterPointXsTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.MainEditorCountdownPaper:extend(.MainCountdownPaper all) {
   /** style */
 }
 
@@ -620,6 +615,17 @@
 
 .BaseComponentErrorViewRetryButton {
   margin-top: 30px;
+}
+
+.BaseCountdownCountTypography {
+  font-size: 2.4rem;
+}
+
+.BaseCountdownUnitTypography {
+}
+
+.BaseCountdownTitleTypography {
+  font-size: 1.8rem;
 }
 
 .BaseSnackAlert {

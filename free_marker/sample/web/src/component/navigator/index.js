@@ -197,41 +197,9 @@ class NavigatorComponent extends BaseNavigatorComponent {
         } else {
             /** route to page or doing something */
             this.setDrawerOpenState(false);
-            this.handleShortcutRouter(shortcut.getRoute());
+            this.handleCustomRouter(shortcut.getRoute());
         }
     }
-
-    handleShortcutRouter = (routeString = '') => {
-        const words = routeString.split(':')
-        const type = _.head(words);
-        switch (type) {
-            case 'path':
-                const path =_.last(words);
-                this.gotoExternalUrl(path);
-                break;
-            case 'route':
-                const routes = _.tail(words)
-                const page = routes.shift();
-                const functionName = `goto${_.upperFirst(page)}Page`;
-                const functionOfGotoPage = Router[functionName];
-                if(_.isFunction(functionOfGotoPage)) {
-                    this.setSnackViewVisibility(true,functionName)
-                    functionOfGotoPage(this,...routes);
-                } else {
-                    this.setSnackViewVisibility(true,`4097 can't handle ${page}`,{type:'error'})
-                }
-                break;
-            default:
-                if(_.isEmpty(routeString)) {
-                    /** doing nothing */
-                } else {
-                    this.setSnackViewVisibility(true,`can't handle ${routeString}`,{type:'error'})
-                }
-                break;
-        }
-
-    }
-
 
     /** -------------------- async api -------------------- **/
 }

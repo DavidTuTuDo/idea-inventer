@@ -34,7 +34,7 @@
 }
 .NavigatorAppBarAppBar {
   /** style */
-  background-color: #7f7f7f;
+  background-color: #111111;
 }
 .NavigatorAppBarToolBarToolbar {
   /** style */
@@ -81,9 +81,8 @@
 }
 .ListMainViewPagerFade {
   /** style */
-  width: 95vw;
-  height: 25vh;
-  margin-top: 10px;
+  width: 100vw;
+  height: 28vh;
 }
 .MainViewPagerImageImg,
 .MainEditorViewPagerImageImg {
@@ -97,21 +96,22 @@
   min-height: 100%;
   min-width: 100%;
 }
-.WrapMainViewPagerImagePaper,
-.WrapMainEditorViewPagerImagePaper {
+.WrapMainViewPagerImageDiv,
+.WrapMainEditorViewPagerImageDiv {
   /** style */
-  width: 95vw;
-  height: 25vh;
+  width: 100vw;
+  height: 28vh;
   overflow: hidden;
   position: relative;
 }
 .MainEnterPointPaper,
 .MainEditorEnterPointPaper {
   /** style */
-  height: 80px;
+  height: 8vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: #d3d3d3;
 }
 .WrapMainEnterPointGrid {
   /** style */
@@ -119,25 +119,22 @@
 .ListMainEnterPointGrid {
   /** style */
 }
-.ListWrapMainEnterPointCard,
-.ListWrapMainEditorEnterPointCard {
+.ListWrapMainEnterPointDiv,
+.ListWrapMainEditorEnterPointDiv {
   /** style */
   margin-top: 40px;
+  padding: 5px;
 }
 .MainEnterPointTitleTypography {
   /** style */
+  font-size: 1.5rem;
 }
-.MainJuniorButton,
-.MainHighButton,
-.MainSocialButton,
-.MainPurchaseButton {
+.MainCountdownPaper,
+.MainEditorCountdownPaper {
   /** style */
-  margin: 5px;
-  min-height: 10vw;
-  min-width: 20vh;
-  font-size: 2.2em;
-  color: #0074d9;
-  border-color: #0074d9;
+  padding: 10px;
+  margin: 10px;
+  margin-top: 6vh;
 }
 /** following for exam  component used  */
 .ExamDiv,
@@ -343,7 +340,7 @@
 .MainEditorViewPagerImageImg {
   /** style */
 }
-.WrapMainEditorViewPagerImagePaper {
+.WrapMainEditorViewPagerImageDiv {
   /** style */
 }
 .MainEditorEnterPointPaper {
@@ -355,7 +352,7 @@
 .ListMainEditorEnterPointDiv {
   /** style */
 }
-.ListWrapMainEditorEnterPointCard {
+.ListWrapMainEditorEnterPointDiv {
   /** style */
 }
 .MainEditorEnterPointTitleTextField {
@@ -365,6 +362,9 @@
   /** style */
 }
 .MainEditorEnterPointXsTextField {
+  /** style */
+}
+.MainEditorCountdownPaper {
   /** style */
 }
 /** following for exam editor component used  */
@@ -511,6 +511,12 @@
 }
 .BaseComponentErrorViewRetryButton {
   margin-top: 30px;
+}
+.BaseCountdownCountTypography {
+  font-size: 2.4rem;
+}
+.BaseCountdownTitleTypography {
+  font-size: 1.8rem;
 }
 .ComponentViewDiv {
   display: flex;

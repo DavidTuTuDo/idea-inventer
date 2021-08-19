@@ -59,13 +59,15 @@ class MobileStyle {
 
   /** => following for main editor component  */
 
+  MainEditorCountdownPaper = {};
+
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};
 
   MainEditorEnterPointTitleTextField = {};
 
-  ListWrapMainEditorEnterPointCard = {};
+  ListWrapMainEditorEnterPointDiv = {};
 
   ListMainEditorEnterPointDiv = {};
 
@@ -73,7 +75,7 @@ class MobileStyle {
 
   MainEditorEnterPointPaper = {};
 
-  WrapMainEditorViewPagerImagePaper = {};
+  WrapMainEditorViewPagerImageDiv = {};
 
   MainEditorViewPagerImageImg = {};
 
@@ -165,17 +167,11 @@ class MobileStyle {
 
   /** => following for main  component  */
 
-  MainPurchaseButton = {};
-
-  MainSocialButton = {};
-
-  MainHighButton = {};
-
-  MainJuniorButton = {};
+  MainCountdownPaper = {};
 
   MainEnterPointTitleTypography = {};
 
-  ListWrapMainEnterPointCard = {};
+  ListWrapMainEnterPointDiv = {};
 
   ListMainEnterPointGrid = {};
 
@@ -183,7 +179,7 @@ class MobileStyle {
 
   MainEnterPointPaper = {};
 
-  WrapMainViewPagerImagePaper = {};
+  WrapMainViewPagerImageDiv = {};
 
   MainViewPagerImageImg = {};
 
