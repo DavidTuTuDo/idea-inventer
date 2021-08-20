@@ -130,11 +130,9 @@ class InfinitePool {
         this.trigger();
         return new Promise((resolve, reject) => {
             const callback = (result) => {
-                if (result.resolve) {
+                if(result.taskResolved){
                     resolve(result.resolve);
-                }
-
-                if (result.reject) {
+                } else {
                     reject(result.reject)
                 }
             }
@@ -181,7 +179,8 @@ class InfinitePool {
         let taskResult;
         let taskError;
         let param = self.paramQueue.shift();
-
+        let taskResolved = true;
+        /** 用來判斷task 有沒有走到 catch裡面, 不然resolve了但return undefined, task會不知所措 */
         return new Promise((resolve, reject) => {
             if (self.enableOfTaskTimeout) {
                 timeoutHash = setTimeout(() => {
@@ -195,12 +194,13 @@ class InfinitePool {
             /** 真正的任務是從這裡開始 */
             console.log(self.getPoollerLogFormat('task executing'));
             task(param).then((result) => {
-                // console.log(self.getPoollerLogFormat('task get result'));
-                taskResult = result
+                    // console.log(self.getPoollerLogFormat('task get result'));
+                    taskResult = result
                 }
             ).catch((error) => {
                     // console.error(self.getPoollerLogFormat('inner error'), error);
                     taskError = error
+                    taskResolved = false;
                 }
             ).finally(() => {
                 clearTimeout(timeoutHash);
@@ -211,10 +211,11 @@ class InfinitePool {
             })
         }).catch(error => {
             // console.error(self.getPoollerLogFormat(self.getPoollerLogFormat('outer error')), error);
+            taskResolved = false;
             taskError = error;
         }).finally(() => {
             // console.info(self.getPoollerLogFormat(self.getPoollerLogFormat('outer finally')));
-            self.removeResolveOrRejectPromiseByHash(hash, {resolve: taskResult, reject: taskError});
+            self.removeResolveOrRejectPromiseByHash(hash, {taskResolved, resolve: taskResult, reject: taskError});
         })
     }
 

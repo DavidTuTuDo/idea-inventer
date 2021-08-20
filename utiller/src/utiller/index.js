@@ -580,6 +580,14 @@ class Utiller {
         let ms = duration.asMilliseconds();
         return ms;
     }
+
+    isEven(n) {
+        return n % 2 === 0;
+    }
+
+    isOdd(n) {
+        return Math.abs(n % 2) === 1;
+    }
 }
 
 if (configer.DEBUG_MODE) {

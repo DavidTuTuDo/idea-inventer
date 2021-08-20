@@ -60,7 +60,6 @@ class CommonRemoteApi {
         }
     }
 
-
     async updateItem(path, id, item) {
         Util.appendInfo(`update item => path:/${path}/${id}`);
         await firebase.firestore().collection(path).doc(id).update(item);
@@ -106,27 +105,37 @@ class CommonRemoteApi {
                 batch.delete(doc.ref)
             })
         }
-
         await batch.commit();
     }
 
     async submitObject(path, object, objName) {
-        const commitment = {};
-        path = libpath.join(path, 'attrs');
+        const commitment = object;
+        path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`submit object => ${path}/${objName}`);
-        commitment[objName] = object
         return await firebase.firestore().collection(path).doc(objName).set(commitment);
     }
 
     async fetchObject(path, objName) {
-        path = libpath.join(path, 'attrs');
+        path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`fetch object => path:/${path}/${objName}`);
         const result = await firebase.firestore().collection(path).doc(objName).get();
         return result.exists ? result.data() : {};
     }
 
+    getNormalizePathOfObjectApi(path) {
+        if (this.isCollectionPath(path))
+            return path;
+        else
+            return libpath.join(path, 'attrs');
+    }
+
+    isCollectionPath(path){
+        const segments = _.split(Util.getNormalizedStringNotStartWith(path,'/'),'/');
+        return Util.isOdd(segments.length);
+    }
+
     async updateObject(path, updatedObject, objName) {
-        path = libpath.join(path, 'attrs');
+        path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`update object => path:/${path}/${objName}`);
         await firebase.firestore().collection(path).doc(objName).update(updatedObject);
     }

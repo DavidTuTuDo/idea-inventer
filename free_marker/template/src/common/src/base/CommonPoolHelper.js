@@ -20,8 +20,9 @@ class CommonPoolHelper {
 
     async submitTo(queueName, async_func, priority = `low`, taskName = 'noName') {
         if(!this.paralledMode) queueName = 'default';
-
-        return await this.queues[queueName].addTaskAndWait4Result(async_func, priority, taskName);
+        const result = await this.queues[queueName].addTaskAndWait4Result(async_func, priority, taskName);
+        console.log('走到這裡了44',result);
+        return result;
     }
 
     async submit(async_func, priority = `low`) {

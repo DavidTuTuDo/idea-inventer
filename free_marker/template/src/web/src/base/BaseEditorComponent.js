@@ -23,6 +23,14 @@ class BaseEditorComponent extends BaseComponent {
         ]
     }
 
+    static getObjectRemoteJobs() {
+        return [
+            {name: 'submit', loadingText: '正在遠端處理中', buttonText: '更新遠端'},
+            {name: 'recover', loadingText: '正在遠端回復中', buttonText: '回復初始'},
+
+        ]
+    }
+
     static getItemJobs() {
         return [
             {name: 'delete', loadingText: '正在刪除中', buttonText: '刪除'},
@@ -92,6 +100,10 @@ class BaseEditorComponent extends BaseComponent {
     renderCollectionEditorView(onCreateClickedAsyncTask, hasPath) {
         return this.renderEditorFunctionView(hasPath ? BaseEditorComponent.getCollectionRemoteJobs() : BaseEditorComponent.getCollectionJobs(),
             onCreateClickedAsyncTask);
+    }
+
+    renderObjectEditorView(onEditClickAsyncTask) {
+        return this.renderEditorFunctionView(BaseEditorComponent.getObjectRemoteJobs(),onEditClickAsyncTask)
     }
 
     async handleAsyncFunction(onClickAsyncTask, type, processingText) {

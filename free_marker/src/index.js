@@ -253,6 +253,13 @@ class CodegenNode {
         return this.storageFolder;
     }
 
+    isCollectionPath() {
+        if (this.hasPath()) {
+            const segments = _.split(Util.getNormalizedStringNotStartWith(this.getPath(), '/'), '/');
+            return Util.isOdd(segments.length);
+        }
+        return undefined;
+    }
 
     setStyle(style) {
         this.style = style;
@@ -299,7 +306,9 @@ class CodegenNode {
     }
 
     getFunctionNameOfCollectionEditorWithParam() {
-        return `self.${this.getFunctionNameOfCollectionEditor()}(${this.getPreciseAttributeParent().getName()})`;
+        return `self.${this.getFunctionNameOfCollectionEditor()}(
+        ${this.isObject() ? this.getName() : this.getPreciseAttributeParent().getName()}
+        )`;
     }
 
     hasValidViewParent() {
@@ -516,7 +525,7 @@ class CodegenNode {
         return 'div';
     }
 
-    setWrapView(view){
+    setWrapView(view) {
         this.wrapView = view;
     }
 
@@ -857,7 +866,7 @@ class CodegenNode {
 
     getClickParamStmt() {
         let object = '';
-        if (Util.isOrEquals(this.type,'arrayItem','array'))
+        if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
             object = this.getName();
         else if (this.isAttribute() || this.needParentParam()) {
             object = this.getPreciseAttributeParent().getName();
@@ -1823,7 +1832,9 @@ class StoreBuilder extends BaseBuilder {
                 `{`,
                 node.hasPath() ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
                 ..._.map(node.getPreciseAttributeChildren(), (child) => {
-                    return (child.isCollection() && !child.isDisableFetch()) ? `${child.getFieldName()}: await new ${child.getClassName()}().fetch(view),` : '';
+                    return (child.isCollection() && !child.isDisableFetch()) ?
+                        child.isArray() && !child.hasPath() ? '' :
+                            `${child.getFieldName()}: await new ${child.getClassName()}().fetch(view),` : '';
                 }),
                 `}`,
             ]
@@ -1832,10 +1843,14 @@ class StoreBuilder extends BaseBuilder {
                 ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
         } else if (node.isArray()) {
+            const stmts = [];
             if (node.hasPath()) {
-                baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
-                    `return await this.${Util.camel(`fetch`, node.getFieldName())}(view)`);
+                stmts.push(`return await this.${Util.camel(`fetch`, node.getFieldName())}(view)`)
             }
+
+            baseGenerator.appendAsyncFunction('fetch',
+                ['view'], [], [],
+                ...stmts);
         }
 
         if (node.isArray()) {
@@ -2063,7 +2078,7 @@ class RemoteFunctionHandler {
 
                 } else if (node.isObject()) {
                     generateApiFunction(
-                        Util.camel('submit', node.getFieldName(), 'object'),
+                        Util.camel(node.getFunctionNameOfSubmit()),
                         [`object`],
                         [
                             `const commitment = this.${functionNameOfNormalize}(object)`,
@@ -2072,7 +2087,12 @@ class RemoteFunctionHandler {
                     generateApiFunction(
                         node.getFunctionNameOfFetch(),
                         [],
-                        [`return await self.fetchObject(path,'${node.getName()}')`], `fetch object`)
+                        [
+                            `const object = await self.fetchObject(path,'${node.getName()}')`,
+                            `this.clear()`,
+                            `this.initial(object)`,
+                            `return object`
+                        ], `fetch object`)
 
                     generateApiFunction(
                         Util.camel('update', node.getFieldName()),
@@ -2593,7 +2613,6 @@ class ComponentBuilder extends BaseBuilder {
                     `}`
                 )
             } else {
-
                 generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], ['因為沒有path, 所以其實只會是SyncTask'],
                     `return  async (type) => {
                 switch (type) {`,
@@ -2618,6 +2637,22 @@ class ComponentBuilder extends BaseBuilder {
                     `}`,
                 )
             }
+        } else if (node.isObject() && node.hasPath()) {
+            generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [node.getName()], [], ['因為沒有path, 所以其實只會是SyncTask'],
+                `const self = this`,
+                `return  async (type) => {`,
+                `switch (type) {`,
+                `case 'submit':`,
+                `await ${node.getName()}.${node.getFunctionNameOfSubmit()}(self)`,
+                `break;`,
+                `case 'recover':`,
+                `await ${node.getName()}.${node.getFunctionNameOfFetch()}(self)`,
+                `break;`,
+                `default:`,
+                `Util.appendError(\`${node.getName()} 3035 can't not happen this type => \${type}\`)`,
+                `}`,
+                `}`,
+            )
         }
     }
 
@@ -3228,6 +3263,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     fetchCollection(node, stmts = []) {
+
         const path = node.getPath();
         if (!_.isEmpty(path)) {
 
@@ -3241,7 +3277,7 @@ class ProjectFileHandler extends PathBase {
 
             const wildcard = `{${node.getName()}}`;
             if (node.isObject()) {
-                stmts.push(`match ${libpath.join('/', normalize, 'attrs', wildcard)} {`, ..._stmts, '}');
+                stmts.push(`match ${libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard)} {`, ..._stmts, '}');
             } else if (node.isArray()) {
                 stmts.push(`match ${libpath.join('/', normalize, wildcard)} {`, ..._stmts, '}');
             } else {
@@ -3356,8 +3392,6 @@ class ProjectFileHandler extends PathBase {
                     node.setViewProps({});
                     node.setView('TextField');
                     node.appendViewProps({variant: `outlined`});
-
-                    ``
                     if (node.isReadOnly()) {
                         node.appendViewProps({
                             InputProps: {
@@ -3393,7 +3427,15 @@ class ProjectFileHandler extends PathBase {
                 node.appendListContents([`{this.renderCollectionEditorView(
                    ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
                 )}`]);
+            } else if (node.isObject() && node.hasPath()) {
+                node.setWrapView('div');
+                const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
+                node.appendWrapStyle({...style, borderColor: 'green'});
+                node.appendWrapContents([`{this.renderObjectEditorView(
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
+                )}`]);
             }
+
             node.clearContents();
 
             for (const child of node.getChildren()) {
@@ -3621,7 +3663,7 @@ if (configer.DEBUG_MODE) {
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
             await builder.buildWeb();
-            await builder.buildAdmin();
+            // await builder.buildAdmin();
             // await builder.testPersistent();
 
         }
