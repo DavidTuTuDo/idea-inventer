@@ -1,7 +1,7 @@
 import libpath from "path";
 import fs from "fs";
 import _ from "lodash";
-import process from "child_process";
+import ChildProcess from "child_process";
 import {configer} from 'configer';
 import Utiller from "./index";
 import ERROR from '../exceptioner/index';
@@ -95,7 +95,7 @@ class NodeUtiller extends Utiller {
             obj['lastModifiedTime'] = this.getFileLastModifiedTime(absolute);
         }
 
-        if (this.isisDirectory(absolute)) {
+        if (this.isDirectory(absolute)) {
             obj['dirName'] = absolute.split('\/').pop();
         }
 
@@ -115,7 +115,7 @@ class NodeUtiller extends Utiller {
     syncExecuteCommandLine(command) {
         const self = this;
         this.appendInfo(`執行腳本 ${command}`);
-        process.exec(`${command}`,
+        ChildProcess.exec(`${command}`,
             (error, stdout, stderr) => {
                 self.appendInfo(`${stdout}`);
                 self.appendInfo(`${stderr}`);
@@ -130,7 +130,7 @@ class NodeUtiller extends Utiller {
         const self = this;
         this.appendInfo(`執行腳本 ${command}`);
         return new Promise(function (resolve, reject) {
-            process.exec(command,
+            ChildProcess.exec(command,
                 (error, stdout, stderr) => {
                     self.appendInfo(`${stdout}`);
                     self.appendInfo(`${stderr}`);
@@ -268,7 +268,12 @@ class NodeUtiller extends Utiller {
         fs.copyFileSync(from, destination);
     }
 
-    isisDirectory(path) {
+    getNodeEnvVariable(key,defaultValue = undefined) {
+        const value = process.env[key]
+        return value === undefined ? defaultValue : value;
+    }
+
+    isDirectory(path) {
         return fs.lstatSync(path).isDirectory();
     }
 
@@ -546,7 +551,10 @@ if (configer.DEBUG_MODE) {
             // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
             // await new NodeUtiller().generatePackage('./');
             // new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
-        //
+            console.log(process.env.keyword);
+            console.log(new NodeUtiller().getNodeEnvVariable('keyword'));
+
+            //
         }
     )();
 }

@@ -3316,7 +3316,7 @@ class ProjectFileHandler extends PathBase {
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
         Util.appendFile(path, base.join('\n'), true, true);
 
-        if(deploy) {
+        if (deploy) {
             Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
             await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only firestore:rules`);
         }
@@ -3679,9 +3679,25 @@ if (configer.DEBUG_MODE) {
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
 
-            await builder.buildWeb();
-            // await builder.buildAdmin();
-            // await builder.persistent();
+            switch (Util.getNodeEnvVariable('type')) {
+                case 'adminOnly':
+                    await builder.buildAdmin();
+                    break;
+                case 'webOnly':
+                    await builder.buildWeb();
+                    break;
+                case 'persistent':
+                    await builder.persistent('web');
+                    await builder.persistent('admin');
+                    break;
+                default:
+                    await builder.buildWeb();
+                    await builder.buildAdmin();
+                    break;
+            }
+
+
+
         }
     )();
 }
