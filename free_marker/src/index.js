@@ -22,6 +22,9 @@ class CodegenNode {
     password;
     components;
 
+    directory;
+    /** 用來提示deploy 的 folder path*/
+
     ref;
     /** 用來標記這個node的內容, 免得重複的再type一遍 */
 
@@ -217,6 +220,10 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    getDirectoryName() {
+        return this.directory;
     }
 
     getStyle() {
@@ -3291,8 +3298,9 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    async generateFireStoreRules() {
-        const path = Util.persistByPath(libpath.join(this.genRootPath, 'firestore.rules'))
+    async generateFireStoreRules(deploy = true) {
+        const fileName = 'firestore.rules';
+        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
         const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
         const stmts = [];
         for (const component of this.nodeOfAncestor.getComponents()) {
@@ -3300,6 +3308,11 @@ class ProjectFileHandler extends PathBase {
         }
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
         Util.appendFile(path, base.join('\n'), true, true);
+
+        if(deploy) {
+            Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
+            await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only firestore:rules`);
+        }
     }
 
     async forAdmin() {
@@ -3662,8 +3675,8 @@ if (configer.DEBUG_MODE) {
                 projectRootPath: './sample',
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
-            await builder.buildWeb();
-            // await builder.buildAdmin();
+            // await builder.buildWeb();
+            await builder.buildAdmin();
             // await builder.testPersistent();
 
         }
