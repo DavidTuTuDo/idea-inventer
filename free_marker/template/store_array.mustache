@@ -61,13 +61,18 @@ remove{{{functionName}}}(...items) {
 
 {{#hasPath}}
         {{{這裡就是放if的邏輯}}}
-submit{{{functionName}}} = async (...objs) => {
+submit{{{functionName}}} = async (view,...objs) => {
     const items = [];
     for (const obj of objs) {
-        const item = await new {{{fieldClass}}}(obj).submit{{{fieldClass}}}Item();
+        const item = await new {{{fieldClass}}}(obj).submit{{{fieldClass}}}Item(view);
         items.push(item.value);
     }
     this.push{{{functionName}}}(...items)
+}
+
+update{{{functionName}}} = async (view) => {
+        await new {{{fieldClass}}}().submit{{{functionName}}}(view,
+        ...this.get{{{functionName}}}().map((each) => each.rawData()))
 }
 
 submit{{{fieldClass}}} = async (obj = {}) => {

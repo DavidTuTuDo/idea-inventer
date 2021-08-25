@@ -20,6 +20,7 @@ class BaseEditorComponent extends BaseComponent {
     static getCollectionRemoteJobs() {
         return [
             {name: 'create', loadingText: '正在遠端新增中', buttonText: '遠端新增項目'},
+            {name: 'batchUpdate', loadingText: '正在遠端批次更新中', buttonText: '遠端批次更新'},
         ]
     }
 
@@ -103,7 +104,7 @@ class BaseEditorComponent extends BaseComponent {
     }
 
     renderObjectEditorView(onEditClickAsyncTask) {
-        return this.renderEditorFunctionView(BaseEditorComponent.getObjectRemoteJobs(),onEditClickAsyncTask)
+        return this.renderEditorFunctionView(BaseEditorComponent.getObjectRemoteJobs(), onEditClickAsyncTask)
     }
 
     async handleAsyncFunction(onClickAsyncTask, type, processingText) {

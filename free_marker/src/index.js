@@ -405,6 +405,10 @@ class CodegenNode {
         return Util.camel('submit', this.getName());
     }
 
+    getFunctionNameOfBatchUpdate() {
+        return Util.camel('update', this.getFieldName());
+    }
+
     setViewModified(modified) {
         this.viewModified = modified;
     }
@@ -1846,7 +1850,7 @@ class StoreBuilder extends BaseBuilder {
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
-                `Util.appendInfo(' ${node.getName()} ',' ===> fetch 被執行 ')`,
+                // `Util.appendInfo(' ${node.getName()} ',' ===> fetch 被執行 ')`,
                 ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
         } else if (node.isArray()) {
@@ -2613,6 +2617,9 @@ class ComponentBuilder extends BaseBuilder {
                     `switch (type) {`,
                     `case 'create':`,
                     `await ${parentName}.${node.getFunctionNameOfSubmit()}(self)`,
+                    `break;`,
+                    `case 'batchUpdate':`,
+                    `await ${parentName}.${node.getFunctionNameOfBatchUpdate()}(self)`,
                     `break;`,
                     `default:`,
                     `Util.appendError(\`${node.getName()} 3033 can't not happen this type => \${type}\`)`,
@@ -3621,7 +3628,7 @@ class BuildApplication {
         );
     }
 
-    async testOverrideFunction(platform = 'web') {
+    async overrideFiles(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
         handler.overrideEachFilesFromFolder(
             `common.style.js`
@@ -3643,22 +3650,18 @@ class BuildApplication {
         );
     }
 
-    async testPersistent(platform = 'web') {
+    async persistent(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(), platform);
         handler.persistBaseFilesToFreeMarkerTemplate();
         handler.persistCustomizePackages()
         handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
-
     }
 
-    hello() {
-        Util.appendInfo('hello');
-    }
 }
 
-const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-// const SURE_TO_PERSIST_VERY_IMPORTANT = false;
+// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
+const SURE_TO_PERSIST_VERY_IMPORTANT = false;
 
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
@@ -3675,10 +3678,10 @@ if (configer.DEBUG_MODE) {
                 projectRootPath: './sample',
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
             })
-            // await builder.buildWeb();
-            await builder.buildAdmin();
-            // await builder.testPersistent();
 
+            await builder.buildWeb();
+            // await builder.buildAdmin();
+            // await builder.persistent();
         }
     )();
 }
