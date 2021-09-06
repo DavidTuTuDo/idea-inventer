@@ -39,6 +39,8 @@ class NodeUtiller extends Utiller {
      *
      * predicate: predicate(pathInfo); predicate帶的參數是 pathInfo object
      *
+     * excludes 忽略掉的資料夾名稱
+     *
      * return [...{
     path: 'database/index.js',
     fileName: 'index',

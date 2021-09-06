@@ -3022,6 +3022,12 @@ class AppBuilder extends ComponentBuilder {
      * srcPath 就是 keep file 的根目錄
      * */
     async buildLessFile(classNameInfos) {
+        /** 先取得 libs file list*/
+        const libs = Util.findFilePathBy(libpath.join(this.freeMarkerRootPath, 'less', 'libs'),
+            (file) => _.isEqual(file.extension, 'less'))
+            .map((file) => file.fileNameExtension);
+
+
         /** 先把舊的整理過, 除掉 comment的字樣line */
         const sign = `/** style */`;
         const types = [`app`, `common`, `mobile`];
@@ -3069,7 +3075,6 @@ class AppBuilder extends ComponentBuilder {
                         }
                     } else
                         generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
-
                 }
             }
 
@@ -3077,6 +3082,11 @@ class AppBuilder extends ComponentBuilder {
                 generator.appendInClassTail(`/** ======== following for homeless ========= */\n\n`);
                 lessAttributesFromSrc.map(each => generator.appendInClassTail(`${each} }\n\n`))
             }
+
+            for (const nameExtension of libs) {
+                generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
+            }
+
 
             generator.needSignature(false);
             generator.disableDefaultImports();
@@ -3089,6 +3099,12 @@ class AppBuilder extends ComponentBuilder {
                 Util.appendInfo(`persist ./less/index.js succeed`);
             }
         }
+    }
+
+    async overrideLessFile() {
+        const less = libpath.join(this.freeMarkerRootPath, `less`);
+        const to = libpath.join(this.genSourcePath, 'less');
+        Util.copyFromFolderToDestFolder(less, to);
     }
 }
 
@@ -3196,6 +3212,14 @@ class ProjectFileHandler extends PathBase {
                 Util.copyFromFolderToDestFolder(genExtraFolderPath, destFolderPath);
                 Util.appendInfo(`extraPackage ,persist to ${destFolderPath} succeed`);
             }
+        }
+    }
+
+    persistLessLibs() {
+        const files = Util.findFilePathBy(libpath.join(this.genSourcePath, 'less', 'libs'), (file) => _.isEqual('less', file.extension));
+        const to = libpath.join(this.freeMarkerRootPath, 'less', 'libs');
+        for (const less of files) {
+            Util.copySingleFile(less.path, to, less.fileNameExtension, true);
         }
     }
 
@@ -3509,6 +3533,7 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(this.props).buildRouterFile(source);
         await new AppBuilder(this.props).buildCookieFiles(source);
         await new AppBuilder(this.props).buildEventFolder(totalEvents);
+        await new AppBuilder(this.props).overrideLessFile();
         await new AppBuilder(this.props).buildLessFile(totalClassNames);
         await new AppBuilder(this.props).buildStyleFiles(totalClassNames);
         await new AppBuilder(this.props).buildHtmlIndexAssetsFile();
@@ -3656,6 +3681,7 @@ class BuildApplication {
         handler.persistCustomizePackages()
         handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
+        handler.persistLessLibs();
     }
 
 }
@@ -3673,11 +3699,13 @@ export {BuildApplication as BuildApplication};
 if (configer.DEBUG_MODE) {
 
     (async () => {
-            const builder = new BuildApplication({
+            const props = {
                 genRootPath: '../gen',
                 projectRootPath: './sample',
                 freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
-            })
+            }
+
+            const builder = new BuildApplication(props)
 
             switch (Util.getNodeEnvVariable('type')) {
                 case 'adminOnly':
@@ -3690,12 +3718,14 @@ if (configer.DEBUG_MODE) {
                     await builder.persistent('web');
                     await builder.persistent('admin');
                     break;
+                case 'less':
+                    await builder.buildWeb();
+                    break;
                 default:
                     await builder.buildWeb();
                     await builder.buildAdmin();
                     break;
             }
-
 
 
         }
