@@ -75,8 +75,8 @@ update{{{functionName}}} = async (view) => {
         ...this.get{{{functionName}}}().map((each) => each.rawData()))
 }
 
-submit{{{fieldClass}}} = async (obj = {}) => {
-    return await this.submit{{{functionName}}}(obj);
+submit{{{fieldClass}}} = async (view, obj = {}) => {
+    return await this.submit{{{functionName}}}(view, obj);
 }
 {{/hasPath}}
 {{^hasPath}}
