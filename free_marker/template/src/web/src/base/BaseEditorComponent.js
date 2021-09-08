@@ -83,13 +83,38 @@ class BaseEditorComponent extends BaseComponent {
         this.enableImageSelectView(false);
     }
 
+    /** origin 的 資料結構是 參照 onFileSelected */
+    async buildWatermarkBlob(origin){
+        const configOfWatermark  = Config.watermark;
+        switch (configOfWatermark.type) {
+            case "text":
+                const watermarkTextNode = watermark.text;
+                const functionNameOfText = watermarkTextNode[configOfWatermark.position];
+                const blobOfTextWatermark = await watermark([origin.blob])
+                    .blob(functionNameOfText(configOfWatermark.src, configOfWatermark.textStyle, configOfWatermark.color, configOfWatermark.alpha))
+                blobOfTextWatermark.name = `watermark_`+origin.blob.name;
+                return blobOfTextWatermark;
+                break;
+            case "image":
+                const watermarkImageNode = watermark.image;
+                const functionNameOfImage = watermarkImageNode[configOfWatermark.position];
+                const blobOfImageWatermark = await watermark([origin.url,configOfWatermark.src])
+                    .blob(functionNameOfImage(configOfWatermark.alpha))
+                blobOfImageWatermark.name = `watermark_`+origin.blob.name;
+                return blobOfImageWatermark;
+                break
+            default:
+                throw new ERROR(9999,'un-handle watermark type');
+        }
+
+
+    }
+
     uploadImageStorage = async (file) => {
         this.setLoadingViewVisibility(true);
         if (this.currentImageTask.needWatermark) {
-            const blobOfWatermark = await watermark([file.blob])
-                .blob(watermark.text.lowerRight(Config.textOfWatermark, '20px roboto', '#000', 0.35))
+            const blobOfWatermark = await this.buildWatermarkBlob(file);
             await this.currentImageTask.beforeSubmit(URL.createObjectURL(blobOfWatermark));
-            blobOfWatermark.name = file.name;
             const urlOfWatermark = await Firebaser.uploadImage(blobOfWatermark, this.currentImageTask.folderName);
             const urlOfOrigin = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
             await this.currentImageTask.afterSubmit({watermark: urlOfWatermark, origin: urlOfOrigin});
@@ -98,6 +123,7 @@ class BaseEditorComponent extends BaseComponent {
             const url = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
             await this.currentImageTask.afterSubmit(url);
         }
+        watermark.destroy();
         this.setLoadingViewVisibility(false);
     }
 

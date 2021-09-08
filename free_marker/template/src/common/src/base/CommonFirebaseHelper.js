@@ -151,6 +151,7 @@ class CommonFirebaseHelper extends BaseFirebase {
         const asyncTask = async () => {
             const ref = this.storage().ref();
             const uploadPath = libpath.join('./', folder, blob.name);
+            Util.appendInfo(`storage upload path => ${uploadPath}`);
             const uploadTask = await ref.child(uploadPath).put(blob);
             const url = await uploadTask.ref.getDownloadURL();
             return url;

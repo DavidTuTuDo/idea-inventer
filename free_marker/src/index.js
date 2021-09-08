@@ -445,7 +445,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['listStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
+        return ['watermark', 'listStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
             'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
             'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -3141,9 +3141,16 @@ class ProjectFileHandler extends PathBase {
     async buildConfig(sourceObj) {
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
+        const watermarkObj = Util.mergeObject({
+            type: 'string',
+            src: 'defaultTexts',
+            alpha: 0.35,
+            position: 'lowerRight',
+            color:'#000',
+            textStyle:'20px roboto',
+        }, sourceObj.watermark);
+        baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
 
-        const watermark = sourceObj.textOfWatermark ? sourceObj.textOfWatermark : sourceObj.name;
-        baseConfigGenerator.appendField(`textOfWatermark`, JSON.stringify(watermark));
         switch (this.platform) {
             case 'admin':
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
