@@ -22,6 +22,12 @@ class CodegenNode {
     password;
     components;
 
+    textOfWatermark;
+    /** 用來當作浮水印的字樣 */
+
+    needWatermark;
+    /** 表示上傳時需要浮水印功能,目前只能用在img上 */
+
     directory;
     /** 用來提示deploy 的 folder path*/
 
@@ -3135,12 +3141,14 @@ class ProjectFileHandler extends PathBase {
     async buildConfig(sourceObj) {
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
+
+        const watermark = sourceObj.textOfWatermark ? sourceObj.textOfWatermark : sourceObj.name;
+        baseConfigGenerator.appendField(`textOfWatermark`, JSON.stringify(watermark));
         switch (this.platform) {
             case 'admin':
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
                 baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
-
                 break;
             case 'web':
                 baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
@@ -3389,6 +3397,15 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            if (node.isImageView() && node.needWatermark) {
+                node.getParentObject().appendChildrenWithJson({
+                    name: `${Util.camel(node.name, 'origin')}`,
+                    type: `string`,
+                    column: true,
+                })
+                console.log()
+            }
+
             if (node.ref) {
                 const targetName = node.ref;
                 const _nodes = CodegenNode.finds(this.strcuts, (_node) => _.isEqual(targetName, _node.getName()))
@@ -3420,14 +3437,26 @@ class ProjectFileHandler extends PathBase {
         const source = this.nodeOfAncestor;
         const structs = source.getComponents().map(component => component.getStruct());
 
+        function getStmtsOfAfterSubmit(node) {
+            if (node.needWatermark) {
+                return `afterSubmit:(remoteUrls) => {
+                ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrls.watermark);
+                ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName(), 'origin')}(remoteUrls.origin);
+                }`
+            } else {
+                return `afterSubmit:(remoteUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrl)`;
+            }
+        }
+
         function toEditorPageMode(node) {
             if (node.isColumnAttribute() && !node.isCollection()) {
                 if (node.isImageView()) {
                     node.appendViewProps({
                         onClick: `###(param) => self.onImageEditorClicked({
+                         needWatermark:${node.needWatermark ? 'true' : 'false'},
                          folderName:'${node.getStorageFolderName()}',
                          beforeSubmit:(localUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(localUrl),
-                         afterSubmit:(remoteUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrl),
+                         ${getStmtsOfAfterSubmit(node)}
                         })`
                     })
                 } else {
@@ -3547,13 +3576,6 @@ class ProjectFileHandler extends PathBase {
     }
 
     async execute() {
-        if (SURE_TO_PERSIST_VERY_IMPORTANT) {
-            this.persistIndexAndLessFiles();
-            this.persistBaseFilesToFreeMarkerTemplate();
-            this.persistCustomizePackages()
-            this.persistImageFolder();
-        }
-
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         switch (this.platform) {
             case 'web':
@@ -3686,9 +3708,6 @@ class BuildApplication {
 
 }
 
-// const SURE_TO_PERSIST_VERY_IMPORTANT = true;
-const SURE_TO_PERSIST_VERY_IMPORTANT = false;
-
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
 
@@ -3713,6 +3732,12 @@ if (configer.DEBUG_MODE) {
                     break;
                 case 'webOnly':
                     await builder.buildWeb();
+                    break;
+                case 'persistentBuild':
+                    await builder.persistent('web');
+                    await builder.persistent('admin');
+                    await builder.buildWeb();
+                    await builder.buildAdmin();
                     break;
                 case 'persistent':
                     await builder.persistent('web');

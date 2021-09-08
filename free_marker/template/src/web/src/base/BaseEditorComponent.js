@@ -5,7 +5,9 @@ import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import {Typography, LinearProgress, CircularProgress, Button, Paper} from "@material-ui/core";
 import {Application} from '../index.js';
 import BaseComponent from './BaseComponent';
-import Firebaser from './CommonFirebaseHelper'
+import Firebaser from './CommonFirebaseHelper';
+import watermark from 'watermarkjs';
+import Config from '../config';
 
 class BaseEditorComponent extends BaseComponent {
 
@@ -70,6 +72,7 @@ class BaseEditorComponent extends BaseComponent {
     }
 
     currentImageTask = {
+        needWaterMark: false,
         folderName: '',
         beforeSubmit: (localUrl) => Util.appendInfo(localUrl),
         afterSubmit: (remoteUrl) => Util.appendInfo(remoteUrl)
@@ -81,12 +84,21 @@ class BaseEditorComponent extends BaseComponent {
     }
 
     uploadImageStorage = async (file) => {
-        await this.currentImageTask.beforeSubmit(file.url);
         this.setLoadingViewVisibility(true);
-        const url = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
-        await this.currentImageTask.afterSubmit(url);
+        if (this.currentImageTask.needWatermark) {
+            const blobOfWatermark = await watermark([file.blob])
+                .blob(watermark.text.lowerRight(Config.textOfWatermark, '20px roboto', '#000', 0.35))
+            await this.currentImageTask.beforeSubmit(URL.createObjectURL(blobOfWatermark));
+            blobOfWatermark.name = file.name;
+            const urlOfWatermark = await Firebaser.uploadImage(blobOfWatermark, this.currentImageTask.folderName);
+            const urlOfOrigin = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
+            await this.currentImageTask.afterSubmit({watermark: urlOfWatermark, origin: urlOfOrigin});
+        } else {
+            await this.currentImageTask.beforeSubmit(file.url);
+            const url = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
+            await this.currentImageTask.afterSubmit(url);
+        }
         this.setLoadingViewVisibility(false);
-
     }
 
     onFilesSelected(files) {
