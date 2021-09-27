@@ -29,6 +29,9 @@ class BaseStore extends ClientRemoteApi {
 
     parentNode;
 
+    docRef;
+    /** 用來記錄firebase的doc,可以找到next page的關鍵 */
+
     @observable
     selectorParams = this.getDefaultSelectorParam();
 
@@ -63,6 +66,14 @@ class BaseStore extends ClientRemoteApi {
 
     setParentNode(param) {
         this.parentNode = param;
+    }
+
+    setDocRef(doc) {
+        this.docRef = doc;
+    }
+
+    getDocRef() {
+        return this.docRef;
     }
 
     getParentNode() {
@@ -111,6 +122,9 @@ class BaseStore extends ClientRemoteApi {
     initial(props) {
         if (props && props.parentNode)
             this.setParentNode(props.parentNode);
+
+        if (props && props.doc)
+            this.setDocRef(props.doc);
     }
 
     filter(obj) {

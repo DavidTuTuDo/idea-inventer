@@ -22,6 +22,13 @@ class CodegenNode {
     password;
     components;
 
+    paginate;
+    /** {threshold:10, size:6} ,array專用 可以指定page size, 觸及底部的threshold(就是距離底部多少就要觸發下一頁,預設是1) */
+
+    preConditions = [];
+    /** startAfter(),where,這邊指的就是firestore裡的 Query operators*/
+    afterConditions = [];
+
     textOfWatermark;
     /** 用來當作浮水印的字樣 */
 
@@ -249,6 +256,14 @@ class CodegenNode {
         return node;
     }
 
+    getPreConditions() {
+        return this.preConditions;
+    }
+
+    getAfterConditions() {
+        return this.afterConditions;
+    }
+
     getStructNode() {
         const node = this.getParentBy((node) => node.isStructNode());
         return node;
@@ -266,6 +281,10 @@ class CodegenNode {
         return this.storageFolder;
     }
 
+    getFunctionNameOfNextPage() {
+        return Util.camel('fetch', 'next', 'page', this.getFieldName());
+    }
+
     isCollectionPath() {
         if (this.hasPath()) {
             const segments = _.split(Util.getNormalizedStringNotStartWith(this.getPath(), '/'), '/');
@@ -280,6 +299,18 @@ class CodegenNode {
 
     getWrapStyle() {
         return this.wrapStyle;
+    }
+
+    getPaginateSize() {
+        return this.paginate.size;
+    }
+
+    getPaginateThreshold() {
+        return this.paginate.threshold;
+    }
+
+    hasPaginate() {
+        return !!this.paginate && _.isObject(this.paginate);
     }
 
     appendWrapStyle(style) {
@@ -445,7 +476,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['watermark', 'listStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
+        return ['paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
             'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
             'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -531,6 +562,7 @@ class CodegenNode {
         this.contents = [];
     }
 
+    /** array => Questions, object => Question*/
     getFieldName() {
         return this.name + (this.plural ? this.plural : '');
     }
@@ -1709,6 +1741,7 @@ class BaseBuilder extends PathBase {
                                    projectVersion,
                                    projectDescription,
                                    fieldClass,
+                                   hasPaginate
                                }) => {
         return {
             hasPath,
@@ -1724,6 +1757,7 @@ class BaseBuilder extends PathBase {
             projectVersion,
             projectDescription,
             fieldClass,
+            hasPaginate,
         }
     }
 
@@ -1752,13 +1786,14 @@ class StoreBuilder extends BaseBuilder {
         super(props);
     }
 
-    getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass, name, hasPath}) {
+    getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass, name, hasPath, hasPaginate}) {
         const functions = this.getStringFromMustache(`store_${type}.mustache`, {
             name,
             hasPath,
             fieldName,
             defaultValue,
-            fieldClass
+            fieldClass,
+            hasPaginate
         })
         return functions;
     }
@@ -1791,6 +1826,7 @@ class StoreBuilder extends BaseBuilder {
                         hasPath: child.hasPath(),
                         type: child.type,
                         defaultValue,
+                        hasPaginate: child.hasPaginate(),
                         fieldClass: child.getClassName(),
                     }));
             if (child.isNumber())
@@ -1978,6 +2014,22 @@ class RemoteFunctionHandler {
     }
 
     buildFetchSubmitApi = (node, recursively = false) => {
+        function getConditionStmts() {
+            const stmts = [];
+            stmts.push(...node.getAfterConditions().map((each) => `(stmt) => stmt.${each}`));
+            if (node.hasPaginate()) {
+                stmts.push(`(stmt) => stmt.limit(${node.getPaginateSize()})`)
+            }
+            return stmts.join(',');
+        }
+
+        function getPreConditionStmts() {
+            if (node.getPreConditions().length > 0)
+                return node.getPreConditions().map((each) => `(stmt) => stmt.${each}`).join(',') + ',';
+            else
+                return '';
+        }
+
         const self = this;
         if (node.isCollection()) {
             const contents = [];
@@ -2048,9 +2100,11 @@ class RemoteFunctionHandler {
                 )
 
                 if (node.isArray()) {
+
+
                     generateApiFunction(node.getFunctionNameOfFetch(),
-                        ['condition = (stmt) => stmt'],
-                        [`return await self.fetchItems(path, condition)`], `fetch items`);
+                        ['...conditions'],
+                        [`return await self.fetchItems(path, ${getPreConditionStmts()}...conditions,${getConditionStmts()})`], `fetch items`);
 
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
@@ -2062,8 +2116,8 @@ class RemoteFunctionHandler {
                     /** admins only , delete collection all */
                     generateApiFunction(
                         Util.camel(`delete`, node.getFieldName()),
-                        ['condition = (stmt) => stmt', 'all = false'],
-                        [`return await self.deleteItems(path,condition,all)`], 'delete items')
+                        ['all = false', '...conditions'],
+                        [`return await self.deleteItems(path,all,...conditions)`], 'delete items')
 
                     generateApiFunction(
                         node.getFunctionNameOfSubmitItem(),
@@ -2729,6 +2783,11 @@ class ComponentBuilder extends BaseBuilder {
             if (existedFunctions[functionName]) continue;
 
             if (child.isArray()) {
+                if (child.hasPaginate()) {
+                    generator.appendFunction(`getThresholdOfScrollToBottom`,[],[],[], `return ${child.getPaginateThreshold()}`)
+                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()}(this))`)
+                }
+
                 /** 讓Array先產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
                 const clone = _.clone(child);
                 clone.type = 'arrayItem';
@@ -3146,8 +3205,8 @@ class ProjectFileHandler extends PathBase {
             src: 'defaultTexts',
             alpha: 0.35,
             position: 'lowerRight',
-            color:'#000',
-            textStyle:'20px roboto',
+            color: '#000',
+            textStyle: '20px roboto',
         }, sourceObj.watermark);
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
 
@@ -3717,7 +3776,6 @@ class BuildApplication {
 
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
-
 const TARGET_COMPONENT = 'main';
 
 export {BuildApplication as BuildApplication};

@@ -83,6 +83,15 @@ submit{{{fieldClass}}} = async (view, obj = {}) => {
     {{{這裡就是放else的邏輯}}}
 {{/hasPath}}
 
-
+{{#hasPaginate}}
+fetchNextPage{{{functionName}}}(view) {
+return async() => {
+const {{{name}}} = _.last(this.get{{{functionName}}}());
+const doc = {{{name}}}.getDocRef();
+const itemsOfNextPage = await new {{{fieldClass}}}().fetch{{{functionName}}}(view, (stmt) => stmt.startAfter(doc));
+this.push{{{functionName}}}(...itemsOfNextPage);
+}
+}
+{{/hasPaginate}}
 
 

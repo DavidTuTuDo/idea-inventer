@@ -72,14 +72,16 @@ class CommonRemoteApi {
         return true;
     }
 
-    async fetchItems(path, condition = (conditionStmt) => conditionStmt) {
+    /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
+    async fetchItems(path, ...conditions) {
         Util.appendInfo(`fetch items => path:/${path}/`);
-        const query = condition(firebase.firestore().collection(path));
+        const query = Util.accumulate(firebase.firestore().collection(path), conditions);
         const querySnapshot = await query.get();
         const all = [];
         if (!querySnapshot.empty)
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
+                data.doc = doc;
                 data.id = _.isEmpty(data.id) ? doc.id : data.id;
                 all.push(data);
             })
@@ -92,14 +94,15 @@ class CommonRemoteApi {
         return result.exists ? {...result.data(), id} : {};
     }
 
-    async deleteItems(path, condition = (conditionStmt) => conditionStmt, all) {
+    /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
+    async deleteItems(path, all,...conditions) {
         Util.appendInfo(`delete items ${path}`);
         const batch = firebase.firestore().batch()
         if (all) {
             const list = await firebase.firestore().collection(path).listDocuments()
             list.map((doc) => batch.delete(doc));
         } else {
-            const query = condition(firebase.firestore().collection(path));
+            const query = Util.accumulate(firebase.firestore().collection(path), conditions);
             const querySnapshot = await query.get();
             querySnapshot.forEach((doc) => {
                 batch.delete(doc.ref)
@@ -129,8 +132,8 @@ class CommonRemoteApi {
             return libpath.join(path, 'attrs');
     }
 
-    isCollectionPath(path){
-        const segments = _.split(Util.getNormalizedStringNotStartWith(path,'/'),'/');
+    isCollectionPath(path) {
+        const segments = _.split(Util.getNormalizedStringNotStartWith(path, '/'), '/');
         return Util.isOdd(segments.length);
     }
 

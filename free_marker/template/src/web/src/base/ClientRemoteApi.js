@@ -4,6 +4,7 @@ import Moment from 'moment';
 import libpath from 'path';
 import CommonPoolHelper from "./CommonPoolHelper";
 import CommonRemoteApi from "./CommonRemoteApi";
+import BaseComponent from "./BaseComponent";
 
 class ClientRemoteApi extends CommonRemoteApi {
 
@@ -37,9 +38,9 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('submit', _async);
     }
 
-
-    async deleteItems(path) {
-        const _async = async () => super.deleteItems(path);
+    /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
+    async deleteItems(path, all,...conditions) {
+        const _async = async () => super.deleteItems(path, ...conditions);
         return await CommonPoolHelper.submitTo('submit', _async);
     }
 
@@ -53,8 +54,9 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('fetch', _async)
     }
 
-    async fetchItems(path) {
-        const asyncTask = async () => super.fetchItems(path);
+    /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
+    async fetchItems(path, ...conditions) {
+        const asyncTask = async () => super.fetchItems(path, ...conditions);
         return await CommonPoolHelper.submitTo('fetch', asyncTask);
     }
 
@@ -83,20 +85,20 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     handleApiExecute(path, type, view) {
-        if (view !== undefined) {
+        if (view !== undefined && view instanceof BaseComponent) {
             view.setLoadingViewVisibility(true);
         }
     }
 
     handleApiException(path, type, error, view) {
-        if (view !== undefined) {
+        if (view !== undefined && view instanceof BaseComponent) {
             const errorMsg = `${type} ${[path]}, ${error.message}`
             view.setSnackViewVisibility(true, errorMsg, {type: `error`, duration: 5000});
         }
     }
 
     handleApiFinally(path, type, view) {
-        if (view !== undefined) {
+        if (view !== undefined && view instanceof BaseComponent) {
             view.setLoadingViewVisibility(false);
         }
     }

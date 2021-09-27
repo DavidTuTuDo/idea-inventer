@@ -56,6 +56,17 @@ class Utiller {
 
     }
 
+    /** 就是把 target 放到 condition 裡面處理, 然後取代原本的target*/
+    accumulate(target, conditions) {
+        let beginning = target;
+        for (const condition of conditions) {
+            if (condition !== undefined) {
+                beginning = condition(beginning);
+            }
+        }
+        return beginning
+    }
+
     isOrEquals(target, ...several) {
         for (const each of several) {
             if (_.isEqual(target, each)) return true;
@@ -247,8 +258,6 @@ class Utiller {
         }
         return false;
     }
-
-
 
 
     getObjectValue(obj) {
@@ -443,7 +452,7 @@ class Utiller {
         return _.join(_.split(string, '\n'), '');
     }
 
-    exist(obj){
+    exist(obj) {
         return !_.isNull(obj) && !_.isUndefined(obj);
     }
 
@@ -556,7 +565,7 @@ class Utiller {
      *  pathName : /free_marker/src/exam/web/src/base/AlertDialog.js
      *  return: /src/base/AlertDialog.js
      * */
-    getRelativePath(pathName,rootName) {
+    getRelativePath(pathName, rootName) {
         return _.dropWhile(pathName, (each, index) => {
             return _.isEqual(each, rootName[index])
         }).join('');
@@ -573,7 +582,7 @@ class Utiller {
     }
 
     /** date format 2022-01-21" */
-    getMillionSecFromNow(date){
+    getMillionSecFromNow(date) {
         let now = moment(new Date()); //
         let end = moment(date); // another date
         let duration = moment.duration(end.diff(now));
@@ -592,7 +601,7 @@ class Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-        console.log(new Utiller().getMillionSecFromNow('2022-01-21'));
+            console.log(new Utiller().getMillionSecFromNow('2022-01-21'));
         }
     )();
 }

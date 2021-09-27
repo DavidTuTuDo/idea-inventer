@@ -31,6 +31,10 @@ class BaseComponent extends React.Component {
     listOfFunctionOfUnsubscribe = [];
     style = {};
     componentStyle = {}
+    jobsOfScrollToBottom = [];
+    jobExecutorLock = false;
+
+    /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
 
     constructor(props) {
         super(props);
@@ -39,6 +43,20 @@ class BaseComponent extends React.Component {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
             this.getStore().setAppBarHeight(isMobile ? 100 : 64);
         }
+    }
+
+    componentWillUnmount() {
+        this.getStore().clear();
+        /** 執行unsubscribe */
+        while (this.listOfFunctionOfUnsubscribe.length > 0) {
+            const unSub = this.listOfFunctionOfUnsubscribe.shift();
+            unSub();
+        }
+        window.removeEventListener('scroll', this.onScrollToBottomListener, true)
+    }
+
+    componentDidMount() {
+        window.addEventListener('scroll', this.onScrollToBottomListener, true);
     }
 
     centerInParent(direction) {
@@ -50,8 +68,49 @@ class BaseComponent extends React.Component {
         }
     }
 
-    componentDidMount() {
+    registerScrollToBottomJob = (...functionOfAsyncTasks) => {
+        for (const func of functionOfAsyncTasks) {
+            if (typeof func !== 'function') {
+                throw new ERROR(4002, `registerScrollToBottomJob `);
+            }
+        }
+        this.jobsOfScrollToBottom.push(...functionOfAsyncTasks);
     }
+
+    getThresholdOfScrollToBottom() {
+        return 1;
+    }
+
+    onScrollToBottomListener = (event) => {
+        const self = this;
+        let documentHeight = document.body.scrollHeight;
+        let currentScroll = window.scrollY + window.innerHeight;
+        let modifier = 1;
+        /** modifier 距離底部的threshold */
+        if (currentScroll + modifier > documentHeight) {
+            /** Scroll達底部了 */
+            if (!self.jobExecutorLock) {
+                this.jobExecutor().then();
+            } else {
+                Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫`);
+            }
+        }
+    }
+
+    jobExecutor = async () => {
+        const self = this;
+        try {
+            self.jobExecutorLock = true;
+            for (const job of this.jobsOfScrollToBottom)
+                await job();
+
+        } catch (error) {
+            Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
+        } finally {
+            self.jobExecutorLock = false
+        }
+    }
+
 
     getEmptyStore() {
         return new Store();
@@ -146,6 +205,7 @@ class BaseComponent extends React.Component {
         const self = this;
         return (
             <div className={'RootViewDiv'}
+                 onScroll={(event) => console.log('scrolling ==> ', event)}
                  style={{...this.style, marginTop: self.getStore().getAppBarHeight()}}>
 
                 {self.renderGlobalLoadingView()}
@@ -211,15 +271,6 @@ class BaseComponent extends React.Component {
     enableImageSelectView(multiple = false) {
         const accepts = `image/*`;
         this.enableFileSelectView(accepts, multiple)
-    }
-
-    componentWillUnmount() {
-        this.getStore().clear();
-        /** 執行unsubscribe */
-        while (this.listOfFunctionOfUnsubscribe.length > 0) {
-            const unSub = this.listOfFunctionOfUnsubscribe.shift();
-            unSub();
-        }
     }
 
     renderGlobalLoadingView() {
