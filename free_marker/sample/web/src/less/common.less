@@ -245,8 +245,7 @@
 
 .ExamQuestionChoiceDiv {
   /** style */
-  margin-top: 2vh;
-  margin-bottom: 2vh;
+  margin: 13px;
 }
 
 .ListExamQuestionChoiceDiv {
@@ -262,6 +261,20 @@
 .WrapExamQuestionChoiceStatementDiv {
   /** style */
   margin-bottom: 1vh;
+}
+
+.ExamQuestionChoiceImageDiv {
+  /** style */
+}
+
+.ListExamQuestionChoiceImageDiv {
+  /** style */
+  display: flex;
+  flex-direction: row;
+}
+
+.ExamQuestionChoiceImageUrlImg {
+  /** style */
 }
 
 .ExamQuestionTipTypography {
@@ -500,6 +513,25 @@
 }
 
 .WrapExamEditorQuestionChoiceStatementDiv:extend(.WrapExamQuestionChoiceStatementDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionChoiceImageDiv:extend(.ExamQuestionChoiceImageDiv all) {
+  /** style */
+}
+
+.WrapExamEditorQuestionChoiceImageDiv:extend(.WrapExamQuestionChoiceImageDiv
+    all) {
+  /** style */
+}
+
+.ListExamEditorQuestionChoiceImageDiv:extend(.ListExamQuestionChoiceImageDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionChoiceImageUrlImg:extend(.ExamQuestionChoiceImageUrlImg
     all) {
   /** style */
 }

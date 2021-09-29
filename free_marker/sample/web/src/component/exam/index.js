@@ -8,7 +8,7 @@ import BaseExamComponent from "./BaseExamComponent";
 import React from 'react';
 import {Application} from '../../index.js';
 
-@inject( "exam" )
+@inject("exam")
 @observer
 class ExamComponent extends BaseExamComponent {
     /** -------------------- fields -------------------- **/
@@ -35,11 +35,25 @@ class ExamComponent extends BaseExamComponent {
         return props;
     }
 
-    getInjectStyleOfQuestionAlertDiv(question) {
-        if(question.isAnswerWrong()){
-            return {visibility:'visible'}
+    getInjectStyleOfQuestionChoiceDiv(choice) {
+        if (choice.hasPhotos()) {
+            return {
+                'borderStyle': 'solid',
+                'borderWidth': '3px',
+                'borderRadius': '10px',
+                'borderColor': 'grey',
+                'padding': '5px',
+            }
+        } else {
+            return {}
         }
-        return {visibility:'hidden'}
+    }
+
+    getInjectStyleOfQuestionAlertDiv(question) {
+        if (question.isAnswerWrong()) {
+            return {visibility: 'visible'}
+        }
+        return {visibility: 'hidden'}
     }
 
     onStatementButtonClicked(param) {
@@ -48,8 +62,8 @@ class ExamComponent extends BaseExamComponent {
         if (question.isReply()) {
             return;
         }
-        const reply = question.getChoices().indexOf( choice );
-        question.setReply( reply );
+        const reply = question.getChoices().indexOf(choice);
+        question.setReply(reply);
     }
 
     getInjectStyleOfChoiceStatementButton(choice) {

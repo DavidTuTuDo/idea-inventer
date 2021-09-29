@@ -33,6 +33,10 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     return !_.isEqual(this.getReply(), this.getAnswer());
   }
 
+  hasPhotos() {
+    this.getChoices()
+  }
+
   getAnswer() {
     const answer = super.getAnswer();
     switch (answer){

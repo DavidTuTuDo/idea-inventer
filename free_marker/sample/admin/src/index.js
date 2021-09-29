@@ -141,6 +141,7 @@ import moment from 'moment';
     async function beforeStartService(efficient) {
         await api.deletePurchasePlans();
         await api.deleteQuestions();
+        await api.deleteMyShortcuts('x1rx1Epw5MdqRwyPFjmCe4WkBLY2',true);
         await api.deleteShortcuts();
         await api.submitShortcuts(
             {
@@ -268,7 +269,7 @@ import moment from 'moment';
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
 
-    // await beforeStartService(true);
+    await beforeStartService(true);
     await backgroundService();
 })();
 

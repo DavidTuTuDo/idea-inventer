@@ -241,7 +241,6 @@ class CommonRemoteApi {
 
     }
 
-
     /** realtime database method */
     async realtimeFetchObject(refPath, filtering = (ref) => ref.once('value')) {
         Util.appendInfo(`fetch object => ${refPath}`);

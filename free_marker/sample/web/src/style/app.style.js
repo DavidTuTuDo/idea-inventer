@@ -19,6 +19,14 @@ class AppStyle {
 
   ExamEditorQuestionAnswerTextField = {};
 
+  ExamEditorQuestionChoiceImageUrlImg = {};
+
+  ListExamEditorQuestionChoiceImageDiv = {};
+
+  WrapExamEditorQuestionChoiceImageDiv = {};
+
+  ExamEditorQuestionChoiceImageDiv = {};
+
   WrapExamEditorQuestionChoiceStatementDiv = {};
 
   ExamEditorQuestionChoiceStatementTextField = {};
@@ -126,6 +134,12 @@ class AppStyle {
   WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};
+
+  ExamQuestionChoiceImageUrlImg = {};
+
+  ListExamQuestionChoiceImageDiv = {};
+
+  ExamQuestionChoiceImageDiv = {};
 
   WrapExamQuestionChoiceStatementDiv = {};
 

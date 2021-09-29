@@ -23,6 +23,14 @@ class MobileStyle {
 
   ExamEditorQuestionAnswerTextField = {};
 
+  ExamEditorQuestionChoiceImageUrlImg = {};
+
+  ListExamEditorQuestionChoiceImageDiv = {};
+
+  WrapExamEditorQuestionChoiceImageDiv = {};
+
+  ExamEditorQuestionChoiceImageDiv = {};
+
   WrapExamEditorQuestionChoiceStatementDiv = {};
 
   ExamEditorQuestionChoiceStatementTextField = {};
@@ -130,6 +138,12 @@ class MobileStyle {
   WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};
+
+  ExamQuestionChoiceImageUrlImg = {};
+
+  ListExamQuestionChoiceImageDiv = {};
+
+  ExamQuestionChoiceImageDiv = {};
 
   WrapExamQuestionChoiceStatementDiv = {};
 

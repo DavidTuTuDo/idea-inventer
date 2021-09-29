@@ -1101,6 +1101,8 @@ class CodegenNode {
     }
 
     getFunctionNameOfInjectStyle() {
+
+
         return `getInjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
 
@@ -2599,7 +2601,7 @@ class ComponentBuilder extends BaseBuilder {
         };
 
         if (node.needInjectStyle()) {
-            const param = node.getPreciseAttributeParentName();
+            const param = node.isArrayItem() ? node.getName(): node.getPreciseAttributeParentName();
             const injectFunctionName = node.getFunctionNameOfInjectStyle();
             props.style = `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getStyle())},...Style.${className}}`;
             generator.appendFunction(injectFunctionName, [param]);

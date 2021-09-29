@@ -19,6 +19,14 @@ class CommonStyle {
 
   ExamEditorQuestionAnswerTextField = {};
 
+  ExamEditorQuestionChoiceImageUrlImg = {};
+
+  ListExamEditorQuestionChoiceImageDiv = {};
+
+  WrapExamEditorQuestionChoiceImageDiv = {};
+
+  ExamEditorQuestionChoiceImageDiv = {};
+
   WrapExamEditorQuestionChoiceStatementDiv = {};
 
   ExamEditorQuestionChoiceStatementTextField = {};
@@ -126,6 +134,12 @@ class CommonStyle {
   WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};
+
+  ExamQuestionChoiceImageUrlImg = {};
+
+  ListExamQuestionChoiceImageDiv = {};
+
+  ExamQuestionChoiceImageDiv = {};
 
   WrapExamQuestionChoiceStatementDiv = {};
 

@@ -495,8 +495,7 @@ body {
 .ExamQuestionChoiceDiv,
 .ExamEditorQuestionChoiceDiv {
   /** style */
-  margin-top: 2vh;
-  margin-bottom: 2vh;
+  margin: 13px;
 }
 .ListExamQuestionChoiceDiv,
 .ListExamEditorQuestionChoiceDiv {
@@ -511,6 +510,20 @@ body {
 .WrapExamEditorQuestionChoiceStatementDiv {
   /** style */
   margin-bottom: 1vh;
+}
+.ExamQuestionChoiceImageDiv,
+.ExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ListExamQuestionChoiceImageDiv,
+.ListExamEditorQuestionChoiceImageDiv {
+  /** style */
+  display: flex;
+  flex-direction: row;
+}
+.ExamQuestionChoiceImageUrlImg,
+.ExamEditorQuestionChoiceImageUrlImg {
+  /** style */
 }
 .ExamQuestionTipTypography {
   /** style */
@@ -695,6 +708,18 @@ body {
   /** style */
 }
 .WrapExamEditorQuestionChoiceStatementDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.WrapExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ListExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceImageUrlImg {
   /** style */
 }
 .ExamEditorQuestionAnswerTextField {

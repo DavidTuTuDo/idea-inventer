@@ -438,6 +438,18 @@ body {
 .WrapExamEditorQuestionChoiceStatementDiv {
   /** style */
 }
+.ExamQuestionChoiceImageDiv,
+.ExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ListExamQuestionChoiceImageDiv,
+.ListExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ExamQuestionChoiceImageUrlImg,
+.ExamEditorQuestionChoiceImageUrlImg {
+  /** style */
+}
 .ExamQuestionTipTypography {
   /** style */
 }
@@ -591,6 +603,18 @@ body {
   /** style */
 }
 .WrapExamEditorQuestionChoiceStatementDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.WrapExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ListExamEditorQuestionChoiceImageDiv {
+  /** style */
+}
+.ExamEditorQuestionChoiceImageUrlImg {
   /** style */
 }
 .ExamEditorQuestionAnswerTextField {
