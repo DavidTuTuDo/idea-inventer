@@ -22,6 +22,15 @@ class CodegenNode {
     password;
     components;
 
+    restful = false;
+    /** 就是這個物件會多出 有 status, message, 讓server處理可以加上狀態, 以便在client顯示出提示
+     * 會在store裡多這兩個屬性
+     * {
+     *     status:succeed || fail
+     *     message: fail reason
+     * }
+     * */
+
     paginate;
     /** {threshold:10, size:6} ,array專用 可以指定page size, 觸及底部的threshold(就是距離底部多少就要觸發下一頁,預設是1) */
 
@@ -218,6 +227,7 @@ class CodegenNode {
 
     admin;
 
+
     /** 當有些按鈕需要確認的dialog, { content:string, title:string }, 必須搭配wrap:true 使用 */
     alertDialog;
 
@@ -237,6 +247,10 @@ class CodegenNode {
 
     getDirectoryName() {
         return this.directory;
+    }
+
+    isRestfulBean() {
+        return this.restful;
     }
 
     getStyle() {
@@ -1172,7 +1186,7 @@ class CodegenNode {
         return !!this.needParam && this.needParam
     }
 
-    getDefaultValueByType() {
+    getDefaultValueByType(isAdmin) {
         if (this.defaultValue) {
             return JSON.stringify(this.defaultValue);
         }
@@ -1186,7 +1200,7 @@ class CodegenNode {
         }
 
         if (this.type === 'object') {
-            return `new ${_.upperFirst(this.name)}()`;
+            return isAdmin ? `{}` :`new ${_.upperFirst(this.name)}()`;
         }
 
         if (this.type === 'number') {
@@ -1335,7 +1349,6 @@ class ClassGenerator {
 
     /** 為了讓import 不用擔心複數宣告 就用Object,empty 裡面放不需要變數宣告的import 例如 import from Firebase/database, 最後再一次gen*/
     imports = {all: {}, empty: []};
-    x
     hasConstructor = false;
     constructorStmt = [];
     hasExtends = false
@@ -1978,12 +1991,33 @@ class RemoteFunctionHandler {
         this.platform = platform;
     }
 
+    isAdminPlatform() {
+        return _.isEqual('admin', this.platform);
+    }
+
+    isWebPlatform() {
+        return _.isEqual('web', this.platform);
+    }
+
+    appendParamIfPlatformEqualsWeb(isString = false) {
+        if (_.isEqual(this.platform, 'web')) {
+            if (isString)
+                return ',view';
+            else
+                return ['view'];
+        } else {
+            if (isString)
+                return '';
+            else
+                return [];
+        }
+    }
+
     buildListenerFunction(node, recursively = false) {
         const defaultParam = node.getParamsOfPath();
         const pathStmt = `const path = \`${node.getPathOfRouterString()}\``;
 
         if (node.isCollection()) {
-
             for (const child of node.getPreciseAttributeChildren()) {
                 if (recursively && child.hasChildren()) this.buildListenerFunction(child);
             }
@@ -2001,6 +2035,16 @@ class RemoteFunctionHandler {
                     `${pathStmt}
                         return this.listenItem(path,id,callback);`
                 );
+
+                if (this.isWebPlatform() && node.isRestfulBean()) {
+                    this.generator.appendFunction(Util.camel(`restful`, `listen`, node.getName(), 'item'),
+                        [...defaultParam, `id`, `callback = (result) => result`, 'view']
+                        , [], [],
+                        `${pathStmt}
+                        return this.restfulListenItem(path,id,callback,view);`
+                    );
+                }
+
             } else if (node.isObject() && node.hasPath()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
                     [...defaultParam, `callback = (data,error) => {}`],
@@ -2040,6 +2084,10 @@ class RemoteFunctionHandler {
                 return self.platform === 'web';
             }
 
+            function isAdminPlatform() {
+                return self.platform === 'admin';
+            }
+
             function appendViewInParamStmt(comma = true) {
                 return isWebPlatform() ? `${comma ? ',' : ''}view` : ``;
             }
@@ -2050,6 +2098,11 @@ class RemoteFunctionHandler {
                         `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`];
                 } else
                     return [];
+            }
+
+            function getFetchStmt() {
+                if (isWebPlatform()) return [`this.clear()`, `this.initial(item)`];
+                return [];
             }
 
             function generateApiFunction(name, params = [], logicStmts = [], type) {
@@ -2070,6 +2123,8 @@ class RemoteFunctionHandler {
                         return `${param} = this.getId()`;
                     } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
                         return `${param} = this.rawData()`;
+                    } else if (_.isEqual(param.trim(), 'restful')) {
+                        return `restful = {status: 'succeed', message: 'default reason'}`;
                     }
                     return param;
                 })
@@ -2083,7 +2138,8 @@ class RemoteFunctionHandler {
             for (const child of node.getPreciseAttributeChildren()) {
                 if (_.isEqual(child, 'updateTime')) continue;
                 if (!child.isColumnAttribute()) continue;
-                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType()};\/\/${child.getType()}`);
+                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
                 children.push(child.getFieldName());
             }
 
@@ -2101,7 +2157,6 @@ class RemoteFunctionHandler {
 
                 if (node.isArray()) {
 
-
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
                         [`return await self.fetchItems(path, ${getPreConditionStmts()}...conditions,${getConditionStmts()})`], `fetch items`);
@@ -2109,8 +2164,7 @@ class RemoteFunctionHandler {
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
                         ['const item =  await self.fetchItem(path, id)',
-                            `this.clear()`,
-                            `this.initial(item)`,
+                            , ...getFetchStmt(),
                             `return item`], `fetch item`)
 
                     /** admins only , delete collection all */
@@ -2124,6 +2178,7 @@ class RemoteFunctionHandler {
                         [`item`],
                         [`const commitment = this.${functionNameOfNormalize}(item)`,
                             `return await self.submitItem(path, commitment);`], 'submit item')
+
 
                     generateApiFunction(
                         node.getFunctionNameOfUpdateItem(),
@@ -2146,6 +2201,15 @@ class RemoteFunctionHandler {
                     generateApiFunction(
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
                         [], [`return await self.fetchSizeOfCollection(path)`], `fetch size`)
+
+                    if (this.isAdminPlatform() && node.isRestfulBean()) {
+                        generateApiFunction(
+                            Util.camel(`restful`, node.getFunctionNameOfSubmitItem()),
+                            ['item', 'restful'],
+                            [`const commitment = this.${functionNameOfNormalize}({...item, ...restful})`,
+                                `return await self.submitItem(path, commitment);`], 'submit item')
+                    }
+
 
                 } else if (node.isObject()) {
                     generateApiFunction(
@@ -2258,7 +2322,6 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         for (const event of componentNode.getEvents()) {
-
             baseGenerator.appendImport('EventBus', '../../base/CommonEventBus')
             const eventName = event.getName();
             const eventParams = event.getEventParams();
@@ -2784,7 +2847,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (child.isArray()) {
                 if (child.hasPaginate()) {
-                    generator.appendFunction(`getThresholdOfScrollToBottom`,[],[],[], `return ${child.getPaginateThreshold()}`)
+                    generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
                     self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()}(this))`)
                 }
 
@@ -3463,13 +3526,30 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            if (node.isRestfulBean()) {
+
+                node.appendChildrenWithJson({
+                    name: 'status',
+                    column: true,
+                    description: '我是server處理完的結果, 回傳succeed/fail',
+                    type: 'string', /** succeed, fail */
+
+                })
+
+                node.appendChildrenWithJson({
+                    name: 'message',
+                    column: true,
+                    description: '我是server處理完的結果, 如果fail,reason就寫在這裡',
+                    type: 'string', /** fail reason */
+                })
+            }
+
             if (node.isImageView() && node.needWatermark) {
                 node.getParentObject().appendChildrenWithJson({
                     name: `${Util.camel(node.name, 'origin')}`,
                     type: `string`,
                     column: true,
                 })
-                console.log()
             }
 
             if (node.ref) {
@@ -3764,7 +3844,7 @@ class BuildApplication {
     }
 
     async persistent(platform = 'web') {
-        const handler = new ProjectFileHandler(this.getBuildObject(), platform);
+        const handler = new ProjectFileHandler(this.getBuildObject(platform));
         handler.persistBaseFilesToFreeMarkerTemplate();
         handler.persistCustomizePackages()
         handler.persistImageFolder();

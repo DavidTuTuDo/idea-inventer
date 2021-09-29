@@ -50,19 +50,18 @@ class PurchaseComponent extends BasePurchaseComponent {
         const plan = param.object;
         const uid = UserInfo.getUid();
         const listenerId = Util.getRandomHash(25);
-        new PurchaseOrder().submitPurchaseOrderItem({
+        new PurchaseOrder().submitPurchaseOrderItem(this,{
             price: plan.price,
             productInfos: [{pid: plan.getPid(), quantity: 1}],
             listenerId,
             uid,
         }).then((result) => {
             self.subscribe(
-                new PurchaseListener().listenPurchaseListenerItem(uid, listenerId, (data, error) => {
-                    console.log(`dataContent==> `, data, `error===> `, error);
-                    if (data) {
+                new PurchaseListener().restfulListenPurchaseListenerItem(uid, listenerId, (result) => {
+                    self.handleRestFulResult(result, async (data) => {
                         window.open(data.paymentUrl);
-                    }
-                })
+                    }).then()
+                },this)
             );
         })
     }

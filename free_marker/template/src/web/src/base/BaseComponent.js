@@ -342,7 +342,7 @@ class BaseComponent extends React.Component {
     defaultSnackExtra() {
         return {
             type: `info`, /** error,warning,success, info */
-            duration: 3000,
+            duration: 5000,
             func: {
                 name: 'default',
                 task: async () => {
@@ -355,7 +355,6 @@ class BaseComponent extends React.Component {
 
     renderSnackView() {
         const self = this;
-
 
         function Alert(props) {
             return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -509,6 +508,18 @@ class BaseComponent extends React.Component {
                     this.setSnackViewVisibility(true, `can't handle ${routeString}`, {type: 'error'})
                 }
                 break;
+        }
+    }
+
+    async handleRestFulResult(restfulResult, succeedBehavior) {
+        if (restfulResult === undefined) return;
+        console.log(restfulResult);
+        if (restfulResult.status === 'succeed') {
+            await succeedBehavior(restfulResult.data);
+        } else if (restfulResult.status === 'fail') {
+            this.setSnackViewVisibility(true, restfulResult.message, {type: 'warning'})
+        } else {
+            throw new ERROR(7007, `status ===> ${restfulResult.status}`)
         }
     }
 

@@ -5,20 +5,15 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BasePurchasePurchasePlanStore from "./BasePurchasePurchasePlanStore";
+import BasePurchasePurchaseListenerDataStore from "./BasePurchasePurchaseListenerDataStore";
 
-class PurchasePurchasePlanStore extends BasePurchasePurchasePlanStore {
+class PurchasePurchaseListenerDataStore extends BasePurchasePurchaseListenerDataStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  isTitle(){
-    return _.isEqual(this.getPid(),-1);
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default PurchasePurchasePlanStore;
+export default PurchasePurchaseListenerDataStore;

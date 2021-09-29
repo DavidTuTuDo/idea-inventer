@@ -60,7 +60,7 @@ class Utiller {
     accumulate(target, conditions) {
         let beginning = target;
         for (const condition of conditions) {
-            if (condition !== undefined) {
+            if (condition !== undefined && _.isFunction(condition)) {
                 beginning = condition(beginning);
             }
         }

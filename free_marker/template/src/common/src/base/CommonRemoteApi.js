@@ -47,7 +47,7 @@ class CommonRemoteApi {
         Util.appendInfo(`submit item => path:${path}/${id}`);
         let obj = object;
         if (id && !_.isEmpty(id)) {
-            await firebase.firestore().collection(path).doc(id).set(object);
+            await firebase.firestore().collection(path).doc(_.toString(id)).set(object);
         } else {
             const docRef = await firebase.firestore().collection(path).add(object);
             obj.id = docRef.id;
@@ -62,13 +62,13 @@ class CommonRemoteApi {
 
     async updateItem(path, id, item) {
         Util.appendInfo(`update item => path:/${path}/${id}`);
-        await firebase.firestore().collection(path).doc(id).update(item);
+        await firebase.firestore().collection(path).doc(_.toString(id)).update(item);
         return true;
     }
 
     async deleteItem(path, id) {
         Util.appendInfo(`delete item => path:/${path}/${id}`);
-        await firebase.firestore().collection(path).doc(id).delete();
+        await firebase.firestore().collection(path).doc(_.toString(id)).delete();
         return true;
     }
 
@@ -90,12 +90,12 @@ class CommonRemoteApi {
 
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
-        const result = await firebase.firestore().collection(path).doc(id).get();
+        const result = await firebase.firestore().collection(path).doc(_.toString(id)).get();
         return result.exists ? {...result.data(), id} : {};
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all,...conditions) {
+    async deleteItems(path, all, ...conditions) {
         Util.appendInfo(`delete items ${path}`);
         const batch = firebase.firestore().batch()
         if (all) {
@@ -149,6 +149,29 @@ class CommonRemoteApi {
         await firebase.firestore().collection(path).doc(objName).delete();
     }
 
+    restfulListenItem(path, id, handler = (data) => data, view) {
+        this.showLoadingView(view);
+        Util.appendInfo(`listenItem path:/${path}/${id}`);
+        const query = firebase.firestore().collection(path).doc(_.toString(id));
+        const functionOfUnsubscribe = query.onSnapshot(
+            (doc) => {
+                if(doc !== undefined)  {
+                    const data = doc.data();
+                    if(data === undefined) return;
+                    /** 註冊listener 會先收到一個空data的訊息, 不知道衝三小, 所以先ignore */
+
+                    this.closeLoadingView(view);
+                    handler(data);
+                }
+            },
+            (error) => {
+                this.closeLoadingView(view);
+                handler({status: 'fail', message: `${error.code}, ${error.message}`})
+            }
+        );
+        return functionOfUnsubscribe;
+    }
+
     /** change:{type,data,id} ;type:['added','modified','removed'], 回傳的就是function of unsubscribe*/
     listenItems(path, callback = (changes, error) => {
     }, condition = (stmt) => stmt) {
@@ -196,13 +219,26 @@ class CommonRemoteApi {
 
         const functionOfUnsubscribe = query.onSnapshot(
             (doc) => {
-                callback(doc.data());
+                const data = doc.data();
+                callback(data);
             },
             (error) => {
                 callback(undefined, error);
             }
         );
         return functionOfUnsubscribe;
+    }
+
+    showLoadingView(view) {
+        if (view !== undefined && view.setLoadingViewVisibility)
+            view.setLoadingViewVisibility(true);
+    }
+
+    closeLoadingView(view) {
+        if (view !== undefined && view.setLoadingViewVisibility) {
+            view.setLoadingViewVisibility(false);
+        }
+
     }
 
 

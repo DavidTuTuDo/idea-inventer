@@ -37,7 +37,7 @@ class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
         self.setGlobalLoadingViewVisibility(true);
         const item = {uid: UserInfo.getUid(), ...this.params};
         Util.appendInfo('line導頁後得到的參數orderId, transactionId', item);
-        new PurchaseReport().submitPurchaseReportItem(item).then((result) => {
+        new PurchaseReport().submitPurchaseReportItem(this,item).then((result) => {
             Util.appendInfo(result);
             self.setGlobalLoadingViewVisibility(false);
             /** 停止loading view */

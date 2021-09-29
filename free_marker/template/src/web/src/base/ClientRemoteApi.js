@@ -39,7 +39,7 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all,...conditions) {
+    async deleteItems(path, all, ...conditions) {
         const _async = async () => super.deleteItems(path, ...conditions);
         return await CommonPoolHelper.submitTo('submit', _async);
     }
@@ -85,8 +85,12 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     handleApiExecute(path, type, view) {
-        if (view !== undefined && view instanceof BaseComponent) {
-            view.setLoadingViewVisibility(true);
+        if (view !== undefined) {
+            if (view instanceof BaseComponent)
+                view.setLoadingViewVisibility(true);
+            else {
+                throw new ERROR(7006)
+            }
         }
     }
 

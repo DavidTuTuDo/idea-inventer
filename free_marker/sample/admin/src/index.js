@@ -16,6 +16,128 @@ import moment from 'moment';
     const api = new Api();
     const listener = new Listener();
 
+    function getLinePayFormOfOrder(orderId, price, productName, imageUrl, host = config.host) {
+        const order = {
+            amount: price,
+            currency: 'TWD',
+            orderId: orderId,
+            packages: [
+                {
+                    id: orderId,
+                    amount: price,
+                    name: productName,
+                    products: [
+                        {
+                            name: productName,
+                            quantity: 1,
+                            price: price,
+                            imageUrl: imageUrl,
+                        }
+                    ]
+                }
+            ],
+            redirectUrls: {
+                confirmUrl: `${host}/purchaseSucceed`,
+                cancelUrl: `${host}/purchaseFail`,
+            }
+        };
+        return order;
+    }
+
+    function listenToPurchaseSucceedReport(){
+        listener.listenPurchaseReports(async (changes) => {
+            for (const change of changes) {
+                if (change.type !== 'added') {
+                    console.log(`listenPurchaseReports`, change.id, change.type)
+                    continue;
+                }
+
+                const report = change.data;
+                const reportId = change.id;
+                const updateContent = {};
+                try {
+                    const order = await api.fetchPurchaseOrderItem(report.orderId);
+                    const confirmContent = {
+                        amount: order.price,
+                        currency: 'TWD'
+                    }
+                    Util.appendInfo(confirmContent);
+
+                    const linePayResult = await linePay.confirm(confirmContent, report.transactionId);
+                    Util.appendInfo(linePayResult);
+                    /** 從pid 找到duration裡面有註記服購買天數, 算出start,end 再寫入,寫入user/purchaseList */
+                    const days = _.toNumber(Util.getNormalizedStringNotEndWith(order.duration, 'd'));
+                    const startTime = await firebase.getCurrentServerTimeStamp();
+                    const endTime = firebase.getTimeStampObj(moment(startTime.toMillis()).add(days, 'days').valueOf())
+
+                    await api.submitPurchaseProductItem(order.uid, {
+                        orderId: report.orderId,
+                        expiration: {
+                            startTime,
+                            endTime
+                        },
+                    })
+                    updateContent.status = 'succeed';
+                    updateContent.transactionId = linePayResult.info.transactionId;
+                } catch (error) {
+                    Util.appendError(error);
+                    updateContent.status = 'fail';
+                    updateContent.message = error.message;
+                } finally {
+                    await api.updatePurchaseReportItem(reportId, updateContent);
+                }
+            }
+        }, (condition) => condition.where('status', '==', 'pending'))
+    }
+
+    function listenToPurchaseOrder(){
+        listener.listenPurchaseOrders(async (changes) => {
+            for (const change of changes) {
+                const order = change.data;
+                const orderId = change.id;
+
+                if (!_.isEqual(change.type, 'added')) continue;
+                /** 在finally有做update, 然後會再收到一次local的推播, 因為資料還沒寫到backend, 所以非added的事件都忽略掉*/
+
+                const updateContent = {};
+                const resultData = {id : order.listenerId};
+                const restfulData = {status: "succeed", message: "LinePay request succeed"};
+
+                try {
+                    const pid = order.productInfos[0].pid;
+                    /** 在server端從pid去找到商品價格, 不能讓client端自己帶入價格, 會被hack, 目前沒有accumulate的作為,只抓出第一筆作為整個order的價格 */
+                    const plan = await api.fetchPurchasePlanItem(pid);
+                    const orderObj = getLinePayFormOfOrder(orderId, plan.price, plan.fullName, plan.imageUrl);
+                    const linePayResult = await linePay.request(orderObj);
+                    const totalPrice = plan.price;
+
+                    Util.appendInfo(`uid=${order.uid}`, `\nline-pay request result`, linePayResult)
+                    if (_.isEqual(linePayResult.returnCode, '0000')) {
+                        /** 這樣才表示成功 */
+                        updateContent.status = 'waiting';
+                        updateContent.transactionId = linePayResult.info.transactionId;
+                        updateContent.paymentAccessToken = linePayResult.info.paymentAccessToken;
+                        updateContent.price = totalPrice;
+                        updateContent.duration = plan.duration;
+                        /** 類似api 的 return value, 不過是讓user 自己去監聽ㄧ個node 的變化 */
+                        resultData.data = {paymentUrl: linePayResult.info.paymentUrl.web}
+
+                    } else {
+                        restfulData.status = 'fail';
+                        restfulData.message = `LinePay出問題, returnCode = ${linePayResult.returnCode}`;
+                    }
+                } catch (error) {
+                    Util.appendError(error);
+                    restfulData.status = 'fail';
+                    restfulData.message = error.message;
+                } finally {
+                    await api.restfulSubmitPurchaseListenerItem(order.uid, resultData, restfulData);
+                    await api.updatePurchaseOrderItem(orderId, updateContent);
+                }
+            }
+        }, (condition) => condition.where('status', '==', 'pending'))
+    }
+
     async function beforeStartService(efficient) {
         await api.deletePurchasePlans();
         await api.deleteQuestions();
@@ -61,15 +183,31 @@ import moment from 'moment';
 
         await api.submitMyShortcuts(
             'x1rx1Epw5MdqRwyPFjmCe4WkBLY2',
-        {
-            title: '我的數據',
+            {
+                title: '我的數據',
                 icon: 'muIcon:AddAlarm',
-            route: 'path:https://www.google.com/'
-        })
+                route: 'path:https://www.google.com/'
+            })
         await api.submitPurchasePlans(
-            {pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
-            {pid: 1002, name: '2個月', price: 110, priceTip: '平均一個月55元', fullName: '選擇王-2個月禮包', duration: '62d'},
-            {pid: 1003, name: '3個月', price: 150, priceTip: '平均一個月50元', fullName: '選擇王-3個月禮包', duration: '63d'})
+            {id: 1001, pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
+            {
+                id: 1002,
+                pid: 1002,
+                name: '2個月',
+                price: 110,
+                priceTip: '平均一個月55元',
+                fullName: '選擇王-2個月禮包',
+                duration: '62d'
+            },
+            {
+                id: 1003,
+                pid: 1003,
+                name: '3個月',
+                price: 150,
+                priceTip: '平均一個月50元',
+                fullName: '選擇王-3個月禮包',
+                duration: '63d'
+            })
 
 
         let questions = qs.map((q) => {
@@ -116,125 +254,24 @@ import moment from 'moment';
     })
 
     async function backgroundService() {
-        function getOrder(orderId, price, productName, imageUrl, host = config.host) {
-            const order = {
-                amount: price,
-                currency: 'TWD',
-                orderId: orderId,
-                packages: [
-                    {
-                        id: orderId,
-                        amount: price,
-                        name: productName,
-                        products: [
-                            {
-                                name: productName,
-                                quantity: 1,
-                                price: price,
-                                imageUrl: imageUrl,
-                            }
-                        ]
-                    }
-                ],
-                redirectUrls: {
-                    confirmUrl: `${host}/purchaseSucceed`,
-                    cancelUrl: `${host}/purchaseFail`,
-                }
-            };
-            return order;
-        }
-
-        await api.deletePurchaseOrders(undefined, true);
-        await api.deletePurchaseReports(undefined, true);
-        await api.deletePurchaseListeners('x1rx1Epw5MdqRwyPFjmCe4WkBLY2', undefined, true);
-        await api.deletePurchaseProducts('x1rx1Epw5MdqRwyPFjmCe4WkBLY2', undefined, true);
 
 
-        listener.listenPurchaseOrders(async (changes) => {
-            for (const change of changes) {
-                const order = change.data;
-                const orderId = change.id;
-                const updateContent = {};
-                try {
-
-                    const pid = order.productInfos[0].pid;
-                    /** 在server端從pid去找到商品價格, 不能讓client端自己帶入價格, 會被hack, 目前沒有accumulate的作為,只抓出第一筆作為整個order的價格 */
-                    const plan = await api.fetchPurchasePlanItem(pid);
-                    console.log(plan);
-                    const orderObj = getOrder(orderId, plan.price, plan.fullName, plan.imageUrl);
-                    console.log(orderObj);
-                    const linePayResult = await linePay.request(orderObj);
-                    const totalPrice = plan.price;
-                    console.log(linePayResult);
-                    await api.submitPurchaseListenerItem(order.uid, {
-                        id: change.data.listenerId,
-                        paymentUrl: linePayResult.info.paymentUrl.web
-                    });
-                    updateContent.status = 'waiting';
-                    updateContent.transactionId = linePayResult.info.transactionId;
-                    updateContent.paymentAccessToken = linePayResult.info.paymentAccessToken;
-                    updateContent.price = totalPrice;
-                    updateContent.duration = plan.duration;
-                } catch (error) {
-                    Util.appendError(error);
-                    updateContent.status = 'fail';
-                    updateContent.message = error.message;
-                } finally {
-                    await api.updatePurchaseOrderItem(orderId, updateContent);
-                }
-            }
-        }, (condition) => condition.where('status', '==', 'pending'))
-
-        listener.listenPurchaseReports(async (changes) => {
-            for (const change of changes) {
-                if (change.type !== 'added') {
-                    console.log(`listenPurchaseReports`, change.id, change.type)
-                    continue;
-                }
+        await api.deletePurchaseOrders(true);
+        await api.deletePurchaseReports(true);
+        await api.deletePurchaseListeners('x1rx1Epw5MdqRwyPFjmCe4WkBLY2', true);
+        await api.deletePurchaseProducts('x1rx1Epw5MdqRwyPFjmCe4WkBLY2', true);
 
 
-                const report = change.data;
-                const reportId = change.id;
-                const updateContent = {};
-                try {
-                    const order = await api.fetchPurchaseOrderItem(report.orderId);
-                    const confirmContent = {
-                        amount: order.price,
-                        currency: 'TWD'
-                    }
-                    Util.appendInfo(confirmContent);
+        listenToPurchaseOrder();
+        listenToPurchaseSucceedReport();
 
-                    const linePayResult = await linePay.confirm(confirmContent, report.transactionId);
-                    Util.appendInfo(linePayResult);
-                    /** 從pid 找到duration裡面有註記服購買天數, 算出start,end 再寫入,寫入user/purchaseList */
-                    const days = _.toNumber(Util.getNormalizedStringNotEndWith(order.duration, 'd'));
-                    const startTime = await firebase.getCurrentServerTimeStamp();
-                    const endTime = firebase.getTimeStampObj(moment(startTime.toMillis()).add(days, 'days').valueOf())
-
-                    await api.submitPurchaseProductItem(order.uid, {
-                        orderId: report.orderId,
-                        expiration: {
-                            startTime,
-                            endTime
-                        },
-                    })
-                    updateContent.status = 'succeed';
-                    updateContent.transactionId = linePayResult.info.transactionId;
-                } catch (error) {
-                    Util.appendError(error);
-                    updateContent.status = 'fail';
-                    updateContent.message = error.message;
-                } finally {
-                    await api.updatePurchaseReportItem(reportId, updateContent);
-                }
-            }
-        }, (condition) => condition.where('status', '==', 'pending'))
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
 
-    await beforeStartService(true);
-    // await backgroundService();
+    // await beforeStartService(true);
+    await backgroundService();
 })();
+
 
 // line-pay request result sample
 // {

@@ -166,7 +166,13 @@ const ERRORs = {
     },
     7005: {
         message: `can't happen this param type`
-    }
+    },
+    7006: {
+        message: `view must instance of BaseComponent,otherwise found no root cause`
+    },
+    7007: {
+        message: `result result should be either succeed or fail`
+}
 
 }
 
