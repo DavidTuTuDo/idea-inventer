@@ -186,6 +186,7 @@ class CodegenNode {
     view;
 
     type;
+    /** array,arrayItem,object,number,string*/
 
     style = {};
 
@@ -1157,7 +1158,7 @@ class CodegenNode {
 
 
     isArray() {
-        return (this.type === 'array');
+        return _.isEqual(this.type, 'array');
     }
 
     isCollection() {
@@ -1181,7 +1182,7 @@ class CodegenNode {
     }
 
     isObject() {
-        return (this.type === 'object');
+        return _.isEqual(this.type, 'object');
     }
 
     needParentParam() {
@@ -1202,7 +1203,7 @@ class CodegenNode {
         }
 
         if (this.type === 'object') {
-            return isAdmin ? `{}` :`new ${_.upperFirst(this.name)}()`;
+            return isAdmin ? `{}` : `new ${_.upperFirst(this.name)}()`;
         }
 
         if (this.type === 'number') {
@@ -2601,7 +2602,7 @@ class ComponentBuilder extends BaseBuilder {
         };
 
         if (node.needInjectStyle()) {
-            const param = node.isArrayItem() ? node.getName(): node.getPreciseAttributeParentName();
+            const param = node.isArrayItem() ? node.getName() : node.getPreciseAttributeParentName();
             const injectFunctionName = node.getFunctionNameOfInjectStyle();
             props.style = `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getStyle())},...Style.${className}}`;
             generator.appendFunction(injectFunctionName, [param]);
