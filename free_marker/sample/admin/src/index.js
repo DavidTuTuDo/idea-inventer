@@ -10,7 +10,7 @@ import config from './config';
 import moment from 'moment';
 
 (async () => {
-    const db = new databaser(`/Users/davidtu/cross-achieve/mimi/idea-inventer/databaser/secret_infos_latest.db`);
+    const db = new databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/databaser/secret_infos_latest.db`);
     await db.init();
     const qs = await db.fetchRecords('CHOOSER');
     const api = new Api();
@@ -44,7 +44,7 @@ import moment from 'moment';
         return order;
     }
 
-    function listenToPurchaseSucceedReport(){
+    function listenToPurchaseSucceedReport() {
         listener.listenPurchaseReports(async (changes) => {
             for (const change of changes) {
                 if (change.type !== 'added') {
@@ -90,7 +90,7 @@ import moment from 'moment';
         }, (condition) => condition.where('status', '==', 'pending'))
     }
 
-    function listenToPurchaseOrder(){
+    function listenToPurchaseOrder() {
         listener.listenPurchaseOrders(async (changes) => {
             for (const change of changes) {
                 const order = change.data;
@@ -100,7 +100,7 @@ import moment from 'moment';
                 /** 在finally有做update, 然後會再收到一次local的推播, 因為資料還沒寫到backend, 所以非added的事件都忽略掉*/
 
                 const updateContent = {};
-                const resultData = {id : order.listenerId};
+                const resultData = {id: order.listenerId};
                 const restfulData = {status: "succeed", message: "LinePay request succeed"};
 
                 try {
@@ -141,7 +141,7 @@ import moment from 'moment';
     async function beforeStartService(efficient) {
         await api.deletePurchasePlans();
         await api.deleteQuestions();
-        await api.deleteMyShortcuts('x1rx1Epw5MdqRwyPFjmCe4WkBLY2',true);
+        await api.deleteMyShortcuts('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
         await api.deleteShortcuts();
         await api.submitShortcuts(
             {
@@ -183,7 +183,7 @@ import moment from 'moment';
         )
 
         await api.submitMyShortcuts(
-            'x1rx1Epw5MdqRwyPFjmCe4WkBLY2',
+            'BYnJOAlUa5aCnpxvoeiIyCzRXSt1',
             {
                 title: '我的數據',
                 icon: 'muIcon:AddAlarm',
@@ -259,8 +259,8 @@ import moment from 'moment';
 
         await api.deletePurchaseOrders(true);
         await api.deletePurchaseReports(true);
-        await api.deletePurchaseListeners('x1rx1Epw5MdqRwyPFjmCe4WkBLY2', true);
-        await api.deletePurchaseProducts('x1rx1Epw5MdqRwyPFjmCe4WkBLY2', true);
+        await api.deletePurchaseListeners('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
+        await api.deletePurchaseProducts('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
 
 
         listenToPurchaseOrder();
@@ -271,6 +271,7 @@ import moment from 'moment';
 
     await beforeStartService(true);
     await backgroundService();
+    // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
 })();
 
 
@@ -288,7 +289,7 @@ import moment from 'moment';
 //      }
 // }
 
-// line-pay request comfirm sample
+// line-pay request confirm sample
 // {
 //     returnCode: '0000',
 //         returnMessage: 'Success.',

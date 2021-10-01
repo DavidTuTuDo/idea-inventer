@@ -122,7 +122,7 @@ class CodegenNode {
     host;
     /** 網域名稱啦 */
 
-    disableInitFetch;
+    initFetchOnlyLogin;
     /** 有些store的field不需要在new的時候就fetch, 就設定為true*/
 
     events;
@@ -491,7 +491,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore', 'disableInitFetch', 'permission', 'alertDialog',
+        return ['paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore', 'initFetchOnlyLogin', 'permission', 'alertDialog',
             'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
             'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -549,8 +549,8 @@ class CodegenNode {
         return this.editor && !!this.editor;
     }
 
-    isDisableFetch() {
-        return this.disableInitFetch ? this.disableInitFetch : false;
+    isFetchOnlyLogin() {
+        return this.initFetchOnlyLogin ? this.initFetchOnlyLogin : false;
     }
 
     getCustomizePackages() {
@@ -1874,6 +1874,16 @@ class StoreBuilder extends BaseBuilder {
     }
 
     async buildBaseStore(node) {
+
+        function getInitFetchStmt(node) {
+            let defaultStmt = `await new ${node.getClassName()}().fetch(view)`;
+            if (node.isFetchOnlyLogin()) {
+                defaultStmt = `UserInfoRef.isLoginInSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
+            }
+            return `${node.getFieldName()} : ${defaultStmt},`;
+
+        }
+
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
@@ -1900,15 +1910,10 @@ class StoreBuilder extends BaseBuilder {
             const contents = [
                 `{`,
                 node.hasPath() ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
-                ..._.map(node.getPreciseAttributeChildren(), (child) => {
-                    return (child.isCollection() && !child.isDisableFetch()) ?
-                        child.isArray() && !child.hasPath() ? '' :
-                            `${child.getFieldName()}: await new ${child.getClassName()}().fetch(view),` : '';
-                }),
+                    ..._.map(node.getPreciseAttributeChildren(), (child) => child.isCollection() ? getInitFetchStmt(child) : ``),
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
-                // `Util.appendInfo(' ${node.getName()} ',' ===> fetch 被執行 ')`,
                 ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
         } else if (node.isArray()) {
@@ -3869,7 +3874,7 @@ if (configer.DEBUG_MODE) {
             const props = {
                 genRootPath: '../gen',
                 projectRootPath: './sample',
-                freeMarkerRootPath: '/Users/davidtu/cross-achieve/mimi/idea-inventer/free_marker/template'
+                freeMarkerRootPath: '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template'
             }
 
             const builder = new BuildApplication(props)

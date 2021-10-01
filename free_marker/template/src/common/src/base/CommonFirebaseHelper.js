@@ -94,13 +94,13 @@ class CommonFirebaseHelper extends BaseFirebase {
         return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'signInWithExistedCredential');
     }
 
-    getLoginConfig(component, pathOfAfterSucceed = '/') {
+    getLoginConfig(component, pathOfAfterSucceed = '/', succeedAsyncTask) {
         return {
             signInFlow: 'popup',
             /**
              Redirect to / after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
              */
-            signInSuccessUrl: pathOfAfterSucceed,
+            // signInSuccessUrl: pathOfAfterSucceed,
             signInOptions: [
                 this.getAuthLibrary().GoogleAuthProvider.PROVIDER_ID,
                 this.getAuthLibrary().FacebookAuthProvider.PROVIDER_ID,
@@ -116,8 +116,12 @@ class CommonFirebaseHelper extends BaseFirebase {
                      Util.appendInfo(`authResult`, authResult);
                      Util.appendInfo(`redirectUrl`, redirectUrl);
                      */
+
                     const Cookie = require('../cookie').default;
-                    Cookie.setCredential(authResult.credential)
+                    Cookie.setCredential(authResult.credential);
+                    if (_.isFunction(succeedAsyncTask)) {
+                        succeedAsyncTask(authResult.user).then()
+                    }
                     return true;
                 },
                 /**

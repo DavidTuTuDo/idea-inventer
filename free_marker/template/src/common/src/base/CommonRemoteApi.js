@@ -91,7 +91,7 @@ class CommonRemoteApi {
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
         const result = await firebase.firestore().collection(path).doc(_.toString(id)).get();
-        return result.exists ? {...result.data(), id} : {};
+        return result.exists ? {...result.data(), id, exists: true} : {exists: false};
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
@@ -155,9 +155,9 @@ class CommonRemoteApi {
         const query = firebase.firestore().collection(path).doc(_.toString(id));
         const functionOfUnsubscribe = query.onSnapshot(
             (doc) => {
-                if(doc !== undefined)  {
+                if (doc !== undefined) {
                     const data = doc.data();
-                    if(data === undefined) return;
+                    if (data === undefined) return;
                     /** 註冊listener 會先收到一個空data的訊息, 不知道衝三小, 所以先ignore */
 
                     this.closeLoadingView(view);
@@ -259,6 +259,27 @@ class CommonRemoteApi {
         const result = await filtering(firebase.database().ref(refPath));
         const value = result.val();
         return _.isArray(value) ? value : _.values(value);
+    }
+
+    async fetchUserIsExist(uid) {
+        const result = await this.fetchItem('users', uid);
+        console.log(result);
+        return result.exists
+    }
+
+    async submitUserAsUid(uid) {
+        await this.updateItem('users', uid, {admin: true});
+    }
+
+    async submitUserExist(uid) {
+        await this.updateItem('users', uid, {exist: true})
+    }
+
+    async submitUserBeingAdmin(uid) {
+        const exist = await this.fetchUserIsExist(uid);
+        console.log(`uid is exists?==> `, exist)
+        // if (exist)
+        //     await this.submitUidBeingAdmin(uid);
     }
 
 

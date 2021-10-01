@@ -39,6 +39,9 @@ class BaseStore extends ClientRemoteApi {
     appBarHeight = 0;
 
     @observable
+    updateTime;
+
+    @observable
     snackVisibility = false;
 
     constructor(props) {
@@ -125,6 +128,17 @@ class BaseStore extends ClientRemoteApi {
 
         if (props && props.doc)
             this.setDocRef(props.doc);
+
+        if (props && props.updateTime)
+            this.setUpdateTime(props.updateTime);
+    }
+
+    setUpdateTime(time) {
+        this.updateTime = time;
+    }
+
+    getUpdateTime() {
+        return this.updateTime;
     }
 
     filter(obj) {
@@ -160,7 +174,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     clear() {
-        this.setState('enable');
+        this.setState('stable');
     }
 
 }

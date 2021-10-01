@@ -12,7 +12,6 @@ import path from 'path';
 import Cookies from "../../cookie";
 import UserInfo from '../../userInfo';
 import {utiller as Util} from 'utiller';
-import UserInfoStore from '../../store/navigatorUserInfo';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 import Countdown from "react-countdown";
 import {Typography} from "@material-ui/core";
@@ -24,7 +23,6 @@ class MainComponent extends BaseMainComponent {
     constructor(prop) {
         super(prop);
         this.props.main.setState('stable');
-        this.userInfoStore = new UserInfoStore();
     }
 
     onEnterPointPaperClicked(param) {
