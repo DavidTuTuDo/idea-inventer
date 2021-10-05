@@ -22,6 +22,9 @@ class CodegenNode {
     password;
     components;
 
+    storageSuperUserUid = "uid";
+    /** storage因為沒有辦法進去firestore去拿isAdmin, 必須hardcode uid*/
+
     restful = false;
     /** 就是這個物件會多出 有 status, message, 讓server處理可以加上狀態, 以便在client顯示出提示
      * 會在store裡多這兩個屬性
@@ -271,6 +274,10 @@ class CodegenNode {
         return node;
     }
 
+    getStorageSuperUserUid() {
+        return this.storageSuperUserUid;
+    }
+
     getPreConditions() {
         return this.preConditions;
     }
@@ -294,6 +301,10 @@ class CodegenNode {
 
     getStorageFolderName() {
         return this.storageFolder;
+    }
+
+    hasStorageFolder() {
+        return !!this.storageFolder;
     }
 
     getFunctionNameOfNextPage() {
@@ -504,6 +515,10 @@ class CodegenNode {
         this.listContents.push(...contents);
     }
 
+    hasPermission() {
+        return !!this.permission && !_.isEmpty(this.permission);
+    }
+
     getListContents() {
         return this.listContents ? this.listContents : [];
     }
@@ -640,6 +655,19 @@ class CodegenNode {
         }
         const customize = this.permission ? this.permission : {};
         return {...defaultPermission, ...customize};
+    }
+
+    getStoragePermission() {
+        const customize = this.permission ? this.permission : {};
+        const result =  {...this.getDefaultStoragePermission(), ...customize};
+        return result
+    }
+
+    getDefaultStoragePermission() {
+        return {
+            write: 'isAdmin()',
+            read: 'alwaysTrue()',
+        };
     }
 
     isState() {
@@ -1477,12 +1505,14 @@ class ClassGenerator {
     appendConstructor(...stmt) {
         this.hasConstructor = true;
         this.constructorStmt.push(...stmt);
+
     }
 
     getIndexOf(stmt) {
         return _.findIndex(this.context, (per) => {
             return _.isEqual(per, stmt);
         });
+
     }
 
     /** extendz:{name,from} 如果沒有from, 就會直接 './{extendz.name}' */
@@ -1517,7 +1547,6 @@ class ClassGenerator {
         this.classes.push(className);
         this.hasExtends = !!extendz;
     }
-
 
     hasClass() {
         return (_.size(this.classes)) >= 1;
@@ -1682,6 +1711,7 @@ class ClassGenerator {
 
 class PathBase {
 
+    classGenerator;
     genRootPath; // gen/web
     genSourcePath; // gen/web/src
     freeMarkerRootPath; // ./template
@@ -1723,16 +1753,6 @@ class PathBase {
         /** 這就是 source.js 的進入點 */
     }
 
-}
-
-class BaseBuilder extends PathBase {
-
-    classGenerator;
-
-    constructor(props) {
-        super(props);
-    }
-
     appendMustacheFile(templateFileName, destFileName, param = {}) {
         Util.appendFile(
             libpath.resolve(destFileName),
@@ -1757,7 +1777,8 @@ class BaseBuilder extends PathBase {
                                    projectVersion,
                                    projectDescription,
                                    fieldClass,
-                                   hasPaginate
+                                   hasPaginate,
+                                   storageSuperUserUid,
                                }) => {
         return {
             hasPath,
@@ -1774,6 +1795,7 @@ class BaseBuilder extends PathBase {
             projectDescription,
             fieldClass,
             hasPaginate,
+            storageSuperUserUid,
         }
     }
 
@@ -1793,7 +1815,13 @@ class BaseBuilder extends PathBase {
         return this.getGenUnion(`component`);
     }
 
+}
 
+class BaseBuilder extends PathBase {
+
+    constructor(props) {
+        super(props);
+    }
 }
 
 class StoreBuilder extends BaseBuilder {
@@ -1910,7 +1938,7 @@ class StoreBuilder extends BaseBuilder {
             const contents = [
                 `{`,
                 node.hasPath() ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
-                    ..._.map(node.getPreciseAttributeChildren(), (child) => child.isCollection() ? getInitFetchStmt(child) : ``),
+                ..._.map(node.getPreciseAttributeChildren(), (child) => child.isCollection() ? getInitFetchStmt(child) : ``),
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
@@ -3445,12 +3473,85 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    fetchCollection(node, stmts = []) {
+    /** *
+     * 遞迴的讀取一個node,如果有children就會形成遞迴
+     * @param node
+     * @param condition 符合條件的node
+     * @param task 當條件符合時, 要處理的非同步事項
+     * @returns {Promise<void>}
+     */
+    async recursiveDoingOfNode(node, condition = (node) => node, task = async (node) => node) {
+        if (node !== undefined && condition(node)) {
+            await task(node);
+        }
 
-        const path = node.getPath();
-        if (!_.isEmpty(path)) {
+        if (node.hasChildren()) {
+            for (const child of node.getChildren())
+                await this.recursiveDoingOfNode(child, condition, task);
+        }
+    }
 
+    /** *
+     * 把所有component 遞迴的讀取一個node,如果有children就會形成遞迴
+     * @param node
+     * @param condition 符合條件的node
+     * @param task 當條件符合時, 要處理的非同步事項
+     * @returns {Promise<void>}
+     */
+    async recursiveDoingOfNodeEachStruct(condition = (node) => node, task = async (node) => node) {
+        for (const component of this.nodeOfAncestor.getComponents()) {
+            await this.recursiveDoingOfNode(component.getStruct(), condition, task);
+        }
+    }
+
+    async generateStorageRules(deploy = true) {
+        const fileName = 'storage.rules';
+        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
+
+        const base = this.getStringFromMustache('template.storage.mustache',
+            {storageSuperUserUid: this.nodeOfAncestor.getStorageSuperUserUid()}).split('\n');
+        const permissions = {};
+        /** storageFolderPath : permission */
+        const task = async (node) => {
+            const folderName = node.getStorageFolderName();
+            if (!Util.exist(permissions[folderName])) {
+                permissions[node.getStorageFolderName()] = node.hasPermission() ? node.getStoragePermission() : node.getDefaultStoragePermission();
+            } else {
+                if (node.hasPermission()) {
+                    permissions[folderName] = node.getStoragePermission();
+                }
+            }
+        }
+
+        await this.recursiveDoingOfNodeEachStruct((node) => node.isImageView() && node.hasStorageFolder(), task)
+        const stmts = [];
+        for(const name in permissions) {
+            const _stmt = [];
+            _stmt.push(`match ${libpath.join('/',name)}/{fileId} {`);
+            const permission = permissions[name];
+            for(const type in permission) {
+                _stmt.push(`allow ${type}: if ${permission[type]}`)
+            }
+            _stmt.push(`}`);
+            stmts.push(_stmt.join('\n'));
+        }
+        Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
+        Util.appendFile(path, base.join('\n'), true, true);
+        if (deploy) {
+            Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
+            await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only storage:rules`);
+        }
+    }
+
+    async generateFireStoreRules(deploy = true) {
+        const fileName = 'firestore.rules';
+        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
+        const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
+        const stmts = [];
+
+        const task = async (node) => {
             const _stmts = [];
+            const path = node.getPath();
             const normalize = path.split('\/')
                 .map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
             const permission = node.getPermission();
@@ -3464,24 +3565,11 @@ class ProjectFileHandler extends PathBase {
             } else if (node.isArray()) {
                 stmts.push(`match ${libpath.join('/', normalize, wildcard)} {`, ..._stmts, '}');
             } else {
-                throw new ERROR(9999, `cant happened this condition`);
+                throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
             }
         }
 
-        if (node.hasChildren()) {
-            for (const child of node.getChildren())
-                this.fetchCollection(child, stmts);
-        }
-    }
-
-    async generateFireStoreRules(deploy = true) {
-        const fileName = 'firestore.rules';
-        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
-        const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
-        const stmts = [];
-        for (const component of this.nodeOfAncestor.getComponents()) {
-            this.fetchCollection(component.getStruct(), stmts);
-        }
+        await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
         Util.appendFile(path, base.join('\n'), true, true);
 
@@ -3829,6 +3917,11 @@ class BuildApplication {
         );
     }
 
+    async buildStorageRule() {
+        const handler = new ProjectFileHandler(this.getBuildObject('admin'))
+        await handler.generateStorageRules();
+    }
+
     async overrideFiles(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
         handler.overrideEachFilesFromFolder(
@@ -3899,10 +3992,14 @@ if (configer.DEBUG_MODE) {
                 case 'less':
                     await builder.buildWeb();
                     break;
-                default:
+                case 'buildAllPlatform':
                     await builder.buildWeb();
                     await builder.buildAdmin();
                     break;
+                default:
+                    // console.log('default')
+                    await builder.buildStorageRule();
+                    break
             }
 
 
