@@ -27,6 +27,7 @@ import Collapse from '@material-ui/core/Collapse';
 import * as MUIcon from '@material-ui/icons';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 
 const useStyles = theme => ({
     paper: {
@@ -74,7 +75,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         if (UserInfo.isLoginInSucceed()) {
             this.getStore().logout().then();
         } else {
-            Router.gotoLoginPage(this);
+            CommonFirebaseHelper.signInWithGoogle((result) => console.log(result)).then();
         }
     }
 

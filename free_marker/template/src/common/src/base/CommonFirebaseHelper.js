@@ -53,6 +53,17 @@ class CommonFirebaseHelper extends BaseFirebase {
         return this.auth().currentUser;
     }
 
+    getGoogleAuthProvider() {
+        const provider = new this.auth().GoogleAuthProvider();
+        provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+        this.auth().useDeviceLanguage();
+        return provider;
+    }
+
+    async signInWithGoogle(asyncTask = async (result) => result) {
+        const result = await this.auth().signInWithPopup(this.getGoogleAuthProvider());
+        await asyncTask(result);
+    }
 
     async logout() {
         Util.appendInfo('sign out called');
@@ -103,8 +114,6 @@ class CommonFirebaseHelper extends BaseFirebase {
             // signInSuccessUrl: pathOfAfterSucceed,
             signInOptions: [
                 this.getAuthLibrary().GoogleAuthProvider.PROVIDER_ID,
-                this.getAuthLibrary().FacebookAuthProvider.PROVIDER_ID,
-                this.getAuthLibrary().TwitterAuthProvider.PROVIDER_ID,
             ],
             callbacks: {
                 signInSuccessWithAuthResult: function (authResult, redirectUrl) {

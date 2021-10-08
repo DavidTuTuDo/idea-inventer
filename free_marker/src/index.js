@@ -3603,6 +3603,7 @@ class ProjectFileHandler extends PathBase {
 
         await listenerGenerator.persist();
         await apiGenerator.persist();
+        await this.generateStorageRules();
         await this.generateFireStoreRules();
     }
 
