@@ -601,7 +601,7 @@ class Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            console.log(new Utiller().getMillionSecFromNow('2022-01-21'));
+            // console.log(new Utiller().getMillionSecFromNow('2022-01-21'));
         }
     )();
 }
