@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 import {open} from 'sqlite';
-import {configer as GlobalConfig} from "configer";
+import {configer} from "configer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 
@@ -24,7 +24,7 @@ class SqliteHandler {
     }
 
 
-    constructor(_dbpath = GlobalConfig.BASE_DATABASE_PATH) {
+    constructor(_dbpath = configer.BASE_DATABASE_PATH) {
         this.dbpath = _dbpath;
     }
 
@@ -92,9 +92,9 @@ class SqliteHandler {
             if (!_.isEmpty(columns))
                 column = _.join(columns, ', ');
 
-            const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), GlobalConfig.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
+            const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), configer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+            if (configer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo('FETCH RECORD STMT:' + stmt);
             const result = await this.db.all(stmt);
             return result;
@@ -189,7 +189,7 @@ class SqliteHandler {
 
     getCreateTableStmt(tableName, content) {
         let stmt = [];
-        stmt = _.concat(stmt, `\n${GlobalConfig.UID} INTEGER PRIMARY KEY AUTOINCREMENT`);
+        stmt = _.concat(stmt, `\n${configer.UID} INTEGER PRIMARY KEY AUTOINCREMENT`);
 
         const attrs = this.getCreateColumnAttributes(content);
         for (const attr of attrs) {
@@ -203,7 +203,7 @@ class SqliteHandler {
         let stmt;
         try {
             const stmt = this.getCreateTableStmt(tableName, object);
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+            if (configer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`CREATE TABLE STMT: ${stmt}`);
             await this.db.run(stmt);
         } catch (error) {
@@ -216,7 +216,7 @@ class SqliteHandler {
         try {
             if (!_.isEmpty(index)) {
                 stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
-                if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                if (configer.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`CREATE INDEX STMT: ${stmt}`);
                 await this.db.run(stmt);
             }
@@ -230,13 +230,13 @@ class SqliteHandler {
         let createStmt = '';
         try {
             createStmt = this.getCreateTableStmt(tableName, object);
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+            if (configer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`CREATE STMT ${createStmt}`);
             await this.db.run(createStmt);
 
             if (!_.isEmpty(index)) {
                 indexStmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
-                if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                if (configer.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`CREATE INDEX STMT:${indexStmt}`);
                 await this.db.run(indexStmt);
             }
@@ -266,7 +266,7 @@ class SqliteHandler {
             }
 
             updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+            if (configer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`UPDATE STMT: ${updateStmt}`);
             const result = await this.db.run(updateStmt);
             return result.changes;
@@ -311,7 +311,7 @@ class SqliteHandler {
     }
 
     async updateState(tableName, state, uid) {
-        if (!Util.has(GlobalConfig.DATABASE_COLUMN_STATE, state)) {
+        if (!Util.has(configer.DATABASE_COLUMN_STATE, state)) {
             throw ERROR(9999, `state${state} not valid`);
         }
         return await this.updateRecords('SINGER', {'state': state}, SqliteHandler.Builder().equal('uid', uid).stmt());
@@ -334,7 +334,7 @@ class SqliteHandler {
         let insertStmt;
         try {
             insertStmt = this.getInsertStmt(tableName, content);
-            if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+            if (configer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`INSERT STMT: ${insertStmt}`);
 
             await this.db.run(insertStmt);
@@ -365,7 +365,7 @@ class SqliteHandler {
             if (!_.isEmpty(diff)) {
                 stmts = this.getAlterColumnStmt(tableName, differ);
                 for (const stmt of stmts) {
-                    if (GlobalConfig.MODULE_MSG.SHOW_SUCCEED)
+                    if (configer.MODULE_MSG.SHOW_SUCCEED)
                         Util.appendInfo(`ALTER COLUMN STMT:${stmt}`);
                     await this.db.run(stmt);
                 }
@@ -507,20 +507,21 @@ export {SqliteHandler as databaser}
 
  */
 
-
-if (GlobalConfig.DEBUG_MODE) {
+if (configer.DEBUG_MODE) {
 
     (async () => {
+
         const handler = new SqliteHandler('./secret_infos_latest.db');
         await handler.init();
-        Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
-        Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SINGER',{state:'NOT'} ,new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
+        Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
+        Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SINGER', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
         Util.appendInfo('ING SONG ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
         Util.appendInfo('ING SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE  SINGER ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+
     })();
 
 }

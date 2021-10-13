@@ -4,6 +4,8 @@ import {exceptioner as ERROR, utiller as Util} from 'utiller';
 
 const Config = {
 
+    INVOKE_REAL_CHROME: false,
+    PERMISSION_FORCE_DOWNLOAD_TONE: true,
     HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD: 0, // 0 means all
     HACK_DELAY_OF_MILLION_SECS: 1200,// 0 means 或出去了
     HACK_LIMITED_COUNT_OF_DOWNLOAD_SINGER: 20,
@@ -32,7 +34,7 @@ const Config = {
     PATH_SAMPLE_URL_SINGER: 'https://www.91pu.com.tw/singer/',
     PATH_SAMPLE_URL_JEST_SAMPLE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
     PATH_SAMPLE_URL_BASE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
-    PATH_DYNAMIC_INFO: './dynamic_info.js',
+    PATH_DYNAMIC_INFO: './dynamic_info',
 
     SAMPLE_FILE_NAME_SINGER: 'AllSingerObject.txt',
     SAMPLE_FILE_NAME_SONG_RANK: 'WeekRankObject.txt',

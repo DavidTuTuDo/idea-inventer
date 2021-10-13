@@ -12,8 +12,10 @@
   "dependencies": {
     "configer": "file:../configer",
     "utiller": "file:../utiller",
+    "databaser": "file:../databaser",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "query-string": "^7.0.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

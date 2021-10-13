@@ -5,6 +5,7 @@
  * 8XXX file IO
  * 9XXX commons
  * 7XXX ui experience
+ * 6XXX puppter=>browser
  */
 const ERRORs = {
     3001: {
@@ -138,16 +139,16 @@ const ERRORs = {
         message: `build firestore error`
     },
     8016: {
-      message:`class generator is necessary!!!`,
+        message: `class generator is necessary!!!`,
     },
     8017: {
-        message:`className type is not valid!`,
+        message: `className type is not valid!`,
     },
     8018: {
-        message:`this platform is not supported`,
+        message: `this platform is not supported`,
     },
-    8019 : {
-        message:`find no source.js file`,
+    8019: {
+        message: `find no source.js file`,
     },
     9999: {
         message: `super stupid error`
@@ -172,7 +173,10 @@ const ERRORs = {
     },
     7007: {
         message: `result result should be either succeed or fail`
-}
+    },
+    6001: {
+        message: `single page work fail`
+    }
 
 }
 

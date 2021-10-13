@@ -23,6 +23,12 @@ class NodeUtiller extends Utiller {
         return `${splited.join('/')}/.idea`;
     }
 
+    /** path ==> /asd/cc/dfj/jei3.mp3 => */
+    isPathEqualsFileType(path, type) {
+        const extension = path.split('.').pop();
+        return _.isEqual(extension, type);
+    }
+
     async getPDFText(path) {
         let dataBuffer = fs.readFileSync(path);
         return pdf(dataBuffer).then((data) => {
@@ -113,7 +119,6 @@ class NodeUtiller extends Utiller {
         }, ...exclude);
     }
 
-
     syncExecuteCommandLine(command) {
         const self = this;
         this.appendInfo(`執行腳本 ${command}`);
@@ -126,7 +131,6 @@ class NodeUtiller extends Utiller {
                 }
             });
     }
-
 
     executeCommandLine = async (command) => {
         const self = this;
@@ -270,7 +274,7 @@ class NodeUtiller extends Utiller {
         fs.copyFileSync(from, destination);
     }
 
-    getNodeEnvVariable(key,defaultValue = undefined) {
+    getNodeEnvVariable(key, defaultValue = undefined) {
         const value = process.env[key]
         return value === undefined ? defaultValue : value;
     }
@@ -399,7 +403,7 @@ class NodeUtiller extends Utiller {
         this.appendFile(path, persistlog);
     }
 
-    getLogString(datas){
+    getLogString(datas) {
         return datas.map((data) => (this.isJson(data) || _.isObject(data) || _.isArray(data)) ? this.deepFlat(data) : data).join(' ,')
     }
 
@@ -501,6 +505,11 @@ class NodeUtiller extends Utiller {
             '/Users/davidtu/cross-achieve/mimi/idea-inventer/firebaser/key/mimi19up-firebase-adminsdk.json'))
     }
 
+    /** http://wnj.cdji/david.mp3 => david.mp3 */
+    getFileNameExtensionFromPath(path) {
+        const name = path.split('/').pop()
+        return name;
+    }
 
     isEmptyFile(path) {
         return _.isEqual('', this.getFileContextInRaw(path).trim())
@@ -550,12 +559,14 @@ if (configer.DEBUG_MODE) {
     (async () => {
             // cthis.appendInfo((new NodeUtiller().getPathInfo('./').absolute);
             // this.appendInfo((new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
-            await new NodeUtiller().generateTempFolderWithCleanSrc('.');
+            // await new NodeUtiller().generateTempFolderWithCleanSrc('.');
             // await new NodeUtiller().generatePackage('./');
             // new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
             // console.log(process.env.keyword);
             // console.log(new NodeUtiller().getNodeEnvVariable('keyword'));
 
+            console.log(new NodeUtiller()
+                .getFileNameExtensionFromPath('https://stackoverflow.com/questions/3916191/download-data-url-file/draw918.mp3'));
             //
         }
     )();
