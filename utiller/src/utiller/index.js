@@ -113,11 +113,6 @@ class Utiller {
             (each) => _.isEqual(each, sign)).join('')
     }
 
-    getOneLineString(string) {
-        return string.split('\n').join('');
-    }
-
-
     isAndWith(self, predicate, ...several) {
         for (const each of several) {
             if (!predicate(self, each)) return false;
@@ -327,16 +322,16 @@ class Utiller {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
-    deepFlat(collection) {
+    deepFlat(collection, sign = '_') {
         let _self = '';
         if (_.isArray(collection)) {
             for (const o of collection) {
-                _self += (_.isEmpty(_self) ? '' : '_') + this.deepFlat(o);
+                _self += (_.isEmpty(_self) ? '' : sign) + this.deepFlat(o);
             }
             return _self;
         } else if (_.isObject(collection)) {
             for (const key in collection) {
-                _self += (_.isEmpty(_self) ? '' : '_') + key + '_' + this.deepFlat(collection[key])
+                _self += (_.isEmpty(_self) ? '' : sign) + key + sign + this.deepFlat(collection[key])
             }
             return _self;
         } else {
@@ -450,6 +445,10 @@ class Utiller {
     /** 去掉文字裡討厭的換行*/
     toOneLineString(string) {
         return _.join(_.split(string, '\n'), '');
+    }
+
+    toSpaceLessString(string) {
+        return _.split(string, ' ').map((each) => _.trim(each)).join('')
     }
 
     exist(obj) {

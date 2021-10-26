@@ -9,9 +9,11 @@ function normalizeText(str) {
 
 }
 
+const SPLIT_SIGN_OF_ARRAY = `#&#@#`;
+
 function getValidPresentOfSQLStatement(value) {
     if (_.isArray(value) || _.isObject(value))
-        return `'${normalizeText(Util.deepFlat(value))}'`;
+        return `'${normalizeText(Util.deepFlat(value,SPLIT_SIGN_OF_ARRAY))}'`;
     if (_.isString(value))
         return `'${normalizeText(value)}'`;
     return value;
@@ -35,6 +37,7 @@ class SqliteHandler {
         });
     }
 
+    /** 如果是沒有database的路徑,他就會自己new出新的.db */
     async init() {
         this.db = await this.createDbConnection(this.dbpath);
     }
@@ -278,7 +281,7 @@ class SqliteHandler {
 
     /** it can do
      * 1.create table if not exist.
-     * 2.alter-column, if column is not exist in table.
+     * 2.alter-column(新增欄位), if column is not exist in table.
      * 3.add index if params exist.
      * 3.if bump into CONSTRAINT prob, goes to updateRecords depend on index value.
      **/
@@ -497,7 +500,7 @@ class ConditionBuilder {
 
 }
 
-export {SqliteHandler as databaser}
+export {SqliteHandler as databaser,ConditionBuilder as builder}
 /** 使用範例
  Util.appendInfo(await handler.fetchRecords("TONE",
  builder.gt('popularLevel', 50000).orderBy({'popularLevel': 'DESCS'})

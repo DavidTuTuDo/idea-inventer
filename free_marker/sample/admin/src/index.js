@@ -1,5 +1,5 @@
 import Api from './api';
-import {databaser} from "databaser";
+import {databaser as Databaser, builder as Builder} from "databaser";
 import {utiller as Util, pooller as InfinitePool} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
@@ -10,9 +10,6 @@ import config from './config';
 import moment from 'moment';
 
 (async () => {
-    const db = new databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/databaser/secret_infos_latest.db`);
-    await db.init();
-    const qs = await db.fetchRecords('CHOOSER');
     const api = new Api();
     const listener = new Listener();
 
@@ -138,9 +135,28 @@ import moment from 'moment';
         }, (condition) => condition.where('status', '==', 'pending'))
     }
 
-    async function beforeStartService(efficient) {
-        await api.deletePurchasePlans();
+    async function deployQuestions() {
+        const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);
+        await db.init();
+        const qs = await db.fetchRecords('QUESTION', new Builder().equal('year', '110').stmt());
         await api.deleteQuestions();
+        let questions = qs.map((q) => {
+            /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
+            const choiceStringArray = q.choices.split(`#&#@#`);
+            q.topic = {name: q.topic, images: []},
+                q.choices = choiceStringArray.map((stmt) => {
+                        return {statement: stmt}
+                    }
+                )
+            delete q.uid;
+            q.type = q.nameOfExam;
+            return q;
+        })
+        await api.submitQuestions(...questions);
+    }
+
+    async function beforeStartService() {
+        await api.deletePurchasePlans();
         await api.deleteMyShortcuts('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
         await api.deleteShortcuts();
         await api.submitShortcuts(
@@ -209,24 +225,6 @@ import moment from 'moment';
                 fullName: '選擇王-3個月禮包',
                 duration: '63d'
             })
-
-
-        let questions = qs.map((q) => {
-            /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
-            const choiceStringArray = q.choice.split(new RegExp(`\\([A-D]\\)`, `g`));
-            choiceStringArray.shift();
-            q.topic = {name: q.topic, images: [{url: 'https://mimi19up.appspot.com/public/IMG_5633.jpg'}]},
-                q.choices = choiceStringArray.map((stmt) => {
-                        return {statement: Util.getNormalizedStringNotEndWith(stmt, ',', ' ')}
-                    }
-                )
-            delete q.uid;
-            return q;
-        })
-        if (efficient) {
-            questions = _.sampleSize(questions, 30)
-        }
-        await api.submitQuestions(...questions);
     }
 
     async function transactionSample() {
@@ -255,22 +253,17 @@ import moment from 'moment';
     })
 
     async function backgroundService() {
-
-
         await api.deletePurchaseOrders(true);
         await api.deletePurchaseReports(true);
         await api.deletePurchaseListeners('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
         await api.deletePurchaseProducts('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
-
-
         listenToPurchaseOrder();
         listenToPurchaseSucceedReport();
-
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
-
-    await beforeStartService(true);
-    await backgroundService();
+    await deployQuestions();
+    // await beforeStartService();
+    // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
 })();
 

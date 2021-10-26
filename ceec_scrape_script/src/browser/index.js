@@ -29,7 +29,7 @@ class Browser {
     }
 
     async destroy() {
-       await this.browser.close();
+        await this.browser.close();
     }
 
     async doSinglePageWork(async) {
@@ -76,6 +76,13 @@ class Browser {
     static async selectCompletelyLoaded(page, stringOfSelector, stringOfValue) {
         await page.select(stringOfSelector, stringOfValue);
         await this.pageCompletelyLoaded(page);
+    }
+
+    /** 找出selector特定屬性的property,*/
+    static async getSelectorProperty(selector, attr) {
+        const attributePair = await selector.getProperty(attr);
+        const stringOfVal = attributePair !== null ? await attributePair.jsonValue() : '';
+        return stringOfVal;
     }
 
     static async pageCompletelyLoaded(page) {

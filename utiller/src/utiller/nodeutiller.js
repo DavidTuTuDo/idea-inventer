@@ -8,7 +8,7 @@ import ERROR from '../exceptioner/index';
 import pdf from 'pdf-parse';
 import del from 'del';
 import fse from 'fs-extra';
-
+import {utiller as Util} from "../../index";
 
 class NodeUtiller extends Utiller {
 
@@ -29,6 +29,7 @@ class NodeUtiller extends Utiller {
         return _.isEqual(extension, type);
     }
 
+    /** {numpages, numrender, info, text, version} */
     async getPDFText(path) {
         let dataBuffer = fs.readFileSync(path);
         return pdf(dataBuffer).then((data) => {
@@ -75,8 +76,13 @@ class NodeUtiller extends Utiller {
         return files
     }
 
+    isPathExist(path) {
+        return fs.existsSync(path);
+    }
+
     //todo 應該要改成class
     getPathInfo(path) {
+
         const absolute = libpath.resolve(path);
         const obj = {
             path,
@@ -247,6 +253,12 @@ class NodeUtiller extends Utiller {
     async deleteFileOrFolder(path) {
         this.appendInfo(`刪掉了 ${path}`);
         await del(path)
+    }
+
+
+    /** 拿到目錄下的資料夾列表 */
+    getNamesOfFolderChild(path) {
+        return _.filter(Util.getChildPathByPath(path), each => each.isDirectory).map((path) => path.dirName);
     }
 
 
@@ -551,8 +563,6 @@ class NodeUtiller extends Utiller {
             }
         }
     }
-
-
 }
 
 if (configer.DEBUG_MODE) {

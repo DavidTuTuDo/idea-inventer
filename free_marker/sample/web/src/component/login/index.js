@@ -23,7 +23,6 @@ class LoginComponent extends BaseLoginComponent {
             <StyledFirebaseAuth
                 uiConfig={firebaser.getLoginConfig(this, Cookie.getPathBeforeLogin(),
                     async (userInfo) => {
-                        await new UserInfo().submitUserInfo(this, userInfo.uid, userInfo);
                         Router.gotoMainPage(self);
                     }
                 )}

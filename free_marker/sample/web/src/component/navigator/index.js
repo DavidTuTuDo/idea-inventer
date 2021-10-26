@@ -57,7 +57,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         const store = this.getStore();
         if (UserInfo.isLoginInSucceed()) {
             Util.appendInfo('登入成功, 所以寫入資料', user)
-            /** 應該在login 以及 signInByCrendential 就會把 crendential 存到 cache */
+            /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
             const credential = Cookie.getCredential();
             Cookie.setUser(user);
             store.setUserInfo(user);
@@ -72,10 +72,18 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     onLoginButtonClicked(param) {
+        const self = this;
         if (UserInfo.isLoginInSucceed()) {
             this.getStore().logout().then();
         } else {
-            CommonFirebaseHelper.signInWithGoogle((result) => console.log(result)).then();
+
+            const asyncTask = async (authResult) => {
+                Cookie.setCredential(authResult.credential);
+                const userInfo = authResult.user;
+                await this.getStore().setUserInfo(userInfo);
+                await this.getStore().getUserInfo().submitUserInfo(self, userInfo.uid, userInfo);
+            }
+            CommonFirebaseHelper.signInWithGoogle(asyncTask).then();
         }
     }
 
@@ -192,7 +200,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
             </ListItemSecondaryAction>)
     })
 
-    handleShortcutClicked = (shortcut) =>{
+    handleShortcutClicked = (shortcut) => {
         if (shortcut.hasSubItems()) {
             shortcut.setSubOpen(!shortcut.isSubOpen())
         } else {

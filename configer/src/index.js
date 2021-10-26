@@ -1,6 +1,8 @@
 const GlobalConfig = {
     ENCRYPT_KEY: 'DavidIsProudOfSingle',
     IS_NODE_ENV: process.env.is_node,
+    UID:'uid',
+    SPLIT_SIGN_OF_ARRAY:'#&#@#',
     DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
     MAIN_MSG: {
         SHOW_ERROR: true,
