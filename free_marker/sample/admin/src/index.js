@@ -135,11 +135,12 @@ import moment from 'moment';
         }, (condition) => condition.where('status', '==', 'pending'))
     }
 
-    async function deployQuestions() {
+    async function deployQuestions(clear) {
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);
         await db.init();
-        const qs = await db.fetchRecords('QUESTION', new Builder().equal('year', '110').stmt());
-        await api.deleteQuestions();
+        const qs = await db.fetchRecords('QUESTION', new Builder().equal('year', '109').stmt());
+        if(clear)
+            await api.deleteQuestions();
         let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
             const choiceStringArray = q.choices.split(`#&#@#`);
@@ -261,6 +262,7 @@ import moment from 'moment';
         listenToPurchaseSucceedReport();
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
+
     await deployQuestions();
     // await beforeStartService();
     // await backgroundService();

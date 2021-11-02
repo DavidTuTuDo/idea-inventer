@@ -177,6 +177,20 @@ class BaseStore extends ClientRemoteApi {
         this.setState('stable');
     }
 
+    conditions = []
+
+    getFetchConditions() {
+        return this.conditions;
+    }
+
+    pushFetchConditions(...conditions) {
+        this.conditions.push(...conditions);
+    }
+
+    clearFetchConditions() {
+        this.conditions.length = 0;
+    }
+
 }
 
 export default BaseStore

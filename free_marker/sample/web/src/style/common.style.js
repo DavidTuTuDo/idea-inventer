@@ -15,6 +15,8 @@ class CommonStyle {
 
   ExamEditorQuestionTypeTextField = {};
 
+  ExamEditorQuestionQidTextField = {};
+
   ExamEditorQuestionSubjectTextField = {};
 
   ExamEditorQuestionAnswerTextField = {};

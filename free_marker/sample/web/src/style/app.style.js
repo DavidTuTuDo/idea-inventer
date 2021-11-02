@@ -15,6 +15,8 @@ class AppStyle {
 
   ExamEditorQuestionTypeTextField = {};
 
+  ExamEditorQuestionQidTextField = {};
+
   ExamEditorQuestionSubjectTextField = {};
 
   ExamEditorQuestionAnswerTextField = {};

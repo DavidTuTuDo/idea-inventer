@@ -22,6 +22,9 @@ class CodegenNode {
     password;
     components;
 
+    disableInitFetch = false;
+    /** 取消 初始畫面就發出fetch request, 放在struct level */
+
     storageSuperUserUid = "uid";
     /** storage因為沒有辦法進去firestore去拿isAdmin, 必須hardcode uid*/
 
@@ -303,6 +306,10 @@ class CodegenNode {
         return this.storageFolder;
     }
 
+    getFunctionNameOfFetchCondition() {
+        return Util.camel('get', this.getName(), 'conditions');
+    }
+
     hasStorageFolder() {
         return !!this.storageFolder;
     }
@@ -415,6 +422,10 @@ class CodegenNode {
 
     setIsEditPage(edit) {
         this.editPage = edit;
+    }
+
+    isDisableInitFetch() {
+        return this.disableInitFetch;
     }
 
     getUniqueIdStmt() {
@@ -659,7 +670,7 @@ class CodegenNode {
 
     getStoragePermission() {
         const customize = this.permission ? this.permission : {};
-        const result =  {...this.getDefaultStoragePermission(), ...customize};
+        const result = {...this.getDefaultStoragePermission(), ...customize};
         return result
     }
 
@@ -1904,7 +1915,7 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
 
         function getInitFetchStmt(node) {
-            let defaultStmt = `await new ${node.getClassName()}().fetch(view)`;
+            let defaultStmt = `await new ${node.getClassName()}().fetch(view,...this.${node.getFunctionNameOfFetchCondition()}())`;
             if (node.isFetchOnlyLogin()) {
                 defaultStmt = `UserInfoRef.isLoginInSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
             }
@@ -1947,11 +1958,12 @@ class StoreBuilder extends BaseBuilder {
         } else if (node.isArray()) {
             const stmts = [];
             if (node.hasPath()) {
-                stmts.push(`return await this.${Util.camel(`fetch`, node.getFieldName())}(view)`)
-            }
+                stmts.push(`return await this.${Util.camel(`fetch`, node.getFieldName())}(view, ...conditions)`);
 
+
+            }
             baseGenerator.appendAsyncFunction('fetch',
-                ['view'], [], [],
+                ['view', '...conditions'], [], [],
                 ...stmts);
         }
 
@@ -1960,6 +1972,17 @@ class StoreBuilder extends BaseBuilder {
                 `if(this.getParentNode())`,
                 `this.getParentNode().remove${_.upperFirst(node.getFieldName())}(this)`
             )
+        }
+
+        for (const child of node.getPreciseAttributeChildren()) {
+            if (child.hasPath() && child.isArray()) {
+                const fieldName = Util.camel('conditions', 'of', child.getName());
+                baseGenerator.appendField(fieldName, '[]')
+                baseGenerator.appendFunction(Util.camel('set', child.getName(), 'conditions'), ['conditions'], [], [],
+                    `this.${fieldName} = conditions`)
+                baseGenerator.appendFunction(child.getFunctionNameOfFetchCondition(), [], [], [],
+                    `return this.${fieldName}`)
+            }
         }
 
         const types = [{name: `rawData`, fetcher: (node) => node.getPreciseColumnChildren()},
@@ -1983,6 +2006,7 @@ class StoreBuilder extends BaseBuilder {
                     }
                 ).join(','), '}')
         })
+
         baseGenerator.appendFunction('clear', [], ['action'], [],
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
@@ -2391,7 +2415,7 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
         }
 
-        if (this.containedFetchAttribute(componentNode.getStruct())) {
+        if (this.containedFetchAttribute(componentNode.getStruct()) && !componentNode.isDisableInitFetch()) {
             this.appendStmtIntoComponentDidMount(
                 `this.getStore().fetch(this).then()`
             )
@@ -3525,11 +3549,11 @@ class ProjectFileHandler extends PathBase {
 
         await this.recursiveDoingOfNodeEachStruct((node) => node.isImageView() && node.hasStorageFolder(), task)
         const stmts = [];
-        for(const name in permissions) {
+        for (const name in permissions) {
             const _stmt = [];
-            _stmt.push(`match ${libpath.join('/',name)}/{fileId} {`);
+            _stmt.push(`match ${libpath.join('/', name)}/{fileId} {`);
             const permission = permissions[name];
-            for(const type in permission) {
+            for (const type in permission) {
                 _stmt.push(`allow ${type}: if ${permission[type]}`)
             }
             _stmt.push(`}`);
@@ -3660,7 +3684,6 @@ class ProjectFileHandler extends PathBase {
                 node.ref = _nodes[0];
                 node.type = node.ref.type;
                 /** 因為還沒機上 view的關係 所以不會產出view
-                 *
                  * node.view = node.ref.view
                  * node.listView = node.ref.listView
                  * node.wrapView = node.ref.wrapView

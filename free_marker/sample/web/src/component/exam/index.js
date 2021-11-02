@@ -7,6 +7,7 @@ import {observer, inject} from "mobx-react";
 import BaseExamComponent from "./BaseExamComponent";
 import React from 'react';
 import {Application} from '../../index.js';
+import {utiller as Util} from "utiller";
 
 @inject("exam")
 @observer
@@ -14,8 +15,13 @@ class ExamComponent extends BaseExamComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
     componentDidMount() {
+        this.getStore().setQuestionConditions([
+            (stmt) => stmt.where(`subject`, `==`, `${this.paramOfSubject}`),
+            (stmt) => stmt.where(`year`, `==`, 110)
+        ])
         super.componentDidMount();
     }
+
 
     getChoiceButtonColor(choice) {
         const question = choice.getParentNode();

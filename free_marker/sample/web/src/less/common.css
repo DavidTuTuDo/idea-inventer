@@ -209,6 +209,7 @@
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,
 .ExamEditorQuestionSubjectTextField,
+.ExamEditorQuestionQidTextField,
 .ExamEditorQuestionTypeTextField,
 .ExamEditorQuestionYearTextField {
   margin: 5px;
@@ -728,6 +729,9 @@ body {
 .ExamEditorQuestionSubjectTextField {
   /** style */
 }
+.ExamEditorQuestionQidTextField {
+  /** style */
+}
 .ExamEditorQuestionTypeTextField {
   /** style */
 }
@@ -780,6 +784,7 @@ body {
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,
 .ExamEditorQuestionSubjectTextField,
+.ExamEditorQuestionQidTextField,
 .ExamEditorQuestionTypeTextField,
 .ExamEditorQuestionYearTextField {
   margin: 5px;

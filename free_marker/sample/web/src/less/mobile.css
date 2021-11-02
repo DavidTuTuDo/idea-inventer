@@ -201,6 +201,7 @@
 .ExamEditorQuestionChoiceStatementTextField,
 .ExamEditorQuestionAnswerTextField,
 .ExamEditorQuestionSubjectTextField,
+.ExamEditorQuestionQidTextField,
 .ExamEditorQuestionTypeTextField,
 .ExamEditorQuestionYearTextField {
   margin: 5px;
@@ -621,6 +622,9 @@ body {
   /** style */
 }
 .ExamEditorQuestionSubjectTextField {
+  /** style */
+}
+.ExamEditorQuestionQidTextField {
   /** style */
 }
 .ExamEditorQuestionTypeTextField {

@@ -19,6 +19,8 @@ class MobileStyle {
 
   ExamEditorQuestionTypeTextField = {};
 
+  ExamEditorQuestionQidTextField = {};
+
   ExamEditorQuestionSubjectTextField = {};
 
   ExamEditorQuestionAnswerTextField = {};

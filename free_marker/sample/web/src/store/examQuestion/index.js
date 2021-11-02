@@ -21,7 +21,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
 
   initial(obj) {
     super.initial(obj);
-    this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}`);
+    this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}-${this.getQid()}`);
   }
 
   isReply(){

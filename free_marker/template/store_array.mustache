@@ -35,7 +35,7 @@ push{{{functionName}}}ByIndex(index, ...params) {
     Util.insertToArray(this.{{{fieldName}}},index, ...params.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 }
 
-append{{{fieldClass}}} = (item = {}) => {
+push{{{fieldClass}}} = (item = {}) => {
     this.push{{{functionName}}}(item);
 }
 
@@ -88,7 +88,7 @@ fetchNextPage{{{functionName}}}(view) {
 return async() => {
 const {{{name}}} = _.last(this.get{{{functionName}}}());
 const doc = {{{name}}}.getDocRef();
-const itemsOfNextPage = await new {{{fieldClass}}}().fetch{{{functionName}}}(view, (stmt) => stmt.startAfter(doc));
+const itemsOfNextPage = await new {{{fieldClass}}}().fetch{{{functionName}}}(view, (stmt) => stmt.startAfter(doc),...this.get{{{fieldClass}}}Conditions());
 this.push{{{functionName}}}(...itemsOfNextPage);
 }
 }
