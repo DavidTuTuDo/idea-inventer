@@ -9,7 +9,7 @@ import Router from '../../router';
 import Config from '../../config';
 import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/styles';
 import UserInfo from '../../userInfo';
 import Style from "../../style";
 import React from "react";

@@ -1915,7 +1915,11 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
 
         function getInitFetchStmt(node) {
-            let defaultStmt = `await new ${node.getClassName()}().fetch(view,...this.${node.getFunctionNameOfFetchCondition()}())`;
+            function getFetchStmts(){
+                return node.isArray() && node.hasPath() ? `...this.${node.getFunctionNameOfFetchCondition()}()`: '';
+            }
+
+            let defaultStmt = `await new ${node.getClassName()}().fetch(view,${getFetchStmts()})`;
             if (node.isFetchOnlyLogin()) {
                 defaultStmt = `UserInfoRef.isLoginInSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
             }

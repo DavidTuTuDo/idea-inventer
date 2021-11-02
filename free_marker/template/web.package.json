@@ -33,9 +33,12 @@
     "webpack-node-externals": "^2.5.2"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.60",
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@material-ui/core": "^5.0.0-beta.5",
+    "@material-ui/icons": "^5.0.0-beta.5",
+    "@material-ui/styles": "^5.0.0-beta.5",
+    "@material-ui/lab": "^5.0.0-alpha.44",
     "notistack": "^1.0.10",
     "@firebase/auth": "^0.16.5",
     "@firebase/database": "^0.10.7",
