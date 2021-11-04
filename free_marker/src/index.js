@@ -238,15 +238,21 @@ class CodegenNode {
     /**
      * 目前機制有設計為1.ConfirmDialog 和 2.CustViewDialog
      * 1.當有些按鈕需要double check, 必須搭配wrap:true 使用 alertDialog:{ content:string, title:string }
-     * 2.當dialog是customView {  customView:functionName, needActionButtons:false }, customView 會拿到 dialog 的 ref, 所以可以在customView裡面控制dialog, 然後有個paramObject也會傳遞到CustomView可以用
+     * 2.當dialog是customView {  customView:functionName, needActionButtons:false },
+     * customView 會拿到 {dialog,paramObject} 的 this.props,
+     * 所以可以在customView裡面控制dialog, 然後有個paramObject也會傳遞到CustomView可以用
+     * paramObject預設會是點擊事件的parent node.
      *
      **/
-    alertDialog = {
-        customView: undefined,
-        needActionButtons: false,
-        title: '',
-        content: '',
-        paramObject: 'some object',
+    alertDialog;
+
+    defaultAlertDialog = {
+        customView: undefined, /** 指component的className */
+        needActionButtons: true, /** 是否需要dialog預設的按鈕功能 */
+        title: undefined,
+        content: undefined,
+        paramObject: 'some object', /** 帶入到customView 裡面的變數 */
+        independentClick: false, /** 獨立觸發dialog的事件, 不然預設都會在click事件裡面觸發. 就是你要拿ref自己控制open() close()會用到 */
     };
 
     /** 放admin的json file*/
@@ -582,18 +588,12 @@ class CodegenNode {
         }
 
         function getActionButtonStmts() {
-            let string = ``
-            if (self.alertDialog.needActionButtons !== undefined) {
-                string = self.alertDialog.needActionButtons
-            } else {
-                string = `true`
-            }
-            return `needActionButtons:${string}`
+            return `needActionButtons:${self.getAlertDialog().needActionButtons}`
         }
 
         function getCustomViewStmts() {
             if (self.hasCustomViewDialog()) {
-                return `customView:${self.alertDialog.customView}`;
+                return `customView:${self.getAlertDialog().customView}`;
             }
         }
 
@@ -608,8 +608,8 @@ class CodegenNode {
 
             const props = [
                 `ref:${this.getAlertDialogVariable()}`,
-                `title:${JSON.stringify(this.alertDialog.title)}`,
-                `content:${JSON.stringify(this.alertDialog.content)}`
+                `title:${JSON.stringify(self.getAlertDialog().title)}`,
+                `content:${JSON.stringify(self.getAlertDialog().content)}`
             ];
             props.push(getActionButtonStmts());
             props.push(getTaskStmts());
@@ -641,17 +641,21 @@ class CodegenNode {
     }
 
     hasAlertDialog() {
-        return this.alertDialog && _.isObject(this.alertDialog) && (this.alertDialog.content || this.alertDialog.customView);
+        return !_.isEmpty(this.getAlertDialog().content) || !_.isEmpty(this.getAlertDialog().customView);
+    }
+
+    getAlertDialog() {
+        return Util.mergeObject(this.defaultAlertDialog, this.alertDialog);
     }
 
     /** 就是點擊要再確認的那種dialog */
     hasConfirmDialog() {
-        return this.hasAlertDialog() && this.alertDialog.content;
+        return this.hasAlertDialog() && this.getAlertDialog().content;
     }
 
     /** 就是客製化view那種dialog */
     hasCustomViewDialog() {
-        return this.hasAlertDialog() && this.alertDialog.customView;
+        return this.hasAlertDialog() && this.getAlertDialog().customView;
     }
 
     setContents(contents = []) {
@@ -2763,7 +2767,7 @@ class ComponentBuilder extends BaseBuilder {
                     ${node.getViewParamVariable()} = param;
                     ${node.getAlertDialogVariable()}.current.open();
                    }`
-            } else if (node.hasCustomViewDialog()) {
+            } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
                 props.onClick =
                     `###(param) => {
                     ${node.getAlertDialogVariable()}.current.open();
