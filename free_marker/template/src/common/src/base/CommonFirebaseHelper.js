@@ -54,8 +54,7 @@ class CommonFirebaseHelper extends BaseFirebase {
     }
 
     getGoogleAuthProvider() {
-        const provider = new this.auth().GoogleAuthProvider();
-        provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+        const provider = new (this.getAuthLibrary().GoogleAuthProvider)()
         this.auth().useDeviceLanguage();
         return provider;
     }

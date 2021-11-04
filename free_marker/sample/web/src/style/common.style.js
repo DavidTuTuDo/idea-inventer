@@ -241,6 +241,16 @@ class CommonStyle {
 
   PurchaseSucceedDiv = {};
 
+  /** => following for examFilter  component  */
+
+  ExamFilterTestWithHistoryButton = {};
+
+  ExamFilterSpaceDiv = {};
+
+  ExamFilterTestWithRandomButton = {};
+
+  ExamFilterDiv = {};
+
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}

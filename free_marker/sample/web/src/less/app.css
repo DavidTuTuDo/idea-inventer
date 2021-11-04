@@ -271,6 +271,19 @@
 body {
   margin: 0;
 }
+/** following for examFilter  component used  */
+.ExamFilterDiv {
+  /** style */
+}
+.ExamFilterTestWithRandomButton {
+  /** style */
+}
+.ExamFilterSpaceDiv {
+  /** style */
+}
+.ExamFilterTestWithHistoryButton {
+  /** style */
+}
 /** following for purchaseSucceed  component used  */
 .PurchaseSucceedDiv {
   /** style */

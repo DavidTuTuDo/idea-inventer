@@ -8,7 +8,10 @@ import {observer, inject} from "mobx-react";
 class DialogStore {
 
     @observable
-    visibility=false;
+    visibility = false;
+
+    @observable
+    extraParam = {}
 
     constructor() {
         makeObservable(this);
@@ -23,6 +26,11 @@ class DialogStore {
         this.visibility = visibility;
     }
 
+    @action
+    setCustomViewParam(object) {
+        this.extraParam = object;
+    }
+
 }
 
 @observer
@@ -34,8 +42,12 @@ class AlertDialog extends React.Component {
         this.onSubmitClick = props.onSubmitClick;
     }
 
-    open= () => {
+    /** object 是可以帶到customView裡面的變數 */
+    open = (object) => {
         this.getStore().setVisibility(true);
+        if(object !== undefined) {
+            this.getStore().setCustomViewParam(object);
+        }
     }
 
 
@@ -43,8 +55,9 @@ class AlertDialog extends React.Component {
         this.getStore().setVisibility(false);
     }
 
-    onSubmitClicked =() =>{
+    onSubmitClicked = () => {
         const submitTask = this.props.submitTask;
+        const paramObject = this.props.paramObject;
         this.close();
         submitTask();
     }
@@ -55,32 +68,70 @@ class AlertDialog extends React.Component {
 
     render() {
         const self = this;
-        const title = this.props.title;
-        const content = this.props.content;
-
         return (
             <Dialog
                 open={self.getStore().getVisibility()}
-                onClose={self.close}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {content}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={self.close} color="primary">
-                        取消
-                    </Button>
-                    <Button onClick={self.onSubmitClicked} color="primary" autoFocus>
-                        確認
-                    </Button>
-                </DialogActions>
+                onClose={self.close}>
+
+                {this.renderTitle()}
+
+                {this.renderContent()}
+
+                {this.renderActionButton()}
+
             </Dialog>
         )
+    }
+
+    renderTitle() {
+        const self = this;
+        const title = this.props.title;
+        if (!_.isEmpty(title)) {
+            return <DialogTitle>{title}</DialogTitle>
+        }
+        return null;
+    }
+
+    renderContent() {
+        const self = this;
+        const content = this.props.content;
+        if (_.isString(content) && !_.isEmpty(content)) {
+            return <DialogContent>
+                <DialogContentText>
+                    {content}
+                </DialogContentText>
+            </DialogContent>
+        }
+        const CustomView = this.props.customView;
+        const paramObject = this.props.paramObject;
+
+        return <DialogContent>
+            <CustomView
+                paramObject={paramObject}
+                dialog={this}
+                {...this.getStore().extraParam} />
+        </DialogContent>
+        return null;
+    }
+
+    hasCustomView(){
+        return this.props.customView;
+    }
+
+    renderActionButton() {
+        const self = this;
+        const needActionButtons = this.props.needActionButtons;
+
+        if(!needActionButtons) return null;
+
+        return <DialogActions>
+            <Button onClick={self.close} color="primary">
+                取消
+            </Button>
+            <Button onClick={self.onSubmitClicked} color="primary" autoFocus>
+                確認
+            </Button>
+        </DialogActions>
     }
 
 }

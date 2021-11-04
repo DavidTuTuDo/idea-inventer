@@ -319,11 +319,14 @@ class BaseComponent extends React.Component {
     }
 
 
-    renderAlertDialog(ref, title, content, task) {
+    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons}) {
         return (<AlertDialog
             title={title}
             content={content}
             submitTask={task}
+            needActionButtons={needActionButtons}
+            customView={customView}
+            paramObject={paramObject}
             ref={ref}/>)
     }
 

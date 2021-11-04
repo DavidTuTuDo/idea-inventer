@@ -14,7 +14,7 @@ import UserInfo from '../../userInfo';
 import {utiller as Util} from 'utiller';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 import Countdown from "react-countdown";
-import {Typography} from "@material-ui/core";
+import {Popover,Typography} from "@material-ui/core";
 
 @inject("main")
 @observer
@@ -29,7 +29,6 @@ class MainComponent extends BaseMainComponent {
         const enterPoint = param.object;
         this.handleCustomRouter(enterPoint.route);
     }
-
 
     renderCountdownView(){
         const CountdownView = this.CountdownView;

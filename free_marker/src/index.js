@@ -235,8 +235,19 @@ class CodegenNode {
     admin;
 
 
-    /** 當有些按鈕需要確認的dialog, { content:string, title:string }, 必須搭配wrap:true 使用 */
-    alertDialog;
+    /**
+     * 目前機制有設計為1.ConfirmDialog 和 2.CustViewDialog
+     * 1.當有些按鈕需要double check, 必須搭配wrap:true 使用 alertDialog:{ content:string, title:string }
+     * 2.當dialog是customView {  customView:functionName, needActionButtons:false }, customView 會拿到 dialog 的 ref, 所以可以在customView裡面控制dialog, 然後有個paramObject也會傳遞到CustomView可以用
+     *
+     **/
+    alertDialog = {
+        customView: undefined,
+        needActionButtons: false,
+        title: '',
+        content: '',
+        paramObject: 'some object',
+    };
 
     /** 放admin的json file*/
 
@@ -558,17 +569,59 @@ class CodegenNode {
         const stmt = [];
         const wrapContents = this.wrapContents ? this.wrapContents : [];
         stmt.push(...wrapContents);
+        this.appendAlertDialogStmts(stmt)
+        return stmt;
+    }
+
+    appendAlertDialogStmts(stmt) {
+        const self = this;
+
+        function getTaskStmts() {
+            if (self.hasConfirmDialog())
+                return `task:() => this.${self.getFunctionNameOfClicked()}({view:${self.getViewParamVariable()},object:${self.getParamOfRenderView()}})`;
+        }
+
+        function getActionButtonStmts() {
+            let string = ``
+            if (self.alertDialog.needActionButtons !== undefined) {
+                string = self.alertDialog.needActionButtons
+            } else {
+                string = `true`
+            }
+            return `needActionButtons:${string}`
+        }
+
+        function getCustomViewStmts() {
+            if (self.hasCustomViewDialog()) {
+                return `customView:${self.alertDialog.customView}`;
+            }
+        }
+
+        function getParamObject() {
+            const param = self.getParamOfRenderView();
+            if (!_.isEmpty(param)) {
+                return `paramObject:${param}`;
+            }
+        }
 
         if (this.hasAlertDialog()) {
+
+            const props = [
+                `ref:${this.getAlertDialogVariable()}`,
+                `title:${JSON.stringify(this.alertDialog.title)}`,
+                `content:${JSON.stringify(this.alertDialog.content)}`
+            ];
+            props.push(getActionButtonStmts());
+            props.push(getTaskStmts());
+            props.push(getCustomViewStmts());
+            props.push(getParamObject());
+            _.remove(props, (each) => _.isEmpty(each))
             stmt.push(`{
             this.renderAlertDialog(
-            ${this.getAlertDialogVariable()},
-            ${JSON.stringify(this.alertDialog.title)},
-            ${JSON.stringify(this.alertDialog.content)},
-            () => this.${this.getFunctionNameOfClicked()}({view:${this.getViewParamVariable()},object:${this.getParamOfRenderView()}})
-            )}`)
+            {
+            ${props.join(',')}
+            })}`)
         }
-        return stmt;
     }
 
     needEditPage() {
@@ -588,15 +641,21 @@ class CodegenNode {
     }
 
     hasAlertDialog() {
-        return this.alertDialog && _.isObject(this.alertDialog);
+        return this.alertDialog && _.isObject(this.alertDialog) && (this.alertDialog.content || this.alertDialog.customView);
+    }
+
+    /** 就是點擊要再確認的那種dialog */
+    hasConfirmDialog() {
+        return this.hasAlertDialog() && this.alertDialog.content;
+    }
+
+    /** 就是客製化view那種dialog */
+    hasCustomViewDialog() {
+        return this.hasAlertDialog() && this.alertDialog.customView;
     }
 
     setContents(contents = []) {
         this.contents = [];
-    }
-
-    setIsWrap(wrap) {
-        this.wrap = wrap
     }
 
     clearContents() {
@@ -704,7 +763,8 @@ class CodegenNode {
         const stmt = [];
         if (this.hasAlertDialog()) {
             stmt.push(`const ${this.getAlertDialogVariable()} = React.createRef()`);
-            stmt.push(`let ${this.getViewParamVariable()}`);
+            if (this.hasConfirmDialog())
+                stmt.push(`let ${this.getViewParamVariable()}`);
         }
 
         if (this.isAppBarView() && this.isScrollingHideDependOnRootNode()) {
@@ -752,10 +812,14 @@ class CodegenNode {
     }
 
     getContents() {
+        const stmts = [];
+
         if (!!this.contents && _.isArray(this.contents)) {
-            return this.contents
+            stmts.push(...this.contents)
         }
-        return [];
+        if (this.hasAlertDialog() && !this.hasWrap())
+            this.appendAlertDialogStmts(stmts);
+        return stmts;
     }
 
     isNumber() {
@@ -1264,8 +1328,11 @@ class CodegenNode {
         if (this.isAttribute() && this.isArrayItem()) {
             param = this.getName();
         } else if (this.isAttribute() || this.needParentParam()) {
-            param = this.getPreciseAttributeParent().getName();
+            const node = this.getPreciseAttributeParent();
+            if (this.isValidNode(node))
+                param = node.getName();
         }
+
         return param;
     }
 
@@ -1915,8 +1982,8 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
 
         function getInitFetchStmt(node) {
-            function getFetchStmts(){
-                return node.isArray() && node.hasPath() ? `...this.${node.getFunctionNameOfFetchCondition()}()`: '';
+            function getFetchStmts() {
+                return node.isArray() && node.hasPath() ? `...this.${node.getFunctionNameOfFetchCondition()}()` : '';
             }
 
             let defaultStmt = `await new ${node.getClassName()}().fetch(view,${getFetchStmts()})`;
@@ -2690,10 +2757,15 @@ class ComponentBuilder extends BaseBuilder {
                 `Util.appendError('${node.getFunctionNameOfClicked()} not override')`
             )
 
-            if (node.hasAlertDialog()) {
+            if (node.hasConfirmDialog()) {
                 props.onClick =
                     `###(param) => {
                     ${node.getViewParamVariable()} = param;
+                    ${node.getAlertDialogVariable()}.current.open();
+                   }`
+            } else if (node.hasCustomViewDialog()) {
+                props.onClick =
+                    `###(param) => {
                     ${node.getAlertDialogVariable()}.current.open();
                    }`
             } else {
@@ -2889,6 +2961,11 @@ class ComponentBuilder extends BaseBuilder {
                 `const ${node.getName()} = this.getStore()`,
                 ...getContentStmt(node));
             this.hasRootRenderViewFunction = true;
+        }
+
+        if (node.hasCustomViewDialog()) {
+            const nameOfCustomView = node.alertDialog.customView;
+            generator.appendImport(nameOfCustomView, `../${nameOfCustomView}`);
         }
 
         if (isEditPage) {
