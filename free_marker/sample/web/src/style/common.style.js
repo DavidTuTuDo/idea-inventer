@@ -243,11 +243,17 @@ class CommonStyle {
 
   /** => following for examFilter  component  */
 
-  ExamFilterTestWithHistoryButton = {};
+  ExamFilterHistoryTestBtnWithHistoryButton = {};
+
+  ExamFilterHistoryTestDiv = {};
 
   ExamFilterSpaceDiv = {};
 
-  ExamFilterTestWithRandomButton = {};
+  ExamFilterRandomTestBtnOfStartExamButton = {};
+
+  ExamFilterRandomTestRangeOfYearSlider = {};
+
+  ExamFilterRandomTestDiv = {};
 
   ExamFilterDiv = {};
 

@@ -17,19 +17,30 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
   constructor(props) {
     super(props);
-
   }
 
   componentDidMount() {
     super.componentDidMount();
-    console.log(`dialog`,this.props.dialog);
-    console.log(`paramObject`,this.props.paramObject);
-    const dialog = this.props.dialog;
-    Util.syncDelay(5000).then(() => {
-      dialog.close();
-    })
+    const enterPoint = this.props.paramObject;
+
+    if(enterPoint !== undefined) {
+      const route = enterPoint.route;
+      if(route.startsWith(`dialog`)) {
+
+      }else {
+        this.handleCustomRouter(route);
+      }
+    }
 
   }
+
+  onBtnOfStartExamButtonClicked(param) {
+    console.log(this.getStore().getRandomTest().getRangeOfYear());
+    console.log(this.getStore().getExamHistoryInfo().rawData())
+  }
+
+
+
 
   /** -------------------- async api -------------------- **/
 }

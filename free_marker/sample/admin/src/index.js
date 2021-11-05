@@ -180,11 +180,6 @@ import moment from 'moment';
                         icon: 'muIcon:Explicit',
                         route: `route:main`,
 
-                    },
-                    {
-                        title: '國文',
-                        icon: 'muIcon:Memory',
-                        route: `route:purchase`
                     }
                 ]
             },
@@ -198,6 +193,26 @@ import moment from 'moment';
                 icon: 'path:https://assets.mydogsname.com/images/categories/003-dog.png'
             }
         )
+
+        await api.submitExamHistoryInfo({
+            maxYear:110,
+            minYear:90,
+            marks:[
+                {
+                    value:90,
+                    label:`90年`
+                },
+                {
+                    value:100,
+                    label:`100年`
+                },
+                {
+                    value:110,
+                    label:`110年`
+                }
+
+            ]
+        })
 
         await api.submitMyShortcuts(
             'BYnJOAlUa5aCnpxvoeiIyCzRXSt1',
@@ -263,8 +278,8 @@ import moment from 'moment';
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
 
-    await deployQuestions();
-    // await beforeStartService();
+    // await deployQuestions();
+    await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
 })();

@@ -243,6 +243,8 @@ class CodegenNode {
      * 所以可以在customView裡面控制dialog, 然後有個paramObject也會傳遞到CustomView可以用
      * paramObject預設會是點擊事件的parent node.
      *
+     * 我常常遇到想嘗試舞台的小朋友, 都礙於身旁有個會無下限嘲弄他的朋友, 而使他各種退卻. 看到你能坦率做自己覺得挺好的. 或許是妳的精神素質很好, 更或許是你周遭人都是有光亮的
+     *
      **/
     alertDialog;
 
@@ -251,6 +253,7 @@ class CodegenNode {
         needActionButtons: true, /** 是否需要dialog預設的按鈕功能 */
         title: undefined,
         content: undefined,
+        component: this, /** 在dialog裡面的view 會拿不到history, 會造成無法導頁, 所以要把喚起dialog的 component instance 帶進去 */
         paramObject: 'some object', /** 帶入到customView 裡面的變數 */
         independentClick: false, /** 獨立觸發dialog的事件, 不然預設都會在click事件裡面觸發. 就是你要拿ref自己控制open() close()會用到 */
     };
@@ -869,6 +872,10 @@ class CodegenNode {
 
     isTextField() {
         return this.isAttribute() && _.isEqual(this.view, 'TextField');
+    }
+
+    isSliderView() {
+        return this.isAttribute() && _.isEqual(this.view, 'Slider');
     }
 
     /** 就是指number, string 這類的物件啦 */
@@ -1986,6 +1993,7 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
 
         function getInitFetchStmt(node) {
+
             function getFetchStmts() {
                 return node.isArray() && node.hasPath() ? `...this.${node.getFunctionNameOfFetchCondition()}()` : '';
             }
@@ -2024,7 +2032,7 @@ class StoreBuilder extends BaseBuilder {
             const contents = [
                 `{`,
                 node.hasPath() ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
-                ..._.map(node.getPreciseAttributeChildren(), (child) => child.isCollection() ? getInitFetchStmt(child) : ``),
+                ..._.map(node.getPreciseAttributeChildren(), (child) => (child.isArray() && child.hasPath()) || child.isObject() ? getInitFetchStmt(child) : ``),
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
@@ -2435,7 +2443,7 @@ class ComponentBuilder extends BaseBuilder {
         );
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('{Grid,Paper,Card,Avatar,AppBar,Toolbar,TextField,Typography,Button,IconButton,Drawer,ListItem,List}', '@material-ui/core')
+        baseGenerator.appendImport('{Grid,Paper,Card,Avatar,AppBar,Toolbar,TextField, Slider,Typography, Button, IconButton, Drawer, ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style');
         baseGenerator.appendImport('{observer}', 'mobx-react');
@@ -2722,7 +2730,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
-        if (!node.isTextField() && !node.isImageView() && node.isStringOrNumberAttribute()) {
+        if (!node.isSliderView() && !node.isTextField() && !node.isImageView() && node.isStringOrNumberAttribute()) {
             contentStmts.push(`{${node.getFieldName()}}`);
         }
 
@@ -2748,7 +2756,6 @@ class ComponentBuilder extends BaseBuilder {
             const injectProps = node.getFunctionNameOfInjectProps();
             props['injectProps'] = `...self.${node.getFunctionNameOfInjectProps()}(${param})`
             generator.appendFunction(injectProps, [param]);
-
         }
 
         if (node.isArray()) {
@@ -2797,6 +2804,12 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isString()) {
                 props['multiline'] = `###true`;
             }
+        } else if(node.isSliderView()) {
+            props['value'] = `###${node.getName()}`;
+            props['onChange'] = `###(event)=>{
+                const range = event.target.value;
+                ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(range);
+            }`
         }
 
         if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
@@ -3460,7 +3473,7 @@ class ProjectFileHandler extends PathBase {
 
                     const existSourceFile = libpath.join(projectCommonSourceBasePath, file.fileNameExtension);
                     if (fs.existsSync(existSourceFile) &&
-                        Util.getFileLastModifiedTime(existSourceFile) > file.lastModifiedTime) {
+                        Util.getFileLastModifiedTime(existSourceFile) > file.lastModifiedTime + 3600) {
                         Util.appendInfo(`${existSourceFile} is the latest, ignore this run`);
                         continue;
                     }
@@ -4086,6 +4099,10 @@ if (configer.DEBUG_MODE) {
                     await builder.buildAdmin();
                     break;
                 case 'webOnly':
+                    await builder.buildWeb();
+                    break;
+                case 'persistentBuildWeb':
+                    await builder.persistent('web');
                     await builder.buildWeb();
                     break;
                 case 'persistentBuild':

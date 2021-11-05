@@ -275,13 +275,22 @@ body {
 .ExamFilterDiv {
   /** style */
 }
-.ExamFilterTestWithRandomButton {
+.ExamFilterRandomTestDiv {
+  /** style */
+}
+.ExamFilterRandomTestRangeOfYearSlider {
+  /** style */
+}
+.ExamFilterRandomTestBtnOfStartExamButton {
   /** style */
 }
 .ExamFilterSpaceDiv {
   /** style */
 }
-.ExamFilterTestWithHistoryButton {
+.ExamFilterHistoryTestDiv {
+  /** style */
+}
+.ExamFilterHistoryTestBtnWithHistoryButton {
   /** style */
 }
 /** following for purchaseSucceed  component used  */

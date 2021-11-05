@@ -45,7 +45,7 @@ class AlertDialog extends React.Component {
     /** object 是可以帶到customView裡面的變數 */
     open = (object) => {
         this.getStore().setVisibility(true);
-        if(object !== undefined) {
+        if (object !== undefined) {
             this.getStore().setCustomViewParam(object);
         }
     }
@@ -104,9 +104,10 @@ class AlertDialog extends React.Component {
         }
         const CustomView = this.props.customView;
         const paramObject = this.props.paramObject;
-
+        const component = this.props.component;
         return <DialogContent>
             <CustomView
+                component={component}
                 paramObject={paramObject}
                 dialog={this}
                 {...this.getStore().extraParam} />
@@ -114,7 +115,7 @@ class AlertDialog extends React.Component {
         return null;
     }
 
-    hasCustomView(){
+    hasCustomView() {
         return this.props.customView;
     }
 
@@ -122,7 +123,7 @@ class AlertDialog extends React.Component {
         const self = this;
         const needActionButtons = this.props.needActionButtons;
 
-        if(!needActionButtons) return null;
+        if (!needActionButtons) return null;
 
         return <DialogActions>
             <Button onClick={self.close} color="primary">

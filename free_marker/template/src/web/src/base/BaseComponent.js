@@ -45,6 +45,10 @@ class BaseComponent extends React.Component {
         }
     }
 
+    isDialogComponent() {
+        return this.props.dialog !== undefined;
+    }
+
     componentWillUnmount() {
         this.getStore().clear();
         /** 執行unsubscribe */
@@ -319,7 +323,7 @@ class BaseComponent extends React.Component {
     }
 
 
-    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons}) {
+    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons, component}) {
         return (<AlertDialog
             title={title}
             content={content}
@@ -327,6 +331,7 @@ class BaseComponent extends React.Component {
             needActionButtons={needActionButtons}
             customView={customView}
             paramObject={paramObject}
+            component={component}
             ref={ref}/>)
     }
 
@@ -484,6 +489,20 @@ class BaseComponent extends React.Component {
             date={Date.now() + Util.getMillionSecFromNow(date)}/>
     })
 
+    getComponentInstance = () => {
+        if (this.isDialogComponent()) {
+            return this.props.component;
+        } else {
+            return this;
+        }
+    }
+
+    dismiss() {
+        if (this.isDialogComponent()) {
+            return this.dialog.close();
+        }
+    }
+
     /** path:'https://' or route:'pageName:...params'*/
     handleCustomRouter = (routeString = '') => {
         const words = routeString.split(':')
@@ -499,7 +518,7 @@ class BaseComponent extends React.Component {
                 const functionName = `goto${_.upperFirst(page)}Page`;
                 const functionOfGotoPage = Router[functionName];
                 if (_.isFunction(functionOfGotoPage)) {
-                    functionOfGotoPage(this, ...routes);
+                    functionOfGotoPage(this.getComponentInstance(), ...routes);
                 } else {
                     this.setSnackViewVisibility(true, `4097 can't handle ${page}`, {type: 'error'})
                 }
