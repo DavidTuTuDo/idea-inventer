@@ -245,6 +245,12 @@ class AppStyle {
 
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 
+  ExamFilterHistoryTestSelectorMenuItem = {};
+
+  ListExamFilterHistoryTestSelectorTextField = {};
+
+  ExamFilterHistoryTestSelectorMenuItem = {};
+
   ExamFilterHistoryTestDiv = {};
 
   ExamFilterSpaceDiv = {};

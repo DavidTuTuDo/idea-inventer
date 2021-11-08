@@ -22,6 +22,11 @@ class CodegenNode {
     password;
     components;
 
+    select;
+    /** 如果是type===array而且 select===true,會在store生出一個selected{getName()}
+     * select 為 true時,  物件規範固定為 [...{label,value}]  ex:[{label:'帥',value:'handsome'},{label:'醜',value:'ugly'}]
+     * */
+
     disableInitFetch = false;
     /** 取消 初始畫面就發出fetch request, 放在struct level */
 
@@ -234,7 +239,6 @@ class CodegenNode {
 
     admin;
 
-
     /**
      * 目前機制有設計為1.ConfirmDialog 和 2.CustViewDialog
      * 1.當有些按鈕需要double check, 必須搭配wrap:true 使用 alertDialog:{ content:string, title:string }
@@ -272,8 +276,28 @@ class CodegenNode {
         }
     }
 
+    setType(type) {
+        this.type = type;
+    }
+
+    getFieldNameOfSelected() {
+        return Util.camel('selected', this.getName());
+    }
+
+    getFunctionNameOfSelectSetter() {
+        return Util.camel('set', this.getFieldNameOfSelected());
+    }
+
+    getFunctionNameOfSelectGetter() {
+        return Util.camel('get', this.getFieldNameOfSelected());
+    }
+
     getDirectoryName() {
         return this.directory;
+    }
+
+    isSelectedArray() {
+        return this.isArray() && _.isEqual(true, this.select);
     }
 
     isRestfulBean() {
@@ -428,7 +452,7 @@ class CodegenNode {
 
     isContainer() {
         return this.view && Util.isOrEquals(_.toLower(this.view), 'grid', 'div', 'card', 'paper'
-            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem');
+            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem');
     }
 
     isScrollingHideDependOnRootNode() {
@@ -533,9 +557,9 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore', 'initFetchOnlyLogin', 'permission', 'alertDialog',
-            'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'extra', 'firebase', 'mother', 'parent',
-            'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
+        return ['defaultValue', 'paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
 
     setListContents(contents) {
@@ -544,6 +568,10 @@ class CodegenNode {
 
     appendListContents(...contents) {
         this.listContents.push(...contents);
+    }
+
+    appendContent(...contents) {
+        this.contents.push(...contents);
     }
 
     hasPermission() {
@@ -1984,6 +2012,13 @@ class StoreBuilder extends BaseBuilder {
             } else {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
+            if (child.isSelectedArray()) {
+                generator.appendField(child.getFieldNameOfSelected(), '{}', ['observable']);
+                generator.appendFunction(child.getFunctionNameOfSelectGetter(), [], [], [],
+                    `return this.${child.getFieldNameOfSelected()}`)
+                generator.appendFunction(child.getFunctionNameOfSelectSetter(), ['selected'], ['action'], [],
+                    `this.${child.getFieldNameOfSelected()} = selected`)
+            }
             propStmt.push(`}`);
             propsStmt.push(...propStmt);
         }
@@ -2443,7 +2478,8 @@ class ComponentBuilder extends BaseBuilder {
         );
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('{Grid,Paper,Card,Avatar,AppBar,Toolbar,TextField, Slider,Typography, Button, IconButton, Drawer, ListItem,List}', '@material-ui/core')
+        baseGenerator.appendImport('{MenuItem, Grid, Paper, Card, Avatar, AppBar, Toolbar, TextField,' +
+            ' Slider,Typography, Button, IconButton, Drawer, ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style');
         baseGenerator.appendImport('{observer}', 'mobx-react');
@@ -2681,10 +2717,23 @@ class ComponentBuilder extends BaseBuilder {
             const itemViewProps = {};
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
-            const ArrayItemView = this.getJSXStrings({
+            let ArrayItemView = this.getJSXStrings({
                 tag: `${node.getFunctionNameOfRenderItemView()}`,
                 props: itemViewProps,
             })
+
+            if (node.isSelectedArray()) {
+                props['onChange'] = `###(event)=>{${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(event.target.value)}`;
+                props['value'] = `###${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}()`;
+                delete itemViewProps[`${node.getName()}`];
+                const clone = _.clone(node);
+                clone.setType('arrayItem');
+                clone.appendViewProps(itemViewProps);
+                clone.appendContent(`{${node.getName()}.label}`)
+                clone.appendViewProps({value: `###${node.getName()}.value`})
+                ArrayItemView = this.getJSXStringsByNode(generator, clone)
+                props.select = true;
+            }
 
             const arrayStmts = this.getJSXStrings({
                 tag: node.getListView(),
@@ -2804,7 +2853,7 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isString()) {
                 props['multiline'] = `###true`;
             }
-        } else if(node.isSliderView()) {
+        } else if (node.isSliderView()) {
             props['value'] = `###${node.getName()}`;
             props['onChange'] = `###(event)=>{
                 const range = event.target.value;

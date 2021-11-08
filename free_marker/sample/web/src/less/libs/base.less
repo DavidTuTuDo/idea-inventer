@@ -1,3 +1,15 @@
+.CenterInParentRow {
+  flex: 1;
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.CenterInParentColumn:extend(.CenterInParentRow all) {
+  flex-direction: column;
+}
+
 .BaseShortcutItemView {
 }
 

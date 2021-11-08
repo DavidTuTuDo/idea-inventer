@@ -7,13 +7,7 @@
   /** style */
 }
 
-.ExamFilterRandomTestDiv {
-  /** style */
-  flex: 1;
-  flex-direction: column;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.ExamFilterRandomTestDiv:extend(.CenterInParentColumn) {
 }
 
 .ExamFilterRandomTestRangeOfYearSlider {
@@ -29,13 +23,27 @@
   /** style */
 }
 
-.ExamFilterHistoryTestDiv {
+.ExamFilterHistoryTestDiv:extend(.CenterInParentColumn) {
   /** style */
-  flex: 1;
+  width: 100%;
+}
+
+.ExamFilterHistoryTestSelectorMenuItem {
+  /** style */
+}
+
+.ListExamFilterHistoryTestSelectorTextField {
+  /** style */
+  width: 40%;
+}
+
+.ExamFilterHistoryTestSelectorMenuItem {
+  /** style */
 }
 
 .ExamFilterHistoryTestBtnWithHistoryButton {
   /** style */
+  margin-top: 50px;
 }
 
 /** following for purchaseSucceed  component used  */

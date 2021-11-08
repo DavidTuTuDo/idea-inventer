@@ -245,6 +245,12 @@ class CommonStyle {
 
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 
+  ExamFilterHistoryTestSelectorMenuItem = {};
+
+  ListExamFilterHistoryTestSelectorTextField = {};
+
+  ExamFilterHistoryTestSelectorMenuItem = {};
+
   ExamFilterHistoryTestDiv = {};
 
   ExamFilterSpaceDiv = {};

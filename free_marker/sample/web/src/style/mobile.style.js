@@ -249,6 +249,12 @@ class MobileStyle {
 
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 
+  ExamFilterHistoryTestSelectorMenuItem = {};
+
+  ListExamFilterHistoryTestSelectorTextField = {};
+
+  ExamFilterHistoryTestSelectorMenuItem = {};
+
   ExamFilterHistoryTestDiv = {};
 
   ExamFilterSpaceDiv = {};

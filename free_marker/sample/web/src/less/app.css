@@ -162,6 +162,17 @@
 .firebaseui-tos {
   font-size: 2.3rem !important;
 }
+.CenterInParentRow,
+.CenterInParentColumn {
+  flex: 1;
+  flex-direction: row;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.CenterInParentColumn {
+  flex-direction: column;
+}
 .BaseShortcutMUIconView {
   color: white;
   font-size: 30px;
@@ -288,6 +299,15 @@ body {
   /** style */
 }
 .ExamFilterHistoryTestDiv {
+  /** style */
+}
+.ExamFilterHistoryTestSelectorMenuItem {
+  /** style */
+}
+.ListExamFilterHistoryTestSelectorTextField {
+  /** style */
+}
+.ExamFilterHistoryTestSelectorMenuItem {
   /** style */
 }
 .ExamFilterHistoryTestBtnWithHistoryButton {
