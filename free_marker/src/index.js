@@ -640,7 +640,8 @@ class CodegenNode {
             const props = [
                 `ref:${this.getAlertDialogVariable()}`,
                 `title:${JSON.stringify(self.getAlertDialog().title)}`,
-                `content:${JSON.stringify(self.getAlertDialog().content)}`
+                `content:${JSON.stringify(self.getAlertDialog().content)}`,
+                `component:this`,
             ];
             props.push(getActionButtonStmts());
             props.push(getTaskStmts());

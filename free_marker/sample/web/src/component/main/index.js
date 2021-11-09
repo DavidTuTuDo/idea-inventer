@@ -25,11 +25,6 @@ class MainComponent extends BaseMainComponent {
         this.props.main.setState('stable');
     }
 
-    onEnterPointPaperClicked(param) {
-        const enterPoint = param.object;
-        this.handleCustomRouter(enterPoint.route);
-    }
-
     renderCountdownView(){
         const CountdownView = this.CountdownView;
         return <CountdownView

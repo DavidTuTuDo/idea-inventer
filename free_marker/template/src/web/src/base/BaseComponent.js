@@ -491,6 +491,7 @@ class BaseComponent extends React.Component {
 
     getComponentInstance = () => {
         if (this.isDialogComponent()) {
+            console.log('我是dialog component');
             return this.props.component;
         } else {
             return this;
@@ -499,7 +500,7 @@ class BaseComponent extends React.Component {
 
     dismiss() {
         if (this.isDialogComponent()) {
-            return this.dialog.close();
+            this.props.dialog.close();
         }
     }
 

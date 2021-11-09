@@ -22,21 +22,24 @@ class ExamFilterComponent extends BaseExamFilterComponent {
   componentDidMount() {
     super.componentDidMount();
     const enterPoint = this.props.paramObject;
-
     if(enterPoint !== undefined) {
       const route = enterPoint.route;
       if(route.startsWith(`dialog`)) {
-
       }else {
         this.handleCustomRouter(route);
+        this.dismiss();
       }
     }
-
   }
 
   onBtnOfStartExamButtonClicked(param) {
     console.log(this.getStore().getRandomTest().getRangeOfYear());
     console.log(this.getStore().getExamHistoryInfo().rawData())
+  }
+
+  onBtnWithHistoryButtonClicked(param) {
+    console.log(this.getStore().getHistoryTest().getSelectedSelector());
+
   }
 
 

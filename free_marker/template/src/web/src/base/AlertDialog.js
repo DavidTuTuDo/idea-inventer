@@ -1,6 +1,13 @@
 import React from "react";
 import PropTypes from 'prop-types';
-import {Dialog, DialogActions, Button, DialogContent, DialogContentText, DialogTitle} from '@material-ui/core';
+import {
+    Dialog,
+    DialogActions,
+    Button,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+} from '@material-ui/core';
 import {action, makeObservable, observable} from "mobx";
 import {observer, inject} from "mobx-react";
 
@@ -70,6 +77,8 @@ class AlertDialog extends React.Component {
         const self = this;
         return (
             <Dialog
+                className={"BaseAlertDialog"}
+                {...this.injectPaperProps()}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
 
@@ -81,6 +90,19 @@ class AlertDialog extends React.Component {
 
             </Dialog>
         )
+    }
+
+    injectPaperProps() {
+        if (this.hasCustomView()) {
+            return {
+                PaperProps: {
+                    style: {
+                        backgroundColor: "transparent",
+                        boxShadow: "none"
+                    }
+                }
+            }
+        }
     }
 
     renderTitle() {
@@ -105,7 +127,9 @@ class AlertDialog extends React.Component {
         const CustomView = this.props.customView;
         const paramObject = this.props.paramObject;
         const component = this.props.component;
-        return <DialogContent>
+
+        return <DialogContent
+            className={'BaseAlertDialogContent'}>
             <CustomView
                 component={component}
                 paramObject={paramObject}

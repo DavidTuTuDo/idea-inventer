@@ -163,14 +163,15 @@
   font-size: 2.3rem !important;
 }
 .CenterInParentRow,
-.CenterInParentColumn {
-  flex: 1;
+.CenterInParentColumn,
+.BaseAlertDialogContent {
   flex-direction: row;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.CenterInParentColumn {
+.CenterInParentColumn,
+.BaseAlertDialogContent {
   flex-direction: column;
 }
 .BaseShortcutMUIconView {
