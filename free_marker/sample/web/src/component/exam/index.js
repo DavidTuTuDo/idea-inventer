@@ -9,17 +9,48 @@ import React from 'react';
 import {Application} from '../../index.js';
 import {utiller as Util} from "utiller";
 
+import Router from '../../router';
+import Cookie from "../../cookie";
+
 @inject("exam")
 @observer
 class ExamComponent extends BaseExamComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
     componentDidMount() {
-        this.getStore().setQuestionConditions([
-            (stmt) => stmt.where(`subject`, `==`, `${this.paramOfSubject}`),
-            (stmt) => stmt.where(`year`, `==`, 110)
-        ])
+        this.handleExamFilter();
         super.componentDidMount();
+    }
+
+    handleExamFilter() {
+        const filter = Cookie.getExamFilter();
+
+        if (_.isEmpty(filter)) {
+            Router.gotoMainPage(this.getComponentInstance());
+            return;
+        }
+
+        const subject = filter.subject;// 'string'
+        const type = filter.type;// 'string'
+        const range = filter.range;//[100,105]
+        const countsOfExam = filter.countsOfExam; //25 or 40
+
+        console.log(subject, type, range, countsOfExam)
+
+        switch (type) {
+            case 'history':
+                this.getStore().setQuestionConditions([
+                    (stmt) => stmt.where('subject', '==', _.trim(subject)),
+                    (stmt) => stmt.where('year', '==', _.toNumber(_.head(range)))
+                ])
+                break;
+            case 'random':
+                break;
+            default:
+                /** show error dialog then return */
+                break;
+        }
+        Cookie.removeExamFilter();
     }
 
 

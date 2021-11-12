@@ -87,6 +87,7 @@ submit{{{fieldClass}}} = async (view, obj = {}) => {
 fetchNextPage{{{functionName}}}(view) {
 return async() => {
 const {{{name}}} = _.last(this.get{{{functionName}}}());
+if(_.isEmpty({{{name}}})) return;
 const doc = {{{name}}}.getDocRef();
 const itemsOfNextPage = await new {{{fieldClass}}}().fetch{{{functionName}}}(view, (stmt) => stmt.startAfter(doc),...this.get{{{fieldClass}}}Conditions());
 this.push{{{functionName}}}(...itemsOfNextPage);

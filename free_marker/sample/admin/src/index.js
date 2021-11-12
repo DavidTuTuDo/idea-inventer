@@ -197,20 +197,33 @@ import moment from 'moment';
         await api.submitExamHistoryInfo({
             maxYear:110,
             minYear:90,
-            marks:[
-                {
-                    value:90,
-                    label:`90年`
-                },
-                {
-                    value:100,
-                    label:`100年`
-                },
-                {
-                    value:110,
-                    label:`110年`
-                }
-
+            marks:[{value: 90, label: '90年'}, {value: 100, label: '100年'},
+                {value: 105, label: '105年'}, {value: 110, label: '110年'
+                }],
+            historyExams:[
+                { value: '90', label: '90年' },
+                { value: '91', label: '91年' },
+                { value: '91-2', label: '91年(補考)' },
+                { value: '92', label: '92年' },
+                { value: '92-2', label: '92年(補考)' },
+                { value: '93', label: '93年' },
+                { value: '94', label: '94年' },
+                { value: '95', label: '95年' },
+                { value: '96', label: '96年' },
+                { value: '97', label: '97年' },
+                { value: '98', label: '98年' },
+                { value: '99', label: '99年' },
+                { value: '100', label: '100年' },
+                { value: '101', label: '101年' },
+                { value: '102', label: '102年' },
+                { value: '103', label: '103年' },
+                { value: '104', label: '104年' },
+                { value: '105', label: '105年' },
+                { value: '106', label: '106年' },
+                { value: '107', label: '107年' },
+                { value: '108', label: '108年' },
+                { value: '109', label: '109年' },
+                { value: '110', label: '110年' }
             ]
         })
 

@@ -18,7 +18,7 @@ import {
     IconButton,
     List,
 } from "@material-ui/core";
-import MuiAlert from '@material-ui/lab/Alert';
+import MuiAlert from '@material-ui/core/Alert';
 import {Application} from '../index.js';
 import Config from '../config';
 import {observer} from "mobx-react";
@@ -209,7 +209,6 @@ class BaseComponent extends React.Component {
         const self = this;
         return (
             <div className={'RootViewDiv'}
-                 onScroll={(event) => console.log('scrolling ==> ', event)}
                  style={{...this.style, marginTop: self.getStore().getAppBarHeight()}}>
 
                 {self.renderGlobalLoadingView()}
@@ -402,14 +401,14 @@ class BaseComponent extends React.Component {
                 open={this.getStore().getSnackVisibility()}
                 autoHideDuration={self.durationOfSnackVisible}
                 onClose={onSnackViewCloseClicked}>
-                <React.Fragment>
+                <div>
                     <Alert
                         className={'BaseSnackAlert'}
                         onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
                         {self.snackMessage}
                     </Alert>
                     {renderSnackExtraFunctionView()}
-                </React.Fragment>
+                </div>
             </Snackbar>
         );
     }
@@ -491,7 +490,6 @@ class BaseComponent extends React.Component {
 
     getComponentInstance = () => {
         if (this.isDialogComponent()) {
-            console.log('我是dialog component');
             return this.props.component;
         } else {
             return this;
@@ -536,7 +534,6 @@ class BaseComponent extends React.Component {
 
     async handleRestFulResult(restfulResult, succeedBehavior) {
         if (restfulResult === undefined) return;
-        console.log(restfulResult);
         if (restfulResult.status === 'succeed') {
             await succeedBehavior(restfulResult.data);
         } else if (restfulResult.status === 'fail') {

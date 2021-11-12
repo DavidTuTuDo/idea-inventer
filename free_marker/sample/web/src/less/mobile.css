@@ -287,28 +287,49 @@ body {
 .ExamFilterDiv {
   /** style */
 }
-.ExamFilterRandomTestDiv {
-  /** style */
-}
-.ExamFilterRandomTestRangeOfYearSlider {
-  /** style */
-}
-.ExamFilterRandomTestBtnOfStartExamButton {
+.ExamFilterSubjectTypography {
   /** style */
 }
 .ExamFilterSpaceDiv {
   /** style */
 }
-.ExamFilterHistoryTestDiv {
+.ExamFilterRandomTestDiv {
   /** style */
 }
-.ExamFilterHistoryTestSelectorMenuItem {
+.ListExamFilterRandomTestFastRangeButtonGroup {
+  /** style */
+}
+.ExamFilterRandomTestFastRangeButton {
+  /** style */
+}
+.ExamFilterRandomTestSpaceDiv {
+  /** style */
+}
+.ExamFilterRandomTestRangeOfYearSlider {
+  /** style */
+}
+.ListExamFilterRandomTestCountsOfExamRadioGroup {
+  /** style */
+}
+.LabelExamFilterRandomTestCountsOfExamTypography {
+  /** style */
+}
+.ExamFilterRandomTestCountsOfExamFormControlLabel {
+  /** style */
+}
+.ExamFilterRandomTestBtnOfStartExamButton {
+  /** style */
+}
+.ExamFilterHistoryTestDiv {
   /** style */
 }
 .ListExamFilterHistoryTestSelectorTextField {
   /** style */
 }
 .ExamFilterHistoryTestSelectorMenuItem {
+  /** style */
+}
+.ExamFilterHistoryTestSpaceDiv {
   /** style */
 }
 .ExamFilterHistoryTestBtnWithHistoryButton {

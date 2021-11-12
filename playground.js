@@ -20,3 +20,9 @@ console.log(`b===> `, b);
 
 console.log('empty:?????>>> ',`${_.isEmpty('2')}`);
 
+const array = _.range(90,110);
+const full = array.map((each) => {
+    return {value:`${each}`,
+        label:`${each}年`}
+})
+console.log(full);

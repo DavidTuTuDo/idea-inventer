@@ -22,9 +22,16 @@ class CodegenNode {
     password;
     components;
 
-    select;
+    index = {enable: false, rule: 'CONTAINS'}
+    /** 'CONTAINS', 'DESCENDING', 'ASCENDING' */
+
+    select = {enable: false, defaultValue: undefined, labelView: undefined};
     /** 如果是type===array而且 select===true,會在store生出一個selected{getName()}
      * select 為 true時,  物件規範固定為 [...{label,value}]  ex:[{label:'帥',value:'handsome'},{label:'醜',value:'ugly'}]
+     *
+     * MUI底下設計的select是看不懂被observer包裝過的元件, 所以array的子類們, 不會用observer修飾 2021/11/08 筆記有相繫
+     *
+     * labelView是指在FormControlLabel可以放CustomView進去
      * */
 
     disableInitFetch = false;
@@ -296,8 +303,29 @@ class CodegenNode {
         return this.directory;
     }
 
+    /** 就是有提供單選
+     * 1.在store產生 selected{node.getName()}
+     * 2.會加上onChange事件 setSelected{node.getName()}
+     * 3.array裡的子類view, 不會用observer修飾, 不然會拿不到values
+     * 4.selectedItem預設都是{value:'100',label:'100年'} label用來顯示標籤
+     * */
     isSelectedArray() {
-        return this.isArray() && _.isEqual(true, this.select);
+        return this.isArray() && _.isEqual(true, this.select.enable);
+    }
+
+    isIndex() {
+        return _.isEqual(this.index.enable, true);
+    }
+
+    getIndexRule() {
+        return this.index.rule
+    }
+
+    getSelectedDefaultValue() {
+        if (this.select && this.select.defaultValue) {
+            return JSON.stringify(this.select.defaultValue);
+        }
+        return '';
     }
 
     isRestfulBean() {
@@ -499,6 +527,32 @@ class CodegenNode {
         return !!this.nameModified;
     }
 
+    isFormControlLabelView() {
+        return _.isEqual(this.view, 'FormControlLabel')
+    }
+
+    getSelectedCustomLabelView() {
+        const view = this.select.labelView;
+        return view;
+    }
+
+    isButton() {
+        return _.isEqual(this.view, 'Button')
+    }
+
+    /** 就是 <FormControlLabel label={object.label} /> 其餘的都放到 content裏面 <Button >{object.label}</Button>*/
+    isLabelPropsView() {
+        return Util.isOrEquals(this.view, 'FormControlLabel')
+    }
+
+    isRadioGroupListView() {
+        return _.isEqual(this.getListView(), `RadioGroup`);
+    }
+
+    isMenuItemView() {
+        return _.isEqual(this.view, 'MenuItem')
+    }
+
     getFunctionNameOfFetch() {
         return Util.camel(`fetch`, this.getFieldName())
     }
@@ -557,7 +611,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['defaultValue', 'paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['index', 'defaultValue', 'paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -807,7 +861,7 @@ class CodegenNode {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
-        if (this.isArray()) {
+        if (this.isArray() && !this.isSelectedArray()) {
             stmt.push(`const ${this.getFunctionNameOfRenderItemView()} = self.${this.getFunctionNameOfRenderItemView()}`);
         } else {
             const exist = {}
@@ -901,6 +955,10 @@ class CodegenNode {
 
     isTextField() {
         return this.isAttribute() && _.isEqual(this.view, 'TextField');
+    }
+
+    isTextFieldListView() {
+        return _.isEqual(this.getListView(), 'TextField');
     }
 
     isSliderView() {
@@ -1154,6 +1212,9 @@ class CodegenNode {
                 break;
             case 'listWrap':
                 viewName = this.getListWrapView();
+                break;
+            case 'label':
+                viewName = this.getSelectedCustomLabelView();
                 break;
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
@@ -1726,7 +1787,7 @@ class ClassGenerator {
         Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
 
         try {
-            await Util.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(this.filePath)}`)
+            await Util.prettier(this.filePath);
         } catch (error) {
             throw new ERROR(8011, error);
         }
@@ -1744,11 +1805,9 @@ class ClassGenerator {
                     index.appendImport(`{observer}`, `mobx-react`);
                 }
             }
-
             for (const tail of this.indexFileTailStmts) {
                 index.appendInClassTail(tail);
             }
-
             await index.persist();
         }
     }
@@ -2014,7 +2073,7 @@ class StoreBuilder extends BaseBuilder {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
             if (child.isSelectedArray()) {
-                generator.appendField(child.getFieldNameOfSelected(), '{}', ['observable']);
+                generator.appendField(child.getFieldNameOfSelected(), child.getSelectedDefaultValue(), ['observable']);
                 generator.appendFunction(child.getFunctionNameOfSelectGetter(), [], [], [],
                     `return this.${child.getFieldNameOfSelected()}`)
                 generator.appendFunction(child.getFunctionNameOfSelectSetter(), ['selected'], ['action'], [],
@@ -2130,7 +2189,13 @@ class StoreBuilder extends BaseBuilder {
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
                         if (child.isArray()) {
-                            return `this.${child.getFieldName()}.length = 0`
+                            const stmts = [`this.${child.getFieldName()} = ${child.getDefaultValueByType()}`]
+
+                            if (child.isSelectedArray()) {
+                                stmts.push(`this.${child.getFieldNameOfSelected()} = ${child.getSelectedDefaultValue()}`);
+                            }
+                            return stmts.join('\n');
+
                         } else if (child.isObject()) {
                             return `this.${child.getFieldName()}.clear()`
                         } else {
@@ -2237,7 +2302,7 @@ class RemoteFunctionHandler {
     }
 
     buildFetchSubmitApi = (node, recursively = false) => {
-        function getConditionStmts() {
+        function getAfterConditionStmts() {
             const stmts = [];
             stmts.push(...node.getAfterConditions().map((each) => `(stmt) => stmt.${each}`));
             if (node.hasPaginate()) {
@@ -2338,7 +2403,7 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
-                        [`return await self.fetchItems(path, ${getPreConditionStmts()}...conditions,${getConditionStmts()})`], `fetch items`);
+                        [`return await self.fetchItems(path, ${getPreConditionStmts()}...conditions,${getAfterConditionStmts()})`], `fetch items`);
 
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
@@ -2480,7 +2545,7 @@ class ComponentBuilder extends BaseBuilder {
 
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('{MenuItem, Grid, Paper, Card, Avatar, AppBar, Toolbar, TextField,' +
-            ' Slider,Typography, Button, IconButton, Drawer, ListItem,List}', '@material-ui/core')
+            'Radio,RadioGroup,ButtonGroup,FormControlLabel, Slider,Typography, Button, IconButton, Drawer, ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style');
         baseGenerator.appendImport('{observer}', 'mobx-react');
@@ -2537,8 +2602,10 @@ class ComponentBuilder extends BaseBuilder {
 
         if (this.containedFetchAttribute(componentNode.getStruct()) && !componentNode.isDisableInitFetch()) {
             this.appendStmtIntoComponentDidMount(
-                `this.getStore().fetch(this).then()`
+                `const self = this;`,
+                `this.getStore().fetch(this).then((obj) => self.onApiSucceed(obj))`
             )
+            baseGenerator.appendFunction(`onApiSucceed`, ['object']);
         }
 
         this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
@@ -2666,17 +2733,18 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-    /** 把組合出className必備存起來 {node,type: 'wrap'|'default'|'List'|'listWrap'} ,後續要產生出less style才有根據 */
+    /** 把組合出className必備存起來 {node,type: 'wrap'|'default'|'List'|'listWrap'|'Label'} ,後續要產生出less style才有根據 */
     storeClassName(className) {
         this.classNames.push(className);
     }
 
-    getJSXStringsByNode(generator, node, isEditPage = false) {
+    getJSXStringsByNode = (generator, node, isEditPage = false) => {
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
          如果子節點是string或是number, 就產生出{string}
          **/
+        const self = this;
 
         function getJsxViewStmt(node) {
             const props = {}
@@ -2690,6 +2758,25 @@ class ComponentBuilder extends BaseBuilder {
                 props,
             })
             return viewJsxStmt;
+        }
+
+        function getLabelStmts() {
+            const clazzName = node.getClassNameOfLessUsage('label');
+            self.storeClassName({node, type: 'label'});
+
+            const view = node.getSelectedCustomLabelView();
+            if (view !== undefined) {
+                const stmts = self.getJSXStrings({
+                    tag: view,
+                    props: {className: clazzName},
+                    contents: [`{${node.getName()}.label}`]
+                })
+                self.normalizeJSXString(stmts)
+                return stmts;
+
+            } else {
+                return [`${node.getName()}.label`];
+            }
         }
 
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
@@ -2726,14 +2813,28 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isSelectedArray()) {
                 props['onChange'] = `###(event)=>{${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(event.target.value)}`;
                 props['value'] = `###${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}()`;
+                if (node.isTextFieldListView()) {
+                    props.select = `###true`
+                }
+
                 delete itemViewProps[`${node.getName()}`];
                 const clone = _.clone(node);
                 clone.setType('arrayItem');
                 clone.appendViewProps(itemViewProps);
-                clone.appendContent(`{${node.getName()}.label}`)
+
+
+                if (node.isRadioGroupListView())
+                    clone.appendViewProps({control: `###<Radio />`});
+
+                if (node.isLabelPropsView()) {
+                    clone.appendViewProps({label: `###${getLabelStmts().join('')}`})
+                } else {
+                    /** 如果不是isLabelPropsView(), 一率都放到content <View >{contents}</View>*/
+                    clone.appendContent(`{${node.getName()}.label}`)
+                }
+
                 clone.appendViewProps({value: `###${node.getName()}.value`})
                 ArrayItemView = this.getJSXStringsByNode(generator, clone)
-                props.select = true;
             }
 
             const arrayStmts = this.getJSXStrings({
@@ -2765,8 +2866,6 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         const contentStmts = [];
-        const self = this;
-
         for (const child of node.getPreciseViewChildren()) {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
@@ -2996,6 +3095,10 @@ class ComponentBuilder extends BaseBuilder {
         }
     }
 
+    normalizeJSXString(strings) {
+        _.remove(strings, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
+    }
+
     appendRenderViewFunctions(node, generator, isEditPage) {
         const self = this;
 
@@ -3060,9 +3163,12 @@ class ComponentBuilder extends BaseBuilder {
                 }
 
                 /** 讓Array先產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
-                const clone = _.clone(child);
-                clone.type = 'arrayItem';
-                appendFunctionWithFields(clone);
+                if (!child.isSelectedArray()) {
+                    const clone = _.clone(child);
+                    clone.type = 'arrayItem';
+                    appendFunctionWithFields(clone);
+                }
+
             }
             appendFunctionWithFields(child);
             if (child.hasViewChildren()) {
@@ -3708,19 +3814,46 @@ class ProjectFileHandler extends PathBase {
             stmts.push(_stmt.join('\n'));
         }
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
-        Util.appendFile(path, base.join('\n'), true, true);
+        await this.buildDeployDocument('storage.rules',base.join('\n'), 'storage:rules', deploy)
+    }
+
+    async buildDeployDocument(fileName, conclusion, commandLine = 'firestore:indexes', deploy) {
+        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
+        Util.appendFile(path, conclusion, true, true);
+        // await Util.prettier(path);
         if (deploy) {
             Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
-            await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only storage:rules`);
+            await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only ${commandLine}`);
         }
     }
 
+    async generateFireIndexRules(deploy = true) {
+        const indexes = [];
+        const task = async (node) => {
+            function getFieldObj(node) {
+                const fieldPath = node.getFieldName();
+                if (node.isArray()) {
+                    return {fieldPath, arrayConfig: node.getIndexRule()}
+                } else {
+                    return {fieldPath, order: node.getIndexRule()}
+                }
+            }
+            const indexNodes = node.getPreciseAttributeChildren().filter((each) => each.isIndex())
+            if (!_.isEmpty(indexNodes)) {
+                indexes.push({
+                    collectionGroup: node.getFieldName(),
+                    queryScope: "COLLECTION",
+                    fields: indexNodes.map((each) => getFieldObj(each))
+                })
+            }
+        }
+        await this.recursiveDoingOfNodeEachStruct(((node) => node.hasPath() && node.isArray()), task)
+        await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes}), 'firestore:indexes', deploy)
+    }
+
     async generateFireStoreRules(deploy = true) {
-        const fileName = 'firestore.rules';
-        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
         const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
         const stmts = [];
-
         const task = async (node) => {
             const _stmts = [];
             const path = node.getPath();
@@ -3740,15 +3873,9 @@ class ProjectFileHandler extends PathBase {
                 throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
             }
         }
-
         await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
-        Util.appendFile(path, base.join('\n'), true, true);
-
-        if (deploy) {
-            Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
-            await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only firestore:rules`);
-        }
+        await this.buildDeployDocument('firestore.rules',base.join('\n'), 'firestore:rules', deploy)
     }
 
     async forAdmin() {
@@ -3777,6 +3904,8 @@ class ProjectFileHandler extends PathBase {
         await apiGenerator.persist();
         await this.generateStorageRules();
         await this.generateFireStoreRules();
+        await this.generateFireIndexRules();
+
     }
 
     enrichNodes(...nodes) {
@@ -4089,6 +4218,11 @@ class BuildApplication {
         );
     }
 
+    async buildIndexRule() {
+        const handler = new ProjectFileHandler(this.getBuildObject('admin'))
+        await handler.generateFireIndexRules();
+    }
+
     async buildStorageRule() {
         const handler = new ProjectFileHandler(this.getBuildObject('admin'))
         await handler.generateStorageRules();
@@ -4172,9 +4306,12 @@ if (configer.DEBUG_MODE) {
                     await builder.buildWeb();
                     await builder.buildAdmin();
                     break;
+                case 'buildStoreIndexJson':
+                    await builder.buildIndexRule();
+                    break;
                 default:
                     // console.log('default')
-                    await builder.buildStorageRule();
+                    await builder.buildIndexRule();
                     break
             }
 

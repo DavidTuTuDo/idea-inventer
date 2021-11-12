@@ -245,21 +245,35 @@ class AppStyle {
 
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 
+  ExamFilterHistoryTestSpaceDiv = {};
+
   ExamFilterHistoryTestSelectorMenuItem = {};
 
   ListExamFilterHistoryTestSelectorTextField = {};
 
-  ExamFilterHistoryTestSelectorMenuItem = {};
-
   ExamFilterHistoryTestDiv = {};
-
-  ExamFilterSpaceDiv = {};
 
   ExamFilterRandomTestBtnOfStartExamButton = {};
 
+  ExamFilterRandomTestCountsOfExamFormControlLabel = {};
+
+  LabelExamFilterRandomTestCountsOfExamTypography = {};
+
+  ListExamFilterRandomTestCountsOfExamRadioGroup = {};
+
   ExamFilterRandomTestRangeOfYearSlider = {};
 
+  ExamFilterRandomTestSpaceDiv = {};
+
+  ExamFilterRandomTestFastRangeButton = {};
+
+  ListExamFilterRandomTestFastRangeButtonGroup = {};
+
   ExamFilterRandomTestDiv = {};
+
+  ExamFilterSpaceDiv = {};
+
+  ExamFilterSubjectTypography = {};
 
   ExamFilterDiv = {};
 

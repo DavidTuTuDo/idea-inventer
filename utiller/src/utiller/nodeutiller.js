@@ -527,6 +527,11 @@ class NodeUtiller extends Utiller {
         return _.isEqual('', this.getFileContextInRaw(path).trim())
     }
 
+    /** 把檔案弄得好看一點 */
+    async prettier(path){
+        await Util.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
+    }
+
     getFileLastModifiedTime(path) {
         /**
          * onsole.log(`File Data Last Modified: ${stats.mtime}`);

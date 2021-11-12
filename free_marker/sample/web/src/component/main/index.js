@@ -32,6 +32,10 @@ class MainComponent extends BaseMainComponent {
             date={'2022-01-22'}/>
     }
 
+    componentDidMount() {
+        super.componentDidMount();
+    }
+
 
     /** -------------------- functions -------------------- **/
     /** -------------------- async api -------------------- **/
