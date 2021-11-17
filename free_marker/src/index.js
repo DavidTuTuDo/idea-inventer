@@ -53,8 +53,10 @@ class CodegenNode {
     /** {threshold:10, size:6} ,array專用 可以指定page size, 觸及底部的threshold(就是距離底部多少就要觸發下一頁,預設是1) */
 
     preConditions = [];
-    /** startAfter(),where,這邊指的就是firestore裡的 Query operators*/
+    /** startAfter,where,array裏面放的就是firestore裡的 Query operators 例：where('year','==', 108)*/
+
     afterConditions = [];
+    /** 接著preCondition敘述, orderBy就應該放到這裡面 */
 
     textOfWatermark;
     /** 用來當作浮水印的字樣 */
@@ -497,7 +499,7 @@ class CodegenNode {
     }
 
     isDisableInitFetch() {
-        return this.disableInitFetch;
+        return !!this.disableInitFetch;
     }
 
     getUniqueIdStmt() {
@@ -2126,8 +2128,8 @@ class StoreBuilder extends BaseBuilder {
         if (node.isObject()) {
             const contents = [
                 `{`,
-                node.hasPath() ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
-                ..._.map(node.getPreciseAttributeChildren(), (child) => (child.isArray() && child.hasPath()) || child.isObject() ? getInitFetchStmt(child) : ``),
+                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
+                ..._.map(node.getPreciseAttributeChildren(), (child) => (child.isArray() && child.hasPath() && !child.isDisableInitFetch()) || child.isObject() ? getInitFetchStmt(child) : ``),
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
@@ -2302,23 +2304,25 @@ class RemoteFunctionHandler {
     }
 
     buildFetchSubmitApi = (node, recursively = false) => {
+        const self = this;
+
         function getAfterConditionStmts() {
             const stmts = [];
-            stmts.push(...node.getAfterConditions().map((each) => `(stmt) => stmt.${each}`));
-            if (node.hasPaginate()) {
+            if (self.isWebPlatform())
+                stmts.push(...node.getAfterConditions().map((each) => `(stmt) => stmt.${each}`));
+            if (node.hasPaginate() && self.isWebPlatform()) {
                 stmts.push(`(stmt) => stmt.limit(${node.getPaginateSize()})`)
             }
             return stmts.join(',');
         }
 
         function getPreConditionStmts() {
-            if (node.getPreConditions().length > 0)
+            if (self.isWebPlatform() && node.getPreConditions().length > 0)
                 return node.getPreConditions().map((each) => `(stmt) => stmt.${each}`).join(',') + ',';
             else
                 return '';
         }
 
-        const self = this;
         if (node.isCollection()) {
             const contents = [];
             const children = [];
@@ -2603,9 +2607,13 @@ class ComponentBuilder extends BaseBuilder {
         if (this.containedFetchAttribute(componentNode.getStruct()) && !componentNode.isDisableInitFetch()) {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
-                `this.getStore().fetch(this).then((obj) => self.onApiSucceed(obj))`
+                `if(this.enableInitFetch) {`,
+                `this.getStore().fetch(this).then((obj) => self.onApiSucceed(obj))}`
             )
             baseGenerator.appendFunction(`onApiSucceed`, ['object']);
+            baseGenerator.appendField('enableInitFetch', true)
+            baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
+                `this.enableInitFetch = enable`);
         }
 
         this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
@@ -3814,13 +3822,14 @@ class ProjectFileHandler extends PathBase {
             stmts.push(_stmt.join('\n'));
         }
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
-        await this.buildDeployDocument('storage.rules',base.join('\n'), 'storage:rules', deploy)
+        await this.buildDeployDocument('storage.rules', base.join('\n'), 'storage:rules', deploy)
     }
 
-    async buildDeployDocument(fileName, conclusion, commandLine = 'firestore:indexes', deploy) {
+    async buildDeployDocument(fileName, conclusion, commandLine = 'firestore:indexes', deploy, prettier = false) {
         const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
         Util.appendFile(path, conclusion, true, true);
-        // await Util.prettier(path);
+        if (prettier)
+            await Util.prettier(path);
         if (deploy) {
             Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
             await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only ${commandLine}`);
@@ -3838,6 +3847,7 @@ class ProjectFileHandler extends PathBase {
                     return {fieldPath, order: node.getIndexRule()}
                 }
             }
+
             const indexNodes = node.getPreciseAttributeChildren().filter((each) => each.isIndex())
             if (!_.isEmpty(indexNodes)) {
                 indexes.push({
@@ -3875,7 +3885,7 @@ class ProjectFileHandler extends PathBase {
         }
         await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
-        await this.buildDeployDocument('firestore.rules',base.join('\n'), 'firestore:rules', deploy)
+        await this.buildDeployDocument('firestore.rules', base.join('\n'), 'firestore:rules', deploy)
     }
 
     async forAdmin() {
@@ -3904,7 +3914,11 @@ class ProjectFileHandler extends PathBase {
         await apiGenerator.persist();
         await this.generateStorageRules();
         await this.generateFireStoreRules();
-        await this.generateFireIndexRules();
+        /**
+         * index rule 有點麻煩, 還要照query順序 例如where(subject) where(year) orderBy(qid) 欄位的順序就必須 qeusetions ==> subject,year,qid
+         * await this.generateFireIndexRules();
+         */
+
 
     }
 

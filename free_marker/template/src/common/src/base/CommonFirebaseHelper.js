@@ -46,7 +46,7 @@ class CommonFirebaseHelper extends BaseFirebase {
     }
 
     getServerTimeSymbol() {
-        return this.getFirebaseLibrary().FieldValue.serverTimestamp();
+        return this.getFirestoreLibrary().FieldValue.serverTimestamp();
     }
 
     currentUser() {
@@ -73,7 +73,7 @@ class CommonFirebaseHelper extends BaseFirebase {
     }
 
     getTimeStampObj(millis) {
-        const timestamp = this.getFirebaseLibrary().Timestamp.fromMillis(millis);
+        const timestamp = this.getFirestoreLibrary().Timestamp.fromMillis(millis);
         return timestamp;
     }
 
@@ -170,6 +170,10 @@ class CommonFirebaseHelper extends BaseFirebase {
         }
         return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'uploadImage');
     }
+
+     getFieldNameOfDocumentId() {
+        return this.getFirestoreLibrary().FieldPath.documentId();
+     }
 
 }
 

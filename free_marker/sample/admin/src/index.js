@@ -135,12 +135,17 @@ import moment from 'moment';
         }, (condition) => condition.where('status', '==', 'pending'))
     }
 
-    async function deployQuestions(clear) {
+    async function deployQuestions({all = false, year = 110, clear = false}) {
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);
         await db.init();
-        const qs = await db.fetchRecords('QUESTION', new Builder().equal('year', '109').stmt());
-        if(clear)
+
+        const qs = _.isNumber(year) ?
+            await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
+            await db.fetchRecords('QUESTION')
+
+        if (clear === true)
             await api.deleteQuestions();
+
         let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
             const choiceStringArray = q.choices.split(`#&#@#`);
@@ -195,35 +200,36 @@ import moment from 'moment';
         )
 
         await api.submitExamHistoryInfo({
-            maxYear:110,
-            minYear:90,
-            marks:[{value: 90, label: '90年'}, {value: 100, label: '100年'},
-                {value: 105, label: '105年'}, {value: 110, label: '110年'
+            maxYear: 110,
+            minYear: 90,
+            marks: [{value: 90, label: '90年'}, {value: 100, label: '100年'},
+                {value: 105, label: '105年'}, {
+                    value: 110, label: '110年'
                 }],
-            historyExams:[
-                { value: '90', label: '90年' },
-                { value: '91', label: '91年' },
-                { value: '91-2', label: '91年(補考)' },
-                { value: '92', label: '92年' },
-                { value: '92-2', label: '92年(補考)' },
-                { value: '93', label: '93年' },
-                { value: '94', label: '94年' },
-                { value: '95', label: '95年' },
-                { value: '96', label: '96年' },
-                { value: '97', label: '97年' },
-                { value: '98', label: '98年' },
-                { value: '99', label: '99年' },
-                { value: '100', label: '100年' },
-                { value: '101', label: '101年' },
-                { value: '102', label: '102年' },
-                { value: '103', label: '103年' },
-                { value: '104', label: '104年' },
-                { value: '105', label: '105年' },
-                { value: '106', label: '106年' },
-                { value: '107', label: '107年' },
-                { value: '108', label: '108年' },
-                { value: '109', label: '109年' },
-                { value: '110', label: '110年' }
+            historyExams: [
+                {value: '90', label: '90年'},
+                {value: '91', label: '91年'},
+                {value: '91-2', label: '91年(補考)'},
+                {value: '92', label: '92年'},
+                {value: '92-2', label: '92年(補考)'},
+                {value: '93', label: '93年'},
+                {value: '94', label: '94年'},
+                {value: '95', label: '95年'},
+                {value: '96', label: '96年'},
+                {value: '97', label: '97年'},
+                {value: '98', label: '98年'},
+                {value: '99', label: '99年'},
+                {value: '100', label: '100年'},
+                {value: '101', label: '101年'},
+                {value: '102', label: '102年'},
+                {value: '103', label: '103年'},
+                {value: '104', label: '104年'},
+                {value: '105', label: '105年'},
+                {value: '106', label: '106年'},
+                {value: '107', label: '107年'},
+                {value: '108', label: '108年'},
+                {value: '109', label: '109年'},
+                {value: '110', label: '110年'}
             ]
         })
 
@@ -281,6 +287,14 @@ import moment from 'moment';
         uri: 'https://sandbox-api-pay.line.me'
     })
 
+    async function submitSubjectMap() {
+        await api.deleteSubjectIds(true);
+        const questions = await api.fetchQuestions();
+        await api.submitSubjectIds(...questions.map(q => {
+            return {quid: q.id, year: q.year, subject: q.subject}
+        }));
+    }
+
     async function backgroundService() {
         await api.deletePurchaseOrders(true);
         await api.deletePurchaseReports(true);
@@ -291,10 +305,19 @@ import moment from 'moment';
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
 
-    // await deployQuestions();
-    await beforeStartService();
+    // async function sampleFetch(){
+    //     return await api.firestore().collection('questions')
+    //         .where('year','==', 110)
+    //         .listDocuments();
+    //
+    // }
+
+    // await deployQuestions({year: 110, all: false, clear: false});
+    // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
+    // await submitSubjectMap()
+    // console.log((await sampleFetch()).length)
 })();
 
 

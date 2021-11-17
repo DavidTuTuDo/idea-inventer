@@ -27,7 +27,7 @@ class BaseFirebase {
         return firebase.auth;
     }
 
-    getFirebaseLibrary(){
+    getFirestoreLibrary(){
         return firebase.firestore;
     }
 

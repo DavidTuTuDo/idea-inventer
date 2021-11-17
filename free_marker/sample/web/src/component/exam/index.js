@@ -11,6 +11,8 @@ import {utiller as Util} from "utiller";
 
 import Router from '../../router';
 import Cookie from "../../cookie";
+import ExamSubjectIdStore from "../../store/examSubjectId";
+import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 
 @inject("exam")
 @observer
@@ -22,9 +24,9 @@ class ExamComponent extends BaseExamComponent {
         super.componentDidMount();
     }
 
-    handleExamFilter() {
+    handleExamFilter = () => {
         const filter = Cookie.getExamFilter();
-
+        const self = this;
         if (_.isEmpty(filter)) {
             Router.gotoMainPage(this.getComponentInstance());
             return;
@@ -35,16 +37,31 @@ class ExamComponent extends BaseExamComponent {
         const range = filter.range;//[100,105]
         const countsOfExam = filter.countsOfExam; //25 or 40
 
-        console.log(subject, type, range, countsOfExam)
-
         switch (type) {
             case 'history':
                 this.getStore().setQuestionConditions([
                     (stmt) => stmt.where('subject', '==', _.trim(subject)),
-                    (stmt) => stmt.where('year', '==', _.toNumber(_.head(range)))
+                    (stmt) => stmt.where('year', '==', _.toNumber(_.head(range))),
+                    (stmt) => stmt.orderBy("qid")
                 ])
                 break;
             case 'random':
+                this.setEnableInitFetch(false);
+                console.log(subject, range, countsOfExam)
+                const conditions = [
+                    (stmt) => stmt.where('subject', '==', _.trim(subject)),
+                    (stmt) => stmt.where('year', '>=', _.toNumber(range.shift())),
+                    (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))
+                ]
+                const subjectID = new ExamSubjectIdStore();
+                subjectID.fetchSubjectIds(this, ...conditions).then((idMaps) => {
+                    const ids = _.sampleSize(idMaps, 10).map(each => each.quid);
+                    this.getStore().setQuestionConditions([(stmt)=> stmt.where(CommonFirebaseHelper.getFieldNameOfDocumentId(),'in',ids)])
+                    return this.getStore().fetch(self)
+                }).then((result) => {
+                    console.log(result);
+                });
+
                 break;
             default:
                 /** show error dialog then return */

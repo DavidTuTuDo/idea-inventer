@@ -585,6 +585,7 @@ body {
   /** style */
   text-align: left;
   font-size: 2.1rem;
+  text-transform: none;
 }
 .WrapExamQuestionChoiceStatementDiv,
 .WrapExamEditorQuestionChoiceStatementDiv {

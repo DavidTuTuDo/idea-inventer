@@ -5,9 +5,9 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseAdminRemoteApi from "./BaseAdminRemoteApi";
+import BaseExamSubjectIdStore from "./BaseExamSubjectIdStore";
 
-class AdminRemoteApi extends BaseAdminRemoteApi {
+class ExamSubjectIdStore extends BaseExamSubjectIdStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,4 +16,4 @@ class AdminRemoteApi extends BaseAdminRemoteApi {
   }
   /** -------------------- async api -------------------- **/
 }
-export default AdminRemoteApi;
+export default ExamSubjectIdStore;

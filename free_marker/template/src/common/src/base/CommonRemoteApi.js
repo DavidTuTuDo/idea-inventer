@@ -13,6 +13,10 @@ class CommonRemoteApi {
         return firebase;
     }
 
+    firestore(){
+        return firebase.firestore();
+    }
+
     async submitItems(path, ...objects) {
         Util.appendInfo(`submit items => path:{${path}}, size:${objects.length}`);
         let batch = firebase.firestore().batch();
@@ -74,7 +78,10 @@ class CommonRemoteApi {
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async fetchItems(path, ...conditions) {
-        Util.appendInfo(`fetch items => path:/${path}/`);
+        const uid = Util.getRandomHash(10);
+        if(conditions.length > 0)
+        Util.appendInfo(conditions.map(each => (_.toString(each))));
+        Util.appendInfo(`${uid} fetch items => path:/${path}/`);
         const query = Util.accumulate(firebase.firestore().collection(path), conditions);
         const querySnapshot = await query.get();
         const all = [];
@@ -85,6 +92,8 @@ class CommonRemoteApi {
                 data.id = _.isEmpty(data.id) ? doc.id : data.id;
                 all.push(data);
             })
+        Util.appendInfo(`${uid} fetch items => ${path} result with ${all.length} items`);
+
         return all;
     }
 
