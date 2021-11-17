@@ -40,27 +40,26 @@ class ExamComponent extends BaseExamComponent {
         switch (type) {
             case 'history':
                 this.getStore().setQuestionConditions([
-                    (stmt) => stmt.where('subject', '==', _.trim(subject)),
-                    (stmt) => stmt.where('year', '==', _.toNumber(_.head(range))),
-                    (stmt) => stmt.orderBy("qid")
+                    {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
+                    {where: (stmt) => stmt.where('year', '==', _.toNumber(_.head(range)))},
+                    {orderBy: (stmt) => stmt.orderBy("qid")}
                 ])
                 break;
             case 'random':
                 this.setEnableInitFetch(false);
-                console.log(subject, range, countsOfExam)
                 const conditions = [
-                    (stmt) => stmt.where('subject', '==', _.trim(subject)),
-                    (stmt) => stmt.where('year', '>=', _.toNumber(range.shift())),
-                    (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))
+                    {where:(stmt) => stmt.where('subject', '==', _.trim(subject))},
+                    {where:(stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))},
+                    {where:(stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))}
                 ]
                 const subjectID = new ExamSubjectIdStore();
                 subjectID.fetchSubjectIds(this, ...conditions).then((idMaps) => {
-                    const ids = _.sampleSize(idMaps, 10).map(each => each.quid);
-                    this.getStore().setQuestionConditions([(stmt)=> stmt.where(CommonFirebaseHelper.getFieldNameOfDocumentId(),'in',ids)])
+                    console.log(idMaps);
+                    const ids = _.sampleSize(idMaps, countsOfExam).map(each => each.quid);
+                    console.log(ids);
+                    this.getStore().pushNextQuestionIDs(...ids);
                     return this.getStore().fetch(self)
-                }).then((result) => {
-                    console.log(result);
-                });
+                }).then();
 
                 break;
             default:

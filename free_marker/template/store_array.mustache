@@ -1,98 +1,172 @@
-{{{name就是qustion}}}
-{{{fieldName就是qustions}}}
+{{{name就是question}}}
+{{{fieldName就是questions}}}
 {{{functionName就是Questions}}}
 {{{fieldClass就是Question}}}
 {{{hasPath就是true/flase}}}
 @action
 set{{{functionName}}}(...items) {
-    const self = this;
-    if(items !== undefined && _.isArray(items)) {
-        this.{{{fieldName}}}.length = 0;
-        this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
-    } else {
-        this.{{{fieldName}}}.length = 0;
-    }
+const self = this;
+if(items !== undefined && _.isArray(items)) {
+this.{{{fieldName}}}.length = 0;
+this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+} else {
+this.{{{fieldName}}}.length = 0;
+}
 }
 
 get{{{functionName}}}() {
-        return this.{{{fieldName}}};
+return this.{{{fieldName}}};
 }
 
 @action
 clean{{{functionName}}}(){
-    this.{{{fieldName}}}.length = 0;
+this.{{{fieldName}}}.length = 0;
 }
 
 @action
 push{{{functionName}}}(...items) {
-    const self = this;
-    this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+const self = this;
+this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 }
 
 @action
 push{{{functionName}}}ByIndex(index, ...params) {
-    const self = this;
-    Util.insertToArray(this.{{{fieldName}}},index, ...params.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+const self = this;
+Util.insertToArray(this.{{{fieldName}}},index, ...params.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 }
 
 push{{{fieldClass}}} = (item = {}) => {
-    this.push{{{functionName}}}(item);
+this.push{{{functionName}}}(item);
 }
 
 @action
 remove{{{functionName}}}ByIndex(...indexes) {
-    for (const index of indexes) {
-        if (index < -1 && this.{{{fieldName}}}.length < index) {
-            Util.appendError(`7821, index ${index} is not valid length ==>`, this.{{{fieldName}}}.length, `index ==>`, index);
-            return;
-        }
-    }
-    _.pullAt(this.{{{fieldName}}}, indexes);
+for (const index of indexes) {
+if (index < -1 && this.{{{fieldName}}}.length < index) {
+Util.appendError(`7821, index ${index} is not valid length ==>`, this.{{{fieldName}}}.length, `index ==>`, index);
+return;
+}
+}
+_.pullAt(this.{{{fieldName}}}, indexes);
 }
 
 @action
 remove{{{functionName}}}(...items) {
-    const indexes = [];
-    for (const item of items) {
-        indexes.push(_.indexOf(this.{{{fieldName}}}, item));
-    }
-    this.remove{{{functionName}}}ByIndex(...indexes);
+const indexes = [];
+for (const item of items) {
+indexes.push(_.indexOf(this.{{{fieldName}}}, item));
+}
+this.remove{{{functionName}}}ByIndex(...indexes);
 }
 
 {{#hasPath}}
-        {{{這裡就是放if的邏輯}}}
-submit{{{functionName}}} = async (view,...objs) => {
+    {{{這裡就是放if的邏輯}}}
+    submit{{{functionName}}} = async (view,...objs) => {
     const items = [];
     for (const obj of objs) {
-        const item = await new {{{fieldClass}}}(obj).submit{{{fieldClass}}}Item(view);
-        items.push(item.value);
+    const item = await new {{{fieldClass}}}(obj).submit{{{fieldClass}}}Item(view);
+    items.push(item.value);
     }
     this.push{{{functionName}}}(...items)
-}
+    }
 
-update{{{functionName}}} = async (view) => {
-        await new {{{fieldClass}}}().submit{{{functionName}}}(view,
-        ...this.get{{{functionName}}}().map((each) => each.rawData()))
-}
+    update{{{functionName}}} = async (view) => {
+    await new {{{fieldClass}}}().submit{{{functionName}}}(view,
+    ...this.get{{{functionName}}}().map((each) => each.rawData()))
+    }
 
-submit{{{fieldClass}}} = async (view, obj = {}) => {
+    submit{{{fieldClass}}} = async (view, obj = {}) => {
     return await this.submit{{{functionName}}}(view, obj);
-}
+    }
 {{/hasPath}}
 {{^hasPath}}
     {{{這裡就是放else的邏輯}}}
 {{/hasPath}}
 
 {{#hasPaginate}}
-fetchNextPage{{{functionName}}}(view) {
-return async() => {
-const {{{name}}} = _.last(this.get{{{functionName}}}());
-if(_.isEmpty({{{name}}})) return;
-const doc = {{{name}}}.getDocRef();
-const itemsOfNextPage = await new {{{fieldClass}}}().fetch{{{functionName}}}(view, (stmt) => stmt.startAfter(doc),...this.get{{{fieldClass}}}Conditions());
-this.push{{{functionName}}}(...itemsOfNextPage);
-}
-}
+    next{{{fieldClass}}}PageMode = 'paging';//['in-array','paging']
+
+    {{{name}}}Ids = [];
+
+    pushNext{{{fieldClass}}}IDs= (...ids)=> {
+    this.{{{name}}}Ids.push(...ids);
+    this.next{{{fieldClass}}}PageMode = 'in-array';
+    }
+
+    getNext{{{fieldClass}}}IDs =() => {
+    return this.{{{name}}}Ids;
+    }
+
+    getNext{{{fieldClass}}}PageMode =() => {
+    return this.next{{{fieldClass}}}PageMode;
+    }
+
+    fetchNextPage{{{functionName}}} = (view) => {
+    const self = this;
+    return async () => {
+    const items = [];
+    switch (self.getNext{{{fieldClass}}}PageMode()) {
+    case "in-array":
+    const itemsOfNextIds = await self.fetch{{{fieldClass}}}ByNextIds(view);
+    items.push(...itemsOfNextIds);
+    break;
+    default:
+    const itemsOfNextPage = await self.fetch{{{fieldClass}}}NextPageItems(view);
+    items.push(...itemsOfNextPage);
+    }
+    this.push{{{functionName}}}(...items);
+    };
+    }
+
+    fetch{{{fieldClass}}}NextPageItems = async (view) => {
+    const last = _.last(this.get{{{functionName}}}());
+    if (_.isEmpty(last)) return [];
+    const doc = last.getDocRef();
+    const items = await new {{{fieldClass}}}().fetch(
+    view,
+    {startAfter:(stmt) => stmt.startAfter(doc)},
+    ...this.get{{{fieldClass}}}Conditions()
+    );
+    return items;
+    }
+
+    fetch{{{fieldClass}}}ByNextIds = async (view) => {
+    const self = this;
+    const targets = _.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
+    return index < 10;
+    })
+    if (_.isArray(targets) && !_.isEmpty(targets)) {
+    return await new {{{fieldClass}}}().fetch(
+    view,
+    {where: (stmt) => stmt.where(self.getFieldNameOfDocumentId(), "in", targets)},
+    ...this.get{{{fieldClass}}}Conditions()
+    );
+    }
+    return [];
+    }
+
+    fetch{{{functionName}}} = async (view) => {
+    const self = this;
+    switch (self.getNext{{{fieldClass}}}PageMode()) {
+    case 'in-array':
+    return await self.fetch{{{fieldClass}}}ByNextIds();
+    default:
+    return await new {{{fieldClass}}}().fetch(
+    view,
+    ...this.get{{{fieldClass}}}Conditions()
+    )
+    }
+    }
 {{/hasPaginate}}
 
-
+{{^hasPaginate}}
+    {{{這裡就是放else的邏輯}}}
+    {{#hasPath}}
+        fetch{{{functionName}}} = async (view) => {
+        return await new {{{fieldClass}}}().fetch(
+        view,
+        ...this.get{{{fieldClass}}}Conditions()
+        )
+        }
+    {{/hasPath}}
+{{/hasPaginate}}

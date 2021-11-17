@@ -52,11 +52,11 @@ class CodegenNode {
     paginate;
     /** {threshold:10, size:6} ,array專用 可以指定page size, 觸及底部的threshold(就是距離底部多少就要觸發下一頁,預設是1) */
 
-    preConditions = [];
-    /** startAfter,where,array裏面放的就是firestore裡的 Query operators 例：where('year','==', 108)*/
-
-    afterConditions = [];
-    /** 接著preCondition敘述, orderBy就應該放到這裡面 */
+    conditions = [];
+    /** array裏面放的就是firestore裡的 Query operators 例：
+     *
+     * key 是指 operator type, 用來sorting的
+     * { where:(stmt) => stmt.where('year','==', 108)} */
 
     textOfWatermark;
     /** 用來當作浮水印的字樣 */
@@ -301,6 +301,10 @@ class CodegenNode {
         return Util.camel('get', this.getFieldNameOfSelected());
     }
 
+    isPathArray() {
+        return this.isArray() && this.hasPath()
+    }
+
     getDirectoryName() {
         return this.directory;
     }
@@ -355,12 +359,8 @@ class CodegenNode {
         return this.storageSuperUserUid;
     }
 
-    getPreConditions() {
-        return this.preConditions;
-    }
-
-    getAfterConditions() {
-        return this.afterConditions;
+    getConditions() {
+        return this.conditions;
     }
 
     getStructNode() {
@@ -613,7 +613,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['index', 'defaultValue', 'paginate', 'afterConditions', 'preConditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -2090,17 +2090,13 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
 
         function getInitFetchStmt(node) {
+            let defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` : `await this.${Util.camel('fetch', node.getFieldName())}(view)`
+            /** ${node.getFieldName()} 是在 array.mustache gen出來的 */
 
-            function getFetchStmts() {
-                return node.isArray() && node.hasPath() ? `...this.${node.getFunctionNameOfFetchCondition()}()` : '';
-            }
-
-            let defaultStmt = `await new ${node.getClassName()}().fetch(view,${getFetchStmts()})`;
             if (node.isFetchOnlyLogin()) {
                 defaultStmt = `UserInfoRef.isLoginInSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
             }
             return `${node.getFieldName()} : ${defaultStmt},`;
-
         }
 
         const folderName = node.getStoreFolderName();
@@ -2129,19 +2125,19 @@ class StoreBuilder extends BaseBuilder {
             const contents = [
                 `{`,
                 (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
-                ..._.map(node.getPreciseAttributeChildren(), (child) => (child.isArray() && child.hasPath() && !child.isDisableInitFetch()) || child.isObject() ? getInitFetchStmt(child) : ``),
+                ..._.map(node.getPreciseAttributeChildren(), (child) => {
+                    if (child.isDisableInitFetch()) return '';
+                    /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
+                    return (child.isPathArray()) || child.isObject() ? getInitFetchStmt(child) : ``
+                }),
                 `}`,
             ]
             baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
                 ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
-        } else if (node.isArray()) {
+        } else if (node.isPathArray()) {
             const stmts = [];
-            if (node.hasPath()) {
-                stmts.push(`return await this.${Util.camel(`fetch`, node.getFieldName())}(view, ...conditions)`);
-
-
-            }
+            stmts.push(`return await this.${Util.camel(`fetch`, node.getFieldName())}(view, ...conditions)`);
             baseGenerator.appendAsyncFunction('fetch',
                 ['view', '...conditions'], [], [],
                 ...stmts);
@@ -2268,7 +2264,7 @@ class RemoteFunctionHandler {
                 if (recursively && child.hasChildren()) this.buildListenerFunction(child);
             }
 
-            if (node.isArray() && node.hasPath()) {
+            if (node.isPathArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
                     [...defaultParam, `callback = (changes,error) => {}`, `condition = (stmt) => stmt`], [],
                     [`type:['added','modified','removed'], 回傳的就是function of unsubscribe`],
@@ -2306,21 +2302,14 @@ class RemoteFunctionHandler {
     buildFetchSubmitApi = (node, recursively = false) => {
         const self = this;
 
-        function getAfterConditionStmts() {
+        function getConditionStmts() {
             const stmts = [];
             if (self.isWebPlatform())
-                stmts.push(...node.getAfterConditions().map((each) => `(stmt) => stmt.${each}`));
+                stmts.push(...node.getConditions().map((each) => `${each}`));
             if (node.hasPaginate() && self.isWebPlatform()) {
-                stmts.push(`(stmt) => stmt.limit(${node.getPaginateSize()})`)
+                stmts.push(`{limit:(stmt) => stmt.limit(${node.getPaginateSize()})}`)
             }
             return stmts.join(',');
-        }
-
-        function getPreConditionStmts() {
-            if (self.isWebPlatform() && node.getPreConditions().length > 0)
-                return node.getPreConditions().map((each) => `(stmt) => stmt.${each}`).join(',') + ',';
-            else
-                return '';
         }
 
         if (node.isCollection()) {
@@ -2407,7 +2396,7 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
-                        [`return await self.fetchItems(path, ${getPreConditionStmts()}...conditions,${getAfterConditionStmts()})`], `fetch items`);
+                        [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`], `fetch items`);
 
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
@@ -3924,7 +3913,7 @@ class ProjectFileHandler extends PathBase {
 
     enrichNodes(...nodes) {
         for (const node of nodes) {
-            if (node.isArray() && node.hasPath()) {
+            if (node.isPathArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
                 if (!Util.has(children, 'id')) {
                     node.appendChildrenWithJson({

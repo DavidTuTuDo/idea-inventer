@@ -13,8 +13,12 @@ class CommonRemoteApi {
         return firebase;
     }
 
-    firestore(){
+    firestore() {
         return firebase.firestore();
+    }
+
+    getFieldNameOfDocumentId() {
+        return firebase.getFieldNameOfDocumentId();
     }
 
     async submitItems(path, ...objects) {
@@ -79,10 +83,12 @@ class CommonRemoteApi {
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async fetchItems(path, ...conditions) {
         const uid = Util.getRandomHash(10);
-        if(conditions.length > 0)
-        Util.appendInfo(conditions.map(each => (_.toString(each))));
+        const sortedCondition = this.orderConditionByRules(conditions);
+        if (sortedCondition.length > 0)
+            Util.appendInfo(sortedCondition.map(each => (_.toString(each))));
+
         Util.appendInfo(`${uid} fetch items => path:/${path}/`);
-        const query = Util.accumulate(firebase.firestore().collection(path), conditions);
+        const query = Util.accumulate(firebase.firestore().collection(path), sortedCondition);
         const querySnapshot = await query.get();
         const all = [];
         if (!querySnapshot.empty)
@@ -97,6 +103,45 @@ class CommonRemoteApi {
         return all;
     }
 
+    orderConditionByRules(conditions) {
+        /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
+        const raw = [];
+        for (const condition of conditions) {
+            let priority = 99;
+            let stmtOfFunction = (stmt) => stmt;
+            if (_.isObject(condition)) {
+                /** 這種概念 {where:(stmt) => stmt.where('id','==','david')}*/
+                stmtOfFunction = Util.getObjectValue(condition);
+                switch (Util.getObjectKey(condition)) {
+                    case 'limit':
+                        priority = 1;
+                        break;
+                    case 'startAt':
+                    case 'startAfter':
+                        priority = 2;
+                        break;
+                    case 'orderBy':
+                        priority = 3
+                        break;
+                    case 'where':
+                        priority = 4;
+                        break;
+                    default:
+                        break;
+                }
+            } else if (_.isFunction(condition)) {
+                /** 這種概念 (stmt) => stmt.where('id','==','david') */
+                stmtOfFunction = condition
+            } else {
+                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`)
+            }
+            raw.push({stmt: stmtOfFunction, priority})
+        }
+        return _.isEmpty(raw) ? [] : _.orderBy(raw, ['priority'], ['desc']).map((each) => each.stmt);
+
+
+    }
+
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
         const result = await firebase.firestore().collection(path).doc(_.toString(id)).get();
@@ -106,12 +151,16 @@ class CommonRemoteApi {
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async deleteItems(path, all, ...conditions) {
         Util.appendInfo(`delete items ${path}`);
+        const sortedCondition = this.orderConditionByRules(conditions);
         const batch = firebase.firestore().batch()
         if (all) {
             const list = await firebase.firestore().collection(path).listDocuments()
             list.map((doc) => batch.delete(doc));
         } else {
-            const query = Util.accumulate(firebase.firestore().collection(path), conditions);
+            if (sortedCondition.length > 0)
+                Util.appendInfo(sortedCondition.map(each => (_.toString(each))));
+
+            const query = Util.accumulate(firebase.firestore().collection(path), sortedCondition);
             const querySnapshot = await query.get();
             querySnapshot.forEach((doc) => {
                 batch.delete(doc.ref)
@@ -272,7 +321,6 @@ class CommonRemoteApi {
 
     async fetchUserIsExist(uid) {
         const result = await this.fetchItem('users', uid);
-        console.log(result);
         return result.exists
     }
 
@@ -285,10 +333,7 @@ class CommonRemoteApi {
     }
 
     async submitUserBeingAdmin(uid) {
-        const exist = await this.fetchUserIsExist(uid);
-        console.log(`uid is exists?==> `, exist)
-        // if (exist)
-        //     await this.submitUidBeingAdmin(uid);
+        await this.fetchUserIsExist(uid);
     }
 
 
