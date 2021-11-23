@@ -36,6 +36,11 @@ class MainComponent extends BaseMainComponent {
         super.componentDidMount();
     }
 
+    onViewPagerDivClicked(param) {
+        console.log(param.object.image);
+        this.openImageDialog(param.object.image);
+    }
+
 
     /** -------------------- functions -------------------- **/
     /** -------------------- async api -------------------- **/

@@ -36,6 +36,9 @@ class BaseStore extends ClientRemoteApi {
     selectorParams = this.getDefaultSelectorParam();
 
     @observable
+    imageDialogParams = this.getDefaultImageDialogParam()
+
+    @observable
     appBarHeight = 0;
 
     @observable
@@ -159,6 +162,10 @@ class BaseStore extends ClientRemoteApi {
         return this.selectorParams;
     }
 
+    getImageDialogParam() {
+        return this.imageDialogParams
+    }
+
     getDefaultSelectorParam() {
         return {
             type: 'file',
@@ -167,10 +174,23 @@ class BaseStore extends ClientRemoteApi {
         }
     }
 
+    getDefaultImageDialogParam() {
+        return {
+            pager: false,
+            href: 'url',
+        }
+    }
+
     @action
     setSelectorParam(params) {
-        const mixer = {...this.getDefaultSelectorParam(), ...params}
+        const mixer = Util.mergeObject(this.getDefaultSelectorParam(),params)
         this.selectorParams = mixer;
+    }
+
+    @action
+    setImageDialogParam(params) {
+        const mixer = Util.mergeObject(this.getDefaultImageDialogParam(),params)
+        this.imageDialogParams = mixer
     }
 
     clear() {

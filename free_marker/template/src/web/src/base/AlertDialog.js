@@ -10,7 +10,8 @@ import {
 } from '@material-ui/core';
 import {action, makeObservable, observable} from "mobx";
 import {observer, inject} from "mobx-react";
-
+import {utiller as Util, exceptioner as ERROR} from "utiller";
+import _ from 'lodash';
 
 class DialogStore {
 
@@ -18,7 +19,7 @@ class DialogStore {
     visibility = false;
 
     @observable
-    extraParam = {}
+    extraParamObject = {}
 
     constructor() {
         makeObservable(this);
@@ -28,6 +29,10 @@ class DialogStore {
         return this.visibility;
     }
 
+    getExtraParamObject(){
+        return this.extraParamObject;
+    }
+
     @action
     setVisibility(visibility) {
         this.visibility = visibility;
@@ -35,7 +40,7 @@ class DialogStore {
 
     @action
     setCustomViewParam(object) {
-        this.extraParam = object;
+        this.extraParamObject = object;
     }
 
 }
@@ -50,11 +55,16 @@ class AlertDialog extends React.Component {
     }
 
     /** object 是可以帶到customView裡面的變數 */
-    open = (object) => {
-        this.getStore().setVisibility(true);
-        if (object !== undefined) {
-            this.getStore().setCustomViewParam(object);
+    open = (paramObject = {}) => {
+        if(!_.isObject(paramObject)) {
+            Util.appendError(`9831, paramObject should be object, not ${paramObject}`)
+            return
         }
+        if (paramObject !== undefined) {
+            this.getStore().setCustomViewParam(paramObject);
+        }
+        this.getStore().setVisibility(true);
+
     }
 
 
@@ -134,7 +144,7 @@ class AlertDialog extends React.Component {
                 component={component}
                 paramObject={paramObject}
                 dialog={this}
-                {...this.getStore().extraParam} />
+                {...this.getStore().getExtraParamObject()} />
         </DialogContent>
         return null;
     }

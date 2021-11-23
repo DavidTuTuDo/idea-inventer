@@ -34,6 +34,9 @@ class CodegenNode {
      * labelView是指在FormControlLabel可以放CustomView進去
      * */
 
+    needImageDialog = false;
+    /** 點擊後自動會開啟image dialog */
+
     disableInitFetch = false;
     /** 取消 初始畫面就發出fetch request, 放在struct level */
 
@@ -837,6 +840,10 @@ class CodegenNode {
         /** 本來想區分store為 state 或是 object, 但好像還沒想齊全, 故先全部當成state
          return !!this.state && this.state;
          */
+    }
+
+    getFunctionNameOfClearCondition() {
+        return Util.camel('clear', this.getName(), 'conditions')
     }
 
     getAlertDialogVariable() {
@@ -2156,6 +2163,8 @@ class StoreBuilder extends BaseBuilder {
                 baseGenerator.appendField(fieldName, '[]')
                 baseGenerator.appendFunction(Util.camel('set', child.getName(), 'conditions'), ['conditions'], [], [],
                     `this.${fieldName} = conditions`)
+                baseGenerator.appendFunction(child.getFunctionNameOfClearCondition(), [], [], [],
+                    `this.${fieldName}.length = 0`)
                 baseGenerator.appendFunction(child.getFunctionNameOfFetchCondition(), [], [], [],
                     `return this.${fieldName}`)
             }
@@ -2607,6 +2616,16 @@ class ComponentBuilder extends BaseBuilder {
 
         this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
 
+        for (const child of componentNode.getStruct().getChildren()) {
+            if(child.isPathArray()) {
+                this.appendStmtIntoComponentDetach(`this.getStore().${child.getFunctionNameOfClearCondition()}()`);
+            }
+
+            if(child.hasPaginate()) {
+                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set','next',child.getName(),'page','mode')}('paging')`);
+            }
+        }
+
         baseGenerator.appendFunction('getStore', [], [], [],
             componentNode.isEditPage() ? `return this.props.${componentNode.getStruct().getOriginalName()}` : `return this.props.${componentNode.getStruct().getName()}`)
 
@@ -2934,6 +2953,11 @@ class ComponentBuilder extends BaseBuilder {
         /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
         if (node.isImageView()) {
             props['src'] = `###${node.getName()}`;
+
+            if(node.needImageDialog) {
+                props.onClick= `###(param) => this.openImageDialog(${node.getName()})`;
+            }
+
         } else if (node.isTextField()) {
             props['label'] = `${node.getDescription()}`;
             props['value'] = `###${node.getName()}`;
@@ -3997,6 +4021,7 @@ class ProjectFileHandler extends PathBase {
         function toEditorPageMode(node) {
             if (node.isColumnAttribute() && !node.isCollection()) {
                 if (node.isImageView()) {
+                    node.needImageDialog = false;
                     node.appendViewProps({
                         onClick: `###(param) => self.onImageEditorClicked({
                          needWatermark:${node.needWatermark ? 'true' : 'false'},

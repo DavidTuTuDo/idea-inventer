@@ -36,7 +36,7 @@ class ExamComponent extends BaseExamComponent {
         const type = filter.type;// 'string'
         const range = filter.range;//[100,105]
         const countsOfExam = filter.countsOfExam; //25 or 40
-
+        Util.appendInfo(subject,type,range,countsOfExam)
         switch (type) {
             case 'history':
                 this.getStore().setQuestionConditions([
@@ -63,6 +63,7 @@ class ExamComponent extends BaseExamComponent {
 
                 break;
             default:
+                Util.appendError(`8354 type can't not be ${type}`)
                 /** show error dialog then return */
                 break;
         }

@@ -101,6 +101,10 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     return this.next{{{fieldClass}}}PageMode;
     }
 
+    setNext{{{fieldClass}}}PageMode = (mode) => {
+    this.next{{{fieldClass}}}PageMode =  mode;
+    }
+
     fetchNextPage{{{functionName}}} = (view) => {
     const self = this;
     return async () => {

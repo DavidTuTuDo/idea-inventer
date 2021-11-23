@@ -25,7 +25,7 @@ import {observer} from "mobx-react";
 import Countdown from "react-countdown";
 import Router from "../router";
 import {isMobile} from 'react-device-detect'
-
+import ImageDialogView from './ImageDialogView';
 
 class BaseComponent extends React.Component {
     listOfFunctionOfUnsubscribe = [];
@@ -43,6 +43,8 @@ class BaseComponent extends React.Component {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
             this.getStore().setAppBarHeight(isMobile ? 100 : 64);
         }
+
+        this.imageDialogRef = React.createRef();
     }
 
     isDialogComponent() {
@@ -222,10 +224,13 @@ class BaseComponent extends React.Component {
 
                 {self.renderSelectorView()}
 
+                {self.renderImageDialog()}
+
                 {self.renderSnackView()}
 
             </div>)
     }
+
 
     renderSelectorView = () => {
         const self = this;
@@ -332,6 +337,23 @@ class BaseComponent extends React.Component {
             paramObject={paramObject}
             component={component}
             ref={ref}/>)
+    }
+
+    renderImageDialog = () => {
+        const self = this;
+        const params = this.getStore().getImageDialogParam();
+        return this.renderAlertDialog({
+                ref: this.imageDialogRef,
+                paramObject: params,
+                customView: ImageDialogView,
+                needActionButtons: false,
+                component: self
+            }
+        )
+    }
+
+    openImageDialog(imgUrl) {
+        this.imageDialogRef.current.open({href:imgUrl});
     }
 
 
