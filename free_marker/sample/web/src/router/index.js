@@ -3,9 +3,16 @@
 	email:freshingmoon0725@gmail.com
 	updateTime:2021-04-27-16-13-47
 */
-import BaseRouter from "./BaseRouter";
+import BaseMyRouter from "./BaseMyRouter";
 import Cookie from '../cookie';
-class Router extends BaseRouter {
+import {
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+
+class Router extends BaseMyRouter {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -14,9 +21,9 @@ class Router extends BaseRouter {
   }
 
   gotoLoginPage(component) {
-      Cookie.setPathBeforeLogin(window.location.href);
       super.gotoLoginPage(component);
   }
+
 
     /** -------------------- async api -------------------- **/
 }

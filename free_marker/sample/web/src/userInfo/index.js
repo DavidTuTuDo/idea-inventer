@@ -9,6 +9,7 @@ import libpath from "path";
 import application from '../index.js';
 import firebaser from '../base/CommonFirebaseHelper'
 import Cookie from '../cookie';
+import Configer from '../config';
 
 class UserInfo {
     /** -------------------- fields -------------------- **/
@@ -40,6 +41,11 @@ class UserInfo {
 
     isLoginInSucceed() {
         return !_.isNull(firebaser.getCurrentUser());
+    }
+
+    isAdmin(){
+        const isAdmin = this.isLoginInSucceed() && _.isEqual(this.getUid(true),Configer.superUserUid);
+        return isAdmin;
     }
 
     getUid(allowCache = true) {

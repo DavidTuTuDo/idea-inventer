@@ -1,6 +1,6 @@
 import {utiller as Util, exceptioner as ERROR, pooller} from 'utiller';
 import _ from 'lodash';
-import Moment from 'moment';
+import moment from 'moment';
 import config from '../config';
 import libpath from 'path';
 import firebase from "./CommonFirebaseHelper";
@@ -19,6 +19,31 @@ class CommonRemoteApi {
 
     getFieldNameOfDocumentId() {
         return firebase.getFieldNameOfDocumentId();
+    }
+
+    getObjectOfIncrement(delta) {
+        return firebase.getFirestoreIncrement(delta);
+    }
+
+    getObjectOfTimeStamp(ts) {
+        return firebase.getFirestoreTimeStamp(ts);
+    }
+
+    normalizeTimestamp(obj) {
+        if (obj instanceof firebase.FirebaseTimestamp) {
+            return obj;
+        } else {
+            try {
+                const ts = moment(obj).valueOf();
+                return this.getObjectOfTimeStamp(ts);
+            } catch (error) {
+                return this.getObjectOfCurrentTimeStamp();
+            }
+        }
+    }
+
+    getObjectOfCurrentTimeStamp() {
+        return firebase.getCurrentFirestoreTimeStamp();
     }
 
     async submitItems(path, ...objects) {
@@ -198,13 +223,13 @@ class CommonRemoteApi {
     async updateObject(path, updatedObject, objName) {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`update object => path:/${path}/${objName}`);
-        await firebase.firestore().collection(path).doc(objName).update(updatedObject);
+        return await firebase.firestore().collection(path).doc(objName).update(updatedObject);
     }
 
     async deleteObject(path, objName) {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`delete object => path:/${path}/${objName}`);
-        await firebase.firestore().collection(path).doc(objName).delete();
+        return await firebase.firestore().collection(path).doc(objName).delete();
     }
 
     restfulListenItem(path, id, handler = (data) => data, view) {

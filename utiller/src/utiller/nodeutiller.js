@@ -579,10 +579,9 @@ if (configer.DEBUG_MODE) {
             // new NodeUtiller().appendInfo('ddsds',{ff:'2',cc:'tggresd'},[2,4,5,6,7,8,9])
             // console.log(process.env.keyword);
             // console.log(new NodeUtiller().getNodeEnvVariable('keyword'));
-
-            console.log(new NodeUtiller()
-                .getFileNameExtensionFromPath('https://stackoverflow.com/questions/3916191/download-data-url-file/draw918.mp3'));
-            //
+            // console.log(new NodeUtiller()
+            //     .getFileNameExtensionFromPath('https://stackoverflow.com/questions/3916191/download-data-url-file/draw918.mp3'));
+            // //
         }
     )();
 }

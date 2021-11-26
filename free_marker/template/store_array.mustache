@@ -86,15 +86,19 @@ this.remove{{{functionName}}}ByIndex(...indexes);
 {{#hasPaginate}}
     next{{{fieldClass}}}PageMode = 'paging';//['in-array','paging']
 
-    {{{name}}}Ids = [];
+    {{{name}}}NextIds = [];
 
     pushNext{{{fieldClass}}}IDs= (...ids)=> {
-    this.{{{name}}}Ids.push(...ids);
+    this.{{{name}}}NextIds.push(...ids);
     this.next{{{fieldClass}}}PageMode = 'in-array';
     }
 
+    clear{{{fieldClass}}}NextIds() {
+    this.{{{name}}}NextIds.length = 0
+    }
+
     getNext{{{fieldClass}}}IDs =() => {
-    return this.{{{name}}}Ids;
+    return this.{{{name}}}NextIds;
     }
 
     getNext{{{fieldClass}}}PageMode =() => {

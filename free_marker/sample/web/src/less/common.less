@@ -19,7 +19,7 @@
 
 .ExamFilterRandomTestDiv:extend(.CenterInParentColumn) {
   width: 60vw;
-  height: 70vh;
+  height: 50vh;
   border-radius: 5px;
   background-color: #e5f2f2;
 }
@@ -105,23 +105,6 @@
   margin-top: 30px;
 }
 
-/** following for login  component used  */
-
-.LoginDiv {
-  /** style */
-  width: 100vw;
-  height: 20%;
-}
-
-.WrapLoginDiv {
-  /** style */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 70vh;
-}
-
 /** following for navigator  component used  */
 
 .NavigatorDiv {
@@ -150,6 +133,11 @@
 .NavigatorAppBarToolBarTitleTypography {
   /** style */
   flex-grow: 1;
+}
+
+.NavigatorAppBarToolBarToEditModeButton {
+  /** style */
+  margin-right: 10px;
 }
 
 .NavigatorAppBarToolBarLoginButton {
@@ -212,6 +200,7 @@
   height: 28vh;
   overflow: hidden;
   position: relative;
+  border-radius: 8px;
 }
 
 .MainEnterPointPaper {
@@ -647,13 +636,19 @@
 
 /** ======== following for homeless ========= */
 
-@import "./libs/slideshow.less";
-@import "./libs/firebaseui.less";
-@import "./libs/base.less";
-.ExamFilterDiv:extend(.CenterInParentColumn) {
+.LoginDiv {
   /** style */
-  padding: 10px;
-  border-radius: 5px;
+  width: 100vw;
+  height: 20%;
+}
+
+.WrapLoginDiv {
+  /** style */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 70vh;
 }
 
 @import "./libs/slideshow.less";
@@ -662,7 +657,7 @@
 .ExamFilterDiv {
   /** style */
   width: 60vw;
-  height: 50vh;
+  height: 80vh;
   display: flex;
   flex-direction: column;
   margin: 1vh;

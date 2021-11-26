@@ -215,6 +215,8 @@ class CommonStyle {
 
   NavigatorAppBarToolBarLoginButton = {};
 
+  NavigatorAppBarToolBarToEditModeButton = {};
+
   NavigatorAppBarToolBarTitleTypography = {};
 
   NavigatorAppBarToolBarMenuIconMenuIcon = {};
@@ -226,12 +228,6 @@ class CommonStyle {
   NavigatorAppBarAppBar = {};
 
   NavigatorDiv = {};
-
-  /** => following for login  component  */
-
-  WrapLoginDiv = {};
-
-  LoginDiv = {};
 
   /** => following for purchaseSucceed  component  */
 

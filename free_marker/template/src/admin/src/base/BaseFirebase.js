@@ -18,7 +18,7 @@ class BaseFirebase {
         return this.admin;
     }
 
-    getFirebaseLibrary() {
+    getFirestoreLibrary() {
         return admin.firestore;
     }
 

@@ -219,6 +219,8 @@ class MobileStyle {
 
   NavigatorAppBarToolBarLoginButton = {};
 
+  NavigatorAppBarToolBarToEditModeButton = {};
+
   NavigatorAppBarToolBarTitleTypography = {};
 
   NavigatorAppBarToolBarMenuIconMenuIcon = {};
@@ -230,12 +232,6 @@ class MobileStyle {
   NavigatorAppBarAppBar = {};
 
   NavigatorDiv = {};
-
-  /** => following for login  component  */
-
-  WrapLoginDiv = {};
-
-  LoginDiv = {};
 
   /** => following for purchaseSucceed  component  */
 

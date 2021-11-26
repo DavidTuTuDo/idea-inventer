@@ -61,8 +61,8 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     async updateObject(path, updatedObject, objName) {
-        const _async = async () => super.updateObject(path, updatedObject, objName);
-        return await CommonPoolHelper.submitTo('submit', _async)
+        const asyncTask = async () => super.updateObject(path, updatedObject, objName);
+        return await CommonPoolHelper.submitTo('submit', asyncTask)
     }
 
     async deleteObject(path, objName) {

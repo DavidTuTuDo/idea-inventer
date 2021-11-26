@@ -35,6 +35,7 @@ class BaseFirebase {
         return firebase.storage;
     }
 
+
 }
 
 export default BaseFirebase

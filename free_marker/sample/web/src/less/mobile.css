@@ -175,17 +175,17 @@
   flex-direction: column;
 }
 .BaseShortcutMUIconView {
-  color: white;
+  color: black;
   font-size: 30px;
 }
 .BaseShortcutItemAvatarView {
   background-color: black;
 }
 .BaseShortcutItemTextView {
-  color: white;
+  color: black;
 }
 .BaseShortcutItemIconView {
-  color: white;
+  color: black;
 }
 .BaseShortcutNestedListView {
   padding-left: 20px;
@@ -345,13 +345,6 @@ body {
 .PurchaseSucceedConfirmButton {
   /** style */
 }
-/** following for login  component used  */
-.LoginDiv {
-  /** style */
-}
-.WrapLoginDiv {
-  /** style */
-}
 /** following for navigator  component used  */
 .NavigatorDiv {
   /** style */
@@ -375,6 +368,9 @@ body {
 .NavigatorAppBarToolBarTitleTypography {
   /** style */
   font-size: 1.8rem;
+}
+.NavigatorAppBarToolBarToEditModeButton {
+  /** style */
 }
 .NavigatorAppBarToolBarLoginButton {
   /** style */

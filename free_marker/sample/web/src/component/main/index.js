@@ -25,11 +25,13 @@ class MainComponent extends BaseMainComponent {
         this.props.main.setState('stable');
     }
 
+
     renderCountdownView(){
         const CountdownView = this.CountdownView;
+        let time = this.getStore().getExpired().getExpiredTime().toMillis();
         return <CountdownView
             title={'距離學測'}
-            date={'2022-01-22'}/>
+            date={time}/>
     }
 
     componentDidMount() {

@@ -51,7 +51,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         }
     }
 
-
     onBtnWithHistoryButtonClicked(param) {
         const result = {
             range: [this.getStore().getHistoryTest().getSelectedSelector()],

@@ -478,7 +478,7 @@ class BaseComponent extends React.Component {
 
             if (completed) {
                 /** Render a completed state */
-                return undefined;
+                return null;
             } else {
                 const times = [{unit: '天', count: days},
                     {unit: '小時', count: hours},
@@ -507,7 +507,7 @@ class BaseComponent extends React.Component {
 
         return <Countdown
             renderer={TimeDisplayView}
-            date={Date.now() + Util.getMillionSecFromNow(date)}/>
+            date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)}/>
     })
 
     getComponentInstance = () => {

@@ -47,10 +47,20 @@ class NavigatorComponent extends BaseNavigatorComponent {
         super(props);
     }
 
+    getInjectStyleOfToolBarToEditModeButton(toolBar) {
+        const visibility = UserInfo.isAdmin() ? 'visible' : 'hidden';
+        return {
+            visibility: visibility
+        }
+    }
+
     componentDidMount() {
         super.componentDidMount();
         this.getStore().forceToStable();
+    }
 
+    onToEditModeButtonClicked(param) {
+        Router.gotoEditPage(this);
     }
 
     onAuthStateChangedReceive = (user) => {
@@ -65,6 +75,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         }
         Util.appendInfo('Navigator收到登入狀態改變的事件', user)
         store.updateLoginButtonStatus();
+        store.updateEditButtonStatus();
     }
 
     onTitleTypographyClicked(param) {

@@ -20,6 +20,14 @@ String.format = function () {
 
 class Utiller {
 
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        // this.enrichZhTw();
+    }
+
     appendInfo(...logs) {
         console.log(...logs);
     }
@@ -478,13 +486,106 @@ class Utiller {
     }
 
     /** 取得 YYYY-MM-DD */
-    getTodayTimeFormat() {
-        return moment().format("YYYY-MM-DD")
+    getTodayTimeFormat(ts) {
+        return moment(ts ? ts : undefined).format("YYYY-MM-DD")
     }
 
     /** 取得 YYY-MM-DD-HH-mm-ss */
-    getCurrentTimeFormat() {
-        return moment().format("YYYY-MM-DD-HH-mm-ss")
+    getCurrentTimeFormat(ts) {
+        return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss")
+    }
+
+    getCurrentMillionSecTimeFormat(ts) {
+        return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss-SSS")
+    }
+
+    isBetweenTimeStamp(target = this.getCurrentTimeStamp(), min, max) {
+        return moment(target).isBetween(min, max)
+    }
+
+    isBeforeTimeStamp(target = this.getCurrentTimeStamp(), time) {
+        return moment(target).isBefore(time);
+    }
+
+    isAfterTimeStamp(target = this.getCurrentTimeStamp(), time) {
+        return moment(target).isAfter(time);
+    }
+
+    /** 獲得 幾天後的timestamp 的概念 {months: 2,days:3} =>
+     * ts => 1643434497341
+     再利用 getCurrentTimeStamp(ts) => 2022-01-29
+     */
+    getTimeStampAfterCondition(target = this.getCurrentTimeStamp(), param = {
+        days: 0,
+        months: 0,
+        years: 0,
+        minutes: 0,
+        seconds: 0
+    }) {
+        let base = moment(target);
+        for (const each in param) {
+            const number = param[each];
+            const unit = each;
+            if (number !== 0) {
+                base = base.add(number, unit);
+            }
+        }
+        return base.valueOf();
+    }
+
+    /** 要記住timestamp 可以轉換成西元時間(timestamp),或是期間(duration) 把duration time-stamp 轉成 02:13.445 */
+    getTimeFormatOfDurationToMillionSecond(duration) {
+        return moment.utc(duration).format("HH小時mm分鐘ss秒SSS");
+    }
+
+    /** duration是兩個timestamp相減,把duration time-stamp 轉成 02:13,moment.utc 就是不會加八小時啦幹 */
+    getTimeFormatOfDurationToSecond(duration) {
+        return moment.utc(duration).format("HH小時mm分鐘ss秒");
+    }
+
+    /** duration是兩個timestamp相減,把duration time-stamp 轉成 02:13,moment.utc 就是不會加八小時啦幹 , 為什麼對多1天 超怪 */
+    getTimeFormatOfDurationToDay(duration) {
+        return moment.utc(duration).format("DD天HH小時mm分鐘ss秒");
+    }
+
+    getChineseTimeFormat(ts) {
+        moment.locale('zh-TW')
+        return moment(ts).format("LLLL");
+    }
+
+    getMinuteFormatOfDuration(ds) {
+        moment.duration(ds).asMinutes();
+    }
+
+    getSecondFormatOfDuration(ds) {
+        moment.duration(ds).asSeconds();
+    }
+
+    getDayFormatOfDuration(ds) {
+        moment.duration(ds).asDays();
+    }
+
+    /** param可以是timeStamp,也可是date,或是string
+     * timestamp : 1231231279
+     * date :(new Date).now()
+     * string: '2021-11-21'
+     *
+     * getDurationOfMillionSec('2022-01-21' || 123123112312 || (new Date).now())) */;
+
+    getDurationOfMillionSec(dateOrTimeStamp) {
+        const currentTimestamp = this.getCurrentTimeStamp();
+        const targetTimeStamp = moment(dateOrTimeStamp).valueOf();
+        const queue = _.sortBy([{ts: currentTimestamp}, {ts: targetTimeStamp}], (each) => each.ts).map((each) => each.ts);
+
+        let after = moment(queue.pop());
+        let before = moment(queue.shift()); // another date
+        let duration = moment.duration(after.diff(before));
+        let ms = duration.asMilliseconds();
+        return ms;
+    }
+
+    getCurrentTimeStamp() {
+        return moment().valueOf()
     }
 
     isStringContainInLines(context, key) {
@@ -580,15 +681,6 @@ class Utiller {
         _.remove(array, (value, index, array) => (end >= index && index >= from));
     }
 
-    /** date format 2022-01-21" */
-    getMillionSecFromNow(date) {
-        let now = moment(new Date()); //
-        let end = moment(date); // another date
-        let duration = moment.duration(end.diff(now));
-        let ms = duration.asMilliseconds();
-        return ms;
-    }
-
     isEven(n) {
         return n % 2 === 0;
     }
@@ -596,11 +688,132 @@ class Utiller {
     isOdd(n) {
         return Math.abs(n % 2) === 1;
     }
+
+    enrichZhTw() {
+        moment.locale('zh-tw', {
+            months: '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
+            monthsShort: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
+            weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
+            weekdaysShort: '周日_周一_周二_周三_周四_周五_周六'.split('_'),
+            weekdaysMin: '日_一_二_三_四_五_六'.split('_'),
+            longDateFormat: {
+                LT: 'Ah點mm分',
+                LTS: 'Ah點m分s秒',
+                L: 'YYYY-MM-DD',
+                LL: 'YYYY年MMMD日',
+                LLL: 'YYYY年MMMD日Ah點mm分',
+                LLLL: 'YYYY年MMMD日ddddAh點mm分',
+                l: 'YYYY-MM-DD',
+                ll: 'YYYY年MMMD日',
+                lll: 'YYYY年MMMD日Ah點mm分',
+                llll: 'YYYY年MMMD日ddddAh點mm分'
+            },
+            meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
+            meridiemHour: function (h, meridiem) {
+                let hour = h;
+                if (hour === 12) {
+                    hour = 0;
+                }
+                if (meridiem === '凌晨' || meridiem === '早上' ||
+                    meridiem === '上午') {
+                    return hour;
+                } else if (meridiem === '下午' || meridiem === '晚上') {
+                    return hour + 12;
+                } else {
+                    // '中午'
+                    return hour >= 11 ? hour : hour + 12;
+                }
+            },
+            meridiem: function (hour, minute, isLower) {
+                const hm = hour * 100 + minute;
+                if (hm < 600) {
+                    return '凌晨';
+                } else if (hm < 900) {
+                    return '早上';
+                } else if (hm < 1130) {
+                    return '上午';
+                } else if (hm < 1230) {
+                    return '中午';
+                } else if (hm < 1800) {
+                    return '下午';
+                } else {
+                    return '晚上';
+                }
+            },
+            calendar: {
+                sameDay: function () {
+                    return this.minutes() === 0 ? '[今天]Ah[點整]' : '[今天]LT';
+                },
+                nextDay: function () {
+                    return this.minutes() === 0 ? '[明天]Ah[點整]' : '[明天]LT';
+                },
+                lastDay: function () {
+                    return this.minutes() === 0 ? '[昨天]Ah[點整]' : '[昨天]LT';
+                },
+                nextWeek: function () {
+                    let startOfWeek, prefix;
+                    startOfWeek = moment().startOf('week');
+                    prefix = this.diff(startOfWeek, 'days') >= 7 ? '[下]' : '[本]';
+                    return this.minutes() === 0 ? prefix + 'dddA點整' : prefix + 'dddAh點mm';
+                },
+                lastWeek: function () {
+                    let startOfWeek, prefix;
+                    startOfWeek = moment().startOf('week');
+                    prefix = this.unix() < startOfWeek.unix() ? '[上]' : '[本]';
+                    return this.minutes() === 0 ? prefix + 'dddAh點整' : prefix + 'dddAh點mm';
+                },
+                sameElse: 'LL'
+            },
+            ordinalParse: /\d{1,2}(日|月|周)/,
+            ordinal: function (number, period) {
+                switch (period) {
+                    case 'd':
+                    case 'D':
+                    case 'DDD':
+                        return number + '日';
+                    case 'M':
+                        return number + '月';
+                    case 'w':
+                    case 'W':
+                        return number + '周';
+                    default:
+                        return number;
+                }
+            },
+            relativeTime: {
+                future: '%s内',
+                past: '%s前',
+                s: '幾秒',
+                m: '1 分鐘',
+                mm: '%d 分鐘',
+                h: '1 小時',
+                hh: '%d 小時',
+                d: '1 天',
+                dd: '%d 天',
+                M: '1 個月',
+                MM: '%d 个月',
+                y: '1 年',
+                yy: '%d 年'
+            },
+            week: {
+                // GB/T 7408-1994《数据元和交换格式·信息交换·日期和时间表示法》与ISO 8601:1988等效
+                dow: 1, // Monday is the first day of the week.
+                doy: 4  // The week that contains Jan 4th is the first week of the year.
+            }
+        });
+    }
 }
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            // console.log(new Utiller().getMillionSecFromNow('2022-01-21'));
+            const util = new Utiller();
+            const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
+            const duration = util.getDurationOfMillionSec(after);
+            // console.log(duration)
+            // console.log(util.getTimeFormatOfDurationToDay(duration));
+            // console.log(moment.duration(duration).asDays())
+            // console.log(util.getCurrentTimeStamp());
+            console.log(moment('12312321312').valueOf())
         }
     )();
 }

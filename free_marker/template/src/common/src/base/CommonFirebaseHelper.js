@@ -36,6 +36,26 @@ class CommonFirebaseHelper extends BaseFirebase {
         return this.core().storage();
     }
 
+    getFireStoreField(){
+        return this.getFirestoreLibrary().FieldValue;
+    }
+
+    getFirestoreIncrement(delta){
+        return this.getFireStoreField().increment(delta);
+    }
+
+    FirebaseTimestamp(){
+        return this.getFirestoreLibrary().Timestamp;
+    }
+
+    getFirestoreTimeStamp(ts) {
+        return this.FirebaseTimestamp().fromMillis(ts);
+    }
+
+    getCurrentFirestoreTimeStamp() {
+        return this.FirebaseTimestamp().now();
+    }
+
     getCurrentUser() {
         return this.auth().currentUser;
     }

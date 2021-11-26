@@ -175,17 +175,17 @@
   flex-direction: column;
 }
 .BaseShortcutMUIconView {
-  color: white;
+  color: black;
   font-size: 30px;
 }
 .BaseShortcutItemAvatarView {
   background-color: black;
 }
 .BaseShortcutItemTextView {
-  color: white;
+  color: black;
 }
 .BaseShortcutItemIconView {
-  color: white;
+  color: black;
 }
 .BaseShortcutNestedListView {
   padding-left: 20px;
@@ -345,13 +345,6 @@ body {
 .PurchaseSucceedConfirmButton {
   /** style */
 }
-/** following for login  component used  */
-.LoginDiv {
-  /** style */
-}
-.WrapLoginDiv {
-  /** style */
-}
 /** following for navigator  component used  */
 .NavigatorDiv {
   /** style */
@@ -369,6 +362,9 @@ body {
   /** style */
 }
 .NavigatorAppBarToolBarTitleTypography {
+  /** style */
+}
+.NavigatorAppBarToolBarToEditModeButton {
   /** style */
 }
 .NavigatorAppBarToolBarLoginButton {
@@ -393,13 +389,17 @@ body {
 .MainDiv,
 .MainEditorDiv {
   /** style */
+  max-width: 880px;
 }
 .MainViewPagerDiv,
 .MainEditorViewPagerDiv {
   /** style */
+  padding-top: 10px;
 }
 .ListMainViewPagerFade {
   /** style */
+  max-width: 880px;
+  height: 380px;
 }
 .MainViewPagerImageImg,
 .MainEditorViewPagerImageImg {
@@ -408,6 +408,10 @@ body {
 .WrapMainViewPagerImageDiv,
 .WrapMainEditorViewPagerImageDiv {
   /** style */
+  max-width: 880px;
+  height: 380px;
+  overflow: hidden;
+  position: relative;
 }
 .MainEnterPointPaper,
 .MainEditorEnterPointPaper {

@@ -22,6 +22,15 @@ class CodegenNode {
     password;
     components;
 
+    /** 讓一些type 是 number, 有一個懶人的increment submit method*/
+    increment = {
+        enable: false,
+        delta: 1,
+    }
+
+    routeHash = false;
+    /** 如果route後面想加個hash混淆,也能避免chrome會有cache頁面的問題 */
+
     index = {enable: false, rule: 'CONTAINS'}
     /** 'CONTAINS', 'DESCENDING', 'ASCENDING' */
 
@@ -40,7 +49,7 @@ class CodegenNode {
     disableInitFetch = false;
     /** 取消 初始畫面就發出fetch request, 放在struct level */
 
-    storageSuperUserUid = "uid";
+    superUserUid = "uid";
     /** storage因為沒有辦法進去firestore去拿isAdmin, 必須hardcode uid*/
 
     restful = false;
@@ -93,7 +102,8 @@ class CodegenNode {
     /** 用來標記圖片上傳到storage哪個資料夾 */
 
     path;
-    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url */
+    /** 用來當Router,記得記得字首要有slash */
+    /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url , */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
     column;
@@ -359,7 +369,7 @@ class CodegenNode {
     }
 
     getStorageSuperUserUid() {
-        return this.storageSuperUserUid;
+        return this.superUserUid;
     }
 
     getConditions() {
@@ -524,6 +534,10 @@ class CodegenNode {
         return this.hasPath() || (this.isAttribute() && !!this.column);
     }
 
+    isTimeStamp() {
+        return _.isEqual(this.type, 'timestamp')
+    }
+
     isViewModified() {
         return !!this.viewModified;
     }
@@ -616,7 +630,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -954,6 +968,10 @@ class CodegenNode {
 
     }
 
+    getDeltaOfIncrement() {
+        return this.increment.delta;
+    }
+
     isOuter() {
         return !!this.outer && this.outer
     }
@@ -1049,6 +1067,10 @@ class CodegenNode {
     getPreciseColumnChildren() {
         return this.getPreciseChildren((node) => node.isColumnAttribute(), (node) => node.isIncestAttribute())
 
+    }
+
+    hasIncrementUsage() {
+        return this.isNumber() && !!this.increment.enable;
     }
 
     getPreciseViewChildren() {
@@ -1287,6 +1309,13 @@ class CodegenNode {
         return path.join('/');
     }
 
+    /** /result/:resultId/id/:id => 把result它給拉出來 */
+    getRootRoutePath() {
+        const segment = this.getPath().split('/');
+        segment.shift();
+        return segment.shift();
+    }
+
     /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
     getParamsOfPath(platform) {
         if (!this.hasPath()) return [];
@@ -1409,6 +1438,14 @@ class CodegenNode {
 
         if (this.type === 'string') {
             return `''`;
+        }
+
+        if (this.type === 'boolean') {
+            return false;
+        }
+
+        if (this.type === 'timestamp') {
+            return `this.getObjectOfCurrentTimeStamp()`;
         }
 
         if (this.type === 'array') {
@@ -2384,8 +2421,13 @@ class RemoteFunctionHandler {
             for (const child of node.getPreciseAttributeChildren()) {
                 if (_.isEqual(child, 'updateTime')) continue;
                 if (!child.isColumnAttribute()) continue;
-                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                if (child.isTimeStamp()) {
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                this.normalizeTimestamp(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();\/\/${child.getType()}`);
+                } else {
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
+                }
                 children.push(child.getFieldName());
             }
 
@@ -2410,7 +2452,7 @@ class RemoteFunctionHandler {
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
                         ['const item =  await self.fetchItem(path, id)',
-                            , ...getFetchStmt(),
+                            ...getFetchStmt(),
                             `return item`], `fetch item`)
 
                     /** admins only , delete collection all */
@@ -2484,6 +2526,18 @@ class RemoteFunctionHandler {
                         Util.camel('delete', node.getFieldName()),
                         [],
                         [`return await self.deleteObject(path, '${node.getName()}')`], `delete object`);
+
+                    for (const child of node.getPreciseColumnChildren()) {
+                        if (child.hasIncrementUsage()) {
+                            generateApiFunction(
+                                Util.camel('submit', 'increment', child.getFieldName()),
+                                [],
+                                [
+                                    `return await self.updateObject(path, {${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})}, '${node.getName()}')`
+                                ], `update object`);
+
+                        }
+                    }
 
                 } else {
                     throw new ERROR(8015, node.getType());
@@ -2617,12 +2671,13 @@ class ComponentBuilder extends BaseBuilder {
         this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
 
         for (const child of componentNode.getStruct().getChildren()) {
-            if(child.isPathArray()) {
+            if (child.isPathArray()) {
                 this.appendStmtIntoComponentDetach(`this.getStore().${child.getFunctionNameOfClearCondition()}()`);
             }
 
-            if(child.hasPaginate()) {
-                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set','next',child.getName(),'page','mode')}('paging')`);
+            if (child.hasPaginate()) {
+                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
+                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clear', child.getName(), 'Next', 'Ids')}()`);
             }
         }
 
@@ -2954,8 +3009,8 @@ class ComponentBuilder extends BaseBuilder {
         if (node.isImageView()) {
             props['src'] = `###${node.getName()}`;
 
-            if(node.needImageDialog) {
-                props.onClick= `###(param) => this.openImageDialog(${node.getName()})`;
+            if (node.needImageDialog) {
+                props.onClick = `###(param) => this.openImageDialog(${node.getName()})`;
             }
 
         } else if (node.isTextField()) {
@@ -3089,7 +3144,7 @@ class ComponentBuilder extends BaseBuilder {
                     `return  async (type) => {`,
                     `switch (type) {`,
                     `case 'create':`,
-                    `${parentName}.${Util.camel(`append`, node.getName())}()`,
+                    `${parentName}.${Util.camel(`push`, node.getName())}()`,
                     `break;`,
                     `default:`,
                     `Util.appendError(\`${node.getName()} 3035 can't not happen this type => \${type}\`)`,
@@ -3315,19 +3370,25 @@ class AppBuilder extends ComponentBuilder {
     async buildRouterFile(sourceObj) {
         const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
             `router`,
-            `BaseRouter.js`
+            `BaseMyRouter.js`
         ));
         baseRouterGenerator.appendClass(
-            `BaseRouter`
+            `BaseMyRouter`, {name: `BaseRouter`, from: '../base/BaseRouter'}
         );
+
         for (const component of sourceObj.components) {
             if (!component.hasPath()) continue;
-            baseRouterGenerator.appendFunction(Util.camel('goto', component.name, component.isEditPage() ? 'editor' : '', 'page'),
+            baseRouterGenerator.appendFunction({
+                    name: Util.camel('goto', component.name, component.isEditPage() ? 'editor' : '', 'page'),
+                    arrow: true
+                },
                 ['component', ...component.getParamsOfPath()],
                 [],
                 [],
                 'const { history } = component.props',
-                `history.push(\`${component.getPathOfRouterString()}\`)`)
+                `const route = \`${component.getPathOfRouterString()}${component.routeHash ? `/\${Util.getRandomHash(15)}` : ``}\``,
+                `this.setCurrentRoute(route)`,
+                `history.push(route)`)
         }
         baseRouterGenerator.needIndexFile('Router', [], true);
         await baseRouterGenerator.persist();
@@ -3607,7 +3668,7 @@ class ProjectFileHandler extends PathBase {
             textStyle: '20px roboto',
         }, sourceObj.watermark);
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
-
+        baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
         switch (this.platform) {
             case 'admin':
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
@@ -4316,6 +4377,10 @@ if (configer.DEBUG_MODE) {
                 case 'persistentBuildWeb':
                     await builder.persistent('web');
                     await builder.buildWeb();
+                    break;
+                case 'persistentBuildAdmin':
+                    await builder.persistent('admin');
+                    await builder.buildAdmin();
                     break;
                 case 'persistentBuild':
                     await builder.persistent('web');
