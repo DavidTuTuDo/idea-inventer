@@ -220,6 +220,7 @@ class NodeUtiller extends Utiller {
         return this.has(segments, target);
     }
 
+    /** 取得folder底下的file counts*/
     getFileCountsOfFolder(path) {
         if (this.isDirectory(path)) {
             return fs.readdirSync(path).length

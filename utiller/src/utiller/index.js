@@ -805,7 +805,7 @@ class Utiller {
 
     /** react js Util */
     getVisibleOrNone(judgement) {
-        return {display: judgement ? 'visible' : 'none'};
+        return {visibility: judgement ? 'visible' : 'hidden'};
     }
 
 }
