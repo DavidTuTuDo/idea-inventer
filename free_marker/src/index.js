@@ -2951,7 +2951,7 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
         if (!node.isSliderView() && !node.isTextField() && !node.isImageView() && node.isStringOrNumberAttribute()) {
-            contentStmts.push(`{${node.getFieldName()}}`);
+            contentStmts.push(`{self.handleTextString(${node.getFieldName()})}`);
         }
 
         const className = node.getClassNameOfLessUsage('default');

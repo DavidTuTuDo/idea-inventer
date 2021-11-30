@@ -565,6 +565,10 @@ class BaseComponent extends React.Component {
         }
     }
 
+    handleTextString(string) {
+        return string;
+    }
+
 }
 
 export default BaseComponent;

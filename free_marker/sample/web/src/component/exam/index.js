@@ -12,7 +12,7 @@ import _ from "lodash";
 import Router from '../../router';
 import Cookie from "../../cookie";
 import ExamSubjectIdStore from "../../store/examSubjectId";
-import ExamRecordStore from "../../store/examTestingRecord";
+import WrongHistoryTestingRecordStore from "../../store/WrongHistoryTestingRecord";
 import ExamCountsOfExamTodayStore from "../../store/examCountsOfExamToday";
 import UserInfo from "../../userInfo";
 
@@ -156,7 +156,7 @@ class ExamComponent extends BaseExamComponent {
 
     async submitQuestionRecord(question) {
         if (UserInfo.isLoginInSucceed()) {
-            const record = new ExamRecordStore();
+            const record = new WrongHistoryTestingRecordStore();
             await record.submitTestingRecords(undefined, undefined, {
                 qid: question.getId(),
                 duration: Util.getDurationOfMillionSec(this.currentTimeStamp),
