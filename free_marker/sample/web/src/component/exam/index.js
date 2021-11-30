@@ -55,12 +55,21 @@ class ExamComponent extends BaseExamComponent {
             Router.gotoMainPage(this.getComponentInstance());
             return;
         }
-
         const subject = filter.subject; // 'string'
         const type = filter.type; // 'string'
         const range = filter.range; // [100, 105]
         const countsOfExam = filter.countsOfExam; //25 or 40
-        Util.appendInfo(subject, type, range, countsOfExam)
+        Util.appendInfo(subject, type, range, countsOfExam);
+
+        function getRandomCondition() {
+            const conditions = [];
+            if (!_.isEqual('綜合測驗', subject)) {
+                conditions.push({where: (stmt) => stmt.where('subject', '==', _.trim(subject))});
+            }
+            conditions.push({where: (stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))});
+            conditions.push({where: (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))});
+            return conditions;
+        }
 
         switch (type) {
             case 'history':
@@ -72,19 +81,13 @@ class ExamComponent extends BaseExamComponent {
                 break;
             case 'random':
                 this.setEnableInitFetch(false);
-                const conditions = [
-                    {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
-                    {where: (stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))},
-                    {where: (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))}
-                ]
                 const subjectID = new ExamSubjectIdStore();
-                subjectID.fetchSubjectIds(this, ...conditions).then((idMaps) => {
+                subjectID.fetchSubjectIds(this, ...getRandomCondition()).then((idMaps) => {
                     const ids = _.sampleSize(idMaps, countsOfExam).map(each => each.quid);
                     this.getStore().pushNextQuestionIDs(...ids);
                     return this.getStore().fetch(self)
                 }).then();
                 break;
-
             default:
                 Util.appendError(`8354 ==> type can't not be ${type}`);
                 /**
@@ -160,7 +163,7 @@ class ExamComponent extends BaseExamComponent {
                 subject: question.getSubject(),
                 myWrongAnswer: question.isAnswerWrong() ? question.getReplyString() : '',
                 isWrongReply: question.isAnswerWrong(),
-                expiredTime: Util.getTimeStampAfterCondition(record.getObjectOfCurrentTimeStamp().toMillis(),{days:20})
+                expiredTime: Util.getTimeStampAfterCondition(record.getObjectOfCurrentTimeStamp().toMillis(), {days: 20})
             })
         }
     }
