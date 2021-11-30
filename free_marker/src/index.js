@@ -4241,13 +4241,23 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
     }
 
+    isComponentOrStoreIndexFile(file) {
+        const isUnderComponentOrStore = Util.isUnderTargetPath(file.absolute, 'component') || Util.isUnderTargetPath(file.absolute, 'store');
+        const isIndexJsFile = _.isEqual(file.fileNameExtension, 'index.js');
+        return (isUnderComponentOrStore && isIndexJsFile);
+    }
+
     async removeEmptyFolder() {
         for (const file of Util.findFilePathBy(this.genSourcePath)) {
+            const folderOfFather = Util.getFileDirPath(file.absolute);
+
             if (Util.isEmptyFile(file.absolute)) {
-                const shouldDeletedFolder = Util.getFileDirPath(file.absolute);
-                if (fs.existsSync(shouldDeletedFolder)) {
-                    await Util.deleteSelfByPath(shouldDeletedFolder, true);
-                }
+                await Util.deleteSelfByPath(folderOfFather, true);
+            }
+
+            if (this.isComponentOrStoreIndexFile(file) &&
+                Util.getFileCountsOfFolder(folderOfFather) < 2) {
+                await Util.deleteSelfByPath(folderOfFather, true);
             }
         }
     }
@@ -4297,6 +4307,11 @@ class BuildApplication {
         Util.appendInfo(
             `web done`
         );
+    }
+
+    async removeEmptyFolder() {
+        const web = new ProjectFileHandler(this.getBuildObject('web'));
+        await web.removeEmptyFolder();
     }
 
     async buildAdmin() {
@@ -4404,7 +4419,8 @@ if (configer.DEBUG_MODE) {
                     break;
                 default:
                     // console.log('default')
-                    await builder.buildIndexRule();
+                    // await builder.buildIndexRule();
+                    await builder.removeEmptyFolder();
                     break
             }
 

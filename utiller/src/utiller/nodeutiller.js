@@ -49,11 +49,11 @@ class NodeUtiller extends Utiller {
      * excludes 忽略掉的資料夾名稱
      *
      * return [...{
-    path: 'database/index.js',
-    fileName: 'index',
-    extension: 'js',
-    dirName: database
-    absolute: '/Users/davidtu/cross-achieve/mimi19up/mimi19up-scrapy/database/index.js'}
+     path: 'database/index.js',
+     fileName: 'index',
+     extension: 'js',
+     dirName: database
+     absolute: '/Users/davidtu/cross-achieve/mimi19up/mimi19up-scrapy/database/index.js'}
      ] */
     findFilePathBy = (path, predicate = (each) => true, ...excludes) => {
         if (!fs.existsSync(path)) return [];
@@ -203,7 +203,6 @@ class NodeUtiller extends Utiller {
     /** 取得檔案的目錄, path => c://folderName/fileName.js to c://folderName */
     getFileDirPath(path, slash = true) {
         return _.join(_.initial(_.split(path, '/')), '/') + (slash ? '/' : '');
-
     }
 
     /** 刪掉自己, force能夠強制刪除 自己root_dir 以外的path */
@@ -213,7 +212,19 @@ class NodeUtiller extends Utiller {
             await del(path, {force});
             this.appendInfo(`成功刪掉了 ${path}`);
         }
+    }
 
+    /** absolute=> /acc/bbv/{target}/index.js 檢查有沒有在他下面 */
+    isUnderTargetPath(absolute, target) {
+        const segments = absolute.split('/');
+        return this.has(segments, target);
+    }
+
+    getFileCountsOfFolder(path) {
+        if (this.isDirectory(path)) {
+            return fs.readdirSync(path).length
+        }
+        return -1;
     }
 
 
@@ -528,7 +539,7 @@ class NodeUtiller extends Utiller {
     }
 
     /** 把檔案弄得好看一點 */
-    async prettier(path){
+    async prettier(path) {
         await Util.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
     }
 
