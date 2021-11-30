@@ -127,10 +127,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionAlertDiv(question) {
-        if (question.isAnswerWrong()) {
-            return {visibility: 'visible'}
-        }
-        return {visibility: 'hidden'}
+        return Util.getVisibleOrNone(question.isAnswerWrong())
     }
 
     onStatementButtonClicked(param) {

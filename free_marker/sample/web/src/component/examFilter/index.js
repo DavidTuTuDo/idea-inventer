@@ -27,13 +27,22 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         if (enterPoint !== undefined) {
             const route = enterPoint.route;
             if (route.startsWith(`dialog`)) {
-                this.getStore().setSubject(enterPoint.title);
+                this.getStore().setSubject(this.getTitle());
             } else {
                 this.handleCustomRouter(route);
                 this.dismiss();
             }
         }
     }
+
+    getTitle() {
+        return this.props.paramObject.title;
+    }
+
+    getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
+        return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), '綜合測驗'))
+    }
+
 
     onApiSucceed(object) {
         const exams = this.getStore().getExamHistoryInfo().getHistoryExams();

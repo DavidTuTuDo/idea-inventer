@@ -14,6 +14,7 @@ import {
     pooller as InfinitePool,
 } from "utiller";
 import UserInfo from '../../userInfo';
+import _ from "lodash";
 
 @inject("purchase")
 @observer
@@ -34,11 +35,11 @@ class PurchaseComponent extends BasePurchaseComponent {
     }
 
     getInjectStyleOfPurchasePlanBuyButton(plan) {
-        return {display: plan.isTitle() ? 'none' : 'visible'};
+       return Util.getVisibleOrNone(!plan.isTitle())
     }
 
     getInjectStyleOfPurchasePlanPriceTipTypography(plan) {
-        return {display: plan.isTitle() ? 'none' : 'visible'};
+        return Util.getVisibleOrNone(!plan.isTitle())
     }
 
     onBuyButtonClicked(param) {

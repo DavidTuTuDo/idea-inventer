@@ -3,8 +3,7 @@
 @import "./libs/base.less";
 /** following for examFilter  component used  */
 
-.ExamFilterDiv {
-  /** style */
+.ExamFilterDiv:extend(.CenterInParentColumn) {
 }
 
 .ExamFilterSubjectTypography {
@@ -636,29 +635,3 @@
 
 /** ======== following for homeless ========= */
 
-.LoginDiv {
-  /** style */
-  width: 100vw;
-  height: 20%;
-}
-
-.WrapLoginDiv {
-  /** style */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 70vh;
-}
-
-@import "./libs/slideshow.less";
-@import "./libs/firebaseui.less";
-@import "./libs/base.less";
-.ExamFilterDiv {
-  /** style */
-  width: 60vw;
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-  margin: 1vh;
-}

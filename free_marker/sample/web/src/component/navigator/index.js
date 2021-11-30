@@ -48,10 +48,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfToolBarToEditModeButton(toolBar) {
-        const visibility = UserInfo.isAdmin() ? 'visible' : 'hidden';
-        return {
-            visibility: visibility
-        }
+        return Util.getVisibleOrNone(UserInfo.isAdmin())
     }
 
     componentDidMount() {
