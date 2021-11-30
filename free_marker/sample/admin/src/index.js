@@ -232,6 +232,7 @@ import moment from 'moment';
                 {value: '110', label: '110年'}
             ]
         })
+        await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
 
         await api.submitMyShortcuts(
             'BYnJOAlUa5aCnpxvoeiIyCzRXSt1',
@@ -240,6 +241,7 @@ import moment from 'moment';
                 icon: 'muIcon:AddAlarm',
                 route: 'path:https://www.google.com/'
             })
+
         await api.submitPurchasePlans(
             {id: 1001, pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
             {

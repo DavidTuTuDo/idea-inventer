@@ -3640,7 +3640,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     buildDistAssetFolder() {
-        const imageSrcFolder = libpath.join(this.projectPlatformSourcePath, 'images');
+        const imageSrcFolder = libpath.join(this.projectPlatformPath, 'images');
         if (fs.existsSync(imageSrcFolder)) {
             Util.copyFromFolderToDestFolder(imageSrcFolder,
                 Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
@@ -3648,10 +3648,10 @@ class ProjectFileHandler extends PathBase {
     }
 
     persistImageFolder() {
-        const images = libpath.join(this.genSourcePath, 'images');
+        const images = libpath.join(this.genRootPath, 'dist','images');
         if (fs.existsSync(images)) {
             Util.copyFromFolderToDestFolder(images,
-                Util.persistByPath(libpath.join(this.projectPlatformSourcePath, 'images'))
+                Util.persistByPath(libpath.join(this.projectPlatformPath, 'images'))
             );
         }
     }
