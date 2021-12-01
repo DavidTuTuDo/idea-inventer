@@ -1,6 +1,6 @@
 class BaseRouter {
 
-    currentRoute = '';
+    currentRoute = '/';
 
     currentParam = [];
 
