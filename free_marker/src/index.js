@@ -20,7 +20,8 @@ const VIEW_IMPORTS =
     [
         {
             from: `@material-ui/core`,
-            views: ['MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField', 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton', 'Drawer', 'ListItem', 'List']
+            views: ['MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+                'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton', 'Drawer', 'ListItem', 'List']
         },
         {
             from: `react-slideshow-image`,
@@ -1704,7 +1705,7 @@ class ClassGenerator {
         } else
             stmt.push(`${async ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
-        if (_.isEqual(decorator,'inject')) {
+        if (_.isEqual(decorator, 'inject')) {
             this.appendImport(`{inject}`, `mobx-react`)
         }
 
@@ -2777,7 +2778,7 @@ class ComponentBuilder extends BaseBuilder {
 
             for (const _import of VIEW_IMPORTS) {
                 if (Util.has(_import.views, param.tag)) {
-                    param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag, `${_import.from}${_import.object? ``:`/${param.tag}`}`)
+                    param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag, `${_import.from}${_import.object ? `` : `/${param.tag}`}`)
                 }
             }
         }
@@ -2836,7 +2837,7 @@ class ComponentBuilder extends BaseBuilder {
         this.classNames.push(className);
     }
 
-    getJSXStringsByNode = (generator, node, isEditPage = false) => {
+    getJSXStringsByNode = (generator, node) => {
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
@@ -2921,8 +2922,11 @@ class ComponentBuilder extends BaseBuilder {
                 clone.appendViewProps(itemViewProps);
 
 
-                if (node.isRadioGroupListView())
+                if (node.isRadioGroupListView()) {
                     clone.appendViewProps({control: `###<Radio />`});
+                    generator.appendImport('Radio','@material-ui/core/Radio')
+                }
+
 
                 if (node.isLabelPropsView()) {
                     clone.appendViewProps({label: `###${getLabelStmts().join('')}`})
