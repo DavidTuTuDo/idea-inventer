@@ -16,6 +16,19 @@ const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 
+const VIEW_IMPORTS =
+    [
+        {
+            from: `@material-ui/core`,
+            views: ['MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField', 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton', 'Drawer', 'ListItem', 'List']
+        },
+        {
+            from: `react-slideshow-image`,
+            views: ['Fade'],
+            object: true,/** 就是要加上{Fade} */
+        }
+    ]
+
 class CodegenNode {
 
     node;
@@ -1691,6 +1704,14 @@ class ClassGenerator {
         } else
             stmt.push(`${async ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
+        if (_.isEqual(decorator,'inject')) {
+            this.appendImport(`{inject}`, `mobx-react`)
+        }
+
+        if (_.isEqual(decorator, 'observer')) {
+            this.appendImport(`{observer}`, `mobx-react`);
+        }
+
         for (let content of contents) {
             stmt.push(`\n`);
             stmt.push(`${content}`);
@@ -1771,6 +1792,15 @@ class ClassGenerator {
         this.context.push(...stmt);
         this.classes.push(className);
         this.hasExtends = !!extendz;
+
+        /** 有marco,就要配搭相對應的import */
+        for (const macro of macros) {
+            if (Util.has(macro, 'inject')) {
+                this.appendImport(`{inject}`, `mobx-react`)
+            } else if (Util.has(macro, 'observer')) {
+                this.appendImport(`{observer}`, `mobx-react`);
+            }
+        }
     }
 
     hasClass() {
@@ -1843,14 +1873,6 @@ class ClassGenerator {
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
             index.setSingleton(this.indexFileSingleton);
             index.needSignature(false);
-            /** 有marco,就要配搭相對應的import */
-            for (const macro of this.indexFileMacros) {
-                if (Util.has(macro, 'inject')) {
-                    index.appendImport(`{inject}`, `mobx-react`)
-                } else if (Util.has(macro, 'observer')) {
-                    index.appendImport(`{observer}`, `mobx-react`);
-                }
-            }
             for (const tail of this.indexFileTailStmts) {
                 index.appendInClassTail(tail);
             }
@@ -2600,14 +2622,8 @@ class ComponentBuilder extends BaseBuilder {
         );
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('{MenuItem, Grid, Paper, Card, Avatar, AppBar, Toolbar, TextField,' +
-            'Radio,RadioGroup,ButtonGroup,FormControlLabel, Slider,Typography, Button, IconButton, Drawer, ListItem,List}', '@material-ui/core')
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style');
-        baseGenerator.appendImport('{observer}', 'mobx-react');
-        baseGenerator.appendImport('{Fade}', 'react-slideshow-image');
-
-
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
             const paramOf = Util.camel('param', 'of', normalizeParam);
@@ -2717,7 +2733,8 @@ class ComponentBuilder extends BaseBuilder {
 
     /**
      * {
-     *      tag:'tag',
+     *     generator:'ClassGenerator',
+     *     tag:'tag',
      *      contentless: 直接給 /> 做結尾,不然都會預設 </View>
      *      props:{...name:object},
      *      contents:['cotent1','content2']
@@ -2755,6 +2772,16 @@ class ComponentBuilder extends BaseBuilder {
             return `{${JSON.stringify(value)}}`;
         }
 
+        function appendViewsImport() {
+            if (!!!param.generator) return;
+
+            for (const _import of VIEW_IMPORTS) {
+                if (Util.has(_import.views, param.tag)) {
+                    param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag, `${_import.from}${_import.object? ``:`/${param.tag}`}`)
+                }
+            }
+        }
+
         const props = param.props;
         const contents = param.contents ? param.contents : [];
         const children = param.children ? param.children : [];
@@ -2762,7 +2789,7 @@ class ComponentBuilder extends BaseBuilder {
         const tag = param.tag;
         stmt.push(`<${tag}`);
         stmt.push('\n');
-
+        appendViewsImport();
         for (const child of children) {
             stmt.push(`{...${child}}`);
             stmt.push('\n');
@@ -2909,7 +2936,9 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             const arrayStmts = this.getJSXStrings({
+                generator: generator,
                 tag: node.getListView(),
+
                 props,
                 contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()}) => `,
                     ...ArrayItemView, `)}`]
@@ -2921,6 +2950,7 @@ class ComponentBuilder extends BaseBuilder {
 
                 return this.getJSXStrings(
                     {
+                        generator: generator,
                         tag: node.getListWrapView(),
                         props: {
                             className: clazzName,
@@ -3043,6 +3073,7 @@ class ComponentBuilder extends BaseBuilder {
 
         let origin = this.getJSXStrings({
             tag: node.view,
+            generator: generator,
             props,
             contents: [...contentStmts, ...node.getContents()],
         });
@@ -3075,6 +3106,7 @@ class ComponentBuilder extends BaseBuilder {
 
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
+                generator: generator,
                 props,
                 contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin, ...stmt],
             })
@@ -3176,6 +3208,7 @@ class ComponentBuilder extends BaseBuilder {
     }
 
     appendRenderViewFunctions(node, generator, isEditPage) {
+
         const self = this;
 
         function normalize(...strings) {
@@ -3190,11 +3223,11 @@ class ComponentBuilder extends BaseBuilder {
                     arrow: true,
                     decorator: 'observer',
                 }, [`{${node.getParamOfRenderView()}}`], [], [],
-                ...getContentStmt(node)
+                ...getContentStmt(node, generator)
             )
         }
 
-        function getContentStmt(node) {
+        function getContentStmt(node, generator) {
             return [
                 'const classes = this.props.classes',
                 'const self = this',
@@ -3205,7 +3238,7 @@ class ComponentBuilder extends BaseBuilder {
         if (!this.hasRootRenderViewFunction) {
             generator.appendFunction('renderView', [], [], [],
                 `const ${node.getName()} = this.getStore()`,
-                ...getContentStmt(node));
+                ...getContentStmt(node, generator));
             this.hasRootRenderViewFunction = true;
         }
 
@@ -3423,9 +3456,11 @@ class AppBuilder extends ComponentBuilder {
             if (!component.hasPath()) continue;
 
             const renderStmts = this.getJSXStrings({
+                    generator: appGenerator,
                     tag: _.upperFirst(component.getStruct().getName()),
                     props: {...component.extra},
                     children: ['props'],
+
                 }
             );
             this.removeJSXSign(renderStmts);
@@ -3433,6 +3468,7 @@ class AppBuilder extends ComponentBuilder {
             childrenStmt.push(...this.getJSXStrings({
                 tag: `Route`,
                 props: {
+                    generator: appGenerator,
                     exact: component.isRootPath() ? true : undefined,
                     path: component.path,
                     render: `###(props) =>
@@ -3443,17 +3479,20 @@ class AppBuilder extends ComponentBuilder {
         }
         const switchStmt = this.getJSXStrings({
             tag: 'Switch',
+            generator: appGenerator,
             contents: [...childrenStmt, `{this.getExtraPages()}`]
         });
 
         const routerStmt = this.getJSXStrings({
             tag: 'Router',
+            generator: appGenerator,
             props: {history: `###this.history`},
             contents: [...switchStmt]
         })
 
         const providerStmt = this.getJSXStrings({
             tag: 'Provider',
+            generator: appGenerator,
             props: {
                 injectProps: '...this.getStoreObject()'
             },
@@ -3648,7 +3687,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     persistImageFolder() {
-        const images = libpath.join(this.genRootPath, 'dist','images');
+        const images = libpath.join(this.genRootPath, 'dist', 'images');
         if (fs.existsSync(images)) {
             Util.copyFromFolderToDestFolder(images,
                 Util.persistByPath(libpath.join(this.projectPlatformPath, 'images'))
@@ -4367,7 +4406,7 @@ class BuildApplication {
 
 // const FAST_DEVELOP_MODE = true;
 const FAST_DEVELOP_MODE = false;
-const TARGET_COMPONENT = 'main';
+const TARGET_COMPONENT = 'exam';
 
 export {BuildApplication as BuildApplication};
 

@@ -565,8 +565,12 @@ class BaseComponent extends React.Component {
         }
     }
 
-    handleTextString(string) {
-        return string;
+    handleTextString(object) {
+        if(typeof object === 'string') {
+            return object
+        } else {
+            return _.toString(object)
+        }
     }
 
 }
