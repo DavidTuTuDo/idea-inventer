@@ -18,7 +18,14 @@ const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
-/** 區分component  和 view */
+/**
+ * true, 就是區分component 和 view 概念, component會參照到view底下的module作為
+ * 優點是 viewMoudule可以reuse, 缺點是會產出很多folder
+ *
+ * false, component裡面就會充滿 View = observer({store})
+ * 優缺點就是前述的反之
+ *
+ * */
 
 const VIEW_IMPORTS =
     [
@@ -39,6 +46,10 @@ class CodegenNode {
     node;
     password;
     components;
+
+
+    useInjectStore = false;
+    /** 每個view component都會injectStore, 你可以選擇用一個new 可拋棄 */
 
     /** 讓一些type 是 number, 有一個懶人的increment submit method*/
     increment = {
@@ -1566,6 +1577,11 @@ class CodegenNode {
         return this.name;
     }
 
+    /** 只有componentNode 可以用這個method*/
+    getPreciseStoreName() {
+        return this.isEditPage() ? this.getStruct().getOriginalName() : this.getStruct().getName()
+    }
+
     setName(name) {
         this.name = name;
     }
@@ -2666,6 +2682,13 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
         }
 
+        if(!componentNode.useInjectStore) {
+            const storeName = componentNode.getPreciseStoreName();
+            baseGenerator.appendImport(`${_.upperFirst(storeName)}Store`,`../../store/${storeName}`)
+            baseGenerator.appendConstructor(`this.disposableStore = new ${_.upperFirst(storeName)}Store()`)
+        }
+
+
 
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigationView', [], [], [],
@@ -2732,8 +2755,18 @@ class ComponentBuilder extends BaseBuilder {
             }
         }
 
+        function getStmtsOfGetStore() {
+            const stmts = [];
+            if(componentNode.useInjectStore) {
+                stmts.push(`return this.props.${componentNode.getPreciseStoreName()}`)
+            } else {
+                stmts.push(`return this.disposableStore;`)
+            }
+            return stmts;
+        }
+
         baseGenerator.appendFunction('getStore', [], [], [],
-            componentNode.isEditPage() ? `return this.props.${componentNode.getStruct().getOriginalName()}` : `return this.props.${componentNode.getStruct().getName()}`)
+            ...getStmtsOfGetStore())
 
         baseGenerator.appendFunction('componentDidMount',
             [], [], [], `super.componentDidMount()`, ...this.componentDidMountStmt);
