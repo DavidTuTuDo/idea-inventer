@@ -8,6 +8,8 @@ import {configer} from "configer";
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
  */
+let FAST_DEVELOP_MODE = false;
+let TARGET_COMPONENT = 'exam';
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
@@ -15,6 +17,8 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
+const useViewModuleAndComponentModuleMechanism = false;
+/** 區分component  和 view */
 
 const VIEW_IMPORTS =
     [
@@ -373,6 +377,7 @@ class CodegenNode {
         this.style = {...this.style, ...style}
     }
 
+    /** arrayItem 是一個抽象的概念, 因為type='array', 必須建造出'QuestionsView(forEach邏輯)', 'QuestionView(viewModule)' */
     isArrayItem() {
         return _.isEqual(this.type, 'arrayItem');
     }
@@ -911,7 +916,7 @@ class CodegenNode {
     }
 
     /**isView 就是指gen出view class, 不然就是component */
-    getSelfVariableStmts(isViewClass = false) {
+    getSelfVariableStmts() {
         const self = this
         const stmt = [];
         if (this.hasAlertDialog()) {
@@ -930,7 +935,7 @@ class CodegenNode {
             const exist = {}
             for (const child of this.getPreciseViewChildren()) {
                 const view = child.getViewClassNameOfRenderView();
-                if (!!!exist[view] && !isViewClass)
+                if (!!!exist[view] && !useViewModuleAndComponentModuleMechanism)
                     stmt.push(`const ${view} = self.${view}`)
                 exist[view] = true;
             }
@@ -939,12 +944,12 @@ class CodegenNode {
         /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
         if (this.needParentParam() || (this.isAttribute() && this.hasValidAttributeParent())) {
             /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
-            if (isViewClass) {
+            if (useViewModuleAndComponentModuleMechanism) {
                 stmt.push(`const ${this.isArrayItem() ? this.getFieldName() : this.getPreciseAttributeParentName()}
                      = self.${self.getFunctionNameOfObservableObject()}()`)
             }
 
-            if (this.isAttribute() && !this.isArrayItem()) {
+            if (this.isAttribute() && !this.isArrayItem() && !useViewModuleAndComponentModuleMechanism) {
                 stmt.push(`const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`)
             }
         }
@@ -964,14 +969,12 @@ class CodegenNode {
         return !!this.injectProps && this.injectProps;
     }
 
-
     hasPath() {
         return !!this.path && !_.isEmpty(this.path);
     }
 
     getContents() {
         const stmts = [];
-
         if (!!this.contents && _.isArray(this.contents)) {
             stmts.push(...this.contents)
         }
@@ -1058,13 +1061,13 @@ class CodegenNode {
     }
 
     getPreciseParent(isIncest, isNode) {
-        let parent = this.getParentObject();
+        let parent = this.getParentNode();
 
         if (isIncest(this)) {
-            parent = parent.getParentObject();
+            parent = parent.getParentNode();
         }
         while (parent && !isNode(parent)) {
-            parent = parent.getParentObject();
+            parent = parent.getParentNode();
             if (parent === undefined || parent.name === SignOfInValidNode) break;
         }
         return parent;
@@ -1384,7 +1387,7 @@ class CodegenNode {
         let currentNode = this;
         while (currentNode.isValidNode()) {
             if (predicate(currentNode)) break;
-            currentNode = currentNode.getParentObject();
+            currentNode = currentNode.getParentNode();
         }
         return currentNode;
     }
@@ -1434,7 +1437,7 @@ class CodegenNode {
     }
 
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
-    getParentObject() {
+    getParentNode() {
         if (this.parent === undefined) {
             return new CodegenNode({name: SignOfInValidNode});
         }
@@ -1518,6 +1521,14 @@ class CodegenNode {
     /** 這個目的就是在View再運用store的值可以上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
     getFunctionNameUsingInComponentGetter() {
         return Util.camel('get', this.getPreciseAttributeParent().getName(), this.getFieldName());
+    }
+
+    isComponentModule() {
+        return this.getParentNode().getParentNode().isStructNode();
+    }
+
+    isViewModule() {
+        return !this.getParentNode().getParentNode().isStructNode();
     }
 
     getParamOfRenderView() {
@@ -2656,7 +2667,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
 
-        if (_.isEqual(componentNode.getName(), componentNode.getParentObject().getNavigationComponentName())) {
+        if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigationView', [], [], [],
                 `return true`
             )
@@ -2731,7 +2742,7 @@ class ComponentBuilder extends BaseBuilder {
             [], [], [], `super.componentWillUnmount()`, ...this.componentDetachStmt);
 
         /** index.js */
-        if (_.isEqual(componentNode.getName(), componentNode.getParentObject().getNavigationComponentName())) {
+        if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
         }
 
@@ -2860,7 +2871,7 @@ class ComponentBuilder extends BaseBuilder {
         this.classNames.push(className);
     }
 
-    getJSXStringsByNode = (generator, node, isViewClass = false) => {
+    getJSXStringsByNode = (generator, node) => {
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
@@ -2875,8 +2886,12 @@ class ComponentBuilder extends BaseBuilder {
                 props[param] = `###${param}`
             }
 
-            if(isViewClass) {
-                generator.appendImport(node.getViewClassNameOfRenderView(),`../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
+            if (useViewModuleAndComponentModuleMechanism) {
+                if (node.isComponentModule()) {
+                    generator.appendImport(node.getViewClassNameOfRenderView(), `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
+                } else {
+                    generator.appendImport(node.getViewClassNameOfRenderView(), `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
+                }
             }
 
             const viewJsxStmt = self.getJSXStrings({
@@ -3268,11 +3283,11 @@ class ComponentBuilder extends BaseBuilder {
             const folderName = _.lowerFirst(node.getViewClassNameOfRenderView())
             const clazzName = node.getViewClassNameOfRenderView();
             const baseClazzName = `Base${clazzName}`;
-            const viewGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'view',folderName ,`${baseClazzName}.js`));
+            const viewGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'view', folderName, `${baseClazzName}.js`));
             viewGenerator.appendClass(baseClazzName, {
                 name: 'BaseView',
                 from: `../../base/BaseView`
-            }, );
+            },);
 
             viewGenerator.appendImport('Style', '../../style');
             viewGenerator.appendFunction('render', [], [], [],
@@ -3280,24 +3295,23 @@ class ComponentBuilder extends BaseBuilder {
             );
             viewGenerator.appendFunction(node.getFunctionNameOfObservableObject(), [], [], [],
                 `return this.props.${node.getObservableName()}`)
-            viewGenerator.needIndexFile(clazzName,['observer'])
+            viewGenerator.needIndexFile(clazzName, ['observer'])
             viewGenerator.persist().then();
         }
 
 
-        function getContentStmt(node, _generator, isViewClass = false) {
+        function getContentStmt(node, _generator) {
             return [
-                'const classes = this.props.classes',
                 'const self = this',
-                ...node.getSelfVariableStmts(isViewClass),
-                normalize(...self.getJSXStringsByNode(_generator, node, isViewClass))];
+                'const classes = this.props.classes',
+                ...node.getSelfVariableStmts(),
+                normalize(...self.getJSXStringsByNode(_generator, node))];
         }
 
-        if (!this.hasRootRenderViewFunction) {
-            generator.appendFunction('renderView', [], [], [],
-                `const ${node.getName()} = this.getStore()`,
-                ...getContentStmt(node, generator));
-            this.hasRootRenderViewFunction = true;
+        function appendViewFunctionClass(node) {
+            if (!useViewModuleAndComponentModuleMechanism)
+                appendFunctionWithFields(node);
+            generateViewClass(node)
         }
 
         if (node.hasCustomViewDialog()) {
@@ -3307,6 +3321,13 @@ class ComponentBuilder extends BaseBuilder {
 
         if (isEditPage) {
             this.generateEditFunctionCallback(node, generator);
+        }
+
+        if (!this.hasRootRenderViewFunction) {
+            generator.appendFunction('renderView', [], [], [],
+                `const ${node.getName()} = this.getStore()`,
+                ...getContentStmt(node, generator, useViewModuleAndComponentModuleMechanism));
+            this.hasRootRenderViewFunction = true;
         }
 
         const existedFunctions = {};
@@ -3324,15 +3345,10 @@ class ComponentBuilder extends BaseBuilder {
 
                 /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
                 if (!child.isSelectedArray()) {
-                    const clone = child.getArrayItemNode();
-                    appendFunctionWithFields(clone);
-                    generateViewClass(clone)
+                    appendViewFunctionClass(child.getArrayItemNode())
                 }
-
             }
-            appendFunctionWithFields(child);
-            generateViewClass(child);
-
+            appendViewFunctionClass(child)
             if (child.hasViewChildren()) {
                 this.appendRenderViewFunctions(child, generator, isEditPage);
             }
@@ -3372,7 +3388,7 @@ class AppBuilder extends ComponentBuilder {
             /** 用這個方式找到params數最多的 */
             const standard = _.last(_.sortBy(events, (event) => event.getEventParams().length));
             baseEventGenerator.appendFunction(Util.camel('emit', event),
-                [...standard.getEventParams()], [], [`event for ==> ${events.map((event) => event.getParentObject().getName()).join(' ,')}`],
+                [...standard.getEventParams()], [], [`event for ==> ${events.map((event) => event.getParentNode().getName()).join(' ,')}`],
                 `EventBus.emit('${standard.getName()}',${standard.getEventParams().join(' ,')})`);
         }
         baseEventGenerator.needIndexFile('Event', [], true)
@@ -3884,7 +3900,6 @@ class ProjectFileHandler extends PathBase {
      * }
      *     type:fileName,extension, fileNameExtension,
      *     keyword: image, svg, image.svg
-
      * */
     overrideEachFilesFromFolder(...excludes) {
         /** 順序會影響檔案的priority */
@@ -4084,8 +4099,6 @@ class ProjectFileHandler extends PathBase {
          * index rule 有點麻煩, 還要照query順序 例如where(subject) where(year) orderBy(qid) 欄位的順序就必須 qeusetions ==> subject,year,qid
          * await this.generateFireIndexRules();
          */
-
-
     }
 
     enrichNodes(...nodes) {
@@ -4099,13 +4112,11 @@ class ProjectFileHandler extends PathBase {
                         column: true,
                         description: '我是uid,不能被更改',
                         readOnly: true,
-
                     })
                 }
             }
 
             if (node.isRestfulBean()) {
-
                 node.appendChildrenWithJson({
                     name: 'status',
                     column: true,
@@ -4123,7 +4134,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isImageView() && node.needWatermark) {
-                node.getParentObject().appendChildrenWithJson({
+                node.getParentNode().appendChildrenWithJson({
                     name: `${Util.camel(node.name, 'origin')}`,
                     type: `string`,
                     column: true,
@@ -4150,7 +4161,6 @@ class ProjectFileHandler extends PathBase {
                         node.appendChildrenWithJson(raw)
                     }
                 }
-
             }
             this.enrichNodes(...node.getChildren());
         }
@@ -4310,7 +4320,6 @@ class ProjectFileHandler extends PathBase {
                 break;
             default:
                 throw new ERROR(8014, `type ==> ${this.platform}`)
-                break;
         }
         await this.buildCustomizePackages();
         await this.buildConfig(this.nodeOfAncestor);
@@ -4457,10 +4466,6 @@ class BuildApplication {
 
 }
 
-// const FAST_DEVELOP_MODE = true;
-const FAST_DEVELOP_MODE = false;
-const TARGET_COMPONENT = 'exam';
-
 export {BuildApplication as BuildApplication};
 
 if (configer.DEBUG_MODE) {
@@ -4479,6 +4484,11 @@ if (configer.DEBUG_MODE) {
                     await builder.buildAdmin();
                     break;
                 case 'webOnly':
+                    await builder.buildWeb();
+                    break;
+                case 'fastBuild':
+                    FAST_DEVELOP_MODE = true;
+                    TARGET_COMPONENT = Util.getNodeEnvVariable('componentName')
                     await builder.buildWeb();
                     break;
                 case 'persistentBuildWeb':
