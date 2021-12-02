@@ -38,17 +38,6 @@ class BaseComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.fileChooserInputRef = React.createRef();
-        if (!this.isNavigationView() && Config.isScrollingHide) {
-            /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
-            this.getStore().setAppBarHeight(isMobile ? 100 : 64);
-        }
-
-        this.imageDialogRef = React.createRef();
-    }
-
-    isDialogComponent() {
-        return this.props.dialog !== undefined;
     }
 
     componentWillUnmount() {
@@ -62,7 +51,23 @@ class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
+        this.viewInitial();
         window.addEventListener('scroll', this.onScrollToBottomListener, true);
+    }
+
+
+    viewInitial() {
+        this.fileChooserInputRef = React.createRef();
+        if (!this.isNavigationView() && Config.isScrollingHide) {
+            /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
+            this.getStore().setAppBarHeight(isMobile ? 100 : 64);
+        }
+        this.imageDialogRef = React.createRef();
+    }
+
+
+    isDialogComponent() {
+        return this.props.dialog !== undefined;
     }
 
     centerInParent(direction) {

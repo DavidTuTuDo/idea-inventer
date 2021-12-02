@@ -49,7 +49,7 @@ class CodegenNode {
 
 
     useInjectStore = false;
-    /** 每個view component都會injectStore, 你可以選擇用一個new 可拋棄 */
+    /** 每個view component都會injectStore,若為false會選擇用一個new disposableStore來用 */
 
     /** 讓一些type 是 number, 有一個懶人的increment submit method*/
     increment = {
