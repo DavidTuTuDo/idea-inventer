@@ -40,6 +40,14 @@ class BaseComponent extends React.Component {
         super(props);
     }
 
+    appendScrollToBottomJob(...asyncTask) {
+        this.jobsOfScrollToBottom.push(...asyncTask);
+    }
+
+    clearScrollToBottomJobs() {
+        this.jobsOfScrollToBottom.length = 0;
+    }
+
     componentWillUnmount() {
         this.getStore().clear();
         /** 執行unsubscribe */

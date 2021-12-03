@@ -626,6 +626,10 @@ class CodegenNode {
         return Util.camel(`fetch`, this.getFieldName())
     }
 
+    getFunctionNameOfNextFetch() {
+        return Util.camel(`fetch`, `next`, this.getFieldName())
+    }
+
     getFunctionNameOfFetchItem() {
         return Util.camel(`fetch`, this.getName(), 'item')
     }
@@ -1377,10 +1381,18 @@ class CodegenNode {
     }
 
     /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
-    getParamsOfPath(platform) {
-        if (!this.hasPath()) return [];
-
+    getParamsOfPath(platform, ...others) {
         const params = [];
+        if (_.isEqual(platform, 'web')) {
+            params.push('view');
+        }
+
+        if (!this.hasPath()) {
+            params.push(...others)
+            return params;
+        };
+
+
         for (const segment of this.path.split('/')) {
             if (_.startsWith(segment, ':')) {
                 let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
@@ -1390,6 +1402,40 @@ class CodegenNode {
                 params.push(param);
             }
         }
+        params.push(...others);
+        return params;
+    }
+
+    getStringOfParamsOfPath(platform, ...others) {
+        return this.getParamsOfPath(platform, ...others).join(',');
+    }
+
+    /**回傳string 'uid,oid,year'*/
+    getStringOfArgumentsOfPath(isWebPlatform = true, ...others) {
+        return this.getArgumentsOfPath(isWebPlatform, ...others).join(',');
+    }
+
+    /**回傳陣列 [uid,oid,year]*/
+    getArgumentsOfPath(isWebPlatform = true, ...others) {
+        const params = [];
+
+        if (isWebPlatform) {
+            params.push('view');
+        }
+
+        if (!this.hasPath())   {
+            params.push(...others)
+            return params;
+        };
+
+
+        for (const segment of this.path.split('/')) {
+            if (_.startsWith(segment, ':')) {
+                let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
+                params.push(param);
+            }
+        }
+        params.push(...others);
         return params;
     }
 
@@ -2057,7 +2103,7 @@ class PathBase {
             true);
     }
 
-    getStringFromMustache(templateFileName, variable) {
+    getStringFromMustache(templateFileName, variable = {}) {
         return mustache.render(Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, templateFileName)), this.getMustacheRenderValues(variable));
     }
 
@@ -2074,6 +2120,8 @@ class PathBase {
                                    projectDescription,
                                    fieldClass,
                                    hasPaginate,
+                                   paramString,
+                                   argumentString,
                                    storageSuperUserUid,
                                }) => {
         return {
@@ -2091,6 +2139,8 @@ class PathBase {
             projectDescription,
             fieldClass,
             hasPaginate,
+            paramString,
+            argumentString,
             storageSuperUserUid,
         }
     }
@@ -2126,15 +2176,8 @@ class StoreBuilder extends BaseBuilder {
         super(props);
     }
 
-    getFunctionsDependOnFieldType({fieldName, type, defaultValue, fieldClass, name, hasPath, hasPaginate}) {
-        const functions = this.getStringFromMustache(`store_${type}.mustache`, {
-            name,
-            hasPath,
-            fieldName,
-            defaultValue,
-            fieldClass,
-            hasPaginate
-        })
+    getFunctionsDependOnFieldType(type,object = {}) {
+        const functions = this.getStringFromMustache(`store_${type}.mustache`, object)
         return functions;
     }
 
@@ -2159,13 +2202,15 @@ class StoreBuilder extends BaseBuilder {
             const defaultValue = child.getDefaultValueByType();
             generator.appendField(fieldName, defaultValue, ['observable']);
             generator.insertBatchLinesIntoFunctionSection(
-                this.getFunctionsDependOnFieldType(
+                this.getFunctionsDependOnFieldType(child.type,
                     {
                         name: child.getName(),
                         fieldName,
                         hasPath: child.hasPath(),
                         type: child.type,
                         defaultValue,
+                        paramString: child.getStringOfParamsOfPath('web'),
+                        argumentString: child.getStringOfArgumentsOfPath(true),
                         hasPaginate: child.hasPaginate(),
                         fieldClass: child.getClassName(),
                     }));
@@ -2241,7 +2286,7 @@ class StoreBuilder extends BaseBuilder {
         if (node.isObject()) {
             const contents = [
                 `{`,
-                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(view)),` : `...{},`,
+                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true)})),` : `...{},`,
                 ..._.map(node.getPreciseAttributeChildren(), (child) => {
                     if (child.isDisableInitFetch()) return '';
                     /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
@@ -2249,15 +2294,13 @@ class StoreBuilder extends BaseBuilder {
                 }),
                 `}`,
             ]
-            baseGenerator.appendAsyncFunction('fetch', ['view'], [], [],
+            baseGenerator.appendAsyncFunction('fetch', [...node.getParamsOfPath('web')], [], [],
                 ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
         } else if (node.isPathArray()) {
-            const stmts = [];
-            stmts.push(`return await this.${Util.camel(`fetch`, node.getFieldName())}(view, ...conditions)`);
             baseGenerator.appendAsyncFunction('fetch',
-                ['view', '...conditions'], [], [],
-                ...stmts);
+                [...node.getParamsOfPath('web', '...conditions')], [], [],
+                `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...conditions')})`);
         }
 
         if (node.isArray()) {
@@ -2484,7 +2527,7 @@ class RemoteFunctionHandler {
                     }
                     return param;
                 })
-                generator.appendAsyncFunction(name, [...[`${appendViewInParamStmt(false)}`], ...defaultParam, ...params], [], [],
+                generator.appendAsyncFunction(name, [...defaultParam, ...params], [], [],
                     ...[...preStmts, ...stmts])
             }
 
@@ -2517,6 +2560,15 @@ class RemoteFunctionHandler {
                 )
 
                 if (node.isArray()) {
+                    if (isWebPlatform() && node.hasPaginate()) {
+                        generator.appendAsyncFunction(node.getFunctionNameOfNextFetch(), [
+                                ...node.getParamsOfPath(self.platform),
+                                `lastItem`,
+                                `...conditions`], [], [],
+                            `const startAfterConditions = this.getStartAfterConditions(lastItem);`,
+                            `await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath('...startAfterConditions', '...conditions')})`
+                        )
+                    }
 
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
@@ -2733,9 +2785,9 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
                 `if(this.enableInitFetch) {`,
-                `this.getStore().fetch(this).then((obj) => self.onApiSucceed(obj))}`
+                `this.getStore().fetch(this).then((obj) => self.onInitialApiSucceed(obj))}`
             )
-            baseGenerator.appendFunction(`onApiSucceed`, ['object']);
+            baseGenerator.appendFunction(`onInitialApiSucceed`, ['object']);
             baseGenerator.appendField('enableInitFetch', true)
             baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
                 `this.enableInitFetch = enable`);
@@ -3374,7 +3426,9 @@ class ComponentBuilder extends BaseBuilder {
             if (child.isArray()) {
                 if (child.hasPaginate()) {
                     generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
-                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()}(this))`)
+                    self.appendStmtIntoComponentDidMount(`const view = this;`)
+
+                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()}(${child.getStringOfArgumentsOfPath(true)}))`)
                 }
 
                 /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */

@@ -132,6 +132,7 @@ class CommonRemoteApi {
         /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
         const raw = [];
         for (const condition of conditions) {
+            if(condition === undefined || _.isEmpty(condition)) continue;
             let priority = 99;
             let stmtOfFunction = (stmt) => stmt;
             if (_.isObject(condition)) {

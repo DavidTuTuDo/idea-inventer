@@ -5,9 +5,9 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseWrongHistoryStore from "./BaseWrongHistoryStore";
+import BaseExamTestingRecordStore from "./BaseExamTestingRecordStore";
 
-class WrongHistoryStore extends BaseWrongHistoryStore {
+class ExamTestingRecordStore extends BaseExamTestingRecordStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,4 +16,4 @@ class WrongHistoryStore extends BaseWrongHistoryStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default WrongHistoryStore;
+export default ExamTestingRecordStore;

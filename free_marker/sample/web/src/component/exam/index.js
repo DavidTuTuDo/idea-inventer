@@ -12,7 +12,7 @@ import _ from "lodash";
 import Router from '../../router';
 import Cookie from "../../cookie";
 import ExamSubjectIdStore from "../../store/examSubjectId";
-import WrongHistoryTestingRecordStore from "../../store/WrongHistoryTestingRecord";
+import TestingRecordStore from "../../store/examTestingRecord";
 import ExamCountsOfExamTodayStore from "../../store/examCountsOfExamToday";
 import UserInfo from "../../userInfo";
 
@@ -27,7 +27,7 @@ class ExamComponent extends BaseExamComponent {
         super.componentDidMount();
     }
 
-    onApiSucceed(object) {
+    onInitialApiSucceed(object) {
         this.incrementCountsOfExamToday().then();
         this.currentTimeStamp = Util.getCurrentTimeStamp();
     }
@@ -87,6 +87,22 @@ class ExamComponent extends BaseExamComponent {
                     this.getStore().pushNextQuestionIDs(...ids);
                     return this.getStore().fetch(self)
                 }).then();
+                break;
+            case 'wrongHistory':
+                this.setEnableInitFetch(false);
+                self.getStore().
+                /**
+                 * 1. 呼叫wrongHistory list(limit size)
+                 * 2. wrongHistory list attr(qid) 換成 question list.
+                 * 3. 顯示 question list.
+                 * 4. override onScrollToBottomJob (用history list 最後一筆去要next page 再轉換成 question id)
+                 * 5.
+                 *
+                 */
+
+
+
+
                 break;
             default:
                 Util.appendError(`8354 ==> type can't not be ${type}`);
@@ -156,7 +172,7 @@ class ExamComponent extends BaseExamComponent {
 
     async submitQuestionRecord(question) {
         if (UserInfo.isLoginInSucceed()) {
-            const record = new WrongHistoryTestingRecordStore();
+            const record = new TestingRecordStore();
             await record.submitTestingRecords(undefined, undefined, {
                 qid: question.getId(),
                 duration: Util.getDurationOfMillionSec(this.currentTimeStamp),

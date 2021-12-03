@@ -463,6 +463,10 @@ class Utiller {
         return !_.isNull(obj) && !_.isUndefined(obj);
     }
 
+    isUndefinedNullEmpty(obj) {
+        return obj === undefined || _.isEmpty(obj) || obj === null
+    }
+
     /** 讓字串結尾必須是指定的 predicate, ex: `i'm good today?,,` => `i'm good today` */
     getNormalizedStringEndWith(string, predicate) {
         string = this.toCDB(string);

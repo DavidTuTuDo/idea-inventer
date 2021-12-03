@@ -99,26 +99,6 @@ class MobileStyle {
 
   MainEditorDiv = {};
 
-  /** => following for wrongHistory  component  */
-
-  WrongHistoryTestingRecordExpiredTimeTypography = {};
-
-  WrongHistoryTestingRecordIsWrongReplyTypography = {};
-
-  WrongHistoryTestingRecordDurationTypography = {};
-
-  WrongHistoryTestingRecordSubjectTypography = {};
-
-  WrongHistoryTestingRecordMyWrongAnswerTypography = {};
-
-  WrongHistoryTestingRecordQidTypography = {};
-
-  ListWrongHistoryTestingRecordPaper = {};
-
-  WrongHistoryTestingRecordCard = {};
-
-  WrongHistoryDiv = {};
-
   /** => following for purchase  component  */
 
   WrapPurchasePurchasePlanBuyDiv = {};
