@@ -37,7 +37,7 @@ const VIEW_IMPORTS =
         {
             from: `react-slideshow-image`,
             views: ['Fade'],
-            object: true,/** 就是要加上{Fade} */
+            object: true,/** 就是要加上braket {Fade} */
         }
     ]
 
@@ -358,7 +358,7 @@ class CodegenNode {
      * 4.selectedItem預設都是{value:'100',label:'100年'} label用來顯示標籤
      * */
     isSelectedArray() {
-        return this.isArray() && _.isEqual(true, this.select.enable);
+        return (this.isArray() || this.isArrayItem()) && _.isEqual(true, this.select.enable);
     }
 
     isIndex() {
@@ -940,7 +940,7 @@ class CodegenNode {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
-        if (this.isArray() && !this.isSelectedArray()) {
+        if (this.isArray() && !this.isSelectedArray() && !useViewModuleAndComponentModuleMechanism) {
             stmt.push(`const ${this.getViewClassNameOfRenderView()} = self.${this.getArrayItemNode().getViewClassNameOfRenderView()}`);
         } else {
             const exist = {}
@@ -960,7 +960,7 @@ class CodegenNode {
                      = self.${self.getFunctionNameOfObservableObject()}()`)
             }
 
-            if (this.isAttribute() && !this.isArrayItem() && !useViewModuleAndComponentModuleMechanism) {
+            if (this.isAttribute() && !this.isArrayItem()) {
                 stmt.push(`const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`)
             }
         }
@@ -2682,12 +2682,11 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
         }
 
-        if(!componentNode.useInjectStore) {
+        if (!componentNode.useInjectStore) {
             const storeName = componentNode.getPreciseStoreName();
-            baseGenerator.appendImport(`${_.upperFirst(storeName)}Store`,`../../store/${storeName}`)
+            baseGenerator.appendImport(`${_.upperFirst(storeName)}Store`, `../../store/${storeName}`)
             baseGenerator.appendConstructor(`this.disposableStore = new ${_.upperFirst(storeName)}Store()`)
         }
-
 
 
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
@@ -2757,7 +2756,7 @@ class ComponentBuilder extends BaseBuilder {
 
         function getStmtsOfGetStore() {
             const stmts = [];
-            if(componentNode.useInjectStore) {
+            if (componentNode.useInjectStore) {
                 stmts.push(`return this.props.${componentNode.getPreciseStoreName()}`)
             } else {
                 stmts.push(`return this.disposableStore;`)
@@ -2841,7 +2840,17 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendViewsImport() {
-            if (!!!param.generator) return;
+            const generator = param.generator;
+            const node = param.customViewNode;
+            if (!!!generator) return;
+
+            if (node) {
+                if (useViewModuleAndComponentModuleMechanism) {
+                    generator.appendImport(node.getViewClassNameOfRenderView(), node.isComponentModule() ?
+                        `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}` :
+                        `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
+                }
+            }
 
             for (const _import of VIEW_IMPORTS) {
                 if (Util.has(_import.views, param.tag)) {
@@ -2919,15 +2928,9 @@ class ComponentBuilder extends BaseBuilder {
                 props[param] = `###${param}`
             }
 
-            if (useViewModuleAndComponentModuleMechanism) {
-                if (node.isComponentModule()) {
-                    generator.appendImport(node.getViewClassNameOfRenderView(), `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
-                } else {
-                    generator.appendImport(node.getViewClassNameOfRenderView(), `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
-                }
-            }
-
             const viewJsxStmt = self.getJSXStrings({
+                generator,
+                customViewNode: node,
                 tag: node.getViewClassNameOfRenderView(),
                 props,
             })
@@ -2986,12 +2989,16 @@ class ComponentBuilder extends BaseBuilder {
             const itemViewProps = {};
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
-            let ArrayItemView = this.getJSXStrings({
+            let arrayItemViewStmts = this.getJSXStrings({
+                generator,
+                customViewNode: node,
                 tag: `${node.getViewClassNameOfRenderView()}`,
                 props: itemViewProps,
             })
 
             if (node.isSelectedArray()) {
+                const arrayItemNode = node.getArrayItemNode();
+                arrayItemNode.setType('arrayItem');
                 props['onChange'] = `###(event)=>{${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(event.target.value)}`;
                 props['value'] = `###${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}()`;
                 if (node.isTextFieldListView()) {
@@ -2999,44 +3006,35 @@ class ComponentBuilder extends BaseBuilder {
                 }
 
                 delete itemViewProps[`${node.getName()}`];
-                const clone = _.clone(node);
-                clone.setType('arrayItem');
-                clone.appendViewProps(itemViewProps);
-
-
+                arrayItemNode.appendViewProps(itemViewProps);
                 if (node.isRadioGroupListView()) {
-                    clone.appendViewProps({control: `###<Radio />`});
+                    arrayItemNode.appendViewProps({control: `###<Radio />`});
                     generator.appendImport('Radio', '@material-ui/core/Radio')
                 }
-
-
                 if (node.isLabelPropsView()) {
-                    clone.appendViewProps({label: `###${getLabelStmts().join('')}`})
+                    arrayItemNode.appendViewProps({label: `###${getLabelStmts().join('')}`})
                 } else {
                     /** 如果不是isLabelPropsView(), 一率都放到content <View >{contents}</View>*/
-                    clone.appendContent(`{${node.getName()}.label}`)
+                    arrayItemNode.appendContent(`{${node.getName()}.label}`)
                 }
-
-                clone.appendViewProps({value: `###${node.getName()}.value`})
-                ArrayItemView = this.getJSXStringsByNode(generator, clone)
+                arrayItemNode.appendViewProps({value: `###${node.getName()}.value`})
+                arrayItemViewStmts = this.getJSXStringsByNode(generator, arrayItemNode)
             }
 
             const arrayStmts = this.getJSXStrings({
-                generator: generator,
+                generator,
                 tag: node.getListView(),
-
                 props,
                 contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()}) => `,
-                    ...ArrayItemView, `)}`]
+                    ...arrayItemViewStmts, `)}`]
             })
 
             if (node.hasListWrap()) {
                 const clazzName = node.getClassNameOfLessUsage('listWrap');
                 this.storeClassName({node, type: 'listWrap'});
-
                 return this.getJSXStrings(
                     {
-                        generator: generator,
+                        generator,
                         tag: node.getListWrapView(),
                         props: {
                             className: clazzName,
@@ -3157,7 +3155,7 @@ class ComponentBuilder extends BaseBuilder {
 
         let origin = this.getJSXStrings({
             tag: node.view,
-            generator: generator,
+            generator,
             props,
             contents: [...contentStmts, ...node.getContents()],
         });
@@ -3190,7 +3188,7 @@ class ComponentBuilder extends BaseBuilder {
 
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
-                generator: generator,
+                generator,
                 props,
                 contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin, ...stmt],
             })
@@ -3328,7 +3326,7 @@ class ComponentBuilder extends BaseBuilder {
             );
             viewGenerator.appendFunction(node.getFunctionNameOfObservableObject(), [], [], [],
                 `return this.props.${node.getObservableName()}`)
-            viewGenerator.needIndexFile(clazzName, ['observer'])
+            viewGenerator.needIndexFile(clazzName, ['obiserver'])
             viewGenerator.persist().then();
         }
 
@@ -3342,9 +3340,12 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendViewFunctionClass(node) {
+            if (node.isArrayItem() && node.isSelectedArray()) return;
+
             if (!useViewModuleAndComponentModuleMechanism)
                 appendFunctionWithFields(node);
-            generateViewClass(node)
+            if (useViewModuleAndComponentModuleMechanism)
+                generateViewClass(node)
         }
 
         if (node.hasCustomViewDialog()) {
@@ -3377,9 +3378,7 @@ class ComponentBuilder extends BaseBuilder {
                 }
 
                 /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
-                if (!child.isSelectedArray()) {
-                    appendViewFunctionClass(child.getArrayItemNode())
-                }
+                appendViewFunctionClass(child.getArrayItemNode())
             }
             appendViewFunctionClass(child)
             if (child.hasViewChildren()) {
@@ -3395,7 +3394,8 @@ class ComponentBuilder extends BaseBuilder {
 
 }
 
-class AppBuilder extends ComponentBuilder {
+class AppBuilder
+    extends ComponentBuilder {
 
     constructor(props) {
         super(props);
