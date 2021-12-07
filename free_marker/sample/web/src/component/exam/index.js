@@ -34,11 +34,14 @@ class ExamComponent extends BaseExamComponent {
     }
 
     fetchExamsTestingRecords = async () => {
-        const items = await this.getStore().fetchNextPageTestingRecords(this);
+        const items = await this.getStore().fetchTestingRecords(this);
         const questionIds = items.map((each) => each.qid);
-        this.getStore().setQuestionConditions(this.getStore().getInArrayConditions(questionIds));
-        this.getStore().setNextQuestionPageMode('custom');
-        await this.getStore().fetchNextPageQuestions(this);
+        if(questionIds.length > 0) {
+            this.getStore().setQuestionConditions();
+            this.getStore().setNextQuestionPageMode('custom');
+            await this.getStore().fetchQuestions(this);
+        }
+
     }
 
     onInitialApiSucceed(object) {

@@ -431,9 +431,6 @@ class CodegenNode {
         return !!this.storageFolder;
     }
 
-    getFunctionNameOfNextPage() {
-        return Util.camel('fetch', 'next', 'page', this.getFieldName());
-    }
 
     isCollectionPath() {
         if (this.hasPath()) {
@@ -2259,7 +2256,8 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
 
         function getInitFetchStmt(node) {
-            let defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` : `await this.${Util.camel('fetch', node.getFieldName())}(view)`
+            let defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` :
+                `await this.${Util.camel('fetch', node.getFieldName())}(view)`
             /** ${node.getFieldName()} 是在 array.mustache gen出來的 */
 
             if (node.isFetchOnlyLogin()) {
@@ -3366,7 +3364,6 @@ class ComponentBuilder extends BaseBuilder {
                 }, [`{${node.getParamOfRenderView()}}`], [], [],
                 ...getContentStmt(node, generator)
             )
-
         }
 
         function generateViewClass(node) {
@@ -3435,7 +3432,7 @@ class ComponentBuilder extends BaseBuilder {
                     generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
                     self.appendStmtIntoComponentDidMount(`const view = this;`)
 
-                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()})`)
+                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfFetch()})`)
                 }
 
                 /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */

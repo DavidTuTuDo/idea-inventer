@@ -113,7 +113,7 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     this.next{{{fieldClass}}}PageMode =  mode;
     }
 
-    fetchNextPage{{{functionName}}} = async ({{{paramString}}}) => {
+    fetch{{{functionName}}} = async ({{{paramString}}}) => {
     const self = this;
     const items = [];
     switch (self.getNext{{{fieldClass}}}PageMode()) {
@@ -164,13 +164,14 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     }
 
 {{/hasPaginate}}
-
-{{{這裡就是放else的邏輯}}}
-{{#hasPath}}
-    fetch{{{functionName}}} = async ({{{paramString}}}) => {
-    return await new {{{fieldClass}}}().fetch(
-    {{{argumentString}}},
-    ...this.get{{{fieldClass}}}Conditions()
-    )
-    }
-{{/hasPath}}
+{{^hasPaginate}}
+    {{{這裡就是放else的邏輯}}}
+    {{#hasPath}}
+        fetch{{{functionName}}} = async ({{{paramString}}}) => {
+        return await new {{{fieldClass}}}().fetch(
+        {{{argumentString}}},
+        ...this.get{{{fieldClass}}}Conditions()
+        )
+        }
+    {{/hasPath}}
+{{/hasPaginate}}
