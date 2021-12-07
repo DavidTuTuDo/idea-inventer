@@ -2124,7 +2124,7 @@ class PathBase {
                                    paginateSize,
                                    paramString,
                                    argumentString,
-                                   storageSuperUserUid,
+                                   superUserUid,
                                }) => {
         return {
             hasPath,
@@ -2144,7 +2144,7 @@ class PathBase {
             paginateSize,
             paramString,
             argumentString,
-            storageSuperUserUid,
+            superUserUid,
         }
     }
 
@@ -2320,6 +2320,7 @@ class StoreBuilder extends BaseBuilder {
                 const fieldName = Util.camel('conditions', 'of', child.getName());
                 baseGenerator.appendField(fieldName, '[]')
                 baseGenerator.appendFunction(Util.camel('set', child.getName(), 'conditions'), ['conditions'], [], [],
+                    `if(_.isArray(conditions))`,
                     `this.${fieldName} = conditions`)
                 baseGenerator.appendFunction(child.getFunctionNameOfClearCondition(), [], [], [],
                     `this.${fieldName}.length = 0`)
@@ -4067,7 +4068,7 @@ class ProjectFileHandler extends PathBase {
         const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
 
         const base = this.getStringFromMustache('template.storage.mustache',
-            {storageSuperUserUid: this.nodeOfAncestor.getStorageSuperUserUid()}).split('\n');
+            {superUserUid: this.nodeOfAncestor.getStorageSuperUserUid()}).split('\n');
         const permissions = {};
         /** storageFolderPath : permission */
         const task = async (node) => {

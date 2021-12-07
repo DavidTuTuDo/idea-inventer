@@ -174,6 +174,9 @@ const ERRORs = {
     7007: {
         message: `result result should be either succeed or fail`
     },
+    7008: {
+      message:`in array can't be empty, otherwise it get abnormal next page`
+    },
     6001: {
         message: `single page work fail`
     }

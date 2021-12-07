@@ -84,51 +84,53 @@ class BaseEditorComponent extends BaseComponent {
     }
 
     /** origin 的 資料結構是 參照 onFileSelected */
-    async buildWatermarkBlob(origin){
-        const configOfWatermark  = Config.watermark;
+    async buildWatermarkBlob(origin) {
+        const configOfWatermark = Config.watermark;
         switch (configOfWatermark.type) {
             case "text":
                 const watermarkTextNode = watermark.text;
                 const functionNameOfText = watermarkTextNode[configOfWatermark.position];
                 const blobOfTextWatermark = await watermark([origin.blob])
                     .blob(functionNameOfText(configOfWatermark.src, configOfWatermark.textStyle, configOfWatermark.color, configOfWatermark.alpha))
-                blobOfTextWatermark.name = `watermark_`+origin.blob.name;
+                blobOfTextWatermark.name = `watermark_` + origin.blob.name;
                 return blobOfTextWatermark;
                 break;
             case "image":
                 const watermarkImageNode = watermark.image;
                 const functionNameOfImage = watermarkImageNode[configOfWatermark.position];
-                const blobOfImageWatermark = await watermark([origin.url,configOfWatermark.src])
+                const blobOfImageWatermark = await watermark([origin.url, configOfWatermark.src])
                     .blob(functionNameOfImage(configOfWatermark.alpha))
-                blobOfImageWatermark.name = `watermark_`+origin.blob.name;
+                blobOfImageWatermark.name = `watermark_` + origin.blob.name;
                 return blobOfImageWatermark;
                 break
             default:
-                throw new ERROR(9999,'un-handle watermark type');
+                throw new ERROR(9999, 'un-handle watermark type');
         }
 
 
     }
 
-    uploadImageStorage = async (file) => {
-        this.setLoadingViewVisibility(true);
-        if (this.currentImageTask.needWatermark) {
-            const blobOfWatermark = await this.buildWatermarkBlob(file);
-            await this.currentImageTask.beforeSubmit(URL.createObjectURL(blobOfWatermark));
-            const urlOfWatermark = await Firebaser.uploadImage(blobOfWatermark, this.currentImageTask.folderName);
-            const urlOfOrigin = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
-            await this.currentImageTask.afterSubmit({watermark: urlOfWatermark, origin: urlOfOrigin});
-        } else {
-            await this.currentImageTask.beforeSubmit(file.url);
-            const url = await Firebaser.uploadImage(file.blob, this.currentImageTask.folderName);
-            await this.currentImageTask.afterSubmit(url);
+    uploadImageStorage = async (view, file) => {
+        const self = this;
+        const task = async () => {
+            if (self.currentImageTask.needWatermark) {
+                const blobOfWatermark = await self.buildWatermarkBlob(file);
+                await self.currentImageTask.beforeSubmit(URL.createObjectURL(blobOfWatermark));
+                const urlOfWatermark = await Firebaser.uploadImage(blobOfWatermark, self.currentImageTask.folderName);
+                const urlOfOrigin = await Firebaser.uploadImage(file.blob, self.currentImageTask.folderName);
+                await self.currentImageTask.afterSubmit({watermark: urlOfWatermark, origin: urlOfOrigin});
+            } else {
+                await self.currentImageTask.beforeSubmit(file.url);
+                const url = await Firebaser.uploadImage(file.blob, self.currentImageTask.folderName);
+                await self.currentImageTask.afterSubmit(url);
+            }
+            watermark.destroy();
         }
-        watermark.destroy();
-        this.setLoadingViewVisibility(false);
+        await this.getStore().runUIAsyncTask(task,'upload image',file.url, self);
     }
 
-    onFilesSelected(files) {
-        this.uploadImageStorage(files[0]).then();
+    onFilesSelected = (files) => {
+        this.uploadImageStorage(this, files[0]).then();
     }
 
     renderItemEditorView(onEditClickedAsyncTask, hasPath) {

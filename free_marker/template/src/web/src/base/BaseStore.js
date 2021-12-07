@@ -216,10 +216,15 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getInArrayConditions =(targets) => {
-        return [{
-            where: (stmt) =>
-                stmt.where(this.getFieldNameOfDocumentId(), "in", targets),
-        }]
+        if(_.isArray(targets) && targets.length > 0) {
+            return [{
+                where: (stmt) =>
+                    stmt.where(this.getFieldNameOfDocumentId(), "in", targets),
+            }]
+        } else {
+            throw ERROR(7842,`${typeof targets}, "${targets}" is not allow`)
+        }
+
     }
 
 }

@@ -35,9 +35,10 @@ class ExamComponent extends BaseExamComponent {
 
     fetchExamsTestingRecords = async () => {
         const items = await this.getStore().fetchTestingRecords(this);
+        console.log("items===>",items);
         const questionIds = items.map((each) => each.qid);
         if(questionIds.length > 0) {
-            this.getStore().setQuestionConditions();
+            this.getStore().setQuestionConditions(this.getStore().getInArrayConditions(questionIds));
             this.getStore().setNextQuestionPageMode('custom');
             await this.getStore().fetchQuestions(this);
         }
