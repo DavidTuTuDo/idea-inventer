@@ -215,6 +215,13 @@ class BaseStore extends ClientRemoteApi {
         return Util.isUndefinedNullEmpty(lastItem) ? [] : [{startAfter: (stmt) => stmt.startAfter(lastItem.getDocRef())}]
     }
 
+    getInArrayConditions =(targets) => {
+        return [{
+            where: (stmt) =>
+                stmt.where(this.getFieldNameOfDocumentId(), "in", targets),
+        }]
+    }
+
 }
 
 export default BaseStore

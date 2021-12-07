@@ -25,6 +25,20 @@ class ExamComponent extends BaseExamComponent {
     componentDidMount() {
         this.handleExamFilter();
         super.componentDidMount();
+
+        if (_.isEqual('historyWrong', this.getExamFilterTips().type)) {
+            this.fetchExamsTestingRecords().then();
+            this.clearScrollToBottomJobs();
+            this.appendScrollToBottomJob(this.fetchExamsTestingRecords)
+        }
+    }
+
+    fetchExamsTestingRecords = async () => {
+        const items = await this.getStore().fetchNextPageTestingRecords(this);
+        const questionIds = items.map((each) => each.qid);
+        this.getStore().setQuestionConditions(this.getStore().getInArrayConditions(questionIds));
+        this.getStore().setNextQuestionPageMode('custom');
+        await this.getStore().fetchNextPageQuestions(this);
     }
 
     onInitialApiSucceed(object) {
@@ -48,18 +62,23 @@ class ExamComponent extends BaseExamComponent {
         }
     }
 
-    handleExamFilter = () => {
+    getExamFilterTips = () => {
         const filter = Cookie.getExamFilter();
-        const self = this;
-        if (_.isEmpty(filter)) {
-            Router.gotoMainPage(this.getComponentInstance());
-            return;
-        }
         const subject = filter.subject; // 'string'
         const type = filter.type; // 'string'
         const range = filter.range; // [100, 105]
         const countsOfExam = filter.countsOfExam; //25 or 40
         Util.appendInfo(subject, type, range, countsOfExam);
+        return {subject, type, range, countsOfExam};
+    }
+
+    handleExamFilter = () => {
+        const self = this;
+        const {range, subject, type, countsOfExam} = this.getExamFilterTips();
+        if (_.isEmpty(type)) {
+            Router.gotoMainPage(this.getComponentInstance());
+            return;
+        }
 
         function getRandomCondition() {
             const conditions = [];
@@ -88,21 +107,8 @@ class ExamComponent extends BaseExamComponent {
                     return this.getStore().fetch(self)
                 }).then();
                 break;
-            case 'wrongHistory':
+            case 'historyWrong':
                 this.setEnableInitFetch(false);
-                self.getStore().
-                /**
-                 * 1. 呼叫wrongHistory list(limit size)
-                 * 2. wrongHistory list attr(qid) 換成 question list.
-                 * 3. 顯示 question list.
-                 * 4. override onScrollToBottomJob (用history list 最後一筆去要next page 再轉換成 question id)
-                 * 5.
-                 *
-                 */
-
-
-
-
                 break;
             default:
                 Util.appendError(`8354 ==> type can't not be ${type}`);

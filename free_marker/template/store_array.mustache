@@ -5,6 +5,7 @@
 {{{hasPath就是true/flase}}}
 {{{argumentString 就是 view uid}}}
 {{{paramString view uid = userInfo.getUid}}}
+{{{paginateSize 就是page size}}}
 
 @action
 set{{{functionName}}}(...items) {
@@ -112,22 +113,30 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     this.next{{{fieldClass}}}PageMode =  mode;
     }
 
-    fetchNextPage{{{functionName}}} = ({{{paramString}}}) => {
+    fetchNextPage{{{functionName}}} = async ({{{paramString}}}) => {
     const self = this;
-    return async () => {
     const items = [];
     switch (self.getNext{{{fieldClass}}}PageMode()) {
     case "in-array":
     const itemsOfNextIds = await self.fetch{{{fieldClass}}}ByNextIds({{{argumentString}}});
     items.push(...itemsOfNextIds);
     break;
-    default:
+    case "paging":
     const itemsOfNextPage = await self.fetch{{{fieldClass}}}NextPageItems({{{argumentString}}});
     items.push(...itemsOfNextPage);
+    break;
+    default:
+    const queryItems = await new {{{fieldClass}}}().fetch(
+    {{{argumentString}}},
+    ...this.get{{{fieldClass}}}Conditions()
+    )
+    items.push(...queryItems)
+    break;
     }
+
     this.push{{{functionName}}}(...items);
+    return items;
     };
-    }
 
     fetch{{{fieldClass}}}NextPageItems = async ({{{paramString}}}) => {
     const conditions = this.getStartAfterConditions(_.last(this.get{{{functionName}}}()));
@@ -142,40 +151,26 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     fetch{{{fieldClass}}}ByNextIds = async ({{{paramString}}}) => {
     const self = this;
     const targets = _.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
-    return index < 10;
+    return index < {{{paginateSize}}};
     })
-    if (_.isArray(targets) && !_.isEmpty(targets)) {
+    if (!_.isEmpty(targets)) {
     return await new {{{fieldClass}}}().fetch(
     {{{argumentString}}},
-    {where: (stmt) => stmt.where(self.getFieldNameOfDocumentId(), "in", targets)},
+    ...this.getInArrayConditions(targets),
     ...this.get{{{fieldClass}}}Conditions()
     );
     }
     return [];
     }
 
+{{/hasPaginate}}
+
+{{{這裡就是放else的邏輯}}}
+{{#hasPath}}
     fetch{{{functionName}}} = async ({{{paramString}}}) => {
-    const self = this;
-    switch (self.getNext{{{fieldClass}}}PageMode()) {
-    case 'in-array':
-    return await self.fetch{{{fieldClass}}}ByNextIds();
-    default:
     return await new {{{fieldClass}}}().fetch(
     {{{argumentString}}},
     ...this.get{{{fieldClass}}}Conditions()
     )
     }
-    }
-{{/hasPaginate}}
-
-{{^hasPaginate}}
-    {{{這裡就是放else的邏輯}}}
-    {{#hasPath}}
-        fetch{{{functionName}}} = async (view) => {
-        return await new {{{fieldClass}}}().fetch(
-        view,
-        ...this.get{{{fieldClass}}}Conditions()
-        )
-        }
-    {{/hasPath}}
-{{/hasPaginate}}
+{{/hasPath}}

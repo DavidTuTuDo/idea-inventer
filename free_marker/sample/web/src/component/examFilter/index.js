@@ -28,6 +28,8 @@ class ExamFilterComponent extends BaseExamFilterComponent {
             const route = enterPoint.route;
             if (route.startsWith(`dialog`)) {
                 this.getStore().setSubject(this.getTitle());
+            } else if (_.isEqual(route, 'historyWrong')) {
+                this.gotoExamPageWithCookie({type: route});
             } else {
                 this.handleCustomRouter(route);
                 this.dismiss();

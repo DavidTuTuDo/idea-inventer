@@ -452,7 +452,9 @@ class CodegenNode {
     }
 
     getPaginateSize() {
-        return this.paginate.size;
+        if(this.paginate)
+            return this.paginate.size;
+        return -1;
     }
 
     getPaginateThreshold() {
@@ -1390,7 +1392,8 @@ class CodegenNode {
         if (!this.hasPath()) {
             params.push(...others)
             return params;
-        };
+        }
+        ;
 
 
         for (const segment of this.path.split('/')) {
@@ -1423,10 +1426,11 @@ class CodegenNode {
             params.push('view');
         }
 
-        if (!this.hasPath())   {
+        if (!this.hasPath()) {
             params.push(...others)
             return params;
-        };
+        }
+        ;
 
 
         for (const segment of this.path.split('/')) {
@@ -2120,6 +2124,7 @@ class PathBase {
                                    projectDescription,
                                    fieldClass,
                                    hasPaginate,
+                                   paginateSize,
                                    paramString,
                                    argumentString,
                                    storageSuperUserUid,
@@ -2139,6 +2144,7 @@ class PathBase {
             projectDescription,
             fieldClass,
             hasPaginate,
+            paginateSize,
             paramString,
             argumentString,
             storageSuperUserUid,
@@ -2176,7 +2182,7 @@ class StoreBuilder extends BaseBuilder {
         super(props);
     }
 
-    getFunctionsDependOnFieldType(type,object = {}) {
+    getFunctionsDependOnFieldType(type, object = {}) {
         const functions = this.getStringFromMustache(`store_${type}.mustache`, object)
         return functions;
     }
@@ -2212,6 +2218,7 @@ class StoreBuilder extends BaseBuilder {
                         paramString: child.getStringOfParamsOfPath('web'),
                         argumentString: child.getStringOfArgumentsOfPath(true),
                         hasPaginate: child.hasPaginate(),
+                        paginateSize: child.getPaginateSize(),
                         fieldClass: child.getClassName(),
                     }));
             if (child.isNumber())
@@ -3428,7 +3435,7 @@ class ComponentBuilder extends BaseBuilder {
                     generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
                     self.appendStmtIntoComponentDidMount(`const view = this;`)
 
-                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()}(${child.getStringOfArgumentsOfPath(true)}))`)
+                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfNextPage()})`)
                 }
 
                 /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
