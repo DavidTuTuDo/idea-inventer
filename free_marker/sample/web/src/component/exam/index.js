@@ -33,10 +33,6 @@ class ExamComponent extends BaseExamComponent {
         this.fetchExamsTestingRecords(true).then();
     }
 
-    getInjectStyleOfExamHistoryFilterDiv(exam) {
-        return Util.getVisibleOrNone(this.isHistoryWrongPage())
-    }
-
     summarizeFilterConditionChanged = () => {
         const filter = this.getStore().getHistoryFilter();
         const subject = filter.getSelectedWhichSubject();
@@ -82,10 +78,12 @@ class ExamComponent extends BaseExamComponent {
 
         const items = await this.getStore().fetchTestingRecords(this);
         const questionIds = items.map((each) => each.qid);
+        console.log(items);
         if (questionIds.length > 0) {
             this.getStore().setQuestionConditions(this.getStore().getInArrayConditions(questionIds));
             this.getStore().setNextQuestionPageMode('custom');
             await this.getStore().fetchQuestions(this);
+            this.getStore().syncQuestionDurationReply();
         }
 
     }
@@ -225,18 +223,30 @@ class ExamComponent extends BaseExamComponent {
     }
 
     async submitQuestionRecord(question) {
-        if (UserInfo.isLoginInSucceed()) {
+        if (!this.isHistoryWrongPage() && UserInfo.isLoginInSucceed()) {
             const record = new TestingRecordStore();
             await record.submitTestingRecords(undefined, undefined, {
+                id: question.getId(),
                 qid: question.getId(),
                 duration: Util.getDurationOfMillionSec(this.currentTimeStamp),
                 subject: question.getSubject(),
-                myWrongAnswer: question.isAnswerWrong() ? question.getReplyString() : '',
+                myWrongAnswer: question.isAnswerWrong() ? Util.integerToString(question.getReply()) : '',
                 isWrongReply: question.isAnswerWrong(),
             })
         }
     }
 
+    getInjectStyleOfExamHistoryFilterDiv(exam) {
+        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+    }
+
+    getInjectStyleOfQuestionDurationTypography(question) {
+        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+    }
+
+    getInjectStyleOfQuestionReplyTimestampTypography(question) {
+        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+    }
 
     /** -------------------- async api -------------------- **/
 }

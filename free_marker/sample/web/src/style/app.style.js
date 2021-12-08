@@ -159,6 +159,10 @@ class AppStyle {
 
   /** => following for exam  component  */
 
+  ExamQuestionReplyTimestampTypography = {};
+
+  ExamQuestionDurationTypography = {};
+
   WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};

@@ -566,7 +566,7 @@ class CodegenNode {
 
     getUniqueIdStmt() {
         if (this.hasPath()) {
-            return `###${this.getName()}.getId()`;
+            return `###\`\${${this.getName()}.getId()}\${index})\``;
         } else {
             if (this.isArray())
                 return `###\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\``;
@@ -999,6 +999,10 @@ class CodegenNode {
 
     isNumber() {
         return _.isEqual(this.type, 'number');
+    }
+
+    isBoolean() {
+        return _.isEqual(this.type, 'boolean');
     }
 
     isString() {
@@ -2224,7 +2228,9 @@ class StoreBuilder extends BaseBuilder {
                     }));
             if (child.isNumber())
                 propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
-            else
+            else if (child.isBoolean())
+                propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
+                else
                 propStmt.push(`if(obj && !_.isEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
 
@@ -3101,7 +3107,7 @@ class ComponentBuilder extends BaseBuilder {
                 generator,
                 tag: node.getListView(),
                 props,
-                contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()}) => `,
+                contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()},index) => `,
                     ...arrayItemViewStmts, `)}`]
             })
 

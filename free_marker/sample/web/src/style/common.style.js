@@ -159,6 +159,10 @@ class CommonStyle {
 
   /** => following for exam  component  */
 
+  ExamQuestionReplyTimestampTypography = {};
+
+  ExamQuestionDurationTypography = {};
+
   WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};

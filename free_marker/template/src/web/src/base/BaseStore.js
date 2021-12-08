@@ -136,12 +136,17 @@ class BaseStore extends ClientRemoteApi {
             this.setUpdateTime(props.updateTime);
     }
 
+    @action
     setUpdateTime(time) {
         this.updateTime = time;
     }
 
+    normalizeTimestamp(obj) {
+        return obj.toDate();
+    }
+
     getUpdateTime() {
-        return this.updateTime;
+        return this.normalizeTimestamp(this.updateTime);
     }
 
     filter(obj) {

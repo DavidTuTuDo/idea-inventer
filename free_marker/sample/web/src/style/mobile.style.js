@@ -163,6 +163,10 @@ class MobileStyle {
 
   /** => following for exam  component  */
 
+  ExamQuestionReplyTimestampTypography = {};
+
+  ExamQuestionDurationTypography = {};
+
   WrapExamQuestionTipDiv = {};
 
   ExamQuestionTipTypography = {};

@@ -19,7 +19,7 @@ class ExamQuestionChoiceStore extends BaseExamQuestionChoiceStore {
         const question = this.getParentNode();
         if (!question.isReply()) return false;
         return _.isEqual(this.getIndexOfParent(),
-            question.getAnswer())
+            Util.stringToInteger(question.getAnswer()))
     }
 
     getIndexOfParent() {
@@ -37,7 +37,7 @@ class ExamQuestionChoiceStore extends BaseExamQuestionChoiceStore {
         const question = this.getParentNode();
         if (!question.isReply()) return false;
         return (_.isEqual(this.getIndexOfParent(), question.getReply()) &&
-            this.getIndexOfParent() !== question.getAnswer());
+            this.getIndexOfParent() !== Util.stringToInteger(question.getAnswer()));
     }
 
     /** -------------------- async api -------------------- **/
