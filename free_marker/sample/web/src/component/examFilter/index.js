@@ -42,7 +42,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
     }
 
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
-        return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), '綜合測驗'))
+        return Util.getVisibleOrHidden(!_.isEqual(this.getTitle(), '綜合測驗'))
     }
 
 
@@ -91,6 +91,8 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         const max = this.getStore().getExamHistoryInfo().getMaxYear();
         this.getStore().getRandomTest().setRangeOfYear([max - value, max])
     }
+
+    on
 
 
     /** -------------------- async api -------------------- **/

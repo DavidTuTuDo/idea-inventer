@@ -3,13 +3,15 @@
 @import "./libs/base.less";
 /** following for examFilter  component used  */
 
-.ExamFilterDiv {
-  /** style */
+.ExamFilterDiv:extend(.CenterInParentColumn) {
 }
 
 .ExamFilterSubjectTypography {
   /** style */
   font-size: 1.8rem;
+  background-color: #bbbbbb;
+  border-radius: 5px;
+  padding: 8px;
 }
 
 .ExamFilterSpaceDiv {
@@ -240,9 +242,56 @@
 
 /** following for exam  component used  */
 
-.ExamDiv {
+.ExamDiv:extend(.CenterInParentColumn) {
+}
+
+.ExamHistoryFilterDiv:extend(.CenterInParentRow) {
+  padding: 12px;
+  width: 100vw;
+  background-color: #bbbbbb;
+  position: sticky;
+  top: 0px;
+  z-index: 100;
+}
+
+.ExamHistoryFilterTitleTypography {
   /** style */
-  margin: 3px;
+  font-size: 2rem;
+}
+
+.ExamHistoryFilterSpaceDiv {
+  /** style */
+  width: 60px;
+}
+
+.ListExamHistoryFilterReplyTypeRadioGroup {
+  /** style */
+}
+
+.LabelExamHistoryFilterReplyTypeTypography {
+  /** style */
+}
+
+.ExamHistoryFilterReplyTypeFormControlLabel {
+  /** style */
+}
+
+.ListExamHistoryFilterWhichSubjectTextField {
+  /** style */
+  min-width: 120px;
+}
+
+.ExamHistoryFilterWhichSubjectMenuItem {
+  /** style */
+}
+
+.ListExamHistoryFilterOrderByWhatTextField {
+  /** style */
+  min-width: 120px;
+}
+
+.ExamHistoryFilterOrderByWhatMenuItem {
+  /** style */
 }
 
 .ExamQuestionCard {
@@ -260,6 +309,7 @@
 
 .ListExamQuestionDiv {
   /** style */
+  margin-top: 10px;
 }
 
 .ExamQuestionAlertOuterDiv {
@@ -528,6 +578,68 @@
   /** style */
 }
 
+.ExamEditorHistoryFilterDiv:extend(.ExamHistoryFilterDiv all) {
+  /** style */
+}
+
+.WrapExamEditorHistoryFilterDiv:extend(.WrapExamHistoryFilterDiv all) {
+  /** style */
+}
+
+.ExamEditorHistoryFilterSpaceDiv:extend(.ExamHistoryFilterSpaceDiv all) {
+  /** style */
+}
+
+.ListExamEditorHistoryFilterReplyTypeRadioGroup:extend(.ListExamHistoryFilterReplyTypeRadioGroup
+    all) {
+  /** style */
+}
+
+.LabelExamEditorHistoryFilterReplyTypeTypography:extend(.LabelExamHistoryFilterReplyTypeTypography
+    all) {
+  /** style */
+}
+
+.ExamEditorHistoryFilterReplyTypeFormControlLabel:extend(.ExamHistoryFilterReplyTypeFormControlLabel
+    all) {
+  /** style */
+}
+
+.WrapExamEditorHistoryFilterReplyTypeDiv:extend(.WrapExamHistoryFilterReplyTypeDiv
+    all) {
+  /** style */
+}
+
+.ListExamEditorHistoryFilterWhichSubjectTextField:extend(.ListExamHistoryFilterWhichSubjectTextField
+    all) {
+  /** style */
+}
+
+.ExamEditorHistoryFilterWhichSubjectMenuItem:extend(.ExamHistoryFilterWhichSubjectMenuItem
+    all) {
+  /** style */
+}
+
+.WrapExamEditorHistoryFilterWhichSubjectDiv:extend(.WrapExamHistoryFilterWhichSubjectDiv
+    all) {
+  /** style */
+}
+
+.ListExamEditorHistoryFilterOrderByWhatTextField:extend(.ListExamHistoryFilterOrderByWhatTextField
+    all) {
+  /** style */
+}
+
+.ExamEditorHistoryFilterOrderByWhatMenuItem:extend(.ExamHistoryFilterOrderByWhatMenuItem
+    all) {
+  /** style */
+}
+
+.WrapExamEditorHistoryFilterOrderByWhatDiv:extend(.WrapExamHistoryFilterOrderByWhatDiv
+    all) {
+  /** style */
+}
+
 .ExamEditorQuestionCard:extend(.ExamQuestionCard all) {
   /** style */
 }
@@ -639,5 +751,4 @@
 @import "./libs/slideshow.less";
 @import "./libs/firebaseui.less";
 @import "./libs/base.less";
-.ExamFilterDiv:extend(.CenterInParentColumn) {
-}
+

@@ -63,7 +63,7 @@ class CodegenNode {
     index = {enable: false, rule: 'CONTAINS'}
     /** 'CONTAINS', 'DESCENDING', 'ASCENDING' */
 
-    select = {enable: false, defaultValue: undefined, labelView: undefined};
+    select = {enable: false, defaultValue: undefined, labelView: undefined,onChange:true};
     /** 如果是type===array而且 select===true,會在store生出一個selected{getName()}
      * select 為 true時,  物件規範固定為 [...{label,value}]  ex:[{label:'帥',value:'handsome'},{label:'醜',value:'ugly'}]
      *
@@ -914,7 +914,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfClearCondition() {
-        return Util.camel('clear', this.getName(), 'conditions')
+        return Util.camel('clean', this.getName(), 'conditions')
     }
 
     getAlertDialogVariable() {
@@ -1390,8 +1390,6 @@ class CodegenNode {
             params.push(...others)
             return params;
         }
-        ;
-
 
         for (const segment of this.path.split('/')) {
             if (_.startsWith(segment, ':')) {
@@ -1427,8 +1425,6 @@ class CodegenNode {
             params.push(...others)
             return params;
         }
-        ;
-
 
         for (const segment of this.path.split('/')) {
             if (_.startsWith(segment, ':')) {
@@ -1605,6 +1601,14 @@ class CodegenNode {
     getViewClassNameOfRenderView() {
         const names = _.reverse(this.getPreciseViewGenealogyNodes().map((each) => each.getFieldName()));
         return _.upperFirst(Util.camel(...names, 'view'));
+    }
+
+    needOnSelectChanged() {
+        return this.isSelectedArray() && this.select.onChange;
+    }
+
+    getFunctionNameOfOnSelectedChange() {
+        return Util.camel('on',this.getName(),`selected`,`change`);
     }
 
     getFunctionNameOfSetter() {
@@ -2351,7 +2355,7 @@ class StoreBuilder extends BaseBuilder {
                 ).join(','), '}')
         })
 
-        baseGenerator.appendFunction('clear', [], ['action'], [],
+        baseGenerator.appendFunction('clean', [], ['action'], [],
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
                         if (child.isArray()) {
@@ -2363,7 +2367,7 @@ class StoreBuilder extends BaseBuilder {
                             return stmts.join('\n');
 
                         } else if (child.isObject()) {
-                            return `this.${child.getFieldName()}.clear()`
+                            return `this.${child.getFieldName()}.clean()`
                         } else {
                             return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
                         }
@@ -2506,7 +2510,7 @@ class RemoteFunctionHandler {
             }
 
             function getFetchStmt() {
-                if (isWebPlatform()) return [`this.clear()`, `this.initial(item)`];
+                if (isWebPlatform()) return [`this.clean()`, `this.initial(item)`];
                 return [];
             }
 
@@ -2643,7 +2647,7 @@ class RemoteFunctionHandler {
                         [],
                         [
                             `const object = await self.fetchObject(path,'${node.getName()}')`,
-                            `this.clear()`,
+                            `this.clean()`,
                             `this.initial(object)`,
                             `return object`
                         ], `fetch object`)
@@ -2799,7 +2803,7 @@ class ComponentBuilder extends BaseBuilder {
                 `this.enableInitFetch = enable`);
         }
 
-        this.appendStmtIntoComponentDetach(`this.getStore().clear()`);
+        this.appendStmtIntoComponentDetach(`this.getStore().clean()`);
 
         for (const child of componentNode.getStruct().getChildren()) {
             if (child.isPathArray()) {
@@ -2808,7 +2812,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (child.hasPaginate()) {
                 this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
-                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clear', child.getName(), 'Next', 'Ids')}()`);
+                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
             }
         }
 
@@ -2995,6 +2999,15 @@ class ComponentBuilder extends BaseBuilder {
             return viewJsxStmt;
         }
 
+        function appendOnChangedStmt() {
+            if(node.needOnSelectChanged()) {
+                generator.appendFunction(node.getFunctionNameOfOnSelectedChange(),['value'],[],[],
+                    `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not override')`)
+                return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
+            }
+            return '';
+        }
+
         function getLabelStmts() {
             const clazzName = node.getClassNameOfLessUsage('label');
             self.storeClassName({node, type: 'label'});
@@ -3057,7 +3070,12 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isSelectedArray()) {
                 const arrayItemNode = node.getArrayItemNode();
                 arrayItemNode.setType('arrayItem');
-                props['onChange'] = `###(event)=>{${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(event.target.value)}`;
+                props['onChange'] = `###(event)=>{
+                    const value = event.target.value;
+                    ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(value)
+                    ${appendOnChangedStmt()}
+                }`;
+
                 props['value'] = `###${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}()`;
                 if (node.isTextFieldListView()) {
                     props.select = `###true`
@@ -3760,7 +3778,10 @@ class AppBuilder
             const lessAttributesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
                 const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
-                _.remove(stub, (each) => (_.startsWith(each, '/** ') || _.isEqual(each.trim(), '')))
+                _.remove(stub, (each) => (
+                    _.startsWith(each, '/** ') ||
+                    _.isEqual(each.trim(), '')  ||
+                    _.startsWith(each, '@import') ))
                 lessAttributesFromSrc.push(...(stub.join('').split('}')))
                 /** 移除掉最後一個,因為split */
                 lessAttributesFromSrc.pop();

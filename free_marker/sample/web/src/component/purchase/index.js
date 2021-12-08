@@ -35,11 +35,11 @@ class PurchaseComponent extends BasePurchaseComponent {
     }
 
     getInjectStyleOfPurchasePlanBuyButton(plan) {
-       return Util.getVisibleOrNone(!plan.isTitle())
+       return Util.getVisibleOrHidden(!plan.isTitle())
     }
 
     getInjectStyleOfPurchasePlanPriceTipTypography(plan) {
-        return Util.getVisibleOrNone(!plan.isTitle())
+        return Util.getVisibleOrHidden(!plan.isTitle())
     }
 
     onBuyButtonClicked(param) {

@@ -193,7 +193,7 @@ class BaseStore extends ClientRemoteApi {
         this.imageDialogParams = mixer
     }
 
-    clear() {
+    clean() {
         this.setState('stable');
     }
 

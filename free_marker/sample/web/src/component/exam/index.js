@@ -20,24 +20,69 @@ import UserInfo from "../../userInfo";
 @inject("exam")
 @observer
 class ExamComponent extends BaseExamComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
+
+    onOrderByWhatSelectedChange(value) {
+        this.fetchExamsTestingRecords(true).then();
+    }
+
+    onWhichSubjectSelectedChange(value) {
+        this.fetchExamsTestingRecords(true).then();
+    }
+
+    onReplyTypeSelectedChange(value) {
+        this.fetchExamsTestingRecords(true).then();
+    }
+
+    getInjectStyleOfExamHistoryFilterDiv(exam) {
+        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+    }
+
+    summarizeFilterConditionChanged = () => {
+        const filter = this.getStore().getHistoryFilter();
+        const subject = filter.getSelectedWhichSubject();
+        const replyType = filter.getSelectedReplyType();
+        const orderByWhat = filter.getSelectedOrderByWhat();
+        const conditions = [];
+        if (!_.isEqual('all', subject))
+            conditions.push({where: (stmt) => stmt.where('subject', '==', subject)})
+
+        if (!_.isEqual('all', replyType))
+            conditions.push({where: (stmt) => stmt.where('isWrongReply', '==', _.isEqual(replyType, 'wrong'))})
+        switch (orderByWhat) {
+            case 'duration':
+                conditions.push({orderBy: (stmt) => stmt.orderBy('duration', 'desc')})
+                break;
+            case 'latest':
+                conditions.push({orderBy: (stmt) => stmt.orderBy('updateTime','desc')})
+                break;
+        }
+        this.getStore().setTestingRecordConditions(conditions);
+    }
+
+    isHistoryWrongPage = () => {
+        return _.isEqual('historyWrong', this.getExamFilterTips().type)
+    }
+
     componentDidMount() {
         this.handleExamFilter();
         super.componentDidMount();
 
-        if (_.isEqual('historyWrong', this.getExamFilterTips().type)) {
-            this.fetchExamsTestingRecords().then();
-            this.clearScrollToBottomJobs();
-            this.appendScrollToBottomJob(this.fetchExamsTestingRecords)
+        if (this.isHistoryWrongPage()) {
+            this.fetchExamsTestingRecords(true).then();
+            this.setScrollToBottomJobs(this.fetchExamsTestingRecords)
         }
     }
 
-    fetchExamsTestingRecords = async () => {
+    fetchExamsTestingRecords = async (clearAll = false) => {
+        if(clearAll) {
+            this.getStore().cleanTestingRecords();
+            this.getStore().cleanQuestions();
+            this.summarizeFilterConditionChanged();
+        }
+
         const items = await this.getStore().fetchTestingRecords(this);
-        console.log("items===>",items);
         const questionIds = items.map((each) => each.qid);
-        if(questionIds.length > 0) {
+        if (questionIds.length > 0) {
             this.getStore().setQuestionConditions(this.getStore().getInArrayConditions(questionIds));
             this.getStore().setNextQuestionPageMode('custom');
             await this.getStore().fetchQuestions(this);
@@ -69,7 +114,7 @@ class ExamComponent extends BaseExamComponent {
     getExamFilterTips = () => {
         const filter = Cookie.getExamFilter();
         const subject = filter.subject; // 'string'
-        const type = filter.type; // 'string'
+        const type = filter.type; // 'string' /** */
         const range = filter.range; // [100, 105]
         const countsOfExam = filter.countsOfExam; //25 or 40
         Util.appendInfo(subject, type, range, countsOfExam);
@@ -128,7 +173,6 @@ class ExamComponent extends BaseExamComponent {
         if (!question.isReply() || choice.isReplyEqualToAnswer()) {
             return 'primary';
         }
-
         if (choice.isWrongReply()) {
             return 'secondary';
         }
@@ -156,7 +200,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionAlertDiv(question) {
-        return Util.getVisibleOrNone(question.isAnswerWrong())
+        return Util.getVisibleOrHidden(question.isAnswerWrong())
     }
 
     onStatementButtonClicked(param) {
@@ -189,7 +233,6 @@ class ExamComponent extends BaseExamComponent {
                 subject: question.getSubject(),
                 myWrongAnswer: question.isAnswerWrong() ? question.getReplyString() : '',
                 isWrongReply: question.isAnswerWrong(),
-                expiredTime: Util.getTimeStampAfterCondition(record.getObjectOfCurrentTimeStamp().toMillis(), {days: 20})
             })
         }
     }

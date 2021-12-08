@@ -808,8 +808,12 @@ class Utiller {
     }
 
     /** react js Util */
-    getVisibleOrNone(judgement) {
+    getVisibleOrHidden(judgement) {
         return {visibility: judgement ? 'visible' : 'hidden'};
+    }
+
+    getVisibleOrNone(judgement) {
+        return {display: judgement ? 'visible' : 'none'};
     }
 
 }

@@ -9,13 +9,13 @@ set{{{functionName}}}(param) {
         param = param instanceof {{{fieldClass}}} ? param.data() : param
         this.{{{fieldName}}}.initial({...param,parentNode:this});
     } else {
-        this.{{{fieldName}}}.clear();
+        this.{{{fieldName}}}.clean();
     }
 }
 
 @action
 remove{{functionName}}() {
-    this.{{{fieldName}}}.clear();
+    this.{{{fieldName}}}.clean();
 }
 
 get{{{functionName}}}() {

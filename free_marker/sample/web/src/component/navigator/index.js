@@ -48,7 +48,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfToolBarToEditModeButton(toolBar) {
-        return Util.getVisibleOrNone(UserInfo.isAdmin())
+        return Util.getVisibleOrHidden(UserInfo.isAdmin())
     }
 
     componentDidMount() {

@@ -61,6 +61,32 @@ class CommonStyle {
 
   ExamEditorQuestionCard = {};
 
+  WrapExamEditorHistoryFilterOrderByWhatDiv = {};
+
+  ExamEditorHistoryFilterOrderByWhatMenuItem = {};
+
+  ListExamEditorHistoryFilterOrderByWhatTextField = {};
+
+  WrapExamEditorHistoryFilterWhichSubjectDiv = {};
+
+  ExamEditorHistoryFilterWhichSubjectMenuItem = {};
+
+  ListExamEditorHistoryFilterWhichSubjectTextField = {};
+
+  WrapExamEditorHistoryFilterReplyTypeDiv = {};
+
+  ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
+
+  LabelExamEditorHistoryFilterReplyTypeTypography = {};
+
+  ListExamEditorHistoryFilterReplyTypeRadioGroup = {};
+
+  ExamEditorHistoryFilterSpaceDiv = {};
+
+  WrapExamEditorHistoryFilterDiv = {};
+
+  ExamEditorHistoryFilterDiv = {};
+
   ExamEditorDiv = {};
 
   /** => following for main editor component  */
@@ -174,6 +200,26 @@ class CommonStyle {
   WrapExamQuestionDiv = {};
 
   ExamQuestionCard = {};
+
+  ExamHistoryFilterOrderByWhatMenuItem = {};
+
+  ListExamHistoryFilterOrderByWhatTextField = {};
+
+  ExamHistoryFilterWhichSubjectMenuItem = {};
+
+  ListExamHistoryFilterWhichSubjectTextField = {};
+
+  ExamHistoryFilterReplyTypeFormControlLabel = {};
+
+  LabelExamHistoryFilterReplyTypeTypography = {};
+
+  ListExamHistoryFilterReplyTypeRadioGroup = {};
+
+  ExamHistoryFilterSpaceDiv = {};
+
+  ExamHistoryFilterTitleTypography = {};
+
+  ExamHistoryFilterDiv = {};
 
   ExamDiv = {};
 

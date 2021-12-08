@@ -44,12 +44,17 @@ class BaseComponent extends React.Component {
         this.jobsOfScrollToBottom.push(...asyncTask);
     }
 
+    setScrollToBottomJobs(...asyncTask) {
+        this.jobsOfScrollToBottom.length = 0;
+        this.jobsOfScrollToBottom.push(...asyncTask)
+    }
+
     clearScrollToBottomJobs() {
         this.jobsOfScrollToBottom.length = 0;
     }
 
     componentWillUnmount() {
-        this.getStore().clear();
+        this.getStore().clean();
         /** 執行unsubscribe */
         while (this.listOfFunctionOfUnsubscribe.length > 0) {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
