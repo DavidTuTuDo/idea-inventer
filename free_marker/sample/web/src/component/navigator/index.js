@@ -111,7 +111,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         return this.getStore().getDrawerOpenStatus();
     }
 
-    DrawerShortcutView = observer(({shortcut}) => {
+    NavigatorDrawerShortcutView = observer(({shortcut}) => {
         const classes = this.props.classes;
         const self = this;
         const DrawerShortcutCollapseView = self.DrawerShortcutCollapseView;
@@ -162,6 +162,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
     })
 
     MUIconView = observer(({name}) => {
+
             const CustomView = MUIcon[name];
             if (CustomView !== undefined)
                 return <CustomView className={'BaseShortcutMUIconView'}/>
@@ -175,7 +176,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
     DrawerShortcutCollapseView = observer(({shortcut}) => {
         const classes = this.props.classes;
         const self = this;
-        const DrawerShortcutView = self.DrawerShortcutView;
+        const DrawerShortcutView = self.NavigatorDrawerShortcutView;
         const subs = shortcut.getSubs();
         if (!shortcut.hasSubItems()) return null;
         return (

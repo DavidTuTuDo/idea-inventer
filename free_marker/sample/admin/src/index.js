@@ -307,12 +307,7 @@ import moment from 'moment';
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
 
-    async function submitTestDate() {
-        const ts = moment('2022-01-22').valueOf()
-        await api.submitExpired({expiredTime: ts})
-    }
 
-    await submitTestDate();
 
     // async function sampleFetch(){
     //     return await api.firestore().collection('questions')
@@ -321,7 +316,7 @@ import moment from 'moment';
     //
     // }
     // await deployQuestions({year: 110, all: false, clear: false});
-    // await beforeStartService();
+    await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
     // await submitSubjectMap()
