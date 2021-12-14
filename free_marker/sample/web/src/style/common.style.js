@@ -63,27 +63,39 @@ class CommonStyle {
 
   ExamEditorQuestionCard = {};
 
+  ExamEditorHistoryFilterOrderByWhatValueTextField = {};
+
+  ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
+
+  ListExamEditorHistoryFilterOrderByWhatDiv = {};
+
   WrapExamEditorHistoryFilterOrderByWhatDiv = {};
 
-  ExamEditorHistoryFilterOrderByWhatMenuItem = {};
+  ExamEditorHistoryFilterOrderByWhatDiv = {};
 
-  ListExamEditorHistoryFilterOrderByWhatTextField = {};
+  ExamEditorHistoryFilterWhichSubjectValueTextField = {};
+
+  ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
+
+  ListExamEditorHistoryFilterWhichSubjectDiv = {};
 
   WrapExamEditorHistoryFilterWhichSubjectDiv = {};
 
-  ExamEditorHistoryFilterWhichSubjectMenuItem = {};
+  ExamEditorHistoryFilterWhichSubjectDiv = {};
 
-  ListExamEditorHistoryFilterWhichSubjectTextField = {};
+  ExamEditorHistoryFilterReplyTypeValueTextField = {};
 
-  WrapExamEditorHistoryFilterReplyTypeDiv = {};
-
-  ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
-
-  LabelExamEditorHistoryFilterReplyTypeTypography = {};
+  ExamEditorHistoryFilterReplyTypeLabelTextField = {};
 
   ListExamEditorHistoryFilterReplyTypeDiv = {};
 
+  WrapExamEditorHistoryFilterReplyTypeDiv = {};
+
+  ExamEditorHistoryFilterReplyTypeDiv = {};
+
   ExamEditorHistoryFilterSpaceDiv = {};
+
+  WrapExamEditorHistoryFilterDiv = {};
 
   ExamEditorHistoryFilterDiv = {};
 

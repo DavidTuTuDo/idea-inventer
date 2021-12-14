@@ -684,7 +684,17 @@ class CodegenNode {
     }
 
     getDescription() {
-        return this.description ? this.description : 'no comments';
+        function getDescriptionStringByName(name) {
+            switch (_.toLower(name)) {
+                case 'value':
+                    return '邏輯處理的值';
+                case 'label':
+                    return '顯示的標籤';
+                default:
+                    return 'no comments';
+            }
+        }
+        return this.description ? this.description : getDescriptionStringByName(this.getName());
     }
 
     /** 這些屬性不可以enrich */
@@ -855,6 +865,10 @@ class CodegenNode {
             return this.listView;
         }
         return 'div';
+    }
+
+    disableSelectedArray() {
+        this.select.enable = false
     }
 
     getListWrapView() {
@@ -2283,6 +2297,17 @@ class StoreBuilder extends BaseBuilder {
             return `${node.getFieldName()} : ${defaultStmt},`;
         }
 
+        function getDefaultValueSetterStmts(node) {
+            const stmts = [];
+            for (const child of node.getPreciseAttributeChildren()) {
+                if (child.isCollection()) {
+                    stmts.push(`this.${Util.camel(`set`, child.getFieldName())}(
+                    ${child.isArray() ? '...' : ''}this.${child.getFieldName()})`)
+                }
+            }
+            return stmts;
+        }
+
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
@@ -2387,10 +2412,16 @@ class StoreBuilder extends BaseBuilder {
                     }
                 ))
 
+        /** 因為defaultValue沒有被storem包裝過, 所以建構子要弄一下*/
+        baseGenerator.appendFunction('setDefaultValues', [], [], [],
+            ...getDefaultValueSetterStmts(node)
+        )
+
+
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
             `super.initial(obj)`,
             ...propsStmt);
-        baseGenerator.appendConstructor(`makeObservable(this)`, `this.initial(props)`);
+        baseGenerator.appendConstructor(`makeObservable(this)`, `this.setDefaultValues()`, `this.initial(props)`);
         baseGenerator.needIndexFile(`${indexClassName}`);
         await baseGenerator.persist();
     }
@@ -3425,7 +3456,7 @@ class ComponentBuilder extends BaseBuilder {
             );
             viewGenerator.appendFunction(node.getFunctionNameOfObservableObject(), [], [], [],
                 `return this.props.${node.getObservableName()}`)
-            viewGenerator.needIndexFile(clazzName, ['obiserver'])
+            viewGenerator.needIndexFile(clazzName, ['observer'])
             viewGenerator.persist().then();
         }
 
@@ -4324,6 +4355,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         function toEditorPageMode(node) {
+
             if (node.isColumnAttribute() && !node.isCollection()) {
                 if (node.isImageView()) {
                     node.needImageDialog = false;
@@ -4357,11 +4389,13 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isArray()) {
-                if (Util.isOrEquals(node.getListView(), 'RadioGroup', 'Fade', 'Grid')) {
+                node.disableSelectedArray();
+
+                if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Grid')) {
                     node.setListView('div');
                 }
 
-                if (Util.isOrEquals(node.getView(), 'RadioGroup', 'Fade', 'Grid')) {
+                if (Util.isOrEquals(node.getView(), 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Grid')) {
                     node.setView('div');
                 }
 
@@ -4559,7 +4593,7 @@ class BuildApplication {
 
     async buildAdmin(deployToRemote = true) {
         const admin = new ProjectFileHandler(this.getBuildObject('admin'));
-        if(!deployToRemote)
+        if (!deployToRemote)
             admin.disableRulesRemoteDeploy();
 
         await admin.execute();

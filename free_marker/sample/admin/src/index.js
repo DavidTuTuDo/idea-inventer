@@ -199,7 +199,32 @@ import moment from 'moment';
             }
         )
 
-        await api.submitHistoryFilter({});
+        await api.submitHistoryFilter({
+            whichSubjects: [
+                {label: "全部", value: "all"},
+                {label: "英文", value: "英文"},
+                {label: "數學", value: "數學"},
+                {label: "國文", value: "國文"},
+                {label: "自然", value: "自然"},
+                {label: "社會", value: "社會"},
+            ],
+            replyTypes: [
+                {value: "wrong", label: "答錯"},
+                {value: "right", label: "答對"},
+                {value: "all", label: "全部"},
+            ],
+            orderByWhats: [
+                {
+                    label: '最近',
+                    value: 'latest'
+                },
+                {
+                    label: '作答耗時(最久)',
+                    value: 'duration'
+                },
+            ]
+        });
+
         await api.submitExamHistoryInfo({
             maxYear: 110,
             minYear: 90,
@@ -307,7 +332,6 @@ import moment from 'moment';
         listenToPurchaseSucceedReport();
         await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
     }
-
 
 
     // async function sampleFetch(){

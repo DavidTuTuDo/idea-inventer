@@ -22,6 +22,10 @@ class ExamEditorComponent extends BaseExamEditorComponent {
         super(props);
     }
 
+    getInjectStyleOfExamEditorHistoryFilterDiv(examEditor) {
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
+    }
+
     /** -------------------- async api -------------------- **/
 }
 
