@@ -22,148 +22,15 @@ import UserInfo from "../../userInfo";
 class ExamComponent extends BaseExamComponent {
 
     onOrderByWhatSelectedChange(value) {
-        this.fetchExamsTestingRecords(true).then();
+        this.getStore().fetch(this).then();
     }
 
     onWhichSubjectSelectedChange(value) {
-        this.fetchExamsTestingRecords(true).then();
+        this.getStore().fetch(this).then();
     }
 
     onReplyTypeSelectedChange(value) {
-        this.fetchExamsTestingRecords(true).then();
-    }
-
-    summarizeFilterConditionChanged = () => {
-        const filter = this.getStore().getHistoryFilter();
-        const subject = filter.getSelectedWhichSubject();
-        const replyType = filter.getSelectedReplyType();
-        const orderByWhat = filter.getSelectedOrderByWhat();
-        const conditions = [];
-        if (!_.isEqual('all', subject))
-            conditions.push({where: (stmt) => stmt.where('subject', '==', subject)})
-
-        if (!_.isEqual('all', replyType))
-            conditions.push({where: (stmt) => stmt.where('isWrongReply', '==', _.isEqual(replyType, 'wrong'))})
-        switch (orderByWhat) {
-            case 'duration':
-                conditions.push({orderBy: (stmt) => stmt.orderBy('duration', 'desc')})
-                break;
-            case 'latest':
-                conditions.push({orderBy: (stmt) => stmt.orderBy('updateTime','desc')})
-                break;
-        }
-        this.getStore().setTestingRecordConditions(conditions);
-    }
-
-    isHistoryWrongPage = () => {
-        return _.isEqual('historyWrong', this.getExamFilterTips().type)
-    }
-
-    componentDidMount() {
-        this.handleExamFilter();
-        super.componentDidMount();
-
-        if (this.isHistoryWrongPage()) {
-            this.fetchExamsTestingRecords(true).then();
-            this.setScrollToBottomJobs(this.fetchExamsTestingRecords)
-        }
-    }
-
-    fetchExamsTestingRecords = async (clearAll = false) => {
-        if(clearAll) {
-            this.getStore().cleanTestingRecords();
-            this.getStore().cleanQuestions();
-            this.summarizeFilterConditionChanged();
-        }
-
-        const items = await this.getStore().fetchTestingRecords(this);
-        const questionIds = items.map((each) => each.qid);
-        console.log(items);
-        if (questionIds.length > 0) {
-            this.getStore().setQuestionConditions(this.getStore().getInArrayConditions(questionIds));
-            this.getStore().setNextQuestionPageMode('custom');
-            await this.getStore().fetchQuestions(this);
-            this.getStore().syncQuestionDurationReply();
-        }
-
-    }
-
-    onInitialApiSucceed(object) {
-        this.incrementCountsOfExamToday().then();
-        this.currentTimeStamp = Util.getCurrentTimeStamp();
-    }
-
-    async incrementCountsOfExamToday() {
-        const self = this;
-        const today = Util.getTodayTimeFormat();
-        if (UserInfo.isLoginInSucceed()) {
-            const store = new ExamCountsOfExamTodayStore()
-            const info = await store.fetchCountsOfExamToday();
-            _.isEqual(info.today, today) ?
-                await store.submitIncrementCounts(self) :
-                await store.submitCountsOfExamToday(undefined, undefined, {today: Util.getTodayTimeFormat(), counts: 1})
-        } else {
-            const info = Cookie.getCountsOfExamToday();
-            let counts = info ? (_.isEqual(today, info.today) ? (info.counts + 1) : 1) : 1
-            Cookie.setCountsOfExamToday({today, counts});
-        }
-    }
-
-    getExamFilterTips = () => {
-        const filter = Cookie.getExamFilter();
-        const subject = filter.subject; // 'string'
-        const type = filter.type; // 'string' /** */
-        const range = filter.range; // [100, 105]
-        const countsOfExam = filter.countsOfExam; //25 or 40
-        Util.appendInfo(subject, type, range, countsOfExam);
-        return {subject, type, range, countsOfExam};
-    }
-
-    handleExamFilter = () => {
-        const self = this;
-        const {range, subject, type, countsOfExam} = this.getExamFilterTips();
-        if (_.isEmpty(type)) {
-            Router.gotoMainPage(this.getComponentInstance());
-            return;
-        }
-
-        function getRandomCondition() {
-            const conditions = [];
-            if (!_.isEqual('綜合測驗', subject)) {
-                conditions.push({where: (stmt) => stmt.where('subject', '==', _.trim(subject))});
-            }
-            conditions.push({where: (stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))});
-            conditions.push({where: (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))});
-            return conditions;
-        }
-
-        switch (type) {
-            case 'history':
-                this.getStore().setQuestionConditions([
-                    {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
-                    {where: (stmt) => stmt.where('year', '==', _.toNumber(_.head(range)))},
-                    {orderBy: (stmt) => stmt.orderBy("qid")}
-                ]);
-                break;
-            case 'random':
-                this.setEnableInitFetch(false);
-                const subjectID = new ExamSubjectIdStore();
-                subjectID.fetchSubjectIds(this, ...getRandomCondition()).then((idMaps) => {
-                    const ids = _.sampleSize(idMaps, countsOfExam).map(each => each.quid);
-                    this.getStore().pushNextQuestionIDs(...ids);
-                    return this.getStore().fetch(self)
-                }).then();
-                break;
-            case 'historyWrong':
-                this.setEnableInitFetch(false);
-                break;
-            default:
-                Util.appendError(`8354 ==> type can't not be ${type}`);
-                /**
-                 * show error dialog then return
-                 **/
-                break;
-        }
+        this.getStore().fetch(this).then();
     }
 
     getChoiceButtonColor(choice) {
@@ -210,7 +77,7 @@ class ExamComponent extends BaseExamComponent {
         }
         const reply = question.getChoices().indexOf(choice);
         question.setReply(reply);
-        this.submitQuestionRecord(question).finally((result) => {
+        self.getStore().submitQuestionRecord(question).finally((result) => {
             self.currentTimeStamp = Util.getCurrentTimeStamp();
         });
     }
@@ -222,30 +89,16 @@ class ExamComponent extends BaseExamComponent {
         return {borderWidth: '2px'}
     }
 
-    async submitQuestionRecord(question) {
-        if (!this.isHistoryWrongPage() && UserInfo.isLoginInSucceed()) {
-            const record = new TestingRecordStore();
-            await record.submitTestingRecords(undefined, undefined, {
-                id: question.getId(),
-                qid: question.getId(),
-                duration: Util.getDurationOfMillionSec(this.currentTimeStamp),
-                subject: question.getSubject(),
-                myWrongAnswer: question.isAnswerWrong() ? Util.integerToString(question.getReply()) : '',
-                isWrongReply: question.isAnswerWrong(),
-            })
-        }
-    }
-
     getInjectStyleOfExamHistoryFilterDiv(exam) {
-        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
     getInjectStyleOfQuestionDurationTypography(question) {
-        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
     getInjectStyleOfQuestionReplyTimestampTypography(question) {
-        return Util.getVisibleOrNone(this.isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
     /** -------------------- async api -------------------- **/

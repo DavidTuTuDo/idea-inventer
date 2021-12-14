@@ -83,11 +83,9 @@ class MobileStyle {
 
   LabelExamEditorHistoryFilterReplyTypeTypography = {};
 
-  ListExamEditorHistoryFilterReplyTypeRadioGroup = {};
+  ListExamEditorHistoryFilterReplyTypeDiv = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
-
-  WrapExamEditorHistoryFilterDiv = {};
 
   ExamEditorHistoryFilterDiv = {};
 

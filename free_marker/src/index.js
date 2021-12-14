@@ -47,6 +47,8 @@ class CodegenNode {
     password;
     components;
 
+    listEmptyTip = {enable: false, customView: undefined, stringOfTip: ''};
+    /** 當陣列需要有無資料提示時 */
 
     useInjectStore = false;
     /** 每個view component都會injectStore,若為false會選擇用一個new disposableStore來用 */
@@ -63,7 +65,7 @@ class CodegenNode {
     index = {enable: false, rule: 'CONTAINS'}
     /** 'CONTAINS', 'DESCENDING', 'ASCENDING' */
 
-    select = {enable: false, defaultValue: undefined, labelView: undefined,onChange:true};
+    select = {enable: false, defaultValue: undefined, labelView: undefined, onChange: true};
     /** 如果是type===array而且 select===true,會在store生出一個selected{getName()}
      * select 為 true時,  物件規範固定為 [...{label,value}]  ex:[{label:'帥',value:'handsome'},{label:'醜',value:'ugly'}]
      *
@@ -347,6 +349,10 @@ class CodegenNode {
         return this.isArray() && this.hasPath()
     }
 
+    needEmptyTip() {
+        return this.listEmptyTip && this.listEmptyTip.enable;
+    }
+
     getDirectoryName() {
         return this.directory;
     }
@@ -449,7 +455,7 @@ class CodegenNode {
     }
 
     getPaginateSize() {
-        if(this.paginate)
+        if (this.paginate)
             return this.paginate.size;
         return -1;
     }
@@ -683,7 +689,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -944,7 +950,8 @@ class CodegenNode {
         }
 
         if (this.isArray() && !this.isSelectedArray() && !useViewModuleAndComponentModuleMechanism) {
-            stmt.push(`const ${this.getViewClassNameOfRenderView()} = self.${this.getArrayItemNode().getViewClassNameOfRenderView()}`);
+            const className = this.getArrayItemNode().getViewClassNameOfRenderView();
+            stmt.push(`const ${className} = self.${className}`);
         } else {
             const exist = {}
             for (const child of this.getPreciseViewChildren()) {
@@ -1612,7 +1619,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfOnSelectedChange() {
-        return Util.camel('on',this.getName(),`selected`,`change`);
+        return Util.camel('on', this.getName(), `selected`, `change`);
     }
 
     getFunctionNameOfSetter() {
@@ -2230,7 +2237,7 @@ class StoreBuilder extends BaseBuilder {
                 propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
             else if (child.isBoolean())
                 propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
-                else
+            else
                 propStmt.push(`if(obj && !_.isEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
 
@@ -2801,9 +2808,11 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
                 `if(this.enableInitFetch) {`,
-                `this.getStore().fetch(this).then((obj) => self.onInitialApiSucceed(obj))}`
+                `self.getStore().fetch(this).then((obj) => {
+                self.getStore().onInitialFetchSucceed(obj)
+                self.onInitialFetchSucceed(obj)})}`
             )
-            baseGenerator.appendFunction(`onInitialApiSucceed`, ['object']);
+            baseGenerator.appendFunction(`onInitialFetchSucceed`, ['object']);
             baseGenerator.appendField('enableInitFetch', true)
             baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
                 `this.enableInitFetch = enable`);
@@ -2825,14 +2834,16 @@ class ComponentBuilder extends BaseBuilder {
         function getStmtsOfGetStore() {
             const stmts = [];
             if (componentNode.useInjectStore) {
-                stmts.push(`return this.props.${componentNode.getPreciseStoreName()}`)
+                stmts.push(`const store = this.props.${componentNode.getPreciseStoreName()}`)
             } else {
-                stmts.push(`return this.disposableStore;`)
+                stmts.push(`const store = this.disposableStore;`)
             }
+            stmts.push(`store.setComponent(this)`)
+            stmts.push(`return store;`)
             return stmts;
         }
 
-        baseGenerator.appendFunction('getStore', [], [], [],
+        baseGenerator.appendFunction({arrow: true, name: 'getStore'}, [], [], [],
             ...getStmtsOfGetStore())
 
         baseGenerator.appendFunction('componentDidMount',
@@ -3006,8 +3017,8 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendOnChangedStmt() {
-            if(node.needOnSelectChanged()) {
-                generator.appendFunction(node.getFunctionNameOfOnSelectedChange(),['value'],[],[],
+            if (node.needOnSelectChanged()) {
+                generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value'], [], [],
                     `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not override')`)
                 return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
             }
@@ -3066,16 +3077,15 @@ class ComponentBuilder extends BaseBuilder {
             const itemViewProps = {};
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
+            const arrayItemNode = node.getArrayItemNode();
             let arrayItemViewStmts = this.getJSXStrings({
                 generator,
-                customViewNode: node,
-                tag: `${node.getViewClassNameOfRenderView()}`,
+                customViewNode: arrayItemNode,
+                tag: `${arrayItemNode.getViewClassNameOfRenderView()}`,
                 props: itemViewProps,
             })
 
             if (node.isSelectedArray()) {
-                const arrayItemNode = node.getArrayItemNode();
-                arrayItemNode.setType('arrayItem');
                 props['onChange'] = `###(event)=>{
                     const value = event.target.value;
                     ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(value)
@@ -3103,12 +3113,20 @@ class ComponentBuilder extends BaseBuilder {
                 arrayItemViewStmts = this.getJSXStringsByNode(generator, arrayItemNode)
             }
 
+            function getStmtsOfRenderEmptyView(node) {
+                const stmts = []
+                if (node.needEmptyTip()) {
+                    stmts.push(`{self.renderListEmptyView(${node.getFieldName()}, ${node.hasPath()})}`)
+                }
+                return stmts;
+            }
+
             const arrayStmts = this.getJSXStrings({
                 generator,
                 tag: node.getListView(),
                 props,
                 contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()},index) => `,
-                    ...arrayItemViewStmts, `)}`]
+                    ...arrayItemViewStmts, `)}`, ...getStmtsOfRenderEmptyView(node)]
             })
 
             if (node.hasListWrap()) {
@@ -3324,7 +3342,7 @@ class ComponentBuilder extends BaseBuilder {
                     `}`
                 )
             } else {
-                generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], ['因為沒有path, 所以其實只會是SyncTask'],
+                generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], ['因為沒有path, 所以其實只會是local sync task'],
                     `return  async (type) => {
                 switch (type) {`,
                     `case 'delete':`,
@@ -3336,7 +3354,7 @@ class ComponentBuilder extends BaseBuilder {
                     `}`
                 )
 
-                generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], ['因為沒有path, 所以其實只會是SyncTask'],
+                generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], ['因為沒有path, 所以其實只會是local sync task'],
                     `return  async (type) => {`,
                     `switch (type) {`,
                     `case 'create':`,
@@ -3349,7 +3367,7 @@ class ComponentBuilder extends BaseBuilder {
                 )
             }
         } else if (node.isObject() && node.hasPath()) {
-            generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [node.getName()], [], ['因為沒有path, 所以其實只會是SyncTask'],
+            generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [node.getName()], [], [],
                 `const self = this`,
                 `return  async (type) => {`,
                 `switch (type) {`,
@@ -3786,8 +3804,8 @@ class AppBuilder
                 const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
                 _.remove(stub, (each) => (
                     _.startsWith(each, '/** ') ||
-                    _.isEqual(each.trim(), '')  ||
-                    _.startsWith(each, '@import') ))
+                    _.isEqual(each.trim(), '') ||
+                    _.startsWith(each, '@import')))
                 lessAttributesFromSrc.push(...(stub.join('').split('}')))
                 /** 移除掉最後一個,因為split */
                 lessAttributesFromSrc.pop();
@@ -3864,6 +3882,11 @@ class ProjectFileHandler extends PathBase {
     constructor(props) {
         super(props);
         this.props = props;
+        this.deployRemoteRules = true;
+    }
+
+    disableRulesRemoteDeploy() {
+        this.deployRemoteRules = false;
     }
 
     buildDistAssetFolder() {
@@ -4212,8 +4235,8 @@ class ProjectFileHandler extends PathBase {
 
         await listenerGenerator.persist();
         await apiGenerator.persist();
-        await this.generateStorageRules();
-        await this.generateFireStoreRules();
+        await this.generateStorageRules(this.deployRemoteRules);
+        await this.generateFireStoreRules(this.deployRemoteRules);
         /**
          * index rule 有點麻煩, 還要照query順序 例如where(subject) where(year) orderBy(qid) 欄位的順序就必須 qeusetions ==> subject,year,qid
          * await this.generateFireIndexRules();
@@ -4334,11 +4357,11 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isArray()) {
-                if (Util.isOrEquals(node.getListView(), 'Fade', 'Grid')) {
+                if (Util.isOrEquals(node.getListView(), 'RadioGroup', 'Fade', 'Grid')) {
                     node.setListView('div');
                 }
 
-                if (Util.isOrEquals(node.getView(), 'Fade', 'Grid')) {
+                if (Util.isOrEquals(node.getView(), 'RadioGroup', 'Fade', 'Grid')) {
                     node.setView('div');
                 }
 
@@ -4534,8 +4557,11 @@ class BuildApplication {
         await web.removeEmptyFolder();
     }
 
-    async buildAdmin() {
+    async buildAdmin(deployToRemote = true) {
         const admin = new ProjectFileHandler(this.getBuildObject('admin'));
+        if(!deployToRemote)
+            admin.disableRulesRemoteDeploy();
+
         await admin.execute();
         Util.appendInfo(
             `admin done`
@@ -4617,6 +4643,10 @@ if (configer.DEBUG_MODE) {
                 case 'persistentBuildAdmin':
                     await builder.persistent('admin');
                     await builder.buildAdmin();
+                    break;
+                case 'BuildQuickAdmin':
+                    await builder.persistent('admin');
+                    await builder.buildAdmin(false);
                     break;
                 case 'persistentBuild':
                     await builder.persistent('web');

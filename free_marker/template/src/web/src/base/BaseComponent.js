@@ -249,6 +249,45 @@ class BaseComponent extends React.Component {
             </div>)
     }
 
+    renderListEmptyView = (items = [], hasPath) => {
+        const ListEmptyView = this.ListEmptyView;
+            return (<ListEmptyView
+                    size={_.size(items)}
+                    isGlobalLoading={this.getStore().isGlobalLoading()}
+                    component={this}
+                    hasPath={hasPath}/>)
+    }
+
+    ListEmptyView = observer(({hasPath, component,isGlobalLoading,size}) => {
+        if(isGlobalLoading || size > 0) {
+            return null
+        }
+
+        function renderRetryButton() {
+            if (hasPath) {
+                return <Button
+                    onClick={
+                        async () => {
+                            if(component instanceof BaseComponent) {
+                                const store = component.getStore();
+                                await  store.fetch(component);
+                            }
+                        }
+                    }
+                    variant={'outlined'}
+                    className={`BaseListEmptyRetryButton`}>重試</Button>
+            }
+            return null;
+        }
+
+        return (
+            <div className={`BaseListEmptyDiv`}>
+                <Typography
+                    className={`BaseListEmptyTypography`}>非常抱歉!目前沒有資料</Typography>
+                {renderRetryButton()}
+            </div>
+        )
+    })
 
     renderSelectorView = () => {
         const self = this;
@@ -260,7 +299,6 @@ class BaseComponent extends React.Component {
             ref={self.fileChooserInputRef}
             style={{display: 'none'}}
             onChange={this.onFilesSelectedEventReceived.bind(self)}/>
-
     }
 
     onFilesSelectedEventReceived = (event) => {
@@ -371,7 +409,7 @@ class BaseComponent extends React.Component {
     }
 
     openImageDialog(imgUrl) {
-        this.imageDialogRef.current.open({href:imgUrl});
+        this.imageDialogRef.current.open({href: imgUrl});
     }
 
 
@@ -584,7 +622,7 @@ class BaseComponent extends React.Component {
     }
 
     handleTextString(object) {
-        if(typeof object === 'string') {
+        if (typeof object === 'string') {
             return object
         } else {
             return _.toString(object)

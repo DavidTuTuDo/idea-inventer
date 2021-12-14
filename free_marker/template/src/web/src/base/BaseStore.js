@@ -15,6 +15,8 @@ import ClientRemoteApi from './ClientRemoteApi'
 
 class BaseStore extends ClientRemoteApi {
 
+    component;
+
     @observable
     state = 'stable';
 
@@ -51,10 +53,17 @@ class BaseStore extends ClientRemoteApi {
         super(props);
     }
 
+    setComponent(component) {
+        this.component = component;
+    }
+
+    getComponent() {
+        return this.component;
+    }
+
     setAppBarHeight(height) {
         this.appBarHeight = height;
     }
-
 
     @action
     getAppBarHeight() {
@@ -102,6 +111,10 @@ class BaseStore extends ClientRemoteApi {
         } else {
             Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);
         }
+    }
+
+    isGlobalLoading() {
+        return _.isEqual(this.state, 'loading');
     }
 
     getGlobalLoadingState() {
@@ -167,6 +180,10 @@ class BaseStore extends ClientRemoteApi {
         return this.selectorParams;
     }
 
+    onInitialFetchSucceed(obj) {
+
+    }
+
     getImageDialogParam() {
         return this.imageDialogParams
     }
@@ -220,14 +237,14 @@ class BaseStore extends ClientRemoteApi {
         return Util.isUndefinedNullEmpty(lastItem) ? [] : [{startAfter: (stmt) => stmt.startAfter(lastItem.getDocRef())}]
     }
 
-    getInArrayConditions =(targets) => {
-        if(_.isArray(targets) && targets.length > 0) {
+    getInArrayConditions = (targets) => {
+        if (_.isArray(targets)) {
             return [{
                 where: (stmt) =>
-                    stmt.where(this.getFieldNameOfDocumentId(), "in", targets),
+                    stmt.where(this.getFieldNameOfDocumentId(), "in", targets.length > 0 ? targets : [Util.getRandomHash(30)]),
             }]
         } else {
-            throw ERROR(7842,`${typeof targets}, "${targets}" is not allow`)
+            throw new ERROR(7008, `${typeof targets}, "${targets}" is not allow`)
         }
 
     }

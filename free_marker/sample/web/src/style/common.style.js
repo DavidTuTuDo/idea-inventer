@@ -9,6 +9,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -79,11 +81,9 @@ class CommonStyle {
 
   LabelExamEditorHistoryFilterReplyTypeTypography = {};
 
-  ListExamEditorHistoryFilterReplyTypeRadioGroup = {};
+  ListExamEditorHistoryFilterReplyTypeDiv = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
-
-  WrapExamEditorHistoryFilterDiv = {};
 
   ExamEditorHistoryFilterDiv = {};
 

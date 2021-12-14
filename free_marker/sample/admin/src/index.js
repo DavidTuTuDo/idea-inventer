@@ -199,6 +199,7 @@ import moment from 'moment';
             }
         )
 
+        await api.submitHistoryFilter({});
         await api.submitExamHistoryInfo({
             maxYear: 110,
             minYear: 90,
