@@ -1,0 +1,34 @@
+import {
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+import libpath from "path";
+import {observer} from "mobx-react";
+import {inject} from "mobx-react";
+import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
+import ExamQuestionView from "../exam";
+import React from 'react';
+@inject("whoknowz")
+@observer
+class WhoknowzComponent extends BaseWhoknowzComponent {
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
+
+    constructor(props) {
+        super(props);
+        this.getStore().setConfuseId(this.paramOfCid);
+    }
+
+    getInjectViewOfQuestionReactFragment(whoknowz) {
+        return <ExamQuestionView
+            freeze={true}
+            question={whoknowz.question}/>
+    }
+
+
+    /** -------------------- async api -------------------- **/
+}
+
+export default WhoknowzComponent;

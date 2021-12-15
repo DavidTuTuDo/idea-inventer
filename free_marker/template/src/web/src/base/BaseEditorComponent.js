@@ -71,15 +71,15 @@ class BaseEditorComponent extends BaseComponent {
         )
     }
 
-    currentImageTask = {
+    currentUploadImagesTaskInfo = {
         needWaterMark: false,
         folderName: '',
-        beforeSubmit: (localUrl) => Util.appendInfo(localUrl),
-        afterSubmit: (remoteUrl) => Util.appendInfo(remoteUrl)
+        asyncTaskOfBeforeSubmit: (localUrls) => Util.appendInfo(localUrls),
+        asyncTaskOfAfterSubmit: (remoteUrls) => Util.appendInfo(remoteUrls)
     };
 
     onImageEditorClicked(task) {
-        this.currentImageTask = task;
+        this.currentUploadImagesTaskInfo = task;
         this.enableImageSelectView(false);
     }
 
@@ -110,27 +110,45 @@ class BaseEditorComponent extends BaseComponent {
 
     }
 
-    uploadImageStorage = async (view, file) => {
+    uploadImageStorage = async (view, files) => {
         const self = this;
-        const task = async () => {
-            if (self.currentImageTask.needWatermark) {
-                const blobOfWatermark = await self.buildWatermarkBlob(file);
-                await self.currentImageTask.beforeSubmit(URL.createObjectURL(blobOfWatermark));
-                const urlOfWatermark = await Firebaser.uploadImage(blobOfWatermark, self.currentImageTask.folderName);
-                const urlOfOrigin = await Firebaser.uploadImage(file.blob, self.currentImageTask.folderName);
-                await self.currentImageTask.afterSubmit({watermark: urlOfWatermark, origin: urlOfOrigin});
-            } else {
-                await self.currentImageTask.beforeSubmit(file.url);
-                const url = await Firebaser.uploadImage(file.blob, self.currentImageTask.folderName);
-                await self.currentImageTask.afterSubmit(url);
+        if (files.length === 1) {
+            const file = files[0];
+            const task = async () => {
+                if (self.currentUploadImagesTaskInfo.needWatermark) {
+                    const blobOfWatermark = await self.buildWatermarkBlob(file);
+                    await self.currentUploadImagesTaskInfo.asyncTaskOfBeforeSubmit(URL.createObjectURL(blobOfWatermark));
+                    const urlOfWatermark = await Firebaser.uploadImage(blobOfWatermark, self.currentUploadImagesTaskInfo.folderName);
+                    const urlOfOrigin = await Firebaser.uploadImage(file.blob, self.currentUploadImagesTaskInfo.folderName);
+                    await self.currentUploadImagesTaskInfo.asyncTaskOfAfterSubmit([{
+                        watermark: urlOfWatermark,
+                        origin: urlOfOrigin
+                    }]);
+                } else {
+                    await self.currentUploadImagesTaskInfo.asyncTaskOfBeforeSubmit([file.url]);
+                    const url = await Firebaser.uploadImage(file.blob, self.currentUploadImagesTaskInfo.folderName);
+                    await self.currentUploadImagesTaskInfo.asyncTaskOfAfterSubmit([url]);
+                }
+                watermark.destroy();
             }
-            watermark.destroy();
+            await this.getStore().runUIAsyncTask(task, 'upload image', file.url, self);
+        } else {
+            const task = async () => {
+                const urls = files.map((each => each.url));
+                self.currentUploadImagesTaskInfo.asyncTaskOfBeforeSubmit(urls);
+                const remoteUrls = [];
+                for (const file of files) {
+                    const remoteUrl = await Firebaser.uploadImage(file.blob, self.currentUploadImagesTaskInfo.folderName);
+                    remoteUrls.push(remoteUrl);
+                }
+                self.currentUploadImagesTaskInfo.asyncTaskOfAfterSubmit(remoteUrls);
+            }
+            await this.getStore().runUIAsyncTask(task, 'upload images', '多圖上傳', self);
         }
-        await this.getStore().runUIAsyncTask(task,'upload image',file.url, self);
     }
 
     onFilesSelected = (files) => {
-        this.uploadImageStorage(this, files[0]).then();
+        this.uploadImageStorage(this, files).then();
     }
 
     renderItemEditorView(onEditClickedAsyncTask, hasPath) {
@@ -149,6 +167,20 @@ class BaseEditorComponent extends BaseComponent {
 
     async handleAsyncFunction(onClickAsyncTask, type, processingText) {
         await onClickAsyncTask(type);
+    }
+
+    renderSelectImageButtonView = (task) => {
+        const self = this;
+        self.currentUploadImagesTaskInfo = task
+        return <Button
+            color={'primary'}
+            onClick={(task) =>
+                self.enableImageSelectView(true)
+            }
+            className={'BaseImageSelectButton'}
+            size={'large'}
+            variant={'outlined'}>新增圖片</Button>
+
     }
 
 

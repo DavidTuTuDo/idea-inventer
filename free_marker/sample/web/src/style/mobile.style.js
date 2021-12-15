@@ -135,6 +135,24 @@ class MobileStyle {
 
   MainEditorDiv = {};
 
+  /** => following for whoknowz  component  */
+
+  WhoknowzAnswerImageUrlImg = {};
+
+  ListWhoknowzAnswerImageDiv = {};
+
+  WhoknowzAnswerImageDiv = {};
+
+  WhoknowzAnswerAnswerByTextTextField = {};
+
+  ListWhoknowzAnswerDiv = {};
+
+  WhoknowzAnswerDiv = {};
+
+  WhoknowzQuestionReactFragment = {};
+
+  WhoknowzDiv = {};
+
   /** => following for purchase  component  */
 
   WrapPurchasePurchasePlanBuyDiv = {};
@@ -206,6 +224,10 @@ class MobileStyle {
   ExamQuestionTopicNameTypography = {};
 
   ExamQuestionTopicDiv = {};
+
+  WrapExamQuestionAlertCalloutHelpDiv = {};
+
+  ExamQuestionAlertCalloutHelpButton = {};
 
   WrapExamQuestionAlertAlertImageDiv = {};
 

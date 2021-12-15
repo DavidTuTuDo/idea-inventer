@@ -11,15 +11,22 @@ import {utiller as Util} from "utiller";
 import _ from "lodash";
 import Router from '../../router';
 import Cookie from "../../cookie";
-import ExamSubjectIdStore from "../../store/examSubjectId";
-import TestingRecordStore from "../../store/examTestingRecord";
-import ExamCountsOfExamTodayStore from "../../store/examCountsOfExamToday";
 import UserInfo from "../../userInfo";
-
+import Config from '../../config';
+import libpath from 'path';
 
 @inject("exam")
 @observer
 class ExamComponent extends BaseExamComponent {
+
+    constructor(props) {
+        super(props);
+        if(!!this.props.freeze) {
+            this.getStore().setFreezeQuestion(this.props.question)
+            this.clearScrollToBottomJobs();
+        }
+    }
+
 
     onOrderByWhatSelectedChange(value) {
         this.getStore().fetch(this).then();
@@ -65,7 +72,10 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionAlertDiv(question) {
-        return Util.getVisibleOrHidden(question.isAnswerWrong())
+
+
+
+        return Util.getVisibleOrHidden(question.isAnswerWrong() && !this.getStore().isFreezePage())
     }
 
     onStatementButtonClicked(param) {
@@ -99,6 +109,14 @@ class ExamComponent extends BaseExamComponent {
 
     getInjectStyleOfQuestionReplyTimestampTypography(question) {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
+    }
+
+    onCalloutHelpButtonClicked(param) {
+        const self = this;
+        const question = param.object;
+        this.getStore().submitConfusedQuestion(question).then((cid) => {
+            self.gotoUrlWithNewTab(Router.gotoWhoknowzPage(undefined, cid));
+        })
     }
 
     /** -------------------- async api -------------------- **/

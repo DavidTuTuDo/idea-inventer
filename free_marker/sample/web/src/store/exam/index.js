@@ -18,8 +18,21 @@ import ExamSubjectIdStore from "../examSubjectId";
 import UserInfo from "../../userInfo";
 import TestingRecordStore from "../examTestingRecord";
 import ExamCountsOfExamTodayStore from "../examCountsOfExamToday";
+import WhoknowzConfuseStore from "../whoknowzConfuse";
+import {
+    action,
+    observable,
+} from "mobx";
 
 class ExamStore extends BaseExamStore {
+
+    @observable
+    freeze = false;
+
+    @action
+    setFreezePage(frz) {
+        this.freeze = frz;
+    }
 
     syncQuestionDurationReply() {
         this.getTestingRecords().forEach((record, index) => {
@@ -33,8 +46,17 @@ class ExamStore extends BaseExamStore {
         })
     }
 
+    setFreezeQuestion(question) {
+        this.setFreezePage(true);
+        this.pushQuestion(question);
+    }
+
     isHistoryWrongPage = () => {
         return _.isEqual('historyWrong', this.getExamFilterTips().type)
+    }
+
+    isFreezePage() {
+        return this.freeze;
     }
 
     fetchExamsTestingRecords = async (clearAll = false) => {
@@ -82,9 +104,10 @@ class ExamStore extends BaseExamStore {
     getExamFilterTips = () => {
         const filter = Cookie.getExamFilter();
         const subject = filter.subject; // 'string'
-        const type = filter.type; // 'string' /** */
+        const type = !!this.freeze ? 'freeze' :filter.type; // 'string' /** */
         const range = filter.range; // [100, 105]
         const countsOfExam = filter.countsOfExam; //25 or 40
+
         return {subject, type, range, countsOfExam};
     }
 
@@ -120,6 +143,10 @@ class ExamStore extends BaseExamStore {
                  const qs = await this.fetchExamsTestingRecords(true);
                 questions.push(...qs)
                 break;
+             case 'freeze':
+                 /** 當作範例題目 */
+                 return {};
+                 break;
             default:
                 Util.appendError(`8354 ==> type can't not be ${type}`);
                 /**
@@ -149,6 +176,17 @@ class ExamStore extends BaseExamStore {
     onInitialFetchSucceed(obj) {
         this.incrementCountsOfExamToday().then();
         this.currentTimeStamp = Util.getCurrentTimeStamp();
+    }
+
+    async submitConfusedQuestion(question) {
+        const confused = new WhoknowzConfuseStore();
+        const item = await confused.submitConfuseItem(this.getComponent(),{
+            qid:question.id,
+            userId:UserInfo.getUid(),
+            isPublic:true,
+            tip:`請你幫幫我-${Util.getCurrentTimeFormat()}`
+        })
+        return item.value.id;
     }
 
     async incrementCountsOfExamToday() {

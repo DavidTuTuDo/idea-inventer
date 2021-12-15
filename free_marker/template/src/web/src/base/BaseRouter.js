@@ -11,6 +11,14 @@ class BaseRouter {
         this.isEditMode = false;
     }
 
+    routeTo(component,path) {
+        if (component !== undefined && component.props !== undefined  && component.props.history !== undefined) {
+            const history = component.props.history;
+            history.push(path);
+            this.setCurrentRoute(path);
+        }
+    }
+
     getEditorRouteString = () => {
         const segment = this.currentRoute.split('/');
         const newbie = segment.map(

@@ -168,6 +168,10 @@ class BaseComponent extends React.Component {
         window.location.replace(url)
     }
 
+    gotoUrlWithNewTab = (url) => {
+        window.open(url, "_blank");
+    }
+
     renderViewByStatus() {
         switch (this.getStore().state) {
             case "stable":

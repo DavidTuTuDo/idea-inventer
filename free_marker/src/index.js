@@ -47,6 +47,15 @@ class CodegenNode {
     password;
     components;
 
+    needEditorBase = false;
+    /** true 就會繼承BaseEditorComponent */
+
+    selectImageButton = false;
+    /** 產生出 add image button */
+
+    injectView = false;
+    /** 產生出 injectView function 可以override */
+
     listEmptyTip = {enable: false, customView: undefined, stringOfTip: ''};
     /** 當陣列需要有無資料提示時 */
 
@@ -341,6 +350,10 @@ class CodegenNode {
         return Util.camel('set', this.getFieldNameOfSelected());
     }
 
+    needAddImageButton() {
+        return this.isArray() && this.selectImageButton;
+    }
+
     getFunctionNameOfSelectGetter() {
         return Util.camel('get', this.getFieldNameOfSelected());
     }
@@ -529,7 +542,7 @@ class CodegenNode {
     }
 
     isContainer() {
-        return this.view && Util.isOrEquals(_.toLower(this.view), 'grid', 'div', 'card', 'paper'
+        return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper'
             , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem');
     }
 
@@ -586,7 +599,11 @@ class CodegenNode {
     }
 
     isColumnAttribute() {
-        return this.hasPath() || (this.isAttribute() && !!this.column);
+        return this.hasPath() || (this.isAttribute() && !!this.column) || this.isLabelOrValue();
+    }
+
+    isLabelOrValue() {
+        return this.isAttribute() && Util.isOrEquals(_.toLower(this.getName()), 'value', 'label')
     }
 
     isTimeStamp() {
@@ -602,7 +619,7 @@ class CodegenNode {
     }
 
     isFormControlLabelView() {
-        return _.isEqual(this.view, 'FormControlLabel')
+        return _.isEqual(this.getView(), 'FormControlLabel')
     }
 
     getSelectedCustomLabelView() {
@@ -611,12 +628,12 @@ class CodegenNode {
     }
 
     isButton() {
-        return _.isEqual(this.view, 'Button')
+        return _.isEqual(this.getView(), 'Button')
     }
 
     /** 就是 <FormControlLabel label={object.label} /> 其餘的都放到 content裏面 <Button >{object.label}</Button>*/
     isLabelPropsView() {
-        return Util.isOrEquals(this.view, 'FormControlLabel')
+        return Util.isOrEquals(this.getView(), 'FormControlLabel')
     }
 
     isRadioGroupListView() {
@@ -624,7 +641,7 @@ class CodegenNode {
     }
 
     isMenuItemView() {
-        return _.isEqual(this.view, 'MenuItem')
+        return _.isEqual(this.getView(), 'MenuItem')
     }
 
     getFunctionNameOfFetch() {
@@ -694,6 +711,7 @@ class CodegenNode {
                     return 'no comments';
             }
         }
+
         return this.description ? this.description : getDescriptionStringByName(this.getName());
     }
 
@@ -890,8 +908,8 @@ class CodegenNode {
         this.view = view;
     }
 
-    getView() {
-        return this.view;
+    getView(raw = false) {
+        return raw ? this.view : _.replace(this.view, '.', ''); /** 處理React.Fragment*/
     }
 
     getEvents() {
@@ -1000,6 +1018,10 @@ class CodegenNode {
         return !!this.injectStyle && this.injectStyle;
     }
 
+    needInjectView() {
+        return !!this.injectView && this.injectView;
+    }
+
     needInjectProps() {
         return !!this.injectProps && this.injectProps;
     }
@@ -1064,11 +1086,11 @@ class CodegenNode {
     }
 
     isImageView() {
-        return this.isAttribute() && _.isEqual(this.view, 'img');
+        return this.isAttribute() && _.isEqual(this.getView(), 'img');
     }
 
     isTextField() {
-        return this.isAttribute() && _.isEqual(this.view, 'TextField');
+        return this.isAttribute() && _.isEqual(this.getView(), 'TextField');
     }
 
     isTextFieldListView() {
@@ -1076,7 +1098,7 @@ class CodegenNode {
     }
 
     isSliderView() {
-        return this.isAttribute() && _.isEqual(this.view, 'Slider');
+        return this.isAttribute() && _.isEqual(this.getView(), 'Slider');
     }
 
     /** 就是指number, string 這類的物件啦 */
@@ -1182,6 +1204,13 @@ class CodegenNode {
 
     getPreciseAttributeParentName() {
         return this.getPreciseAttributeParent().getName();
+    }
+
+    getChildNodeOfImage() {
+        for(const child of this.getPreciseAttributeChildren()) {
+            if(child.isImageView())
+                return child;
+        }
     }
 
     /** 表示這會在component裡面產生邏輯 */
@@ -1366,7 +1395,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfClicked() {
-        return Util.camel(`on`, this.name, this.view, 'clicked');
+        return Util.camel(`on`, this.name, this.getView(), 'clicked');
     }
 
     getPath() {
@@ -1473,6 +1502,10 @@ class CodegenNode {
 
     getFunctionNameOfInjectStyle() {
         return `getInjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
+    }
+
+    getFunctionNameOfInjectView() {
+        return `getInjectViewOf${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
 
     getFunctionNameOfInjectProps() {
@@ -2769,7 +2802,7 @@ class ComponentBuilder extends BaseBuilder {
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
         baseGenerator.appendClass(baseClassName,
-            componentNode.isEditPage() ? {
+            (componentNode.isEditPage() || componentNode.needEditorBase)  ? {
                 name: 'BaseEditorComponent',
                 from: '../../base/BaseEditorComponent'
             } : {
@@ -3105,6 +3138,7 @@ class ComponentBuilder extends BaseBuilder {
                 ...node.getListProps(),
             }
 
+
             const itemViewProps = {};
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
@@ -3152,12 +3186,28 @@ class ComponentBuilder extends BaseBuilder {
                 return stmts;
             }
 
+            function getStmtsOfSelectImageButton(node) {
+                const stmts = []
+                const parent = node.getPreciseAttributeParentName();
+                const child = node.getChildNodeOfImage();
+                const me = _.upperFirst(node.getFieldName());
+                if (node.needAddImageButton()) {
+                    stmts.push(`{self.renderSelectImageButtonView({`,
+                    `needWaterMark:${child.needWatermark ? 'true' : 'false'},`,
+                    `folderName:'${child.getStorageFolderName()}',`,
+                    `asyncTaskOfBeforeSubmit:(localUrls) => ${parent}.set${me}(...localUrls.map(url => {return {${child.getName()}:url}})),`,
+                    `asyncTaskOfAfterSubmit:(remoteUrls) => ${parent}.set${me}(...remoteUrls.map(url => {return {${child.getName()}:url}})),`,
+                    `})}`)
+                }
+                return stmts;
+            }
+
             const arrayStmts = this.getJSXStrings({
                 generator,
                 tag: node.getListView(),
                 props,
                 contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()},index) => `,
-                    ...arrayItemViewStmts, `)}`, ...getStmtsOfRenderEmptyView(node)]
+                    ...arrayItemViewStmts, `)}`, ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
 
             if (node.hasListWrap()) {
@@ -3203,6 +3253,13 @@ class ComponentBuilder extends BaseBuilder {
             className,
             ...node.getViewProps(),
         };
+
+        if (node.needInjectView()) {
+            const param = node.getObservableName();
+            const nameOfInjectView = node.getFunctionNameOfInjectView();
+            generator.appendFunction(nameOfInjectView, [param], [], [], [], `return null`);
+            contentStmts.push(`{this.${nameOfInjectView}(${param})}`);
+        }
 
         if (node.needInjectStyle()) {
             const param = node.getObservableName();
@@ -3285,7 +3342,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         let origin = this.getJSXStrings({
-            tag: node.view,
+            tag: node.getView(true),
             generator,
             props,
             contents: [...contentStmts, ...node.getContents()],
@@ -3505,8 +3562,7 @@ class ComponentBuilder extends BaseBuilder {
                 if (child.hasPaginate()) {
                     generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
                     self.appendStmtIntoComponentDidMount(`const view = this;`)
-
-                    self.appendStmtIntoComponentDidMount(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfFetch()})`)
+                    generator.appendConstructor(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfFetch()})`)
                 }
 
                 /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
@@ -3587,7 +3643,7 @@ class AppBuilder
                 baseCookieGenerator.appendFunction(Util.camel(`get`, cookie.name), ['options = {}'], [], [],
                     `const value = this.cookie.get(`,
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password), options)`,
-                    `if(_.isEmpty(value)) return undefined`,
+                    `if(_.isEmpty(value)) return ${cookie.isObject() ? '{}': ''}`,
                     `const decrypt = Util.getDecryptString(value, this.password)`,
                     cookie.isObject() ? `return JSON.parse(decrypt)` : `return decrypt`
                 )
@@ -3652,10 +3708,10 @@ class AppBuilder
                 ['component', ...component.getParamsOfPath()],
                 [],
                 [],
-                'const { history } = component.props',
                 `const route = \`${component.getPathOfRouterString()}${component.routeHash ? `/\${Util.getRandomHash(15)}` : ``}\``,
-                `this.setCurrentRoute(route)`,
-                `history.push(route)`)
+                `this.routeTo(component, route);`,
+                `return route;`
+            )
         }
         baseRouterGenerator.needIndexFile('Router', [], true);
         await baseRouterGenerator.persist();
@@ -4345,12 +4401,12 @@ class ProjectFileHandler extends PathBase {
 
         function getStmtsOfAfterSubmit(node) {
             if (node.needWatermark) {
-                return `afterSubmit:(remoteUrls) => {
-                ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrls.watermark);
-                ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName(), 'origin')}(remoteUrls.origin);
+                return `asyncTaskOfAfterSubmit:(remoteUrls) => {
+                ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrls[0].watermark);
+                ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName(), 'origin')}(remoteUrls[0].origin);
                 }`
             } else {
-                return `afterSubmit:(remoteUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrl)`;
+                return `asyncTaskOfAfterSubmit:(remoteUrls) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(remoteUrls[0])`;
             }
         }
 
@@ -4363,7 +4419,7 @@ class ProjectFileHandler extends PathBase {
                         onClick: `###(param) => self.onImageEditorClicked({
                          needWatermark:${node.needWatermark ? 'true' : 'false'},
                          folderName:'${node.getStorageFolderName()}',
-                         beforeSubmit:(localUrl) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(localUrl),
+                         asyncTaskOfBeforeSubmit:(localUrls) => ${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(localUrls[0]),
                          ${getStmtsOfAfterSubmit(node)}
                         })`
                     })

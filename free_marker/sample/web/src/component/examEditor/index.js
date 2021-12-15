@@ -26,6 +26,10 @@ class ExamEditorComponent extends BaseExamEditorComponent {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
+    getInjectStyleOfQuestionAlertDiv(question) {
+        return Util.getVisibleOrNone(false);
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

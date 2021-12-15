@@ -9,8 +9,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -133,6 +131,24 @@ class AppStyle {
 
   MainEditorDiv = {};
 
+  /** => following for whoknowz  component  */
+
+  WhoknowzAnswerImageUrlImg = {};
+
+  ListWhoknowzAnswerImageDiv = {};
+
+  WhoknowzAnswerImageDiv = {};
+
+  WhoknowzAnswerAnswerByTextTextField = {};
+
+  ListWhoknowzAnswerDiv = {};
+
+  WhoknowzAnswerDiv = {};
+
+  WhoknowzQuestionReactFragment = {};
+
+  WhoknowzDiv = {};
+
   /** => following for purchase  component  */
 
   WrapPurchasePurchasePlanBuyDiv = {};
@@ -204,6 +220,10 @@ class AppStyle {
   ExamQuestionTopicNameTypography = {};
 
   ExamQuestionTopicDiv = {};
+
+  WrapExamQuestionAlertCalloutHelpDiv = {};
+
+  ExamQuestionAlertCalloutHelpButton = {};
 
   WrapExamQuestionAlertAlertImageDiv = {};
 

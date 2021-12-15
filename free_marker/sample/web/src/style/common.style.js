@@ -9,8 +9,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -133,6 +131,24 @@ class CommonStyle {
 
   MainEditorDiv = {};
 
+  /** => following for whoknowz  component  */
+
+  WhoknowzAnswerImageUrlImg = {};
+
+  ListWhoknowzAnswerImageDiv = {};
+
+  WhoknowzAnswerImageDiv = {};
+
+  WhoknowzAnswerAnswerByTextTextField = {};
+
+  ListWhoknowzAnswerDiv = {};
+
+  WhoknowzAnswerDiv = {};
+
+  WhoknowzQuestionReactFragment = {};
+
+  WhoknowzDiv = {};
+
   /** => following for purchase  component  */
 
   WrapPurchasePurchasePlanBuyDiv = {};
@@ -204,6 +220,10 @@ class CommonStyle {
   ExamQuestionTopicNameTypography = {};
 
   ExamQuestionTopicDiv = {};
+
+  WrapExamQuestionAlertCalloutHelpDiv = {};
+
+  ExamQuestionAlertCalloutHelpButton = {};
 
   WrapExamQuestionAlertAlertImageDiv = {};
 
