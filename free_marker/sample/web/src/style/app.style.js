@@ -133,7 +133,7 @@ class AppStyle {
 
   /** => following for whoknowz  component  */
 
-  WrapWhoknowzSubmitDiv = {};
+  WrapWhoknowzSubmitReactFragment = {};
 
   WhoknowzSubmitButton = {};
 

@@ -29,7 +29,7 @@ class DialogStore {
         return this.visibility;
     }
 
-    getExtraParamObject(){
+    getExtraParamObject() {
         return this.extraParamObject;
     }
 
@@ -56,7 +56,7 @@ class AlertDialog extends React.Component {
 
     /** object 是可以帶到customView裡面的變數 */
     open = (paramObject = {}) => {
-        if(!_.isObject(paramObject)) {
+        if (!_.isObject(paramObject)) {
             Util.appendError(`9831, paramObject should be object, not ${paramObject}`)
             return
         }
@@ -72,11 +72,11 @@ class AlertDialog extends React.Component {
         this.getStore().setVisibility(false);
     }
 
-    onSubmitClicked = () => {
-        const submitTask = this.props.submitTask;
+    onSubmitClicked = async () => {
+        const submitAsyncTask = this.props.submitAsyncTask;
         const paramObject = this.props.paramObject;
         this.close();
-        submitTask();
+        await submitAsyncTask();
     }
 
     getStore() {
@@ -163,7 +163,7 @@ class AlertDialog extends React.Component {
             <Button onClick={self.close} color="primary">
                 取消
             </Button>
-            <Button onClick={self.onSubmitClicked} color="primary" autoFocus>
+            <Button onClick={async () => await self.onSubmitClicked()} color="primary" autoFocus>
                 確認
             </Button>
         </DialogActions>

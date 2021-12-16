@@ -133,7 +133,7 @@ class CommonStyle {
 
   /** => following for whoknowz  component  */
 
-  WrapWhoknowzSubmitDiv = {};
+  WrapWhoknowzSubmitReactFragment = {};
 
   WhoknowzSubmitButton = {};
 

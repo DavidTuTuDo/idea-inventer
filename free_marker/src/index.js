@@ -50,6 +50,9 @@ class CodegenNode {
     password;
     components;
 
+    loginRequiredAlert = false;
+    /** 執行按鈕按鈕需要 login 就會給提示 */
+
     needEditorBase = false;
     /** true 就會繼承BaseEditorComponent */
 
@@ -776,7 +779,7 @@ class CodegenNode {
 
         function getTaskStmts() {
             if (self.hasConfirmDialog())
-                return `task:() => this.${self.getFunctionNameOfClicked()}({view:${self.getViewParamVariable()},object:${self.getParamOfRenderView()}})`;
+                return `task:async() => self.${self.getFunctionNameOfClicked()}({view:${self.getViewParamVariable()},object:${self.getParamOfRenderView()}})`;
         }
 
         function getActionButtonStmts() {
@@ -802,7 +805,7 @@ class CodegenNode {
                 `ref:${this.getAlertDialogVariable()}`,
                 `title:${JSON.stringify(self.getAlertDialog().title)}`,
                 `content:${JSON.stringify(self.getAlertDialog().content)}`,
-                `component:this`,
+                `component:self`,
             ];
             props.push(getActionButtonStmts());
             props.push(getTaskStmts());
@@ -814,6 +817,12 @@ class CodegenNode {
             {
             ${props.join(',')}
             })}`)
+        }
+
+        if (this.hasLoginRequiredDialog()) {
+            stmt.push(`{
+            this.renderLoginRequiredDialogView(${this.getLoginAlertDialogVariable()})
+            }`)
         }
     }
 
@@ -844,6 +853,10 @@ class CodegenNode {
     /** 就是點擊要再確認的那種dialog */
     hasConfirmDialog() {
         return this.hasAlertDialog() && this.getAlertDialog().content;
+    }
+
+    hasLoginRequiredDialog() {
+        return !!this.loginRequiredAlert;
     }
 
     /** 就是客製化view那種dialog */
@@ -960,6 +973,10 @@ class CodegenNode {
         return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref');
     }
 
+    getLoginAlertDialogVariable() {
+        return Util.camel(this.getName(), this.getView(), 'loginAlertDialog', 'ref');
+    }
+
     getViewParamVariable() {
         return Util.camel(this.getName(), this.getView(), 'View', 'Param');
     }
@@ -974,8 +991,13 @@ class CodegenNode {
         const stmt = [];
         if (this.hasAlertDialog()) {
             stmt.push(`const ${this.getAlertDialogVariable()} = React.createRef()`);
+
             if (this.hasConfirmDialog())
                 stmt.push(`let ${this.getViewParamVariable()}`);
+        }
+
+        if (this.hasLoginRequiredDialog()) {
+            stmt.push(`const ${this.getLoginAlertDialogVariable()} = React.createRef()`);
         }
 
         if (this.isAppBarView() && this.isScrollingHideDependOnRootNode()) {
@@ -1208,8 +1230,8 @@ class CodegenNode {
     }
 
     getChildNodeOfImage() {
-        for(const child of this.getPreciseAttributeChildren()) {
-            if(child.isImageView())
+        for (const child of this.getPreciseAttributeChildren()) {
+            if (child.isImageView())
                 return child;
         }
     }
@@ -2803,7 +2825,7 @@ class ComponentBuilder extends BaseBuilder {
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
 
         baseGenerator.appendClass(baseClassName,
-            (componentNode.isEditPage() || componentNode.needEditorBase)  ? {
+            (componentNode.isEditPage() || componentNode.needEditorBase) ? {
                 name: 'BaseEditorComponent',
                 from: '../../base/BaseEditorComponent'
             } : {
@@ -2811,6 +2833,8 @@ class ComponentBuilder extends BaseBuilder {
                 from: '../../base/BaseComponent'
             }
         );
+
+        baseGenerator.appendFunction('getComponentName',[],[],[],`return '${className}'`)
 
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
@@ -3008,6 +3032,11 @@ class ComponentBuilder extends BaseBuilder {
         const children = param.children ? param.children : [];
         const stmt = [];
         const tag = param.tag;
+        if(_.isEqual(tag,'React.Fragment')) {
+            delete props['className'];
+            delete props['style'];
+        }
+
         stmt.push(`<${tag}`);
         stmt.push('\n');
         appendViewsImport();
@@ -3194,11 +3223,11 @@ class ComponentBuilder extends BaseBuilder {
                 const me = _.upperFirst(node.getFieldName());
                 if (node.needAddImageButton()) {
                     stmts.push(`{self.renderSelectImageButtonView({`,
-                    `needWaterMark:${child.needWatermark ? 'true' : 'false'},`,
-                    `folderName:'${child.getStorageFolderName()}',`,
-                    `asyncTaskOfBeforeSubmit:(localUrls) => ${parent}.set${me}(...localUrls.map(url => {return {${child.getName()}:url}})),`,
-                    `asyncTaskOfAfterSubmit:(remoteUrls) => ${parent}.set${me}(...remoteUrls.map(url => {return {${child.getName()}:url}})),`,
-                    `})}`)
+                        `needWaterMark:${child.needWatermark ? 'true' : 'false'},`,
+                        `folderName:'${child.getStorageFolderName()}',`,
+                        `asyncTaskOfBeforeSubmit:(localUrls) => ${parent}.set${me}(...localUrls.map(url => {return {${child.getName()}:url}})),`,
+                        `asyncTaskOfAfterSubmit:(remoteUrls) => ${parent}.set${me}(...remoteUrls.map(url => {return {${child.getName()}:url}})),`,
+                        `})}`)
                 }
                 return stmts;
             }
@@ -3289,23 +3318,30 @@ class ComponentBuilder extends BaseBuilder {
                 `Util.appendError('${node.getFunctionNameOfClicked()} not override')`
             )
 
-            if (node.hasConfirmDialog()) {
-                props.onClick =
-                    `###(param) => {
-                    ${node.getViewParamVariable()} = param;
-                    ${node.getAlertDialogVariable()}.current.open();
-                   }`
-            } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
-                props.onClick =
-                    `###(param) => {
-                    ${node.getAlertDialogVariable()}.current.open();
-                   }`
-            } else {
-                props.onClick =
-                    `###(param) => self.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`
+            const onClickStmts = [];
+            if (node.hasLoginRequiredDialog()) {
+                generator.appendImport('UserInfoRef', '../../userInfo');
+                onClickStmts.push(
+                    `if(!UserInfoRef.isLoginInSucceed()) {
+                        ${node.getLoginAlertDialogVariable()}.current.open();
+                        return;
+                    }`
+                )
             }
-        }
 
+            if (node.hasConfirmDialog()) {
+                onClickStmts.push(
+                    `${node.getViewParamVariable()} = param;
+                    ${node.getAlertDialogVariable()}.current.open()`)
+            } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
+                onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)
+            } else {
+                onClickStmts.push(`self.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`)
+            }
+
+            props.onClick =
+                `###(param) => {${onClickStmts.join('\n')}}`
+        }
         /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
         if (node.isImageView()) {
             props['src'] = `###${node.getName()}`;
@@ -3644,7 +3680,7 @@ class AppBuilder
                 baseCookieGenerator.appendFunction(Util.camel(`get`, cookie.name), ['options = {}'], [], [],
                     `const value = this.cookie.get(`,
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password), options)`,
-                    `if(_.isEmpty(value)) return ${cookie.isObject() ? '{}': ''}`,
+                    `if(_.isEmpty(value)) return ${cookie.isObject() ? '{}' : ''}`,
                     `const decrypt = Util.getDecryptString(value, this.password)`,
                     cookie.isObject() ? `return JSON.parse(decrypt)` : `return decrypt`
                 )
@@ -3758,8 +3794,9 @@ class AppBuilder
 
             childrenStmt.push(...this.getJSXStrings({
                 tag: `Route`,
+                generator: appGenerator,
                 props: {
-                    generator: appGenerator,
+
                     exact: component.isRootPath() ? true : undefined,
                     path: component.path,
                     render: `###(props) =>
@@ -3808,7 +3845,11 @@ class AppBuilder
                 `return this.store.${storeName}`
             )
         }
-
+        appGenerator.appendFunction({
+            name: `getNavigatorRef`,
+            arrow: true
+        }, [], [], [], `return this.navigatorRef.current`)
+        appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`)
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
         await appGenerator.needIndexFile('App', [], false, [`new App().mount()`, `module.hot.accept()`]);
 
@@ -3822,7 +3863,10 @@ class AppBuilder
             stmt.push(...this.getJSXStrings({
                 /** 因為import 是大寫, 所以這裡只好hack*/
                 tag: _.upperFirst(navigation.view),
-                props: {history: `###history`}
+                props: {
+                    ref: `###this.navigatorRef`,
+                    history: `###history`
+                }
             }));
             this.removeJSXSign(stmt);
         }
@@ -4371,8 +4415,8 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if(node.hasAlertDialog() && _.isEmpty(node.raw.wrapView)) {
-                node.setWrapView('div');
+            if (node.hasAlertDialog() && _.isEmpty(node.raw.wrapView)) {
+                node.setWrapView('React.Fragment');
             }
 
             if (node.ref) {

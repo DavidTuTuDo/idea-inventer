@@ -26,6 +26,8 @@ import Countdown from "react-countdown";
 import Router from "../router";
 import {isMobile} from 'react-device-detect'
 import ImageDialogView from './ImageDialogView';
+import UserInfo from '../userInfo';
+import EventBus from "./CommonEventBus";
 
 class BaseComponent extends React.Component {
     listOfFunctionOfUnsubscribe = [];
@@ -40,9 +42,14 @@ class BaseComponent extends React.Component {
         super(props);
     }
 
+    getComponentName() {
+        return `BaseComponent`;
+    }
+
     appendScrollToBottomJob(...asyncTask) {
         this.jobsOfScrollToBottom.push(...asyncTask);
     }
+
 
     setScrollToBottomJobs(...asyncTask) {
         this.jobsOfScrollToBottom.length = 0;
@@ -60,12 +67,51 @@ class BaseComponent extends React.Component {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
             unSub();
         }
-        window.removeEventListener('scroll', this.onScrollToBottomListener, true)
+        if (this.isNotNavigatorNComponentView()) {
+            window.removeEventListener('scroll', this.onScrollToBottomListener, true)
+            this.unsubscribeAuthStateChanged();
+        }
+
+
     }
 
     componentDidMount() {
         this.viewInitial();
-        window.addEventListener('scroll', this.onScrollToBottomListener, true);
+        if (this.isNotNavigatorNComponentView()) {
+            window.addEventListener('scroll', this.onScrollToBottomListener, true);
+            this.subscribeAuthStateChanged();
+        }
+
+    }
+
+    unsubscribeAuthStateChanged() {
+        EventBus.self().detach("authStateChanged", this.onAuthStateChangedReceive);
+    }
+
+    subscribeAuthStateChanged() {
+        EventBus.self().on("authStateChanged", this.onAuthStateChangedReceive);
+    }
+
+    /** 如果Component被當作View使用..............
+     * <ExamQuestionView
+     freeze={true}
+     componentView={true}
+     question={whoknowz.question}/>
+     *
+     * */
+    isComponentView = () => {
+        return !!this.props.isComponentView;
+    }
+
+    isNotNavigatorNComponentView() {
+        return (!this.isNavigator() && !this.isComponentView());
+    }
+
+    onAuthStateChangedReceive(user) {
+        if (this.isNotNavigatorNComponentView()) {
+            this.componentWillUnmount();
+            this.componentDidMount();
+        }
     }
 
 
@@ -395,7 +441,7 @@ class BaseComponent extends React.Component {
         return (<AlertDialog
             title={title}
             content={content}
-            submitTask={task}
+            submitAsyncTask={task}
             needActionButtons={needActionButtons}
             customView={customView}
             paramObject={paramObject}
@@ -648,6 +694,24 @@ class BaseComponent extends React.Component {
     copyCurrentLinkToClipboard() {
         navigator.clipboard.writeText(this.getCurrentWebSiteLink())
         this.showInfoSnackMessage(`已複製連結`);
+    }
+
+    renderLoginRequiredDialogView = (ref) => {
+        const self = this;
+        return this.renderAlertDialog({
+            ref: ref,
+            title: "此功能必須登入",
+            content: "此功能必須登入,點擊確認後將跳轉至登入頁面",
+            component: this,
+            needActionButtons: true,
+            task: async () => await self.invokeLoginBehavior(),
+        })
+    }
+
+    async invokeLoginBehavior() {
+        await Util.syncDelay(10);
+        if (!UserInfo.isLoginInSucceed())
+            Application.getNavigatorRef().onLoginButtonClicked()
     }
 
 }

@@ -8,6 +8,7 @@ import BaseComponent from './BaseComponent';
 import Firebaser from './CommonFirebaseHelper';
 import watermark from 'watermarkjs';
 import Config from '../config';
+import UserInfoRef from '../userInfo';
 
 class BaseEditorComponent extends BaseComponent {
 
@@ -171,16 +172,25 @@ class BaseEditorComponent extends BaseComponent {
 
     renderSelectImageButtonView = (task) => {
         const self = this;
+        const loginRequiredRef = React.createRef();
         self.currentUploadImagesTaskInfo = task
-        return <Button
-            color={'primary'}
-            onClick={(task) =>
-                self.enableImageSelectView(true)
-            }
-            className={'BaseImageSelectButton'}
-            size={'large'}
-            variant={'outlined'}>新增圖片</Button>
+        return (<React.Fragment>
+            {this.renderLoginRequiredDialogView(loginRequiredRef)}
 
+            <Button
+                color={'primary'}
+                onClick={(task) => {
+                    if (!UserInfoRef.isLoginInSucceed()) {
+                        loginRequiredRef.current.open()
+                        return;
+                    }
+                    self.enableImageSelectView(true)
+                }
+                }
+                className={'BaseImageSelectButton'}
+                size={'large'}
+                variant={'outlined'}>新增圖片</Button>
+        </React.Fragment>)
     }
 
 

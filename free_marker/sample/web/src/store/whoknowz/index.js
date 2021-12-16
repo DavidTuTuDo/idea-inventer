@@ -81,7 +81,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
     async submitConfirmedAnswer() {
         const answer = _.head(this.getAnswers())
         if(answer.getAnswerByText().length <= 10) {
-            this.getComponent().showWarningSnackMessage(`文字答案清補到10個字元,方便篩選無意義回答,感謝`);
+            this.getComponent().showWarningSnackMessage(`文字答案至少需要到10個字元,方便過濾無意義回答`);
         } else {
             this.setIsAnswerReply(true);
             answer.setCid(this.getHeadConfuse().getId());

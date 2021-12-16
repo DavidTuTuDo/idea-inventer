@@ -137,7 +137,7 @@ class MobileStyle {
 
   /** => following for whoknowz  component  */
 
-  WrapWhoknowzSubmitDiv = {};
+  WrapWhoknowzSubmitReactFragment = {};
 
   WhoknowzSubmitButton = {};
 
