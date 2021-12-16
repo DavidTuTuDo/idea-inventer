@@ -137,6 +137,10 @@ class MobileStyle {
 
   /** => following for whoknowz  component  */
 
+  WrapWhoknowzSubmitDiv = {};
+
+  WhoknowzSubmitButton = {};
+
   WhoknowzAnswerImageUrlImg = {};
 
   ListWhoknowzAnswerImageDiv = {};
@@ -147,9 +151,15 @@ class MobileStyle {
 
   ListWhoknowzAnswerDiv = {};
 
-  WhoknowzAnswerDiv = {};
+  WhoknowzAnswerCard = {};
 
   WhoknowzQuestionReactFragment = {};
+
+  WhoknowzFastCenterAskmrlinButton = {};
+
+  WhoknowzFastCenterCopylinkButton = {};
+
+  WhoknowzFastCenterDiv = {};
 
   WhoknowzDiv = {};
 

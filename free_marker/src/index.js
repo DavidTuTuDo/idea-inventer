@@ -43,7 +43,10 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
-    node;
+    raw;
+    /** 沒有被enrich的node*/
+
+
     password;
     components;
 
@@ -309,8 +312,6 @@ class CodegenNode {
      * 所以可以在customView裡面控制dialog, 然後有個paramObject也會傳遞到CustomView可以用
      * paramObject預設會是點擊事件的parent node.
      *
-     * 我常常遇到想嘗試舞台的小朋友, 都礙於身旁有個會無下限嘲弄他的朋友, 而使他各種退卻. 看到你能坦率做自己覺得挺好的. 或許是妳的精神素質很好, 更或許是你周遭人都是有光亮的
-     *
      **/
     alertDialog;
 
@@ -331,7 +332,7 @@ class CodegenNode {
     /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
 
     constructor(node) {
-        this.node = node;
+        this.raw = node;
         const self = this;
         for (const key in node) {
             self[key] = node[key];
@@ -4370,6 +4371,10 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
+            if(node.hasAlertDialog() && _.isEmpty(node.raw.wrapView)) {
+                node.setWrapView('div');
+            }
+
             if (node.ref) {
                 const targetName = node.ref;
                 const _nodes = CodegenNode.finds(this.strcuts, (_node) => _.isEqual(targetName, _node.getName()))
@@ -4386,7 +4391,7 @@ class ProjectFileHandler extends PathBase {
                  * node.wrapView = node.ref.wrapView
                  * */
                 if (node.independence) {
-                    for (const raw of node.ref.node.children) {
+                    for (const raw of node.ref.raw.children) {
                         node.appendChildrenWithJson(raw)
                     }
                 }

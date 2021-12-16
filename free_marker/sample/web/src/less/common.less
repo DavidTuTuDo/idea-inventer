@@ -527,15 +527,37 @@
 
 /** following for whoknowz  component used  */
 
-.WhoknowzDiv {
+.WhoknowzDiv:extend(.CenterInParentColumn all) {
+}
+
+.WhoknowzFastCenterDiv {
   /** style */
+  position: sticky;
+  width: 100vw;
+  padding: 10px;
+  background-color: rgba(108, 122, 137, 0.5);
+  z-index: 3;
+  top: 0px;
+}
+
+.WhoknowzFastCenterCopylinkButton {
+  /** style */
+  margin-left: 15px;
+  border-radius: 40px;
+}
+
+.WhoknowzFastCenterAskmrlinButton:extend(.WhoknowzFastCenterCopylinkButton) {
 }
 
 .WhoknowzQuestionReactFragment {
   /** style */
 }
 
-.WhoknowzAnswerDiv:extend(.CenterInParentColumn) {
+.WhoknowzAnswerCard:extend(.CenterInParentColumn) {
+  /** style */
+  padding: 10px;
+  margin: 10px;
+  width: 95vw;
 }
 
 .ListWhoknowzAnswerDiv {
@@ -544,7 +566,7 @@
 
 .WhoknowzAnswerAnswerByTextTextField {
   /** style */
-  width: 90%;
+  width: 95%;
 }
 
 .WhoknowzAnswerImageDiv {
@@ -559,6 +581,16 @@
 .WhoknowzAnswerImageUrlImg {
   /** style */
   height: 300px;
+}
+
+.WhoknowzSubmitButton {
+  /** style */
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.WrapWhoknowzSubmitDiv {
+  /** style */
 }
 
 /** following for main editor component used  */

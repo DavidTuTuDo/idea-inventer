@@ -133,6 +133,10 @@ class AppStyle {
 
   /** => following for whoknowz  component  */
 
+  WrapWhoknowzSubmitDiv = {};
+
+  WhoknowzSubmitButton = {};
+
   WhoknowzAnswerImageUrlImg = {};
 
   ListWhoknowzAnswerImageDiv = {};
@@ -143,9 +147,15 @@ class AppStyle {
 
   ListWhoknowzAnswerDiv = {};
 
-  WhoknowzAnswerDiv = {};
+  WhoknowzAnswerCard = {};
 
   WhoknowzQuestionReactFragment = {};
+
+  WhoknowzFastCenterAskmrlinButton = {};
+
+  WhoknowzFastCenterCopylinkButton = {};
+
+  WhoknowzFastCenterDiv = {};
 
   WhoknowzDiv = {};
 

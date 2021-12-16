@@ -168,6 +168,10 @@ class BaseComponent extends React.Component {
         window.location.replace(url)
     }
 
+    getCurrentWebSiteLink = () => {
+        return window.location.href;
+    }
+
     gotoUrlWithNewTab = (url) => {
         window.open(url, "_blank");
     }
@@ -255,15 +259,15 @@ class BaseComponent extends React.Component {
 
     renderListEmptyView = (items = [], hasPath) => {
         const ListEmptyView = this.ListEmptyView;
-            return (<ListEmptyView
-                    size={_.size(items)}
-                    isGlobalLoading={this.getStore().isGlobalLoading()}
-                    component={this}
-                    hasPath={hasPath}/>)
+        return (<ListEmptyView
+            size={_.size(items)}
+            isGlobalLoading={this.getStore().isGlobalLoading()}
+            component={this}
+            hasPath={hasPath}/>)
     }
 
-    ListEmptyView = observer(({hasPath, component,isGlobalLoading,size}) => {
-        if(isGlobalLoading || size > 0) {
+    ListEmptyView = observer(({hasPath, component, isGlobalLoading, size}) => {
+        if (isGlobalLoading || size > 0) {
             return null
         }
 
@@ -272,9 +276,9 @@ class BaseComponent extends React.Component {
                 return <Button
                     onClick={
                         async () => {
-                            if(component instanceof BaseComponent) {
+                            if (component instanceof BaseComponent) {
                                 const store = component.getStore();
-                                await  store.fetch(component);
+                                await store.fetch(component);
                             }
                         }
                     }
@@ -495,6 +499,14 @@ class BaseComponent extends React.Component {
         );
     }
 
+    showWarningSnackMessage(message) {
+        this.setSnackViewVisibility(true, message, {type: `warning`})
+    }
+
+    showInfoSnackMessage(message) {
+        this.setSnackViewVisibility(true, message, {type: `info`})
+    }
+
     /**
      * extra.type: |'error','success','info','warning' |
      * extra.func.tack 只能放 async task */
@@ -631,6 +643,11 @@ class BaseComponent extends React.Component {
         } else {
             return _.toString(object)
         }
+    }
+
+    copyCurrentLinkToClipboard() {
+        navigator.clipboard.writeText(this.getCurrentWebSiteLink())
+        this.showInfoSnackMessage(`已複製連結`);
     }
 
 }

@@ -133,6 +133,10 @@ class CommonStyle {
 
   /** => following for whoknowz  component  */
 
+  WrapWhoknowzSubmitDiv = {};
+
+  WhoknowzSubmitButton = {};
+
   WhoknowzAnswerImageUrlImg = {};
 
   ListWhoknowzAnswerImageDiv = {};
@@ -143,9 +147,15 @@ class CommonStyle {
 
   ListWhoknowzAnswerDiv = {};
 
-  WhoknowzAnswerDiv = {};
+  WhoknowzAnswerCard = {};
 
   WhoknowzQuestionReactFragment = {};
+
+  WhoknowzFastCenterAskmrlinButton = {};
+
+  WhoknowzFastCenterCopylinkButton = {};
+
+  WhoknowzFastCenterDiv = {};
 
   WhoknowzDiv = {};
 

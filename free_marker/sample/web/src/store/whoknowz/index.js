@@ -12,6 +12,9 @@ import {
     action,
     observable,
 } from "mobx";
+import UserInfoRef from "../../userInfo";
+import UserInfo from "../../userInfo";
+
 
 class WhoknowzStore extends BaseWhoknowzStore {
     /** -------------------- fields -------------------- **/
@@ -36,12 +39,61 @@ class WhoknowzStore extends BaseWhoknowzStore {
         this.question.initial(question);
     }
 
+    getHeadConfuse(){
+        const confuse = _.head(this.getConfuses());
+        return confuse === undefined ? {} : confuse;
+    }
+
+    isConfuserOwner() {
+        return _.isEqual(this.getHeadConfuse().userId,
+            UserInfoRef.getUid())
+    }
+
     async fetch() {
         const confuse = await (new ConfuseStore()).fetchConfuseItem(this.getComponent(), this.cid);
         this.setConfuses(confuse);
         const question = await (new QuestionStore()).fetchQuestionItem(this.getComponent(), confuse.qid);
         this.setQuestion(question);
-        this.pushAnswer({})
+        this.invalidateSubmitString();
+
+        if(this.isConfuserOwner()) {
+            this.setAnswerConditions([{
+                where:(stmt) => stmt.where('cid','==',this.getHeadConfuse().id)
+            }])
+            const answers = await this.fetchAnswers(this.getComponent());
+            this.pushAnswers(...answers);
+        } else {
+            this.pushAnswer({})
+        }
+    }
+
+    @action
+    invalidateSubmitString() {
+        if(this.getIsAnswerReply()) {
+            this.setSubmit(`答案已送出`)
+        } else if(this.isConfuserOwner()) {
+            this.setSubmit(`本人無法回答`)
+        } else {
+            this.removeSubmit()
+        }
+    }
+
+    async submitConfirmedAnswer() {
+        const answer = _.head(this.getAnswers())
+        if(answer.getAnswerByText().length <= 10) {
+            this.getComponent().showWarningSnackMessage(`文字答案清補到10個字元,方便篩選無意義回答,感謝`);
+        } else {
+            this.setIsAnswerReply(true);
+            answer.setCid(this.getHeadConfuse().getId());
+            answer.setUserId(UserInfo.getUid());
+            await answer.submitAnswerItem(this.getComponent());
+            this.invalidateSubmitString();
+        }
+    }
+
+    isAnswerReliedOrOwner() {
+        return (!!this.getIsAnswerReply() ||
+        this.isConfuserOwner())
     }
 
 

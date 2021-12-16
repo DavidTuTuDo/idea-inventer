@@ -9,6 +9,7 @@ import {observer} from "mobx-react";
 import {inject} from "mobx-react";
 import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
 import ExamQuestionView from "../exam";
+import UserInfo from '../../userInfo';
 import React from 'react';
 @inject("whoknowz")
 @observer
@@ -25,6 +26,30 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
         return <ExamQuestionView
             freeze={true}
             question={whoknowz.question}/>
+    }
+
+    onCopylinkButtonClicked(param) {
+        this.copyCurrentLinkToClipboard();
+    }
+
+    onSubmitButtonClicked(param) {
+        this.getStore().submitConfirmedAnswer().then();
+    }
+
+    getInjectPropsOfWhoknowzSubmitButton = () => {
+        return {disabled : this.getStore().isAnswerReliedOrOwner()}
+    }
+
+    getInjectPropsOfAnswerAnswerByTextTextField(answer) {
+        return {disabled : this.getStore().isAnswerReliedOrOwner()}
+    }
+
+    enableImageSelectView(multiple) {
+        if(this.getStore().isAnswerReliedOrOwner()) {
+            /** doing nothing */
+        }else {
+            return super.enableImageSelectView(multiple)
+        }
     }
 
 
