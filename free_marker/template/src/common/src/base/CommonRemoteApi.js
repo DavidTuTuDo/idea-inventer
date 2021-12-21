@@ -119,7 +119,7 @@ class CommonRemoteApi {
         if (!querySnapshot.empty)
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                data.doc = doc;
+                data._doc = doc;
                 data.id = _.isEmpty(data.id) ? doc.id : data.id;
                 all.push(data);
             })
@@ -171,7 +171,7 @@ class CommonRemoteApi {
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
         const result = await firebase.firestore().collection(path).doc(_.toString(id)).get();
-        return result.exists ? {...result.data(), id, exists: true} : {exists: false};
+        return result.exists ? {...result.data(), id, _doc:result, exists: true} : {exists: false};
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/

@@ -17,6 +17,8 @@ class BaseStore extends ClientRemoteApi {
 
     component;
 
+    initialFetchSucceed = false;
+
     @observable
     state = 'stable';
 
@@ -48,6 +50,8 @@ class BaseStore extends ClientRemoteApi {
 
     @observable
     snackVisibility = false;
+
+    hasNextPageItems = true;
 
     constructor(props) {
         super(props);
@@ -142,8 +146,8 @@ class BaseStore extends ClientRemoteApi {
         if (props && props.parentNode)
             this.setParentNode(props.parentNode);
 
-        if (props && props.doc)
-            this.setDocRef(props.doc);
+        if (props && props._doc)
+            this.setDocRef(props._doc);
 
         if (props && props.updateTime)
             this.setUpdateTime(props.updateTime);
@@ -180,8 +184,16 @@ class BaseStore extends ClientRemoteApi {
         return this.selectorParams;
     }
 
-    onInitialFetchSucceed(obj) {
+    async onInitialFetchSucceed(collection) {
+        this.initialFetchSucceed = true;
+        if(this.getComponent() !== undefined) {
+           await this.getComponent().invalidateNextPageBehavior();
+        }
 
+    }
+
+    isInitialFetchSucceed() {
+        return this.initialFetchSucceed;
     }
 
     getImageDialogParam() {
@@ -234,7 +246,8 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getStartAfterConditions(lastItem) {
-        return Util.isUndefinedNullEmpty(lastItem) ? [] : [{startAfter: (stmt) => stmt.startAfter(lastItem.getDocRef())}]
+        return Util.isUndefinedNullEmpty(lastItem) ? [] : [{startAfter: (stmt) =>
+                stmt.startAfter(lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc)}]
     }
 
     getInArrayConditions = (targets) => {
@@ -247,6 +260,14 @@ class BaseStore extends ClientRemoteApi {
             throw new ERROR(7008, `${typeof targets}, "${targets}" is not allow`)
         }
 
+    }
+
+    hasNextPage = () => {
+        return this.hasNextPageItems;
+    }
+
+    setHasPageItems(has) {
+        return this.hasNextPageItems = has;
     }
 
 }

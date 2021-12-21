@@ -83,13 +83,14 @@ class NavigatorComponent extends BaseNavigatorComponent {
         const self = this;
         if (UserInfo.isLoginInSucceed()) {
             this.getStore().logout().then();
+            self.reloadPage()
         } else {
-
             const asyncTask = async (authResult) => {
                 Cookie.setCredential(authResult.credential);
                 const userInfo = authResult.user;
                 await this.getStore().setUserInfo(userInfo);
                 await this.getStore().getUserInfo().submitUserInfo(self, userInfo.uid, userInfo);
+                self.reloadPage();
             }
             CommonFirebaseHelper.signInWithGoogle(asyncTask).then();
         }

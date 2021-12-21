@@ -35,6 +35,7 @@ class BaseComponent extends React.Component {
     componentStyle = {}
     jobsOfScrollToBottom = [];
     jobExecutorLock = false;
+    initialFetchSucceed = false;
 
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
 
@@ -49,7 +50,6 @@ class BaseComponent extends React.Component {
     appendScrollToBottomJob(...asyncTask) {
         this.jobsOfScrollToBottom.push(...asyncTask);
     }
-
 
     setScrollToBottomJobs(...asyncTask) {
         this.jobsOfScrollToBottom.length = 0;
@@ -69,27 +69,18 @@ class BaseComponent extends React.Component {
         }
         if (this.isNotNavigatorNComponentView()) {
             window.removeEventListener('scroll', this.onScrollToBottomListener, true)
-            this.unsubscribeAuthStateChanged();
         }
+    }
 
-
+    canVerticalScrollable() {
+        return document.body.scrollHeight > window.innerHeight;
     }
 
     componentDidMount() {
         this.viewInitial();
         if (this.isNotNavigatorNComponentView()) {
             window.addEventListener('scroll', this.onScrollToBottomListener, true);
-            this.subscribeAuthStateChanged();
         }
-
-    }
-
-    unsubscribeAuthStateChanged() {
-        EventBus.self().detach("authStateChanged", this.onAuthStateChangedReceive);
-    }
-
-    subscribeAuthStateChanged() {
-        EventBus.self().on("authStateChanged", this.onAuthStateChangedReceive);
     }
 
     /** 如果Component被當作View使用..............
@@ -107,8 +98,8 @@ class BaseComponent extends React.Component {
         return (!this.isNavigator() && !this.isComponentView());
     }
 
-    onAuthStateChangedReceive(user) {
-        if (this.isNotNavigatorNComponentView()) {
+    onAuthStateChangedReceive = (user) => {
+        if (this.isNotNavigatorNComponentView() && user !== null) {
             this.componentWillUnmount();
             this.componentDidMount();
         }
@@ -124,6 +115,9 @@ class BaseComponent extends React.Component {
         this.imageDialogRef = React.createRef();
     }
 
+    reloadPage = () => {
+        window.location.reload();
+    }
 
     isDialogComponent() {
         return this.props.dialog !== undefined;
@@ -148,7 +142,7 @@ class BaseComponent extends React.Component {
     }
 
     getThresholdOfScrollToBottom() {
-        return 1;
+        return 5;
     }
 
     onScrollToBottomListener = (event) => {
@@ -159,7 +153,22 @@ class BaseComponent extends React.Component {
         /** modifier 距離底部的threshold */
         if (currentScroll + modifier > documentHeight) {
             /** Scroll達底部了 */
+            if (!this.getStore().isInitialFetchSucceed()) {
+                Util.appendInfo(`初始任務尚未完成, 不能執行後續工作`);
+                return;
+            }
+
             if (!self.jobExecutorLock) {
+                if (!this.hasScrollToBottomTask()) {
+                    Util.appendInfo(`當前沒有觸底任務`);
+                    return;
+                }
+
+                if(!this.getStore().hasNextPage()) {
+                    Util.appendInfo(`已沒有下一頁的資料`);
+                    return;
+                }
+
                 this.jobExecutor().then();
             } else {
                 Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫`);
@@ -167,8 +176,18 @@ class BaseComponent extends React.Component {
         }
     }
 
+    hasScrollToBottomTask() {
+        return this.jobsOfScrollToBottom.length > 0;
+    }
+
     jobExecutor = async () => {
         const self = this;
+        if (self.jobExecutorLock) {
+            Util.appendError(`self.jobExecutorLock是true,不能跑進來才對...`);
+            return;
+        }
+
+        Util.appendInfo(`觸底任務執行中`);
         try {
             self.jobExecutorLock = true;
             for (const job of this.jobsOfScrollToBottom)
@@ -178,9 +197,19 @@ class BaseComponent extends React.Component {
             Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
         } finally {
             self.jobExecutorLock = false
+            await this.invalidateNextPage();
         }
     }
 
+    /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() */
+    invalidateNextPageBehavior = async () => {
+        if (this.getStore().hasNextPage() &&
+            this.hasScrollToBottomTask() &&
+            !this.canVerticalScrollable()
+        ) {
+            await this.jobExecutor()
+        }
+    }
 
     getEmptyStore() {
         return new Store();

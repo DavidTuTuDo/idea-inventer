@@ -173,7 +173,8 @@ class ExamStore extends BaseExamStore {
         }
     }
 
-    onInitialFetchSucceed(obj) {
+    onInitialFetchSucceed(collection) {
+        super.onInitialFetchSucceed(collection)
         this.incrementCountsOfExamToday().then();
         this.currentTimeStamp = Util.getCurrentTimeStamp();
     }

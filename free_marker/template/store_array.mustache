@@ -134,6 +134,10 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     break;
     }
 
+    if(items < {{{fieldClass}}}.sizeOfPerPage) {
+    this.setHasPageItems(false);
+    }
+
     this.push{{{functionName}}}(...items);
     return items;
     };
@@ -151,7 +155,7 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     fetch{{{fieldClass}}}ByNextIds = async ({{{paramString}}}) => {
     const self = this;
     const targets = _.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
-    return index < {{{paginateSize}}};
+    return index < {{{fieldClass}}}.sizeOfPerPage;
     })
     if (!_.isEmpty(targets)) {
     return await new {{{fieldClass}}}().fetch(

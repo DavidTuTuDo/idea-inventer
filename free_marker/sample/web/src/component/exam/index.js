@@ -72,9 +72,6 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionAlertDiv(question) {
-
-
-
         return Util.getVisibleOrHidden(question.isAnswerWrong() && !this.getStore().isFreezePage())
     }
 
@@ -117,6 +114,17 @@ class ExamComponent extends BaseExamComponent {
         this.getStore().submitConfusedQuestion(question).then((cid) => {
             self.gotoUrlWithNewTab(Router.gotoWhoknowzPage(undefined, cid));
         })
+    }
+
+    onAddToFavoriteButtonClicked(param) {
+        super.onAddToFavoriteButtonClicked(param);
+        const self = this;
+        const question = param.object;
+        self.showWarningSnackMessage(`尚未實作`)
+    }
+
+    getInjectStyleOfQuestionFunctionCenterDiv(question) {
+        return Util.getVisibleOrHidden(question.isReply() && !this.getStore().isFreezePage())
     }
 
     /** -------------------- async api -------------------- **/

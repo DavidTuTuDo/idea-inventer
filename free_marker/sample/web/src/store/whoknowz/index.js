@@ -50,7 +50,9 @@ class WhoknowzStore extends BaseWhoknowzStore {
     }
 
     async fetch() {
+        Util.appendInfo(this.getClassName(),' fetch... 被執行了');
         const confuse = await (new ConfuseStore()).fetchConfuseItem(this.getComponent(), this.cid);
+
         this.setConfuses(confuse);
         const question = await (new QuestionStore()).fetchQuestionItem(this.getComponent(), confuse.qid);
         this.setQuestion(question);
@@ -58,10 +60,9 @@ class WhoknowzStore extends BaseWhoknowzStore {
 
         if(this.isConfuserOwner()) {
             this.setAnswerConditions([{
-                where:(stmt) => stmt.where('cid','==',this.getHeadConfuse().id)
+                where:(stmt) => stmt.where('cid','==',this.getHeadConfuse().getId())
             }])
-            const answers = await this.fetchAnswers(this.getComponent());
-            this.pushAnswers(...answers);
+            await this.fetchAnswers(this.getComponent());
         } else {
             this.pushAnswer({})
         }
@@ -85,6 +86,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
         } else {
             this.setIsAnswerReply(true);
             answer.setCid(this.getHeadConfuse().getId());
+            answer.setQid(this.getHeadConfuse().getQid());
             answer.setUserId(UserInfo.getUid());
             await answer.submitAnswerItem(this.getComponent());
             this.invalidateSubmitString();
@@ -99,5 +101,4 @@ class WhoknowzStore extends BaseWhoknowzStore {
 
     /** -------------------- async api -------------------- **/
 }
-
 export default WhoknowzStore;

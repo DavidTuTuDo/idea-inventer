@@ -57,6 +57,8 @@ class MobileStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
+  ExamEditorQuestionFunctionCenterOuterDiv = {};
+
   ExamEditorQuestionAlertOuterDiv = {};
 
   ListExamEditorQuestionDiv = {};
@@ -134,6 +136,22 @@ class MobileStyle {
   MainEditorViewPagerDiv = {};
 
   MainEditorDiv = {};
+
+  /** => following for myKindlyHelp  component  */
+
+  MyKindlyHelpAnswerQuestionInfoReplyTimeTypography = {};
+
+  MyKindlyHelpAnswerQuestionInfoSubjectInfoTypography = {};
+
+  MyKindlyHelpAnswerQuestionInfoDiv = {};
+
+  MyKindlyHelpAnswerQuestionTopicTypography = {};
+
+  ListMyKindlyHelpAnswerDiv = {};
+
+  MyKindlyHelpAnswerCard = {};
+
+  MyKindlyHelpDiv = {};
 
   /** => following for whoknowz  component  */
 
@@ -235,9 +253,15 @@ class MobileStyle {
 
   ExamQuestionTopicDiv = {};
 
-  WrapExamQuestionAlertCalloutHelpDiv = {};
+  WrapExamQuestionFunctionCenterCalloutHelpReactFragment = {};
 
-  ExamQuestionAlertCalloutHelpButton = {};
+  ExamQuestionFunctionCenterCalloutHelpButton = {};
+
+  WrapExamQuestionFunctionCenterAddToFavoriteReactFragment = {};
+
+  ExamQuestionFunctionCenterAddToFavoriteButton = {};
+
+  ExamQuestionFunctionCenterOuterDiv = {};
 
   WrapExamQuestionAlertAlertImageDiv = {};
 

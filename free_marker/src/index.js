@@ -1326,6 +1326,10 @@ class CodegenNode {
         return _.upperFirst(this.getStoreFolderName());
     }
 
+    getNameOfBaseClassName() {
+        return `Base${this.getStoreClassName()}Store`;
+    }
+
     hasTitle() {
         return (!_.isUndefined(this.title));
     }
@@ -1815,6 +1819,8 @@ class ClassGenerator {
     indexFileSingleton = false;
     indexFileTailStmts = [];
 
+    isStoreFile = false;
+
     constructor(path) {
         this.filePath = path;
         this.classes = [];
@@ -1825,7 +1831,11 @@ class ClassGenerator {
         this.context = Util.getFileContextInRaw(this.filePath).split('\n');
     }
 
-    appendField(fieldName, defaultValue, macros = [], comments = []) {
+    setIsStoreFile() {
+        this.isStoreFile = true;
+    }
+
+    appendField(fieldName, defaultValue, macros = [], comments = [], type = '') {
         const stmt = [];
 
         for (const comment of comments) {
@@ -1838,7 +1848,7 @@ class ClassGenerator {
             stmt.push(`@${m}`);
         }
         stmt.push(`\n`);
-        stmt.push(`${fieldName} = ${defaultValue};`);
+        stmt.push(`${type} ${fieldName} = ${defaultValue};`);
         stmt.push(`\n`);
         Util.insertToArray(this.context, this.getIndexOfFieldSign(), ...stmt);
     }
@@ -2007,6 +2017,11 @@ class ClassGenerator {
     }
 
     importDefaultModule() {
+        if (this.isStoreFile) {
+            this.appendImport('UserInfoRef', '../../userInfo');
+
+        }
+
         this.appendImport('libpath', 'path');
         this.appendImport('_', 'lodash');
         this.appendImport('{ utiller as Util, exceptioner as ERROR, pooller as InfinitePool }', 'utiller');
@@ -2372,7 +2387,6 @@ class StoreBuilder extends BaseBuilder {
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         baseGenerator.appendImport('_', 'lodash');
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
-        baseGenerator.appendImport('UserInfoRef', '../../userInfo');
         baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
         const propsStmt = [];
@@ -2478,6 +2492,7 @@ class StoreBuilder extends BaseBuilder {
             `super.initial(obj)`,
             ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.setDefaultValues()`, `this.initial(props)`);
+        baseGenerator.setIsStoreFile();
         baseGenerator.needIndexFile(`${indexClassName}`);
         await baseGenerator.persist();
     }
@@ -2579,7 +2594,7 @@ class RemoteFunctionHandler {
             if (self.isWebPlatform())
                 stmts.push(...node.getConditions().map((each) => `${each}`));
             if (node.hasPaginate() && self.isWebPlatform()) {
-                stmts.push(`{limit:(stmt) => stmt.limit(${node.getPaginateSize()})}`)
+                stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.sizeOfPerPage)}`)
             }
             return stmts.join(',');
         }
@@ -2671,12 +2686,13 @@ class RemoteFunctionHandler {
 
                 if (node.isArray()) {
                     if (isWebPlatform() && node.hasPaginate()) {
+                        generator.appendField('sizeOfPerPage', node.getPaginateSize(), [], [], 'static')
                         generator.appendAsyncFunction(node.getFunctionNameOfNextFetch(), [
                                 ...node.getParamsOfPath(self.platform),
                                 `lastItem`,
                                 `...conditions`], [], [],
                             `const startAfterConditions = this.getStartAfterConditions(lastItem);`,
-                            `await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath('...startAfterConditions', '...conditions')})`
+                            `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...startAfterConditions', '...conditions')})`
                         )
                     }
 
@@ -2834,7 +2850,7 @@ class ComponentBuilder extends BaseBuilder {
             }
         );
 
-        baseGenerator.appendFunction('getComponentName',[],[],[],`return '${className}'`)
+        baseGenerator.appendFunction('getComponentName', [], [], [], `return '${className}'`)
 
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
@@ -2893,15 +2909,15 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
         }
 
-        if (this.containedFetchAttribute(componentNode.getStruct()) && !componentNode.isDisableInitFetch()) {
+        /** this.containedFetchAttribute(componentNode.getStruct())  讓每個component都執行fetch*/
+        if (!componentNode.isDisableInitFetch()) {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
                 `if(this.enableInitFetch) {`,
-                `self.getStore().fetch(this).then((obj) => {
-                self.getStore().onInitialFetchSucceed(obj)
-                self.onInitialFetchSucceed(obj)})}`
+                `self.getStore().fetch(this).then((collection) => {
+                    return self.getStore().onInitialFetchSucceed(collection)
+                }).then((result) => { Util.appendInfo('page silent')})}`
             )
-            baseGenerator.appendFunction(`onInitialFetchSucceed`, ['object']);
             baseGenerator.appendField('enableInitFetch', true)
             baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
                 `this.enableInitFetch = enable`);
@@ -3032,7 +3048,7 @@ class ComponentBuilder extends BaseBuilder {
         const children = param.children ? param.children : [];
         const stmt = [];
         const tag = param.tag;
-        if(_.isEqual(tag,'React.Fragment')) {
+        if (_.isEqual(tag, 'React.Fragment')) {
             delete props['className'];
             delete props['style'];
         }
