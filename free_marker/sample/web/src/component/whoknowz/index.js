@@ -20,6 +20,8 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
     constructor(props) {
         super(props);
         this.getStore().setConfuseId(this.paramOfCid);
+        this.getStore().setAnswerId(this.paramOfAid);
+
     }
 
     getInjectViewOfQuestionReactFragment(whoknowz) {
@@ -38,15 +40,18 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
     }
 
     getInjectPropsOfWhoknowzSubmitButton = () => {
-        return {disabled : this.getStore().isAnswerReliedOrOwner()}
+        return {disabled : this.getStore().isAnswerReliedOrOwner() ||
+                this.getStore().hasTargetAnswerId()}
     }
 
     getInjectPropsOfAnswerAnswerByTextTextField(answer) {
-        return {disabled : this.getStore().isAnswerReliedOrOwner()}
+        return {disabled : this.getStore().isAnswerReliedOrOwner() ||
+                this.getStore().hasTargetAnswerId()}
     }
 
     enableImageSelectView(multiple) {
-        if(this.getStore().isAnswerReliedOrOwner()) {
+        if(this.getStore().isAnswerReliedOrOwner() ||
+            this.getStore().hasTargetAnswerId()) {
             /** doing nothing */
         }else {
             return super.enableImageSelectView(multiple)

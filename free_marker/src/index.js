@@ -1475,8 +1475,12 @@ class CodegenNode {
         for (const segment of this.path.split('/')) {
             if (_.startsWith(segment, ':')) {
                 let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
-                if (_.isEqual(platform, 'web')) {
+                if (_.isEqual(param, 'uid') && _.isEqual(platform, 'web')) {
                     param += '= UserInfoRef.getUid()';
+                }
+
+                if (_.isEqual(platform, 'route')) {
+                    param += ` = ''`;
                 }
                 params.push(param);
             }
@@ -2710,7 +2714,7 @@ class RemoteFunctionHandler {
                     generateApiFunction(
                         Util.camel(`delete`, node.getFieldName()),
                         ['all = false', '...conditions'],
-                        [`return await self.deleteItems(path,all,...conditions)`], 'delete items')
+                        [`return await self.deleteItems(path,all,...conditions)`], 'delete fatefulItems')
 
                     generateApiFunction(
                         node.getFunctionNameOfSubmitItem(),
@@ -3758,7 +3762,7 @@ class AppBuilder
                     name: Util.camel('goto', component.name, component.isEditPage() ? 'editor' : '', 'page'),
                     arrow: true
                 },
-                ['component', ...component.getParamsOfPath()],
+                ['component', ...component.getParamsOfPath('route')],
                 [],
                 [],
                 `const route = \`${component.getPathOfRouterString()}${component.routeHash ? `/\${Util.getRandomHash(15)}` : ``}\``,
@@ -4504,6 +4508,8 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            node.setClick(false);
+
             if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) {
                 /** 就是把不是遠端欄位的UI給刪掉 */
                 delete node.view;
@@ -4651,6 +4657,7 @@ class ProjectFileHandler extends PathBase {
 
             if (Util.isEmptyFile(file.absolute)) {
                 await Util.deleteSelfByPath(folderOfFather, true);
+                continue;
             }
 
             if (this.isComponentOrStoreIndexFile(file) &&

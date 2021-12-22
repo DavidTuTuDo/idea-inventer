@@ -16,7 +16,10 @@ class BaseRouter {
             const history = component.props.history;
             history.push(path);
             this.setCurrentRoute(path);
+        } else{
+            Util.appendError('component 怪怪的哦')
         }
+
     }
 
     getEditorRouteString = () => {

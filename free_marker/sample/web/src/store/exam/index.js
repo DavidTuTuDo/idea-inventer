@@ -19,6 +19,8 @@ import UserInfo from "../../userInfo";
 import TestingRecordStore from "../examTestingRecord";
 import ExamCountsOfExamTodayStore from "../examCountsOfExamToday";
 import WhoknowzConfuseStore from "../whoknowzConfuse";
+import WhoknowzFavoriteStore from "../whoknowzFavorite";
+
 import {
     action,
     observable,
@@ -70,7 +72,7 @@ class ExamStore extends BaseExamStore {
         const questionIds = items.map((each) => each.qid);
         this.setQuestionConditions(this.getInArrayConditions(questionIds));
         this.setNextQuestionPageMode('custom');
-        if(!clearAll) {
+        if (!clearAll) {
             const qs = await this.fetchQuestions(this.getComponent());
             questions.push(...qs)
         }
@@ -104,16 +106,18 @@ class ExamStore extends BaseExamStore {
     getExamFilterTips = () => {
         const filter = Cookie.getExamFilter();
         const subject = filter.subject; // 'string'
-        const type = !!this.freeze ? 'freeze' :filter.type; // 'string' /** */
+        const type = !!this.freeze ? 'freeze' : filter.type; // 'string' /** */
         const range = filter.range; // [100, 105]
         const countsOfExam = filter.countsOfExam; //25 or 40
-
-        return {subject, type, range, countsOfExam};
+        const qid = filter.qid
+        return {subject, type, range, countsOfExam, qid};
     }
 
     async fetch(view) {
-        const {range, subject, type, countsOfExam} = this.getExamFilterTips();
+        const {range, subject, type, countsOfExam,qid} = this.getExamFilterTips();
+        console.log({range, subject, type, countsOfExam,qid})
         const questions = [];
+
         function getRandomCondition() {
             const conditions = [];
             if (!_.isEqual('綜合測驗', subject)) {
@@ -140,13 +144,17 @@ class ExamStore extends BaseExamStore {
                 break;
             case 'historyWrong':
                 this.getComponent().setScrollToBottomJobs(this.fetchExamsTestingRecords)
-                 const qs = await this.fetchExamsTestingRecords(true);
+                const qs = await this.fetchExamsTestingRecords(true);
                 questions.push(...qs)
                 break;
-             case 'freeze':
-                 /** 當作範例題目 */
-                 return {};
-                 break;
+            case 'freeze':
+                /** 當作範例題目 */
+                return {};
+                break;
+            case 'demo':
+                this.getComponent().clearScrollToBottomJobs();
+                this.setQuestionConditions(this.getInArrayConditions([qid]))
+                break;
             default:
                 Util.appendError(`8354 ==> type can't not be ${type}`);
                 /**
@@ -180,14 +188,24 @@ class ExamStore extends BaseExamStore {
     }
 
     async submitConfusedQuestion(question) {
-        const confused = new WhoknowzConfuseStore();
-        const item = await confused.submitConfuseItem(this.getComponent(),{
-            qid:question.id,
-            userId:UserInfo.getUid(),
-            isPublic:true,
-            tip:`請你幫幫我-${Util.getCurrentTimeFormat()}`
+        const item = await (new WhoknowzConfuseStore()).submitConfuseItem(this.getComponent(), {
+            qid: question.id,
+            userId: UserInfo.getUid(),
+            isPublic: true,
+            subject: question.subject,
+            tip: `請你幫幫我-${Util.getCurrentTimeFormat()}`
         })
         return item.value.id;
+    }
+
+    async submitToFavoriteQuestion(question) {
+        await (new WhoknowzFavoriteStore()).submitFavoriteItem(this.getComponent(), undefined, {
+            id: question.id,
+            qid: question.id,
+            subject: question.subject,
+            tip: undefined
+        })
+        return 'succeed';
     }
 
     async incrementCountsOfExamToday() {

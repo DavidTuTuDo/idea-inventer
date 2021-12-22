@@ -112,15 +112,17 @@ class ExamComponent extends BaseExamComponent {
         const self = this;
         const question = param.object;
         this.getStore().submitConfusedQuestion(question).then((cid) => {
-            self.gotoUrlWithNewTab(Router.gotoWhoknowzPage(undefined, cid));
+            self.gotoUrlWithNewTab(Router.gotoWhoknowzPage(this, cid));
         })
     }
 
     onAddToFavoriteButtonClicked(param) {
-        super.onAddToFavoriteButtonClicked(param);
         const self = this;
         const question = param.object;
-        self.showWarningSnackMessage(`尚未實作`)
+        this.getStore().submitToFavoriteQuestion(question).then((whatever) =>
+            self.showWarningSnackMessage(`已加入我的最愛`)
+        )
+
     }
 
     getInjectStyleOfQuestionFunctionCenterDiv(question) {

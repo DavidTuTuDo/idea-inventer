@@ -137,21 +137,31 @@ class MobileStyle {
 
   MainEditorDiv = {};
 
-  /** => following for myKindlyHelp  component  */
+  /** => following for myFatefulQuestions  component  */
 
-  MyKindlyHelpAnswerQuestionInfoReplyTimeTypography = {};
+  MyFatefulQuestionsFatefulItemQuestionInfoCreateTimeTypography = {};
 
-  MyKindlyHelpAnswerQuestionInfoSubjectInfoTypography = {};
+  MyFatefulQuestionsFatefulItemQuestionInfoSubjectInfoTypography = {};
 
-  MyKindlyHelpAnswerQuestionInfoDiv = {};
+  MyFatefulQuestionsFatefulItemQuestionInfoDiv = {};
 
-  MyKindlyHelpAnswerQuestionTopicTypography = {};
+  MyFatefulQuestionsFatefulItemQuestionTopicTypography = {};
 
-  ListMyKindlyHelpAnswerDiv = {};
+  ListMyFatefulQuestionsFatefulItemDiv = {};
 
-  MyKindlyHelpAnswerCard = {};
+  MyFatefulQuestionsFatefulItemCard = {};
 
-  MyKindlyHelpDiv = {};
+  MyFatefulQuestionsFilterQuestionTypeMenuItem = {};
+
+  ListMyFatefulQuestionsFilterQuestionTypeTextField = {};
+
+  MyFatefulQuestionsFilterWhichSubjectMenuItem = {};
+
+  ListMyFatefulQuestionsFilterWhichSubjectTextField = {};
+
+  MyFatefulQuestionsFilterDiv = {};
+
+  MyFatefulQuestionsDiv = {};
 
   /** => following for whoknowz  component  */
 

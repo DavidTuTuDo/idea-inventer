@@ -5,9 +5,9 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseMyKindlyHelpAnswerStore from "./BaseMyKindlyHelpAnswerStore";
+import BaseWhoknowzFavoriteStore from "./BaseWhoknowzFavoriteStore";
 
-class MyKindlyHelpAnswerStore extends BaseMyKindlyHelpAnswerStore {
+class WhoknowzFavoriteStore extends BaseWhoknowzFavoriteStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,4 +16,4 @@ class MyKindlyHelpAnswerStore extends BaseMyKindlyHelpAnswerStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MyKindlyHelpAnswerStore;
+export default WhoknowzFavoriteStore;

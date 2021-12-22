@@ -197,7 +197,7 @@ class BaseComponent extends React.Component {
             Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
         } finally {
             self.jobExecutorLock = false
-            await this.invalidateNextPage();
+            await this.invalidateNextPageBehavior();
         }
     }
 
@@ -207,6 +207,7 @@ class BaseComponent extends React.Component {
             this.hasScrollToBottomTask() &&
             !this.canVerticalScrollable()
         ) {
+            Util.appendInfo(`補花功能啟動`)
             await this.jobExecutor()
         }
     }

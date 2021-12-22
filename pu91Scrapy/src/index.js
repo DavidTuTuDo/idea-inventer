@@ -30,7 +30,7 @@ const INVOKE_REAL_CHROME = false;
                 Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
                 const ranks = await fetchRankTable(Config.RANK_TABLE_TYPE[maintype].ID, Config.RANK_TABLE_TYPE[maintype].SORT)
                 for (const rank of ranks) {
-                    for (const each of rank.items) {
+                    for (const each of rank.fatefulItems) {
                         const obj = {}
                         obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
                         await database.lazyInsertRecord(tableName,
@@ -44,7 +44,7 @@ const INVOKE_REAL_CHROME = false;
          *
          * sortType sample => {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}
          *
-         * return:[...{type:'YEAR',items:[...{name:'歌名',rank:1,singer:{name:'人名'} }]}]
+         * return:[...{type:'YEAR',fatefulItems:[...{name:'歌名',rank:1,singer:{name:'人名'} }]}]
          *
          * */
         async function fetchRankTable(mainType = Config.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
@@ -250,7 +250,7 @@ const INVOKE_REAL_CHROME = false;
                 Util.appendError(`latestSongPersist 抓取失敗了喔～`);
                 return;
             }
-            const songs = song[0].items;
+            const songs = song[0].fatefulItems;
             const exist = await database.fetchRecords('SONG');
             _.pullAllWith(song, exist, (s1, s2) => _.isEqual(s1.name, s2.name) && _.isEqual(s1.singer, s2.singer))
             Util.appendInfo(`latestSongPersist() 抓了新歌 ${songs.length} 首`);

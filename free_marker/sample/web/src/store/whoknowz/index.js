@@ -30,8 +30,19 @@ class WhoknowzStore extends BaseWhoknowzStore {
     @observable
     cid = '';
 
+    @observable
+    aid = '';
+
     setConfuseId(cid) {
         this.cid = cid;
+    }
+
+    setAnswerId(aid) {
+        this.aid = aid;
+    }
+
+    hasTargetAnswerId() {
+        return !_.isEmpty(this.aid);
     }
 
     @action
@@ -63,6 +74,9 @@ class WhoknowzStore extends BaseWhoknowzStore {
                 where:(stmt) => stmt.where('cid','==',this.getHeadConfuse().getId())
             }])
             await this.fetchAnswers(this.getComponent());
+        } else if(this.hasTargetAnswerId()){
+            this.setAnswerConditions(this.getInArrayConditions([this.aid]));
+            await this.fetchAnswers(this.getComponent());
         } else {
             this.pushAnswer({})
         }
@@ -88,6 +102,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
             answer.setCid(this.getHeadConfuse().getId());
             answer.setQid(this.getHeadConfuse().getQid());
             answer.setUserId(UserInfo.getUid());
+            answer.setSubject(this.getHeadConfuse().getSubject())
             await answer.submitAnswerItem(this.getComponent());
             this.invalidateSubmitString();
         }

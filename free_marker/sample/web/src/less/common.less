@@ -208,6 +208,7 @@
 .MainEnterPointPaper {
   /** style */
   height: 6vh;
+  min-height: 60px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -469,7 +470,7 @@
 .PurchaseDiv {
   /** style */
   display: flex;
-  width: 99%;
+  width: 90%;
   flex-direction: column;
   justify-content: center;
 }
@@ -615,28 +616,52 @@
   /** style */
 }
 
-/** following for myKindlyHelp  component used  */
+/** following for myFatefulQuestions  component used  */
 
-.MyKindlyHelpDiv {
+.MyFatefulQuestionsDiv:extend(.CenterInParentColumn all) {
+}
+
+.MyFatefulQuestionsFilterDiv:extend(.ExamHistoryFilterDiv) {
+  justify-content: space-between;
+  padding-right: 100px;
+  padding-left: 100px;
+}
+
+.ListMyFatefulQuestionsFilterWhichSubjectTextField {
+  /** style */
+  margin-left: 80px;
+}
+
+.MyFatefulQuestionsFilterWhichSubjectMenuItem {
   /** style */
 }
 
-.MyKindlyHelpAnswerCard {
+.ListMyFatefulQuestionsFilterQuestionTypeTextField {
+  /** style */
+  margin-right: 80px;
+}
+
+.MyFatefulQuestionsFilterQuestionTypeMenuItem {
+  /** style */
+}
+
+.MyFatefulQuestionsFatefulItemCard {
   /** style */
   margin: 15px;
   padding: 10px;
+  width: 90vw;
   max-width: 880px;
 }
 
-.ListMyKindlyHelpAnswerDiv {
+.ListMyFatefulQuestionsFatefulItemDiv {
   /** style */
 }
 
-.MyKindlyHelpAnswerQuestionTopicTypography {
+.MyFatefulQuestionsFatefulItemQuestionTopicTypography {
   /** style */
 }
 
-.MyKindlyHelpAnswerQuestionInfoDiv {
+.MyFatefulQuestionsFatefulItemQuestionInfoDiv {
   /** style */
   display: flex;
   flex-direction: row;
@@ -644,11 +669,11 @@
   margin-top: 15px;
 }
 
-.MyKindlyHelpAnswerQuestionInfoSubjectInfoTypography {
+.MyFatefulQuestionsFatefulItemQuestionInfoSubjectInfoTypography {
   /** style */
 }
 
-.MyKindlyHelpAnswerQuestionInfoReplyTimeTypography {
+.MyFatefulQuestionsFatefulItemQuestionInfoCreateTimeTypography {
   /** style */
 }
 
