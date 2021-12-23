@@ -109,6 +109,8 @@ class MobileStyle {
 
   MainEditorCountdownPaper = {};
 
+  MainEditorEnterPointIndexOfSequenceTextField = {};
+
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};
@@ -245,7 +247,7 @@ class MobileStyle {
 
   WrapExamQuestionChoiceStatementDiv = {};
 
-  ExamQuestionChoiceStatementButton = { fontSize: "2.1rem" };
+  ExamQuestionChoiceStatementButton = {};
 
   ListExamQuestionChoiceDiv = {};
 

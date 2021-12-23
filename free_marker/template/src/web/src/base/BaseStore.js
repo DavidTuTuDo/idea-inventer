@@ -65,11 +65,11 @@ class BaseStore extends ClientRemoteApi {
         return this.component;
     }
 
+    @action
     setAppBarHeight(height) {
         this.appBarHeight = height;
     }
 
-    @action
     getAppBarHeight() {
         return this.appBarHeight;
     }
@@ -159,7 +159,10 @@ class BaseStore extends ClientRemoteApi {
     }
 
     normalizeTimestamp(obj) {
-        return obj.toDate();
+        if(obj instanceof this.FirebaseTimestampClass())
+            return obj.toMillis();
+        else
+            return obj;
     }
 
     getUpdateTime() {

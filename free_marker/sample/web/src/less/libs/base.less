@@ -1,8 +1,56 @@
+@desktop: ~'only screen and (min-width: 1025px) and (max-width: 1280px)';
+@phone: ~'only screen and (min-width: 320px) and (max-width: 600px)';
+@tablet: ~'only screen and (min-width: 601px) and (max-width: 1024px)';
+
 .CenterInParentRow {
   flex-direction: row;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+/** countdown */
+
+
+.BaseCountdownTitleTypography {
+  font-size: 2.8rem;
+  @media @phone {
+    font-size: 1.6rem;
+  }
+}
+
+.BaseCountdownCountTypography {
+  font-size: 2rem;
+
+  @media @phone {
+    font-size: 1.3rem;
+  }
+}
+
+.BaseCountdownUnitTypography {
+  font-size: 1.5rem;
+
+  @media @phone {
+    font-size: 1.0rem;
+  }
+}
+
+
+.BaseCountdownCountCard:extend(.CenterInParentColumn) {
+  margin: 10px;
+  padding: 10px;
+  min-width: 80px;
+  @media @phone {
+    min-width: 50px;
+  }
+
+}
+
+.BaseCountdownCountDiv:extend(.CenterInParentColumn) {
+}
+
+.ListBaseCountdownCountDiv:extend(.CenterInParentRow) {
+
 }
 
 .StickyOnTheHead {
@@ -11,9 +59,6 @@
 
 .CenterInParentColumn:extend(.CenterInParentRow all) {
   flex-direction: column;
-}
-
-.BaseShortcutItemView {
 }
 
 .BaseListEmptyDiv:extend(.CenterInParentColumn all) {
@@ -27,7 +72,7 @@
 }
 
 .BaseListEmptyRetryButton {
-    margin-top: 20px;
+  margin-top: 20px;
 }
 
 .BaseAlertDialog {
@@ -40,16 +85,24 @@
 }
 
 .BaseImageDialogImg {
-
+  width: 80vw;
 }
 
 .BaseImageDialogDiv {
 
 }
 
+/** drawer */
+
+
+.BaseShortcutItemView {
+}
 
 .BaseShortcutMUIconView {
   font-size: 30px;
+  @media @phone {
+    font-size: 25px;
+  }
 }
 
 .BaseShortcutItemAvatarView {
@@ -57,7 +110,12 @@
 }
 
 .BaseShortcutItemTextView {
-  color: black;
+  font-size: 1.6rem;
+
+  @media @phone {
+    font-size: 1.1rem;
+  }
+
 }
 
 .BaseShortcutItemIconView {
@@ -69,6 +127,9 @@
 
 .BaseShortcutNestedListView {
   padding-left: 20px;
+  @media @phone {
+    padding-left: 5px;
+  }
 }
 
 .BaseComponentErrorViewPaper {
@@ -136,17 +197,6 @@
 
 .BaseComponentErrorViewRetryButton {
   margin-top: 30px;
-}
-
-.BaseCountdownCountTypography {
-  font-size: 2.4rem;
-}
-
-.BaseCountdownUnitTypography {
-}
-
-.BaseCountdownTitleTypography {
-  font-size: 1.8rem;
 }
 
 .BaseSnackAlert {

@@ -28,6 +28,7 @@ import {isMobile} from 'react-device-detect'
 import ImageDialogView from './ImageDialogView';
 import UserInfo from '../userInfo';
 import EventBus from "./CommonEventBus";
+import "../less";
 
 class BaseComponent extends React.Component {
     listOfFunctionOfUnsubscribe = [];
@@ -35,7 +36,7 @@ class BaseComponent extends React.Component {
     componentStyle = {}
     jobsOfScrollToBottom = [];
     jobExecutorLock = false;
-    initialFetchSucceed = false;
+    loginDialogRef = React.createRef();
 
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
 
@@ -110,7 +111,7 @@ class BaseComponent extends React.Component {
         this.fileChooserInputRef = React.createRef();
         if (!this.isNavigationView() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
-            this.getStore().setAppBarHeight(isMobile ? 100 : 64);
+            this.getStore().setAppBarHeight(isMobile ? 60 : 64);
         }
         this.imageDialogRef = React.createRef();
     }
@@ -164,7 +165,7 @@ class BaseComponent extends React.Component {
                     return;
                 }
 
-                if(!this.getStore().hasNextPage()) {
+                if (!this.getStore().hasNextPage()) {
                     Util.appendInfo(`已沒有下一頁的資料`);
                     return;
                 }
@@ -329,6 +330,8 @@ class BaseComponent extends React.Component {
                 {self.renderImageDialog()}
 
                 {self.renderSnackView()}
+
+                {self.renderLoginRequiredDialogView()}
 
             </div>)
     }
@@ -614,12 +617,12 @@ class BaseComponent extends React.Component {
         const TimeDisplayView = ({days, hours, minutes, seconds, completed}) => {
             const UnitView = (({count, unit}) => {
                 return (
-                    <Card style={{
-                        ...this.centerInParent('column'),
-                        ...{padding: 10, margin: 10, width: '16vw'}
-                    }}>
-                        <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
-                        <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
+                    <Card
+                        className={"BaseCountdownCountCard"}>
+                        <Typography className={"BaseCountdownCountTypography"}>
+                            {count}</Typography>
+                        <Typography className={"BaseCountdownUnitTypography"}>
+                            {unit}</Typography>
                     </Card>
                 )
             });
@@ -633,16 +636,14 @@ class BaseComponent extends React.Component {
                     {unit: '分鐘', count: minutes},
                     {unit: '秒', count: seconds}]
                 return (
-                    <div style={
-                        {
-                            ...this.centerInParent('column')
-                        }}>
+                    <div
+                        className={"BaseCountdownCountDiv"}>
                         <Typography
-                            className={"BaseCountdownTitleTypography"}>{title}</Typography>
-
+                            className={"BaseCountdownTitleTypography"}>
+                            {title}</Typography>
                         <div/>
                         <div
-                            style={{...this.centerInParent('row')}}>
+                            className={"ListBaseCountdownCountDiv"}>
                             {times.map((each) =>
                                 <UnitView
                                     key={each.unit}
@@ -726,16 +727,24 @@ class BaseComponent extends React.Component {
         this.showInfoSnackMessage(`已複製連結`);
     }
 
-    renderLoginRequiredDialogView = (ref) => {
+    renderLoginRequiredDialogView = () => {
         const self = this;
         return this.renderAlertDialog({
-            ref: ref,
+            ref: self.loginDialogRef,
             title: "此功能必須登入",
-            content: "此功能必須登入,點擊確認後將跳轉至登入頁面",
+            content: "此功能必須登入,點擊確認後將喚起登入頁面",
             component: this,
             needActionButtons: true,
             task: async () => await self.invokeLoginBehavior(),
         })
+    }
+
+    getLoginDialogRef = () => {
+        return this.loginDialogRef.current;
+    }
+
+    enableLoginConfirmDialog = () => {
+        this.getLoginDialogRef().open();
     }
 
     async invokeLoginBehavior() {

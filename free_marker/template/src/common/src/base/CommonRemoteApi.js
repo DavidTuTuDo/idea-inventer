@@ -25,17 +25,21 @@ class CommonRemoteApi {
         return firebase.getFirestoreIncrement(delta);
     }
 
-    getObjectOfTimeStamp(ts) {
+    getFirebaseTimestampObject(ts) {
         return firebase.getFirestoreTimeStamp(ts);
     }
 
-    normalizeTimestamp(obj) {
+    FirebaseTimestampClass() {
+        return firebase.FirebaseTimestamp();
+    }
+
+    toFireBaseTimestampObject(obj) {
         if (obj instanceof firebase.FirebaseTimestamp) {
             return obj;
         } else {
             try {
                 const ts = moment(obj).valueOf();
-                return this.getObjectOfTimeStamp(ts);
+                return this.getFirebaseTimestampObject(ts);
             } catch (error) {
                 return this.getObjectOfCurrentTimeStamp();
             }

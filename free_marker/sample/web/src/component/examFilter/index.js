@@ -28,8 +28,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
             const route = enterPoint.route;
             if (route.startsWith(`dialog`)) {
                 this.getStore().setSubject(this.getTitle());
-            } else if (_.isEqual(route, 'historyWrong')) {
-                this.gotoExamPageWithCookie({type: route});
             } else {
                 this.handleCustomRouter(route);
                 this.dismiss();
@@ -43,6 +41,14 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
         return Util.getVisibleOrHidden(!_.isEqual(this.getTitle(), '綜合測驗'))
+    }
+
+    gotoExamPageWithCookie = (obj) => {
+        this.dismiss();
+        Util.syncDelay(10).then((result) => {
+            Cookie.setExamFilter(obj);
+            Router.gotoExamPage(this.getComponentInstance())
+        })
     }
 
 
@@ -76,11 +82,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         const countsOfExam = this.getStore().getRandomTest().getSelectedCountsOfExam();
         const result = {range, countsOfExam, type: 'random', subject: this.getStore().getSubject()};
         this.gotoExamPageWithCookie(result);
-    }
-
-    gotoExamPageWithCookie(obj) {
-        Cookie.setExamFilter(obj);
-        Router.gotoExamPage(this.getComponentInstance())
     }
 
     onFastRangeButtonClicked(param) {

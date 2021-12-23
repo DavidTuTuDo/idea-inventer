@@ -93,7 +93,7 @@
 
 .NavigatorAppBarAppBar {
   /** style */
-  height: 100px;
+  height: 60px;
   display: flex;
   justify-content: center;
 }
@@ -104,7 +104,6 @@
 
 .NavigatorAppBarToolBarMenuIconButton {
   /** style */
-  width: 60px;
 }
 
 .NavigatorAppBarToolBarMenuIconMenuIcon {
@@ -113,7 +112,7 @@
 
 .NavigatorAppBarToolBarTitleTypography {
   /** style */
-  font-size: 1.8rem;
+  font-size: 1rem;
 }
 
 .NavigatorAppBarToolBarToEditModeButton {
@@ -122,7 +121,7 @@
 
 .NavigatorAppBarToolBarLoginButton {
   /** style */
-  font-size: 1.8rem;
+  font-size: 0.8rem;
 }
 
 .NavigatorDrawerDrawer {
@@ -147,8 +146,7 @@
 
 /** following for main  component used  */
 
-.MainDiv {
-  /** style */
+.MainDiv:extend(.CenterInParentColumn) {
 }
 
 .MainViewPagerDiv {
@@ -185,7 +183,7 @@
 
 .MainEnterPointTitleTypography {
   /** style */
-  font-size: 2.4rem;
+  font-size: 1rem;
 }
 
 .MainCountdownPaper {
@@ -289,6 +287,7 @@
 
 .ExamQuestionTopicNameTypography {
   /** style */
+  font-size: 1.5rem;
 }
 
 .WrapExamQuestionTopicNameDiv {
@@ -305,6 +304,7 @@
 
 .ExamQuestionTopicImageUrlImg {
   /** style */
+  width: 140px;
 }
 
 .ExamQuestionChoiceDiv {
@@ -316,7 +316,9 @@
 }
 
 .ExamQuestionChoiceStatementButton {
-  /** style */
+  text-align: left;
+  font-size: 1.4rem;
+  text-transform: none;
 }
 
 .WrapExamQuestionChoiceStatementDiv {
@@ -333,6 +335,7 @@
 
 .ExamQuestionChoiceImageUrlImg {
   /** style */
+  width: 130px;
 }
 
 .ExamQuestionTipTypography {
@@ -582,6 +585,10 @@
   /** style */
 }
 
+.MainEditorEnterPointIndexOfSequenceTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
 .MainEditorCountdownPaper:extend(.MainCountdownPaper all) {
   /** style */
 }
@@ -788,18 +795,4 @@
 
 .ExamEditorQuestionYearTextField:extend(.BaseEditorTextField all) {
   /** style */
-}
-
-/** ======== following for homeless ========= */
-
-.BaseCountdownCountTypography {
-  font-size: 3rem;
-}
-
-.BaseCountdownUnitTypography {
-  font-size: 1.8rem;
-}
-
-.BaseCountdownTitleTypography {
-  font-size: 3.5rem;
 }

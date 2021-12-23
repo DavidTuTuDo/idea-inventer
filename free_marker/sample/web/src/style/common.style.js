@@ -105,6 +105,8 @@ class CommonStyle {
 
   MainEditorCountdownPaper = {};
 
+  MainEditorEnterPointIndexOfSequenceTextField = {};
+
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};

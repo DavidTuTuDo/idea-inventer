@@ -19,6 +19,7 @@ import {
     IconButton,
     ListItemIcon,
     ListItem,
+    Typography,
     ListSubheader,
     ListItemAvatar,
     Avatar
@@ -28,11 +29,12 @@ import * as MUIcon from '@material-ui/icons';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
+import {isMobile} from 'react-device-detect'
 
 const useStyles = theme => ({
     paper: {
         marginTop: "50px",
-        width: '40%',
+        width: isMobile? '55%': '40%',
         backgroundColor: '#000000'
     }
 });
@@ -126,8 +128,8 @@ class NavigatorComponent extends BaseNavigatorComponent {
                     onClick={() => self.handleShortcutClicked(shortcut)}>
                     <ListItemIconView img={shortcut.icon}/>
                     <ListItemText
-                        className={'BaseShortcutItemTextView'}
-                        primary={shortcut.getTitle()}/>
+                        disableTypography
+                        primary={<Typography className={'BaseShortcutItemTextView'}>{shortcut.getTitle()}</Typography>}/>
                     <ListItemTailIconView shortcut={shortcut}/>
                 </ListItem>
 

@@ -7,14 +7,7 @@ import {observer, inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {Redirect} from 'react-router-dom';
 import React from 'react';
-import Router from '../../router';
-import path from 'path';
-import Cookies from "../../cookie";
-import UserInfo from '../../userInfo';
-import {utiller as Util} from 'utiller';
-import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
-import Countdown from "react-countdown";
-import {Popover,Typography} from "@material-ui/core";
+import moment from 'moment';
 
 @inject("main")
 @observer
@@ -23,15 +16,17 @@ class MainComponent extends BaseMainComponent {
     constructor(prop) {
         super(prop);
         this.props.main.setState('stable');
+        setInterval(this.tick,100);
     }
 
 
-    renderCountdownView(){
+    getInjectViewOfCountdownPaper() {
         const CountdownView = this.CountdownView;
-        let time = this.getStore().getExpired().getExpiredTime().toMillis();
+        let time = this.getStore().getExpired().getExpiredTime();
         return <CountdownView
             title={'距離學測'}
             date={time}/>
+
     }
 
     componentDidMount() {
@@ -39,10 +34,21 @@ class MainComponent extends BaseMainComponent {
     }
 
     onViewPagerDivClicked(param) {
-        console.log(param.object.image);
         this.openImageDialog(param.object.image);
     }
 
+    /** 因為countdown自己會計算時間差, 所以只能藉由觸發他改變時間 */
+    isOdd = false;
+
+    tick = () => {
+        const self = this;
+        const beforeTimestamp = self.getStore().getExpired().getExpiredTime();
+        if (beforeTimestamp > 0) {
+            const newTime = self.isOdd ? beforeTimestamp - 1 : beforeTimestamp + 1;
+            self.getStore().getExpired().setExpiredTime(newTime);
+        }
+        self.isOdd = !self.isOdd;
+    }
 
 
     /** -------------------- functions -------------------- **/

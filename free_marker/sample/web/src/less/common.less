@@ -135,9 +135,10 @@
 .NavigatorAppBarToolBarTitleTypography {
   /** style */
   flex-grow: 1;
+  font-size: 1.6rem;
 }
 
-.NavigatorAppBarToolBarToEditModeButton {
+.NavigatorAppBarToolBarToEditModeButton:extend(.NavigatorAppBarToolBarLoginButton) {
   /** style */
   margin-right: 10px;
 }
@@ -160,6 +161,7 @@
 
 .NavigatorDrawerShortcutTitleTypography {
   /** style */
+  font-size: 3rem;
 }
 
 .NavigatorDrawerShortcutIconImg {
@@ -168,10 +170,7 @@
 
 /** following for main  component used  */
 
-.MainDiv {
-  /** style */
-  display: flex;
-  flex-direction: column;
+.MainDiv:extend(.CenterInParentColumn) {
 }
 
 .MainViewPagerDiv {
@@ -202,7 +201,6 @@
   height: 28vh;
   overflow: hidden;
   position: relative;
-  border-radius: 8px;
 }
 
 .MainEnterPointPaper {
@@ -226,6 +224,8 @@
 .ListWrapMainEnterPointDiv {
   /** style */
   margin-top: 40px;
+  margin-left: 5px;
+  margin-right: 5px;
   padding: 5px;
 }
 
@@ -395,8 +395,7 @@
 
 .ExamQuestionTopicImageUrlImg {
   /** style */
-  width: 120px;
-  height: 120px;
+  width: 200px;
   margin: 3px;
 }
 
@@ -732,6 +731,10 @@
 }
 
 .MainEditorEnterPointXsTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.MainEditorEnterPointIndexOfSequenceTextField:extend(.BaseEditorTextField all) {
   /** style */
 }
 

@@ -50,6 +50,9 @@ class CodegenNode {
     password;
     components;
 
+    loginOnlyPage = false;
+    /** 就是進入這些頁面必須是login,寫在 BaseMyRouter裏面,component level的設定 */
+
     loginRequiredAlert = false;
     /** 執行按鈕按鈕需要 login 就會給提示 */
 
@@ -111,10 +114,12 @@ class CodegenNode {
     /** {threshold:10, size:6} ,array專用 可以指定page size, 觸及底部的threshold(就是距離底部多少就要觸發下一頁,預設是1) */
 
     conditions = [];
-    /** array裏面放的就是firestore裡的 Query operators 例：
+    /** firestore compound 的query敘述句
      *
+     * array裏面放的就是firestore裡的 Query operators 例：
      * key 是指 operator type, 用來sorting的
-     * { where:(stmt) => stmt.where('year','==', 108)} */
+     * { where:(stmt) => stmt.where('year','==', 108)}
+     * */
 
     textOfWatermark;
     /** 用來當作浮水印的字樣 */
@@ -532,7 +537,7 @@ class CodegenNode {
     }
 
     hasValidAttributeParent() {
-        return this.getPreciseViewParent().isValidNode();
+        return this.getPreciseAttributeParent().isValidNode();
     }
 
     /** 像是編輯一個item, 這種屬許item等級的作業, item自己做的事情 */
@@ -554,18 +559,25 @@ class CodegenNode {
         return Util.camel('get', 'observable', this.getObservableName());
     }
 
+    allowOfParam() {
+        return this.isAttribute() && this.hasValidAttributeParent() || this.needParentParam();
+    }
+
     getObservableName() {
         let objName = '';
-        switch (this.getType()) {
-            case 'arrayItem':
-                objName = this.getName();
-                break;
-            case 'array':
-            case 'object':
-                objName = this.getPreciseAttributeParentName();
-                break;
-            default:
-                objName = this.getPreciseAttributeParentName();
+        if (this.allowOfParam()) {
+            switch (this.getType()) {
+                case 'arrayItem':
+                    objName = this.getName();
+                    break;
+                case 'array':
+                case 'object':
+                    objName = this.getPreciseAttributeParentName();
+                    break;
+                default:
+                    objName = this.getPreciseAttributeParentName();
+                    break;
+            }
         }
         return objName;
     }
@@ -819,11 +831,6 @@ class CodegenNode {
             })}`)
         }
 
-        if (this.hasLoginRequiredDialog()) {
-            stmt.push(`{
-            this.renderLoginRequiredDialogView(${this.getLoginAlertDialogVariable()})
-            }`)
-        }
     }
 
     needEditPage() {
@@ -973,9 +980,6 @@ class CodegenNode {
         return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref');
     }
 
-    getLoginAlertDialogVariable() {
-        return Util.camel(this.getName(), this.getView(), 'loginAlertDialog', 'ref');
-    }
 
     getViewParamVariable() {
         return Util.camel(this.getName(), this.getView(), 'View', 'Param');
@@ -996,10 +1000,6 @@ class CodegenNode {
                 stmt.push(`let ${this.getViewParamVariable()}`);
         }
 
-        if (this.hasLoginRequiredDialog()) {
-            stmt.push(`const ${this.getLoginAlertDialogVariable()} = React.createRef()`);
-        }
-
         if (this.isAppBarView() && this.isScrollingHideDependOnRootNode()) {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
@@ -1018,7 +1018,7 @@ class CodegenNode {
         }
 
         /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
-        if (this.needParentParam() || (this.isAttribute() && this.hasValidAttributeParent())) {
+        if (this.allowOfParam()) {
             /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
             if (useViewModuleAndComponentModuleMechanism) {
                 stmt.push(`const ${this.isArrayItem() ? this.getFieldName() : this.getPreciseAttributeParentName()}
@@ -1304,7 +1304,7 @@ class CodegenNode {
         let object = '';
         if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
             object = this.getName();
-        else if (this.isAttribute() || this.needParentParam()) {
+        else if (this.allowOfParam()) {
             object = this.getPreciseAttributeParent().getName();
         }
 
@@ -1678,7 +1678,7 @@ class CodegenNode {
         let param = '';
         if (this.isAttribute() && this.isArrayItem()) {
             param = this.getName();
-        } else if (this.isAttribute() || this.needParentParam()) {
+        } else if (this.allowOfParam()) {
             const node = this.getPreciseAttributeParent();
             if (node.isValidNode())
                 param = node.getName();
@@ -2666,9 +2666,12 @@ class RemoteFunctionHandler {
             for (const child of node.getPreciseAttributeChildren()) {
                 if (_.isEqual(child, 'updateTime')) continue;
                 if (!child.isColumnAttribute()) continue;
-                if (child.isTimeStamp()) {
+                if(child.isNumber()) {
+                    contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
+                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
+                }else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                this.normalizeTimestamp(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();\/\/${child.getType()}`);
+                this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();\/\/${child.getType()}`);
                 } else {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
@@ -3343,7 +3346,7 @@ class ComponentBuilder extends BaseBuilder {
                 generator.appendImport('UserInfoRef', '../../userInfo');
                 onClickStmts.push(
                     `if(!UserInfoRef.isLoginInSucceed()) {
-                        ${node.getLoginAlertDialogVariable()}.current.open();
+                        self.enableLoginConfirmDialog();
                         return;
                     }`
                 )
@@ -3748,6 +3751,19 @@ class AppBuilder
     }
 
     async buildRouterFile(sourceObj) {
+
+        function appendLoginStmts(component) {
+            const stmts = []
+            if (component.loginOnlyPage) {
+                stmts.push(
+                    'if(!UserInfoRef.isLoginInSucceed() && component !== undefined) {',
+                    'component.enableLoginConfirmDialog()',
+                    'return;}',
+                )
+            }
+            return stmts;
+        }
+
         const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
             `router`,
             `BaseMyRouter.js`
@@ -3755,6 +3771,7 @@ class AppBuilder
         baseRouterGenerator.appendClass(
             `BaseMyRouter`, {name: `BaseRouter`, from: '../base/BaseRouter'}
         );
+        baseRouterGenerator.appendImport('UserInfoRef', '../userInfo');
 
         for (const component of sourceObj.components) {
             if (!component.hasPath()) continue;
@@ -3765,6 +3782,7 @@ class AppBuilder
                 ['component', ...component.getParamsOfPath('route')],
                 [],
                 [],
+                ...appendLoginStmts(component),
                 `const route = \`${component.getPathOfRouterString()}${component.routeHash ? `/\${Util.getRandomHash(15)}` : ``}\``,
                 `this.routeTo(component, route);`,
                 `return route;`

@@ -167,36 +167,42 @@ import moment from 'moment';
         await api.deleteShortcuts();
         await api.submitShortcuts(
             {
-                title: '我的數據',
-                icon: 'path:ListAlt',
-                route: `path:https://material-ui.com/components/material-icons/`
+                title: '我的歷史錯誤',
+                icon: 'muIcon:Rule',
+                route: `route:historyWrong`
+            },
+            {
+                title: '問過的問題',
+                icon: 'muIcon:HistoryToggleOff',
+                route: `route:myFatefulQuestions:stupidAsk`
+            },
+            {
+                title: '回答的題目',
+                icon: 'muIcon:Rule',
+                route: `route:myFatefulQuestions:kindlyReply`
             }
             , {
-                title: '我的最愛',
+                title: '最愛的題目',
                 icon: 'muIcon:FavoriteBorder',
+                route: `route:myFatefulQuestions:favorite`,
+            },
+            {
+                title: '相關網站',
+                icon: 'muIcon:Whatshot',
                 subs: [
                     {
-                        title: '數學',
-                        icon: 'path:https://is4-ssl.mzstatic.com/image/thumb/Purple114/v4/f6/17/2f/f6172f86-4b1e-529a-b01b-da9b32ea809f/source/256x256bb.jpg',
-                        route: 'path:https://www.google.com/'
+                        title: '大考入學中心',
+                        icon: 'muIcon:School',
+                        route: 'path:https://www.ceec.edu.tw/'
                     },
                     {
-                        title: '英文',
-                        icon: 'muIcon:Explicit',
-                        route: `route:main`,
+                        title: '大數數學',
+                        icon: 'muIcon:Calculate',
+                        route: `path:https://bignmath.weebly.com/`,
 
                     }
                 ]
             },
-            {
-                title: '發燒',
-                icon: 'muIcon:Whatshot',
-                route: `route:exam:31232:tedsld`
-            },
-            {
-                title: '最常錯誤',
-                icon: 'path:https://assets.mydogsname.com/images/categories/003-dog.png'
-            }
         )
 
         await api.submitHistoryFilter({
@@ -259,14 +265,6 @@ import moment from 'moment';
             ]
         })
         await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
-
-        await api.submitMyShortcuts(
-            'BYnJOAlUa5aCnpxvoeiIyCzRXSt1',
-            {
-                title: '我的數據',
-                icon: 'muIcon:AddAlarm',
-                route: 'path:https://www.google.com/'
-            })
 
         await api.submitPurchasePlans(
             {id: 1001, pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},

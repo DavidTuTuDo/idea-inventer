@@ -105,6 +105,8 @@ class AppStyle {
 
   MainEditorCountdownPaper = {};
 
+  MainEditorEnterPointIndexOfSequenceTextField = {};
+
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};
