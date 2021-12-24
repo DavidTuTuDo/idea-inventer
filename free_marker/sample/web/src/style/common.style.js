@@ -53,6 +53,8 @@ class CommonStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
+  WrapExamEditorQuestionFunctionCenterOuterDiv = {};
+
   ExamEditorQuestionFunctionCenterOuterDiv = {};
 
   ExamEditorQuestionAlertOuterDiv = {};
@@ -268,6 +270,8 @@ class CommonStyle {
   WrapExamQuestionFunctionCenterAddToFavoriteReactFragment = {};
 
   ExamQuestionFunctionCenterAddToFavoriteButton = {};
+
+  WrapExamQuestionFunctionCenterOuterDiv = {};
 
   ExamQuestionFunctionCenterOuterDiv = {};
 

@@ -125,7 +125,7 @@ class ExamComponent extends BaseExamComponent {
 
     }
 
-    getInjectStyleOfQuestionFunctionCenterDiv(question) {
+    getWrapInjectStyleOfQuestionFunctionCenterDiv(question) {
         return Util.getVisibleOrHidden(question.isReply() && !this.getStore().isFreezePage())
     }
 

@@ -57,6 +57,8 @@ class MobileStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
+  WrapExamEditorQuestionFunctionCenterOuterDiv = {};
+
   ExamEditorQuestionFunctionCenterOuterDiv = {};
 
   ExamEditorQuestionAlertOuterDiv = {};
@@ -272,6 +274,8 @@ class MobileStyle {
   WrapExamQuestionFunctionCenterAddToFavoriteReactFragment = {};
 
   ExamQuestionFunctionCenterAddToFavoriteButton = {};
+
+  WrapExamQuestionFunctionCenterOuterDiv = {};
 
   ExamQuestionFunctionCenterOuterDiv = {};
 

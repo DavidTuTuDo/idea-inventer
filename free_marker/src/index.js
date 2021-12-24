@@ -239,6 +239,9 @@ class CodegenNode {
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
+    wrapInjectStyle;
+    /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
+
     injectProps;
     /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
@@ -1041,6 +1044,10 @@ class CodegenNode {
         return !!this.injectStyle && this.injectStyle;
     }
 
+    needWrapInjectStyle() {
+        return !!this.wrapInjectStyle && this.wrapInjectStyle;
+    }
+
     needInjectView() {
         return !!this.injectView && this.injectView;
     }
@@ -1531,8 +1538,8 @@ class CodegenNode {
         return currentNode;
     }
 
-    getFunctionNameOfInjectStyle() {
-        return `getInjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
+    getFunctionNameOfInjectStyle(isWrap = false) {
+        return `get${isWrap ? 'Wrap' : ''}InjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
     }
 
     getFunctionNameOfInjectView() {
@@ -2666,10 +2673,10 @@ class RemoteFunctionHandler {
             for (const child of node.getPreciseAttributeChildren()) {
                 if (_.isEqual(child, 'updateTime')) continue;
                 if (!child.isColumnAttribute()) continue;
-                if(child.isNumber()) {
+                if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
                                     object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
-                }else if (child.isTimeStamp()) {
+                } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();\/\/${child.getType()}`);
                 } else {
@@ -3133,6 +3140,13 @@ class ComponentBuilder extends BaseBuilder {
             return viewJsxStmt;
         }
 
+        function injectStyleBehavior(node, props, clazzName, wrap = false) {
+            const param = node.getObservableName();
+            const injectFunctionName = node.getFunctionNameOfInjectStyle(wrap);
+            props.style = `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(wrap ? node.getWrapStyle() : node.getStyle())},...Style.${clazzName}}`;
+            generator.appendFunction(injectFunctionName, [param]);
+        }
+
         function appendOnChangedStmt() {
             if (node.needOnSelectChanged()) {
                 generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value'], [], [],
@@ -3170,6 +3184,7 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
         function getOuterChildJSXStrings(node) {
+
             const contentStmts = [];
             for (const child of node.getChildren()) {
                 if (child.isOuter()) {
@@ -3315,11 +3330,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.needInjectStyle()) {
-            const param = node.getObservableName();
-            const injectFunctionName = node.getFunctionNameOfInjectStyle();
-            props.style = `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getStyle())},...Style.${className}}`;
-            generator.appendFunction(injectFunctionName, [param]);
-
+            injectStyleBehavior(node,props,className,false)
         } else {
             props.style = `###{...${JSON.stringify(node.getStyle())},...Style.${className}}`;
         }
@@ -3420,15 +3431,25 @@ class ComponentBuilder extends BaseBuilder {
             const clazzName = node.getClassNameOfLessUsage('wrap');
             this.storeClassName({node, type: 'wrap'});
 
+
             const props = {
                 className: `${clazzName}`,
                 style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`,
                 ...node.getWrapProps(),
             }
 
+            if (node.needWrapInjectStyle()) {
+                injectStyleBehavior(node,props,clazzName,true);
+            } else {
+                props.style = `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`;
+            }
+
             const stmt = [];
-            /** 當屬性不是資料結構, 但卻還有view的child node時, 就自動放到 wrap 裡面*/
-            if (!node.isCollection() && node.hasViewChildren()) {
+            /** 當屬性不是資料結構, 但卻還有view的child node時, 就自動放到 wrap 裡面
+             *
+             * outer不支援 viewOnly children(沒有type的attribute)
+             * */
+            if (!node.isOuter() && !node.isCollection() && node.hasViewChildren()) {
                 for (const child of node.getPreciseViewChildren()) {
                     stmt.push(...getJsxViewStmt(child))
                 }

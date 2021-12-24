@@ -9,14 +9,18 @@
 
 .ExamFilterSubjectTypography {
   /** style */
+  font-size: 1.2rem;
 }
 
 .ExamFilterSpaceDiv {
   /** style */
+  height: 10px;
 }
 
 .ExamFilterRandomTestDiv {
   /** style */
+  height: 35vh;
+  width: 75vw;
 }
 
 .ListExamFilterRandomTestFastRangeButtonGroup {
@@ -29,10 +33,13 @@
 
 .ExamFilterRandomTestSpaceDiv {
   /** style */
+  height: 8px;
 }
 
 .ExamFilterRandomTestRangeOfYearSlider {
   /** style */
+  width: 80%;
+  margin-top: 20px;
 }
 
 .ListExamFilterRandomTestCountsOfExamRadioGroup {
@@ -49,10 +56,13 @@
 
 .ExamFilterRandomTestBtnOfStartExamButton {
   /** style */
+  font-size: 1rem;
 }
 
 .ExamFilterHistoryTestDiv {
   /** style */
+  height: 25vh;
+  width: 75vw;
 }
 
 .ListExamFilterHistoryTestSelectorTextField {
@@ -69,6 +79,7 @@
 
 .ExamFilterHistoryTestBtnWithHistoryButton {
   /** style */
+  font-size: 1rem;
 }
 
 /** following for purchaseSucceed  component used  */
@@ -194,7 +205,6 @@
 
 .ExamDiv {
   /** style */
-  background-color: #888888;
 }
 
 .ExamHistoryFilterDiv {
@@ -262,6 +272,11 @@
 }
 
 .ExamQuestionFunctionCenterOuterDiv {
+  /** style */
+  border-radius: 30px;
+}
+
+.WrapExamQuestionFunctionCenterOuterDiv {
   /** style */
 }
 
@@ -703,6 +718,11 @@
 }
 
 .ExamEditorQuestionFunctionCenterOuterDiv:extend(.ExamQuestionFunctionCenterOuterDiv
+    all) {
+  /** style */
+}
+
+.WrapExamEditorQuestionFunctionCenterOuterDiv:extend(.WrapExamQuestionFunctionCenterOuterDiv
     all) {
   /** style */
 }

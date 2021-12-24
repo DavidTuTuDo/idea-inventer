@@ -51,14 +51,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         })
     }
 
-
-    onApiSucceed(object) {
-        const exams = this.getStore().getExamHistoryInfo().getHistoryExams();
-        this.getStore().getHistoryTest().setSelectors(...exams);
-        this.getStore().getHistoryTest().setSelectedSelector(_.last(exams).value)
-        this.validateRangeByValue(3);
-    }
-
     getInjectPropsOfRandomTestRangeOfYearSlider(randomTest) {
         return {
             min: this.getStore().getExamHistoryInfo().getMinYear(),
@@ -90,11 +82,9 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     validateRangeByValue(value) {
         const max = this.getStore().getExamHistoryInfo().getMaxYear();
+        const min = max - value;
         this.getStore().getRandomTest().setRangeOfYear([max - value, max])
     }
-
-    on
-
 
     /** -------------------- async api -------------------- **/
 }

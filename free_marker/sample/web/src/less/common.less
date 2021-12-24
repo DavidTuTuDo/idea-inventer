@@ -21,7 +21,7 @@
 
 .ExamFilterRandomTestDiv:extend(.CenterInParentColumn) {
   width: 60vw;
-  height: 50vh;
+  height: 30vh;
   border-radius: 5px;
   background-color: #e5f2f2;
 }
@@ -41,7 +41,7 @@
 
 .ExamFilterRandomTestRangeOfYearSlider {
   /** style */
-  width: 420px;
+  width: 300px;
   margin-top: 20px;
 }
 
@@ -62,17 +62,15 @@
   font-size: 1.3rem;
 }
 
-.ExamFilterHistoryTestDiv:extend(.CenterInParentColumn) {
+.ExamFilterHistoryTestDiv:extend(.ExamFilterRandomTestDiv) {
   /** style */
-  width: 60vw;
-  height: 40vh;
-  border-radius: 5px;
+  height: 30vh;
   background-color: #fcdadb;
 }
 
 .ListExamFilterHistoryTestSelectorTextField {
   /** style */
-  width: 40%;
+  width: 200px;
 }
 
 .ExamFilterHistoryTestSelectorMenuItem {
@@ -85,7 +83,6 @@
 
 .ExamFilterHistoryTestBtnWithHistoryButton {
   /** style */
-  font-size: 1.3rem;
 }
 
 /** following for purchaseSucceed  component used  */
@@ -313,21 +310,17 @@
   margin-top: 10px;
 }
 
-.ExamQuestionAlertOuterDiv {
+.ExamQuestionAlertOuterDiv:extend(.CenterInParentRelative) {
   /** style */
-  position: absolute;
-  width: 90%;
-  height: 90%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   z-index: 1;
+  max-width: 50vw;
+  max-height: 50vh;
 }
 
 .ExamQuestionAlertAlertImageImg {
   /** style */
   opacity: 0.3;
-  height: 70%;
+  height: 100%;
 }
 
 .WrapExamQuestionAlertAlertImageDiv {
@@ -335,21 +328,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 70%;
-  height: 70%;
+  width: 100%;
+  height: 100%;
 }
 
 .ExamQuestionFunctionCenterOuterDiv:extend(.CenterInParentRow) {
   /** style */
-  position: absolute;
-  width: 90%;
-  left: 50%;
-  border-radius: 20px;
+  border-radius: 28px;
   padding: 5px;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2;
+  margin: 10px;
   background-color: rgba(108, 122, 137, 0.5);
+  margin-top: 50%;
+}
+
+.WrapExamQuestionFunctionCenterOuterDiv:extend(.CenterInParentRelative) {
+  /** style */
+  z-index: 2;
 }
 
 .ExamQuestionFunctionCenterAddToFavoriteButton {
@@ -852,6 +846,11 @@
 }
 
 .ExamEditorQuestionFunctionCenterOuterDiv:extend(.ExamQuestionFunctionCenterOuterDiv
+    all) {
+  /** style */
+}
+
+.WrapExamEditorQuestionFunctionCenterOuterDiv:extend(.WrapExamQuestionFunctionCenterOuterDiv
     all) {
   /** style */
 }

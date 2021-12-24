@@ -53,6 +53,8 @@ class AppStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
+  WrapExamEditorQuestionFunctionCenterOuterDiv = {};
+
   ExamEditorQuestionFunctionCenterOuterDiv = {};
 
   ExamEditorQuestionAlertOuterDiv = {};
@@ -268,6 +270,8 @@ class AppStyle {
   WrapExamQuestionFunctionCenterAddToFavoriteReactFragment = {};
 
   ExamQuestionFunctionCenterAddToFavoriteButton = {};
+
+  WrapExamQuestionFunctionCenterOuterDiv = {};
 
   ExamQuestionFunctionCenterOuterDiv = {};
 

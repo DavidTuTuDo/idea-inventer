@@ -14,6 +14,14 @@ class ExamFilterStore extends BaseExamFilterStore {
   constructor(props) {
     super(props);
   }
+
+  async onInitialFetchSucceed(collection) {
+    const exams = this.getExamHistoryInfo().getHistoryExams();
+    this.getHistoryTest().setSelectors(...exams);
+    this.getHistoryTest().setSelectedSelector(_.last(exams).value)
+    this.getComponent().validateRangeByValue(3);
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default ExamFilterStore;
