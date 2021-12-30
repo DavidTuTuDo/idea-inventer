@@ -14,13 +14,18 @@ class gener {
 
 export {gener as gener}
 
-Util.generatePackage(
-    '../',
-    'free_marker',
-    'question_update',
-    'gen',
-    'playground',
-    'newp',
-    'deploy_examing_ui',
-    'testing_self'
-).then();
+(async () => {
+        await Util.generatePackage(
+            '../databazer', true)
+
+        await Util.generatePackage(
+            '../linepay', true)
+
+        await Util.generatePackage(
+            '../configer', true)
+
+        await Util.generatePackage(
+            '../utiller', true)
+
+    }
+)();

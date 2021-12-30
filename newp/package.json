@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./temp --out-dir ./lib",
-    "update": "npm update utiller --save"
+
+    "update": "npm update utiller --save",
+    "updateUtiller": "npm update utiller --save"
   },
   "author": "",
   "license": "ISC",

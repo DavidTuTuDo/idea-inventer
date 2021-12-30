@@ -1,11 +1,12 @@
 {
   "name": "utiller",
-  "version": "1.0.14",
+  "version": "1.0.18",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./temp --out-dir ./release/lib"
+    "gen": "npx babel ./temp --out-dir ./release/lib",
+    "updateUtiller": "npm update utiller --save"
   },
   "author": "david",
   "license": "ISC",

@@ -488,7 +488,7 @@ class NodeUtiller extends Utiller {
     /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
      * release folder 會被自動ignore到
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
-    async generatePackage(path = './', ...exclude) {
+    async generatePackage(path = './',deploy = true, ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules', 'release');
         packagejsons = _.filter(packagejsons,
             (each) => _.isEqual(each.fileName, 'package'));
@@ -506,7 +506,7 @@ class NodeUtiller extends Utiller {
                 await this.executeCommandLine(`cd ${path} && npx babel ./temp --out-dir ./release/lib`);
 
                 /** 複製公版的index.js */
-                this.copySingleFile('./template/sample.index.js',
+                this.copySingleFile('/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.index.js',
                     release, 'index.js', true);
 
                 /** template就是樣板的概念 */
@@ -531,10 +531,12 @@ class NodeUtiller extends Utiller {
                 this.appendInfo(`build ${path} succeed`);
 
                 /** 部署到 local server*/
-                await this.executeCommandLine(
-                    `cd ${release} &&  npm publish --registry http://localhost:4873`)
+                if(deploy) {
+                    await this.executeCommandLine(
+                        `cd ${release} &&  npm publish --registry http://localhost:4873`)
 
-                await this.deleteSelfByPath(tempFolderPath, true);
+                    await this.deleteSelfByPath(tempFolderPath, true);
+                }
 
                 /** 把所有樣板的版號都提升 */
                 await this.updateVersionOfTemplate(name, version);
@@ -542,14 +544,14 @@ class NodeUtiller extends Utiller {
         }
     }
 
+    /** 用來更新樣板裡面的模組版本 */
     async updateVersionOfTemplate(dependency, newVersion) {
         const paths = [
-            '../free_marker/template/admin.package.json',
-            '../free_marker/template/web.package.json',
-            '../free_marker/template/functions.package.json',
-            '../utiller/template/sample.package.json',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/web.package.json',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/functions.package.json',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.package.json',
         ];
-
         for (const path of paths) {
             if (this.isPathExist(path)) {
                 const json = this.getJsonObjByFilePath(path);
@@ -566,6 +568,7 @@ class NodeUtiller extends Utiller {
         await this.prettier(path);
     }
 
+    /** 用來豐富package.json的功能 */
     async enrichEachPackageJson(path) {
         const jsons = this.findFilePathByExtension(path, ['json'], 'gen', 'node_modules', 'release');
         const packages = _.filter(jsons, (each) =>
@@ -575,23 +578,10 @@ class NodeUtiller extends Utiller {
             _.isEqual(each.fileName, 'functions.package')
         )
         for (const path of packages) {
-            const json = this.getJsonObjByFilePath(path);
-            const script = json.script ? json.script : {};
+            const json = this.getJsonObjByFilePath(path.absolute);
+            const script = json.scripts ? json.scripts : {};
             script['updateUtiller'] = "npm update utiller --save";
-
-        }
-    }
-
-    async installEveryProject(path = './', ...exclude) {
-        let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules');
-        packagejsons = _.filter(packagejsons,
-            (each) => _.isEqual(each.fileName, 'package'));
-        packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
-        for (const path of packagejsons) {
-            if (this.isAndEquals(...exclude.map((projectName) => () => !this.has(path, projectName)))) {
-                await this.executeCommandLine(`cd ${path} && yarn install`);
-                this.appendInfo(`build ${path} succeed`);
-            }
+            await this.writeJsonThanPrettier(path.absolute, json);
         }
     }
 
@@ -634,10 +624,11 @@ class NodeUtiller extends Utiller {
     }
 
     getJsonObjByFilePath(path) {
+        this.appendInfo(`ready to json path:${path}`)
         return JSON.parse(this.getFileContextInRaw(path));
     }
 
-    /** 回傳latest version, name */
+    /** increment version number,  回傳latest version, name */
     async upgradePackageJsonVersion(path) {
         if (_.isEqual('package.json', this.getPathInfo(path).fileNameExtension)) {
             const json = this.getJsonObjByFilePath(path);
@@ -651,7 +642,6 @@ class NodeUtiller extends Utiller {
         } else {
             throw new ERROR(8020, `path is not package.json, which is ${path}`)
         }
-
     }
 
     async getAnswerFromPromptQ(configs = [{
@@ -695,9 +685,10 @@ class NodeUtiller extends Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            // await new NodeUtiller().enrichEachPackageJson('../');
+            await new NodeUtiller().generatePackage('./');
+        // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
-            // await new NodeUtiller().generatePackage('./');
+            // await new NodeUtiller().generatePackage('../linepay');
             // await new NodeUtiller().installEveryProject('../');
             // cthis.appendInfo((new NodeUtiller().getPathInfo('./').absolute);
             // this.appendInfo((new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));

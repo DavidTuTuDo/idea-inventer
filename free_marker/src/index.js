@@ -4527,6 +4527,7 @@ class ProjectFileHandler extends PathBase {
 
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.babel.config.js'),
             this.genRootPath, 'babel.config.js', true);
+
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.function.index.js'),
             this.genRootPath, 'index.js', true);
 
@@ -4541,7 +4542,7 @@ class ProjectFileHandler extends PathBase {
         await apiGenerator.persist();
 
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'index.js'));
-        appGenerator.appendImport('functions', 'firebase-functions')
+        appGenerator.appendImport('* as functions', 'firebase-functions')
         appGenerator.appendImport('admin', 'firebase-admin')
 
         for (const func of functions) {
@@ -4564,13 +4565,14 @@ class ProjectFileHandler extends PathBase {
         await appGenerator.persist();
     }
 
-    async buildFunctionImplement(func){
+    async buildFunctionImplement(func) {
         const className = _.upperFirst(func.getName());
-        const generator = new ClassGenerator(libpath.join(this.genSourcePath,'func',func.getName() ,`Base${className}.js`));
-        generator.appendClass(className,{name: `BaseFunction`, from: '../../base/BaseFunction'})
+        const baseClass = `Base${className}`;
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
+        generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction('handle',
-            ['request'],[],[]);
-        generator.needIndexFile('index',[],true);
+            ['request'], [], []);
+        generator.needIndexFile(className, [], true);
         await generator.persist();
     }
 
@@ -4768,8 +4770,13 @@ class ProjectFileHandler extends PathBase {
         await this.removeEmptyFolder();
         await this.runInstallIfNeed();
 
-        if(_.isEqual('functions',this.platform)) {
-            await Util.generatePackage(this.genRootPath);
+        if (_.isEqual('functions', this.platform)) {
+            await Util.generatePackage(this.genRootPath,false);
+
+            const pathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(),'functions');
+            await Util.deleteSelfByPath(pathOfFunction,true);
+            Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath,'release'),
+                Util.persistByPath(pathOfFunction))
         }
     }
 

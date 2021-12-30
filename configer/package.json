@@ -4,7 +4,8 @@
   "description": "",
   "main": "release/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "updateUtiller": "npm update utiller --save"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./temp --out-dir ./lib"
+
+    "updateUtiller": "npm update utiller --save"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +14,7 @@
     "configer": "^1.0.2",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller":"^1.0.12"
+    "utiller": "^1.0.12"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",
