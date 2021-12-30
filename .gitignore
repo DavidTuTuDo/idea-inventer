@@ -6,6 +6,8 @@ logs
 *.txt
 *.css.map
 *.css
+yarn.lock
+package-lock.json
 source_workspace.xml
 npm-debug.log*
 yarn-debug.log*
@@ -122,5 +124,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+*/release/*
 */lib/*
 */temp/*

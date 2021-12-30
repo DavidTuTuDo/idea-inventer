@@ -1,4 +1,7 @@
-/** "use strict" */
+/** "use strict"
+ *  developer:david
+ *  email:freshingmoon0725@gmail.com
+ * */
 
 Object.defineProperty(exports, "__esModule", {
     value: true

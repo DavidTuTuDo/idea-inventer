@@ -1,5 +1,5 @@
 {
-  "name": "databaser",
+  "name": "linepay",
   "version": "1.0.1",
   "description": "",
   "main": "index.js",
@@ -10,13 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "configer": "file:../configer",
-    "utiller": "file:../utiller",
-    "databaser": "file:../databaser",
+    "configer": "^1.0.2",
+    "utiller":"^1.0.12",
+    "databazer": "^1.0.1",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "sqlite": "^4.0.19",
-    "sqlite3": "^5.0.0"
+    "query-string": "^7.0.1",
+    "axios": "^0.21.1",
+    "json-bigint": "^1.0.0",
+    "uuid": "^3.3.3",
+    "crypto-js": "^3.1.9-1"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

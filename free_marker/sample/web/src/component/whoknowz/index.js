@@ -35,6 +35,18 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
         this.copyCurrentLinkToClipboard();
     }
 
+    onAskmrlinButtonClicked(param) {
+        this.askMrLin(`請您教教我這題,謝謝!
+        \n\n\n
+        \n\n\n
+        \n\n\n
+        ${this.getCurrentWebSiteLink()}`);
+    }
+
+    askMrLin(message = '') {
+        this.openLineChatAccountWithMessage(`@546kkjvt`, message)
+    }
+
     onSubmitButtonClicked(param) {
         this.getStore().submitConfirmedAnswer().then();
     }

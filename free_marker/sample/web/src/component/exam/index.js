@@ -21,7 +21,7 @@ class ExamComponent extends BaseExamComponent {
 
     constructor(props) {
         super(props);
-        if(!!this.props.freeze) {
+        if (!!this.props.freeze) {
             this.getStore().setFreezeQuestion(this.props.question)
             this.clearScrollToBottomJobs();
         }
@@ -122,7 +122,6 @@ class ExamComponent extends BaseExamComponent {
         this.getStore().submitToFavoriteQuestion(question).then((whatever) =>
             self.showWarningSnackMessage(`已加入我的最愛`)
         )
-
     }
 
     getWrapInjectStyleOfQuestionFunctionCenterDiv(question) {

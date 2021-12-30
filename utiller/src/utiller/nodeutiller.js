@@ -8,7 +8,7 @@ import ERROR from '../exceptioner/index';
 import pdf from 'pdf-parse';
 import del from 'del';
 import fse from 'fs-extra';
-import {utiller as Util} from "../../index";
+import prompt from 'prompt';
 
 class NodeUtiller extends Utiller {
 
@@ -38,7 +38,7 @@ class NodeUtiller extends Utiller {
     }
 
     printf() {
-        this.appendInfo('i can use in node.js only');
+        this.appendInfo('i can use in node.js only yo yo');
     }
 
     /**
@@ -159,14 +159,10 @@ class NodeUtiller extends Utiller {
     /** '/a/b/c.js' 把它變成真的 */
     persistByPath(path) {
         const dirs = _.split(path, '\/');
-
         for (let index = 0; index < dirs.length; index++) {
-
             let currentPath = (_.join(_.take(dirs, index + 1), '/'))
-
             /** 避免 /Users/davidtu/cross-achieve/ 這種狀況, 字串首是slash */
             if (currentPath === '') continue;
-
             let currentDir = _.nth(dirs, index);
             let hasExtension = this.has(currentDir, '.') && !_.isEmpty(currentDir.split('.').pop());
             try {
@@ -180,9 +176,7 @@ class NodeUtiller extends Utiller {
             } catch (error) {
                 throw new ERROR(8008, `currentPath => ${currentPath}`, error);
             }
-
         }
-
         return libpath.resolve(path);
     }
 
@@ -267,10 +261,9 @@ class NodeUtiller extends Utiller {
         await del(path)
     }
 
-
     /** 拿到目錄下的資料夾列表 */
     getNamesOfFolderChild(path) {
-        return _.filter(Util.getChildPathByPath(path), each => each.isDirectory).map((path) => path.dirName);
+        return _.filter(this.getChildPathByPath(path), each => each.isDirectory).map((path) => path.dirName);
     }
 
 
@@ -363,7 +356,7 @@ class NodeUtiller extends Utiller {
         fs.copyFileSync('./template/sample.babel.config.js', `${dirPath}/babel.config.js`);
 
         /** 3.要有package,json */
-        const packagejson = this.getFileContextInJSON('./template/sample.package.json');
+        const packagejson = this.getJsonObjByFilePath('./template/sample.package.json');
         packagejson['name'] = packageName;
         this.writeFileInJSON(`${dirPath}/package.json`, packagejson);
 
@@ -371,11 +364,6 @@ class NodeUtiller extends Utiller {
         this.persistByPath(`${dirPath}/src`);
         const classBase = String.format(this.getFileContextInRaw(`./template/sample.src.index.js`), packageName, '明悅', new Date());
         fs.writeFileSync(`${dirPath}/src/index.js`, classBase);
-        fs.copyFileSync(`./template/sample.index.js`, `${dirPath}/index.js`)
-
-        /** 5 產生lib folder,並且產生 warning index.js */
-        this.persistByPath(`${dirPath}/lib`);
-        fs.writeFileSync(`${dirPath}/lib/index.js`, String.format(this.getFileContextInRaw(`./template/sample.warning.index.js`), packageName));
 
         /** 6.要產生webstorm run case? */
         const ideaWorkspacePath = `${this.findSpecificFolderByPath(dirPath, '.idea')}/workspace.xml`;
@@ -497,21 +485,113 @@ class NodeUtiller extends Utiller {
         return splited.join('/');
     }
 
-    /** exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
+    /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
+     * release folder 會被自動ignore到
+     * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
     async generatePackage(path = './', ...exclude) {
+        let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules', 'release');
+        packagejsons = _.filter(packagejsons,
+            (each) => _.isEqual(each.fileName, 'package'));
+        packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
 
+        for (const path of packagejsons) {
+            if (this.isAndEquals(...exclude.map((projectName) => () => !this.has(path, projectName)))) {
+                /** 產生去掉if(debug) { command } 字樣的 */
+                const tempFolderPath = await this.generateTempFolderWithCleanSrc(path);
+
+                /** 產生release資料夾 */
+                const release = this.persistByPath(libpath.join(path, 'release'))
+
+                /** 利用babel 產生出 es5相容性高的src file */
+                await this.executeCommandLine(`cd ${path} && npx babel ./temp --out-dir ./release/lib`);
+
+                /** 複製公版的index.js */
+                this.copySingleFile('./template/sample.index.js',
+                    release, 'index.js', true);
+
+                /** template就是樣板的概念 */
+                const templatePath = libpath.join(path, 'template');
+                if (this.isPathExist(templatePath)) {
+                    this.copyFromFolderToDestFolder(
+                        templatePath,
+                        this.persistByPath(libpath.join(release, 'template')));
+                }
+
+                /** 升級package.json的版號 */
+                const pathOfPackageJson = libpath.join(path, 'package.json');
+                const {name, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
+
+                /** 把package.json 放進去 */
+                this.copySingleFile(pathOfPackageJson, libpath.join(release, 'package.json'),
+                    undefined, true);
+
+                /** 安裝一個沒有devDependency 的node_module */
+                await this.executeCommandLine(`
+                cd ${release} && yarn install --production`);
+                this.appendInfo(`build ${path} succeed`);
+
+                /** 部署到 local server*/
+                await this.executeCommandLine(
+                    `cd ${release} &&  npm publish --registry http://localhost:4873`)
+
+                await this.deleteSelfByPath(tempFolderPath, true);
+
+                /** 把所有樣板的版號都提升 */
+                await this.updateVersionOfTemplate(name, version);
+            }
+        }
+    }
+
+    async updateVersionOfTemplate(dependency, newVersion) {
+        const paths = [
+            '../free_marker/template/admin.package.json',
+            '../free_marker/template/web.package.json',
+            '../free_marker/template/functions.package.json',
+            '../utiller/template/sample.package.json',
+        ];
+
+        for (const path of paths) {
+            if (this.isPathExist(path)) {
+                const json = this.getJsonObjByFilePath(path);
+                if (json && json.dependencies && json.dependencies[dependency]) {
+                    json.dependencies[dependency] = `^${newVersion}`
+                    await this.writeJsonThanPrettier(path, json);
+                }
+            }
+        }
+    }
+
+    async writeJsonThanPrettier(path, json) {
+        this.writeFileInJSON(path, json);
+        await this.prettier(path);
+    }
+
+    async enrichEachPackageJson(path) {
+        const jsons = this.findFilePathByExtension(path, ['json'], 'gen', 'node_modules', 'release');
+        const packages = _.filter(jsons, (each) =>
+            _.isEqual(each.fileName, 'package') ||
+            _.isEqual(each.fileName, 'admin.package') ||
+            _.isEqual(each.fileName, 'web.package') ||
+            _.isEqual(each.fileName, 'functions.package')
+        )
+        for (const path of packages) {
+            const json = this.getJsonObjByFilePath(path);
+            const script = json.script ? json.script : {};
+            script['updateUtiller'] = "npm update utiller --save";
+
+        }
+    }
+
+    async installEveryProject(path = './', ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules');
         packagejsons = _.filter(packagejsons,
-            (each) => _.isEqual(each.fileName, 'package') && this.has(this.getFileContextInRaw(each.absolute), 'gen'));
+            (each) => _.isEqual(each.fileName, 'package'));
         packagejsons = packagejsons.map((each) => this.getFolderPathOfSpecificPath(each.absolute));
         for (const path of packagejsons) {
             if (this.isAndEquals(...exclude.map((projectName) => () => !this.has(path, projectName)))) {
-                await this.generateTempFolderWithCleanSrc(path);
-                await this.executeCommandLine(`
-            cd ${path} && npm run gen`);
+                await this.executeCommandLine(`cd ${path} && yarn install`);
                 this.appendInfo(`build ${path} succeed`);
             }
-            await this.deleteSelfByPath(libpath.join(path, 'temp'), true)
         }
     }
 
@@ -525,8 +605,8 @@ class NodeUtiller extends Utiller {
     }
 
     getAdminCredential() {
-        return JSON.parse(this.getFileContextInRaw(
-            '/Users/davidtu/cross-achieve/mimi/idea-inventer/firebaser/key/mimi19up-firebase-adminsdk.json'))
+        return this.getJsonObjByFilePath(
+            '/Users/davidtu/cross-achieve/mimi/idea-inventer/firebaser/key/mimi19up-firebase-adminsdk.json')
     }
 
     /** http://wnj.cdji/david.mp3 => david.mp3 */
@@ -541,7 +621,7 @@ class NodeUtiller extends Utiller {
 
     /** 把檔案弄得好看一點 */
     async prettier(path) {
-        await Util.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
+        await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
     }
 
     getFileLastModifiedTime(path) {
@@ -553,17 +633,47 @@ class NodeUtiller extends Utiller {
         return stats.mtimeMs;
     }
 
+    getJsonObjByFilePath(path) {
+        return JSON.parse(this.getFileContextInRaw(path));
+    }
+
+    /** 回傳latest version, name */
+    async upgradePackageJsonVersion(path) {
+        if (_.isEqual('package.json', this.getPathInfo(path).fileNameExtension)) {
+            const json = this.getJsonObjByFilePath(path);
+            const numbers = json.version.split('.').map((each) => _.toNumber(each));
+            const last = numbers.length - 1;
+            numbers[last] = numbers[last] + 1;
+            json.version = numbers.join('.')
+            await this.writeJsonThanPrettier(path, json)
+
+            return {version: json.version, name: json.name};
+        } else {
+            throw new ERROR(8020, `path is not package.json, which is ${path}`)
+        }
+
+    }
+
+    async getAnswerFromPromptQ(configs = [{
+        name: 'name',
+        require: true,
+        description: 'type the name',
+    }]) {
+        prompt.start();
+        return await prompt.get(configs);
+    }
+
 
     /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
     async generateTempFolderWithCleanSrc(path) {
         this.appendInfo('generateTempFolderWithCleanSrc', path);
         const sourceFile = libpath.join(path, 'src');
-        const tempFile = libpath.join(path, 'temp');
+        const tempFolderPath = libpath.join(path, 'temp');
         if (fs.existsSync(sourceFile)) {
             this.appendInfo('generateTempFolderWithCleanSrc', 'source', sourceFile);
-            this.persistByPath(tempFile)
-            this.copyFromFolderToDestFolder(sourceFile, tempFile);
-            for (const file of this.findFilePathBy(tempFile)) {
+            this.persistByPath(tempFolderPath)
+            this.copyFromFolderToDestFolder(sourceFile, tempFolderPath);
+            for (const file of this.findFilePathBy(tempFolderPath)) {
                 const tempFilePath = file.absolute;
                 const stmts = this.getFileContextInRaw(tempFilePath).split(`\n`).map((line) => _.trim(line));
                 /** 找出if (configer) 當作start */
@@ -579,11 +689,16 @@ class NodeUtiller extends Utiller {
                 }
             }
         }
+        return tempFolderPath;
     }
 }
 
 if (configer.DEBUG_MODE) {
     (async () => {
+            // await new NodeUtiller().enrichEachPackageJson('../');
+            // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
+            // await new NodeUtiller().generatePackage('./');
+            // await new NodeUtiller().installEveryProject('../');
             // cthis.appendInfo((new NodeUtiller().getPathInfo('./').absolute);
             // this.appendInfo((new NodeUtiller().getFileLastModifiedTime(`./error_logs.txt`));
             // await new NodeUtiller().generateTempFolderWithCleanSrc('.');

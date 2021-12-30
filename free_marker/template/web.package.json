@@ -44,7 +44,8 @@
     "@firebase/database": "^0.10.7",
     "@firebase/firestore": "^2.4.0",
     "@firebase/storage": "^0.5.6",
-    "configer": "file:../../configer",
+    "configer": "^1.0.2",
+    "utiller": "^1.0.14",
     "crypto-browserify": "^3.12.0",
     "firebase": "^8.2.10",
     "history": "^4.10.1",
@@ -52,6 +53,7 @@
     "lodash": "^4.17.21",
     "mobx": "^6.1.8",
     "react-countdown": "^2.3.2",
+    "moment": "^2.29.1",
     "mobx-react": "^7.1.0",
     "mobx-react-router": "^4.1.0",
     "react-slideshow-image": "^3.5.0",
@@ -65,7 +67,6 @@
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
     "universal-cookie": "^4.0.4",
-    "watermarkjs": "^2.1.1",
-    "utiller": "file:../../utiller"
+    "watermarkjs": "^2.1.1"
   }
 }

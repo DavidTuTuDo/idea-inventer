@@ -753,6 +753,10 @@ class BaseComponent extends React.Component {
             Application.getNavigatorRef().onLoginButtonClicked()
     }
 
+    openLineChatAccountWithMessage(id = '',message = '') {
+        this.gotoExternalUrl(`https://line.me/R/oaMessage/${id}/?${message}`)
+    }
+
 }
 
 export default BaseComponent;

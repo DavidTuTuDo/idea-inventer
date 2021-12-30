@@ -1,0 +1,37 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "gen": "npx babel ./temp --out-dir ./lib"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "main": "./index.js",
+  "dependencies": {
+    "firebase-admin": "^9.2.0",
+    "firebase-functions": "^3.11.0",
+    "configer": "file:../../configer",
+    "utiller": "^1.0.14",
+    "linepay": "../../linepay",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1"
+  },
+  "devDependencies": {
+    "firebase-functions-test": "^0.2.0",
+    "@babel/cli": "^7.12.8",
+    "@babel/core": "^7.12.9",
+    "@babel/plugin-proposal-class-properties": "^7.12.1",
+    "@babel/plugin-proposal-decorators": "^7.12.1",
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.7",
+    "@babel/register": "^7.12.1",
+    "@babel/preset-react": "^7.12.13"
+  },
+  "private": true
+}

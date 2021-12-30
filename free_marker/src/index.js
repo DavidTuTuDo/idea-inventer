@@ -47,6 +47,9 @@ class CodegenNode {
     /** 沒有被enrich的node*/
 
 
+    cloudFunctions
+    /** 用來定義serverless的functions */
+
     password;
     components;
 
@@ -240,7 +243,7 @@ class CodegenNode {
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
     wrapInjectStyle;
-    /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
+    /** 如果wrap有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
     injectProps;
     /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
@@ -1745,6 +1748,10 @@ class CodegenNode {
             return [];
     }
 
+    getCloudFunctions() {
+        return this.cloudFunctions;
+    }
+
     static find(node, predicate) {
         const nodes = [];
         if (predicate(node)) {
@@ -1945,7 +1952,15 @@ class ClassGenerator {
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
 
-    appendAsyncFunction(functionName, params = [], macros = [], comments, ...contents) {
+    appendExportsHttpRequestFunction(name, ...stmt) {
+        const stmts = [];
+        stmts.push(`exports.${name} = functions.https.onRequest(async (request , response) => {`)
+        stmts.push(...stmt);
+        stmts.push(`})`);
+        this.appendInClassTail(this.context, ...stmts)
+    }
+
+    appendAsyncFunction(functionName, params = [], macros = [], comments = [], ...contents) {
         this.appendFunction({
             name: functionName,
             async: true
@@ -2067,7 +2082,7 @@ class ClassGenerator {
 
         this.appendInClassTail(stmts);
         if (this.signature)
-            this.appendInClassHead(`/** this code are generated, modify is no sense. \n\tauthor:David Tu, \n\temail:freshingmoon0725@gmail.com \n\tupdateTime:${Util.getCurrentTimeFormat()} \n*/`, false);
+            this.appendInClassHead(`/** this code are generated, modify is no sense. \n\tauthor:David Tu, \n\temail:freshingmoon0725@gmail.com \n\tupdateTime:${Util.getCurrentTimeFormat()} \n*/`);
 
         Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
 
@@ -2101,16 +2116,16 @@ class ClassGenerator {
 
     }
 
-    appendInClassHead(stmt, needSemicolon = true) {
+    appendInClassHead(...stmt) {
         const stmts = [];
-        stmts.push(`${stmt}${needSemicolon ? ';' : ''}`);
+        stmts.push(...stmt);
         stmts.push('\n');
         Util.insertToArray(this.context, 0, ...stmts);
     }
 
-    appendInClassTail(stmt) {
+    appendInClassTail(...stmt) {
         const stmts = [];
-        stmts.push(stmt);
+        stmts.push(...stmt);
         stmts.push('\n');
         this.context.push(...stmts);
     }
@@ -2182,7 +2197,7 @@ class PathBase {
     genStoreRootPath; // gen/app/src/store
 
     constructor(props) {
-        if (!Util.isOrEquals(props.platform, 'web', 'admin')) {
+        if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
             throw new ERROR(8018, `platform ==> ''${props.platform}''`)
         }
         const platform = props.platform;
@@ -3330,7 +3345,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.needInjectStyle()) {
-            injectStyleBehavior(node,props,className,false)
+            injectStyleBehavior(node, props, className, false)
         } else {
             props.style = `###{...${JSON.stringify(node.getStyle())},...Style.${className}}`;
         }
@@ -3439,7 +3454,7 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             if (node.needWrapInjectStyle()) {
-                injectStyleBehavior(node,props,clazzName,true);
+                injectStyleBehavior(node, props, clazzName, true);
             } else {
                 props.style = `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`;
             }
@@ -4112,6 +4127,7 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
         switch (this.platform) {
             case 'admin':
+            case 'functions':
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
                 baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
@@ -4418,7 +4434,6 @@ class ProjectFileHandler extends PathBase {
         });
         listenerGenerator.needIndexFile('AdminListenerApi');
 
-        this.enrichNodes(...this.nodeOfAncestor.getComponents().map(component => component.struct))
         for (const component of this.nodeOfAncestor.getComponents()) {
             new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
             new RemoteFunctionHandler(listenerGenerator, this.platform).buildListenerFunction(component.getStruct(), true)
@@ -4503,10 +4518,63 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    async forWeb() {
+    async forCloudFunctions() {
         const source = this.nodeOfAncestor;
-        const structs = source.getComponents().map(component => component.getStruct());
+        const functions = source.getCloudFunctions();
+        Util.persistByPath(this.genRootPath);
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'functions.package.json'),
+            this.genRootPath, 'package.json', true);
 
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.babel.config.js'),
+            this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.function.index.js'),
+            this.genRootPath, 'index.js', true);
+
+        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
+        apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
+        apiGenerator.needIndexFile('AdminRemoteApi');
+
+        for (const component of this.nodeOfAncestor.getComponents()) {
+            new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
+        }
+
+        await apiGenerator.persist();
+
+        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'index.js'));
+        appGenerator.appendImport('functions', 'firebase-functions')
+        appGenerator.appendImport('admin', 'firebase-admin')
+
+        for (const func of functions) {
+            await this.buildFunctionImplement(func);
+            const functionName = func.getName();
+            const fieldName = _.upperFirst(functionName);
+            appGenerator.appendImport(fieldName, `./func/${functionName}`)
+            appGenerator.appendExportsHttpRequestFunction(functionName,
+                `let result = {};`,
+                `let succeed = true;`,
+                `try {`,
+                ` result = await ${fieldName}.handle(request)`,
+                `} catch (error) {`,
+                `succeed = false;`,
+                `result = error;`,
+                `}`,
+                `response.send({succeed,result});`
+            );
+        }
+        await appGenerator.persist();
+    }
+
+    async buildFunctionImplement(func){
+        const className = _.upperFirst(func.getName());
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath,'func',func.getName() ,`Base${className}.js`));
+        generator.appendClass(className,{name: `BaseFunction`, from: '../../base/BaseFunction'})
+        generator.appendAsyncFunction('handle',
+            ['request'],[],[]);
+        generator.needIndexFile('index',[],true);
+        await generator.persist();
+    }
+
+    enrichComponentStructs = (needEditComponent = false) => {
         function getStmtsOfAfterSubmit(node) {
             if (node.needWatermark) {
                 return `asyncTaskOfAfterSubmit:(remoteUrls) => {
@@ -4615,10 +4683,20 @@ class ProjectFileHandler extends PathBase {
             return editorComponents;
         }
 
+        const source = this.nodeOfAncestor;
+        if (needEditComponent)
+            source.components.push(...getEditorComponents());
+        this.enrichNodes(...source.getComponents().map(component => component.getStruct()));
+    }
+
+    getStructs = () => {
+        return this.nodeOfAncestor.getComponents().map(component => component.getStruct());
+    }
+
+    async forWeb() {
+        const source = this.nodeOfAncestor;
         const totalClassNames = [];
         const totalEvents = [];
-        source.components.push(...getEditorComponents());
-        this.enrichNodes(...structs)
         for (let component of source.components) {
             if (FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT))
                 continue;
@@ -4630,7 +4708,6 @@ class ProjectFileHandler extends PathBase {
             if (!component.isEditPage() && component.getStruct().isAttribute())
                 await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
         }
-
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(this.props).buildStoreIndexFiles();
@@ -4651,7 +4728,12 @@ class ProjectFileHandler extends PathBase {
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
 
+    isWebPlatform() {
+        return _.isEqual('web', this.platform);
+    }
+
     async execute() {
+        this.enrichComponentStructs(this.isWebPlatform());
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         switch (this.platform) {
             case 'web':
@@ -4659,6 +4741,9 @@ class ProjectFileHandler extends PathBase {
                 break;
             case 'admin':
                 await this.forAdmin();
+                break;
+            case 'functions':
+                await this.forCloudFunctions();
                 break;
             default:
                 throw new ERROR(8014, `type ==> ${this.platform}`)
@@ -4678,10 +4763,28 @@ class ProjectFileHandler extends PathBase {
             }, {
                 type: 'extension',
                 keyword: 'png'
-            }
+            }, ...this.getIngnoreFilesByPlatform()
         );
         await this.removeEmptyFolder();
         await this.runInstallIfNeed();
+
+        if(_.isEqual('functions',this.platform)) {
+            await Util.generatePackage(this.genRootPath);
+        }
+    }
+
+    getIngnoreFilesByPlatform() {
+        const fileNames = [];
+        switch (this.platform) {
+            case 'functions':
+                fileNames.push('CommonEventBus.js')
+                break;
+            case 'web':
+            case 'admin':
+                break;
+        }
+
+        return fileNames;
     }
 
     isComponentOrStoreIndexFile(file) {
@@ -4750,6 +4853,14 @@ class BuildApplication {
         await web.execute();
         Util.appendInfo(
             `web done`
+        );
+    }
+
+    async buildCloudFunctions() {
+        const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        await functions.execute();
+        Util.appendInfo(
+            `functions done`
         );
     }
 
@@ -4826,6 +4937,9 @@ if (configer.DEBUG_MODE) {
             const builder = new BuildApplication(props)
 
             switch (Util.getNodeEnvVariable('type')) {
+                case 'functionsOnly':
+                    await builder.buildCloudFunctions();
+                    break;
                 case 'adminOnly':
                     await builder.buildAdmin();
                     break;

@@ -5,17 +5,17 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./temp --out-dir ./lib"
+    "gen": "npx babel ./temp --out-dir ./lib",
+    "update": "npm update utiller --save"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "configer": "file:../configer",
+    "configer": "^1.0.2",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "prompt": "^1.1.0",
-    "prompts": "^2.4.0",
-    "utiller": "file:../utiller"
+    "utiller": "^1.0.13"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

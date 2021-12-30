@@ -2,7 +2,7 @@
  *
  * 3XXX databases
  * 4XXX pooller
- * 8XXX file IO
+ * 8XXX file IO,Utiller
  * 9XXX commons
  * 7XXX ui experience
  * 6XXX puppter=>browser
@@ -149,6 +149,9 @@ const ERRORs = {
     },
     8019: {
         message: `find no source.js file`,
+    },
+    8020: {
+        message: `package.json has something wrong`,
     },
     9999: {
         message: `super stupid error`

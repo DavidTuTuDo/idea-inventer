@@ -4,7 +4,7 @@ import {utiller as Util, pooller as InfinitePool} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
 import firebase from "./base/CommonFirebaseHelper";
-import LinePay from "./base/LinePay";
+import {linepay as LinePay} from "linepay";
 import libpath from 'path';
 import config from './config';
 import moment from 'moment';

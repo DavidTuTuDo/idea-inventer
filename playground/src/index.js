@@ -36,10 +36,10 @@ if (configer.DEBUG_MODE) {
         //         label:`${each}年`}
         // })
         // console.log(full);
-
-        const ddd =false;
-        const rrr = !!ddd;
-        console.log('dddd===> ', rrr);
+        Util.printf();
+        // const ddd =false;
+        // const rrr = !!ddd;
+        // console.log('dddd===> ', rrr);
     }
 )();
 }

@@ -1,9 +1,18 @@
+import {configer} from "configer";
+import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from 'utiller';
+import _ from 'lodash';
+import libpath from 'path';
+import Moment from 'moment';
 const crypto = require('crypto-js')
 const axios = require('axios')
 import { v4 as uuid } from 'uuid';
 const jsonbig = require('json-bigint');
 
-class LinePay {
+/** author:明悅
+ *  create time:Wed Dec 29 2021 10:36:45 GMT+0800 (Taipei Standard Time)
+ */
+
+class linepay {
 
     constructor (data) {
         this.channelId = data.channelId
@@ -12,20 +21,19 @@ class LinePay {
     }
 
     // Method
-
     // Request API
     // Input:
     //  body (object) ->  your order content
     //
     request (body) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = '/v3/payments/request'
             let configs = {
                 headers: this.__header('POST', api, body),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, body, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -38,14 +46,14 @@ class LinePay {
     //  transactionId (String) -> which one you get with ConfirmURL's query
     //
     confirm (body, transactionId) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/${transactionId}/confirm`
             let configs = {
                 headers: this.__header('POST', api, body),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, body, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -58,14 +66,14 @@ class LinePay {
     //  transactionId (String) -> which one you get with ConfirmURL's query
     //
     capture (body, transactionId) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/authorizations/${transactionId}/capture`
             let configs = {
                 headers: this.__header('POST', api, body),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, body, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -77,14 +85,14 @@ class LinePay {
     //  transactionId (String) -> which one you get with ConfirmURL's query
     //
     void (transactionId) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/authorizations/${transactionId}/void`
             let configs = {
                 headers: this.__header('POST', api, {}),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, {}, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -97,14 +105,14 @@ class LinePay {
     //  transactionId (String) -> which one you get with ConfirmURL's query
     //
     refund (body, transactionId) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/${transactionId}/refund`
             let configs = {
                 headers: this.__header('POST', api, body),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, body, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -116,7 +124,7 @@ class LinePay {
     //  params (Object) -> { transactionId: [STRING], orderId: [STRING], fields: [STRING] } all params are optional
     //
     paymentDetails (params) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments`
             let configs = {
                 params: params,
@@ -124,7 +132,7 @@ class LinePay {
                 // transformResponse: this.__jsonbig
             }
             axios.get(this.URI + api, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -136,14 +144,14 @@ class LinePay {
     //  transactionId (String)
     //
     checkPaymentStatus (transactionId) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/requests/${transactionId}/check`
             let configs = {
                 headers: this.__header('GET', api, ''),
                 // transformResponse: this.__jsonbig
             }
             axios.get(this.URI + api, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -156,7 +164,7 @@ class LinePay {
     //  regKey (String)
     //
     checkRegKey (params, regKey) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/preapprovedPay/${regKey}/check`
             let configs = {
                 params: params,
@@ -164,7 +172,7 @@ class LinePay {
                 // transformResponse: this.__jsonbig
             }
             axios.get(this.URI + api, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -177,14 +185,14 @@ class LinePay {
     //  regKey (String)
     //
     preapprovedPay (body, regKey) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/preapprovedPay/${regKey}/payment`
             let configs = {
                 headers: this.__header('POST', api, body),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, body, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -196,14 +204,14 @@ class LinePay {
     //  regKey (String)
     //
     expireRegKey (regKey) {
-        return new Promise((reslove, reject) => {
+        return new Promise((resolve, reject) => {
             let api = `/v3/payments/preapprovedPay/${regKey}/expire`
             let configs = {
                 headers: this.__header('POST', api, {}),
                 // transformResponse: this.__jsonbig
             }
             axios.post(this.URI + api, {}, configs).then(response => {
-                reslove(response.data)
+                resolve(response.data)
             }).catch(error => {
                 reject(error)
             })
@@ -242,6 +250,8 @@ class LinePay {
     __jsonbig (data) {
         return jsonbig.parse(data);
     }
+
 }
 
-module.exports = LinePay
+export { linepay as linepay }
+

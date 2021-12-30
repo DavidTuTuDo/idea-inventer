@@ -5,29 +5,25 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./temp --out-dir ./lib"
+    "updateUtiller": "npm update utiller --save"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "configer": "file:../../configer",
-    "utiller": "file:../../utiller",
+    "utiller": "^1.0.14",
     "databaser": "file:../../databaser",
+    "linepay": "file:../../linepay",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "firebase": "^8.2.9",
     "firebase-admin": "^9.4.1",
-    "line-pay-v3": "^1.0.6",
-    "uuidv4": "^6.2.10",
-    "axios": "^0.21.1",
-    "json-bigint": "^1.0.0",
-    "uuid": "^3.3.3",
-    "js-event-bus": "^1.1.0",
-    "crypto-js": "^3.1.9-1"
+    "js-event-bus": "^1.1.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",
     "@babel/core": "^7.12.9",
+    "@babel/preset-react": "^7.12.13",
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-proposal-decorators": "^7.12.1",
     "@babel/plugin-transform-runtime": "^7.12.1",

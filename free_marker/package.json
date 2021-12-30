@@ -10,12 +10,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "configer": "file:../configer",
+    "configer": "^1.0.2",
     "freemarker.js": "^1.4.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "mustache": "^4.1.0",
-    "utiller": "file:../utiller"
+    "utiller":"^1.0.12"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

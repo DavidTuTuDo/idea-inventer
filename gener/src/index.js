@@ -12,11 +12,15 @@ class gener {
 
 }
 
-export { gener as gener }
+export {gener as gener}
 
-Util.generatePackage('../',
+Util.generatePackage(
+    '../',
     'free_marker',
     'question_update',
+    'gen',
+    'playground',
     'newp',
     'deploy_examing_ui',
-    'testing_self').then();
+    'testing_self'
+).then();

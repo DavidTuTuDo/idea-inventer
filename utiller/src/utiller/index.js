@@ -4,7 +4,6 @@ import CryptoJS from "crypto-js";
 import {configer} from 'configer';
 import ERROR from '../exceptioner';
 import moment from "moment";
-import {utiller as Util} from "../../index";
 
 String.format = function () {
     let param = [];
@@ -876,14 +875,14 @@ class Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            const util = new Utiller();
-            const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
-            const duration = util.getDurationOfMillionSec(after);
+            // const util = new Utiller();
+            // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
+            // const duration = util.getDurationOfMillionSec(after);
             // console.log(duration)
             // console.log(util.getTimeFormatOfDurationToDay(duration));
             // console.log(moment.duration(duration).asDays())
             // console.log(util.getCurrentTimeStamp());
-            console.log(moment('12312321312').valueOf())
+            // console.log(moment('12312321312').valueOf())
         }
     )();
 }

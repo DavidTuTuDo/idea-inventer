@@ -35,7 +35,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@react-firebase/database": "^0.3.11",
-    "configer": "file:../configer",
+    "configer": "^1.0.2",
     "firebase": "^8.2.10",
     "history": "^5.0.0",
     "lodash": "^4.17.21",
@@ -46,6 +46,6 @@
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "utiller": "file:../utiller"
+    "utiller":"^1.0.12"
   }
 }

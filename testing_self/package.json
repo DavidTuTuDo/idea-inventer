@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "configer": "file:../configer",
-    "utiller": "file:../utiller",
+    "configer": "^1.0.2",
+    "utiller":"^1.0.12",
     "lodash": "^4.17.20",
     "moment": "^2.29.1"
   },

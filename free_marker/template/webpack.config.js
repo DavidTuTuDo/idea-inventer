@@ -26,6 +26,7 @@ const self = {
             child_process: false,
             path: require.resolve("path-browserify"),
             crypto: require.resolve('crypto-browserify'),
+            buffer: require.resolve("buffer/"),
             url: false,
             http: false,
             https: false,
