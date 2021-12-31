@@ -37,6 +37,8 @@ const self = {
             constants: false,
             events: false,
             os: false,
+            prompt: false,
+            readline: false,
         }
     },
     output: {
