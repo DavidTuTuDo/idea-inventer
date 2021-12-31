@@ -47,6 +47,9 @@ class CodegenNode {
     /** 沒有被enrich的node*/
 
 
+    schedule
+    /** firebase-function 的規則 'every 2 minute' */
+
     cloudFunctions
     /** 用來定義serverless的functions */
 
@@ -1752,6 +1755,31 @@ class CodegenNode {
         return this.cloudFunctions;
     }
 
+    getCloudFunctionInfo() {
+        const functionName = this.getName();
+        const fieldName = _.upperFirst(functionName);
+        let params = [];
+        let typeOfFunction = 'https.onCall';
+        let functionNameOfHandleBy = Util.camel('handle', this.getType());
+        switch (this.getType()) {
+            case 'schedule':
+                typeOfFunction = `pubsub.schedule('${this.schedule}').onRun`;
+                params.push('context');
+                break;
+            case 'httpOnRequest':
+                typeOfFunction = 'https.onRequest';
+                params.push('request', 'response');
+                break;
+            case 'httpOnCall':
+                params.push('data', 'context');
+                typeOfFunction = 'https.onCall';
+                break;
+            default:
+                throw new ERROR(9999, '6181, unknown cloud function type ')
+        }
+        return {functionName,fieldName,functionNameOfHandleBy,typeOfFunction,params}
+    }
+
     static find(node, predicate) {
         const nodes = [];
         if (predicate(node)) {
@@ -1952,12 +1980,42 @@ class ClassGenerator {
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...stmts)
     }
 
-    appendExportsHttpRequestFunction(name, ...stmt) {
-        const stmts = [];
-        stmts.push(`exports.${name} = functions.https.onRequest(async (request , response) => {`)
-        stmts.push(...stmt);
+    /** type : [httpOnCall,schedule,httpOnRequest] */
+    appendCloudFunctionStatement(func, ...extra) {
+        const self = this;
+
+        function isHttpRequest() {
+            return _.isEqual(func.getType(), 'httpOnRequest');
+        }
+
+        function isHttpOnCall() {
+            return _.isEqual(func.getType(), 'httpOnCall');
+        }
+
+        function getStmtsByType() {
+            const _stmts = [`let result = {};`,
+                `let succeed = true;`,
+                `try {`];
+            _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
+            _stmts.push(...[`} catch (error) {`,
+                `succeed = false;`,
+                `result = error;`,
+                `}`])
+            if (isHttpRequest()) {
+                _stmts.push('response.send({succeed,result});');
+            }
+
+            if (isHttpOnCall()) {
+                _stmts.push('return {succeed,result};');
+            }
+            return _stmts;
+        }
+        const {functionName,fieldName,functionNameOfHandleBy,typeOfFunction,params} = func.getCloudFunctionInfo()
+        let stmts = [];
+        stmts.push(`exports.${functionName} = functions.${typeOfFunction}(async (${params.join(',')}) => {`)
+        stmts.push(...getStmtsByType(params));
         stmts.push(`})`);
-        this.appendInClassTail(this.context, ...stmts)
+        this.appendInClassTail(this.context, ...stmts, ...extra)
     }
 
     appendAsyncFunction(functionName, params = [], macros = [], comments = [], ...contents) {
@@ -2220,6 +2278,18 @@ class PathBase {
         this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
         this.strcuts = this.nodeOfAncestor.components.map(component => component.struct);
         /** 這就是 source.js 的進入點 */
+    }
+
+    isFunctionsPlatform() {
+        return _.isEqual(this.platform, 'functions')
+    }
+
+    isWebPlatform() {
+        return _.isEqual(this.platform, 'web')
+    }
+
+    isAdminPlatform() {
+        return _.isEqual(this.platform, 'admin')
     }
 
     appendMustacheFile(templateFileName, destFileName, param = {}) {
@@ -4089,6 +4159,7 @@ class ProjectFileHandler extends PathBase {
         super(props);
         this.props = props;
         this.deployRemoteRules = true;
+        this.needDeployCloudFunctions = true;
     }
 
     disableRulesRemoteDeploy() {
@@ -4550,29 +4621,20 @@ class ProjectFileHandler extends PathBase {
             const functionName = func.getName();
             const fieldName = _.upperFirst(functionName);
             appGenerator.appendImport(fieldName, `./func/${functionName}`)
-            appGenerator.appendExportsHttpRequestFunction(functionName,
-                `let result = {};`,
-                `let succeed = true;`,
-                `try {`,
-                ` result = await ${fieldName}.handle(request)`,
-                `} catch (error) {`,
-                `succeed = false;`,
-                `result = error;`,
-                `}`,
-                `response.send({succeed,result});`
-            );
+            appGenerator.appendCloudFunctionStatement(func);
         }
         await appGenerator.persist();
     }
 
     async buildFunctionImplement(func) {
-        const className = _.upperFirst(func.getName());
-        const baseClass = `Base${className}`;
+        const {functionName,fieldName,functionNameOfHandleBy,typeOfFunction,params} = func.getCloudFunctionInfo()
+
+        const baseClass = `Base${fieldName}`;
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
-        generator.appendAsyncFunction('handle',
-            ['request'], [], []);
-        generator.needIndexFile(className, [], true);
+        generator.appendAsyncFunction(functionNameOfHandleBy,
+            [...params], [], []);
+        generator.needIndexFile(fieldName, [], true);
         await generator.persist();
     }
 
@@ -4730,8 +4792,8 @@ class ProjectFileHandler extends PathBase {
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
 
-    isWebPlatform() {
-        return _.isEqual('web', this.platform);
+    setFunctionNeedDeploy(need = true) {
+        this.needDeployCloudFunctions = need;
     }
 
     async execute() {
@@ -4770,12 +4832,11 @@ class ProjectFileHandler extends PathBase {
         await this.removeEmptyFolder();
         await this.runInstallIfNeed();
 
-        if (_.isEqual('functions', this.platform)) {
-            await Util.generatePackage(this.genRootPath,false);
-
-            const pathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(),'functions');
-            await Util.deleteSelfByPath(pathOfFunction,true);
-            Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath,'release'),
+        if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
+            await Util.generatePackage(this.genRootPath, false);
+            const pathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions');
+            await Util.deleteSelfByPath(pathOfFunction, true);
+            Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'),
                 Util.persistByPath(pathOfFunction))
         }
     }
@@ -4863,8 +4924,9 @@ class BuildApplication {
         );
     }
 
-    async buildCloudFunctions() {
+    async buildCloudFunctions(deploy = true) {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        functions.setFunctionNeedDeploy(deploy);
         await functions.execute();
         Util.appendInfo(
             `functions done`
@@ -4944,6 +5006,9 @@ if (configer.DEBUG_MODE) {
             const builder = new BuildApplication(props)
 
             switch (Util.getNodeEnvVariable('type')) {
+                case 'fastFunctionsOnly':
+                    await builder.buildCloudFunctions(false);
+                    break;
                 case 'functionsOnly':
                     await builder.buildCloudFunctions();
                     break;
