@@ -5045,6 +5045,9 @@ if (configer.DEBUG_MODE) {
                     await builder.persistent('web');
                     await builder.persistent('admin');
                     break;
+                case 'persistentFunctions':
+                    await builder.persistent('functions');
+                    break;
                 case 'less':
                     await builder.buildWeb();
                     break;
