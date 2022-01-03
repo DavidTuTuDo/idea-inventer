@@ -1242,7 +1242,7 @@ class CodegenNode {
         return this.getPreciseAttributeParent().getName();
     }
 
-    getChildNozOfImage() {
+    getChildNodeOfImage() {
         for (const child of this.getPreciseAttributeChildren()) {
             if (child.isImageView())
                 return child;
@@ -5031,6 +5031,9 @@ if (configerer.DEBUG_MODE) {
                     await builder.buildCloudFunctions(false);
                     break;
                 case 'functionsOnly':
+                    await builder.buildCloudFunctions();
+                    break;
+                case 'persistentFunctions':
                     await builder.persistent('functions');
                     await builder.buildCloudFunctions();
                     break;
@@ -5066,9 +5069,6 @@ if (configerer.DEBUG_MODE) {
                 case 'persistent':
                     await builder.persistent('web');
                     await builder.persistent('admin');
-                    await builder.persistent('functions');
-                    break;
-                case 'persistentFunctions':
                     await builder.persistent('functions');
                     break;
                 case 'functionsGenerateRelease':

@@ -14,6 +14,11 @@ class PostMethod extends BasePostMethod {
   constructor(props) {
     super(props);
   }
+
+  async handleHttpOnRequest(request, response) {
+    return {data:'this is PostMethod:handleHttpOnRequest'}
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default new PostMethod();

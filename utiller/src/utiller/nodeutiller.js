@@ -707,13 +707,14 @@ class NodeUtiller extends Utiller {
     }
 }
 
-// if (configerer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
     (async () => {
             const uii = new NodeUtiller();
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
+            await new NodeUtiller().generatePackage('../utiller');
             // await new NodeUtiller().generatePackage('../databazer');
-            await new NodeUtiller().generatePackage('../linepayer');
+            // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
@@ -731,6 +732,6 @@ class NodeUtiller extends Utiller {
             // //
         }
     )();
-// }
+}
 
 export default NodeUtiller;

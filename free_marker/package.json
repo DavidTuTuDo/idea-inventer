@@ -1,23 +1,22 @@
 {
   "name": "free_marker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
     "updateUtiller": "npm update utiller --save",
-    "updateConfiger": "npm update configerer --save",
     "updateConfigerer": "npm update configerer --save"
   },
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.4",
+    "configerer": "^1.0.7",
     "freemarker.js": "^1.4.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "mustache": "^4.1.0",
-    "utiller": "^1.0.22"
+    "utiller": "^1.0.25"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

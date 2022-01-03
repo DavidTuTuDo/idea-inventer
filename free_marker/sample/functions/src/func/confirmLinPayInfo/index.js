@@ -14,6 +14,11 @@ class ConfirmLinPayInfo extends BaseConfirmLinPayInfo {
   constructor(props) {
     super(props);
   }
+
+  async handleHttpOnCall(data, context) {
+    return {data:'this is ConfirmLinPayInfo:handleHttpOnCall'}
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default new ConfirmLinPayInfo();

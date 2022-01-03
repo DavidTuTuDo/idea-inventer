@@ -14,6 +14,11 @@ class FetchLinePayInfo extends BaseFetchLinePayInfo {
   constructor(props) {
     super(props);
   }
+
+  async handleHttpOnCall(data, context) {
+    return {data:'this is FetchLinePayInfo:handleHttpOnCall'}
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default new FetchLinePayInfo();
