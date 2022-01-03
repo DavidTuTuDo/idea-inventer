@@ -1,7 +1,7 @@
 import _ from "lodash";
 import Crypto from "crypto";
 import CryptoJS from "crypto-js";
-import {configer} from 'configer';
+import {configerer} from "configerer";
 import ERROR from '../exceptioner';
 import moment from "moment";
 
@@ -155,7 +155,7 @@ class Utiller {
     }
 
     /** alwaysTheSame 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
-    getEncryptString(texts, key = configer.ENCRYPT_KEY, alwaysTheSame = false) {
+    getEncryptString(texts, key = configerer.ENCRYPT_KEY, alwaysTheSame = false) {
         const maxLengthOfKey = 22;
         if (key.length > maxLengthOfKey)
             throw new ERROR(8010, _.size(key))
@@ -165,7 +165,7 @@ class Utiller {
         return CryptoJS.AES.encrypt(texts, keyOfCrypto, {iv: ivOfCrypto}).toString();
     }
 
-    getDecryptString(ciphertext, key = configer.ENCRYPT_KEY) {
+    getDecryptString(ciphertext, key = configerer.ENCRYPT_KEY) {
         const maxLengthOfKey = 22;
         if (key.length > maxLengthOfKey)
             throw new ERROR(8010, _.size(key))
@@ -188,7 +188,7 @@ class Utiller {
     formalizeNamesToArray(singerString) {
         let normalize = singerString;
         /** avoid this situation, 演唱：陳勢安、畢書盡 (Bii)   編曲：Jerry C */
-        normalize = normalize.split(configer.SEPARATE_TONE_SINGER)[0].trim();
+        normalize = normalize.split(configerer.SEPARATE_TONE_SINGER)[0].trim();
 
         normalize = _.replace(normalize, /[,\/#!$%\^&\*;:{}=_`、~()（）]/g, "_").trim();
         /** avoid this situation, 陳勢安_畢書盡__Bii_ */
@@ -873,7 +873,7 @@ class Utiller {
 
 }
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
     (async () => {
             // const util = new Utiller();
             // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})

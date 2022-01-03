@@ -1,10 +1,12 @@
 {
-  "name": "configer",
-  "version": "1.0.2",
+  "name": "configerer",
+  "version": "1.0.7",
   "description": "",
-  "main": "release/index.js",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",
@@ -15,6 +17,6 @@
     "@babel/preset-env": "^7.12.7",
     "@babel/register": "^7.12.1"
   },
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC"
 }

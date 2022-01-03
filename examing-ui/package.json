@@ -7,10 +7,11 @@
     "start": "webpack serve --config ./webpack.config.js --mode development",
     "build": "webpack --mode production",
     "test": "echo \"No test specified\" && exit 0",
-    "updateUtiller": "npm update utiller --save"
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
   "keywords": [],
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.12.8",
@@ -36,7 +37,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@react-firebase/database": "^0.3.11",
-    "configer": "^1.0.2",
+    "configerer": "^1.0.4",
     "firebase": "^8.2.10",
     "history": "^5.0.0",
     "lodash": "^4.17.21",

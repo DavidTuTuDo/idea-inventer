@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -20,7 +20,7 @@ export {question_update as question_update}
 
 
         const fire = new firebaser(Util.getAdminCredential());
-        // await fire.deleteTable(configer.REFERENCE_QUESTION);
+        // await fire.deleteTable(configerer.REFERENCE_QUESTION);
         // for (const q of qs) {
         //     Util.appendInfo(`${JSON.stringify(q)} is uploading`);
         //     await fire.setQuestion(q);

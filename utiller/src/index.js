@@ -1,10 +1,10 @@
 import ERROR from './exceptioner';
 import pooller from './pooller';
-import {configer} from 'configer';
+import {configerer} from "configerer";
 
 
 let instance = undefined;
-if (configer.IS_NODE_ENV) {
+if (configerer.IS_NODE_ENV) {
     const self = require('./utiller/nodeutiller');
     instance = new self.default();
 } else {

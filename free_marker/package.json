@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "updateUtiller": "npm update utiller --save"
+    "updateUtiller": "npm update utiller --save",
+    "updateConfiger": "npm update configerer --save",
+    "updateConfigerer": "npm update configerer --save"
   },
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configer": "^1.0.2",
+    "configerer": "^1.0.4",
     "freemarker.js": "^1.4.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",

@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import Moment from 'moment';
@@ -11,11 +11,11 @@ import path from "path";
 
 class firebaser {
 
-    constructor(credential = Util.getFileContextInRaw(configer.PATH_ACCOUNT_ADMIN)) {
+    constructor(credential = Util.getFileContextInRaw(configerer.PATH_ACCOUNT_ADMIN)) {
         admin.initializeApp({
             credential: admin.credential.cert(_.isString(credential) ?
                 JSON.parse(credential) : credential),
-            databaseURL: configer.DATA_BASE_URL
+            databaseURL: configerer.DATA_BASE_URL
         });
         this.db = admin.database();
         this.firestore = admin.firestore();
@@ -26,12 +26,12 @@ class firebaser {
     }
 
     async deleteAll() {
-        await this.db.ref(path.join(configer.REFERENCE_ROOT)).set({});
+        await this.db.ref(path.join(configerer.REFERENCE_ROOT)).set({});
         Util.appendInfo(`firebase delete all succeed`);
     }
 
     async deleteTable(tableName) {
-        await this.db.ref(path.join(configer.REFERENCE_ROOT, tableName)).set({});
+        await this.db.ref(path.join(configerer.REFERENCE_ROOT, tableName)).set({});
         Util.appendInfo(`firebase delete table ${tableName}`);
     }
 
@@ -39,52 +39,52 @@ class firebaser {
 
     async setTone(tone) {
         const refer = `${tone.name}_${tone.singers.join('_')}`;
-        await this.setValues(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_TONE, `${refer}`), tone);
+        await this.setValues(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_TONE, `${refer}`), tone);
 
         /** join tone and singer to SUGGEST_WORD table */
         const params = {};
-        const updatePath = path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SUGGEST_WORDS);
+        const updatePath = path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SUGGEST_WORDS);
         for (let singer of tone.singers) {
 
-            params[path.join(singer, configer.REFERENCE_SUGGEST_TYPE)] = configer.TYPE_SUGGEST_SINGER;
-            params[path.join(singer, configer.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
+            params[path.join(singer, configerer.REFERENCE_SUGGEST_TYPE)] = configerer.TYPE_SUGGEST_SINGER;
+            params[path.join(singer, configerer.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
         }
-        params[path.join(tone.name, configer.REFERENCE_SUGGEST_TYPE)] = configer.TYPE_SUGGEST_TONE;
-        params[path.join(tone.name, configer.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
+        params[path.join(tone.name, configerer.REFERENCE_SUGGEST_TYPE)] = configerer.TYPE_SUGGEST_TONE;
+        params[path.join(tone.name, configerer.REFERENCE_SUGGEST_POPULAR)] = tone.popularLevel;
 
         await this.updateValues(updatePath, params)
     }
 
     async setSinger(singer) {
         for (let name of singer.names) {
-            await this.setValues(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SINGER, `${name}`, configer.REFERENCE_INFO), singer);
-            await this.setValues(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SINGER, `${name}`, configer.REFERENCE_TYPE), singer.type)
+            await this.setValues(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SINGER, `${name}`, configerer.REFERENCE_INFO), singer);
+            await this.setValues(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SINGER, `${name}`, configerer.REFERENCE_TYPE), singer.type)
         }
     }
 
     async setQuestion(question) {
-        const refPath = path.join(configer.REFERENCE_ROOT, configer.REFERENCE_QUESTION, `${question.uid}`);
+        const refPath = path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_QUESTION, `${question.uid}`);
         await this.setValues(refPath, question);
     }
 
     async setExam(questions) {
-        const refPath = path.join(configer.REFERENCE_ROOT, 'QuestionsOfExam');
+        const refPath = path.join(configerer.REFERENCE_ROOT, 'QuestionsOfExam');
         await this.setValues(refPath, {questions: questions});
     }
 
     async setQuestions(questions) {
-        const refPath = path.join(configer.REFERENCE_ROOT, 'Questions');
+        const refPath = path.join(configerer.REFERENCE_ROOT, 'Questions');
         await this.setValues(refPath,  questions);
     }
 
     async setValues(refPath, params) {
-        if (configer.MODULE_MSG.SHOW_SUCCEED)
+        if (configerer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`SET PATH:${refPath},PARAM:${JSON.stringify(params)}`);
         return await this.db.ref(refPath).set(params);
     }
 
     async updateValues(refPath, params) {
-        if (configer.MODULE_MSG.SHOW_SUCCEED)
+        if (configerer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`UPDATE PATH:${refPath},PARAM:${JSON.stringify(params)}`);
         return await this.db.ref(refPath).update(params);
     }
@@ -102,8 +102,8 @@ class firebaser {
 
     async enrichSuggestWord(word, params) {
         const ref = path.join(
-            configer.REFERENCE_ROOT,
-            configer.REFERENCE_SUGGEST_WORDS,
+            configerer.REFERENCE_ROOT,
+            configerer.REFERENCE_SUGGEST_WORDS,
             word);
         await this.setValues(ref, params);
     }
@@ -112,10 +112,10 @@ class firebaser {
         const pk = this.getTonesPk(tone);
         for (let singerName of tone.singers) {
             const refPath = path.join(
-                configer.REFERENCE_ROOT,
-                configer.REFERENCE_SINGER,
+                configerer.REFERENCE_ROOT,
+                configerer.REFERENCE_SINGER,
                 `${singerName}`,
-                configer.REFERENCE_SINGER_TONES,
+                configerer.REFERENCE_SINGER_TONES,
                 pk);
             const params = {
                 name: tone.name,
@@ -132,27 +132,27 @@ class firebaser {
         const updatedReference = Util.getItsKeyByValue(tone, updatingValue);
         for (let singer of tone.singers) {
             const refPath = path.join(
-                configer.REFERENCE_ROOT,
-                configer.REFERENCE_SINGER,
+                configerer.REFERENCE_ROOT,
+                configerer.REFERENCE_SINGER,
                 singer,
-                configer.REFERENCE_SINGER_TONES,
+                configerer.REFERENCE_SINGER_TONES,
                 this.getTonesPk(tone),
                 updatedReference);
             params[refPath] = updatingValue;
         }
         const refPath = path.join(
-            configer.REFERENCE_ROOT,
-            configer.REFERENCE_TONE,
+            configerer.REFERENCE_ROOT,
+            configerer.REFERENCE_TONE,
             this.getTonesPk(tone),
             updatedReference);
         params[refPath] = updatingValue;
 
-        return await this.updateValues(path.join(configer.REFERENCE_ROOT), params)
+        return await this.updateValues(path.join(configerer.REFERENCE_ROOT), params)
     }
 
     /** methods of READ */
     async getToneListByKeyword(key) {
-        const result = await this.fetchOnceByConstraint(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_TONE), key);
+        const result = await this.fetchOnceByConstraint(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_TONE), key);
         return result;
     }
 
@@ -162,7 +162,7 @@ class firebaser {
         let ref = this.db.ref(refPath);
         const snapshot = await ref.orderByKey().startAt(`${key.trim()}`).endAt(`${key.trim()}\uf8ff`).once("value");
 
-        if (configer.MODULE_MSG.SHOW_SUCCEED)
+        if (configerer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath},PARAM:${key}`);
 
         return snapshot;
@@ -173,17 +173,17 @@ class firebaser {
     }
 
     async getSingerListByKeyword(key) {
-        const result = await this.fetchOnceByConstraint(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SINGER), key);
+        const result = await this.fetchOnceByConstraint(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SINGER), key);
         return result;
     }
 
 
     async getToneListBySingerName(name) {
         Util.isKeywordRule(name);
-        const refPath = path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SINGER, name);
+        const refPath = path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SINGER, name);
         const ref = this.db.ref(refPath);
 
-        if (configer.MODULE_MSG.SHOW_SUCCEED)
+        if (configerer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath}`);
 
         return await ref.once("value");
@@ -191,18 +191,18 @@ class firebaser {
 
     async getSingerListByType(type) {
         Util.isSingerTypeRule(type);
-        const refPath = path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SINGER);
+        const refPath = path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SINGER);
         const ref = this.db.ref(refPath);
 
-        if (configer.MODULE_MSG.SHOW_SUCCEED)
+        if (configerer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath}`);
 
-        return await ref.orderByChild(configer.REFERENCE_TYPE).equalTo(type).once("value");
+        return await ref.orderByChild(configerer.REFERENCE_TYPE).equalTo(type).once("value");
     }
 
     async getSuggestWord() {
-        const refPath = path.join(configer.REFERENCE_ROOT, configer.REFERENCE_SUGGEST_WORDS);
-        if (configer.MODULE_MSG.SHOW_SUCCEED)
+        const refPath = path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_SUGGEST_WORDS);
+        if (configerer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`FETCH PATH:${refPath}`);
         return await this.db.ref(refPath).orderByValue().once('value');
     }
@@ -227,7 +227,7 @@ class firebaser {
         ]
 
         for (const plan of plans) {
-            await this.setValues(path.join(configer.REFERENCE_ROOT, configer.REFERENCE_PRICE, _.toString(plan.pid)), plan)
+            await this.setValues(path.join(configerer.REFERENCE_ROOT, configerer.REFERENCE_PRICE, _.toString(plan.pid)), plan)
         }
     }
 
@@ -239,7 +239,7 @@ class firebaser {
 
 export {firebaser as firebaser}
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
     (async () => {
 
             const handler = new firebaser();

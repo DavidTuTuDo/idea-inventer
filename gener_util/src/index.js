@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -16,7 +16,7 @@ Util.generatePackage('../utiller',true).then();
 
 export { gener_util as gener_util }
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
 (async () => {
 
 

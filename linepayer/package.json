@@ -1,25 +1,26 @@
 {
-  "name": "linepay",
-  "version": "1.0.2",
+  "name": "linepayer",
+  "version": "1.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "updateUtiller": "npm update utiller --save"
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configer": "^1.0.2",
-    "utiller": "^1.0.12",
+    "axios": "^0.21.1",
+    "configerer": "^1.0.7",
+    "crypto-js": "^3.1.9-1",
     "databazer": "^1.0.1",
+    "json-bigint": "^1.0.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "query-string": "^7.0.1",
-    "axios": "^0.21.1",
-    "json-bigint": "^1.0.0",
-    "uuid": "^3.3.3",
-    "crypto-js": "^3.1.9-1"
+    "utiller": "^1.0.24",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

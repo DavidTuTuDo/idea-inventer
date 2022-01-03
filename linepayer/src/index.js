@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -12,7 +12,7 @@ const jsonbig = require('json-bigint');
  *  create time:Wed Dec 29 2021 10:36:45 GMT+0800 (Taipei Standard Time)
  */
 
-class linepay {
+class linepayer {
 
     constructor (data) {
         this.channelId = data.channelId
@@ -253,5 +253,5 @@ class linepay {
 
 }
 
-export { linepay as linepay }
+export { linepayer as linepayer }
 

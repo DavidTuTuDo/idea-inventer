@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import {configer as Config, configer} from "configer";
+import {configerer as Config, configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import download from 'download-file';
 
@@ -10,7 +10,7 @@ class Browser {
     headless = false;
     maxViewPageSize = true;
 
-    constructor(headless = configer.INVOKE_REAL_CHROME, maxViewPageSize = true) {
+    constructor(headless = configerer.INVOKE_REAL_CHROME, maxViewPageSize = true) {
         const self = this;
         this.headless = headless;
         this.maxViewPageSize = maxViewPageSize;

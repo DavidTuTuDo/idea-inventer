@@ -1,4 +1,4 @@
-import {configer as Index} from "configer";
+import {configerer as Index} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -285,7 +285,7 @@ class HtmlAnalysis {
 
 export { HtmlAnalysis as Scraper }
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
 (async () => {
 
 

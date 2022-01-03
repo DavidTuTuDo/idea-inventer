@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -240,7 +240,7 @@ class ceec_scrape_script {
 
 export {ceec_scrape_script as ceec_scrape_script}
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new ceec_scrape_script();
             // await handler.samplePdfFile();

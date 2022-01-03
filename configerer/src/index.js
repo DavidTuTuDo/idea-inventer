@@ -34,4 +34,4 @@ const GlobalConfig = {
     PATH_INFO_LOG: './info_logs.txt',
 };
 
-export {GlobalConfig as configer};
+export {GlobalConfig as configerer};

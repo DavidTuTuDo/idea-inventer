@@ -14,6 +14,11 @@ class AutoIncrementNumber extends BaseAutoIncrementNumber {
   constructor(props) {
     super(props);
   }
+
+  async handleSchedule(context) {
+      this.appendLog('it really works')
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default new AutoIncrementNumber();

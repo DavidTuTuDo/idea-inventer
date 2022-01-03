@@ -6,7 +6,7 @@ import moment from 'moment';
 import {utiller as Util} from "utiller";
 import firebase from 'firebase/app';
     import 'firebase/database';
-import {configer} from 'configer';
+import {configerer} from "configerer";
 import {Link} from 'react-router-dom';
 import {makeAutoObservable,isObservableObject,isObservableArray} from "mobx";
 
@@ -69,7 +69,7 @@ class Index extends React.Component {
             app = firebase.app(); // if already initialized, use that one
         }
         this.database = app.database();
-        this.getValues(this.database, `${configer.REFERENCE_ROOT}/${configer.REFERENCE_QUESTION}`)
+        this.getValues(this.database, `${configerer.REFERENCE_ROOT}/${configerer.REFERENCE_QUESTION}`)
             .then((result) => {
                 const _qs = _.sampleSize(_.values(result.val()), QUESTION_COUNT);
                 for (const q of _qs) {
@@ -181,7 +181,7 @@ class Index extends React.Component {
                 wrongOfAnswer: self,
             }
             await this.setValue(this.database,
-                `${configer.REFERENCE_ROOT}/${configer.REFERENCE_QUESTION_REPLY_RECORD}/${configer.REFERENCE_QUESTION_REPLY_WRONG}/${reply.dateTime}`,
+                `${configerer.REFERENCE_ROOT}/${configerer.REFERENCE_QUESTION_REPLY_RECORD}/${configerer.REFERENCE_QUESTION_REPLY_WRONG}/${reply.dateTime}`,
                 reply);
             this.startTime = _.now();
         }
@@ -232,7 +232,7 @@ class Index extends React.Component {
 
             const countBy = _.countBy(cacu, (qq) => qq.state);
             this.setValue(this.database,
-                `${configer.REFERENCE_ROOT}/${configer.REFERENCE_QUESTION_REPLY_RECORD}/${configer.REFERENCE_QUESTION_REPLY_HISTORY}/${Util.getCurrentTimeFormat()}`,
+                `${configerer.REFERENCE_ROOT}/${configerer.REFERENCE_QUESTION_REPLY_RECORD}/${configerer.REFERENCE_QUESTION_REPLY_HISTORY}/${Util.getCurrentTimeFormat()}`,
                 countBy).then()
             return (
                 <div className="App">

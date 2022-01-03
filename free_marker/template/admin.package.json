@@ -5,15 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "updateUtiller": "npm update utiller --save"
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configer": "^1.0.2",
-    "utiller": "^1.0.22",
-    "databaser": "file:../../databaser",
-    "linepay": "^1.0.2",
+    "configerer": "^1.0.6",
+    "utiller": "^1.0.24",
+    "databazer": "^1.0.2",
+    "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "firebase": "^8.2.9",

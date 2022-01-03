@@ -2,7 +2,7 @@ import libpath from "path";
 import fs from "fs";
 import _ from "lodash";
 import ChildProcess from "child_process";
-import {configer} from 'configer';
+import {configerer} from "configerer";
 import Utiller from "./index";
 import ERROR from '../exceptioner/index';
 import pdf from 'pdf-parse';
@@ -93,7 +93,7 @@ class NodeUtiller extends Utiller {
             return;
         }
         const next = libpath.join(this.getFileDirPath(path), `${newName}.${this.getExtensionFromPath(path)}`)
-        fs.renameSync(path,next);
+        fs.renameSync(path, next);
     }
 
     //todo 應該要改成class
@@ -202,7 +202,6 @@ class NodeUtiller extends Utiller {
      * preserveTimestamps : boolean, 要不要保留原始檔案的時間, 不然就是cp的時間,default true;
      * */
     copyFromFolderToDestFolder(from, dest, override = true, preserveTimestamps = false, filter = () => true) {
-
         if (!fs.existsSync(from) || !fs.existsSync(from))
             throw new ERROR(8009, `${from} or ${dest} is not exist!`);
 
@@ -250,7 +249,7 @@ class NodeUtiller extends Utiller {
     }
 
     async reinstallNodeModules(path = '../', ...exclude) {
-        const ex = [...exclude, 'node_modules', 'utiller', 'configer'];
+        const ex = [...exclude, 'node_modules', 'utiller', 'configerer'];
         /** utiller 不能刪掉,不然就爆了, configer是他的依賴也不能刪 */
 
         const paths = this.findFilePathBy(path, (each) => _.isEqual(each.fileNameExtension, 'package.json'), ...ex)
@@ -351,7 +350,7 @@ class NodeUtiller extends Utiller {
         for (let path of paths) {
             try {
                 if (!_.isEqual(path.dirName, '..'))
-                    this.insertShellCommand(configer.BASE_SHELL_SCRIPT,
+                    this.insertShellCommand(configerer.BASE_SHELL_SCRIPT,
                         `cd_${path.dirName}`,
                         `cd ${this.getFolderPathOfSpecificPath(path.absolute)}`)
             } catch (error) {
@@ -387,7 +386,7 @@ class NodeUtiller extends Utiller {
         const ideaWorkspacePath = `${this.findSpecificFolderByPath(dirPath, '.idea')}/workspace.xml`;
 
         /** 7.要產生cd script 腳本 **/
-        this.insertShellCommand(configer.BASE_SHELL_SCRIPT, `cd_${packageName}`, `cd ${libpath.resolve(dirPath)}`)
+        this.insertShellCommand(configerer.BASE_SHELL_SCRIPT, `cd_${packageName}`, `cd ${libpath.resolve(dirPath)}`)
 
         if (fs.existsSync(ideaWorkspacePath)) {
             const workspace = this.getFileContextInRaw(ideaWorkspacePath);
@@ -418,11 +417,11 @@ class NodeUtiller extends Utiller {
     }
 
     appendInfo(...data) {
-        return this.appendLog(configer.PATH_INFO_LOG, data, false);
+        return this.appendLog(configerer.PATH_INFO_LOG, data, false);
     }
 
     appendError(...data) {
-        return this.appendLog(configer.PATH_ERROR_LOG, data, true);
+        return this.appendLog(configerer.PATH_ERROR_LOG, data, true);
     }
 
     appendLog(path, datas, isError = false) {
@@ -550,9 +549,8 @@ class NodeUtiller extends Utiller {
 
                 /** 部署到 local server*/
                 if (deployToNPMServer) {
-                    await this.executeCommandLine(
-                        `cd ${release} &&  npm publish --registry http://localhost:4873`)
-
+                    await this.executeCommandLine(`cd ${release} &&  npm publish`);
+                    /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
                     await this.deleteSelfByPath(tempFolderPath, true);
 
                     /** 把所有樣板的版號都提升 */
@@ -600,12 +598,12 @@ class NodeUtiller extends Utiller {
         for (const path of packages) {
             const json = this.getJsonObjByFilePath(path.absolute);
             const script = json.scripts ? json.scripts : {};
-            script['updateUtiller'] = "npm update utiller --save";
+            script['updateConfigerer'] = "npm update configerer --save";
             await this.writeJsonThanPrettier(path.absolute, json);
         }
     }
 
-    insertShellCommand(shellPath = configer.BASE_SHELL_SCRIPT, alias, command) {
+    insertShellCommand(shellPath = configerer.BASE_SHELL_SCRIPT, alias, command) {
         if (this.isStringContainInLines(this.getFileContextInRaw(shellPath), alias)) {
             throw new ERROR(8007, `alias ${alias} is exist`);
         } else {
@@ -692,12 +690,12 @@ class NodeUtiller extends Utiller {
             for (const file of this.findFilePathBy(tempFolderPath)) {
                 const tempFilePath = file.absolute;
                 const stmts = this.getFileContextInRaw(tempFilePath).split(`\n`).map((line) => _.trim(line));
-                /** 找出if (configer) 當作start */
-                const indexOfStart = _.findIndex(stmts, (stmt) => _.startsWith(stmt, `if (configer.DEBUG_MODE)`));
+                /** 找出if (configerer) 當作start */
+                const indexOfStart = _.findIndex(stmts, (stmt) => _.startsWith(stmt, `if (configerer.DEBUG_MODE)`));
                 /** 找出 } 當作 end */
                 const indexOfEnd = _.findLastIndex(stmts, (stmt) => _.isEqual(stmt, `}`));
                 if (indexOfEnd > 0 && indexOfStart > 0 && indexOfEnd > indexOfStart) {
-                    /** 刪除掉 if(configer.DEBUG) {...........} */
+                    /** 刪除掉 if(configerer.DEBUG) {...........} */
                     this.dropItemsByIndex(stmts, indexOfStart, indexOfEnd);
                     this.appendFile(tempFilePath, _.join(stmts, `\n`), true, true);
                     await this.executeCommandLine(`cd ${libpath.resolve(`${this.getFileDirPath(tempFilePath)}`)} &&
@@ -709,12 +707,14 @@ class NodeUtiller extends Utiller {
     }
 }
 
-if (configer.DEBUG_MODE) {
+// if (configerer.DEBUG_MODE) {
     (async () => {
             const uii = new NodeUtiller();
-            const path = uii.persistByPath('./one.js');
-            new NodeUtiller().renameFile(path,'two');
-            // await new NodeUtiller().generatePackage('./');
+            // const path = uii.persistByPath('./one.js');
+            // new NodeUtiller().renameFile(path, 'two');
+            // await new NodeUtiller().generatePackage('../databazer');
+            await new NodeUtiller().generatePackage('../linepayer');
+            // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
             // await new NodeUtiller().generatePackage('../linepay');
@@ -731,6 +731,6 @@ if (configer.DEBUG_MODE) {
             // //
         }
     )();
-}
+// }
 
 export default NodeUtiller;

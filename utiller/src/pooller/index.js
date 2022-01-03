@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {utiller as Util} from '../index.js';
-import {configer} from "configer";
+import {configerer} from "configerer";
 import ERROR from '../exceptioner';
 
 
@@ -17,15 +17,15 @@ import ERROR from '../exceptioner';
  */
 class InfinitePool {
 
-    state = configer.POOLLER_STATE.RUN_BY_EACH_TASK
+    state = configerer.POOLLER_STATE.RUN_BY_EACH_TASK
 
     /** 用來處理Task的延遲,假設要偷網頁東西, 不能太頻繁, 要偽裝成手動只能透過這方式, 如果是multi thread, 延遲是針對worker滿載後,再加進去的那一個 */
-    enableOfTaskSleepByInterval = configer.POOLLER_ENABLE_TASK_SLEEP_BY_INTERVAL;
-    taskSleepInterval = configer.POOLLER_TASK_OF_INTERVAL_DEFAULT;
+    enableOfTaskSleepByInterval = configerer.POOLLER_ENABLE_TASK_SLEEP_BY_INTERVAL;
+    taskSleepInterval = configerer.POOLLER_TASK_OF_INTERVAL_DEFAULT;
 
     /** 用來處理每一個task的timeout, 避免task處理太久卡在Queue裡面 */
-    enableOfTaskTimeout = configer.POOLLER_ENABLE_TIMEOUT;
-    timeOfTaskTimeout = configer.POOLLER_TASK_TIMEOUT_DEFAULT;
+    enableOfTaskTimeout = configerer.POOLLER_ENABLE_TIMEOUT;
+    timeOfTaskTimeout = configerer.POOLLER_TASK_TIMEOUT_DEFAULT;
 
     maxWorker;
     ignoreFirstRun = false
@@ -51,10 +51,10 @@ class InfinitePool {
     hashCallbackMapOfWaiting4Result = {}
     poolId = ``;
 
-    constructor(maxWorkers = configer.POOLLER_WORKER_DEFAULT, name = Util.getRandomValue(0, 100000000000)) {
+    constructor(maxWorkers = configerer.POOLLER_WORKER_DEFAULT, name = Util.getRandomValue(0, 100000000000)) {
         this.maxWorker = maxWorkers;
         this.setPoolId(_.toString(name));
-        for (const prior of configer.POOLLER_PRIORITY) {
+        for (const prior of configerer.POOLLER_PRIORITY) {
             this.taskQueue[prior] = [];
         }
     }
@@ -71,8 +71,8 @@ class InfinitePool {
      * @deprecated there's no sleep mechanism
      */
     enableQueueTerminateBySleepCount(enable = true,
-                                     interval = configer.POOLLER_QUEUE_TIME_OF_SLEEP_INTERVAL_DEFAULT
-        , times = configer.POOLLER_MAX_SLEEP_COUNTS_DEFAULT) {
+                                     interval = configerer.POOLLER_QUEUE_TIME_OF_SLEEP_INTERVAL_DEFAULT
+        , times = configerer.POOLLER_MAX_SLEEP_COUNTS_DEFAULT) {
         this.enableOfQueueTerminateSleepCount = enable;
         this.queueMaxSleepCounts = times;
         this.intervalOfQueueSleep = interval
@@ -112,7 +112,7 @@ class InfinitePool {
     /**
      * interval:{min: 800, max: 1000}
      * */
-    enableTaskSleepInterval(enable = true, interval = configer.POOLLER_TASK_OF_INTERVAL_DEFAULT) {
+    enableTaskSleepInterval(enable = true, interval = configerer.POOLLER_TASK_OF_INTERVAL_DEFAULT) {
 
         this.enableOfTaskSleepByInterval = enable
         if (_.isNumber(interval)) {
@@ -121,7 +121,7 @@ class InfinitePool {
         this.taskSleepInterval = interval;
     }
 
-    enableTaskTimeout(enable = true, millionSec = configer.POOLLER_TASK_TIMEOUT_DEFAULT) {
+    enableTaskTimeout(enable = true, millionSec = configerer.POOLLER_TASK_TIMEOUT_DEFAULT) {
         this.enableOfTaskTimeout = enable;
         this.timeOfTaskTimeout = millionSec;
     }
@@ -147,9 +147,9 @@ class InfinitePool {
 
     getTaskQueueCount = () => {
         let size = 0;
-        if (this.state === configer.POOLLER_STATE.RUN_BY_PARAMS) return this.paramQueue.length;
+        if (this.state === configerer.POOLLER_STATE.RUN_BY_PARAMS) return this.paramQueue.length;
 
-        for (const prior of configer.POOLLER_PRIORITY) {
+        for (const prior of configerer.POOLLER_PRIORITY) {
             size += this.taskQueue[prior].length;
         }
 
@@ -160,7 +160,7 @@ class InfinitePool {
     /** add the task into taskQueue, return task key,once you want to remove it */
     add = (task, priority = 'low') => {
         if (typeof task === "function") {
-            if (configer.POOLLER_PRIORITY.indexOf(priority) < 0) {
+            if (configerer.POOLLER_PRIORITY.indexOf(priority) < 0) {
                 throw new ERROR(4001, `priority can't be ${priority}`);
             }
             const hash = Util.getRandomHash();
@@ -254,7 +254,7 @@ class InfinitePool {
     remove(hash) {
         let taskInfo = this.getTaskInfoByHash(hash);
         if (taskInfo) {
-            for (const prior of configer.POOLLER_PRIORITY) {
+            for (const prior of configerer.POOLLER_PRIORITY) {
                 const _index = _.indexOf(this.taskQueue[prior], taskInfo);
                 if (_index > 0) {
                     this.taskQueue[prior].splice(_index, 1);
@@ -290,7 +290,7 @@ class InfinitePool {
         else
             throw new ERROR(4006, `type of task is ===> ${typeof task}`)
         this.enableTaskSleepInterval(!!interval, interval);
-        this.setState(configer.POOLLER_STATE.RUN_INFINITE);
+        this.setState(configerer.POOLLER_STATE.RUN_INFINITE);
         while (this.isRunning()) {
             await this.#run();
         }
@@ -306,7 +306,7 @@ class InfinitePool {
         }
 
         this.add(task);
-        this.setState(configer.POOLLER_STATE.RUN_BY_PARAMS);
+        this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
         this.beforeRun();
         while (this.isRunning() && !_.isEmpty(this.paramQueue)) {
             await this.#run();
@@ -324,7 +324,7 @@ class InfinitePool {
         this.id = Util.getRandomHash(3);
         this.beforeRun();
         this.adds(tasks);
-        this.setState(configer.POOLLER_STATE.RUN_BY_EACH_TASK);
+        this.setState(configerer.POOLLER_STATE.RUN_BY_EACH_TASK);
         while (this.isRunning()) {
             if (this.getTaskQueueCount() <= 0) {
                 this.terminate();
@@ -338,7 +338,7 @@ class InfinitePool {
     runByTimes = async (times, tasks = []) => {
         this.adds(tasks);
         this.beforeRun();
-        this.setState(configer.POOLLER_STATE.RUN_BY_TIMES);
+        this.setState(configerer.POOLLER_STATE.RUN_BY_TIMES);
 
         for (let index = 0; index < times; index++) {
             await this.#run();
@@ -404,12 +404,12 @@ class InfinitePool {
         if (this.isQueuePolling) {
             return;
         }
-        if (this.state === configer.POOLLER_STATE.RUN_BY_EACH_TASK) {
+        if (this.state === configerer.POOLLER_STATE.RUN_BY_EACH_TASK) {
             /** 因為不這樣做, 就會產生 race condition, 會產生出3個runInGround instance */
             this.runByEachTaskInBackGround();
             return;
         }
-        throw new ERROR(4011, `this.state is ==> ${Util.getItsKeyByValue(configer.POOLLER_STATE, this.state)}`)
+        throw new ERROR(4011, `this.state is ==> ${Util.getItsKeyByValue(configerer.POOLLER_STATE, this.state)}`)
     }
 
     isQueueFull() {
@@ -421,7 +421,7 @@ class InfinitePool {
 
         if (initialTaskShouldNotRun || (this.firstTaskDone() && this.isQueueFull() && this.enableOfTaskSleepByInterval)) {
             const restInInterval = await Util.syncDelayRandom(this.taskSleepInterval.min, this.taskSleepInterval.max)
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`${this.getPoollerLogFormat(`Dispatcher 照規矩 睡  ${restInInterval} million-secs 後才能Dispatch Task`)} `);
             if (!this.isRunning()) {
                 Util.appendInfo(`${this.getPoollerLogFormat(` Dispatcher 睡起來之後, 遇到this.isTaskRunning === true, 所以就結束這個Dispatch`)}`);
@@ -470,14 +470,14 @@ class InfinitePool {
 
     /** taskInfo = { task, hash }*/
     getTaskInfoDependOnPriority = () => {
-        for (const prior of configer.POOLLER_PRIORITY) {
+        for (const prior of configerer.POOLLER_PRIORITY) {
             if (this.taskQueue[prior].length > 0) {
                 switch (this.state) {
-                    case configer.POOLLER_STATE.RUN_BY_EACH_TASK:
+                    case configerer.POOLLER_STATE.RUN_BY_EACH_TASK:
                         return this.taskQueue[prior].shift();
-                    case configer.POOLLER_STATE.RUN_BY_PARAMS:
-                    case configer.POOLLER_STATE.RUN_BY_TIMES:
-                    case configer.POOLLER_STATE.RUN_INFINITE:
+                    case configerer.POOLLER_STATE.RUN_BY_PARAMS:
+                    case configerer.POOLLER_STATE.RUN_BY_TIMES:
+                    case configerer.POOLLER_STATE.RUN_INFINITE:
                         const taskInfo = this.taskQueue[prior].shift();
                         this.add(taskInfo.task);
                         return taskInfo;
@@ -486,7 +486,7 @@ class InfinitePool {
                 }
             }
         }
-        if (!_.isEqual(this.state, configer.POOLLER_STATE.RUN_BY_EACH_TASK))
+        if (!_.isEqual(this.state, configerer.POOLLER_STATE.RUN_BY_EACH_TASK))
             throw new ERROR(4007);
     }
 
@@ -584,7 +584,7 @@ class InfinitePool {
     }
 }
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
     (async () => {
         // await new InfinitePool().exampleOfRunByCount();
     })();

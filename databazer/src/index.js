@@ -1,6 +1,6 @@
 import sqlite3 from 'sqlite3';
 import {open} from 'sqlite';
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 
@@ -26,7 +26,7 @@ class SqliteHandler {
     }
 
 
-    constructor(_dbpath = configer.BASE_DATABASE_PATH) {
+    constructor(_dbpath = configerer.BASE_DATABASE_PATH) {
         this.dbpath = _dbpath;
     }
 
@@ -95,9 +95,9 @@ class SqliteHandler {
             if (!_.isEmpty(columns))
                 column = _.join(columns, ', ');
 
-            const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), configer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
+            const needWhere = _.isEmpty(condition) ? '' : Util.startWiths(_.toUpper(condition), configerer.SQL_NEEDLESS_WHERE_START_OF) ? '' : 'WHERE';
             stmt = `SELECT ${column} FROM ${tableName} ${needWhere} ${condition}`;
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo('FETCH RECORD STMT:' + stmt);
             const result = await this.db.all(stmt);
             return result;
@@ -192,7 +192,7 @@ class SqliteHandler {
 
     getCreateTableStmt(tableName, content) {
         let stmt = [];
-        stmt = _.concat(stmt, `\n${configer.UID} INTEGER PRIMARY KEY AUTOINCREMENT`);
+        stmt = _.concat(stmt, `\n${configerer.UID} INTEGER PRIMARY KEY AUTOINCREMENT`);
 
         const attrs = this.getCreateColumnAttributes(content);
         for (const attr of attrs) {
@@ -206,7 +206,7 @@ class SqliteHandler {
         let stmt;
         try {
             const stmt = this.getCreateTableStmt(tableName, object);
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`CREATE TABLE STMT: ${stmt}`);
             await this.db.run(stmt);
         } catch (error) {
@@ -219,7 +219,7 @@ class SqliteHandler {
         try {
             if (!_.isEmpty(index)) {
                 stmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
-                if (configer.MODULE_MSG.SHOW_SUCCEED)
+                if (configerer.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`CREATE INDEX STMT: ${stmt}`);
                 await this.db.run(stmt);
             }
@@ -233,13 +233,13 @@ class SqliteHandler {
         let createStmt = '';
         try {
             createStmt = this.getCreateTableStmt(tableName, object);
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`CREATE STMT ${createStmt}`);
             await this.db.run(createStmt);
 
             if (!_.isEmpty(index)) {
                 indexStmt = `CREATE UNIQUE INDEX IF NOT EXISTS ${_.join([tableName, ...index], '_')} ON ${tableName}(${_.join(index, ' ,')})`;
-                if (configer.MODULE_MSG.SHOW_SUCCEED)
+                if (configerer.MODULE_MSG.SHOW_SUCCEED)
                     Util.appendInfo(`CREATE INDEX STMT:${indexStmt}`);
                 await this.db.run(indexStmt);
             }
@@ -269,7 +269,7 @@ class SqliteHandler {
             }
 
             updateStmt = `UPDATE ${tableName} SET ${_.join(pairs, ', ')} WHERE ${condition}`;
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`UPDATE STMT: ${updateStmt}`);
             const result = await this.db.run(updateStmt);
             return result.changes;
@@ -314,7 +314,7 @@ class SqliteHandler {
     }
 
     async updateState(tableName, state, uid) {
-        if (!Util.has(configer.DATABASE_COLUMN_STATE, state)) {
+        if (!Util.has(configerer.DATABASE_COLUMN_STATE, state)) {
             throw ERROR(9999, `state${state} not valid`);
         }
         return await this.updateRecords('SINGER', {'state': state}, SqliteHandler.Builder().equal('uid', uid).stmt());
@@ -337,7 +337,7 @@ class SqliteHandler {
         let insertStmt;
         try {
             insertStmt = this.getInsertStmt(tableName, content);
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`INSERT STMT: ${insertStmt}`);
 
             await this.db.run(insertStmt);
@@ -368,7 +368,7 @@ class SqliteHandler {
             if (!_.isEmpty(diff)) {
                 stmts = this.getAlterColumnStmt(tableName, differ);
                 for (const stmt of stmts) {
-                    if (configer.MODULE_MSG.SHOW_SUCCEED)
+                    if (configerer.MODULE_MSG.SHOW_SUCCEED)
                         Util.appendInfo(`ALTER COLUMN STMT:${stmt}`);
                     await this.db.run(stmt);
                 }
@@ -510,7 +510,7 @@ export {SqliteHandler as databaser,ConditionBuilder as builder}
 
  */
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
 
     (async () => {
 

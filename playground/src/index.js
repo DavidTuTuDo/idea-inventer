@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -14,7 +14,7 @@ class playground {
 
 export { playground as playground }
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
 (async () => {
 
         // const sss = true;

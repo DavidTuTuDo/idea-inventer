@@ -1,4 +1,4 @@
-import {configer as GlobalConfig} from 'configer';
+import {configerer as GlobalConfig} from 'configerer';
 import Util from "../utiller/index.js";
 import ERRORs from './ERRORs';
 const utiller = new Util();

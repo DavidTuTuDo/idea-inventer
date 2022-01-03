@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -22,7 +22,7 @@ export {gener as gener}
             '../linepay', true)
 
         await Util.generatePackage(
-            '../configer', true)
+            '../configerer', true)
 
         await Util.generatePackage(
             '../utiller', true)

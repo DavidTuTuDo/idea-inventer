@@ -8,7 +8,7 @@ import ta from './analysis/ToneAnalysis.js';
 import sa from './analysis/SingersAnalysis.js';
 import sla from './analysis/SongListAnalysis.js';
 
-import {configer as Config} from 'configer';
+import {configerer as Config} from 'configerer';
 import {utiller as Util, exceptioner as ERROR, pooller as Pooller} from 'utiller';
 import {databaser as SQL} from 'databaser';
 

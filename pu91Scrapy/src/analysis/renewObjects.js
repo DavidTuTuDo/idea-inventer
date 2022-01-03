@@ -4,7 +4,7 @@ import sla from "./SongListAnalysis";
 import rta from "./RankTableAnalysis";
 import sa from "./SingersAnalysis";
 import puppeteer from "puppeteer";
-import Index from "configer";
+import Index from "configerer";
 
 (async () => {
     async function snycDelay(delayInms) {

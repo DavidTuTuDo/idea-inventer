@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import _ from 'lodash';
 import {exceptioner as ERROR, utiller as Util} from 'utiller';
 
@@ -79,7 +79,7 @@ const Config = {
     MAX_COUNTS_IN_RANK: 800, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['DONE', 'ING', 'NOT'],
 }
 
-const mergeObjectConfig = Util.mergeObject(configer, Config);
+const mergeObjectConfig = Util.mergeObject(configerer, Config);
 
 
 export default mergeObjectConfig;

@@ -5,13 +5,14 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "updateUtiller": "npm update utiller --save"
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "@babel/runtime": "^7.16.5",
-    "configer": "^1.0.2",
+    "configerer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "query-string": "^7.0.1",

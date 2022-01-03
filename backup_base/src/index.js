@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -15,7 +15,7 @@ class backup_base {
 
 export { backup_base as backup_base }
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
 (async () => {
         Util.copyFromFolderToDestFolder(
             `../gen/src/base`,

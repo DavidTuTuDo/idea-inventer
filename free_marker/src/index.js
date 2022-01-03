@@ -3,7 +3,7 @@ import _ from 'lodash';
 import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
-import {configer} from "configer";
+import {configerer} from "configerer";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -1242,7 +1242,7 @@ class CodegenNode {
         return this.getPreciseAttributeParent().getName();
     }
 
-    getChildNodeOfImage() {
+    getChildNozOfImage() {
         for (const child of this.getPreciseAttributeChildren()) {
             if (child.isImageView())
                 return child;
@@ -4846,7 +4846,7 @@ class ProjectFileHandler extends PathBase {
     async copyFunctionsModuleToDestFolder() {
         const deployPathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions');
         await Util.deleteSelfByPath(deployPathOfFunction, true);
-
+        // await Util.deleteSelfByPath(libpath.join(this.genRootPath, 'release','yarn.lock'),true);
         const pathOfReleaseLibAppFile = libpath.join(this.genRootPath, 'release', 'lib', 'app.js');
         Util.renameFile(pathOfReleaseLibAppFile, 'index');
         Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), Util.persistByPath(deployPathOfFunction))
@@ -4866,7 +4866,8 @@ class ProjectFileHandler extends PathBase {
     }
 
     isComponentOrStoreIndexFile(file) {
-        const isUnderComponentOrStore = Util.isUnderTargetPath(file.absolute, 'component') || Util.isUnderTargetPath(file.absolute, 'store');
+        const isUnderComponentOrStore = Util.isUnderTargetPath(file.absolute, 'component') ||
+            Util.isUnderTargetPath(file.absolute, 'store');
         const isIndexJsFile = _.isEqual(file.fileNameExtension, 'index.js');
         return (isUnderComponentOrStore && isIndexJsFile);
     }
@@ -5014,7 +5015,7 @@ class BuildApplication {
 
 export {BuildApplication as BuildApplication};
 
-if (configer.DEBUG_MODE) {
+if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {

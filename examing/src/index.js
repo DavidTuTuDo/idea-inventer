@@ -1,4 +1,4 @@
-import {configer} from "configer";
+import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
@@ -43,7 +43,7 @@ class examing {
             const textlines = text.split(`\n`).map((line) => _.trim(line));
             const from = _.findIndex(textlines, (line) => _.isEqual(line, startFrom));
             const to = _.findIndex(textlines, (line) => _.isEqual(line, endWith), from);
-            if (configer.MODULE_MSG.SHOW_SUCCEED)
+            if (configerer.MODULE_MSG.SHOW_SUCCEED)
                 Util.appendInfo(`from: ${from}, to:${to}`);
             if (to > from > -1) {
                 _.pullAt(textlines, _.range(from, to - 1));

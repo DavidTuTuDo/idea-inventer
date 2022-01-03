@@ -1,18 +1,19 @@
 {
   "name": "utiller",
-  "version": "1.0.22",
+  "version": "1.0.24",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
     "gen": "npx babel ./temp --out-dir ./release/lib",
-    "updateUtiller": "npm update utiller --save"
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
-  "author": "david",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "bl": "^4.1.0",
-    "configer": "^1.0.2",
+    "configerer": "^1.0.7",
     "crypto-js": "^4.0.0",
     "del": "^6.0.0",
     "fs-extra": "^9.1.0",
