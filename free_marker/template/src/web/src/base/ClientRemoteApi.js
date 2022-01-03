@@ -71,6 +71,34 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     }
 
+    async callCloudFunctions(functionName, data = {}) {
+        const _async = async () => super.callCloudFunctions(functionName, data);
+        return await CommonPoolHelper.submitTo('functions', _async)
+    }
+
+    async runUIAsyncCloudFunctionsTask(functionName, data, view) {
+        const self = this;
+        const task = async () => {
+            return this.callCloudFunctions(functionName, data);
+        }
+        const path = `call functions => '${functionName}' `;
+        const type = `firebase/functions`
+        try {
+            self.handleApiExecute(path, type, view);
+            const general = await task();
+            const result = general.data;
+            if (!result.succeed) {
+                throw new Error(result.data);
+            } else {
+                return result.data;
+            }
+        } catch (error) {
+            self.handleApiException(path, type, error, view)
+        } finally {
+            self.handleApiFinally(path, type, view);
+        }
+    }
+
     /** asyncApiTask 必須給的是async function */
     async runUIAsyncTask(asyncApiTask, type, path, view) {
         const self = this;

@@ -3,6 +3,7 @@ import 'firebase/auth';
 import 'firebase/database';
 import 'firebase/firestore';
 import 'firebase/storage';
+import 'firebase/functions';
 
 import config from "../config";
 import EventBus from "js-event-bus";
@@ -34,6 +35,8 @@ class BaseFirebase {
     getStorageLibrary(){
         return firebase.storage;
     }
+
+
 
 
 }

@@ -23,6 +23,10 @@ class CommonFirebaseHelper extends BaseFirebase {
         return this.core().firestore();
     }
 
+    functions() {
+        return this.core().functions();
+    }
+
     database() {
         return this.core().database();
     }
@@ -193,6 +197,7 @@ class CommonFirebaseHelper extends BaseFirebase {
      getFieldNameOfDocumentId() {
         return this.getFirestoreLibrary().FieldPath.documentId();
      }
+
 
 }
 

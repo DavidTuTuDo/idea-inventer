@@ -50,6 +50,12 @@ class CommonRemoteApi {
         return firebase.getCurrentFirestoreTimeStamp();
     }
 
+    async callCloudFunctions(functionName = '', data,region = 'us-central1'){
+        const func = await firebase.functions(region).httpsCallable(functionName);
+        Util.appendInfo(`functions httpOnCall => '${functionName}'`,data);
+        return await func(data);
+    }
+
     async submitItems(path, ...objects) {
         Util.appendInfo(`submit items => path:{${path}}, size:${objects.length}`);
         let batch = firebase.firestore().batch();

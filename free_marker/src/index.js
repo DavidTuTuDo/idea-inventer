@@ -2002,11 +2002,11 @@ class ClassGenerator {
                 `result = error;`,
                 `}`])
             if (isHttpRequest()) {
-                _stmts.push('response.send({succeed,result});');
+                _stmts.push('response.send({succeed,data:result});');
             }
 
             if (isHttpOnCall()) {
-                _stmts.push('return {succeed,result};');
+                _stmts.push('return {succeed,data:result};');
             }
             return _stmts;
         }
