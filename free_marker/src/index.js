@@ -2104,9 +2104,7 @@ class ClassGenerator {
     importDefaultModule() {
         if (this.isStoreFile) {
             this.appendImport('UserInfoRef', '../../userInfo');
-
         }
-
         this.appendImport('libpath', 'path');
         this.appendImport('_', 'lodash');
         this.appendImport('{ utiller as Util, exceptioner as ERROR, pooller as InfinitePool }', 'utiller');
@@ -3784,16 +3782,16 @@ class AppBuilder
 
     }
 
-    async buildCookieFiles(sourceObj) {
+    async buildCookieFiles() {
 
-        if (sourceObj.hasCookies()) {
+        if (this.nodeOfAncestor.hasCookies()) {
             const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`));
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
             baseCookieGenerator.appendField(`cookie`, `new Cookies()`);
             baseCookieGenerator.appendField('password', 'Config.password');
-            for (const cookie of sourceObj.cookies) {
+            for (const cookie of this.nodeOfAncestor.cookies) {
                 baseCookieGenerator.appendField(cookie.name, JSON.stringify({
                         key: cookie.name,
                         defaultValue: cookie.defaultValue
@@ -3836,13 +3834,13 @@ class AppBuilder
         }
     }
 
-    async buildWebpackNPackageJson(sourceObj) {
+    async buildWebpackNPackageJson() {
         this.appendMustacheFile('web.package.json', libpath.join(this.genRootPath,
             `package.json`
         ), {
-            projectName: sourceObj.name,
-            projectVersion: sourceObj.version,
-            projectDescription: sourceObj.description
+            projectName: this.nodeOfAncestor.name,
+            projectVersion: this.nodeOfAncestor.version,
+            projectDescription: this.nodeOfAncestor.description
         });
         this.appendMustacheFile('webpack.config.js', libpath.join(this.genRootPath,
             `webpack.config.js`
@@ -3857,7 +3855,28 @@ class AppBuilder
         this.appendMustacheFile('index.html', libpath.join(path, 'index.html'));
     }
 
-    async buildRouterFile(sourceObj) {
+    async buildCloudFunctionsApi() {
+        const baseFunctionGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
+            `functions`, `BaseMyCloudFunctions.js`));
+        baseFunctionGenerator.appendClass(
+            `BaseMyCloudFunctions`, {name: `ClientRemoteApi`, from: '../base/ClientRemoteApi'}
+        )
+
+        for (const _func of this.nodeOfAncestor.getCloudFunctions()) {
+            if (_.isEqual(_func.getType(), 'httpOnCall')) {
+                baseFunctionGenerator.appendAsyncFunction(
+                    `${Util.camel(_func.getType(), _func.getName())}`,
+                    ['view', 'data'],
+                    [], [],
+                    `return await this.runUIAsyncCloudFunctionsTask('${_func.getName()}', data, view);`
+                )
+            }
+        }
+        baseFunctionGenerator.needIndexFile(`MyCloudFunctions`, [], true);
+        await baseFunctionGenerator.persist();
+    }
+
+    async buildRouterFile() {
 
         function appendLoginStmts(component) {
             const stmts = []
@@ -3880,7 +3899,7 @@ class AppBuilder
         );
         baseRouterGenerator.appendImport('UserInfoRef', '../userInfo');
 
-        for (const component of sourceObj.components) {
+        for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
             baseRouterGenerator.appendFunction({
                     name: Util.camel('goto', component.name, component.isEditPage() ? 'editor' : '', 'page'),
@@ -3899,7 +3918,7 @@ class AppBuilder
         await baseRouterGenerator.persist();
     }
 
-    async buildAppIndexFiles(sourceObj) {
+    async buildAppIndexFiles() {
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `app.js`));
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(` ReactDOM`, `react-dom`);
@@ -3924,7 +3943,7 @@ class AppBuilder
         }
 
         const childrenStmt = [];
-        for (const component of sourceObj.components) {
+        for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
 
             const renderStmts = this.getJSXStrings({
@@ -3969,13 +3988,13 @@ class AppBuilder
             props: {
                 injectProps: '...this.getStoreObject()'
             },
-            contents: [sourceObj.hasNavigation() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt]
+            contents: [this.nodeOfAncestor.hasNavigation() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt]
         })
 
         const whole = providerStmt;
         this.removeJSXSign(whole);
-        if (sourceObj.hasNavigation())
-            appGenerator.appendFunction('getNavigationView', ['history'], [], [], `return (${this.getNavigationStmt(sourceObj.navigation).join('')})`)
+        if (this.nodeOfAncestor.hasNavigation())
+            appGenerator.appendFunction('getNavigationView', ['history'], [], [], `return (${this.getNavigationStmt(this.nodeOfAncestor.navigation).join('')})`)
 
         appGenerator.appendFunction('getStoreObject', [], [], [],
             'const stores = {}',
@@ -4776,15 +4795,16 @@ class ProjectFileHandler extends PathBase {
 
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(this.props).buildStoreIndexFiles();
-        await new AppBuilder(this.props).buildWebpackNPackageJson(source);
-        await new AppBuilder(this.props).buildRouterFile(source);
-        await new AppBuilder(this.props).buildCookieFiles(source);
+        await new AppBuilder(this.props).buildWebpackNPackageJson();
+        await new AppBuilder(this.props).buildCloudFunctionsApi();
+        await new AppBuilder(this.props).buildRouterFile();
+        await new AppBuilder(this.props).buildCookieFiles();
         await new AppBuilder(this.props).buildEventFolder(totalEvents);
         await new AppBuilder(this.props).overrideLessFile();
         await new AppBuilder(this.props).buildLessFile(totalClassNames);
         await new AppBuilder(this.props).buildStyleFiles(totalClassNames);
         await new AppBuilder(this.props).buildHtmlIndexAssetsFile();
-        await new AppBuilder(this.props).buildAppIndexFiles(source);
+        await new AppBuilder(this.props).buildAppIndexFiles();
         this.buildDistAssetFolder();
     }
 
