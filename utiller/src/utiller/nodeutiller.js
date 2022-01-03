@@ -80,6 +80,22 @@ class NodeUtiller extends Utiller {
         return fs.existsSync(path);
     }
 
+    /** path = a/b/c/file.js , newName = 'two'
+     * output => a/b/c/two.js
+     * */
+    renameFile(path, newName = 'fileName') {
+        if (!this.isPathExist(path) || !this.isFile(path)) {
+            this.appendError('984521 path not exist or not a file path');
+            return;
+        }
+        if (_.isEmpty(newName)) {
+            this.appendError('984522,new name is empty');
+            return;
+        }
+        const next = libpath.join(this.getFileDirPath(path), `${newName}.${this.getExtensionFromPath(path)}`)
+        fs.renameSync(path,next);
+    }
+
     //todo 應該要改成class
     getPathInfo(path) {
 
@@ -186,11 +202,13 @@ class NodeUtiller extends Utiller {
      * preserveTimestamps : boolean, 要不要保留原始檔案的時間, 不然就是cp的時間,default true;
      * */
     copyFromFolderToDestFolder(from, dest, override = true, preserveTimestamps = false, filter = () => true) {
+
         if (!fs.existsSync(from) || !fs.existsSync(from))
             throw new ERROR(8009, `${from} or ${dest} is not exist!`);
 
+        this.appendInfo(`正在複製ing ${from}/* => ${dest}/* succeed`);
         fse.copySync(from, dest, {preserveTimestamps, override, filter})
-        this.appendInfo(`複製 ${from}/* => ${dest}/* succeed`);
+        this.appendInfo(`複製成功 ${from}/* => ${dest}/* succeed`);
     }
 
 
@@ -488,7 +506,7 @@ class NodeUtiller extends Utiller {
     /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
      * release folder 會被自動ignore到
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
-    async generatePackage(path = './',deploy = true, ...exclude) {
+    async generatePackage(path = './', deployToNPMServer = true, ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules', 'release');
         packagejsons = _.filter(packagejsons,
             (each) => _.isEqual(each.fileName, 'package'));
@@ -531,15 +549,17 @@ class NodeUtiller extends Utiller {
                 this.appendInfo(`build ${path} succeed`);
 
                 /** 部署到 local server*/
-                if(deploy) {
+                if (deployToNPMServer) {
                     await this.executeCommandLine(
                         `cd ${release} &&  npm publish --registry http://localhost:4873`)
 
                     await this.deleteSelfByPath(tempFolderPath, true);
+
+                    /** 把所有樣板的版號都提升 */
+                    await this.updateVersionOfTemplate(name, version);
                 }
 
-                /** 把所有樣板的版號都提升 */
-                await this.updateVersionOfTemplate(name, version);
+
             }
         }
     }
@@ -603,6 +623,12 @@ class NodeUtiller extends Utiller {
     getFileNameExtensionFromPath(path) {
         const name = path.split('/').pop()
         return name;
+    }
+
+    /** http://wnj.cdji/david.mp3 => mp3 */
+    getExtensionFromPath(path) {
+        const name = path.split('/').pop()
+        return name.split('.').pop();
     }
 
     isEmptyFile(path) {
@@ -685,8 +711,11 @@ class NodeUtiller extends Utiller {
 
 if (configer.DEBUG_MODE) {
     (async () => {
-            await new NodeUtiller().generatePackage('./');
-        // await new NodeUtiller().enrichEachPackageJson('../');
+            const uii = new NodeUtiller();
+            const path = uii.persistByPath('./one.js');
+            new NodeUtiller().renameFile(path,'two');
+            // await new NodeUtiller().generatePackage('./');
+            // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
             // await new NodeUtiller().generatePackage('../linepay');
             // await new NodeUtiller().installEveryProject('../');

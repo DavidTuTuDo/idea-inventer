@@ -1777,7 +1777,7 @@ class CodegenNode {
             default:
                 throw new ERROR(9999, '6181, unknown cloud function type ')
         }
-        return {functionName,fieldName,functionNameOfHandleBy,typeOfFunction,params}
+        return {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params}
     }
 
     static find(node, predicate) {
@@ -2010,7 +2010,8 @@ class ClassGenerator {
             }
             return _stmts;
         }
-        const {functionName,fieldName,functionNameOfHandleBy,typeOfFunction,params} = func.getCloudFunctionInfo()
+
+        const {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params} = func.getCloudFunctionInfo()
         let stmts = [];
         stmts.push(`exports.${functionName} = functions.${typeOfFunction}(async (${params.join(',')}) => {`)
         stmts.push(...getStmtsByType(params));
@@ -4612,7 +4613,7 @@ class ProjectFileHandler extends PathBase {
 
         await apiGenerator.persist();
 
-        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'index.js'));
+        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'));
         appGenerator.appendImport('* as functions', 'firebase-functions')
         appGenerator.appendImport('admin', 'firebase-admin')
 
@@ -4627,7 +4628,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildFunctionImplement(func) {
-        const {functionName,fieldName,functionNameOfHandleBy,typeOfFunction,params} = func.getCloudFunctionInfo()
+        const {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params} = func.getCloudFunctionInfo()
 
         const baseClass = `Base${fieldName}`;
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
@@ -4827,21 +4828,31 @@ class ProjectFileHandler extends PathBase {
             }, {
                 type: 'extension',
                 keyword: 'png'
-            }, ...this.getIngnoreFilesByPlatform()
+            }, ...this.getIgnoredFilesByPlatform()
         );
         await this.removeEmptyFolder();
         await this.runInstallIfNeed();
+        await this.functionsGenerateRelease();
+    }
 
+    async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
             await Util.generatePackage(this.genRootPath, false);
-            const pathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions');
-            await Util.deleteSelfByPath(pathOfFunction, true);
-            Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'),
-                Util.persistByPath(pathOfFunction))
+            /** 會產生出 release folder */
+            await this.copyFunctionsModuleToDestFolder();
         }
     }
 
-    getIngnoreFilesByPlatform() {
+    async copyFunctionsModuleToDestFolder() {
+        const deployPathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions');
+        await Util.deleteSelfByPath(deployPathOfFunction, true);
+
+        const pathOfReleaseLibAppFile = libpath.join(this.genRootPath, 'release', 'lib', 'app.js');
+        Util.renameFile(pathOfReleaseLibAppFile, 'index');
+        Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), Util.persistByPath(deployPathOfFunction))
+    }
+
+    getIgnoredFilesByPlatform() {
         const fileNames = [];
         switch (this.platform) {
             case 'functions':
@@ -4851,7 +4862,6 @@ class ProjectFileHandler extends PathBase {
             case 'admin':
                 break;
         }
-
         return fileNames;
     }
 
@@ -4933,6 +4943,16 @@ class BuildApplication {
         );
     }
 
+    async copyFunctionsToDeployFolder() {
+        const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        await functions.copyFunctionsModuleToDestFolder();
+    }
+
+    async generateReleaseFunctionsModule() {
+        const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        await functions.functionsGenerateRelease();
+    }
+
     async removeEmptyFolder() {
         const web = new ProjectFileHandler(this.getBuildObject('web'));
         await web.removeEmptyFolder();
@@ -5010,6 +5030,7 @@ if (configer.DEBUG_MODE) {
                     await builder.buildCloudFunctions(false);
                     break;
                 case 'functionsOnly':
+                    await builder.persistent('functions');
                     await builder.buildCloudFunctions();
                     break;
                 case 'adminOnly':
@@ -5044,9 +5065,16 @@ if (configer.DEBUG_MODE) {
                 case 'persistent':
                     await builder.persistent('web');
                     await builder.persistent('admin');
+                    await builder.persistent('functions');
                     break;
                 case 'persistentFunctions':
                     await builder.persistent('functions');
+                    break;
+                case 'functionsGenerateRelease':
+                    await builder.generateReleaseFunctionsModule();
+                    break;
+                case 'copyToDeployFolder':
+                    await builder.copyFunctionsToDeployFolder();
                     break;
                 case 'less':
                     await builder.buildWeb();
@@ -5054,13 +5082,12 @@ if (configer.DEBUG_MODE) {
                 case 'buildAllPlatform':
                     await builder.buildWeb();
                     await builder.buildAdmin();
+                    await builder.buildCloudFunctions();
                     break;
                 case 'buildStoreIndexJson':
                     await builder.buildIndexRule();
                     break;
                 default:
-                    // console.log('default')
-                    // await builder.buildIndexRule();
                     await builder.removeEmptyFolder();
                     break
             }
