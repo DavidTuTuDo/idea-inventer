@@ -210,6 +210,14 @@ class NodeUtiller extends Utiller {
         this.appendInfo(`複製成功 ${from}/* => ${dest}/* succeed`);
     }
 
+    /** remove all under dir */
+    cleanAllFiles(dir) {
+        if(this.isDirectory(dir)) {
+            this.appendInfo(`準備清除底下的所有 ${dir}`);
+            fse.emptyDirSync(dir)
+            this.appendInfo(`成功清除底下的所有 ${dir}`);
+        }
+    }
 
     /** 取得檔案的目錄, path => c://folderName/fileName.js to c://folderName */
     getFileDirPath(path, slash = true) {
@@ -712,7 +720,10 @@ if (configerer.DEBUG_MODE) {
             const uii = new NodeUtiller();
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
-            await new NodeUtiller().generatePackage('../utiller');
+
+            // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
+
+            // await new NodeUtiller().generatePackage('../utiller');
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');

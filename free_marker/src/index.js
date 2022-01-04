@@ -4457,6 +4457,16 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
+    async copyWebDistToProjectThanDeploy() {
+        await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
+        const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
+        const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
+        Util.persistByPath(pathOfDestination);
+        Util.cleanAllFiles(pathOfDestination);
+        Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
+        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only hosting`);
+    }
+
     async generateFireIndexRules(deploy = true) {
         const indexes = [];
         const task = async (node) => {
@@ -4955,6 +4965,14 @@ class BuildApplication {
         );
     }
 
+    async deployWeb() {
+        const web = new ProjectFileHandler(this.getBuildObject('web'));
+        await web.copyWebDistToProjectThanDeploy();
+        Util.appendInfo(
+            `web deploy succeed`
+        );
+    }
+
     async buildCloudFunctions(deploy = true) {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         functions.setFunctionNeedDeploy(deploy);
@@ -5052,6 +5070,9 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'functionsOnly':
                     await builder.buildCloudFunctions();
+                    break;
+                case 'deployWebToProduction':
+                    await builder.deployWeb();
                     break;
                 case 'persistentFunctions':
                     await builder.persistent('functions');
