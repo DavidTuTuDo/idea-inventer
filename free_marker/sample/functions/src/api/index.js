@@ -16,4 +16,4 @@ class AdminRemoteApi extends BaseAdminRemoteApi {
   }
   /** -------------------- async api -------------------- **/
 }
-export default AdminRemoteApi;
+export default new AdminRemoteApi();

@@ -3,6 +3,7 @@ import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
 import libpath from 'path';
+import Config from '../config';
 
 class CommonFirebaseHelper extends BaseFirebase {
 
@@ -17,6 +18,9 @@ class CommonFirebaseHelper extends BaseFirebase {
             })
         }
 
+        if (_.isEqual(Config.env,'dev') && _.isEqual(Config.platform, 'web')) {
+            this.functions().useEmulator("localhost", 5001);
+        }
     }
 
     firestore() {
@@ -39,15 +43,15 @@ class CommonFirebaseHelper extends BaseFirebase {
         return this.core().storage();
     }
 
-    getFireStoreField(){
+    getFireStoreField() {
         return this.getFirestoreLibrary().FieldValue;
     }
 
-    getFirestoreIncrement(delta){
+    getFirestoreIncrement(delta) {
         return this.getFireStoreField().increment(delta);
     }
 
-    FirebaseTimestamp(){
+    FirebaseTimestamp() {
         return this.getFirestoreLibrary().Timestamp;
     }
 
@@ -194,9 +198,9 @@ class CommonFirebaseHelper extends BaseFirebase {
         return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'uploadImage');
     }
 
-     getFieldNameOfDocumentId() {
+    getFieldNameOfDocumentId() {
         return this.getFirestoreLibrary().FieldPath.documentId();
-     }
+    }
 
 
 }

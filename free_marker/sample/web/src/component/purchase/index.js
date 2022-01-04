@@ -6,8 +6,6 @@
 import {observer, inject} from "mobx-react";
 import BasePurchaseComponent from "./BasePurchaseComponent";
 import Router from "../../router";
-import PurchaseOrder from "../../store/purchasePurchaseOrder";
-import PurchaseListener from "../../store/purchasePurchaseListener";
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -15,6 +13,8 @@ import {
 } from "utiller";
 import UserInfo from '../../userInfo';
 import _ from "lodash";
+import Functions from '../../functions';
+
 
 @inject("purchase")
 @observer
@@ -35,7 +35,7 @@ class PurchaseComponent extends BasePurchaseComponent {
     }
 
     getInjectStyleOfPurchasePlanBuyButton(plan) {
-       return Util.getVisibleOrHidden(!plan.isTitle())
+        return Util.getVisibleOrHidden(!plan.isTitle())
     }
 
     getInjectStyleOfPurchasePlanPriceTipTypography(plan) {
@@ -43,28 +43,13 @@ class PurchaseComponent extends BasePurchaseComponent {
     }
 
     onBuyButtonClicked(param) {
-        if (!UserInfo.isLoginInSucceed()) {
-            Router.gotoLoginPage(this);
-            return;
-        }
         const self = this;
         const plan = param.object;
         const uid = UserInfo.getUid();
-        const listenerId = Util.getRandomHash(25);
-        new PurchaseOrder().submitPurchaseOrderItem(this,{
-            price: plan.price,
-            productInfos: [{pid: plan.getPid(), quantity: 1}],
-            listenerId,
-            uid,
-        }).then((result) => {
-            self.subscribe(
-                new PurchaseListener().restfulListenPurchaseListenerItem(uid, listenerId, (result) => {
-                    self.handleRestFulResult(result, async (data) => {
-                        window.open(data.paymentUrl);
-                    }).then()
-                },this)
-            );
-        })
+        Functions.httpOnCallFetchLinePayInfo(self, {pid: plan.getPid()})
+            .then((linepayInfo) => {
+                this.gotoExternalUrl(linepayInfo.paymentUrl)
+            })
     }
 
 

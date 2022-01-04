@@ -17,6 +17,7 @@ import {
 import EventBus from "./base/CommonEventBus";
 import UserInfo from "./userInfo";
 import Cookie from './cookie';
+import Config from './config';
 
 class App extends BaseApp {
     /** -------------------- fields -------------------- **/
@@ -52,4 +53,5 @@ class App extends BaseApp {
 
 const self = new App();
 self.mount();
+Util.setEnvironment(Config.env);
 export {self as Application} ;

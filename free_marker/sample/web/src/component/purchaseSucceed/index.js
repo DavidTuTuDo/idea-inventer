@@ -14,10 +14,10 @@ import {observer} from "mobx-react";
 import {inject} from "mobx-react";
 import BasePurchaseSucceedComponent from "./BasePurchaseSucceedComponent";
 import queryString from 'query-string';
-import PurchaseReport from '../../store/purchaseSucceedPurchaseReport';
 import Router from "../../router";
 import Cookie from '../../cookie';
 import UserInfo from '../../userInfo';
+import Functions from '../../functions';
 
 @inject("purchaseSucceed")
 @observer
@@ -27,21 +27,30 @@ class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
 
     constructor(props) {
         super(props);
-        this.params = queryString.parse(this.props.location.search) //console.log(params) { transactionId:2021062500677569710, orderId:Order2019101500001 };
     }
 
     componentDidMount() {
         const self = this;
         super.componentDidMount();
-        /** 開始 loading view */
-        self.setGlobalLoadingViewVisibility(true);
-        const item = {uid: UserInfo.getUid(), ...this.params};
-        Util.appendInfo('line導頁後得到的參數orderId, transactionId', item);
-        new PurchaseReport().submitPurchaseReportItem(this,item).then((result) => {
-            Util.appendInfo(result);
-            self.setGlobalLoadingViewVisibility(false);
-            /** 停止loading view */
-        })
+        const paramObject = queryString.parse(this.props.location.search) //console.log(params) { transactionId:2021062500677569710, orderId:Order2019101500001 };
+        Util.appendInfo('line導頁後得到的參數orderId, transactionId', paramObject);
+        Util.syncDelay(500).then((result) => {
+            return Functions.httpOnCallConfirmLinePayInfo(self, {uid:UserInfo.getUid(),...paramObject});
+        }).then(
+            (result) => {
+                self.getStore().setSucceedTitle('已完成交易');
+                self.getStore().setIsTransactionSucceed(true);
+            }
+        ).catch(
+            (error) => {
+                self.getStore().setSucceedTitle(`失敗交易:${error.message}`);
+                self.getStore().setIsTransactionSucceed(false);
+            }
+        )
+    }
+
+    getInjectPropsOfPurchaseSucceedConfirmButton(purchaseSucceed) {
+        return {disabled: !this.getStore().getIsTransactionSucceed()}
     }
 
     onConfirmButtonClicked(param) {

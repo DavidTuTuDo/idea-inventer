@@ -4,7 +4,7 @@ import {utiller as Util, pooller as InfinitePool} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
 import firebase from "./base/CommonFirebaseHelper";
-import {linepay as LinePay} from "linepay";
+import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';
 import moment from 'moment';
@@ -13,127 +13,6 @@ import moment from 'moment';
     const api = new Api();
     const listener = new Listener();
 
-    function getLinePayFormOfOrder(orderId, price, productName, imageUrl, host = config.host) {
-        const order = {
-            amount: price,
-            currency: 'TWD',
-            orderId: orderId,
-            packages: [
-                {
-                    id: orderId,
-                    amount: price,
-                    name: productName,
-                    products: [
-                        {
-                            name: productName,
-                            quantity: 1,
-                            price: price,
-                            imageUrl: imageUrl,
-                        }
-                    ]
-                }
-            ],
-            redirectUrls: {
-                confirmUrl: `${host}/purchaseSucceed`,
-                cancelUrl: `${host}/purchaseFail`,
-            }
-        };
-        return order;
-    }
-
-    function listenToPurchaseSucceedReport() {
-        listener.listenPurchaseReports(async (changes) => {
-            for (const change of changes) {
-                if (change.type !== 'added') {
-                    console.log(`listenPurchaseReports`, change.id, change.type)
-                    continue;
-                }
-
-                const report = change.data;
-                const reportId = change.id;
-                const updateContent = {};
-                try {
-                    const order = await api.fetchPurchaseOrderItem(report.orderId);
-                    const confirmContent = {
-                        amount: order.price,
-                        currency: 'TWD'
-                    }
-                    Util.appendInfo(confirmContent);
-
-                    const linePayResult = await linePay.confirm(confirmContent, report.transactionId);
-                    Util.appendInfo(linePayResult);
-                    /** 從pid 找到duration裡面有註記服購買天數, 算出start,end 再寫入,寫入user/purchaseList */
-                    const days = _.toNumber(Util.getNormalizedStringNotEndWith(order.duration, 'd'));
-                    const startTime = await firebase.getCurrentServerTimeStamp();
-                    const endTime = firebase.getTimeStampObj(moment(startTime.toMillis()).add(days, 'days').valueOf())
-
-                    await api.submitPurchaseProductItem(order.uid, {
-                        orderId: report.orderId,
-                        expiration: {
-                            startTime,
-                            endTime
-                        },
-                    })
-                    updateContent.status = 'succeed';
-                    updateContent.transactionId = linePayResult.info.transactionId;
-                } catch (error) {
-                    Util.appendError(error);
-                    updateContent.status = 'fail';
-                    updateContent.message = error.message;
-                } finally {
-                    await api.updatePurchaseReportItem(reportId, updateContent);
-                }
-            }
-        }, (condition) => condition.where('status', '==', 'pending'))
-    }
-
-    function listenToPurchaseOrder() {
-        listener.listenPurchaseOrders(async (changes) => {
-            for (const change of changes) {
-                const order = change.data;
-                const orderId = change.id;
-
-                if (!_.isEqual(change.type, 'added')) continue;
-                /** 在finally有做update, 然後會再收到一次local的推播, 因為資料還沒寫到backend, 所以非added的事件都忽略掉*/
-
-                const updateContent = {};
-                const resultData = {id: order.listenerId};
-                const restfulData = {status: "succeed", message: "LinePay request succeed"};
-
-                try {
-                    const pid = order.productInfos[0].pid;
-                    /** 在server端從pid去找到商品價格, 不能讓client端自己帶入價格, 會被hack, 目前沒有accumulate的作為,只抓出第一筆作為整個order的價格 */
-                    const plan = await api.fetchPurchasePlanItem(pid);
-                    const orderObj = getLinePayFormOfOrder(orderId, plan.price, plan.fullName, plan.imageUrl);
-                    const linePayResult = await linePay.request(orderObj);
-                    const totalPrice = plan.price;
-
-                    Util.appendInfo(`uid=${order.uid}`, `\nline-pay request result`, linePayResult)
-                    if (_.isEqual(linePayResult.returnCode, '0000')) {
-                        /** 這樣才表示成功 */
-                        updateContent.status = 'waiting';
-                        updateContent.transactionId = linePayResult.info.transactionId;
-                        updateContent.paymentAccessToken = linePayResult.info.paymentAccessToken;
-                        updateContent.price = totalPrice;
-                        updateContent.duration = plan.duration;
-                        /** 類似api 的 return value, 不過是讓user 自己去監聽ㄧ個node 的變化 */
-                        resultData.data = {paymentUrl: linePayResult.info.paymentUrl.web}
-
-                    } else {
-                        restfulData.status = 'fail';
-                        restfulData.message = `LinePay出問題, returnCode = ${linePayResult.returnCode}`;
-                    }
-                } catch (error) {
-                    Util.appendError(error);
-                    restfulData.status = 'fail';
-                    restfulData.message = error.message;
-                } finally {
-                    await api.restfulSubmitPurchaseListenerItem(order.uid, resultData, restfulData);
-                    await api.updatePurchaseOrderItem(orderId, updateContent);
-                }
-            }
-        }, (condition) => condition.where('status', '==', 'pending'))
-    }
 
     async function deployQuestions({all = false, year = 110, clear = false}) {
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);

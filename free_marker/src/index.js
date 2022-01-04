@@ -43,9 +43,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+
     raw;
     /** 沒有被enrich的node*/
 
+    linepay;
+    /** 放linepay secret info */
 
     schedule
     /** firebase-function 的規則 'every 2 minute' */
@@ -209,7 +212,7 @@ class CodegenNode {
     description;
     /** 解釋這個node欄位的意義, 也能當作TextField的解釋 */
 
-    host;
+    host = {dev: '', prod: ''};
     /** 網域名稱啦 */
 
     initFetchOnlyLogin;
@@ -742,7 +745,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['linepay','listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1999,7 +2002,7 @@ class ClassGenerator {
             _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,
-                `result = error;`,
+                `result = error.message;`,
                 `}`])
             if (isHttpRequest()) {
                 _stmts.push('response.send({succeed,data:result});');
@@ -2249,7 +2252,8 @@ class PathBase {
     projectCommonSourcePath; // exam/common/src
     nodeOfAncestor; //source.js
     structs;
-    platform; // web, admin, app
+    env = 'dev'; //dev, prod
+    platform; // web, admin, platform
     genComponentRootPath; // gen/app/src/component
     genStoreRootPath; // gen/app/src/store
 
@@ -2276,6 +2280,7 @@ class PathBase {
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
         this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
         this.strcuts = this.nodeOfAncestor.components.map(component => component.struct);
+        this.env = props.env;
         /** 這就是 source.js 的進入點 */
     }
 
@@ -4203,7 +4208,8 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    async buildConfig(sourceObj) {
+    async buildConfig() {
+        const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
         const watermarkObj = Util.mergeObject({
@@ -4214,17 +4220,21 @@ class ProjectFileHandler extends PathBase {
             color: '#000',
             textStyle: '20px roboto',
         }, sourceObj.watermark);
+        baseConfigGenerator.appendField(`platform`, JSON.stringify(this.platform));
+        baseConfigGenerator.appendField(`env`, JSON.stringify(this.env));
+        baseConfigGenerator.appendField(`host`, JSON.stringify(_.isEqual(this.env, 'dev') ? sourceObj.host.dev : sourceObj.host.prod));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
+
+
         switch (this.platform) {
             case 'admin':
             case 'functions':
+                baseConfigGenerator.appendField(`linepay`, JSON.stringify(sourceObj.linepay));
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
-                baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
                 break;
             case 'web':
-                baseConfigGenerator.appendField(`host`, JSON.stringify(sourceObj.host));
                 baseConfigGenerator.appendField(`firebase`, JSON.stringify(sourceObj.firebase));
                 if (sourceObj.hasCookiePassword())
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
@@ -4457,7 +4467,7 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    async copyWebDistToProjectThanDeploy() {
+    async buildProdWebDistToProjectThanDeploy() {
         await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
         const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
         const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
@@ -4634,7 +4644,7 @@ class ProjectFileHandler extends PathBase {
 
         const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
-        apiGenerator.needIndexFile('AdminRemoteApi');
+        apiGenerator.needIndexFile('AdminRemoteApi', [], true);
 
         for (const component of this.nodeOfAncestor.getComponents()) {
             new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
@@ -4827,6 +4837,14 @@ class ProjectFileHandler extends PathBase {
         this.needDeployCloudFunctions = need;
     }
 
+    async deployFunctionsToProd() {
+        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only functions`);
+    }
+
+    async cleanGenDirectory() {
+        await Util.cleanAllFiles(this.genRootPath);
+    }
+
     async execute() {
         this.enrichComponentStructs(this.isWebPlatform());
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
@@ -4844,7 +4862,7 @@ class ProjectFileHandler extends PathBase {
                 throw new ERROR(8014, `type ==> ${this.platform}`)
         }
         await this.buildCustomizePackages();
-        await this.buildConfig(this.nodeOfAncestor);
+        await this.buildConfig();
         this.overrideEachFilesFromFolder(
             `common.style.js`
             , `app.style.js`
@@ -4867,6 +4885,7 @@ class ProjectFileHandler extends PathBase {
 
     async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
+            Util.cleanAllFiles(libpath.join(this.genRootPath, 'release'));
             await Util.generatePackage(this.genRootPath, false);
             /** 會產生出 release folder */
             await this.copyFunctionsModuleToDestFolder();
@@ -4874,12 +4893,10 @@ class ProjectFileHandler extends PathBase {
     }
 
     async copyFunctionsModuleToDestFolder() {
-        const deployPathOfFunction = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions');
-        await Util.deleteSelfByPath(deployPathOfFunction, true);
-        // await Util.deleteSelfByPath(libpath.join(this.genRootPath, 'release','yarn.lock'),true);
-        const pathOfReleaseLibAppFile = libpath.join(this.genRootPath, 'release', 'lib', 'app.js');
-        Util.renameFile(pathOfReleaseLibAppFile, 'index');
-        Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), Util.persistByPath(deployPathOfFunction))
+        const deployPathOfFunction = Util.persistByPath(libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions'));
+        Util.cleanAllFiles(deployPathOfFunction);
+        Util.renameFile(libpath.join(this.genRootPath, 'release', 'lib', 'app.js'), 'index');
+        Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), deployPathOfFunction);
     }
 
     getIgnoredFilesByPlatform() {
@@ -4948,12 +4965,13 @@ class BuildApplication {
         }
     }
 
-    getBuildObject = (platform = 'web') => {
+    getBuildObject = (platform = 'web', env = 'dev') => {
         return {
             freeMarkerRootPath: this.freeMarkerRootPath,
             genRootPath: this.genRootPath,
             projectRootPath: this.projectRootPath,
-            platform
+            platform,
+            env,
         }
     }
 
@@ -4965,9 +4983,18 @@ class BuildApplication {
         );
     }
 
-    async deployWeb() {
-        const web = new ProjectFileHandler(this.getBuildObject('web'));
-        await web.copyWebDistToProjectThanDeploy();
+    async deployFunctionsToProd() {
+        const functions = new ProjectFileHandler(this.getBuildObject('functions', 'prod'));
+        await functions.cleanGenDirectory();
+        await functions.execute();
+        await functions.deployFunctionsToProd();
+    }
+
+    async deployWebProd() {
+        const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
+        await web.cleanGenDirectory();
+        await web.execute();
+        await web.buildProdWebDistToProjectThanDeploy();
         Util.appendInfo(
             `web deploy succeed`
         );
@@ -4982,14 +5009,10 @@ class BuildApplication {
         );
     }
 
-    async copyFunctionsToDeployFolder() {
-        const functions = new ProjectFileHandler(this.getBuildObject('functions'));
-        await functions.copyFunctionsModuleToDestFolder();
-    }
-
     async generateReleaseFunctionsModule() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         await functions.functionsGenerateRelease();
+        await functions.copyFunctionsModuleToDestFolder();
     }
 
     async removeEmptyFolder() {
@@ -5065,14 +5088,24 @@ if (configerer.DEBUG_MODE) {
             const builder = new BuildApplication(props)
 
             switch (Util.getNodeEnvVariable('type')) {
+                case 'functionsGenerateRelease':
+                    await builder.generateReleaseFunctionsModule();
+                    break;
                 case 'fastFunctionsOnly':
                     await builder.buildCloudFunctions(false);
                     break;
                 case 'functionsOnly':
                     await builder.buildCloudFunctions();
                     break;
+                case 'deployFunctionsToProduction':
+                    await builder.deployFunctionsToProd();
+                    break;
                 case 'deployWebToProduction':
-                    await builder.deployWeb();
+                    await builder.deployWebProd();
+                    break;
+                case 'deployPlatformToProd':
+                    await builder.deployFunctionsToProd();
+                    await builder.deployWebProd();
                     break;
                 case 'persistentFunctions':
                     await builder.persistent('functions');
@@ -5111,12 +5144,6 @@ if (configerer.DEBUG_MODE) {
                     await builder.persistent('web');
                     await builder.persistent('admin');
                     await builder.persistent('functions');
-                    break;
-                case 'functionsGenerateRelease':
-                    await builder.generateReleaseFunctionsModule();
-                    break;
-                case 'copyToDeployFolder':
-                    await builder.copyFunctionsToDeployFolder();
                     break;
                 case 'less':
                     await builder.buildWeb();

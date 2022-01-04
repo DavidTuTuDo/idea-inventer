@@ -21,17 +21,32 @@ class Utiller {
 
     constructor() {
         this.init();
+        this.env = 'dev';
     }
 
     init() {
         // this.enrichZhTw();
     }
 
+    setEnvironment(env) {
+       this.env = env;
+    }
+
+    getEnvironment() {
+        return this.env;
+    }
+
+    isProductionEnvironment() {
+        return _.isEqual(this.env,'prod');
+    }
+
     appendInfo(...logs) {
+        if(this.isProductionEnvironment()) return;
         console.log(...logs);
     }
 
     appendError(...logs) {
+        if(this.isProductionEnvironment()) return;
         console.error(...logs);
     }
 

@@ -85,7 +85,7 @@ class NodeUtiller extends Utiller {
      * */
     renameFile(path, newName = 'fileName') {
         if (!this.isPathExist(path) || !this.isFile(path)) {
-            this.appendError('984521 path not exist or not a file path');
+            this.appendError(`984521 path not exist or not a file path:${path}`);
             return;
         }
         if (_.isEmpty(newName)) {
@@ -433,10 +433,11 @@ class NodeUtiller extends Utiller {
     }
 
     appendLog(path, datas, isError = false) {
+        if(!this.isProductionEnvironment()) {
+            isError ? console.error(...datas) : console.log(...datas);
+        }
 
-        isError ? console.error(...datas) : console.log(...datas);
-        const log = `${isError ? `ERROR` : `LOG`} : ${this.getLogString(datas)}`;
-        const persistlog = `${new Date()} ${log}`;
+        const persistlog = `${new Date()} ${isError ? `ERROR` : `LOG`} : ${this.getLogString(datas)}`;
         this.appendFile(path, persistlog);
     }
 
@@ -559,13 +560,11 @@ class NodeUtiller extends Utiller {
                 if (deployToNPMServer) {
                     await this.executeCommandLine(`cd ${release} &&  npm publish`);
                     /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
-                    await this.deleteSelfByPath(tempFolderPath, true);
 
                     /** 把所有樣板的版號都提升 */
                     await this.updateVersionOfTemplate(name, version);
                 }
-
-
+                await this.deleteSelfByPath(tempFolderPath, true);
             }
         }
     }

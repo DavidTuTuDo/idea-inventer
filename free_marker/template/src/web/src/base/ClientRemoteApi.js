@@ -94,6 +94,7 @@ class ClientRemoteApi extends CommonRemoteApi {
             }
         } catch (error) {
             self.handleApiException(path, type, error, view)
+            throw new Error(error.message);
         } finally {
             self.handleApiFinally(path, type, view);
         }
@@ -107,6 +108,7 @@ class ClientRemoteApi extends CommonRemoteApi {
             return await asyncApiTask();
         } catch (error) {
             self.handleApiException(path, type, error, view);
+            throw new Error(error.message);
         } finally {
             self.handleApiFinally(path, type, view);
         }

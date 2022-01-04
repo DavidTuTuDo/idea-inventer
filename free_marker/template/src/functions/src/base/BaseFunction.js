@@ -12,6 +12,27 @@ class BaseFunction {
         functions.logger.log(...msgs);
     }
 
+
+    appendError(...msgs) {
+        functions.logger.error(...msgs);
+    }
+
+    isLoginUser(context) {
+        return context.auth && context.auth.uid;
+    }
+
+    getUid(context) {
+        return context.auth.uid;
+    }
+
+    getPictureUrl(context) {
+        return context.auth.token.name || null;
+    }
+
+    getEmailAddress(context) {
+        return context.auth.token.email || null;
+    }
+
 }
 
 
