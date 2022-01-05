@@ -89,6 +89,8 @@ class MobileStyle {
 
   ExamEditorHistoryFilterWhichSubjectDiv = {};
 
+  ExamEditorHistoryFilterSpaceDiv = {};
+
   ExamEditorHistoryFilterReplyTypeValueTextField = {};
 
   ExamEditorHistoryFilterReplyTypeLabelTextField = {};
@@ -98,8 +100,6 @@ class MobileStyle {
   WrapExamEditorHistoryFilterReplyTypeDiv = {};
 
   ExamEditorHistoryFilterReplyTypeDiv = {};
-
-  ExamEditorHistoryFilterSpaceDiv = {};
 
   WrapExamEditorHistoryFilterDiv = {};
 
@@ -299,15 +299,13 @@ class MobileStyle {
 
   ListExamHistoryFilterWhichSubjectTextField = {};
 
+  ExamHistoryFilterSpaceDiv = {};
+
   ExamHistoryFilterReplyTypeFormControlLabel = {};
 
   LabelExamHistoryFilterReplyTypeTypography = {};
 
   ListExamHistoryFilterReplyTypeRadioGroup = {};
-
-  ExamHistoryFilterSpaceDiv = {};
-
-  ExamHistoryFilterTitleTypography = {};
 
   ExamHistoryFilterDiv = {};
 

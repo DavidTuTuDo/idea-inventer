@@ -44,6 +44,10 @@ class BaseComponent extends React.Component {
         super(props);
     }
 
+    isMobileDevice() {
+        return isMobile;
+    }
+
     getComponentName() {
         return `BaseComponent`;
     }
@@ -753,7 +757,7 @@ class BaseComponent extends React.Component {
             Application.getNavigatorRef().onLoginButtonClicked()
     }
 
-    openLineChatAccountWithMessage(id = '',message = '') {
+    openLineChatAccountWithMessage(id = '', message = '') {
         this.gotoExternalUrl(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
 

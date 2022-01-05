@@ -212,7 +212,7 @@ class NodeUtiller extends Utiller {
 
     /** remove all under dir */
     cleanAllFiles(dir) {
-        if(this.isDirectory(dir)) {
+        if (this.isDirectory(dir)) {
             this.appendInfo(`準備清除底下的所有 ${dir}`);
             fse.emptyDirSync(dir)
             this.appendInfo(`成功清除底下的所有 ${dir}`);
@@ -322,10 +322,12 @@ class NodeUtiller extends Utiller {
     }
 
     isDirectory(path) {
+        if (!this.isPathExist(path)) return false;
         return fs.lstatSync(path).isDirectory();
     }
 
     isFile(path) {
+        if (!this.isPathExist(path)) return false;
         return fs.lstatSync(path).isFile();
     }
 
@@ -433,7 +435,7 @@ class NodeUtiller extends Utiller {
     }
 
     appendLog(path, datas, isError = false) {
-        if(!this.isProductionEnvironment()) {
+        if (!this.isProductionEnvironment()) {
             isError ? console.error(...datas) : console.log(...datas);
         }
 
@@ -716,7 +718,7 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const uii = new NodeUtiller();
+            // const uii = new NodeUtiller();
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
 
@@ -726,6 +728,9 @@ if (configerer.DEBUG_MODE) {
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
+            // await new NodeUtiller().generatePackage('../configerer');
+            await new NodeUtiller().generatePackage('../databazer');
+
             // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
             // await new NodeUtiller().generatePackage('../linepay');

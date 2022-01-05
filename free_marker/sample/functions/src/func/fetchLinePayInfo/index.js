@@ -52,11 +52,14 @@ class FetchLinePayInfo extends BaseFetchLinePayInfo {
 
         if (data.pid && this.isLoginUser(context)) {
             const plan = await Api.fetchPurchasePlanItem(data.pid);
+            const isMobile = data.isMobile;
+
             if (plan) {
                 const uid = this.getUid(context);
                 const result = await Api.submitPurchaseOrderItem({uid, productInfos: [{pid: plan.id, quantity: 1}]})
                 const orderId = result.value.id;
                 const orderObj = this.getLinePayFormOfOrder(orderId, plan.price, plan.fullName, plan.imageUrl);
+                this.appendLog('redirectUrls',orderObj.redirectUrls);
                 const linePayResult = await this.linePayerRef.request(orderObj);
                 if (_.isEqual(linePayResult.returnCode, '0000')) {
                     const updateContent = {};

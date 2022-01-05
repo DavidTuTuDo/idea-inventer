@@ -11,6 +11,7 @@ import {
     pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
+import UserInfoRef from "../userInfo";
 
 class Router extends BaseMyRouter {
     /** -------------------- fields -------------------- **/
@@ -20,11 +21,12 @@ class Router extends BaseMyRouter {
         super(props);
     }
 
-    gotoLoginPage(component) {
-        super.gotoLoginPage(component);
-    }
-
     gotoHistoryWrongPage = (component) => {
+        if (!UserInfoRef.isLoginInSucceed() && component !== undefined) {
+            component.enableLoginConfirmDialog();
+            return;
+        }
+
         Cookie.setExamFilter({type: 'historyWrong'});
         this.gotoExamPage(component);
     }

@@ -500,7 +500,7 @@ class ConditionBuilder {
 
 }
 
-export {SqliteHandler as databaser,ConditionBuilder as builder}
+export {SqliteHandler as databazer,ConditionBuilder as builder}
 /** 使用範例
  Util.appendInfo(await handler.fetchRecords("TONE",
  builder.gt('popularLevel', 50000).orderBy({'popularLevel': 'DESCS'})

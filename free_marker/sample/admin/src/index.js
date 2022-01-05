@@ -1,5 +1,5 @@
 import Api from './api';
-import {databaser as Databaser, builder as Builder} from "databaser";
+import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
@@ -46,39 +46,52 @@ import moment from 'moment';
         await api.deleteShortcuts();
         await api.submitShortcuts(
             {
+                title: '回到首頁',
+                icon: 'muIcon:Bedtime',
+                route: `route:main`,
+                indexOfSequence: 0,
+            }
+            ,
+            {
                 title: '我的歷史錯誤',
                 icon: 'muIcon:Rule',
-                route: `route:historyWrong`
+                route: `route:historyWrong`,
+                indexOfSequence: 2,
             },
             {
                 title: '問過的問題',
                 icon: 'muIcon:HistoryToggleOff',
-                route: `route:myFatefulQuestions:stupidAsk`
+                route: `route:myFatefulQuestions:stupidAsk`,
+                indexOfSequence: 2,
             },
             {
                 title: '回答的題目',
                 icon: 'muIcon:Rule',
-                route: `route:myFatefulQuestions:kindlyReply`
+                route: `route:myFatefulQuestions:kindlyReply`,
+                indexOfSequence: 2,
             }
             , {
                 title: '最愛的題目',
                 icon: 'muIcon:FavoriteBorder',
                 route: `route:myFatefulQuestions:favorite`,
+                indexOfSequence: 2,
             },
             {
                 title: '相關網站',
                 icon: 'muIcon:Whatshot',
+                indexOfSequence: 3,
                 subs: [
                     {
                         title: '大考入學中心',
                         icon: 'muIcon:School',
-                        route: 'path:https://www.ceec.edu.tw/'
+                        route: 'path:https://www.ceec.edu.tw/',
+                        indexOfSequence: 2,
                     },
                     {
                         title: '大數數學',
                         icon: 'muIcon:Calculate',
                         route: `path:https://bignmath.weebly.com/`,
-
+                        indexOfSequence: 1,
                     }
                 ]
             },
@@ -146,14 +159,14 @@ import moment from 'moment';
         await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
 
         await api.submitPurchasePlans(
-            {id: 1001, pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '選擇王-1個月禮包', duration: '31d'},
+            {id: 1001, pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '明悅科技-1個月', duration: '31d'},
             {
                 id: 1002,
                 pid: 1002,
                 name: '2個月',
                 price: 110,
                 priceTip: '平均一個月55元',
-                fullName: '選擇王-2個月禮包',
+                fullName: '明悅科技-2個月',
                 duration: '62d'
             },
             {
@@ -162,7 +175,7 @@ import moment from 'moment';
                 name: '3個月',
                 price: 150,
                 priceTip: '平均一個月50元',
-                fullName: '選擇王-3個月禮包',
+                fullName: '明悅科技-3個月',
                 duration: '63d'
             })
     }

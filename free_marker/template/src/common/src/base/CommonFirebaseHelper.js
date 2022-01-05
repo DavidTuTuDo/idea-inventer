@@ -96,9 +96,6 @@ class CommonFirebaseHelper extends BaseFirebase {
         await this.auth().signOut();
     }
 
-    credential() {
-    }
-
     getTimeStampObj(millis) {
         const timestamp = this.getFirestoreLibrary().Timestamp.fromMillis(millis);
         return timestamp;

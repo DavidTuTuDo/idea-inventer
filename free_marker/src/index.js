@@ -2278,10 +2278,14 @@ class PathBase {
         this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
 
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
-        this.strcuts = this.nodeOfAncestor.components.map(component => component.struct);
+        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
+
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
+    }
+
+    getStructs() {
+        return this.nodeOfAncestor.components.map(component => component.struct);
     }
 
     isFunctionsPlatform() {
@@ -4606,7 +4610,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.ref) {
                 const targetName = node.ref;
-                const _nodes = CodegenNode.finds(this.strcuts, (_node) => _.isEqual(targetName, _node.getName()))
+                const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
                 /** 目前先抓第一個當目標*/
                 if (_.isEmpty(_nodes)) {
                     throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
@@ -4679,6 +4683,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     enrichComponentStructs = (needEditComponent = false) => {
+
         function getStmtsOfAfterSubmit(node) {
             if (node.needWatermark) {
                 return `asyncTaskOfAfterSubmit:(remoteUrls) => {
@@ -4690,7 +4695,7 @@ class ProjectFileHandler extends PathBase {
             }
         }
 
-        function toEditorPageMode(node) {
+        function toEditorPageStruct(node) {
 
             if (node.isColumnAttribute() && !node.isCollection()) {
                 if (node.isImageView()) {
@@ -4761,7 +4766,7 @@ class ProjectFileHandler extends PathBase {
 
             for (const child of node.getChildren()) {
                 if (!!!child.editIgnore)
-                    toEditorPageMode(child);
+                    toEditorPageStruct(child);
             }
         }
 
@@ -4779,7 +4784,7 @@ class ProjectFileHandler extends PathBase {
                         editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
                         editorComponent.getStruct().setNameModified(true);
                         editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
-                        toEditorPageMode(editorComponent.getStruct());
+                        toEditorPageStruct(editorComponent.getStruct());
                         editorComponents.push(editorComponent);
                     }
                 }
@@ -4788,8 +4793,12 @@ class ProjectFileHandler extends PathBase {
         }
 
         const source = this.nodeOfAncestor;
-        if (needEditComponent)
+        if (needEditComponent) {
             source.components.push(...getEditorComponents());
+            // Util.appendInfo(source.components.map((each) => {return {name:each.getName(), editor: each.isEditPage()}}))
+        }
+
+
         this.enrichNodes(...source.getComponents().map(component => component.getStruct()));
     }
 
@@ -4798,10 +4807,9 @@ class ProjectFileHandler extends PathBase {
     }
 
     async forWeb() {
-        const source = this.nodeOfAncestor;
         const totalClassNames = [];
         const totalEvents = [];
-        for (let component of source.components) {
+        for (let component of this.nodeOfAncestor.components) {
             if (FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT))
                 continue;
 
@@ -4812,19 +4820,19 @@ class ProjectFileHandler extends PathBase {
             if (!component.isEditPage() && component.getStruct().isAttribute())
                 await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
         }
-
+        const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-        await new StoreBuilder(this.props).buildStoreIndexFiles();
-        await new AppBuilder(this.props).buildWebpackNPackageJson();
-        await new AppBuilder(this.props).buildCloudFunctionsApi();
-        await new AppBuilder(this.props).buildRouterFile();
-        await new AppBuilder(this.props).buildCookieFiles();
-        await new AppBuilder(this.props).buildEventFolder(totalEvents);
-        await new AppBuilder(this.props).overrideLessFile();
-        await new AppBuilder(this.props).buildLessFile(totalClassNames);
-        await new AppBuilder(this.props).buildStyleFiles(totalClassNames);
-        await new AppBuilder(this.props).buildHtmlIndexAssetsFile();
-        await new AppBuilder(this.props).buildAppIndexFiles();
+        await new StoreBuilder(paramProps).buildStoreIndexFiles();
+        await new AppBuilder(paramProps).buildWebpackNPackageJson();
+        await new AppBuilder(paramProps).buildCloudFunctionsApi();
+        await new AppBuilder(paramProps).buildRouterFile();
+        await new AppBuilder(paramProps).buildCookieFiles();
+        await new AppBuilder(paramProps).buildEventFolder(totalEvents);
+        await new AppBuilder(paramProps).overrideLessFile();
+        await new AppBuilder(paramProps).buildLessFile(totalClassNames);
+        await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
+        await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
+        await new AppBuilder(paramProps).buildAppIndexFiles();
         this.buildDistAssetFolder();
     }
 
@@ -4847,6 +4855,7 @@ class ProjectFileHandler extends PathBase {
 
     async execute() {
         this.enrichComponentStructs(this.isWebPlatform());
+        Util.appendInfo(this.nodeOfAncestor.components.map((each) => {return {name:each.getName(), editor: each.isEditPage()}}))
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         switch (this.platform) {
             case 'web':

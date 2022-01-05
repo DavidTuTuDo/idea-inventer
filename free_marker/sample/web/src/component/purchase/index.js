@@ -46,7 +46,7 @@ class PurchaseComponent extends BasePurchaseComponent {
         const self = this;
         const plan = param.object;
         const uid = UserInfo.getUid();
-        Functions.httpOnCallFetchLinePayInfo(self, {pid: plan.getPid()})
+        Functions.httpOnCallFetchLinePayInfo(self, {isMobile: this.isMobileDevice(), pid: plan.getPid()})
             .then((linepayInfo) => {
                 this.gotoExternalUrl(linepayInfo.paymentUrl)
             })
