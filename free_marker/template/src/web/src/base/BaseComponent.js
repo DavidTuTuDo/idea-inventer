@@ -701,19 +701,19 @@ class BaseComponent extends React.Component {
     /** path:'https://' or route:'pageName:...params'*/
     handleCustomRouter = (routeString = '') => {
         const words = routeString.split(':')
-        const type = _.head(words);
+        console.log(words);
+        const type = words.shift();
         switch (type) {
             case 'path':
-                const path = _.last(words);
+                const path = words.join(':');
                 this.gotoExternalUrl(path);
                 break;
             case 'route':
-                const routes = _.tail(words)
-                const page = routes.shift();
+                const page = words.shift();
                 const functionName = `goto${_.upperFirst(page)}Page`;
                 const functionOfGotoPage = Router[functionName];
                 if (_.isFunction(functionOfGotoPage)) {
-                    functionOfGotoPage(this.getComponentInstance(), ...routes);
+                    functionOfGotoPage(this.getComponentInstance(), ...words);
                 } else {
                     this.setSnackViewVisibility(true, `4097 can't handle ${page}`, {type: 'error'})
                 }

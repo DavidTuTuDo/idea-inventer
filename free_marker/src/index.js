@@ -3430,7 +3430,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.needInjectProps()) {
-            const param = node.getPreciseAttributeParentName();
+            const param = node.getObservableName();
             const injectProps = node.getFunctionNameOfInjectProps();
             props['injectProps'] = `...self.${node.getFunctionNameOfInjectProps()}(${param})`
             generator.appendFunction(injectProps, [param]);
@@ -3538,25 +3538,12 @@ class ComponentBuilder extends BaseBuilder {
                 props.style = `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`;
             }
 
-            const stmt = [];
-            /** 當屬性不是資料結構, 但卻還有view的child node時, 就自動放到 wrap 裡面
-             *
-             * outer不支援 viewOnly children(沒有type的attribute)
-             *
-             *  if (!node.isOuter() && !node.isCollection() && node.hasViewChildren()) {
-             *    for (const child of node.getPreciseViewChildren()) {
-             *        stmt.push(...getJsxViewStmt(child))
-             *    }
-             * }
-             *
-             **/
-
 
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
                 generator,
                 props,
-                contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin, ...stmt],
+                contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin],
             })
         }
 
