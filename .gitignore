@@ -6,6 +6,7 @@ logs
 *.txt
 *.css.map
 *.css
+*.db
 yarn.lock
 package-lock.json
 source_workspace.xml

@@ -4,7 +4,7 @@ import _ from 'lodash';
 import libpath from 'path';
 import Moment from 'moment';
 import Browser from "./browser";
-import {databaser as Databaser} from "databaser";
+import {databazer as Databaser} from "databazer";
 
 /** author:明悅
  *  create time:Wed Oct 13 2021 17:25:32 GMT+0800 (Taipei Standard Time)
@@ -65,7 +65,7 @@ class ceec_scrape_script {
         await browser.destroy();
     }
 
-    async goThroughGSAT() {
+    async goThroughGSAT(onlySubject, onlyYear = -1) {
         const db = new Databaser('./gsat.db');
         await db.init();
         await db.dropTable('QUESTION');
@@ -73,14 +73,25 @@ class ceec_scrape_script {
         const subjects = Util.getNamesOfFolderChild(pathOfRoot);
         for (const subject of subjects) {
 
+            if (!_.isEmpty(onlySubject) && !_.isEqual(onlySubject, subject)) {
+                continue;
+            }
+
             const pathOfRootSubject = libpath.join(pathOfRoot, subject);
             const years = Util.getNamesOfFolderChild(pathOfRootSubject);
             for (const year of years) {
-                Util.appendInfo(`正在執行${subject}, 第 ${year} 的題目`)
+
                 const pathOfRootSubjectYear = libpath.join(pathOfRootSubject, year);
                 const pathOfExamPaper = libpath.join(pathOfRootSubjectYear, folderOfQuestion);
                 const pathOfAnswerPaper = this.handleAnswerPath(pathOfRootSubjectYear);
                 const numberOfYear = _.toNumber(year.match(new RegExp(`[0-9]{2,3}`)));
+
+                if (onlyYear > 0 && !_.isEqual(numberOfYear, onlyYear)) {
+                    continue;
+                }
+
+                Util.appendInfo(`正在執行${subject}, 第 ${year} 的題目`)
+
                 const extra = Util.has(year, examOfMakeUp) ? examOfMakeUp : examOfFormal;
                 const questions = await this.toEachQuestions(
                     this.getHeadFileOfPath(pathOfExamPaper),
@@ -147,6 +158,11 @@ class ceec_scrape_script {
                               exam: 'GSAT'
                           }) {
 
+        function safeGetAnswer(question) {
+            const target = answers.find((ans) => _.isEqual(question.qid, ans.qid));
+            return target ? target.answer : '';
+        }
+
         const answers = [];
         if (pathInfoOfAnswer !== undefined && info.year > 95) {
             const pdfOfAnswer = await Util.getPDFText(pathInfoOfAnswer.absolute);
@@ -174,17 +190,15 @@ class ceec_scrape_script {
                  */
             });
 
+        const afterFactoryQuestions = rawQuestions.map(raw => this.toChoiceQuestionFormat(raw));
 
-        const questions = _.filter(rawQuestions.map(raw => this.toChoiceQuestionFormat(raw)),
-            question => question.valid);
-        return questions.map((question) => {
+        const questions = _.filter(afterFactoryQuestions, question => question.valid);
+
+        const formalizeQuestion = questions.map((question) => {
             return {...question, ...info, answer: safeGetAnswer(question)}
         });
 
-        function safeGetAnswer(question) {
-            const target = answers.find((ans) => _.isEqual(question.qid, ans.qid));
-            return target ? target.answer : '';
-        }
+        return formalizeQuestion;
     }
 
     toChoiceQuestionFormat(raw) {
@@ -210,10 +224,10 @@ class ceec_scrape_script {
         let qid = -1;
         /** 在試卷上原始的題號 */
 
-        const rawContent = raw.content;
-        const topicAnswers = _.split(rawContent, new RegExp(`\\([A-Z]\\)`, `g`));
+        const rawContent = raw.content.trim();
+        const topicAnswers = _.split(rawContent, new RegExp(`\\(\\s{0,2}[A-Z]\\s{0,2}\\)`, `g`));
         if (topicAnswers && _.size(topicAnswers) > 4) {
-            topic = _.trim(_.trim(topicAnswers.shift()));
+            topic = _.trim(topicAnswers.shift());
             choices.push(...(topicAnswers.map(each => _.trim(each))));
             valid = true;
         }

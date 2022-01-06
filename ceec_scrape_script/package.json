@@ -11,9 +11,9 @@
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.4",
-    "utiller": "^1.0.12",
-    "databazer": "^1.0.1",
+    "configerer": "^1.0.7",
+    "utiller": "^1.0.30",
+    "databazer": "^1.0.6",
     "scraper": "file:../scraper",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
