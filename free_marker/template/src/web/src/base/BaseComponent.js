@@ -786,6 +786,11 @@ class BaseComponent extends React.Component {
     }
 
     openLineChatAccountWithMessage(id = '', message = '') {
+        if(!isMobile) {
+            this.showInfoSnackMessage(`抱歉,此功能僅提供在移動設備上(手機,平板)`);
+            return;
+        }
+
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
 
