@@ -78,7 +78,7 @@
 
 .ExamFilterCloseButton {
   /** style */
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   font-size: 1rem;
 }
 
@@ -325,37 +325,23 @@
   height: 100%;
 }
 
-.ExamQuestionFunctionCenterOuterDiv:extend(.CenterInParentRow) {
-  /** style */
-  border-radius: 28px;
-  padding: 5px;
-  margin: 10px;
-  background-color: rgba(255, 255, 255, 0.9);
-  margin-top: 50%;
-  border-width: 1px;
-  border-style: solid;
-  border-color: rgba(0, 0, 0, 0.5);
-}
-
-.WrapExamQuestionFunctionCenterOuterDiv:extend(.CenterInParentRelative) {
-  /** style */
-  z-index: 2;
-}
-
-.ExamQuestionFunctionCenterAddToFavoriteButton {
+.ExamQuestionTopicOfAssistantDiv {
   /** style */
 }
 
-.WrapExamQuestionFunctionCenterAddToFavoriteReactFragment {
+.ExamQuestionTopicOfAssistantNameTypography {
   /** style */
 }
 
-.ExamQuestionFunctionCenterCalloutHelpButton {
+.ExamQuestionTopicOfAssistantImageDiv {
   /** style */
-  margin-left: 25px;
 }
 
-.WrapExamQuestionFunctionCenterCalloutHelpReactFragment {
+.ListExamQuestionTopicOfAssistantImageDiv {
+  /** style */
+}
+
+.ExamQuestionTopicOfAssistantImageUrlImg {
   /** style */
 }
 
@@ -421,6 +407,31 @@
 }
 
 .ExamQuestionChoiceImageUrlImg {
+  /** style */
+}
+
+.ExamQuestionFunctionCenterDiv:extend(.CenterInParentRow) {
+  /** style */
+  padding: 5px;
+  border-width: 1px;
+  background-color: rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+}
+
+.ExamQuestionFunctionCenterAddToFavoriteButton {
+  /** style */
+}
+
+.WrapExamQuestionFunctionCenterAddToFavoriteReactFragment {
+  /** style */
+}
+
+.ExamQuestionFunctionCenterCalloutHelpButton {
+  /** style */
+  margin-left: 25px;
+}
+
+.WrapExamQuestionFunctionCenterCalloutHelpReactFragment {
   /** style */
 }
 
@@ -845,12 +856,32 @@
   /** style */
 }
 
-.ExamEditorQuestionFunctionCenterOuterDiv:extend(.ExamQuestionFunctionCenterOuterDiv
+.ExamEditorQuestionTopicOfAssistantDiv:extend(.ExamQuestionTopicOfAssistantDiv
     all) {
   /** style */
 }
 
-.WrapExamEditorQuestionFunctionCenterOuterDiv:extend(.WrapExamQuestionFunctionCenterOuterDiv
+.ExamEditorQuestionTopicOfAssistantNameTextField:extend(.BaseEditorTextField
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicOfAssistantImageDiv:extend(.ExamQuestionTopicOfAssistantImageDiv
+    all) {
+  /** style */
+}
+
+.WrapExamEditorQuestionTopicOfAssistantImageDiv:extend(.WrapExamQuestionTopicOfAssistantImageDiv
+    all) {
+  /** style */
+}
+
+.ListExamEditorQuestionTopicOfAssistantImageDiv:extend(.ListExamQuestionTopicOfAssistantImageDiv
+    all) {
+  /** style */
+}
+
+.ExamEditorQuestionTopicOfAssistantImageUrlImg:extend(.ExamQuestionTopicOfAssistantImageUrlImg
     all) {
   /** style */
 }
@@ -925,7 +956,16 @@
   /** style */
 }
 
+.ExamEditorQuestionTypeOfQuestionTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
 .ExamEditorQuestionAnswerTextField:extend(.BaseEditorTextField all) {
+  /** style */
+}
+
+.ExamEditorQuestionFunctionCenterDiv:extend(.ExamQuestionFunctionCenterDiv
+    all) {
   /** style */
 }
 
@@ -947,10 +987,19 @@
 
 /** ======== following for homeless ========= */
 
-.ExamFilterSubjectTypography {
+.ExamQuestionFunctionCenterOuterDiv:extend(.CenterInParentRow) {
   /** style */
-  font-size: 1.8rem;
-  background-color: #bbbbbb;
-  border-radius: 5px;
-  padding: 8px;
+  border-radius: 28px;
+  padding: 5px;
+  margin: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  margin-top: 50%;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.5);
+}
+
+.WrapExamQuestionFunctionCenterOuterDiv:extend(.CenterInParentRelative) {
+  /** style */
+  z-index: 2;
 }

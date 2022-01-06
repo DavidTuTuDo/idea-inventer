@@ -23,7 +23,11 @@ class MobileStyle {
 
   ExamEditorQuestionSubjectTextField = {};
 
+  ExamEditorQuestionFunctionCenterDiv = {};
+
   ExamEditorQuestionAnswerTextField = {};
+
+  ExamEditorQuestionTypeOfQuestionTextField = {};
 
   ExamEditorQuestionChoiceImageUrlImg = {};
 
@@ -57,9 +61,17 @@ class MobileStyle {
 
   ExamEditorQuestionTopicDiv = {};
 
-  WrapExamEditorQuestionFunctionCenterOuterDiv = {};
+  ExamEditorQuestionTopicOfAssistantImageUrlImg = {};
 
-  ExamEditorQuestionFunctionCenterOuterDiv = {};
+  ListExamEditorQuestionTopicOfAssistantImageDiv = {};
+
+  WrapExamEditorQuestionTopicOfAssistantImageDiv = {};
+
+  ExamEditorQuestionTopicOfAssistantImageDiv = {};
+
+  ExamEditorQuestionTopicOfAssistantNameTextField = {};
+
+  ExamEditorQuestionTopicOfAssistantDiv = {};
 
   ExamEditorQuestionAlertOuterDiv = {};
 
@@ -241,6 +253,16 @@ class MobileStyle {
 
   ExamQuestionTipTypography = {};
 
+  WrapExamQuestionFunctionCenterCalloutHelpReactFragment = {};
+
+  ExamQuestionFunctionCenterCalloutHelpButton = {};
+
+  WrapExamQuestionFunctionCenterAddToFavoriteReactFragment = {};
+
+  ExamQuestionFunctionCenterAddToFavoriteButton = {};
+
+  ExamQuestionFunctionCenterDiv = {};
+
   ExamQuestionChoiceImageUrlImg = {};
 
   ListExamQuestionChoiceImageDiv = {};
@@ -267,17 +289,15 @@ class MobileStyle {
 
   ExamQuestionTopicDiv = {};
 
-  WrapExamQuestionFunctionCenterCalloutHelpReactFragment = {};
+  ExamQuestionTopicOfAssistantImageUrlImg = {};
 
-  ExamQuestionFunctionCenterCalloutHelpButton = {};
+  ListExamQuestionTopicOfAssistantImageDiv = {};
 
-  WrapExamQuestionFunctionCenterAddToFavoriteReactFragment = {};
+  ExamQuestionTopicOfAssistantImageDiv = {};
 
-  ExamQuestionFunctionCenterAddToFavoriteButton = {};
+  ExamQuestionTopicOfAssistantNameTypography = {};
 
-  WrapExamQuestionFunctionCenterOuterDiv = {};
-
-  ExamQuestionFunctionCenterOuterDiv = {};
+  ExamQuestionTopicOfAssistantDiv = {};
 
   WrapExamQuestionAlertAlertImageDiv = {};
 

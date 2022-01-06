@@ -38,10 +38,22 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     hasPhotos() {
-        this.getChoices()
+        return _.size(this.getChoices()) > 0;
     }
 
+    setReply(int) {
+        super.setReply(int);
+        if(this.isReply())
+        this.validateAlertImage();
+    }
 
+    validateAlertImage = () =>{
+        if(this.isAnswerWrong()) {
+            this.setAlertImage('images/question_error.svg');
+        } else {
+            this.setAlertImage('images/question_right.svg');
+        }
+    }
 
 
     /** -------------------- async api -------------------- **/

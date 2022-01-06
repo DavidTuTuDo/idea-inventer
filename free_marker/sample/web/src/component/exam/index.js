@@ -72,7 +72,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionAlertDiv(question) {
-        return Util.getVisibleOrHidden(question.isAnswerWrong() && !this.getStore().isFreezePage())
+        return Util.getVisibleOrHidden(question.isReply() && !this.getStore().isFreezePage())
     }
 
     onStatementButtonClicked(param) {
@@ -100,6 +100,10 @@ class ExamComponent extends BaseExamComponent {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
+    getInjectStyleOfQuestionTopicOfAssistantDiv(question) {
+        return Util.getVisibleOrNone(false);
+    }
+
     getInjectStyleOfQuestionDurationTypography(question) {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
@@ -124,7 +128,7 @@ class ExamComponent extends BaseExamComponent {
         )
     }
 
-    getWrapInjectStyleOfQuestionFunctionCenterDiv(question) {
+    getInjectStyleOfQuestionFunctionCenterDiv(question) {
         return Util.getVisibleOrHidden(question.isReply() && !this.getStore().isFreezePage())
     }
 

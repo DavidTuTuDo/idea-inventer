@@ -745,7 +745,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['linepay','listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -3542,12 +3542,15 @@ class ComponentBuilder extends BaseBuilder {
             /** 當屬性不是資料結構, 但卻還有view的child node時, 就自動放到 wrap 裡面
              *
              * outer不支援 viewOnly children(沒有type的attribute)
-             * */
-            if (!node.isOuter() && !node.isCollection() && node.hasViewChildren()) {
-                for (const child of node.getPreciseViewChildren()) {
-                    stmt.push(...getJsxViewStmt(child))
-                }
-            }
+             *
+             *  if (!node.isOuter() && !node.isCollection() && node.hasViewChildren()) {
+             *    for (const child of node.getPreciseViewChildren()) {
+             *        stmt.push(...getJsxViewStmt(child))
+             *    }
+             * }
+             *
+             **/
+
 
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
@@ -4856,7 +4859,9 @@ class ProjectFileHandler extends PathBase {
 
     async execute() {
         this.enrichComponentStructs(this.isWebPlatform());
-        Util.appendInfo(this.nodeOfAncestor.components.map((each) => {return {name:each.getName(), editor: each.isEditPage()}}))
+        Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
+            return {name: each.getName(), editor: each.isEditPage()}
+        }))
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         switch (this.platform) {
             case 'web':
