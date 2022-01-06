@@ -6,19 +6,6 @@
 .ExamFilterDiv:extend(.CenterInParentColumn) {
 }
 
-.ExamFilterSubjectTypography {
-  /** style */
-  font-size: 1.8rem;
-  background-color: #bbbbbb;
-  border-radius: 5px;
-  padding: 8px;
-}
-
-.ExamFilterSpaceDiv {
-  /** style */
-  height: 20px;
-}
-
 .ExamFilterRandomTestDiv:extend(.CenterInParentColumn) {
   width: 60vw;
   height: 30vh;
@@ -62,6 +49,11 @@
   font-size: 1.3rem;
 }
 
+.ExamFilterSpaceDiv {
+  /** style */
+  height: 20px;
+}
+
 .ExamFilterHistoryTestDiv:extend(.ExamFilterRandomTestDiv) {
   /** style */
   height: 30vh;
@@ -81,8 +73,13 @@
   height: 3vh;
 }
 
-.ExamFilterHistoryTestBtnWithHistoryButton {
+.ExamFilterHistoryTestBtnWithHistoryButton:extend(.ExamFilterRandomTestBtnOfStartExamButton) {
+}
+
+.ExamFilterCloseButton {
   /** style */
+  background-color: rgba(0,0,0,0.5);
+  font-size: 1rem;
 }
 
 /** following for purchaseSucceed  component used  */
@@ -950,3 +947,10 @@
 
 /** ======== following for homeless ========= */
 
+.ExamFilterSubjectTypography {
+  /** style */
+  font-size: 1.8rem;
+  background-color: #bbbbbb;
+  border-radius: 5px;
+  padding: 8px;
+}

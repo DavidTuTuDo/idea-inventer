@@ -373,6 +373,8 @@ class MobileStyle {
 
   /** => following for examFilter  component  */
 
+  ExamFilterCloseButton = {};
+
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 
   ExamFilterHistoryTestSpaceDiv = {};
@@ -382,6 +384,8 @@ class MobileStyle {
   ListExamFilterHistoryTestSelectorTextField = {};
 
   ExamFilterHistoryTestDiv = {};
+
+  ExamFilterSpaceDiv = {};
 
   ExamFilterRandomTestBtnOfStartExamButton = {};
 
@@ -400,10 +404,6 @@ class MobileStyle {
   ListExamFilterRandomTestFastRangeButtonGroup = {};
 
   ExamFilterRandomTestDiv = {};
-
-  ExamFilterSpaceDiv = {};
-
-  ExamFilterSubjectTypography = {};
 
   ExamFilterDiv = {};
 

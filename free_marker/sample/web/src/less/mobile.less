@@ -7,20 +7,11 @@
   /** style */
 }
 
-.ExamFilterSubjectTypography {
-  /** style */
-  font-size: 1.2rem;
-}
-
-.ExamFilterSpaceDiv {
-  /** style */
-  height: 10px;
-}
-
 .ExamFilterRandomTestDiv {
   /** style */
   height: 35vh;
-  width: 75vw;
+  width: 72vw;
+  max-width: 400px;
 }
 
 .ListExamFilterRandomTestFastRangeButtonGroup {
@@ -38,7 +29,7 @@
 
 .ExamFilterRandomTestRangeOfYearSlider {
   /** style */
-  width: 80%;
+  width: 70%;
   margin-top: 20px;
 }
 
@@ -59,10 +50,14 @@
   font-size: 1rem;
 }
 
-.ExamFilterHistoryTestDiv {
+.ExamFilterSpaceDiv {
+  /** style */
+  height: 10px;
+}
+
+.ExamFilterHistoryTestDiv:extend(.ExamFilterRandomTestDiv) {
   /** style */
   height: 25vh;
-  width: 75vw;
 }
 
 .ListExamFilterHistoryTestSelectorTextField {
@@ -77,9 +72,11 @@
   /** style */
 }
 
-.ExamFilterHistoryTestBtnWithHistoryButton {
+.ExamFilterHistoryTestBtnWithHistoryButton:extend(.ExamFilterRandomTestBtnOfStartExamButton) {
+}
+
+.ExamFilterCloseButton {
   /** style */
-  font-size: 1rem;
 }
 
 /** following for purchaseSucceed  component used  */
@@ -211,7 +208,6 @@
 .ExamHistoryFilterDiv {
   /** style */
   padding: 1px;
-
 }
 
 .ListExamHistoryFilterReplyTypeRadioGroup {
@@ -520,7 +516,6 @@
 .ListMyFatefulQuestionsFilterQuestionTypeTextField {
   /** style */
   margin-right: 20px;
-
 }
 
 .MyFatefulQuestionsFilterQuestionTypeMenuItem {
@@ -827,3 +822,8 @@
 }
 
 /** ======== following for homeless ========= */
+
+.ExamFilterSubjectTypography {
+  /** style */
+  font-size: 1.2rem;
+}

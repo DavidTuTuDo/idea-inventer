@@ -175,7 +175,7 @@ class BaseEditorComponent extends BaseComponent {
         const loginRequiredRef = React.createRef();
         self.currentUploadImagesTaskInfo = task
         return (<React.Fragment>
-            {this.renderLoginRequiredDialogView(loginRequiredRef)}
+            {this.renderGlobalDialogView(loginRequiredRef)}
 
             <Button
                 color={'primary'}

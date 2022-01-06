@@ -245,16 +245,37 @@ class BaseComponent extends React.Component {
         return false;
     }
 
-    gotoExternalUrl = (url = '') => {
-        window.location.replace(url)
-    }
 
     getCurrentWebSiteLink = () => {
         return window.location.href;
     }
 
     gotoUrlWithNewTab = (url) => {
+        const task = async () => this.gotoUrlWithNewTabDirectly(url);
+        this.enableExternalLinkDialog(url, task);
+    }
+
+    gotoExternalUrl = (url = '') => {
+        const task = async () => this.gotoExternalUrlDirectly(url);
+        this.enableExternalLinkDialog(url, task);
+    }
+
+    enableExternalLinkDialog = (url, task) => {
+        this.getStore().setGlobalDialogContent({
+            title: "是否開啟新頁面",
+            content: `即將前往外部網站\n\n${url}`,
+            task: task,
+        });
+        this.getLoginDialogRef().open();
+    }
+
+
+    gotoUrlWithNewTabDirectly(url) {
         window.open(url, "_blank");
+    }
+
+    gotoExternalUrlDirectly(url) {
+        window.location.replace(url)
     }
 
     renderViewByStatus() {
@@ -335,7 +356,7 @@ class BaseComponent extends React.Component {
 
                 {self.renderSnackView()}
 
-                {self.renderLoginRequiredDialogView()}
+                {self.renderGlobalDialogView()}
 
             </div>)
     }
@@ -731,15 +752,16 @@ class BaseComponent extends React.Component {
         this.showInfoSnackMessage(`已複製連結`);
     }
 
-    renderLoginRequiredDialogView = () => {
+    renderGlobalDialogView = () => {
         const self = this;
+        const dialog = self.getStore().getGlobalDialogContent();
         return this.renderAlertDialog({
             ref: self.loginDialogRef,
-            title: "此功能必須登入",
-            content: "此功能必須登入,點擊確認後將喚起登入頁面",
+            title: dialog.title,
+            content: dialog.content,
             component: this,
             needActionButtons: true,
-            task: async () => await self.invokeLoginBehavior(),
+            task: dialog.task,
         })
     }
 
@@ -748,6 +770,12 @@ class BaseComponent extends React.Component {
     }
 
     enableLoginConfirmDialog = () => {
+        const self = this;
+        this.getStore().setGlobalDialogContent({
+            title: "此功能必須登入",
+            content: "此功能必須登入,點擊確認後將喚起登入頁面",
+            task: async () => await self.invokeLoginBehavior()
+        })
         this.getLoginDialogRef().open();
     }
 
@@ -758,7 +786,7 @@ class BaseComponent extends React.Component {
     }
 
     openLineChatAccountWithMessage(id = '', message = '') {
-        this.gotoExternalUrl(`https://line.me/R/oaMessage/${id}/?${message}`)
+        this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
 
 }

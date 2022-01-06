@@ -39,8 +39,13 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         return this.props.paramObject.title;
     }
 
+
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
-        return Util.getVisibleOrHidden(!_.isEqual(this.getTitle(), '綜合測驗'))
+        return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), '綜合題目'))
+    }
+
+    onCloseButtonClicked(param) {
+        this.dismiss();
     }
 
     gotoExamPageWithCookie = (obj) => {
@@ -60,19 +65,19 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         }
     }
 
-    onBtnWithHistoryButtonClicked(param) {
+    onBtnWithHistoryButtonClicked = (param) => {
         const result = {
             range: [this.getStore().getHistoryTest().getSelectedSelector()],
             type: 'history',
-            subject: this.getStore().getSubject()
+            subject: this.getTitle(),
         };
         this.gotoExamPageWithCookie(result);
     }
 
-    onBtnOfStartExamButtonClicked(param) {
+    onBtnOfStartExamButtonClicked = (param) => {
         const range = this.getStore().getRandomTest().getRangeOfYear();
         const countsOfExam = this.getStore().getRandomTest().getSelectedCountsOfExam();
-        const result = {range, countsOfExam, type: 'random', subject: this.getStore().getSubject()};
+        const result = {range, countsOfExam, type: 'random', subject: this.getTitle()};
         this.gotoExamPageWithCookie(result);
     }
 

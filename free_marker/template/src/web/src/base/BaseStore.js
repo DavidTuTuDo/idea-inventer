@@ -17,6 +17,13 @@ class BaseStore extends ClientRemoteApi {
 
     component;
 
+    @observable
+    globalDialogContent = {
+        task: async () => {
+            await Util.syncDelay(10)
+        }, title: '標題', content: '內容'
+    }
+
     initialFetchSucceed = false;
 
     @observable
@@ -63,6 +70,19 @@ class BaseStore extends ClientRemoteApi {
 
     getComponent() {
         return this.component;
+    }
+
+    @action
+    setGlobalDialogContent(
+        dialogContent = {
+            title: '標題', content: '內容', task: async () => await Util.syncDelay(10)
+        }
+    ) {
+        this.globalDialogContent = dialogContent;
+    }
+
+    getGlobalDialogContent() {
+        return this.globalDialogContent;
     }
 
     @action
@@ -159,7 +179,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     normalizeTimestamp(obj) {
-        if(obj instanceof this.FirebaseTimestampClass())
+        if (obj instanceof this.FirebaseTimestampClass())
             return obj.toMillis();
         else
             return obj;
@@ -189,8 +209,8 @@ class BaseStore extends ClientRemoteApi {
 
     async onInitialFetchSucceed(collection) {
         this.initialFetchSucceed = true;
-        if(this.getComponent() !== undefined) {
-           await this.getComponent().invalidateNextPageBehavior();
+        if (this.getComponent() !== undefined) {
+            await this.getComponent().invalidateNextPageBehavior();
         }
 
     }
@@ -249,8 +269,10 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getStartAfterConditions(lastItem) {
-        return Util.isUndefinedNullEmpty(lastItem) ? [] : [{startAfter: (stmt) =>
-                stmt.startAfter(lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc)}]
+        return Util.isUndefinedNullEmpty(lastItem) ? [] : [{
+            startAfter: (stmt) =>
+                stmt.startAfter(lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc)
+        }]
     }
 
     getInArrayConditions = (targets) => {

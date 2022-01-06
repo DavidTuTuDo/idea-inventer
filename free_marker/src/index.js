@@ -3256,6 +3256,7 @@ class ComponentBuilder extends BaseBuilder {
             const view = node.getSelectedCustomLabelView();
             if (view !== undefined) {
                 const stmts = self.getJSXStrings({
+                    generator,
                     tag: view,
                     props: {className: clazzName},
                     contents: [`{${node.getName()}.label}`]

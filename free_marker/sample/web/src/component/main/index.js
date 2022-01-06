@@ -35,7 +35,6 @@ class MainComponent extends BaseMainComponent {
 
     onViewPagerDivClicked(param) {
         this.gotoUrlWithNewTab(param.object.route)
-        // this.openImageDialog(param.object.image);
     }
 
     /** 因為countdown自己會計算時間差, 所以只能藉由觸發他改變時間 */

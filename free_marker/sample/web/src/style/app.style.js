@@ -9,8 +9,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -371,6 +369,8 @@ class AppStyle {
 
   /** => following for examFilter  component  */
 
+  ExamFilterCloseButton = {};
+
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 
   ExamFilterHistoryTestSpaceDiv = {};
@@ -380,6 +380,8 @@ class AppStyle {
   ListExamFilterHistoryTestSelectorTextField = {};
 
   ExamFilterHistoryTestDiv = {};
+
+  ExamFilterSpaceDiv = {};
 
   ExamFilterRandomTestBtnOfStartExamButton = {};
 
@@ -398,10 +400,6 @@ class AppStyle {
   ListExamFilterRandomTestFastRangeButtonGroup = {};
 
   ExamFilterRandomTestDiv = {};
-
-  ExamFilterSpaceDiv = {};
-
-  ExamFilterSubjectTypography = {};
 
   ExamFilterDiv = {};
 

@@ -120,7 +120,7 @@ class ExamStore extends BaseExamStore {
 
         function getRandomCondition() {
             const conditions = [];
-            if (!_.isEqual('綜合測驗', subject)) {
+            if (!_.isEqual('綜合題目', subject)) {
                 conditions.push({where: (stmt) => stmt.where('subject', '==', _.trim(subject))});
             }
             conditions.push({where: (stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))});
