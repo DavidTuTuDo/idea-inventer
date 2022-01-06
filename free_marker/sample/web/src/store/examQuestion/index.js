@@ -21,23 +21,28 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     setReply(param) {
-        const charOfAnswer = Util.integerToString(param);
-        if (this.getCompleted() || Util.has(this.getReply(), charOfAnswer)) {
+        /** 在historyWrong,param會是string,'ABC', 在答題的時候會是number,0123*/
+
+        const charsOfAnswer = _.isNumber(param) ? Util.integerToString(param) : param;
+        if (this.getCompleted() || Util.has(this.getReply(), charsOfAnswer)) {
             return;
         }
 
-        const AtoZ = {answer: Util.integerToString(param)};
+        const AtoZs = charsOfAnswer.split('').map((each) => {
+            return {answer: each}
+        });
+
         const currently = this.getReply().split('').map((each) => {
             return {answer: each}
         });
-        const orders = _.orderBy([...currently, AtoZ], ['answer'], "asc");
+
+        const orders = _.orderBy([...currently, ...AtoZs], ['answer'], "asc");
         const stringOfAnswer = orders.map((each) => each.answer).join('');
         super.setReply(`${stringOfAnswer}`);
 
         if ((this.isAnswerRight() || this.isAnswerWrong())) {
             this.setCompleted(true);
         }
-
     }
 
     isAnswerRight() {

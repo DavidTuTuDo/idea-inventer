@@ -27,7 +27,6 @@ class ExamComponent extends BaseExamComponent {
         }
     }
 
-
     onOrderByWhatSelectedChange(value) {
         this.getStore().fetch(this).then();
     }

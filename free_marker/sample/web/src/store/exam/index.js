@@ -45,8 +45,8 @@ class ExamStore extends BaseExamStore {
         this.getTestingRecords().forEach((record, index) => {
             const question = _.nth(this.getQuestions(), index);
             if (question instanceof QuestionStore) {
-                const int = Util.stringToInteger(record.getIsWrongReply() ? record.getMyWrongAnswer() : question.getAnswer());
-                question.setReply(int);
+                const reply = record.getIsWrongReply() ? record.getMyWrongAnswer() : question.getAnswer();
+                question.setReply(reply);
                 question.setDuration(`本題使用: ${Util.getTimeFormatOfDurationToMillionSecond(record.duration)}`);
                 question.setReplyTimestamp(`作答時間: ${Util.getChineseTimeFormat(record.getUpdateTime())}`)
             }
@@ -68,10 +68,10 @@ class ExamStore extends BaseExamStore {
 
     fetchExamsTestingRecords = async (clearAll = false) => {
         const questions = [];
+        this.summarizeFilterConditionChanged();
         if (clearAll) {
             this.cleanTestingRecords();
             this.cleanQuestions();
-            this.summarizeFilterConditionChanged();
         }
         const items = await this.fetchTestingRecords(this.getComponent());
         const questionIds = items.map((each) => each.qid);
@@ -135,6 +135,7 @@ class ExamStore extends BaseExamStore {
 
         switch (type) {
             case 'history':
+                /** 考古題呀 */
                 this.setQuestionConditions([
                     {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
                     {where: (stmt) => stmt.where('year', '==', _.toNumber(_.head(range)))},
@@ -142,6 +143,7 @@ class ExamStore extends BaseExamStore {
                 ]);
                 break;
             case 'random':
+                /** 隨機測驗 */
                 const subjectID = new ExamSubjectIdStore();
                 const idMaps = await subjectID.fetchSubjectIds(this.getComponent(), ...getRandomCondition())
                 const ids = _.sampleSize(idMaps, countsOfExam).map(each => each.quid)
