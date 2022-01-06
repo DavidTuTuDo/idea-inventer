@@ -343,7 +343,11 @@
 
 .ExamQuestionTopicOfAssistantImageUrlImg {
   /** style */
-  width: 75%;
+  width: 99%;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #888888;
 }
 
 .ExamQuestionTopicDiv {
@@ -352,7 +356,7 @@
 
 .ExamQuestionTopicNameTypography {
   /** style */
-  font-size: 2.0rem;
+  font-size: 1.8rem;
 }
 
 .WrapExamQuestionTopicNameDiv {
@@ -378,7 +382,8 @@
 
 .ExamQuestionChoiceDiv {
   /** style */
-  margin: 13px;
+  margin: 10px;
+  padding: 5px;
 }
 
 .ListExamQuestionChoiceDiv {
@@ -388,7 +393,7 @@
 .ExamQuestionChoiceStatementButton {
   /** style */
   text-align: left;
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   text-transform: none;
 }
 
@@ -399,6 +404,7 @@
 
 .ExamQuestionChoiceImageDiv {
   /** style */
+  width: 100%;
 }
 
 .ListExamQuestionChoiceImageDiv {
@@ -409,6 +415,7 @@
 
 .ExamQuestionChoiceImageUrlImg {
   /** style */
+  width: 40%;;
 }
 
 .ExamQuestionFunctionCenterDiv:extend(.CenterInParentRow) {
@@ -885,7 +892,7 @@
 .ExamEditorQuestionTopicOfAssistantImageUrlImg:extend(.ExamQuestionTopicOfAssistantImageUrlImg
     all) {
   /** style */
-  height:100px;
+  height: 100px;
 }
 
 .ExamEditorQuestionTopicDiv:extend(.ExamQuestionTopicDiv all) {
@@ -916,7 +923,7 @@
 
 .ExamEditorQuestionTopicImageUrlImg:extend(.ExamQuestionTopicImageUrlImg all) {
   /** style */
-  height:100px;
+  height: 100px;
 }
 
 .ExamEditorQuestionChoiceDiv:extend(.ExamQuestionChoiceDiv all) {
@@ -957,8 +964,7 @@
 .ExamEditorQuestionChoiceImageUrlImg:extend(.ExamQuestionChoiceImageUrlImg
     all) {
   /** style */
-  height:100px;
-
+  height: 100px;
 }
 
 .ExamEditorQuestionTypeOfQuestionTextField:extend(.BaseEditorTextField all) {

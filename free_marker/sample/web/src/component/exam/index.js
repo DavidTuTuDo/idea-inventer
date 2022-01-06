@@ -31,6 +31,7 @@ class ExamComponent extends BaseExamComponent {
         this.getStore().fetch(this).then();
     }
 
+
     onWhichSubjectSelectedChange(value) {
         this.getStore().fetch(this).then();
     }
@@ -63,11 +64,7 @@ class ExamComponent extends BaseExamComponent {
     getInjectStyleOfQuestionChoiceDiv(choice) {
         if (choice.hasPhotos()) {
             return {
-                'borderStyle': 'solid',
-                'borderWidth': '3px',
-                'borderRadius': '10px',
-                'borderColor': 'grey',
-                'padding': '5px',
+                backgroundColor: 'rgba(0,0,0,0.1)'
             }
         } else {
             return {}
@@ -104,7 +101,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionTopicOfAssistantDiv(question) {
-        return Util.getVisibleOrNone(false);
+        return Util.getVisibleOrNone(question.getTypeOfQuestion() > 1);
     }
 
     getInjectStyleOfQuestionDurationTypography(question) {
