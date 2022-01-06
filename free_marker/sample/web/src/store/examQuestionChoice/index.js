@@ -15,11 +15,16 @@ class ExamQuestionChoiceStore extends BaseExamQuestionChoiceStore {
         super(props);
     }
 
-    isReplyEqualToAnswer() {
-        const question = this.getParentNode();
-        if (!question.isReply()) return false;
-        return _.isEqual(this.getIndexOfParent(),
-            Util.stringToInteger(question.getAnswer()))
+    getChoiceStringID() {
+        return Util.integerToString(this.getIndexOfParent());
+    }
+
+    getQuestion() {
+        return this.getParentNode();
+    }
+
+    isSelected() {
+        return Util.has(this.getQuestion().getReply(), this.getChoiceStringID());
     }
 
     getIndexOfParent() {
@@ -33,11 +38,15 @@ class ExamQuestionChoiceStore extends BaseExamQuestionChoiceStore {
         return this.getImages().length > 0
     }
 
-    isWrongReply() {
-        const question = this.getParentNode();
-        if (!question.isReply()) return false;
-        return (_.isEqual(this.getIndexOfParent(), question.getReply()) &&
-            this.getIndexOfParent() !== Util.stringToInteger(question.getAnswer()));
+    isRightAnswer() {
+        /** 選項在reply裏面, 也在Answer裏面 */
+        return this.getQuestion().getCompleted() && Util.has(this.getQuestion().getAnswer(), this.getChoiceStringID())
+    }
+
+    isMyWrongReply() {
+        /** 選項在reply裏面, 但也在Answer裏面 */
+        return this.getQuestion().getCompleted() &&
+            (Util.has(this.getQuestion().getReply(), this.getChoiceStringID()) && !Util.has(this.getQuestion().getAnswer(), this.getChoiceStringID()))
     }
 
     /** -------------------- async api -------------------- **/

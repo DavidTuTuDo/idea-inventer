@@ -16,8 +16,44 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         super(props);
     }
 
-    filter(obj) {
-        return _.sampleSize(obj, 10);
+    isMultiSelected() {
+        return _.size(Array.from(this.getAnswer())) > 1
+    }
+
+    setReply(param) {
+        const charOfAnswer = Util.integerToString(param);
+        if (this.getCompleted() || Util.has(this.getReply(), charOfAnswer)) {
+            return;
+        }
+
+        const AtoZ = {answer: Util.integerToString(param)};
+        const currently = this.getReply().split('').map((each) => {
+            return {answer: each}
+        });
+        const orders = _.orderBy([...currently, AtoZ], ['answer'], "asc");
+        const stringOfAnswer = orders.map((each) => each.answer).join('');
+        super.setReply(`${stringOfAnswer}`);
+
+        if ((this.isAnswerRight() || this.isAnswerWrong())) {
+            this.setCompleted(true);
+        }
+
+    }
+
+    isAnswerRight() {
+        return _.isEqual(this.getAnswer(), this.getReply());
+    }
+
+    isAnswerWrong() {
+        let wrong = false;
+        const replies = this.getReply().split('');
+        for (const reply of replies) {
+            if (!Util.has(this.getAnswer(), reply)) {
+                wrong = true;
+                break;
+            }
+        }
+        return wrong;
     }
 
     initial(obj) {
@@ -28,36 +64,25 @@ class ExamQuestionStore extends BaseExamQuestionStore {
             this.setTip(`${this.getYear()}年-${this.getSubject()}科目`)
     }
 
-    isReply() {
-        return this.getReply() !== -32768;
-    }
-
-    isAnswerWrong() {
-        if (!this.isReply()) return false;
-        return !_.isEqual(this.getReply(), Util.stringToInteger(this.getAnswer()));
-    }
-
     hasPhotos() {
         return _.size(this.getChoices()) > 0;
     }
 
-    setReply(int) {
-        super.setReply(int);
-        if(this.isReply())
+    setCompleted(param) {
+        super.setCompleted(param);
         this.validateAlertImage();
+        this.getParentNode().submitQuestionRecord(this).then();
     }
 
-    validateAlertImage = () =>{
-        if(this.isAnswerWrong()) {
+
+    validateAlertImage = () => {
+        if (this.isAnswerWrong()) {
             this.setAlertImage('images/question_error.svg');
         } else {
             this.setAlertImage('images/question_right.svg');
         }
     }
 
-
-    /** -------------------- async api -------------------- **/
-    /** -------------------- async api -------------------- **/
 }
 
 export default ExamQuestionStore;

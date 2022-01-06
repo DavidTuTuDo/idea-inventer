@@ -36,6 +36,11 @@ class ExamStore extends BaseExamStore {
         this.freeze = frz;
     }
 
+    constructor() {
+        super();
+        this.currentTimeStamp = Util.getCurrentTimeStamp();
+    }
+
     syncQuestionDurationReply() {
         this.getTestingRecords().forEach((record, index) => {
             const question = _.nth(this.getQuestions(), index);
@@ -114,8 +119,8 @@ class ExamStore extends BaseExamStore {
     }
 
     async fetch(view) {
-        const {range, subject, type, countsOfExam,qid} = this.getExamFilterTips();
-        console.log({range, subject, type, countsOfExam,qid})
+        const {range, subject, type, countsOfExam, qid} = this.getExamFilterTips();
+        console.log({range, subject, type, countsOfExam, qid})
         const questions = [];
 
         function getRandomCondition() {
@@ -170,20 +175,29 @@ class ExamStore extends BaseExamStore {
     async submitQuestionRecord(question) {
         if (!this.isHistoryWrongPage() && UserInfo.isLoginInSucceed()) {
             const record = new TestingRecordStore();
-            await record.submitTestingRecords(undefined, undefined, {
-                id: question.getId(),
-                qid: question.getId(),
-                duration: Util.getDurationOfMillionSec(this.currentTimeStamp),
-                subject: question.getSubject(),
-                myWrongAnswer: question.isAnswerWrong() ? Util.integerToString(question.getReply()) : '',
-                isWrongReply: question.isAnswerWrong(),
-            })
+            try {
+                await record.submitTestingRecords(undefined, undefined, {
+                    id: question.getId(),
+                    qid: question.getId(),
+                    duration: Util.getDurationOfMillionSec(this.currentTimeStamp),
+                    subject: question.getSubject(),
+                    myWrongAnswer: question.isAnswerWrong() ? question.getReply() : '',
+                    isWrongReply: question.isAnswerWrong(),
+                })
+            } finally {
+                this.renewTimeStamp();
+            }
+
         }
     }
 
-    onInitialFetchSucceed(collection) {
-        super.onInitialFetchSucceed(collection)
-        this.incrementCountsOfExamToday().then();
+    async onInitialFetchSucceed(collection) {
+        await super.onInitialFetchSucceed(collection)
+        await this.incrementCountsOfExamToday()
+        this.renewTimeStamp();
+    }
+
+    renewTimeStamp() {
         this.currentTimeStamp = Util.getCurrentTimeStamp();
     }
 

@@ -42,10 +42,14 @@ class ExamComponent extends BaseExamComponent {
 
     getChoiceButtonColor(choice) {
         const question = choice.getParentNode();
-        if (!question.isReply() || choice.isReplyEqualToAnswer()) {
+        if (!question.getCompleted()) {
             return 'primary';
         }
-        if (choice.isWrongReply()) {
+
+        if (choice.isRightAnswer()) {
+            return 'primary';
+        }
+        if (choice.isMyWrongReply()) {
             return 'secondary';
         }
         return 'inherit';
@@ -72,28 +76,28 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionAlertDiv(question) {
-        return Util.getVisibleOrHidden(question.isReply() && !this.getStore().isFreezePage())
+        return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
     }
 
     onStatementButtonClicked(param) {
-        const self = this;
         const choice = param.object;
         const question = choice.getParentNode();
-        if (question.isReply()) {
+        if (question.getCompleted()) {
             return;
         }
+
         const reply = question.getChoices().indexOf(choice);
         question.setReply(reply);
-        self.getStore().submitQuestionRecord(question).finally((result) => {
-            self.currentTimeStamp = Util.getCurrentTimeStamp();
-        });
     }
 
     getInjectStyleOfChoiceStatementButton(choice) {
-        if (choice.isReplyEqualToAnswer()) {
-            return {borderWidth: '5px'}
+        const question = choice.getParentNode();
+        if (!question.getCompleted()) {
+            return choice.isSelected() ? {borderWidth: '5px'} : {borderWidth: '2px'}
+        } else {
+            /** 題目已完成 */
+            return choice.isRightAnswer() ? {borderWidth: '5px'} : {borderWidth: '2px'}
         }
-        return {borderWidth: '2px'}
     }
 
     getInjectStyleOfExamHistoryFilterDiv(exam) {
@@ -129,7 +133,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionFunctionCenterDiv(question) {
-        return Util.getVisibleOrHidden(question.isReply() && !this.getStore().isFreezePage())
+        return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
     }
 
     /** -------------------- async api -------------------- **/
