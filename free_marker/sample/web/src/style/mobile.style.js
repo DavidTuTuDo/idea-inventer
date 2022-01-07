@@ -29,6 +29,8 @@ class MobileStyle {
 
   ExamEditorQuestionTypeOfQuestionTextField = {};
 
+  ExamEditorQuestionChoiceImageUrlTextField = {};
+
   ExamEditorQuestionChoiceImageUrlImg = {};
 
   ListExamEditorQuestionChoiceImageDiv = {};
@@ -47,6 +49,8 @@ class MobileStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
+  ExamEditorQuestionTopicImageUrlTextField = {};
+
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ListExamEditorQuestionTopicImageDiv = {};
@@ -60,6 +64,8 @@ class MobileStyle {
   ExamEditorQuestionTopicNameTextField = {};
 
   ExamEditorQuestionTopicDiv = {};
+
+  ExamEditorQuestionTopicOfAssistantImageUrlTextField = {};
 
   ExamEditorQuestionTopicOfAssistantImageUrlImg = {};
 
@@ -138,6 +144,8 @@ class MobileStyle {
   WrapMainEditorEnterPointDiv = {};
 
   MainEditorEnterPointPaper = {};
+
+  MainEditorViewPagerImageTextField = {};
 
   WrapMainEditorViewPagerImageDiv = {};
 

@@ -25,6 +25,8 @@ class CommonStyle {
 
   ExamEditorQuestionTypeOfQuestionTextField = {};
 
+  ExamEditorQuestionChoiceImageUrlTextField = {};
+
   ExamEditorQuestionChoiceImageUrlImg = {};
 
   ListExamEditorQuestionChoiceImageDiv = {};
@@ -43,6 +45,8 @@ class CommonStyle {
 
   ExamEditorQuestionChoiceDiv = {};
 
+  ExamEditorQuestionTopicImageUrlTextField = {};
+
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ListExamEditorQuestionTopicImageDiv = {};
@@ -56,6 +60,8 @@ class CommonStyle {
   ExamEditorQuestionTopicNameTextField = {};
 
   ExamEditorQuestionTopicDiv = {};
+
+  ExamEditorQuestionTopicOfAssistantImageUrlTextField = {};
 
   ExamEditorQuestionTopicOfAssistantImageUrlImg = {};
 
@@ -134,6 +140,8 @@ class CommonStyle {
   WrapMainEditorEnterPointDiv = {};
 
   MainEditorEnterPointPaper = {};
+
+  MainEditorViewPagerImageTextField = {};
 
   WrapMainEditorViewPagerImageDiv = {};
 

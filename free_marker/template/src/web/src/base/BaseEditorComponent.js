@@ -12,38 +12,38 @@ import UserInfoRef from '../userInfo';
 
 class BaseEditorComponent extends BaseComponent {
 
-    static getItemRemoteJobs() {
+    static getItemRemoteJobs(name = '') {
         return [
-            {name: 'update', loadingText: '正在遠端更新中', buttonText: '更新遠端'},
-            {name: 'delete', loadingText: '正在遠端刪除中', buttonText: '遠端刪除'},
-            {name: 'recover', loadingText: '正在遠端回復中', buttonText: '回復初始'}
+            {name: 'update', loadingText: '正在遠端更新中', buttonText: `更新遠端${name}`},
+            {name: 'delete', loadingText: '正在遠端刪除中', buttonText: `遠端刪除${name}`},
+            {name: 'recover', loadingText: '正在遠端回復中', buttonText: `回復初始${name}`}
         ]
     }
 
-    static getCollectionRemoteJobs() {
+    static getCollectionRemoteJobs(name = '') {
         return [
-            {name: 'create', loadingText: '正在遠端新增中', buttonText: '遠端新增項目'},
-            {name: 'batchUpdate', loadingText: '正在遠端批次更新中', buttonText: '遠端批次更新'},
+            {name: 'create', loadingText: '正在遠端新增中', buttonText: `遠端新增項目${name}`},
+            {name: 'batchUpdate', loadingText: '正在遠端批次更新中', buttonText: `遠端批次更新${name}`},
         ]
     }
 
-    static getObjectRemoteJobs() {
+    static getObjectRemoteJobs(name = '') {
         return [
-            {name: 'submit', loadingText: '正在遠端處理中', buttonText: '更新遠端'},
-            {name: 'recover', loadingText: '正在遠端回復中', buttonText: '回復初始'},
+            {name: 'submit', loadingText: '正在遠端處理中', buttonText: `更新遠端${name}`},
+            {name: 'recover', loadingText: '正在遠端回復中', buttonText: `回復初始${name}`},
 
         ]
     }
 
-    static getItemJobs() {
+    static getItemJobs(name) {
         return [
-            {name: 'delete', loadingText: '正在刪除中', buttonText: '刪除'},
+            {name: 'delete', loadingText: '正在刪除中', buttonText: `刪除${name}`},
         ]
     }
 
-    static getCollectionJobs() {
+    static getCollectionJobs(name = '') {
         return [
-            {name: 'create', loadingText: '正在新增中', buttonText: '新增'},
+            {name: 'create', loadingText: '正在新增中', buttonText: `新增${name}`},
         ]
     }
 
@@ -152,18 +152,18 @@ class BaseEditorComponent extends BaseComponent {
         this.uploadImageStorage(this, files).then();
     }
 
-    renderItemEditorView(onEditClickedAsyncTask, hasPath) {
-        return this.renderEditorFunctionView(hasPath ? BaseEditorComponent.getItemRemoteJobs() : BaseEditorComponent.getItemJobs(),
+    renderItemEditorView(onEditClickedAsyncTask, hasPath,sign) {
+        return this.renderEditorFunctionView(hasPath ? BaseEditorComponent.getItemRemoteJobs(sign) : BaseEditorComponent.getItemJobs(sign),
             onEditClickedAsyncTask);
     }
 
-    renderCollectionEditorView(onCreateClickedAsyncTask, hasPath) {
-        return this.renderEditorFunctionView(hasPath ? BaseEditorComponent.getCollectionRemoteJobs() : BaseEditorComponent.getCollectionJobs(),
+    renderCollectionEditorView(onCreateClickedAsyncTask, hasPath,sign) {
+        return this.renderEditorFunctionView(hasPath ? BaseEditorComponent.getCollectionRemoteJobs(sign) : BaseEditorComponent.getCollectionJobs(sign),
             onCreateClickedAsyncTask);
     }
 
-    renderObjectEditorView(onEditClickAsyncTask) {
-        return this.renderEditorFunctionView(BaseEditorComponent.getObjectRemoteJobs(), onEditClickAsyncTask)
+    renderObjectEditorView(onEditClickAsyncTask,hasPath,sign) {
+        return this.renderEditorFunctionView(BaseEditorComponent.getObjectRemoteJobs(sign), onEditClickAsyncTask)
     }
 
     async handleAsyncFunction(onClickAsyncTask, type, processingText) {

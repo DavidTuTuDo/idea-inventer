@@ -20,15 +20,16 @@ import moment from 'moment';
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);
         await db.init();
 
-        const qs = _.isNumber(year) ?
+
+        const qs =   (_.isNumber(year) && year > 0) ?
             await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
             await db.fetchRecords('QUESTION')
 
-        // if (clear === true) {
-        //     await api.deleteQuestions(true);
-        //     await api.deleteConfuses(true);
-        //     await api.deleteAnswers(true);
-        // }
+        if (clear === true) {
+            await api.deleteQuestions(true);
+            await api.deleteConfuses(true);
+            await api.deleteAnswers(true);
+        }
 
 
         let questions = qs.map((q) => {
@@ -226,10 +227,10 @@ import moment from 'moment';
     //         .listDocuments();
     //
     // }
-    await api.deleteQuestions(true);
-    await api.deleteConfuses(true);
-    await api.deleteAnswers(true);
-    await deployQuestions({year: undefined, all: false, clear: false});
+    // await api.deleteQuestions(true);
+    // await api.deleteConfuses(true);
+    // await api.deleteAnswers(true);
+    await deployQuestions({year: -1, all: false, clear: true});
     // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);

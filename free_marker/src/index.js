@@ -4763,21 +4763,21 @@ class ProjectFileHandler extends PathBase {
                 node.setWrapView('div');
                 node.appendWrapContents([`{this.renderItemEditorView(
                    ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
-                )}`]);
+                ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'red'});
                 node.appendListStyle({...style, borderColor: 'blue'});
 
                 node.appendListContents([`{this.renderCollectionEditorView(
                    ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
-                )}`]);
+                ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             } else if (node.isObject() && node.hasPath()) {
                 node.setWrapView('div');
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'green'});
                 node.appendWrapContents([`{this.renderObjectEditorView(
                    ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
-                )}`]);
+                ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             }
 
             node.clearContents();
