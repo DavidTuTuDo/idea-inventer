@@ -44,6 +44,9 @@ const VIEW_IMPORTS =
 class CodegenNode {
 
 
+    shadow = false;
+    /** 目前是為了用來img可以再editor模式時, 能後產生 TextField來加快編輯效率, 一個observable欄位產生出兩個響應的view */
+
     raw;
     /** 沒有被enrich的node*/
 
@@ -1610,6 +1613,11 @@ class CodegenNode {
         return this.parent;
     }
 
+    /** 請注意getParentNode的註記 */
+    getParent() {
+        return this.parent;
+    }
+
 
     isArray() {
         return _.isEqual(this.type, 'array');
@@ -1705,7 +1713,11 @@ class CodegenNode {
 
     getViewClassNameOfRenderView() {
         const names = _.reverse(this.getPreciseViewGenealogyNodes().map((each) => each.getFieldName()));
-        return _.upperFirst(Util.camel(...names, 'view'));
+        return _.upperFirst(Util.camel(...names, this.isShadowView() ? ['Shadow']:[], 'view'));
+    }
+
+    isShadowView() {
+        return this.shadow;
     }
 
     needOnSelectChanged() {
@@ -3368,8 +3380,8 @@ class ComponentBuilder extends BaseBuilder {
                 generator,
                 tag: node.getListView(),
                 props,
-                contents: [...node.getListContents(), `{${node.getFieldName()}.map((${node.getName()},index) => `,
-                    ...arrayItemViewStmts, `)}`, ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
+                contents: [`{${node.getFieldName()}.map((${node.getName()},index) => `,
+                    ...arrayItemViewStmts, `)}`, ...node.getListContents(), ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
 
             if (node.hasListWrap()) {
@@ -3543,7 +3555,7 @@ class ComponentBuilder extends BaseBuilder {
                 tag: node.getWrapView(),
                 generator,
                 props,
-                contents: [...node.getWrapContents(), ...getOuterChildJSXStrings(node), ...origin],
+                contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
             })
         }
 
@@ -4699,6 +4711,21 @@ class ProjectFileHandler extends PathBase {
                          ${getStmtsOfAfterSubmit(node)}
                         })`
                     })
+
+                    /** 為了讓url顯示出來,加快編輯速度 */
+                    const parent = node.getParentNode();
+                    if (parent.isArray()) {
+                        parent.appendChildrenWithJson({
+                            name: node.getName(),
+                            view: 'TextField',
+                            column: true,
+                            shadow: true,
+                            description:`${node.getName()} 的實體位置`,
+                            type: node.getType(),
+                            viewProps: [{variant: `outlined`}],
+                        });
+                    }
+
                 } else {
                     node.setViewModified(true);
                     node.setOriginalView(node.getView());
@@ -4786,7 +4813,6 @@ class ProjectFileHandler extends PathBase {
         const source = this.nodeOfAncestor;
         if (needEditComponent) {
             source.components.push(...getEditorComponents());
-            // Util.appendInfo(source.components.map((each) => {return {name:each.getName(), editor: each.isEditPage()}}))
         }
 
 

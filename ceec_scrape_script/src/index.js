@@ -65,7 +65,7 @@ class ceec_scrape_script {
         await browser.destroy();
     }
 
-    async goThroughGSAT(onlySubject, onlyYear = -1) {
+    async goThroughGSAT(onlySubject, onlyYear = -1, range = {enable: false, max: 110, min: 100},) {
         const db = new Databaser('./gsat.db');
         await db.init();
         await db.dropTable('QUESTION');
@@ -87,6 +87,10 @@ class ceec_scrape_script {
                 const numberOfYear = _.toNumber(year.match(new RegExp(`[0-9]{2,3}`)));
 
                 if (onlyYear > 0 && !_.isEqual(numberOfYear, onlyYear)) {
+                    continue;
+                }
+
+                if (range.enable && (numberOfYear < range.min || numberOfYear > range.max)) {
                     continue;
                 }
 
@@ -257,9 +261,15 @@ export {ceec_scrape_script as ceec_scrape_script}
 if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new ceec_scrape_script();
-            // await handler.samplePdfFile();
-            await handler.goThroughGSAT();
             // await handler.fetchCeeCPDFFilesOfPaper();
+            // await handler.samplePdfFile();
+
+
+            /** 拿到 90-99 */
+            // await handler.goThroughGSAT('國文',-1,{enable:true,min:90,max:99});
+
+            /** 拿到 100-110 */
+            await handler.goThroughGSAT(undefined, -1, {enable: true, min: 100, max: 110});
 
         }
     )();

@@ -15,6 +15,8 @@ import moment from 'moment';
 
 
     async function deployQuestions({all = false, year = 110, clear = false}) {
+
+
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);
         await db.init();
 
@@ -22,8 +24,12 @@ import moment from 'moment';
             await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
             await db.fetchRecords('QUESTION')
 
-        if (clear === true)
-            await api.deleteQuestions();
+        // if (clear === true) {
+        //     await api.deleteQuestions(true);
+        //     await api.deleteConfuses(true);
+        //     await api.deleteAnswers(true);
+        // }
+
 
         let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
@@ -213,16 +219,6 @@ import moment from 'moment';
         }));
     }
 
-    async function backgroundService() {
-        await api.deletePurchaseOrders(true);
-        await api.deletePurchaseReports(true);
-        await api.deletePurchaseListeners('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
-        await api.deletePurchaseProducts('BYnJOAlUa5aCnpxvoeiIyCzRXSt1', true);
-        listenToPurchaseOrder();
-        listenToPurchaseSucceedReport();
-        await Util.syncDelay(60 * 5 * 1000); //監聽五分鐘
-    }
-
 
     // async function sampleFetch(){
     //     return await api.firestore().collection('questions')
@@ -230,8 +226,11 @@ import moment from 'moment';
     //         .listDocuments();
     //
     // }
-    // await deployQuestions({year: 110, all: false, clear: false});
-    await beforeStartService();
+    await api.deleteQuestions(true);
+    await api.deleteConfuses(true);
+    await api.deleteAnswers(true);
+    await deployQuestions({year: undefined, all: false, clear: false});
+    // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
     // await submitSubjectMap()

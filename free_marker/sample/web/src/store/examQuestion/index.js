@@ -16,6 +16,10 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         super(props);
     }
 
+    needAssistantArea() {
+        return !_.isEmpty(this.getTopicOfAssistant().getName()) || _.size(this.getTopicOfAssistant().getImages()) > 0
+    }
+
     isMultiSelected() {
         return _.size(Array.from(this.getAnswer())) > 1
     }
