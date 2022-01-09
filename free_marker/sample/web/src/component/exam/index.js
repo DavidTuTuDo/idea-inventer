@@ -134,6 +134,10 @@ class ExamComponent extends BaseExamComponent {
         return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
     }
 
+    getInjectStyleOfTopicOfAssistantNameTypography(topicOfAssistant) {
+        return Util.getVisibleOrNone(!_.isEmpty(topicOfAssistant.getName()))
+    }
+
     /** -------------------- async api -------------------- **/
 }
 
