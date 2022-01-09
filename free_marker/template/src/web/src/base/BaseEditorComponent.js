@@ -16,7 +16,8 @@ class BaseEditorComponent extends BaseComponent {
         return [
             {name: 'update', loadingText: '正在遠端更新中', buttonText: `更新遠端${name}`},
             {name: 'delete', loadingText: '正在遠端刪除中', buttonText: `遠端刪除${name}`},
-            {name: 'recover', loadingText: '正在遠端回復中', buttonText: `回復初始${name}`}
+            {name: 'recover', loadingText: '正在遠端回復中', buttonText: `回復初始${name}`},
+            {name: 'duplicate', loadingText: '正在遠端複製更新中', buttonText: `遠端複製${name}`},
         ]
     }
 

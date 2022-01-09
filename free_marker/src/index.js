@@ -1713,7 +1713,7 @@ class CodegenNode {
 
     getViewClassNameOfRenderView() {
         const names = _.reverse(this.getPreciseViewGenealogyNodes().map((each) => each.getFieldName()));
-        return _.upperFirst(Util.camel(...names, this.isShadowView() ? ['Shadow']:[], 'view'));
+        return _.upperFirst(Util.camel(...names, this.isShadowView() ? ['Shadow'] : [], 'view'));
     }
 
     isShadowView() {
@@ -3576,6 +3576,15 @@ class ComponentBuilder extends BaseBuilder {
                     `const self =this`,
                     `return  async (type) => {
                 switch (type) {`,
+                    `case 'duplicate':`,
+                    `/** 快速複製一個相同屬性的項目,除了id以外 */`,
+                    `const parentNode = ${node.getName()}.getParentNode()`,
+                    `if(parentNode !== undefined) {`,
+                    `const clonedObject = _.cloneDeep(${node.getName()}.rawData())`,
+                    `delete clonedObject.id`,
+                    `await parentNode.${Util.camel('submit', node.getName())}(self, clonedObject)`,
+                    `}`,
+                    `break;`,
                     `case 'recover':`,
                     `await ${node.getName()}.${node.getFunctionNameOfFetchItem()}(self)`,
                     `break;`,
@@ -4720,7 +4729,7 @@ class ProjectFileHandler extends PathBase {
                             view: 'TextField',
                             column: true,
                             shadow: true,
-                            description:`${node.getName()} 的實體位置`,
+                            description: `${node.getName()} 的實體位置`,
                             type: node.getType(),
                             viewProps: [{variant: `outlined`}],
                         });
