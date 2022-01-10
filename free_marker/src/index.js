@@ -3628,6 +3628,20 @@ class ComponentBuilder extends BaseBuilder {
                     `}`
                 )
 
+                function appendStatementFunctions() {
+                    const parentName = node.getPreciseAttributeParentName();
+                    const stmts = [`case 'createA-E':`,
+                        `${parentName}.${Util.camel(`push`, node.getFieldName())}(
+                    {statement:' A '},
+                    {statement:' B '},
+                    {statement:' C '},
+                    {statement:' D '},
+                    {statement:' E '},
+                    )`,
+                        `break;`]
+                    return stmts;
+                }
+
                 generator.appendFunction(node.getFunctionNameOfCollectionEditor(), [parentName], [], ['因為沒有path, 所以其實只會是local sync task'],
                     `return  async (type) => {`,
                     `switch (type) {`,
@@ -3637,15 +3651,7 @@ class ComponentBuilder extends BaseBuilder {
                     `case 'clearAll':`,
                     `${parentName}.${Util.camel(`clean`, node.getFieldName())}()`,
                     `break;`,
-                    `case 'createA-E':`,
-                    `${parentName}.${Util.camel(`push`, node.getFieldName())}(
-                    {statement:' A '},
-                    {statement:' B '},
-                    {statement:' C '},
-                    {statement:' D '},
-                    {statement:' E '},
-                    )`,
-                    `break;`,
+                    ...appendStatementFunctions(),
                     `default:`,
                     `Util.appendError(\`${node.getName()} 3035 can't not happen this type => \${type}\`)`,
                     `}`,

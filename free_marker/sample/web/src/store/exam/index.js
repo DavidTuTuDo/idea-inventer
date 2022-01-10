@@ -163,12 +163,16 @@ class ExamStore extends BaseExamStore {
                 this.setQuestionConditions(this.getInArrayConditions([qid]))
                 break;
             default:
+                this.getComponent().clearScrollToBottomJobs();
                 Util.appendError(`8354 ==> type can't not be ${type}`);
+                this.getComponent().showWarningSnackMessage(`很抱歉,連結已失效`)
+                return undefined;
                 /**
                  * show error dialog then return
                  **/
                 break;
         }
+
         const result = await super.fetch(this.getComponent());
         this.syncQuestionDurationReply();
         return result;
