@@ -45,6 +45,8 @@ class BaseEditorComponent extends BaseComponent {
     static getCollectionJobs(name = '') {
         return [
             {name: 'create', loadingText: '正在新增中', buttonText: `新增${name}`},
+            {name: 'createA-E', loadingText: '正在新增中', buttonText: `(物件為{statement:A})新增${name} A-E`},
+            {name: 'clearAll', loadingText: '清除所有項目', buttonText: `清除所有${name}`},
         ]
     }
 

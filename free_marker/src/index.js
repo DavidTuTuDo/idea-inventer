@@ -3634,6 +3634,18 @@ class ComponentBuilder extends BaseBuilder {
                     `case 'create':`,
                     `${parentName}.${Util.camel(`push`, node.getName())}()`,
                     `break;`,
+                    `case 'clearAll':`,
+                    `${parentName}.${Util.camel(`clean`, node.getFieldName())}()`,
+                    `break;`,
+                    `case 'createA-E':`,
+                    `${parentName}.${Util.camel(`push`, node.getFieldName())}(
+                    {statement:' A '},
+                    {statement:' B '},
+                    {statement:' C '},
+                    {statement:' D '},
+                    {statement:' E '},
+                    )`,
+                    `break;`,
                     `default:`,
                     `Util.appendError(\`${node.getName()} 3035 can't not happen this type => \${type}\`)`,
                     `}`,
@@ -4820,7 +4832,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         const source = this.nodeOfAncestor;
-        if (needEditComponent) {
+        if (needEditComponent && _.isEqual(this.env, 'dev')) {
             source.components.push(...getEditorComponents());
         }
 
