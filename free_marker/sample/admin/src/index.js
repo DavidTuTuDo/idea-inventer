@@ -230,11 +230,11 @@ import moment from 'moment';
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);
-    await deployQuestions({year: -1, all: false, clear: true});
+    // await deployQuestions({year: -1, all: false, clear: true});
     // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
-    // await submitSubjectMap()
+    await submitSubjectMap()
     // console.log((await sampleFetch()).length)
 })();
 
