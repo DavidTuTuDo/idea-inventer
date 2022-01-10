@@ -61,6 +61,10 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
                 this.getStore().hasTargetAnswerId()}
     }
 
+    getInjectStyleOfFastCenterAskmrlinButton = (fastCenter) => {
+        return Util.getVisibleOrHidden(this.getStore().isMathOrEnglish())
+    }
+
     enableImageSelectView(multiple) {
         if(this.getStore().isAnswerReliedOrOwner() ||
             this.getStore().hasTargetAnswerId()) {

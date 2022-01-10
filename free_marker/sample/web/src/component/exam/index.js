@@ -89,10 +89,10 @@ class ExamComponent extends BaseExamComponent {
     getInjectStyleOfChoiceStatementButton(choice) {
         const question = choice.getParentNode();
         if (!question.getCompleted()) {
-            return choice.isSelected() ? {borderWidth: '5px'} : {borderWidth: '2px'}
+            return choice.isSelected() ? {borderWidth: '6px'} : {borderWidth: '2px'}
         } else {
             /** 題目已完成 */
-            return choice.isRightAnswer() ? {borderWidth: '5px'} : {borderWidth: '2px'}
+            return choice.isRightAnswer() ? {borderWidth: '6px'} : {borderWidth: '2px'}
         }
     }
 

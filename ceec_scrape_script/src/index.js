@@ -14,7 +14,7 @@ import {databazer as Databaser} from "databazer";
 const folderOfQuestion = '試題內容';
 const folderOfAnswer = '選擇題答案';
 const folderOfMathAnswer = '選擇(填)題答案';
-const exam = 'GSAT';
+const nameOfExam = 'GSAT';
 const examOfMakeUp = '補考';
 const examOfFormal = '正式';
 
@@ -65,11 +65,11 @@ class ceec_scrape_script {
         await browser.destroy();
     }
 
-    async goThroughGSAT(onlySubject, onlyYear = -1, range = {enable: false, max: 110, min: 100},) {
-        const db = new Databaser('./gsat.db');
+    async goThroughGSAT(dbapth, onlySubject, onlyYear = -1, range = {enable: false, max: 110, min: 100},) {
+        const db = new Databaser(dbapth);
         await db.init();
         await db.dropTable('QUESTION');
-        const pathOfRoot = `./${exam}`;
+        const pathOfRoot = `./${nameOfExam}`;
         const subjects = Util.getNamesOfFolderChild(pathOfRoot);
         for (const subject of subjects) {
 
@@ -100,7 +100,7 @@ class ceec_scrape_script {
                 const questions = await this.toEachQuestions(
                     this.getHeadFileOfPath(pathOfExamPaper),
                     this.getHeadFileOfPath(pathOfAnswerPaper)
-                    , {year: numberOfYear, subject, nameOfExam: exam, extra})
+                    , {year: numberOfYear, subject, nameOfExam, extra})
 
                 for (const question of questions) {
                     if (question !== undefined) {
@@ -140,7 +140,9 @@ class ceec_scrape_script {
 
         const answers = _.zipWith(rawAnswers, qids,
             (answer, qid) => {
+
                 const answerShouldBe = _.trim(answer).match(new RegExp(`[a-wA-W]{1,7}`));
+
                 /** 處理這種 `E 以上答案依照考選部規定`*/
                 return {
                     qid: _.toNumber(_.trim(qid)),
@@ -159,7 +161,7 @@ class ceec_scrape_script {
                               extra: '正式',
                               year: 100,
                               subject: 'English',
-                              exam: 'GSAT'
+                              nameOfExam: 'GSAT'
                           }) {
 
         function safeGetAnswer(question) {
@@ -170,7 +172,7 @@ class ceec_scrape_script {
         const answers = [];
         if (pathInfoOfAnswer !== undefined && info.year > 95) {
             const pdfOfAnswer = await Util.getPDFText(pathInfoOfAnswer.absolute);
-            answers.push(...this.analysisAnswerTexts(pdfOfAnswer.text));
+            answers.push(...this.analysisAnswerTexts(pdfOfAnswer.text, info));
         }
 
         const pdfOfQuestion = await Util.getPDFText(pathInfoOfQuestion.absolute);
@@ -194,18 +196,22 @@ class ceec_scrape_script {
                  */
             });
 
-        const afterFactoryQuestions = rawQuestions.map(raw => this.toChoiceQuestionFormat(raw));
+        const afterFactoryQuestions = rawQuestions.map(raw => this.toChoiceQuestionFormat(raw, info));
 
         const questions = _.filter(afterFactoryQuestions, question => question.valid);
 
         const formalizeQuestion = questions.map((question) => {
-            return {...question, ...info, answer: safeGetAnswer(question)}
+            return {...question, ...info, answer: this.isGSATMath(info) ? '' : safeGetAnswer(question)}
         });
 
         return formalizeQuestion;
     }
 
-    toChoiceQuestionFormat(raw) {
+    isGSATMath(info) {
+        return _.isEqual(info.subject, '數學') && _.isEqual(info.nameOfExam, 'GSAT');
+    }
+
+    toChoiceQuestionFormat(raw, info) {
         let choices = [];
         let topic = '';
         let answer = '';
@@ -229,8 +235,13 @@ class ceec_scrape_script {
         /** 在試卷上原始的題號 */
 
         const rawContent = raw.content.trim();
-        const topicAnswers = _.split(rawContent, new RegExp(`\\(\\s{0,2}[A-Z]\\s{0,2}\\)`, `g`));
-        if (topicAnswers && _.size(topicAnswers) > 4) {
+        let topicAnswers = _.split(rawContent, new RegExp(`\\(\\s{0,2}[A-Z]\\s{0,2}\\)`, `g`));
+
+        if (this.isGSATMath(info)) {
+            topicAnswers = _.split(rawContent, new RegExp(`\\(\\s{0,2}[1-8]\\s{0,2}\\)`, `g`));
+        }
+
+        if (topicAnswers && _.size(topicAnswers) > 2) {
             topic = _.trim(topicAnswers.shift());
             choices.push(...(topicAnswers.map(each => _.trim(each))));
             valid = true;
@@ -269,7 +280,8 @@ if (configerer.DEBUG_MODE) {
             // await handler.goThroughGSAT('國文',-1,{enable:true,min:90,max:99});
 
             /** 拿到 100-110 */
-            await handler.goThroughGSAT(undefined, -1, {enable: true, min: 100, max: 110});
+            await handler.goThroughGSAT('./gsat.db', undefined, -1, {enable: true, min: 100, max: 110});
+            // await handler.goThroughGSAT('./gsat-math.db', '數學', -1, {enable: true, min: 100, max: 110});
 
         }
     )();

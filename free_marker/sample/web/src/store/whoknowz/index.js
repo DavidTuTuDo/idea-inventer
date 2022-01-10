@@ -60,6 +60,10 @@ class WhoknowzStore extends BaseWhoknowzStore {
             UserInfoRef.getUid())
     }
 
+    isMathOrEnglish() {
+        return this.question !== undefined && Util.isOrEquals(this.question.getSubject(), '數學', '英文');
+    }
+
     async fetch() {
         Util.appendInfo(this.getClassName(),' fetch... 被執行了');
         const confuse = await (new ConfuseStore()).fetchConfuseItem(this.getComponent(), this.cid);

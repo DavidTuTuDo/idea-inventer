@@ -14,22 +14,21 @@ import moment from 'moment';
     const listener = new Listener();
 
 
-    async function deployQuestions({all = false, year = 110, clear = false}) {
+    async function deployQuestions({dbpath = '', year = 110}) {
 
 
-        const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/gsat.db`);
+        const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
 
 
-        const qs =   (_.isNumber(year) && year > 0) ?
+        const qs = (_.isNumber(year) && year > 0) ?
             await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
             await db.fetchRecords('QUESTION')
 
-        if (clear === true) {
-            await api.deleteQuestions(true);
-            await api.deleteConfuses(true);
-            await api.deleteAnswers(true);
-        }
+        // if (clear === true) {
+        //     await api.deleteConfuses(true);
+        //     await api.deleteAnswers(true);
+        // }
 
 
         let questions = qs.map((q) => {
@@ -205,19 +204,17 @@ import moment from 'moment';
         await pool.runByEachTask(asyncTasks);
     }
 
-
-    let linePay = new LinePay({
-        channelId: `1656136761`,
-        channelSecret: `638c3fc075aaa03fab0a7c9fb89b7723`,
-        uri: 'https://sandbox-api-pay.line.me'
-    })
-
     async function submitSubjectMap() {
         await api.deleteSubjectIds(true);
-        const questions = await api.fetchQuestions();
-        await api.submitSubjectIds(...questions.map(q => {
-            return {quid: q.id, year: q.year, subject: q.subject}
-        }));
+        const years = [105, 106, 107, 108, 109, 110];
+        for (const year of years) {
+            console.log(`正在fetch ${year}`);
+            const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
+            console.log(`submit id/map year=> ${year}年`,questions.length);
+            await api.submitSubjectIds(...questions.map(q => {
+                return {quid: q.id, year: q.year, subject: q.subject}
+            }));
+        }
     }
 
 
@@ -230,7 +227,7 @@ import moment from 'moment';
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);
-    // await deployQuestions({year: -1, all: false, clear: true});
+    // await deployQuestions({dbpath:'gsat.db',year: -1, all: false, clear: false});
     // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);

@@ -3628,7 +3628,7 @@ class ComponentBuilder extends BaseBuilder {
                     `}`
                 )
 
-                function appendStatementFunctions() {
+                function appendStatementAtoEFunctions() {
                     const parentName = node.getPreciseAttributeParentName();
                     const stmts = [`case 'createA-E':`,
                         `${parentName}.${Util.camel(`push`, node.getFieldName())}(
@@ -3637,6 +3637,20 @@ class ComponentBuilder extends BaseBuilder {
                     {statement:' C '},
                     {statement:' D '},
                     {statement:' E '},
+                    )`,
+                        `break;`]
+                    return stmts;
+                }
+
+                function appendStatement1to5Functions() {
+                    const parentName = node.getPreciseAttributeParentName();
+                    const stmts = [`case 'create1-5':`,
+                        `${parentName}.${Util.camel(`push`, node.getFieldName())}(
+                    {statement:' 1 '},
+                    {statement:' 2 '},
+                    {statement:' 3 '},
+                    {statement:' 4 '},
+                    {statement:' 5 '},
                     )`,
                         `break;`]
                     return stmts;
@@ -3651,7 +3665,8 @@ class ComponentBuilder extends BaseBuilder {
                     `case 'clearAll':`,
                     `${parentName}.${Util.camel(`clean`, node.getFieldName())}()`,
                     `break;`,
-                    ...appendStatementFunctions(),
+                    ...appendStatementAtoEFunctions(),
+                    ...appendStatement1to5Functions(),
                     `default:`,
                     `Util.appendError(\`${node.getName()} 3035 can't not happen this type => \${type}\`)`,
                     `}`,
