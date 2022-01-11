@@ -9,7 +9,6 @@ import {observer} from "mobx-react";
 import {inject} from "mobx-react";
 import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
 import ExamQuestionView from "../exam";
-import UserInfo from '../../userInfo';
 import React from 'react';
 @inject("whoknowz")
 @observer

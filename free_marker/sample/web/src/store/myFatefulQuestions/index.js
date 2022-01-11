@@ -11,6 +11,7 @@ import WhoknowzConfuseStore from "../whoknowzConfuse";
 import WhoknowzFastCenterStore from "../whoknowzFavorite";
 import ExamQuestionStore from "../examQuestion";
 import WhoknowzFavoriteStore from "../whoknowzFavorite";
+import UserInfo from '../../userInfo';
 
 class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
     /** -------------------- fields -------------------- **/
@@ -24,10 +25,6 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
 
     setQuestionsType(type) {
         this.getFilter().setSelectedQuestionType(type);
-    }
-
-    getCompoundQueryStmts = () => {
-        return [{orderBy: (stmt) => stmt.orderBy('updateTime', 'desc')}, ...this.getSelectSubjectStmts()];
     }
 
     getSelectSubjectStmts = () => {
@@ -48,14 +45,23 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
                 break;
             case 'stupidAsk':
                 items.push(...await (new WhoknowzConfuseStore()).fetchConfuses(this.getComponent(),
-                    ...this.getCompoundQueryStmts()));
+                    ...this.getCompoundQueryStmts(true)));
                 break;
             case 'kindlyReply':
                 items.push(...await (new WhoknowzAnswerStore()).fetchAnswers(this.getComponent(),
-                    ...this.getCompoundQueryStmts()));
+                    ...this.getCompoundQueryStmts(true)));
                 break;
         }
         await this.fatefulItemAdapter(items)
+    }
+
+    getCompoundQueryStmts = (onlySelf) => {
+        const stmts =  [];
+        if(onlySelf) {
+            stmts.push({where: (stmt) => stmt.where('userId', '==', UserInfo.getUid())})
+        }
+        stmts.push({orderBy: (stmt) => stmt.orderBy('updateTime', 'desc')}, ...this.getSelectSubjectStmts());
+        return stmts;
     }
 
 
@@ -101,7 +107,7 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
                 break;
             case 'stupidAsk':
                 items.push(...await (new WhoknowzConfuseStore()).fetchNextConfuses(this.getComponent(),
-                    lastItem, ...this.getCompoundQueryStmts()));
+                    lastItem, ...this.getCompoundQueryStmts(true)));
 
                 if (items.length < WhoknowzConfuseStore.sizeOfPerPage) {
                     this.setHasPageItems(false);
@@ -109,7 +115,7 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
                 break;
             case 'kindlyReply':
                 items.push(...await (new WhoknowzAnswerStore()).fetchNextAnswers(this.getComponent(),
-                    lastItem, ...this.getCompoundQueryStmts()));
+                    lastItem, ...this.getCompoundQueryStmts(true)));
 
                 if (items.length < WhoknowzAnswerStore.sizeOfPerPage) {
                     this.setHasPageItems(false);
