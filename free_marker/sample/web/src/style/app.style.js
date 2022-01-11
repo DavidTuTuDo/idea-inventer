@@ -201,7 +201,7 @@ class AppStyle {
 
   WhoknowzAnswerCard = {};
 
-  WhoknowzQuestionReactFragment = {};
+  WhoknowzQuestionDiv = {};
 
   WhoknowzFastCenterAskmrlinButton = {};
 

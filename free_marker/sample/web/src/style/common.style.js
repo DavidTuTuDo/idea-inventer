@@ -201,7 +201,7 @@ class CommonStyle {
 
   WhoknowzAnswerCard = {};
 
-  WhoknowzQuestionReactFragment = {};
+  WhoknowzQuestionDiv = {};
 
   WhoknowzFastCenterAskmrlinButton = {};
 

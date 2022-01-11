@@ -113,9 +113,10 @@ class BaseComponent extends React.Component {
 
     viewInitial() {
         this.fileChooserInputRef = React.createRef();
-        if (!this.isNavigationView() && Config.isScrollingHide) {
+        if ((!this.isNavigator()) && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
-            this.getStore().setAppBarHeight(isMobile ? 60 : 64);
+            if (!this.isComponentView())
+                this.getStore().setAppBarHeight(isMobile ? 60 : 64);
         }
         this.imageDialogRef = React.createRef();
     }
@@ -786,7 +787,7 @@ class BaseComponent extends React.Component {
     }
 
     openLineChatAccountWithMessage(id = '', message = '') {
-        if(!isMobile) {
+        if (!isMobile) {
             this.showInfoSnackMessage(`抱歉,此功能僅提供在移動設備上(手機,平板)`);
             return;
         }

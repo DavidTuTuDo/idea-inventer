@@ -101,8 +101,6 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfQuestionTopicOfAssistantDiv(question) {
-
-
         return Util.getVisibleOrNone(question.needAssistantArea());
     }
 

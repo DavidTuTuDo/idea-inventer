@@ -24,7 +24,7 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
 
     }
 
-    getInjectViewOfQuestionReactFragment(whoknowz) {
+    getInjectViewOfQuestionDiv(whoknowz) {
         return <ExamQuestionView
             freeze={true}
             isComponentView={true}

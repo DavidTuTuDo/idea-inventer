@@ -9,10 +9,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
-  ExamQuestionTopicTypography = { lineHeight: 1.6, fontSize: "2.4rem" };
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -205,7 +201,7 @@ class MobileStyle {
 
   WhoknowzAnswerCard = {};
 
-  WhoknowzQuestionReactFragment = {};
+  WhoknowzQuestionDiv = {};
 
   WhoknowzFastCenterAskmrlinButton = {};
 
