@@ -437,6 +437,7 @@ class Utiller {
         return tmp
     }
 
+    /** 找到關鍵字所有的index */
     indexesOf(arr, val) {
         const indexes = []
         let i = -1;
@@ -470,7 +471,8 @@ class Utiller {
     }
 
     toSpaceLessString(string) {
-        return _.split(string, ' ').map((each) => _.trim(each)).join('')
+        /** 這樣寫也可以 string.split('').map((each) => each.trim()).join(''); */
+        return _.split(string, '').map((each) => _.trim(each)).join('')
     }
 
     exist(obj) {
@@ -496,7 +498,7 @@ class Utiller {
         return _.isEmpty(after) ? string : after;
     }
 
-    /** 讓字串開頭不可以是 predicate, ex: `,, \n\t\s i'm good today?` => `i'm good today?` */
+    /** 讓字串開頭不可以是 predicate, ex: `,, \n\t\s i'm good today?` => `\n\t\s i'm good today` */
     getNormalizedStringNotEndWith(string, ...predicate) {
         string = this.toCDB(string);
         const after = _.join(_.dropRightWhile(string, (each) => this.has(predicate, each)), '');
@@ -891,6 +893,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const util = new Utiller();
+            // console.log(util.toSpaceLessString('4  5  .'));
             // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
             // const duration = util.getDurationOfMillionSec(after);
             // console.log(duration)

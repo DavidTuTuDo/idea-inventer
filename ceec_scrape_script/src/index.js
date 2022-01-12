@@ -169,6 +169,10 @@ class ceec_scrape_script {
             return target ? target.answer : '';
         }
 
+        function safeGetQuestionOrderNumber(string) {
+            return _.toNumber(Util.getNormalizedStringNotEndWith(Util.toSpaceLessString(string),'.'));
+        }
+
         const answers = [];
         if (pathInfoOfAnswer !== undefined && info.year > 95) {
             const pdfOfAnswer = await Util.getPDFText(pathInfoOfAnswer.absolute);
@@ -178,17 +182,22 @@ class ceec_scrape_script {
         const pdfOfQuestion = await Util.getPDFText(pathInfoOfQuestion.absolute);
         const texts = pdfOfQuestion.text;
 
+        Util.appendFile('./since.txt', texts, true, true);
+
         /**
          *
-         *  用來搞定100年的自然
-         *  const regex = new RegExp(`[0-9]\\s[0-9]\\s\\.`, `g`);
+         *  用來搞定100年的自然, 應該這一年的題號 會是 '4 8 .  ', ' 1 . '
+         *  const regex = new RegExp(`[1-9]?[1-9]?\\s?\\d\\s?\\.\\s{2}`,`g`)
+         *
+         *  用來分割多數的情況  '11.' , '1.'
+         *  const regex = new RegExp(`\\d{1,2}\\.\\s{1,2}`, `g`);
+         *
+         *  最中立的方式, 但可能會多index = 0 的狀況.
+         *  const regex = new RegExp(`[1-9]?[1-9]?\\s?\\d\\s?\\.\\s{1,2}`, `g`)
          *
          */
+        const regex = new RegExp(`[1-9]?[1-9]?\\s?\\d\\s?\\.\\s{1,2}`, `g`)
 
-
-
-
-        const regex = new RegExp(`\\d{1,2}\\.\\s{1,2}`, `g`);
         const eachQuestions = _.split(texts, regex);
         eachQuestions.shift();
         /** 第一個是髒資料, 在'1. '之前*/
@@ -196,8 +205,8 @@ class ceec_scrape_script {
         const rawQuestions = _.zipWith(eachQuestions, titles,
             (question, title) => {
                 return {
-                    qid: _.toNumber(title.match(new RegExp(`[0-9]{1,2}`))),
-                    content: _.trim(Util.toOneLineString(question))
+                    qid: safeGetQuestionOrderNumber(title),
+                    content: _.trim(Util.toSpaceLessString(question))
                 }
                 /**
                  * {
@@ -293,8 +302,10 @@ if (configerer.DEBUG_MODE) {
             /** 拿到 100-110 */
             // await handler.goThroughGSAT('./gsat.db', undefined, -1, {enable: true, min: 100, max: 110});
             // await handler.goThroughGSAT('./gsat-math.db', '數學', -1, {enable: true, min: 100, max: 110});
-            await handler.goThroughGSAT('./gsat-sin.db', '自然', 100, {enable: false});
-
+            // await handler.goThroughGSAT('./gsat-sin.db', '自然', 100, {enable: false});
+            // await handler.goThroughGSAT('./gsat-chi.db', '國文', 100, {enable: false});
+            // await handler.goThroughGSAT('./gsat-soci.db', '社會', 100, {enable: false});
+            await handler.goThroughGSAT('./gsat-ttttteeeessstttt.db', '英文', 109, {enable: false});
 
         }
     )();

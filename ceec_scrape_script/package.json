@@ -12,14 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.7",
-    "utiller": "^1.0.30",
     "databazer": "^1.0.6",
-    "scraper": "file:../scraper",
+    "download-file": "^0.1.5",
+    "downloadjs": "^1.4.7",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "puppeteer": "^5.4.1",
-    "downloadjs": "^1.4.7",
-    "download-file": "^0.1.5"
+    "scraper": "file:../scraper",
+    "utiller": "^1.0.31"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

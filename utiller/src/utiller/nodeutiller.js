@@ -729,7 +729,7 @@ if (configerer.DEBUG_MODE) {
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().generatePackage('../configerer');
-            await new NodeUtiller().generatePackage('../databazer');
+            // await new NodeUtiller().generatePackage('../databazer');
 
             // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
