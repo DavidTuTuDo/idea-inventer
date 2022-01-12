@@ -177,6 +177,17 @@ class ceec_scrape_script {
 
         const pdfOfQuestion = await Util.getPDFText(pathInfoOfQuestion.absolute);
         const texts = pdfOfQuestion.text;
+
+        /**
+         *
+         *  用來搞定100年的自然
+         *  const regex = new RegExp(`[0-9]\\s[0-9]\\s\\.`, `g`);
+         *
+         */
+
+
+
+
         const regex = new RegExp(`\\d{1,2}\\.\\s{1,2}`, `g`);
         const eachQuestions = _.split(texts, regex);
         eachQuestions.shift();
@@ -280,8 +291,10 @@ if (configerer.DEBUG_MODE) {
             // await handler.goThroughGSAT('國文',-1,{enable:true,min:90,max:99});
 
             /** 拿到 100-110 */
-            await handler.goThroughGSAT('./gsat.db', undefined, -1, {enable: true, min: 100, max: 110});
+            // await handler.goThroughGSAT('./gsat.db', undefined, -1, {enable: true, min: 100, max: 110});
             // await handler.goThroughGSAT('./gsat-math.db', '數學', -1, {enable: true, min: 100, max: 110});
+            await handler.goThroughGSAT('./gsat-sin.db', '自然', 100, {enable: false});
+
 
         }
     )();

@@ -1,3 +1,5 @@
+import {utiller as Util, exceptioner as ERROR,} from "utiller";
+
 class BaseRouter {
 
     currentRoute = '/';
@@ -11,13 +13,13 @@ class BaseRouter {
         this.isEditMode = false;
     }
 
-    routeTo(component,path) {
-        if (component !== undefined && component.props !== undefined  && component.props.history !== undefined) {
+    routeTo(component, path) {
+        if (component !== undefined && component.props !== undefined && component.props.history !== undefined) {
             const history = component.props.history;
             history.push(path);
             this.setCurrentRoute(path);
-        } else{
-            Util.appendError('component 怪怪的哦')
+        } else {
+            Util.appendError(`component為undefined,可能是為了拿url [${path}]`)
         }
 
     }

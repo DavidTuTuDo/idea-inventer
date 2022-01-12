@@ -3952,6 +3952,8 @@ class AppBuilder
             `BaseMyRouter`, {name: `BaseRouter`, from: '../base/BaseRouter'}
         );
         baseRouterGenerator.appendImport('UserInfoRef', '../userInfo');
+        baseRouterGenerator.appendImport('Config', '../config');
+
 
         for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
@@ -3965,7 +3967,7 @@ class AppBuilder
                 ...appendLoginStmts(component),
                 `const route = \`${component.getPathOfRouterString()}${component.routeHash ? `/\${Util.getRandomHash(15)}` : ``}\``,
                 `this.routeTo(component, route);`,
-                `return route;`
+                `return libpath.join(Config.host,route);`
             )
         }
         baseRouterGenerator.needIndexFile('Router', [], true);
