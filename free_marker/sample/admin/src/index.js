@@ -10,6 +10,9 @@ import config from './config';
 import moment from 'moment';
 
 (async () => {
+    console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`)
+    await Util.syncDelay(5000)
+
     const api = new Api();
     const listener = new Listener();
 
@@ -24,11 +27,6 @@ import moment from 'moment';
         const qs = (_.isNumber(year) && year > 0) ?
             await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
             await db.fetchRecords('QUESTION')
-
-        // if (clear === true) {
-        //     await api.deleteConfuses(true);
-        //     await api.deleteAnswers(true);
-        // }
 
 
         let questions = qs.map((q) => {
@@ -204,13 +202,27 @@ import moment from 'moment';
         await pool.runByEachTask(asyncTasks);
     }
 
+    async function sampleOfDeleteEnglish() {
+        for (const year of [99, 98, 97, 96]) {
+            const result = await api.fetchQuestions(
+                {where: (stmt) => stmt.where('year', '==', year)},
+                {where: (stmt) => stmt.where('subject', '==', '英文')}
+            );
+
+            for(const each of result) {
+                console.log(`delete ${each.subject} ${each.year} ${each.qid}-${each.id}`)
+                await api.deleteQuestionItem(each.id);
+            }
+        }
+    }
+
     async function submitSubjectMap() {
         await api.deleteSubjectIds(true);
-        const years = [105, 106, 107, 108, 109, 110];
+        const years = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
         for (const year of years) {
             console.log(`正在fetch ${year}`);
             const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
-            console.log(`submit id/map year=> ${year}年`,questions.length);
+            console.log(`submit id/map year=> ${year}年`, questions.length);
             await api.submitSubjectIds(...questions.map(q => {
                 return {quid: q.id, year: q.year, subject: q.subject}
             }));
@@ -218,20 +230,14 @@ import moment from 'moment';
     }
 
 
-    // async function sampleFetch(){
-    //     return await api.firestore().collection('questions')
-    //         .where('year','==', 110)
-    //         .listDocuments();
-    //
-    // }
+
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);
-    // await deployQuestions({dbpath:'gsat.db',year: -1, all: false, clear: false});
     // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
-    await submitSubjectMap()
+    // await submitSubjectMap()
     // console.log((await sampleFetch()).length)
 })();
 

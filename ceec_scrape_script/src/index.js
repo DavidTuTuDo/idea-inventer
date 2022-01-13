@@ -206,7 +206,7 @@ class ceec_scrape_script {
             (question, title) => {
                 return {
                     qid: safeGetQuestionOrderNumber(title),
-                    content: _.trim(Util.toSpaceLessString(question))
+                    content: _.trim(Util.toNewLineLessString(question))
                 }
                 /**
                  * {
@@ -305,7 +305,10 @@ if (configerer.DEBUG_MODE) {
             // await handler.goThroughGSAT('./gsat-sin.db', '自然', 100, {enable: false});
             // await handler.goThroughGSAT('./gsat-chi.db', '國文', 100, {enable: false});
             // await handler.goThroughGSAT('./gsat-soci.db', '社會', 100, {enable: false});
-            await handler.goThroughGSAT('./gsat-ttttteeeessstttt.db', '英文', 109, {enable: false});
+            // await handler.goThroughGSAT('./gsat-95.db', undefined, 95, {enable: false});
+            // await handler.goThroughGSAT('./gsat-eng98.db', '英文', 98, {enable: false});
+            // await handler.goThroughGSAT('./gsat-eng97.db', '英文', 97, {enable: false});
+            // await handler.goThroughGSAT('./gsat-eng96.db', '英文', 96, {enable: false});
 
         }
     )();

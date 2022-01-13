@@ -475,6 +475,11 @@ class Utiller {
         return _.split(string, '').map((each) => _.trim(each)).join('')
     }
 
+    toNewLineLessString(string) {
+        /** 這樣寫也可以 string.split('').map((each) => each.trim()).join(''); */
+        return _.split(string, '\n').map((each) => _.trim(each)).join('')
+    }
+
     exist(obj) {
         return !_.isNull(obj) && !_.isUndefined(obj);
     }
