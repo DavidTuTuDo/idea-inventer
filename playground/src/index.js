@@ -37,6 +37,8 @@ if (configerer.DEBUG_MODE) {
         // })
         // console.log(full);
         Util.printf();
+
+        console.log(_.range(95,112,1));
         // const ddd =false;
         // const rrr = !!ddd;
         // console.log('dddd===> ', rrr);

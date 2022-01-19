@@ -9,6 +9,8 @@ import libpath from 'path';
 import config from './config';
 import moment from 'moment';
 
+const OFFICIAL_YEARS_OF_YEARS = _.range(95,112,1);
+
 (async () => {
     console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`)
     await Util.syncDelay(5000)
@@ -216,10 +218,19 @@ import moment from 'moment';
         }
     }
 
+
+    async function batchDeleteSubjectMap() {
+        for(const year of OFFICIAL_YEARS_OF_YEARS) {
+            console.log(`正在刪除 SubjectIds ${year}`);
+            await api.deleteSubjectIds(false,{where: (stmt) => stmt.where('year', '==', year)});
+        }
+
+
+    }
+
     async function submitSubjectMap() {
-        await api.deleteSubjectIds(true);
-        const years = [100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110];
-        for (const year of years) {
+        await batchDeleteSubjectMap();
+        for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在fetch ${year}`);
             const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
             console.log(`submit id/map year=> ${year}年`, questions.length);
