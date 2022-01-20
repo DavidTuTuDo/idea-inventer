@@ -18,6 +18,22 @@ const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
+const LESS_MODULES = [
+    {
+        name: 'mobile',
+        rule: 'only screen and (min-width: 320px) and (max-width: 600px)',
+    },
+    {
+        name: 'tablet',
+        rule: 'only screen and (min-width: 320px) and (max-width: 600px)'
+    },
+    {
+        name: 'desktop',
+        rule: 'only screen and (min-width: 600px) and (max-width: 1680px)',
+    },
+]
+
+
 /**
  * true, 就是區分component 和 view 概念, component會參照到view底下的module作為
  * 優點是 viewMoudule可以reuse, 缺點是會產出很多folder
@@ -4136,6 +4152,168 @@ class AppBuilder
         }
     }
 
+    async buildAllNewBrandLessFiles(classNameInfos) {
+        const self = this;
+        const sign = `/** empty style */`;
+
+        /** return { ..., mobile:'' desktop:'' , tablet:''} */
+        function rawToAttributeObj(raw) {
+            const object = {}
+            /**{ mobile:'' desktop:'' }*/
+
+            const platformStrings = raw.split('@media').map(each => each.trim())
+                .map((each) => Util.toOneLineString(each));
+
+
+            for (const string of platformStrings) {
+                const regexOfGetPlatform = new RegExp(`(?<=\\@)\\w+`, 'g');
+                /** 抓取@之後的字樣*/
+                const regexGetInsideBraces = new RegExp(`(?<=\\{).+?(?=\\})`, 'g');
+                /** 抓取{}裏面的*/
+
+                const platform = string.match(regexOfGetPlatform);
+                const statement = string.match(regexGetInsideBraces);
+
+                if (!_.isEmpty(platform) && !_.isEmpty(statement)) {
+                    object[platform[0]] = statement[0].trim();
+                }
+            }
+            object['default'] = platformStrings.shift();
+            return object;
+        }
+
+        function isEmptyAttribute(attributeObj) {
+            let isEmpty = true;
+            for (const key in attributeObj) {
+                if (!_.isEmpty(attributeObj[key])) {
+                    isEmpty = false;
+                    break;
+                }
+            }
+            return isEmpty;
+        }
+
+        function getLessLibs() {
+            return Util.findFilePathBy(libpath.join(self.freeMarkerRootPath, 'less', 'libs'),
+                (file) => _.isEqual(file.extension, 'less'))
+                .map((file) => file.fileNameExtension);
+        }
+
+        function getVarietyDeviceStmts(existedObj) {
+            const stmts = [];
+            const isModifiedObject = existedObj && existedObj.isModified && existedObj['attributeObj']
+            for (const module of LESS_MODULES) {
+                const existed = isModifiedObject && existedObj['attributeObj'][module.name];
+
+                stmts.push(`@media @${module.name} {${existed ? existedObj['attributeObj'][module.name] : sign}}`);
+            }
+
+            if (isModifiedObject) {
+                stmts.unshift(existedObj['attributeObj']['default'])
+            }
+
+            return stmts.join('');
+        }
+
+        /**
+         * className: {
+         *     isEmpty: '是否為一個沒有編輯過的className'
+         *     raw: '沒處理過的字串'
+         *     attributeObj:{ mobile:'', desktop:'' }
+         * }
+         */
+        function getExistedLessAttributeObj() {
+            const lessAttributeObj = {};
+            const srcLessPath = libpath.join(self.projectPlatformSourcePath, `less`, `styles.less`)
+            const stringOfPlatforms = _.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
+            if (fs.existsSync(srcLessPath)) {
+                const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
+                /** 注意!! 是用 remove,會mutate 原本的 array */
+                _.remove(stub, (each) => (
+                    _.startsWith(each.trim(), '/**')
+                    || _.isEqual(each.trim(), '')
+                    || _.startsWith(each.trim(), '@import')
+                    || Util.startWithRegex(each.trim(), `@(${stringOfPlatforms})\:`)
+                ))
+
+                /** 移除掉最後一個,因為split */
+                const pureLessStringFile = stub.join('\n');
+                const regexOfClassName = new RegExp(`^\\..+\\s{`, `gm`)
+                /**  找出像是這樣的.ExamFilterRandomTestRangeOfYearSlider  */
+                const classNames = pureLessStringFile.match(regexOfClassName).map((each) => {
+                    const normalize = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(each, '.'), '{').trim()
+                    const precise = normalize.split(':')[0];
+                    return {
+                        complete: normalize, /** ExamFilterRandomTestRangeOfYearSlider:extend(.CenterInParent all)*/
+                        precise: precise, /** ExamFilterRandomTestRangeOfYearSlider*/
+                    }
+                });
+
+                const blocks = Util.toObjectMap(pureLessStringFile.split(regexOfClassName), {key: 'raw'});
+                blocks.shift();
+
+                /** split 第一個會是沒意義的值 */
+                const styles = _.zip(classNames, blocks).map((each) => Util.mergeObject(...each));
+
+                for (const style of styles) {
+                    const attributeObj = rawToAttributeObj(style.raw);
+                    /** { mobile:'', desktop:''} */
+                    lessAttributeObj[style.precise] = {
+                        ...style,
+                        attributeObj,
+                        isModified: !isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise),
+                    }
+                }
+            }
+            return lessAttributeObj;
+        }
+
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
+        for (const model of LESS_MODULES) {
+            generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
+        }
+
+        for (const nameExtension of getLessLibs()) {
+            generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
+        }
+
+        const existedLessAttributeObj = getExistedLessAttributeObj();
+        for (const info of classNameInfos) {
+            const isEditPage = info.component.isEditPage();
+            generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
+            for (const className of info.classNames) {
+
+                const preciselyClazzName = className.node.getClassNameOfLessUsage(className.type);
+
+                const existObj = existedLessAttributeObj[preciselyClazzName]; /** 從file裡面找出定義過的屬性敘述*/
+
+                if (existObj) {
+                    generator.appendInClassTail(`.${existObj.complete} 
+                        {${getVarietyDeviceStmts(existObj)}}`);
+                    delete existedLessAttributeObj[preciselyClazzName];
+                } else {
+                    generator.appendInClassTail(`.${preciselyClazzName} 
+                        {${getVarietyDeviceStmts()}}`);
+                }
+            }
+        }
+
+        if (_.size(existedLessAttributeObj) > 0) {
+            generator.appendInClassTail(`/** ======== following for homeless ========= */\n\n`);
+            for (const clazzName in existedLessAttributeObj) {
+                const object = existedLessAttributeObj[clazzName];
+                if (object.isModified) {
+                    generator.appendInClassTail(`.${clazzName} {${getVarietyDeviceStmts(existedLessAttributeObj[clazzName])}}`);
+                }
+            }
+
+        }
+
+        generator.needSignature(false);
+        generator.disableDefaultImports();
+        await generator.persist();
+    }
+
     /** {[...{component,names}], srcPath}
      * srcPath 就是 keep file 的根目錄
      * */
@@ -4428,7 +4606,7 @@ class ProjectFileHandler extends PathBase {
 
                 const destFolder = Util.getFileDirPath(dest);
                 if (!fs.existsSync(destFolder)) {
-                    Util.appendError(`overrideIndexFiles warning ,dest folder not exist 
+                    Util.appendError(`overrideIndexFiles warning ,dest folder not exist
                     destFolder=> ''${destFolder}'' || sourceFileName=>''${from}''`);
                     Util.persistByPath(Util.getFileDirPath(dest));
                     if (FAST_DEVELOP_MODE) {
@@ -4813,14 +4991,14 @@ class ProjectFileHandler extends PathBase {
                 node.appendListStyle({...style, borderColor: 'blue'});
 
                 node.appendListContents([`{this.renderCollectionEditorView(
-                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             } else if (node.isObject() && node.hasPath()) {
                 node.setWrapView('div');
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'green'});
                 node.appendWrapContents([`{this.renderObjectEditorView(
-                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())} 
+                   ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             }
 
@@ -4865,6 +5043,24 @@ class ProjectFileHandler extends PathBase {
 
     getStructs = () => {
         return this.nodeOfAncestor.getComponents().map(component => component.getStruct());
+    }
+
+    async forNewLess() {
+        this.enrichComponentStructs(this.isWebPlatform());
+        Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
+            return {name: each.getName(), editor: each.isEditPage()}
+        }))
+        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
+
+        const totalClassNames = [];
+        for (let component of this.nodeOfAncestor.components) {
+            if (FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT))
+                continue;
+            const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
+            totalClassNames.push({component, classNames});
+        }
+        const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
+        await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
     }
 
     async forWeb() {
@@ -5092,6 +5288,14 @@ class BuildApplication {
         await web.removeEmptyFolder();
     }
 
+    async buildLessFilesOnly() {
+        const web = new ProjectFileHandler(this.getBuildObject('web'));
+        await web.forNewLess();
+        Util.appendInfo(
+            `less done`
+        );
+    }
+
     async buildAdmin(deployToRemote = true) {
         const admin = new ProjectFileHandler(this.getBuildObject('admin'));
         if (!deployToRemote)
@@ -5217,8 +5421,8 @@ if (configerer.DEBUG_MODE) {
                     await builder.persistent('admin');
                     await builder.persistent('functions');
                     break;
-                case 'less':
-                    await builder.buildWeb();
+                case 'newLessFileOnly':
+                    await builder.buildLessFilesOnly();
                     break;
                 case 'buildAllPlatform':
                     await builder.buildWeb();

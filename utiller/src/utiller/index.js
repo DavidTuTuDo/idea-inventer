@@ -29,7 +29,7 @@ class Utiller {
     }
 
     setEnvironment(env) {
-       this.env = env;
+        this.env = env;
     }
 
     getEnvironment() {
@@ -37,16 +37,16 @@ class Utiller {
     }
 
     isProductionEnvironment() {
-        return _.isEqual(this.env,'prod');
+        return _.isEqual(this.env, 'prod');
     }
 
     appendInfo(...logs) {
-        if(this.isProductionEnvironment()) return;
+        if (this.isProductionEnvironment()) return;
         console.log(...logs);
     }
 
     appendError(...logs) {
-        if(this.isProductionEnvironment()) return;
+        if (this.isProductionEnvironment()) return;
         console.error(...logs);
     }
 
@@ -58,6 +58,17 @@ class Utiller {
         });
     }
 
+    /**
+     * sample:
+     *
+     *  string = `@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";`;
+     *  rule = '@[desktop|mobile|desktop]';
+     *  return true | false
+     * */
+    startWithRegex(string = '', rule = '.') {
+        let pattern = new RegExp(`^${rule}`, 'i');
+        return (pattern.test(string));
+    }
 
     /** this is used for unit test,
      * param 是給 runInBackground 用的 => param */
@@ -893,11 +904,35 @@ class Utiller {
         }
     }
 
+    /**
+     *
+     * rules => {key:'newKeyName', child: 'name', func: (stmt) => stmt}
+     * child指的就是sample裏面的child屬性,如果child是空值.表示物件內容就是each. func就可以再包一層邏輯
+     *
+     * sample:
+     * const sample = [{name: 'a'}, {name: 'b'}];
+     * console.log(util.toObjectMap(sample, {key: 'newName', child: 'name',func:(p) => (p+'yaya')}));
+     * result : [ { newName: 'ayaya' }, { newName: 'byaya' } ]
+     */
+    toObjectMap(array, ...rules) {
+        const newbie = []
+        for (const each of array) {
+            const object = {}
+            for (const rule of rules) {
+                const func = rule.func ? rule.func : (stmt) => stmt;
+                object[rule.key] = this.isUndefinedNullEmpty(rule.child) ? func(each) : func(each[rule.child]);
+            }
+            newbie.push(object);
+        }
+        return newbie;
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const util = new Utiller();
+            const util = new Utiller();
+
+            console.log(util.startWithRegex('@sjasidoas @you','@[can|you|one]'));
             // console.log(util.toSpaceLessString('4  5  .'));
             // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
             // const duration = util.getDurationOfMillionSec(after);
