@@ -4318,6 +4318,13 @@ class AppBuilder
         generator.needSignature(false);
         generator.disableDefaultImports();
         await generator.persist();
+
+        if (!fs.existsSync(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'))) {
+            this.appendMustacheFile('less.index.mustache',
+                Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
+            );
+            Util.appendInfo(`persist ./less/index.js succeed`);
+        }
     }
 
     /** {[...{component,names}], srcPath}
@@ -5092,7 +5099,7 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildCookieFiles();
         await new AppBuilder(paramProps).buildEventFolder(totalEvents);
         await new AppBuilder(paramProps).overrideLessFile();
-        await new AppBuilder(paramProps).buildLessFile(totalClassNames);
+        // await new AppBuilder(paramProps).buildLessFile(totalClassNames);
         await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
