@@ -1,0 +1,2446 @@
+@import "./libs/slideshow.less";
+@import "./libs/firebaseui.less";
+@import "./libs/base.less";
+@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";
+@tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+@mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+/** following for examFilter  component used  */
+
+.ExamFilterDiv:extend(.CenterInParentColumn) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterRandomTestDiv:extend(.CenterInParentColumn) {
+  width: 60vw;
+  height: 30vh;
+  max-width: 550px;
+  min-height: 320px;
+  border-radius: 5px;
+  background-color: #e5f2f2;
+  @media @mobile {
+    height: 35vh;
+    width: 72vw;
+    max-width: 380px;
+    min-height: 0px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamFilterRandomTestFastRangeButtonGroup {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterRandomTestFastRangeButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterRandomTestSpaceDiv {
+  height: 20px;
+  @media @mobile {
+    height: 8px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterRandomTestRangeOfYearSlider {
+  width: 300px;
+  margin-top: 20px;
+  @media @mobile {
+    width: 70%;
+    margin-top: 20px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamFilterRandomTestCountsOfExamRadioGroup {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.LabelExamFilterRandomTestCountsOfExamTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterRandomTestCountsOfExamFormControlLabel {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterRandomTestBtnOfStartExamButton {
+  font-size: 1.3rem;
+  @media @mobile {
+    font-size: 1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterSpaceDiv {
+  height: 20px;
+  @media @mobile {
+    height: 10px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterHistoryTestDiv:extend(.ExamFilterRandomTestDiv) {
+  height: 30vh;
+  background-color: #fcdadb;
+  @media @mobile {
+    height: 25vh;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamFilterHistoryTestSelectorTextField {
+  width: 200px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterHistoryTestSelectorMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterHistoryTestSpaceDiv {
+  height: 3vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterHistoryTestBtnWithHistoryButton:extend(.ExamFilterRandomTestBtnOfStartExamButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamFilterCloseButton {
+  background-color: rgba(0, 0, 0, 0.5);
+  font-size: 1rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for purchaseSucceed  component used  */
+
+.PurchaseSucceedDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchaseSucceedSucceedTitleTypography {
+  font-size: 1.8rem;
+  margin-top: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchaseSucceedConfirmButton {
+  font-size: 1.2rem;
+  margin-top: 30px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for navigator  component used  */
+
+.NavigatorDiv {
+  flex-grow: 1;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarAppBar {
+  background-color: #111111;
+  @media @mobile {
+    height: 60px;
+    display: flex;
+    justify-content: center;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarToolbar {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarMenuIconButton {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarMenuIconMenuIcon {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarTitleTypography {
+  flex-grow: 1;
+  font-size: 1.4rem;
+  @media @mobile {
+    font-size: 1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarToEditModeButton:extend(.NavigatorAppBarToolBarLoginButton) {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarLoginButton {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerDrawer {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutListItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListNavigatorDrawerShortcutList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutTitleTypography {
+  font-size: 3rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutIconImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for main  component used  */
+
+.MainDiv {
+  max-width: 880px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainViewPagerDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMainViewPagerFade {
+  width: 100vw;
+  max-width: 880px;
+  height: 32vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    height: 380px;
+  }
+}
+.MainViewPagerImageImg {
+  position: absolute;
+  left: -1000%;
+  right: -1000%;
+  top: -1000%;
+  bottom: -1000%;
+  margin: auto;
+  min-height: 100%;
+  min-width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapMainViewPagerImageDiv {
+  width: 100vw;
+  height: 32vh;
+  overflow: hidden;
+  position: relative;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    max-width: 880px;
+    height: 380px;
+    overflow: hidden;
+    position: relative;
+  }
+}
+.MainEnterPointPaper {
+  height: 5.5vh;
+  min-height: 55px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #d3d3d3;
+  @media @mobile {
+    min-height: 55px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapMainEnterPointGrid {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMainEnterPointGrid {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListWrapMainEnterPointDiv {
+  margin-top: 40px;
+  margin-left: 5px;
+  margin-right: 5px;
+  padding: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEnterPointTitleTypography {
+  font-size: 1.3rem;
+  @media @mobile {
+    font-size: 1.1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainCountdownPaper {
+  padding: 10px;
+  margin: 10px;
+  margin-top: 1vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for exam  component used  */
+
+.ExamDiv:extend(.CenterInParentColumn) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamHistoryFilterDiv:extend(.CenterInParentRow) {
+  padding: 12px;
+  width: 100vw;
+  background-color: #bbbbbb;
+  position: sticky;
+  top: 0px;
+  z-index: 100;
+  @media @mobile {
+    padding: 1px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamHistoryFilterReplyTypeRadioGroup {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.LabelExamHistoryFilterReplyTypeTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamHistoryFilterReplyTypeFormControlLabel {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamHistoryFilterSpaceDiv {
+  width: 3%;
+  @media @mobile {
+    width: 5px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamHistoryFilterWhichSubjectTextField {
+  min-width: 100px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamHistoryFilterWhichSubjectMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamHistoryFilterOrderByWhatTextField {
+  min-width: 120px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamHistoryFilterOrderByWhatMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionCard {
+  margin-left: 1vw;
+  margin-right: 1vw;
+  margin-bottom: 2vw;
+  padding: 1vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionDiv {
+  position: relative;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamQuestionDiv {
+  margin-top: 10px;
+  max-width: 880px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionAlertOuterDiv:extend(.CenterInParentRelative) {
+  z-index: 1;
+  max-width: 32vw;
+  max-height: 32vh;
+  @media @mobile {
+    max-width: 30vw;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionAlertAlertImageImg {
+  opacity: 0.3;
+  height: 70%;
+  @media @mobile {
+    height: 60%;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionAlertAlertImageDiv {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicOfAssistantDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicOfAssistantNameTypography {
+  font-size: 1.4rem;
+  background-color: white;
+  white-space: pre-line;
+  border-style: solid;
+  border-width: 1px;
+  padding: 1px;
+  border-radius: 10px;
+  border-color: rgba(136, 136, 136, 0.5);
+  margin-bottom: 10px;
+  @media @mobile {
+    font-size: 1.1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicOfAssistantImageDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamQuestionTopicOfAssistantImageDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicOfAssistantImageUrlImg {
+  width: 99%;
+  border-radius: 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(136, 136, 136, 0.5);
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicNameTypography {
+  font-size: 1.6rem;
+  white-space: pre-line;
+  @media @mobile {
+    font-size: 1.1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionTopicNameDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicImageDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamQuestionTopicImageDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTopicImageUrlImg {
+  width: 40vw;
+  max-width: 500px;
+  margin: 3px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgba(136, 136, 136, 0.5);
+  @media @mobile {
+    width: 60vw;
+    max-width: 400px;
+    margin: 3px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionChoiceDiv {
+  margin: 10px;
+  padding: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamQuestionChoiceDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionChoiceStatementButton {
+  text-align: left;
+  font-size: 1.4rem;
+  text-transform: none;
+  @media @mobile {
+    text-align: left;
+    font-size: 1rem;
+    text-transform: none;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionChoiceStatementDiv {
+  margin-bottom: 1vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionChoiceImageDiv {
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamQuestionChoiceImageDiv {
+  display: flex;
+  flex-direction: row;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionChoiceImageUrlImg {
+  width: 40vw;
+  max-width: 500px;
+  margin: 3px;
+  @media @mobile {
+    width: 55vw;
+    max-width: 400px;
+    margin: 3px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionFunctionCenterDiv:extend(.CenterInParentRow) {
+  padding: 5px;
+  border-width: 1px;
+  background-color: rgba(0, 0, 0, 0.2);
+  margin-bottom: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionFunctionCenterAddToFavoriteButton {
+  @media @mobile {
+    font-size: 0.9rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionFunctionCenterAddToFavoriteReactFragment {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionFunctionCenterCalloutHelpButton {
+  margin-left: 25px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionFunctionCenterCalloutHelpReactFragment {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionTipTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamQuestionTipDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionDurationTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionReplyTimestampTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for result  component used  */
+
+.ResultCard {
+  @media @mobile {
+    flex: 1;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ResultScoreTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ResultMessageTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for purchase  component used  */
+
+.PurchaseDiv {
+  display: flex;
+  width: 95%;
+  max-width: 1080px;
+  flex-direction: column;
+  justify-content: center;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchaseBannerImg {
+  width: 90vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapPurchaseBannerDiv {
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchasePurchasePlanDiv {
+  display: flex;
+  width: 95vw;
+  flex-direction: column;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListPurchasePurchasePlanDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  border-style: solid;
+  border-width: 1px;
+  margin: 10px;
+  min-height: 100px;
+  border-radius: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchasePurchasePlanNameTypography {
+  font-size: 1.4rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapPurchasePurchasePlanNameDiv {
+  display: flex;
+  justify-content: center;
+  width: 20vw;
+  min-width: 120px;
+  height: 6vh;
+  min-height: 80px;
+  align-items: center;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchasePurchasePlanSpaceDiv {
+  height: 1px;
+  background-color: #111111;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchasePurchasePlanPriceTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapPurchasePurchasePlanPriceDiv:extend(.WrapPurchasePurchasePlanNameDiv all) {
+  flex-direction: column;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchasePurchasePlanPricePriceTipTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PurchasePurchasePlanBuyButton {
+  font-size: 1rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapPurchasePurchasePlanBuyDiv:extend(.WrapPurchasePurchasePlanNameDiv all) {
+  border-style: none;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for whoknowz  component used  */
+
+.WhoknowzDiv:extend(.CenterInParentColumn all) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzFastCenterDiv {
+  position: sticky;
+  width: 100vw;
+  padding: 10px;
+  background-color: rgba(108, 122, 137, 0.5);
+  z-index: 3;
+  top: 0px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzFastCenterCopylinkButton {
+  margin-left: 15px;
+  border-radius: 40px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzFastCenterAskmrlinButton:extend(.WhoknowzFastCenterCopylinkButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzQuestionDiv {
+  padding: 10px;
+  margin: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzAnswerCard:extend(.CenterInParentColumn) {
+  padding: 10px;
+  margin: 10px;
+  width: 90vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListWhoknowzAnswerDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzAnswerAnswerByTextTextField {
+  width: 90%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzAnswerImageDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListWhoknowzAnswerImageDiv {
+  margin-top: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzAnswerImageUrlImg {
+  height: 300px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WhoknowzSubmitButton {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapWhoknowzSubmitReactFragment {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for myFatefulQuestions  component used  */
+
+.MyFatefulQuestionsDiv:extend(.CenterInParentColumn all) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFilterDiv:extend(.ExamHistoryFilterDiv) {
+  justify-content: space-between;
+  padding-right: 100px;
+  padding-left: 100px;
+  @media @mobile {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMyFatefulQuestionsFilterWhichSubjectTextField {
+  margin-left: 80px;
+  @media @mobile {
+    margin-left: 20px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFilterWhichSubjectMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMyFatefulQuestionsFilterQuestionTypeTextField {
+  margin-right: 80px;
+  @media @mobile {
+    margin-right: 20px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFilterQuestionTypeMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFatefulItemCard {
+  margin: 15px;
+  padding: 10px;
+  width: 90vw;
+  max-width: 880px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMyFatefulQuestionsFatefulItemDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFatefulItemQuestionTopicTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFatefulItemQuestionInfoDiv {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 15px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFatefulItemQuestionInfoSubjectInfoTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MyFatefulQuestionsFatefulItemQuestionInfoCreateTimeTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for main editor component used  */
+
+.MainEditorDiv:extend(.MainDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorViewPagerDiv:extend(.MainViewPagerDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapMainEditorViewPagerDiv:extend(.WrapMainViewPagerDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMainEditorViewPagerDiv:extend(.ListMainViewPagerDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorViewPagerRouteTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorViewPagerImageImg:extend(.MainViewPagerImageImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapMainEditorViewPagerImageDiv:extend(.WrapMainViewPagerImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorViewPagerImageTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorEnterPointPaper:extend(.MainEnterPointPaper) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapMainEditorEnterPointDiv:extend(.WrapMainEnterPointDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListMainEditorEnterPointDiv:extend(.ListMainEnterPointDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListWrapMainEditorEnterPointDiv:extend(.ListWrapMainEnterPointDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorEnterPointTitleTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorEnterPointRouteTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorEnterPointXsTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorEnterPointIndexOfSequenceTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorCountdownPaper:extend(.MainCountdownPaper) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for exam editor component used  */
+
+.ExamEditorDiv:extend(.ExamDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterDiv:extend(.ExamHistoryFilterDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorHistoryFilterDiv:extend(.WrapExamHistoryFilterDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterReplyTypeDiv:extend(.ExamHistoryFilterReplyTypeDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorHistoryFilterReplyTypeDiv:extend(.WrapExamHistoryFilterReplyTypeDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorHistoryFilterReplyTypeDiv:extend(.ListExamHistoryFilterReplyTypeDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterReplyTypeLabelTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterReplyTypeValueTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterSpaceDiv:extend(.ExamHistoryFilterSpaceDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterWhichSubjectDiv:extend(.ExamHistoryFilterWhichSubjectDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorHistoryFilterWhichSubjectDiv:extend(.WrapExamHistoryFilterWhichSubjectDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorHistoryFilterWhichSubjectDiv:extend(.ListExamHistoryFilterWhichSubjectDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterWhichSubjectLabelTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterWhichSubjectValueTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterOrderByWhatDiv:extend(.ExamHistoryFilterOrderByWhatDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorHistoryFilterOrderByWhatDiv:extend(.WrapExamHistoryFilterOrderByWhatDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorHistoryFilterOrderByWhatDiv:extend(.ListExamHistoryFilterOrderByWhatDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterOrderByWhatLabelTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterOrderByWhatValueTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionCard:extend(.ExamQuestionCard) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionDiv:extend(.WrapExamQuestionDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorQuestionDiv:extend(.ListExamQuestionDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionAlertOuterDiv:extend(.ExamQuestionAlertOuterDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicOfAssistantDiv:extend(.ExamQuestionTopicOfAssistantDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicOfAssistantNameTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicOfAssistantImageDiv:extend(.ExamQuestionTopicOfAssistantImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionTopicOfAssistantImageDiv:extend(.WrapExamQuestionTopicOfAssistantImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorQuestionTopicOfAssistantImageDiv:extend(.ListExamQuestionTopicOfAssistantImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicOfAssistantImageUrlImg:extend(.ExamQuestionTopicOfAssistantImageUrlImg) {
+
+
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+    height: 100px;
+  }
+}
+.ExamEditorQuestionTopicOfAssistantImageUrlTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicDiv:extend(.ExamQuestionTopicDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicNameTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionTopicNameDiv:extend(.WrapExamQuestionTopicNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicImageDiv:extend(.ExamQuestionTopicImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionTopicImageDiv:extend(.WrapExamQuestionTopicImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorQuestionTopicImageDiv:extend(.ListExamQuestionTopicImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTopicImageUrlImg:extend(.ExamQuestionTopicImageUrlImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+    height: 100px;
+
+  }
+}
+.ExamEditorQuestionTopicImageUrlTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionChoiceDiv:extend(.ExamQuestionChoiceDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionChoiceDiv:extend(.WrapExamQuestionChoiceDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorQuestionChoiceDiv:extend(.ListExamQuestionChoiceDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionChoiceStatementTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionChoiceStatementDiv:extend(.WrapExamQuestionChoiceStatementDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionChoiceImageDiv:extend(.ExamQuestionChoiceImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.WrapExamEditorQuestionChoiceImageDiv:extend(.WrapExamQuestionChoiceImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ListExamEditorQuestionChoiceImageDiv:extend(.ListExamQuestionChoiceImageDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionChoiceImageUrlImg:extend(.ExamQuestionChoiceImageUrlImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+    height: 100px;
+
+  }
+}
+.ExamEditorQuestionChoiceImageUrlTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTypeOfQuestionTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionAnswerTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionFunctionCenterDiv:extend(.ExamQuestionFunctionCenterDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionSubjectTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionQidTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTypeTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionYearTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}

@@ -4244,8 +4244,8 @@ class AppBuilder
                     const normalize = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(each, '.'), '{').trim()
                     const precise = normalize.split(':')[0];
                     return {
-                        complete: normalize, /** ExamFilterRandomTestRangeOfYearSlider:extend(.CenterInParent all)*/
-                        precise: precise, /** ExamFilterRandomTestRangeOfYearSlider*/
+                        complete: normalize, /** ExamFilterRandomTestRangeOfYearSlider:extend(.CenterInParent all) */
+                        precise: precise, /** ExamFilterRandomTestRangeOfYearSlider */
                     }
                 });
 
@@ -4258,10 +4258,13 @@ class AppBuilder
                 for (const style of styles) {
                     const attributeObj = rawToAttributeObj(style.raw);
                     /** { mobile:'', desktop:''} */
+                    const isEditorClassName = Util.has(style.precise, 'Editor');
                     lessAttributeObj[style.precise] = {
                         ...style,
                         attributeObj,
-                        isModified: !isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise),
+                        /**  isModified 就是指這個className有沒有被編輯過 */
+                        isModified: isEditorClassName ? !isEmptyAttribute(attributeObj) /** 如果是Editor的className就只要看空值不,  */
+                            : (!isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise)),
                     }
                 }
             }
@@ -4282,19 +4285,22 @@ class AppBuilder
             const isEditPage = info.component.isEditPage();
             generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
             for (const className of info.classNames) {
-
-                const preciselyClazzName = className.node.getClassNameOfLessUsage(className.type);
-
+                const node = className.node;
+                const type = className.type;
+                const preciselyClazzName = node.getClassNameOfLessUsage(className.type);
                 const existObj = existedLessAttributeObj[preciselyClazzName]; /** 從file裡面找出定義過的屬性敘述*/
 
-                if (existObj) {
-                    generator.appendInClassTail(`.${existObj.complete} 
-                        {${getVarietyDeviceStmts(existObj)}}`);
-                    delete existedLessAttributeObj[preciselyClazzName];
+                if (isEditPage) {
+                    const original = node.getOriginalClassNameOfLessUsage(type);
+                    const extendStmt = (type === 'default' && node.isTextField()) ? `BaseEditorTextField` : `${original.value}`
+                    const stmt = `.${preciselyClazzName}:extend(.${extendStmt}){${getVarietyDeviceStmts(existObj)}}`;
+                    console.log(stmt);
+                    generator.appendInClassTail(`${stmt}`);
                 } else {
-                    generator.appendInClassTail(`.${preciselyClazzName} 
-                        {${getVarietyDeviceStmts()}}`);
+                    generator.appendInClassTail(`.${existObj ? existObj.complete : preciselyClazzName} 
+                        {${getVarietyDeviceStmts(existObj)}}`);
                 }
+                delete existedLessAttributeObj[preciselyClazzName];
             }
         }
 
@@ -5087,10 +5093,12 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildEventFolder(totalEvents);
         await new AppBuilder(paramProps).overrideLessFile();
         await new AppBuilder(paramProps).buildLessFile(totalClassNames);
+        await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
         await new AppBuilder(paramProps).buildAppIndexFiles();
         this.buildDistAssetFolder();
+
     }
 
     buildCustomizePackages = async () => {
@@ -5138,6 +5146,7 @@ class ProjectFileHandler extends PathBase {
             , `common.less`
             , `app.less`
             , `mobile.less`
+            , `styles.less`
             , {
                 type: 'extension',
                 keyword: 'svg'
