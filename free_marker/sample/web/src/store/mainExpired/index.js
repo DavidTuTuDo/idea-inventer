@@ -14,7 +14,7 @@ class MainExpiredStore extends BaseMainExpiredStore {
     constructor(props) {
         super(props);
         setInterval(this.onTick, 0);
-        this.setExpiredTime(this.toFireBaseTimestampObject("2022-01-22"))
+        this.setExpiredTime(this.toFireBaseTimestampObject("2023-01-21"))
     }
 
     clientTime = Date.now();

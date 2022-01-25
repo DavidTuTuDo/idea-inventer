@@ -149,7 +149,7 @@ class AppStyle {
 
   MainEditorViewPagerRouteTextField = {};
 
-  ListMainEditorViewPagerDiv = {};
+  ListMainEditorViewPagerSlide = {};
 
   WrapMainEditorViewPagerDiv = {};
 
@@ -353,7 +353,7 @@ class AppStyle {
 
   MainViewPagerImageImg = {};
 
-  ListMainViewPagerFade = {};
+  ListMainViewPagerSlide = {};
 
   MainViewPagerDiv = {};
 

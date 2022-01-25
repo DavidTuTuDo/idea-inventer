@@ -130,7 +130,9 @@ class ceec_scrape_script {
      { qid: 2, answer: 'A' },
      { qid: 3, answer: 'B' },
      ]*/
-    analysisAnswerTexts(text) {
+    analysisAnswerTexts(text, info) {
+        Util.appendFile(`./answer_${info.year}_${info.extra}.txt`, text, true, true);
+
         const oneLineString = Util.toOneLineString(text);
         const regex = new RegExp(`\\d{1,2}\\s{1,2}`, `g`);
         const rawAnswers = _.split(oneLineString, regex);
@@ -140,7 +142,6 @@ class ceec_scrape_script {
 
         const answers = _.zipWith(rawAnswers, qids,
             (answer, qid) => {
-
                 const answerShouldBe = _.trim(answer).match(new RegExp(`[a-wA-W]{1,7}`));
 
                 /** 處理這種 `E 以上答案依照考選部規定`*/
@@ -170,19 +171,17 @@ class ceec_scrape_script {
         }
 
         function safeGetQuestionOrderNumber(string) {
-            return _.toNumber(Util.getNormalizedStringNotEndWith(Util.toSpaceLessString(string),'.'));
+            return _.toNumber(Util.getNormalizedStringNotEndWith(Util.toSpaceLessString(string), '.'));
         }
 
         const answers = [];
-        if (pathInfoOfAnswer !== undefined && info.year > 95) {
+        if (pathInfoOfAnswer !== undefined && info.year >= 90) {
             const pdfOfAnswer = await Util.getPDFText(pathInfoOfAnswer.absolute);
             answers.push(...this.analysisAnswerTexts(pdfOfAnswer.text, info));
         }
 
         const pdfOfQuestion = await Util.getPDFText(pathInfoOfQuestion.absolute);
         const texts = pdfOfQuestion.text;
-
-        Util.appendFile('./since.txt', texts, true, true);
 
         /**
          *
@@ -208,12 +207,16 @@ class ceec_scrape_script {
                     qid: safeGetQuestionOrderNumber(title),
                     content: _.trim(Util.toNewLineLessString(question))
                 }
+
                 /**
-                 * {
+
+                 {
                      content: 'Elderly shoppers in this store are advised to take the elevator rather than the _____, which may move too fast for them to keep their balance.
                       (A) airway (B) operator (C) escalator (D) instrument  '
-                    }
+                  }
+
                  */
+
             });
 
         const afterFactoryQuestions = rawQuestions.map(raw => this.toChoiceQuestionFormat(raw, info));
@@ -221,7 +224,7 @@ class ceec_scrape_script {
         const questions = _.filter(afterFactoryQuestions, question => question.valid);
 
         const formalizeQuestion = questions.map((question) => {
-            return {...question, ...info, answer: this.isGSATMath(info) ? '' : safeGetAnswer(question)}
+            return {...question, ...info, answer: safeGetAnswer(question)}
         });
 
         return formalizeQuestion;
@@ -303,13 +306,8 @@ if (configerer.DEBUG_MODE) {
             // await handler.goThroughGSAT('./gsat.db', undefined, -1, {enable: true, min: 100, max: 110});
             // await handler.goThroughGSAT('./gsat-math.db', '數學', -1, {enable: true, min: 100, max: 110});
             // await handler.goThroughGSAT('./gsat-sin.db', '自然', 100, {enable: false});
-            // await handler.goThroughGSAT('./gsat-chi.db', '國文', 100, {enable: false});
-            // await handler.goThroughGSAT('./gsat-soci.db', '社會', 100, {enable: false});
-            // await handler.goThroughGSAT('./gsat-95.db', undefined, 95, {enable: false});
-            // await handler.goThroughGSAT('./gsat-eng98.db', '英文', 98, {enable: false});
-            // await handler.goThroughGSAT('./gsat-eng97.db', '英文', 97, {enable: false});
-            // await handler.goThroughGSAT('./gsat-eng96.db', '英文', 96, {enable: false});
-
+            await handler.goThroughGSAT('./gsat-94-sin-1.db', '自然', 94, {enable: false, min: 90, max: 95});
+            //
         }
     )();
 }

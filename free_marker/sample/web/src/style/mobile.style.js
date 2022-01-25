@@ -149,7 +149,7 @@ class MobileStyle {
 
   MainEditorViewPagerRouteTextField = {};
 
-  ListMainEditorViewPagerDiv = {};
+  ListMainEditorViewPagerSlide = {};
 
   WrapMainEditorViewPagerDiv = {};
 
@@ -353,7 +353,7 @@ class MobileStyle {
 
   MainViewPagerImageImg = {};
 
-  ListMainViewPagerFade = {};
+  ListMainViewPagerSlide = {};
 
   MainViewPagerDiv = {};
 

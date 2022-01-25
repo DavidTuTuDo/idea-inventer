@@ -149,7 +149,7 @@ class CommonStyle {
 
   MainEditorViewPagerRouteTextField = {};
 
-  ListMainEditorViewPagerDiv = {};
+  ListMainEditorViewPagerSlide = {};
 
   WrapMainEditorViewPagerDiv = {};
 
@@ -353,7 +353,7 @@ class CommonStyle {
 
   MainViewPagerImageImg = {};
 
-  ListMainViewPagerFade = {};
+  ListMainViewPagerSlide = {};
 
   MainViewPagerDiv = {};
 

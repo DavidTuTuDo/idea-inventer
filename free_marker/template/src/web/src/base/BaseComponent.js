@@ -29,6 +29,8 @@ import ImageDialogView from './ImageDialogView';
 import UserInfo from '../userInfo';
 import EventBus from "./CommonEventBus";
 import "../less";
+import ArrowBackIosRounded from "@material-ui/icons/ArrowBackIosRounded";
+import ArrowForwardIosRounded from "@material-ui/icons/ArrowForwardIosRounded";
 
 class BaseComponent extends React.Component {
     listOfFunctionOfUnsubscribe = [];
@@ -42,6 +44,21 @@ class BaseComponent extends React.Component {
 
     constructor(props) {
         super(props);
+    }
+
+    arrowOfBackward() {
+        return (<div
+            className={"SlideIndicatorArrowDiv"}>
+            <ArrowBackIosRounded/>
+        </div>)
+
+    }
+
+    arrowOfForward() {
+        return (<div
+            className={"SlideIndicatorArrowDiv"}>
+            <ArrowForwardIosRounded/>
+        </div>)
     }
 
     isMobileDevice() {

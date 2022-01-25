@@ -52,7 +52,8 @@ const VIEW_IMPORTS =
         },
         {
             from: `react-slideshow-image`,
-            views: ['Fade'],
+            views: ['Fade','Slide'],
+            /** Fade就是有漸入漸出的效果,  Slide就可以滑動 */
             object: true,/** 就是要加上braket {Fade} */
         }
     ]

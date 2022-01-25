@@ -436,12 +436,14 @@
     /** empty style */
   }
 }
-.ListMainViewPagerFade {
+.ListMainViewPagerSlide {
   width: 100vw;
   max-width: 880px;
   height: 32vh;
+  margin-top: 5px;
   @media @mobile {
     /** empty style */
+    margin-top: 0px;
   }
   @media @tablet {
     /** empty style */
@@ -493,7 +495,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #d3d3d3;
   @media @mobile {
     min-height: 55px;
   }
@@ -1676,7 +1677,7 @@
     /** empty style */
   }
 }
-.ListMainEditorViewPagerDiv:extend(.ListMainViewPagerDiv) {
+.ListMainEditorViewPagerSlide:extend(.ListMainViewPagerSlide) {
   @media @mobile {
     /** empty style */
   }
@@ -2141,8 +2142,6 @@
   }
 }
 .ExamEditorQuestionTopicOfAssistantImageUrlImg:extend(.ExamQuestionTopicOfAssistantImageUrlImg) {
-
-
   @media @mobile {
     /** empty style */
   }
@@ -2150,7 +2149,6 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
     height: 100px;
   }
 }
@@ -2239,9 +2237,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
     height: 100px;
-
   }
 }
 .ExamEditorQuestionTopicImageUrlTextField:extend(.BaseEditorTextField) {
@@ -2351,9 +2347,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
     height: 100px;
-
   }
 }
 .ExamEditorQuestionChoiceImageUrlTextField:extend(.BaseEditorTextField) {

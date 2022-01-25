@@ -9,7 +9,7 @@ import libpath from 'path';
 import config from './config';
 import moment from 'moment';
 
-const OFFICIAL_YEARS_OF_YEARS = _.range(95,112,1);
+const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
 
 (async () => {
     console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`)
@@ -240,8 +240,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(95,112,1);
         }
     }
 
-
-
+    // await deployQuestions({dbpath:'gsat-94.db',year: -1});
+    // await submitSubjectMap()
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);
