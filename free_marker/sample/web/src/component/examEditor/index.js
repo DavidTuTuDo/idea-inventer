@@ -30,6 +30,14 @@ class ExamEditorComponent extends BaseExamEditorComponent {
         return Util.getVisibleOrNone(false);
     }
 
+    getInjectStyleOfExamEditorQuestionCard(question) {
+        if (Util.isOdd(question.qid)) {
+            return {backgroundColor: '#ccc0c0c0'}
+        } else {
+            return {backgroundColor: 'transparent'}
+        }
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

@@ -29,7 +29,7 @@ const LESS_MODULES = [
     },
     {
         name: 'desktop',
-        rule: 'only screen and (min-width: 600px) and (max-width: 1680px)',
+        rule: 'only screen and (min-width: 601px)',
     },
 ]
 
@@ -4988,11 +4988,11 @@ class ProjectFileHandler extends PathBase {
             if (node.isArray()) {
                 node.disableSelectedArray();
 
-                if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Grid')) {
+                if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide','Grid')) {
                     node.setListView('div');
                 }
 
-                if (Util.isOrEquals(node.getView(), 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Grid')) {
+                if (Util.isOrEquals(node.getView(), 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide','Grid')) {
                     node.setView('div');
                 }
 
