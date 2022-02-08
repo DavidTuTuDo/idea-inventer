@@ -9,6 +9,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -22,6 +24,8 @@ class MobileStyle {
   ExamEditorQuestionFunctionCenterDiv = {};
 
   ExamEditorQuestionAnswerTextField = {};
+
+  ExamEditorQuestionTimesOfYearTextField = {};
 
   ExamEditorQuestionTypeOfQuestionTextField = {};
 
@@ -149,7 +153,7 @@ class MobileStyle {
 
   MainEditorViewPagerRouteTextField = {};
 
-  ListMainEditorViewPagerSlide = {};
+  ListMainEditorViewPagerDiv = {};
 
   WrapMainEditorViewPagerDiv = {};
 

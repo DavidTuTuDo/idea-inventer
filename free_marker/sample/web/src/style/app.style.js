@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -22,6 +24,8 @@ class AppStyle {
   ExamEditorQuestionFunctionCenterDiv = {};
 
   ExamEditorQuestionAnswerTextField = {};
+
+  ExamEditorQuestionTimesOfYearTextField = {};
 
   ExamEditorQuestionTypeOfQuestionTextField = {};
 
@@ -149,7 +153,7 @@ class AppStyle {
 
   MainEditorViewPagerRouteTextField = {};
 
-  ListMainEditorViewPagerSlide = {};
+  ListMainEditorViewPagerDiv = {};
 
   WrapMainEditorViewPagerDiv = {};
 

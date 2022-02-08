@@ -12,14 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.6",
-    "utiller": "^1.0.36",
     "databazer": "^1.0.7",
+    "firebase": "^9.6.6",
+    "firebase-admin": "^10.0.2",
+    "js-event-bus": "^1.1.0",
     "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "firebase": "^8.2.9",
-    "firebase-admin": "^9.4.1",
-    "js-event-bus": "^1.1.0"
+    "utiller": "^1.0.37"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

@@ -462,6 +462,14 @@ class NodeUtiller extends Utiller {
         }
     }
 
+    /** 快速把資料結構印出來看 */
+    printCollectionToFile(collection) {
+        const fileName = `./logs/__temp_${this.getCurrentTimeFormat()}.txt`;
+        this.persistByPath(`./logs/`);
+        this.appendFile(fileName, this.deepFlat(collection, ` \n\n, `));
+        this.appendInfo(`collectionToFile succeed, file name ==> ${fileName}`);
+    }
+
     singleFileTemplatify(path = './') {
         const all = this.findFilePathByExtension(path, ['js'], 'node_modules');
         for (const file of all) {

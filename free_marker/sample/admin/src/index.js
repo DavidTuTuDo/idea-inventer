@@ -9,7 +9,8 @@ import libpath from 'path';
 import config from './config';
 import moment from 'moment';
 
-const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
+const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
+
 
 (async () => {
     console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`)
@@ -18,18 +19,13 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
     const api = new Api();
     const listener = new Listener();
 
-
-    async function deployQuestions({dbpath = '', year = 110}) {
-
-
+    async function deployQuestions({dbpath = '', year = 120}) {
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
-
 
         const qs = (_.isNumber(year) && year > 0) ?
             await db.fetchRecords('QUESTION', new Builder().equal('year', year).stmt()) :
             await db.fetchRecords('QUESTION')
-
 
         let questions = qs.map((q) => {
             /** 把`a...b...c..` 換成 ['a...','b...','c....']*/
@@ -39,6 +35,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
                         return {statement: stmt}
                     }
                 )
+
+            q.timesOfYear = _.isEqual(q.extra, '正式') ? 1 : 2
             delete q.uid;
             q.type = q.nameOfExam;
             return q;
@@ -130,36 +128,36 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
         });
 
         await api.submitExamHistoryInfo({
-            maxYear: 110,
-            minYear: 90,
-            marks: [{value: 90, label: '90年'}, {value: 100, label: '100年'},
+            maxYear: 111,
+            minYear: 91,
+            marks: [{value: 91, label: '91年'}, {value: 100, label: '100年'},
                 {value: 105, label: '105年'}, {
-                    value: 110, label: '110年'
+                    value: 111, label: '111年'
                 }],
             historyExams: [
-                {value: '90', label: '90年'},
-                {value: '91', label: '91年'},
+                {value: '91-1', label: '91年'},
                 {value: '91-2', label: '91年(補考)'},
-                {value: '92', label: '92年'},
+                {value: '92-1', label: '92年'},
                 {value: '92-2', label: '92年(補考)'},
-                {value: '93', label: '93年'},
-                {value: '94', label: '94年'},
-                {value: '95', label: '95年'},
-                {value: '96', label: '96年'},
-                {value: '97', label: '97年'},
-                {value: '98', label: '98年'},
-                {value: '99', label: '99年'},
-                {value: '100', label: '100年'},
-                {value: '101', label: '101年'},
-                {value: '102', label: '102年'},
-                {value: '103', label: '103年'},
-                {value: '104', label: '104年'},
-                {value: '105', label: '105年'},
-                {value: '106', label: '106年'},
-                {value: '107', label: '107年'},
-                {value: '108', label: '108年'},
-                {value: '109', label: '109年'},
-                {value: '110', label: '110年'}
+                {value: '93-1', label: '93年'},
+                {value: '94-1', label: '94年'},
+                {value: '95-1', label: '95年'},
+                {value: '96-1', label: '96年'},
+                {value: '97-1', label: '97年'},
+                {value: '98-1', label: '98年'},
+                {value: '99-1', label: '99年'},
+                {value: '100-1', label: '100年'},
+                {value: '101-1', label: '101年'},
+                {value: '102-1', label: '102年'},
+                {value: '103-1', label: '103年'},
+                {value: '104-1', label: '104年'},
+                {value: '105-1', label: '105年'},
+                {value: '106-1', label: '106年'},
+                {value: '107-1', label: '107年'},
+                {value: '108-1', label: '108年'},
+                {value: '109-1', label: '109年'},
+                {value: '110-1', label: '110年'},
+                {value: '111-1', label: '110年'},
             ]
         })
         await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
@@ -211,7 +209,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
                 {where: (stmt) => stmt.where('subject', '==', '英文')}
             );
 
-            for(const each of result) {
+            for (const each of result) {
                 console.log(`delete ${each.subject} ${each.year} ${each.qid}-${each.id}`)
                 await api.deleteQuestionItem(each.id);
             }
@@ -220,9 +218,9 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
 
 
     async function batchDeleteSubjectMap() {
-        for(const year of OFFICIAL_YEARS_OF_YEARS) {
+        for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在刪除 SubjectIds ${year}`);
-            await api.deleteSubjectIds(false,{where: (stmt) => stmt.where('year', '==', year)});
+            await api.deleteSubjectIds(false, {where: (stmt) => stmt.where('year', '==', year)});
         }
 
 
@@ -235,13 +233,25 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93,112,1);
             const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
             console.log(`submit id/map year=> ${year}年`, questions.length);
             await api.submitSubjectIds(...questions.map(q => {
-                return {quid: q.id, year: q.year, subject: q.subject}
+                return {quid: q.id, year: q.year, subject: q.subject, timesOfYear: q.timesOfYear}
             }));
         }
     }
 
-    // await deployQuestions({dbpath:'gsat-94.db',year: -1});
-    // await submitSubjectMap()
+    async function migrate() {
+        for (const year of OFFICIAL_YEARS_OF_YEARS) {
+            console.log(`正在fetch ${year}`);
+            const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
+            console.log(`submit id/map year=> ${year}年`, questions.length);
+            const afters = questions.map((q) => {
+                return {...q, timesOfYear: 1}
+            })
+            await api.submitQuestions(...afters);
+        }
+    }
+
+    // await deployQuestions({dbpath:'gsat-92.db',year: -1});
+    await submitSubjectMap()
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);

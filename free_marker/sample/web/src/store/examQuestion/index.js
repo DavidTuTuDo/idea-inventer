@@ -68,7 +68,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     initial(obj) {
         super.initial(obj);
         if (UserInfo.isAdmin())
-            this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}-${this.getQid()}-${this.isMultiSelected() ? '多選題' : '單選題'}`);
+            this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}-${this.getTimesOfYear() === 1 ? '正式':'補考'}-${this.getQid()}-${this.isMultiSelected() ? '多選題' : '單選題'}`);
         else
             this.setTip(`${this.getYear()}年-${this.getSubject()}科目-${this.isMultiSelected() ? '多選題' : '單選題'}`)
     }

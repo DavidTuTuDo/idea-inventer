@@ -849,6 +849,7 @@ class Utiller {
     }
 
     stringToInteger(string) {
+        string = _.toUpper(string);
         switch (string) {
             case 'A':
                 return 0;
@@ -872,6 +873,14 @@ class Utiller {
                 return 9;
             case 'K':
                 return 10;
+            case 'L':
+                return 11;
+            case 'M':
+                return 12;
+            case 'N':
+                return 13;
+
+
             default:
                 return 101;
         }
@@ -899,6 +908,14 @@ class Utiller {
                 return 'I';
             case 9:
                 return 'J';
+            case 10:
+                return 'K';
+            case 11:
+                return 'L';
+            case 12:
+                return 'M';
+            case 13:
+                return 'N';
             default:
                 return 'Z';
         }
@@ -932,7 +949,7 @@ if (configerer.DEBUG_MODE) {
     (async () => {
             const util = new Utiller();
 
-            console.log(util.startWithRegex('@sjasidoas @you','@[can|you|one]'));
+            console.log(util.startWithRegex('@sjasidoas @you', '@[can|you|one]'));
             // console.log(util.toSpaceLessString('4  5  .'));
             // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
             // const duration = util.getDurationOfMillionSec(after);

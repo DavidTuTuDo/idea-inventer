@@ -1,7 +1,7 @@
 @import "./libs/slideshow.less";
 @import "./libs/firebaseui.less";
 @import "./libs/base.less";
-@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";
+@desktop: ~"only screen and (min-width: 601px)";
 @tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 @mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 /** following for examFilter  component used  */
@@ -442,7 +442,6 @@
   height: 32vh;
   margin-top: 5px;
   @media @mobile {
-    /** empty style */
     margin-top: 0px;
   }
   @media @tablet {
@@ -1677,7 +1676,7 @@
     /** empty style */
   }
 }
-.ListMainEditorViewPagerSlide:extend(.ListMainViewPagerSlide) {
+.ListMainEditorViewPagerDiv:extend(.ListMainViewPagerDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -2372,6 +2371,17 @@
     /** empty style */
   }
 }
+.ExamEditorQuestionTimesOfYearTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .ExamEditorQuestionAnswerTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
@@ -2438,3 +2448,4 @@
     /** empty style */
   }
 }
+/** ======== following for homeless ========= */

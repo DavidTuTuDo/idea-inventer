@@ -77,6 +77,7 @@ class CommonRemoteApi {
         }
         if (threshold > 0)
             await batch.commit();
+
         return {message: `set path:${path} succeed`}
     }
 

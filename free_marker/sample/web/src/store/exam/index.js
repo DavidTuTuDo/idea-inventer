@@ -122,7 +122,7 @@ class ExamStore extends BaseExamStore {
         const {range, subject, type, countsOfExam, qid} = this.getExamFilterTips();
         console.log({range, subject, type, countsOfExam, qid})
         const questions = [];
-
+        console.log(range);
         function getRandomCondition() {
             const conditions = [];
             if (!_.isEqual('綜合題目', subject)) {
@@ -136,9 +136,15 @@ class ExamStore extends BaseExamStore {
         switch (type) {
             case 'history':
                 /** 考古題呀 */
+                const mTimesAndYear = _.head(range).split('-');
+                const year = mTimesAndYear.shift();
+                const times = mTimesAndYear.pop();
+
+                Util.appendInfo('year:'+year, 'times:'+times, 'complete:'+_.head(range));
                 this.setQuestionConditions([
                     {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
-                    {where: (stmt) => stmt.where('year', '==', _.toNumber(_.head(range)))},
+                    {where: (stmt) => stmt.where('year', '==', _.toNumber(year))},
+                    {where: (stmt) => stmt.where('timesOfYear', '==', _.toNumber(times))},
                     {orderBy: (stmt) => stmt.orderBy("qid")}
                 ]);
                 break;
