@@ -5,7 +5,7 @@ import config from '../config';
 import libpath from 'path';
 import firebase from "./CommonFirebaseHelper";
 
-const MAX_BATCH_COUNT = 100;
+const MAX_BATCH_COUNT = 200;
 
 class CommonRemoteApi {
 
@@ -50,35 +50,58 @@ class CommonRemoteApi {
         return firebase.getCurrentFirestoreTimeStamp();
     }
 
-    async callCloudFunctions(functionName = '', data,region = 'us-central1'){
+    async callCloudFunctions(functionName = '', data, region = 'us-central1') {
         const func = await firebase.functions(region).httpsCallable(functionName);
-        Util.appendInfo(`functions httpOnCall => '${functionName}'`,data);
+        Util.appendInfo(`functions httpOnCall => '${functionName}'`, data);
         return await func(data);
     }
 
-    async submitItems(path, ...objects) {
-        Util.appendInfo(`submit items => path:{${path}}, size:${objects.length}`);
+    /** predicate 裏面放batch要做的動作 set,update,delete */
+    async batchBracket(objects, predicate = (batch, object) => {}) {
         let batch = firebase.firestore().batch();
         let threshold = 0;
         while (objects.length > 0) {
             const object = objects.shift();
-            const pk = _.toString(object.id);
-            if (!_.isEmpty(pk)) {
-                batch.set(firebase.firestore().collection(path).doc(pk), object)
-            } else {
-                batch.set(firebase.firestore().collection(path).doc(), object)
-            }
+            predicate(batch, object);
             threshold++;
+            /** 超過數量就先commit  一次 */
             if (threshold >= MAX_BATCH_COUNT) {
                 await batch.commit();
                 threshold = 0;
                 batch = firebase.firestore().batch();
             }
         }
+
         if (threshold > 0)
             await batch.commit();
+    }
 
-        return {message: `set path:${path} succeed`}
+    async submitItems(path, ...objects) {
+        const size = objects.length
+        Util.appendInfo(`batch submit => path:${path}, size:${size} start`);
+        await this.batchBracket(objects, (batch, object) => {
+            const pk = _.toString(object.id);
+            if (!_.isEmpty(pk)) {
+                batch.set(firebase.firestore().collection(path).doc(pk), object)
+            } else {
+                batch.set(firebase.firestore().collection(path).doc(), object)
+            }
+        })
+        return {message: `batch submit path:${path}, size:${size} succeed`}
+    }
+
+    async updateItems(path, ...objects) {
+        const size = objects.length
+        Util.appendInfo(`batch update path:${path}, size:${objects.length}`);
+        await this.batchBracket(objects, (batch, object) => {
+            const id = object.id;
+            if (Util.isUndefinedNullEmpty(id)) {
+                throw new ERROR(2001, `ERROR ===> ${object}`)
+            } else {
+                batch.update(firebase.firestore().collection(path).doc(id), object);
+            }
+        })
+        return {message: `batch update path:${path}, size:${size} succeed`}
     }
 
     async fetchSizeOfCollection(path) {
@@ -143,7 +166,7 @@ class CommonRemoteApi {
         /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
         const raw = [];
         for (const condition of conditions) {
-            if(condition === undefined || _.isEmpty(condition)) continue;
+            if (condition === undefined || _.isEmpty(condition)) continue;
             let priority = 99;
             let stmtOfFunction = (stmt) => stmt;
             if (_.isObject(condition)) {
@@ -182,7 +205,7 @@ class CommonRemoteApi {
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
         const result = await firebase.firestore().collection(path).doc(_.toString(id)).get();
-        return result.exists ? {...result.data(), id, _doc:result, exists: true} : {exists: false};
+        return result.exists ? {...result.data(), id, _doc: result, exists: true} : {exists: false};
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/

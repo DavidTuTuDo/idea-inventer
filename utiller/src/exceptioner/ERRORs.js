@@ -1,5 +1,5 @@
 /***
- *
+ * 2XXX api io
  * 3XXX databases
  * 4XXX pooller
  * 8XXX file IO,Utiller
@@ -8,6 +8,10 @@
  * 6XXX puppter=>browser
  */
 const ERRORs = {
+    2001: {
+        message: 'update item, id is required'
+    },
+
     3001: {
         message: `get table error`
     },
@@ -25,15 +29,12 @@ const ERRORs = {
     },
     3006: {
         message: `delete record error`
-
     },
     3007: {
         message: `drop table error`
-
     },
     3008: {
         message: `orderBy,order SQLRules Error`
-
     },
     3009: {
         message: `createTableAndIndex, create table fail`
@@ -182,7 +183,8 @@ const ERRORs = {
     },
     6001: {
         message: `single page work fail`
-    }
+    },
+
 
 }
 

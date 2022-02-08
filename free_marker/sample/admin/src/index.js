@@ -250,8 +250,25 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
         }
     }
 
+    async function testBatchFunctions() {
+        const fetchAll = await api.fetchItems('testBatch');
+        // const samples = _.range(0,300).map((each) => { return {name:`update ,text${each}`}})
+        // await api.updateItems('testBatch',...samples)
+        const news = fetchAll.map((each) => {
+            return {id: each.id}
+        })
+
+        await api.updateItems('testBatch', ...news.map((each) => {
+            return {
+                id: each.id,
+                sign: Util.getRandomHash(10)
+            }
+        }))
+    }
+
     // await deployQuestions({dbpath:'gsat-92.db',year: -1});
-    await submitSubjectMap()
+    // await submitSubjectMap()
+    // await testBatchFunctions();
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
     // await api.deleteAnswers(true);
