@@ -9,8 +9,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -20,6 +18,8 @@ class MobileStyle {
   ExamEditorQuestionQidTextField = {};
 
   ExamEditorQuestionSubjectTextField = {};
+
+  ExamEditorQuestionIdTextField = {};
 
   ExamEditorQuestionFunctionCenterDiv = {};
 

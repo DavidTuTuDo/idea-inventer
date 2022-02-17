@@ -19,6 +19,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     constructor(props) {
         super(props);
+        this.subjectName = '';
     }
 
     componentDidMount() {
@@ -28,11 +29,16 @@ class ExamFilterComponent extends BaseExamFilterComponent {
             const route = enterPoint.route;
             if (route.startsWith(`dialog`)) {
                 this.getStore().setSubject(this.getTitle());
+                this.subjectName = route.split(':').pop();
             } else {
                 this.handleCustomRouter(route);
                 this.dismiss();
             }
         }
+    }
+
+    getSubjectName() {
+        return this.subjectName.trim();
     }
 
     getTitle() {
@@ -69,7 +75,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         const result = {
             range: [this.getStore().getHistoryTest().getSelectedSelector()],
             type: 'history',
-            subject: this.getTitle(),
+            subject: this.getSubjectName(),
         };
         this.gotoExamPageWithCookie(result);
     }

@@ -238,6 +238,77 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
         }
     }
 
+    async function batchDoing(){
+        const ids =[
+            "yVF1wzFDJTVhpPVmq4I4",
+            "LuhrfegQ23bPvGeJqUhK",
+            "Pa3ZFORBmelHeTPiBtkx",
+            "m6fZtMSBBhmIegebRWRD",
+            "Oc7xRsPP870sH6wUG1HO",
+            "TeXNYoQsnCGk6lQGxYL3",
+            "zRDfwEFdEBPbi3nrvA4h",
+            "3cvqUkWLVAWtV2h78oGr",
+            "VBzOcwQ1V7CPynImhAu6",
+            "L847lqPGXyUbwkBv3d0Y",
+            "uHgAYHu9Xh2kDV88ZqR6",
+            "eA2O04WoV5ouFn54yuH2",
+            "rdWD6gRyUZrMx4riuHte",
+            "Stg4Zo6yWgY0qRz0B3kU",
+            "PhqnzWHxGnTSY3Bzemd2",
+            "Nckv0dkkh3hrq4iCDebU",
+            "rZ5sDQdezejlhuOg3I9C"]
+
+        const answsers = [
+            "GCDABHFEJ",
+            "EHGBJACFD",
+            "DGABCEHJI",
+            "HEAGIFCJD",
+            "IHCGBAEJD",
+            "FCIJEHGAD",
+            "CBDJGAIHE",
+            "GHIEBJFAC",
+            "AEBGCDHFJ",
+            "IGAJEDHFB",
+            "JAEHFGCIB",
+            "CJFHDBEAG",
+            "IECBJAFGH",
+            "FEHDBCAJG",
+            "DHIAEJGFB",
+            "CDGIHFBAE",
+            "GIAJHDBFE"
+        ]
+
+        const combines = _.zip(ids,answsers);
+        // console.log(combines)
+
+
+        for(const each of combines) {
+            const item = await api.fetchQuestionItem(each.shift());
+            const answerString = each.pop();
+            delete item._doc;
+            delete item.id;
+            delete item.updateTime;
+
+            const as = answerString.split('')
+            const waitForSubmits = [];
+            let index = 32;
+            for(const a of as) {
+                const deepClone = _.cloneDeep(item);
+                deepClone.qid = index;
+                deepClone.topic.name = `請依照題目作答 ${index}`;
+                deepClone.answer = a;
+                index = index + 1;
+                waitForSubmits.push(deepClone);
+            }
+
+            const result = await api.submitQuestions(...waitForSubmits);
+            console.log(result);
+        }
+
+
+    }
+
+
     async function migrate() {
         for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在fetch ${year}`);
@@ -266,6 +337,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
         }))
     }
 
+    await batchDoing();
     // await deployQuestions({dbpath:'gsat-92.db',year: -1});
     // await submitSubjectMap()
     // await testBatchFunctions();

@@ -596,6 +596,10 @@ class NodeUtiller extends Utiller {
                 }
             }
         }
+        this.copyFromFolderToDestFolder(
+            '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
+            true,true)
     }
 
     async writeJsonThanPrettier(path, json) {

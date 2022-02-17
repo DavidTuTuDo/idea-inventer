@@ -11,7 +11,7 @@
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.6",
+    "configerer": "^1.0.9",
     "databazer": "^1.0.7",
     "firebase": "^9.6.6",
     "firebase-admin": "^10.0.2",
@@ -19,7 +19,7 @@
     "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller": "^1.0.37"
+    "utiller": "^1.0.39"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

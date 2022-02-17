@@ -8,6 +8,7 @@ import {configerer} from "configerer";
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
  */
+
 let FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT = 'exam';
 

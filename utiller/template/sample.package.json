@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.6",
-    "utiller": "^1.0.37",
+    "configerer": "^1.0.9",
+    "utiller": "^1.0.39",
     "databazer": "^1.0.7",
     "lodash": "^4.17.20",
     "moment": "^2.29.1"

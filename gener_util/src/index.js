@@ -11,8 +11,9 @@ class gener_util {
 
 }
 
-
-Util.generatePackage('../utiller',true).then();
+Util.generatePackage('../scraper',false).then();
+// Util.generatePackage('../utiller',trude).then();
+// Util.generatePackage('../configerer',true).then();
 
 export { gener_util as gener_util }
 

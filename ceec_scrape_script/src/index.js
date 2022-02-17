@@ -231,7 +231,7 @@ class ceec_scrape_script {
     }
 
     isGSATMath(info) {
-        return _.isEqual(info.subject, '數學') && _.isEqual(info.nameOfExam, 'GSAT');
+        return _.startsWith(info.subject, '數學') && _.isEqual(info.nameOfExam, 'GSAT');
     }
 
     toChoiceQuestionFormat(raw, info) {
@@ -298,17 +298,9 @@ if (configerer.DEBUG_MODE) {
             // await handler.fetchCeeCPDFFilesOfPaper();
             // await handler.samplePdfFile();
 
-            /** 拿到 90-99 */
-            // await handler.goThroughGSAT('國文',-1,{enable:true,min:90,max:99});
-
             /** 拿到 100-110 */
-            // await handler.goThroughGSAT('./gsat.db', undefined, -1, {enable: true, min: 100, max: 110});
-            // await handler.goThroughGSAT('./gsat-math.db', '數學', -1, {enable: true, min: 100, max: 110});
-            // await handler.goThroughGSAT('./gsat-sin.db', '自然', 100, {enable: false});
-            // await handler.goThroughGSAT('./gsat-94-sin-1.db', '自然', 94, {enable: false, min: 90, max: 95});
             // await handler.goThroughGSAT('./gsat-91-sin-formal.db', '自然', 91, {enable: false, min: 90, max: 95});
-
-
+            await handler.goThroughGSAT('./gsat-111.db', undefined, 111, {enable: false, min: 90, max: 95});
         }
     )();
 }
