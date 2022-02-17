@@ -4,7 +4,7 @@ import _ from 'lodash';
 import libpath from 'path';
 import Moment from 'moment';
 import {databaser} from "../../databaser";
-import {firebaser} from "../../firebaser";
+import {firebaser} from "../../pu91_admin_firebase";
 
 /** author:明悅
  *  create time:Tue Mar 09 2021 14:31:57 GMT+0800 (Taipei Standard Time)

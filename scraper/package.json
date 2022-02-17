@@ -11,8 +11,8 @@
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.4",
-    "utiller": "^1.0.12",
+    "configerer": "^1.0.9",
+    "utiller": "^1.0.39",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "himalaya": "^1.1.0"
