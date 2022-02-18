@@ -4,7 +4,7 @@ import {exceptioner as ERROR, utiller as Util} from 'utiller';
 
 const Config = {
 
-    INVOKE_REAL_CHROME: false,
+    INVOKE_REAL_CHROME: true,
     PERMISSION_FORCE_DOWNLOAD_TONE: true,
     HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD: 0, // 0 means all
     HACK_DELAY_OF_MILLION_SECS: 1200,// 0 means 或出去了

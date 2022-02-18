@@ -8,11 +8,9 @@ import ta from './analysis/ToneAnalysis.js';
 import sa from './analysis/SingersAnalysis.js';
 import sla from './analysis/SongListAnalysis.js';
 
-import {configerer as Config} from 'configerer';
+import Config from './config';
 import {utiller as Util, exceptioner as ERROR, pooller as Pooller} from 'utiller';
 import {databazer as SQL} from 'databazer';
-
-const INVOKE_REAL_CHROME = false;
 
 (async () => {
         async function syncDelay(delayInms) {
@@ -29,8 +27,9 @@ const INVOKE_REAL_CHROME = false;
             for (const maintype in Config.RANK_TABLE_TYPE) {
                 Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
                 const ranks = await fetchRankTable(Config.RANK_TABLE_TYPE[maintype].ID, Config.RANK_TABLE_TYPE[maintype].SORT)
+
                 for (const rank of ranks) {
-                    for (const each of rank.fatefulItems) {
+                    for (const each of rank.items) {
                         const obj = {}
                         obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
                         await database.lazyInsertRecord(tableName,
@@ -44,32 +43,34 @@ const INVOKE_REAL_CHROME = false;
          *
          * sortType sample => {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}
          *
-         * return:[...{type:'YEAR',fatefulItems:[...{name:'歌名',rank:1,singer:{name:'人名'} }]}]
+         * return:[...{type:'YEAR',items:[...{name:'歌名',rank:1,singer:{name:'人名'} }]}]
          *
          * */
         async function fetchRankTable(mainType = Config.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
             let page;
+            const all = [];
             try {
                 page = await browser.newPage();
                 await page.goto(Config.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
                 await page.click(`span[sid="${mainType}"]`);
                 await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
-                const all = [];
                 if (sortType) {
-
                     for (const type in sortType) {
                         const selector = await page.$(`div[class="singsort sorttype"] > .list > span[sid="${sortType[type]}"]`);
                         /** 上面的寫法 const eval = await page.$eval(`div[class="singsort sorttype"] > .list > span[sid="${sortType}"]`,(element => element.click())); */
                         await selector.click();
                         await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
-                        all.push({type, items: await fetchRankPageData(page)});
+                        const songs = await fetchItemsFromRankPageData(page);
+                        all.push({type, items: songs});
                     }
                 } else {
-                    all.push({type: '', items: await fetchRankPageData(page)});
+                    const songs = await fetchItemsFromRankPageData(page);
+                    all.push({type: '', items: songs});
                 }
                 return all;
             } catch (error) {
                 Util.appendError(`fetch rank tables fail, because ` + error.message);
+                return all;
             } finally {
                 if (page) await page.close()
             }
@@ -92,7 +93,7 @@ const INVOKE_REAL_CHROME = false;
                 return rankPage;
             }
 
-            async function fetchRankPageData(page) {
+            async function fetchItemsFromRankPageData(page) {
                 /** fetchObject all pages */
                 let songs = [];
                 let rankPage;
@@ -250,7 +251,7 @@ const INVOKE_REAL_CHROME = false;
                 Util.appendError(`latestSongPersist 抓取失敗了喔～`);
                 return;
             }
-            const songs = song[0].fatefulItems;
+            const songs = song[0].items;
             const exist = await database.fetchRecords('SONG');
             _.pullAllWith(song, exist, (s1, s2) => _.isEqual(s1.name, s2.name) && _.isEqual(s1.singer, s2.singer))
             Util.appendInfo(`latestSongPersist() 抓了新歌 ${songs.length} 首`);
@@ -297,6 +298,7 @@ const INVOKE_REAL_CHROME = false;
             }
 
             const poollers = [];
+
             const errorHandler = (error) => {
                 Util.appendError(`９１pu => TASK 遇到問題 ${JSON.stringify(error.message)}`);
             }
@@ -352,7 +354,7 @@ const INVOKE_REAL_CHROME = false;
             poollers.push(latestToneFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(4);
+            const toneFetch = new Pooller(3);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
             toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, twoSecs);
@@ -379,7 +381,7 @@ const INVOKE_REAL_CHROME = false;
         await database.init();
 
         const browser = await puppeteer.launch({
-            headless: !INVOKE_REAL_CHROME
+            headless: !Config.INVOKE_REAL_CHROME
         });
         Util.writeFileInJSON(Config.PATH_DYNAMIC_INFO, {
             cancel: false,

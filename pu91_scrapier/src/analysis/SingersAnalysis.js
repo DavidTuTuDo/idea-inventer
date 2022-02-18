@@ -94,8 +94,8 @@ class SingersAnalysis extends HtmlAnalysis {
 }
 
 if (Index.DEBUG_MODE) {
-    const sa = new SingersAnalysis();
-    Util.appendInfo(Util.getShuffledArrayWithLimitCount(sa.getAllSingers(), 10));
+    // const sa = new SingersAnalysis();
+    // Util.appendInfo(Util.getShuffledArrayWithLimitCount(sa.getAllSingers(), 10));
 }
 
 export default SingersAnalysis
