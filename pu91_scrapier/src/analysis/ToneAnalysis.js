@@ -4,6 +4,7 @@ import HtmlAnalysis from "./HtmlAnalysis.js";
 import path from 'path';
 import {utiller as Util} from 'utiller';
 import Index from "../config";
+
 class ToneAnalysis extends HtmlAnalysis {
 
     constructor(raw) {
@@ -78,7 +79,7 @@ class ToneAnalysis extends HtmlAnalysis {
         /** stmt all tone under this singer */
 
         fs.writeFile(`${path.join(tonePath,
-            _.trim(this.getTitle()))}.txt`,
+                _.trim(this.getTitle()))}.txt`,
             this.printAll(), (err) => {
                 if (Index.MODULE_MSG.SHOW_ERROR && !_.isNull(err))
                     Util.appendInfo(`error: ${err.message}`)
@@ -88,6 +89,12 @@ class ToneAnalysis extends HtmlAnalysis {
     getCapoLevel() {
         const result = this.getFlatTextByNode(
             this.findNodeByClasses(this.body, 'capo', 'select'), false);
+        return result.trim();
+    }
+
+    getKeyLevel() {
+        const result = this.getFlatTextByNode(
+            this.findNodeByClasses(this.body, 'keys', 'ks', 'select'), false);
         return result.trim();
     }
 
@@ -105,7 +112,7 @@ class ToneAnalysis extends HtmlAnalysis {
             decrypt + '\n\n';
 
         if (Index.MODULE_MSG.SHOW_SUCCEED)
-            Util.appendInfo('TONE:'+whole);
+            Util.appendInfo('TONE:' + whole);
 
         return whole;
     }
@@ -122,6 +129,7 @@ class ToneAnalysis extends HtmlAnalysis {
             composer: this.getComposer(),
             tkInfo: this.getTkInfo(),
             sfzf: this.getSfzf(),
+            key: this.getKeyLevel(),
             updateTime: _.now(),
         }
     }

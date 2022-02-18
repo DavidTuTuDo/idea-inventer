@@ -321,7 +321,7 @@ import {databazer as SQL} from 'databazer';
             poollers.push(singerFetcher);
 
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            const songFetch = new Pooller(1);
+            const songFetch = new Pooller(3);
             songFetch.setPoolId("SONG FETCHER");
             songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, tenSecs);
             songFetch.setTaskFailHandler(errorHandler);
@@ -349,12 +349,12 @@ import {databazer as SQL} from 'databazer';
             latestToneFetch.setPoolId("LATEST SONG FETCHER");
             latestToneFetch.setIgnoreFirstRun();
             latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist,
-                threeMin);
+                fiveMin);
             latestToneFetch.setTaskFailHandler(errorHandler);
             poollers.push(latestToneFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(3);
+            const toneFetch = new Pooller(4);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
             toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, twoSecs);
@@ -377,7 +377,7 @@ import {databazer as SQL} from 'databazer';
             }
         }
 
-        const database = new SQL('./secret_infos_latest.db');
+        const database = new SQL('./guitar_pu_from_91.db');
         await database.init();
 
         const browser = await puppeteer.launch({

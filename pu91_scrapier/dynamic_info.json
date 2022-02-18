@@ -1,6 +1,6 @@
 {
-  "cancel": true,
+  "cancel": false,
   "host": "David",
-  "timeStamp": "2022-02-18T06:28:55.959Z",
+  "timeStamp": "2022-02-18T07:47:54.381Z",
   "dbName": "./secret_infos_latest.db"
 }
