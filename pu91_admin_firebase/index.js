@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var _index = require("./lib");
+var _index = require("./release/lib");
 
 Object.keys(_index).forEach(function (key) {
     if (key === "default" || key === "__esModule") return;

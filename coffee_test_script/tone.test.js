@@ -1,5 +1,5 @@
 import Index from "../configerer/release";
-import ToneAnalysis from "../pu91Scrapy/src/analysis/ToneAnalysis";
+import ToneAnalysis from "../pu91_scrapier/src/analysis/ToneAnalysis";
 Index['DEBUG_MODE'] = true;
 const tone = new ToneAnalysis();
 

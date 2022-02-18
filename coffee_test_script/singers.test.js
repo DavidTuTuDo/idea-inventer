@@ -1,6 +1,6 @@
 import Index from "../configerer/release";
-import ToneAnalysis from "../pu91Scrapy/src/analysis/ToneAnalysis";
-import SingersAnalysis from "../pu91Scrapy/src/analysis/SingersAnalysis";
+import ToneAnalysis from "../pu91_scrapier/src/analysis/ToneAnalysis";
+import SingersAnalysis from "../pu91_scrapier/src/analysis/SingersAnalysis";
 Index['DEBUG_MODE'] = true;
 const singers = new SingersAnalysis();
 

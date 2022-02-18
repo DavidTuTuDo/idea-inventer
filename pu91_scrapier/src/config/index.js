@@ -34,7 +34,7 @@ const Config = {
     PATH_SAMPLE_URL_SINGER: 'https://www.91pu.com.tw/singer/',
     PATH_SAMPLE_URL_JEST_SAMPLE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
     PATH_SAMPLE_URL_BASE: 'https://www.91pu.com.tw/song/2020/0829/13002.html',
-    PATH_DYNAMIC_INFO: './dynamic_info',
+    PATH_DYNAMIC_INFO: './dynamic_info.json',
 
     SAMPLE_FILE_NAME_SINGER: 'AllSingerObject.txt',
     SAMPLE_FILE_NAME_SONG_RANK: 'WeekRankObject.txt',

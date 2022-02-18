@@ -1,4 +1,4 @@
-import Analysis from '../pu91Scrapy/src/analysis/HtmlAnalysis'
+import Analysis from '../pu91_scrapier/src/analysis/HtmlAnalysis'
 import Index from "../configerer/release";
 Index['DEBUG_MODE'] = true;
 const analysis = new Analysis();

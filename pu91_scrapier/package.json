@@ -1,20 +1,26 @@
 {
-  "name": "scraper",
-  "version": "1.0.5",
+  "name": "91puScrapy",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
     "updateUtiller": "npm update utiller --save",
-    "updateConfigerer": "npm update configerer --save"
+    "updateConfigerer": "npm update configerer --save",
+    "updateDatabazer": "npm update databazer --save"
   },
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.9",
     "utiller": "^1.0.39",
+    "databazer": "^1.0.7",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
+    "crypto-js": "^4.0.0",
+    "puppeteer": "^5.4.1",
+    "query-string": "^7.0.1",
+    "react-countdown": "^2.3.2",
     "himalaya": "^1.1.0"
   },
   "devDependencies": {

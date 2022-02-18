@@ -1,5 +1,6 @@
-import {configerer as Index} from "configerer";
+import {configerer as Configer} from "configerer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
+import config from '../config';
 import _ from 'lodash';
 import libpath from 'path';
 import Moment from 'moment';
@@ -26,9 +27,9 @@ class HtmlAnalysis {
 
 
     init() {
-        if (Index.DEBUG_MODE && _.isEmpty(this.samplingTaget)) {
+        if (Configer.DEBUG_MODE && _.isEmpty(this.samplingTaget)) {
             let sample = {};
-            const mSamplePath = path.join(Index.PATH_SAMPLE_OBJECT_ROOT, this.getSampleConfig().filename);
+            const mSamplePath = path.join(config.PATH_SAMPLE_OBJECT_ROOT, this.getSampleConfig().filename);
             if (fs.existsSync(mSamplePath))
                 sample = JSON.parse(fs.readFileSync(mSamplePath, 'utf-8'));
             this.samplingTaget = sample ? sample : {};
@@ -54,8 +55,8 @@ class HtmlAnalysis {
 
     getSampleConfig() {
         return {
-            path: Index.PATH_SAMPLE_URL_BASE,
-            filename: Index.SAMPLE_FILE_NAME_BASE,
+            path: config.PATH_SAMPLE_URL_BASE,
+            filename: config.SAMPLE_FILE_NAME_BASE,
         }
     }
 
@@ -243,7 +244,7 @@ class HtmlAnalysis {
     persistedUnderObjectFolder(fileName, raw) {
         if (raw) {
             const jsonObj = html2json.parse(raw);
-            fs.writeFile(path.join(Index.PATH_SAMPLE_OBJECT_ROOT, fileName),
+            fs.writeFile(path.join(config.PATH_SAMPLE_OBJECT_ROOT, fileName),
                 JSON.stringify(jsonObj, null, 2),
                 (err) => {
                     Util.appendError('persistedUnderObjectFolder : ' + JSON.stringify(err.message))
@@ -256,10 +257,10 @@ class HtmlAnalysis {
         await page.goto(config.path,
             {waitUntil: 'networkidle2'}
         );
-        await _delay(Index.HACK_DELAY_OF_MILLION_SECS);
+        await _delay(Configer.HACK_DELAY_OF_MILLION_SECS);
         const content = await page.content();
         this.persistedUnderObjectFolder(config.filename, content);
-        if (Index.MODULE_MSG.SHOW_SUCCEED)
+        if (Configer.MODULE_MSG.SHOW_SUCCEED)
             Util.appendInfo(`download ${config.filename} succeed`);
     }
 
@@ -283,12 +284,12 @@ class HtmlAnalysis {
     }
 }
 
-export { HtmlAnalysis as Scraper }
+export default HtmlAnalysis
 
-if (configerer.DEBUG_MODE) {
-(async () => {
+if (Configer.DEBUG_MODE) {
+    (async () => {
 
 
-    }
-)();
+        }
+    )();
 }

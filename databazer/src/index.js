@@ -514,16 +514,21 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
 
-        const handler = new SqliteHandler('./secret_infos_latest.db');
+        const handler = new SqliteHandler('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/secret_infos_latest.db');
         await handler.init();
-        Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
-        Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SINGER', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
+        // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SONG', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
+        // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await handler.updateRecords('SINGER', {state: 'NOT'}, new ConditionBuilder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
         Util.appendInfo('ING SONG ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE SONG  ' + ((await handler.fetchRecords('SONG', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
         Util.appendInfo('ING SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'ING').stmt())).length));
         Util.appendInfo('NOT SINGER  ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'NOT').stmt())).length));
         Util.appendInfo('DONE  SINGER ' + ((await handler.fetchRecords('SINGER', new ConditionBuilder().equal('state', 'DONE').stmt())).length));
+
+
+        console.log(await handler.dropTable('test'));
+
+
 
     })();
 

@@ -10,7 +10,7 @@ import sla from './analysis/SongListAnalysis.js';
 
 import {configerer as Config} from 'configerer';
 import {utiller as Util, exceptioner as ERROR, pooller as Pooller} from 'utiller';
-import {databaser as SQL} from 'databaser';
+import {databazer as SQL} from 'databazer';
 
 const INVOKE_REAL_CHROME = false;
 
@@ -375,7 +375,7 @@ const INVOKE_REAL_CHROME = false;
             }
         }
 
-        const database = new SQL('../databaser/secret_infos_latest.db');
+        const database = new SQL('./secret_infos_latest.db');
         await database.init();
 
         const browser = await puppeteer.launch({

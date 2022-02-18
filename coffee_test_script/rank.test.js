@@ -1,4 +1,4 @@
-import RankTableAnalysis from "../pu91Scrapy/src/analysis/RankTableAnalysis";
+import RankTableAnalysis from "../pu91_scrapier/src/analysis/RankTableAnalysis";
 import Index from "../configerer/release";
 Index['DEBUG_MODE'] = true;
 const rank = new RankTableAnalysis();

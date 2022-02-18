@@ -1,5 +1,5 @@
 import Index from "../configerer/release";
-import SongListAnalysis from "../pu91Scrapy/src/analysis/SongListAnalysis";
+import SongListAnalysis from "../pu91_scrapier/src/analysis/SongListAnalysis";
 Index['DEBUG_MODE'] = true;
 const songlist = new SongListAnalysis();
 
