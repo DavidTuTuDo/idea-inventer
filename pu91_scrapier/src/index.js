@@ -337,7 +337,7 @@ import {databazer as SQL} from 'databazer';
             const twoMin = 2 * oneMin;
             const fiveMin = 5 * oneMin;
             const threeMin = 3 * oneMin;
-
+            const tenMin = 10 * oneMin;
             const singerFetcher = new Pooller(1);
             singerFetcher.setPoolId("SINGER FETCHER");
             singerFetcher.setIgnoreFirstRun();
@@ -359,7 +359,7 @@ import {databazer as SQL} from 'databazer';
             rankFetch.setIgnoreFirstRun()
             rankFetch.setPoolId("RANK FETCHER");
             rankFetch.enableTaskTimeout(true, fiveMin);
-            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, threeMin);
+            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, tenMin);
             rankFetch.setTaskFailHandler(errorHandler);
             poollers.push(rankFetch);
 
@@ -375,7 +375,7 @@ import {databazer as SQL} from 'databazer';
             latestToneFetch.setPoolId("LATEST SONG FETCHER");
             latestToneFetch.setIgnoreFirstRun();
             latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist,
-                twoMin);
+                fiveMin);
             latestToneFetch.setTaskFailHandler(errorHandler);
             poollers.push(latestToneFetch);
 
