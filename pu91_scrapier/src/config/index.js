@@ -22,9 +22,9 @@ const Config = {
     SINGER_TYPE_OF_FEMALE: 2,
     SINGER_TYPE_OF_MALE: 1,
 
-    BASE_DATABASE_PATH: './secret_infos_latest.db',
     BASE_URL: 'https://www.91pu.com.tw',
     TONES_ROOT: './Tones/',
+    BASE_DATABASE_PATH: `./guitar_pu_from_91.db`,
     PATH_SAMPLE_OBJECT_ROOT: './ObjectSamples/',
     PATH_FILE_COMPLETED_SINGERS: './cache/completed_singer.txt',
     PATH_FILE_COMPLETED_TONES: './cache/completed_tone.txt',

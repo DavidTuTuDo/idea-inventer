@@ -72,7 +72,7 @@ import {databazer as SQL} from 'databazer';
                 Util.appendError(`fetch rank tables fail, because ` + error.message);
                 return all;
             } finally {
-                if (page) await page.close()
+                if (page !== undefined) await page.close()
             }
 
             async function getRankPageInstance() {
@@ -111,16 +111,23 @@ import {databazer as SQL} from 'databazer';
         }
 
         async function fetchAllSinger(singerType = 6) {
+            const page = await browser.newPage();
+            try {
+                await page.goto(Config.PATH_SAMPLE_URL_SINGER,
+                    {waitUntil: 'networkidle2'}
+                );
+                await page.click('span[sid="0"]');
+                await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
+                const content = await page.content();
+                const mSingerAnalysis = new sa(content);
+                const all = mSingerAnalysis.getAllSingers(singerType);
+                return all;
+            } catch (error) {
+                Util.appendError(`fetchAllSinger error ${error}`)
+            } finally {
+                await page.close();
+            }
 
-            await mainPage.goto(Config.PATH_SAMPLE_URL_SINGER,
-                {waitUntil: 'networkidle2'}
-            );
-            await mainPage.click('span[sid="0"]');
-            await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
-            const content = await mainPage.content();
-            const mSingerAnalysis = new sa(content);
-            const all = mSingerAnalysis.getAllSingers(singerType);
-            return all;
         }
 
         async function fetchTone(song) {
@@ -152,24 +159,31 @@ import {databazer as SQL} from 'databazer';
 
         async function fetchSongsOfSingersPage(path) {
             let mSongList = [];
-            const _page = await browser.newPage();
-            await _page.goto(path,
-                {waitUntil: 'networkidle2'}
-            );
-            await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
-            const content = await _page.content();
-            let mSongListAnalysis = new sla(content);
-            mSongList = mSongList.concat(mSongListAnalysis.getAll());
-
-            while (mSongListAnalysis.hasNextPage()) {
-                await _page.click(`${mSongListAnalysis.getNextPageButtonSymbol()}`);
+            let _page;
+            try {
+                _page = await browser.newPage();
+                await _page.goto(path,
+                    {waitUntil: 'networkidle2'}
+                );
                 await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
                 const content = await _page.content();
-                mSongListAnalysis = new sla(content);
+                let mSongListAnalysis = new sla(content);
                 mSongList = mSongList.concat(mSongListAnalysis.getAll());
+
+                while (mSongListAnalysis.hasNextPage()) {
+                    await _page.click(`${mSongListAnalysis.getNextPageButtonSymbol()}`);
+                    await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
+                    const content = await _page.content();
+                    mSongListAnalysis = new sla(content);
+                    mSongList = mSongList.concat(mSongListAnalysis.getAll());
+                }
+                return mSongList;
+            } catch (error) {
+                Util.appendError(`fetchSongsOfSingersPage error ${error}`)
+            } finally {
+                if (_page) await _page.close();
             }
-            await _page.close();
-            return mSongList;
+
         }
 
         async function persistSongs() {
@@ -278,11 +292,21 @@ import {databazer as SQL} from 'databazer';
         async function persistSingers(singerType = 6) {
             Util.appendInfo('persistSingers 起飛了');
             let singers = await fetchAllSinger(singerType);
+
+            const inValid = _.remove(singers, (singer) => {
+                return _.isEmpty(_.trim(singer.name)) || _.isEmpty(_.trim(singer.url))
+            })
+
             const exists = (await database.fetchRecords('SINGER', '', 'names')).map((singer) => singer.names);
             Util.appendInfo(`persistSingers 在網路上歌手有 '${singers.length}' 個, 資料庫裡面有 '${exists.length}'`);
             _.remove(singers, (singer) => {
                 return _.indexOf(exists, Util.deepFlat(singer.names)) >= 0
             });
+
+            Util.appendFile('./newbie_singers.txt', Util.deepFlat(inValid, '\n\n === '), true, true);
+            /** 應該是名單內有重複的歌手, 才會
+             * persistSingers 在網路上歌手有 '2255' 個, 資料庫裡面有 '2235'
+             * */
             for (const singer of singers) {
                 await database.lazyInsertRecord('SINGER',
                     {...singer, state: 'NOT'}, 'name', 'names');
@@ -307,6 +331,8 @@ import {databazer as SQL} from 'databazer';
 
             const tenSecs = 10 * 1000;
             const twoSecs = 2 * 1000;
+            const fourSecs = 4 * 1000;
+
             const oneMin = 6 * tenSecs;
             const twoMin = 2 * oneMin;
             const fiveMin = 5 * oneMin;
@@ -321,7 +347,7 @@ import {databazer as SQL} from 'databazer';
             poollers.push(singerFetcher);
 
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            const songFetch = new Pooller(3);
+            const songFetch = new Pooller(2);
             songFetch.setPoolId("SONG FETCHER");
             songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, tenSecs);
             songFetch.setTaskFailHandler(errorHandler);
@@ -333,14 +359,14 @@ import {databazer as SQL} from 'databazer';
             rankFetch.setIgnoreFirstRun()
             rankFetch.setPoolId("RANK FETCHER");
             rankFetch.enableTaskTimeout(true, fiveMin);
-            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, fiveMin);
+            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, threeMin);
             rankFetch.setTaskFailHandler(errorHandler);
             poollers.push(rankFetch);
 
             /** 監督browser page 有沒有爆掉 */
             const browserWatcher = new Pooller(1);
             browserWatcher.setPoolId("BROWSER WATCHER");
-            browserWatcher.runInBackGround(browserWatcher.runInInfinite, browserPageWatcher, twoMin);
+            browserWatcher.runInBackGround(browserWatcher.runInInfinite, browserPageWatcher, oneMin);
             browserWatcher.setTaskFailHandler(errorHandler);
             poollers.push(browserWatcher);
 
@@ -349,22 +375,25 @@ import {databazer as SQL} from 'databazer';
             latestToneFetch.setPoolId("LATEST SONG FETCHER");
             latestToneFetch.setIgnoreFirstRun();
             latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist,
-                fiveMin);
+                twoMin);
             latestToneFetch.setTaskFailHandler(errorHandler);
             poollers.push(latestToneFetch);
 
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(4);
+            const toneFetch = new Pooller(3);
             toneFetch.cleanTaskInterval();
             toneFetch.setPoolId("TONE FETCHER");
-            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, twoSecs);
+            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, fourSecs);
             toneFetch.setTaskFailHandler((error) => console.error(`.....無奈呀 ${error.message}`));
             poollers.push(toneFetch);
 
             while (true) {
-                const millionSecs = await Util.syncDelayRandom(5000, 10000);
-                Util.appendInfo(`主線程還在努中工作中, ${millionSecs} mms`);
-                if ((Util.getFileContextInJSON(Config.PATH_DYNAMIC_INFO))['cancel']) {
+                const random = Util.getRandomValue(5000, 8000)
+                Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
+                await Util.syncDelay(random);
+                const cancelAllThread = Util.getFileContextInJSON(Config.PATH_DYNAMIC_INFO)['cancel'];
+                Util.appendInfo(`讀取了 ${Config.PATH_DYNAMIC_INFO}, 是否執行停止:${cancelAllThread}`);
+                if (cancelAllThread) {
                     Util.appendInfo(`主線程收到關閉指令...`);
                     for (const pooller of poollers) {
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
@@ -377,7 +406,7 @@ import {databazer as SQL} from 'databazer';
             }
         }
 
-        const database = new SQL('./guitar_pu_from_91.db');
+        const database = new SQL(Config.BASE_DATABASE_PATH);
         await database.init();
 
         const browser = await puppeteer.launch({
@@ -391,7 +420,6 @@ import {databazer as SQL} from 'databazer';
         });
         Util.syncDeleteFile(Config.PATH_ERROR_LOG);
         Util.syncDeleteFile(Config.PATH_INFO_LOG);
-        const mainPage = await browser.newPage();
         await persist91puEveryThing();
         // await latestSongPersist();
         // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */

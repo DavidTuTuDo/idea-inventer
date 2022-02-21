@@ -5,6 +5,6 @@ const info = Util.getFileContextInJSON(Index.PATH_DYNAMIC_INFO);
 console.log(`before:`,info);
 
 
-info.cancel = !info.cancel;
+info.cancel = true;
 Util.writeFileInJSON(Index.PATH_DYNAMIC_INFO, info);
 console.log(`after read:`,Util.getFileContextInJSON(Index.PATH_DYNAMIC_INFO));

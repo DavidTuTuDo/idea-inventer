@@ -1,9 +1,9 @@
 import {databazer as SQL} from "databazer";
 import {utiller as Util, exceptioner as ERROR} from 'utiller';
-
+import config from './config';
 
 (async () => {
-    const database = new SQL('./secret_infos_latest.db');
+    const database = new SQL(config.BASE_DATABASE_PATH);
     await database.init();
     Util.appendInfo(`update {ING => NOT}  succeed  ` + (await database.updateRecords('SONG', {state: 'NOT'}, new SQL.Builder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
     Util.appendInfo(`update {ING => NOT}  succeed  ` + (await database.updateRecords('SINGER', {state: 'NOT'}, new SQL.Builder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
