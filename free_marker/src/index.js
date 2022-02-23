@@ -1613,7 +1613,7 @@ class CodegenNode {
         return clone;
     }
 
-    /** 如果要用在程式內的view做一些邏輯上的inject, 或是onclick ,中間的unique function name統一都用這個 */
+    /** 如果要用在程式內的view做一些邏輯上的injectStyle,injectView,injectProps 或是onClicked ,中間的unique function name統一都用這個 */
     getPreciseNameOfAttributeView() {
         const nodes = this.getPreciseAttributeGenealogyNodes(true);
         const parentNames = _.reverse(nodes.map((node) => node.getName()));
