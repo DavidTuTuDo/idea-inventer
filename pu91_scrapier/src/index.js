@@ -338,6 +338,7 @@ import {databazer as SQL} from 'databazer';
             const fiveMin = 5 * oneMin;
             const threeMin = 3 * oneMin;
             const tenMin = 10 * oneMin;
+
             const singerFetcher = new Pooller(1);
             singerFetcher.setPoolId("SINGER FETCHER");
             singerFetcher.setIgnoreFirstRun();
