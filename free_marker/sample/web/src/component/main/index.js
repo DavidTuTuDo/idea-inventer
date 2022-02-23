@@ -16,11 +16,10 @@ class MainComponent extends BaseMainComponent {
     constructor(prop) {
         super(prop);
         this.props.main.setState('stable');
-        setInterval(this.tick,100);
+        setInterval(this.tick, 100);
     }
 
-
-    getInjectViewOfCountdownPaper() {
+    getInjectViewOfMainCountdownPaper() {
         const CountdownView = this.CountdownView;
         let time = this.getStore().getExpired().getExpiredTime();
         return <CountdownView
@@ -33,7 +32,7 @@ class MainComponent extends BaseMainComponent {
         super.componentDidMount();
     }
 
-    onViewPagerDivClicked(param) {
+    onMainViewPagerDivClicked(param) {
         this.gotoUrlWithNewTab(param.object.route)
     }
 

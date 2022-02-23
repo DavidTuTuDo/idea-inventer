@@ -15,6 +15,8 @@ class MobileStyle {
 
   ExamEditorQuestionTypeTextField = {};
 
+  ExamEditorQuestionIndexOfAnswerTextField = {};
+
   ExamEditorQuestionQidTextField = {};
 
   ExamEditorQuestionSubjectTextField = {};
@@ -28,6 +30,18 @@ class MobileStyle {
   ExamEditorQuestionTimesOfYearTextField = {};
 
   ExamEditorQuestionTypeOfQuestionTextField = {};
+
+  ListExamEditorQuestionOptionalChoiceDiv = {};
+
+  WrapExamEditorQuestionOptionalChoiceDiv = {};
+
+  ExamEditorQuestionOptionalChoiceDiv = {};
+
+  ListExamEditorQuestionOptionalDiv = {};
+
+  WrapExamEditorQuestionOptionalDiv = {};
+
+  ExamEditorQuestionOptionalDiv = {};
 
   ExamEditorQuestionChoiceImageUrlTextField = {};
 
@@ -270,6 +284,18 @@ class MobileStyle {
   ExamQuestionFunctionCenterAddToFavoriteButton = {};
 
   ExamQuestionFunctionCenterDiv = {};
+
+  ExamQuestionOptionalChoiceStatementButton = {};
+
+  ListExamQuestionOptionalChoiceDiv = {};
+
+  ExamQuestionOptionalChoiceDiv = {};
+
+  ExamQuestionOptionalIndexOfAnswerTypography = {};
+
+  ListExamQuestionOptionalDiv = {};
+
+  ExamQuestionOptionalDiv = {};
 
   ExamQuestionChoiceImageUrlImg = {};
 

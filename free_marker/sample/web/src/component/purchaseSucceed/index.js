@@ -53,7 +53,7 @@ class PurchaseSucceedComponent extends BasePurchaseSucceedComponent {
         return {disabled: !this.getStore().getIsTransactionSucceed()}
     }
 
-    onConfirmButtonClicked(param) {
+    onPurchaseSucceedConfirmButtonClicked(param) {
         Router.gotoMainPage(this);
     }
 

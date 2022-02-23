@@ -15,6 +15,8 @@ class CommonStyle {
 
   ExamEditorQuestionTypeTextField = {};
 
+  ExamEditorQuestionIndexOfAnswerTextField = {};
+
   ExamEditorQuestionQidTextField = {};
 
   ExamEditorQuestionSubjectTextField = {};
@@ -28,6 +30,18 @@ class CommonStyle {
   ExamEditorQuestionTimesOfYearTextField = {};
 
   ExamEditorQuestionTypeOfQuestionTextField = {};
+
+  ListExamEditorQuestionOptionalChoiceDiv = {};
+
+  WrapExamEditorQuestionOptionalChoiceDiv = {};
+
+  ExamEditorQuestionOptionalChoiceDiv = {};
+
+  ListExamEditorQuestionOptionalDiv = {};
+
+  WrapExamEditorQuestionOptionalDiv = {};
+
+  ExamEditorQuestionOptionalDiv = {};
 
   ExamEditorQuestionChoiceImageUrlTextField = {};
 
@@ -270,6 +284,18 @@ class CommonStyle {
   ExamQuestionFunctionCenterAddToFavoriteButton = {};
 
   ExamQuestionFunctionCenterDiv = {};
+
+  ExamQuestionOptionalChoiceStatementButton = {};
+
+  ListExamQuestionOptionalChoiceDiv = {};
+
+  ExamQuestionOptionalChoiceDiv = {};
+
+  ExamQuestionOptionalIndexOfAnswerTypography = {};
+
+  ListExamQuestionOptionalDiv = {};
+
+  ExamQuestionOptionalDiv = {};
 
   ExamQuestionChoiceImageUrlImg = {};
 

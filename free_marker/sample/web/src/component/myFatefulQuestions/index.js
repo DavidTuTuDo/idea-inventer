@@ -31,7 +31,7 @@ class MyFatefulQuestionsComponent extends BaseMyFatefulQuestionsComponent {
     this.getStore().fetch(this).then();
   }
 
-  onFatefulItemCardClicked(param) {
+  onMyFatefulQuestionsFatefulItemCardClicked(param) {
     const item = param.object;
     switch (this.getStore().getFatefulQuestionType()) {
       case 'favorite':

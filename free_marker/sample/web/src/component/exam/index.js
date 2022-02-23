@@ -55,13 +55,13 @@ class ExamComponent extends BaseExamComponent {
         return 'inherit';
     }
 
-    getInjectPropsOfChoiceStatementButton(choice) {
+    getInjectPropsOfExamQuestionChoiceStatementButton(choice) {
         const props = {}
         props.color = this.getChoiceButtonColor(choice);
         return props;
     }
 
-    getInjectStyleOfQuestionChoiceDiv(choice) {
+    getInjectStyleOfExamQuestionChoiceDiv(choice) {
         if (choice.hasPhotos()) {
             return {
                 backgroundColor: 'rgba(0,0,0,0.1)'
@@ -71,11 +71,11 @@ class ExamComponent extends BaseExamComponent {
         }
     }
 
-    getInjectStyleOfQuestionAlertDiv(question) {
+    getInjectStyleOfExamQuestionAlertDiv(question) {
         return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
     }
 
-    onStatementButtonClicked(param) {
+    onExamQuestionChoiceStatementButtonClicked(param) {
         const choice = param.object;
         const question = choice.getParentNode();
         if (question.getCompleted()) {
@@ -86,7 +86,7 @@ class ExamComponent extends BaseExamComponent {
         question.setReply(reply);
     }
 
-    getInjectStyleOfChoiceStatementButton(choice) {
+    getInjectStyleOfExamQuestionChoiceStatementButton(choice) {
         const question = choice.getParentNode();
         if (!question.getCompleted()) {
             return choice.isSelected() ? {borderWidth: '6px'} : {borderWidth: '2px'}
@@ -100,19 +100,19 @@ class ExamComponent extends BaseExamComponent {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
-    getInjectStyleOfQuestionTopicOfAssistantDiv(question) {
+    getInjectStyleOfExamQuestionTopicOfAssistantDiv(question) {
         return Util.getVisibleOrNone(question.needAssistantArea());
     }
 
-    getInjectStyleOfQuestionDurationTypography(question) {
+    getInjectStyleOfExamQuestionDurationTypography(question) {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
-    getInjectStyleOfQuestionReplyTimestampTypography(question) {
+    getInjectStyleOfExamQuestionReplyTimestampTypography(question) {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }
 
-    onCalloutHelpButtonClicked(param) {
+    onExamQuestionCalloutHelpButtonClicked(param) {
         const self = this;
         const question = param.object;
         this.getStore().submitConfusedQuestion(question).then((cid) => {
@@ -120,7 +120,7 @@ class ExamComponent extends BaseExamComponent {
         })
     }
 
-    onAddToFavoriteButtonClicked(param) {
+    onExamQuestionAddToFavoriteButtonClicked(param) {
         const self = this;
         const question = param.object;
         this.getStore().submitToFavoriteQuestion(question).then((whatever) =>
@@ -128,12 +128,16 @@ class ExamComponent extends BaseExamComponent {
         )
     }
 
-    getInjectStyleOfQuestionFunctionCenterDiv(question) {
+    getInjectStyleOfExamQuestionFunctionCenterDiv(question) {
         return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
     }
 
-    getInjectStyleOfTopicOfAssistantNameTypography(topicOfAssistant) {
+    getInjectStyleOfExamQuestionTopicOfAssistantNameTypography(topicOfAssistant) {
         return Util.getVisibleOrNone(!_.isEmpty(topicOfAssistant.getName()))
+    }
+
+    getInjectStyleOfExamQuestionTopicNameTypography(topic) {
+        return Util.getVisibleOrNone(!topic.getParentNode().isMathOptionalQuestion())
     }
 
     /** -------------------- async api -------------------- **/

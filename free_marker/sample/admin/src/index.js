@@ -185,7 +185,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
     }
 
     async function transactionSample() {
-        /** transaction sample */
+        /** transaction initialBehaviorOfMathOptionalQuestion */
         await firebase.firestore().collection('tests').doc('first').set({index: 1});
         const asyncTasks = _.range(20).map(() => {
             return async () => {
@@ -352,7 +352,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
 })();
 
 
-// line-pay request result sample
+// line-pay request result initialBehaviorOfMathOptionalQuestion
 // {
 //     returnCode: '0000',
 //         returnMessage: 'Success.',
@@ -366,7 +366,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
 //      }
 // }
 
-// line-pay request confirm sample
+// line-pay request confirm initialBehaviorOfMathOptionalQuestion
 // {
 //     returnCode: '0000',
 //         returnMessage: 'Success.',

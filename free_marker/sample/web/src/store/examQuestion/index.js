@@ -8,12 +8,52 @@ import libpath from "path";
 import BaseExamQuestionStore from "./BaseExamQuestionStore";
 import UserInfo from '../../userInfo';
 
+
+const OPTIONS_OF_MATH_QUESTION = [' 0 ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', , ' - ', ' ± ']
+
 class ExamQuestionStore extends BaseExamQuestionStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);
+        this.initialBehaviorOfMathOptionalQuestion();
+
+    }
+
+    isMathOptionalQuestion() {
+        return _.startsWith(this.getSubject(), '數學') && this.getTypeOfQuestion() === 3
+    }
+
+    is108Evolution() {
+        return this.getYear() >= 111
+    }
+
+    initialBehaviorOfMathOptionalQuestion() {
+        if (!this.isMathOptionalQuestion())
+            return;
+
+        const startIndex = this.is108Evolution() ? this.getQid() : this.getIndexOfAnswer();
+        const length = _.size(this.getAnswer().split(''));
+        const subs = _.range(startIndex, startIndex + length, 1).map(
+            (each) => {
+                return {
+                    indexOfAnswer: this.getOptionQuestionTitle(each, this.getQid()),
+                    choices: OPTIONS_OF_MATH_QUESTION.map((each) => {
+                        return {statement: _.trim(each)}
+                    })
+                }
+            })
+
+        this.pushOptionals(...subs)
+    }
+
+    getOptionQuestionTitle(result, qid) {
+        if (this.is108Evolution()) {
+            const position = result - qid;
+            result = `${qid}-${position === 0 ? 1 : position+1}`
+        }
+        return `選擇圖中 (${result}) 答案`
     }
 
     needAssistantArea() {
@@ -68,7 +108,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     initial(obj) {
         super.initial(obj);
         if (UserInfo.isAdmin())
-            this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}-${this.getTimesOfYear() === 1 ? '正式':'補考'}-${this.getQid()}-${this.isMultiSelected() ? '多選題' : '單選題'}`);
+            this.setTip(`${this.getYear()}-${this.getSubject()}-${this.getType()}-${this.getTimesOfYear() === 1 ? '正式' : '補考'}-${this.getQid()}-${this.isMultiSelected() ? '多選題' : '單選題'}`);
         else
             this.setTip(`${this.getYear()}年-${this.getSubject()}科目-${this.isMultiSelected() ? '多選題' : '單選題'}`)
     }
@@ -80,7 +120,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     setCompleted(param) {
         super.setCompleted(param);
         this.validateAlertImage();
-        if(this.getParentNode() !== undefined) {
+        if (this.getParentNode() !== undefined) {
             this.getParentNode().submitQuestionRecord(this).then();
         }
     }

@@ -45,7 +45,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         return this.props.paramObject.title;
     }
 
-
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
         return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), '綜合題目'))
     }
@@ -62,7 +61,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         })
     }
 
-    getInjectPropsOfRandomTestRangeOfYearSlider(randomTest) {
+    getInjectPropsOfExamFilterRandomTestRangeOfYearSlider(randomTest) {
         return {
             min: this.getStore().getExamHistoryInfo().getMinYear(),
             max: this.getStore().getExamHistoryInfo().getMaxYear(),
@@ -71,7 +70,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         }
     }
 
-    onBtnWithHistoryButtonClicked = (param) => {
+    onExamFilterHistoryTestBtnWithHistoryButtonClicked = (param) => {
         const result = {
             range: [this.getStore().getHistoryTest().getSelectedSelector()],
             type: 'history',
@@ -80,14 +79,15 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         this.gotoExamPageWithCookie(result);
     }
 
-    onBtnOfStartExamButtonClicked = (param) => {
+
+    onExamFilterRandomTestBtnOfStartExamButtonClicked = (param) => {
         const range = this.getStore().getRandomTest().getRangeOfYear();
         const countsOfExam = this.getStore().getRandomTest().getSelectedCountsOfExam();
         const result = {range, countsOfExam, type: 'random', subject: this.getTitle()};
         this.gotoExamPageWithCookie(result);
     }
 
-    onFastRangeButtonClicked(param) {
+    onExamFilterRandomTestFastRangeButtonClicked(param) {
         this.validateRangeByValue(param.object.value)
     }
 

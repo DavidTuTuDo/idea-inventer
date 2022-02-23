@@ -49,7 +49,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         super(props);
     }
 
-    getInjectStyleOfToolBarToEditModeButton(toolBar) {
+    getInjectStyleOfNavigatorAppBarToolBarToEditModeButton(toolBar) {
         return Util.getVisibleOrHidden(UserInfo.isAdmin())
     }
 
@@ -58,7 +58,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         this.getStore().forceToStable();
     }
 
-    onToEditModeButtonClicked(param) {
+    onNavigatorAppBarToolBarToEditModeButtonClicked(param) {
         Router.gotoEditPage(this);
     }
 
@@ -77,11 +77,11 @@ class NavigatorComponent extends BaseNavigatorComponent {
         store.updateEditButtonStatus();
     }
 
-    onTitleTypographyClicked(param) {
+    onNavigatorAppBarToolBarTitleTypographyClicked(param) {
         Router.gotoMainPage(this);
     }
 
-    onLoginButtonClicked(param) {
+    onNavigatorAppBarToolBarLoginButtonClicked(param) {
         const self = this;
         if (UserInfo.isLoginInSucceed()) {
             this.getStore().logout().then();
@@ -106,7 +106,7 @@ class NavigatorComponent extends BaseNavigatorComponent {
         this.getStore().setDrawerOpenStatus(open);
     }
 
-    onMenuIconButtonClicked(param) {
+    onNavigatorAppBarToolBarMenuIconButtonClicked(param) {
         this.setDrawerOpenState(true)
     }
 

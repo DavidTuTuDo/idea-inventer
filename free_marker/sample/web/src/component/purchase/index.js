@@ -34,15 +34,19 @@ class PurchaseComponent extends BasePurchaseComponent {
         return origin;
     }
 
-    getInjectStyleOfPurchasePlanBuyButton(plan) {
+    getInjectStyleOfPurchasePurchasePlanBuyButton(purchasePlan) {
+        super.getInjectStyleOfPurchasePurchasePlanBuyButton(purchasePlan);
+    }
+
+    getInjectStyleOfPurchasePurchasePlanBuyButton(plan) {
         return Util.getVisibleOrHidden(!plan.isTitle())
     }
 
-    getInjectStyleOfPurchasePlanPriceTipTypography(plan) {
+    getInjectStyleOfPurchasePurchasePlanPriceTipTypography(plan) {
         return Util.getVisibleOrHidden(!plan.isTitle())
     }
 
-    onBuyButtonClicked(param) {
+    onPurchasePurchasePlanBuyButtonClicked(param) {
         const self = this;
         const plan = param.object;
         const uid = UserInfo.getUid();

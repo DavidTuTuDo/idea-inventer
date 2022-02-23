@@ -23,14 +23,15 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
 
     }
 
-    getInjectViewOfQuestionDiv(whoknowz) {
+    getInjectViewOfWhoknowzQuestionDiv(whoknowz) {
         return <ExamQuestionView
             freeze={true}
             isComponentView={true}
             question={whoknowz.question}/>
     }
 
-    onCopylinkButtonClicked(param) {
+
+    onWhoknowzFastCenterCopylinkButtonClicked(param) {
         this.copyCurrentLinkToClipboard();
     }
 
@@ -46,7 +47,7 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
         this.openLineChatAccountWithMessage(`@546kkjvt`, message)
     }
 
-    onSubmitButtonClicked(param) {
+    onWhoknowzSubmitButtonClicked(param) {
         this.getStore().submitConfirmedAnswer().then();
     }
 
@@ -55,12 +56,12 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
                 this.getStore().hasTargetAnswerId()}
     }
 
-    getInjectPropsOfAnswerAnswerByTextTextField(answer) {
+    getInjectPropsOfWhoknowzAnswerAnswerByTextTextField(answer) {
         return {disabled : this.getStore().isAnswerReliedOrOwner() ||
                 this.getStore().hasTargetAnswerId()}
     }
 
-    getInjectStyleOfFastCenterAskmrlinButton = (fastCenter) => {
+    getInjectStyleOfWhoknowzFastCenterAskmrlinButton = (fastCenter) => {
         return Util.getVisibleOrHidden(this.getStore().isMathOrEnglish())
     }
 

@@ -8,11 +8,11 @@
 {{{paginateSize 就是page size}}}
 
 @action
-set{{{functionName}}}(...fatefulItems) {
+set{{{functionName}}}(...items) {
 const self = this;
-if(fatefulItems !== undefined && _.isArray(fatefulItems)) {
+if(items !== undefined && _.isArray(items)) {
 this.{{{fieldName}}}.length = 0;
-this.{{{fieldName}}}.push(...fatefulItems.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 } else {
 this.{{{fieldName}}}.length = 0;
 }
@@ -28,9 +28,9 @@ this.{{{fieldName}}}.length = 0;
 }
 
 @action
-push{{{functionName}}}(...fatefulItems) {
+push{{{functionName}}}(...items) {
 const self = this;
-this.{{{fieldName}}}.push(...fatefulItems.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 }
 
 @action

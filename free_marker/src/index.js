@@ -53,7 +53,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `react-slideshow-image`,
-            views: ['Fade','Slide'],
+            views: ['Fade', 'Slide'],
             /** Fade就是有漸入漸出的效果,  Slide就可以滑動 */
             object: true,/** 就是要加上braket {Fade} */
         }
@@ -61,6 +61,11 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    rapidBuild = {
+        enable: false,
+        componentName: 'WhatTheHell'
+    }
+    /** 快速 debug 的build 設定,componentName就是只會build的 component */
 
     shadow = false;
     /** 目前是為了用來img可以再editor模式時, 能後產生 TextField來加快編輯效率, 一個observable欄位產生出兩個響應的view */
@@ -766,7 +771,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1459,7 +1464,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfClicked() {
-        return Util.camel(`on`, this.name, this.getView(), 'clicked');
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'clicked');
     }
 
     getPath() {
@@ -1569,15 +1574,15 @@ class CodegenNode {
     }
 
     getFunctionNameOfInjectStyle(isWrap = false) {
-        return `get${isWrap ? 'Wrap' : ''}InjectStyleOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
+        return Util.camel(`get${isWrap ? 'Wrap' : ''}InjectStyleOf`, this.getPreciseNameOfAttributeView());
     }
 
     getFunctionNameOfInjectView() {
-        return `getInjectViewOf${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
+        return Util.camel('get', 'inject', 'view', 'of', this.getPreciseNameOfAttributeView());
     }
 
     getFunctionNameOfInjectProps() {
-        return `getInjectPropsOf${_.upperFirst(this.getPreciseAttributeParent().getName())}${_.upperFirst(this.getName())}${_.upperFirst(this.getView())}`
+        return Util.camel('get', 'inject', 'props', 'of', this.getPreciseNameOfAttributeView());
     }
 
     /** 找出祖譜 */
@@ -1606,6 +1611,13 @@ class CodegenNode {
         const clone = _.clone(this);
         clone.setType('arrayItem');
         return clone;
+    }
+
+    /** 如果要用在程式內的view做一些邏輯上的inject, 或是onclick ,中間的unique function name統一都用這個 */
+    getPreciseNameOfAttributeView() {
+        const nodes = this.getPreciseAttributeGenealogyNodes(true);
+        const parentNames = _.reverse(nodes.map((node) => node.getName()));
+        return Util.camel(...parentNames, this.getName(), this.getView());
     }
 
     getPreciseViewGenealogyNodes(excludeSelf = false) {
@@ -2847,7 +2859,7 @@ class RemoteFunctionHandler {
                     generateApiFunction(
                         Util.camel(`delete`, node.getFieldName()),
                         ['all = false', '...conditions'],
-                        [`return await self.deleteItems(path,all,...conditions)`], 'delete fatefulItems')
+                        [`return await self.deleteItems(path,all,...conditions)`], 'delete items')
 
                     generateApiFunction(
                         node.getFunctionNameOfSubmitItem(),
@@ -4989,11 +5001,11 @@ class ProjectFileHandler extends PathBase {
             if (node.isArray()) {
                 node.disableSelectedArray();
 
-                if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide','Grid')) {
+                if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
                     node.setListView('div');
                 }
 
-                if (Util.isOrEquals(node.getView(), 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide','Grid')) {
+                if (Util.isOrEquals(node.getView(), 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
                     node.setView('div');
                 }
 
@@ -5132,6 +5144,10 @@ class ProjectFileHandler extends PathBase {
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
             return {name: each.getName(), editor: each.isEditPage()}
         }))
+
+        FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
+        TARGET_COMPONENT = this.nodeOfAncestor.rapidBuild.componentName;
+
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
         switch (this.platform) {
             case 'web':
@@ -5409,11 +5425,6 @@ if (configerer.DEBUG_MODE) {
                     await builder.buildAdmin();
                     break;
                 case 'webOnly':
-                    await builder.buildWeb();
-                    break;
-                case 'fastBuild':
-                    FAST_DEVELOP_MODE = true;
-                    TARGET_COMPONENT = Util.getNodeEnvVariable('componentName')
                     await builder.buildWeb();
                     break;
                 case 'persistentBuildWeb':
