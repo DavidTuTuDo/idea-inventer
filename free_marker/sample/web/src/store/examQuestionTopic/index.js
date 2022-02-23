@@ -14,6 +14,15 @@ class ExamQuestionTopicStore extends BaseExamQuestionTopicStore {
   constructor(props) {
     super(props);
   }
+
+  getName() {
+
+    const self =  super.getName();
+    return _.isEqual(_.trim(self),'請依照題目作答') ? '': self
+  }
+
+
+
   /** -------------------- async api -------------------- **/
 }
 export default ExamQuestionTopicStore;

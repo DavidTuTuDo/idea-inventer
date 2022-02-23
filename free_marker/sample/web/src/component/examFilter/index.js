@@ -38,7 +38,10 @@ class ExamFilterComponent extends BaseExamFilterComponent {
     }
 
     getSubjectName() {
-        return this.subjectName.trim();
+        let result = this.subjectName.trim();
+        if (_.isEqual(result, '數學(舊制)'))
+            result = '數學';
+        return result;
     }
 
     getTitle() {
@@ -49,7 +52,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), '綜合題目'))
     }
 
-    onCloseButtonClicked(param) {
+    onExamFilterCloseButtonClicked(param) {
         this.dismiss();
     }
 
@@ -83,7 +86,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
     onExamFilterRandomTestBtnOfStartExamButtonClicked = (param) => {
         const range = this.getStore().getRandomTest().getRangeOfYear();
         const countsOfExam = this.getStore().getRandomTest().getSelectedCountsOfExam();
-        const result = {range, countsOfExam, type: 'random', subject: this.getTitle()};
+        const result = {range, countsOfExam, type: 'random', subject: this.getSubjectName()};
         this.gotoExamPageWithCookie(result);
     }
 

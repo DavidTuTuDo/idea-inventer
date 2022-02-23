@@ -45,8 +45,7 @@ class ExamQuestionChoiceStore extends BaseExamQuestionChoiceStore {
 
     isMyWrongReply() {
         /** 選項在reply裏面, 但也在Answer裏面 */
-        return this.getQuestion().getCompleted() &&
-            (Util.has(this.getQuestion().getReply(), this.getChoiceStringID()) && !Util.has(this.getQuestion().getAnswer(), this.getChoiceStringID()))
+        return this.getQuestion().getCompleted() && (Util.has(this.getQuestion().getReply(), this.getChoiceStringID()) && !Util.has(this.getQuestion().getAnswer(), this.getChoiceStringID()))
     }
 
     /** -------------------- async api -------------------- **/

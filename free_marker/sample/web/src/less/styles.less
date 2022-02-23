@@ -1014,7 +1014,6 @@
   }
 }
 .ExamQuestionOptionalDiv {
-  margin-top: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1026,6 +1025,9 @@
   }
 }
 .ListExamQuestionOptionalDiv {
+  flex-direction: column;
+  display: flex;
+  gap: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -1037,8 +1039,9 @@
   }
 }
 .ExamQuestionOptionalIndexOfAnswerTypography {
+  font-size: 1.2rem;
   @media @mobile {
-    /** empty style */
+    font-size: 1rem;
   }
   @media @tablet {
     /** empty style */
@@ -1061,7 +1064,7 @@
 .ListExamQuestionOptionalChoiceDiv {
   flex-direction: row;
   display: flex;
-  gap: 3px;
+  gap: 4px;
   flex-wrap: wrap;
   @media @mobile {
     /** empty style */
@@ -1074,8 +1077,9 @@
   }
 }
 .ExamQuestionOptionalChoiceStatementButton {
+  font-size: 1.4rem;
   @media @mobile {
-    /** empty style */
+    font-size: 1.2rem;
   }
   @media @tablet {
     /** empty style */

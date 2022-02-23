@@ -31,7 +31,6 @@ class ExamComponent extends BaseExamComponent {
         this.getStore().fetch(this).then();
     }
 
-
     onWhichSubjectSelectedChange(value) {
         this.getStore().fetch(this).then();
     }
@@ -49,16 +48,44 @@ class ExamComponent extends BaseExamComponent {
         if (choice.isRightAnswer()) {
             return 'primary';
         }
+
         if (choice.isMyWrongReply()) {
             return 'secondary';
         }
+
         return 'inherit';
     }
 
-    getInjectPropsOfExamQuestionChoiceStatementButton(choice) {
+    handleStatementButtonColorBehavior(choice) {
         const props = {}
         props.color = this.getChoiceButtonColor(choice);
         return props;
+    }
+
+    handleStatementBorderWidthBehavior(choice, thin = false) {
+        const mQuestionOrOptional = choice.getParentNode();
+        if (!mQuestionOrOptional.getCompleted()) {
+            return choice.isSelected() ? {borderWidth: thin ? '3px' : '6px'} : {borderWidth: '2px'}
+        } else {
+            /** 題目已完成 */
+            return choice.isRightAnswer() ? {borderWidth: thin ? '3px' : '6px'} : {borderWidth: '2px'}
+        }
+    }
+
+    getInjectPropsOfExamQuestionChoiceStatementButton(choice) {
+        return this.handleStatementButtonColorBehavior(choice);
+    }
+
+    getInjectStyleOfExamQuestionChoiceStatementButton(choice) {
+        return this.handleStatementBorderWidthBehavior(choice);
+    }
+
+    getInjectPropsOfExamQuestionOptionalChoiceStatementButton(choice) {
+        return this.handleStatementButtonColorBehavior(choice);
+    }
+
+    getInjectStyleOfExamQuestionOptionalChoiceStatementButton(choice) {
+        return this.handleStatementBorderWidthBehavior(choice, true);
     }
 
     getInjectStyleOfExamQuestionChoiceDiv(choice) {
@@ -84,16 +111,6 @@ class ExamComponent extends BaseExamComponent {
 
         const reply = question.getChoices().indexOf(choice);
         question.setReply(reply);
-    }
-
-    getInjectStyleOfExamQuestionChoiceStatementButton(choice) {
-        const question = choice.getParentNode();
-        if (!question.getCompleted()) {
-            return choice.isSelected() ? {borderWidth: '6px'} : {borderWidth: '2px'}
-        } else {
-            /** 題目已完成 */
-            return choice.isRightAnswer() ? {borderWidth: '6px'} : {borderWidth: '2px'}
-        }
     }
 
     getInjectStyleOfExamHistoryFilterDiv(exam) {
@@ -138,6 +155,14 @@ class ExamComponent extends BaseExamComponent {
 
     getInjectStyleOfExamQuestionTopicNameTypography(topic) {
         return Util.getVisibleOrNone(!topic.getParentNode().isMathOptionalQuestion())
+    }
+
+    onExamQuestionOptionalChoiceStatementButtonClicked(param) {
+        const choice = param.object;
+        const reply = choice.getStatement();
+        const optional = choice.getParentNode();
+        optional.setReply(reply);
+
     }
 
     /** -------------------- async api -------------------- **/

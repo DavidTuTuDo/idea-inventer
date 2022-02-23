@@ -9,7 +9,7 @@ import libpath from 'path';
 import config from './config';
 import moment from 'moment';
 
-const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
+const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 
 
 (async () => {
@@ -337,9 +337,9 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(93, 112, 1);
         }))
     }
 
-    await batchDoing();
+    // await batchDoing();
     // await deployQuestions({dbpath:'gsat-92.db',year: -1});
-    // await submitSubjectMap()
+    await submitSubjectMap()
     // await testBatchFunctions();
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);

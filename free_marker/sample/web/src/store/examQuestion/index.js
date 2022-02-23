@@ -9,16 +9,18 @@ import BaseExamQuestionStore from "./BaseExamQuestionStore";
 import UserInfo from '../../userInfo';
 
 
-const OPTIONS_OF_MATH_QUESTION = [' 0 ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', , ' - ', ' ± ']
+const OPTIONS_OF_MATH_QUESTION = [' 0 ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' - ', ' ± ']
 
 class ExamQuestionStore extends BaseExamQuestionStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
+    /** 用來判定options對or錯 */
+    isOptionResultWithWrong = false;
+
     constructor(props) {
         super(props);
         this.initialBehaviorOfMathOptionalQuestion();
-
     }
 
     isMathOptionalQuestion() {
@@ -36,9 +38,10 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         const startIndex = this.is108Evolution() ? this.getQid() : this.getIndexOfAnswer();
         const length = _.size(this.getAnswer().split(''));
         const subs = _.range(startIndex, startIndex + length, 1).map(
-            (each) => {
+            (each, index) => {
                 return {
                     indexOfAnswer: this.getOptionQuestionTitle(each, this.getQid()),
+                    answer: this.getAnswer().split('')[index],
                     choices: OPTIONS_OF_MATH_QUESTION.map((each) => {
                         return {statement: _.trim(each)}
                     })
@@ -51,7 +54,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     getOptionQuestionTitle(result, qid) {
         if (this.is108Evolution()) {
             const position = result - qid;
-            result = `${qid}-${position === 0 ? 1 : position+1}`
+            result = `${qid}-${position === 0 ? 1 : position + 1}`
         }
         return `選擇圖中 (${result}) 答案`
     }
@@ -90,6 +93,10 @@ class ExamQuestionStore extends BaseExamQuestionStore {
     }
 
     isAnswerRight() {
+        if (this.isMathOptionalQuestion()) {
+            return !this.isOptionResultWithWrong;
+        }
+
         return _.isEqual(this.getAnswer(), this.getReply());
     }
 
@@ -125,12 +132,51 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         }
     }
 
-
     validateAlertImage = () => {
-        if (this.isAnswerWrong()) {
-            this.setAlertImage('images/question_error.svg');
-        } else {
+        if (this.isAnswerRight()) {
             this.setAlertImage('images/question_right.svg');
+        } else {
+            this.setAlertImage('images/question_error.svg');
+        }
+    }
+
+    optionalValidation = () => {
+        const self = this;
+
+        function completedAllOptions() {
+            for (const option of self.getOptionals()) {
+                option.silentCompleted(true);
+            }
+        }
+
+        if (this.isMathOptionalQuestion()) {
+            let hasWrongOption = false;
+            let optionsNotCompleted = false;
+
+            for (const option of this.getOptionals()) {
+                /**
+                 * 1.如果completed 然後有一則是wrong = true, 顯示整題錯誤
+                 * 2.如果completed 而且全部都是 wrong = false, 顯示整題正確
+                 */
+                if (!option.getCompleted()) {
+                    optionsNotCompleted = true;
+                }
+
+                if (option.isAnswerWrong()) {
+                    hasWrongOption = true;
+                    break;
+                }
+            }
+
+            const isAllOptionsRight = !optionsNotCompleted; /** 如果for完沒有發現wrong的, 也每題都completed === 這題對了 */
+
+            console.log(isAllOptionsRight, hasWrongOption);
+
+            if (isAllOptionsRight || hasWrongOption) {
+                this.isOptionResultWithWrong = hasWrongOption;
+                this.setCompleted(true);
+                completedAllOptions();
+            }
         }
     }
 
