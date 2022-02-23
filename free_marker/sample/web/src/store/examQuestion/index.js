@@ -99,6 +99,7 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         return _.isEqual(this.getAnswer(), this.getReply());
     }
 
+    /** 就是choice選項是依賴圖中的A-E or 1-5, 讓敘述更明確*/
     isChoiceDependOnAttachImage() {
         const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         const oneToTen = '123456789';
