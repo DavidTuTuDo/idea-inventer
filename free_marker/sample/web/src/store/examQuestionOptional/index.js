@@ -41,6 +41,9 @@ class ExamQuestionOptionalStore extends BaseExamQuestionOptionalStore {
         question.optionalValidation();
     }
 
+    isChoiceDependOnAttachImage() {
+        return false;
+    }
 
     isAnswerWrong() {
         let wrong = false;

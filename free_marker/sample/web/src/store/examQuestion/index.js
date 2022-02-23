@@ -96,8 +96,15 @@ class ExamQuestionStore extends BaseExamQuestionStore {
         if (this.isMathOptionalQuestion()) {
             return !this.isOptionResultWithWrong;
         }
-
         return _.isEqual(this.getAnswer(), this.getReply());
+    }
+
+    isChoiceDependOnAttachImage() {
+        const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const oneToTen = '123456789';
+        const statements = this.getChoices().map((each) => _.trim(each.getStatement()));
+        const length = _.size(statements);
+        return Util.isOrEquals(statements.join(''), AtoZ.substr(0, length), oneToTen.substr(0, length))
     }
 
     isAnswerWrong() {

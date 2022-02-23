@@ -27,6 +27,12 @@ class ExamComponent extends BaseExamComponent {
         }
     }
 
+    getChoiceStatement(choice) {
+        const question = choice.getParentNode();
+        const statement = super.getChoiceStatement(choice);
+        return question.isChoiceDependOnAttachImage() ? `如圖示的 (${statement}) `:statement;
+    }
+
     onOrderByWhatSelectedChange(value) {
         this.getStore().fetch(this).then();
     }

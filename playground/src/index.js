@@ -16,8 +16,13 @@ export {playground as playground}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const oneToTen = '123456789';
+            const length = 5
+            console.log(oneToTen.substr(0,length));
+            console.log(AtoZ.substr(0,length));
 
-            // const sss = true;
+                // const sss = true;
             // console.log(!!sss);
             // const a = {aa: 1, ab: {abc: 1, abd: 2}}
             // const b = {bb: 2, bc: {abc: 1, abd: 2}}
