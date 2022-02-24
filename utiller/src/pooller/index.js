@@ -72,7 +72,7 @@ class InfinitePool {
      */
     enableQueueTerminateBySleepCount(enable = true,
                                      interval = configerer.POOLLER_QUEUE_TIME_OF_SLEEP_INTERVAL_DEFAULT
-        , times = configerer.POOLLER_MAX_SLEEP_COUNTS_DEFAULT) {
+        , times = configerer.POOLLER_QUEUE_MAX_SLEEP_COUNTS_DEFAULT) {
         this.enableOfQueueTerminateSleepCount = enable;
         this.queueMaxSleepCounts = times;
         this.intervalOfQueueSleep = interval
@@ -586,7 +586,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool().exampleOfRunByCount();
+        await new InfinitePool().exampleOfRunByCount();
     })();
 
 }

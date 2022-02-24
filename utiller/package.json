@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.45",
+  "version": "1.0.47",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "bl": "^4.1.0",
-    "configerer": "^1.0.7",
+    "configerer": "^1.0.10",
     "crypto-js": "^4.0.0",
     "del": "^6.0.0",
     "fs-extra": "^9.1.0",
