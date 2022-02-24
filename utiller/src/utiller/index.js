@@ -350,7 +350,7 @@ class Utiller {
     }
 
     /** pattern => {from:'㊟',to:'注'}, {from:'\\(土\\)',to:'(土)'}*/
-    replaceAllWithSets(string, ...patterns) {
+    replaceAllWithSets(string = '', ...patterns) {
         let after = string;
         for (const pattern of patterns) {
             if (this.isOrEquals(undefined, pattern.from, pattern.to)) {
@@ -957,7 +957,7 @@ class Utiller {
         return newbies;
     }
 
-    /** 把collection 裏面的物件執行一下,會mutate本身
+    /**
      * sample:
      const array = [{aa: '1'},{ aa: '2'}, {aa: '3'}];
      const object = {aa: '1', bb: '2', cc: '3'};
@@ -965,7 +965,7 @@ class Utiller {
      util.exeAll(array,(each) => {each.aa = each.aa + 1});
      console.log(object);  // { aa: '11', bb: '21', cc: '31' }
      console.log(array); // [ { aa: '11' }, { aa: '21' }, { aa: '31' } ]
-     * */
+     * 把collection 裏面的物件執行一下,會mutate本身*/
     exeAll(collection, ...funcs) {
 
         if (_.isArray(collection)) {
@@ -991,17 +991,17 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const util = new Utiller();
+            // const util = new Utiller();
 
-            const string = '(有)些(社)會現象與行為表現往往會引發㆟們的民族主義聯想，㆘列何者在民族主義的立場㆖是合宜的？'
-            const array = [{aa: '1'}, {aa: '2'}, {aa: '3'}];
-            const object = {aa: '1', bb: '2', cc: '3'};
-            util.exeAll(object, (each) => each + 1)
-            util.exeAll(array, (each) => {
-                each.aa = each.aa + 1
-            });
-            console.log(object);
-            console.log(array);
+            // const string = '(有)些(社)會現象與行為表現往往會引發㆟們的民族主義聯想，㆘列何者在民族主義的立場㆖是合宜的？'
+            // const array = [{aa: '1'}, {aa: '2'}, {aa: '3'}];
+            // const object = {aa: '1', bb: '2', cc: '3'};
+            // util.exeAll(object, (each) => each + 1)
+            // util.exeAll(array, (each) => {
+            //     each.aa = each.aa + 1
+            // });
+            // console.log(object);
+            // console.log(array);
             // console.log(util.toObjectMap([{aa:'1'},{aa:'2'},{aa:'3'}], {to: 'index'}, {to: 'second', from:'aa', func: (each) => each + 2}))
             // console.log(util.startWithRegex('@sjasidoas @you', '@[can|you|one]'));
             // console.log(util.toSpaceLessString('4  5  .'));

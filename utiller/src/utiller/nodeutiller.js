@@ -541,40 +541,49 @@ class NodeUtiller extends Utiller {
                 /** 利用babel 產生出 es5相容性高的src file */
                 await this.executeCommandLine(`cd ${path} && npx babel ./temp --out-dir ./release/lib`);
 
-                /** 複製公版的index.js */
-                this.copySingleFile('/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.index.js',
-                    release, 'index.js', true);
+                try {
 
-                /** template就是樣板的概念 */
-                const templatePath = libpath.join(path, 'template');
-                if (this.isPathExist(templatePath)) {
-                    this.copyFromFolderToDestFolder(
-                        templatePath,
-                        this.persistByPath(libpath.join(release, 'template')));
-                }
 
-                /** 升級package.json的版號 */
-                const pathOfPackageJson = libpath.join(path, 'package.json');
-                const {name, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
+                    const indexFileName = deployToNPMServer ? 'sample.npm.module.index.js' : 'sample.index.js'
+                    /** 複製公版的index.js */
+                    this.copySingleFile(`/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/${indexFileName}`,
+                        release, 'index.js', true);
 
-                /** 把package.json 放進去 */
-                this.copySingleFile(pathOfPackageJson, libpath.join(release, 'package.json'),
-                    undefined, true);
+                    /** template就是樣板的概念 */
+                    const templatePath = libpath.join(path, 'template');
+                    if (this.isPathExist(templatePath)) {
+                        this.copyFromFolderToDestFolder(
+                            templatePath,
+                            this.persistByPath(libpath.join(release, 'template')));
+                    }
 
-                /** 安裝一個沒有devDependency 的node_module */
-                await this.executeCommandLine(`
+                    /** 升級package.json的版號 */
+                    const pathOfPackageJson = libpath.join(path, 'package.json');
+                    const {name, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
+
+                    /** 把package.json 放進去 */
+                    this.copySingleFile(pathOfPackageJson, libpath.join(release, 'package.json'),
+                        undefined, true);
+
+                    /** 安裝一個沒有devDependency 的node_module */
+                    await this.executeCommandLine(`
                 cd ${release} && yarn install --production`);
-                this.appendInfo(`build ${path} succeed`);
+                    this.appendInfo(`build ${path} succeed`);
 
-                /** 部署到 local server*/
-                if (deployToNPMServer) {
-                    await this.executeCommandLine(`cd ${release} &&  npm publish`);
-                    /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
+                    /** 部署到 local server*/
+                    if (deployToNPMServer) {
+                        await this.executeCommandLine(`cd ${release} &&  npm publish`);
+                        /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
 
-                    /** 把所有樣板的版號都提升 */
-                    await this.updateVersionOfTemplate(name, version);
+                        /** 把所有樣板的版號都提升 */
+                        await this.updateVersionOfTemplate(name, version);
+                    }
+                } catch (error) {
+                    await this.deleteSelfByPath(release, true);
+                    throw new ERROR(9999,`generatePackage 報錯, ${error.message}`);
+                } finally {
+                    await this.deleteSelfByPath(tempFolderPath, true);
                 }
-                await this.deleteSelfByPath(tempFolderPath, true);
             }
         }
     }
@@ -599,7 +608,7 @@ class NodeUtiller extends Utiller {
         this.copyFromFolderToDestFolder(
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
             '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
-            true,true)
+            true, true)
     }
 
     async writeJsonThanPrettier(path, json) {
@@ -733,16 +742,13 @@ if (configerer.DEBUG_MODE) {
             // const uii = new NodeUtiller();
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
-
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-
-            // await new NodeUtiller().generatePackage('../utiller');
+            await new NodeUtiller().generatePackage('../utiller');
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().generatePackage('../configerer');
             // await new NodeUtiller().generatePackage('../databazer');
-
             // await new NodeUtiller().enrichEachPackageJson('../');
             // await new NodeUtiller().upgradePackageJsonVersion('./package.json');
             // await new NodeUtiller().generatePackage('../linepay');
