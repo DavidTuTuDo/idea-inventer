@@ -349,6 +349,18 @@ class Utiller {
         return _.replace(string, new RegExp(`${patten}`, `g`), to); /** g就是 global */
     }
 
+    /** pattern => {from:'㊟',to:'注'}, {from:'\\(土\\)',to:'(土)'}*/
+    replaceAllWithSets(string, ...patterns) {
+        let after = string;
+        for (const pattern of patterns) {
+            if (this.isOrEquals(undefined, pattern.from, pattern.to)) {
+                throw ERROR(9999, `from or to can't be empty`);
+            }
+            after = this.replaceAll(after, pattern.from, pattern.to);
+        }
+        return after
+    }
+
     getRandomValue = (min, max) => {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -922,26 +934,58 @@ class Utiller {
     }
 
     /**
+     * const sample = [{name: 'a'}, {name: 'b'}];
      *
-     * rules => {key:'newKeyName', child: 'name', func: (stmt) => stmt}
-     * child指的就是sample裏面的child屬性,如果child是空值.表示物件內容就是each. func就可以再包一層邏輯
+     * rules => {to:'newKeyName', from: 'name', func: (stmt) => stmt}
+     * to指的是新的屬性名稱, from指的就是sample物件裏面要被取代的原屬性(這裡是指name),如果屬性的的value(string,number).表示each的內容就是value. func就可以把再包一層邏輯
      *
      * sample:
      * const sample = [{name: 'a'}, {name: 'b'}];
-     * console.log(util.toObjectMap(sample, {key: 'newName', child: 'name',func:(p) => (p+'yaya')}));
+     * console.log(util.toObjectMap(sample, {to: 'newName', from: 'name',func:(p) => (p+'yaya')}));
      * result : [ { newName: 'ayaya' }, { newName: 'byaya' } ]
      */
     toObjectMap(array, ...rules) {
-        const newbie = []
+        const newbies = []
         for (const each of array) {
             const object = {}
             for (const rule of rules) {
                 const func = rule.func ? rule.func : (stmt) => stmt;
-                object[rule.key] = this.isUndefinedNullEmpty(rule.child) ? func(each) : func(each[rule.child]);
+                object[rule.to] = this.isUndefinedNullEmpty(rule.from) || !_.isObject(each) ? func(each) : func(each[rule.from]);
             }
-            newbie.push(object);
+            newbies.push(object);
         }
-        return newbie;
+        return newbies;
+    }
+
+    /** 把collection 裏面的物件執行一下,會mutate本身
+     * sample:
+     const array = [{aa: '1'},{ aa: '2'}, {aa: '3'}];
+     const object = {aa: '1', bb: '2', cc: '3'};
+     util.exeAll(object,(each) => each + 1)
+     util.exeAll(array,(each) => {each.aa = each.aa + 1});
+     console.log(object);  // { aa: '11', bb: '21', cc: '31' }
+     console.log(array); // [ { aa: '11' }, { aa: '21' }, { aa: '31' } ]
+     * */
+    exeAll(collection, ...funcs) {
+
+        if (_.isArray(collection)) {
+            for (const each of collection) {
+                for (const func of funcs) {
+                    func(each);
+                }
+            }
+            /** 陣列專屬邏輯 */
+        } else if (_.isObject(collection)) {
+            for (const each in collection) {
+                for (const func of funcs) {
+                    collection[each] = func(collection[each])
+                }
+            }
+            /** 物件專屬邏輯 */
+        } else {
+            throw new ERROR(9999, `7841212 type can't be array or object`)
+        }
+        return collection;
     }
 }
 
@@ -949,7 +993,17 @@ if (configerer.DEBUG_MODE) {
     (async () => {
             const util = new Utiller();
 
-            console.log(util.startWithRegex('@sjasidoas @you', '@[can|you|one]'));
+            const string = '(有)些(社)會現象與行為表現往往會引發㆟們的民族主義聯想，㆘列何者在民族主義的立場㆖是合宜的？'
+            const array = [{aa: '1'}, {aa: '2'}, {aa: '3'}];
+            const object = {aa: '1', bb: '2', cc: '3'};
+            util.exeAll(object, (each) => each + 1)
+            util.exeAll(array, (each) => {
+                each.aa = each.aa + 1
+            });
+            console.log(object);
+            console.log(array);
+            // console.log(util.toObjectMap([{aa:'1'},{aa:'2'},{aa:'3'}], {to: 'index'}, {to: 'second', from:'aa', func: (each) => each + 2}))
+            // console.log(util.startWithRegex('@sjasidoas @you', '@[can|you|one]'));
             // console.log(util.toSpaceLessString('4  5  .'));
             // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
             // const duration = util.getDurationOfMillionSec(after);

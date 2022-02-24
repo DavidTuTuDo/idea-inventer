@@ -4263,7 +4263,7 @@ class AppBuilder
                     }
                 });
 
-                const blocks = Util.toObjectMap(pureLessStringFile.split(regexOfClassName), {key: 'raw'});
+                const blocks = Util.toObjectMap(pureLessStringFile.split(regexOfClassName), {to: 'raw'});
                 blocks.shift();
 
                 /** split 第一個會是沒意義的值 */
