@@ -17,27 +17,35 @@ export {refresh_all as refresh_all}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const files = Util.findFilePathBy('../', (file) => _.isEqual(file.fileNameExtension, 'package.json'), 'node_modules');
+            const files = Util.findFilePathBy('../', (file) => _.isEqual(file.fileNameExtension, 'package.json'), 'node_modules','release');
             const modulePackageJson = Util.getFileContextInJSON('/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.package.json');
 
             for (const packageJson of files) {
                 const uglyPackageJson = Util.getFileContextInJSON(packageJson.absolute);
-                updateSection(uglyPackageJson, 'dependencies');
-                updateSection(uglyPackageJson, 'devDependencies');
-                console.log(uglyPackageJson);
-                await Util.syncDelay(5000);
+                const ugly = Util.or(updatePackageJsonParticularSection(uglyPackageJson, 'dependencies'),
+                    updatePackageJsonParticularSection(uglyPackageJson, 'devDependencies'));
+
+                if (ugly) {
+                    await Util.writeJsonThanPrettier(packageJson.absolute, uglyPackageJson);
+                    await Util.deleteSelfByPath(libpath.join(packageJson.dirPath,'node_modules'),true);
+                    await Util.executeCommandLine(`cd ${packageJson.dirPath} && npm install`)
+                } else {
+                    Util.appendInfo(`${packageJson.dirName} is latest project`)
+                }
             }
 
-            function updateSection(uglyPackageJson, sectionName) {
+            function updatePackageJsonParticularSection(uglyPackageJson, sectionName) {
                 const moduleSection = modulePackageJson[sectionName];
                 const targetSection = uglyPackageJson[sectionName];
                 if (targetSection === undefined || moduleSection === undefined) {
                     return;
                 }
                 const waitForUpgrade = Util.getIntersectionObject(moduleSection, targetSection);
-                uglyPackageJson[sectionName] = Util.mergeObject(uglyPackageJson[sectionName], waitForUpgrade);
+                const ugly = !Util.isObjectContainAndEqual(waitForUpgrade, targetSection);
+                if (ugly)
+                    uglyPackageJson[sectionName] = Util.mergeObject(uglyPackageJson[sectionName], waitForUpgrade);
+                return ugly;
             }
-
 
         }
     )();

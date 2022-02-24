@@ -106,6 +106,7 @@ class NodeUtiller extends Utiller {
             isFile: false,
             isDirectory: true,
             dirName: undefined,
+            dirPath: undefined,
             extension: undefined,
             fileName: undefined,
             fileNameExtension: undefined,
@@ -113,6 +114,7 @@ class NodeUtiller extends Utiller {
         }
 
         if (this.isFile(absolute)) {
+
             obj['extension'] = absolute.split('\.').pop();
             const fileNameStrings = absolute.split('\/').pop().split('\.');
             fileNameStrings.pop()
@@ -120,6 +122,7 @@ class NodeUtiller extends Utiller {
             obj['fileName'] = fileNameStrings.join('\.');
             obj['dirName'] = _.nth(absolute.split('\/'), -2);
             obj['isFile'] = true;
+            obj['dirPath'] = this.getFolderPathOfSpecificPath(absolute);
             obj['isDirectory'] = false;
             obj['fileNameExtension'] = `${obj.fileName}.${obj.extension}`;
             obj['lastModifiedTime'] = this.getFileLastModifiedTime(absolute);
@@ -233,6 +236,19 @@ class NodeUtiller extends Utiller {
         }
     }
 
+    async deleteFileOrFolder(path) {
+        this.appendInfo(`刪掉了 ${path}`);
+        await del(path)
+    }
+
+    /** 刪掉自己目錄內的孩子, force能夠強制刪除 自己root_dir 以外的path,保留folder的記體體位置 */
+    async deleteChildByPath(path, force = false) {
+        const pathes = this.getChildPathByPath(path);
+        for (const path of pathes) {
+            await this.deleteSelfByPath(path.absolute, force);
+        }
+    }
+
     /** absolute=> /acc/bbv/{target}/index.js 檢查有沒有在他下面 */
     isUnderTargetPath(absolute, target) {
         const segments = absolute.split('/');
@@ -247,14 +263,6 @@ class NodeUtiller extends Utiller {
         return -1;
     }
 
-
-    /** 刪掉自己目錄內的孩子, force能夠強制刪除 自己root_dir 以外的path */
-    async deleteChildByPath(path, force = false) {
-        const pathes = this.getChildPathByPath(path);
-        for (const path of pathes) {
-            await this.deleteSelfByPath(path.absolute, force);
-        }
-    }
 
     async reinstallNodeModules(path = '../', ...exclude) {
         const ex = [...exclude, 'node_modules', 'utiller', 'configerer'];
@@ -279,11 +287,6 @@ class NodeUtiller extends Utiller {
 
             }
         }
-    }
-
-    async deleteFileOrFolder(path) {
-        this.appendInfo(`刪掉了 ${path}`);
-        await del(path)
     }
 
     /** 拿到目錄下的資料夾列表 */

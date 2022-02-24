@@ -12,14 +12,14 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.21.1",
-    "configerer": "^1.0.7",
+    "configerer": "^1.0.10",
     "crypto-js": "^3.1.9-1",
-    "databazer": "^1.0.1",
+    "databazer": "^1.0.7",
     "json-bigint": "^1.0.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "query-string": "^7.0.1",
-    "utiller": "^1.0.24",
+    "utiller": "^1.0.52",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

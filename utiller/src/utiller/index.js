@@ -1017,14 +1017,34 @@ class Utiller {
     getDifferenceObject(objOfMajor,objOfMinor) {
         return this.getObjectWhile(objOfMajor,objOfMinor,((major,minor,key) => minor[key] === undefined));
     }
+
+    /**
+     *
+     const obj1 = {b:4,c:2};
+     const obj2 = {b:4,c:3};
+     const obj3 = {a:1,b:4,c:3};
+     console.log(util.isObjectContainAndEqual(obj1,obj3)) false
+     console.log(util.isObjectContainAndEqual(obj1,obj3)) true
+     targetObject 是數量比較小那個
+     */
+    isObjectContainAndEqual(targetObject,mainObject) {
+        let equal = true;
+        for(const key in targetObject) {
+            if(mainObject[key] === undefined || mainObject[key] !==targetObject[key]){
+                equal = false;
+                break;
+            }
+        }
+        return equal;
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             const util = new Utiller();
-            const obj1 = {a:1,b:4,c:3};
-            const obj2 = {b:3};
-            console.log(util.getDifferenceObject(obj1,obj2))
+            const obj1 = {a:1,b:4,c:3,d:8};
+            const obj2 = {a:1,b:4,c:3};
+            console.log(util.isContainAndEqual(obj1,obj2))
             // const string = '(有)些(社)會現象與行為表現往往會引發㆟們的民族主義聯想，㆘列何者在民族主義的立場㆖是合宜的？'
             // const array = [{aa: '1'}, {aa: '2'}, {aa: '3'}];
             // const object = {aa: '1', bb: '2', cc: '3'};
