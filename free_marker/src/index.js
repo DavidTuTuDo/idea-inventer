@@ -4218,7 +4218,6 @@ class AppBuilder
             const isModifiedObject = existedObj && existedObj.isModified && existedObj['attributeObj']
             for (const module of LESS_MODULES) {
                 const existed = isModifiedObject && existedObj['attributeObj'][module.name];
-
                 stmts.push(`@media @${module.name} {${existed ? existedObj['attributeObj'][module.name] : sign}}`);
             }
 

@@ -12,11 +12,11 @@
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "configerer": "^1.0.7",
+    "configerer": "^1.0.10",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "prompt": "^1.1.0",
-    "utiller": "^1.0.38"
+    "utiller": "^1.0.46"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

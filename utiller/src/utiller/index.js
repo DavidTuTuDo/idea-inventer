@@ -987,12 +987,44 @@ class Utiller {
         }
         return collection;
     }
+
+    getObjectWhile(major,minor,predicate = (target) => true) {
+        const collection = {};
+        for(const key in major)   {
+            if(predicate(major,minor,key)) {
+                collection[key] = major[key];
+            }
+        }
+        return collection;
+    }
+
+    /** 找出兩個object,相同的屬性
+     sample:
+     const obj1 = {a:1,b:4,c:3};
+     const obj2 = {b:3};
+     console.log(util.getIntersectionObject(obj1,obj2)) => { b: 4 }
+     */
+    getIntersectionObject(objOfMajor,objOfMinor) {
+        return this.getObjectWhile(objOfMajor,objOfMinor,((major,minor,key) => minor[key] !== undefined));
+    }
+
+    /** 找出兩個object,相同的屬性
+     sample:
+     const obj1 = {a:1,b:4,c:3};
+     const obj2 = {b:3};
+     console.log(util.getIntersectionObject(obj1,obj2)) => { a: 1, c: 3 }
+     */
+    getDifferenceObject(objOfMajor,objOfMinor) {
+        return this.getObjectWhile(objOfMajor,objOfMinor,((major,minor,key) => minor[key] === undefined));
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const util = new Utiller();
-
+            const util = new Utiller();
+            const obj1 = {a:1,b:4,c:3};
+            const obj2 = {b:3};
+            console.log(util.getDifferenceObject(obj1,obj2))
             // const string = '(有)些(社)會現象與行為表現往往會引發㆟們的民族主義聯想，㆘列何者在民族主義的立場㆖是合宜的？'
             // const array = [{aa: '1'}, {aa: '2'}, {aa: '3'}];
             // const object = {aa: '1', bb: '2', cc: '3'};
