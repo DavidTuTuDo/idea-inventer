@@ -442,7 +442,7 @@ class NodeUtiller extends Utiller {
             isError ? console.error(...datas) : console.log(...datas);
         }
 
-        const persistlog = `${new Date()} ${isError ? `ERROR` : `LOG`} : ${this.getLogString(datas)}`;
+        const persistlog = `${this.getCurrentTimeFormat()} ${isError ? `ERROR` : `LOG`} : ${this.getLogString(datas)}`;
         this.appendFile(path, persistlog);
     }
 

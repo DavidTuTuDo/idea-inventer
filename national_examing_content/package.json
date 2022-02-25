@@ -12,10 +12,10 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.10",
-    "databazer": "^1.0.7",
+    "databazer": "^1.0.9",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller": "^1.0.52"
+    "utiller": "^1.0.54"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

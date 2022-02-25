@@ -11,9 +11,9 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.10",
-    "utiller": "^1.0.52",
+    "utiller": "^1.0.54",
     "linepayer": "^1.0.4",
-    "databazer": "^1.0.7",
+    "databazer": "^1.0.9",
     "lodash": "^4.17.20",
     "moment": "^2.29.1"
   },

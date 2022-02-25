@@ -13,6 +13,7 @@ class gener_util {
 
 // Util.generatePackage('../scraper',false).then();
 Util.generatePackage('../utiller',true).then();
+// Util.generatePackage('../databazer',true).then();
 // Util.generatePackage('../configerer',true).then();
 
 export { gener_util as gener_util }

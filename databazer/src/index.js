@@ -13,7 +13,7 @@ const SPLIT_SIGN_OF_ARRAY = `#&#@#`;
 
 function getValidPresentOfSQLStatement(value) {
     if (_.isArray(value) || _.isObject(value))
-        return `'${normalizeText(Util.deepFlat(value,SPLIT_SIGN_OF_ARRAY))}'`;
+        return `'${normalizeText(Util.deepFlat(value, SPLIT_SIGN_OF_ARRAY))}'`;
     if (_.isString(value))
         return `'${normalizeText(value)}'`;
     return value;
@@ -317,7 +317,7 @@ class SqliteHandler {
         if (!Util.has(configerer.DATABASE_COLUMN_STATE, state)) {
             throw ERROR(9999, `state${state} not valid`);
         }
-        return await this.updateRecords('SINGER', {'state': state}, SqliteHandler.Builder().equal('uid', uid).stmt());
+        return await this.updateRecords(tableName, {'state': state}, SqliteHandler.Builder().equal('uid', uid).stmt());
     }
 
     async insertRecords(tableName, contents) {
@@ -346,6 +346,10 @@ class SqliteHandler {
         }
     }
 
+    async getCountsOfRecord(tableName) {
+        const result = await this.db.all(`select count(*) from ${tableName}`);
+        return Util.getObjectValue(result.shift());
+    }
 
     getInsertStmt(tableName, content) {
         const contentValues = _.map(content, (value) => {
@@ -500,7 +504,7 @@ class ConditionBuilder {
 
 }
 
-export {SqliteHandler as databazer,ConditionBuilder as builder}
+export {SqliteHandler as databazer, ConditionBuilder as builder}
 /** 使用範例
  Util.appendInfo(await handler.fetchRecords("TONE",
  builder.gt('popularLevel', 50000).orderBy({'popularLevel': 'DESCS'})
@@ -511,8 +515,12 @@ export {SqliteHandler as databazer,ConditionBuilder as builder}
  */
 
 if (configerer.DEBUG_MODE) {
+    (async () => {
+        // const h = new SqliteHandler('./secret_infos_latest.db');
+        // await h.init()
+        // console.log(await h.getCountsOfRecord('SINGER'))
 
+    })();
 
 }
-
 

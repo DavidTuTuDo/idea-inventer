@@ -321,7 +321,27 @@ import {databazer as SQL} from 'databazer';
                 }
             }
 
-            const poollers = [];
+            function joinTaskToPool(
+                countOfWorker = 1,
+                nameOfPool = 'DEFAULT',
+                ignoreFirstRun = true,
+                asyncTask = async () => {
+                    await Util.syncDelay()
+                },
+                period = 1000
+            ) {
+                const pool = new Pooller(countOfWorker);
+                pool.setPoolId(nameOfPool);
+                pool.setIgnoreFirstRun(ignoreFirstRun);
+                pool.runInBackGround(pool.runInInfinite, asyncTask,
+                    period);
+                pool.setTaskFailHandler(errorHandler);
+                allOfPooller.push(pool);
+                return pool;
+            }
+
+
+            const allOfPooller = [];
 
             const errorHandler = (error) => {
                 Util.appendError(`９１pu => TASK 遇到問題 ${JSON.stringify(error.message)}`);
@@ -339,54 +359,18 @@ import {databazer as SQL} from 'databazer';
             const threeMin = 3 * oneMin;
             const tenMin = 10 * oneMin;
 
-            const singerFetcher = new Pooller(1);
-            singerFetcher.setPoolId("SINGER FETCHER");
-            singerFetcher.setIgnoreFirstRun();
-            singerFetcher.runInBackGround(singerFetcher.runInInfinite, persistSingers,
-                oneMin);
-            singerFetcher.setTaskFailHandler(errorHandler);
-            poollers.push(singerFetcher);
 
+            joinTaskToPool(1, "SINGER FETCHER", true,  persistSingers, oneMin);
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            const songFetch = new Pooller(2);
-            songFetch.setPoolId("SONG FETCHER");
-            songFetch.runInBackGround(songFetch.runInInfinite, persistSongs, tenSecs);
-            songFetch.setTaskFailHandler(errorHandler);
-            poollers.push(songFetch);
-
+            joinTaskToPool(2, "SONG FETCHER", false,  persistSongs, tenSecs);
             /** 抓取排行版上的資訊們 */
-            const rankFetch = new Pooller(1);
-            rankFetch.cleanTaskInterval();
-            rankFetch.setIgnoreFirstRun()
-            rankFetch.setPoolId("RANK FETCHER");
-            rankFetch.enableTaskTimeout(true, fiveMin);
-            rankFetch.runInBackGround(rankFetch.runInInfinite, persistRankTable, tenMin);
-            rankFetch.setTaskFailHandler(errorHandler);
-            poollers.push(rankFetch);
-
+            joinTaskToPool(1, "RANK FETCHER", true,  persistRankTable, tenMin);
             /** 監督browser page 有沒有爆掉 */
-            const browserWatcher = new Pooller(1);
-            browserWatcher.setPoolId("BROWSER WATCHER");
-            browserWatcher.runInBackGround(browserWatcher.runInInfinite, browserPageWatcher, oneMin);
-            browserWatcher.setTaskFailHandler(errorHandler);
-            poollers.push(browserWatcher);
-
+            joinTaskToPool(1, "BROWSER WATCHER", true,  browserPageWatcher, oneMin);
             /** 猛抓LATEST TABLE的歌曲*/
-            const latestToneFetch = new Pooller(1);
-            latestToneFetch.setPoolId("LATEST SONG FETCHER");
-            latestToneFetch.setIgnoreFirstRun();
-            latestToneFetch.runInBackGround(latestToneFetch.runInInfinite, latestSongPersist,
-                fiveMin);
-            latestToneFetch.setTaskFailHandler(errorHandler);
-            poollers.push(latestToneFetch);
-
+            joinTaskToPool(1, "LATEST SONG FETCHER", true,  latestSongPersist, fiveMin);
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            const toneFetch = new Pooller(3);
-            toneFetch.cleanTaskInterval();
-            toneFetch.setPoolId("TONE FETCHER");
-            toneFetch.runInBackGround(toneFetch.runInInfinite, persistTone, fourSecs);
-            toneFetch.setTaskFailHandler((error) => console.error(`.....無奈呀 ${error.message}`));
-            poollers.push(toneFetch);
+            joinTaskToPool(5, "TONE FETCHER", true,  persistTone, fourSecs);
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
@@ -396,7 +380,7 @@ import {databazer as SQL} from 'databazer';
                 Util.appendInfo(`讀取了 ${Config.PATH_DYNAMIC_INFO}, 是否執行停止:${cancelAllThread}`);
                 if (cancelAllThread) {
                     Util.appendInfo(`主線程收到關閉指令...`);
-                    for (const pooller of poollers) {
+                    for (const pooller of allOfPooller) {
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
                         await pooller.stopInBackground();
                         pooller.showState();

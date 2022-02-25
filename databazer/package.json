@@ -1,6 +1,6 @@
 {
   "name": "databazer",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.10",
-    "utiller": "^1.0.52",
+    "utiller": "^1.0.54",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "sqlite": "^4.0.19",

@@ -33,6 +33,7 @@ if (configerer.DEBUG_MODE) {
                     Util.appendInfo(`${packageJson.dirName} is latest project`)
                 }
             }
+            Util.appendInfo(`refresh all dependencies succeed!!!!!!`)
 
             function updatePackageJsonParticularSection(uglyPackageJson, sectionName) {
                 const moduleSection = modulePackageJson[sectionName];

@@ -90,9 +90,10 @@ class InfinitePool {
 
     /** return true if task completed, after 15 secs, force leave */
     stopInBackground = async () => {
-        this.isQueuePolling = false;
+        this.terminate();
         while (_.size(this.executingTaskQueue) > 0) {
             await Util.syncDelay(1000);
+            Util.appendInfo(this.getPoollerLogFormat(`咬在 stopInBackground 出不來`))
         }
         return true;
     }
@@ -395,8 +396,8 @@ class InfinitePool {
     }
 
     /** 如果設定interval, 第一個run不要執行的話,就設定true */
-    setIgnoreFirstRun() {
-        this.ignoreFirstRun = true;
+    setIgnoreFirstRun(ignore = true) {
+        this.ignoreFirstRun = ignore;
     }
 
     /** 加上一個 被動式啟動, 不然一直while() run, 可能有效能上的問題,現階端只支援RUN_BY_TASK */
@@ -405,7 +406,7 @@ class InfinitePool {
             return;
         }
         if (this.state === configerer.POOLLER_STATE.RUN_BY_EACH_TASK) {
-            /** 因為不這樣做, 就會產生 race condition, 會產生出3個runInGround instance */
+            /** 因為不這樣做, 就會產生 race condition, 會產生出3個runInBackGround instance */
             this.runByEachTaskInBackGround();
             return;
         }

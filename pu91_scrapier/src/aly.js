@@ -13,6 +13,7 @@ import config from './config';
     Util.appendInfo('ING SINGER  ' + ((await database.fetchRecords('SINGER', new SQL.Builder().equal('state', 'ING').stmt())).length));
     Util.appendInfo('NOT SINGER  ' + ((await database.fetchRecords('SINGER', new SQL.Builder().equal('state', 'NOT').stmt())).length));
     Util.appendInfo('DONE SINGER ' + ((await database.fetchRecords('SINGER', new SQL.Builder().equal('state', 'DONE').stmt())).length));
+    Util.appendInfo('TONE ' + ((await database.getCountsOfRecord('TONE'))));
 
 
 })();
