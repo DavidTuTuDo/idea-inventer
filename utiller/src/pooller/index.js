@@ -45,6 +45,7 @@ class InfinitePool {
 
     isQueuePolling = false;
     /** 目前queue機制是while(isQueuePolling)  沒任務就睡一下, 有任務就做事情, 發現task有延遲, 就要注意是不是taskInterval*/
+
     dispatchers = [];
 
     initialTaskKickOff = false;
@@ -226,7 +227,7 @@ class InfinitePool {
         }).finally(() => {
             // console.info(self.getPoollerLogFormat(self.getPoollerLogFormat('outer finally')));
             const result = {taskResolved: taskSucceed, resolve: taskResult, reject: taskError};
-            Util.appendInfo('客端委託的task執行完回傳的內容', result, hash)
+            // Util.appendInfo('客端委託的task執行完回傳的內容', result, hash)
             self.removeResolveOrRejectPromiseByHash(hash, result);
 
         })
@@ -472,7 +473,7 @@ class InfinitePool {
         }
 
         async function execute() {
-            console.log(`\n\n正要執行的隊列`,self.executingTaskQueue)
+            // Util.appendInfo(`\n\n正要執行的隊列`,self.executingTaskQueue)
             await Promise.race(get());
         }
 
@@ -537,7 +538,6 @@ class InfinitePool {
     async exampleOfRunInBackground() {
         const pool = new InfinitePool(1);
         pool.enableTaskTimeout(true, 3000);
-
         function asyncTask(sign, taskSpend = 2000) {
             return async () => {
                 await Util.syncDelay(taskSpend)
