@@ -76,7 +76,7 @@ const Config = {
         POPULAR: {ID: 1, SORT: {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}},
 
     },
-    MAX_COUNTS_IN_RANK: 1000, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['DONE', 'ING', 'NOT'],
+    MAX_COUNTS_IN_RANK: 1000, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['FAIL','DONE', 'ING', 'NOT'],
 }
 
 const mergeObjectConfig = Util.mergeObject(configerer, Config);

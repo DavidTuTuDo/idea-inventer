@@ -47,10 +47,9 @@ import {databazer as SQL} from 'databazer';
          *
          * */
         async function fetchRankTable(mainType = Config.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
-            let page;
+            const page= await browser.newPage();;
             const all = [];
             try {
-                page = await browser.newPage();
                 await page.goto(Config.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
                 await page.click(`span[sid="${mainType}"]`);
                 await syncDelay(Config.HACK_DELAY_OF_MILLION_SECS);
@@ -205,7 +204,7 @@ import {databazer as SQL} from 'databazer';
                         SQL.Builder().equal('uid', singer.uid).stmt());
                 } catch (error) {
                     Util.appendError(`persistSongsBySinger() 出現錯誤了, ${error.message}`)
-                    await database.updateState('SINGER', 'NOT', singer.uid);
+                    await database.updateState('SINGER', 'FAIL', singer.uid);
                 }
             } else {
                 Util.appendInfo(`沒有未完成的歌手了....睡個 ${await Util.syncDelayRandom()} mms`);
@@ -218,33 +217,33 @@ import {databazer as SQL} from 'databazer';
                 const start = _.now();
                 const record = Util.getRandomItemOfArray(
                     await database.fetchRecords('SONG', SQL.Builder()
-                        .gte('popularLevel',
-                            Config.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD)
-                        .and().equal('state', 'NOT')
-                        .orderByRandom().limit(1).stmt())
+                        .gte('popularLevel', Config.HACK_FETCH_DEPEND_ON_POPULAR_LEVEL_THRESHOLD).and().equal('state', 'NOT').orderByRandom().limit(1).stmt())
                 );
 
                 if (record) {
                     song = record;
-                    await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
-
-                    const raw = await fetchTone(song);
-                    if (raw !== undefined) {
-                        const tone = raw.getNormalizeToneObject();
-                        const cost = _.now() - start;
-                        await database.lazyInsertRecord('TONE', {
-                            ...tone,
-                            cost
-                        }, 'name', 'singer');
-                        await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
-                        Util.appendInfo(`成功儲存TONE '${tone.name}' .....`)
-                        return true;
-
+                    if (Util.or(_.isEmpty(song.name) || _.isEmpty(song.url))){
+                        await database.updateRecords('SONG', {state: 'FAIL'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                     } else {
-                        Util.appendError(
-                            `persistTone() ${song.name} 出現錯誤, tone 是 undefined`);
-                        await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
-                        return false;
+                        await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
+                        const raw = await fetchTone(song);
+                        if (raw !== undefined) {
+                            const tone = raw.getNormalizeToneObject();
+                            const cost = _.now() - start;
+                            await database.lazyInsertRecord('TONE', {
+                                ...tone,
+                                cost
+                            }, 'name', 'singer');
+                            await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
+                            Util.appendInfo(`成功儲存TONE '${tone.name}' .....`)
+                            return true;
+
+                        } else {
+                            Util.appendError(
+                                `persistTone() ${song.name} 出現錯誤, tone 是 undefined`);
+                            await database.updateRecords('SONG', {state: 'NOT'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
+                            return false;
+                        }
                     }
                 } else {
                     Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500, 3500)}`)
@@ -321,14 +320,11 @@ import {databazer as SQL} from 'databazer';
                 }
             }
 
-            function joinTaskToPool(
-                countOfWorker = 1,
-                nameOfPool = 'DEFAULT',
-                ignoreFirstRun = true,
-                asyncTask = async () => {
-                    await Util.syncDelay()
-                },
-                period = 1000
+            function joinTaskToPool(countOfWorker = 1, nameOfPool = 'DEFAULT', ignoreFirstRun = true,
+                                    asyncTask = async () => {
+                                        await Util.syncDelay()
+                                    },
+                                    period = 1000
             ) {
                 const pool = new Pooller(countOfWorker);
                 pool.setPoolId(nameOfPool);
@@ -360,20 +356,24 @@ import {databazer as SQL} from 'databazer';
             const tenMin = 10 * oneMin;
 
 
-            joinTaskToPool(1, "SINGER FETCHER", true,  persistSingers, oneMin);
-            /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            joinTaskToPool(2, "SONG FETCHER", false,  persistSongs, tenSecs);
+            /** 抓所有歌手 */
+            // joinTaskToPool(1, "SINGER FETCHER", true, persistSingers, threeMin);
             /** 抓取排行版上的資訊們 */
-            joinTaskToPool(1, "RANK FETCHER", true,  persistRankTable, tenMin);
+            joinTaskToPool(3, "RANK FETCHER", false, persistRankTable, tenSecs);
             /** 監督browser page 有沒有爆掉 */
-            joinTaskToPool(1, "BROWSER WATCHER", true,  browserPageWatcher, oneMin);
-            /** 猛抓LATEST TABLE的歌曲*/
-            joinTaskToPool(1, "LATEST SONG FETCHER", true,  latestSongPersist, fiveMin);
-            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            joinTaskToPool(5, "TONE FETCHER", true,  persistTone, fourSecs);
+            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, oneMin);
+            // /** 猛抓LATEST TABLE的歌曲*/
+            // joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, threeMin);
+            // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+            // joinTaskToPool(4, "TONE FETCHER", true, persistTone, fourSecs);
+            // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+            // joinTaskToPool(2, "SONG FETCHER", false, persistSongs, tenSecs);
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
+
+                Util.exeAll(allOfPooller,(each) => each.showState())
+
                 Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
                 await Util.syncDelay(random);
                 const cancelAllThread = Util.getFileContextInJSON(Config.PATH_DYNAMIC_INFO)['cancel'];

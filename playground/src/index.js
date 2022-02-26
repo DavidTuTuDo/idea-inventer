@@ -16,12 +16,13 @@ export {playground as playground}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const oneToTen = '123456789';
-            const length = 5
-            console.log(oneToTen.substr(0,length));
-            console.log(AtoZ.substr(0,length));
-
+            // const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            // const oneToTen = '123456789';
+            // const length = 5
+            // console.log(oneToTen.substr(0,length));
+            // console.log(AtoZ.substr(0,length));
+            const ddd = [];
+            console.log(ddd.shift());
                 // const sss = true;
             // console.log(!!sss);
             // const a = {aa: 1, ab: {abc: 1, abd: 2}}
@@ -47,11 +48,11 @@ if (configerer.DEBUG_MODE) {
             // const rrr = !!ddd;
             // console.log('dddd===> ', rrr);
 
-            const line = `@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";`;
-            const line2 = `@media @mobile`;
-            let pattern = new RegExp('^' + '@[desktop|mobile|desktop]', 'i');
-
-            console.log(pattern.test(line2));
+            // const line = `@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";`;
+            // const line2 = `@media @mobile`;
+            // let pattern = new RegExp('^' + '@[desktop|mobile|desktop]', 'i');
+            //
+            // console.log(pattern.test(line2));
 
         }
     )();
