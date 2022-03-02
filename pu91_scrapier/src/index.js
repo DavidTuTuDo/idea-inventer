@@ -47,7 +47,8 @@ import {databazer as SQL} from 'databazer';
          *
          * */
         async function fetchRankTable(mainType = Config.RANK_TABLE_TYPE.POPULAR.ID, sortType) {
-            const page= await browser.newPage();;
+            const page = await browser.newPage();
+            ;
             const all = [];
             try {
                 await page.goto(Config.PATH_SAMPLE_URL_SINGER, {waitUntil: 'networkidle2'});
@@ -222,7 +223,7 @@ import {databazer as SQL} from 'databazer';
 
                 if (record) {
                     song = record;
-                    if (Util.or(_.isEmpty(song.name) || _.isEmpty(song.url))){
+                    if (Util.or(_.isEmpty(song.name) || _.isEmpty(song.url))) {
                         await database.updateRecords('SONG', {state: 'FAIL'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                     } else {
                         await database.updateRecords('SONG', {state: 'ING'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
@@ -320,7 +321,9 @@ import {databazer as SQL} from 'databazer';
                 }
             }
 
-            function joinTaskToPool(countOfWorker = 1, nameOfPool = 'DEFAULT', ignoreFirstRun = true,
+            function joinTaskToPool(countOfWorker = 1,
+                                    nameOfPool = 'DEFAULT',
+                                    ignoreFirstRun = true,
                                     asyncTask = async () => {
                                         await Util.syncDelay()
                                     },
@@ -329,7 +332,7 @@ import {databazer as SQL} from 'databazer';
                 const pool = new Pooller(countOfWorker);
                 pool.setPoolId(nameOfPool);
                 pool.setIgnoreFirstRun(ignoreFirstRun);
-                pool.runInBackGround(pool.runInInfinite, asyncTask,
+                pool.runInfiniteInBackground(asyncTask,
                     period);
                 pool.setTaskFailHandler(errorHandler);
                 allOfPooller.push(pool);
@@ -359,21 +362,19 @@ import {databazer as SQL} from 'databazer';
             /** 抓所有歌手 */
             // joinTaskToPool(1, "SINGER FETCHER", true, persistSingers, threeMin);
             /** 抓取排行版上的資訊們 */
-            joinTaskToPool(3, "RANK FETCHER", false, persistRankTable, tenSecs);
+            // joinTaskToPool(3, "RANK FETCHER", false, persistRankTable, tenSecs);
             /** 監督browser page 有沒有爆掉 */
             // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, oneMin);
             // /** 猛抓LATEST TABLE的歌曲*/
-            // joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, threeMin);
+            joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, threeMin);
             // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            // joinTaskToPool(4, "TONE FETCHER", true, persistTone, fourSecs);
+            joinTaskToPool(6, "TONE FETCHER", true, persistTone, fourSecs);
             // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            // joinTaskToPool(2, "SONG FETCHER", false, persistSongs, tenSecs);
+            // joinTaskToPool(10, "SONG FETCHER", false, persistSongs, tenSecs);
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
-
-                Util.exeAll(allOfPooller,(each) => each.showState())
-
+                Util.exeAll(allOfPooller, (each) => each.showState())
                 Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
                 await Util.syncDelay(random);
                 const cancelAllThread = Util.getFileContextInJSON(Config.PATH_DYNAMIC_INFO)['cancel'];

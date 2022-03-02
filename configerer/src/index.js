@@ -1,8 +1,8 @@
 const GlobalConfig = {
     ENCRYPT_KEY: 'DavidIsProudOfSingle',
     IS_NODE_ENV: process.env.is_node,
-    UID:'uid',
-    SPLIT_SIGN_OF_ARRAY:'#&#@#',
+    UID: 'uid',
+    SPLIT_SIGN_OF_ARRAY: '#&#@#',
     DEBUG_MODE: process.env.self_debug, /** use sample object under ./ObjectSamples/* */
     MAIN_MSG: {
         SHOW_ERROR: true,
@@ -21,7 +21,7 @@ const GlobalConfig = {
     POOLLER_ENABLE_TASK_TIMEOUT: true,
     POOLLER_TASK_TIMEOUT_DEFAULT: 40000,
     POOLLER_ENABLE_TIMEOUT: true,
-    POOLLER_WORKER_DEFAULT:1,
+    POOLLER_WORKER_DEFAULT: 1,
     /** 用來處理 Queue 當沒有工作(TASK)時, 設定多久後讓他的while停止, 減少不必要的耗能  */
     POOLLER_ENABLE_QUEUE_TERMINATE_BY_SLEEP_COUNT: true,
     POOLLER_QUEUE_MAX_SLEEP_COUNTS_DEFAULT: 15,

@@ -64,7 +64,8 @@ class Utiller {
      *  string = `@desktop: ~"only screen and (min-width: 600px) and (max-width: 1680px)";`;
      *  rule = '@[desktop|mobile|desktop]';
      *  return true | false
-     * */
+     *
+     */
     startWithRegex(string = '', rule = '.') {
         let pattern = new RegExp(`^${rule}`, 'i');
         return (pattern.test(string));

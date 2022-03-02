@@ -85,10 +85,10 @@ const ERRORs = {
         message: `如果要用runInBackground的task發生Error,就必須設定 backgoundtasklistener,不能讓task發生錯誤而沒有紀錄`
     },
     4009: {
-        message: `如果走到了這一層, 代表 runInBackGround() 在無預期的狀況下被停止了, 代表執行中的task拋出的catch()沒有自己處理好`
+        message: `如果走到了這一層, 代表 Pooller runInBackGround() 在無預期的狀況下被停止了, 代表assign task throw ERROR, 請善用setTaskFailHandler()`
     },
     4010: {
-        message: `task timeout`
+        message: `assign task timeout happen`
     },
     4011: {
         message: `不能走到這裡, 目前被動式的機制只支援runByEachTask`,

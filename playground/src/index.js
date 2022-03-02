@@ -21,9 +21,57 @@ if (configerer.DEBUG_MODE) {
             // const length = 5
             // console.log(oneToTen.substr(0,length));
             // console.log(AtoZ.substr(0,length));
-            const ddd = [];
-            console.log(ddd.shift());
-                // const sss = true;
+
+
+            async function runTaskWithTimeout() {
+                const timeout = (ms, message) => {
+                    return new Promise((_, reject) => {
+                        setTimeout(() => {
+                            reject(new Error(message));
+                        }, ms);
+                    });
+                };
+
+                try {
+                    await Promise.race([
+                        timeout(3000, 'timeout happen'), // 3000 = the maximum time to wait
+                        (async () => {
+                            // ..
+                            console.log('task start')
+                            await wait(4000);
+                        })()
+                    ]);
+
+                    /** assume this is async function*/
+                    console.log('task complete')
+                } catch (error) {
+                    console.log('catch error', error.message);
+                } finally {
+                    console.log('task finally')
+                }
+            }
+
+            const timeout = (ms, message) => {
+                return new Promise((_, reject) => {
+                    setTimeout(() => {
+                        reject(new Error(message));
+                    }, ms);
+                });
+            };
+
+            async function wait(ms) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve(ms);
+                    }, ms);
+                });
+            }
+
+            await runTaskWithTimeout();
+
+            // const ddd = [];
+            // console.log(ddd.shift());
+            // const sss = true;
             // console.log(!!sss);
             // const a = {aa: 1, ab: {abc: 1, abd: 2}}
             // const b = {bb: 2, bc: {abc: 1, abd: 2}}
