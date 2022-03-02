@@ -335,15 +335,13 @@ import {databazer as SQL} from 'databazer';
                 pool.runInfiniteInBackground(asyncTask,
                     period);
                 pool.setTaskFailHandler(errorHandler);
-                allOfPooller.push(pool);
+                poollers.push(pool);
                 return pool;
             }
 
-
-            const allOfPooller = [];
-
+            const poollers = [];
             const errorHandler = (error) => {
-                Util.appendError(`９１pu => TASK 遇到問題 ${JSON.stringify(error.message)}`);
+                Util.appendError(`９１pu => TASK 遇到問題 ${error.message}`);
             }
 
             // /** 檢查歌手 once 2 mins */
@@ -366,7 +364,7 @@ import {databazer as SQL} from 'databazer';
             /** 監督browser page 有沒有爆掉 */
             // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, oneMin);
             // /** 猛抓LATEST TABLE的歌曲*/
-            joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, threeMin);
+            // joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, threeMin);
             // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
             joinTaskToPool(6, "TONE FETCHER", true, persistTone, fourSecs);
             // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
@@ -374,14 +372,14 @@ import {databazer as SQL} from 'databazer';
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
-                Util.exeAll(allOfPooller, (each) => each.showState())
+                Util.exeAll(poollers, (each) => each.showState())
                 Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
                 await Util.syncDelay(random);
                 const cancelAllThread = Util.getFileContextInJSON(Config.PATH_DYNAMIC_INFO)['cancel'];
                 Util.appendInfo(`讀取了 ${Config.PATH_DYNAMIC_INFO}, 是否執行停止:${cancelAllThread}`);
                 if (cancelAllThread) {
                     Util.appendInfo(`主線程收到關閉指令...`);
-                    for (const pooller of allOfPooller) {
+                    for (const pooller of poollers) {
                         Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
                         await pooller.stopInBackground();
                         pooller.showState();
