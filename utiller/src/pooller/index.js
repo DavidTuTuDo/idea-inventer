@@ -337,7 +337,7 @@ class InfinitePool {
         this.enableTaskSleepInterval(!!interval, interval);
         this.setState(configerer.POOLLER_STATE.RUN_INFINITE);
         while (this.ruleOfInfiniteRun()) {
-            this.printLogMessage(`415123, runInInfinite() 正在無限Loop中,${this.getLogMessageOfExecutingTaskQueueCount()}`)
+            this.printLogMessage(`415123, runInInfinite() 正在無限Loop中, ${this.getLogMessageOfExecutingTaskQueueCount()}`)
             await this.#run();
         }
     }
@@ -375,9 +375,10 @@ class InfinitePool {
         if (this.atomicBgInstance !== undefined)
             clearTimeout(this.atomicBgInstance);
         this.atomicBgInstance = this.runInBackGround(this.runByEachTask);
-        /** 因為偷懶, 所以回傳整個instance, 這樣程式碼就只要寫一行
-         *  const pool = new InfinitePool(1).runByEachTaskInBackGround();
-         * */
+        /**
+         * 因為偷懶, 所以回傳整個instance, 這樣程式碼就只要寫一行
+         * const pool = new InfinitePool(1).runByEachTaskInBackGround();
+         */
         return this;
     }
 
@@ -399,7 +400,6 @@ class InfinitePool {
      * runByTimes目前只支援1個worker
      * */
     runByTimes = async (functionOfAsyncTask, times) => {
-        this.maxWorker = 1
         this.add(functionOfAsyncTask);
         this.beforeRun();
         this.setState(configerer.POOLLER_STATE.RUN_BY_TIMES);
@@ -493,7 +493,7 @@ class InfinitePool {
                 this.removeTaskMapByHash(taskInfo.hash);
                 this.appendTaskToExecuteQueue(taskInfo.hash, promise);
             } else {
-                /** 如果是runByTask模式, 沒有task, 就不能繼續loop了*/
+                /** 如果是runByTask模式, 沒有taskInfo, 就代表QueueOfAssignedTask已經空了,需要停止while loop */
                 break;
             }
             this.printLogMessage(`848451 是不是在這裡無限迴圈跑跑跑`, true);
@@ -607,7 +607,6 @@ class InfinitePool {
     /** following function are examples **/
     /** following function are examples **/
     /** following function are examples **/
-
     /** following function are examples **/
     /** following function are examples **/
 
@@ -732,13 +731,13 @@ class InfinitePool {
     }
 
     async exampleOfRunByCount() {
-        const pool = new InfinitePool(1);
+        const pool = new InfinitePool(4);
         let time = 0
-        await pool.runByTimes(20, async () => {
-            await Util.syncDelay(1000);
+        await pool.runByTimes(async () => {
+            await Util.syncDelay(100);
             time++
             console.log(`execute the ${time} time`)
-        })
+        },30 )
     }
 
     async exampleOfInfiniteUnStopLoopingIssue() {
@@ -788,7 +787,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool().exampleOfWait4ResultAndRunInBackground()
+        await new InfinitePool().exampleOfRunByCount()
     })();
 
 }

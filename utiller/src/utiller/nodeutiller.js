@@ -747,7 +747,7 @@ if (configerer.DEBUG_MODE) {
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            await new NodeUtiller().generatePackage('../utiller',false);
+            // await new NodeUtiller().generatePackage('../utiller',false);
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
