@@ -20,8 +20,6 @@ export { gener_util as gener_util }
 
 if (configerer.DEBUG_MODE) {
 (async () => {
-
-
     }
 )();
 }

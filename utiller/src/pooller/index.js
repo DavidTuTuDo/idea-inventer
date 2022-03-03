@@ -15,8 +15,11 @@ import ERROR from '../exceptioner';
  6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
  *
  */
+const SPECIFICITY_DEBUG = false;
 
 class InfinitePool {
+
+    isRunInBackgroundMode = false;
 
     state = configerer.POOLLER_STATE.RUN_BY_EACH_TASK
 
@@ -35,6 +38,8 @@ class InfinitePool {
     /** 用於 runByParam */
     queueOfWaitingParam = [];
 
+    /** runByTimes 的次數 */
+    countsOfRunByTimes = -1;
 
     /** 裡面放 {high:[], low:[], medium }
      * taskQueue就是指裡面有多少Task!
@@ -97,7 +102,8 @@ class InfinitePool {
     }
 
     printLogMessage(message, error = false, ...infos) {
-        Util.printLogMessage(this.getPoollerLogFormat(message), error, ...infos)
+        if (SPECIFICITY_DEBUG)
+            Util.printLogMessage(this.getPoollerLogFormat(message), error, ...infos)
     }
 
     /** return true if task completed, after 15 secs, force leave
@@ -142,7 +148,7 @@ class InfinitePool {
     }
 
     async addTaskAndWait4Result(asyncTask, priority = 'low', taskName = 'noName') {
-        this.trigger();
+        this.triggerBgInstance();
         return new Promise((resolve, reject) => {
             const callbackWrapper = (result) => {
                 if (result.assignedTaskCompleted) {
@@ -160,10 +166,8 @@ class InfinitePool {
         this.mapOfHashNCallbackWrapper[hash] = callback;
     }
 
-    getTaskQueueCount = () => {
+    getCountOfAssignTaskInQueue = () => {
         let size = 0;
-        if (this.state === configerer.POOLLER_STATE.RUN_BY_PARAMS) return this.queueOfWaitingParam.length;
-
         for (const prior of configerer.POOLLER_PRIORITY) {
             size += this.queueOfAssignTask[prior].length;
         }
@@ -198,12 +202,11 @@ class InfinitePool {
     }
 
     /** 這裡的設計是利用兩個promise, 一個為了timeout , 一個被客端委託的task */
-    taskWrapper = (assignedTask, hashOfTask) => () => {
+    taskWrapper = (assignedTask, hashOfTask, param) => () => {
         const self = this;
         let timeoutHash = '';
         let assignedTaskResult;
         let assignedTaskError;
-        let param = self.queueOfWaitingParam.shift();
         let isAssignedTaskCompleted = true;
         /** 用來判斷task 有沒有走到 catch裡面, 不然resolve了但return undefined, task會不知所措 */
         return new Promise((resolve, reject) => {
@@ -352,34 +355,24 @@ class InfinitePool {
     }
 
     appendParamInToQueue = (...params) => {
-        for (const param of params) {
-            this.queueOfWaitingParam.push(param);
-        }
+        this.triggerBgInstance();
+        this.queueOfWaitingParam.push(...params);
     }
 
     /** run time by params length, param有可能會是undefined, 要在functionOfAsyncTask判斷 */
     runByParams = async (functionOfAsyncTask, ...params) => {
+        if (functionOfAsyncTask === undefined) {
+            functionOfAsyncTask = this.queueOfAssignTask['low'].shift().task;
+        }
         if (!_.isFunction(functionOfAsyncTask)) throw new ERROR(4006, `runByParams error, typeof task can't be ${typeof functionOfAsyncTask}`);
         if (!_.isArray(params)) throw new ERROR(4006, `runByParams error, typeof params can't be ${typeof params}`);
-
-        this.appendParamInToQueue(...params)
-        this.add(functionOfAsyncTask);
-        this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
         this.beforeRun();
-        while (this.ruleOfInfiniteRun() && !_.isEmpty(this.queueOfWaitingParam)) {
+        this.add(functionOfAsyncTask);
+        this.appendParamInToQueue(...params)
+        this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
+        while (this.ruleOfInfiniteRun() && _.size(this.queueOfWaitingParam) > 0) {
             await this.#run();
         }
-    }
-
-    runByEachTaskInBackGround = () => {
-        if (this.atomicBgInstance !== undefined)
-            clearTimeout(this.atomicBgInstance);
-        this.atomicBgInstance = this.runInBackGround(this.runByEachTask);
-        /**
-         * 因為偷懶, 所以回傳整個instance, 這樣程式碼就只要寫一行
-         * const pool = new InfinitePool(1).runByEachTaskInBackGround();
-         */
-        return this;
     }
 
     runByEachTask = async (tasks = []) => {
@@ -389,7 +382,7 @@ class InfinitePool {
         this.setState(configerer.POOLLER_STATE.RUN_BY_EACH_TASK);
         while (this.ruleOfInfiniteRun()) {
             await this.#run(this.id);
-            if (this.getTaskQueueCount() <= 0) {
+            if (this.getCountOfAssignTaskInQueue() <= 0) {
                 this.terminate();
                 this.printLogMessage(`788121, runByEachTask() 因為 taskOfWaitingQueue 清空而停止`)
             }
@@ -399,18 +392,21 @@ class InfinitePool {
     /** run times wound be depend on times, task would by loop and sync in given order
      * runByTimes目前只支援1個worker
      * */
-    runByTimes = async (functionOfAsyncTask, times) => {
+    runByTimes = async (functionOfAsyncTask, times = 1) => {
+        this.countsOfRunByTimes = times;
         this.add(functionOfAsyncTask);
         this.beforeRun();
         this.setState(configerer.POOLLER_STATE.RUN_BY_TIMES);
 
-        for (let index = 0; index < times; index++) {
+        while (this.ruleOfInfiniteRun() && this.countsOfRunByTimes > 0) {
             await this.#run();
         }
+
     }
 
     /** what it means, like a thread run in background,  */
     runInBackGround = (asyncfunc, ...params) => {
+        this.isRunInBackgroundMode = true;
         if (!(typeof asyncfunc === "function")) {
             throw new ERROR(4002, `_asyncfunc can't be ${typeof asyncfunc}`);
         }
@@ -456,15 +452,20 @@ class InfinitePool {
     }
 
     /** 加上一個 被動式啟動, 不然一直while() run, 可能有效能上的問題,現階端只支援RUN_BY_TASK */
-    trigger() {
-        if (this.isQueuePolling) {
+    triggerBgInstance() {
+        if (!this.isRunInBackgroundMode || this.isQueuePolling) {
             return;
         }
+
         if (this.state === configerer.POOLLER_STATE.RUN_BY_EACH_TASK) {
             /** 因為不這樣做, 就會產生 race condition, 會產生出3個runInBackGround instance */
             this.runByEachTaskInBackGround();
             return;
+        } else if (this.state === configerer.POOLLER_STATE.RUN_BY_PARAMS) {
+            this.runByParamInBackGround();
+            return;
         }
+
         throw new ERROR(4011, `this.state is ==> ${Util.getItsKeyByValue(configerer.POOLLER_STATE, this.state)}`)
     }
 
@@ -473,7 +474,7 @@ class InfinitePool {
     }
 
     isTaskQueueEmpty() {
-        return this.getTaskQueueCount() === 0
+        return this.getCountOfAssignTaskInQueue() === 0
     }
 
     /** 依照config 把委託任務放置到Queue裡面 */
@@ -486,21 +487,41 @@ class InfinitePool {
         }
 
         /** 當pool isRunning才可以把任務加進去 */
-        while (this.isRunning() && !this.isExecutingQueueFull()) {
+        while (this.rulesOfAppendToExecutingTask()) {
             const taskInfo = this.getTaskInfoDependOnPriority();
             if (taskInfo) {
-                const promise = this.taskWrapper(taskInfo.task, taskInfo.hash);
+                const promise = this.taskWrapper(taskInfo.task, taskInfo.hash, this.queueOfWaitingParam.shift());
                 this.removeTaskMapByHash(taskInfo.hash);
                 this.appendTaskToExecuteQueue(taskInfo.hash, promise);
             } else {
-                /** 如果是runByTask模式, 沒有taskInfo, 就代表QueueOfAssignedTask已經空了,需要停止while loop */
+                /** 沒有taskInfo, 也許有未知的isssue,保險起見break */
+                this.printLogMessage(`848451  也許有未知的isssue,保險起見break,是不是在這裡無限迴圈跑跑跑`, true);
                 break;
             }
-            this.printLogMessage(`848451 是不是在這裡無限迴圈跑跑跑`, true);
+
+        }
+    }
+
+    /** 把assignedTask 加入到 QueueOfExecutingTask 的規則*/
+    rulesOfAppendToExecutingTask = () => {
+        switch (this.state) {
+            case configerer.POOLLER_STATE.RUN_BY_EACH_TASK:
+                return this.isRunning() && !this.isExecutingQueueFull() && this.getCountOfAssignTaskInQueue() > 0;
+            case configerer.POOLLER_STATE.RUN_BY_PARAMS:
+                return this.isRunning() && !this.isExecutingQueueFull() && _.size(this.queueOfWaitingParam) > 0;
+            case configerer.POOLLER_STATE.RUN_BY_TIMES:
+                return this.isRunning() && !this.isExecutingQueueFull() && this.countsOfRunByTimes > 0;
+            case configerer.POOLLER_STATE.RUN_INFINITE:
+                return this.isRunning() && !this.isExecutingQueueFull();
+            default:
+                throw new ERROR(4005, `this.state ==> ${this.state}`)
         }
     }
 
     appendTaskToExecuteQueue = (hash, promise) => {
+        if (_.isEqual(this.state, configerer.POOLLER_STATE.RUN_BY_TIMES)) {
+            this.countsOfRunByTimes = this.countsOfRunByTimes - 1;
+        }
         const task = {state: 'NOT', hash: hash, task: promise};
         this.printLogMessage(`4484451, 增加了一個assignedTask ${this.getLogMessageOfTaskHash(hash)} 到 QueueOfExecutingTask ,${this.getLogMessageOfExecutingTaskQueueCount}`, false, task)
         this.queueOfExecutingTask.push(task);
@@ -515,7 +536,7 @@ class InfinitePool {
 
     showState = () => {
         Util.appendInfo(this.getPoollerLogFormat(`workerCount: ${this.maxWorker}`));
-        Util.appendInfo(this.getPoollerLogFormat(`taskQueue(還在排隊的Task): ${this.getTaskQueueCount()}`));
+        Util.appendInfo(this.getPoollerLogFormat(`taskQueue(還在排隊的Task): ${this.getCountOfAssignTaskInQueue()}`));
         Util.appendInfo(this.getPoollerLogFormat(`QueueOfExecutingTask(正在執行的AsyncTask, 超過workerCount就是bug): ${_.size(this.queueOfExecutingTask)}`));
         Util.appendInfo(this.getPoollerLogFormat(`mapOfHashNTask(還沒執行到的AsyncTask reference的暫存區): ${_.size(this.mapOfHashNTask)}`));
     }
@@ -540,7 +561,7 @@ class InfinitePool {
             const task = await execute();
             this.printLogMessage(`4512213 完畢任務(taskWrapper:${task}), ${this.getLogMessageOfExecutingTaskQueueCount()}`);
         } else {
-            Util.appendInfo(this.getPoollerLogFormat(`4574152 不應該走到這裏,但是 minor issue`));
+            this.printLogMessage(`4574152 不應該走到這裏,但是 minor issue`,true)
         }
 
         if (this.queueOfExecutingTask.length > this.maxWorker)
@@ -593,24 +614,37 @@ class InfinitePool {
         this.runInBackGround(this.runInInfinite, functionOfAsyncTask, interval);
     }
 
-    runByParamInBackground = (functionOfAsyncTask, ...params) => {
-        this.runInBackGround(this.runByParams, functionOfAsyncTask, ...params);
-        return this;
+    runByParamInBackGround = (functionOfAsyncTask, ...params) => {
+        return this.invokeInstanceOfBackground(this.runByParams, functionOfAsyncTask, ...params);
     }
 
-    runByTimesInBackground = (functionOfAsyncTask, times) => {
+    runByTimesInBackGround = (functionOfAsyncTask, times) => {
         this.runInBackGround(this.runByTimes, functionOfAsyncTask, times);
         return this;
     }
 
-    /** following function are examples **/
-    /** following function are examples **/
-    /** following function are examples **/
-    /** following function are examples **/
+    runByEachTaskInBackGround = (...params) => {
+        return this.invokeInstanceOfBackground(this.runByEachTask, ...params);
+    }
+
+    invokeInstanceOfBackground = (state, ...params) => {
+        if (this.atomicBgInstance !== undefined)
+            clearTimeout(this.atomicBgInstance);
+        this.atomicBgInstance = this.runInBackGround(state, ...params);
+        /**
+         * 因為偷懶, 所以回傳整個instance, 這樣程式碼就只要寫一行
+         * const pool = new InfinitePool(1).runByEachTaskInBackGround();
+         */
+        return this;
+    }
+
     /** following function are examples **/
     /** following function are examples **/
 
-    async exampleOfWait4ResultAndRunInBackground() {
+    /** following function are examples **/
+    /** following function are examples **/
+
+    async exampleOfRunByTaskWait4ResultAndRunInBackground() {
         const pool = new InfinitePool(1, 'david').runByEachTaskInBackGround();
         pool.enableTaskTimeout(true, 3000);
 
@@ -641,9 +675,9 @@ class InfinitePool {
 
 
         while (pool.isRunning()) {
-            Util.appendInfo('system is running');
+            console.log('system is running');
             pool.showState();
-            await Util.syncDelay(5000);
+            await Util.syncDelay(1000);
         }
     }
 
@@ -689,12 +723,16 @@ class InfinitePool {
     }
 
     async exampleOfRunByParamInBackground() {
-        const pool = new InfinitePool(2);
-        pool.runByParamInBackground(
+        const pool = new InfinitePool(5);
+        pool.runByParamInBackGround(
             async (param) => {
-                await Util.syncDelayRandom()
-                console.log('param', param);
+                const ms = await Util.syncDelayRandom()
+                console.log(`wait ${ms} ms`, 'param', param);
             }, 'david', 'susan', 'golden', 'weber', 'kevin')
+
+        setTimeout(() => {
+            pool.appendParamInToQueue('apple', 'Rui')
+        }, 12000)
 
         while (pool.isRunning()) {
             Util.appendInfo('system is running');
@@ -704,14 +742,14 @@ class InfinitePool {
     }
 
     async exampleOfRunByTimesInBackground() {
-        const pool = new InfinitePool(1);
+        const pool = new InfinitePool(6);
         let count = 0;
-        pool.runByTimesInBackground(
+        pool.runByTimesInBackGround(
             async () => {
-                await Util.syncDelayRandom()
+                const ms = await Util.syncDelayRandom()
                 count++
-                console.log('count:', count);
-            }, 10)
+                console.log(`wait for time: ${ms} ms, count:${count}`);
+            }, 20)
 
         while (pool.isRunning()) {
             Util.appendInfo('system is running');
@@ -723,7 +761,7 @@ class InfinitePool {
 
     async exampleOfRunByParam() {
         const oneToTen = _.range(1, 10);
-        const pool = new InfinitePool(2);
+        const pool = new InfinitePool(5);
         await pool.runByParams(async (param) => {
             const ms = await Util.syncDelayRandom();
             console.log(param, `${ms} ms`);
@@ -731,13 +769,13 @@ class InfinitePool {
     }
 
     async exampleOfRunByCount() {
-        const pool = new InfinitePool(4);
+        const pool = new InfinitePool(1);
         let time = 0
         await pool.runByTimes(async () => {
-            await Util.syncDelay(100);
+            await Util.syncDelay(1000);
             time++
             console.log(`execute the ${time} time`)
-        },30 )
+        }, 20)
     }
 
     async exampleOfInfiniteUnStopLoopingIssue() {
@@ -787,7 +825,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool().exampleOfRunByCount()
+        // await new InfinitePool().exampleOfRunByTaskWait4ResultAndRunInBackground();
     })();
 
 }

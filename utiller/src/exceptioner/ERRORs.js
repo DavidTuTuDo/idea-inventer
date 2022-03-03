@@ -91,7 +91,7 @@ const ERRORs = {
         message: `assign task timeout happen`
     },
     4011: {
-        message: `不能走到這裡, 目前被動式的機制只支援runByEachTask`,
+        message: `不能走到這裡, 目前被動式的機制只支援runByEachTask, runByParams`,
     },
 
     8001: {
