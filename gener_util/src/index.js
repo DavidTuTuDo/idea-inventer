@@ -12,7 +12,7 @@ class gener_util {
 }
 
 // Util.generatePackage('../scraper',false).then();
-Util.generatePackage('../utiller',true).then();
+Util.generatePackage('../utiller',false).then();
 // Util.generatePackage('../databazer',true).then();
 // Util.generatePackage('../configerer',true).then();
 

@@ -593,7 +593,7 @@ class InfinitePool {
 
     /** following function are examples **/
     async exampleOfWait4ResultAndRunInBackground() {
-        const pool = new InfinitePool(1);
+        const pool = new InfinitePool(1,'david').runByEachTaskInBackGround();
         pool.enableTaskTimeout(true, 3000);
 
         function asyncTask(sign, taskSpend = 2000) {
@@ -624,7 +624,7 @@ class InfinitePool {
 
         while (pool.isRunning()) {
             Util.appendInfo('system is running');
-            // pool.showState();
+            pool.showState();
             await Util.syncDelay(5000);
         }
     }
@@ -769,7 +769,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool().exampleOfInfiniteUnStopLoopingIssue()
+        await new InfinitePool().exampleOfWait4ResultAndRunInBackground()
     })();
 
 }

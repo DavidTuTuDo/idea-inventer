@@ -546,8 +546,7 @@ class NodeUtiller extends Utiller {
 
                 try {
 
-
-                    const indexFileName = deployToNPMServer ? 'sample.npm.module.index.js' : 'sample.index.js'
+                    const indexFileName = 'sample.npm.module.index.js'
                     /** 複製公版的index.js */
                     this.copySingleFile(`/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/${indexFileName}`,
                         release, 'index.js', true);
@@ -560,10 +559,6 @@ class NodeUtiller extends Utiller {
                             this.persistByPath(libpath.join(release, 'template')));
                     }
 
-                    /** 升級package.json的版號 */
-                    const pathOfPackageJson = libpath.join(path, 'package.json');
-                    const {name, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
-
                     /** 把package.json 放進去 */
                     this.copySingleFile(pathOfPackageJson, libpath.join(release, 'package.json'),
                         undefined, true);
@@ -575,6 +570,10 @@ class NodeUtiller extends Utiller {
 
                     /** 部署到 local server*/
                     if (deployToNPMServer) {
+                        /** 升級package.json的版號 */
+                        const pathOfPackageJson = libpath.join(path, 'package.json');
+                        const {name, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
+
                         await this.executeCommandLine(`cd ${release} &&  npm publish`);
                         /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
 
