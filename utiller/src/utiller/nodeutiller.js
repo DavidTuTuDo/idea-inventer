@@ -429,21 +429,21 @@ class NodeUtiller extends Utiller {
         this.appendInfo(`build ${packageName} succeed!`);
     }
 
-    appendInfo(...data) {
-        return this.appendLog(configerer.PATH_INFO_LOG, data, false);
+    appendInfo(...messages) {
+        return this.appendLog(configerer.PATH_INFO_LOG, messages, false);
     }
 
-    appendError(...data) {
-        return this.appendLog(configerer.PATH_ERROR_LOG, data, true);
+    appendError(...messages) {
+        return this.appendLog(configerer.PATH_ERROR_LOG, messages, true);
     }
 
-    appendLog(path, datas, isError = false) {
+    appendLog(path, messages, error = false) {
         if (!this.isProductionEnvironment()) {
-            isError ? console.error(...datas) : console.log(...datas);
+            error ? console.error(...messages) : console.log(...messages);
         }
 
-        const persistlog = `${this.getCurrentTimeFormat()} ${isError ? `ERROR` : `LOG`} : ${this.getLogString(datas)}`;
-        this.appendFile(path, persistlog);
+        const messageOfSpecificLog = `${this.getCurrentTimeFormat()} ${error ? `ERROR` : `LOG`} : ${this.getLogString(messages)}`;
+        this.appendFile(path, messageOfSpecificLog);
     }
 
     getLogString(datas) {
@@ -527,7 +527,7 @@ class NodeUtiller extends Utiller {
     /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
      * release folder 會被自動ignore到
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
-    async generatePackage(path = './', deployToNPMServer = true, ...exclude) {
+    async generatePackage(path = './', deployToNPMServer = false, ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules', 'release');
         packagejsons = _.filter(packagejsons,
             (each) => _.isEqual(each.fileName, 'package'));
@@ -544,6 +544,7 @@ class NodeUtiller extends Utiller {
                 /** 利用babel 產生出 es5相容性高的src file */
                 await this.executeCommandLine(`cd ${path} && npx babel ./temp --out-dir ./release/lib`);
 
+                const pathOfPackageJson = libpath.join(path, 'package.json');
                 try {
 
                     const indexFileName = 'sample.npm.module.index.js'
@@ -558,8 +559,15 @@ class NodeUtiller extends Utiller {
                             templatePath,
                             this.persistByPath(libpath.join(release, 'template')));
                     }
+                    if (deployToNPMServer) {
+                        /** 升級package.json的版號 */
+                        const {moduleName, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
 
-                    /** 把package.json 放進去 */
+                        /** 把所有樣板的版號都提升 */
+                        await this.updateVersionOfTemplate(moduleName, version);
+                    }
+
+                    /** 把package.json release放進去 */
                     this.copySingleFile(pathOfPackageJson, libpath.join(release, 'package.json'),
                         undefined, true);
 
@@ -571,14 +579,8 @@ class NodeUtiller extends Utiller {
                     /** 部署到 local server*/
                     if (deployToNPMServer) {
                         /** 升級package.json的版號 */
-                        const pathOfPackageJson = libpath.join(path, 'package.json');
-                        const {name, version} = await this.upgradePackageJsonVersion(pathOfPackageJson);
-
                         await this.executeCommandLine(`cd ${release} &&  npm publish`);
                         /** await this.executeCommandLine(`cd ${release} &&  npm publish --registry http://localhost:4873`) */
-
-                        /** 把所有樣板的版號都提升 */
-                        await this.updateVersionOfTemplate(name, version);
                     }
                 } catch (error) {
                     await this.deleteSelfByPath(release, true);
@@ -694,7 +696,7 @@ class NodeUtiller extends Utiller {
             json.version = numbers.join('.')
             await this.writeJsonThanPrettier(path, json)
 
-            return {version: json.version, name: json.name};
+            return {version: json.version, moduleName: json.name};
         } else {
             throw new ERROR(8020, `path is not package.json, which is ${path}`)
         }
@@ -745,7 +747,7 @@ if (configerer.DEBUG_MODE) {
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            // await new NodeUtiller().generatePackage('../utiller');
+            await new NodeUtiller().generatePackage('../utiller',false);
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');

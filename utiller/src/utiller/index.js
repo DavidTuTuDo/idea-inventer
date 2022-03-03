@@ -24,6 +24,16 @@ class Utiller {
         this.env = 'dev';
     }
 
+    printLogMessage(message, error = false, ...infos) {
+        if (!this.isProductionEnvironment()) {
+            if(error) {
+                this.appendError(message,...infos)
+            } else {
+                this.appendInfo(message,...infos)
+            }
+        }
+    }
+
     init() {
         // this.enrichZhTw();
     }

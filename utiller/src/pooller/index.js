@@ -15,6 +15,7 @@ import ERROR from '../exceptioner';
  6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
  *
  */
+
 class InfinitePool {
 
     state = configerer.POOLLER_STATE.RUN_BY_EACH_TASK
@@ -28,49 +29,50 @@ class InfinitePool {
     timeOfTaskTimeout = configerer.POOLLER_TASK_TIMEOUT_DEFAULT;
 
     /** 如果要讓每個pool不會因為task掉進catch 而被中斷, 就必須加入taskFailHandler*/
-    taskFailHandler = undefined;
+    handlerOfAssignTaskFail = undefined;
     maxWorker;
     ignoreFirstRun = false
     /** 用於 runByParam */
-    paramQueue = [];
+    queueOfWaitingParam = [];
 
 
     /** 裡面放 {high:[], low:[], medium }
      * taskQueue就是指裡面有多少Task!
      * 通常Infinite模式,裡面只會有一個asyncTask
      * */
-    assignedTaskQueue = {};
+    queueOfAssignTask = {};
 
     /** 裡面放準備執行中的Task(worker正在工作的Task), 這邊的task就沒辦法remove了
      * 一次能處理幾個取決於maxWorker
      * */
-    executingTaskInQueue = [];
+    queueOfExecutingTask = [];
     /** [{state: 'NOT', hash: hash, task: functionOfAsyncTask} ]*/
 
     isQueuePolling = false;
     /** 目前queue機制是while(isQueuePolling)  沒任務就睡一下, 有任務就做事情, 發現task有延遲, 就要注意是不是taskInterval*/
 
     initialTaskCompleted = false;
-    mHashNTaskMap = {};
+    mapOfHashNTask = {};
     /** 為了刪除未執行的task, 但只限於runByTask, 因為下一個run之後, hash就改變了    */
 
-    hashCallbackMapOfWaiting4Result = {}
-    poolId = ``;
+    mapOfHashNCallbackWrapper = {}
+
+    nameOfCurrentPool = ``;
 
     constructor(maxWorkers = configerer.POOLLER_WORKER_DEFAULT, name = Util.getRandomValue(0, 100000000000)) {
         this.maxWorker = maxWorkers;
         this.setPoolId(_.toString(name));
         for (const prior of configerer.POOLLER_PRIORITY) {
-            this.assignedTaskQueue[prior] = [];
+            this.queueOfAssignTask[prior] = [];
         }
     }
 
-    setPoolId = (id = this.poolId) => {
-        this.poolId = id;
+    setPoolId = (id = this.nameOfCurrentPool) => {
+        this.nameOfCurrentPool = id;
     }
 
     getPoolId = () => {
-        return this.poolId;
+        return this.nameOfCurrentPool;
     }
 
     /**
@@ -85,22 +87,26 @@ class InfinitePool {
     }
 
     clearCache() {
-        this.executingTaskInQueue.length = 0;
-        this.mHashNTaskMap = {};
-        this.assignedTaskQueue = {};
+        this.queueOfExecutingTask.length = 0;
+        this.mapOfHashNTask = {};
+        this.queueOfAssignTask = {};
     }
 
     terminate() {
         this.isQueuePolling = false;
     }
 
+    printLogMessage(message, error = false, ...infos) {
+        Util.printLogMessage(this.getPoollerLogFormat(message), error, ...infos)
+    }
+
     /** return true if task completed, after 15 secs, force leave
      *  TODO:應該要設計成當terminate後, 監聽executingTaskInQueue為零時,回傳結束 */
     stopInBackground = async () => {
         this.terminate();
-        while (_.size(this.executingTaskInQueue) > 0) {
+        while (_.size(this.queueOfExecutingTask) > 0) {
             await Util.syncDelay(500);
-            // Util.appendInfo(this.getPoollerLogFormat(`咬在 stopInBackground 出不來, executingTaskInQueue:${_.size(this.executingTaskInQueue)}`))
+            this.printLogMessage(`784512, 咬在 stopInBackground 出不來,${this.getLogMessageOfExecutingTaskQueueCount()}`)
             this.showState();
         }
         return true;
@@ -151,22 +157,22 @@ class InfinitePool {
     }
 
     registerHash4Result(hash, callback) {
-        this.hashCallbackMapOfWaiting4Result[hash] = callback;
+        this.mapOfHashNCallbackWrapper[hash] = callback;
     }
 
     getTaskQueueCount = () => {
         let size = 0;
-        if (this.state === configerer.POOLLER_STATE.RUN_BY_PARAMS) return this.paramQueue.length;
+        if (this.state === configerer.POOLLER_STATE.RUN_BY_PARAMS) return this.queueOfWaitingParam.length;
 
         for (const prior of configerer.POOLLER_PRIORITY) {
-            size += this.assignedTaskQueue[prior].length;
+            size += this.queueOfAssignTask[prior].length;
         }
 
         return size;
     }
 
     /** 3:low,2:medium,1:high */
-    /** add the task into assignedTaskQueue, return task key,once you want to remove it */
+    /** add the task into queueOfAssignTask, return task key,once you want to remove it */
     add = (task, priority = 'low') => {
         if (typeof task === "function") {
             if (configerer.POOLLER_PRIORITY.indexOf(priority) < 0) {
@@ -175,7 +181,7 @@ class InfinitePool {
             const hash = Util.getRandomHash();
             const taskInfo = {task, hash};
             this.appendHashTaskMap(taskInfo);
-            this.assignedTaskQueue[priority].push(taskInfo);
+            this.queueOfAssignTask[priority].push(taskInfo);
             return hash;
         } else {
             throw new ERROR(4002, `task can't be ${typeof task}`);
@@ -184,9 +190,9 @@ class InfinitePool {
 
     updateExecuteTaskState = (hash) => {
         const self = this;
-        const task = _.find(this.executingTaskInQueue, (each) => _.isEqual(each.hash, hash))
+        const task = _.find(this.queueOfExecutingTask, (each) => _.isEqual(each.hash, hash))
         if (task) {
-            // Util.appendInfo(self.getPoollerLogFormat(`客端委託的task: ${hash},更改狀態為'ING'`));
+            this.printLogMessage(`847875153, 客端委託的任務: ${hash},更改狀態為 'ING'`)
             task.state = 'ING';
         }
     }
@@ -197,13 +203,14 @@ class InfinitePool {
         let timeoutHash = '';
         let assignedTaskResult;
         let assignedTaskError;
-        let param = self.paramQueue.shift();
+        let param = self.queueOfWaitingParam.shift();
         let isAssignedTaskCompleted = true;
         /** 用來判斷task 有沒有走到 catch裡面, 不然resolve了但return undefined, task會不知所措 */
         return new Promise((resolve, reject) => {
             if (self.enableOfTaskTimeout) {
                 timeoutHash = setTimeout(() => {
                     try {
+                        this.printLogMessage(`982532, taskWrapper執行中,發生timout: ${self.timeOfTaskTimeout} ms`)
                         throw new ERROR(4010, self.getPoollerLogFormat(`TASK HASH:${hashOfTask} IS TIMEOUT ${self.timeOfTaskTimeout} ms ${param ? `,PARAMS IS ${JSON.stringify(param)}` : ''}`))
                     } catch (error) {
                         reject(error);
@@ -211,54 +218,52 @@ class InfinitePool {
                 }, self.timeOfTaskTimeout);
             }
             /** 客端委託的task的是從這裡開始 */
-            // Util.appendInfo(self.getPoollerLogFormat(`客端委託的task開始執行 ${hashOfTask}`));
+            this.printLogMessage(`984135, 客端委託的task開始執行 ${hashOfTask}`)
+
             self.updateExecuteTaskState(hashOfTask);
             assignedTask(param).then((result) => {
-                    // console.log(self.getPoollerLogFormat('task get result'));
+                    this.printLogMessage(`984545, 客端委託的任務,resolve回應: ${result}`)
                     assignedTaskResult = result
                     isAssignedTaskCompleted = true;
                 }
             ).catch((error) => {
-                    // console.error(self.getPoollerLogFormat('委託任務發生錯誤'), error);
+                    this.printLogMessage(`989652, 客端委託的任務,reject回應: ${error.message}`, true, error)
                     assignedTaskError = error
                     isAssignedTaskCompleted = false;
                 }
             ).finally(() => {
                 clearTimeout(timeoutHash);
-                // console.info(self.getPoollerLogFormat(self.getPoollerLogFormat('inner finally')));
                 resolve();
+                this.printLogMessage(`98942, taskWrapper()裡面第一個promise(為了timeout設計)完成了`)
+
             })
         }).then((result) => {
-                /** 再沒有timeout的狀況下,執行了委託的任務(委託任務可能成功也可能進到catch) */
+                /** 能走到這裡,代表沒有timeout的狀況下,執行了委託的任務 */
                 if (!isAssignedTaskCompleted) {
                     throw assignedTaskError;
                 } else {
-                    return `${hashOfTask} completed`;
+                    return `${this.getLogMessageOfTaskHash(hashOfTask)} completed`;
                 }
             }
         ).catch(error => {
-            // console.error(self.getPoollerLogFormat(self.getPoollerLogFormat('outer error')), error);
-            /** 如果發生timeout  或是 assign task 掉進去catch 都會跑到這裡 */
+            /** 如果發生timeout  或是 客端任務掉進去catch都會跑到這裡 */
             isAssignedTaskCompleted = false;
             assignedTaskError = error;
-
             /** 如果是Wait4ResultTask模式, 要把catch | result 回到callbackWrapper */
             if (!self.isWait4ResultTask(hashOfTask)) {
-                if (self.taskFailHandler !== undefined) {
-                    self.taskFailHandler(assignedTaskError);
+                if (self.handlerOfAssignTaskFail !== undefined) {
+                    self.handlerOfAssignTaskFail(assignedTaskError);
                 } else
                     throw assignedTaskError;
             }
         }).finally(() => {
-            // console.info(self.getPoollerLogFormat(self.getPoollerLogFormat('outer finally')));
             const result = {
                 assignedTaskCompleted: isAssignedTaskCompleted,
                 resolve: assignedTaskResult,
                 reject: assignedTaskError
             };
-            // Util.appendInfo('客端委託的task執行完回傳的內容', result, hashOfTask)
             self.removeResolveOrRejectPromiseByHash(hashOfTask, result);
-
+            this.printLogMessage(`98943213, ${this.getTaskInfoByHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`, result)
         })
     }
 
@@ -275,32 +280,29 @@ class InfinitePool {
     }
 
     removeTaskMapByHash = (hash) => {
-        delete this.mHashNTaskMap[hash];
+        delete this.mapOfHashNTask[hash];
     }
 
     appendHashTaskMap(taskInfo) {
-        this.mHashNTaskMap[taskInfo.hash] = taskInfo;
+        this.mapOfHashNTask[taskInfo.hash] = taskInfo;
     }
 
     getTaskInfoByHash(hash) {
-        return this.mHashNTaskMap[hash];
+        return this.mapOfHashNTask[hash];
     }
 
     /**
      * remove task in queue by its hash, hash was created when add to queue
-     *
      * method will return true when succeed delete
-     *
      * 放到executing queue, 就沒辦法刪除了
-     *
      **/
     remove(hash) {
         let taskInfo = this.getTaskInfoByHash(hash);
         if (taskInfo) {
             for (const prior of configerer.POOLLER_PRIORITY) {
-                const _index = _.indexOf(this.assignedTaskQueue[prior], taskInfo);
+                const _index = _.indexOf(this.queueOfAssignTask[prior], taskInfo);
                 if (_index > 0) {
-                    this.assignedTaskQueue[prior].splice(_index, 1);
+                    this.queueOfAssignTask[prior].splice(_index, 1);
                     this.removeTaskMapByHash(hash);
                     return true;
                 }
@@ -322,7 +324,7 @@ class InfinitePool {
         this.clearCache();
     }
 
-    /** interval was the time between tasks when executingTaskInQueue is full.
+    /** interval was the time between tasks when queueOfExecutingTask is full.
      * run would infinite, in default, intervalOfQueueSleep over 100 times, pooller would shutdown */
     runInInfinite = async (task = [], interval) => {
         this.beforeRun();
@@ -335,7 +337,7 @@ class InfinitePool {
         this.enableTaskSleepInterval(!!interval, interval);
         this.setState(configerer.POOLLER_STATE.RUN_INFINITE);
         while (this.ruleOfInfiniteRun()) {
-            // Util.appendInfo(`this.isQueuePolling is ${this.isQueuePolling}`, this.executingTaskInQueue)
+            this.printLogMessage(`415123, runInInfinite() 正在無限Loop中,${this.getLogMessageOfExecutingTaskQueueCount()}`)
             await this.#run();
         }
     }
@@ -346,12 +348,12 @@ class InfinitePool {
     }
 
     isExecutingTaskQueueEmpty = () => {
-        return _.size(this.executingTaskInQueue) === 0;
+        return _.size(this.queueOfExecutingTask) === 0;
     }
 
     appendParamInToQueue = (...params) => {
         for (const param of params) {
-            this.paramQueue.push(param);
+            this.queueOfWaitingParam.push(param);
         }
     }
 
@@ -364,7 +366,7 @@ class InfinitePool {
         this.add(functionOfAsyncTask);
         this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
         this.beforeRun();
-        while (this.ruleOfInfiniteRun() && !_.isEmpty(this.paramQueue)) {
+        while (this.ruleOfInfiniteRun() && !_.isEmpty(this.queueOfWaitingParam)) {
             await this.#run();
         }
     }
@@ -384,13 +386,13 @@ class InfinitePool {
         this.beforeRun();
         this.adds(tasks);
         this.setState(configerer.POOLLER_STATE.RUN_BY_EACH_TASK);
-        while (this.isRunning()) {
+        while (this.ruleOfInfiniteRun()) {
+            await this.#run(this.id);
             if (this.getTaskQueueCount() <= 0) {
                 this.terminate();
+                this.printLogMessage(`788121, runByEachTask() 因為 taskOfWaitingQueue 清空而停止`)
             }
-            await this.#run(this.id);
         }
-        this.terminate();
     }
 
     /** run times wound be depend on times, task would by loop and sync in given order
@@ -420,17 +422,17 @@ class InfinitePool {
                 throw new ERROR(4009, {message: `${this.getPoollerLogFormat('')}`}, error);
             } finally {
                 this.terminate();
-                Util.appendInfo(`${this.getPoollerLogFormat(`background instance terminated`)} `);
+                this.printLogMessage(`7812123, runInBackGround() 走到finally`)
             }
         }, 1);
     }
 
     getPoollerLogFormat = (msg) => {
-        return `POOLLER ID: ${this.getPoolId()}${_.isEmpty(msg) ? '' : ' , '}${msg}`;
+        return `POOLLER NAME: ${this.getPoolId()}${_.isEmpty(msg) ? '' : ' , '}${msg}`;
     }
 
     setTaskFailHandler = (listener = (error) => console.log(error.message)) => {
-        this.taskFailHandler = listener;
+        this.handlerOfAssignTaskFail = listener;
     }
 
     /** run by how many task in queue, FIFO, if task completed, pool with intervalOfQueueSleep for a while
@@ -467,7 +469,11 @@ class InfinitePool {
     }
 
     isExecutingQueueFull() {
-        return _.size(this.executingTaskInQueue) >= this.maxWorker;
+        return _.size(this.queueOfExecutingTask) >= this.maxWorker;
+    }
+
+    isTaskQueueEmpty() {
+        return this.getTaskQueueCount() === 0
     }
 
     /** 依照config 把委託任務放置到Queue裡面 */
@@ -476,42 +482,53 @@ class InfinitePool {
 
         if (initialTaskShouldNotRun || (this.isFirstTaskCompleted() && this.isExecutingQueueFull() && this.enableOfTaskSleepByInterval)) {
             const restInInterval = await Util.syncDelayRandom(this.taskSleepInterval.min, this.taskSleepInterval.max)
-            // Util.appendInfo(`${this.getPoollerLogFormat(`enableOfTaskSleepByInterval:${this.enableOfTaskSleepByInterval}, sleepTime:${restInInterval} million-secs`)} `);
+            this.printLogMessage(`4484121, 走到一坡睡覺區 enableOfTaskSleepByInterval:${this.enableOfTaskSleepByInterval} || ${restInInterval} ms`)
         }
 
         /** 當pool isRunning才可以把任務加進去 */
         while (this.isRunning() && !this.isExecutingQueueFull()) {
             const taskInfo = this.getTaskInfoDependOnPriority();
             if (taskInfo) {
-                // Util.appendInfo(`加了一個任務到executingQueue裡面 ${taskInfo.hash}`)
                 const promise = this.taskWrapper(taskInfo.task, taskInfo.hash);
                 this.removeTaskMapByHash(taskInfo.hash);
                 this.appendTaskToExecuteQueue(taskInfo.hash, promise);
+            } else {
+                /** 如果是runByTask模式, 沒有task, 就不能繼續loop了*/
+                break;
             }
+            this.printLogMessage(`848451 是不是在這裡無限迴圈跑跑跑`, true);
         }
     }
 
     appendTaskToExecuteQueue = (hash, promise) => {
-        this.executingTaskInQueue.push({state: 'NOT', hash: hash, task: promise});
-        // Util.appendInfo(`\n\n新增了一個任務${hash} 進入executingTaskQueue ==>`, this.executingTaskInQueue)
+        const task = {state: 'NOT', hash: hash, task: promise};
+        this.printLogMessage(`4484451, 增加了一個assignedTask ${this.getLogMessageOfTaskHash(hash)} 到 QueueOfExecutingTask ,${this.getLogMessageOfExecutingTaskQueueCount}`, false, task)
+        this.queueOfExecutingTask.push(task);
+    }
+
+    getLogMessageOfExecutingTaskQueueCount = () => {
+        return `ExecutingTaskQueueCount: ${_.size(this.queueOfExecutingTask)}`
+    }
+    getLogMessageOfTaskHash = (hash) => {
+        return `TASK HASH: ${hash}`
     }
 
     showState = () => {
         Util.appendInfo(this.getPoollerLogFormat(`workerCount: ${this.maxWorker}`));
         Util.appendInfo(this.getPoollerLogFormat(`taskQueue(還在排隊的Task): ${this.getTaskQueueCount()}`));
-        Util.appendInfo(this.getPoollerLogFormat(`executingTaskInQueue(正在執行的AsyncTask, 超過workerCount就是bug): ${this.executingTaskInQueue.length}`));
-        Util.appendInfo(this.getPoollerLogFormat(`mHashNTaskMap(還沒執行到的AsyncTask reference的暫存區): ${_.size(this.mHashNTaskMap)}`));
+        Util.appendInfo(this.getPoollerLogFormat(`QueueOfExecutingTask(正在執行的AsyncTask, 超過workerCount就是bug): ${_.size(this.queueOfExecutingTask)}`));
+        Util.appendInfo(this.getPoollerLogFormat(`mapOfHashNTask(還沒執行到的AsyncTask reference的暫存區): ${_.size(this.mapOfHashNTask)}`));
     }
 
     #run = async () => {
         const self = this;
 
         async function execute() {
-            const tasks = self.executingTaskInQueue.filter((each) => _.isEqual(each.state, 'NOT')).map((each) => {
+            const tasks = self.queueOfExecutingTask.filter((each) => _.isEqual(each.state, 'NOT')).map((each) => {
                 const task = each.task;
                 return task();
             })
-            /** Util.appendInfo(`\n\n正要執行的隊列`,self.executingTaskInQueue) */
+            /** Util.appendInfo(`\n\n正要執行的隊列`,self.queueOfExecutingTask) */
             return await Promise.race(tasks);
         }
 
@@ -519,34 +536,29 @@ class InfinitePool {
 
         if (!this.isExecutingTaskQueueEmpty()) {
             /** 當pool已經被要求停止時, executeQueue裡面還有未做完的任務*/
-            // Util.appendInfo(this.getPoollerLogFormat(`4512211 開始執行任務: executingQueue:${_.size(self.executingTaskInQueue)}`));
+            this.printLogMessage(`4512211, 開始任務(taskWrapper): ${this.getLogMessageOfExecutingTaskQueueCount()}`)
             const task = await execute();
-            // Util.appendInfo(this.getPoollerLogFormat(`4512213 完畢委託任務:${task} executingQueue:${_.size(self.executingTaskInQueue)}`));
-
+            this.printLogMessage(`4512213 完畢任務(taskWrapper:${task}), ${this.getLogMessageOfExecutingTaskQueueCount()}`);
         } else {
-            // Util.appendInfo(this.getPoollerLogFormat(`4574152 不應該走到這裏,但是 minor issue`));
+            Util.appendInfo(this.getPoollerLogFormat(`4574152 不應該走到這裏,但是 minor issue`));
         }
 
-        if (this.executingTaskInQueue.length > this.maxWorker) {
-            Util.appendError(`一定是改壞了！！！！ ${this.getPoollerLogFormat(`executing queue ${this.executingTaskInQueue.length} !!`)}`);
-        }
+        if (this.queueOfExecutingTask.length > this.maxWorker)
+            this.printLogMessage(`4512214 一定是改壞了!!!!!!!!!!, ${this.getLogMessageOfExecutingTaskQueueCount} `, true);
 
-        /** 只要完成run 就要把sleepTimeCount歸零
-         * this.currentSleepCounts = 0;
-         */
     }
 
     /** taskInfo = { task, hash }*/
     getTaskInfoDependOnPriority = () => {
         for (const prior of configerer.POOLLER_PRIORITY) {
-            if (this.assignedTaskQueue[prior].length > 0) {
+            if (this.queueOfAssignTask[prior].length > 0) {
                 switch (this.state) {
                     case configerer.POOLLER_STATE.RUN_BY_EACH_TASK:
-                        return this.assignedTaskQueue[prior].shift();
+                        return this.queueOfAssignTask[prior].shift();
                     case configerer.POOLLER_STATE.RUN_BY_PARAMS:
                     case configerer.POOLLER_STATE.RUN_BY_TIMES:
                     case configerer.POOLLER_STATE.RUN_INFINITE:
-                        const taskInfo = this.assignedTaskQueue[prior].shift();
+                        const taskInfo = this.queueOfAssignTask[prior].shift();
                         this.add(taskInfo.task);
                         return taskInfo;
                     default:
@@ -559,22 +571,22 @@ class InfinitePool {
     }
 
     removeResolveOrRejectPromiseByHash = (hash, result) => {
-        const callbackWrapper = this.hashCallbackMapOfWaiting4Result[hash];
+        const callbackWrapper = this.mapOfHashNCallbackWrapper[hash];
         if (callbackWrapper !== undefined) {
             callbackWrapper(result);
-            delete this.hashCallbackMapOfWaiting4Result[hash];
+            delete this.mapOfHashNCallbackWrapper[hash];
         }
         this.removePromiseFromExecutingQueue(hash);
     }
 
     removePromiseFromExecutingQueue = (hash) => {
-        // Util.appendInfo(`executingTaskQueue 拿掉了完成的任務 ${hash}, executingTaskInQueue:${_.size(this.executingTaskInQueue)}`)
-        _.remove(this.executingTaskInQueue, (each) => _.isEqual(hash, each.hash));
+        this.printLogMessage(`QueueOfExecutingTask 拿掉了完成的任務 ${this.getLogMessageOfTaskHash(hash)}`)
+        _.remove(this.queueOfExecutingTask, (each) => _.isEqual(hash, each.hash));
     }
 
     /** 如果有function 就代表是一個需要回傳result的task, task在線等的意思*/
     isWait4ResultTask(hash) {
-        return this.hashCallbackMapOfWaiting4Result[hash] !== undefined;
+        return this.mapOfHashNCallbackWrapper[hash] !== undefined;
     }
 
     runInfiniteInBackground = (functionOfAsyncTask, interval) => {
@@ -592,8 +604,15 @@ class InfinitePool {
     }
 
     /** following function are examples **/
+    /** following function are examples **/
+    /** following function are examples **/
+    /** following function are examples **/
+
+    /** following function are examples **/
+    /** following function are examples **/
+
     async exampleOfWait4ResultAndRunInBackground() {
-        const pool = new InfinitePool(1,'david').runByEachTaskInBackGround();
+        const pool = new InfinitePool(1, 'david').runByEachTaskInBackGround();
         pool.enableTaskTimeout(true, 3000);
 
         function asyncTask(sign, taskSpend = 2000) {
@@ -769,7 +788,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool().exampleOfWait4ResultAndRunInBackground()
+        // await new InfinitePool().exampleOfWait4ResultAndRunInBackground()
     })();
 
 }
