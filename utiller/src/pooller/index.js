@@ -266,7 +266,7 @@ class InfinitePool {
                 reject: assignedTaskError
             };
             self.removeResolveOrRejectPromiseByHash(hashOfTask, result);
-            this.printLogMessage(`98943213, ${this.getTaskInfoByHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`, result)
+            this.printLogMessage(`98943213, ${this.getLogMessageOfTaskHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`,false,result)
         })
     }
 

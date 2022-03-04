@@ -3065,7 +3065,7 @@ class ComponentBuilder extends BaseBuilder {
                 `if(this.enableInitFetch) {`,
                 `self.getStore().fetch(this).then((collection) => {
                     return self.getStore().onInitialFetchSucceed(collection)
-                }).then((result) => { Util.appendInfo('page silent')})}`
+                }).then((result) => { Util.appendInfo('${componentNode.getName()} page initial fetch completed')})}`
             )
             baseGenerator.appendField('enableInitFetch', true)
             baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
@@ -3823,10 +3823,6 @@ class ComponentBuilder extends BaseBuilder {
             }
             existedFunctions[functionName] = true;
         }
-    }
-
-    getComponentClassBody(className) {
-        return mustache.render(Util.getFileContextInRaw('./template/component.js'), this.getMustacheRenderValues({className}))
     }
 
 }
