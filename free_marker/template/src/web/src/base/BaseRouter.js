@@ -2,30 +2,33 @@ import {utiller as Util, exceptioner as ERROR,} from "utiller";
 
 class BaseRouter {
 
-    currentRoute = '/';
-
     currentParam = [];
 
-    isEditMode = false;
+    currentComponent = undefined;
 
-    setCurrentRoute = (route) => {
-        this.currentRoute = route;
-        this.isEditMode = false;
+    setCurrentComponent = (component) => {
+        this.currentComponent = component;
     }
 
     routeTo(component, path) {
         if (component !== undefined && component.props !== undefined && component.props.history !== undefined) {
             const history = component.props.history;
             history.push(path);
-            this.setCurrentRoute(path);
         } else {
             Util.appendError(`component為undefined,可能是為了拿url [${path}]`)
         }
-
     }
 
-    getEditorRouteString = () => {
-        const segment = this.currentRoute.split('/');
+    getCurrentPath = () => {
+        if (this.currentComponent) {
+            const history = this.currentComponent.props.history;
+            return history.location.pathname;
+        }
+        return ''
+    }
+
+    getPathOfEditorRoute = () => {
+        const segment = this.getCurrentPath().split('/');
         const newbie = segment.map(
             (each, index) => {
                 return index === 1 ? `${each}editor` : each
@@ -33,25 +36,33 @@ class BaseRouter {
         return newbie.join('/');
     }
 
-    getDeEditorRouteString = () => {
-        const segment = this.currentRoute.split('/');
+    getPathOfDeEditorRoute = () => {
+        const segment = this.getCurrentPath().split('/');
         const newbie = segment.map(
             (each, index) => {
-                return index === 1 ? this.getDeEditorString(each) : each
+                return index === 1 ? this.getStringOfDeEditor(each) : each
             })
         return newbie.join('/');
     }
 
-    getDeEditorString(string) {
+    getStringOfDeEditor(string) {
         const segment = string.split('editor');
         return segment.shift();
     }
 
+    isEditPath = () => {
+        const segment = this.getCurrentPath().split('/');
+        segment.shift();
+        /** 第一個是空值 */
+
+        const isEdit = Util.has(segment.shift(), 'editor');
+        console.log('isEdit===> ', isEdit);
+        return isEdit;
+    }
+
     gotoEditPage = (component) => {
-        this.isEditMode = !this.isEditMode;
         const {history} = component.props;
-        const route = this.isEditMode ? this.getEditorRouteString() : this.getDeEditorRouteString();
-        this.currentRoute = route;
+        const route = this.isEditPath() ? this.getPathOfDeEditorRoute() : this.getPathOfEditorRoute();
         history.push(route);
     };
 

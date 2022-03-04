@@ -99,6 +99,7 @@ class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
+        Router.setCurrentComponent(this);
         this.viewInitial();
         if (this.isNotNavigatorNComponentView()) {
             window.addEventListener('scroll', this.onScrollToBottomListener, true);
