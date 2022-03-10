@@ -4,6 +4,7 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
+import StructOfNavigator from "./navigator";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -176,7 +177,6 @@ class CodegenNode {
 
     indexOfCollection;
     /** enrich的時候, 因為遞迴是由最小單位, 被enrich的 parent 的address還沒被產生出來, 所以先記parent的index,然後把parent指為[]  */
-
 
     isScrollingHide;
     /** 註記AppBar 要隨著scroll hide */
@@ -1847,25 +1847,43 @@ class CodegenNode {
         return nodes;
     }
 
-    static enrich(node, parent) {
-        let involution = new CodegenNode(node);
-        if (_.isArray(node)) {
+    /** 在enrich node裡面的Array再加入結構*/
+    static appendChildInArray(addressOfArray, rawJson) {
+        if (_.isArray(addressOfArray)) {
+            const mother = addressOfArray[0].mother;
+            mother.push(rawJson);
+            rawJson.parent = addressOfArray.parent
+            rawJson.mother = mother;
+            const node = this.enrich(rawJson, addressOfArray);
+            addressOfArray.push(node);
+        } else {
+            throw new ERROR(9999, 'addressOfArray is not array')
+        }
+    }
+
+    static isCodegenNode(node) {
+        return node instanceof CodegenNode;
+    }
+
+    static enrich(nodeOfRaw, parent) {
+        let involution = new CodegenNode(nodeOfRaw);
+        if (_.isArray(nodeOfRaw)) {
             /** 隨便改變物件的型態,未來會出現各種bug */
             involution = [];
             involution.parent = parent;
-            for (const child of node) {
+            for (const child of nodeOfRaw) {
                 child.parent = parent;
-                child.mother = node;
+                child.mother = nodeOfRaw;
                 involution.push(this.enrich(child, involution));
             }
-        } else if (_.isObject(node)) {
-            for (const key in node) {
+        } else if (_.isObject(nodeOfRaw)) {
+            for (const key in nodeOfRaw) {
                 if (Util.isOrEquals(key, ...this.doNotEnrichAttribute()))
-                    involution[key] = node[key];
-                else if (_.isObject(node[key]) || _.isArray(node[key])) {
-                    const obj = node[key];
+                    involution[key] = nodeOfRaw[key];
+                else if (_.isObject(nodeOfRaw[key]) || _.isArray(nodeOfRaw[key])) {
+                    const obj = nodeOfRaw[key];
                     if (_.isArray(parent)) {
-                        const index = _.indexOf(node.mother, node);
+                        const index = _.indexOf(nodeOfRaw.mother, nodeOfRaw);
                         obj.indexOfCollection = index;
                     }
                     obj.parent = parent;
@@ -1884,10 +1902,6 @@ class CodegenNode {
         const child = CodegenNode.enrich(obj);
         child.parent = this;
         this.appendChildren(child);
-    }
-
-    static isCodegenNode(node) {
-        return node instanceof CodegenNode;
     }
 
 }
@@ -2325,6 +2339,7 @@ class PathBase {
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
     }
+
 
     getStructs() {
         return this.nodeOfAncestor.components.map(component => component.struct);
@@ -3017,7 +3032,7 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendConstructor(`this.disposableStore = new ${_.upperFirst(storeName)}Store()`)
         }
 
-
+        Util.appendInfo(`比較一下下下 ===> `, componentNode.getName(), componentNode.getParentNode().getNavigationComponentName(),)
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigationView', [], [], [],
                 `return true`
@@ -4971,6 +4986,7 @@ class ProjectFileHandler extends PathBase {
                     }
 
                 } else {
+                    /** 這裡目前就是指 type === string | number*/
                     node.setViewModified(true);
                     node.setOriginalView(node.getView());
                     node.setViewProps({});
@@ -5055,6 +5071,9 @@ class ProjectFileHandler extends PathBase {
         }
 
         const source = this.nodeOfAncestor;
+
+        CodegenNode.appendChildInArray(source.getComponents(), StructOfNavigator)
+
         if (needEditComponent && _.isEqual(this.env, 'dev')) {
             source.components.push(...getEditorComponents());
         }
@@ -5240,6 +5259,7 @@ class ProjectFileHandler extends PathBase {
                 `cd ${this.genRootPath} && npm install`
             );
     }
+
 }
 
 
