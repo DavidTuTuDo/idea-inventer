@@ -4,7 +4,6 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
-import StructOfNavigator from "./navigator";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -56,7 +55,7 @@ const VIEW_IMPORTS =
             from: `react-slideshow-image`,
             views: ['Fade', 'Slide'],
             /** Fade就是有漸入漸出的效果,  Slide就可以滑動 */
-            object: true,/** 就是要加上braket {Fade} */
+            object: true,/** 就是要加上bracket {Fade} */
         }
     ]
 
@@ -411,6 +410,18 @@ class CodegenNode {
 
     needEmptyTip() {
         return this.listEmptyTip && this.listEmptyTip.enable;
+    }
+
+    /** 設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到concrete class,
+     * concrete class 會persist到 free_marker/src/module/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
+    isModuleComponent() {
+        const ancestor = this.getStructNode();
+        const modules = Util.getNamesOfFolderChild('./src/modules');
+        return Util.has(modules, ancestor.getName());
+    }
+
+    getListOfModuleComponent() {
+        return Util.getNamesOfFolderChild('./src/modules').map((each) => _.trim(each));
     }
 
     getDirectoryName() {
@@ -1720,12 +1731,8 @@ class CodegenNode {
         return Util.camel('get', this.getPreciseAttributeParent().getName(), this.getFieldName());
     }
 
-    isComponentModule() {
+    isComponentNode() {
         return this.getParentNode().getParentNode().isStructNode();
-    }
-
-    isViewModule() {
-        return !this.getParentNode().getParentNode().isStructNode();
     }
 
     getParamOfRenderView() {
@@ -1924,8 +1931,6 @@ class ClassGenerator {
     indexFileSingleton = false;
     indexFileTailStmts = [];
 
-    isStoreFile = false;
-
     constructor(path) {
         this.filePath = path;
         this.classes = [];
@@ -1934,10 +1939,6 @@ class ClassGenerator {
             Util.persistByPath(path)
         }
         this.context = Util.getFileContextInRaw(this.filePath).split('\n');
-    }
-
-    setIsStoreFile() {
-        this.isStoreFile = true;
     }
 
     appendField(fieldName, defaultValue, macros = [], comments = [], type = '') {
@@ -2161,9 +2162,6 @@ class ClassGenerator {
     }
 
     importDefaultModule() {
-        if (this.isStoreFile) {
-            this.appendImport('UserInfoRef', '../../userInfo');
-        }
         this.appendImport('libpath', 'path');
         this.appendImport('_', 'lodash');
         this.appendImport('{ utiller as Util, exceptioner as ERROR, pooller as InfinitePool }', 'utiller');
@@ -2210,6 +2208,7 @@ class ClassGenerator {
 
         if (this.needCreatedIndexFile) {
             const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
+            index.imports = this.imports;
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
             index.setSingleton(this.indexFileSingleton);
             index.needSignature(false);
@@ -2543,12 +2542,11 @@ class StoreBuilder extends BaseBuilder {
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
+        const concreteClassName = `Concrete${className}Store`;
         const indexClassName = `${className}Store`;
         const baseGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${baseClassName}.js`));
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
-        baseGenerator.appendImport('_', 'lodash');
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
-        baseGenerator.appendInClassHead(`import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction} from "mobx"`)
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
         const propsStmt = [];
 
@@ -2648,14 +2646,35 @@ class StoreBuilder extends BaseBuilder {
             ...getDefaultValueSetterStmts(node)
         )
 
-
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
             `super.initial(obj)`,
             ...propsStmt);
         baseGenerator.appendConstructor(`makeObservable(this)`, `this.setDefaultValues()`, `this.initial(props)`);
-        baseGenerator.setIsStoreFile();
-        baseGenerator.needIndexFile(`${indexClassName}`);
+        this.importStoreDefault(baseGenerator);
+
+        if (node.isModuleComponent()) {
+            const concreteGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${concreteClassName}.js`));
+            concreteGenerator.appendClass(concreteClassName, {name: baseClassName, from: `./${baseClassName}`});
+            concreteGenerator.needIndexFile(`${indexClassName}`);
+            concreteGenerator.needSignature(false);
+            this.importStoreDefault(concreteGenerator);
+            await concreteGenerator.persist();
+        } else {
+            baseGenerator.needIndexFile(`${indexClassName}`);
+        }
         await baseGenerator.persist();
+    }
+
+    importStoreDefault(generator) {
+        generator.appendImport(`{
+        makeAutoObservable, makeObservable, action, 
+        observable, comparer, computed, autorun, runInAction}`,
+            'mobx')
+        generator.appendImport('UserInfoRef', '../../userInfo');
+        generator.appendImport(`Cookie`, '../../cookie');
+        generator.appendImport(`Router`, '../../router');
+        generator.appendImport(`Config`, '../../config');
+        generator.appendImport(`{Application}`, '../../');
     }
 
     getDecorateFetchStrings(isObject = false, ...contents) {
@@ -2982,6 +3001,7 @@ class ComponentBuilder extends BaseBuilder {
     importComponentDefault(generator) {
         generator.appendImport(`Cookie`, '../../cookie');
         generator.appendImport(`Router`, '../../router');
+        generator.appendImport(`Config`, '../../config');
         generator.appendImport(`{Application}`, '../../');
         generator.appendImport(`React`, 'react');
     }
@@ -2998,6 +3018,8 @@ class ComponentBuilder extends BaseBuilder {
 
         const baseComponentName = componentNode.getStruct().getName();
         const baseClassName = `Base${_.upperFirst(baseComponentName)}Component`;
+        const concreteClassName = `Concrete${_.upperFirst(baseComponentName)}Component`;
+
         const className = `${_.upperFirst(baseComponentName)}Component`;
         const folderName = baseComponentName;
 
@@ -3032,7 +3054,6 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendConstructor(`this.disposableStore = new ${_.upperFirst(storeName)}Store()`)
         }
 
-        Util.appendInfo(`比較一下下下 ===> `, componentNode.getName(), componentNode.getParentNode().getNavigationComponentName(),)
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigationView', [], [], [],
                 `return true`
@@ -3126,9 +3147,20 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
         }
 
-        baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
+        if (componentNode.isModuleComponent()) {
+            const concreteGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${concreteClassName}.js`));
+            concreteGenerator.appendClass(concreteClassName, {
+                name: baseClassName,
+                from: `./${baseClassName}`
+            })
+            concreteGenerator.needSignature(false);
+            concreteGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
+            this.importComponentDefault(concreteGenerator);
+            await concreteGenerator.persist()
+        } else {
+            baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
+        }
         await baseGenerator.persist();
-
         return {classNames: this.classNames, events: componentNode.getEvents()};
     }
 
@@ -3194,7 +3226,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (node) {
                 if (useViewModuleAndComponentModuleMechanism) {
-                    generator.appendImport(node.getViewClassNameOfRenderView(), node.isComponentModule() ?
+                    generator.appendImport(node.getViewClassNameOfRenderView(), node.isComponentNode() ?
                         `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}` :
                         `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
                 }
@@ -4507,16 +4539,42 @@ class ProjectFileHandler extends PathBase {
                 const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide
                 baseConfigGenerator.appendField(`isScrollingHide`, JSON.stringify(trueOrFalse));
                 break;
-
-
         }
+
         await baseConfigGenerator.needIndexFile('Config', [], true);
         await baseConfigGenerator.persist();
     }
 
+    persistModuleComponentConcreteFiles() {
+        if (!fs.existsSync(this.genSourcePath)) {
+            Util.appendInfo(`${this.genSourcePath} is note created, ignore`);
+            return
+        }
+
+        for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
+            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
+                (each) => _.startsWith(_.toLower(each.dirName), module) &&
+                    _.startsWith(each.fileName, 'Concrete'))) {
+                const pathOfDestination = libpath.join(`./src/modules/${module}/component/`,
+                    file.fileNameExtension);
+                Util.copySingleFileConservative(pathOfDestination, file);
+            }
+
+            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'store'),
+                (each) => _.startsWith(_.toLower(each.dirName), module) &&
+                    _.startsWith(each.fileName, 'Concrete'))) {
+                const pathOfDestination = libpath.join(`./src/modules/${module}/store/`,
+                    file.dirName, file.fileNameExtension);
+                Util.copySingleFileConservative(pathOfDestination, file);
+            }
+
+            /** less file */
+        }
+
+    }
+
     persistBaseFilesToFreeMarkerTemplate() {
         try {
-
             if (!fs.existsSync(this.genSourcePath)) {
                 Util.appendInfo(`${this.genSourcePath} is note created, ignore`);
                 return
@@ -4530,29 +4588,15 @@ class ProjectFileHandler extends PathBase {
 
                 if (_.startsWith(_.toLower(file.fileName), 'common')) {
                     /** back-up to common*/
-                    const projectCommonSourceBasePath = libpath.join(this.freeMarkerSourceCommonPath, 'src', 'base');
-                    Util.persistByPath(projectCommonSourceBasePath);
-
-                    const existSourceFile = libpath.join(projectCommonSourceBasePath, file.fileNameExtension);
-                    if (fs.existsSync(existSourceFile) &&
-                        Util.getFileLastModifiedTime(existSourceFile) > file.lastModifiedTime + 3600) {
-                        Util.appendInfo(`${existSourceFile} is the latest, ignore this run`);
-                        continue;
-                    }
-
-                    Util.copySingleFile(file.absolute,
-                        libpath.join(projectCommonSourceBasePath, file.fileNameExtension), undefined, true)
-
+                    const pathOfDestination = libpath.join(this.freeMarkerSourceCommonPath, 'src', 'base', file.fileNameExtension);
+                    Util.copySingleFileConservative(pathOfDestination, file);
                 } else {
                     /** back-up to platform src*/
-                    const projectPlatformSourceBasePath = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base');
-                    Util.persistByPath(projectPlatformSourceBasePath);
-                    Util.copySingleFile(file.absolute,
-                        libpath.join(projectPlatformSourceBasePath, file.fileNameExtension), undefined, true)
+                    const pathOfDestination = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
+                    Util.copySingleFileConservative(pathOfDestination, file);
                 }
             }
             Util.appendInfo(`persist free-marker base files succeed`);
-            return false;
         } catch (error) {
             /** 偷懶 hack */
             Util.appendError(error);
@@ -5071,13 +5115,13 @@ class ProjectFileHandler extends PathBase {
         }
 
         const source = this.nodeOfAncestor;
-
-        CodegenNode.appendChildInArray(source.getComponents(), StructOfNavigator)
+        for (const file of Util.findFilePathBy('./src/modules', (each) => _.isEqual(each.fileName, each.dirName))) {
+            CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
+        }
 
         if (needEditComponent && _.isEqual(this.env, 'dev')) {
             source.components.push(...getEditorComponents());
         }
-
 
         this.enrichNodes(...source.getComponents().map(component => component.getStruct()));
     }
@@ -5390,11 +5434,12 @@ class BuildApplication {
 
     async persistent(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
-        handler.persistBaseFilesToFreeMarkerTemplate();
-        handler.persistCustomizePackages()
-        handler.persistImageFolder();
-        handler.persistIndexAndLessFiles();
-        handler.persistLessLibs();
+        handler.persistModuleComponentConcreteFiles()
+        // handler.persistBaseFilesToFreeMarkerTemplate();
+        // handler.persistCustomizePackages()
+        // handler.persistImageFolder();
+        // handler.persistIndexAndLessFiles();
+        // handler.persistLessLibs();
     }
 
 }

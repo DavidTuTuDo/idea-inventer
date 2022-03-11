@@ -487,6 +487,25 @@ class NodeUtiller extends Utiller {
         }
     }
 
+    /** 保守的複製檔案, 如果檔案比較舊, 或是檔案是空的, 就放棄copy行為 */
+    copySingleFileConservative(pathOfDestination, latestFile) {
+        if(this.isEmptyFile(latestFile.absolute)) {
+            this.appendInfo(`${latestFile.absolute} is empty file, ignore copy behavior`);
+            return;
+        }
+
+        if (!fs.existsSync(pathOfDestination)) {
+            this.appendInfo(`${pathOfDestination} is not exist, easy to override`);
+        } else if (fs.existsSync(pathOfDestination) &&
+            this.getFileLastModifiedTime(pathOfDestination) < latestFile.lastModifiedTime + 3600) {
+            this.appendInfo(`${pathOfDestination} is the latest, ignore this run`);
+            return;
+        }
+
+        this.persistByPath(this.getFolderPathOfSpecificPath(pathOfDestination));
+        this.copySingleFile(latestFile.absolute, pathOfDestination, undefined, true);
+    }
+
     syncDeleteFile(path) {
         if (fs.existsSync(path))
             fs.unlinkSync(path);
