@@ -1941,6 +1941,11 @@ class ClassGenerator {
         this.context = Util.getFileContextInRaw(this.filePath).split('\n');
     }
 
+    async cleanBuild() {
+        await Util.deleteSelfByPath(this.filePath,true);
+        Util.persistByPath(this.filePath);
+    }
+
     appendField(fieldName, defaultValue, macros = [], comments = [], type = '') {
         const stmt = [];
 
@@ -3874,8 +3879,7 @@ class ComponentBuilder extends BaseBuilder {
 
 }
 
-class AppBuilder
-    extends ComponentBuilder {
+class AppBuilder extends ComponentBuilder {
 
     constructor(props) {
         super(props);
@@ -4166,6 +4170,9 @@ class AppBuilder
         return stmt;
     }
 
+    /**
+     * classNameInfos: [ {name:navigator,classnames:['List','Wrap'] }]
+     * */
     async buildStyleFiles(classNameInfos) {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
@@ -4209,18 +4216,20 @@ class AppBuilder
         }
     }
 
-    async buildAllNewBrandLessFiles(classNameInfos) {
-        const self = this;
-        const sign = `/** empty style */`;
-
+    /**
+     * className: {
+     *     isEmpty: '是否為一個沒有編輯過的className'
+     *     raw: '沒處理過的字串'
+     *     attributeObj:{ mobile:'', desktop:'' }
+     * }
+     */
+    getObjectOfExistedLessAttribute(path = this.projectPlatformSourcePath) {
         /** return { ..., mobile:'' desktop:'' , tablet:''} */
         function rawToAttributeObj(raw) {
             const object = {}
             /**{ mobile:'' desktop:'' }*/
-
             const platformStrings = raw.split('@media').map(each => each.trim())
                 .map((each) => Util.toOneLineString(each));
-
 
             for (const string of platformStrings) {
                 const regexOfGetPlatform = new RegExp(`(?<=\\@)\\w+`, 'g');
@@ -4250,81 +4259,80 @@ class AppBuilder
             return isEmpty;
         }
 
+        const lessAttributeObj = {};
+        const srcLessPath = libpath.join(path, `less`, `styles.less`)
+        if(Util.isEmptyFile(srcLessPath)) {
+            Util.appendInfo(`4842454 ${srcLessPath} is not exist!!!`);
+            return undefined;
+        }
+        const stringOfPlatforms = _.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
+        if (fs.existsSync(srcLessPath)) {
+            const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
+            /** 注意!! 是用 remove,會mutate 原本的 array */
+            _.remove(stub, (each) => (
+                _.startsWith(each.trim(), '/**')
+                || _.isEqual(each.trim(), '')
+                || _.startsWith(each.trim(), '@import')
+                || Util.startWithRegex(each.trim(), `@(${stringOfPlatforms})\:`)
+            ))
+
+            /** 移除掉最後一個,因為split */
+            const pureLessStringFile = stub.join('\n');
+            const regexOfClassName = new RegExp(`^\\..+\\s{`, `gm`)
+            /**  找出像是這樣的.ExamFilterRandomTestRangeOfYearSlider  */
+            const classNames = pureLessStringFile.match(regexOfClassName).map((each) => {
+                const normalize = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(each, '.'), '{').trim()
+                const precise = normalize.split(':')[0];
+                return {
+                    complete: normalize, /** ExamFilterRandomTestRangeOfYearSlider:extend(.CenterInParent all) */
+                    precise: precise, /** ExamFilterRandomTestRangeOfYearSlider */
+                }
+            });
+
+            const blocks = Util.toObjectMap(pureLessStringFile.split(regexOfClassName), {to: 'raw'});
+            blocks.shift();
+
+            /** split 第一個會是沒意義的值 */
+            const styles = _.zip(classNames, blocks).map((each) => Util.mergeObject(...each));
+
+            for (const style of styles) {
+                const attributeObj = rawToAttributeObj(style.raw);
+                /** { mobile:'', desktop:''} */
+                const isEditorClassName = Util.has(style.precise, 'Editor');
+                lessAttributeObj[style.precise] = {
+                    ...style,
+                    attributeObj,
+                    /**  isModified 就是指這個className有沒有被編輯過 */
+                    isModified: isEditorClassName ? !isEmptyAttribute(attributeObj) /** 如果是Editor的className就只要看空值不,  */
+                        : (!isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise)),
+                }
+            }
+        }
+        return lessAttributeObj;
+    }
+
+    getVarietyDeviceStmts(existedObj) {
+        const sign = `/** empty style */`;
+        const stmts = [];
+        const isModifiedObject = existedObj && existedObj.isModified && existedObj['attributeObj']
+        for (const module of LESS_MODULES) {
+            const existed = isModifiedObject && existedObj['attributeObj'][module.name];
+            stmts.push(`@media @${module.name} {${existed ? existedObj['attributeObj'][module.name] : sign}}`);
+        }
+
+        if (isModifiedObject) {
+            stmts.unshift(existedObj['attributeObj']['default'])
+        }
+
+        return stmts.join('');
+    }
+
+    async buildAllNewBrandLessFiles(classNameInfos) {
+        const self = this;
         function getLessLibs() {
             return Util.findFilePathBy(libpath.join(self.freeMarkerRootPath, 'less', 'libs'),
                 (file) => _.isEqual(file.extension, 'less'))
                 .map((file) => file.fileNameExtension);
-        }
-
-        function getVarietyDeviceStmts(existedObj) {
-            const stmts = [];
-            const isModifiedObject = existedObj && existedObj.isModified && existedObj['attributeObj']
-            for (const module of LESS_MODULES) {
-                const existed = isModifiedObject && existedObj['attributeObj'][module.name];
-                stmts.push(`@media @${module.name} {${existed ? existedObj['attributeObj'][module.name] : sign}}`);
-            }
-
-            if (isModifiedObject) {
-                stmts.unshift(existedObj['attributeObj']['default'])
-            }
-
-            return stmts.join('');
-        }
-
-        /**
-         * className: {
-         *     isEmpty: '是否為一個沒有編輯過的className'
-         *     raw: '沒處理過的字串'
-         *     attributeObj:{ mobile:'', desktop:'' }
-         * }
-         */
-        function getExistedLessAttributeObj() {
-            const lessAttributeObj = {};
-            const srcLessPath = libpath.join(self.projectPlatformSourcePath, `less`, `styles.less`)
-            const stringOfPlatforms = _.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
-            if (fs.existsSync(srcLessPath)) {
-                const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
-                /** 注意!! 是用 remove,會mutate 原本的 array */
-                _.remove(stub, (each) => (
-                    _.startsWith(each.trim(), '/**')
-                    || _.isEqual(each.trim(), '')
-                    || _.startsWith(each.trim(), '@import')
-                    || Util.startWithRegex(each.trim(), `@(${stringOfPlatforms})\:`)
-                ))
-
-                /** 移除掉最後一個,因為split */
-                const pureLessStringFile = stub.join('\n');
-                const regexOfClassName = new RegExp(`^\\..+\\s{`, `gm`)
-                /**  找出像是這樣的.ExamFilterRandomTestRangeOfYearSlider  */
-                const classNames = pureLessStringFile.match(regexOfClassName).map((each) => {
-                    const normalize = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(each, '.'), '{').trim()
-                    const precise = normalize.split(':')[0];
-                    return {
-                        complete: normalize, /** ExamFilterRandomTestRangeOfYearSlider:extend(.CenterInParent all) */
-                        precise: precise, /** ExamFilterRandomTestRangeOfYearSlider */
-                    }
-                });
-
-                const blocks = Util.toObjectMap(pureLessStringFile.split(regexOfClassName), {to: 'raw'});
-                blocks.shift();
-
-                /** split 第一個會是沒意義的值 */
-                const styles = _.zip(classNames, blocks).map((each) => Util.mergeObject(...each));
-
-                for (const style of styles) {
-                    const attributeObj = rawToAttributeObj(style.raw);
-                    /** { mobile:'', desktop:''} */
-                    const isEditorClassName = Util.has(style.precise, 'Editor');
-                    lessAttributeObj[style.precise] = {
-                        ...style,
-                        attributeObj,
-                        /**  isModified 就是指這個className有沒有被編輯過 */
-                        isModified: isEditorClassName ? !isEmptyAttribute(attributeObj) /** 如果是Editor的className就只要看空值不,  */
-                            : (!isEmptyAttribute(attributeObj) || !_.isEqual(style.complete, style.precise)),
-                    }
-                }
-            }
-            return lessAttributeObj;
         }
 
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
@@ -4336,7 +4344,11 @@ class AppBuilder
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
         }
 
-        const existedLessAttributeObj = getExistedLessAttributeObj();
+        const existedLessAttributeObj = this.getObjectOfExistedLessAttribute(this.projectPlatformSourcePath);
+
+        /**
+         * classNameInfos: [ {component:componentNode, classNames:['List','Wrap'] }...]
+         * */
         for (const info of classNameInfos) {
             const isEditPage = info.component.isEditPage();
             generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
@@ -4349,12 +4361,11 @@ class AppBuilder
                 if (isEditPage) {
                     const original = node.getOriginalClassNameOfLessUsage(type);
                     const extendStmt = (type === 'default' && node.isTextField()) ? `BaseEditorTextField` : `${original.value}`
-                    const stmt = `.${preciselyClazzName}:extend(.${extendStmt}){${getVarietyDeviceStmts(existObj)}}`;
-                    console.log(stmt);
+                    const stmt = `.${preciselyClazzName}:extend(.${extendStmt}){${this.getVarietyDeviceStmts(existObj)}}`;
                     generator.appendInClassTail(`${stmt}`);
                 } else {
                     generator.appendInClassTail(`.${existObj ? existObj.complete : preciselyClazzName} 
-                        {${getVarietyDeviceStmts(existObj)}}`);
+                        {${this.getVarietyDeviceStmts(existObj)}}`);
                 }
                 delete existedLessAttributeObj[preciselyClazzName];
             }
@@ -4383,9 +4394,12 @@ class AppBuilder
         }
     }
 
-    /** {[...{component,names}], srcPath}
+    /**
+     * @deprecate
+     * {[...{component,names}], srcPath}
      * srcPath 就是 keep file 的根目錄
      * */
+
     async buildLessFile(classNameInfos) {
         /** 先取得 libs file list*/
         const libs = Util.findFilePathBy(libpath.join(this.freeMarkerRootPath, 'less', 'libs'),
@@ -4454,7 +4468,6 @@ class AppBuilder
             for (const nameExtension of libs) {
                 generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
             }
-
 
             generator.needSignature(false);
             generator.disableDefaultImports();
@@ -4545,7 +4558,7 @@ class ProjectFileHandler extends PathBase {
         await baseConfigGenerator.persist();
     }
 
-    persistModuleComponentConcreteFiles() {
+    async persistModuleComponentConcreteFiles() {
         if (!fs.existsSync(this.genSourcePath)) {
             Util.appendInfo(`${this.genSourcePath} is note created, ignore`);
             return
@@ -4568,9 +4581,25 @@ class ProjectFileHandler extends PathBase {
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
 
-            /** less file */
+            /** persist  less file */
+            const instance = new AppBuilder(this.getAppBuildParam());
+            const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
+            if(attrs) {
+                const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
+                await Util.deleteSelfByPath(`./src/modules/${module}/less`);
+                const generator = new ClassGenerator(`./src/modules/${module}/less/style.less`);
+                for (const model of LESS_MODULES) {
+                    generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
+                }
+                generator.needSignature(false);
+                generator.disableDefaultImports();
+                for (const less of lessees) {
+                    generator.appendInClassTail(`.${less.complete} 
+                        {${instance.getVarietyDeviceStmts(less)}}`);
+                }
+                await generator.persist();
+            }
         }
-
     }
 
     persistBaseFilesToFreeMarkerTemplate() {
@@ -5130,6 +5159,11 @@ class ProjectFileHandler extends PathBase {
         return this.nodeOfAncestor.getComponents().map(component => component.getStruct());
     }
 
+
+    getAppBuildParam = () => {
+        return {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
+    }
+
     async forNewLess() {
         this.enrichComponentStructs(this.isWebPlatform());
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
@@ -5434,7 +5468,7 @@ class BuildApplication {
 
     async persistent(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
-        handler.persistModuleComponentConcreteFiles()
+        await handler.persistModuleComponentConcreteFiles()
         // handler.persistBaseFilesToFreeMarkerTemplate();
         // handler.persistCustomizePackages()
         // handler.persistImageFolder();

@@ -683,7 +683,7 @@ class NodeUtiller extends Utiller {
     }
 
     isEmptyFile(path) {
-        return _.isEqual('', this.getFileContextInRaw(path).trim())
+        return !this.isPathExist(path) || _.isEqual('', this.getFileContextInRaw(path).trim())
     }
 
     /** 把檔案弄得好看一點 */
