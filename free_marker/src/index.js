@@ -4265,7 +4265,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         const lessAttributeObj = {};
-        const srcLessPath = libpath.join(path, `less`, `styles.less`)
+        const srcLessPath = _.isEqual('less', Util.getExtensionFromPath(path)) ? path : libpath.join(path, `less`, `styles.less`)
         if (Util.isEmptyFile(srcLessPath)) {
             Util.appendInfo(`4842454 ${srcLessPath} is not exist!!!`);
             return undefined;
@@ -4354,23 +4354,21 @@ class AppBuilder extends ComponentBuilder {
             await modulesGenerator.persist();
         }
 
-        // await buildModuleLessFile();
 
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
         }
-        generator.appendInClassHead(`@import "./modules.less";`);
-        const existedLessAttributeObj = this.getObjectOfExistedLessAttribute(this.projectPlatformSourcePath);
+        generator.appendInClassHead(this.getAnnouncementsOfLessDevice().join('\n'))
+        const filesOfLess = [this.projectPlatformSourcePath, ...this.nodeOfAncestor.getLessFilesOfModuleComponent().map((file) => file.absolute)];
+        const existedLessAttributeObj = Util.mergeObject(...filesOfLess.map((each) => this.getObjectOfExistedLessAttribute(each)));
+
         /**
          * classNameInfos: [ {component:componentNode, classNames:['List','Wrap'] }...]
          * */
         for (const info of classNameInfos) {
             const isEditPage = info.component.isEditPage();
             generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
-            if (info.component.isModuleComponent()) {
-                continue;
-            }
 
             for (const className of info.classNames) {
                 const node = className.node;

@@ -489,7 +489,7 @@ class NodeUtiller extends Utiller {
 
     /** 保守的複製檔案, 如果檔案比較舊, 或是檔案是空的, 就放棄copy行為 */
     copySingleFileConservative(pathOfDestination, latestFile) {
-        if(this.isEmptyFile(latestFile.absolute)) {
+        if (this.isEmptyFile(latestFile.absolute)) {
             this.appendInfo(`${latestFile.absolute} is empty file, ignore copy behavior`);
             return;
         }
@@ -603,7 +603,7 @@ class NodeUtiller extends Utiller {
                     }
                 } catch (error) {
                     await this.deleteSelfByPath(release, true);
-                    throw new ERROR(9999,`generatePackage 報錯, ${error.message}`);
+                    throw new ERROR(9999, `generatePackage 報錯, ${error.message}`);
                 } finally {
                     await this.deleteSelfByPath(tempFolderPath, true);
                 }
