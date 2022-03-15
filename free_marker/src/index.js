@@ -424,6 +424,11 @@ class CodegenNode {
         return Util.getNamesOfFolderChild('./src/modules').map((each) => _.trim(each));
     }
 
+    /** exclude => 要略過的資料夾名稱 */
+    getLessFilesOfModuleComponent(...exclude) {
+        return Util.findFilePathBy('./src/modules', (file) => _.isEqual(file.extension, 'less'));
+    }
+
     getDirectoryName() {
         return this.directory;
     }
@@ -1942,7 +1947,7 @@ class ClassGenerator {
     }
 
     async cleanBuild() {
-        await Util.deleteSelfByPath(this.filePath,true);
+        await Util.deleteSelfByPath(this.filePath, true);
         Util.persistByPath(this.filePath);
     }
 
@@ -4261,7 +4266,7 @@ class AppBuilder extends ComponentBuilder {
 
         const lessAttributeObj = {};
         const srcLessPath = libpath.join(path, `less`, `styles.less`)
-        if(Util.isEmptyFile(srcLessPath)) {
+        if (Util.isEmptyFile(srcLessPath)) {
             Util.appendInfo(`4842454 ${srcLessPath} is not exist!!!`);
             return undefined;
         }
@@ -4329,29 +4334,43 @@ class AppBuilder extends ComponentBuilder {
 
     async buildAllNewBrandLessFiles(classNameInfos) {
         const self = this;
+
         function getLessLibs() {
             return Util.findFilePathBy(libpath.join(self.freeMarkerRootPath, 'less', 'libs'),
                 (file) => _.isEqual(file.extension, 'less'))
                 .map((file) => file.fileNameExtension);
         }
 
-        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
-        for (const model of LESS_MODULES) {
-            generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
+        async function buildModuleLessFile() {
+            /** 用來放componentModules 的 attrs */
+
+            const modulesGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'less', `modules.less`));
+            modulesGenerator.appendInClassHead(self.getAnnouncementsOfLessDevice().join('\n'));
+            const lessees = self.nodeOfAncestor.getLessFilesOfModuleComponent();
+            for (const file of lessees) {
+                modulesGenerator.appendInClassTail(self.getStringOfRemoveDeviceInfo(Util.getFileContextInRaw(file)));
+            }
+            modulesGenerator.disableDefaultImports();
+            await modulesGenerator.persist();
         }
 
+        await buildModuleLessFile();
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
         }
-
+        generator.appendInClassHead(`@import "./modules.less";`);
         const existedLessAttributeObj = this.getObjectOfExistedLessAttribute(this.projectPlatformSourcePath);
-
         /**
          * classNameInfos: [ {component:componentNode, classNames:['List','Wrap'] }...]
          * */
         for (const info of classNameInfos) {
             const isEditPage = info.component.isEditPage();
             generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
+            if (info.component.isModuleComponent()) {
+                continue;
+            }
+
             for (const className of info.classNames) {
                 const node = className.node;
                 const type = className.type;
@@ -4376,10 +4395,9 @@ class AppBuilder extends ComponentBuilder {
             for (const clazzName in existedLessAttributeObj) {
                 const object = existedLessAttributeObj[clazzName];
                 if (object.isModified) {
-                    generator.appendInClassTail(`.${clazzName} {${getVarietyDeviceStmts(existedLessAttributeObj[clazzName])}}`);
+                    generator.appendInClassTail(`.${clazzName} {${this.getVarietyDeviceStmts(existedLessAttributeObj[clazzName])}}`);
                 }
             }
-
         }
 
         generator.needSignature(false);
@@ -4482,8 +4500,38 @@ class AppBuilder extends ComponentBuilder {
         }
     }
 
+    /** 拿到[... '@mobile' ,'@table'] 的陣列 */
+    getAnnouncementsOfLessDevice() {
+        const announcements = [];
+        for (const model of LESS_MODULES) {
+            announcements.push(`@${model.name}: ~'${model.rule}';`);
+        }
+        return announcements;
+    }
+
+    /** 拿到less file 但是去掉 @mobile, @tablet 這類宣告*/
+    getStringOfRemoveDeviceInfo(string) {
+        const stringOfPlatforms = _.map(LESS_MODULES, 'name').map((each) => `(${each})`).join("|");
+        const stub = string.split('\n');
+        _.remove(stub, (each) => Util.startWithRegex(each.trim(), `@(${stringOfPlatforms})\:`))
+        return stub.join('\n');
+    }
+
+    /** 把less的 device宣告更新 */
+    refactorLessDeviceInfo(file) {
+        const stub = this.getStringOfRemoveDeviceInfo(Util.getFileContextInRaw(file.absolute));
+        const latest = [...this.getAnnouncementsOfLessDevice(), stub].join('\n');
+        Util.appendFile(file.absolute, latest, false, true);
+    }
+
     async overrideLessFile() {
+
         const less = libpath.join(this.freeMarkerRootPath, `less`);
+        const files = Util.findFilePathBy(less);
+        _.forEach(_.filter(files, (file) => _.isEqual(file.extension, 'less')),
+            (file) => this.refactorLessDeviceInfo(file)
+        );
+
         const to = libpath.join(this.genSourcePath, 'less');
         Util.copyFromFolderToDestFolder(less, to);
     }
@@ -4584,7 +4632,7 @@ class ProjectFileHandler extends PathBase {
             /** persist  less file */
             const instance = new AppBuilder(this.getAppBuildParam());
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
-            if(attrs) {
+            if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
                 await Util.deleteSelfByPath(`./src/modules/${module}/less`);
                 const generator = new ClassGenerator(`./src/modules/${module}/less/style.less`);
@@ -5205,7 +5253,6 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildCookieFiles();
         await new AppBuilder(paramProps).buildEventFolder(totalEvents);
         await new AppBuilder(paramProps).overrideLessFile();
-        // await new AppBuilder(paramProps).buildLessFile(totalClassNames);
         await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();

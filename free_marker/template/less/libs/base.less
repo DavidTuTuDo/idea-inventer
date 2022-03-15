@@ -1,6 +1,6 @@
-@desktop: ~'only screen and (min-width: 1025px) and (max-width: 1280px)';
-@phone: ~'only screen and (min-width: 320px) and (max-width: 600px)';
-@tablet: ~'only screen and (min-width: 601px) and (max-width: 1024px)';
+@mobile: ~'only screen and (min-width: 320px) and (max-width: 600px)';
+@tablet: ~'only screen and (min-width: 320px) and (max-width: 600px)';
+@desktop: ~'only screen and (min-width: 601px)';
 
 .CenterInParentRow {
   flex-direction: row;
@@ -23,7 +23,7 @@
 
 .BaseCountdownTitleTypography {
   font-size: 2.8rem;
-  @media @phone {
+  @media @mobile {
     font-size: 1.6rem;
   }
 }
@@ -31,7 +31,7 @@
 .BaseCountdownCountTypography {
   font-size: 2rem;
 
-  @media @phone {
+  @media @mobile {
     font-size: 1.2rem;
   }
 }
@@ -39,7 +39,7 @@
 .BaseCountdownUnitTypography {
   font-size: 1.5rem;
 
-  @media @phone {
+  @media @mobile {
     font-size: 1.0rem;
   }
 }
@@ -49,7 +49,7 @@
   margin: 8px;
   padding: 8px;
   min-width: 80px;
-  @media @phone {
+  @media @mobile {
     min-width: 40px;
   }
 
@@ -110,7 +110,7 @@
 
 .BaseShortcutMUIconView {
   font-size: 30px;
-  @media @phone {
+  @media @mobile {
     font-size: 25px;
   }
 }
@@ -122,7 +122,7 @@
 .BaseShortcutItemTextView {
   font-size: 1.4rem;
 
-  @media @phone {
+  @media @mobile {
     font-size: 1.1rem;
   }
 
@@ -137,7 +137,7 @@
 
 .BaseShortcutNestedListView {
   padding-left: 20px;
-  @media @phone {
+  @media @mobile {
     padding-left: 5px;
   }
 }
