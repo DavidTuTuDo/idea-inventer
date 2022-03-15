@@ -4354,7 +4354,8 @@ class AppBuilder extends ComponentBuilder {
             await modulesGenerator.persist();
         }
 
-        await buildModuleLessFile();
+        // await buildModuleLessFile();
+
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
