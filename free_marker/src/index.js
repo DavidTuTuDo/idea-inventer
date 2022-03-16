@@ -21,6 +21,8 @@ const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
 const KEYWORD_OF_MODULARIZED = 'Modularized';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
+const FILENAME_OF_SOURCE_JS = `source.js`;
+/** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
     {
@@ -4622,7 +4624,7 @@ class ProjectFileHandler extends PathBase {
             if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
                 await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less`));
-                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less/style.less`));
+                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less/styles.less`));
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
@@ -4735,20 +4737,25 @@ class ProjectFileHandler extends PathBase {
     overrideEachFilesFromFolder(...excludes) {
         /** 順序會影響檔案的priority */
         const pathsOfModuleComponent = this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each));
-        /** ./src/modules/navigator */
+        /** ex: ./src/modules/navigator */
 
         const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
         /** exam/web/ */
         for (const sourcePath of fromSourcePath) {
             for (const sourceFile of Util.findFilePathBy(sourcePath)) {
-
                 let ignoreThisRun = false;
                 for (let exclude of excludes) {
+
                     if (_.isString(exclude)) {
                         exclude = {type: 'fileNameExtension', keyword: exclude}
                     }
 
                     if (_.isEqual(sourceFile[exclude.type], exclude.keyword)) {
+                        ignoreThisRun = true;
+                        break;
+                    }
+
+                    if (_.isEqual(sourceFile.fileNameExtension,FILENAME_OF_SOURCE_JS)) {
                         ignoreThisRun = true;
                         break;
                     }
@@ -5189,7 +5196,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         const source = this.nodeOfAncestor;
-        for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileName, each.dirName))) {
+        for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
             CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
         }
 
@@ -5396,8 +5403,8 @@ class BuildApplication {
     }
 
     init() {
-        if (!fs.existsSync(libpath.join(this.projectRootPath, 'source.js'))) {
-            throw new ERROR(8019, `you should put source.js in ${libpath.resolve(this.projectRootPath)}`)
+        if (!fs.existsSync(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS))) {
+            throw new ERROR(8019, `you should put ${FILENAME_OF_SOURCE_JS} in ${libpath.resolve(this.projectRootPath)}`)
         }
     }
 

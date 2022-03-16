@@ -3,7 +3,7 @@
 	email:freshingmoon0725@gmail.com
 	updateTime:2021-04-14-20-30-46
 */
-import BaseStore from "./store";
+import BaseStore from "./store.js";
 import {
     utiller as Util,
     exceptioner as ERROR,
