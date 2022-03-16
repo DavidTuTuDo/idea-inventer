@@ -5,9 +5,24 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
+import { Application } from "../../";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../userInfo";
+import {
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
+} from "mobx";
 import BaseNavigatorCredentialStore from "./BaseNavigatorCredentialStore";
 
-class NavigatorCredentialStore extends BaseNavigatorCredentialStore {
+class ModularizedNavigatorCredentialStore extends BaseNavigatorCredentialStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -21,7 +36,6 @@ class NavigatorCredentialStore extends BaseNavigatorCredentialStore {
         !_.isEmpty(this.getOauthIdToken())
     )
   }
-
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorCredentialStore;
+export default ModularizedNavigatorCredentialStore;

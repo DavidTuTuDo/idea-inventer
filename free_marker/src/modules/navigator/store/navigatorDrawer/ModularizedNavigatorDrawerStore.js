@@ -5,10 +5,24 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import UserInfo from '../../userInfo';
+import { Application } from "../../";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../userInfo";
+import {
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
+} from "mobx";
 import BaseNavigatorDrawerStore from "./BaseNavigatorDrawerStore";
 
-class NavigatorDrawerStore extends BaseNavigatorDrawerStore {
+class ModularizedNavigatorDrawerStore extends BaseNavigatorDrawerStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -18,7 +32,7 @@ class NavigatorDrawerStore extends BaseNavigatorDrawerStore {
 
   async fetch(view) {
     const result = await super.fetch(view);
-    if(UserInfo.isLoginInSucceed()){
+    if(UserInfoRef.isLoginInSucceed()){
       result.shortcuts.push(...result.myShortcuts)
     }
     return result;
@@ -26,4 +40,4 @@ class NavigatorDrawerStore extends BaseNavigatorDrawerStore {
 
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorDrawerStore;
+export default ModularizedNavigatorDrawerStore;

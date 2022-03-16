@@ -5,10 +5,24 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
+import { Application } from "../../";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../userInfo";
+import {
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
+} from "mobx";
 import BaseNavigatorDrawerShortcutStore from "./BaseNavigatorDrawerShortcutStore";
-import {action, computed} from "mobx";
 
-class NavigatorDrawerShortcutStore extends BaseNavigatorDrawerShortcutStore {
+class ModularizedNavigatorDrawerShortcutStore extends BaseNavigatorDrawerShortcutStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -28,6 +42,7 @@ class NavigatorDrawerShortcutStore extends BaseNavigatorDrawerShortcutStore {
   hasSubItems() {
     return this.getSubs().length > 0;
   }
+
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorDrawerShortcutStore;
+export default ModularizedNavigatorDrawerShortcutStore;

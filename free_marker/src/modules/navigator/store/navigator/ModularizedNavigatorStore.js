@@ -1,8 +1,3 @@
-/** this code are generated, modify is no sense.
- author:David Tu,
- email:freshingmoon0725@gmail.com
- updateTime:2021-07-01-10-54-37
- */
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -10,18 +5,29 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseNavigatorStore from "./BaseNavigatorStore";
-import Cookie from '../../cookie';
-import firebaser from '../../base/CommonFirebaseHelper';
-import {makeObservable, observable} from "mobx";
-import UserInfo from '../../userInfo';
+import {Application} from "../../";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../userInfo";
 import {
+    makeAutoObservable,
+    makeObservable,
     action,
+    observable,
+    comparer,
+    computed,
+    autorun,
+    runInAction,
 } from "mobx";
-import CommonPoolHelper from '../../base/CommonPoolHelper';
+import BaseNavigatorStore from "./BaseNavigatorStore";
+import UserInfo from "../../userInfo";
+import firebaser from "../../base/CommonFirebaseHelper";
+import CommonPoolHelper from "../../base/CommonPoolHelper";
 
-class NavigatorStore extends BaseNavigatorStore {
+class ModularizedNavigatorStore extends BaseNavigatorStore {
     /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
     @observable
     drawerOpenStatus = false;
@@ -104,6 +110,7 @@ class NavigatorStore extends BaseNavigatorStore {
     }
 
     /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
-export default NavigatorStore;
+export default ModularizedNavigatorStore;

@@ -5,9 +5,24 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
+import { Application } from "../../";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../userInfo";
+import {
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
+} from "mobx";
 import BaseNavigatorUserInfoStore from "./BaseNavigatorUserInfoStore";
 
-class NavigatorUserInfoStore extends BaseNavigatorUserInfoStore {
+class ModularizedNavigatorUserInfoStore extends BaseNavigatorUserInfoStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,4 +31,4 @@ class NavigatorUserInfoStore extends BaseNavigatorUserInfoStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorUserInfoStore;
+export default ModularizedNavigatorUserInfoStore;
