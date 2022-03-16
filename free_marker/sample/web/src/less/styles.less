@@ -1,9 +1,9 @@
+@mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+@tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+@desktop: ~"only screen and (min-width: 601px)";
 @import "./libs/slideshow.less";
 @import "./libs/firebaseui.less";
 @import "./libs/base.less";
-@desktop: ~"only screen and (min-width: 601px)";
-@tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
-@mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 /** following for examFilter  component used  */
 
 .ExamFilterDiv:extend(.CenterInParentColumn) {
@@ -37,7 +37,7 @@
     /** empty style */
   }
 }
-.ListExamFilterRandomTestFastRangeButtonGroup {
+.ExamFilterRandomTestFastRangeButtonGroupList {
   @media @mobile {
     /** empty style */
   }
@@ -85,7 +85,7 @@
     /** empty style */
   }
 }
-.ListExamFilterRandomTestCountsOfExamRadioGroup {
+.ExamFilterRandomTestCountsOfExamRadioGroupList {
   @media @mobile {
     /** empty style */
   }
@@ -96,7 +96,7 @@
     /** empty style */
   }
 }
-.LabelExamFilterRandomTestCountsOfExamTypography {
+.ExamFilterRandomTestCountsOfExamTypographyLabel {
   @media @mobile {
     /** empty style */
   }
@@ -155,7 +155,7 @@
     /** empty style */
   }
 }
-.ListExamFilterHistoryTestSelectorTextField {
+.ExamFilterHistoryTestSelectorTextFieldList {
   width: 200px;
   @media @mobile {
     /** empty style */
@@ -257,7 +257,6 @@
     /** empty style */
   }
 }
-
 /** following for main  component used  */
 
 .MainDiv {
@@ -283,7 +282,7 @@
     /** empty style */
   }
 }
-.ListMainViewPagerSlide {
+.MainViewPagerSlideList {
   width: 100vw;
   max-width: 880px;
   height: 32vh;
@@ -317,7 +316,7 @@
     /** empty style */
   }
 }
-.WrapMainViewPagerImageDiv {
+.MainViewPagerImageDivWrap {
   width: 100vw;
   height: 32vh;
   overflow: hidden;
@@ -351,7 +350,7 @@
     /** empty style */
   }
 }
-.WrapMainEnterPointGrid {
+.MainEnterPointGridWrap {
   @media @mobile {
     /** empty style */
   }
@@ -362,7 +361,7 @@
     /** empty style */
   }
 }
-.ListMainEnterPointGrid {
+.MainEnterPointGridList {
   @media @mobile {
     /** empty style */
   }
@@ -373,7 +372,7 @@
     /** empty style */
   }
 }
-.ListWrapMainEnterPointDiv {
+.MainEnterPointDivListWrap {
   margin-top: 40px;
   margin-left: 5px;
   margin-right: 5px;
@@ -444,7 +443,7 @@
     /** empty style */
   }
 }
-.ListExamHistoryFilterReplyTypeRadioGroup {
+.ExamHistoryFilterReplyTypeRadioGroupList {
   @media @mobile {
     /** empty style */
   }
@@ -455,7 +454,7 @@
     /** empty style */
   }
 }
-.LabelExamHistoryFilterReplyTypeTypography {
+.ExamHistoryFilterReplyTypeTypographyLabel {
   @media @mobile {
     font-size: 0.8rem;
   }
@@ -489,7 +488,7 @@
     /** empty style */
   }
 }
-.ListExamHistoryFilterWhichSubjectTextField {
+.ExamHistoryFilterWhichSubjectTextFieldList {
   min-width: 100px;
   @media @mobile {
     /** empty style */
@@ -512,7 +511,7 @@
     /** empty style */
   }
 }
-.ListExamHistoryFilterOrderByWhatTextField {
+.ExamHistoryFilterOrderByWhatTextFieldList {
   min-width: 120px;
   @media @mobile {
     /** empty style */
@@ -550,7 +549,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionDiv {
+.ExamQuestionDivWrap {
   position: relative;
   @media @mobile {
     /** empty style */
@@ -562,7 +561,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionDiv {
+.ExamQuestionDivList {
   margin-top: 10px;
   max-width: 880px;
   @media @mobile {
@@ -602,7 +601,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionAlertAlertImageDiv {
+.ExamQuestionAlertAlertImageDivWrap {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -660,7 +659,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionTopicOfAssistantImageDiv {
+.ExamQuestionTopicOfAssistantImageDivList {
   @media @mobile {
     /** empty style */
   }
@@ -711,7 +710,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionTopicNameDiv {
+.ExamQuestionTopicNameDivWrap {
   @media @mobile {
     /** empty style */
   }
@@ -733,7 +732,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionTopicImageDiv {
+.ExamQuestionTopicImageDivList {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -780,7 +779,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionChoiceDiv {
+.ExamQuestionChoiceDivList {
   @media @mobile {
     /** empty style */
   }
@@ -807,7 +806,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionChoiceStatementDiv {
+.ExamQuestionChoiceStatementDivWrap {
   margin-bottom: 1vh;
   @media @mobile {
     /** empty style */
@@ -831,7 +830,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionChoiceImageDiv {
+.ExamQuestionChoiceImageDivList {
   display: flex;
   flex-direction: row;
   @media @mobile {
@@ -871,7 +870,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionOptionalDiv {
+.ExamQuestionOptionalDivList {
   flex-direction: column;
   display: flex;
   gap: 15px;
@@ -908,7 +907,7 @@
     /** empty style */
   }
 }
-.ListExamQuestionOptionalChoiceDiv {
+.ExamQuestionOptionalChoiceDivList {
   flex-direction: row;
   display: flex;
   gap: 4px;
@@ -961,7 +960,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionFunctionCenterAddToFavoriteReactFragment {
+.ExamQuestionFunctionCenterAddToFavoriteReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -984,7 +983,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionFunctionCenterCalloutHelpReactFragment {
+.ExamQuestionFunctionCenterCalloutHelpReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1006,7 +1005,7 @@
     /** empty style */
   }
 }
-.WrapExamQuestionTipDiv {
+.ExamQuestionTipDivWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1104,7 +1103,7 @@
     /** empty style */
   }
 }
-.WrapPurchaseBannerDiv {
+.PurchaseBannerDivWrap {
   display: flex;
   justify-content: center;
   margin: 10px;
@@ -1132,7 +1131,7 @@
     /** empty style */
   }
 }
-.ListPurchasePurchasePlanDiv {
+.PurchasePurchasePlanDivList {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -1163,7 +1162,7 @@
     /** empty style */
   }
 }
-.WrapPurchasePurchasePlanNameDiv {
+.PurchasePurchasePlanNameDivWrap {
   display: flex;
   justify-content: center;
   width: 20vw;
@@ -1205,7 +1204,7 @@
     /** empty style */
   }
 }
-.WrapPurchasePurchasePlanPriceDiv:extend(.WrapPurchasePurchasePlanNameDiv all) {
+.PurchasePurchasePlanPriceDivWrap {
   flex-direction: column;
   @media @mobile {
     /** empty style */
@@ -1240,7 +1239,7 @@
     /** empty style */
   }
 }
-.WrapPurchasePurchasePlanBuyDiv:extend(.WrapPurchasePurchasePlanNameDiv all) {
+.PurchasePurchasePlanBuyDivWrap {
   border-style: none;
   @media @mobile {
     /** empty style */
@@ -1333,7 +1332,7 @@
     /** empty style */
   }
 }
-.ListWhoknowzAnswerDiv {
+.WhoknowzAnswerDivList {
   @media @mobile {
     /** empty style */
   }
@@ -1367,8 +1366,9 @@
     /** empty style */
   }
 }
-.ListWhoknowzAnswerImageDiv {
+.WhoknowzAnswerImageDivList {
   margin-top: 20px;
+
   @media @mobile {
     /** empty style */
   }
@@ -1404,7 +1404,7 @@
     /** empty style */
   }
 }
-.WrapWhoknowzSubmitReactFragment {
+.WhoknowzSubmitReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1443,7 +1443,7 @@
     /** empty style */
   }
 }
-.ListMyFatefulQuestionsFilterWhichSubjectTextField {
+.MyFatefulQuestionsFilterWhichSubjectTextFieldList {
   margin-left: 80px;
   @media @mobile {
     margin-left: 20px;
@@ -1466,7 +1466,7 @@
     /** empty style */
   }
 }
-.ListMyFatefulQuestionsFilterQuestionTypeTextField {
+.MyFatefulQuestionsFilterQuestionTypeTextFieldList {
   margin-right: 80px;
   @media @mobile {
     margin-right: 20px;
@@ -1504,7 +1504,7 @@
     /** empty style */
   }
 }
-.ListMyFatefulQuestionsFatefulItemDiv {
+.MyFatefulQuestionsFatefulItemDivList {
   @media @mobile {
     /** empty style */
   }
@@ -1563,6 +1563,161 @@
     /** empty style */
   }
 }
+/** following for navigator  component used  */
+
+.NavigatorDiv {
+  flex-grow: 1;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarAppBar {
+  background-color: #111111;
+  @media @mobile {
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    border: transparent;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarToolbar {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarMenuIconButton {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarMenuIconMenuIcon {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarTitleTypography {
+  flex-grow: 1;
+  font-size: 1.4rem;
+  @media @mobile {
+    font-size: 1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarToEditModeButton {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarLoginButton {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerDrawer {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutListItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutListList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutTitleTypography {
+  font-size: 3rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutIconImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for main editor component used  */
 
 .MainEditorDiv:extend(.MainDiv) {
@@ -1587,7 +1742,7 @@
     /** empty style */
   }
 }
-.WrapMainEditorViewPagerDiv:extend(.WrapMainViewPagerDiv) {
+.MainEditorViewPagerDivWrap:extend(.MainViewPagerDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1598,7 +1753,7 @@
     /** empty style */
   }
 }
-.ListMainEditorViewPagerDiv:extend(.ListMainViewPagerDiv) {
+.MainEditorViewPagerDivList:extend(.MainViewPagerDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -1631,7 +1786,7 @@
     /** empty style */
   }
 }
-.WrapMainEditorViewPagerImageDiv:extend(.WrapMainViewPagerImageDiv) {
+.MainEditorViewPagerImageDivWrap:extend(.MainViewPagerImageDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1664,7 +1819,7 @@
     /** empty style */
   }
 }
-.WrapMainEditorEnterPointDiv:extend(.WrapMainEnterPointDiv) {
+.MainEditorEnterPointDivWrap:extend(.MainEnterPointDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1675,7 +1830,7 @@
     /** empty style */
   }
 }
-.ListMainEditorEnterPointDiv:extend(.ListMainEnterPointDiv) {
+.MainEditorEnterPointDivList:extend(.MainEnterPointDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -1686,7 +1841,7 @@
     /** empty style */
   }
 }
-.ListWrapMainEditorEnterPointDiv:extend(.ListWrapMainEnterPointDiv) {
+.MainEditorEnterPointDivListWrap:extend(.MainEnterPointDivListWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1776,7 +1931,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorHistoryFilterDiv:extend(.WrapExamHistoryFilterDiv) {
+.ExamEditorHistoryFilterDivWrap:extend(.ExamHistoryFilterDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1798,7 +1953,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorHistoryFilterReplyTypeDiv:extend(.WrapExamHistoryFilterReplyTypeDiv) {
+.ExamEditorHistoryFilterReplyTypeDivWrap:extend(.ExamHistoryFilterReplyTypeDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1809,7 +1964,7 @@
     /** empty style */
   }
 }
-.ListExamEditorHistoryFilterReplyTypeDiv:extend(.ListExamHistoryFilterReplyTypeDiv) {
+.ExamEditorHistoryFilterReplyTypeDivList:extend(.ExamHistoryFilterReplyTypeDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -1864,7 +2019,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorHistoryFilterWhichSubjectDiv:extend(.WrapExamHistoryFilterWhichSubjectDiv) {
+.ExamEditorHistoryFilterWhichSubjectDivWrap:extend(.ExamHistoryFilterWhichSubjectDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1875,7 +2030,7 @@
     /** empty style */
   }
 }
-.ListExamEditorHistoryFilterWhichSubjectDiv:extend(.ListExamHistoryFilterWhichSubjectDiv) {
+.ExamEditorHistoryFilterWhichSubjectDivList:extend(.ExamHistoryFilterWhichSubjectDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -1919,7 +2074,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorHistoryFilterOrderByWhatDiv:extend(.WrapExamHistoryFilterOrderByWhatDiv) {
+.ExamEditorHistoryFilterOrderByWhatDivWrap:extend(.ExamHistoryFilterOrderByWhatDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1930,7 +2085,7 @@
     /** empty style */
   }
 }
-.ListExamEditorHistoryFilterOrderByWhatDiv:extend(.ListExamHistoryFilterOrderByWhatDiv) {
+.ExamEditorHistoryFilterOrderByWhatDivList:extend(.ExamHistoryFilterOrderByWhatDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -1974,7 +2129,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionDiv:extend(.WrapExamQuestionDiv) {
+.ExamEditorQuestionDivWrap:extend(.ExamQuestionDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1985,7 +2140,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionDiv:extend(.ListExamQuestionDiv) {
+.ExamEditorQuestionDivList:extend(.ExamQuestionDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2040,7 +2195,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionTopicOfAssistantImageDiv:extend(.WrapExamQuestionTopicOfAssistantImageDiv) {
+.ExamEditorQuestionTopicOfAssistantImageDivWrap:extend(.ExamQuestionTopicOfAssistantImageDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2051,7 +2206,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionTopicOfAssistantImageDiv:extend(.ListExamQuestionTopicOfAssistantImageDiv) {
+.ExamEditorQuestionTopicOfAssistantImageDivList:extend(.ExamQuestionTopicOfAssistantImageDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2106,7 +2261,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionTopicNameDiv:extend(.WrapExamQuestionTopicNameDiv) {
+.ExamEditorQuestionTopicNameDivWrap:extend(.ExamQuestionTopicNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2128,7 +2283,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionTopicImageDiv:extend(.WrapExamQuestionTopicImageDiv) {
+.ExamEditorQuestionTopicImageDivWrap:extend(.ExamQuestionTopicImageDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2139,7 +2294,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionTopicImageDiv:extend(.ListExamQuestionTopicImageDiv) {
+.ExamEditorQuestionTopicImageDivList:extend(.ExamQuestionTopicImageDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2183,7 +2338,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionChoiceDiv:extend(.WrapExamQuestionChoiceDiv) {
+.ExamEditorQuestionChoiceDivWrap:extend(.ExamQuestionChoiceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2194,7 +2349,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionChoiceDiv:extend(.ListExamQuestionChoiceDiv) {
+.ExamEditorQuestionChoiceDivList:extend(.ExamQuestionChoiceDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2216,7 +2371,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionChoiceStatementDiv:extend(.WrapExamQuestionChoiceStatementDiv) {
+.ExamEditorQuestionChoiceStatementDivWrap:extend(.ExamQuestionChoiceStatementDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2238,7 +2393,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionChoiceImageDiv:extend(.WrapExamQuestionChoiceImageDiv) {
+.ExamEditorQuestionChoiceImageDivWrap:extend(.ExamQuestionChoiceImageDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2249,7 +2404,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionChoiceImageDiv:extend(.ListExamQuestionChoiceImageDiv) {
+.ExamEditorQuestionChoiceImageDivList:extend(.ExamQuestionChoiceImageDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2293,7 +2448,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionOptionalDiv:extend(.WrapExamQuestionOptionalDiv) {
+.ExamEditorQuestionOptionalDivWrap:extend(.ExamQuestionOptionalDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2304,7 +2459,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionOptionalDiv:extend(.ListExamQuestionOptionalDiv) {
+.ExamEditorQuestionOptionalDivList:extend(.ExamQuestionOptionalDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2326,7 +2481,7 @@
     /** empty style */
   }
 }
-.WrapExamEditorQuestionOptionalChoiceDiv:extend(.WrapExamQuestionOptionalChoiceDiv) {
+.ExamEditorQuestionOptionalChoiceDivWrap:extend(.ExamQuestionOptionalChoiceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2337,7 +2492,7 @@
     /** empty style */
   }
 }
-.ListExamEditorQuestionOptionalChoiceDiv:extend(.ListExamQuestionOptionalChoiceDiv) {
+.ExamEditorQuestionOptionalChoiceDivList:extend(.ExamQuestionOptionalChoiceDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -2458,3 +2613,4 @@
     /** empty style */
   }
 }
+

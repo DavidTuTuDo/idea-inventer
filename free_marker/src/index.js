@@ -1457,7 +1457,7 @@ class CodegenNode {
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
         }
-        return Util.upperCamel(prefix, ...parentNames, this.isOuter() ? 'outer' : '', viewName);
+        return Util.upperCamel(...parentNames, this.isOuter() ? 'outer' : '', viewName, prefix);
     }
 
     /** 放在css用來做key => ExamEditorQuestionCard */
@@ -4695,7 +4695,7 @@ class ProjectFileHandler extends PathBase {
             (each) => {
                 return (
                     _.isEqual(each.fileNameExtension, `index.js`) ||
-                    _.isEqual(each.extension, `styles.less`) ||
+                    _.isEqual(each.fileNameExtension, `styles.less`) ||
                     _.isEqual(each.fileNameExtension, `app.style.js`) ||
                     _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
                     _.isEqual(each.fileNameExtension, `common.style.js`)
@@ -4711,12 +4711,6 @@ class ProjectFileHandler extends PathBase {
             }
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
-
-            if (_.isEqual(file.fileNameExtension, 'styles.less')) {
-                /** 把 componentModule相關的less 拿掉*/
-
-
-            }
 
             const dest = libpath.join(this.projectPlatformSourcePath, from.split(`src`).pop());
             Util.persistByPath(dest);
@@ -4755,7 +4749,7 @@ class ProjectFileHandler extends PathBase {
                         break;
                     }
 
-                    if (_.isEqual(sourceFile.fileNameExtension,FILENAME_OF_SOURCE_JS)) {
+                    if (_.isEqual(sourceFile.fileNameExtension, FILENAME_OF_SOURCE_JS)) {
                         ignoreThisRun = true;
                         break;
                     }
