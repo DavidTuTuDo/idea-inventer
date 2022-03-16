@@ -19,7 +19,9 @@ const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
-const KEYWORD_OF_MODULARIZED = 'Modularized'
+const KEYWORD_OF_MODULARIZED = 'Modularized';
+const PATH_OF_COMPONENT_MODULE = `./src/modules`;
+
 const LESS_MODULES = [
     {
         name: 'mobile',
@@ -59,8 +61,6 @@ const VIEW_IMPORTS =
             object: true,/** 就是要加上bracket {Fade} */
         }
     ]
-
-const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 
 class CodegenNode {
 
@@ -4603,7 +4603,7 @@ class ProjectFileHandler extends PathBase {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/component/`,
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/component/${module}`,
                     file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
@@ -4611,7 +4611,7 @@ class ProjectFileHandler extends PathBase {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'store'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/store/`,
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/store/`,
                     file.dirName, file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
@@ -4621,8 +4621,8 @@ class ProjectFileHandler extends PathBase {
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
             if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
-                await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/less`));
-                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/less/style.less`));
+                await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less`));
+                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less/style.less`));
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
@@ -4734,7 +4734,10 @@ class ProjectFileHandler extends PathBase {
      * */
     overrideEachFilesFromFolder(...excludes) {
         /** 順序會影響檔案的priority */
-        const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath];
+        const pathsOfModuleComponent = this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each));
+        /** ./src/modules/navigator */
+
+        const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
         /** exam/web/ */
         for (const sourcePath of fromSourcePath) {
             for (const sourceFile of Util.findFilePathBy(sourcePath)) {
@@ -5301,9 +5304,6 @@ class ProjectFileHandler extends PathBase {
             `common.style.js`
             , `app.style.js`
             , `mobile.style.js`
-            , `common.less`
-            , `app.less`
-            , `mobile.less`
             , `styles.less`
             , {
                 type: 'extension',
