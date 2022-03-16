@@ -19,6 +19,7 @@ const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
+const KEYWORD_OF_MODULARIZED = 'Modularized'
 const LESS_MODULES = [
     {
         name: 'mobile',
@@ -58,6 +59,8 @@ const VIEW_IMPORTS =
             object: true,/** 就是要加上bracket {Fade} */
         }
     ]
+
+const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 
 class CodegenNode {
 
@@ -412,21 +415,21 @@ class CodegenNode {
         return this.listEmptyTip && this.listEmptyTip.enable;
     }
 
-    /** 設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到concrete class,
-     * concrete class 會persist到 free_marker/src/module/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
+    /** 設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
+     * module class 會persist到 free_marker/src/modules/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
     isModuleComponent() {
         const ancestor = this.getStructNode();
-        const modules = Util.getNamesOfFolderChild('./src/modules');
+        const modules = Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE);
         return Util.has(modules, ancestor.getName());
     }
 
     getListOfModuleComponent() {
-        return Util.getNamesOfFolderChild('./src/modules').map((each) => _.trim(each));
+        return Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE).map((each) => _.trim(each));
     }
 
     /** exclude => 要略過的資料夾名稱 */
     getLessFilesOfModuleComponent(...exclude) {
-        return Util.findFilePathBy('./src/modules', (file) => _.isEqual(file.extension, 'less'));
+        return Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (file) => _.isEqual(file.extension, 'less'));
     }
 
     getDirectoryName() {
@@ -2552,7 +2555,7 @@ class StoreBuilder extends BaseBuilder {
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
-        const concreteClassName = `Concrete${className}Store`;
+        const moduleClassName = `${KEYWORD_OF_MODULARIZED}${className}Store`;
         const indexClassName = `${className}Store`;
         const baseGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${baseClassName}.js`));
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
@@ -2663,12 +2666,12 @@ class StoreBuilder extends BaseBuilder {
         this.importStoreDefault(baseGenerator);
 
         if (node.isModuleComponent()) {
-            const concreteGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${concreteClassName}.js`));
-            concreteGenerator.appendClass(concreteClassName, {name: baseClassName, from: `./${baseClassName}`});
-            concreteGenerator.needIndexFile(`${indexClassName}`);
-            concreteGenerator.needSignature(false);
-            this.importStoreDefault(concreteGenerator);
-            await concreteGenerator.persist();
+            const moduleGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${moduleClassName}.js`));
+            moduleGenerator.appendClass(moduleClassName, {name: baseClassName, from: `./${baseClassName}`});
+            moduleGenerator.needIndexFile(`${indexClassName}`);
+            moduleGenerator.needSignature(false);
+            this.importStoreDefault(moduleGenerator);
+            await moduleGenerator.persist();
         } else {
             baseGenerator.needIndexFile(`${indexClassName}`);
         }
@@ -3028,7 +3031,7 @@ class ComponentBuilder extends BaseBuilder {
 
         const baseComponentName = componentNode.getStruct().getName();
         const baseClassName = `Base${_.upperFirst(baseComponentName)}Component`;
-        const concreteClassName = `Concrete${_.upperFirst(baseComponentName)}Component`;
+        const moduleClassName = `${KEYWORD_OF_MODULARIZED}${_.upperFirst(baseComponentName)}Component`;
 
         const className = `${_.upperFirst(baseComponentName)}Component`;
         const folderName = baseComponentName;
@@ -3158,15 +3161,15 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (componentNode.isModuleComponent()) {
-            const concreteGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${concreteClassName}.js`));
-            concreteGenerator.appendClass(concreteClassName, {
+            const moduleGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${moduleClassName}.js`));
+            moduleGenerator.appendClass(moduleClassName, {
                 name: baseClassName,
                 from: `./${baseClassName}`
             })
-            concreteGenerator.needSignature(false);
-            concreteGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
-            this.importComponentDefault(concreteGenerator);
-            await concreteGenerator.persist()
+            moduleGenerator.needSignature(false);
+            moduleGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
+            this.importComponentDefault(moduleGenerator);
+            await moduleGenerator.persist()
         } else {
             baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         }
@@ -4341,20 +4344,6 @@ class AppBuilder extends ComponentBuilder {
                 .map((file) => file.fileNameExtension);
         }
 
-        async function buildModuleLessFile() {
-            /** 用來放componentModules 的 attrs */
-
-            const modulesGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'less', `modules.less`));
-            modulesGenerator.appendInClassHead(self.getAnnouncementsOfLessDevice().join('\n'));
-            const lessees = self.nodeOfAncestor.getLessFilesOfModuleComponent();
-            for (const file of lessees) {
-                modulesGenerator.appendInClassTail(self.getStringOfRemoveDeviceInfo(Util.getFileContextInRaw(file)));
-            }
-            modulesGenerator.disableDefaultImports();
-            await modulesGenerator.persist();
-        }
-
-
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
@@ -4524,7 +4513,6 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async overrideLessFile() {
-
         const less = libpath.join(this.freeMarkerRootPath, `less`);
         const files = Util.findFilePathBy(less);
         _.forEach(_.filter(files, (file) => _.isEqual(file.extension, 'less')),
@@ -4605,7 +4593,7 @@ class ProjectFileHandler extends PathBase {
         await baseConfigGenerator.persist();
     }
 
-    async persistModuleComponentConcreteFiles() {
+    async persistModuleComponentFiles() {
         if (!fs.existsSync(this.genSourcePath)) {
             Util.appendInfo(`${this.genSourcePath} is note created, ignore`);
             return
@@ -4614,27 +4602,27 @@ class ProjectFileHandler extends PathBase {
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
-                    _.startsWith(each.fileName, 'Concrete'))) {
-                const pathOfDestination = libpath.join(`./src/modules/${module}/component/`,
+                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/component/`,
                     file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
 
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'store'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
-                    _.startsWith(each.fileName, 'Concrete'))) {
-                const pathOfDestination = libpath.join(`./src/modules/${module}/store/`,
+                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/store/`,
                     file.dirName, file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
 
-            /** persist  less file */
+            /** persist less file */
             const instance = new AppBuilder(this.getAppBuildParam());
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
             if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
-                await Util.deleteSelfByPath(`./src/modules/${module}/less`);
-                const generator = new ClassGenerator(`./src/modules/${module}/less/style.less`);
+                await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/less`));
+                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/less/style.less`));
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
@@ -4705,7 +4693,7 @@ class ProjectFileHandler extends PathBase {
             (each) => {
                 return (
                     _.isEqual(each.fileNameExtension, `index.js`) ||
-                    _.isEqual(each.extension, `less`) ||
+                    _.isEqual(each.extension, `styles.less`) ||
                     _.isEqual(each.fileNameExtension, `app.style.js`) ||
                     _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
                     _.isEqual(each.fileNameExtension, `common.style.js`)
@@ -4721,6 +4709,13 @@ class ProjectFileHandler extends PathBase {
             }
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
+
+            if (_.isEqual(file.fileNameExtension, 'styles.less')) {
+                /** 把 componentModule相關的less 拿掉*/
+
+
+            }
+
             const dest = libpath.join(this.projectPlatformSourcePath, from.split(`src`).pop());
             Util.persistByPath(dest);
             Util.copySingleFile(from, dest, '', true);
@@ -5191,7 +5186,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         const source = this.nodeOfAncestor;
-        for (const file of Util.findFilePathBy('./src/modules', (each) => _.isEqual(each.fileName, each.dirName))) {
+        for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileName, each.dirName))) {
             CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
         }
 
@@ -5514,12 +5509,12 @@ class BuildApplication {
 
     async persistent(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
-        await handler.persistModuleComponentConcreteFiles()
-        // handler.persistBaseFilesToFreeMarkerTemplate();
-        // handler.persistCustomizePackages()
-        // handler.persistImageFolder();
-        // handler.persistIndexAndLessFiles();
-        // handler.persistLessLibs();
+        await handler.persistModuleComponentFiles()
+        handler.persistBaseFilesToFreeMarkerTemplate();
+        handler.persistCustomizePackages()
+        handler.persistImageFolder();
+        handler.persistIndexAndLessFiles();
+        handler.persistLessLibs();
     }
 
 }
