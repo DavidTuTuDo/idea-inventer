@@ -20,6 +20,7 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
 const KEYWORD_OF_MODULARIZED = 'Modularized';
+const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 /** source.js 是專有名詞的概念*/
@@ -65,6 +66,9 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    genRootPath
+    /** 專案產出的位置 */
 
     rapidBuild = {
         enable: false,
@@ -2348,7 +2352,7 @@ class PathBase {
         this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
 
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, `source.js`))).default);
+        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS))).default);
 
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
@@ -5386,15 +5390,27 @@ class ProjectFileHandler extends PathBase {
 class BuildApplication {
 
     genRootPath;
+    /** ./gen/ 寫在 source.js */
     projectRootPath;
+    /** 放source.js 的folder */
     freeMarkerRootPath;
 
-    constructor(object = {genRootPath: './gen/', projectRootPath: './', freeMarkerRootPath: '../'}) {
-        this.genRootPath = libpath.resolve(object.genRootPath);
+    constructor(object = {projectRootPath: './'}) {
+        if (!Util.isPathExist(object.projectRootPath)) {
+            throw new ERROR(9999, `${object.projectRootPath} 這個專案位置不存在`)
+        }
+
         this.projectRootPath = libpath.resolve(object.projectRootPath);
-        this.freeMarkerRootPath = libpath.resolve(object.freeMarkerRootPath);
+        this.freeMarkerRootPath = libpath.resolve(PATH_OF_FREE_MARKER_TEMPLATE);
+
+        const context = require(libpath.join( this.projectRootPath, FILENAME_OF_SOURCE_JS)).default;
+        if (_.isEmpty(context.genRootPath)) {
+            throw new ERROR(9999, `${ this.projectRootPath}/'${FILENAME_OF_SOURCE_JS}' 裡面沒有attribute ==> genRootPath`)
+        }
+        this.genRootPath = libpath.resolve(context.genRootPath);
         this.init();
     }
+
 
     init() {
         if (!fs.existsSync(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS))) {
@@ -5526,11 +5542,8 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                genRootPath: '../gen',
-                projectRootPath: './sample',
-                freeMarkerRootPath: '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template'
+                projectRootPath: './kh-high',
             }
-
             const builder = new BuildApplication(props)
 
             switch (Util.getNodeEnvVariable('type')) {
@@ -5598,7 +5611,8 @@ if (configerer.DEBUG_MODE) {
                     await builder.buildIndexRule();
                     break;
                 default:
-                    await builder.removeEmptyFolder();
+                    Util.appendInfo('jo4你')
+                    // await builder.removeEmptyFolder();
                     break
             }
 
