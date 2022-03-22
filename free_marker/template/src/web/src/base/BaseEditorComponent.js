@@ -8,7 +8,7 @@ import BaseComponent from './BaseComponent';
 import Firebaser from './CommonFirebaseHelper';
 import watermark from 'watermarkjs';
 import Config from '../config';
-import UserInfoRef from '../userInfo';
+import UserInfoRef from '../base/BaseUserInfo';
 
 class BaseEditorComponent extends BaseComponent {
 

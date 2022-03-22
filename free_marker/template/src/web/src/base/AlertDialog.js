@@ -10,7 +10,7 @@ import {
 } from '@material-ui/core';
 import {action, makeObservable, observable} from "mobx";
 import {observer, inject} from "mobx-react";
-import {utiller as Util, exceptioner as ERROR} from "utiller";
+import {utiller as Util } from "utiller";
 import _ from 'lodash';
 
 class DialogStore {

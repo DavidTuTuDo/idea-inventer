@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import React from "react";
 import moment from 'moment';
+
+
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
 import AlertDialog from './AlertDialog';
@@ -26,7 +28,7 @@ import Countdown from "react-countdown";
 import Router from "../router";
 import {isMobile} from 'react-device-detect'
 import ImageDialogView from './ImageDialogView';
-import UserInfo from '../userInfo';
+import UserInfo from '../base/BaseUserInfo';
 import EventBus from "./CommonEventBus";
 import "../less";
 import ArrowBackIosRounded from "@material-ui/icons/ArrowBackIosRounded";

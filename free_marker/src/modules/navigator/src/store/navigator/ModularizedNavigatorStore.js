@@ -9,7 +9,7 @@ import {Application} from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
-import UserInfoRef from "../../userInfo";
+import UserInfoRef from "../../base/BaseUserInfo";
 import {
     makeAutoObservable,
     makeObservable,
@@ -21,7 +21,7 @@ import {
     runInAction,
 } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
-import UserInfo from "../../userInfo";
+import UserInfo from "../../base/BaseUserInfo";
 import firebaser from "../../base/CommonFirebaseHelper";
 import CommonPoolHelper from "../../base/CommonPoolHelper";
 

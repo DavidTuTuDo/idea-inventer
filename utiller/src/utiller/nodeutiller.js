@@ -497,7 +497,7 @@ class NodeUtiller extends Utiller {
         if (!fs.existsSync(pathOfDestinationFolder)) {
             this.appendInfo(`${pathOfDestinationFolder} is not exist, easy to override`);
         } else if (fs.existsSync(pathOfDestinationFolder) &&
-            this.getFileLastModifiedTime(pathOfDestinationFolder) < latestFile.lastModifiedTime + 3600) {
+            this.getFileLastModifiedTime(pathOfDestinationFolder) > latestFile.lastModifiedTime) {
             this.appendInfo(`${pathOfDestinationFolder} is the latest, ignore this run`);
             return;
         }
