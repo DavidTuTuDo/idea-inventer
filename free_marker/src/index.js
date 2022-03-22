@@ -4206,7 +4206,7 @@ class AppBuilder extends ComponentBuilder {
                     const node = className.node;
                     const type = className.type;
                     const name = node.getClassNameOfLessUsage(type);
-                    if (!!origins[name]) {
+                    if (origins && origins[name]) {
                         generator.appendField(name, JSON.stringify(origins[name]));
                         delete origins[name];
                     } else {
@@ -5547,7 +5547,7 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                projectRootPath: './project-kh-high',
+                projectRootPath: './project-yueh-pu',
             }
             const builder = new BuildApplication(props)
 
