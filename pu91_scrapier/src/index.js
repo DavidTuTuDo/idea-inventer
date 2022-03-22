@@ -314,6 +314,7 @@ import {databazer as SQL} from 'databazer';
         }
 
         async function persist91puEveryThing(singerType = 6) {
+            const poollers = [];
 
             async function browserPageWatcher() {
                 if (browser !== undefined) {
@@ -323,7 +324,7 @@ import {databazer as SQL} from 'databazer';
 
             function joinTaskToPool(countOfWorker = 1,
                                     nameOfPool = 'DEFAULT',
-                                    ignoreFirstRun = true,
+                                    disableFirstRun = true,
                                     asyncTask = async () => {
                                         await Util.syncDelay()
                                     },
@@ -331,24 +332,25 @@ import {databazer as SQL} from 'databazer';
             ) {
                 const pool = new Pooller(countOfWorker);
                 pool.setPoolId(nameOfPool);
-                pool.setIgnoreFirstRun(ignoreFirstRun);
+                pool.setDisableFirstRun(disableFirstRun);
                 pool.runInfiniteInBackground(asyncTask,
                     period);
+                pool.enableTaskTimeout(true, twoMin);
                 pool.setTaskFailHandler(errorHandler);
                 poollers.push(pool);
                 return pool;
             }
 
-            const poollers = [];
             const errorHandler = (error) => {
                 Util.appendError(`９１pu => TASK 遇到問題 ${error.message}`);
             }
 
             // /** 檢查歌手 once 2 mins */
 
-            const tenSecs = 10 * 1000;
+
             const twoSecs = 2 * 1000;
             const fourSecs = 4 * 1000;
+            const tenSecs = 10 * 1000;
 
             const oneMin = 6 * tenSecs;
             const twoMin = 2 * oneMin;
@@ -360,13 +362,13 @@ import {databazer as SQL} from 'databazer';
             /** 抓所有歌手 */
             // joinTaskToPool(1, "SINGER FETCHER", true, persistSingers, threeMin);
             /** 抓取排行版上的資訊們 */
-            // joinTaskToPool(3, "RANK FETCHER", false, persistRankTable, tenSecs);
+            joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, oneMin);
             /** 監督browser page 有沒有爆掉 */
-            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, oneMin);
-            // /** 猛抓LATEST TABLE的歌曲*/
-            // joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, threeMin);
+            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
+            // // /** 猛抓LATEST TABLE的歌曲*/
+            joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, oneMin);
             // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            joinTaskToPool(6, "TONE FETCHER", true, persistTone, fourSecs);
+            joinTaskToPool(3, "TONE FETCHER", true, persistTone, tenSecs);
             // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             // joinTaskToPool(10, "SONG FETCHER", false, persistSongs, tenSecs);
 

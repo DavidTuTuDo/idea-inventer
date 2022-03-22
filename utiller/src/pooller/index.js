@@ -33,8 +33,11 @@ class InfinitePool {
 
     /** 如果要讓每個pool不會因為task掉進catch 而被中斷, 就必須加入taskFailHandler*/
     handlerOfAssignTaskFail = undefined;
-    maxWorker;
-    ignoreFirstRun = false
+    maximumOfWorker;
+
+    /** 如果設定sleep interval, 可以加這個參數要不要先執行第一次 再開始 interval 機制*/
+    disableFirstRun = false
+
     /** 用於 runByParam */
     queueOfWaitingParam = [];
 
@@ -65,7 +68,7 @@ class InfinitePool {
     nameOfCurrentPool = ``;
 
     constructor(maxWorkers = configerer.POOLLER_WORKER_DEFAULT, name = Util.getRandomValue(0, 100000000000)) {
-        this.maxWorker = maxWorkers;
+        this.maximumOfWorker = maxWorkers;
         this.setPoolId(_.toString(name));
         for (const prior of configerer.POOLLER_PRIORITY) {
             this.queueOfAssignTask[prior] = [];
@@ -123,7 +126,7 @@ class InfinitePool {
     }
 
     setWorker(counts) {
-        this.maxWorker = counts;
+        this.maximumOfWorker = counts;
     }
 
     cleanTaskInterval() {
@@ -134,7 +137,6 @@ class InfinitePool {
      * interval:{min: 800, max: 1000}
      * */
     enableTaskSleepInterval(enable = true, interval = configerer.POOLLER_TASK_OF_INTERVAL_DEFAULT) {
-
         this.enableOfTaskSleepByInterval = enable
         if (_.isNumber(interval)) {
             interval = {min: interval, max: interval};
@@ -266,7 +268,7 @@ class InfinitePool {
                 reject: assignedTaskError
             };
             self.removeResolveOrRejectPromiseByHash(hashOfTask, result);
-            this.printLogMessage(`98943213, ${this.getLogMessageOfTaskHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`,false,result)
+            this.printLogMessage(`98943213, ${this.getLogMessageOfTaskHash(hashOfTask)} taskWrapper()裡面第2個promise完成了`, false, result)
         })
     }
 
@@ -337,7 +339,8 @@ class InfinitePool {
             this.adds(task);
         else
             throw new ERROR(4006, `type of task is ===> ${typeof task}`)
-        this.enableTaskSleepInterval(!!interval, interval);
+
+        this.enableTaskSleepInterval(_.isNumber(interval), interval);
         this.setState(configerer.POOLLER_STATE.RUN_INFINITE);
         while (this.ruleOfInfiniteRun()) {
             this.printLogMessage(`415123, runInInfinite() 正在無限Loop中, ${this.getLogMessageOfExecutingTaskQueueCount()}`)
@@ -447,8 +450,8 @@ class InfinitePool {
     }
 
     /** 如果設定interval, 第一個run不要執行的話,就設定true, default是false */
-    setIgnoreFirstRun(ignore = true) {
-        this.ignoreFirstRun = ignore;
+    setDisableFirstRun(disable = true) {
+        this.disableFirstRun = disable;
     }
 
     /** 加上一個 被動式啟動, 不然一直while() run, 可能有效能上的問題,現階端只支援RUN_BY_TASK */
@@ -470,7 +473,7 @@ class InfinitePool {
     }
 
     isExecutingQueueFull() {
-        return _.size(this.queueOfExecutingTask) >= this.maxWorker;
+        return _.size(this.queueOfExecutingTask) >= this.maximumOfWorker;
     }
 
     isTaskQueueEmpty() {
@@ -479,9 +482,13 @@ class InfinitePool {
 
     /** 依照config 把委託任務放置到Queue裡面 */
     async syncTaskDispatcher() {
-        const initialTaskShouldNotRun = this.ignoreFirstRun && !this.isFirstTaskCompleted()
+        const initialTaskShouldNotRun = this.disableFirstRun && !this.isFirstTaskCompleted()
+        const isExecutingTaskAlmostFull = this.queueOfExecutingTask.length >= this.maximumOfWorker - 1;
+        /** 因為走能到syncTaskDispatcher表示其中一個工作完成了, 這個瞬間不可能 === maximumOfWorker,
+         *  所以必須減1, 除非這個syncTaskDispatcher是單獨一個線程 */
+        const comparison = this.isFirstTaskCompleted() && isExecutingTaskAlmostFull && this.enableOfTaskSleepByInterval;
 
-        if (initialTaskShouldNotRun || (this.isFirstTaskCompleted() && this.isExecutingQueueFull() && this.enableOfTaskSleepByInterval)) {
+        if (initialTaskShouldNotRun || comparison) {
             const restInInterval = await Util.syncDelayRandom(this.taskSleepInterval.min, this.taskSleepInterval.max)
             this.printLogMessage(`4484121, 走到一坡睡覺區 enableOfTaskSleepByInterval:${this.enableOfTaskSleepByInterval} || ${restInInterval} ms`)
         }
@@ -535,7 +542,7 @@ class InfinitePool {
     }
 
     showState = () => {
-        Util.appendInfo(this.getPoollerLogFormat(`workerCount: ${this.maxWorker}`));
+        Util.appendInfo(this.getPoollerLogFormat(`workerCount: ${this.maximumOfWorker}`));
         Util.appendInfo(this.getPoollerLogFormat(`taskQueue(還在排隊的Task): ${this.getCountOfAssignTaskInQueue()}`));
         Util.appendInfo(this.getPoollerLogFormat(`QueueOfExecutingTask(正在執行的AsyncTask, 超過workerCount就是bug): ${_.size(this.queueOfExecutingTask)}`));
         Util.appendInfo(this.getPoollerLogFormat(`mapOfHashNTask(還沒執行到的AsyncTask reference的暫存區): ${_.size(this.mapOfHashNTask)}`));
@@ -561,10 +568,10 @@ class InfinitePool {
             const task = await execute();
             this.printLogMessage(`4512213 完畢任務(taskWrapper:${task}), ${this.getLogMessageOfExecutingTaskQueueCount()}`);
         } else {
-            this.printLogMessage(`4574152 不應該走到這裏,但是 minor issue`,true)
+            this.printLogMessage(`4574152 不應該走到這裏,但是 minor issue`, true)
         }
 
-        if (this.queueOfExecutingTask.length > this.maxWorker)
+        if (this.queueOfExecutingTask.length > this.maximumOfWorker)
             this.printLogMessage(`4512214 一定是改壞了!!!!!!!!!!, ${this.getLogMessageOfExecutingTaskQueueCount} `, true);
 
     }
@@ -699,7 +706,7 @@ class InfinitePool {
 
         const pool = new InfinitePool(2);
         pool.runInfiniteInBackground(myAsyncTask, 5000);
-        pool.setIgnoreFirstRun(true);
+        pool.setDisableFirstRun(true);
         pool.setTaskFailHandler((error) => {
             console.error(error.message)
         })
@@ -779,11 +786,13 @@ class InfinitePool {
     }
 
     async exampleOfInfiniteUnStopLoopingIssue() {
+
         async function persistTone() {
             try {
                 const sign = Util.getRandomHash(20);
-                await Util.syncDelay(1000);
-                Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500, 3500)}`)
+                const time = await Util.syncDelayRandom(1, 10);
+                Util.appendInfo(`${time} ms, yoyoyo ${sign}`);
+                // Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500, 3500)}`)
                 return `任務ID:${sign}`;
             } catch (error) {
                 Util.appendError(error.message);
@@ -791,23 +800,23 @@ class InfinitePool {
         }
 
         const poollers = []
-        const pool = new InfinitePool(2);
+        const pool = new InfinitePool(3);
         pool.setPoolId('tone fetch');
-        pool.setIgnoreFirstRun(false);
+        pool.setDisableFirstRun(true);
         pool.runInfiniteInBackground(persistTone,
-            3000);
+            5000);
         pool.setTaskFailHandler((error) => Util.appendError(`5165 error ${error.message}`));
         poollers.push(pool);
 
         let isRequiredTerminate = false;
         setTimeout(() => {
             isRequiredTerminate = true;
-        }, 10000)
+        }, 20000)
 
         while (true) {
             Util.exeAll(poollers, (each) => each.showState())
             const random = await Util.syncDelayRandom();
-            Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
+            // Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
             await Util.syncDelay(random);
             if (isRequiredTerminate) {
                 Util.appendInfo(`主線程收到關閉指令...`);
@@ -825,7 +834,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool().exampleOfRunByTaskWait4ResultAndRunInBackground();
+        // await new InfinitePool().exampleOfInfiniteUnStopLoopingIssue()
     })();
 
 }
