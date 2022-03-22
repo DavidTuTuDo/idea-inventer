@@ -15,7 +15,7 @@ import {
 import Cookie from "../../cookie";
 import Router from "../../router";
 import ExamSubjectIdStore from "../examSubjectId";
-import UserInfo from "../../userInfo";
+import UserInfo from "../../base/BaseUserInfo";
 import TestingRecordStore from "../examTestingRecord";
 import ExamCountsOfExamTodayStore from "../examCountsOfExamToday";
 import WhoknowzConfuseStore from "../whoknowzConfuse";

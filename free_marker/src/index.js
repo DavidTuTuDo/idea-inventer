@@ -2690,7 +2690,7 @@ class StoreBuilder extends BaseBuilder {
         makeAutoObservable, makeObservable, action, 
         observable, comparer, computed, autorun, runInAction}`,
             'mobx')
-        generator.appendImport('UserInfoRef', '../../userInfo');
+        generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`Cookie`, '../../cookie');
         generator.appendImport(`Router`, '../../router');
         generator.appendImport(`Config`, '../../config');
@@ -3557,7 +3557,7 @@ class ComponentBuilder extends BaseBuilder {
 
             const onClickStmts = [];
             if (node.hasLoginRequiredDialog()) {
-                generator.appendImport('UserInfoRef', '../../userInfo');
+                generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
                 onClickStmts.push(
                     `if(!UserInfoRef.isLoginInSucceed()) {
                         self.enableLoginConfirmDialog();
@@ -4043,7 +4043,7 @@ class AppBuilder extends ComponentBuilder {
         baseRouterGenerator.appendClass(
             `BaseMyRouter`, {name: `BaseRouter`, from: '../base/BaseRouter'}
         );
-        baseRouterGenerator.appendImport('UserInfoRef', '../userInfo');
+        baseRouterGenerator.appendImport('UserInfoRef', '../base/BaseUserInfo');
         baseRouterGenerator.appendImport('Config', '../config');
 
 
@@ -5547,7 +5547,7 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                projectRootPath: './project-yueh-pu',
+                projectRootPath: './project-kh-high',
             }
             const builder = new BuildApplication(props)
 

@@ -16,7 +16,7 @@ import BasePurchaseSucceedComponent from "./BasePurchaseSucceedComponent";
 import queryString from 'query-string';
 import Router from "../../router";
 import Cookie from '../../cookie';
-import UserInfo from '../../userInfo';
+import UserInfo from '../../base/BaseUserInfo';
 import Functions from '../../functions';
 
 @inject("purchaseSucceed")

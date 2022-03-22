@@ -9,7 +9,7 @@ import Config from '../../config';
 import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
 import {withStyles} from '@material-ui/styles';
-import UserInfo from '../../userInfo';
+import UserInfo from '../../base/BaseUserInfo';
 import Style from "../../style";
 import React from "react";
 import {

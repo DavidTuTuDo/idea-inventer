@@ -11,7 +11,7 @@ import {
     pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
-import UserInfoRef from "../userInfo";
+import UserInfoRef from "../base/BaseUserInfo";
 
 class Router extends BaseMyRouter {
     /** -------------------- fields -------------------- **/

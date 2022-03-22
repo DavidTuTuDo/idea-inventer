@@ -15,7 +15,7 @@ import {
     pooller as InfinitePool,
 } from "utiller";
 import EventBus from "./base/CommonEventBus";
-import UserInfo from "./userInfo";
+import UserInfo from "./base/BaseUserInfo";
 import Cookie from './cookie';
 import Config from './config';
 

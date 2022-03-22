@@ -11,7 +11,7 @@ import WhoknowzConfuseStore from "../whoknowzConfuse";
 import WhoknowzFastCenterStore from "../whoknowzFavorite";
 import ExamQuestionStore from "../examQuestion";
 import WhoknowzFavoriteStore from "../whoknowzFavorite";
-import UserInfo from '../../userInfo';
+import UserInfo from "../../base/BaseUserInfo";
 
 class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
     /** -------------------- fields -------------------- **/

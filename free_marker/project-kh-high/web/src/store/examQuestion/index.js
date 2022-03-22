@@ -6,7 +6,7 @@ import {
 import _ from "lodash";
 import libpath from "path";
 import BaseExamQuestionStore from "./BaseExamQuestionStore";
-import UserInfo from '../../userInfo';
+import UserInfo from '../../base/BaseUserInfo';
 
 
 const OPTIONS_OF_MATH_QUESTION = [' 0 ', ' 1 ', ' 2 ', ' 3 ', ' 4 ', ' 5 ', ' 6 ', ' 7 ', ' 8 ', ' 9 ', ' - ', ' ± ']

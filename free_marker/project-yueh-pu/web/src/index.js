@@ -24,6 +24,6 @@ class App extends BaseApp {
   }
   /** -------------------- async api -------------------- **/
 }
-new App().mount();
+const Application = new App().mount();
 module.hot.accept();
-export default App;
+export default Application;

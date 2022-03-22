@@ -12,8 +12,7 @@ import {
     action,
     observable,
 } from "mobx";
-import UserInfoRef from "../../userInfo";
-import UserInfo from "../../userInfo";
+import UserInfoRef from "../../base/BaseUserInfo";
 
 
 class WhoknowzStore extends BaseWhoknowzStore {
@@ -105,7 +104,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
             this.setIsAnswerReply(true);
             answer.setCid(this.getHeadConfuse().getId());
             answer.setQid(this.getHeadConfuse().getQid());
-            answer.setUserId(UserInfo.getUid());
+            answer.setUserId(UserInfoRef.getUid());
             answer.setSubject(this.getHeadConfuse().getSubject())
             await answer.submitAnswerItem(this.getComponent());
             this.invalidateSubmitString();

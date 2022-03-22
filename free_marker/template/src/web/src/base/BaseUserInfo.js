@@ -1,4 +1,3 @@
-
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -6,8 +5,8 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import application from '../index.js';
-import firebaser from '../base/CommonFirebaseHelper'
+import application from '../';
+import firebaser from './CommonFirebaseHelper'
 import Cookie from '../cookie';
 import Configer from '../config';
 

@@ -11,7 +11,7 @@ import {
     exceptioner as ERROR,
     pooller as InfinitePool,
 } from "utiller";
-import UserInfo from '../../userInfo';
+import UserInfo from '../../base/BaseUserInfo';
 import _ from "lodash";
 import Functions from '../../functions';
 

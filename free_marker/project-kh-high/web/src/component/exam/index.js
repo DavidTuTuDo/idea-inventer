@@ -11,7 +11,7 @@ import {utiller as Util} from "utiller";
 import _ from "lodash";
 import Router from '../../router';
 import Cookie from "../../cookie";
-import UserInfo from "../../userInfo";
+import UserInfo from "../../base/BaseUserInfo";
 import Config from '../../config';
 import libpath from 'path';
 
