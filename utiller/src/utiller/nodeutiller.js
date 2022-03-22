@@ -312,7 +312,7 @@ class NodeUtiller extends Utiller {
      * */
     copySingleFile(from, dest, fileName, force = false) {
 
-        const destination = _.isEmpty(fileName) ? dest : libpath.join(dest, fileName)
+        const destination = !_.isString(fileName) ? dest : libpath.join(dest, fileName)
         if (fs.existsSync(destination) && !force)
             throw new ERROR(8006, destination);
 

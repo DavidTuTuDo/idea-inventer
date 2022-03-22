@@ -3,7 +3,7 @@
  email:freshingmoon0725@gmail.com
  updateTime:2021-04-14-20-30-47
  */
-import BaseApp from "./app";
+import BaseApp from "./BaseApp";
 import {Provider} from "mobx-react";
 import Exam from "./component/exam";
 import {Route} from "react-router-dom";

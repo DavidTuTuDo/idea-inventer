@@ -1818,7 +1818,7 @@ class CodegenNode {
     }
 
     getCloudFunctions() {
-        return this.cloudFunctions;
+        return this.cloudFunctions ?? [];
     }
 
     getCloudFunctionInfo() {
@@ -2165,8 +2165,8 @@ class ClassGenerator {
     }
 
     /** 產出index.js 他會繼承當前的class */
-    needIndexFile(indexClassName = 'Index', indexFileMacro = [], singleton = false, extraTailStmts = []) {
-        this.indexClassName = indexClassName;
+    needIndexFile(classNameOfFile = 'Index', indexFileMacro = [], singleton = false, extraTailStmts = []) {
+        this.indexClassName = classNameOfFile;
         this.indexFileMacros = indexFileMacro;
         this.indexFileSingleton = singleton;
         this.indexFileTailStmts = extraTailStmts;
@@ -2465,9 +2465,10 @@ class StoreBuilder extends BaseBuilder {
 
     async buildStoreIndexFiles() {
         /** 產生 store再project的index file */
+        const BaseStoreFileName = 'BaseStore';
         const stores = this.getGenStores();
-        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genStoreRootPath, `store.js`)));
-        baseGenerator.appendClass(`BaseStore`);
+        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genStoreRootPath, `${BaseStoreFileName}.js`)));
+        baseGenerator.appendClass(BaseStoreFileName);
         for (const store of stores) {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
         }
@@ -4066,7 +4067,7 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildAppIndexFiles() {
-        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `app.js`));
+        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`));
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(` ReactDOM`, `react-dom`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
@@ -4228,6 +4229,10 @@ class AppBuilder extends ComponentBuilder {
             }
             await generator.persist();
         }
+
+        /** template.style.index.js */
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.style.index.js'),
+            libpath.join(this.genSourcePath, 'style', 'index.js'), undefined, true);
     }
 
     /**
@@ -5403,9 +5408,9 @@ class BuildApplication {
         this.projectRootPath = libpath.resolve(object.projectRootPath);
         this.freeMarkerRootPath = libpath.resolve(PATH_OF_FREE_MARKER_TEMPLATE);
 
-        const context = require(libpath.join( this.projectRootPath, FILENAME_OF_SOURCE_JS)).default;
+        const context = require(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS)).default;
         if (_.isEmpty(context.genRootPath)) {
-            throw new ERROR(9999, `${ this.projectRootPath}/'${FILENAME_OF_SOURCE_JS}' 裡面沒有attribute ==> genRootPath`)
+            throw new ERROR(9999, `${this.projectRootPath}/'${FILENAME_OF_SOURCE_JS}' 裡面沒有attribute ==> genRootPath`)
         }
         this.genRootPath = libpath.resolve(context.genRootPath);
         this.init();
@@ -5542,7 +5547,7 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                projectRootPath: './kh-high',
+                projectRootPath: './project-yueh-pu',
             }
             const builder = new BuildApplication(props)
 
