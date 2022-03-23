@@ -2984,8 +2984,8 @@ class RemoteFunctionHandler {
                         [],
                         [
                             `const object = await self.fetchObject(path,'${node.getName()}')`,
-                            `${this.isWebPlatform()?'this.clean()': ''}`,
-                            `${this.isWebPlatform()?'this.initial(object)': ''}`,
+                            `${this.isWebPlatform() ? 'this.clean()' : ''}`,
+                            `${this.isWebPlatform() ? 'this.initial(object)' : ''}`,
                             `return object`
                         ], `fetch object`)
 
@@ -4714,6 +4714,7 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
+    /** 將less/libs/ 底下全部都back-up到 template */
     persistLessLibs() {
         const files = Util.findFilePathBy(libpath.join(this.genSourcePath, 'less', 'libs'), (file) => _.isEqual('less', file.extension));
         const to = libpath.join(this.freeMarkerRootPath, 'less', 'libs');
@@ -4727,14 +4728,18 @@ class ProjectFileHandler extends PathBase {
             (each) => {
                 return (
                     _.isEqual(each.fileNameExtension, `index.js`) ||
-                    _.isEqual(each.fileNameExtension, `styles.less`) ||
+                    _.isEqual(each.extension, `less`) ||
                     _.isEqual(each.fileNameExtension, `app.style.js`) ||
                     _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
                     _.isEqual(each.fileNameExtension, `common.style.js`)
                 )
             },
             'node_modules');
-
+        /** _.isEqual(each.fileNameExtension, `styles.less`)
+         *
+         * 如果這樣寫less watcher 會找不到 @import /libs/, 而報錯導致build中斷
+         * 所以把libs都一起hard save
+         */
 
         for (const file of files) {
             if (_.isEqual('', Util.getFileContextInRaw(file.path).trim())) {
@@ -4743,8 +4748,9 @@ class ProjectFileHandler extends PathBase {
             }
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
-
             const dest = libpath.join(this.projectPlatformSourcePath, from.split(`src`).pop());
+
+
             Util.persistByPath(dest);
             Util.copySingleFile(from, dest, '', true);
             Util.appendInfo(`persist ${from} succeed`);
@@ -5289,7 +5295,6 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildRouterFile();
         await new AppBuilder(paramProps).buildCookieFiles();
         await new AppBuilder(paramProps).buildEventFolder(totalEvents);
-        await new AppBuilder(paramProps).overrideLessFile();
         await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
@@ -5353,6 +5358,10 @@ class ProjectFileHandler extends PathBase {
                 keyword: 'png'
             }, ...this.getIgnoredFilesByPlatform()
         );
+        if(this.isWebPlatform()){
+            await new AppBuilder(this.props).overrideLessFile();
+        }
+
         await this.removeEmptyFolder();
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
@@ -5399,12 +5408,20 @@ class ProjectFileHandler extends PathBase {
             const folderOfFather = Util.getFileDirPath(file.absolute);
 
             if (Util.isEmptyFile(file.absolute)) {
+
+                if (Util.isOrEquals(file.extension, 'map', 'css')) {
+                    /** 這兩個檔案類別是auto gen,所以為空值挺正常的 */
+                    continue;
+                }
+
+                Util.appendInfo(`${file.absolute} is empty file, so that kill ${folderOfFather}`)
                 await Util.deleteSelfByPath(folderOfFather, true);
                 continue;
             }
 
             if (this.isComponentOrStoreIndexFile(file) &&
                 Util.getFileCountsOfFolder(folderOfFather) < 2) {
+                Util.appendInfo(`${file.absolute} is component|store, file counts < 2, so that kill ${folderOfFather}`)
                 await Util.deleteSelfByPath(folderOfFather, true);
             }
         }

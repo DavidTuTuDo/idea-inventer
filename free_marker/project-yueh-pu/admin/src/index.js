@@ -43,9 +43,9 @@ import moment from 'moment';
     }
 
     // console.log(await api.fetchTest());
-    const pool = new InfinitePool(4);
-    await pool.runByTimes(subtractOneTransaction, 11);
-
+    // const pool = new InfinitePool(4);
+    // await pool.runByTimes(subtractOneTransaction, 11);
+    // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
 
 })();
 
