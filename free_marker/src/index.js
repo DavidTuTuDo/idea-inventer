@@ -4779,7 +4779,7 @@ class ProjectFileHandler extends PathBase {
                         continue;
                     }
                 }
-                Util.copySingleFile(from, dest, '', true);
+                Util.rewriteFile2File(from, dest);
             }
         }
     }

@@ -76,6 +76,7 @@ class NodeUtiller extends Utiller {
         return files
     }
 
+    /** 是一個存在的檔案 */
     isPathExist(path) {
         return fs.existsSync(path);
     }
@@ -312,7 +313,7 @@ class NodeUtiller extends Utiller {
      * */
     copySingleFile(from, dest, fileName, force = false) {
 
-        const destination = !_.isString(fileName) ? dest : libpath.join(dest, fileName)
+        const destination = (_.isString(fileName) && !_.isEmpty(fileName)) ? libpath.join(dest, fileName) : dest;
         if (fs.existsSync(destination) && !force)
             throw new ERROR(8006, destination);
 
@@ -344,17 +345,18 @@ class NodeUtiller extends Utiller {
             const files = this.findFilePathBy(path, predicate, ...exclude);
             for (const file of files) {
                 if (this.isImageFile(file)) continue;
-
-                fs.truncate(file.absolute, 0, (result) => {
-                    if (!_.isUndefined(result) && !_.isNull(result))
-                        this.appendInfo(result)
-                });
-                this.appendInfo(`${file.absolute} 被清的乾乾淨淨！`);
+                this.cleanFileContent(file.absolute);
             }
-            await this.syncDelay(500);
+            await this.syncDelay(10);
             return files;
         }
         return false;
+    }
+
+    /** 將檔案清除乾淨, 但不刪掉檔案, 這樣hot reload的監聽才不會遺失*/
+    cleanFileContent(path) {
+        fs.truncateSync(path, 0);
+        this.appendInfo(`${path} 內容被清除！`);
     }
 
     async syncWithExistPackage(path = '../') {
@@ -451,18 +453,24 @@ class NodeUtiller extends Utiller {
     }
 
     /** 如果file不存在,就會產生file,force_delete 可以強制刪除cache file*/
-    appendFile(path, data, newLine = true, force_delete = false) {
+    appendFile(path, data, newlineOnceFileNotEmpty = true, forceDelete = false) {
         let options = err => {
             throw new ERROR(8001, err);
         };
 
-        if (force_delete) this.syncDeleteFile(path);
-
-        if (!fs.existsSync(path)) {
-            fs.writeFileSync(path, data, options);
-        } else {
-            fs.appendFileSync(path, `${newLine ? '\n' : ''}${data}`, options);
+        if (!this.isValidFilePath(path)) {
+            throw new ERROR(9999, `不是個合法的file路徑 ==> '' ${path} ''`);
         }
+
+        this.persistByPath(path);
+
+        if (forceDelete)
+            this.cleanFileContent(path);
+
+        if (this.isEmptyFile(path))
+            newlineOnceFileNotEmpty = false;
+
+        fs.appendFileSync(path, `${newlineOnceFileNotEmpty ? '\n' : ''}${data}`, options);
     }
 
     /** 快速把資料結構印出來看 */
@@ -679,7 +687,14 @@ class NodeUtiller extends Utiller {
     /** http://wnj.cdji/david.mp3 => mp3 */
     getExtensionFromPath(path) {
         const name = path.split('/').pop()
-        return name.split('.').pop();
+        const segments = name.split('.');
+        return _.size(segments) > 1 ? segments.pop() : '';
+    }
+
+    /** 是一個/a/b/c.js 的檔案路徑 */
+    isValidFilePath(path) {
+        const extension = this.getExtensionFromPath(path);
+        return _.size(extension) > 0;
     }
 
     isEmptyFile(path) {
@@ -758,11 +773,28 @@ class NodeUtiller extends Utiller {
         }
         return tempFolderPath;
     }
+
+    /**
+     * from, destination
+     *
+     * 讓file content清除後,在寫入資料, 避免destined file address改變*/
+    rewriteFile2File(from, destination) {
+        const content = this.getFileContextInRaw(from);
+        if (_.isEmpty(content))
+            throw new ERROR(9999, `${from} 內容為空值, ***rewrite功能會避免空值覆蓋, 這是一個設計`)
+
+        this.appendFile(destination, content, true, true);
+        this.appendInfo(`rewrite from:${from} => dest:${destination} succeed`);
+
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const uii = new NodeUtiller();
+            // const utiller = new NodeUtiller();
+            // utiller.appendFile(`./test/2.js`, '2saads\n\nwqeadsdas', true, true);
+            // utiller.rewriteFile2File('./test/2.js','./test/1.js');
+            // console.log(uii.isValidFilePath('aa/cc/vv.ss'));
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
@@ -786,6 +818,8 @@ if (configerer.DEBUG_MODE) {
             // console.log(new NodeUtiller()
             //     .getFileNameExtensionFromPath('https://stackoverflow.com/questions/3916191/download-data-url-file/draw918.mp3'));
             // //
+
+
         }
     )();
 }
