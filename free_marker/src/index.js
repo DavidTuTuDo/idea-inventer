@@ -409,6 +409,12 @@ class CodegenNode {
         return this.isArray() && this.selectImageButton;
     }
 
+    /** */
+    getProjectName() {
+        const root = this.getRootNode();
+        return root.getName();
+    }
+
     getFunctionNameOfSelectGetter() {
         return Util.camel('get', this.getFieldNameOfSelected());
     }
@@ -797,7 +803,7 @@ class CodegenNode {
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
         return ['rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
-            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style',
+            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style','listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
 
@@ -1240,7 +1246,6 @@ class CodegenNode {
         const parent = this.getPreciseAttributeParent();
         return parent.isValidNode();
     }
-
 
     isValidNode() {
         return !_.isEqual(this.getName(), SignOfInValidNode);
@@ -2327,7 +2332,7 @@ class PathBase {
     nodeOfAncestor; //source.js
     structs;
     env = 'dev'; //dev, prod
-    platform; // web, admin, platform
+    platform; // web, admin,function, platform
     genComponentRootPath; // gen/app/src/component
     genStoreRootPath; // gen/app/src/store
 
@@ -4739,7 +4744,9 @@ class ProjectFileHandler extends PathBase {
      * */
     overrideEachFilesFromFolder(...excludes) {
         /** 順序會影響檔案的priority */
-        const pathsOfModuleComponent = this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each));
+        const pathsOfModuleComponent =
+            this.isWebPlatform() ?
+            this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each)):[];
         /** ex: ./src/modules/navigator */
 
         const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
@@ -4857,8 +4864,13 @@ class ProjectFileHandler extends PathBase {
             await Util.prettier(path);
         if (deploy) {
             Util.copySingleFile(path, this.nodeOfAncestor.getDirectoryName(), fileName, true);
-            await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only ${commandLine}`);
+            await this.executeCommandToFirebaseRemote(`firebase deploy --only ${commandLine}`)
         }
+    }
+
+    /** 每次deploy 都要記得切換成對應的project */
+    async executeCommandToFirebaseRemote(command){
+        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase use ${this.nodeOfAncestor.getProjectName()} && ${command}`);
     }
 
     async buildProdWebDistToProjectThanDeploy() {
@@ -4868,7 +4880,7 @@ class ProjectFileHandler extends PathBase {
         Util.persistByPath(pathOfDestination);
         Util.cleanAllFiles(pathOfDestination);
         Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
-        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only hosting`);
+        await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
     }
 
     async generateFireIndexRules(deploy = true) {
@@ -5278,7 +5290,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     async deployFunctionsToProd() {
-        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase deploy --only functions`);
+        await this.executeCommandToFirebaseRemote(`firebase deploy --only functions`)
     }
 
     async cleanGenDirectory() {
@@ -5616,8 +5628,7 @@ if (configerer.DEBUG_MODE) {
                     await builder.buildIndexRule();
                     break;
                 default:
-                    Util.appendInfo('jo4你')
-                    // await builder.removeEmptyFolder();
+                    Util.appendInfo('jo4你');
                     break
             }
 
