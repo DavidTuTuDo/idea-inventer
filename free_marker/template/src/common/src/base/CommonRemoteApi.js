@@ -57,8 +57,9 @@ class CommonRemoteApi {
     }
 
     /** predicate 裏面放batch要做的動作 set,update,delete */
-    async batchBracket(objects, predicate = (batch, object) => {}) {
-        let batch = firebase.firestore().batch();
+    async batchBracket(objects, predicate = (batch, object) => {
+    }) {
+        let batch = this.firestore().batch();
         let threshold = 0;
         while (objects.length > 0) {
             const object = objects.shift();
@@ -68,7 +69,7 @@ class CommonRemoteApi {
             if (threshold >= MAX_BATCH_COUNT) {
                 await batch.commit();
                 threshold = 0;
-                batch = firebase.firestore().batch();
+                batch = this.firestore().batch();
             }
         }
 
@@ -82,9 +83,9 @@ class CommonRemoteApi {
         await this.batchBracket(objects, (batch, object) => {
             const pk = _.toString(object.id);
             if (!_.isEmpty(pk)) {
-                batch.set(firebase.firestore().collection(path).doc(pk), object)
+                batch.set(this.firestoreDocRef(path, pk), object)
             } else {
-                batch.set(firebase.firestore().collection(path).doc(), object)
+                batch.set(this.firestoreDocRef(path), object)
             }
         })
         return {message: `batch submit path:${path}, size:${size} succeed`}
@@ -98,14 +99,14 @@ class CommonRemoteApi {
             if (Util.isUndefinedNullEmpty(id)) {
                 throw new ERROR(2001, `ERROR ===> ${object}`)
             } else {
-                batch.update(firebase.firestore().collection(path).doc(id), object);
+                batch.update(this.firestoreDocRef(path, id), object);
             }
         })
         return {message: `batch update path:${path}, size:${size} succeed`}
     }
 
     async fetchSizeOfCollection(path) {
-        const list = await firebase.firestore().collection(path).listDocuments()
+        const list = await this.collectionRef(path).listDocuments()
         return list.length;
     }
 
@@ -114,9 +115,9 @@ class CommonRemoteApi {
         Util.appendInfo(`submit item => path:${path}/${id}`);
         let obj = object;
         if (id && !_.isEmpty(id)) {
-            await firebase.firestore().collection(path).doc(_.toString(id)).set(object);
+            await this.firestoreDocRef(path, id).set(object);
         } else {
-            const docRef = await firebase.firestore().collection(path).add(object);
+            const docRef = await this.collectionRef(path).add(object);
             obj.id = docRef.id;
         }
 
@@ -129,13 +130,46 @@ class CommonRemoteApi {
 
     async updateItem(path, id, item) {
         Util.appendInfo(`update item => path:/${path}/${id}`);
-        await firebase.firestore().collection(path).doc(_.toString(id)).update(item);
+        await this.firestoreDocRef(path, id).update(item);
         return true;
+    }
+
+    /** firestore transaction 的呼叫入口*/
+    async runTransaction(asyncTask = async (behavior) => true) {
+        return await this.firestore().runTransaction(asyncTask);
+    }
+
+    /** predict 裡面寫 updateContent | 觸發throw error的規則
+     *
+     *      (item) => {
+                const old = item.count;
+                if (old <= 85)
+                    throw new ERROR(9999,'不能小於85');
+
+                const latest = old - 1;
+                return {count: latest}
+            }
+     *
+     * */
+    async updateDocumentTransaction(path, id, predict = (item) => item) {
+        const behavior = async (transaction) => {
+            const ref = this.firestoreDocRef(path, id);
+            const item = (await transaction.get(ref)).data();
+            const updateItem = predict(item);
+            await transaction.update(ref, updateItem);
+            Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, updateItem);
+
+        }
+        return await this.runTransaction(behavior);
+    }
+
+    async updateItemTransaction(path, id, predict = (item) => item) {
+        return await this.updateDocumentTransaction(path, id, predict);
     }
 
     async deleteItem(path, id) {
         Util.appendInfo(`delete item => path:/${path}/${id}`);
-        await firebase.firestore().collection(path).doc(_.toString(id)).delete();
+        await this.firestoreDocRef(path, id).delete();
         return true;
     }
 
@@ -147,7 +181,7 @@ class CommonRemoteApi {
             Util.appendInfo(sortedCondition.map(each => (_.toString(each))));
 
         Util.appendInfo(`${uid} fetch items => path:/${path}/`);
-        const query = Util.accumulate(firebase.firestore().collection(path), sortedCondition);
+        const query = Util.accumulate(this.collectionRef(path), sortedCondition);
         const querySnapshot = await query.get();
         const all = [];
         if (!querySnapshot.empty)
@@ -198,13 +232,22 @@ class CommonRemoteApi {
             raw.push({stmt: stmtOfFunction, priority})
         }
         return _.isEmpty(raw) ? [] : _.orderBy(raw, ['priority'], ['desc']).map((each) => each.stmt);
+    }
 
+    firestoreDocRef(path, id) {
+        if (id !== undefined)
+            return this.collectionRef(path).doc(_.toString(id));
+        else
+            return this.collectionRef(path).doc();
+    }
 
+    collectionRef(path) {
+        return this.firestore().collection(path);
     }
 
     async fetchItem(path, id) {
         Util.appendInfo(`fetch item => path:/${path}/${id}`);
-        const result = await firebase.firestore().collection(path).doc(_.toString(id)).get();
+        const result = await this.firestoreDocRef(path, id).get();
         return result.exists ? {...result.data(), id, _doc: result, exists: true} : {exists: false};
     }
 
@@ -212,15 +255,15 @@ class CommonRemoteApi {
     async deleteItems(path, all, ...conditions) {
         Util.appendInfo(`delete items ${path}`);
         const sortedCondition = this.orderConditionByRules(conditions);
-        const batch = firebase.firestore().batch()
+        const batch = this.firestore().batch();
         if (all) {
-            const list = await firebase.firestore().collection(path).listDocuments()
+            const list = await this.collectionRef(path).listDocuments();
             list.map((doc) => batch.delete(doc));
         } else {
             if (sortedCondition.length > 0)
                 Util.appendInfo(sortedCondition.map(each => (_.toString(each))));
 
-            const query = Util.accumulate(firebase.firestore().collection(path), sortedCondition);
+            const query = Util.accumulate(this.collectionRef(path), sortedCondition);
             const querySnapshot = await query.get();
             querySnapshot.forEach((doc) => {
                 batch.delete(doc.ref)
@@ -233,13 +276,13 @@ class CommonRemoteApi {
         const commitment = object;
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`submit object => ${path}/${objName}`);
-        return await firebase.firestore().collection(path).doc(objName).set(commitment);
+        return await this.firestoreDocRef(path, objName).set(commitment);
     }
 
     async fetchObject(path, objName) {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`fetch object => path:/${path}/${objName}`);
-        const result = await firebase.firestore().collection(path).doc(objName).get();
+        const result = await this.firestoreDocRef(path, objName).get();
         return result.exists ? result.data() : {};
     }
 
@@ -255,22 +298,26 @@ class CommonRemoteApi {
         return Util.isOdd(segments.length);
     }
 
-    async updateObject(path, updatedObject, objName) {
+    async updateObject(path, objName, updatedObject) {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`update object => path:/${path}/${objName}`);
-        return await firebase.firestore().collection(path).doc(objName).update(updatedObject);
+        return await this.firestoreDocRef(path, objName).update(updatedObject);
+    }
+
+    async updateObjectTransaction(path, objName, predict = (object) => object) {
+        return await this.updateDocumentTransaction(path, objName, predict);
     }
 
     async deleteObject(path, objName) {
         path = libpath.join(path, 'attrs');
         Util.appendInfo(`delete object => path:/${path}/${objName}`);
-        return await firebase.firestore().collection(path).doc(objName).delete();
+        return await this.firestoreDocRef(path, objName).delete();
     }
 
     restfulListenItem(path, id, handler = (data) => data, view) {
         this.showLoadingView(view);
         Util.appendInfo(`listenItem path:/${path}/${id}`);
-        const query = firebase.firestore().collection(path).doc(_.toString(id));
+        const query = this.firestoreDocRef(path, id);
         const functionOfUnsubscribe = query.onSnapshot(
             (doc) => {
                 if (doc !== undefined) {
@@ -294,7 +341,7 @@ class CommonRemoteApi {
     listenItems(path, callback = (changes, error) => {
     }, condition = (stmt) => stmt) {
         Util.appendInfo(`listenItems path:/${path}`);
-        const query = condition(firebase.firestore().collection(path));
+        const query = condition(this.collectionRef(path));
         const functionOfUnsubscribe = query.onSnapshot(
             (querySnapshot) => {
                 const _changes = [];
@@ -317,7 +364,7 @@ class CommonRemoteApi {
     listenItem(path, id, callback = (data, error) => {
     }) {
         Util.appendInfo(`listenItem path:/${path}/${id}`);
-        const query = firebase.firestore().collection(path).doc(id);
+        const query = this.firestoreDocRef(path, id);
         const functionOfUnsubscribe = query.onSnapshot(
             (doc) => {
                 callback(doc.data());
@@ -333,7 +380,7 @@ class CommonRemoteApi {
     }) {
         const fullpath = libpath.join(path, "attrs");
         Util.appendInfo(`listenObject path:/${fullpath}/${objName}`);
-        const query = firebase.firestore().collection(fullpath).doc(objName);
+        const query = this.firestoreDocRef(fullpath, objName);
 
         const functionOfUnsubscribe = query.onSnapshot(
             (doc) => {

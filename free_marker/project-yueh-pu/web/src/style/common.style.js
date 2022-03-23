@@ -11,6 +11,22 @@ class CommonStyle {
 
   /** => following for main editor component  */
 
+  MainEditorProductColorTextField = {};
+
+  MainEditorProductCountTextField = {};
+
+  MainEditorProductNameTextField = {};
+
+  MainEditorProductIdTextField = {};
+
+  MainEditorProductDivListWrap = {};
+
+  MainEditorProductDivList = {};
+
+  MainEditorProductDivWrap = {};
+
+  MainEditorProductDiv = {};
+
   MainEditorTestSubTitleTextField = {};
 
   MainEditorTestTitleTextField = {};
@@ -50,6 +66,20 @@ class CommonStyle {
   NavigatorDiv = {};
 
   /** => following for main  component  */
+
+  MainProductColorTypography = {};
+
+  MainProductCountTypography = {};
+
+  MainProductNameTypography = {};
+
+  MainProductIdTypography = {};
+
+  MainProductDivListWrap = {};
+
+  MainProductDivList = {};
+
+  MainProductDiv = {};
 
   MainTestSubTitleTypography = {};
 

@@ -745,6 +745,10 @@ class CodegenNode {
         return Util.camel('update', this.getName(), 'item');
     }
 
+    getFunctionNameOfUpdateItemTransaction() {
+        return Util.camel('update', this.getName(), 'item', 'transaction');
+    }
+
     getFunctionNameOfDeleteItem() {
         return Util.camel('delete', this.getName(), 'item')
     }
@@ -803,7 +807,7 @@ class CodegenNode {
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
         return ['rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
-            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style','listWrapStyle',
+            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
 
@@ -2926,11 +2930,15 @@ class RemoteFunctionHandler {
                         [`const commitment = this.${functionNameOfNormalize}(item)`,
                             `return await self.submitItem(path, commitment);`], 'submit item')
 
-
                     generateApiFunction(
                         node.getFunctionNameOfUpdateItem(),
                         [`id`, `item`],
                         [`return await self.updateItem(path, id , item)`], 'update item')
+
+                    generateApiFunction(
+                        node.getFunctionNameOfUpdateItemTransaction(),
+                        ['id', 'predict'],
+                        [`return await self.updateItemTransaction(path,id,predict)`], 'update item transaction')
 
                     generateApiFunction(
                         node.getFunctionNameOfDeleteItem(),
@@ -2941,9 +2949,14 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(
                         Util.camel('submit', node.getFieldName()),
-                        ['...objects'],
-                        [`const commitments = objects.map((object) => this.${functionNameOfNormalize}(object))`,
+                        ['...items'],
+                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
                             `return await self.submitItems(path,...commitments)`], `submit items`)
+
+                    generateApiFunction(
+                        Util.camel('update', node.getFieldName()),
+                        ['...items'],
+                        [`await self.updateItems(path,...items)`], `update items`)
 
                     generateApiFunction(
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
@@ -2971,15 +2984,20 @@ class RemoteFunctionHandler {
                         [],
                         [
                             `const object = await self.fetchObject(path,'${node.getName()}')`,
-                            `this.clean()`,
-                            `this.initial(object)`,
+                            `${this.isWebPlatform()?'this.clean()': ''}`,
+                            `${this.isWebPlatform()?'this.initial(object)': ''}`,
                             `return object`
                         ], `fetch object`)
 
                     generateApiFunction(
                         Util.camel('update', node.getFieldName()),
                         [`object`],
-                        [`return await self.updateObject(path, object, '${node.getName()}')`], `update object`);
+                        [`return await self.updateObject(path, '${node.getName()}',object)`], `update object`);
+
+                    generateApiFunction(
+                        Util.camel('update', node.getFieldName(), 'transaction'),
+                        [`predict`],
+                        [`return await self.updateObjectTransaction(path, '${node.getName()}',predict)`], `update object transaction`);
 
                     generateApiFunction(
                         Util.camel('delete', node.getFieldName()),
@@ -4746,7 +4764,7 @@ class ProjectFileHandler extends PathBase {
         /** 順序會影響檔案的priority */
         const pathsOfModuleComponent =
             this.isWebPlatform() ?
-            this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each)):[];
+                this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each)) : [];
         /** ex: ./src/modules/navigator */
 
         const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
@@ -4869,7 +4887,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     /** 每次deploy 都要記得切換成對應的project */
-    async executeCommandToFirebaseRemote(command){
+    async executeCommandToFirebaseRemote(command) {
         await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase use ${this.nodeOfAncestor.getProjectName()} && ${command}`);
     }
 
@@ -5613,8 +5631,8 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'persistent':
                     await builder.persistent('web');
-                    // await builder.persistent('admin');
-                    // await builder.persistent('functions');
+                    await builder.persistent('admin');
+                    await builder.persistent('functions');
                     break;
                 case 'newLessFileOnly':
                     await builder.buildLessFilesOnly();
