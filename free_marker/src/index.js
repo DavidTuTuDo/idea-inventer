@@ -4968,24 +4968,42 @@ class ProjectFileHandler extends PathBase {
     async generateFireStoreRules(deploy = true) {
         const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
         const stmts = [];
-        const task = async (node) => {
-            const _stmts = [];
-            const path = node.getPath();
-            const normalize = path.split('\/')
-                .map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
-            const permission = node.getPermission();
-            for (const each in permission) {
-                _stmts.push(`allow ${each}: if ${permission[each]};`)
-            }
 
+        /** type => update|create|delete|read */
+        function appendGetAfterStmts(type, node) {
+            const disable = true;
+            if(disable) return '';
+
+            if (Util.isOrEquals(type, 'update')) {
+                const path = libpath.join('/databases/$(database)/documents',Util.getStringOfPop(getFirestoreRoute(node),`\/`),
+                    `$(request.resource.id)`)
+                const getAfter = `getAfter(${path})`;
+                const stmt = `&& ${getAfter}.data.updateTime == request.time`;
+                return stmt;
+            }
+            return '';
+        }
+
+        function getFirestoreRoute(node) {
+            const path = node.getPath();
             const wildcard = `{${node.getName()}}`;
+            const normalize = path.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
             if (node.isObject()) {
-                stmts.push(`match ${libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard)} {`, ..._stmts, '}');
+                return libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
             } else if (node.isArray()) {
-                stmts.push(`match ${libpath.join('/', normalize, wildcard)} {`, ..._stmts, '}');
+                return libpath.join('/', normalize, wildcard);
             } else {
                 throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
             }
+        }
+
+        const task = async (node) => {
+            const _stmts = [];
+            const permission = node.getPermission();
+            for (const each in permission) {
+                _stmts.push(`allow ${each}: if ${permission[each]} ${appendGetAfterStmts(each, node)};`)
+            }
+            stmts.push(`match ${getFirestoreRoute(node)} {`, ..._stmts, '}');
         }
         await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);

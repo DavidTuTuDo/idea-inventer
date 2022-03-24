@@ -26,10 +26,10 @@ class Utiller {
 
     printLogMessage(message, error = false, ...infos) {
         if (!this.isProductionEnvironment()) {
-            if(error) {
-                this.appendError(message,...infos)
+            if (error) {
+                this.appendError(message, ...infos)
             } else {
-                this.appendInfo(message,...infos)
+                this.appendInfo(message, ...infos)
             }
         }
     }
@@ -999,10 +999,10 @@ class Utiller {
         return collection;
     }
 
-    getObjectWhile(major,minor,predicate = (target) => true) {
+    getObjectWhile(major, minor, predicate = (target) => true) {
         const collection = {};
-        for(const key in major)   {
-            if(predicate(major,minor,key)) {
+        for (const key in major) {
+            if (predicate(major, minor, key)) {
                 collection[key] = major[key];
             }
         }
@@ -1015,8 +1015,8 @@ class Utiller {
      const obj2 = {b:3};
      console.log(util.getIntersectionObject(obj1,obj2)) => { b: 4 }
      */
-    getIntersectionObject(objOfMajor,objOfMinor) {
-        return this.getObjectWhile(objOfMajor,objOfMinor,((major,minor,key) => minor[key] !== undefined));
+    getIntersectionObject(objOfMajor, objOfMinor) {
+        return this.getObjectWhile(objOfMajor, objOfMinor, ((major, minor, key) => minor[key] !== undefined));
     }
 
     /** 找出兩個object,相同的屬性
@@ -1025,8 +1025,8 @@ class Utiller {
      const obj2 = {b:3};
      console.log(util.getIntersectionObject(obj1,obj2)) => { a: 1, c: 3 }
      */
-    getDifferenceObject(objOfMajor,objOfMinor) {
-        return this.getObjectWhile(objOfMajor,objOfMinor,((major,minor,key) => minor[key] === undefined));
+    getDifferenceObject(objOfMajor, objOfMinor) {
+        return this.getObjectWhile(objOfMajor, objOfMinor, ((major, minor, key) => minor[key] === undefined));
     }
 
     /**
@@ -1038,15 +1038,35 @@ class Utiller {
      console.log(util.isObjectContainAndEqual(obj1,obj3)) true
      targetObject 是數量比較小那個
      */
-    isObjectContainAndEqual(targetObject,mainObject) {
+    isObjectContainAndEqual(targetObject, mainObject) {
         let equal = true;
-        for(const key in targetObject) {
-            if(mainObject[key] === undefined || mainObject[key] !==targetObject[key]){
+        for (const key in targetObject) {
+            if (mainObject[key] === undefined || mainObject[key] !== targetObject[key]) {
                 equal = false;
                 break;
             }
         }
         return equal;
+    }
+
+    /** 把 /a/v/c/d => /a/v/c/ */
+    getStringOfPop(string, separator) {
+        if (!_.isString(string)) {
+            throw new ERROR(9999, `445115,type should be string but ==> ${typeof string}`)
+        }
+        const segments = string.split(separator);
+        segments.pop();
+        return segments.join(separator);
+    }
+
+    /** 把 /a/v/c/d => /v/c/d */
+    getStringOfShift(string, separator) {
+        if (!_.isString(string)) {
+            throw new ERROR(9999, `445116,type should be string but ==> ${typeof string}`)
+        }
+        const segments = string.split(separator);
+        segments.shift();
+        return segments.join(separator);
     }
 }
 
