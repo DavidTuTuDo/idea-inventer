@@ -5660,7 +5660,7 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                projectRootPath: './project-davidtu-dev',
+                projectRootPath: './project-yueh-pu',
             }
             const builder = new BuildApplication(props)
 
@@ -5732,7 +5732,6 @@ if (configerer.DEBUG_MODE) {
                     Util.appendInfo('jo4你');
                     break
             }
-
 
         }
     )();

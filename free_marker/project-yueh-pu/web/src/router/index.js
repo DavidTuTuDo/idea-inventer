@@ -7,7 +7,6 @@ import {
 import _ from "lodash";
 import libpath from "path";
 import Config from "../config";
-import UserInfoRef from "../userInfo";
 import BaseRouter from "../base/BaseRouter";
 
 class Router extends BaseMyRouter {
