@@ -2858,16 +2858,18 @@ class RemoteFunctionHandler {
                     stmts.push(...logicStmts);
                 }
 
-                params = params.map(param => {
-                    if (_.isEqual(param.trim(), 'id')) {
-                        return `${param} = this.getId()`;
-                    } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
-                        return `${param} = this.rawData()`;
-                    } else if (_.isEqual(param.trim(), 'restful')) {
-                        return `restful = {status: 'succeed', message: 'default reason'}`;
-                    }
-                    return param;
-                })
+                if (isWebPlatform()) {
+                    params = params.map(param => {
+                        if (_.isEqual(param.trim(), 'id')) {
+                            return `${param} = this.getId()`;
+                        } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
+                            return `${param} = this.rawData()`;
+                        } else if (_.isEqual(param.trim(), 'restful')) {
+                            return `restful = {status: 'succeed', message: 'default reason'}`;
+                        }
+                        return param;
+                    })
+                }
 
                 const pramsOfWhole = [...defaultParam, ...params];
                 const stmtsOfWhole = [...preStmts, ...stmts];
@@ -2927,7 +2929,7 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
                         ['id'],
-                        [`return this.firestoreDocRef(${node.getName()}, id)`],
+                        [`return this.firestoreDocRef(path, id)`],
                         `get item doc ref`,
                         false,
                     )

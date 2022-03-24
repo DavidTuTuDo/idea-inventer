@@ -31,21 +31,18 @@ import moment from 'moment';
     }
 
     async function subtractOneTransaction() {
-        await api.updateProductItemTransaction(`afIOihtOdfusq7x2lvHU`,
+        await api.updateTestTransaction(
             async (item, transaction) => {
-                const test = (await transaction.get(api.getTestDocRef())).data();
-                test.subTitle = test.subTitle + 1;
-                transaction.set(api.getTestDocRef(), test)
-                const old = item.count;
-
-                const latest = old - 1;
-                return {count: latest}
+                const old = item.subTitle;
+                const latest = old + 1;
+                transaction.set(api.getProductItemDocRef(),api.normalizeProduct({name:`香蕉 ${latest}`}))
+                return {subTitle: latest}
             })
     }
 
     // console.log(await api.fetchTest());
-    const pool = new InfinitePool(4);
-    await pool.runByTimes(subtractOneTransaction, 15);
+    const pool = new InfinitePool(3);
+    await pool.runByTimes(subtractOneTransaction, 6);
     // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
 
 })();

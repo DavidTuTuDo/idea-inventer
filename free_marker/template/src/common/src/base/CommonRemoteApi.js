@@ -154,7 +154,11 @@ class CommonRemoteApi {
     async updateDocumentAtomically(path, id, predict = async (collection, transaction) => collection) {
         const behavior = async (transaction) => {
             const ref = this.firestoreDocRef(path, id);
-            const collection = (await transaction.get(ref)).data();
+            const node = await transaction.get(ref);
+            if(!node.exists) {
+                throw new ERROR(9999,`document ${libpath.join(path,id)} not exist`)
+            }
+            const collection = node.data();
             const updateContent = await predict(collection, transaction);
             transaction.update(ref, updateContent);
             Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, updateContent);
@@ -234,8 +238,9 @@ class CommonRemoteApi {
         return _.isEmpty(raw) ? [] : _.orderBy(raw, ['priority'], ['desc']).map((each) => each.stmt);
     }
 
+    /** 沒有帶入id表示firebase submit document會自己generate uid(具有uuid的規則在)*/
     firestoreDocRef(path, id) {
-        if (id !== undefined)
+        if (id !== undefined && !_.isEmpty(id))
             return this.collectionRef(path).doc(_.toString(id));
         else
             return this.collectionRef(path).doc();
