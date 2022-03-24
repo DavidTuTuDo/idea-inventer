@@ -745,8 +745,8 @@ class CodegenNode {
         return Util.camel('update', this.getName(), 'item');
     }
 
-    getFunctionNameOfUpdateItemTransaction() {
-        return Util.camel('update', this.getName(), 'item', 'transaction');
+    getFunctionNameOfUpdateItemAtomically() {
+        return Util.camel('update', this.getName(), 'item', 'atomically');
     }
 
     getFunctionNameOfDeleteItem() {
@@ -2887,7 +2887,7 @@ class RemoteFunctionHandler {
                 throw new ERROR(8016)
 
             for (const child of node.getPreciseAttributeChildren()) {
-                if (_.isEqual(child, 'updateTime')) continue;
+                if (_.isEqual(child.getName(), 'updateTime')) continue;
                 if (!child.isColumnAttribute()) continue;
                 if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
@@ -2962,7 +2962,7 @@ class RemoteFunctionHandler {
                         [`return await self.updateItem(path, id , item)`], 'update item')
 
                     generateApiFunction(
-                        node.getFunctionNameOfUpdateItemTransaction(),
+                        node.getFunctionNameOfUpdateItemAtomically(),
                         ['id', 'predict = async (item,transaction) => item'],
                         [`return await self.updateItemAtomically(path,id,predict)`], 'update item atomically')
 
