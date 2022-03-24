@@ -1936,7 +1936,7 @@ class CodegenNode {
 
     /** 就是在baseStore 已經定義過了, 再gen出來會有conflict */
     isReservedAttribute() {
-        return Util.isOrEquals(this.getName(),'updateTime');
+        return Util.isOrEquals(this.getName(), 'updateTime');
     }
 
 }
@@ -1951,13 +1951,16 @@ class ClassGenerator {
     filePath = ``;
     classes = [];
     isSingletonFile = false;
+    disableExportStmt = false;
     signature = true;
     needDefaultImports = true;
     needCreatedIndexFile = false;
+
     indexClassName = 'Index';
     indexFileMacros = [];
     indexFileSingleton = false;
     indexFileTailStmts = [];
+    indexDisableExportStmt = false;
 
     constructor(path) {
         this.filePath = path;
@@ -2179,12 +2182,13 @@ class ClassGenerator {
     }
 
     /** 產出index.js 他會繼承當前的class */
-    needIndexFile(classNameOfFile = 'Index', indexFileMacro = [], singleton = false, extraTailStmts = []) {
+    needIndexFile(classNameOfFile = 'Index', indexFileMacro = [], singleton = false, extraTailStmts = [], disableExportStmt = false) {
         this.indexClassName = classNameOfFile;
         this.indexFileMacros = indexFileMacro;
         this.indexFileSingleton = singleton;
         this.indexFileTailStmts = extraTailStmts;
         this.needCreatedIndexFile = true;
+        this.indexDisableExportStmt = disableExportStmt
     }
 
     getMainClassName() {
@@ -2200,15 +2204,17 @@ class ClassGenerator {
         this.appendImport('{ utiller as Util, exceptioner as ERROR, pooller as InfinitePool }', 'utiller');
     }
 
+
     async persist() {
         const stmts = [];
         if (_.size(this.classes) === 1) {
-            if (this.isSingletonFile) {
-                stmts.push(`export default new ${this.classes[0]}()`);
-            } else {
-                stmts.push(`export default ${this.classes[0]}`);
+            if (!this.disableExportStmt) {
+                if (this.isSingletonFile) {
+                    stmts.push(`export default new ${this.classes[0]}()`);
+                } else {
+                    stmts.push(`export default ${this.classes[0]}`);
+                }
             }
-
         } else if (_.size(this.classes) > 1) {
             stmts.push(`export { ${this.classes.map((clazz => `${clazz} as ${clazz}`)).join(',')}}`);
         }
@@ -2245,6 +2251,7 @@ class ClassGenerator {
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
             index.setSingleton(this.indexFileSingleton);
             index.needSignature(false);
+            index.disableExportStmt = this.indexDisableExportStmt;
             for (const tail of this.indexFileTailStmts) {
                 index.appendInClassTail(tail);
             }
@@ -2494,7 +2501,7 @@ class StoreBuilder extends BaseBuilder {
     async buildFieldAttribute(generator, node) {
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
-            if(child.isReservedAttribute()) continue;
+            if (child.isReservedAttribute()) continue;
 
             const propStmt = [];
             const fieldName = child.getFieldName();
@@ -2916,7 +2923,7 @@ class RemoteFunctionHandler {
             if (node.hasPath()) {
                 /** 有path 才代表 這是一個遠端也有的物件 */
                 const functionNameOfNormalize = Util.camel('normalize', node.getName());
-                generator.appendFunction(functionNameOfNormalize, ['object','update = false'], [], [],
+                generator.appendFunction(functionNameOfNormalize, ['object', 'update = false'], [], [],
                     ...contents,
                     'this.handleCommitment(update, commitment, object)',
                     'return commitment'
@@ -4227,9 +4234,9 @@ class AppBuilder extends ComponentBuilder {
         }, [], [], [], `return this.navigatorRef.current`)
         appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`)
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
-        await appGenerator.needIndexFile('App', [], false, [`new App().mount()`, `module.hot.accept()`]);
-
-
+        await appGenerator.needIndexFile('App', [], false, [
+            `const self = new App().mount()`, `module.hot.accept()`, `export {self as Application};`],
+            true);
         await appGenerator.persist();
     }
 
@@ -4980,10 +4987,10 @@ class ProjectFileHandler extends PathBase {
         /** type => update|create|delete|read */
         function appendGetAfterStmts(type, node) {
             const disable = true;
-            if(disable) return '';
+            if (disable) return '';
 
             if (Util.isOrEquals(type, 'update')) {
-                const path = libpath.join('/databases/$(database)/documents',Util.getStringOfPop(getFirestoreRoute(node),`\/`),
+                const path = libpath.join('/databases/$(database)/documents', Util.getStringOfPop(getFirestoreRoute(node), `\/`),
                     `$(request.resource.id)`)
                 const getAfter = `getAfter(${path})`;
                 const stmt = `&& ${getAfter}.data.updateTime == request.time`;
@@ -5653,7 +5660,7 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                projectRootPath: './project-yueh-pu',
+                projectRootPath: './project-davidtu-dev',
             }
             const builder = new BuildApplication(props)
 
