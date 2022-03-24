@@ -11,6 +11,8 @@ class CommonStyle {
 
   /** => following for main editor component  */
 
+  MainEditorProductUpdateTimeTextField = {};
+
   MainEditorProductColorTextField = {};
 
   MainEditorProductCountTextField = {};
@@ -66,6 +68,8 @@ class CommonStyle {
   NavigatorDiv = {};
 
   /** => following for main  component  */
+
+  MainProductUpdateTimeTypography = {};
 
   MainProductColorTypography = {};
 

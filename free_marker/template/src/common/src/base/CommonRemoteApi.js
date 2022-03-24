@@ -155,8 +155,8 @@ class CommonRemoteApi {
         const behavior = async (transaction) => {
             const ref = this.firestoreDocRef(path, id);
             const node = await transaction.get(ref);
-            if(!node.exists) {
-                throw new ERROR(9999,`document ${libpath.join(path,id)} not exist`)
+            if (!node.exists) {
+                throw new ERROR(9999, `document ${libpath.join(path, id)} not exist`)
             }
             const collection = node.data();
             const updateContent = await predict(collection, transaction);
@@ -448,6 +448,19 @@ class CommonRemoteApi {
         await this.fetchUserIsExist(uid);
     }
 
+    handleCommitment(update, commitment, object) {
+        if (update) {
+            for (const key in commitment) {
+                if (key in object) {
+                    /** 保留屬性 */
+                } else if (_.isEqual(key, 'updateTime')) {
+                    /** 保留屬性 */
+                } else {
+                    delete commitment[key];
+                }
+            }
+        }
+    }
 
 }
 

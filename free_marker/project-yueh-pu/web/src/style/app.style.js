@@ -11,6 +11,8 @@ class AppStyle {
 
   /** => following for main editor component  */
 
+  MainEditorProductUpdateTimeTextField = {};
+
   MainEditorProductColorTextField = {};
 
   MainEditorProductCountTextField = {};
@@ -66,6 +68,8 @@ class AppStyle {
   NavigatorDiv = {};
 
   /** => following for main  component  */
+
+  MainProductUpdateTimeTypography = {};
 
   MainProductColorTypography = {};
 

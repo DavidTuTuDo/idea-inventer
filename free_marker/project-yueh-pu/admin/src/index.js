@@ -41,10 +41,10 @@ import moment from 'moment';
     }
 
     // console.log(await api.fetchTest());
-    const pool = new InfinitePool(3);
-    await pool.runByTimes(subtractOneTransaction, 2);
+    // const pool = new InfinitePool(3);
+    // await pool.runByTimes(subtractOneTransaction, 2);
     // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
-
+    await api.updateProductItem(`1XaPnxHNVa6yLpXoesrB`,api.normalizeProduct({name:2},true))
 })();
 
 

@@ -1934,6 +1934,11 @@ class CodegenNode {
         this.appendChildren(child);
     }
 
+    /** 就是在baseStore 已經定義過了, 再gen出來會有conflict */
+    isReservedAttribute() {
+        return Util.isOrEquals(this.getName(),'updateTime');
+    }
+
 }
 
 class ClassGenerator {
@@ -2489,6 +2494,8 @@ class StoreBuilder extends BaseBuilder {
     async buildFieldAttribute(generator, node) {
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
+            if(child.isReservedAttribute()) continue;
+
             const propStmt = [];
             const fieldName = child.getFieldName();
             const defaultValue = child.getDefaultValueByType();
@@ -2887,7 +2894,7 @@ class RemoteFunctionHandler {
                 throw new ERROR(8016)
 
             for (const child of node.getPreciseAttributeChildren()) {
-                if (_.isEqual(child.getName(), 'updateTime')) continue;
+                if (child.isReservedAttribute()) continue;
                 if (!child.isColumnAttribute()) continue;
                 if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
@@ -2909,8 +2916,9 @@ class RemoteFunctionHandler {
             if (node.hasPath()) {
                 /** 有path 才代表 這是一個遠端也有的物件 */
                 const functionNameOfNormalize = Util.camel('normalize', node.getName());
-                generator.appendFunction(functionNameOfNormalize, ['object'], [], [],
+                generator.appendFunction(functionNameOfNormalize, ['object','update = false'], [], [],
                     ...contents,
+                    'this.handleCommitment(update, commitment, object)',
                     'return commitment'
                 )
 

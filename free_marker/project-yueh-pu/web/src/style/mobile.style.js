@@ -11,6 +11,8 @@ class MobileStyle {
 
   /** => following for main editor component  */
 
+  MainEditorProductUpdateTimeTextField = {};
+
   MainEditorProductColorTextField = {};
 
   MainEditorProductCountTextField = {};
@@ -66,6 +68,8 @@ class MobileStyle {
   NavigatorDiv = {};
 
   /** => following for main  component  */
+
+  MainProductUpdateTimeTypography = {};
 
   MainProductColorTypography = {};
 
