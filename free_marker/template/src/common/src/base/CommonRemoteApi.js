@@ -151,20 +151,20 @@ class CommonRemoteApi {
             }
      *
      * */
-    async updateDocumentTransaction(path, id, predict = (item) => item) {
+    async updateDocumentAtomically(path, id, predict = async (collection, transaction) => collection) {
         const behavior = async (transaction) => {
             const ref = this.firestoreDocRef(path, id);
-            const item = (await transaction.get(ref)).data();
-            const updateItem = predict(item);
-            await transaction.update(ref, updateItem);
-            Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, updateItem);
+            const collection = (await transaction.get(ref)).data();
+            const updateContent = await predict(collection, transaction);
+            transaction.update(ref, updateContent);
+            Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, updateContent);
 
         }
         return await this.runTransaction(behavior);
     }
 
-    async updateItemTransaction(path, id, predict = (item) => item) {
-        return await this.updateDocumentTransaction(path, id, predict);
+    async updateItemAtomically(path, id, predict = (item, transaction) => item) {
+        return await this.updateDocumentAtomically(path, id, predict);
     }
 
     async deleteItem(path, id) {
@@ -304,8 +304,8 @@ class CommonRemoteApi {
         return await this.firestoreDocRef(path, objName).update(updatedObject);
     }
 
-    async updateObjectTransaction(path, objName, predict = (object) => object) {
-        return await this.updateDocumentTransaction(path, objName, predict);
+    async updateObjectAtomically(path, objName, predict = (object, transaction) => object) {
+        return await this.updateDocumentAtomically(path, objName, predict);
     }
 
     async deleteObject(path, objName) {

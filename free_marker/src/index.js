@@ -2838,19 +2838,26 @@ class RemoteFunctionHandler {
                 return [];
             }
 
-            function generateApiFunction(name, params = [], logicStmts = [], type) {
+            function generateApiFunction(name, params = [], logicStmts = [], type, isAsync = true) {
                 const defaultParam = node.getParamsOfPath(self.platform);
                 const preStmts = [
                     `const self = this`,
                     `const path = \`${node.getPathOfRouterString()}\``
                 ];
-                const stmts = [`const task = async () => {`];
-                stmts.push(...logicStmts);
-                stmts.push(`}`);
-                if (isWebPlatform())
-                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', path${appendViewInParamStmt()})`)
-                else
-                    stmts.push(`return await task()`);
+
+                let stmts = [];
+                if (isAsync) {
+                    stmts.push(`const task = async () => {`)
+                    stmts.push(...logicStmts);
+                    stmts.push(`}`);
+                    if (isWebPlatform())
+                        stmts.push(`return await self.runUIAsyncTask(task, '${type}', path${appendViewInParamStmt()})`)
+                    else
+                        stmts.push(`return await task()`);
+                } else {
+                    stmts.push(...logicStmts);
+                }
+
                 params = params.map(param => {
                     if (_.isEqual(param.trim(), 'id')) {
                         return `${param} = this.getId()`;
@@ -2861,8 +2868,17 @@ class RemoteFunctionHandler {
                     }
                     return param;
                 })
-                generator.appendAsyncFunction(name, [...defaultParam, ...params], [], [],
-                    ...[...preStmts, ...stmts])
+
+                const pramsOfWhole = [...defaultParam, ...params];
+                const stmtsOfWhole = [...preStmts, ...stmts];
+                if (isAsync) {
+                    generator.appendAsyncFunction(name, pramsOfWhole, [], [],
+                        ...stmtsOfWhole)
+                } else {
+                    generator.appendFunction(name, pramsOfWhole, [], [],
+                        ...stmtsOfWhole)
+                }
+
             }
 
             if (generator === undefined)
@@ -2896,6 +2912,7 @@ class RemoteFunctionHandler {
                     'return commitment'
                 )
 
+
                 if (node.isArray()) {
                     if (isWebPlatform() && node.hasPaginate()) {
                         generator.appendField('sizeOfPerPage', node.getPaginateSize(), [], [], 'static')
@@ -2907,6 +2924,13 @@ class RemoteFunctionHandler {
                             `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...startAfterConditions', '...conditions')})`
                         )
                     }
+
+                    generateApiFunction(Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
+                        ['id'],
+                        [`return this.firestoreDocRef(${node.getName()}, id)`],
+                        `get item doc ref`,
+                        false,
+                    )
 
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
@@ -2937,8 +2961,8 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(
                         node.getFunctionNameOfUpdateItemTransaction(),
-                        ['id', 'predict'],
-                        [`return await self.updateItemTransaction(path,id,predict)`], 'update item transaction')
+                        ['id', 'predict = async (item,transaction) => item'],
+                        [`return await self.updateItemAtomically(path,id,predict)`], 'update item atomically')
 
                     generateApiFunction(
                         node.getFunctionNameOfDeleteItem(),
@@ -2973,6 +2997,13 @@ class RemoteFunctionHandler {
 
                 } else if (node.isObject()) {
                     generateApiFunction(
+                        Util.camel('get', node.getName(), 'doc', 'ref'),
+                        [],
+                        [`return this.firestoreDocRef(path,'${node.getName()}')`],
+                        `get object doc ref`,
+                        false)
+
+                    generateApiFunction(
                         Util.camel(node.getFunctionNameOfSubmit()),
                         [`object`],
                         [
@@ -2996,8 +3027,8 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(
                         Util.camel('update', node.getFieldName(), 'transaction'),
-                        [`predict`],
-                        [`return await self.updateObjectTransaction(path, '${node.getName()}',predict)`], `update object transaction`);
+                        [`predict = async (object,transaction) => object`],
+                        [`return await self.updateObjectAtomically(path, '${node.getName()}',predict)`], `update object atomically`);
 
                     generateApiFunction(
                         Util.camel('delete', node.getFieldName()),
@@ -5358,7 +5389,7 @@ class ProjectFileHandler extends PathBase {
                 keyword: 'png'
             }, ...this.getIgnoredFilesByPlatform()
         );
-        if(this.isWebPlatform()){
+        if (this.isWebPlatform()) {
             await new AppBuilder(this.props).overrideLessFile();
         }
 

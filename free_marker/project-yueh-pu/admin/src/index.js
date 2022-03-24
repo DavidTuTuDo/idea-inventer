@@ -32,10 +32,11 @@ import moment from 'moment';
 
     async function subtractOneTransaction() {
         await api.updateProductItemTransaction(`afIOihtOdfusq7x2lvHU`,
-            (item) => {
+            async (item, transaction) => {
+                const test = (await transaction.get(api.getTestDocRef())).data();
+                test.subTitle = test.subTitle + 1;
+                transaction.set(api.getTestDocRef(), test)
                 const old = item.count;
-                if (old <= 20)
-                    throw new ERROR(9999,'不能小於85');
 
                 const latest = old - 1;
                 return {count: latest}
@@ -43,8 +44,8 @@ import moment from 'moment';
     }
 
     // console.log(await api.fetchTest());
-    // const pool = new InfinitePool(4);
-    // await pool.runByTimes(subtractOneTransaction, 11);
+    const pool = new InfinitePool(4);
+    await pool.runByTimes(subtractOneTransaction, 15);
     // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
 
 })();
