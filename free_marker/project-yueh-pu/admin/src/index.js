@@ -31,7 +31,7 @@ import moment from 'moment';
     }
 
     async function subtractOneTransaction() {
-        await api.updateTestTransaction(
+        await api.updateTestAtomically(
             async (item, transaction) => {
                 const old = item.subTitle;
                 const latest = old + 1;
@@ -42,7 +42,7 @@ import moment from 'moment';
 
     // console.log(await api.fetchTest());
     const pool = new InfinitePool(3);
-    await pool.runByTimes(subtractOneTransaction, 6);
+    await pool.runByTimes(subtractOneTransaction, 2);
     // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
 
 })();

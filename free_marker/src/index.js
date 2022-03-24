@@ -3028,7 +3028,7 @@ class RemoteFunctionHandler {
                         [`return await self.updateObject(path, '${node.getName()}',object)`], `update object`);
 
                     generateApiFunction(
-                        Util.camel('update', node.getFieldName(), 'transaction'),
+                        Util.camel('update', node.getFieldName(), 'atomically'),
                         [`predict = async (object,transaction) => object`],
                         [`return await self.updateObjectAtomically(path, '${node.getName()}',predict)`], `update object atomically`);
 
