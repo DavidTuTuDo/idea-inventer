@@ -33,7 +33,13 @@ import {databazer as SQL} from 'databazer';
                         const obj = {}
                         obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
                         await database.lazyInsertRecord(tableName,
-                            {name: each.name, singer: each.singer.name, updateTime: _.now(), ...obj}, 'name', 'singer');
+                            {
+                                url: each.url,
+                                singerUrl: each.singer.pageUrl,
+                                name: each.name,
+                                singer: each.singer.name,
+                                updateTime: _.now(), ...obj
+                            }, 'url');
                     }
                 }
             }
@@ -195,8 +201,16 @@ import {databazer as SQL} from 'databazer';
                     await database.updateState('SINGER', 'ING', singer.uid);
                     const songs = await fetchSongsOfSingersPage(path.join(Config.BASE_URL, singer.url));
                     for (const song of songs) {
+                        if(Util.isUndefinedNullEmpty(song.url)) continue;
+
                         await database.lazyInsertRecord('SONG',
-                            {...song, state: 'NOT', singer: singer.name}, 'name', 'singer');
+                            {
+                                ...song,
+                                state: 'NOT',
+                                singer: singer.name,
+                                singerId: singer.uid,
+                                singerUrl: singer.url
+                            }, 'url');
                         Util.appendInfo(`正在儲存歌手 '${singer.name}' 的歌 '${song.name}' `);
                     }
                     const cost = _.now() - start;
@@ -233,8 +247,12 @@ import {databazer as SQL} from 'databazer';
                             const cost = _.now() - start;
                             await database.lazyInsertRecord('TONE', {
                                 ...tone,
+                                url: song.url,
+                                songId: song.uid,
+                                singerId:song.singerId,
+                                singerUrl:song.singerUrl,
                                 cost
-                            }, 'name', 'singer');
+                            }, 'url');
                             await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
                             Util.appendInfo(`成功儲存TONE '${tone.name}' .....`)
                             return true;
@@ -309,7 +327,7 @@ import {databazer as SQL} from 'databazer';
              * */
             for (const singer of singers) {
                 await database.lazyInsertRecord('SINGER',
-                    {...singer, state: 'NOT'}, 'name', 'names');
+                    {...singer, state: 'NOT'}, 'url');
             }
         }
 
@@ -335,7 +353,7 @@ import {databazer as SQL} from 'databazer';
                 pool.setDisableFirstRun(disableFirstRun);
                 pool.runInfiniteInBackground(asyncTask,
                     period);
-                pool.enableTaskTimeout(true, twoMin);
+                pool.enableTaskTimeout(true, tenMin);
                 pool.setTaskFailHandler(errorHandler);
                 poollers.push(pool);
                 return pool;
@@ -357,20 +375,23 @@ import {databazer as SQL} from 'databazer';
             const fiveMin = 5 * oneMin;
             const threeMin = 3 * oneMin;
             const tenMin = 10 * oneMin;
+            const twentyMin = 2 * tenMin;
+            const halfHour = 3 * tenMin;
+            const oneHour = 2 * halfHour;
 
 
             /** 抓所有歌手 */
-            // joinTaskToPool(1, "SINGER FETCHER", true, persistSingers, threeMin);
+            // joinTaskToPool(1, "SINGER FETCHER", false, persistSingers, oneHour);
             /** 抓取排行版上的資訊們 */
-            joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, oneMin);
+            // joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
-            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
-            // // /** 猛抓LATEST TABLE的歌曲*/
-            joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, oneMin);
-            // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            joinTaskToPool(3, "TONE FETCHER", true, persistTone, tenSecs);
-            // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            // joinTaskToPool(10, "SONG FETCHER", false, persistSongs, tenSecs);
+            joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
+            /** 猛抓LATEST TABLE的歌曲*/
+            // joinTaskToPool(1, "LATEST SONG FETCHER", true, latestSongPersist, twentyMin);
+            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+            joinTaskToPool(5, "TONE FETCHER", true, persistTone, tenSecs);
+            /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+            joinTaskToPool(3, "SONG FETCHER", false, persistSongs, tenSecs);
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)

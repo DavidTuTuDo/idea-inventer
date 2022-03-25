@@ -23,6 +23,7 @@ const KEYWORD_OF_MODULARIZED = 'Modularized';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
+const CURRENT_PROJECT = './project-yueh-pu';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -5660,7 +5661,7 @@ if (configerer.DEBUG_MODE) {
 
     (async () => {
             const props = {
-                projectRootPath: './project-yueh-pu',
+                projectRootPath: CURRENT_PROJECT,
             }
             const builder = new BuildApplication(props)
 
