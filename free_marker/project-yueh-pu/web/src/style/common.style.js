@@ -11,31 +11,23 @@ class CommonStyle {
 
   /** => following for main editor component  */
 
-  MainEditorProductUpdateTimeTextField = {};
+  MainEditorWeekPopularIdOfSingerTextField = {};
 
-  MainEditorProductColorTextField = {};
+  MainEditorWeekPopularIdOfToneTextField = {};
 
-  MainEditorProductCountTextField = {};
+  MainEditorWeekPopularIndexOfSequenceTextField = {};
 
-  MainEditorProductNameTextField = {};
+  MainEditorWeekPopularSingerTextField = {};
 
-  MainEditorProductIdTextField = {};
+  MainEditorWeekPopularNameTextField = {};
 
-  MainEditorProductDivListWrap = {};
+  MainEditorWeekPopularDivListWrap = {};
 
-  MainEditorProductDivList = {};
+  MainEditorWeekPopularDivList = {};
 
-  MainEditorProductDivWrap = {};
+  MainEditorWeekPopularDivWrap = {};
 
-  MainEditorProductDiv = {};
-
-  MainEditorTestSubTitleTextField = {};
-
-  MainEditorTestTitleTextField = {};
-
-  MainEditorTestDivWrap = {};
-
-  MainEditorTestDiv = {};
+  MainEditorWeekPopularCard = {};
 
   MainEditorDiv = {};
 
@@ -67,29 +59,29 @@ class CommonStyle {
 
   NavigatorDiv = {};
 
+  /** => following for rhythm  component  */
+
+  RhythmGuitarpuContextTypography = {};
+
+  RhythmGuitarpuDivList = {};
+
+  RhythmGuitarpuPaper = {};
+
+  RhythmPaper = {};
+
   /** => following for main  component  */
 
-  MainProductUpdateTimeTypography = {};
+  MainWeekPopularIndexOfSequenceTypography = {};
 
-  MainProductColorTypography = {};
+  MainWeekPopularSingerTypography = {};
 
-  MainProductCountTypography = {};
+  MainWeekPopularNameTypography = {};
 
-  MainProductNameTypography = {};
+  MainWeekPopularDivListWrap = {};
 
-  MainProductIdTypography = {};
+  MainWeekPopularDivList = {};
 
-  MainProductDivListWrap = {};
-
-  MainProductDivList = {};
-
-  MainProductDiv = {};
-
-  MainTestSubTitleTypography = {};
-
-  MainTestTitleTypography = {};
-
-  MainTestDiv = {};
+  MainWeekPopularCard = {};
 
   MainDiv = {};
 

@@ -27,6 +27,12 @@ class MainComponent extends BaseMainComponent {
   constructor(props) {
     super(props);
   }
+
+  onMainWeekPopularCardClicked(param) {
+    const song = param.object;
+    Router.gotoRhythmDetailPage(this,song.getIdOfTone())
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default MainComponent;

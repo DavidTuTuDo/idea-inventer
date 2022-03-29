@@ -1,4 +1,4 @@
-import BaseMainTestStore from "./BaseMainTestStore";
+import BaseRhythmStore from "./BaseRhythmStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -10,6 +10,7 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
 import {
   makeAutoObservable,
   makeObservable,
@@ -20,9 +21,10 @@ import {
   autorun,
   runInAction,
 } from "mobx";
+import Guitarpu from "../rhythmGuitarpu";
 import BaseStore from "../../base/BaseStore";
 
-class MainTestStore extends BaseMainTestStore {
+class RhythmStore extends BaseRhythmStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -31,4 +33,4 @@ class MainTestStore extends BaseMainTestStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainTestStore;
+export default RhythmStore;

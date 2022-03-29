@@ -1,4 +1,4 @@
-import BaseMainStore from "./BaseMainStore";
+import BaseRhythmGuitarpuStore from "./BaseRhythmGuitarpuStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,16 +21,16 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import WeekPopular from "../mainWeekPopular";
 import BaseStore from "../../base/BaseStore";
 
-class MainStore extends BaseMainStore {
+class RhythmGuitarpuStore extends BaseRhythmGuitarpuStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
+
   /** -------------------- async api -------------------- **/
 }
-export default MainStore;
+export default RhythmGuitarpuStore;

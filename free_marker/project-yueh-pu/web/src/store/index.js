@@ -14,7 +14,6 @@ import NavigatorCredential from "./navigatorCredential";
 import NavigatorAppBarToolBar from "./navigatorAppBarToolBar";
 import NavigatorAppBar from "./navigatorAppBar";
 import Navigator from "./navigator";
-import MainTest from "./mainTest";
 import Main from "./main";
 
 class Store extends BaseStore {

@@ -20,7 +20,7 @@ import moment from 'moment';
     /** 找出週 rank 對應的tone*/
     async function deployWeekPopular() {
         await api.deleteWeekPopulars(true);
-        await api.deleteRhythms(true);
+        await api.deleteGuitarpus(true);
 
         const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
         await database.init();
@@ -35,7 +35,7 @@ import moment from 'moment';
 
         for (const each of tones) {
             /** get uid after submit tone */
-            const result = await api.submitRhythmItem({context: each.tone});
+            const result = await api.submitGuitarpuItem({context: each.tone});
             if (result.succeed) {
                 const item = result.value;
                 const idOfTone = item.id;
@@ -43,7 +43,7 @@ import moment from 'moment';
                 await api.submitWeekPopulars({
                     name:song.name,
                     singer:song.singer,
-                    indexOfOrder:song.week,
+                    indexOfSequence:song.WEEK,
                     idOfTone,
                 })
             }
@@ -51,7 +51,15 @@ import moment from 'moment';
         }
     }
 
-    await deployWeekPopular();
+    async function printRawText() {
+        const encrypt = await api.fetchGuitarpuItem('rlgeVPBbAAD5r4DIkiaL');
+        const decrypt = Util.getDecryptString(encrypt.context);
+        console.log(decrypt);
+        Util.appendFile('./pu.raw',decrypt,true,true);
+    }
+
+    // await deployWeekPopular();
+    await printRawText();
     // Util.getStringOfPop(undefined,',');
 })();
 

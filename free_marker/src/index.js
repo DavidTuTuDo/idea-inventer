@@ -3160,6 +3160,10 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
         }
 
+        if(componentNode.detailPage) {
+            baseGenerator.appendConstructor(`this.setUidOfDetail(this.props.match.params.uidOfDetail)`);
+        }
+
         if (!componentNode.useInjectStore) {
             const storeName = componentNode.getPreciseStoreName();
             baseGenerator.appendImport(`${_.upperFirst(storeName)}Store`, `../../store/${storeName}`)
