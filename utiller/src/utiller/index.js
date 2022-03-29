@@ -260,6 +260,11 @@ class Utiller {
         return result;
     }
 
+    /** 拿前面n個items */
+    getArrayOfSize(array, n) {
+        return _.slice(array, 0, n);
+    }
+
     getShuffledArrayWithLimitCount(arr, n) {
         let shuffled = _.shuffle(arr);
         return shuffled.slice(0, n);
@@ -1068,11 +1073,66 @@ class Utiller {
         segments.shift();
         return segments.join(separator);
     }
+
+    /**
+     * array = [{name:'david',id:'kfgijifd'},{name:'serena',id:'kdffof'}....]
+     * attrKeyOfPK = 'id'
+     * result => { kfgijifd: {name:'david',id:'kfgijifd'}, kdffof:{name:'serena',id:'kdffof'} }
+     * */
+    toObjectWithAttributeKey(array, attrKeyOfPK) {
+        const object = {}
+        for (const each of array) {
+            const pk = each[attrKeyOfPK];
+            if (this.isUndefinedNullEmpty(pk)) {
+                throw new ERROR(9999, `48157232 pk can't be empty => '${pk}'`);
+            }
+            object[pk] = each;
+        }
+        return object;
+    }
+
+    /** others returns  [{logic:true|false,message:'oops'}]
+     *  */
+    constraintOfParam(collection, type, ...others) {
+        let result = false;
+        const validOfOthersCondition = _.isEmpty(others) ? true : this.and(...others.map(each => each.logic));
+
+        switch (type) {
+            case 'array':
+                if (_.isArray(collection) && validOfOthersCondition)
+                    result = true;
+                break;
+            case 'object':
+                if (_.isObject(collection) && validOfOthersCondition)
+                    result = true;
+                break;
+            case 'string':
+                if (_.isString(collection) && validOfOthersCondition)
+                    result = true;
+                break;
+            case 'number':
+                if (_.isNumber(collection) && validOfOthersCondition)
+                    result = true;
+                break;
+            case 'other':
+                if (validOfOthersCondition)
+                    return true
+        }
+
+        const stringOfRules = _.isEmpty(others) ? '' : `, ${others.map(each => each.message).join(' | ')}`
+
+        if (result === false) {
+            throw new ERROR(9999, `7474423 type should be ${type} but get '${typeof type}' ${stringOfRules} `)
+        }
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const util = new Utiller();
+            // console.log('why ==> ',new ERROR(1234))
+            // util.getStringOfPop([],',');
+            // util.constraintOfParam([], 'array',{logic:_.size([]) > 1, message:'should larger than 1'});
             // const obj1 = {a:1,b:4,c:3,d:8};
             // const obj2 = {a:1,b:4,c:3};
             // console.log(util.isContainAndEqual(obj1,obj2))

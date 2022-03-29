@@ -1,7 +1,7 @@
 import {configerer as GlobalConfig} from 'configerer';
-import Util from "../utiller/index.js";
 import ERRORs from './ERRORs';
-const utiller = new Util();
+import {utiller as Util} from '../index.js';
+import _ from 'lodash';
 
 class MyException extends Error {
 
@@ -11,20 +11,20 @@ class MyException extends Error {
             throw new MyException(9999, `code ''${code}'' is not define in ERRORs.js`);
         }
         super(`${error.message}`);
-        this.uid = utiller.getRandomValue(0, 100000000000);
+        this.uid = Util.getRandomValue(0, 100000000000);
         this.code = code;
         this.infos = '';
         this._msg = error.message;
 
         for (const info of infos) {
             if (info !== undefined)
-                this.infos += ('##') + ' ' + utiller.getAttrValueInSequence(info, 'message', 'msg');
+                this.infos += ('##') + ' ' + Util.getAttrValueInSequence(info, 'message', 'msg');
         }
 
         this.message = `UID:${this.uid}  CODE:${this.code}  REASON:${this._msg}  INFO:${this.infos}`;
 
         if (GlobalConfig.MODULE_MSG.SHOW_ERROR)
-            utiller.appendError(this.message);
+            Util.appendError(this.message);
 
     }
 

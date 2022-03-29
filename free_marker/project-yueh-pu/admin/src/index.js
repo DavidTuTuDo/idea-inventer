@@ -11,40 +11,48 @@ import moment from 'moment';
 
 
 (async () => {
-    console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`)
 
     const api = new Api();
     const listener = new Listener();
-    // await api.submitProductItem({
-    //     name:'小狗',
-    //     count:10,
-    //     color:'黑色',
-    // })
 
-    async function subtractOne() {
-        const item = await api.fetchProductItem(`afIOihtOdfusq7x2lvHU`);
-        console.log('取得 item=>', item);
-        item.count = item.count - 1;
-        const updateContent = {count: item.count - 1};
-        await api.updateProductItem(`afIOihtOdfusq7x2lvHU`, updateContent);
-        console.log('update item=>', updateContent);
+    /** 找出週 rank*/
+
+    /** 找出週 rank 對應的tone*/
+    async function deployWeekPopular() {
+        await api.deleteWeekPopulars(true);
+        await api.deleteRhythms(true);
+
+        const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
+        await database.init();
+        const top100 = Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK', new Builder().gt('WEEK', 0).stmt()), (each) => each.WEEK, 'ASC'), 100);
+        console.log('top100 count => ', _.size(top100));
+
+        const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
+        console.log(_.size(mapOfUrlNContent));
+        const urls = top100.map((each) => each.url)
+        const tones = await database.fetchRecords('TONE', new Builder().in('url', ...urls).stmt());
+        console.log('tones count => ', _.size(tones));
+
+        for (const each of tones) {
+            /** get uid after submit tone */
+            const result = await api.submitRhythmItem({context: each.tone});
+            if (result.succeed) {
+                const item = result.value;
+                const idOfTone = item.id;
+                const song = mapOfUrlNContent[each.url];
+                await api.submitWeekPopulars({
+                    name:song.name,
+                    singer:song.singer,
+                    indexOfOrder:song.week,
+                    idOfTone,
+                })
+            }
+            /** submit weekPopular with tone uid */
+        }
     }
 
-    async function subtractOneTransaction() {
-        await api.updateTestAtomically(
-            async (item, transaction) => {
-                const old = item.subTitle;
-                const latest = old + 1;
-                transaction.set(api.getProductItemDocRef(),api.normalizeProduct({name:`香蕉 ${latest}`}))
-                return {subTitle: latest}
-            })
-    }
-
-    // console.log(await api.fetchTest());
-    // const pool = new InfinitePool(3);
-    // await pool.runByTimes(subtractOneTransaction, 2);
-    // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
-    await api.updateProductItem(`1XaPnxHNVa6yLpXoesrB`,api.normalizeProduct({name:2},true))
+    await deployWeekPopular();
+    // Util.getStringOfPop(undefined,',');
 })();
 
 

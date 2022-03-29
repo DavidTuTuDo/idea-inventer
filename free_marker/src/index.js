@@ -20,9 +20,11 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
 const KEYWORD_OF_MODULARIZED = 'Modularized';
+const KEYWORD_OF_UID_OF_DETAIL= 'uidOfDetail';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
+
 const CURRENT_PROJECT = './project-yueh-pu';
 /** source.js 是專有名詞的概念*/
 
@@ -67,6 +69,11 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    needDetail;
+    /** 當type === array, 而且想獲得uidOfDetail,必須加上這個屬性*/
+    detailPage;
+    /** 想要產出path/{uidOfDetail}/的概念*/
 
     genRootPath
     /** 專案產出的位置 */
@@ -2583,6 +2590,18 @@ class StoreBuilder extends BaseBuilder {
             return stmts;
         }
 
+        function getStmtOfFetchByDetail(node) {
+            const stmt = []
+            if (node.needDetail) {
+                stmt.push(
+                    `if(view.isDetailPage()){`,
+                    ` const item = await this.${node.getFunctionNameOfFetchItem()}(view, view.getUidOfDetail());`,
+                    `return [item]`,
+                    `}`)
+            }
+            return stmt
+        }
+
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
@@ -2620,6 +2639,7 @@ class StoreBuilder extends BaseBuilder {
         } else if (node.isPathArray()) {
             baseGenerator.appendAsyncFunction('fetch',
                 [...node.getParamsOfPath('web', '...conditions')], [], [],
+                ...getStmtOfFetchByDetail(node),
                 `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...conditions')})`);
         }
 
@@ -4108,6 +4128,28 @@ class AppBuilder extends ComponentBuilder {
             return stmts;
         }
 
+        function appendGotoFunction(generator, nodeOfComponent, isDetail = false) {
+            const route = libpath.join(nodeOfComponent.getPathOfRouterString(),
+                isDetail ? `\$\{${KEYWORD_OF_UID_OF_DETAIL}\}` : '',
+                nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
+            )
+
+            generator.appendFunction({
+                    name: Util.camel('goto', nodeOfComponent.name,
+                        nodeOfComponent.isEditPage() ? 'editor' : '',
+                        isDetail ? 'detail' : '', 'page'),
+                    arrow: true
+                },
+                ['component', ...nodeOfComponent.getParamsOfPath('route'), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
+                [],
+                [],
+                ...appendLoginStmts(nodeOfComponent),
+                `const route = \`${route}\``,
+                `this.routeTo(component, route);`,
+                `return libpath.join(Config.host,route);`
+            )
+        }
+
         const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
             `router`,
             `BaseMyRouter.js`
@@ -4121,18 +4163,11 @@ class AppBuilder extends ComponentBuilder {
 
         for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
-            baseRouterGenerator.appendFunction({
-                    name: Util.camel('goto', component.name, component.isEditPage() ? 'editor' : '', 'page'),
-                    arrow: true
-                },
-                ['component', ...component.getParamsOfPath('route')],
-                [],
-                [],
-                ...appendLoginStmts(component),
-                `const route = \`${component.getPathOfRouterString()}${component.routeHash ? `/\${Util.getRandomHash(15)}` : ``}\``,
-                `this.routeTo(component, route);`,
-                `return libpath.join(Config.host,route);`
-            )
+
+            appendGotoFunction(baseRouterGenerator, component);
+            if (component.detailPage) {
+                appendGotoFunction(baseRouterGenerator, component, true);
+            }
         }
         baseRouterGenerator.needIndexFile('Router', [], true);
         await baseRouterGenerator.persist();
@@ -4176,13 +4211,15 @@ class AppBuilder extends ComponentBuilder {
             );
             this.removeJSXSign(renderStmts);
 
+            const path = libpath.join(component.path, component.detailPage ? `:${KEYWORD_OF_UID_OF_DETAIL}?` : '');
+
             childrenStmt.push(...this.getJSXStrings({
                 tag: `Route`,
                 generator: appGenerator,
                 props: {
 
                     exact: component.isRootPath() ? true : undefined,
-                    path: component.path,
+                    path: path,
                     render: `###(props) =>
                      ${renderStmts.join('')}`,
                     /** component: `###${_.upperFirst(component.name)}`, */
@@ -4236,7 +4273,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`)
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
         await appGenerator.needIndexFile('App', [], false, [
-            `const self = new App().mount()`, `module.hot.accept()`, `export {self as Application};`],
+                `const self = new App().mount()`, `module.hot.accept()`, `export {self as Application};`],
             true);
         await appGenerator.persist();
     }
