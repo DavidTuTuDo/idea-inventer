@@ -32,9 +32,22 @@ class RhythmComponent extends BaseRhythmComponent {
     getGuitarpuContext(guitarpu) {
         const encrypt = super.getGuitarpuContext(guitarpu);
         const decrypt = Util.getDecryptString(encrypt);
-        const normalize = _.replace(decrypt, new RegExp(` `, `gm`), ` `);
-        return normalize;
+        return decrypt;
     }
+
+
+
+    getStringOfHidingChord(context) {
+        const segments = _.split(context, '\n');
+        _.remove(segments,(each) => this.isGuitarChordParagraph(each));
+        return segments.join('\n');
+    }
+
+    /** 檢查這條訊息是吉他Chord*/
+     isGuitarChordParagraph(string) {
+        return _.size(Util.indexesOf(string, '|')) > 1
+    }
+
 
     /** -------------------- async api -------------------- **/
 }
