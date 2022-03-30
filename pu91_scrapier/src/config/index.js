@@ -73,7 +73,7 @@ const Config = {
     RANK_TABLE_TYPE: {
         FAVORITE: {ID: 3},
         LATEST: {ID: 2},
-        POPULAR: {ID: 1, SORT: {YEAR: 5, SEASON: 4, MONTH: 3, WEEK: 2, DAY: 1}},
+        POPULAR: {ID: 1, SORT: {YEAR: 1, SEASON: 2, MONTH: 3, WEEK: 4, DAY: 5}},
 
     },
     MAX_COUNTS_IN_RANK: 1000, RANK_TABLE_NAME: 'RANK', DATABASE_COLUMN_STATE: ['FAIL','DONE', 'ING', 'NOT'],

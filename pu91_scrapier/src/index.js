@@ -385,13 +385,13 @@ import {databazer as SQL} from 'databazer';
             // /** 抓取排行版上的資訊們 */
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
-            joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
-            /** 猛抓LATEST TABLE的歌曲*/
+            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
+            // /** 猛抓LATEST TABLE的歌曲*/
             joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
-            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            joinTaskToPool(10, "TONE FETCHER", true, persistTone, tenSecs);
-            /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
-            joinTaskToPool(10, "SONG FETCHER", false, persistSongs, tenSecs);
+            // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+            joinTaskToPool(5, "TONE FETCHER", true, persistTone, tenSecs);
+            // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+            // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
