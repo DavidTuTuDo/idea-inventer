@@ -377,6 +377,18 @@ class Utiller {
         return after
     }
 
+    /** 就是用address去找出current index(比較內文要用findIndex),然後取代之
+     * array = ['a','b','c'];
+     * current = array[1] === 'b'
+     * latest = 'd'
+     *
+     * return ['a','d','c']
+     * */
+    replaceArrayByContentIndex(array, current, latest) {
+        const index = _.indexOf(array, current);
+        array[index] = latest;
+    }
+
     getRandomValue = (min, max) => {
         min = Math.ceil(min);
         max = Math.floor(max);
@@ -498,6 +510,7 @@ class Utiller {
 
     }
 
+    /** 比較內文, 不是只比較 memory address */
     getIndexOfContext(context, stmt) {
         return _.findIndex(context, (per) => {
             return _.isEqual(per.trim(), stmt);

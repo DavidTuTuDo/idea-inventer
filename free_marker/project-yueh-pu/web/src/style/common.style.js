@@ -9,6 +9,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorWeekPopularIdOfSingerTextField = {};
@@ -61,13 +63,17 @@ class CommonStyle {
 
   /** => following for rhythm  component  */
 
+  RhythmFlattenButton = {};
+
+  RhythmSharpenButton = {};
+
   RhythmGuitarpuContextTypography = {};
 
   RhythmGuitarpuDivList = {};
 
   RhythmGuitarpuPaper = {};
 
-  RhythmPaper = {};
+  RhythmDiv = {};
 
   /** => following for main  component  */
 

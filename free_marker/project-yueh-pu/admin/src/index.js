@@ -35,7 +35,7 @@ import moment from 'moment';
 
         for (const each of tones) {
             /** get uid after submit tone */
-            const result = await api.submitGuitarpuItem({context: each.tone});
+            const result = await api.submitGuitawrpuItem({context: each.tone});
             if (result.succeed) {
                 const item = result.value;
                 const idOfTone = item.id;
@@ -58,8 +58,8 @@ import moment from 'moment';
         Util.appendFile('./pu.raw',decrypt,true,true);
     }
 
-    // await deployWeekPopular();
-    await printRawText();
+    await deployWeekPopular();
+    // await printRawText();
     // Util.getStringOfPop(undefined,',');
 })();
 
