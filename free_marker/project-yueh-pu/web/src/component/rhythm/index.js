@@ -125,6 +125,18 @@ class RhythmComponent extends BaseRhythmComponent {
         return this.getGuitarpuContext(_.head(this.getStore().getGuitarpus()))
     }
 
+    onRhythmAdjustCenterEnlargeButtonClicked(param) {
+        this.adjustFontSizeByClassName('RhythmGuitarpuContextTypography');
+    }
+
+    onRhythmAdjustCenterShrinkButtonClicked(param) {
+        this.adjustFontSizeByClassName('RhythmGuitarpuContextTypography', false);
+    }
+
+    onRhythmAdjustCenterIsHideChordSwitchChange(param) {
+        super.onRhythmAdjustCenterIsHideChordSwitchChange(param);
+    }
+
 
     /** -------------------- async api -------------------- **/
 }

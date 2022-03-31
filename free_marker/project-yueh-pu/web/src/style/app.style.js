@@ -61,6 +61,12 @@ class AppStyle {
 
   /** => following for rhythm  component  */
 
+  RhythmAdjustCenterIsHideChordSwitch = {};
+
+  RhythmAdjustCenterShrinkButton = {};
+
+  RhythmAdjustCenterEnlargeButton = {};
+
   RhythmAdjustCenterFlattenButton = {};
 
   RhythmAdjustCenterSharpenButton = {};

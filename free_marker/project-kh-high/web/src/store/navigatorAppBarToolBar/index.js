@@ -30,6 +30,11 @@ class NavigatorAppBarToolBarStore extends ModularizedNavigatorAppBarToolBarStore
   constructor(props) {
     super(props);
   }
+
+  getTitle() {
+    return `悅考`
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default NavigatorAppBarToolBarStore;

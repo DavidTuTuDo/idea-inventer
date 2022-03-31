@@ -25,7 +25,7 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -57,8 +57,9 @@ const VIEW_IMPORTS =
     [
         {
             from: `@material-ui/core`,
-            views: ['SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
-                'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton', 'Drawer', 'ListItem', 'List']
+            views: ['Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+                'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
+                'Drawer', 'ListItem', 'List']
         },
         {
             from: `react-slideshow-image`,
@@ -69,6 +70,15 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    /** [...{params = [],functionName = 'string',loginOnly = false}]
+     *
+     * 如果要建立override的method,就在這裡加上
+     * */
+    methods = [];
+
+    testButton = false;
+    /** 就是在colletion view 加一個測試按鈕*/
 
     needDetail;
     /** 當type === array, 而且想獲得uidOfDetail,必須加上這個屬性*/
@@ -359,6 +369,8 @@ class CodegenNode {
 
     click;
 
+    change;
+
     defaultValue;
     /** 可以指定attribute的default value */
 
@@ -399,6 +411,14 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    getFunctionMethods() {
+        return this.methods;
+    }
+
+    needTestButton() {
+        return this.isContainer() && !!this.needtestButton
     }
 
     setType(type) {
@@ -450,6 +470,11 @@ class CodegenNode {
     /** exclude => 要略過的資料夾名稱 */
     getLessFilesOfModuleComponent(...exclude) {
         return Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (file) => _.isEqual(file.extension, 'less'));
+    }
+
+    /** 像是Switch, ToogleButton這類*/
+    needOnChangeBehavior() {
+        return this.change || Util.isOrEquals(this.view, 'Switch');
     }
 
     getDirectoryName() {
@@ -629,7 +654,7 @@ class CodegenNode {
 
     isContainer() {
         return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper'
-            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem','swipeabledrawer');
+            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer');
     }
 
     getFunctionNameOfObservableObject() {
@@ -814,7 +839,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -834,6 +859,10 @@ class CodegenNode {
 
     appendContent(...contents) {
         this.contents.push(...contents);
+    }
+
+    appendMethod(...methods) {
+        this.methods.push(...methods)
     }
 
     hasPermission() {
@@ -1389,7 +1418,7 @@ class CodegenNode {
         }
     }
 
-    getClickParamStmt() {
+    getParamStmtOfInvalidate() {
         let object = '';
         if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
             object = this.getName();
@@ -1799,6 +1828,10 @@ class CodegenNode {
 
     getFunctionNameOfOnSelectedChange() {
         return Util.camel('on', this.getName(), `selected`, `change`);
+    }
+
+    getFunctionNameOfOnChanged() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'change');
     }
 
     getFunctionNameOfSetter() {
@@ -3120,6 +3153,7 @@ class ComponentBuilder extends BaseBuilder {
         generator.appendImport(`Router`, '../../router');
         generator.appendImport(`Config`, '../../config');
         generator.appendImport(`{Application}`, '../../');
+        generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`React`, 'react');
     }
 
@@ -3315,7 +3349,8 @@ class ComponentBuilder extends BaseBuilder {
             tag: node.view,
             props: { style: {height: 80},className:'className' }, ### means 不需要 single quatation
             contents: [`Util.appendInfo()`,`Util.appendError()`],
-            children:['children1','children2']
+            children:['children1','children2'],
+            typeOfClass: 'component'|'store'|'others'
         }
 
      * output:
@@ -3353,11 +3388,14 @@ class ComponentBuilder extends BaseBuilder {
                 }
             }
 
-            for (const _import of VIEW_IMPORTS) {
-                if (Util.has(_import.views, param.tag)) {
-                    param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag, `${_import.from}${_import.object ? `` : `/${param.tag}`}`)
+            if (_.isEqual(param.typeOfClass, 'component')) {
+                for (const _import of VIEW_IMPORTS) {
+                    if (Util.has(_import.views, param.tag)) {
+                        param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag, `${_import.from}${_import.object ? `` : `/${param.tag}`}`)
+                    }
                 }
             }
+
         }
 
         const props = param.props;
@@ -3438,6 +3476,7 @@ class ComponentBuilder extends BaseBuilder {
                 generator,
                 customViewNode: node,
                 tag: node.getViewClassNameOfRenderView(),
+                typeOfClass: 'component',
                 props,
             })
             return viewJsxStmt;
@@ -3469,7 +3508,8 @@ class ComponentBuilder extends BaseBuilder {
                     generator,
                     tag: view,
                     props: {className: clazzName},
-                    contents: [`{${node.getName()}.label}`]
+                    contents: [`{${node.getName()}.label}`],
+                    typeOfClass: 'component',
                 })
                 self.normalizeJSXString(stmts)
                 return stmts;
@@ -3518,6 +3558,7 @@ class ComponentBuilder extends BaseBuilder {
             let arrayItemViewStmts = this.getJSXStrings({
                 generator,
                 customViewNode: arrayItemNode,
+                typeOfClass: 'component',
                 tag: `${arrayItemNode.getViewClassNameOfRenderView()}`,
                 props: itemViewProps,
             })
@@ -3578,6 +3619,7 @@ class ComponentBuilder extends BaseBuilder {
                 generator,
                 tag: node.getListView(),
                 props,
+                typeOfClass: 'component',
                 contents: [`{${node.getFieldName()}.map((${node.getName()},index) => `,
                     ...arrayItemViewStmts, `)}`, ...node.getListContents(), ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
@@ -3589,6 +3631,7 @@ class ComponentBuilder extends BaseBuilder {
                     {
                         generator,
                         tag: node.getListWrapView(),
+                        typeOfClass: 'component',
                         props: {
                             className: clazzName,
                             style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
@@ -3650,82 +3693,18 @@ class ComponentBuilder extends BaseBuilder {
             props.key = `${node.getUniqueIdStmt()}`;
         }
 
-        if (node.isClickView()) {
-            generator.appendFunction(node.getFunctionNameOfClicked(),
-                ['param'], [], [],
-                `Util.appendError('${node.getFunctionNameOfClicked()} not override')`
-            )
-
-            const onClickStmts = [];
-            if (node.hasLoginRequiredDialog()) {
-                generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
-                onClickStmts.push(
-                    `if(!UserInfoRef.isLoginInSucceed()) {
-                        self.enableLoginConfirmDialog();
-                        return;
-                    }`
-                )
-            }
-
-            if (node.hasConfirmDialog()) {
-                onClickStmts.push(
-                    `${node.getViewParamVariable()} = param;
-                    ${node.getAlertDialogVariable()}.current.open()`)
-            } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
-                onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)
-            } else {
-                onClickStmts.push(`self.${node.getFunctionNameOfClicked()}({view:param${node.getClickParamStmt()}})`)
-            }
-
-            props.onClick =
-                `###(param) => {${onClickStmts.join('\n')}}`
-        }
-        /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
-        if (node.isImageView()) {
-            props['src'] = `###${node.getName()}`;
-
-            if (node.needImageDialog) {
-                props.onClick = `###(param) => this.openImageDialog(${node.getName()})`;
-            }
-
-        } else if (node.isTextField()) {
-            props['label'] = `${node.getDescription()}`;
-            props['value'] = `###${node.getName()}`;
-            props['onChange'] = `###(event)=>{ 
-            ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(
-            ${node.isNumber() ? '_.toNumber(event.target.value)' : 'event.target.value'}
-            )}`
-            if (node.isNumber()) {
-                props['type'] = `number`;
-                props['InputLabelProps'] = {
-                    shrink: true,
-                };
-            }
-            if (node.isString()) {
-                props['multiline'] = `###true`;
-            }
-        } else if (node.isSliderView()) {
-            props['value'] = `###${node.getName()}`;
-            props['onChange'] = `###(event)=>{
-                const range = event.target.value;
-                ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(range);
-            }`
-        }
-
-        if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
-            props['position'] = 'static';
-        }
-
         let origin = this.getJSXStrings({
             tag: node.getView(true),
             generator,
             props,
+            typeOfClass: 'component',
             contents: [...contentStmts, ...node.getContents()],
         });
 
         if (node.isAppBarView() && node.isScrollingHideDependOnRootNode()) {
             origin = this.getJSXStrings({
                 tag: 'ScrollingHideWrap',
+                typeOfClass: 'component',
                 props: {injectProps: '...self.props'},
                 contents: [...origin]
             })
@@ -3753,6 +3732,7 @@ class ComponentBuilder extends BaseBuilder {
                 tag: node.getWrapView(),
                 generator,
                 props,
+                typeOfClass: 'component',
                 contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
             })
         }
@@ -3974,6 +3954,17 @@ class ComponentBuilder extends BaseBuilder {
             const functionName = child.getViewClassNameOfRenderView();
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
             if (existedFunctions[functionName]) continue;
+
+
+            for (const method of child.getFunctionMethods()) {
+                generator.appendFunction(method.functionName,
+                    method.params,
+                    [],
+                    [],
+                    `Util.appendError('${method.functionName} not override')`
+                )
+            }
+
 
             if (child.isArray()) {
                 if (child.hasPaginate()) {
@@ -5117,6 +5108,106 @@ class ProjectFileHandler extends PathBase {
                     })
                 }
             }
+
+            if (node.needTestButton()) {
+                node.appendChildrenWithJson({
+                    view: 'Button',
+                    type: 'string',
+                    name: 'testUsage',
+                    click: true,
+                    defaultValue: '測試按鈕'
+                })
+            }
+
+            function getStmtOfEventInValidate(node, functionName) {
+                return `self.${functionName}({view:event${node.getParamStmtOfInvalidate()}})`;
+            }
+
+            if (node.needOnChangeBehavior()) {
+                node.appendViewProps({
+                    onChange: `###(event) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`
+                })
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfOnChanged(),
+                    params: ['param'],
+                    loginOnly: false,
+                })
+            }
+
+            if (node.isClickView()) {
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfClicked(),
+                    params: ['param'],
+                    loginOnly: false,
+                })
+
+                const onClickStmts = [];
+                if (node.hasLoginRequiredDialog()) {
+                    onClickStmts.push(
+                        `if(!UserInfoRef.isLoginInSucceed()) {
+                        self.enableLoginConfirmDialog();
+                        return;
+                    }`
+                    )
+                }
+
+                if (node.hasConfirmDialog()) {
+                    onClickStmts.push(
+                        `${node.getViewParamVariable()} = param;
+                    ${node.getAlertDialogVariable()}.current.open()`)
+                } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
+                    onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)
+                } else {
+                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
+                }
+                node.appendViewProps({onClick: `###(event) => {${onClickStmts.join('\n')}}`})
+            }
+
+            /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
+            if (node.isImageView()) {
+                node.appendViewProps({src: `###${node.getName()}`})
+
+                if (node.needImageDialog) {
+                    node.appendViewProps({onClick: `###(param) => this.openImageDialog(${node.getName()})`})
+                }
+
+            }
+
+            if (node.isTextField()) {
+                node.appendViewProps(
+                    {label: `${node.getDescription()}`},
+                    {value: `###${node.getName()}`},
+                    {
+                        onChange: `###(event)=>{ 
+                        ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(
+                        ${node.isNumber() ? '_.toNumber(event.target.value)' : 'event.target.value'}
+                        )}`
+                    }
+                )
+                if (node.isNumber()) {
+                    node.appendViewProps({type: 'number'});
+                    node.appendViewProps({InputLabelProps: {shrink: true}});
+                }
+
+                if (node.isString()) {
+                    node.appendViewProps({multiline: '###true'});
+                }
+            }
+
+            if (node.isSliderView()) {
+                node.appendViewProps({value: `###${node.getName()}`})
+                node.appendViewProps({
+                    onChange: `###(event)=>{
+                const range = event.target.value;
+                ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(range);
+            }`
+                })
+            }
+
+            if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
+                node.appendViewProps({position: 'static'})
+            }
+
 
             if (node.isRestfulBean()) {
                 node.appendChildrenWithJson({

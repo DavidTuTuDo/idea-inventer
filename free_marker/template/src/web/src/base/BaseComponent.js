@@ -49,7 +49,7 @@ class BaseComponent extends React.Component {
         super(props);
     }
 
-    isDetailPage(){
+    isDetailPage() {
         return !Util.isUndefinedNullEmpty(this.uidOfDetail)
     }
 
@@ -827,6 +827,32 @@ class BaseComponent extends React.Component {
 
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
+
+    getElementByClassName(className) {
+        const element = document.getElementsByClassName(className)[0];
+        return element;
+    }
+
+    /**
+     *
+     * @param className
+     * @param attribute font-size
+     */
+    getStyleByElementClassName(className, attribute) {
+        const view = this.getElementByClassName(className);
+        const style = window.getComputedStyle(view, null)
+        const value = style.getPropertyValue(attribute);
+        return value;
+
+    }
+
+    adjustFontSizeByClassName(className, enlarge = true, delta = 1) {
+        const element = this.getElementByClassName(className);
+        const originValue = parseFloat(this.getStyleByElementClassName(className, 'font-size'))
+        const nextValue = enlarge ? originValue + delta : originValue - delta;
+        element.style.fontSize = `${nextValue}px`;
+    }
+
 
 }
 

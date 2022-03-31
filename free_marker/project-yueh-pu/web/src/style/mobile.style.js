@@ -61,6 +61,12 @@ class MobileStyle {
 
   /** => following for rhythm  component  */
 
+  RhythmAdjustCenterIsHideChordSwitch = {};
+
+  RhythmAdjustCenterShrinkButton = {};
+
+  RhythmAdjustCenterEnlargeButton = {};
+
   RhythmAdjustCenterFlattenButton = {};
 
   RhythmAdjustCenterSharpenButton = {};
