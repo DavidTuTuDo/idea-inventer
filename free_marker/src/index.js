@@ -736,10 +736,6 @@ class CodegenNode {
         return !!this.nameModified;
     }
 
-    isFormControlLabelView() {
-        return _.isEqual(this.getView(), 'FormControlLabel')
-    }
-
     getSelectedCustomLabelView() {
         const view = this.select.labelView;
         return view;
@@ -3683,10 +3679,8 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.needInjectProps()) {
-            const param = node.getObservableName();
-            const injectProps = node.getFunctionNameOfInjectProps();
             props['injectProps'] = `...self.${node.getFunctionNameOfInjectProps()}(${param})`
-            generator.appendFunction(injectProps, [param]);
+            generator.appendFunction(node.getFunctionNameOfInjectProps(), [node.getObservableName()]);
         }
 
         if (node.isArray()) {
