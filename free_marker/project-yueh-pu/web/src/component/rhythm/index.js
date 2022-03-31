@@ -51,12 +51,15 @@ class RhythmComponent extends BaseRhythmComponent {
         return _.size(Util.indexesOf(string, '|')) > 1
     }
 
+    onRhythmGuitarpuPaperClicked(param) {
+        this.getStore().toggleIsAdjustVisible();
+    }
 
-    onRhythmSharpenButtonClicked(param) {
+    onRhythmAdjustCenterSharpenButtonClicked(param) {
         this.invalidateTranspositionChord(true);
     }
 
-    onRhythmFlattenButtonClicked(param) {
+    onRhythmAdjustCenterFlattenButtonClicked(param) {
         this.invalidateTranspositionChord(false);
     }
 

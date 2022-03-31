@@ -3,6 +3,7 @@
 {{{functionName就是Questions}}}
 {{{fieldClass就是Question}}}
 {{{hasPath就是true/flase}}}
+
 get{{functionName}}() {
 return this.{{fieldName}};
 }
@@ -10,6 +11,11 @@ return this.{{fieldName}};
 @action
 remove{{functionName}}() {
 this.{{fieldName}} = {{{defaultValue}}};
+}
+
+@action
+toggle{{functionName}}() {
+    this.set{{functionName}}(!this.get{{functionName}}())
 }
 
 @action

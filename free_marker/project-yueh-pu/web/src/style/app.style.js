@@ -9,8 +9,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for main editor component  */
 
   MainEditorWeekPopularIdOfSingerTextField = {};
@@ -63,9 +61,13 @@ class AppStyle {
 
   /** => following for rhythm  component  */
 
-  RhythmFlattenButton = {};
+  RhythmAdjustCenterFlattenButton = {};
 
-  RhythmSharpenButton = {};
+  RhythmAdjustCenterSharpenButton = {};
+
+  RhythmAdjustCenterDiv = {};
+
+  RhythmAdjustSwipeableDrawer = {};
 
   RhythmGuitarpuContextTypography = {};
 

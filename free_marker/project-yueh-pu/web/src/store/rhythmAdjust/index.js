@@ -1,4 +1,4 @@
-import ModularizedNavigatorAppBarToolBarStore from "./ModularizedNavigatorAppBarToolBarStore";
+import BaseRhythmAdjustStore from "./BaseRhythmAdjustStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -10,6 +10,7 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
 import {
   makeAutoObservable,
   makeObservable,
@@ -20,19 +21,16 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorAppBarToolBarStore from "./BaseNavigatorAppBarToolBarStore";
+import Center from "../rhythmAdjustCenter";
+import BaseStore from "../../base/BaseStore";
 
-class NavigatorAppBarToolBarStore extends ModularizedNavigatorAppBarToolBarStore {
+class RhythmAdjustStore extends BaseRhythmAdjustStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  getTitle() {
-    return '悅譜';
-  }
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorAppBarToolBarStore;
+export default RhythmAdjustStore;

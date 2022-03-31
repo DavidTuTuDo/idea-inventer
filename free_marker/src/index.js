@@ -20,7 +20,7 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
 const KEYWORD_OF_MODULARIZED = 'Modularized';
-const KEYWORD_OF_UID_OF_DETAIL= 'uidOfDetail';
+const KEYWORD_OF_UID_OF_DETAIL = 'uidOfDetail';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
@@ -57,7 +57,7 @@ const VIEW_IMPORTS =
     [
         {
             from: `@material-ui/core`,
-            views: ['MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton', 'Drawer', 'ListItem', 'List']
         },
         {
@@ -629,7 +629,7 @@ class CodegenNode {
 
     isContainer() {
         return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper'
-            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem');
+            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem','swipeabledrawer');
     }
 
     getFunctionNameOfObservableObject() {
@@ -821,6 +821,11 @@ class CodegenNode {
 
     setListContents(contents) {
         this.listContents = contents;
+    }
+
+    /** 如果是dialog, 或是 pop-up 類型的view, 應該需要一個hook去開關 */
+    needVisibleHook() {
+        return Util.isOrEquals(this.view, 'SwipeableDrawer')
     }
 
     appendListContents(...contents) {
@@ -3160,7 +3165,7 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
         }
 
-        if(componentNode.detailPage) {
+        if (componentNode.detailPage) {
             baseGenerator.appendConstructor(`this.setUidOfDetail(this.props.match.params.uidOfDetail)`);
         }
 
@@ -5128,6 +5133,27 @@ class ProjectFileHandler extends PathBase {
                     description: '我是server處理完的結果, 如果fail,reason就寫在這裡',
                     type: 'string', /** fail reason */
                 })
+            }
+
+            if (node.needVisibleHook()) {
+                const nameOfHook = Util.camel(`is`, node.getName(), 'visible');
+
+                node.getParentNode().appendChildrenWithJson({
+                    name: nameOfHook,
+                    type: `boolean`,
+                })
+                node.appendViewProps(
+                    {
+                        open: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfHook)}()`,
+                    },
+                    {
+                        onClose: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(false)`
+                    }
+                    ,
+                    {
+                        onOpen: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(true)`
+                    }
+                )
             }
 
             if (node.isImageView() && node.needWatermark) {
