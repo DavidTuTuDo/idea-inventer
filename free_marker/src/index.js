@@ -167,7 +167,7 @@ class CodegenNode {
                                     select: true,
                                     color: "primary",
                                 },
-     *
+     *2022/03/31筆記有註記
      * MUI底下設計的select是看不懂被observer包裝過的元件, 所以array的子類們, 不會用observer修飾 2021/11/08 筆記有相繫
      * */
 
