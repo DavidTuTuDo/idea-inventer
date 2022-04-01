@@ -25,7 +25,7 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 
-const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -71,11 +71,19 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    simpleRadio; //{defaultValue:};
+
+    simpleSwitch; //{label,defaultValue};
+
+    nameOfProp
+    /** 如果child view是定義在props
+     * 例如 <FormControlLabel label=<TypoGraphy item={child}/>,就要定義在這裡 */
+
+    methods = [];
     /** [...{params = [],functionName = 'string',loginOnly = false}]
      *
      * 如果要建立override的method,就在這裡加上
      * */
-    methods = [];
 
     testButton = false;
     /** 就是在colletion view 加一個測試按鈕*/
@@ -418,7 +426,12 @@ class CodegenNode {
     }
 
     needTestButton() {
-        return this.isContainer() && !!this.needtestButton
+        return this.isContainer() && !!this.testButton
+    }
+
+
+    isViewDefinedInProps() {
+        return !!this.nameOfProp;
     }
 
     setType(type) {
@@ -3515,13 +3528,6 @@ class ComponentBuilder extends BaseBuilder {
             }
         }
 
-        /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
-        if (node.hasValidParent() && node.isAttribute() && !node.isArrayItem()) {
-            generator.appendFunction(node.getFunctionNameUsingInComponentGetter(),
-                [`${node.getPreciseAttributeParentName()}`], [], [],
-                `return ${node.getPreciseAttributeParentName()}.${node.getFunctionNameInStoreGetter()}()`);
-        }
-
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
         function getOuterChildJSXStrings(node) {
 
@@ -3534,6 +3540,13 @@ class ComponentBuilder extends BaseBuilder {
             return contentStmts;
         }
 
+
+        /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
+        if (node.hasValidParent() && node.isAttribute() && !node.isArrayItem()) {
+            generator.appendFunction(node.getFunctionNameUsingInComponentGetter(),
+                [`${node.getPreciseAttributeParentName()}`], [], [],
+                `return ${node.getPreciseAttributeParentName()}.${node.getFunctionNameInStoreGetter()}()`);
+        }
 
         /** type是array就必須的包上一成List,可以調整物件方向 */
         if (node.isArray()) {
@@ -3645,6 +3658,11 @@ class ComponentBuilder extends BaseBuilder {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
 
+            if(child.isViewDefinedInProps()) {
+                node.props[child.nameOfProp] = `###${getJsxViewStmt(child).join('\n')}`;
+                continue;
+            }
+
             if (node.isContainer()) {
                 if (child.isIncestView()) {
                     contentStmts.push(`{/* ${child.getName()}, incest view */}`);
@@ -3679,8 +3697,10 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.needInjectProps()) {
-            props['injectProps'] = `...self.${node.getFunctionNameOfInjectProps()}(${param})`
-            generator.appendFunction(node.getFunctionNameOfInjectProps(), [node.getObservableName()]);
+            const param = node.getObservableName();
+            const injectProps = node.getFunctionNameOfInjectProps();
+            props['injectProps'] = `...self.${injectProps}(${param})`
+            generator.appendFunction(injectProps, [param]);
         }
 
         if (node.isArray()) {
@@ -5164,7 +5184,6 @@ class ProjectFileHandler extends PathBase {
                 if (node.needImageDialog) {
                     node.appendViewProps({onClick: `###(param) => this.openImageDialog(${node.getName()})`})
                 }
-
             }
 
             if (node.isTextField()) {
