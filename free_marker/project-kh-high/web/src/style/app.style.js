@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -101,19 +103,11 @@ class AppStyle {
 
   ExamEditorQuestionCard = {};
 
-  ExamEditorHistoryFilterOrderByWhatValueTextField = {};
-
-  ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
-
   ExamEditorHistoryFilterOrderByWhatDivList = {};
 
   ExamEditorHistoryFilterOrderByWhatDivWrap = {};
 
   ExamEditorHistoryFilterOrderByWhatDiv = {};
-
-  ExamEditorHistoryFilterWhichSubjectValueTextField = {};
-
-  ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
 
   ExamEditorHistoryFilterWhichSubjectDivList = {};
 
@@ -122,16 +116,6 @@ class AppStyle {
   ExamEditorHistoryFilterWhichSubjectDiv = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
-
-  ExamEditorHistoryFilterReplyTypeValueTextField = {};
-
-  ExamEditorHistoryFilterReplyTypeLabelTextField = {};
-
-  ExamEditorHistoryFilterReplyTypeDivList = {};
-
-  ExamEditorHistoryFilterReplyTypeDivWrap = {};
-
-  ExamEditorHistoryFilterReplyTypeDiv = {};
 
   ExamEditorHistoryFilterDivWrap = {};
 
@@ -383,9 +367,11 @@ class AppStyle {
 
   ExamHistoryFilterSpaceDiv = {};
 
-  ExamHistoryFilterReplyTypeFormControlLabel = {};
+  ExamHistoryFilterReplyTypeValueRadio = {};
 
-  ExamHistoryFilterReplyTypeTypographyLabel = {};
+  ExamHistoryFilterReplyTypeLabelTypography = {};
+
+  ExamHistoryFilterReplyTypeFormControlLabel = {};
 
   ExamHistoryFilterReplyTypeRadioGroupList = {};
 
@@ -443,9 +429,11 @@ class AppStyle {
 
   ExamFilterRandomTestBtnOfStartExamButton = {};
 
-  ExamFilterRandomTestCountsOfExamFormControlLabel = {};
+  ExamFilterRandomTestCountsOfExamValueRadio = {};
 
-  ExamFilterRandomTestCountsOfExamTypographyLabel = {};
+  ExamFilterRandomTestCountsOfExamLabelTypography = {};
+
+  ExamFilterRandomTestCountsOfExamFormControlLabel = {};
 
   ExamFilterRandomTestCountsOfExamRadioGroupList = {};
 

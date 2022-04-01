@@ -9,6 +9,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -101,19 +103,11 @@ class MobileStyle {
 
   ExamEditorQuestionCard = {};
 
-  ExamEditorHistoryFilterOrderByWhatValueTextField = {};
-
-  ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
-
   ExamEditorHistoryFilterOrderByWhatDivList = {};
 
   ExamEditorHistoryFilterOrderByWhatDivWrap = {};
 
   ExamEditorHistoryFilterOrderByWhatDiv = {};
-
-  ExamEditorHistoryFilterWhichSubjectValueTextField = {};
-
-  ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
 
   ExamEditorHistoryFilterWhichSubjectDivList = {};
 
@@ -122,16 +116,6 @@ class MobileStyle {
   ExamEditorHistoryFilterWhichSubjectDiv = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
-
-  ExamEditorHistoryFilterReplyTypeValueTextField = {};
-
-  ExamEditorHistoryFilterReplyTypeLabelTextField = {};
-
-  ExamEditorHistoryFilterReplyTypeDivList = {};
-
-  ExamEditorHistoryFilterReplyTypeDivWrap = {};
-
-  ExamEditorHistoryFilterReplyTypeDiv = {};
 
   ExamEditorHistoryFilterDivWrap = {};
 
@@ -383,9 +367,11 @@ class MobileStyle {
 
   ExamHistoryFilterSpaceDiv = {};
 
-  ExamHistoryFilterReplyTypeFormControlLabel = {};
+  ExamHistoryFilterReplyTypeValueRadio = {};
 
-  ExamHistoryFilterReplyTypeTypographyLabel = {};
+  ExamHistoryFilterReplyTypeLabelTypography = {};
+
+  ExamHistoryFilterReplyTypeFormControlLabel = {};
 
   ExamHistoryFilterReplyTypeRadioGroupList = {};
 
@@ -443,9 +429,11 @@ class MobileStyle {
 
   ExamFilterRandomTestBtnOfStartExamButton = {};
 
-  ExamFilterRandomTestCountsOfExamFormControlLabel = {};
+  ExamFilterRandomTestCountsOfExamValueRadio = {};
 
-  ExamFilterRandomTestCountsOfExamTypographyLabel = {};
+  ExamFilterRandomTestCountsOfExamLabelTypography = {};
+
+  ExamFilterRandomTestCountsOfExamFormControlLabel = {};
 
   ExamFilterRandomTestCountsOfExamRadioGroupList = {};
 

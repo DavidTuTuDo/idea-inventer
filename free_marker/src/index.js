@@ -25,7 +25,7 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -153,13 +153,22 @@ class CodegenNode {
     index = {enable: false, rule: 'CONTAINS'}
     /** 'CONTAINS', 'DESCENDING', 'ASCENDING' */
 
-    select = {enable: false, defaultValue: undefined, labelView: undefined, onChange: true};
-    /** 如果是type===array而且 select===true,會在store生出一個selected{getName()}
-     * select 為 true時,  物件規範固定為 [...{label,value}]  ex:[{label:'帥',value:'handsome'},{label:'醜',value:'ugly'}]
+    select; //{type:'button', defaultValue: undefined, values:[]}
+    /**
+     * type = spinner|button|radio
+     * values= [...{label:'one',value:'1'},{label:'two',value:'2'}]
+     * defaultValue= '1',
+     *
+     * listProps
+     type== radio可以listProps ｛ row: true}
+
+     type==spinner 可以 listProps: {
+                                    label: "選擇科目",
+                                    select: true,
+                                    color: "primary",
+                                },
      *
      * MUI底下設計的select是看不懂被observer包裝過的元件, 所以array的子類們, 不會用observer修飾 2021/11/08 筆記有相繫
-     *
-     * labelView是指在FormControlLabel可以放CustomView進去
      * */
 
     needImageDialog = false;
@@ -456,6 +465,10 @@ class CodegenNode {
         return root.getName();
     }
 
+    setDefaultValue(value) {
+        this.defaultValue = value;
+    }
+
     getFunctionNameOfSelectGetter() {
         return Util.camel('get', this.getFieldNameOfSelected());
     }
@@ -500,8 +513,16 @@ class CodegenNode {
      * 3.array裡的子類view, 不會用observer修飾, 不然會拿不到values
      * 4.selectedItem預設都是{value:'100',label:'100年'} label用來顯示標籤
      * */
-    isSelectedArray() {
-        return (this.isArray() || this.isArrayItem()) && _.isEqual(true, this.select.enable);
+    isSimpleSelected() {
+        return (this.isArray() || this.isArrayItem()) && this.select && Util.isOrEquals(this.select.type, 'radio', 'spinner', 'button');
+    }
+
+    getTypeOfSimpleSelected() {
+        return this.select.type;
+    }
+
+    getDefaultValueOfSimpleSelected() {
+        return this.select.values;
     }
 
     isIndex() {
@@ -514,7 +535,7 @@ class CodegenNode {
 
     getSelectedDefaultValue() {
         if (this.select && this.select.defaultValue) {
-            return JSON.stringify(this.select.defaultValue);
+            return this.select.defaultValue;
         }
         return '';
     }
@@ -763,14 +784,6 @@ class CodegenNode {
         return Util.isOrEquals(this.getView(), 'FormControlLabel')
     }
 
-    isRadioGroupListView() {
-        return _.isEqual(this.getListView(), `RadioGroup`);
-    }
-
-    isMenuItemView() {
-        return _.isEqual(this.getView(), 'MenuItem')
-    }
-
     getFunctionNameOfFetch() {
         return Util.camel(`fetch`, this.getFieldName())
     }
@@ -848,7 +861,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['select','methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1031,7 +1044,7 @@ class CodegenNode {
     }
 
     disableSelectedArray() {
-        this.select.enable = false
+        this.select = {}
     }
 
     getListWrapView() {
@@ -1128,7 +1141,7 @@ class CodegenNode {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
-        if (this.isArray() && !this.isSelectedArray() && !useViewModuleAndComponentModuleMechanism) {
+        if (this.isArray() && !this.isSimpleSelected() && !useViewModuleAndComponentModuleMechanism) {
             const className = this.getArrayItemNode().getViewClassNameOfRenderView();
             stmt.push(`const ${className} = self.${className}`);
         } else {
@@ -1244,8 +1257,8 @@ class CodegenNode {
         return this.isAttribute() && _.isEqual(this.getView(), 'TextField');
     }
 
-    isTextFieldListView() {
-        return _.isEqual(this.getListView(), 'TextField');
+    isRadioView() {
+        return this.isAttribute() && _.isEqual(this.getView(), 'Radio');
     }
 
     isSliderView() {
@@ -1831,9 +1844,6 @@ class CodegenNode {
         return this.shadow;
     }
 
-    needOnSelectChanged() {
-        return this.isSelectedArray() && this.select.onChange;
-    }
 
     getFunctionNameOfOnSelectedChange() {
         return Util.camel('on', this.getName(), `selected`, `change`);
@@ -2600,13 +2610,6 @@ class StoreBuilder extends BaseBuilder {
             } else {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
-            if (child.isSelectedArray()) {
-                generator.appendField(child.getFieldNameOfSelected(), child.getSelectedDefaultValue(), ['observable']);
-                generator.appendFunction(child.getFunctionNameOfSelectGetter(), [], [], [],
-                    `return this.${child.getFieldNameOfSelected()}`)
-                generator.appendFunction(child.getFunctionNameOfSelectSetter(), ['selected'], ['action'], [],
-                    `this.${child.getFieldNameOfSelected()} = selected`)
-            }
             propStmt.push(`}`);
             propsStmt.push(...propStmt);
         }
@@ -2738,10 +2741,6 @@ class StoreBuilder extends BaseBuilder {
                 .map((child) => {
                         if (child.isArray()) {
                             const stmts = [`this.${child.getFieldName()} = ${child.getDefaultValueByType()}`]
-
-                            if (child.isSelectedArray()) {
-                                stmts.push(`this.${child.getFieldNameOfSelected()} = ${child.getSelectedDefaultValue()}`);
-                            }
                             return stmts.join('\n');
 
                         } else if (child.isObject()) {
@@ -3126,8 +3125,8 @@ class RemoteFunctionHandler {
                                 Util.camel('submit', 'increment', child.getFieldName()),
                                 [],
                                 [
-                                    `return await self.updateObject(path, {${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})}, '${node.getName()}')`
-                                ], `update object`);
+                                    `return await self.updateObject(path, '${node.getName()}',{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})},)`
+                                ], `update(increment) object`);
 
                         }
                     }
@@ -3499,12 +3498,9 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendOnChangedStmt() {
-            if (node.needOnSelectChanged()) {
-                generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value'], [], [],
-                    `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not override')`)
-                return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
-            }
-            return '';
+            generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value'], [], [],
+                `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not override')`)
+            return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
         }
 
         function getLabelStmts() {
@@ -3540,6 +3536,29 @@ class ComponentBuilder extends BaseBuilder {
             return contentStmts;
         }
 
+        function getStmtsOfRenderEmptyView(node) {
+            const stmts = []
+            if (node.needEmptyTip()) {
+                stmts.push(`{self.renderListEmptyView(${node.getFieldName()}, ${node.hasPath()})}`)
+            }
+            return stmts;
+        }
+
+        function getStmtsOfSelectImageButton(node) {
+            const stmts = []
+            const parent = node.getPreciseAttributeParentName();
+            const child = node.getChildNodeOfImage();
+            const me = _.upperFirst(node.getFieldName());
+            if (node.needAddImageButton()) {
+                stmts.push(`{self.renderSelectImageButtonView({`,
+                    `needWaterMark:${child.needWatermark ? 'true' : 'false'},`,
+                    `folderName:'${child.getStorageFolderName()}',`,
+                    `asyncTaskOfBeforeSubmit:(localUrls) => ${parent}.set${me}(...localUrls.map(url => {return {${child.getName()}:url}})),`,
+                    `asyncTaskOfAfterSubmit:(remoteUrls) => ${parent}.set${me}(...remoteUrls.map(url => {return {${child.getName()}:url}})),`,
+                    `})}`)
+            }
+            return stmts;
+        }
 
         /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
         if (node.hasValidParent() && node.isAttribute() && !node.isArrayItem()) {
@@ -3559,7 +3578,6 @@ class ComponentBuilder extends BaseBuilder {
                 ...node.getListProps(),
             }
 
-
             const itemViewProps = {};
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
@@ -3572,7 +3590,7 @@ class ComponentBuilder extends BaseBuilder {
                 props: itemViewProps,
             })
 
-            if (node.isSelectedArray()) {
+            if (node.isSimpleSelected()) {
                 props['onChange'] = `###(event)=>{
                     const value = event.target.value;
                     ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(value)
@@ -3580,48 +3598,11 @@ class ComponentBuilder extends BaseBuilder {
                 }`;
 
                 props['value'] = `###${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}()`;
-                if (node.isTextFieldListView()) {
-                    props.select = `###true`
-                }
-
                 delete itemViewProps[`${node.getName()}`];
                 arrayItemNode.appendViewProps(itemViewProps);
-                if (node.isRadioGroupListView()) {
-                    arrayItemNode.appendViewProps({control: `###<Radio />`});
-                    generator.appendImport('Radio', '@material-ui/core/Radio')
-                }
-                if (node.isLabelPropsView()) {
-                    arrayItemNode.appendViewProps({label: `###${getLabelStmts().join('')}`})
-                } else {
-                    /** 如果不是isLabelPropsView(), 一率都放到content <View >{contents}</View>*/
-                    arrayItemNode.appendContent(`{${node.getName()}.label}`)
-                }
                 arrayItemNode.appendViewProps({value: `###${node.getName()}.value`})
+                arrayItemNode.appendContent(`{${node.getName()}.label}`)
                 arrayItemViewStmts = this.getJSXStringsByNode(generator, arrayItemNode)
-            }
-
-            function getStmtsOfRenderEmptyView(node) {
-                const stmts = []
-                if (node.needEmptyTip()) {
-                    stmts.push(`{self.renderListEmptyView(${node.getFieldName()}, ${node.hasPath()})}`)
-                }
-                return stmts;
-            }
-
-            function getStmtsOfSelectImageButton(node) {
-                const stmts = []
-                const parent = node.getPreciseAttributeParentName();
-                const child = node.getChildNodeOfImage();
-                const me = _.upperFirst(node.getFieldName());
-                if (node.needAddImageButton()) {
-                    stmts.push(`{self.renderSelectImageButtonView({`,
-                        `needWaterMark:${child.needWatermark ? 'true' : 'false'},`,
-                        `folderName:'${child.getStorageFolderName()}',`,
-                        `asyncTaskOfBeforeSubmit:(localUrls) => ${parent}.set${me}(...localUrls.map(url => {return {${child.getName()}:url}})),`,
-                        `asyncTaskOfAfterSubmit:(remoteUrls) => ${parent}.set${me}(...remoteUrls.map(url => {return {${child.getName()}:url}})),`,
-                        `})}`)
-                }
-                return stmts;
             }
 
             const arrayStmts = this.getJSXStrings({
@@ -3658,7 +3639,7 @@ class ComponentBuilder extends BaseBuilder {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
 
-            if(child.isViewDefinedInProps()) {
+            if (child.isViewDefinedInProps()) {
                 node.props[child.nameOfProp] = `###${getJsxViewStmt(child).join('\n')}`;
                 continue;
             }
@@ -3672,7 +3653,8 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
-        if (!node.isSliderView() && !node.isTextField() && !node.isImageView() && node.isStringOrNumberAttribute()) {
+        if (node.isStringOrNumberAttribute() && !node.isAppBarView() &&
+            !node.isSliderView() && !node.isTextField() && !node.isImageView()) {
             contentStmts.push(`{self.handleTextString(${node.getFieldName()})}`);
         }
 
@@ -3938,7 +3920,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendViewFunctionClass(node) {
-            if (node.isArrayItem() && node.isSelectedArray()) return;
+            if (node.isArrayItem() && node.isSimpleSelected()) return;
 
             if (!useViewModuleAndComponentModuleMechanism)
                 appendFunctionWithFields(node);
@@ -5123,6 +5105,57 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            if (node.isSimpleSelected()) {
+
+                if (!node.isArray()) {
+                    throw new ERROR(9999, '98787453 simple selected support array only')
+                }
+
+                node.getParentNode().appendChildrenWithJson({
+                    name: `${node.getFieldNameOfSelected()}`,
+                    type: 'string', /** succeed, fail */
+                    defaultValue: node.getSelectedDefaultValue()
+                })
+
+                node.setDefaultValue(node.getDefaultValueOfSimpleSelected())
+
+                const objectOfAppend = {
+                    label: {
+                        name: 'label',
+                        type: 'string',
+                    },
+                    value: {
+                        name: 'value',
+                        type: 'string',
+                    }
+                }
+
+                switch (node.getTypeOfSimpleSelected()) {
+                    case 'spinner':
+                        node.setListView('TextField');
+                        node.setView('MenuItem');
+                        node.appendListProps({select:true})
+                        break;
+                    case 'button':
+                        node.setListView('ButtonGroup');
+                        node.setView('Button');
+                        node.setClick(true);
+                        break;
+                    case 'radio':
+                        node.setListView('RadioGroup');
+                        node.setView('FormControlLabel');
+                        objectOfAppend.label.view = 'Typography';
+                        objectOfAppend.label.nameOfProp = 'label';
+                        objectOfAppend.value.view = 'Radio';
+                        objectOfAppend.value.nameOfProp = 'control';
+                        break;
+                }
+
+                for(const key in objectOfAppend) {
+                    node.appendChildrenWithJson(objectOfAppend[key]);
+                }
+            }
+
             if (node.needTestButton()) {
                 node.appendChildrenWithJson({
                     view: 'Button',
@@ -5206,6 +5239,12 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({multiline: '###true'});
                 }
             }
+
+            if(node.isRadioView()) {
+                node.appendViewProps({value: `###${node.getName()}`})
+            }
+
+
 
             if (node.isSliderView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
