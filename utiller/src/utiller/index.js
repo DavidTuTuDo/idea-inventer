@@ -127,6 +127,12 @@ class Utiller {
         return true
     }
 
+    /** 取得reg match 第一個項目, 不然好煩呀 */
+    getStringOfHeadMatch(string,regex,flag = 'g'){
+        const result = string.match(new RegExp(regex, flag));
+        return this.isUndefinedNullEmpty(result) ? undefined : result[0]
+    }
+
     or(...booleans) {
         for (const boo of booleans) {
             if (_.isBoolean(boo) && boo)
