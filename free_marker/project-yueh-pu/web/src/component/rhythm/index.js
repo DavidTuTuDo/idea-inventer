@@ -18,6 +18,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
+import {normalize} from "crypto-browserify/example/bundle";
 
 const RULE_OF_CHANGE_CHORD_SIGN = ['A', 'Bb', 'B', 'C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab'];
 const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_LENGTH = _.orderBy(RULE_OF_CHANGE_CHORD_SIGN, (each) => _.size(each), 'desc')
@@ -34,16 +35,13 @@ class RhythmComponent extends BaseRhythmComponent {
         super(props);
     }
 
-    getGuitarpuContext(guitarpu) {
-        const encrypt = super.getGuitarpuContext(guitarpu);
-        const decrypt = Util.getDecryptString(encrypt);
-        return decrypt;
+    getGuitarpuCurrentContext(guitarpu) {
+        return this.normalizePu(this.getDecryptString(super.getGuitarpuCurrentContext(guitarpu)));
     }
 
-    getStringOfHidingChord(context) {
-        const segments = _.split(context, '\n');
-        _.remove(segments, (each) => this.isGuitarChordParagraph(each));
-        return segments.join('\n');
+    getDecryptString(context) {
+        const decrypt = Util.getDecryptString(context);
+        return decrypt;
     }
 
     /** 檢查這條訊息是吉他Chord*/
@@ -118,25 +116,52 @@ class RhythmComponent extends BaseRhythmComponent {
 
     updatePuContext(latest) {
         const pu = _.head(this.getStore().getGuitarpus())
-        pu.setContext(Util.getEncryptString(latest));
+        const normalize = this.normalizePu(latest);
+        pu.setCurrentContext(Util.getEncryptString(normalize));
+    }
+
+    normalizePu(string){
+        let segments = string.split('\n');
+        segments = _.dropWhile(segments,(each) => Util.isUndefinedNullEmpty(_.trim(each)));
+        segments = _.dropRightWhile(segments,(each) => Util.isUndefinedNullEmpty(_.trim(each)));
+        return segments.join('\n');
     }
 
     getCurrentPuContext() {
-        return this.getGuitarpuContext(_.head(this.getStore().getGuitarpus()))
+        return this.getGuitarpuCurrentContext(_.head(this.getStore().getGuitarpus()))
     }
 
+    getOriginalPuContext() {
+        return this.getDecryptString(_.head(this.getStore().getGuitarpus()).getOriginalContext())
+    }
+
+
     onRhythmAdjustCenterEnlargeButtonClicked(param) {
-        this.adjustFontSizeByClassName('RhythmGuitarpuContextTypography');
+        this.adjustFontSizeByClassName('RhythmGuitarpuCurrentContextTypography');
     }
 
     onRhythmAdjustCenterShrinkButtonClicked(param) {
-        this.adjustFontSizeByClassName('RhythmGuitarpuContextTypography', false);
+        this.adjustFontSizeByClassName('RhythmGuitarpuCurrentContextTypography', false);
     }
 
     onRhythmAdjustCenterIsHideChordSwitchChange(param) {
         super.onRhythmAdjustCenterIsHideChordSwitchChange(param);
     }
 
+    onRhythmAdjustCenterHideChordToggleSwitchChange(param) {
+        this.setVisibleOfChordInContext(this.getCheckStateByEvent(param.view))
+    }
+
+    setVisibleOfChordInContext(hide = false) {
+        const segments = this.getOriginalPuContext().split('\n');
+        if(hide) {
+            for(const segment of segments) {
+                if(this.isGuitarChordParagraph(segment))
+                    Util.replaceArrayByContentIndex(segments,segment,'');
+            }
+        }
+        this.updatePuContext(segments.join('\n'));
+    }
 
     /** -------------------- async api -------------------- **/
 }

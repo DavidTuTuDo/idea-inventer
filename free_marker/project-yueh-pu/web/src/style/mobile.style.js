@@ -61,7 +61,17 @@ class MobileStyle {
 
   /** => following for rhythm  component  */
 
-  RhythmAdjustCenterIsHideChordSwitch = {};
+  RhythmTestUsageButton = {};
+
+  RhythmAdjustCenterHideChordLabelTypography = {};
+
+  RhythmAdjustCenterHideChordToggleSwitch = {};
+
+  RhythmAdjustCenterHideChordFormControlLabel = {};
+
+  RhythmAdjustCenterTonalityMenuItem = {};
+
+  RhythmAdjustCenterTonalityTextFieldList = {};
 
   RhythmAdjustCenterShrinkButton = {};
 
@@ -75,7 +85,7 @@ class MobileStyle {
 
   RhythmAdjustSwipeableDrawer = {};
 
-  RhythmGuitarpuContextTypography = {};
+  RhythmGuitarpuCurrentContextTypography = {};
 
   RhythmGuitarpuDivList = {};
 

@@ -25,7 +25,7 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 
-const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -71,9 +71,10 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
-    simpleRadio; //{defaultValue:};
-
     simpleSwitch; //{label,defaultValue};
+
+    /** Switch之類的元件 在onChange會更動store setter,如果要disable, 要設為true*/
+    disableOnChangeSetter = false;
 
     nameOfProp
     /** 如果child view是定義在props
@@ -386,7 +387,7 @@ class CodegenNode {
 
     click;
 
-    change;
+    change = false;
 
     defaultValue;
     /** 可以指定attribute的default value */
@@ -500,7 +501,10 @@ class CodegenNode {
 
     /** 像是Switch, ToogleButton這類*/
     needOnChangeBehavior() {
-        return this.change || Util.isOrEquals(this.view, 'Switch');
+        return this.change || Util.or(
+            this.isSliderView(),
+            this.isSwitchView(),
+            this.isTextFieldView());
     }
 
     getDirectoryName() {
@@ -852,7 +856,7 @@ class CodegenNode {
                 case 'label':
                     return '顯示的標籤';
                 default:
-                    return 'no comments';
+                    return '沒有解釋';
             }
         }
 
@@ -861,7 +865,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['select','methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1250,19 +1254,27 @@ class CodegenNode {
     }
 
     isImageView() {
-        return this.isAttribute() && _.isEqual(this.getView(), 'img');
+        return this.isAttributeView('img');
     }
 
-    isTextField() {
-        return this.isAttribute() && _.isEqual(this.getView(), 'TextField');
+    isTextFieldView() {
+        return this.isAttributeView('TextField');
     }
 
     isRadioView() {
-        return this.isAttribute() && _.isEqual(this.getView(), 'Radio');
+        return this.isAttributeView('Radio');
+    }
+
+    isSwitchView() {
+        return this.isAttributeView('Switch');
     }
 
     isSliderView() {
-        return this.isAttribute() && _.isEqual(this.getView(), 'Slider');
+        return this.isAttributeView('Slider');
+    }
+
+    isAttributeView(view) {
+        return this.isAttribute() && _.isEqual(this.getView(), view);
     }
 
     /** 就是指number, string 這類的物件啦 */
@@ -1527,9 +1539,6 @@ class CodegenNode {
                 break;
             case 'listWrap':
                 viewName = this.getListWrapView();
-                break;
-            case 'label':
-                viewName = this.getSelectedCustomLabelView();
                 break;
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
@@ -3652,12 +3661,6 @@ class ComponentBuilder extends BaseBuilder {
             }
         }
 
-        /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
-        if (node.isStringOrNumberAttribute() && !node.isAppBarView() &&
-            !node.isSliderView() && !node.isTextField() && !node.isImageView()) {
-            contentStmts.push(`{self.handleTextString(${node.getFieldName()})}`);
-        }
-
         const className = node.getClassNameOfLessUsage('default');
         this.storeClassName({node, type: 'default'});
         const props = {
@@ -3744,7 +3747,6 @@ class ComponentBuilder extends BaseBuilder {
     generateEditFunctionCallback(node, generator) {
         if (node.isArray()) {
             const parentName = node.getPreciseAttributeParentName();
-
             if (node.hasPath()) {
                 generator.appendFunction(node.getFunctionNameOfItemEditor(), [node.getName()], [], [],
                     `const self =this`,
@@ -4483,7 +4485,7 @@ class AppBuilder extends ComponentBuilder {
 
                 if (isEditPage) {
                     const original = node.getOriginalClassNameOfLessUsage(type);
-                    const extendStmt = (type === 'default' && node.isTextField()) ? `BaseEditorTextField` : `${original.value}`
+                    const extendStmt = (type === 'default' && node.isTextFieldView()) ? `BaseEditorTextField` : `${original.value}`
                     const stmt = `.${preciselyClazzName}:extend(.${extendStmt}){${this.getVarietyDeviceStmts(existObj)}}`;
                     generator.appendInClassTail(`${stmt}`);
                 } else {
@@ -4567,7 +4569,7 @@ class AppBuilder extends ComponentBuilder {
                     const undefinedInFile = _.isEmpty(srcAttribute);
 
                     if (isEditPage) {
-                        if (type === 'default' && node.isTextField()) {
+                        if (type === 'default' && node.isTextFieldView()) {
                             const extendStmt = `:extend(.BaseEditorTextField all)`;
                             generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
                         } else {
@@ -5091,6 +5093,30 @@ class ProjectFileHandler extends PathBase {
     }
 
     enrichNodes(...nodes) {
+
+        function getStmtOfEventInValidate(node, functionName) {
+            const stmts = [];
+
+            if (node.isAttribute() && !node.disableOnChangeSetter) {
+                let paramStmt = '';
+                if (node.isSwitchView()) {
+                    paramStmt = `self.getCheckStateByEvent(event)`;
+                } else if (node.isTextFieldView()) {
+                    stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
+                    paramStmt = `latestValue`;
+                } else if (node.isSliderView()) {
+                    paramStmt = `getLatestValueByEvent(event)`;
+                } else {
+                    /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
+                }
+                if (!Util.isUndefinedNullEmpty(paramStmt))
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
+            }
+
+            stmts.push(`self.${functionName}({view:event${node.getParamStmtOfInvalidate()}})`);
+            return stmts.join('\n');
+        }
+
         for (const node of nodes) {
             if (node.isPathArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
@@ -5134,7 +5160,7 @@ class ProjectFileHandler extends PathBase {
                     case 'spinner':
                         node.setListView('TextField');
                         node.setView('MenuItem');
-                        node.appendListProps({select:true})
+                        node.appendListProps({select: true})
                         break;
                     case 'button':
                         node.setListView('ButtonGroup');
@@ -5151,29 +5177,17 @@ class ProjectFileHandler extends PathBase {
                         break;
                 }
 
-                for(const key in objectOfAppend) {
+                for (const key in objectOfAppend) {
                     node.appendChildrenWithJson(objectOfAppend[key]);
                 }
-            }
 
-            if (node.needTestButton()) {
-                node.appendChildrenWithJson({
-                    view: 'Button',
-                    type: 'string',
-                    name: 'testUsage',
-                    click: true,
-                    defaultValue: '測試按鈕'
-                })
-            }
-
-            function getStmtOfEventInValidate(node, functionName) {
-                return `self.${functionName}({view:event${node.getParamStmtOfInvalidate()}})`;
             }
 
             if (node.needOnChangeBehavior()) {
                 node.appendViewProps({
                     onChange: `###(event) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`
                 })
+
                 node.appendMethod({
                     functionName: node.getFunctionNameOfOnChanged(),
                     params: ['param'],
@@ -5181,79 +5195,26 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.isClickView()) {
-                node.appendMethod({
-                    functionName: node.getFunctionNameOfClicked(),
-                    params: ['param'],
-                    loginOnly: false,
-                })
-
-                const onClickStmts = [];
-                if (node.hasLoginRequiredDialog()) {
-                    onClickStmts.push(
-                        `if(!UserInfoRef.isLoginInSucceed()) {
-                        self.enableLoginConfirmDialog();
-                        return;
-                    }`
-                    )
-                }
-
-                if (node.hasConfirmDialog()) {
-                    onClickStmts.push(
-                        `${node.getViewParamVariable()} = param;
-                    ${node.getAlertDialogVariable()}.current.open()`)
-                } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
-                    onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)
-                } else {
-                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
-                }
-                node.appendViewProps({onClick: `###(event) => {${onClickStmts.join('\n')}}`})
-            }
-
-            /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
-            if (node.isImageView()) {
-                node.appendViewProps({src: `###${node.getName()}`})
-
-                if (node.needImageDialog) {
-                    node.appendViewProps({onClick: `###(param) => this.openImageDialog(${node.getName()})`})
-                }
-            }
-
-            if (node.isTextField()) {
+            if (node.isTextFieldView()) {
                 node.appendViewProps(
                     {label: `${node.getDescription()}`},
-                    {value: `###${node.getName()}`},
-                    {
-                        onChange: `###(event)=>{ 
-                        ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(
-                        ${node.isNumber() ? '_.toNumber(event.target.value)' : 'event.target.value'}
-                        )}`
-                    }
                 )
-                if (node.isNumber()) {
+
+                if (node.isTextFieldView() && node.isNumber()) {
                     node.appendViewProps({type: 'number'});
                     node.appendViewProps({InputLabelProps: {shrink: true}});
                 }
 
-                if (node.isString()) {
+                if (node.isTextFieldView() && node.isString()) {
                     node.appendViewProps({multiline: '###true'});
                 }
             }
 
-            if(node.isRadioView()) {
-                node.appendViewProps({value: `###${node.getName()}`})
-            }
-
-
-
-            if (node.isSliderView()) {
-                node.appendViewProps({value: `###${node.getName()}`})
-                node.appendViewProps({
-                    onChange: `###(event)=>{
-                const range = event.target.value;
-                ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(range);
-            }`
-                })
+            /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
+            if (node.isImageView()) {
+                if (node.needImageDialog) {
+                    node.appendViewProps({onClick: `###(param) => this.openImageDialog(${node.getName()})`})
+                }
             }
 
             if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
@@ -5299,7 +5260,18 @@ class ProjectFileHandler extends PathBase {
                 )
             }
 
-            if (node.isImageView() && node.needWatermark) {
+            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView()) {
+                node.appendViewProps({value: `###${node.getName()}`})
+            } else if (node.isSwitchView()) {
+                node.appendViewProps({checked: `###${node.getName()}`});
+            } else if (node.isImageView()) {
+                node.appendViewProps({src: `###${node.getName()}`})
+            } else if (node.isStringOrNumberAttribute() && !node.isAppBarView()) {
+                /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
+                node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
+            }
+
+            if (node.needWatermark) {
                 node.getParentNode().appendChildrenWithJson({
                     name: `${Util.camel(node.name, 'origin')}`,
                     type: `string`,
@@ -5309,6 +5281,16 @@ class ProjectFileHandler extends PathBase {
 
             if (node.hasAlertDialog() && _.isEmpty(node.raw.wrapView)) {
                 node.setWrapView('React.Fragment');
+            }
+
+            if (node.needTestButton()) {
+                node.appendChildrenWithJson({
+                    view: 'Button',
+                    type: 'string',
+                    name: 'testUsage',
+                    click: true,
+                    defaultValue: '測試按鈕'
+                })
             }
 
             if (node.ref) {
@@ -5332,6 +5314,36 @@ class ProjectFileHandler extends PathBase {
                     }
                 }
             }
+
+            if (node.isClickView()) {
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfClicked(),
+                    params: ['param'],
+                    loginOnly: false,
+                })
+
+                const onClickStmts = [];
+                if (node.hasLoginRequiredDialog()) {
+                    onClickStmts.push(
+                        `if(!UserInfoRef.isLoginInSucceed()) {
+                        self.enableLoginConfirmDialog();
+                        return;
+                    }`
+                    )
+                }
+
+                if (node.hasConfirmDialog()) {
+                    onClickStmts.push(
+                        `${node.getViewParamVariable()} = param;
+                    ${node.getAlertDialogVariable()}.current.open()`)
+                } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
+                    onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)
+                } else {
+                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
+                }
+                node.appendViewProps({onClick: `###(event) => {${onClickStmts.join('\n')}}`})
+            }
+
             this.enrichNodes(...node.getChildren());
         }
     }
@@ -5450,7 +5462,7 @@ class ProjectFileHandler extends PathBase {
                 delete node.view;
             }
 
-            if (node.isArray()) {
+            if (node.isArray() && node.hasPath()) {
                 node.disableSelectedArray();
 
                 if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
@@ -5480,8 +5492,6 @@ class ProjectFileHandler extends PathBase {
                    ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             }
-
-            node.clearContents();
 
             for (const child of node.getChildren()) {
                 if (!!!child.editIgnore)

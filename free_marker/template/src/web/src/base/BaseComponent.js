@@ -853,6 +853,17 @@ class BaseComponent extends React.Component {
         element.style.fontSize = `${nextValue}px`;
     }
 
+    getCheckStateByEvent(event) {
+        if (event && event.target)
+            return event.target.checked;
+        return false;
+    }
+
+    getLatestValueByEvent(event) {
+        if (event && event.target)
+            return event.target.value;
+        return '';
+    }
 
 }
 

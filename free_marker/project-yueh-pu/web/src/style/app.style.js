@@ -61,7 +61,17 @@ class AppStyle {
 
   /** => following for rhythm  component  */
 
-  RhythmAdjustCenterIsHideChordSwitch = {};
+  RhythmTestUsageButton = {};
+
+  RhythmAdjustCenterHideChordLabelTypography = {};
+
+  RhythmAdjustCenterHideChordToggleSwitch = {};
+
+  RhythmAdjustCenterHideChordFormControlLabel = {};
+
+  RhythmAdjustCenterTonalityMenuItem = {};
+
+  RhythmAdjustCenterTonalityTextFieldList = {};
 
   RhythmAdjustCenterShrinkButton = {};
 
@@ -75,7 +85,7 @@ class AppStyle {
 
   RhythmAdjustSwipeableDrawer = {};
 
-  RhythmGuitarpuContextTypography = {};
+  RhythmGuitarpuCurrentContextTypography = {};
 
   RhythmGuitarpuDivList = {};
 

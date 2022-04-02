@@ -61,7 +61,17 @@ class CommonStyle {
 
   /** => following for rhythm  component  */
 
-  RhythmAdjustCenterIsHideChordSwitch = {};
+  RhythmTestUsageButton = {};
+
+  RhythmAdjustCenterHideChordLabelTypography = {};
+
+  RhythmAdjustCenterHideChordToggleSwitch = {};
+
+  RhythmAdjustCenterHideChordFormControlLabel = {};
+
+  RhythmAdjustCenterTonalityMenuItem = {};
+
+  RhythmAdjustCenterTonalityTextFieldList = {};
 
   RhythmAdjustCenterShrinkButton = {};
 
@@ -75,7 +85,7 @@ class CommonStyle {
 
   RhythmAdjustSwipeableDrawer = {};
 
-  RhythmGuitarpuContextTypography = {};
+  RhythmGuitarpuCurrentContextTypography = {};
 
   RhythmGuitarpuDivList = {};
 

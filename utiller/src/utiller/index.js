@@ -129,7 +129,7 @@ class Utiller {
 
     or(...booleans) {
         for (const boo of booleans) {
-            if (!!boo)
+            if (_.isBoolean(boo) && boo)
                 return true;
         }
         return false;
@@ -539,6 +539,20 @@ class Utiller {
     isUndefinedNullEmpty(obj) {
         return obj === undefined || _.isEmpty(obj) || obj === null
     }
+
+    /** this method mutates segments */
+    getStringHandledByEachLine(string, predict = (segment, index, segments) => true) {
+        const segments = string.split('\n');
+        for (const segment of segments) {
+            predict(segment, _.indexOf(segments, segment), segments);
+        }
+        return segments.join('\n');
+    }
+
+    getSegmentsOfEachLine(string) {
+        return string.split('\n');
+    }
+
 
     /** 讓字串結尾必須是指定的 predicate, ex: `i'm good today?,,` => `i'm good today` */
     getNormalizedStringEndWith(string, predicate) {
