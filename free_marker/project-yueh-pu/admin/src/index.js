@@ -25,7 +25,7 @@ import moment from 'moment';
         const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
         await database.init();
         const top100 = Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
-            new Builder().gt('WEEK', 0).stmt()), (each) => each.WEEK, 'ASC'), 20);
+            new Builder().gt('WEEK', 0).stmt()), (each) => each.WEEK, 'ASC'), 100);
         console.log('top100 count => ', _.size(top100));
 
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');

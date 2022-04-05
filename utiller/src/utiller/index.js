@@ -128,7 +128,7 @@ class Utiller {
     }
 
     /** 取得reg match 第一個項目, 不然好煩呀 */
-    getStringOfHeadMatch(string,regex,flag = 'g'){
+    getStringOfHeadMatch(string, regex, flag = 'g') {
         const result = string.match(new RegExp(regex, flag));
         return this.isUndefinedNullEmpty(result) ? undefined : result[0]
     }
@@ -147,6 +147,16 @@ class Utiller {
                 return false;
         }
         return true;
+    }
+
+    /**
+     *
+     * const array = [1,2,3,4,5,6,7,8];
+     *  nth(array, -9)
+     *  // => 8
+     * */
+    nth(array, index = -1) {
+        return _.nth(array, index % _.size(array));
     }
 
     /** 選一個exsist的candidate回傳, 像是firebase 可以 idToken 又可以 oauthIdToken*/
@@ -190,6 +200,31 @@ class Utiller {
             return collection.indexOf(item) > -1;
         }
         return false;
+    }
+
+    /** 就是比較_.isEqual(isEqual的註解很重要), 不是用address去判斷 */
+    containsBy(array, item) {
+        return _.findIndex(array, (each) => _.isEqual(each, item)) >= 0
+    }
+
+    /** (Parentheses) */
+    getStringOfInsideParentheses(string, rule = `.`) {
+        return this.getStringOfRule(string, rule, '(', ')');
+    }
+
+    /** [Brackets] */
+    getStringOfInsideBrackets(string, rule = `.`) {
+        return this.getStringOfRule(string, rule, '[', ']');
+    }
+
+    /** {Braces} */
+    getStringOfInsideBraces(string, rule = `.`) {
+        return this.getStringOfRule(string, rule, '{', '}');
+    }
+
+    /** rules 只抓文字 [\\w] |*/
+    getStringOfRule(string, rule = `.`, left = '{', right = '}') {
+        return this.getStringOfHeadMatch(string, `(?<=\\${left})${rule}+?(?=\\${right})`)
     }
 
     getRandomHash(size = 30) {
@@ -1036,7 +1071,7 @@ class Utiller {
         }
         return collection;
     }
-
+    /**
     getObjectWhile(major, minor, predicate = (target) => true) {
         const collection = {};
         for (const key in major) {
@@ -1124,6 +1159,25 @@ class Utiller {
         return object;
     }
 
+    /**
+     * 用來檢查string是否包含字元
+     * string = '|C    G/B|'
+     * signs = ['/','$']
+     * return ==> {exist:true,sign:'/'}
+     *
+     * @param string
+     * @param signs
+     * @returns {{exists: boolean}|{sign: *, exists: boolean}}
+     */
+    getStateOfStringContainsSign(string, ...signs) {
+        for (const sign of signs) {
+            if (this.has(string, sign)) {
+                return {exists: true, sign};
+            }
+        }
+        return {exists: false};
+    }
+
     /** others returns  [{logic:true|false,message:'oops'}]
      *  */
     constraintOfParam(collection, type, ...others) {
@@ -1163,6 +1217,8 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const util = new Utiller();
+            // console.log(util.nth([1,2,3],-1000));
+            // console.log(util.containsBy(['A', 'V', 'C'], 'C'))
             // console.log('why ==> ',new ERROR(1234))
             // util.getStringOfPop([],',');
             // util.constraintOfParam([], 'array',{logic:_.size([]) > 1, message:'should larger than 1'});

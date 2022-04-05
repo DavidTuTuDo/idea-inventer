@@ -67,8 +67,9 @@ if (configerer.DEBUG_MODE) {
                 });
             }
 
-            await runTaskWithTimeout();
-
+            // await runTaskWithTimeout();
+            // const array = [1,2,3,4,5,6,7,8];
+            // console.log(_.nth(array,-9 % _.size(array)));
             // const ddd = [];
             // console.log(ddd.shift());
             // const sss = true;

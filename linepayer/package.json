@@ -19,7 +19,7 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "query-string": "^7.0.1",
-    "utiller": "^1.0.85",
+    "utiller": "^1.0.103",
     "uuid": "^3.3.3"
   },
   "devDependencies": {

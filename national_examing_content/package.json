@@ -15,7 +15,7 @@
     "databazer": "^1.0.9",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller": "^1.0.85"
+    "utiller": "^1.0.103"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

@@ -5587,6 +5587,13 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
         await new AppBuilder(paramProps).buildAppIndexFiles();
         this.buildDistAssetFolder();
+    }
+
+    async buildLessToCss() {
+        const files = Util.findFilePathBy(this.genSourcePath,(file) => _.isEqual(file.extension,'less'));
+        for(const each of files){
+            await Util.executeCommandLine(`lessc ${each.absolute} ${libpath.join(each.dirPath,`${each.fileName}.css`)}`);
+        }
 
     }
 
@@ -5652,6 +5659,7 @@ class ProjectFileHandler extends PathBase {
         await this.removeEmptyFolder();
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
+        await this.buildLessToCss();
     }
 
     async functionsGenerateRelease() {
@@ -5836,6 +5844,11 @@ class BuildApplication {
         await handler.generateFireIndexRules();
     }
 
+    async buildLessToCss() {
+        const handler = new ProjectFileHandler(this.getBuildObject('web'))
+        await handler.buildLessToCss()
+    }
+
     async buildStorageRule() {
         const handler = new ProjectFileHandler(this.getBuildObject('admin'))
         await handler.generateStorageRules();
@@ -5951,6 +5964,7 @@ if (configerer.DEBUG_MODE) {
                     break;
                 default:
                     Util.appendInfo('jo4你');
+                    await builder.buildLessToCss();
                     break
             }
 
