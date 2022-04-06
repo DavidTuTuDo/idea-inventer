@@ -26,6 +26,7 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 
 const CURRENT_PROJECT = './project-yueh-pu';
+const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -94,7 +95,7 @@ class CodegenNode {
 
     nameOfProp = {
         name: '',
-        functionalized: true
+        functionalized: false
     }
     /** 如果child view是定義在props
      * 例如 <FormControlLabel label=<TypoGraphy item={child}/>,就要定義在這裡
@@ -896,7 +897,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['.name', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -3430,7 +3431,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (node) {
                 if (useViewModuleAndComponentModuleMechanism) {
-                    generator.appendImport(node.getViewClassNameOfRenderView(), node.isComponentNode() ?
+                    generator.appendImport(node.zClassNameOfRenderView(), node.isComponentNode() ?
                         `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}` :
                         `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
                 }
@@ -3518,14 +3519,13 @@ class ComponentBuilder extends BaseBuilder {
         /** */
         function getJsxViewStmt(node) {
             const props = {}
-            const simpleProps = [];
             const param = node.getParamOfRenderView();
             if (!_.isEmpty(param)) {
                 props[param] = `###${param}`
             }
 
-            if (node.isViewPropsFunctionalized()) {
-                simpleProps.push('...params');
+            if(node.isViewPropsFunctionalized()) {
+                props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
 
             const viewJsxStmt = self.getJSXStrings({
@@ -3533,7 +3533,6 @@ class ComponentBuilder extends BaseBuilder {
                 customViewNode: node,
                 tag: node.getViewClassNameOfRenderView(),
                 typeOfClass: 'component',
-                simpleProps,
                 props,
             })
             return viewJsxStmt;
@@ -3690,7 +3689,7 @@ class ComponentBuilder extends BaseBuilder {
 
             function appendParamStmt(node) {
                 if (node.isViewPropsFunctionalized()) {
-                    return `(params) => `
+                    return `(${STRING_OF_INJECT_PARAM}) => `
                 }
                 return ''
             }
@@ -3715,7 +3714,7 @@ class ComponentBuilder extends BaseBuilder {
             className,
             ...node.getViewProps(),
         };
-        const simpleProps = [];
+        const simpleProps = node.simpleProps;
 
         if (node.needInjectView()) {
             const param = node.getObservableName();
@@ -3934,11 +3933,20 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendFunctionWithFields(node) {
+
+            function getStringOfParamOfRenderView(node) {
+                const params = [node.getParamOfRenderView()];
+                if(node.isViewPropsFunctionalized()) {
+                    params.push(STRING_OF_INJECT_PARAM);
+                }
+                return params.join(',');
+            }
+
             generator.appendFunction({
                     name: node.getViewClassNameOfRenderView(),
                     arrow: true,
                     decorator: 'observer',
-                }, [`{${node.getParamOfRenderView()}}`], [], [],
+                }, [`{${getStringOfParamOfRenderView(node)}}`], [], [],
                 ...getContentStmt(node, generator)
             )
         }
@@ -5332,6 +5340,10 @@ class ProjectFileHandler extends PathBase {
 
             if (node.hasAlertDialog() && _.isEmpty(node.raw.wrapView)) {
                 node.setWrapView('React.Fragment');
+            }
+
+            if(node.isViewPropsFunctionalized()) {
+                node.simpleProps.push(`...${STRING_OF_INJECT_PARAM}`);
             }
 
             if (node.needTestButton()) {
