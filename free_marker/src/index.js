@@ -476,6 +476,7 @@ class CodegenNode {
         return this.isViewDefinedInProps() && _.isEqual(this.nameOfProp.functionalized, true);
     }
 
+
     setType(type) {
         this.type = type;
     }
@@ -1291,6 +1292,10 @@ class CodegenNode {
 
     isTextFieldView() {
         return this.isAttributeView('TextField');
+    }
+
+    isAutoCompleteView() {
+        return this.isAttributeView('Autocomplete')
     }
 
     isRadioView() {
@@ -3524,7 +3529,7 @@ class ComponentBuilder extends BaseBuilder {
                 props[param] = `###${param}`
             }
 
-            if(node.isViewPropsFunctionalized()) {
+            if (node.isViewPropsFunctionalized()) {
                 props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
 
@@ -3780,7 +3785,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
                 generator,
-                props:propOfWrap,
+                props: propOfWrap,
                 typeOfClass: 'component',
                 contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
             })
@@ -3936,7 +3941,7 @@ class ComponentBuilder extends BaseBuilder {
 
             function getStringOfParamOfRenderView(node) {
                 const params = [node.getParamOfRenderView()];
-                if(node.isViewPropsFunctionalized()) {
+                if (node.isViewPropsFunctionalized()) {
                     params.push(STRING_OF_INJECT_PARAM);
                 }
                 return params.join(',');
@@ -5255,8 +5260,17 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isTextFieldView()) {
+                const nameOfDescription = Util.camel(`label`,`of`,node.getName());
+                node.getParentNode().appendChildrenWithJson(
+                    {
+                        name: nameOfDescription,
+                        type: 'string',
+                        defaultValue: node.getDescription(),
+                    }
+                )
+
                 node.appendViewProps(
-                    {label: `${node.getDescription()}`},
+                    {label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDescription)}()`},
                 )
 
                 if (node.isTextFieldView() && node.isNumber()) {
@@ -5330,6 +5344,29 @@ class ProjectFileHandler extends PathBase {
                 node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
             }
 
+            if (node.isAutoCompleteView()) {
+                const name = `suggest${node.getName()}`;
+                const plural = 's';
+                const fieldName = `${name}s`;
+                node.getParentNode().appendChildrenWithJson({
+                    name,
+                    type: `array`,
+                    plural,
+                    children: [
+                        {
+                            type: 'string',
+                            name: 'value',
+                        }, {
+                            type: 'string',
+                            name: 'label',
+                        }
+                    ]
+                })
+                node.appendViewProps({
+                    options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
+                })
+            }
+
             if (node.needWatermark) {
                 node.getParentNode().appendChildrenWithJson({
                     name: `${Util.camel(node.name, 'origin')}`,
@@ -5342,7 +5379,7 @@ class ProjectFileHandler extends PathBase {
                 node.setWrapView('React.Fragment');
             }
 
-            if(node.isViewPropsFunctionalized()) {
+            if (node.isViewPropsFunctionalized()) {
                 node.simpleProps.push(`...${STRING_OF_INJECT_PARAM}`);
             }
 
