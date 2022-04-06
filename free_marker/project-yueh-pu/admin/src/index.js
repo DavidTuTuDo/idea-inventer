@@ -26,13 +26,13 @@ import moment from 'moment';
         await database.init();
         const top100 = Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
             new Builder().gt('WEEK', 0).stmt()), (each) => each.WEEK, 'ASC'), 100);
-        console.log('top100 count => ', _.size(top100));
+        // console.log('top100 count => ', _.size(top100));
 
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
         console.log(_.size(mapOfUrlNContent));
         const urls = top100.map((each) => each.url)
         const tones = await database.fetchRecords('TONE', new Builder().in('url', ...urls).stmt());
-        console.log('tones count => ', _.size(tones));
+        // console.log('tones count => ', _.size(tones));
 
         for (const each of tones) {
 
@@ -108,7 +108,6 @@ import moment from 'moment';
             capo: getFirstNumber(string),
             tonalityOfContext: getStringOfBrace(string)
         }
-
         return obj;
     }
 

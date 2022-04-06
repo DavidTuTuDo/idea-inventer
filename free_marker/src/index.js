@@ -55,9 +55,22 @@ const LESS_MODULES = [
 
 const VIEW_IMPORTS =
     [
+
+        {
+            from: `@material-ui/icons/menu`,
+            views: ['MenuIcon'],
+            simplePath: true, /** 就是只要material-ui/icons/menu */
+
+        },
+        {
+            from: `@material-ui/icons/Search`,
+            views: ['SearchIcon'],
+            simplePath: true, /** 就是只要material-ui/icons/Search */
+        }
+        ,
         {
             from: `@material-ui/core`,
-            views: ['Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List']
         },
@@ -73,12 +86,25 @@ class CodegenNode {
 
     simpleSwitch; //{label,defaultValue};
 
+    simpleProps = [];
+    /** 有些props沒有key <View {...params} 就要定義在這裡*/
+
     /** Switch之類的元件 在onChange會更動store setter,如果要disable, 要設為true*/
     disableOnChangeSetter = false;
 
-    nameOfProp
+    nameOfProp = {
+        name: '',
+        functionalized: true
+    }
     /** 如果child view是定義在props
-     * 例如 <FormControlLabel label=<TypoGraphy item={child}/>,就要定義在這裡 */
+     * 例如 <FormControlLabel label=<TypoGraphy item={child}/>,就要定義在這裡
+     *
+     * nameOfProp = {
+     *  name:'label',
+     *  functionalized =>  <FormControlLabel label=(param)<TypoGraphy item={child,param}/>
+     * }
+     *
+     * */
 
     methods = [];
     /** [...{params = [],functionName = 'string',loginOnly = false}]
@@ -441,7 +467,12 @@ class CodegenNode {
 
 
     isViewDefinedInProps() {
-        return !!this.nameOfProp;
+        return this.nameOfProp && !Util.isUndefinedNullEmpty(this.nameOfProp.name);
+    }
+
+    /** (params) => (params) => <CustomView {...params} />*/
+    isViewPropsFunctionalized() {
+        return this.isViewDefinedInProps() && _.isEqual(this.nameOfProp.functionalized, true);
     }
 
     setType(type) {
@@ -865,7 +896,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['.name', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1190,7 +1221,7 @@ class CodegenNode {
         return !!this.injectView && this.injectView;
     }
 
-    needInjectProps() {
+    needInjectPropsCallBack() {
         return !!this.injectProps && this.injectProps;
     }
 
@@ -1832,16 +1863,16 @@ class CodegenNode {
     }
 
     getParamOfRenderView() {
-        let param = '';
+        const params = [];
         if (this.isAttribute() && this.isArrayItem()) {
-            param = this.getName();
+            params.push(this.getName());
         } else if (this.allowOfParam()) {
             const node = this.getPreciseAttributeParent();
             if (node.isValidNode())
-                param = node.getName();
+                params.push(node.getName());
         }
 
-        return param;
+        return params.join(',');
     }
 
     getViewClassNameOfRenderView() {
@@ -3193,7 +3224,7 @@ class ComponentBuilder extends BaseBuilder {
 
         const baseGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${baseClassName}.js`));
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
-
+        // baseGenerator.appendImport(`{styled, alpha}`, '@mui/material/styles');
         baseGenerator.appendClass(baseClassName,
             (componentNode.isEditPage() || componentNode.needEditorBase) ? {
                 name: 'BaseEditorComponent',
@@ -3207,7 +3238,6 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendFunction('getComponentName', [], [], [], `return '${className}'`)
 
         this.importComponentDefault(baseGenerator);
-        baseGenerator.appendImport('MenuIcon', `@material-ui/icons/menu`);
         baseGenerator.appendImport('Style', '../../style');
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
@@ -3364,6 +3394,7 @@ class ComponentBuilder extends BaseBuilder {
      * ////////////// sample: ///////////////
      praam :{
             tag: node.view,
+            simpleProps = [...string], 就是沒有key的prop {...params};
             props: { style: {height: 80},className:'className' }, ### means 不需要 single quatation
             contents: [`Util.appendInfo()`,`Util.appendError()`],
             children:['children1','children2'],
@@ -3408,14 +3439,16 @@ class ComponentBuilder extends BaseBuilder {
             if (_.isEqual(param.typeOfClass, 'component')) {
                 for (const _import of VIEW_IMPORTS) {
                     if (Util.has(_import.views, param.tag)) {
-                        param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag, `${_import.from}${_import.object ? `` : `/${param.tag}`}`)
+                        param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag,
+                            `${_import.from}${_import.object | _import.simplePath ? `` : `/${param.tag}`}`)
                     }
                 }
             }
 
         }
 
-        const props = param.props;
+        const props = param.props ?? {};
+        const simpleProps = param.simpleProps ?? [];
         const contents = param.contents ? param.contents : [];
         const children = param.children ? param.children : [];
         const stmt = [];
@@ -3441,11 +3474,11 @@ class ComponentBuilder extends BaseBuilder {
             } else {
                 if (!!!props[key]) continue
             }
+            stmt.push(`${key}=${normalize(props[key])}\n`);
+        }
 
-            if (_.isEqual(key, 'injectProps'))
-                stmt.push(`{${props[key]}}`)
-            else
-                stmt.push(`${key}=${normalize(props[key])}\n`);
+        for (const prop of simpleProps) {
+            stmt.push(`{${prop}}`)
         }
 
         if (_.isEmpty(contents)) {
@@ -3482,11 +3515,17 @@ class ComponentBuilder extends BaseBuilder {
          **/
         const self = this;
 
+        /** */
         function getJsxViewStmt(node) {
             const props = {}
+            const simpleProps = [];
             const param = node.getParamOfRenderView();
             if (!_.isEmpty(param)) {
                 props[param] = `###${param}`
+            }
+
+            if (node.isViewPropsFunctionalized()) {
+                simpleProps.push('...params');
             }
 
             const viewJsxStmt = self.getJSXStrings({
@@ -3494,6 +3533,7 @@ class ComponentBuilder extends BaseBuilder {
                 customViewNode: node,
                 tag: node.getViewClassNameOfRenderView(),
                 typeOfClass: 'component',
+                simpleProps,
                 props,
             })
             return viewJsxStmt;
@@ -3648,8 +3688,16 @@ class ComponentBuilder extends BaseBuilder {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
 
+            function appendParamStmt(node) {
+                if (node.isViewPropsFunctionalized()) {
+                    return `(params) => `
+                }
+                return ''
+            }
+
             if (child.isViewDefinedInProps()) {
-                node.props[child.nameOfProp] = `###${getJsxViewStmt(child).join('\n')}`;
+                /** label = <Typography /> */
+                node.props[child.nameOfProp.name] = `###${appendParamStmt(child)}${getJsxViewStmt(child).join('\n')}`;
                 continue;
             }
 
@@ -3667,6 +3715,7 @@ class ComponentBuilder extends BaseBuilder {
             className,
             ...node.getViewProps(),
         };
+        const simpleProps = [];
 
         if (node.needInjectView()) {
             const param = node.getObservableName();
@@ -3681,11 +3730,11 @@ class ComponentBuilder extends BaseBuilder {
             props.style = `###{...${JSON.stringify(node.getStyle())},...Style.${className}}`;
         }
 
-        if (node.needInjectProps()) {
+        if (node.needInjectPropsCallBack()) {
             const param = node.getObservableName();
-            const injectProps = node.getFunctionNameOfInjectProps();
-            props['injectProps'] = `...self.${injectProps}(${param})`
-            generator.appendFunction(injectProps, [param]);
+            const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
+            simpleProps.push(`...self.${functionNameOfInjectProps}(${param})`);
+            generator.appendFunction(functionNameOfInjectProps, [param]);
         }
 
         if (node.isArray()) {
@@ -3696,6 +3745,7 @@ class ComponentBuilder extends BaseBuilder {
             tag: node.getView(true),
             generator,
             props,
+            simpleProps,
             typeOfClass: 'component',
             contents: [...contentStmts, ...node.getContents()],
         });
@@ -3704,7 +3754,8 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: 'ScrollingHideWrap',
                 typeOfClass: 'component',
-                props: {injectProps: '...self.props'},
+                props,
+                simpleProps: ['...self.props'],
                 contents: [...origin]
             })
         }
@@ -3714,23 +3765,23 @@ class ComponentBuilder extends BaseBuilder {
             this.storeClassName({node, type: 'wrap'});
 
 
-            const props = {
+            const propOfWrap = {
                 className: `${clazzName}`,
                 style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`,
                 ...node.getWrapProps(),
             }
 
             if (node.needWrapInjectStyle()) {
-                injectStyleBehavior(node, props, clazzName, true);
+                injectStyleBehavior(node, propOfWrap, clazzName, true);
             } else {
-                props.style = `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`;
+                propOfWrap.style = `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`;
             }
 
 
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
                 generator,
-                props,
+                props:propOfWrap,
                 typeOfClass: 'component',
                 contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
             })
@@ -3928,6 +3979,7 @@ class ComponentBuilder extends BaseBuilder {
                 appendFunctionWithFields(node);
             if (useViewModuleAndComponentModuleMechanism)
                 generateViewClass(node)
+
         }
 
         if (node.hasCustomViewDialog()) {
@@ -3962,7 +4014,6 @@ class ComponentBuilder extends BaseBuilder {
                     `Util.appendError('${method.functionName} not override')`
                 )
             }
-
 
             if (child.isArray()) {
                 if (child.hasPaginate()) {
@@ -4240,9 +4291,7 @@ class AppBuilder extends ComponentBuilder {
         const providerStmt = this.getJSXStrings({
             tag: 'Provider',
             generator: appGenerator,
-            props: {
-                injectProps: '...this.getStoreObject()'
-            },
+            simpleProps: ['...this.getStoreObject()'],
             contents: [this.nodeOfAncestor.hasNavigation() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt]
         })
 
@@ -5171,9 +5220,11 @@ class ProjectFileHandler extends PathBase {
                         node.setListView('RadioGroup');
                         node.setView('FormControlLabel');
                         objectOfAppend.label.view = 'Typography';
-                        objectOfAppend.label.nameOfProp = 'label';
+                        objectOfAppend.label.nameOfProp = {};
+                        objectOfAppend.label.nameOfProp.name = 'label';
                         objectOfAppend.value.view = 'Radio';
-                        objectOfAppend.value.nameOfProp = 'control';
+                        objectOfAppend.value.nameOfProp = {};
+                        objectOfAppend.value.nameOfProp.name = 'control';
                         break;
                 }
 
@@ -5590,9 +5641,9 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildLessToCss() {
-        const files = Util.findFilePathBy(this.genSourcePath,(file) => _.isEqual(file.extension,'less'));
-        for(const each of files){
-            await Util.executeCommandLine(`lessc ${each.absolute} ${libpath.join(each.dirPath,`${each.fileName}.css`)}`);
+        const files = Util.findFilePathBy(this.genSourcePath, (file) => _.isEqual(file.extension, 'less'));
+        for (const each of files) {
+            await Util.executeCommandLine(`lessc ${each.absolute} ${libpath.join(each.dirPath, `${each.fileName}.css`)}`);
         }
 
     }
