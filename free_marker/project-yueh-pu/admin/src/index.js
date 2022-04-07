@@ -25,24 +25,22 @@ import moment from 'moment';
         const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
         await database.init();
         const top100 = Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
-            new Builder().gt('WEEK', 0).stmt()), (each) => each.WEEK, 'ASC'), 100);
-        // console.log('top100 count => ', _.size(top100));
-
+            new Builder().gt('WEEK', 0).orderBy({WEEK:'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), 100);
+        console.log('top100 count => ', _.size(top100));
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
         console.log(_.size(mapOfUrlNContent));
         const urls = top100.map((each) => each.url)
         const tones = await database.fetchRecords('TONE', new Builder().in('url', ...urls).stmt());
-        // console.log('tones count => ', _.size(tones));
+        console.log('tones count => ', _.size(tones));
 
         for (const each of tones) {
 
             const objOfTones = getMapOfTonalitySpeed(each.tkInfo);
             const objOfCapoTone = getCapoAndContextTonality(each.capoLevel);
             const info = {name: each.name, ...objOfCapoTone, ...objOfTones};
-            console.log(info);
-
-            console.log('capo  ', _.toNumber(info.capo));
-            console.log('speed  ', _.toNumber(info['速度']));
+            // console.log(info);
+            // console.log('capo  ', _.toNumber(info.capo));
+            // console.log('speed  ', _.toNumber(info['速度']));
             /** get uid after submit tone */
             const result = await api.submitGuitarpuItem({
                 currentContext: each.tone,
@@ -108,6 +106,7 @@ import moment from 'moment';
             capo: getFirstNumber(string),
             tonalityOfContext: getStringOfBrace(string)
         }
+
         return obj;
     }
 

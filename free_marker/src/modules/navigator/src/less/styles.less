@@ -62,10 +62,49 @@
   }
 }
 .NavigatorAppBarToolBarTitleTypography {
-  flex-grow: 1;
+  width: 80px;
   font-size: 1.4rem;
   @media @mobile {
     font-size: 1rem;
+    width: 50px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarCompleteAutocomplete {
+  flex-grow: 1;
+  margin-right: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarCompleteInputTextField {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  @media @mobile {
+    width: 95%;
+  }
+  @media @tablet {
+    width: 95%;
+  }
+  @media @desktop {
+    width: 70%;
+    max-width: 500px;
+  }
+}
+.NavigatorAppBarToolBarCompleteInputFormWrap {
+  @media @mobile {
+    /** empty style */
   }
   @media @tablet {
     /** empty style */

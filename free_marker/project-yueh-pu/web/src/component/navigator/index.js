@@ -34,8 +34,8 @@ const useStyles = theme => ({
   paper: {
     marginTop: "50px",
     width: isMobile? '55%': '40%',
-    backgroundColor: '#000000'
-  }
+    backgroundColor: '#000000',
+  },
 });
 
 @inject("navigator")

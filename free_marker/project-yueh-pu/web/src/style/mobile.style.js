@@ -47,6 +47,12 @@ class MobileStyle {
 
   NavigatorAppBarToolBarToEditModeButton = {};
 
+  NavigatorAppBarToolBarCompleteInputFormWrap = {};
+
+  NavigatorAppBarToolBarCompleteInputTextField = {};
+
+  NavigatorAppBarToolBarCompleteAutocomplete = {};
+
   NavigatorAppBarToolBarTitleTypography = {};
 
   NavigatorAppBarToolBarMenuIconMenuIcon = {};
@@ -69,9 +75,13 @@ class MobileStyle {
 
   RhythmAdjustCenterHideChordFormControlLabel = {};
 
-  RhythmAdjustCenterTonalityMenuItem = {};
+  RhythmAdjustCenterCapoLevelTypography = {};
 
-  RhythmAdjustCenterTonalityTextFieldList = {};
+  RhythmAdjustCenterToOriginalTonalityButton = {};
+
+  RhythmAdjustCenterToFemaleTonalityButton = {};
+
+  RhythmAdjustCenterToMaleTonalityButton = {};
 
   RhythmAdjustCenterShrinkButton = {};
 

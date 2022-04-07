@@ -87,6 +87,9 @@ class CodegenNode {
 
     simpleSwitch; //{label,defaultValue};
 
+    search = false;
+    /** 讓手機(android ios)keyboard產生搜尋按鈕,  產生onXXXSearchPress(), */
+
     simpleProps = [];
     /** 有些props沒有key <View {...params} 就要定義在這裡*/
 
@@ -1451,6 +1454,16 @@ class CodegenNode {
         this.listProps = props;
     }
 
+    appendWrapProps(...props) {
+        for (const prop of props) {
+            this.wrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
+        }
+    }
+
+    setWrapProps(props = {}) {
+        this.wrapProps = props;
+    }
+
     appendListProps(...props) {
         for (const prop of props) {
             this.listProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
@@ -1609,6 +1622,10 @@ class CodegenNode {
 
     getFunctionNameOfClicked() {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'clicked');
+    }
+
+    getFunctionNameOfSearchPressed() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'search', 'pressed');
     }
 
     getPath() {
@@ -3279,7 +3296,7 @@ class ComponentBuilder extends BaseBuilder {
 
             baseGenerator.appendFunction(
                 functionNameOfImpl, [...eventParams], [], [],
-                `Util.appendError('${functionNameOfImpl} not implemented')`
+                `Util.appendInfo('${functionNameOfImpl} not implemented')`
             )
 
             baseGenerator.appendFunction(
@@ -5260,7 +5277,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isTextFieldView()) {
-                const nameOfDescription = Util.camel(`label`,`of`,node.getName());
+                const nameOfDescription = Util.camel(`label`, `of`, node.getName());
                 node.getParentNode().appendChildrenWithJson(
                     {
                         name: nameOfDescription,
@@ -5273,13 +5290,35 @@ class ProjectFileHandler extends PathBase {
                     {label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDescription)}()`},
                 )
 
-                if (node.isTextFieldView() && node.isNumber()) {
+                if (node.isNumber()) {
                     node.appendViewProps({type: 'number'});
                     node.appendViewProps({InputLabelProps: {shrink: true}});
                 }
 
-                if (node.isTextFieldView() && node.isString()) {
+                if (node.isString() && !node.search) {
                     node.appendViewProps({multiline: '###true'});
+                }
+
+                if (node.search) {
+                    /** <form action={.} />*/
+                    node.setWrapView('form');
+                    node.appendWrapProps({action: '.'})
+
+                    /** onSearchPress() */
+                    node.appendViewProps({
+                        onKeyPress: `###(event) => {
+                        if(_.isEqual(event.key ,'Enter'))
+                            self.${node.getFunctionNameOfSearchPressed()}(${node.getFieldName()},${node.getPreciseAttributeParentName()}) 
+                    }`
+                    })
+
+                    node.appendMethod({
+                        functionName: node.getFunctionNameOfSearchPressed(),
+                        params: [node.getFieldName(), node.getPreciseAttributeParentName()],
+                        loginOnly: node.hasLoginRequiredDialog(),
+                    })
+                    /** TextField type={`search`}*/
+                    node.appendViewProps({type: 'search'})
                 }
             }
 
@@ -5345,7 +5384,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isAutoCompleteView()) {
-                const name = `suggest${node.getName()}`;
+                const name = Util.camel(`suggest`, node.getName());
                 const plural = 's';
                 const fieldName = `${name}s`;
                 node.getParentNode().appendChildrenWithJson({
@@ -5356,9 +5395,26 @@ class ProjectFileHandler extends PathBase {
                         {
                             type: 'string',
                             name: 'value',
+                            description: '內容'
                         }, {
                             type: 'string',
                             name: 'label',
+                            description: '顯示在屏幕上'
+                        },
+                        {
+                            type: 'string',
+                            name: 'type',
+                            description: '用來當作額router'
+                        },
+                        {
+                            name: 'priority',
+                            type: 'number',
+                            description: '搜尋的排序'
+                        },
+                        {
+                            type: 'string',
+                            name: 'extra',
+                            description: '用來當作額外判斷資訊'
                         }
                     ]
                 })
@@ -5419,7 +5475,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendMethod({
                     functionName: node.getFunctionNameOfClicked(),
                     params: ['param'],
-                    loginOnly: false,
+                    loginOnly: node.hasLoginRequiredDialog(),
                 })
 
                 const onClickStmts = [];

@@ -59,7 +59,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     @action
     updateEditButtonStatus() {
         const self = this;
-        let editButton = UserInfo.isAdmin() ? '編輯模式' : '無功能按鍵';
+        let editButton = UserInfo.isAdmin() ? '編輯' : '無';
         self.getAppBar().getToolBar().setToEditMode(editButton);
     }
 

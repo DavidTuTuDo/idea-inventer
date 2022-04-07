@@ -48,7 +48,10 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
   }
 
   getInjectStyleOfNavigatorAppBarToolBarToEditModeButton(toolBar) {
-    return Util.getVisibleOrHidden(UserInfo.isAdmin())
+    // if(isMobile) return Util.getVisibleOrNone(false);
+    const result = Util.getVisibleOrHidden(UserInfo.isAdmin());
+    console.log('result ==> ', result);
+    return result;
   }
 
   componentDidMount() {
