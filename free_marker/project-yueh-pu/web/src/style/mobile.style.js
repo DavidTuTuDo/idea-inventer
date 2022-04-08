@@ -9,6 +9,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorWeekPopularIdOfSingerTextField = {};
@@ -66,8 +68,6 @@ class MobileStyle {
   NavigatorDiv = {};
 
   /** => following for rhythm  component  */
-
-  RhythmTestUsageButton = {};
 
   RhythmAdjustCenterHideChordLabelTypography = {};
 

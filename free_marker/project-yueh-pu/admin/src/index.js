@@ -14,18 +14,22 @@ import moment from 'moment';
 
     const api = new Api();
     const listener = new Listener();
-
+    const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
+    await database.init();
     /** 找出週 rank*/
+
+    async function fetchTopSongsOfRank(n) {
+        Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
+            new Builder().gt('WEEK', 0).orderBy({WEEK:'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
+    }
 
     /** 找出週 rank 對應的tone*/
     async function deployWeekPopular() {
         await api.deleteWeekPopulars(true);
         await api.deleteGuitarpus(true);
 
-        const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
-        await database.init();
-        const top100 = Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
-            new Builder().gt('WEEK', 0).orderBy({WEEK:'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), 100);
+
+        const top100 = await fetchTopSongsOfRank(100)
         console.log('top100 count => ', _.size(top100));
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
         console.log(_.size(mapOfUrlNContent));
@@ -34,7 +38,6 @@ import moment from 'moment';
         console.log('tones count => ', _.size(tones));
 
         for (const each of tones) {
-
             const objOfTones = getMapOfTonalitySpeed(each.tkInfo);
             const objOfCapoTone = getCapoAndContextTonality(each.capoLevel);
             const info = {name: each.name, ...objOfCapoTone, ...objOfTones};
@@ -65,6 +68,24 @@ import moment from 'moment';
             }
             /** submit weekPopular with tone uid */
         }
+    }
+
+    async function deployKeyword()  {
+        console.log(Util.getArrayOfSize((await  api.fetchKeywords()).map(each => { return { title:each.label,priority:each.priority}}),100));
+        return;
+
+        await api.deleteKeywords(true);
+        const songs = await database.fetchRecords(`SONG`,
+            new Builder().gt('popularLevel',0).orderBy({popularLevel:`DESC`}).limit(1000).stmt());
+        console.log(songs);
+        await api.submitKeywords(
+            ...songs.map((song) => {return {
+             value:song.name,
+             priority:song.popularLevel,
+             label:song.name,
+            }})
+
+        )
     }
 
     /**
@@ -117,7 +138,8 @@ import moment from 'moment';
         Util.appendFile('./pu.raw', decrypt, true, true);
     }
 
-    await deployWeekPopular();
+    // await deployWeekPopular();
+    await deployKeyword();
     // await printRawText();
     // Util.getStringOfPop(undefined,',');
 })();

@@ -41,9 +41,15 @@ const useStyles = theme => ({
 @inject("navigator")
 @observer
 class NavigatorComponent extends ModularizedNavigatorComponent {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
 
+    onNavigatorAppBarToolBarCompleteInputTextFieldSearchPressed(input, complete) {
+      /** 先判斷autoComplete 有沒有selectedItem()
+       *
+       * 沒有的話再用 getInput() 去搜尋
+       * */
+
+      console.log(complete.getInput());
+    }
 }
 
 export default withStyles(useStyles)

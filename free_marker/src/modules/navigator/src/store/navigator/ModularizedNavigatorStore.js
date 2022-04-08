@@ -10,6 +10,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
+import Fuse from 'fuse.js';
 import {
     makeAutoObservable,
     makeObservable,
@@ -109,8 +110,16 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         this.setState('stable');
     }
 
-    /** -------------------- async api -------------------- **/
-    /** -------------------- async api -------------------- **/
+    async invalidateSuggestion(keyword) {
+        if (!Util.isUndefinedNullEmpty(keyword)) {
+            const keywords = this.getKeywords() ?? [];
+            const fuse = new Fuse(keywords, {includeScore: true, keys: ['label', 'value']})
+            const suggests = _.orderBy(fuse.search(keyword).map(each => each.item), 'priority', 'desc')
+            this.getAppBar().getToolBar().setSuggestCompletes(...suggests);
+        }
+
+    }
+
 }
 
 export default ModularizedNavigatorStore;

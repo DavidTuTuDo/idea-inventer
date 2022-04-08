@@ -1,4 +1,4 @@
-import ModularizedNavigatorStore from "./ModularizedNavigatorStore";
+import ModularizedNavigatorKeywordStore from "./ModularizedNavigatorKeywordStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -10,6 +10,7 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
 import {
   makeAutoObservable,
   makeObservable,
@@ -20,17 +21,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorStore from "./BaseNavigatorStore";
+import BaseNavigatorKeywordStore from "./BaseNavigatorKeywordStore";
 
-class NavigatorStore extends ModularizedNavigatorStore {
+class NavigatorKeywordStore extends ModularizedNavigatorKeywordStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorStore;
+export default NavigatorKeywordStore;

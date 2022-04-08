@@ -540,7 +540,9 @@ class CodegenNode {
         return this.change || Util.or(
             this.isSliderView(),
             this.isSwitchView(),
-            this.isTextFieldView());
+            this.isTextFieldView(),
+            this.isAutoCompleteView(),
+        );
     }
 
     getDirectoryName() {
@@ -1504,7 +1506,9 @@ class CodegenNode {
 
     getParamStmtOfInvalidate() {
         let object = '';
-        if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
+        if(this.isAutoCompleteView()) {
+            object = 'value'
+        }else if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
             object = this.getName();
         else if (this.allowOfParam()) {
             object = this.getPreciseAttributeParent().getName();
@@ -4041,7 +4045,7 @@ class ComponentBuilder extends BaseBuilder {
                     method.params,
                     [],
                     [],
-                    `Util.appendError('${method.functionName} not override')`
+                    `Util.appendInfo('${method.functionName} not override')`
                 )
             }
 
@@ -5185,9 +5189,12 @@ class ProjectFileHandler extends PathBase {
                     paramStmt = `latestValue`;
                 } else if (node.isSliderView()) {
                     paramStmt = `getLatestValueByEvent(event)`;
+                } else if (node.isAutoCompleteView()) {
+                    stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else {
                     /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
                 }
+
                 if (!Util.isUndefinedNullEmpty(paramStmt))
                     stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
             }
@@ -5264,18 +5271,6 @@ class ProjectFileHandler extends PathBase {
 
             }
 
-            if (node.needOnChangeBehavior()) {
-                node.appendViewProps({
-                    onChange: `###(event) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`
-                })
-
-                node.appendMethod({
-                    functionName: node.getFunctionNameOfOnChanged(),
-                    params: ['param'],
-                    loginOnly: false,
-                })
-            }
-
             if (node.isTextFieldView()) {
                 const nameOfDescription = Util.camel(`label`, `of`, node.getName());
                 node.getParentNode().appendChildrenWithJson(
@@ -5307,8 +5302,10 @@ class ProjectFileHandler extends PathBase {
                     /** onSearchPress() */
                     node.appendViewProps({
                         onKeyPress: `###(event) => {
-                        if(_.isEqual(event.key ,'Enter'))
-                            self.${node.getFunctionNameOfSearchPressed()}(${node.getFieldName()},${node.getPreciseAttributeParentName()}) 
+                        if(_.isEqual(event.key ,'Enter')){
+                            event.preventDefault();
+                            self.${node.getFunctionNameOfSearchPressed()}(${node.getFieldName()},${node.getPreciseAttributeParentName()})
+                        } 
                     }`
                     })
 
@@ -5317,8 +5314,10 @@ class ProjectFileHandler extends PathBase {
                         params: [node.getFieldName(), node.getPreciseAttributeParentName()],
                         loginOnly: node.hasLoginRequiredDialog(),
                     })
-                    /** TextField type={`search`}*/
-                    node.appendViewProps({type: 'search'})
+
+                    /** TextField type={`search`} */
+                    /** node.appendViewProps({type: 'search'}) */
+
                 }
             }
 
@@ -5383,45 +5382,6 @@ class ProjectFileHandler extends PathBase {
                 node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
             }
 
-            if (node.isAutoCompleteView()) {
-                const name = Util.camel(`suggest`, node.getName());
-                const plural = 's';
-                const fieldName = `${name}s`;
-                node.getParentNode().appendChildrenWithJson({
-                    name,
-                    type: `array`,
-                    plural,
-                    children: [
-                        {
-                            type: 'string',
-                            name: 'value',
-                            description: '內容'
-                        }, {
-                            type: 'string',
-                            name: 'label',
-                            description: '顯示在屏幕上'
-                        },
-                        {
-                            type: 'string',
-                            name: 'type',
-                            description: '用來當作額router'
-                        },
-                        {
-                            name: 'priority',
-                            type: 'number',
-                            description: '搜尋的排序'
-                        },
-                        {
-                            type: 'string',
-                            name: 'extra',
-                            description: '用來當作額外判斷資訊'
-                        }
-                    ]
-                })
-                node.appendViewProps({
-                    options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
-                })
-            }
 
             if (node.needWatermark) {
                 node.getParentNode().appendChildrenWithJson({
@@ -5469,6 +5429,69 @@ class ProjectFileHandler extends PathBase {
                         node.appendChildrenWithJson(raw)
                     }
                 }
+            }
+
+            if (node.isAutoCompleteView()) {
+                const name = Util.camel(`suggest`, node.getName());
+                const plural = 's';
+                const fieldName = `${name}s`;
+                node.getParentNode().appendChildrenWithJson({
+                    name,
+                    type: `array`,
+                    plural,
+                    children: [
+                        {
+                            type: 'string',
+                            name: 'value',
+                            description: '內容'
+                        }, {
+                            type: 'string',
+                            name: 'label',
+                            description: '顯示在屏幕上'
+                        },
+                        {
+                            type: 'string',
+                            name: 'type',
+                            description: '用來當作額router'
+                        },
+                        {
+                            name: 'priority',
+                            type: 'number',
+                            description: '搜尋的排序'
+                        },
+                        {
+                            type: 'string',
+                            name: 'uid',
+                            description: '用來當作額外判斷資訊'
+                        }
+                    ]
+                })
+
+                node.appendChildrenWithJson({
+                    name: Util.camel(`selected`, node.getName()),
+                    type: 'string',
+                })
+
+                node.appendViewProps({
+                    options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
+                })
+
+                node.appendViewProps({
+                    isOptionEqualToValue: `###(option, value) => true`
+                })
+
+            }
+
+            if (node.needOnChangeBehavior()) {
+                node.appendViewProps({
+                    onChange: `###(event,value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`
+                })
+
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfOnChanged(),
+                    params: ['param'],
+                    loginOnly: node.hasLoginRequiredDialog(),
+                })
             }
 
             if (node.isClickView()) {
