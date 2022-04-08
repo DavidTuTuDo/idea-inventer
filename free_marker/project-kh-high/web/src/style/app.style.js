@@ -35,13 +35,9 @@ class AppStyle {
 
   ExamEditorQuestionOptionalChoiceDivList = {};
 
-  ExamEditorQuestionOptionalChoiceDivWrap = {};
-
   ExamEditorQuestionOptionalChoiceDiv = {};
 
   ExamEditorQuestionOptionalDivList = {};
-
-  ExamEditorQuestionOptionalDivWrap = {};
 
   ExamEditorQuestionOptionalDiv = {};
 
@@ -51,8 +47,6 @@ class AppStyle {
 
   ExamEditorQuestionChoiceImageDivList = {};
 
-  ExamEditorQuestionChoiceImageDivWrap = {};
-
   ExamEditorQuestionChoiceImageDiv = {};
 
   ExamEditorQuestionChoiceStatementDivWrap = {};
@@ -61,8 +55,6 @@ class AppStyle {
 
   ExamEditorQuestionChoiceDivList = {};
 
-  ExamEditorQuestionChoiceDivWrap = {};
-
   ExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionTopicImageUrlTextField = {};
@@ -70,8 +62,6 @@ class AppStyle {
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ExamEditorQuestionTopicImageDivList = {};
-
-  ExamEditorQuestionTopicImageDivWrap = {};
 
   ExamEditorQuestionTopicImageDiv = {};
 
@@ -87,8 +77,6 @@ class AppStyle {
 
   ExamEditorQuestionTopicOfAssistantImageDivList = {};
 
-  ExamEditorQuestionTopicOfAssistantImageDivWrap = {};
-
   ExamEditorQuestionTopicOfAssistantImageDiv = {};
 
   ExamEditorQuestionTopicOfAssistantNameTextField = {};
@@ -103,19 +91,23 @@ class AppStyle {
 
   ExamEditorQuestionCard = {};
 
-  ExamEditorHistoryFilterOrderByWhatDivList = {};
+  ExamEditorHistoryFilterOrderByWhatMenuItem = {};
 
-  ExamEditorHistoryFilterOrderByWhatDivWrap = {};
+  ExamEditorHistoryFilterOrderByWhatTextFieldList = {};
 
-  ExamEditorHistoryFilterOrderByWhatDiv = {};
+  ExamEditorHistoryFilterWhichSubjectMenuItem = {};
 
-  ExamEditorHistoryFilterWhichSubjectDivList = {};
-
-  ExamEditorHistoryFilterWhichSubjectDivWrap = {};
-
-  ExamEditorHistoryFilterWhichSubjectDiv = {};
+  ExamEditorHistoryFilterWhichSubjectTextFieldList = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
+
+  ExamEditorHistoryFilterReplyTypeValueRadio = {};
+
+  ExamEditorHistoryFilterReplyTypeLabelTypography = {};
+
+  ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
+
+  ExamEditorHistoryFilterReplyTypeRadioGroupList = {};
 
   ExamEditorHistoryFilterDivWrap = {};
 
@@ -171,19 +163,25 @@ class AppStyle {
 
   NavigatorDrawerDrawer = {};
 
-  NavigatorAppBarToolBarLoginButton = {};
+  NavigatorToolBarLoginButton = {};
 
-  NavigatorAppBarToolBarToEditModeButton = {};
+  NavigatorToolBarToEditModeButton = {};
 
-  NavigatorAppBarToolBarTitleTypography = {};
+  NavigatorToolBarCompleteInputFormWrap = {};
 
-  NavigatorAppBarToolBarMenuIconMenuIcon = {};
+  NavigatorToolBarCompleteInputTextField = {};
 
-  NavigatorAppBarToolBarMenuIconButton = {};
+  NavigatorToolBarCompleteAutocomplete = {};
 
-  NavigatorAppBarToolBarToolbar = {};
+  NavigatorToolBarTitleTypography = {};
 
-  NavigatorAppBarAppBar = {};
+  NavigatorToolBarMenuIconMenuIcon = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarAppBarWrap = {};
+
+  NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
 

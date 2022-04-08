@@ -1598,7 +1598,18 @@
     /** empty style */
   }
 }
-.NavigatorAppBarAppBar {
+.NavigatorToolBarToolbar {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAppBarWrap {
   background-color: #111111;
   @media @mobile {
     height: 60px;
@@ -1612,18 +1623,7 @@
     /** empty style */
   }
 }
-.NavigatorAppBarToolBarToolbar {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.NavigatorAppBarToolBarMenuIconButton {
+.NavigatorToolBarMenuIconButton {
   margin-right: 10px;
   @media @mobile {
     /** empty style */
@@ -1635,7 +1635,7 @@
     /** empty style */
   }
 }
-.NavigatorAppBarToolBarMenuIconMenuIcon {
+.NavigatorToolBarMenuIconMenuIcon {
   @media @mobile {
     /** empty style */
   }
@@ -1646,11 +1646,12 @@
     /** empty style */
   }
 }
-.NavigatorAppBarToolBarTitleTypography {
-  flex-grow: 1;
+.NavigatorToolBarTitleTypography {
+  width: 80px;
   font-size: 1.4rem;
   @media @mobile {
     font-size: 1rem;
+    width: 50px;
   }
   @media @tablet {
     /** empty style */
@@ -1659,7 +1660,45 @@
     /** empty style */
   }
 }
-.NavigatorAppBarToolBarToEditModeButton {
+.NavigatorToolBarCompleteAutocomplete {
+  flex-grow: 1;
+  margin-right: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCompleteInputTextField {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  @media @mobile {
+    width: 95%;
+  }
+  @media @tablet {
+    width: 95%;
+  }
+  @media @desktop {
+    width: 70%;
+    max-width: 500px;
+  }
+}
+.NavigatorToolBarCompleteInputFormWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarToEditModeButton {
   margin-right: 10px;
   @media @mobile {
     /** empty style */
@@ -1671,7 +1710,7 @@
     /** empty style */
   }
 }
-.NavigatorAppBarToolBarLoginButton {
+.NavigatorToolBarLoginButton {
   @media @mobile {
     font-size: 0.8rem;
   }
@@ -1962,6 +2001,50 @@
     /** empty style */
   }
 }
+.ExamEditorHistoryFilterReplyTypeRadioGroupList:extend(.ExamHistoryFilterReplyTypeRadioGroupList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterReplyTypeFormControlLabel:extend(.ExamHistoryFilterReplyTypeFormControlLabel) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterReplyTypeLabelTypography:extend(.ExamHistoryFilterReplyTypeLabelTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorHistoryFilterReplyTypeValueRadio:extend(.ExamHistoryFilterReplyTypeValueRadio) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .ExamEditorHistoryFilterSpaceDiv:extend(.ExamHistoryFilterSpaceDiv) {
   @media @mobile {
     /** empty style */
@@ -1973,7 +2056,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterWhichSubjectDiv:extend(.ExamHistoryFilterWhichSubjectDiv) {
+.ExamEditorHistoryFilterWhichSubjectTextFieldList:extend(.ExamHistoryFilterWhichSubjectTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -1984,7 +2067,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterWhichSubjectDivWrap:extend(.ExamHistoryFilterWhichSubjectDivWrap) {
+.ExamEditorHistoryFilterWhichSubjectMenuItem:extend(.ExamHistoryFilterWhichSubjectMenuItem) {
   @media @mobile {
     /** empty style */
   }
@@ -1995,7 +2078,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterWhichSubjectDivList:extend(.ExamHistoryFilterWhichSubjectDivList) {
+.ExamEditorHistoryFilterOrderByWhatTextFieldList:extend(.ExamHistoryFilterOrderByWhatTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -2006,29 +2089,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterOrderByWhatDiv:extend(.ExamHistoryFilterOrderByWhatDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorHistoryFilterOrderByWhatDivWrap:extend(.ExamHistoryFilterOrderByWhatDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorHistoryFilterOrderByWhatDivList:extend(.ExamHistoryFilterOrderByWhatDivList) {
+.ExamEditorHistoryFilterOrderByWhatMenuItem:extend(.ExamHistoryFilterOrderByWhatMenuItem) {
   @media @mobile {
     /** empty style */
   }
@@ -2116,17 +2177,6 @@
     /** empty style */
   }
 }
-.ExamEditorQuestionTopicOfAssistantImageDivWrap:extend(.ExamQuestionTopicOfAssistantImageDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .ExamEditorQuestionTopicOfAssistantImageDivList:extend(.ExamQuestionTopicOfAssistantImageDivList) {
   @media @mobile {
     /** empty style */
@@ -2204,17 +2254,6 @@
     /** empty style */
   }
 }
-.ExamEditorQuestionTopicImageDivWrap:extend(.ExamQuestionTopicImageDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .ExamEditorQuestionTopicImageDivList:extend(.ExamQuestionTopicImageDivList) {
   @media @mobile {
     /** empty style */
@@ -2249,17 +2288,6 @@
   }
 }
 .ExamEditorQuestionChoiceDiv:extend(.ExamQuestionChoiceDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorQuestionChoiceDivWrap:extend(.ExamQuestionChoiceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2314,17 +2342,6 @@
     /** empty style */
   }
 }
-.ExamEditorQuestionChoiceImageDivWrap:extend(.ExamQuestionChoiceImageDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .ExamEditorQuestionChoiceImageDivList:extend(.ExamQuestionChoiceImageDivList) {
   @media @mobile {
     /** empty style */
@@ -2369,17 +2386,6 @@
     /** empty style */
   }
 }
-.ExamEditorQuestionOptionalDivWrap:extend(.ExamQuestionOptionalDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .ExamEditorQuestionOptionalDivList:extend(.ExamQuestionOptionalDivList) {
   @media @mobile {
     /** empty style */
@@ -2392,17 +2398,6 @@
   }
 }
 .ExamEditorQuestionOptionalChoiceDiv:extend(.ExamQuestionOptionalChoiceDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorQuestionOptionalChoiceDivWrap:extend(.ExamQuestionOptionalChoiceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2536,6 +2531,68 @@
 }
 /** ======== following for homeless ========= */
 
+.NavigatorAppBarAppBar {
+  background-color: #111111;
+  @media @mobile {
+    height: 60px;
+    display: flex;
+    justify-content: center;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarMenuIconButton {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarTitleTypography {
+  flex-grow: 1;
+  font-size: 1.4rem;
+  @media @mobile {
+    font-size: 1rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarToEditModeButton {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorAppBarToolBarLoginButton {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .ExamHistoryFilterReplyTypeTypographyLabel {
   @media @mobile {
     font-size: 0.8rem;
