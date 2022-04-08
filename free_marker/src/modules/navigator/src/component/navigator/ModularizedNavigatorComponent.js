@@ -47,7 +47,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         super(props);
     }
 
-    getInjectStyleOfNavigatorAppBarToolBarToEditModeButton(toolBar) {
+    getInjectStyleOfNavigatorToolBarToEditModeButton(toolBar) {
         if (isMobile) return Util.getVisibleOrNone(false);
         const result = Util.getVisibleOrHidden(UserInfo.isAdmin());
         return result;
@@ -58,7 +58,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         this.getStore().forceToStable();
     }
 
-    onNavigatorAppBarToolBarToEditModeButtonClicked(param) {
+    onNavigatorToolBarToEditModeButtonClicked(param) {
         Router.gotoEditPage(this);
     }
 
@@ -77,11 +77,11 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         store.updateEditButtonStatus();
     }
 
-    onNavigatorAppBarToolBarTitleTypographyClicked(param) {
+    onNavigatorToolBarTitleTypographyClicked(param) {
         Router.gotoMainPage(this);
     }
 
-    onNavigatorAppBarToolBarLoginButtonClicked(param) {
+    onNavigatorToolBarLoginButtonClicked(param) {
         const self = this;
         if (UserInfo.isLoginInSucceed()) {
             this.getStore().logout().then();
@@ -106,7 +106,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         this.getStore().setDrawerOpenStatus(open);
     }
 
-    onNavigatorAppBarToolBarMenuIconButtonClicked(param) {
+    onNavigatorToolBarMenuIconButtonClicked(param) {
         this.setDrawerOpenState(true)
     }
 
@@ -223,15 +223,15 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         }
     }
 
-    onNavigatorAppBarToolBarCompleteInputTextFieldChange(param) {
+    onNavigatorToolBarCompleteInputTextFieldChange(param) {
         const complete = param.object;
         this.getStore().invalidateSuggestion(complete.getInput()).then();
     }
 
-    onNavigatorAppBarToolBarCompleteAutocompleteChange(param) {
+    onNavigatorToolBarCompleteAutocompleteChange(param) {
         const keyword = param.object;
         if (!Util.isUndefinedNullEmpty(keyword))
-            this.getStore().getAppBar().getToolBar().getComplete().setInput(keyword.getValue());
+            this.getStore().getToolBar().getComplete().setInput(keyword.getValue());
     }
 
     /** -------------------- async api -------------------- **/

@@ -1,3 +1,4 @@
+import ModularizedNavigatorToolBarSuggestCompleteStore from "./ModularizedNavigatorToolBarSuggestCompleteStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,9 +21,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorAppBarStore from "./BaseNavigatorAppBarStore";
+import BaseNavigatorToolBarSuggestCompleteStore from "./BaseNavigatorToolBarSuggestCompleteStore";
 
-class ModularizedNavigatorAppBarStore extends BaseNavigatorAppBarStore {
+class NavigatorToolBarSuggestCompleteStore extends ModularizedNavigatorToolBarSuggestCompleteStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -31,4 +32,4 @@ class ModularizedNavigatorAppBarStore extends BaseNavigatorAppBarStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedNavigatorAppBarStore;
+export default NavigatorToolBarSuggestCompleteStore;

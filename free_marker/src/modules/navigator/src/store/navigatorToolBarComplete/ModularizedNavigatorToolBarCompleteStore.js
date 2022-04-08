@@ -1,4 +1,3 @@
-import ModularizedNavigatorAppBarStore from "./ModularizedNavigatorAppBarStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -10,6 +9,7 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
 import {
   makeAutoObservable,
   makeObservable,
@@ -20,9 +20,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorAppBarStore from "./BaseNavigatorAppBarStore";
+import BaseNavigatorToolBarCompleteStore from "./BaseNavigatorToolBarCompleteStore";
 
-class NavigatorAppBarStore extends ModularizedNavigatorAppBarStore {
+class ModularizedNavigatorToolBarCompleteStore extends BaseNavigatorToolBarCompleteStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -31,4 +31,4 @@ class NavigatorAppBarStore extends ModularizedNavigatorAppBarStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorAppBarStore;
+export default ModularizedNavigatorToolBarCompleteStore;

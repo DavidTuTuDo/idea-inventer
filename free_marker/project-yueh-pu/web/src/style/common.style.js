@@ -9,8 +9,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for main editor component  */
 
   MainEditorWeekPopularIdOfSingerTextField = {};
@@ -45,25 +43,25 @@ class CommonStyle {
 
   NavigatorDrawerDrawer = {};
 
-  NavigatorAppBarToolBarLoginButton = {};
+  NavigatorToolBarLoginButton = {};
 
-  NavigatorAppBarToolBarToEditModeButton = {};
+  NavigatorToolBarToEditModeButton = {};
 
-  NavigatorAppBarToolBarCompleteInputFormWrap = {};
+  NavigatorToolBarCompleteInputFormWrap = {};
 
-  NavigatorAppBarToolBarCompleteInputTextField = {};
+  NavigatorToolBarCompleteInputTextField = {};
 
-  NavigatorAppBarToolBarCompleteAutocomplete = {};
+  NavigatorToolBarCompleteAutocomplete = {};
 
-  NavigatorAppBarToolBarTitleTypography = {};
+  NavigatorToolBarTitleTypography = {};
 
-  NavigatorAppBarToolBarMenuIconMenuIcon = {};
+  NavigatorToolBarMenuIconMenuIcon = {};
 
-  NavigatorAppBarToolBarMenuIconButton = {};
+  NavigatorToolBarMenuIconButton = {};
 
-  NavigatorAppBarToolBarToolbar = {};
+  NavigatorToolBarAppBarWrap = {};
 
-  NavigatorAppBarAppBar = {};
+  NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
 

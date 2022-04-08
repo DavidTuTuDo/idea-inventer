@@ -61,7 +61,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     updateEditButtonStatus() {
         const self = this;
         let editButton = UserInfo.isAdmin() ? '編輯' : '無';
-        self.getAppBar().getToolBar().setToEditMode(editButton);
+        self.getToolBar().setToEditMode(editButton);
     }
 
     @action
@@ -70,7 +70,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         let loginStateString = UserInfo.isLoginInSucceed() ? '登出' : '登入';
         if (text !== undefined)
             loginStateString = text;
-        self.getAppBar().getToolBar().setLogin(loginStateString);
+        self.getToolBar().setLogin(loginStateString);
     }
 
     /**
@@ -115,7 +115,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
             const keywords = this.getKeywords() ?? [];
             const fuse = new Fuse(keywords, {includeScore: true, keys: ['label', 'value']})
             const suggests = _.orderBy(fuse.search(keyword).map(each => each.item), 'priority', 'desc')
-            this.getAppBar().getToolBar().setSuggestCompletes(...suggests);
+            this.getToolBar().setSuggestCompletes(...suggests);
         }
 
     }

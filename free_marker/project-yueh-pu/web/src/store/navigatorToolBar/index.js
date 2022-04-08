@@ -1,3 +1,4 @@
+import ModularizedNavigatorToolBarStore from "./ModularizedNavigatorToolBarStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,15 +21,19 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorAppBarToolBarSuggestcompleteStore from "./BaseNavigatorAppBarToolBarSuggestcompleteStore";
+import BaseNavigatorToolBarStore from "./BaseNavigatorToolBarStore";
 
-class ModularizedNavigatorAppBarToolBarSuggestcompleteStore extends BaseNavigatorAppBarToolBarSuggestcompleteStore {
+class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
+
+  getTitle() {
+    return '悅譜';
+  }
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedNavigatorAppBarToolBarSuggestcompleteStore;
+export default NavigatorToolBarStore;

@@ -1164,8 +1164,8 @@ class CodegenNode {
         return Util.camel(this.getName(), this.getView(), 'View', 'Param');
     }
 
-    isAppBarView() {
-        return _.isEqual(this.getView(), 'AppBar');
+    isWrapByAppBarView() {
+        return _.isEqual(this.getWrapView(), 'AppBar');
     }
 
     /**isView 就是指gen出view class, 不然就是component */
@@ -1179,7 +1179,7 @@ class CodegenNode {
                 stmt.push(`let ${this.getViewParamVariable()}`);
         }
 
-        if (this.isAppBarView() && this.isScrollingHideDependOnRootNode()) {
+        if (this.isWrapByAppBarView() && this.isScrollingHideDependOnRootNode()) {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
@@ -3775,16 +3775,6 @@ class ComponentBuilder extends BaseBuilder {
             contents: [...contentStmts, ...node.getContents()],
         });
 
-        if (node.isAppBarView() && node.isScrollingHideDependOnRootNode()) {
-            origin = this.getJSXStrings({
-                tag: 'ScrollingHideWrap',
-                typeOfClass: 'component',
-                props,
-                simpleProps: ['...self.props'],
-                contents: [...origin]
-            })
-        }
-
         if (node.hasWrap()) {
             const clazzName = node.getClassNameOfLessUsage('wrap');
             this.storeClassName({node, type: 'wrap'});
@@ -3809,6 +3799,16 @@ class ComponentBuilder extends BaseBuilder {
                 props: propOfWrap,
                 typeOfClass: 'component',
                 contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
+            })
+        }
+
+        if (node.isWrapByAppBarView() && node.isScrollingHideDependOnRootNode()) {
+            origin = this.getJSXStrings({
+                tag: 'ScrollingHideWrap',
+                typeOfClass: 'component',
+                props,
+                simpleProps: ['...self.props'],
+                contents: [...origin]
             })
         }
 
@@ -5328,8 +5328,8 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
-            if (node.isAppBarView() && !node.isScrollingHideDependOnRootNode()) {
-                node.appendViewProps({position: 'static'})
+            if (node.isWrapByAppBarView() && !node.isScrollingHideDependOnRootNode()) {
+                node.appendWrapProps({position: 'static'})
             }
 
 
@@ -5377,7 +5377,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({checked: `###${node.getName()}`});
             } else if (node.isImageView()) {
                 node.appendViewProps({src: `###${node.getName()}`})
-            } else if (node.isStringOrNumberAttribute() && !node.isAppBarView()) {
+            } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
                 node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
             }

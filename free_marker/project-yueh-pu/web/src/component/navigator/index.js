@@ -42,7 +42,7 @@ const useStyles = theme => ({
 @observer
 class NavigatorComponent extends ModularizedNavigatorComponent {
 
-    onNavigatorAppBarToolBarCompleteInputTextFieldSearchPressed(input, complete) {
+    onNavigatorToolBarCompleteInputTextFieldSearchPressed(input, complete) {
       /** 先判斷autoComplete 有沒有selectedItem()
        *
        * 沒有的話再用 getInput() 去搜尋
