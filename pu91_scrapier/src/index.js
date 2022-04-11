@@ -29,17 +29,22 @@ import {databazer as SQL} from 'databazer';
                 const ranks = await fetchRankTable(Config.RANK_TABLE_TYPE[maintype].ID, Config.RANK_TABLE_TYPE[maintype].SORT)
 
                 for (const rank of ranks) {
-                    for (const each of rank.items) {
+                    for (const each of _.reverse(rank.items)) {
                         const obj = {}
                         obj[`${rank.type ? rank.type : maintype}`] = _.toNumber(each.rank);
-                        await database.lazyInsertRecord(tableName,
-                            {
-                                url: each.url,
-                                singerUrl: each.singer.url,
-                                name: each.name,
-                                singer: each.singer.name,
-                                updateTime: _.now(), ...obj
-                            }, 'url');
+                        const exist = await database.fetchRecord(tableName, SQL.Builder().equal('url', each.url).stmt());
+                        if (exist) {
+                            await database.updateRecords(tableName, obj, SQL.Builder().equal('url', each.url).stmt())
+                        } else {
+                            await database.lazyInsertRecord(tableName,
+                                {
+                                    url: each.url,
+                                    singerUrl: each.singer.url,
+                                    name: each.name,
+                                    singer: each.singer.name,
+                                    updateTime: _.now(), ...obj
+                                }, 'url');
+                        }
                     }
                 }
             }
@@ -386,11 +391,11 @@ import {databazer as SQL} from 'databazer';
             // /** 抓取排行版上的資訊們 */
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
-            joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
+            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
             // /** 猛抓LATEST TABLE的歌曲*/
-            joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
+            // joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
             // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            joinTaskToPool(5, "TONE FETCHER", true, persistTone, tenSecs);
+            // joinTaskToPool(5, "TONE FETCHER", true, persistTone, tenSecs);
             // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
 

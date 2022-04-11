@@ -8,6 +8,7 @@ import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';
 import moment from 'moment';
+import {configerer} from "configerer";
 
 
 (async () => {
@@ -16,11 +17,31 @@ import moment from 'moment';
     const listener = new Listener();
     const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
     await database.init();
+
     /** 找出週 rank*/
 
     async function fetchTopSongsOfRank(n) {
-        Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
-            new Builder().gt('WEEK', 0).orderBy({WEEK:'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
+        return Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
+            new Builder().gt('WEEK', 0).orderBy({WEEK: 'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
+    }
+
+    async function deployKeyword() {
+        // console.log(Util.getArrayOfSize((await  api.fetchKeywords()).map(each => { return { title:each.label,priority:each.priority}}),100));
+        await api.deleteKeywords(true);
+        const songs = await database.fetchRecords(`SONG`,
+            new Builder().gt('popularLevel', 0).orderBy({popularLevel: `DESC`}).limit(3000).stmt());
+
+        // console.log(songs);
+
+        await api.submitKeywords(
+            ...songs.map((song) => {
+                return {
+                    value: song.name,
+                    priority: song.popularLevel,
+                    label: song.name,
+                }
+            })
+        )
     }
 
     /** 找出週 rank 對應的tone*/
@@ -28,63 +49,53 @@ import moment from 'moment';
         await api.deleteWeekPopulars(true);
         await api.deleteGuitarpus(true);
 
-        const top100 = await fetchTopSongsOfRank(100)
-        console.log('top100 count => ', _.size(top100));
+        const top100 = await fetchTopSongsOfRank(300)
+        // console.log('top100 count => ', _.size(top100));
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
-        console.log(_.size(mapOfUrlNContent));
+        // console.log(_.size(mapOfUrlNContent));
         const urls = top100.map((each) => each.url)
         const tones = await database.fetchRecords('TONE', new Builder().in('url', ...urls).stmt());
         console.log('tones count => ', _.size(tones));
 
-        for (const each of tones) {
-            const objOfTones = getMapOfTonalitySpeed(each.tkInfo);
-            const objOfCapoTone = getCapoAndContextTonality(each.capoLevel);
-            const info = {name: each.name, ...objOfCapoTone, ...objOfTones};
-            // console.log(info);
-            // console.log('capo  ', _.toNumber(info.capo));
-            // console.log('speed  ', _.toNumber(info['速度']));
-            /** get uid after submit tone */
-            const result = await api.submitGuitarpuItem({
-                currentContext: each.tone,
-                originalContext: each.tone,
-                tonalityOfContext: info.tonalityOfContext,
-                capoLevel: info.capo ? _.toNumber(info.capo) : -1,
-                tonalityOfFemale: info['女調'],
-                tonalityOfMale: info['男調'],
-                tonalityOfOriginal: info['原調'],
-                speed: info['速度'] ? _.toNumber(info['速度']) : -1,
-            });
-            if (result.succeed) {
-                const item = result.value;
-                const idOfTone = item.id;
-                const song = mapOfUrlNContent[each.url];
-                await api.submitWeekPopulars({
-                    name: song.name,
-                    singer: song.singer,
-                    indexOfSequence: song.WEEK,
-                    idOfTone,
-                })
+
+        await api.submitGuitarpus(...(tones.map((each) => getSubmitGuitarPuItem(each))));
+        const guitars = await api.fetchGuitarpus();
+
+        await api.submitWeekPopulars(...guitars.map((each) => {
+            const index = mapOfUrlNContent[each.uuidOfSong].WEEK;
+            return {
+                name: each.name,
+                singer: each.singer,
+                indexOfSequence: index,
+                idOfTone: each.id,
+
             }
-            /** submit weekPopular with tone uid */
-        }
+        }))
     }
 
-    async function deployKeyword()  {
-        // console.log(Util.getArrayOfSize((await  api.fetchKeywords()).map(each => { return { title:each.label,priority:each.priority}}),100));
-        await api.deleteKeywords(true);
-        const songs = await database.fetchRecords(`SONG`,
-            new Builder().gt('popularLevel',0).orderBy({popularLevel:`DESC`}).limit(3000).stmt());
-
-        // console.log(songs);
-
-        await api.submitKeywords(
-            ...songs.map((song) => {return {
-             value:song.name,
-             priority:song.popularLevel,
-             label:song.name,
-            }})
-
-        )
+    function getSubmitGuitarPuItem(tone) {
+        const objOfTones = getMapOfTonalitySpeed(tone.tkInfo);
+        const objOfCapoTone = getCapoAndContextTonality(tone.capoLevel);
+        const info = {name: tone.name, ...objOfCapoTone, ...objOfTones};
+        // console.log(info);
+        // console.log('capo  ', _.toNumber(info.capo));
+        // console.log('speed  ', _.toNumber(info['速度']));
+        return {
+            currentContext: tone.tone,
+            originalContext: tone.tone,
+            tonalityOfContext: info.tonalityOfContext,
+            capoLevel: info.capo ? _.toNumber(info.capo) : -1,
+            tonalityOfFemale: info['女調'],
+            tonalityOfMale: info['男調'],
+            tonalityOfOriginal: info['原調'],
+            speed: info['速度'] ? _.toNumber(info['速度']) : -1,
+            singer: tone.singer,
+            name: tone.name,
+            uuidOfSong: tone.url,
+            uuidOfSinger: tone.singerUrl,
+            // uuidOfSong: Util.getEncryptString(tone.url, configerer.ENCRYPT_KEY, true),
+            // uuidOfSinger: Util.getEncryptString(tone.singerUrl, configerer.ENCRYPT_KEY, true),
+        }
     }
 
     /**
@@ -103,7 +114,7 @@ import moment from 'moment';
         array = _.chunk(array, 2);
         const object = {}
         for (const each of array) {
-            object[each.shift()] = Util.replaceAll(getWordOnly(each.pop()),'-','|');
+            object[each.shift()] = Util.replaceAll(getWordOnly(each.pop()), '-', '|');
         }
 
         return object;
@@ -137,8 +148,9 @@ import moment from 'moment';
         Util.appendFile('./pu.raw', decrypt, true, true);
     }
 
-    // await deployWeekPopular();
-    await deployKeyword();
+
+    await deployWeekPopular();
+    // await deployKeyword();
     // await printRawText();
     // Util.getStringOfPop(undefined,',');
 })();
