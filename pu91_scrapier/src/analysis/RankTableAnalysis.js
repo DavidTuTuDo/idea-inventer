@@ -49,7 +49,7 @@ class RankTableAnalysis extends HtmlAnalysis {
             singer: {
                 img: this.getNodeAttributeValue(this.findNodeByTagsInSequence(div, "span", "img"), "src"),
                 name: this.getFlatTextByNode(this.findNodeByTagsInSequence(div, "span", "a"), false),
-                pageUrl: this.getNodeAttributeValue(this.findNodeByTagsInSequence(div, "span", "a"), "href")
+                url: this.getNodeAttributeValue(this.findNodeByTagsInSequence(div, "span", "a"), "href")
             }
         };
         return obj;

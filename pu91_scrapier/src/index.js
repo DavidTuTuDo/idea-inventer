@@ -35,7 +35,7 @@ import {databazer as SQL} from 'databazer';
                         await database.lazyInsertRecord(tableName,
                             {
                                 url: each.url,
-                                singerUrl: each.singer.pageUrl,
+                                singerUrl: each.singer.url,
                                 name: each.name,
                                 singer: each.singer.name,
                                 updateTime: _.now(), ...obj
@@ -201,7 +201,7 @@ import {databazer as SQL} from 'databazer';
                     await database.updateState('SINGER', 'ING', singer.uid);
                     const songs = await fetchSongsOfSingersPage(path.join(Config.BASE_URL, singer.url));
                     for (const song of songs) {
-                        if(Util.isUndefinedNullEmpty(song.url)) continue;
+                        if (Util.isUndefinedNullEmpty(song.url)) continue;
 
                         await database.lazyInsertRecord('SONG',
                             {
@@ -249,8 +249,8 @@ import {databazer as SQL} from 'databazer';
                                 ...tone,
                                 url: song.url,
                                 songId: song.uid,
-                                singerId:song.singerId,
-                                singerUrl:song.singerUrl,
+                                singerId: song.singerId,
+                                singerUrl: song.singerUrl,
                                 cost
                             }, 'url');
                             await database.updateRecords('SONG', {state: 'DONE'}, SQL.Builder().equal(Config.UID, song.uid).stmt());
@@ -285,7 +285,7 @@ import {databazer as SQL} from 'databazer';
             }
             const songs = song[0].items;
             const exist = await database.fetchRecords('SONG');
-            _.pullAllWith(song, exist, (s1, s2) => _.isEqual(s1.name, s2.name) && _.isEqual(s1.singer, s2.singer))
+            _.pullAllWith(song, exist, (s1, s2) => _.isEqual(s1.url, s2.url))
             Util.appendInfo(`latestSongPersist() 抓了新歌 ${songs.length} 首`);
             for (const item of songs)
                 try {
@@ -295,6 +295,7 @@ import {databazer as SQL} from 'databazer';
                             name: item.name,
                             singer: item.singer.name,
                             url: item.url,
+                            singerUrl: item.singer.url,
                             state: 'NOT',
                         });
                 } catch (error) {
@@ -385,7 +386,7 @@ import {databazer as SQL} from 'databazer';
             // /** 抓取排行版上的資訊們 */
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
-            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
+            joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
             // /** 猛抓LATEST TABLE的歌曲*/
             joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
             // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
