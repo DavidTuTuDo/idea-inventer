@@ -260,10 +260,9 @@ class CommonRemoteApi {
     async deleteItems(path, all, ...conditions) {
         Util.appendInfo(`delete items ${path}`);
         const sortedCondition = this.orderConditionByRules(conditions);
-        const batch = this.firestore().batch();
+        const refs = [];
         if (all) {
-            const list = await this.collectionRef(path).listDocuments();
-            list.map((doc) => batch.delete(doc));
+            refs.push(...(await this.collectionRef(path).listDocuments()));
         } else {
             if (sortedCondition.length > 0)
                 Util.appendInfo(sortedCondition.map(each => (_.toString(each))));
@@ -271,10 +270,13 @@ class CommonRemoteApi {
             const query = Util.accumulate(this.collectionRef(path), sortedCondition);
             const querySnapshot = await query.get();
             querySnapshot.forEach((doc) => {
-                batch.delete(doc.ref)
+                refs.push(doc.ref)
             })
         }
-        await batch.commit();
+
+        await this.batchBracket(refs, (batch, each) => {
+            batch.delete(each)
+        })
     }
 
     async submitObject(path, object, objName) {

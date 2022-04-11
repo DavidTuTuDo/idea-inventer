@@ -28,7 +28,6 @@ import moment from 'moment';
         await api.deleteWeekPopulars(true);
         await api.deleteGuitarpus(true);
 
-
         const top100 = await fetchTopSongsOfRank(100)
         console.log('top100 count => ', _.size(top100));
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
@@ -71,13 +70,13 @@ import moment from 'moment';
     }
 
     async function deployKeyword()  {
-        console.log(Util.getArrayOfSize((await  api.fetchKeywords()).map(each => { return { title:each.label,priority:each.priority}}),100));
-        return;
-
+        // console.log(Util.getArrayOfSize((await  api.fetchKeywords()).map(each => { return { title:each.label,priority:each.priority}}),100));
         await api.deleteKeywords(true);
         const songs = await database.fetchRecords(`SONG`,
-            new Builder().gt('popularLevel',0).orderBy({popularLevel:`DESC`}).limit(1000).stmt());
-        console.log(songs);
+            new Builder().gt('popularLevel',0).orderBy({popularLevel:`DESC`}).limit(3000).stmt());
+
+        // console.log(songs);
+
         await api.submitKeywords(
             ...songs.map((song) => {return {
              value:song.name,
