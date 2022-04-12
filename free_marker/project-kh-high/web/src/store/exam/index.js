@@ -120,9 +120,9 @@ class ExamStore extends BaseExamStore {
 
     async fetch(view) {
         const {range, subject, type, countsOfExam, qid} = this.getExamFilterTips();
-        console.log({range, subject, type, countsOfExam, qid})
+        // console.log({range, subject, type, countsOfExam, qid})
         const questions = [];
-        console.log(range);
+        // console.log(range);
         function getRandomCondition() {
             const conditions = [];
             if (!_.isEqual('綜合題目', subject)) {

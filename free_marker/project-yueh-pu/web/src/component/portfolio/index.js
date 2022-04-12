@@ -29,6 +29,12 @@ class PortfolioComponent extends BasePortfolioComponent {
   constructor(props) {
     super(props);
   }
+
+  onPortfolioRhythmCardClicked(param) {
+    const rhythm = param.object;
+    Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu)
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default PortfolioComponent;

@@ -14,6 +14,8 @@ import {RouterStore, syncHistoryWithStore} from "mobx-react-router";
 import {Route, Router, Switch} from "react-router-dom";
 import ReactDOM from "react-dom";
 import {Provider} from "mobx-react";
+import Config from './config';
+
 
 class App extends BaseApp {
     /** -------------------- fields -------------------- **/
@@ -26,6 +28,7 @@ class App extends BaseApp {
     /** -------------------- async api -------------------- **/
 }
 
-const self = new App().mount();
-module.hot.accept();
+const self = new App();
+self.mount();
+Util.setEnvironment(Config.env);
 export {self as Application};

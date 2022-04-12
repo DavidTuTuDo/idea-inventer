@@ -46,6 +46,10 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         return this.getToolBar().getComplete().getSelectedComplete();
     }
 
+    clearKeywordDetail(){
+        this.getToolBar().getComplete().setSelectedComplete(null);
+    }
+
     async signInWithCredential() {
         if (Cookie.hasCredential() && !UserInfo.isLoginInSucceed()) {
             try {
@@ -118,7 +122,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         if (!Util.isUndefinedNullEmpty(keyword)) {
             const keywords = this.getKeywords() ?? [];
             const fuse = new Fuse(keywords, {includeScore: true, keys: ['label', 'value']})
-            const suggests = _.orderBy(fuse.search(keyword).map(each => each.item), 'priority', 'desc')
+            const suggests = _.orderBy(fuse.search(keyword).map(each => each.item), 'popularLevel', 'desc')
             this.getToolBar().setSuggestCompletes(...suggests);
         }
 

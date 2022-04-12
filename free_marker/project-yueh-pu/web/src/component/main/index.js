@@ -30,7 +30,7 @@ class MainComponent extends BaseMainComponent {
 
   onMainWeekPopularCardClicked(param) {
     const song = param.object;
-    Router.gotoRhythmDetailPage(this,song.getIdOfTone())
+    Router.gotoSheetDetailPage(this,song.getIdOfTone())
   }
 
   /** -------------------- async api -------------------- **/

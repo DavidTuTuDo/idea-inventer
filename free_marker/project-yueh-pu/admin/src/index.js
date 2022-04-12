@@ -26,9 +26,9 @@ import {configerer} from "configerer";
     }
 
     /** 找出週 rank 對應的tone*/
-    async function deployWeekPopular() {
+    async function deployWeekPopular(n) {
         await api.deleteWeekPopulars(true);
-        const top100 = await fetchTopSongsOfRank(50)
+        const top100 = await fetchTopSongsOfRank(n)
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
         const urls = top100.map((each) => each.url)
         const tones = await database.fetchRecords('TONE', new Builder().in('url', ...urls).stmt());
@@ -55,7 +55,7 @@ import {configerer} from "configerer";
         const guitars = await api.fetchGuitarpus();
         /** 部署Rhythms*/
         await api.submitRhythms(...guitars.map(guitar => {
-            return {...guitar, idOfGuitarPu: guitar.id}
+            return {...guitar, idOfGuitarPu: guitar.id};
         }));
 
         const rhythms = await api.fetchRhythms();
@@ -65,9 +65,9 @@ import {configerer} from "configerer";
                 value: rhythm.name,
                 label: rhythm.name,
                 popularLevel: rhythm.popularLevel,
-                type: 1,
+                type: 11,
                 uid: rhythm.id,
-                extra: `1是代表rhythm,2代表singer`,
+                extra: `11是代表rhythm,12代表singer`,
             }
         }));
     }
@@ -150,7 +150,7 @@ import {configerer} from "configerer";
     }
 
 
-    await deployWeekPopular();
+    await deployWeekPopular(300);
     // await printRawText();
     // Util.getStringOfPop(undefined,',');
 })();

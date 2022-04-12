@@ -5447,26 +5447,38 @@ class ProjectFileHandler extends PathBase {
                         {
                             type: 'string',
                             name: 'value',
-                            description: '內容'
+                            column: true,
+                            description: '本質內容'
                         }, {
                             type: 'string',
                             name: 'label',
+                            column: true,
                             description: '顯示在屏幕上'
                         },
                         {
-                            type: 'string',
+                            type: 'number',
                             name: 'type',
+                            column: true,
                             description: '用來當作額router'
                         },
                         {
-                            name: 'priority',
+                            name:'popularLevel',
                             type: 'number',
-                            description: '搜尋的排序'
+                            column: true,
+                            defaultValue: 1,
+                            description: 'order時候,會desc,讓最熱門的項目留在最上方'
                         },
                         {
                             type: 'string',
                             name: 'uid',
-                            description: '用來當作額外判斷資訊'
+                            column: true,
+                            description: '用來放document id,由type 判斷路由'
+                        },
+                        {
+                            type: 'string',
+                            name: 'extra',
+                            column: true,
+                            description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
                         }
                     ]
                 })

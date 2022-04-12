@@ -33,6 +33,49 @@ class SheetComponent extends BaseSheetComponent {
   constructor(props) {
     super(props);
   }
+
+  onSheetGuitarpuPaperClicked(param) {
+    this.getStore().toggleIsAdjustVisible();
+  }
+
+  onSheetAdjustCenterSharpenButtonClicked(param) {
+    this.getStore().invalidateTranspositionChord(1);
+  }
+
+  onSheetAdjustCenterFlattenButtonClicked(param) {
+    this.getStore().invalidateTranspositionChord(-1);
+  }
+
+  onSheetAdjustCenterEnlargeButtonClicked(param) {
+    this.adjustFontSizeByClassName('SheetGuitarpuCurrentContextTypography');
+  }
+
+  onSheetAdjustCenterShrinkButtonClicked(param) {
+    this.adjustFontSizeByClassName('SheetGuitarpuCurrentContextTypography', false);
+  }
+
+  onSheetAdjustCenterHideChordToggleSwitchChange(param) {
+    super.onSheetAdjustCenterHideChordToggleSwitchChange(param);
+  }
+
+  onSheetAdjustCenterHideChordToggleSwitchChange(param) {
+    this.getStore().setVisibleOfChordInContext(this.getCheckStateByEvent(param.view))
+  }
+
+  onSheetAdjustCenterToMaleTonalityButtonClicked(param) {
+    this.getStore().transpositionByGender('male');
+  }
+
+  onSheetAdjustCenterToFemaleTonalityButtonClicked(param) {
+    this.getStore().transpositionByGender('female')
+  }
+
+  onSheetAdjustCenterToOriginalTonalityButtonClicked(param) {
+    this.getStore().transpositionByGender('original')
+  }
+
+  onSheetTestUsageButtonClicked(param) {
+  }
   /** -------------------- async api -------------------- **/
 }
 export default SheetComponent;
