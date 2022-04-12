@@ -1,4 +1,4 @@
-import BaseRhythmAdjustCenterHideChordStore from "./BaseRhythmAdjustCenterHideChordStore";
+import BaseSheetGuitarpuStore from "./BaseSheetGuitarpuStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class RhythmAdjustCenterHideChordStore extends BaseRhythmAdjustCenterHideChordStore {
+class SheetGuitarpuStore extends BaseSheetGuitarpuStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class RhythmAdjustCenterHideChordStore extends BaseRhythmAdjustCenterHideChordSt
   }
   /** -------------------- async api -------------------- **/
 }
-export default RhythmAdjustCenterHideChordStore;
+export default SheetGuitarpuStore;

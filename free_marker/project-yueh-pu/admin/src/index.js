@@ -25,42 +25,16 @@ import {configerer} from "configerer";
             new Builder().gt('WEEK', 0).orderBy({WEEK: 'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
     }
 
-    async function deployKeyword() {
-        // console.log(Util.getArrayOfSize((await  api.fetchKeywords()).map(each => { return { title:each.label,priority:each.priority}}),100));
-        await api.deleteKeywords(true);
-        const songs = await database.fetchRecords(`SONG`,
-            new Builder().gt('popularLevel', 0).orderBy({popularLevel: `DESC`}).limit(3000).stmt());
-
-        // console.log(songs);
-
-        await api.submitKeywords(
-            ...songs.map((song) => {
-                return {
-                    value: song.name,
-                    priority: song.popularLevel,
-                    label: song.name,
-                }
-            })
-        )
-    }
-
     /** 找出週 rank 對應的tone*/
     async function deployWeekPopular() {
         await api.deleteWeekPopulars(true);
-        await api.deleteGuitarpus(true);
-
-        const top100 = await fetchTopSongsOfRank(300)
-        // console.log('top100 count => ', _.size(top100));
+        const top100 = await fetchTopSongsOfRank(50)
         const mapOfUrlNContent = Util.toObjectWithAttributeKey(top100, 'url');
-        // console.log(_.size(mapOfUrlNContent));
         const urls = top100.map((each) => each.url)
         const tones = await database.fetchRecords('TONE', new Builder().in('url', ...urls).stmt());
         console.log('tones count => ', _.size(tones));
-
-
-        await api.submitGuitarpus(...(tones.map((each) => getSubmitGuitarPuItem(each))));
+        await deployGuitarPu(...tones);
         const guitars = await api.fetchGuitarpus();
-
         await api.submitWeekPopulars(...guitars.map((each) => {
             const index = mapOfUrlNContent[each.uuidOfSong].WEEK;
             return {
@@ -68,9 +42,34 @@ import {configerer} from "configerer";
                 singer: each.singer,
                 indexOfSequence: index,
                 idOfTone: each.id,
-
             }
         }))
+    }
+
+    async function deployGuitarPu(...tones) {
+        await api.deleteGuitarpus(true);
+        await api.deleteRhythms(true);
+        await api.deleteKeywords(true);
+        await api.submitGuitarpus(...(tones.map((each) => getSubmitGuitarPuItem(each))));
+
+        const guitars = await api.fetchGuitarpus();
+        /** 部署Rhythms*/
+        await api.submitRhythms(...guitars.map(guitar => {
+            return {...guitar, idOfGuitarPu: guitar.id}
+        }));
+
+        const rhythms = await api.fetchRhythms();
+        /** 部署Keywords*/
+        await api.submitKeywords(...rhythms.map((rhythm) => {
+            return {
+                value: rhythm.name,
+                label: rhythm.name,
+                popularLevel: rhythm.popularLevel,
+                type: 1,
+                uid: rhythm.id,
+                extra: `1是代表rhythm,2代表singer`,
+            }
+        }));
     }
 
     function getSubmitGuitarPuItem(tone) {
@@ -93,6 +92,8 @@ import {configerer} from "configerer";
             name: tone.name,
             uuidOfSong: tone.url,
             uuidOfSinger: tone.singerUrl,
+            composer: tone.composer,
+            popularLevel: tone.popularLevel,
             // uuidOfSong: Util.getEncryptString(tone.url, configerer.ENCRYPT_KEY, true),
             // uuidOfSinger: Util.getEncryptString(tone.singerUrl, configerer.ENCRYPT_KEY, true),
         }
@@ -150,7 +151,6 @@ import {configerer} from "configerer";
 
 
     await deployWeekPopular();
-    // await deployKeyword();
     // await printRawText();
     // Util.getStringOfPop(undefined,',');
 })();

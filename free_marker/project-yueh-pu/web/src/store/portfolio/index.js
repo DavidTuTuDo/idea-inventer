@@ -1,4 +1,4 @@
-import ModularizedNavigatorToolBarCompleteStore from "./ModularizedNavigatorToolBarCompleteStore";
+import BasePortfolioStore from "./BasePortfolioStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,20 +21,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorToolBarCompleteStore from "./BaseNavigatorToolBarCompleteStore";
+import BaseStore from "../../base/BaseStore";
 
-class NavigatorToolBarCompleteStore extends ModularizedNavigatorToolBarCompleteStore {
+class PortfolioStore extends BasePortfolioStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  getLabelOfInput() {
-    return `搜尋歌手 | 歌名`;
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorToolBarCompleteStore;
+export default PortfolioStore;

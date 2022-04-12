@@ -1,4 +1,4 @@
-import BaseRhythmAdjustStore from "./BaseRhythmAdjustStore";
+import BaseSheetAdjustCenterHideChordStore from "./BaseSheetAdjustCenterHideChordStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,10 +21,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import Center from "../rhythmAdjustCenter";
 import BaseStore from "../../base/BaseStore";
 
-class RhythmAdjustStore extends BaseRhythmAdjustStore {
+class SheetAdjustCenterHideChordStore extends BaseSheetAdjustCenterHideChordStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -33,4 +32,4 @@ class RhythmAdjustStore extends BaseRhythmAdjustStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default RhythmAdjustStore;
+export default SheetAdjustCenterHideChordStore;

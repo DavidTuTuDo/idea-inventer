@@ -1,4 +1,4 @@
-import BaseRhythmGuitarpuStore from "./BaseRhythmGuitarpuStore";
+import BasePortfolioRhythmStore from "./BasePortfolioRhythmStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,14 +23,13 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class RhythmGuitarpuStore extends BaseRhythmGuitarpuStore {
+class PortfolioRhythmStore extends BasePortfolioRhythmStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
   /** -------------------- async api -------------------- **/
 }
-export default RhythmGuitarpuStore;
+export default PortfolioRhythmStore;

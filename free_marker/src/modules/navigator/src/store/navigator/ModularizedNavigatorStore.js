@@ -42,6 +42,10 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         return this.drawerOpenStatus;
     }
 
+    getSuggestKeywordDetail(){
+        return this.getToolBar().getComplete().getSelectedComplete();
+    }
+
     async signInWithCredential() {
         if (Cookie.hasCredential() && !UserInfo.isLoginInSucceed()) {
             try {

@@ -9,28 +9,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** => following for main editor component  */
-
-  MainEditorWeekPopularIdOfSingerTextField = {};
-
-  MainEditorWeekPopularIdOfToneTextField = {};
-
-  MainEditorWeekPopularIndexOfSequenceTextField = {};
-
-  MainEditorWeekPopularSingerTextField = {};
-
-  MainEditorWeekPopularNameTextField = {};
-
-  MainEditorWeekPopularDivListWrap = {};
-
-  MainEditorWeekPopularDivList = {};
-
-  MainEditorWeekPopularDivWrap = {};
-
-  MainEditorWeekPopularCard = {};
-
-  MainEditorDiv = {};
-
   /** => following for navigator  component  */
 
   NavigatorDrawerShortcutIconImg = {};
@@ -65,41 +43,55 @@ class MobileStyle {
 
   NavigatorDiv = {};
 
-  /** => following for rhythm  component  */
+  /** => following for portfolio  component  */
 
-  RhythmAdjustCenterHideChordLabelTypography = {};
+  PortfolioRhythmComposerTypography = {};
 
-  RhythmAdjustCenterHideChordToggleSwitch = {};
+  PortfolioRhythmSingerTypography = {};
 
-  RhythmAdjustCenterHideChordFormControlLabel = {};
+  PortfolioRhythmNameTypography = {};
 
-  RhythmAdjustCenterCapoLevelTypography = {};
+  PortfolioRhythmDivList = {};
 
-  RhythmAdjustCenterToOriginalTonalityButton = {};
+  PortfolioRhythmCard = {};
 
-  RhythmAdjustCenterToFemaleTonalityButton = {};
+  PortfolioDiv = {};
 
-  RhythmAdjustCenterToMaleTonalityButton = {};
+  /** => following for sheet  component  */
 
-  RhythmAdjustCenterShrinkButton = {};
+  SheetAdjustCenterHideChordLabelTypography = {};
 
-  RhythmAdjustCenterEnlargeButton = {};
+  SheetAdjustCenterHideChordToggleSwitch = {};
 
-  RhythmAdjustCenterFlattenButton = {};
+  SheetAdjustCenterHideChordFormControlLabel = {};
 
-  RhythmAdjustCenterSharpenButton = {};
+  SheetAdjustCenterCapoLevelTypography = {};
 
-  RhythmAdjustCenterDiv = {};
+  SheetAdjustCenterToOriginalTonalityButton = {};
 
-  RhythmAdjustSwipeableDrawer = {};
+  SheetAdjustCenterToFemaleTonalityButton = {};
 
-  RhythmGuitarpuCurrentContextTypography = {};
+  SheetAdjustCenterToMaleTonalityButton = {};
 
-  RhythmGuitarpuDivList = {};
+  SheetAdjustCenterShrinkButton = {};
 
-  RhythmGuitarpuPaper = {};
+  SheetAdjustCenterEnlargeButton = {};
 
-  RhythmDiv = {};
+  SheetAdjustCenterFlattenButton = {};
+
+  SheetAdjustCenterSharpenButton = {};
+
+  SheetAdjustCenterDiv = {};
+
+  SheetAdjustSwipeableDrawer = {};
+
+  SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuDivList = {};
+
+  SheetGuitarpuPaper = {};
+
+  SheetDiv = {};
 
   /** => following for main  component  */
 

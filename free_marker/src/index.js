@@ -1507,9 +1507,9 @@ class CodegenNode {
 
     getParamStmtOfInvalidate() {
         let object = '';
-        if(this.isAutoCompleteView()) {
+        if (this.isAutoCompleteView()) {
             object = 'value'
-        }else if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
+        } else if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
             object = this.getName();
         else if (this.allowOfParam()) {
             object = this.getPreciseAttributeParent().getName();
@@ -3029,7 +3029,10 @@ class RemoteFunctionHandler {
                     generator.appendFunction(name, pramsOfWhole, [], [],
                         ...stmtsOfWhole)
                 }
+            }
 
+            function getCommentDescription(node) {
+                return `\/\/ ${node.getType()}:${node.getDescription()}`
             }
 
             if (generator === undefined)
@@ -3040,13 +3043,13 @@ class RemoteFunctionHandler {
                 if (!child.isColumnAttribute()) continue;
                 if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
-                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
+                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();\/\/${child.getType()}`);
+                this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
                 } else {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};\/\/${child.getType()}`);
+                object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};${getCommentDescription(child)}`);
                 }
                 children.push(child.getFieldName());
             }

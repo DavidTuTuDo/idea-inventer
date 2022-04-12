@@ -1,4 +1,4 @@
-import ModularizedNavigatorToolBarCompleteStore from "./ModularizedNavigatorToolBarCompleteStore";
+import BaseSheetAdjustCenterStore from "./BaseSheetAdjustCenterStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,20 +21,16 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorToolBarCompleteStore from "./BaseNavigatorToolBarCompleteStore";
+import HideChord from "../sheetAdjustCenterHideChord";
+import BaseStore from "../../base/BaseStore";
 
-class NavigatorToolBarCompleteStore extends ModularizedNavigatorToolBarCompleteStore {
+class SheetAdjustCenterStore extends BaseSheetAdjustCenterStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  getLabelOfInput() {
-    return `搜尋歌手 | 歌名`;
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorToolBarCompleteStore;
+export default SheetAdjustCenterStore;

@@ -48,7 +48,9 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
        * 沒有的話再用 getInput() 去搜尋
        * */
 
+      console.log(`detail ==> `,this.getStore().getSuggestKeywordDetail());
       console.log(complete.getInput());
+
     }
 }
 
