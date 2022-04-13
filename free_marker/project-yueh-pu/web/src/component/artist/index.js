@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import { inject } from "mobx-react";
-import BaseMainComponent from "./BaseMainComponent";
+import BaseArtistComponent from "./BaseArtistComponent";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -8,31 +8,25 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import MainStore from "../../store/main";
+import ArtistStore from "../../store/artist";
 import Style from "../../style";
-import MenuIcon from "@material-ui/icons/menu";
 import React from "react";
+import UserInfoRef from "../../base/BaseUserInfo";
 import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
 
-@inject("main")
+@inject("artist")
 @observer
-class MainComponent extends BaseMainComponent {
+class ArtistComponent extends BaseArtistComponent {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  onMainWeekPopularCardClicked(param) {
-    const song = param.object;
-    Router.gotoSheetDetailPage(this,song.getIdOfGuitarPu())
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default MainComponent;
+export default ArtistComponent;

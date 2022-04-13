@@ -43,6 +43,10 @@ class AppStyle {
 
   NavigatorDiv = {};
 
+  /** => following for artist  component  */
+
+  ArtistDiv = {};
+
   /** => following for portfolio  component  */
 
   PortfolioRhythmComposerTypography = {};

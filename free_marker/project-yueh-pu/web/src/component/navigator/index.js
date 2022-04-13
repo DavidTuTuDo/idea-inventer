@@ -33,13 +33,14 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
                 case 11:
                     Router.gotoSheetDetailPage(this.getComponentInstance(), content.uid);
                     break;
-                case 22:
-                    throw new ERROR(999, `88745478 route to singer not implemented`)
+                case 12:
+                    Router.gotoPortfolioPage(this, 'list', content.uid);
                     /** route to singer page*/
                     break;
+                default:
+                    throw new ERROR(999, `88745478 ${content.type} not handed`)
             }
         } else if (!Util.isUndefinedNullEmpty(content)) {
-            // Cookie.setPortfolio({type: 'search', id: content})
             Router.gotoPortfolioPage(this, 'search', content);
         }
 

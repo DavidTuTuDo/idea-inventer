@@ -184,6 +184,10 @@ class BaseComponent extends React.Component {
         return 5;
     }
 
+    disapearKeyboard(){
+        document.activeElement.blur();
+    }
+
     onScrollToBottomListener = (event) => {
         const self = this;
         let documentHeight = document.body.scrollHeight;

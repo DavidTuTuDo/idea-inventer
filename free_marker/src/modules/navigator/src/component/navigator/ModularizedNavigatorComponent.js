@@ -229,7 +229,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
          * 沒有的話再用 getInput() 去搜尋
          * */
 
-        document.activeElement.blur();
+        this.disapearKeyboard()
         const selected = this.getStore().getSuggestKeywordDetail();
         if (!Util.isUndefinedNullEmpty(selected)) {
             this.onSearchPressed(selected.data());

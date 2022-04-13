@@ -831,6 +831,11 @@ class CodegenNode {
         return Util.camel(`fetch`, this.getFieldName())
     }
 
+    /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
+    getFunctionNameOfPureFetch() {
+        return Util.camel(`fetch`, 'Pure',this.getName());
+    }
+
     getFunctionNameOfNextFetch() {
         return Util.camel(`fetch`, `next`, this.getFieldName())
     }
@@ -1693,7 +1698,13 @@ class CodegenNode {
                 params.push(param);
             }
         }
+
         params.push(...others);
+
+        if (_.isEqual('paramsOfRoute', platform) && this.detailPage) {
+            params.push(KEYWORD_OF_UID_OF_DETAIL);
+        }
+
         return params;
     }
 
@@ -2947,11 +2958,11 @@ class RemoteFunctionHandler {
     buildFetchSubmitApi = (node, recursively = false) => {
         const self = this;
 
-        function getConditionStmts() {
+        function getConditionStmts(isFetchAll = false) {
             const stmts = [];
             if (self.isWebPlatform())
                 stmts.push(...node.getConditions().map((each) => `${each}`));
-            if (node.hasPaginate() && self.isWebPlatform()) {
+            if (!isFetchAll && node.hasPaginate() && self.isWebPlatform()) {
                 stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.sizeOfPerPage)}`)
             }
             return stmts.join(',');
@@ -3090,6 +3101,14 @@ class RemoteFunctionHandler {
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
                         [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`], `fetch items`);
+
+
+                    /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
+                    if (node.hasPaginate()) {
+                        generateApiFunction(node.getFunctionNameOfPureFetch(),
+                            ['...conditions'],
+                            [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`], `fetch items without limit condition`);
+                    }
 
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
@@ -3278,7 +3297,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (componentNode.detailPage) {
-            baseGenerator.appendConstructor(`this.setUidOfDetail(this.props.match.params.uidOfDetail)`);
+            baseGenerator.appendConstructor(`this.setUidOfDetail(this.props.match.params.${KEYWORD_OF_UID_OF_DETAIL})`);
         }
 
         if (!componentNode.useInjectStore) {
@@ -4261,6 +4280,17 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildAppIndexFiles() {
+
+        /** 產生出key, 這樣每次path的param有改變,都會reload page*/
+        function getPropOfKey(component) {
+            const paramsOfProp = component.getParamsOfPath('paramsOfRoute').map((each) => `\$\{props.match.params.${each}\}`);
+            if (_.size(paramsOfProp) > 0) {
+                return {key: `###\`${paramsOfProp.join('')}\``}
+            } else {
+                return {}
+            }
+        }
+
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`));
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(` ReactDOM`, `react-dom`);
@@ -4291,9 +4321,8 @@ class AppBuilder extends ComponentBuilder {
             const renderStmts = this.getJSXStrings({
                     generator: appGenerator,
                     tag: _.upperFirst(component.getStruct().getName()),
-                    props: {...component.extra},
-                    children: ['props'],
-
+                    props: {...component.extra, ...getPropOfKey(component)},
+                    simpleProps: ['...props'],
                 }
             );
             this.removeJSXSign(renderStmts);
@@ -4304,7 +4333,6 @@ class AppBuilder extends ComponentBuilder {
                 tag: `Route`,
                 generator: appGenerator,
                 props: {
-
                     exact: component.isRootPath() ? true : undefined,
                     path: path,
                     render: `###(props) =>
@@ -5462,7 +5490,7 @@ class ProjectFileHandler extends PathBase {
                             description: '用來當作額router'
                         },
                         {
-                            name:'popularLevel',
+                            name: 'popularLevel',
                             type: 'number',
                             column: true,
                             defaultValue: 1,

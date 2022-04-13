@@ -302,13 +302,13 @@ class Utiller {
     }
 
     /** 拿前面n個items */
-    getArrayOfSize(array, n) {
-        return _.slice(array, 0, n);
+    getArrayOfSize(array, n = 1) {
+        return _.take(array, n);
     }
 
     getShuffledArrayWithLimitCount(arr, n) {
         let shuffled = _.shuffle(arr);
-        return shuffled.slice(0, n);
+        return _.take(shuffled, n);
     }
 
     getRandomItemOfArray(array) {
@@ -1071,7 +1071,7 @@ class Utiller {
         }
         return collection;
     }
-    /**
+
     getObjectWhile(major, minor, predicate = (target) => true) {
         const collection = {};
         for (const key in major) {
@@ -1217,6 +1217,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const util = new Utiller();
+            // console.log(util.getArrayOfSize([1,2,3,4,5],9999));
             // console.log(util.nth([1,2,3],-1000));
             // console.log(util.containsBy(['A', 'V', 'C'], 'C'))
             // console.log('why ==> ',new ERROR(1234))
