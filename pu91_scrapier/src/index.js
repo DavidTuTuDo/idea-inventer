@@ -294,15 +294,29 @@ import {databazer as SQL} from 'databazer';
             Util.appendInfo(`latestSongPersist() 抓了新歌 ${songs.length} 首`);
             for (const item of songs)
                 try {
-                    await database.insertRecord('SONG',
-                        {
-                            popularLevel: 10000,
-                            name: item.name,
-                            singer: item.singer.name,
-                            url: item.url,
-                            singerUrl: item.singer.url,
-                            state: 'NOT',
-                        });
+
+                    if (!(await database.exists('SONG', {url: item.url}))) {
+                        await database.insertRecord('SONG',
+                            {
+                                popularLevel: 1,
+                                name: item.name,
+                                singer: item.singer.name,
+                                url: item.url,
+                                singerUrl: item.singer.url,
+                                state: 'NOT',
+                            });
+                    }
+                    if (!(database.exists('SINGER', {url: item.singer.url}))) {
+                        await database.insertRecord('SINGER',
+                            {
+                                url: item.singer.url,
+                                name: item.name,
+                                type: 1,
+                                songCounts: 1,
+                                state: 'DONE',
+                            });
+                    }
+
                 } catch (error) {
                     if (error instanceof ERROR && error.isConstraintError()) {
                         /** ignore */
@@ -393,9 +407,9 @@ import {databazer as SQL} from 'databazer';
             /** 監督browser page 有沒有爆掉 */
             // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
             // /** 猛抓LATEST TABLE的歌曲*/
-            // joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
+            joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
             // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-            // joinTaskToPool(5, "TONE FETCHER", true, persistTone, tenSecs);
+            joinTaskToPool(4, "TONE FETCHER", true, persistTone, tenSecs);
             // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
 

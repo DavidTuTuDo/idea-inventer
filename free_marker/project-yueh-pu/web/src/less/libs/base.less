@@ -9,6 +9,35 @@
   align-items: center;
 }
 
+.CenterInParentColumn {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ContainerOfHorizontalScroll {
+  display: flex;
+  justify-content: space-between;
+  align-items:center;
+  padding: 1rem;
+  position: relative;
+  width: 100vw;
+  overflow-x:auto;
+  margin: auto;
+  gap: 5px;
+}
+
+.ChildOfHorizontalScroll {
+  width: 12%;
+  min-width: 150px;
+  text-align: center;
+  height: 100px;
+  padding-top: 1%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+
 .CenterInParentRelative {
   position: absolute;
   width: 100%;

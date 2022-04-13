@@ -17,11 +17,15 @@
     /** empty style */
   }
 }
-.MainWeekPopularCard {
-  height: 50px;
-  margin: 5px;
+
+.MainWeekPopularCard:extend(.ChildOfHorizontalScroll) {
+  border-width: 1px;
+  border-radius: 5px;
+  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   @media @mobile {
-    height: 70px;
   }
   @media @tablet {
     /** empty style */
@@ -30,7 +34,9 @@
     /** empty style */
   }
 }
-.MainWeekPopularDivList {
+
+.MainWeekPopularDivList:extend(.ContainerOfHorizontalScroll) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -39,8 +45,11 @@
   }
   @media @desktop {
     /** empty style */
+    max-width: 1080px;
+
   }
 }
+
 .MainWeekPopularDivListWrap {
   @media @mobile {
     /** empty style */
@@ -52,6 +61,7 @@
     /** empty style */
   }
 }
+
 .MainWeekPopularNameTypography {
   @media @mobile {
     /** empty style */
@@ -63,6 +73,7 @@
     /** empty style */
   }
 }
+
 .MainWeekPopularSingerTypography {
   @media @mobile {
     /** empty style */
@@ -74,7 +85,9 @@
     /** empty style */
   }
 }
+
 .MainWeekPopularIndexOfSequenceTypography {
+  display: none;
   @media @mobile {
     /** empty style */
   }
@@ -85,6 +98,7 @@
     /** empty style */
   }
 }
+
 /** following for sheet  component used  */
 
 .SheetDiv {
@@ -99,6 +113,7 @@
     /** empty style */
   }
 }
+
 .SheetGuitarpuPaper {
   width: 95vw;
   padding: 5px;
@@ -112,6 +127,7 @@
     /** empty style */
   }
 }
+
 .SheetGuitarpuDivList {
   @media @mobile {
     /** empty style */
@@ -123,6 +139,7 @@
     /** empty style */
   }
 }
+
 .SheetGuitarpuCurrentContextTypography {
   white-space: pre-wrap;
   @media @mobile {
@@ -135,6 +152,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustSwipeableDrawer {
   @media @mobile {
     /** empty style */
@@ -146,6 +164,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterDiv {
   @media @mobile {
     /** empty style */
@@ -157,6 +176,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterSharpenButton {
   @media @mobile {
     /** empty style */
@@ -168,6 +188,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterFlattenButton {
   @media @mobile {
     /** empty style */
@@ -179,6 +200,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterEnlargeButton {
   @media @mobile {
     /** empty style */
@@ -190,6 +212,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterShrinkButton {
   @media @mobile {
     /** empty style */
@@ -201,6 +224,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterToMaleTonalityButton {
   @media @mobile {
     /** empty style */
@@ -212,6 +236,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterToFemaleTonalityButton {
   @media @mobile {
     /** empty style */
@@ -223,6 +248,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterToOriginalTonalityButton {
   @media @mobile {
     /** empty style */
@@ -234,6 +260,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterCapoLevelTypography {
   @media @mobile {
     /** empty style */
@@ -245,6 +272,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterHideChordFormControlLabel {
   @media @mobile {
     /** empty style */
@@ -256,6 +284,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterHideChordToggleSwitch {
   @media @mobile {
     /** empty style */
@@ -267,6 +296,7 @@
     /** empty style */
   }
 }
+
 .SheetAdjustCenterHideChordLabelTypography {
   @media @mobile {
     /** empty style */
@@ -278,6 +308,7 @@
     /** empty style */
   }
 }
+
 /** following for portfolio  component used  */
 
 .PortfolioDiv {
@@ -291,6 +322,7 @@
     /** empty style */
   }
 }
+
 .PortfolioRhythmCard {
   padding: 10px;
   @media @mobile {
@@ -303,6 +335,7 @@
     /** empty style */
   }
 }
+
 .PortfolioRhythmDivList {
   @media @mobile {
     /** empty style */
@@ -314,6 +347,7 @@
     /** empty style */
   }
 }
+
 .PortfolioRhythmNameTypography {
   @media @mobile {
     /** empty style */
@@ -325,6 +359,7 @@
     /** empty style */
   }
 }
+
 .PortfolioRhythmSingerTypography {
   @media @mobile {
     /** empty style */
@@ -336,6 +371,7 @@
     /** empty style */
   }
 }
+
 .PortfolioRhythmComposerTypography {
   @media @mobile {
     /** empty style */
@@ -347,6 +383,7 @@
     /** empty style */
   }
 }
+
 /** following for artist  component used  */
 
 .ArtistDiv {
@@ -360,6 +397,7 @@
     /** empty style */
   }
 }
+
 /** following for navigator  component used  */
 
 .NavigatorDiv {
@@ -374,6 +412,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarToolbar {
   @media @mobile {
     /** empty style */
@@ -385,6 +424,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarAppBarWrap {
   background-color: #111111;
   @media @mobile {
@@ -399,6 +439,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarMenuIconButton {
   margin-right: 10px;
   @media @mobile {
@@ -411,6 +452,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarMenuIconMenuIcon {
   @media @mobile {
     /** empty style */
@@ -422,6 +464,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarTitleTypography {
   width: 80px;
   font-size: 1.4rem;
@@ -436,6 +479,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarCompleteAutocomplete {
   flex-grow: 1;
   margin-right: 20px;
@@ -449,6 +493,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarCompleteInputTextField {
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.3);
@@ -463,6 +508,7 @@
     max-width: 500px;
   }
 }
+
 .NavigatorToolBarCompleteInputFormWrap {
   @media @mobile {
     /** empty style */
@@ -474,6 +520,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarToEditModeButton {
   margin-right: 10px;
   @media @mobile {
@@ -486,6 +533,7 @@
     /** empty style */
   }
 }
+
 .NavigatorToolBarLoginButton {
   @media @mobile {
     font-size: 0.8rem;
@@ -497,6 +545,7 @@
     /** empty style */
   }
 }
+
 .NavigatorDrawerDrawer {
   @media @mobile {
     /** empty style */
@@ -508,6 +557,7 @@
     /** empty style */
   }
 }
+
 .NavigatorDrawerShortcutListItem {
   @media @mobile {
     /** empty style */
@@ -519,6 +569,7 @@
     /** empty style */
   }
 }
+
 .NavigatorDrawerShortcutListList {
   @media @mobile {
     /** empty style */
@@ -530,6 +581,7 @@
     /** empty style */
   }
 }
+
 .NavigatorDrawerShortcutTitleTypography {
   font-size: 3rem;
   @media @mobile {
@@ -542,6 +594,7 @@
     /** empty style */
   }
 }
+
 .NavigatorDrawerShortcutIconImg {
   @media @mobile {
     /** empty style */

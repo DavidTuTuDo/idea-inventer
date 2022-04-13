@@ -201,7 +201,7 @@ import {configerer} from "configerer";
     }
 
     // await deployAllSingerTone(5000);
-    await deployWeekPopular(100);
+    await deployWeekPopular(20);
     // await deploySingers();
     // await accumulatePopularLevelOfSinger()
     // await printRawText();

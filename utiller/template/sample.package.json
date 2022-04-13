@@ -13,7 +13,7 @@
     "configerer": "^1.0.11",
     "utiller": "^1.0.107",
     "linepayer": "^1.0.4",
-    "databazer": "^1.0.9",
+    "databazer": "^1.0.11",
     "lodash": "^4.17.20",
     "moment": "^2.29.1"
   },

@@ -81,6 +81,19 @@ class SqliteHandler {
         const records = await this.fetchRecords(tableName, condition, ...columns);
         return Util.getRandomItemOfArray(records);
     }
+    /**
+     *
+     * objectOfCondition { index:vlaue }
+     */
+    async exists(tableName, objectOfCondition) {
+        let builder = SqliteHandler.Builder()
+        for (const index in objectOfCondition) {
+            builder = builder.equal(index, objectOfCondition[index]);
+        }
+        const records = await this.fetchRecords(tableName, builder.stmt());
+        return _.size(records) > 0;
+
+    }
 
     async fetchRecords(tableName, condition = '', ...columns) {
         let stmt = '';

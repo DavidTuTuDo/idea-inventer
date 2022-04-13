@@ -20,7 +20,7 @@ export {gener_util as gener_util}
 // Util.generatePackage('../scraper',false).then();
         await Util.syncDelay(3000);
         await Util.generatePackage('../utiller', true);
-// Util.generatePackage('../databazer',true).then();
+        // await Util.generatePackage('../databazer', true);
 // Util.generatePackage('../configerer',true).then();
 
     }
