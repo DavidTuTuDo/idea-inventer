@@ -1,10 +1,10 @@
-import { observer } from "mobx-react";
-import { inject } from "mobx-react";
+import {observer} from "mobx-react";
+import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
@@ -12,7 +12,7 @@ import MainStore from "../../store/main";
 import Style from "../../style";
 import MenuIcon from "@material-ui/icons/menu";
 import React from "react";
-import { Application } from "../../";
+import {Application} from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
@@ -21,18 +21,25 @@ import BaseComponent from "../../base/BaseComponent";
 @inject("main")
 @observer
 class MainComponent extends BaseMainComponent {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  onMainWeekPopularCardClicked(param) {
-    const song = param.object;
-    Router.gotoSheetDetailPage(this,song.getIdOfGuitarPu())
-  }
 
-  /** -------------------- async api -------------------- **/
+    onMainHotRhythmCardClicked(param) {
+        const song = param.object;
+        Router.gotoSheetDetailPage(this, song.getIdOfGuitarPu())
+    }
+
+    onMainHotSingerCardClicked(param) {
+        const singer = param.object;
+        Router.gotoPortfolioPage(this, 'list', singer.getIdOfSinger())
+    }
+
+    /** -------------------- async api -------------------- **/
 }
+
 export default MainComponent;

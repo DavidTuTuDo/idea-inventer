@@ -22,7 +22,6 @@ import NavigatorDrawerMyShortcut from "./navigatorDrawerMyShortcut";
 import NavigatorDrawer from "./navigatorDrawer";
 import NavigatorCredential from "./navigatorCredential";
 import Navigator from "./navigator";
-import MainWeekPopular from "./mainWeekPopular";
 import Main from "./main";
 
 class Store extends BaseStore {

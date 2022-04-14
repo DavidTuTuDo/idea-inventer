@@ -1,4 +1,4 @@
-import BaseMainStore from "./BaseMainStore";
+import BaseMainHotRhythmStore from "./BaseMainHotRhythmStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class MainStore extends BaseMainStore {
+class MainHotRhythmStore extends BaseMainHotRhythmStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class MainStore extends BaseMainStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainStore;
+export default MainHotRhythmStore;

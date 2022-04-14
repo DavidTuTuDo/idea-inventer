@@ -99,17 +99,29 @@ class CommonStyle {
 
   /** => following for main  component  */
 
-  MainWeekPopularIndexOfSequenceTypography = {};
+  MainHotSingerStatementTypography = {};
 
-  MainWeekPopularSingerTypography = {};
+  MainHotSingerIndexOfSequenceTypography = {};
 
-  MainWeekPopularNameTypography = {};
+  MainHotSingerNameTypography = {};
 
-  MainWeekPopularDivListWrap = {};
+  MainHotSingerDivListWrap = {};
 
-  MainWeekPopularDivList = {};
+  MainHotSingerDivList = {};
 
-  MainWeekPopularCard = {};
+  MainHotSingerCard = {};
+
+  MainHotRhythmIndexOfSequenceTypography = {};
+
+  MainHotRhythmSingerTypography = {};
+
+  MainHotRhythmNameTypography = {};
+
+  MainHotRhythmDivListWrap = {};
+
+  MainHotRhythmDivList = {};
+
+  MainHotRhythmCard = {};
 
   MainDiv = {};
 

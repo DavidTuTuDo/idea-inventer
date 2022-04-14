@@ -57,8 +57,8 @@ class PortfolioStore extends BasePortfolioStore {
             /** 利用id去搜尋歌手作品清單*/
             case 'list':
                 this.setRhythmConditions(
-                    [{where: (stmt) => stmt.where('idOfSinger', '==', view.paramOfId)},
-                        // {orderBy: (stmt) => stmt.orderBy("qid")}
+                    [
+                        {where: (stmt) => stmt.where('idOfSinger', '==', view.paramOfId)},
                     ]
                 );
                 return await super.fetch(this.getComponent());

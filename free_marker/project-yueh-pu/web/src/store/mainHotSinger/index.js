@@ -1,4 +1,4 @@
-import BaseMainWeekPopularStore from "./BaseMainWeekPopularStore";
+import BaseMainHotSingerStore from "./BaseMainHotSingerStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class MainWeekPopularStore extends BaseMainWeekPopularStore {
+class MainHotSingerStore extends BaseMainHotSingerStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class MainWeekPopularStore extends BaseMainWeekPopularStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainWeekPopularStore;
+export default MainHotSingerStore;

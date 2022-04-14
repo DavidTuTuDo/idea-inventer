@@ -26,18 +26,41 @@ import {configerer} from "configerer";
     }
 
     /** 找出週 rank 對應的tone*/
-    async function deployWeekPopular(n) {
-        await api.deleteWeekPopulars(true);
+    async function deployMainPageHotRhythm(n) {
+        await api.deleteHotRhythms(true);
         const ranks = await fetchTopSongsOfRank(n)
         const guitars = Util.toObjectWithAttributeKey(await api.fetchGuitarpus(), 'uuidOfSong');
-        await api.submitWeekPopulars(...ranks.map((each) => {
+        await api.submitHotRhythms(...ranks.map((each) => {
             return {
                 name: each.name,
                 singer: each.singer,
                 indexOfSequence: each.WEEK,
                 idOfGuitarPu: getDocumentId(each, guitars),
                 uuidOfSong: each.url,
-                uuidOfSinger: each.singerUrl,
+            }
+        }))
+
+        function getDocumentId(rank, guitars) {
+            const url = rank.url;
+            // console.log(rank.WEEK,' 歌名: ', rank.name, 'url:', rank.url);
+            const guitar = guitars[url];
+            return guitar ? guitar.id : '';
+        }
+    }
+
+    /** 找出週 rank 對應的tone*/
+    async function deployMainPageHotSingers(n) {
+        await api.deleteHotSingers(true);
+        const singers = Util.getArrayOfSize((await api.fetchSingers({
+                orderBy: (stmt) => stmt.orderBy("popularLevel", 'desc')
+            })),n)
+        await api.submitHotSingers(...singers.map((each,index) => {
+            return {
+                name: each.name,
+                singer: each.singer,
+                indexOfSequence: index,
+                idOfSinger: each.id,
+                statement: `作品 ${each.countsOfRhythm} 件`,
             }
         }))
 
@@ -54,14 +77,18 @@ import {configerer} from "configerer";
         for (const singer of singers) {
             const tones = await database.fetchRecords('TONE', new Builder().equal('singerUrl', singer.url).stmt());
             const popularLevel = _.sum(tones.map((each) => each.popularLevel));
-            console.log(`歌手:${singer.name}, 有 ${popularLevel} 個讚`);
-            await database.updateRecords('SINGER', {popularLevel: popularLevel}, new Builder().equal('uid', singer.uid).stmt())
+            const countsOfRhythm = _.size(tones);
+            console.log(`歌手:${singer.name}, 有 ${popularLevel} 個讚, 有 ${countsOfRhythm} 個作品`);
+            await database.updateRecords('SINGER', {
+                popularLevel: popularLevel,
+                songCounts: countsOfRhythm
+            }, new Builder().equal('uid', singer.uid).stmt())
         }
     }
 
     async function deploySingers(popularLevel) {
         await api.deleteSingers(true);
-        const singers = await database.fetchRecords('SINGER', new Builder().gte('popularLevel', popularLevel).stmt());
+        const singers = await database.fetchRecords('SINGER', new Builder().gt('songCounts', 0).and().gte('popularLevel', popularLevel).stmt());
         await api.submitSingers(...singers.map((singer) => {
             return {
                 name: singer.name,
@@ -71,6 +98,7 @@ import {configerer} from "configerer";
                 type: singer.type,
                 uuidOfSinger: singer.url,
                 popularLevel: singer.popularLevel,
+                countsOfRhythm: singer.songCounts,
             }
         }));
 
@@ -91,10 +119,13 @@ import {configerer} from "configerer";
     async function deployAllSingerTone(popularLevel) {
         await api.deleteKeywords(true);
         await deploySingers(popularLevel);
-        const tones = await database.fetchRecords('TONE', new Builder().gte('popularLevel', popularLevel).stmt())
-        await deployGuitarPu(...tones);
+        await deployGuitarPuByPopularLevel(popularLevel);
     }
 
+    async function deployGuitarPuByPopularLevel(n) {
+        const tones = await database.fetchRecords('TONE', new Builder().gte('popularLevel', n).stmt())
+        await deployGuitarPu(...tones);
+    }
 
     async function deployGuitarPu(...tones) {
         await api.deleteGuitarpus(true);
@@ -151,7 +182,7 @@ import {configerer} from "configerer";
 
         function getSingerDocumentId() {
             const singerUrl = tone.singerUrl;
-            console.log(' name:', tone.name, ' url:', singerUrl, 'singer:', tone.singer);
+            // console.log(' name:', tone.name, ' url:', singerUrl, 'singer:', tone.singer);
             return singers[singerUrl].id;
         }
     }
@@ -196,16 +227,21 @@ import {configerer} from "configerer";
             capo: getFirstNumber(string),
             tonalityOfContext: getStringOfBrace(string)
         }
-
         return obj;
     }
 
-    // await deployAllSingerTone(5000);
-    await deployWeekPopular(20);
-    // await deploySingers();
+    // await deployGuitarPuByPopularLevel(2000);
+    // await deploySingers(2000);
+
     // await accumulatePopularLevelOfSinger()
     // await printRawText();
     // Util.getStringOfPop(undefined,',');
+
+
+    // 這三個是一組的
+    // await deployAllSingerTone(3000);
+    // await deployMainPageHotRhythm(20);
+    // await deployMainPageHotSingers(20);
 })();
 
 
