@@ -784,7 +784,7 @@ class CodegenNode {
     }
 
     getUniqueIdStmt() {
-        if (this.hasPath()) {
+        if (this.hasPath() && !this.isCheapArray()) {
             return `###\`\${${this.getName()}.getId()}\${index})\``;
         } else {
             if (this.isArray())
