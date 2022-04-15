@@ -27,9 +27,10 @@ import {configerer} from "configerer";
 
     /** 找出週 rank 對應的tone*/
     async function deployMainPageHotRhythm(n) {
-        await api.deleteHotRhythms(true);
-        const ranks = await fetchTopSongsOfRank(n)
-        const guitars = Util.toObjectWithAttributeKey(await api.fetchGuitarpus(), 'uuidOfSong');
+        const ranks = await fetchTopSongsOfRank(n);
+        let guitars = await api.fetchGuitarpusOfLimitation('in','uuidOfSong',...ranks.map(value => value.url));
+        guitars = Util.toObjectWithAttributeKey(guitars, 'uuidOfSong');
+
         await api.submitHotRhythms(...ranks.map((each) => {
             return {
                 name: each.name,
@@ -50,11 +51,11 @@ import {configerer} from "configerer";
 
     /** 找出週 rank 對應的tone*/
     async function deployMainPageHotSingers(n) {
-        await api.deleteHotSingers(true);
-        const singers = Util.getArrayOfSize((await api.fetchSingers({
-                orderBy: (stmt) => stmt.orderBy("popularLevel", 'desc')
-            })),n)
-        await api.submitHotSingers(...singers.map((each,index) => {
+        const singers = Util.getArrayOfSize((await api.fetchSingers(
+            {orderBy: (stmt) => stmt.orderBy("popularLevel", 'desc')},
+            {limit: (stmt) => stmt.limit(n)}
+        )), n)
+        await api.submitHotSingers(...singers.map((each, index) => {
             return {
                 name: each.name,
                 singer: each.singer,
@@ -104,7 +105,7 @@ import {configerer} from "configerer";
 
     }
 
-    async function deployKeywords(){
+    async function deployKeywords() {
         /** 部署Keywords*/
 
         const singersOfLatest = await api.fetchSingers();
@@ -244,11 +245,11 @@ import {configerer} from "configerer";
 
     // 這三個是一組的
     // await deployAllSingerTone(3000);
-    // await deployMainPageHotRhythm(20);
+    await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
     // console.log(await api.fetchSizeOfKeywords());
     // await deployKeywords();
-    console.log(await api.fetchSizeOfKeywords());
+    // console.log(await api.fetchSizeOfKeywords());
 })();
 
 

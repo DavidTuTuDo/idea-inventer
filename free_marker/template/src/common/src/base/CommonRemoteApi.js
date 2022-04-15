@@ -105,6 +105,23 @@ class CommonRemoteApi {
         return {message: `batch update path:${path}, size:${size} succeed`}
     }
 
+    /** 因為 == ,in, array-contains, not-in 這類的比較最多只能有10個, 所以得設計batch */
+    fetchItemsOfLimitation = async (path, action, fieldName, ...valuesOfComparison) => {
+        const result = [];
+        Util.appendInfo(`fetch items in limitation with action = ${action} | fieldName = ${fieldName} | path:${path}, size:${valuesOfComparison.length}`);
+
+        if (_.isEqual('id', fieldName)) {
+            fieldName = this.getFieldNameOfDocumentId()
+        }
+        while (_.size(valuesOfComparison) > 0) {
+            const values = await this.fetchItems(path, {
+                where: (stmt) => stmt.where(fieldName, action, Util.getSliceArrayWithMutate(valuesOfComparison, 10))
+            })
+            result.push(...values);
+        }
+        return result;
+    }
+
     async fetchSizeOfCollection(path) {
         const list = await this.collectionRef(path).listDocuments()
         return list.length;

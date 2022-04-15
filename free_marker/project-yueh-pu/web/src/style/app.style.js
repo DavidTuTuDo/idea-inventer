@@ -35,8 +35,6 @@ class AppStyle {
 
   MainEditorHotSingerNameTextField = {};
 
-  MainEditorHotSingerDivListWrap = {};
-
   MainEditorHotSingerDivList = {};
 
   MainEditorHotSingerDivWrap = {};
@@ -50,8 +48,6 @@ class AppStyle {
   MainEditorHotRhythmSingerTextField = {};
 
   MainEditorHotRhythmNameTextField = {};
-
-  MainEditorHotRhythmDivListWrap = {};
 
   MainEditorHotRhythmDivList = {};
 
@@ -165,8 +161,6 @@ class AppStyle {
 
   MainHotSingerNameTypography = {};
 
-  MainHotSingerDivListWrap = {};
-
   MainHotSingerDivList = {};
 
   MainHotSingerCard = {};
@@ -178,8 +172,6 @@ class AppStyle {
   MainHotRhythmSingerTypography = {};
 
   MainHotRhythmNameTypography = {};
-
-  MainHotRhythmDivListWrap = {};
 
   MainHotRhythmDivList = {};
 

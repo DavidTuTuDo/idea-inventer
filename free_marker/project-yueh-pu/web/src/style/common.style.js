@@ -35,8 +35,6 @@ class CommonStyle {
 
   MainEditorHotSingerNameTextField = {};
 
-  MainEditorHotSingerDivListWrap = {};
-
   MainEditorHotSingerDivList = {};
 
   MainEditorHotSingerDivWrap = {};
@@ -50,8 +48,6 @@ class CommonStyle {
   MainEditorHotRhythmSingerTextField = {};
 
   MainEditorHotRhythmNameTextField = {};
-
-  MainEditorHotRhythmDivListWrap = {};
 
   MainEditorHotRhythmDivList = {};
 
@@ -165,8 +161,6 @@ class CommonStyle {
 
   MainHotSingerNameTypography = {};
 
-  MainHotSingerDivListWrap = {};
-
   MainHotSingerDivList = {};
 
   MainHotSingerCard = {};
@@ -178,8 +172,6 @@ class CommonStyle {
   MainHotRhythmSingerTypography = {};
 
   MainHotRhythmNameTypography = {};
-
-  MainHotRhythmDivListWrap = {};
 
   MainHotRhythmDivList = {};
 

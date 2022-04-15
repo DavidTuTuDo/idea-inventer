@@ -3117,7 +3117,7 @@ class RemoteFunctionHandler {
                         [], [`return _.size(await self.${node.getFunctionNameOfFetch()}())`], `fetch cheap size`)
 
 
-                } else if (node.isArray()) {
+                } else if (node.isPathArray()) {
 
                     if (isWebPlatform() && node.hasPaginate()) {
                         generator.appendField('sizeOfPerPage', node.getPaginateSize(), [], [], 'static')
@@ -3135,18 +3135,28 @@ class RemoteFunctionHandler {
                             [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`], `fetch items without limit condition`);
                     }
 
-                    generateApiFunction(Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
+                    generateApiFunction(
+                        Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
                         ['id'],
                         [`return this.firestoreDocRef(path, id)`],
                         `get item doc ref`,
                         false,
                     )
 
-                    generateApiFunction(node.getFunctionNameOfFetch(),
+                    generateApiFunction(
+                        Util.camel(node.getFunctionNameOfFetch(), 'of', 'limitation'),
+                        [`action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'],
+                        [`return await this.fetchItemsOfLimitation(path, action, fieldName, ...valuesOfComparison)`],
+                        `get items with limitation`
+                    )
+
+                    generateApiFunction(
+                        node.getFunctionNameOfFetch(),
                         ['...conditions'],
                         [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`], `fetch items`);
 
-                    generateApiFunction(node.getFunctionNameOfFetchItem(),
+                    generateApiFunction(
+                        node.getFunctionNameOfFetchItem(),
                         [`id`],
                         ['const item =  await self.fetchItem(path, id)',
                             ...getFetchStmt(),

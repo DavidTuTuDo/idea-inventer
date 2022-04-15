@@ -1212,6 +1212,17 @@ class Utiller {
             throw new ERROR(9999, `7474423 type should be ${type} but get '${typeof type}' ${stringOfRules} `)
         }
     }
+
+    /**
+     const array = _.range(0, 50).map((each) => `index Of each`);
+     console.log('origin: ==> ', array.length) //origin: ==>  50
+     const result = util.getSliceArrayWithMutate(array, 10);
+     console.log('after: ==> ', result.length, ' | ', array.length) //after: ==>  10  |  40
+     */
+    getSliceArrayWithMutate(array, n) {
+        const slice = _.remove(array, (each, index) => index < n);
+        return slice;
+    }
 }
 
 if (configerer.DEBUG_MODE) {
