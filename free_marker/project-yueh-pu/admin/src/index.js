@@ -243,13 +243,11 @@ import {configerer} from "configerer";
     // Util.getStringOfPop(undefined,',');
 
 
-    // 這三個是一組的
-    // await deployAllSingerTone(3000);
-    await deployMainPageHotRhythm(20);
+    // 這四個是一組的
+    // await deployAllSingerTone(2000);
+    // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
-    // console.log(await api.fetchSizeOfKeywords());
     // await deployKeywords();
-    // console.log(await api.fetchSizeOfKeywords());
 })();
 
 
