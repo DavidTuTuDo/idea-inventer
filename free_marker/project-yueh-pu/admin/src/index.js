@@ -102,8 +102,16 @@ import {configerer} from "configerer";
             }
         }));
 
+    }
+
+    async function deployKeywords(){
+        /** 部署Keywords*/
+
         const singersOfLatest = await api.fetchSingers();
-        await api.submitKeywords(...singersOfLatest.map((singer) => {
+        const rhythms = await api.fetchRhythms();
+
+        const keywords = [];
+        keywords.push(...singersOfLatest.map((singer) => {
             return {
                 value: singer.name,
                 label: singer.name,
@@ -112,12 +120,21 @@ import {configerer} from "configerer";
                 uid: singer.id,
                 extra: `11是代表rhythm,12代表singer`,
             }
-        }));
+        }),)
+        keywords.push(...rhythms.map((rhythm) => {
+            return {
+                value: rhythm.name,
+                label: rhythm.name,
+                popularLevel: rhythm.popularLevel,
+                type: 11,
+                uid: rhythm.id,
+                extra: `11是代表rhythm,12代表singer`,
+            }
+        }))
+        await api.submitKeywords(...keywords);
     }
 
-
     async function deployAllSingerTone(popularLevel) {
-        await api.deleteKeywords(true);
         await deploySingers(popularLevel);
         await deployGuitarPuByPopularLevel(popularLevel);
     }
@@ -138,19 +155,6 @@ import {configerer} from "configerer";
 
         await api.submitRhythms(...guitars.map(guitar => {
             return {...guitar, idOfGuitarPu: guitar.id};
-        }));
-
-        const rhythms = await api.fetchRhythms();
-        /** 部署Keywords*/
-        await api.submitKeywords(...rhythms.map((rhythm) => {
-            return {
-                value: rhythm.name,
-                label: rhythm.name,
-                popularLevel: rhythm.popularLevel,
-                type: 11,
-                uid: rhythm.id,
-                extra: `11是代表rhythm,12代表singer`,
-            }
         }));
     }
 
@@ -242,6 +246,9 @@ import {configerer} from "configerer";
     // await deployAllSingerTone(3000);
     // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
+    // console.log(await api.fetchSizeOfKeywords());
+    // await deployKeywords();
+    console.log(await api.fetchSizeOfKeywords());
 })();
 
 

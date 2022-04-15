@@ -121,12 +121,12 @@ class BaseComponent extends React.Component {
         }
     }
 
-    /** 如果Component被當作View使用..............
-     * <ExamQuestionView
+    /**
+     如果Component被當作View使用..............
+     <ExamQuestionView
      freeze={true}
      componentView={true}
      question={whoknowz.question}/>
-     *
      * */
     isComponentView = () => {
         return !!this.props.isComponentView;
@@ -192,10 +192,15 @@ class BaseComponent extends React.Component {
         const self = this;
         let documentHeight = document.body.scrollHeight;
         let currentScroll = window.scrollY + window.innerHeight;
+        let isScrollDown = window.scrollY > 0;
+        /** 應該要記錄scrollY, 然後判斷偏移量 */
+
         let modifier = 1;
+        let isScrollToEnd = currentScroll + modifier > documentHeight
         /** modifier 距離底部的threshold */
-        if (currentScroll + modifier > documentHeight) {
+        if (isScrollDown  && isScrollToEnd) {
             /** Scroll達底部了 */
+            // console.log(`window.scrollY:${window.scrollY}, currentScroll:${currentScroll}, documentHeight:${documentHeight}`);
             if (!this.getStore().isInitialFetchSucceed()) {
                 Util.appendInfo(`初始任務尚未完成, 不能執行後續工作`);
                 return;

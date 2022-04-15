@@ -24,7 +24,7 @@ const KEYWORD_OF_UID_OF_DETAIL = 'uidOfDetail';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
-
+const ID_OF_CHEAP_ARRAY = 'contents';
 // const CURRENT_PROJECT = './project-kh-high';
 const CURRENT_PROJECT = './project-yueh-pu';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -87,6 +87,11 @@ const VIEW_IMPORTS =
 class CodegenNode {
 
     simpleSwitch; //{label,defaultValue};
+
+    cheap = false;
+    /** type = array 而且有path 的話, 會製造出太多document, fetch all的話就會花太多費用, 像是keywords, 或是首頁的banner
+     *  不需要用 firestore compound queries function 的就應該設計成這樣.
+     * */
 
     search = false;
     /** 讓手機(android ios)keyboard產生搜尋按鈕,  產生onXXXSearchPress(), */
@@ -512,7 +517,7 @@ class CodegenNode {
     }
 
     isPathArray() {
-        return this.isArray() && this.hasPath()
+        return this.isArray() && this.hasPath();
     }
 
     needEmptyTip() {
@@ -833,7 +838,7 @@ class CodegenNode {
 
     /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
     getFunctionNameOfPureFetch() {
-        return Util.camel(`fetch`, 'Pure',this.getName());
+        return Util.camel(`fetch`, 'Pure', this.getName());
     }
 
     getFunctionNameOfNextFetch() {
@@ -1826,6 +1831,13 @@ class CodegenNode {
     }
 
 
+    /** type = array 而且有path 的話, 會製造出太多document, fetch all的話就會花太多費用, 像是keywords, 或是首頁的banner
+     *  不需要用 firestore compound queries function 的就應該設計成這樣.
+     * */
+    isCheapArray() {
+        return this.isArray() && !!this.cheap;
+    }
+
     isArray() {
         return _.isEqual(this.type, 'array');
     }
@@ -2765,6 +2777,10 @@ class StoreBuilder extends BaseBuilder {
             baseGenerator.appendAsyncFunction('fetch', [...node.getParamsOfPath('web')], [], [],
                 ...this.getDecorateFetchStrings(node.isObject(), ...contents)
             )
+        } else if (node.isCheapArray()) {
+            baseGenerator.appendAsyncFunction('fetch',
+                [...node.getParamsOfPath('web')], [], [],
+                `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true)})`);
         } else if (node.isPathArray()) {
             baseGenerator.appendAsyncFunction('fetch',
                 [...node.getParamsOfPath('web', '...conditions')], [], [],
@@ -2920,7 +2936,15 @@ class RemoteFunctionHandler {
                 if (recursively && child.hasChildren()) this.buildListenerFunction(child);
             }
 
-            if (node.isPathArray()) {
+            if ((node.isObject() && node.hasPath()) || node.isCheapArray()) {
+                this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
+                    [...defaultParam, `callback = (data,error) => {}`],
+                    [], [node.isCheapArray() ? 'attention! this is cheap array' : ''],
+                    `${pathStmt}
+                           const objName = '${node.getName()}'
+                        return this.listenObject(path,objName,callback);`
+                )
+            } else if (node.isPathArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
                     [...defaultParam, `callback = (changes,error) => {}`, `condition = (stmt) => stmt`], [],
                     [`type:['added','modified','removed'], 回傳的就是function of unsubscribe`],
@@ -2943,14 +2967,6 @@ class RemoteFunctionHandler {
                     );
                 }
 
-            } else if (node.isObject() && node.hasPath()) {
-                this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
-                    [...defaultParam, `callback = (data,error) => {}`],
-                    [], [],
-                    `${pathStmt}
-                           const objName = '${node.getName()}'
-                        return this.listenObject(path,objName,callback);`
-                )
             }
         }
     }
@@ -3065,8 +3081,11 @@ class RemoteFunctionHandler {
                 children.push(child.getFieldName());
             }
 
-            contents.push(`const _updateTime = this._firebase().getServerTimeSymbol()`);
-            children.push(`updateTime`);
+            if (!node.isCheapArray()) {
+                contents.push(`const _updateTime = this._firebase().getServerTimeSymbol()`);
+                children.push(`updateTime`);
+            }
+
             contents.push(`const commitment = \{${children.map(child => `${child}: _${child}`).join(',')}\}`);
 
             if (node.hasPath()) {
@@ -3078,8 +3097,28 @@ class RemoteFunctionHandler {
                     'return commitment'
                 )
 
+                if (node.isCheapArray()) {
+                    generateApiFunction(
+                        Util.camel('submit', node.getFieldName()),
+                        ['...items'],
+                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
+                            `return await self.submitObject(path,{
+                                    ${ID_OF_CHEAP_ARRAY}:commitments,
+                                    updateTime:this._firebase().getServerTimeSymbol(),
+                            },'${ID_OF_CHEAP_ARRAY}')`], `submit cheap  items`)
 
-                if (node.isArray()) {
+                    generateApiFunction(node.getFunctionNameOfFetch(),
+                        [],
+                        [`const result = await self.fetchObject(path,'${ID_OF_CHEAP_ARRAY}')`,
+                            `return result.${ID_OF_CHEAP_ARRAY} ?? []`], `fetch cheap items`);
+
+                    generateApiFunction(
+                        Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
+                        [], [`return _.size(await self.${node.getFunctionNameOfFetch()}())`], `fetch cheap size`)
+
+
+                } else if (node.isArray()) {
+
                     if (isWebPlatform() && node.hasPaginate()) {
                         generator.appendField('sizeOfPerPage', node.getPaginateSize(), [], [], 'static')
                         generator.appendAsyncFunction(node.getFunctionNameOfNextFetch(), [
@@ -3089,6 +3128,11 @@ class RemoteFunctionHandler {
                             `const startAfterConditions = this.getStartAfterConditions(lastItem);`,
                             `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...startAfterConditions', '...conditions')})`
                         )
+
+                        /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
+                        generateApiFunction(node.getFunctionNameOfPureFetch(),
+                            ['...conditions'],
+                            [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`], `fetch items without limit condition`);
                     }
 
                     generateApiFunction(Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
@@ -3101,14 +3145,6 @@ class RemoteFunctionHandler {
                     generateApiFunction(node.getFunctionNameOfFetch(),
                         ['...conditions'],
                         [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`], `fetch items`);
-
-
-                    /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
-                    if (node.hasPaginate()) {
-                        generateApiFunction(node.getFunctionNameOfPureFetch(),
-                            ['...conditions'],
-                            [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`], `fetch items without limit condition`);
-                    }
 
                     generateApiFunction(node.getFunctionNameOfFetchItem(),
                         [`id`],
@@ -3220,7 +3256,6 @@ class RemoteFunctionHandler {
 
                         }
                     }
-
                 } else {
                     throw new ERROR(8015, node.getType());
                 }
@@ -5236,7 +5271,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         for (const node of nodes) {
-            if (node.isPathArray()) {
+            if (node.isPathArray() && !node.isCheapArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
                 if (!Util.has(children, 'id')) {
                     node.appendChildrenWithJson({
@@ -5309,6 +5344,7 @@ class ProjectFileHandler extends PathBase {
                     {
                         name: nameOfDescription,
                         type: 'string',
+                        editIgnore: true,
                         defaultValue: node.getDescription(),
                     }
                 )
@@ -5685,7 +5721,7 @@ class ProjectFileHandler extends PathBase {
                 delete node.view;
             }
 
-            if (node.isArray() && node.hasPath()) {
+            if (node.isPathArray()) {
                 node.disableSelectedArray();
 
                 if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {

@@ -9,6 +9,58 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
+  /** => following for main editor component  */
+
+  MainEditorInterestingOfFunctionIndexOfSequenceTextField = {};
+
+  MainEditorInterestingOfFunctionXsTextField = {};
+
+  MainEditorInterestingOfFunctionRouteTextField = {};
+
+  MainEditorInterestingOfFunctionTitleTypography = {};
+
+  MainEditorInterestingOfFunctionDivList = {};
+
+  MainEditorInterestingOfFunctionDivWrap = {};
+
+  MainEditorInterestingOfFunctionPaper = {};
+
+  MainEditorHotSingerStatementTextField = {};
+
+  MainEditorHotSingerIdOfSingerTextField = {};
+
+  MainEditorHotSingerIndexOfSequenceTextField = {};
+
+  MainEditorHotSingerNameTextField = {};
+
+  MainEditorHotSingerDivListWrap = {};
+
+  MainEditorHotSingerDivList = {};
+
+  MainEditorHotSingerDivWrap = {};
+
+  MainEditorHotSingerCard = {};
+
+  MainEditorHotRhythmIdOfGuitarPuTextField = {};
+
+  MainEditorHotRhythmIndexOfSequenceTextField = {};
+
+  MainEditorHotRhythmSingerTextField = {};
+
+  MainEditorHotRhythmNameTextField = {};
+
+  MainEditorHotRhythmDivListWrap = {};
+
+  MainEditorHotRhythmDivList = {};
+
+  MainEditorHotRhythmDivWrap = {};
+
+  MainEditorHotRhythmCard = {};
+
+  MainEditorDiv = {};
+
   /** => following for navigator  component  */
 
   NavigatorDrawerShortcutIconImg = {};
@@ -99,6 +151,14 @@ class MobileStyle {
 
   /** => following for main  component  */
 
+  MainInterestingOfFunctionTitleTypography = {};
+
+  MainInterestingOfFunctionGridList = {};
+
+  MainInterestingOfFunctionGridWrap = {};
+
+  MainInterestingOfFunctionPaper = {};
+
   MainHotSingerStatementTypography = {};
 
   MainHotSingerIndexOfSequenceTypography = {};
@@ -111,6 +171,8 @@ class MobileStyle {
 
   MainHotSingerCard = {};
 
+  MainTitleOfHotSingerTypography = {};
+
   MainHotRhythmIndexOfSequenceTypography = {};
 
   MainHotRhythmSingerTypography = {};
@@ -122,6 +184,8 @@ class MobileStyle {
   MainHotRhythmDivList = {};
 
   MainHotRhythmCard = {};
+
+  MainTitleOfHotRhythmTypography = {};
 
   MainDiv = {};
 
