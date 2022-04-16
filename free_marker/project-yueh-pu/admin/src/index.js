@@ -192,7 +192,6 @@ import {configerer} from "configerer";
         }
     }
 
-
     /**
      *  原調：F#m速度：123
      男調：Fm女調：Cm
@@ -211,7 +210,6 @@ import {configerer} from "configerer";
         for (const each of array) {
             object[each.shift()] = Util.replaceAll(getWordOnly(each.pop()), '-', '|');
         }
-
         return object;
     }
 
@@ -248,6 +246,16 @@ import {configerer} from "configerer";
         }
     }
 
+    async function submitMainFunctions() {
+        await api.deleteInterestingOfFunctions(true);
+        await api.submitInterestingOfFunctionItem({
+            title: '命運中的一首歌',
+            xs: 6,
+            indexOfSequence: 0,
+            route: 'randomRhythm',
+        })
+    }
+
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
 
@@ -261,7 +269,9 @@ import {configerer} from "configerer";
     // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
     // await deployKeywords();
-    await syncRemoteIdWithToneAndSinger()
+    // await syncRemoteIdWithToneAndSinger()
+
+    await submitMainFunctions();
 })();
 
 
