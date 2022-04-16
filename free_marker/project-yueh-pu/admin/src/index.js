@@ -28,7 +28,7 @@ import {configerer} from "configerer";
     /** 找出週 rank 對應的tone*/
     async function deployMainPageHotRhythm(n) {
         const ranks = await fetchTopSongsOfRank(n);
-        let guitars = await api.fetchGuitarpusOfLimitation('in','uuidOfSong',...ranks.map(value => value.url));
+        let guitars = await api.fetchGuitarpusOfLimitation('in', 'uuidOfSong', ...ranks.map(value => value.url));
         guitars = Util.toObjectWithAttributeKey(guitars, 'uuidOfSong');
 
         await api.submitHotRhythms(...ranks.map((each) => {
@@ -235,6 +235,19 @@ import {configerer} from "configerer";
         return obj;
     }
 
+    async function syncRemoteIdWithToneAndSinger() {
+        const singers = await api.fetchSingers();
+        for (const singer of singers) {
+            await database.updateRecords('SINGER', {idOfRemote: singer.id},
+                new Builder().equal('url', singer.uuidOfSinger).stmt())
+        }
+        const guitars = await api.fetchGuitarpus()
+        for (const guitar of guitars) {
+            await database.updateRecords('TONE', {idOfRemote: guitar.id},
+                new Builder().equal('url', guitar.uuidOfSong).stmt())
+        }
+    }
+
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
 
@@ -248,6 +261,7 @@ import {configerer} from "configerer";
     // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
     // await deployKeywords();
+    await syncRemoteIdWithToneAndSinger()
 })();
 
 

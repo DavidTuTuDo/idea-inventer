@@ -19,6 +19,8 @@ class CommonStyle {
 
   MainEditorInterestingOfFunctionTitleTypography = {};
 
+  MainEditorInterestingOfFunctionPaperSkeleton = {};
+
   MainEditorInterestingOfFunctionDivList = {};
 
   MainEditorInterestingOfFunctionDivWrap = {};
@@ -32,6 +34,8 @@ class CommonStyle {
   MainEditorHotSingerIndexOfSequenceTextField = {};
 
   MainEditorHotSingerNameTextField = {};
+
+  MainEditorHotSingerCardSkeleton = {};
 
   MainEditorHotSingerDivList = {};
 
@@ -47,6 +51,8 @@ class CommonStyle {
 
   MainEditorHotRhythmNameTextField = {};
 
+  MainEditorHotRhythmCardSkeleton = {};
+
   MainEditorHotRhythmDivList = {};
 
   MainEditorHotRhythmDivWrap = {};
@@ -60,6 +66,8 @@ class CommonStyle {
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
+
+  NavigatorDrawerShortcutListItemSkeleton = {};
 
   NavigatorDrawerShortcutListList = {};
 
@@ -101,6 +109,8 @@ class CommonStyle {
 
   PortfolioRhythmNameTypography = {};
 
+  PortfolioRhythmCardSkeleton = {};
+
   PortfolioRhythmDivList = {};
 
   PortfolioRhythmCard = {};
@@ -115,27 +125,31 @@ class CommonStyle {
 
   SheetAdjustCenterHideChordFormControlLabel = {};
 
-  SheetAdjustCenterCapoLevelTypography = {};
-
   SheetAdjustCenterToOriginalTonalityButton = {};
 
   SheetAdjustCenterToFemaleTonalityButton = {};
 
   SheetAdjustCenterToMaleTonalityButton = {};
 
-  SheetAdjustCenterShrinkButton = {};
+  SheetAdjustCenterFontWrapperShrinkButton = {};
 
-  SheetAdjustCenterEnlargeButton = {};
+  SheetAdjustCenterFontWrapperEnlargeButton = {};
 
-  SheetAdjustCenterFlattenButton = {};
+  SheetAdjustCenterFontWrapperDiv = {};
 
-  SheetAdjustCenterSharpenButton = {};
+  SheetAdjustCenterTonalityWrapperFlattenButton = {};
+
+  SheetAdjustCenterTonalityWrapperSharpenButton = {};
+
+  SheetAdjustCenterTonalityWrapperDiv = {};
 
   SheetAdjustCenterDiv = {};
 
   SheetAdjustSwipeableDrawer = {};
 
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuPaperSkeleton = {};
 
   SheetGuitarpuDivList = {};
 
@@ -146,6 +160,8 @@ class CommonStyle {
   /** => following for main  component  */
 
   MainInterestingOfFunctionTitleTypography = {};
+
+  MainInterestingOfFunctionPaperSkeleton = {};
 
   MainInterestingOfFunctionGridList = {};
 
@@ -159,6 +175,8 @@ class CommonStyle {
 
   MainHotSingerNameTypography = {};
 
+  MainHotSingerCardSkeleton = {};
+
   MainHotSingerDivList = {};
 
   MainHotSingerCard = {};
@@ -170,6 +188,8 @@ class CommonStyle {
   MainHotRhythmSingerTypography = {};
 
   MainHotRhythmNameTypography = {};
+
+  MainHotRhythmCardSkeleton = {};
 
   MainHotRhythmDivList = {};
 

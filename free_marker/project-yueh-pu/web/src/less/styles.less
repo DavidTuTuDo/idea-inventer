@@ -59,6 +59,19 @@
     max-width: 1080px;
   }
 }
+.MainHotRhythmCardSkeleton {
+  width: 100vw;
+  height: 100px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .MainHotRhythmNameTypography {
   @media @mobile {
     /** empty style */
@@ -94,6 +107,7 @@
   }
 }
 .MainTitleOfHotSingerTypography:extend(.MainTitleOfHotRhythmTypography all) {
+  margin-top: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -116,6 +130,18 @@
   }
 }
 .MainHotSingerDivList:extend(.MainHotRhythmDivList all) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainHotSingerCardSkeleton:extend(.MainHotRhythmCardSkeleton) {
+
   @media @mobile {
     /** empty style */
   }
@@ -193,6 +219,17 @@
     /** empty style */
   }
 }
+.MainInterestingOfFunctionPaperSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .MainInterestingOfFunctionTitleTypography {
   @media @mobile {
     /** empty style */
@@ -242,6 +279,17 @@
     /** empty style */
   }
 }
+.SheetGuitarpuPaperSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .SheetGuitarpuCurrentContextTypography {
   white-space: pre-wrap;
   @media @mobile {
@@ -265,7 +313,21 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterDiv {
+.SheetAdjustCenterDiv:extend(.CenterInParentColumn) {
+  gap: 8px;
+  padding: 5px;
+  @media @mobile {
+    gap: 4px;
+  }
+  @media @tablet {
+    gap: 4px;
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterTonalityWrapperDiv:extend(.CenterInParentRow) {
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -276,7 +338,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterSharpenButton {
+.SheetAdjustCenterTonalityWrapperSharpenButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -287,7 +349,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterFlattenButton {
+.SheetAdjustCenterTonalityWrapperFlattenButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -298,7 +360,8 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterEnlargeButton {
+.SheetAdjustCenterFontWrapperDiv:extend(.CenterInParentRow) {
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -309,7 +372,18 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterShrinkButton {
+.SheetAdjustCenterFontWrapperEnlargeButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterFontWrapperShrinkButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -321,6 +395,18 @@
   }
 }
 .SheetAdjustCenterToMaleTonalityButton {
+  text-transform: none;
+  @media @mobile {
+    font-size: 0.9rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterToFemaleTonalityButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -331,29 +417,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterToFemaleTonalityButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.SheetAdjustCenterToOriginalTonalityButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.SheetAdjustCenterCapoLevelTypography {
+.SheetAdjustCenterToOriginalTonalityButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -423,6 +487,17 @@
   }
 }
 .PortfolioRhythmDivList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PortfolioRhythmCardSkeleton {
   @media @mobile {
     /** empty style */
   }
@@ -649,6 +724,17 @@
     /** empty style */
   }
 }
+.NavigatorDrawerShortcutListItemSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .NavigatorDrawerShortcutTitleTypography {
   font-size: 3rem;
   @media @mobile {
@@ -708,6 +794,17 @@
   }
 }
 .MainEditorHotRhythmDivList:extend(.MainHotRhythmDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorHotRhythmCardSkeleton:extend(.MainHotRhythmCardSkeleton) {
   @media @mobile {
     /** empty style */
   }
@@ -795,6 +892,17 @@
     /** empty style */
   }
 }
+.MainEditorHotSingerCardSkeleton:extend(.MainHotSingerCardSkeleton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .MainEditorHotSingerNameTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
@@ -862,6 +970,17 @@
   }
 }
 .MainEditorInterestingOfFunctionDivList:extend(.MainInterestingOfFunctionDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorInterestingOfFunctionPaperSkeleton:extend(.MainInterestingOfFunctionPaperSkeleton) {
   @media @mobile {
     /** empty style */
   }

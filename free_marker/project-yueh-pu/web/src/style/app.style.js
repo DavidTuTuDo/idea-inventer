@@ -19,6 +19,8 @@ class AppStyle {
 
   MainEditorInterestingOfFunctionTitleTypography = {};
 
+  MainEditorInterestingOfFunctionPaperSkeleton = {};
+
   MainEditorInterestingOfFunctionDivList = {};
 
   MainEditorInterestingOfFunctionDivWrap = {};
@@ -32,6 +34,8 @@ class AppStyle {
   MainEditorHotSingerIndexOfSequenceTextField = {};
 
   MainEditorHotSingerNameTextField = {};
+
+  MainEditorHotSingerCardSkeleton = {};
 
   MainEditorHotSingerDivList = {};
 
@@ -47,6 +51,8 @@ class AppStyle {
 
   MainEditorHotRhythmNameTextField = {};
 
+  MainEditorHotRhythmCardSkeleton = {};
+
   MainEditorHotRhythmDivList = {};
 
   MainEditorHotRhythmDivWrap = {};
@@ -60,6 +66,8 @@ class AppStyle {
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
+
+  NavigatorDrawerShortcutListItemSkeleton = {};
 
   NavigatorDrawerShortcutListList = {};
 
@@ -101,6 +109,8 @@ class AppStyle {
 
   PortfolioRhythmNameTypography = {};
 
+  PortfolioRhythmCardSkeleton = {};
+
   PortfolioRhythmDivList = {};
 
   PortfolioRhythmCard = {};
@@ -115,27 +125,31 @@ class AppStyle {
 
   SheetAdjustCenterHideChordFormControlLabel = {};
 
-  SheetAdjustCenterCapoLevelTypography = {};
-
   SheetAdjustCenterToOriginalTonalityButton = {};
 
   SheetAdjustCenterToFemaleTonalityButton = {};
 
   SheetAdjustCenterToMaleTonalityButton = {};
 
-  SheetAdjustCenterShrinkButton = {};
+  SheetAdjustCenterFontWrapperShrinkButton = {};
 
-  SheetAdjustCenterEnlargeButton = {};
+  SheetAdjustCenterFontWrapperEnlargeButton = {};
 
-  SheetAdjustCenterFlattenButton = {};
+  SheetAdjustCenterFontWrapperDiv = {};
 
-  SheetAdjustCenterSharpenButton = {};
+  SheetAdjustCenterTonalityWrapperFlattenButton = {};
+
+  SheetAdjustCenterTonalityWrapperSharpenButton = {};
+
+  SheetAdjustCenterTonalityWrapperDiv = {};
 
   SheetAdjustCenterDiv = {};
 
   SheetAdjustSwipeableDrawer = {};
 
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuPaperSkeleton = {};
 
   SheetGuitarpuDivList = {};
 
@@ -146,6 +160,8 @@ class AppStyle {
   /** => following for main  component  */
 
   MainInterestingOfFunctionTitleTypography = {};
+
+  MainInterestingOfFunctionPaperSkeleton = {};
 
   MainInterestingOfFunctionGridList = {};
 
@@ -159,6 +175,8 @@ class AppStyle {
 
   MainHotSingerNameTypography = {};
 
+  MainHotSingerCardSkeleton = {};
+
   MainHotSingerDivList = {};
 
   MainHotSingerCard = {};
@@ -170,6 +188,8 @@ class AppStyle {
   MainHotRhythmSingerTypography = {};
 
   MainHotRhythmNameTypography = {};
+
+  MainHotRhythmCardSkeleton = {};
 
   MainHotRhythmDivList = {};
 

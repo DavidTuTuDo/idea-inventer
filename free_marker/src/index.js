@@ -62,17 +62,15 @@ const VIEW_IMPORTS =
             from: `@material-ui/icons/menu`,
             views: ['MenuIcon'],
             simplePath: true, /** 就是只要material-ui/icons/menu */
-
         },
         {
             from: `@material-ui/icons/Search`,
             views: ['SearchIcon'],
             simplePath: true, /** 就是只要material-ui/icons/Search */
-        }
-        ,
+        },
         {
             from: `@material-ui/core`,
-            views: ['Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List']
         },
@@ -87,6 +85,11 @@ const VIEW_IMPORTS =
 class CodegenNode {
 
     simpleSwitch; //{label,defaultValue};
+    skeleton = {
+        enable: true,
+        variant: 'rectangular',
+    };
+    /** loading的時候出現的類似等待中的loading 樣式 */
 
     cheap = false;
     /** type = array 而且有path 的話, 會製造出太多document, fetch all的話就會花太多費用, 像是keywords, 或是首頁的banner
@@ -914,13 +917,24 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
 
     setListContents(contents) {
         this.listContents = contents;
+    }
+
+    needLoadingSkeleton() {
+        return this.isPathArray() && this.skeleton && this.skeleton.enable;
+    }
+
+    getVariantOfSkeleton() {
+        if (this.skeleton && this.skeleton.variant) {
+            return this.skeleton.variant;
+        }
+        return 'rectangular';
     }
 
     /** 如果是dialog, 或是 pop-up 類型的view, 應該需要一個hook去開關 */
@@ -1604,6 +1618,7 @@ class CodegenNode {
                 break;
             case 'listWrap':
                 viewName = this.getListWrapView();
+            case 'skeleton':
                 break;
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
@@ -3747,7 +3762,7 @@ class ComponentBuilder extends BaseBuilder {
                 arrayItemViewStmts = this.getJSXStringsByNode(generator, arrayItemNode)
             }
 
-            const arrayStmts = this.getJSXStrings({
+            let arrayStmts = this.getJSXStrings({
                 generator,
                 tag: node.getListView(),
                 props,
@@ -3755,6 +3770,27 @@ class ComponentBuilder extends BaseBuilder {
                 contents: [`{${node.getFieldName()}.map((${node.getName()},index) => `,
                     ...arrayItemViewStmts, `)}`, ...node.getListContents(), ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
+
+            if (node.needLoadingSkeleton()) {
+
+                const clazzName = node.getClassNameOfLessUsage('skeleton');
+                this.storeClassName({node, type: 'skeleton'});
+                const props = {
+                    variant: node.getVariantOfSkeleton(),
+                    className: clazzName,
+                    animation: 'wave'
+                };
+
+                const stmtOfSkeleton = this.getJSXStrings({
+                    generator,
+                    tag: 'Skeleton',
+                    typeOfClass: 'component',
+                    props: props
+                });
+
+                arrayStmts = [`_.size(${node.getFieldName()}) > 0 ?`, ...arrayStmts, ` : `, ...stmtOfSkeleton]
+
+            }
 
             if (node.hasListWrap()) {
                 const clazzName = node.getClassNameOfLessUsage('listWrap');
