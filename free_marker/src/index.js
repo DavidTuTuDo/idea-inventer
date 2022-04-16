@@ -85,11 +85,12 @@ const VIEW_IMPORTS =
 class CodegenNode {
 
     simpleSwitch; //{label,defaultValue};
+
     skeleton = {
         enable: true,
         variant: 'rectangular',
     };
-    /** loading的時候出現的類似等待中的loading 樣式 */
+    /** loading的時候出現的類似等待中的loading 樣式, 目前支援path array */
 
     cheap = false;
     /** type = array 而且有path 的話, 會製造出太多document, fetch all的話就會花太多費用, 像是keywords, 或是首頁的banner
