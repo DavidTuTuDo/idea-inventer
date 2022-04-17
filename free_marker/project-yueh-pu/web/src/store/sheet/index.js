@@ -96,10 +96,10 @@ class SheetStore extends BaseSheetStore {
     await super.onInitialFetchSucceed();
     this.getCurrentPu().setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
     this.getCurrentPu().setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
-
     this.getAdjustCenter().setToFemaleTonality(`女${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
     this.getAdjustCenter().setToMaleTonality(`男${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
     this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
+    this.getComponent().showInfoSnackMessage(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
   }
 
   getStringOfSuggestDescription(tone) {

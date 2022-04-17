@@ -837,6 +837,10 @@ class BaseComponent extends React.Component {
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
 
+    getKeywords(){
+        return Application.getNavigatorStore().getKeywords();
+    }
+
     getElementByClassName(className) {
         const element = document.getElementsByClassName(className)[0];
         return element;
