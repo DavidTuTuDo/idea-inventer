@@ -11,7 +11,7 @@ class CommonStyle {
 
   /** => following for main editor component  */
 
-  MainEditorInterestingOfFunctionIdTextField = {};
+  MainEditorInterestingOfFunctionSubTitleTextField = {};
 
   MainEditorInterestingOfFunctionTitleTextField = {};
 
@@ -20,6 +20,8 @@ class CommonStyle {
   MainEditorInterestingOfFunctionXsTextField = {};
 
   MainEditorInterestingOfFunctionRouteTextField = {};
+
+  MainEditorInterestingOfFunctionIdTextField = {};
 
   MainEditorInterestingOfFunctionDivList = {};
 
@@ -131,17 +133,27 @@ class CommonStyle {
 
   /** => following for sheet  component  */
 
-  SheetAdjustCenterHideChordLabelTypography = {};
+  SheetAdjustCenterToggleWrapperJoinToFavoriteLabelTypography = {};
 
-  SheetAdjustCenterHideChordToggleSwitch = {};
+  SheetAdjustCenterToggleWrapperJoinToFavoriteToggleSwitch = {};
 
-  SheetAdjustCenterHideChordFormControlLabel = {};
+  SheetAdjustCenterToggleWrapperJoinToFavoriteFormControlLabel = {};
 
-  SheetAdjustCenterToOriginalTonalityButton = {};
+  SheetAdjustCenterToggleWrapperHideChordLabelTypography = {};
 
-  SheetAdjustCenterToFemaleTonalityButton = {};
+  SheetAdjustCenterToggleWrapperHideChordToggleSwitch = {};
 
-  SheetAdjustCenterToMaleTonalityButton = {};
+  SheetAdjustCenterToggleWrapperHideChordFormControlLabel = {};
+
+  SheetAdjustCenterToggleWrapperDiv = {};
+
+  SheetAdjustCenterGenderWrapperToOriginalTonalityButton = {};
+
+  SheetAdjustCenterGenderWrapperToFemaleTonalityButton = {};
+
+  SheetAdjustCenterGenderWrapperToMaleTonalityButton = {};
+
+  SheetAdjustCenterGenderWrapperDiv = {};
 
   SheetAdjustCenterFontWrapperShrinkButton = {};
 
@@ -161,15 +173,19 @@ class CommonStyle {
 
   SheetGuitarpuCurrentContextTypography = {};
 
-  SheetGuitarpuPaperSkeleton = {};
+  SheetGuitarpuDivSkeleton = {};
 
   SheetGuitarpuDivList = {};
 
-  SheetGuitarpuPaper = {};
+  SheetGuitarpuPaperWrap = {};
+
+  SheetGuitarpuDiv = {};
 
   SheetDiv = {};
 
   /** => following for main  component  */
+
+  MainInterestingOfFunctionSubTitleTypography = {};
 
   MainInterestingOfFunctionTitleTypography = {};
 

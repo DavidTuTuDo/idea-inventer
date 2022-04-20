@@ -846,6 +846,11 @@ class BaseComponent extends React.Component {
         return element;
     }
 
+    getElementsByClassName(className) {
+        const elements = document.getElementsByClassName(className);
+        return elements;
+    }
+
     /**
      *
      * @param className
@@ -857,6 +862,22 @@ class BaseComponent extends React.Component {
         const value = style.getPropertyValue(attribute);
         return value;
 
+    }
+
+    getStyleByElement(element,attribute){
+        const style = window.getComputedStyle(element, null)
+        const value = style.getPropertyValue(attribute);
+        return value;
+    }
+
+    /** 修改所有className 的elements */
+    adjustBunchOfFontSizeByClassName(className, enlarge = true, delta = 1) {
+        const elements = this.getElementsByClassName(className);
+        for(const element of elements) {
+            const originValue = parseFloat(this.getStyleByElement(element,'font-size'))
+            const nextValue = enlarge ? originValue + delta : originValue - delta;
+            element.style.fontSize = `${nextValue}px`;
+        }
     }
 
     adjustFontSizeByClassName(className, enlarge = true, delta = 1) {

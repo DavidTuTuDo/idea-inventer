@@ -42,7 +42,6 @@
 .MainPromotedBannerDivSkeleton {
   height: 25vh;
   width: 100vh;
-
   @media @mobile {
     /** empty style */
   }
@@ -130,6 +129,7 @@
   }
 }
 .MainHotRhythmNameTypography {
+  color:#5580AA;
   @media @mobile {
     /** empty style */
   }
@@ -209,6 +209,8 @@
   }
 }
 .MainHotSingerNameTypography {
+  color:#5580AA;
+
   @media @mobile {
     /** empty style */
   }
@@ -242,9 +244,7 @@
     /** empty style */
   }
 }
-.MainInterestingOfFunctionPaper:extend(.CenterInParentColumn) {
-  height: 60px;
-  background-color: rgba(188, 188, 188, 0.3);
+.MainInterestingOfFunctionPaper:extend(.PaperOfSimpleGrid all) {
   @media @mobile {
     /** empty style */
   }
@@ -280,6 +280,8 @@
   }
 }
 .MainInterestingOfFunctionPaperSkeleton {
+  width: 100vw;
+  hight: 40px;
   @media @mobile {
     /** empty style */
   }
@@ -291,6 +293,17 @@
   }
 }
 .MainInterestingOfFunctionTitleTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainInterestingOfFunctionSubTitleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -315,7 +328,19 @@
     /** empty style */
   }
 }
-.SheetGuitarpuPaper {
+.SheetGuitarpuDiv {
+  width: 95%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetGuitarpuPaperWrap:extend(.CenterInParentColumn) {
   width: 95vw;
   padding: 5px;
   @media @mobile {
@@ -339,7 +364,7 @@
     /** empty style */
   }
 }
-.SheetGuitarpuPaperSkeleton {
+.SheetGuitarpuDivSkeleton {
   @media @mobile {
     /** empty style */
   }
@@ -353,13 +378,15 @@
 .SheetGuitarpuCurrentContextTypography {
   white-space: pre-wrap;
   @media @mobile {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
     /** empty style */
+    font-size: 1.0rem;
+
   }
 }
 .SheetAdjustSwipeableDrawer {
@@ -398,7 +425,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterTonalityWrapperSharpenButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+.SheetAdjustCenterTonalityWrapperSharpenButton:extend(.SheetAdjustCenterGenderWrapperToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -409,7 +436,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterTonalityWrapperFlattenButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+.SheetAdjustCenterTonalityWrapperFlattenButton:extend(.SheetAdjustCenterGenderWrapperToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -432,7 +459,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterFontWrapperEnlargeButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+.SheetAdjustCenterFontWrapperEnlargeButton:extend(.SheetAdjustCenterGenderWrapperToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -443,7 +470,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterFontWrapperShrinkButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+.SheetAdjustCenterFontWrapperShrinkButton:extend(.SheetAdjustCenterGenderWrapperToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -454,8 +481,21 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterToMaleTonalityButton {
+.SheetAdjustCenterGenderWrapperDiv:extend(.CenterInParentRow) {
+  gap: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterGenderWrapperToMaleTonalityButton {
   text-transform: none;
+  white-space: pre-wrap;
   @media @mobile {
     font-size: 0.9rem;
   }
@@ -466,7 +506,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterToFemaleTonalityButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+.SheetAdjustCenterGenderWrapperToFemaleTonalityButton:extend(.SheetAdjustCenterGenderWrapperToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -477,7 +517,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterToOriginalTonalityButton:extend(.SheetAdjustCenterToMaleTonalityButton) {
+.SheetAdjustCenterGenderWrapperToOriginalTonalityButton:extend(.SheetAdjustCenterGenderWrapperToMaleTonalityButton) {
   @media @mobile {
     /** empty style */
   }
@@ -488,7 +528,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterHideChordFormControlLabel {
+.SheetAdjustCenterToggleWrapperDiv {
   @media @mobile {
     /** empty style */
   }
@@ -499,7 +539,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterHideChordToggleSwitch {
+.SheetAdjustCenterToggleWrapperHideChordFormControlLabel {
   @media @mobile {
     /** empty style */
   }
@@ -510,7 +550,52 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterHideChordLabelTypography {
+.SheetAdjustCenterToggleWrapperHideChordToggleSwitch {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterToggleWrapperHideChordLabelTypography {
+  color: rgba(19, 96, 166, 0.8);
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterToggleWrapperJoinToFavoriteFormControlLabel {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterToggleWrapperJoinToFavoriteToggleSwitch {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterToggleWrapperJoinToFavoriteLabelTypography:extend(.SheetAdjustCenterToggleWrapperHideChordLabelTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -1081,6 +1166,7 @@
   }
 }
 .MainEditorInterestingOfFunctionPaper:extend(.MainInterestingOfFunctionPaper) {
+  height: 500px;
   @media @mobile {
     /** empty style */
   }
@@ -1103,6 +1189,17 @@
   }
 }
 .MainEditorInterestingOfFunctionDivList:extend(.MainInterestingOfFunctionDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorInterestingOfFunctionIdTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1157,7 +1254,7 @@
     /** empty style */
   }
 }
-.MainEditorInterestingOfFunctionIdTextField:extend(.BaseEditorTextField) {
+.MainEditorInterestingOfFunctionSubTitleTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
   }

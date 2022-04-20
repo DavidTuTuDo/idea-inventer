@@ -17,6 +17,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
+import PortfolioRhythmStore from "../../store/portfolioRhythm";
 
 @inject("main")
 @observer
@@ -40,16 +41,33 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainInterestingOfFunctionPaperClicked(param) {
+        const self = this;
         const func = param.object;
         console.log(func.route);
         switch (func.route) {
             case 'randomRhythm':
-                const rhythm = Util.getRandomItemOfArray(this.getKeywords().filter((each) => _.isEqual(each.type,11) && each.popularLevel > 10000));
+                const rhythm = Util.getRandomItemOfArray(this.getKeywords().filter((each) => _.isEqual(each.type, 11) && each.popularLevel > 10000));
                 Router.gotoSheetDetailPage(this, rhythm.uid);
+                break;
+            case 'randomEric':
+                this.gotoSingerRandomRhythm('niyTvtrrHV4h22xjoJ96').then()
+                break;
+            case 'randomGEM':
+                this.gotoSingerRandomRhythm('9kTdLItmUY231jq8QB33').then()
                 break;
             default:
                 break
         }
+    }
+
+    gotoSingerRandomRhythm = async (id) => {
+        const store = new PortfolioRhythmStore();
+        const portfolio = await store.fetchPureRhythms(this,
+            {where: (stmt) => stmt.where('idOfSinger', '==', id)}
+        )
+        const rhythm = Util.getRandomItemOfArray(portfolio);
+        if(rhythm)
+            Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu);
     }
 
     /** -------------------- async api -------------------- **/

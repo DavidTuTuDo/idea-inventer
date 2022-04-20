@@ -84,7 +84,7 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
-    simpleSwitch; //{label,defaultValue};
+    labelOfSwitch; /** view為simpleSwitch時, 顯示的label */
 
     skeleton = {
         enable: true,
@@ -843,7 +843,7 @@ class CodegenNode {
 
     /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
     getFunctionNameOfPureFetch() {
-        return Util.camel(`fetch`, 'Pure', this.getName());
+        return Util.camel(`fetch`, 'Pure', this.getFieldName());
     }
 
     getFunctionNameOfNextFetch() {
@@ -1326,9 +1326,17 @@ class CodegenNode {
         return this.isAttributeView('TextField');
     }
 
-    /** viewPager懶人包 */
+
     isSimpleViewPager() {
         return this.isArray() && this.isAttributeView('SimpleViewPager');
+    }
+
+    isSimpleGrid() {
+        return this.isArray() && this.isAttributeView('SimpleGrid');
+    }
+
+    isSimpleSwitch() {
+        return this.isObject() && this.isAttributeView('SimpleSwitch');
     }
 
     isAutoCompleteView() {
@@ -1488,6 +1496,12 @@ class CodegenNode {
         this.listProps = props;
     }
 
+    appendListProps(...props) {
+        for (const prop of props) {
+            this.listProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
+        }
+    }
+
     appendWrapProps(...props) {
         for (const prop of props) {
             this.wrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
@@ -1498,11 +1512,6 @@ class CodegenNode {
         this.wrapProps = props;
     }
 
-    appendListProps(...props) {
-        for (const prop of props) {
-            this.listProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
-        }
-    }
 
     getListWrapProps() {
         if (!!this.listWrapProps)
@@ -3421,7 +3430,7 @@ class ComponentBuilder extends BaseBuilder {
         if (!componentNode.isDisableInitFetch()) {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
-                `if(this.enableInitFetch) {`,
+                `if(!self.getStore().isInitialFetchSucceed() && this.enableInitFetch) {`,
                 `self.getStore().fetch(this).then((collection) => {
                     return self.getStore().onInitialFetchSucceed(collection)
                 }).then((result) => { Util.appendInfo('${componentNode.getName()} page initial fetch completed')})}`
@@ -5264,7 +5273,7 @@ class ProjectFileHandler extends PathBase {
          */
     }
 
-    /** 放一些SimpleViewPager, SimpleWaterFallGrid*/
+    /** 放一些SimpleViewPager, SimpleGrid*/
     enrichNodeWithCustomViewDefined(...nodes) {
         for (const node of nodes) {
             if (node.isPathArray() && !node.isCheapArray()) {
@@ -5278,6 +5287,78 @@ class ProjectFileHandler extends PathBase {
                         readOnly: true,
                     })
                 }
+            }
+
+            if(node.isSimpleSwitch()) {
+                node.setView('FormControlLabel');
+                node.appendChildrenWithJsons(
+                    {
+                        nameOfProp: {
+                            name: 'control'
+                        },
+                        view: 'Switch',
+                        name: 'toggle',
+                        type: 'boolean',
+                    },
+                    {
+                        nameOfProp: {
+                            name: 'label'
+                        },
+                        view: 'Typography',
+                        defaultValue: node.labelOfSwitch,
+                        name: 'label',
+                        type: 'string',
+                    })
+            }
+
+            if (node.isSimpleGrid()) {
+                node.setView('Paper');
+                node.setListView('Grid');
+                node.appendListProps(
+                    {container: true},
+                    {spacing: 2}
+                )
+                node.setClick(true);
+                node.appendWrapProps(
+                    {item: true},
+                    {xs: `###${node.getName()}.getXs()`}
+                )
+                node.setWrapView('Grid');
+                node.appendChildrenWithJsons(
+                    {
+                        column: true,
+                        name: 'route',
+                        type: 'string',
+                        description: '點擊後的導頁'
+                    },
+                    {
+                        column: true,
+                        name: 'xs',
+                        type: 'number',
+                        defaultValue: 1,
+                        description: '按鈕的比重'
+                    },
+                    {
+                        column: true,
+                        name: 'indexOfSequence',
+                        type: 'number',
+                        description: '用來調整順序orderBy'
+                    },
+                    {
+                        column: true,
+                        name: 'title',
+                        type: 'string',
+                        view: 'Typography',
+                        description: '用來顯示標題'
+                    },
+                    {
+                        column: true,
+                        name: 'subTitle',
+                        type: 'string',
+                        view: 'Typography',
+                        description: '用來顯示標題'
+                    }
+                )
             }
 
             if (node.isSimpleViewPager()) {
@@ -5361,6 +5442,7 @@ class ProjectFileHandler extends PathBase {
                     node.appendChildrenWithJsons(objectOfAppend[key]);
                 }
             }
+
             this.enrichNodeWithCustomViewDefined(...node.getChildren());
         }
     }
@@ -5471,7 +5553,7 @@ class ProjectFileHandler extends PathBase {
                     description: '我是server處理完的結果, 回傳succeed/fail',
                     type: 'string', /** succeed, fail */
 
-                },{
+                }, {
                     name: 'message',
                     column: true,
                     description: '我是server處理完的結果, 如果fail,reason就寫在這裡',
