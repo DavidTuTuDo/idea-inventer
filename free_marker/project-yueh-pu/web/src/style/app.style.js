@@ -11,6 +11,8 @@ class AppStyle {
 
   /** => following for main editor component  */
 
+  MainEditorInterestingOfFunctionIdTextField = {};
+
   MainEditorInterestingOfFunctionTitleTextField = {};
 
   MainEditorInterestingOfFunctionIndexOfSequenceTextField = {};
@@ -18,8 +20,6 @@ class AppStyle {
   MainEditorInterestingOfFunctionXsTextField = {};
 
   MainEditorInterestingOfFunctionRouteTextField = {};
-
-  MainEditorInterestingOfFunctionPaperSkeleton = {};
 
   MainEditorInterestingOfFunctionDivList = {};
 
@@ -35,8 +35,6 @@ class AppStyle {
 
   MainEditorHotSingerNameTextField = {};
 
-  MainEditorHotSingerCardSkeleton = {};
-
   MainEditorHotSingerDivList = {};
 
   MainEditorHotSingerDivWrap = {};
@@ -51,13 +49,27 @@ class AppStyle {
 
   MainEditorHotRhythmNameTextField = {};
 
-  MainEditorHotRhythmCardSkeleton = {};
-
   MainEditorHotRhythmDivList = {};
 
   MainEditorHotRhythmDivWrap = {};
 
   MainEditorHotRhythmCard = {};
+
+  MainEditorPromotedBannerImageTextField = {};
+
+  MainEditorPromotedBannerImageDivWrap = {};
+
+  MainEditorPromotedBannerImageImg = {};
+
+  MainEditorPromotedBannerRouteTextField = {};
+
+  MainEditorPromotedBannerIdTextField = {};
+
+  MainEditorPromotedBannerDivList = {};
+
+  MainEditorPromotedBannerDivWrap = {};
+
+  MainEditorPromotedBannerDiv = {};
 
   MainEditorDiv = {};
 
@@ -196,6 +208,16 @@ class AppStyle {
   MainHotRhythmCard = {};
 
   MainTitleOfHotRhythmTypography = {};
+
+  MainPromotedBannerImageDivWrap = {};
+
+  MainPromotedBannerImageImg = {};
+
+  MainPromotedBannerDivSkeleton = {};
+
+  MainPromotedBannerSlideList = {};
+
+  MainPromotedBannerDiv = {};
 
   MainDiv = {};
 

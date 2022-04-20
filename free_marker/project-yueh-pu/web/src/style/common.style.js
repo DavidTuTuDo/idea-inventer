@@ -11,6 +11,8 @@ class CommonStyle {
 
   /** => following for main editor component  */
 
+  MainEditorInterestingOfFunctionIdTextField = {};
+
   MainEditorInterestingOfFunctionTitleTextField = {};
 
   MainEditorInterestingOfFunctionIndexOfSequenceTextField = {};
@@ -18,8 +20,6 @@ class CommonStyle {
   MainEditorInterestingOfFunctionXsTextField = {};
 
   MainEditorInterestingOfFunctionRouteTextField = {};
-
-  MainEditorInterestingOfFunctionPaperSkeleton = {};
 
   MainEditorInterestingOfFunctionDivList = {};
 
@@ -35,8 +35,6 @@ class CommonStyle {
 
   MainEditorHotSingerNameTextField = {};
 
-  MainEditorHotSingerCardSkeleton = {};
-
   MainEditorHotSingerDivList = {};
 
   MainEditorHotSingerDivWrap = {};
@@ -51,13 +49,27 @@ class CommonStyle {
 
   MainEditorHotRhythmNameTextField = {};
 
-  MainEditorHotRhythmCardSkeleton = {};
-
   MainEditorHotRhythmDivList = {};
 
   MainEditorHotRhythmDivWrap = {};
 
   MainEditorHotRhythmCard = {};
+
+  MainEditorPromotedBannerImageTextField = {};
+
+  MainEditorPromotedBannerImageDivWrap = {};
+
+  MainEditorPromotedBannerImageImg = {};
+
+  MainEditorPromotedBannerRouteTextField = {};
+
+  MainEditorPromotedBannerIdTextField = {};
+
+  MainEditorPromotedBannerDivList = {};
+
+  MainEditorPromotedBannerDivWrap = {};
+
+  MainEditorPromotedBannerDiv = {};
 
   MainEditorDiv = {};
 
@@ -196,6 +208,16 @@ class CommonStyle {
   MainHotRhythmCard = {};
 
   MainTitleOfHotRhythmTypography = {};
+
+  MainPromotedBannerImageDivWrap = {};
+
+  MainPromotedBannerImageImg = {};
+
+  MainPromotedBannerDivSkeleton = {};
+
+  MainPromotedBannerSlideList = {};
+
+  MainPromotedBannerDiv = {};
 
   MainDiv = {};
 

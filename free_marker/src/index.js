@@ -531,7 +531,7 @@ class CodegenNode {
     /** 設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
      * module class 會persist到 free_marker/src/modules/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
     isModuleComponent() {
-        const ancestor = this.getStructNode();
+        const ancestor = this.getNodeOfComponent();
         const modules = Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE);
         return Util.has(modules, ancestor.getName());
     }
@@ -622,7 +622,7 @@ class CodegenNode {
         return this.conditions;
     }
 
-    getStructNode() {
+    getNodeOfComponent() {
         const node = this.getParentBy((node) => node.isStructNode());
         return node;
     }
@@ -799,7 +799,8 @@ class CodegenNode {
     }
 
     isEditPage() {
-        return !!this.editPage;
+        const nodeOfComponent = this.getNodeOfComponent();
+        return nodeOfComponent.editPage;
     }
 
     isColumnAttribute() {
@@ -1325,6 +1326,11 @@ class CodegenNode {
         return this.isAttributeView('TextField');
     }
 
+    /** viewPager懶人包 */
+    isSimpleViewPager() {
+        return this.isArray() && this.isAttributeView('SimpleViewPager');
+    }
+
     isAutoCompleteView() {
         return this.isAttributeView('Autocomplete')
     }
@@ -1667,11 +1673,6 @@ class CodegenNode {
         this.path = path;
     }
 
-    isEditPageDependOnParent() {
-        const struct = this.getStructNode();
-        return struct.isEditPage();
-    }
-
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
     getPathOfRouterString() {
         if (!this.hasPath()) return '';
@@ -1926,7 +1927,7 @@ class CodegenNode {
     }
 
     isComponentNode() {
-        return this.getParentNode().getParentNode().isStructNode();
+        return this.isStructNode();
     }
 
     getParamOfRenderView() {
@@ -2098,6 +2099,14 @@ class CodegenNode {
 
     getStruct() {
         return this.struct;
+    }
+
+    appendChildrenWithJsons(...objs) {
+        for (const obj of objs) {
+            const child = CodegenNode.enrich(obj);
+            child.parent = this;
+            this.appendChildren(child);
+        }
     }
 
     appendChildrenWithJson(obj) {
@@ -3114,6 +3123,7 @@ class RemoteFunctionHandler {
                 )
 
                 if (node.isCheapArray()) {
+
                     generateApiFunction(
                         Util.camel('submit', node.getFieldName()),
                         ['...items'],
@@ -3477,20 +3487,6 @@ class ComponentBuilder extends BaseBuilder {
         return {classNames: this.classNames, events: componentNode.getEvents()};
     }
 
-    containedFetchAttribute(node) {
-        if (node && node instanceof CodegenNode && node.hasPath()) {
-            return true;
-        }
-
-        for (const child of node.getChildren()) {
-            const result = this.containedFetchAttribute(child)
-            if (result === true) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * {
      *     generator:'ClassGenerator',
@@ -3541,7 +3537,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (node) {
                 if (useViewModuleAndComponentModuleMechanism) {
-                    generator.appendImport(node.zClassNameOfRenderView(), node.isComponentNode() ?
+                    generator.appendImport(node.getViewClassNameOfRenderView(), node.isComponentNode() ?
                         `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}` :
                         `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
                 }
@@ -3661,27 +3657,6 @@ class ComponentBuilder extends BaseBuilder {
             return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
         }
 
-        function getLabelStmts() {
-            const clazzName = node.getClassNameOfLessUsage('label');
-            self.storeClassName({node, type: 'label'});
-
-            const view = node.getSelectedCustomLabelView();
-            if (view !== undefined) {
-                const stmts = self.getJSXStrings({
-                    generator,
-                    tag: view,
-                    props: {className: clazzName},
-                    contents: [`{${node.getName()}.label}`],
-                    typeOfClass: 'component',
-                })
-                self.normalizeJSXString(stmts)
-                return stmts;
-
-            } else {
-                return [`${node.getName()}.label`];
-            }
-        }
-
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
         function getOuterChildJSXStrings(node) {
 
@@ -3772,7 +3747,7 @@ class ComponentBuilder extends BaseBuilder {
                     ...arrayItemViewStmts, `)}`, ...node.getListContents(), ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
 
-            if (node.needLoadingSkeleton()) {
+            if (!node.isEditPage() && node.needLoadingSkeleton()) {
 
                 const clazzName = node.getClassNameOfLessUsage('skeleton');
                 this.storeClassName({node, type: 'skeleton'});
@@ -5289,39 +5264,13 @@ class ProjectFileHandler extends PathBase {
          */
     }
 
-    enrichNodes(...nodes) {
-
-        function getStmtOfEventInValidate(node, functionName) {
-            const stmts = [];
-
-            if (node.isAttribute() && !node.disableOnChangeSetter) {
-                let paramStmt = '';
-                if (node.isSwitchView()) {
-                    paramStmt = `self.getCheckStateByEvent(event)`;
-                } else if (node.isTextFieldView()) {
-                    stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
-                    paramStmt = `latestValue`;
-                } else if (node.isSliderView()) {
-                    paramStmt = `getLatestValueByEvent(event)`;
-                } else if (node.isAutoCompleteView()) {
-                    stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
-                } else {
-                    /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
-                }
-
-                if (!Util.isUndefinedNullEmpty(paramStmt))
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
-            }
-
-            stmts.push(`self.${functionName}({view:event${node.getParamStmtOfInvalidate()}})`);
-            return stmts.join('\n');
-        }
-
+    /** 放一些SimpleViewPager, SimpleWaterFallGrid*/
+    enrichNodeWithCustomViewDefined(...nodes) {
         for (const node of nodes) {
             if (node.isPathArray() && !node.isCheapArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
                 if (!Util.has(children, 'id')) {
-                    node.appendChildrenWithJson({
+                    node.appendChildrenWithJsons({
                         name: 'id',
                         type: 'string',
                         column: true,
@@ -5331,13 +5280,42 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            if (node.isSimpleViewPager()) {
+                node.setView('div');
+                node.setClick(true);
+                node.setListView('Slide');
+                node.appendListProps(
+                    {arrows: false},
+                    {indicators: true},
+                    {canSwipe: true},
+                    {duration: 5000}
+                )
+
+                node.appendChildrenWithJsons({
+                        column: true,
+                        name: 'route',
+                        type: 'string',
+                        description: '點擊圖片後的導頁',
+                    },
+                    {
+                        column: true,
+                        name: 'image',
+                        view: 'img',
+                        needWatermark: true,
+                        description: '顯示的頁面',
+                        wrapView: 'div',
+                        type: 'string',
+                    }
+                );
+            }
+
             if (node.isSimpleSelected()) {
 
                 if (!node.isArray()) {
                     throw new ERROR(9999, '98787453 simple selected support array only')
                 }
 
-                node.getParentNode().appendChildrenWithJson({
+                node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
                     type: 'string', /** succeed, fail */
                     defaultValue: node.getSelectedDefaultValue()
@@ -5380,14 +5358,48 @@ class ProjectFileHandler extends PathBase {
                 }
 
                 for (const key in objectOfAppend) {
-                    node.appendChildrenWithJson(objectOfAppend[key]);
+                    node.appendChildrenWithJsons(objectOfAppend[key]);
+                }
+            }
+            this.enrichNodeWithCustomViewDefined(...node.getChildren());
+        }
+    }
+
+    /** 針對view的種類, 增加與store互動的規則 例如TextField就要有onChange */
+    enrichNodesOfBehavior(...nodes) {
+
+        function getStmtOfEventInValidate(node, functionName) {
+            const stmts = [];
+
+            if (node.isAttribute() && !node.disableOnChangeSetter) {
+                let paramStmt = '';
+                if (node.isSwitchView()) {
+                    paramStmt = `self.getCheckStateByEvent(event)`;
+                } else if (node.isTextFieldView()) {
+                    stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
+                    paramStmt = `latestValue`;
+                } else if (node.isSliderView()) {
+                    paramStmt = `getLatestValueByEvent(event)`;
+                } else if (node.isAutoCompleteView()) {
+                    stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
+                } else {
+                    /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
                 }
 
+                if (!Util.isUndefinedNullEmpty(paramStmt))
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
             }
 
+            stmts.push(`self.${functionName}({view:event${node.getParamStmtOfInvalidate()}})`);
+            return stmts.join('\n');
+        }
+
+        for (const node of nodes) {
+
             if (node.isTextFieldView()) {
-                const nameOfDescription = Util.camel(`label`, `of`, node.getName());
-                node.getParentNode().appendChildrenWithJson(
+                const nameOfDescription = Util.camel('label', 'of', node.getName());
+
+                node.getParentNode().appendChildrenWithJsons(
                     {
                         name: nameOfDescription,
                         type: 'string',
@@ -5396,8 +5408,12 @@ class ProjectFileHandler extends PathBase {
                     }
                 )
 
+                /** 因為editor後 會把Typography 改成 TextField, 但是 store沒有gen出 getLabelOf${name} 的實作 */
                 node.appendViewProps(
-                    {label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDescription)}()`},
+                    {
+                        label: node.isEditPage() ? node.getDescription() :
+                            `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDescription)}()`
+                    }
                 )
 
                 if (node.isNumber()) {
@@ -5449,26 +5465,25 @@ class ProjectFileHandler extends PathBase {
 
 
             if (node.isRestfulBean()) {
-                node.appendChildrenWithJson({
+                node.appendChildrenWithJsons({
                     name: 'status',
                     column: true,
                     description: '我是server處理完的結果, 回傳succeed/fail',
                     type: 'string', /** succeed, fail */
 
-                })
-
-                node.appendChildrenWithJson({
+                },{
                     name: 'message',
                     column: true,
                     description: '我是server處理完的結果, 如果fail,reason就寫在這裡',
                     type: 'string', /** fail reason */
                 })
+
             }
 
             if (node.needVisibleHook()) {
                 const nameOfHook = Util.camel(`is`, node.getName(), 'visible');
 
-                node.getParentNode().appendChildrenWithJson({
+                node.getParentNode().appendChildrenWithJsons({
                     name: nameOfHook,
                     type: `boolean`,
                 })
@@ -5497,9 +5512,8 @@ class ProjectFileHandler extends PathBase {
                 node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
             }
 
-
             if (node.needWatermark) {
-                node.getParentNode().appendChildrenWithJson({
+                node.getParentNode().appendChildrenWithJsons({
                     name: `${Util.camel(node.name, 'origin')}`,
                     type: `string`,
                     column: true,
@@ -5515,7 +5529,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.needTestButton()) {
-                node.appendChildrenWithJson({
+                node.appendChildrenWithJsons({
                     view: 'Button',
                     type: 'string',
                     name: 'testUsage',
@@ -5541,7 +5555,7 @@ class ProjectFileHandler extends PathBase {
                  * */
                 if (node.independence) {
                     for (const raw of node.ref.raw.children) {
-                        node.appendChildrenWithJson(raw)
+                        node.appendChildrenWithJsons(raw)
                     }
                 }
             }
@@ -5594,7 +5608,7 @@ class ProjectFileHandler extends PathBase {
                     ]
                 })
 
-                node.appendChildrenWithJson({
+                node.appendChildrenWithJsons({
                     name: Util.camel(`selected`, node.getName()),
                     type: 'string',
                 })
@@ -5649,8 +5663,7 @@ class ProjectFileHandler extends PathBase {
                 }
                 node.appendViewProps({onClick: `###(event) => {${onClickStmts.join('\n')}}`})
             }
-
-            this.enrichNodes(...node.getChildren());
+            this.enrichNodesOfBehavior(...node.getChildren());
         }
     }
 
@@ -5716,6 +5729,26 @@ class ProjectFileHandler extends PathBase {
             }
         }
 
+        function getEditorComponents() {
+            /** 先把edit component 做好放到components */
+            const editorComponents = [];
+            for (let component of source.getComponents()) {
+                if (component.needEditPage()) {
+                    const editorComponent = _.cloneDeep(component);
+                    editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
+                    editorComponent.setEvents([]);
+                    editorComponent.setIsEditPage(true)
+                    editorComponent.setPath(editorComponent.getPath() + `editor`);
+                    editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
+                    editorComponent.getStruct().setNameModified(true);
+                    editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
+                    toEditorPageStruct(editorComponent.getStruct());
+                    editorComponents.push(editorComponent);
+                }
+            }
+            return editorComponents;
+        }
+
         function toEditorPageStruct(node) {
 
             if (node.isColumnAttribute() && !node.isCollection()) {
@@ -5733,7 +5766,7 @@ class ProjectFileHandler extends PathBase {
                     /** 為了讓url顯示出來,加快編輯速度 */
                     const parent = node.getParentNode();
                     if (parent.isArray()) {
-                        parent.appendChildrenWithJson({
+                        parent.appendChildrenWithJsons({
                             name: node.getName(),
                             view: 'TextField',
                             column: true,
@@ -5743,12 +5776,10 @@ class ProjectFileHandler extends PathBase {
                             viewProps: [{variant: `outlined`}],
                         });
                     }
-
                 } else {
                     /** 這裡目前就是指 type === string | number*/
                     node.setViewModified(true);
                     node.setOriginalView(node.getView());
-                    node.setViewProps({});
                     node.setView('TextField');
                     node.appendViewProps({variant: `outlined`});
                     if (node.isReadOnly()) {
@@ -5805,38 +5836,20 @@ class ProjectFileHandler extends PathBase {
             }
         }
 
-        function getEditorComponents() {
-            /** 先把edit component 做好放到components */
-            const editorComponents = [];
-            for (let component of source.components) {
-                if (component.needEditPage()) {
-                    if (component.needEditPage()) {
-                        const editorComponent = _.cloneDeep(component);
-                        editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
-                        editorComponent.setEvents([]);
-                        editorComponent.setIsEditPage(true)
-                        editorComponent.setPath(editorComponent.getPath() + `editor`);
-                        editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
-                        editorComponent.getStruct().setNameModified(true);
-                        editorComponent.getStruct().setName(Util.camel(editorComponent.getStruct().getName(), 'editor'))
-                        toEditorPageStruct(editorComponent.getStruct());
-                        editorComponents.push(editorComponent);
-                    }
-                }
-            }
-            return editorComponents;
-        }
-
         const source = this.nodeOfAncestor;
         for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
             CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
         }
 
+        this.enrichNodeWithCustomViewDefined(...source.getComponents().map(component => component.getStruct()));
+
         if (needEditComponent && _.isEqual(this.env, 'dev')) {
-            source.components.push(...getEditorComponents());
+            /** 編輯模式只有在dev */
+            source.getComponents().push(...getEditorComponents());
         }
 
-        this.enrichNodes(...source.getComponents().map(component => component.getStruct()));
+        this.enrichNodesOfBehavior(...source.getComponents().map(component => component.getStruct()));
+
     }
 
     getStructs = () => {

@@ -48,7 +48,7 @@ class PortfolioStore extends BasePortfolioStore {
                     const idsOfSinger = Util.getArrayOfSize(suggests, 10).map((each) => each.uid)
                     /** 因為firestore只接受10個條件*/
                     const api = new Rhythm();
-                    const nexts = await api.fetchPureRhythm(this.getComponent(),
+                    const nexts = await api.fetchRhythmsOfLimitation(this.getComponent(),
                         {where: (stmt) => stmt.where('idOfSinger', 'in', idsOfSinger)})
                     this.pushNextRhythmIDs(...nexts.map((each) => each.id));
                 }

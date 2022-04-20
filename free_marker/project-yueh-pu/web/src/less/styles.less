@@ -6,8 +6,65 @@
 @import "./libs/base.less";
 /** following for main  component used  */
 
-.MainDiv {
-  padding-top: 10px;
+.MainDiv:extend(.CenterInParentColumn) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainPromotedBannerDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainPromotedBannerSlideList:extend(.SliderOfViewPager) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainPromotedBannerDivSkeleton {
+  height: 25vh;
+  width: 100vh;
+
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainPromotedBannerImageImg:extend(.ImageOfViewPage) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainPromotedBannerImageDivWrap:extend(.ImageWrapOfViewPager) {
   @media @mobile {
     /** empty style */
   }
@@ -19,7 +76,7 @@
   }
 }
 .MainTitleOfHotRhythmTypography {
-  margin-left: 20px;
+  margin-top: 30px;
   @media @mobile {
     /** empty style */
   }
@@ -48,7 +105,7 @@
   }
 }
 .MainHotRhythmDivList:extend(.ContainerOfHorizontalScroll) {
-  gap: 10px;
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -781,6 +838,94 @@
     /** empty style */
   }
 }
+.MainEditorPromotedBannerDiv:extend(.MainPromotedBannerDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerDivWrap:extend(.MainPromotedBannerDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerDivList:extend(.MainPromotedBannerDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerIdTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerRouteTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerImageImg:extend(.MainPromotedBannerImageImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerImageDivWrap:extend(.MainPromotedBannerImageDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorPromotedBannerImageTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .MainEditorHotRhythmCard:extend(.MainHotRhythmCard) {
   @media @mobile {
     /** empty style */
@@ -804,17 +949,6 @@
   }
 }
 .MainEditorHotRhythmDivList:extend(.MainHotRhythmDivList) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorHotRhythmCardSkeleton:extend(.MainHotRhythmCardSkeleton) {
   @media @mobile {
     /** empty style */
   }
@@ -902,17 +1036,6 @@
     /** empty style */
   }
 }
-.MainEditorHotSingerCardSkeleton:extend(.MainHotSingerCardSkeleton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .MainEditorHotSingerNameTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
@@ -990,17 +1113,6 @@
     /** empty style */
   }
 }
-.MainEditorInterestingOfFunctionPaperSkeleton:extend(.MainInterestingOfFunctionPaperSkeleton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .MainEditorInterestingOfFunctionRouteTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
@@ -1035,6 +1147,17 @@
   }
 }
 .MainEditorInterestingOfFunctionTitleTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorInterestingOfFunctionIdTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
   }
