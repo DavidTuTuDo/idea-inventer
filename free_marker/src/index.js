@@ -26,7 +26,7 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
 
@@ -5316,7 +5316,7 @@ class ProjectFileHandler extends PathBase {
                 node.setListView('Grid');
                 node.appendListProps(
                     {container: true},
-                    {spacing: 2}
+                    {spacing: 1}
                 )
                 node.setClick(true);
                 node.appendWrapProps(
@@ -5602,7 +5602,7 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.hasAlertDialog() && _.isEmpty(node.raw.wrapView)) {
+            if (node.hasAlertDialog() && _.isEqual(node.getWrapView(),'div')) {
                 node.setWrapView('React.Fragment');
             }
 
@@ -5736,7 +5736,7 @@ class ProjectFileHandler extends PathBase {
 
                 if (node.hasConfirmDialog()) {
                     onClickStmts.push(
-                        `${node.getViewParamVariable()} = param;
+                        `${node.getViewParamVariable()} = event;
                     ${node.getAlertDialogVariable()}.current.open()`)
                 } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
                     onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)

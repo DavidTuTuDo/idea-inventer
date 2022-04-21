@@ -91,9 +91,17 @@ class MobileStyle {
 
   ExamEditorQuestionCard = {};
 
+  ExamEditorHistoryFilterOrderByWhatValueTextField = {};
+
+  ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
+
   ExamEditorHistoryFilterOrderByWhatMenuItem = {};
 
   ExamEditorHistoryFilterOrderByWhatTextFieldList = {};
+
+  ExamEditorHistoryFilterWhichSubjectValueTextField = {};
+
+  ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
 
   ExamEditorHistoryFilterWhichSubjectMenuItem = {};
 
@@ -101,9 +109,9 @@ class MobileStyle {
 
   ExamEditorHistoryFilterSpaceDiv = {};
 
-  ExamEditorHistoryFilterReplyTypeValueRadio = {};
+  ExamEditorHistoryFilterReplyTypeValueTextField = {};
 
-  ExamEditorHistoryFilterReplyTypeLabelTypography = {};
+  ExamEditorHistoryFilterReplyTypeLabelTextField = {};
 
   ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
 
@@ -119,19 +127,21 @@ class MobileStyle {
 
   MainEditorCountdownPaper = {};
 
+  MainEditorEnterPointSubTitleTextField = {};
+
+  MainEditorEnterPointTitleTextField = {};
+
   MainEditorEnterPointIndexOfSequenceTextField = {};
 
   MainEditorEnterPointXsTextField = {};
 
   MainEditorEnterPointRouteTextField = {};
 
-  MainEditorEnterPointTitleTextField = {};
-
-  MainEditorEnterPointDivListWrap = {};
+  MainEditorEnterPointIdTextField = {};
 
   MainEditorEnterPointDivList = {};
 
-  MainEditorEnterPointDivWrap = {};
+  MainEditorEnterPointReactFragmentWrap = {};
 
   MainEditorEnterPointPaper = {};
 
@@ -142,6 +152,8 @@ class MobileStyle {
   MainEditorViewPagerImageImg = {};
 
   MainEditorViewPagerRouteTextField = {};
+
+  MainEditorViewPagerIdTextField = {};
 
   MainEditorViewPagerDivList = {};
 
@@ -156,6 +168,8 @@ class MobileStyle {
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
+
+  NavigatorDrawerShortcutListItemSkeleton = {};
 
   NavigatorDrawerShortcutListList = {};
 
@@ -225,6 +239,8 @@ class MobileStyle {
 
   WhoknowzAnswerAnswerByTextTextField = {};
 
+  WhoknowzAnswerCardSkeleton = {};
+
   WhoknowzAnswerDivList = {};
 
   WhoknowzAnswerCard = {};
@@ -241,7 +257,7 @@ class MobileStyle {
 
   /** => following for purchase  component  */
 
-  PurchasePurchasePlanBuyDivWrap = {};
+  PurchasePurchasePlanBuyReactFragmentWrap = {};
 
   PurchasePurchasePlanBuyButton = {};
 
@@ -256,6 +272,8 @@ class MobileStyle {
   PurchasePurchasePlanNameDivWrap = {};
 
   PurchasePurchasePlanNameTypography = {};
+
+  PurchasePurchasePlanDivSkeleton = {};
 
   PurchasePurchasePlanDivList = {};
 
@@ -349,6 +367,8 @@ class MobileStyle {
 
   ExamQuestionAlertOuterDiv = {};
 
+  ExamQuestionCardSkeleton = {};
+
   ExamQuestionDivList = {};
 
   ExamQuestionDivWrap = {};
@@ -381,9 +401,11 @@ class MobileStyle {
 
   MainCountdownPaper = {};
 
+  MainEnterPointSubTitleTypography = {};
+
   MainEnterPointTitleTypography = {};
 
-  MainEnterPointDivListWrap = {};
+  MainEnterPointPaperSkeleton = {};
 
   MainEnterPointGridList = {};
 
@@ -394,6 +416,8 @@ class MobileStyle {
   MainViewPagerImageDivWrap = {};
 
   MainViewPagerImageImg = {};
+
+  MainViewPagerDivSkeleton = {};
 
   MainViewPagerSlideList = {};
 

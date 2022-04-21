@@ -9,6 +9,106 @@
   align-items: center;
 }
 
+.ImageOfViewPager {
+  position: absolute;
+  left: -1000%;
+  right: -1000%;
+  top: -1000%;
+  bottom: -1000%;
+  margin: auto;
+  min-height: 100%;
+  min-width: 100%;
+}
+
+.SliderOfViewPager {
+  width: 100vw;
+  height: 32vh;
+  @media @mobile {
+    margin-top: 0;
+  }
+  @media @tablet {
+    /** empty style */
+    margin-top: 0;
+  }
+  @media @desktop {
+    height: 380px;
+    margin-top: 5px;
+    max-width: 880px;
+  }
+}
+
+.ImageWrapOfViewPager {
+  width: 100vw;
+  height: 32vh;
+  overflow: hidden;
+  position: relative;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    max-width: 880px;
+    height: 380px;
+    overflow: hidden;
+    position: relative;
+  }
+}
+
+.PaperOfSimpleGrid:extend(.CenterInParentColumn) {
+  height: 60px;
+  background-color: rgba(188, 188, 188, 0.3);
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.CenterInParentColumn {
+  flex-direction: column;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ContainerOfHorizontalScroll {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  margin: auto;
+  position: relative;
+  overflow-x: auto;
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+    width: 95vw;
+  }
+  @media @tablet {
+    /** empty style */
+    width: 95vw;
+  }
+  @media @desktop {
+    max-width: 1080px;
+  }
+}
+
+.ChildOfHorizontalScroll {
+  width: 12%;
+  min-width: 150px;
+  text-align: center;
+  height: 100px;
+  padding-top: 1%;
+  padding-left: 1%;
+  padding-right: 1%;
+}
+
 .CenterInParentRelative {
   position: absolute;
   width: 100%;
@@ -43,7 +143,6 @@
     font-size: 1.0rem;
   }
 }
-
 
 .BaseCountdownCountCard:extend(.CenterInParentColumn) {
   margin: 8px;
@@ -224,6 +323,17 @@
 
 .RootViewDiv {
   position: relative;
+
+  @media @mobile {
+    /** empty style */
+    overflow-x: hidden;
+  }
+  @media @tablet {
+    /** empty style */
+    overflow-x: hidden;
+  }
+  @media @desktop {
+  }
 }
 
 .BaseLoadingViewDiv {
@@ -245,5 +355,5 @@ body {
 
 /** view pager settings */
 .SlideIndicatorArrowDiv {
-  background-color:lightgray;
+  background-color: lightgray;
 }
