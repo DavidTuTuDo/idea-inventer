@@ -288,7 +288,6 @@ class BaseComponent extends React.Component {
         return false;
     }
 
-
     getCurrentWebSiteLink = () => {
         return window.location.href;
     }

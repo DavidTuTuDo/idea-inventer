@@ -69,7 +69,8 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getComponent() {
-        return this.component;
+        if (this.component)
+            return this.component.getComponentInstance();
     }
 
     @action
