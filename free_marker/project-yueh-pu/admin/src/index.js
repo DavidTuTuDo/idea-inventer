@@ -192,6 +192,37 @@ import {configerer} from "configerer";
         }
     }
 
+    async function submitShortcut() {
+        await api.deleteShortcuts();
+        await api.submitShortcuts(
+            {
+                title: '回到首頁',
+                icon: 'muIcon:Bedtime',
+                route: `route:main`,
+                indexOfSequence: 0,
+            }
+            , {
+                title: '我的最愛',
+                icon: 'muIcon:FavoriteBorder',
+                route: `route:personalRhythm`,
+                indexOfSequence: 1,
+            },
+            {
+                title: '相關網站',
+                icon: 'muIcon:Whatshot',
+                indexOfSequence: 2,
+                subs: [
+                    {
+                        title: '91譜',
+                        icon: 'muIcon:School',
+                        route: 'path:https://www.91pu.com.tw/',
+                        indexOfSequence: 1,
+                    }
+                ]
+            },
+        )
+    }
+
     /**
      *  原調：F#m速度：123
      男調：Fm女調：Cm
@@ -246,16 +277,6 @@ import {configerer} from "configerer";
         }
     }
 
-    async function submitMainFunctions() {
-        await api.deleteInterestingOfFunctions(true);
-        await api.submitInterestingOfFunctionItem({
-            title: '命運中的一首歌',
-            xs: 6,
-            indexOfSequence: 0,
-            route: 'randomRhythm',
-        })
-    }
-
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
 
@@ -270,8 +291,7 @@ import {configerer} from "configerer";
     // await deployMainPageHotSingers(20);
     // await deployKeywords();
     // await syncRemoteIdWithToneAndSinger()
-
-    await submitMainFunctions();
+    await submitShortcut();
 })();
 
 

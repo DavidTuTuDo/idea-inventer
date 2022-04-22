@@ -26,7 +26,7 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
 
@@ -84,7 +84,8 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
-    labelOfSwitch; /** view為simpleSwitch時, 顯示的label */
+    labelOfSwitch;
+    /** view為simpleSwitch時, 顯示的label */
 
     skeleton = {
         enable: true,
@@ -830,6 +831,10 @@ class CodegenNode {
 
     isButton() {
         return _.isEqual(this.getView(), 'Button')
+    }
+
+    isIconButton() {
+        return _.isEqual(this.getView(), 'IconButton')
     }
 
     /** 就是 <FormControlLabel label={object.label} /> 其餘的都放到 content裏面 <Button >{object.label}</Button>*/
@@ -3686,6 +3691,7 @@ class ComponentBuilder extends BaseBuilder {
             return stmts;
         }
 
+
         function getStmtsOfSelectImageButton(node) {
             const stmts = []
             const parent = node.getPreciseAttributeParentName();
@@ -3707,6 +3713,11 @@ class ComponentBuilder extends BaseBuilder {
             generator.appendFunction(node.getFunctionNameUsingInComponentGetter(),
                 [`${node.getPreciseAttributeParentName()}`], [], [],
                 `return ${node.getPreciseAttributeParentName()}.${node.getFunctionNameInStoreGetter()}()`);
+        }
+
+        if (node.hasCustomViewDialog()) {
+            const nameOfCustomView = node.alertDialog.customView;
+            generator.appendImport(nameOfCustomView, `../${nameOfCustomView}`);
         }
 
         /** type是array就必須的包上一成List,可以調整物件方向 */
@@ -4037,6 +4048,7 @@ class ComponentBuilder extends BaseBuilder {
         _.remove(strings, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
 
+
     appendRenderViewFunctions(node, generator, isEditPage) {
 
         const self = this;
@@ -4086,7 +4098,6 @@ class ComponentBuilder extends BaseBuilder {
             viewGenerator.persist().then();
         }
 
-
         function getContentStmt(node, _generator) {
             return [
                 'const self = this',
@@ -4102,12 +4113,6 @@ class ComponentBuilder extends BaseBuilder {
                 appendFunctionWithFields(node);
             if (useViewModuleAndComponentModuleMechanism)
                 generateViewClass(node)
-
-        }
-
-        if (node.hasCustomViewDialog()) {
-            const nameOfCustomView = node.alertDialog.customView;
-            generator.appendImport(nameOfCustomView, `../${nameOfCustomView}`);
         }
 
         if (isEditPage) {
@@ -5289,7 +5294,7 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
-            if(node.isSimpleSwitch()) {
+            if (node.isSimpleSwitch()) {
                 node.setView('FormControlLabel');
                 node.appendChildrenWithJsons(
                     {
@@ -5480,6 +5485,8 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTextFieldView()) {
                 const nameOfDescription = Util.camel('label', 'of', node.getName());
+                const nameOfDisabled = Util.camel(node.getName(), 'disabled');
+
 
                 node.getParentNode().appendChildrenWithJsons(
                     {
@@ -5487,6 +5494,15 @@ class ProjectFileHandler extends PathBase {
                         type: 'string',
                         editIgnore: true,
                         defaultValue: node.getDescription(),
+                    }
+                )
+
+                node.getParentNode().appendChildrenWithJsons(
+                    {
+                        name: nameOfDisabled,
+                        type: 'boolean',
+                        editIgnore: true,
+                        defaultValue: false,
                     }
                 )
 
@@ -5545,6 +5561,9 @@ class ProjectFileHandler extends PathBase {
                 node.appendWrapProps({position: 'static'})
             }
 
+            if (node.isButton() || node.isIconButton()) {
+                node.setClick(true);
+            }
 
             if (node.isRestfulBean()) {
                 node.appendChildrenWithJsons({
@@ -5585,6 +5604,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTextFieldView() || node.isRadioView() || node.isSliderView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
+                node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
             } else if (node.isImageView()) {
@@ -5602,7 +5622,7 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.hasAlertDialog() && _.isEqual(node.getWrapView(),'div')) {
+            if (node.hasAlertDialog() && _.isEqual(node.getWrapView(), 'div')) {
                 node.setWrapView('React.Fragment');
             }
 

@@ -40,10 +40,12 @@ class SheetComponent extends BaseSheetComponent {
 
     onSheetAdjustCenterSharpenButtonClicked(param) {
         this.getStore().invalidateTranspositionChord(1);
+        this.showMessageOfSucceedOnTonalityChange(this.getCenterSharpen(param.object));
     }
 
     onSheetAdjustCenterFlattenButtonClicked(param) {
         this.getStore().invalidateTranspositionChord(-1);
+        this.showMessageOfSucceedOnTonalityChange(this.getCenterFlatten(param.object), 'warning');
     }
 
     onSheetAdjustCenterEnlargeButtonClicked(param) {
@@ -55,23 +57,35 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     onSheetAdjustCenterHideChordToggleSwitchChange(param) {
-        super.onSheetAdjustCenterHideChordToggleSwitchChange(param);
+        this.getStore().setVisibleOfChordInContext(this.getCheckStateByEvent(param.view))
     }
 
-    onSheetAdjustCenterHideChordToggleSwitchChange(param) {
-        this.getStore().setVisibleOfChordInContext(this.getCheckStateByEvent(param.view))
+    onSheetAdjustCenterJoinToFavoriteToggleSwitchChange(param) {
+        this.getStore().submitFavoritePuState(this.getCheckStateByEvent(param.view)).then();
     }
 
     onSheetAdjustCenterToMaleTonalityButtonClicked(param) {
         this.getStore().transpositionByGender('male');
+        this.showMessageOfSucceedOnTonalityChange(this.getCenterToMaleTonality(param.object));
     }
 
     onSheetAdjustCenterToFemaleTonalityButtonClicked(param) {
         this.getStore().transpositionByGender('female')
+        this.showMessageOfSucceedOnTonalityChange(this.getCenterToFemaleTonality(param.object),'warning');
     }
 
     onSheetAdjustCenterToOriginalTonalityButtonClicked(param) {
         this.getStore().transpositionByGender('original')
+        this.showMessageOfSucceedOnTonalityChange(this.getCenterToOriginalTonality(param.object));
+    }
+
+    showMessageOfSucceedOnTonalityChange(text, type = 'info') {
+        /** type = info, warning */
+        const message = `完成 「${text}」`;
+        if (_.isEqual(type, 'info'))
+            this.showInfoSnackMessage(message);
+        else
+            this.showWarningSnackMessage(message)
     }
 
     SheetGuitarpusCurrentContextView = observer(({guitarpu}) => {
@@ -81,13 +95,13 @@ class SheetComponent extends BaseSheetComponent {
         const segments = Util.getSegmentsOfEachLine(currentContext);
 
         return (
-            segments.map((segment,index) => <Typography
+            segments.map((segment, index) => <Typography
                 key={`unique${index}`}
                 className={"SheetGuitarpuCurrentContextTypography"}
                 style={{
                     ...{
-                        fontWeight:self.getStore().isGuitarChordParagraph(segment) ?'bold':'normal',
-                        color: self.getStore().isGuitarChordParagraph(segment) ? '#5580AA' : '#000000',
+                        fontWeight: self.getStore().isGuitarChordParagraph(segment) ? 'bold' : 'normal',
+                        color: self.getStore().isGuitarChordParagraph(segment) ? '#1976D2' : '#000000',
                     },
                     ...Style.SheetGuitarpuCurrentContextTypography
                 }}>

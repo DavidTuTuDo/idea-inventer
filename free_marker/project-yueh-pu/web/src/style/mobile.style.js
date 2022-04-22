@@ -111,6 +111,32 @@ class MobileStyle {
 
   NavigatorDiv = {};
 
+  /** => following for noteEditor  component  */
+
+  NoteEditorFunctionAreaCancelButton = {};
+
+  NoteEditorFunctionAreaSubmitButton = {};
+
+  NoteEditorFunctionAreaDiv = {};
+
+  NoteEditorContentTextField = {};
+
+  NoteEditorPaper = {};
+
+  /** => following for personalRhythm  component  */
+
+  PersonalFavoritePuSingerTypography = {};
+
+  PersonalFavoritePuNameTypography = {};
+
+  PersonalFavoritePuCardSkeleton = {};
+
+  PersonalFavoritePuDivList = {};
+
+  PersonalFavoritePuCard = {};
+
+  PersonalDiv = {};
+
   /** => following for artist  component  */
 
   ArtistDiv = {};
@@ -132,6 +158,10 @@ class MobileStyle {
   PortfolioDiv = {};
 
   /** => following for sheet  component  */
+
+  SheetAdjustCenterToggleWrapperNoteReactFragmentWrap = {};
+
+  SheetAdjustCenterToggleWrapperNoteButton = {};
 
   SheetAdjustCenterToggleWrapperJoinToFavoriteLabelTypography = {};
 

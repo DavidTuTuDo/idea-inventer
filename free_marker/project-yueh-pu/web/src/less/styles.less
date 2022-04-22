@@ -7,6 +7,7 @@
 /** following for main  component used  */
 
 .MainDiv:extend(.CenterInParentColumn) {
+  margin-bottom: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -52,7 +53,7 @@
     /** empty style */
   }
 }
-.MainPromotedBannerImageImg:extend(.ImageOfViewPage) {
+.MainPromotedBannerImageImg:extend(.ImageOfViewPager) {
   @media @mobile {
     /** empty style */
   }
@@ -94,7 +95,7 @@
   flex-direction: column;
   justify-content: center;
   @media @mobile {
-    /** empty style */
+    height: 80px;
   }
   @media @tablet {
     /** empty style */
@@ -129,7 +130,8 @@
   }
 }
 .MainHotRhythmNameTypography {
-  color:#5580AA;
+  color: #5580aa;
+  font-weight: bold;
   @media @mobile {
     /** empty style */
   }
@@ -197,7 +199,7 @@
     /** empty style */
   }
 }
-.MainHotSingerCardSkeleton:extend(.MainHotRhythmCardSkeleton) {
+.MainHotSingerCardSkeleton:extend(.MainHotRhythmCardSkeleton all) {
   @media @mobile {
     /** empty style */
   }
@@ -208,9 +210,7 @@
     /** empty style */
   }
 }
-.MainHotSingerNameTypography {
-  color:#5580AA;
-
+.MainHotSingerNameTypography:extend(.MainHotRhythmNameTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -280,8 +280,7 @@
   }
 }
 .MainInterestingOfFunctionPaperSkeleton {
-  width: 100vw;
-  hight: 40px;
+  display: none;
   @media @mobile {
     /** empty style */
   }
@@ -329,7 +328,6 @@
   }
 }
 .SheetGuitarpuDiv {
-  width: 95%;
   @media @mobile {
     /** empty style */
   }
@@ -341,8 +339,12 @@
   }
 }
 .SheetGuitarpuPaperWrap:extend(.CenterInParentColumn) {
-  width: 95vw;
-  padding: 5px;
+  width: 96vw;
+  padding-left: 5px;
+  padding-right: 3px;
+  padding-top: 3px;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -384,9 +386,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
-    font-size: 1.0rem;
-
+    font-size: 1rem;
   }
 }
 .SheetAdjustSwipeableDrawer {
@@ -562,7 +562,8 @@
   }
 }
 .SheetAdjustCenterToggleWrapperHideChordLabelTypography {
-  color: rgba(19, 96, 166, 0.8);
+  color: #1976d2;
+  font-weight: bold;
   @media @mobile {
     /** empty style */
   }
@@ -606,6 +607,28 @@
     /** empty style */
   }
 }
+.SheetAdjustCenterToggleWrapperNoteButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetAdjustCenterToggleWrapperNoteReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for portfolio  component used  */
 
 .PortfolioDiv {
@@ -634,7 +657,8 @@
   }
 }
 .PortfolioRhythmDivList:extend(.CenterInParentColumn) {
-  gap: 6px;
+  gap: 10px;
+  min-height: 50vh;
   @media @mobile {
     /** empty style */
   }
@@ -657,7 +681,8 @@
   }
 }
 .PortfolioRhythmNameTypography {
-  color: rgba(19, 96, 166, 0.8);
+  color: #5580aa;
+  font-weight: bold;
   font-size: 1.1rem;
   @media @mobile {
     /** empty style */
@@ -681,7 +706,7 @@
     /** empty style */
   }
 }
-.PortfolioRhythmComposerTypography {
+.PortfolioRhythmComposerTypography:extend(.PortfolioRhythmSingerTypography) {
   font-size: 0.9rem;
   @media @mobile {
     /** empty style */
@@ -696,6 +721,140 @@
 /** following for artist  component used  */
 
 .ArtistDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for personalRhythm  component used  */
+
+.PersonalDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PersonalFavoritePuCard:extend(.PortfolioRhythmCard) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PersonalFavoritePuDivList:extend(.PortfolioRhythmDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PersonalFavoritePuCardSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PersonalFavoritePuNameTypography:extend(.PortfolioRhythmNameTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PersonalFavoritePuSingerTypography:extend(.PortfolioRhythmSingerTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for noteEditor  component used  */
+
+.NoteEditorPaper:extend(.CenterInParentColumn) {
+  width: 50vw;
+  padding: 10px;
+  max-height: 70vh;
+  gap: 10px;
+  @media @mobile {
+    width: 70vw;
+  }
+  @media @tablet {
+    width: 70vw;
+  }
+  @media @desktop {
+    max-width: 880px;
+    padding: 14px;
+  }
+}
+.NoteEditorContentTextField {
+  width: 100%;
+  max-height: 70vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NoteEditorFunctionAreaDiv:extend(.TailInParentRow) {
+  width: 100%;
+  gap: 15px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NoteEditorFunctionAreaSubmitButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NoteEditorFunctionAreaCancelButton {
   @media @mobile {
     /** empty style */
   }

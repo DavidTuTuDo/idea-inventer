@@ -70,6 +70,10 @@ class MainComponent extends BaseMainComponent {
             Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu);
     }
 
+    onMainPromotedBannerDivClicked(param) {
+        this.gotoUrlWithNewTab(param.object.route);
+    }
+
     /** -------------------- async api -------------------- **/
 }
 
