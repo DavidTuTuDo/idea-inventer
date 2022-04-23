@@ -83,6 +83,8 @@ const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RUL
  * order的目的是避免 [A]b => [Ab]b, 要以字數長的作為替換優先
  */
 
+const SEPARATOR_OF_CHORD = '།';
+
 class SheetStore extends BaseSheetStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
@@ -156,7 +158,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     normalizeTonality(string) {
-        return string.split('|').shift();
+        return string.split(SEPARATOR_OF_CHORD).shift();
     }
 
 
@@ -322,7 +324,7 @@ class SheetStore extends BaseSheetStore {
 
     /** 檢查這條訊息是吉他Chord*/
     isGuitarChordParagraph(string) {
-        return _.size(Util.indexesOf(string, '|')) > 1
+        return _.size(Util.indexesOf(string, SEPARATOR_OF_CHORD)) > 1
     }
 }
 

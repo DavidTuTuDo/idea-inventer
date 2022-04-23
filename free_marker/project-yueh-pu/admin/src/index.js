@@ -161,15 +161,44 @@ import {configerer} from "configerer";
 
 
     function getSubmitGuitarPuItem(tone, singers) {
+
+        function refactorTone(string) {
+            /** decode */
+            const origin = Util.getDecryptString(string);
+
+            const after = Util.replaceAllWithSets(origin,
+                {from: '▲', to: '🌕'},
+                {from: '★', to: '🌓'},
+                {from: '△', to: '🌑'},
+                {from: '\\|', to: '།'},
+                {from: '\\[前奏\\]', to: '(開始)'},
+                {from: '\\[尾奏\\]', to: '(結束)'},
+                {from: '\\[間奏\\]', to: '(橋段)'},
+                {from: '\\[間奏1\\]', to: '(橋段I)'},
+                {from: '\\[間奏2\\]', to: '(橋段II)'},
+                {from: '\\[間奏3\\]', to: '(橋段III)'},
+                {from: '\\[間奏4\\]', to: '(橋段IV)'},
+                {from: '\\(End\\)', to: '(終止)'},
+            )
+            // console.log(origin)
+            // console.log('\n\n\n\n\n\n\n\n')
+            // console.log(after)
+
+            return Util.getEncryptString(after);
+            /** encode */
+        }
+
         const objOfTones = getMapOfTonalitySpeed(tone.tkInfo);
         const objOfCapoTone = getCapoAndContextTonality(tone.capoLevel);
         const info = {name: tone.name, ...objOfCapoTone, ...objOfTones};
         // console.log(info);
         // console.log('capo  ', _.toNumber(info.capo));
         // console.log('speed  ', _.toNumber(info['速度']));
+        const latestTone = refactorTone(tone.tone);
         return {
-            currentContext: tone.tone,
-            originalContext: tone.tone,
+            id: tone.idOfRemote,
+            currentContext: latestTone,
+            originalContext: latestTone,
             tonalityOfContext: info.tonalityOfContext,
             capoLevel: info.capo ? _.toNumber(info.capo) : -1,
             tonalityOfFemale: info['女調'],
@@ -187,8 +216,12 @@ import {configerer} from "configerer";
 
         function getSingerDocumentId() {
             const singerUrl = tone.singerUrl;
+            if (singers && singerUrl && singers[singerUrl]) {
+                return singers[singerUrl].idOfRemote;
+            }
+            return '';
             // console.log(' name:', tone.name, ' url:', singerUrl, 'singer:', tone.singer);
-            return singers[singerUrl].id;
+
         }
     }
 
@@ -285,13 +318,34 @@ import {configerer} from "configerer";
     // Util.getStringOfPop(undefined,',');
 
 
-    // 這四個是一組的
+    // 這五個是initialize一組的
     // await deployAllSingerTone(2000);
     // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
     // await deployKeywords();
     // await syncRemoteIdWithToneAndSinger()
-    await submitShortcut();
+    // await submitShortcut();
+
+    async function updateTonesWithSameRemoteId() {
+        const tones = await database.fetchRecords('TONE');
+        _.remove(tones, (tone) => Util.isUndefinedNullEmpty(tone.idOfRemote));
+
+        const singers = await database.fetchRecords('SINGER');
+        _.remove(singers, (singer) => Util.isUndefinedNullEmpty(singer.idOfRemote));
+
+
+        const objectOfSinger = {};
+        for (const singer of singers) {
+            objectOfSinger[singer.url] = singer;
+        }
+
+        const submits = tones.map(tone => getSubmitGuitarPuItem(tone, objectOfSinger));
+        await api.submitGuitarpus(...submits);
+    }
+
+    await updateTonesWithSameRemoteId();
+        // console.log(await api.fetchSizeOfGuitarpus())
 })();
+
 
 
