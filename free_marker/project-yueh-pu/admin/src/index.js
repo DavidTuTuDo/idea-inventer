@@ -264,7 +264,7 @@ import {configerer} from "configerer";
      * */
     function getMapOfTonalitySpeed(string) {
         function getWordOnly(string) {
-            return Util.getStringOfHeadMatch(string, `[a-zA-Z0-9-]+`);
+            return Util.getStringOfHeadMatch(string, `[#a-zA-Z0-9-]+`);
         }
 
         let array = Util.toOneLineString(string).split(new RegExp('\(原調|速度|男調|女調\)', 'gm'));
@@ -310,22 +310,7 @@ import {configerer} from "configerer";
         }
     }
 
-    // await deployGuitarPuByPopularLevel(2000);
-    // await deploySingers(2000);
-
-    // await accumulatePopularLevelOfSinger()
-    // await printRawText();
-    // Util.getStringOfPop(undefined,',');
-
-
-    // 這五個是initialize一組的
-    // await deployAllSingerTone(2000);
-    // await deployMainPageHotRhythm(20);
-    // await deployMainPageHotSingers(20);
-    // await deployKeywords();
-    // await syncRemoteIdWithToneAndSinger()
-    // await submitShortcut();
-
+    /** 避免智慧權蠢做法 */
     async function updateTonesWithSameRemoteId() {
         const tones = await database.fetchRecords('TONE');
         _.remove(tones, (tone) => Util.isUndefinedNullEmpty(tone.idOfRemote));
@@ -343,8 +328,20 @@ import {configerer} from "configerer";
         await api.submitGuitarpus(...submits);
     }
 
+    // await deployGuitarPuByPopularLevel(2000);
+    // await deploySingers(2000);
+
+    // await accumulatePopularLevelOfSinger()
+
+    // 這五個是initialize一組的
+    // await deployAllSingerTone(2000);
+    // await deployMainPageHotRhythm(20);
+    // await deployMainPageHotSingers(20);
+    // await deployKeywords();
+    // await syncRemoteIdWithToneAndSinger()
+    // await submitShortcut();
+
     await updateTonesWithSameRemoteId();
-        // console.log(await api.fetchSizeOfGuitarpus())
 })();
 
 
