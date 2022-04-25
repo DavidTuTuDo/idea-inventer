@@ -11,7 +11,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import FavoritePu from "../personalFavoritePu"
+import FavoritePu from "../personalRhythmFavoritePu"
 import {
     makeAutoObservable,
     makeObservable,

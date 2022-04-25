@@ -1,5 +1,5 @@
 import {inject} from "mobx-react";
-import BasePersonalComponent from "./BasePersonalComponent";
+import BasePersonalRhythmComponent from "./BasePersonalRhythmComponent";
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -11,7 +11,6 @@ import Typography from "@material-ui/core/Typography";
 import Skeleton from "@material-ui/core/Skeleton";
 import {observer} from "mobx-react";
 import Card from "@material-ui/core/Card";
-import PersonalStore from "../../store/personal";
 import Style from "../../style";
 import React from "react";
 import UserInfoRef from "../../base/BaseUserInfo";
@@ -21,9 +20,9 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
 
-@inject("personal")
+@inject("personalRhythm")
 @observer
-class PersonalComponent extends BasePersonalComponent {
+class PersonalRhythmComponent extends BasePersonalRhythmComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
@@ -31,7 +30,7 @@ class PersonalComponent extends BasePersonalComponent {
         super(props);
     }
 
-    onPersonalFavoritePuCardClicked(param) {
+    onPersonalRhythmFavoritePuCardClicked(param) {
         const rhythm = param.object;
         Router.gotoSheetDetailPage(this, rhythm.getIdOfGuitarPu());
     }
@@ -39,4 +38,4 @@ class PersonalComponent extends BasePersonalComponent {
     /** -------------------- async api -------------------- **/
 }
 
-export default PersonalComponent;
+export default PersonalRhythmComponent;

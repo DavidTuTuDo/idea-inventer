@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import FunctionArea from "../noteEditorFunctionArea";
 import BaseStore from "../../base/BaseStore";
-import GuitarPuNote from '../personalGuitarPuNote';
+import GuitarPuNote from '../personalRhythmGuitarPuNote';
 
 class NoteEditorStore extends BaseNoteEditorStore {
     /** -------------------- fields -------------------- **/

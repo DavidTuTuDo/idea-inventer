@@ -291,7 +291,7 @@
     /** empty style */
   }
 }
-.MainInterestingOfFunctionTitleTypography {
+.MainInterestingOfFunctionTitleTypography:extend(.TitleOfSimpleGridItem) {
   @media @mobile {
     /** empty style */
   }
@@ -302,7 +302,7 @@
     /** empty style */
   }
 }
-.MainInterestingOfFunctionSubTitleTypography {
+.MainInterestingOfFunctionSubTitleTypography:extend(.SubTitleOfSimpleGridItem) {
   @media @mobile {
     /** empty style */
   }
@@ -380,7 +380,7 @@
 .SheetGuitarpuCurrentContextTypography {
   white-space: pre-wrap;
   @media @mobile {
-    font-size: 0.7rem;
+    font-size: 0.6rem;
   }
   @media @tablet {
     /** empty style */
@@ -632,6 +632,8 @@
 /** following for portfolio  component used  */
 
 .PortfolioDiv {
+  padding-top: 10px;
+  padding-bottom: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -733,7 +735,7 @@
 }
 /** following for personalRhythm  component used  */
 
-.PersonalDiv {
+.PersonalRhythmDiv:extend(.PortfolioDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -744,7 +746,7 @@
     /** empty style */
   }
 }
-.PersonalFavoritePuCard:extend(.PortfolioRhythmCard) {
+.PersonalRhythmFavoritePuCard:extend(.PortfolioRhythmCard) {
   @media @mobile {
     /** empty style */
   }
@@ -755,7 +757,7 @@
     /** empty style */
   }
 }
-.PersonalFavoritePuDivList:extend(.PortfolioRhythmDivList) {
+.PersonalRhythmFavoritePuDivList:extend(.PortfolioRhythmDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -766,7 +768,7 @@
     /** empty style */
   }
 }
-.PersonalFavoritePuCardSkeleton {
+.PersonalRhythmFavoritePuCardSkeleton {
   @media @mobile {
     /** empty style */
   }
@@ -777,7 +779,7 @@
     /** empty style */
   }
 }
-.PersonalFavoritePuNameTypography:extend(.PortfolioRhythmNameTypography) {
+.PersonalRhythmFavoritePuNameTypography:extend(.PortfolioRhythmNameTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -788,7 +790,7 @@
     /** empty style */
   }
 }
-.PersonalFavoritePuSingerTypography:extend(.PortfolioRhythmSingerTypography) {
+.PersonalRhythmFavoritePuSingerTypography:extend(.PortfolioRhythmSingerTypography) {
   @media @mobile {
     /** empty style */
   }

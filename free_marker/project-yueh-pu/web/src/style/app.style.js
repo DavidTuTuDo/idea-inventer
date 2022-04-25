@@ -125,17 +125,17 @@ class AppStyle {
 
   /** => following for personalRhythm  component  */
 
-  PersonalFavoritePuSingerTypography = {};
+  PersonalRhythmFavoritePuSingerTypography = {};
 
-  PersonalFavoritePuNameTypography = {};
+  PersonalRhythmFavoritePuNameTypography = {};
 
-  PersonalFavoritePuCardSkeleton = {};
+  PersonalRhythmFavoritePuCardSkeleton = {};
 
-  PersonalFavoritePuDivList = {};
+  PersonalRhythmFavoritePuDivList = {};
 
-  PersonalFavoritePuCard = {};
+  PersonalRhythmFavoritePuCard = {};
 
-  PersonalDiv = {};
+  PersonalRhythmDiv = {};
 
   /** => following for artist  component  */
 

@@ -88,6 +88,10 @@ class SheetComponent extends BaseSheetComponent {
             this.showWarningSnackMessage(message)
     }
 
+    getInjectStyleOfSheetAdjustCenterJoinToFavoriteFormControlLabel(center) {
+        return Util.getVisibleOrNone(UserInfoRef.isLoginInSucceed());
+    }
+
     SheetGuitarpusCurrentContextView = observer(({guitarpu}) => {
         const self = this;
         const classes = this.props.classes;

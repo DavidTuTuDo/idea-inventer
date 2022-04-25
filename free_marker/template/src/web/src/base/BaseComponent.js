@@ -98,7 +98,6 @@ class BaseComponent extends React.Component {
     }
 
     componentWillUnmount() {
-        this.getStore().clean();
         /** 執行unsubscribe */
         while (this.listOfFunctionOfUnsubscribe.length > 0) {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
@@ -824,7 +823,7 @@ class BaseComponent extends React.Component {
     async invokeLoginBehavior() {
         await Util.syncDelay(10);
         if (!UserInfo.isLoginInSucceed())
-            Application.getNavigatorRef().onLoginButtonClicked()
+            Application.getNavigatorRef().onNavigatorToolBarLoginButtonClicked()
     }
 
     openLineChatAccountWithMessage(id = '', message = '') {

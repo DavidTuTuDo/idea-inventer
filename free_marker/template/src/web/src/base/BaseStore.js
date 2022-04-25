@@ -24,6 +24,7 @@ class BaseStore extends ClientRemoteApi {
         }, title: '標題', content: '內容'
     }
 
+    @observable
     initialFetchSucceed = false;
 
     @observable
@@ -60,8 +61,14 @@ class BaseStore extends ClientRemoteApi {
 
     hasNextPageItems = true;
 
+    idOfCurrentStore = Util.getRandomHash(10);
+
     constructor(props) {
         super(props);
+    }
+
+    getIdOfStore() {
+        return this.idOfCurrentStore;
     }
 
     setComponent(component) {
@@ -252,6 +259,8 @@ class BaseStore extends ClientRemoteApi {
     }
 
     clean() {
+        this.initialFetchSucceed = false;
+        this.hasNextPageItems = true;
         this.setState('stable');
     }
 

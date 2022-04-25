@@ -84,6 +84,11 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    disposablePage = true;
+    /**
+     *  一次性(disposable)的頁面, 像是搜尋列表, 隨著param有不同的響應, 會在routeToPage時 re-new store()
+     * */
+
     labelOfSwitch;
     /** view為simpleSwitch時, 顯示的label */
 
@@ -160,7 +165,9 @@ class CodegenNode {
     /** 用來定義serverless的functions */
 
     password;
+
     components;
+    /** source.js裡面的 requirement */
 
     loginOnlyPage = false;
     /** 就是進入這些頁面必須是login,寫在 BaseMyRouter裏面,component level的設定 */
@@ -179,9 +186,6 @@ class CodegenNode {
 
     listEmptyTip = {enable: false, customView: undefined, stringOfTip: ''};
     /** 當陣列需要有無資料提示時 */
-
-    useInjectStore = false;
-    /** 每個view component都會injectStore,若為false會選擇用一個new disposableStore來用 */
 
     /** 讓一些type 是 number, 有一個懶人的increment submit method*/
     increment = {
@@ -523,6 +527,10 @@ class CodegenNode {
 
     isPathArray() {
         return this.isArray() && this.hasPath();
+    }
+
+    isReference() {
+        return this.ref;
     }
 
     needEmptyTip() {
@@ -2579,6 +2587,10 @@ class PathBase {
         return this.nodeOfAncestor.components.map(component => component.struct);
     }
 
+    getComponents() {
+        return this.nodeOfAncestor.components;
+    }
+
     isFunctionsPlatform() {
         return _.isEqual(this.platform, 'functions')
     }
@@ -2652,11 +2664,30 @@ class PathBase {
     }
 
     getGenStores() {
-        return this.getGenUnion(`store`);
+        return this.getAllStore();
     }
 
     getGenComponent() {
-        return this.getGenUnion(`component`);
+        return this.getComponents().map((each) => Util.camel(each.getName(), each.isEditPage() ? 'editor' : ''));
+    }
+
+    getAllStore() {
+        const total = [];
+
+        function appendStore(node, list = []) {
+            if (CodegenNode.isCodegenNode(node) && node.isCollection() && !node.isReference()) {
+                list.push(node.getStoreFolderName())
+                for (const child of node.getChildren()) {
+                    appendStore(child, list);
+                }
+            }
+            return list;
+        }
+
+        for (const node of this.getStructs().filter(each => !each.isEditPage())) {
+            total.push(...appendStore(node))
+        }
+        return total;
     }
 
 }
@@ -2687,9 +2718,16 @@ class StoreBuilder extends BaseBuilder {
         baseGenerator.appendClass(BaseStoreFileName);
         for (const store of stores) {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
+            baseGenerator.appendFunction(
+                {name: Util.camel('renew', store), arrow: true},
+                [], [], [],
+                `this.${store}.clean()`,
+                // `this.${store} = new ${_.upperFirst(store)}()`,
+            )
+
         }
         baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}()`))
-        baseGenerator.needIndexFile('Store')
+        baseGenerator.needIndexFile('Store');
         await baseGenerator.persist();
     }
 
@@ -2871,12 +2909,19 @@ class StoreBuilder extends BaseBuilder {
         })
 
         baseGenerator.appendFunction('clean', [], ['action'], [],
+            `super.clean()`,
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
                         if (child.isArray()) {
                             const stmts = [`this.${child.getFieldName()} = ${child.getDefaultValueByType()}`]
+                            if (child.isPathArray()) {
+                                stmts.push(`this.${child.getFunctionNameOfClearCondition()}()`);
+                            }
+                            if (child.hasPaginate()) {
+                                stmts.push(`this.${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
+                                stmts.push(`this.${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
+                            }
                             return stmts.join('\n');
-
                         } else if (child.isObject()) {
                             return `this.${child.getFieldName()}.clean()`
                         } else {
@@ -3378,17 +3423,11 @@ class ComponentBuilder extends BaseBuilder {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
             const paramOf = Util.camel('param', 'of', normalizeParam);
             baseGenerator.appendConstructor(`this.${paramOf}= this.props.match.params.${normalizeParam}`);
-            baseGenerator.appendConstructor(`Util.appendInfo(this.${paramOf})`);
+            baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${paramOf}:$\{this.${paramOf}\}\`)`);
         }
 
         if (componentNode.detailPage) {
             baseGenerator.appendConstructor(`this.setUidOfDetail(this.props.match.params.${KEYWORD_OF_UID_OF_DETAIL})`);
-        }
-
-        if (!componentNode.useInjectStore) {
-            const storeName = componentNode.getPreciseStoreName();
-            baseGenerator.appendImport(`${_.upperFirst(storeName)}Store`, `../../store/${storeName}`)
-            baseGenerator.appendConstructor(`this.disposableStore = new ${_.upperFirst(storeName)}Store()`)
         }
 
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
@@ -3445,26 +3484,23 @@ class ComponentBuilder extends BaseBuilder {
                 `this.enableInitFetch = enable`);
         }
 
-        this.appendStmtIntoComponentDetach(`this.getStore().clean()`);
+        /** 2022.04.25本來以為離開頁面就要清空所有, 但這樣ios swipe-back 體驗會變得很糟糕
+         this.appendStmtIntoComponentDetach(`this.getStore().clean()`);
+         for (const child of componentNode.getStruct().getChildren()) {
+                if (child.isPathArray()) {
+                    this.appendStmtIntoComponentDetach(`this.getStore().${child.getFunctionNameOfClearCondition()}()`);
+                }
 
-        for (const child of componentNode.getStruct().getChildren()) {
-            if (child.isPathArray()) {
-                this.appendStmtIntoComponentDetach(`this.getStore().${child.getFunctionNameOfClearCondition()}()`);
+                if (child.hasPaginate()) {
+                    this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
+                    this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
+                }
             }
-
-            if (child.hasPaginate()) {
-                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
-                this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
-            }
-        }
+         */
 
         function getStmtsOfGetStore() {
             const stmts = [];
-            if (componentNode.useInjectStore) {
-                stmts.push(`const store = this.props.${componentNode.getPreciseStoreName()}`)
-            } else {
-                stmts.push(`const store = this.disposableStore;`)
-            }
+            stmts.push(`const store = this.props.${componentNode.getPreciseStoreName()}`)
             stmts.push(`store.setComponent(this)`)
             stmts.push(`return store;`)
             return stmts;
@@ -4293,7 +4329,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildRouterFile() {
 
-        function appendLoginStmts(component) {
+        function getStmtsOfLoginStmts(component) {
             const stmts = []
             if (component.loginOnlyPage) {
                 stmts.push(
@@ -4301,6 +4337,15 @@ class AppBuilder extends ComponentBuilder {
                     'component.enableLoginConfirmDialog()',
                     'return;}',
                 )
+            }
+            return stmts;
+        }
+
+        function getStmtsOfRenewStore(nodeOfComponent) {
+            const stmts = [];
+            const nameOfStore = nodeOfComponent.getStruct().getName();
+            if (nodeOfComponent.disposablePage) {
+                stmts.push(`Application.getStore().${Util.camel('renew', nameOfStore)}()`);
             }
             return stmts;
         }
@@ -4320,11 +4365,13 @@ class AppBuilder extends ComponentBuilder {
                 ['component', ...nodeOfComponent.getParamsOfPath('route'), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
                 [],
                 [],
-                ...appendLoginStmts(nodeOfComponent),
+                ...getStmtsOfLoginStmts(nodeOfComponent),
+                ...getStmtsOfRenewStore(nodeOfComponent),
                 `const route = \`${route}\``,
                 `this.routeTo(component, route);`,
                 `return libpath.join(Config.host,route);`
             )
+
         }
 
         const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
@@ -4336,7 +4383,7 @@ class AppBuilder extends ComponentBuilder {
         );
         baseRouterGenerator.appendImport('UserInfoRef', '../base/BaseUserInfo');
         baseRouterGenerator.appendImport('Config', '../config');
-
+        baseRouterGenerator.appendImport('{ Application }', '../');
 
         for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
@@ -4450,14 +4497,24 @@ class AppBuilder extends ComponentBuilder {
                 `return this.store.${storeName}`
             )
         }
+
+        appGenerator.appendFunction(Util.camel('get', 'store'), [], [], [],
+            `return this.store`
+        )
+
         appGenerator.appendFunction({
             name: `getNavigatorRef`,
             arrow: true
         }, [], [], [], `return this.navigatorRef.current`)
         appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`)
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
+
         await appGenerator.needIndexFile('App', [], false, [
-                `const self = new App().mount()`, `module.hot.accept()`, `export {self as Application};`],
+                `const self = new App().mount()`,
+                `module.hot.accept()`,
+                `Util.setEnvironment(Config.env)`,
+                `export {self as Application};`
+            ],
             true);
         await appGenerator.persist();
     }
@@ -5640,7 +5697,7 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.ref) {
+            if (node.isReference()) {
                 const targetName = node.ref;
                 const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
                 /** 目前先抓第一個當目標*/
@@ -5954,11 +6011,6 @@ class ProjectFileHandler extends PathBase {
 
     }
 
-    getStructs = () => {
-        return this.nodeOfAncestor.getComponents().map(component => component.getStruct());
-    }
-
-
     getAppBuildParam = () => {
         return {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
     }
@@ -6270,6 +6322,11 @@ class BuildApplication {
         await handler.buildLessToCss()
     }
 
+    async test() {
+        const handler = new ProjectFileHandler(this.getBuildObject('web'));
+        console.log(handler.getGenComponent());
+    }
+
     async buildStorageRule() {
         const handler = new ProjectFileHandler(this.getBuildObject('admin'))
         await handler.generateStorageRules();
@@ -6385,7 +6442,7 @@ if (configerer.DEBUG_MODE) {
                     break;
                 default:
                     Util.appendInfo('jo4你');
-                    await builder.buildLessToCss();
+                    await builder.test();
                     break
             }
 

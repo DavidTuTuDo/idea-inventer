@@ -1,4 +1,4 @@
-import BasePersonalGuitarPuNoteStore from "./BasePersonalGuitarPuNoteStore";
+import BasePersonalRhythmFavoritePuStore from "./BasePersonalRhythmFavoritePuStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class PersonalGuitarPuNoteStore extends BasePersonalGuitarPuNoteStore {
+class PersonalRhythmFavoritePuStore extends BasePersonalRhythmFavoritePuStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class PersonalGuitarPuNoteStore extends BasePersonalGuitarPuNoteStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default PersonalGuitarPuNoteStore;
+export default PersonalRhythmFavoritePuStore;
