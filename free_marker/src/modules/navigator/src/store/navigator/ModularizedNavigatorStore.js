@@ -42,11 +42,11 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         return this.drawerOpenStatus;
     }
 
-    getSuggestKeywordDetail(){
+    getSuggestKeywordDetail() {
         return this.getToolBar().getComplete().getSelectedComplete();
     }
 
-    clearKeywordDetail(){
+    clearKeywordDetail() {
         this.getToolBar().getComplete().setSelectedComplete(null);
     }
 
@@ -118,15 +118,19 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         this.setState('stable');
     }
 
+    @action
     async invalidateSuggestion(keyword) {
+        const self = this;
         if (!Util.isUndefinedNullEmpty(keyword)) {
-            const keywords = this.getKeywords() ?? [];
-            const fuse = new Fuse(keywords, {includeScore: true, keys: ['label', 'value']})
-            const suggests = _.orderBy(fuse.search(keyword).map(each => each.item), 'popularLevel', 'desc')
-            this.getToolBar().setSuggestCompletes(...suggests);
+            Util.executeTimeoutTask(async () => {
+                const keywords = self.getKeywords() ?? [];
+                const fuse = new Fuse(keywords, {shouldSort: true, includeScore: true, keys: ['label', 'value']})
+                const suggests = fuse.search(keyword).map(each => each.item);
+                self.getToolBar().setSuggestCompletes(...suggests);
+            }, 600, "NAVIGATOR_SEARCH_FUNCTION");
         }
-
     }
+
 
 }
 

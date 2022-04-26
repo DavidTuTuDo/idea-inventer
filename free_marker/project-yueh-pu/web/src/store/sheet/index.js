@@ -122,10 +122,9 @@ class SheetStore extends BaseSheetStore {
                 await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(),undefined,this.getCurrentPu().getId());
             }
         }
-
-
     }
 
+    @action
     async onInitialFetchSucceed() {
         await super.onInitialFetchSucceed();
         this.getCurrentPu().setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
@@ -268,6 +267,7 @@ class SheetStore extends BaseSheetStore {
                 return _.indexOf(RULE_OF_CHANGE_CHORD_WHOLE_SIGN, compound)
             }
         }
+        Util.appendError(`878415451 ${chord} is not handled`);
         throw new Error(9999, `878415451 ${chord} is not handled`);
     }
 

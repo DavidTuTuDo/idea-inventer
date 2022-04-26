@@ -184,8 +184,11 @@ class CodegenNode {
     injectView = false;
     /** 產生出 injectView function 可以override */
 
-    listEmptyTip = {enable: false, customView: undefined, stringOfTip: ''};
-    /** 當陣列需要有無資料提示時 */
+    listEmptyTip = {enable: true, customView: undefined, stringOfTip: ''};
+    /** 當陣列需要有無資料提示時
+     *
+     * custView 和 stringOfTip還沒實作
+     * */
 
     /** 讓一些type 是 number, 有一個懶人的increment submit method*/
     increment = {
@@ -1223,6 +1226,11 @@ class CodegenNode {
             stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
+        if (this.isAutoCompleteView()) {
+            stmt.push(`/** force update AutoCompleteView view usage */`)
+            stmt.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, `suggest`, this.getName())}s())+Util.getRandomHash()`)
+        }
+
         if (this.isArray() && !this.isSimpleSelected() && !useViewModuleAndComponentModuleMechanism) {
             const className = this.getArrayItemNode().getViewClassNameOfRenderView();
             stmt.push(`const ${className} = self.${className}`);
@@ -1556,6 +1564,10 @@ class CodegenNode {
         for (const prop of props) {
             this.props[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
+    }
+
+    disableListEmptyTip() {
+        this.listEmptyTip = {enable: false}
     }
 
     getParamStmtOfInvalidate() {
@@ -3820,8 +3832,7 @@ class ComponentBuilder extends BaseBuilder {
                     props: props
                 });
 
-                arrayStmts = [`_.size(${node.getFieldName()}) > 0 ?`, ...arrayStmts, ` : `, ...stmtOfSkeleton]
-
+                arrayStmts = [`self.shouldDisplayLoadingArea(${node.getFieldName()}) ?`, ...stmtOfSkeleton, ` : `, ...arrayStmts]
             }
 
             if (node.hasListWrap()) {
@@ -5427,6 +5438,7 @@ class ProjectFileHandler extends PathBase {
                 node.setView('div');
                 node.setClick(true);
                 node.setListView('Slide');
+                node.disableListEmptyTip();
                 node.appendListProps(
                     {arrows: false},
                     {indicators: true},
@@ -5544,7 +5556,6 @@ class ProjectFileHandler extends PathBase {
                 const nameOfDescription = Util.camel('label', 'of', node.getName());
                 const nameOfDisabled = Util.camel(node.getName(), 'disabled');
 
-
                 node.getParentNode().appendChildrenWithJsons(
                     {
                         name: nameOfDescription,
@@ -5661,7 +5672,8 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTextFieldView() || node.isRadioView() || node.isSliderView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
-                node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
+                if (!node.isEditPage())
+                    node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
             } else if (node.isImageView()) {
@@ -5774,6 +5786,10 @@ class ProjectFileHandler extends PathBase {
 
                 node.appendViewProps({
                     options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
+                })
+
+                node.appendViewProps({
+                    filterOptions: `###(options, state) => options`
                 })
 
                 node.appendViewProps({

@@ -402,6 +402,10 @@ class BaseComponent extends React.Component {
             </div>)
     }
 
+    shouldDisplayLoadingArea(items = []) {
+        return !this.getStore().isInitialFetchSucceed() && _.size(items) < 1
+    }
+
     renderListEmptyView = (items = [], hasPath) => {
         const ListEmptyView = this.ListEmptyView;
         return (<ListEmptyView

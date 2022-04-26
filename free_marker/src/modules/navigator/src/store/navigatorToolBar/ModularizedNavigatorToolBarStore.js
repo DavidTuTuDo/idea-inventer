@@ -18,9 +18,10 @@ import {
   comparer,
   computed,
   autorun,
-  runInAction,
+  runInAction, override,
 } from "mobx";
 import BaseNavigatorToolBarStore from "./BaseNavigatorToolBarStore";
+import SuggestComplete from "../navigatorToolBarSuggestComplete";
 
 class ModularizedNavigatorToolBarStore extends BaseNavigatorToolBarStore {
   /** -------------------- fields -------------------- **/
@@ -28,6 +29,24 @@ class ModularizedNavigatorToolBarStore extends BaseNavigatorToolBarStore {
 
   constructor(props) {
     super(props);
+  }
+
+  @override
+  setSuggestCompletes(...items) {
+    const self = this;
+    items = _.uniqBy(items,'label');
+    if (items !== undefined && _.isArray(items)) {
+      this.suggestCompletes.length = 0;
+      this.suggestCompletes.push(
+          ...items.map((each) =>
+              each instanceof SuggestComplete
+                  ? each
+                  : new SuggestComplete({...each, parentNode: self})
+          )
+      );
+    } else {
+      this.suggestCompletes.length = 0;
+    }
   }
   /** -------------------- async api -------------------- **/
 }

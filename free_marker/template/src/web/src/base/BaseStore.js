@@ -215,12 +215,18 @@ class BaseStore extends ClientRemoteApi {
         return this.selectorParams;
     }
 
+
     async onInitialFetchSucceed(collection) {
-        this.initialFetchSucceed = true;
+        this.setInitialFetchSucceed();
         if (this.getComponent() !== undefined) {
             await this.getComponent().invalidateNextPageBehavior();
         }
+    }
 
+    @action
+    setInitialFetchSucceed() {
+        this.initialFetchSucceed = true;
+        console.log(`有set成功嗎?`);
     }
 
     isInitialFetchSucceed() {

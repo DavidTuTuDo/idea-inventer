@@ -170,6 +170,8 @@ import {configerer} from "configerer";
                 {from: '▲', to: '🌕'},
                 {from: '★', to: '🌓'},
                 {from: '△', to: '🌑'},
+                {from: '✩', to: '🌙'},
+                {from: '☆', to: '🌙'},
                 {from: '\\|', to: '།'},
                 {from: '\\[前奏\\]', to: '(開始)'},
                 {from: '\\[尾奏\\]', to: '(結束)'},
@@ -189,6 +191,14 @@ import {configerer} from "configerer";
         }
 
         const objOfTones = getMapOfTonalitySpeed(tone.tkInfo);
+        // '原調': 'E', '速度': '59', '男調': 'A', '女調': 'E'
+        if (Util.isUndefinedNullEmpty(objOfTones['原調']) ||
+            Util.isUndefinedNullEmpty(objOfTones['男調']) ||
+            Util.isUndefinedNullEmpty(objOfTones['女調'])
+        ) {
+            console.log(tone.name, ' ===> ', objOfTones);
+        }
+
         const objOfCapoTone = getCapoAndContextTonality(tone.capoLevel);
         const info = {name: tone.name, ...objOfCapoTone, ...objOfTones};
         // console.log(info);

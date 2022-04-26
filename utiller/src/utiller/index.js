@@ -19,9 +19,30 @@ String.format = function () {
 
 class Utiller {
 
+    mapOfIdNTimeoutId = {}
+
+    /**   Key : idOfSetTimout */
+
+
     constructor() {
         this.init();
         this.env = 'dev';
+    }
+
+    /**
+     * 執行為了避免沒意義的任務重複執行, 像是search 輸入關鍵字後, 不應該每次onchange就呼叫一次建議列表, 應該等到打完後500ms後在去 執行搜尋任務
+     * */
+    executeTimeoutTask(functionOfAsyncTask, ms = 1000, id = this.getRandomHash(), ...params) {
+        const self = this;
+        const idOfCurrentTimeoutTask = this.mapOfIdNTimeoutId[id];
+        if (idOfCurrentTimeoutTask)
+            clearTimeout(idOfCurrentTimeoutTask)
+
+        const idOfTimeoutTask = setTimeout(async (...param) => {
+            await functionOfAsyncTask()
+            delete self.mapOfIdNTimeoutId[id];
+        }, ms, ...params)
+        self.mapOfIdNTimeoutId[id] = idOfTimeoutTask;
     }
 
     printLogMessage(message, error = false, ...infos) {
@@ -1227,7 +1248,6 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const util = new Utiller();
             // console.log(util.getArrayOfSize([1,2,3,4,5],9999));
             // console.log(util.nth([1,2,3],-1000));
             // console.log(util.containsBy(['A', 'V', 'C'], 'C'))
