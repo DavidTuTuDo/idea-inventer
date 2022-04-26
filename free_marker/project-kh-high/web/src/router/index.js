@@ -22,7 +22,7 @@ class Router extends BaseMyRouter {
     }
 
     gotoHistoryWrongPage = (component) => {
-        if (!UserInfoRef.isLoginInSucceed() && component !== undefined) {
+        if (!UserInfoRef.isLoginWithSucceed() && component !== undefined) {
             component.enableLoginConfirmDialog();
             return;
         }

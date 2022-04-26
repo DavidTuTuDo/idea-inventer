@@ -26,4 +26,5 @@ class App extends BaseApp {
 }
 const self = new App().mount();
 module.hot.accept();
+Util.setEnvironment(Config.env);
 export { self as Application };

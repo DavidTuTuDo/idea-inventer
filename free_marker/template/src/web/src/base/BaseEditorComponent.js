@@ -183,7 +183,7 @@ class BaseEditorComponent extends BaseComponent {
             <Button
                 color={'primary'}
                 onClick={(task) => {
-                    if (!UserInfoRef.isLoginInSucceed()) {
+                    if (!UserInfoRef.isLoginWithSucceed()) {
                         loginRequiredRef.current.open()
                         return;
                     }

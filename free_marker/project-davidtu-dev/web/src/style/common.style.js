@@ -45,27 +45,59 @@ class CommonStyle {
 
   NavigatorDrawerShortcutTitleTypography = {};
 
+  NavigatorDrawerShortcutListItemSkeleton = {};
+
   NavigatorDrawerShortcutListList = {};
 
   NavigatorDrawerShortcutListItem = {};
 
   NavigatorDrawerDrawer = {};
 
-  NavigatorAppBarToolBarLoginButton = {};
+  NavigatorToolBarAccountHeadAccountCircle = {};
 
-  NavigatorAppBarToolBarToEditModeButton = {};
+  NavigatorToolBarAccountReactFragmentWrap = {};
 
-  NavigatorAppBarToolBarTitleTypography = {};
+  NavigatorToolBarAccountIconButton = {};
 
-  NavigatorAppBarToolBarMenuIconMenuIcon = {};
+  NavigatorToolBarLoginButton = {};
 
-  NavigatorAppBarToolBarMenuIconButton = {};
+  NavigatorToolBarCompleteInputFormWrap = {};
 
-  NavigatorAppBarToolBarToolbar = {};
+  NavigatorToolBarCompleteInputTextField = {};
 
-  NavigatorAppBarAppBar = {};
+  NavigatorToolBarCompleteAutocomplete = {};
+
+  NavigatorToolBarTitleTypography = {};
+
+  NavigatorToolBarMenuIconMenuIcon = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarAppBarWrap = {};
+
+  NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
+
+  /** => following for account  component  */
+
+  AccountFuncAreaOfEditToEditModeButton = {};
+
+  AccountFuncAreaOfEditLogoutButton = {};
+
+  AccountFuncAreaOfEditDiv = {};
+
+  AccountFuncAreaOfIdCopyUserIdButton = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+
+  AccountFuncAreaOfIdDiv = {};
+
+  AccountPaper = {};
 
   /** => following for main  component  */
 
@@ -80,6 +112,8 @@ class CommonStyle {
   MainProductIdTypography = {};
 
   MainProductDivListWrap = {};
+
+  MainProductDivSkeleton = {};
 
   MainProductDivList = {};
 

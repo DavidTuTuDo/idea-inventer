@@ -89,7 +89,7 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     getInjectStyleOfSheetAdjustCenterJoinToFavoriteFormControlLabel(center) {
-        return Util.getVisibleOrNone(UserInfoRef.isLoginInSucceed());
+        return Util.getVisibleOrNone(UserInfoRef.isLoginWithSucceed());
     }
 
     SheetGuitarpusCurrentContextView = observer(({guitarpu}) => {

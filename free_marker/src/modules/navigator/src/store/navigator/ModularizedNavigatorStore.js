@@ -51,7 +51,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     }
 
     async signInWithCredential() {
-        if (Cookie.hasCredential() && !UserInfo.isLoginInSucceed()) {
+        if (Cookie.hasCredential() && !UserInfo.isLoginWithSucceed()) {
             try {
                 const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
                 if (result !== undefined) {
@@ -72,15 +72,6 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         self.getToolBar().setToEditMode(editButton);
     }
 
-    @action
-    updateLoginButtonStatus(text) {
-        const self = this;
-        let loginStateString = UserInfo.isLoginInSucceed() ? '登出' : '登入';
-        if (text !== undefined)
-            loginStateString = text;
-        self.getToolBar().setLogin(loginStateString);
-    }
-
     /**
      * @deprecated 根本沒用到
      */
@@ -98,15 +89,6 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
                 Cookie.removeCredential();
             }
         }
-    }
-
-    async logout() {
-        Util.appendInfo('logout executed');
-        await firebaser.logout();
-        this.setCredential(undefined);
-        this.setUserInfo(undefined);
-        Cookie.removeCredential()
-        Cookie.removeUser();
     }
 
     /** -------------------- functions -------------------- **/

@@ -12,6 +12,7 @@ class CommonFirebaseHelper extends BaseFirebase {
         if (this.auth() === undefined) return;
 
         if (_.isFunction(this.auth().onAuthStateChanged)) {
+            /** 因為和admin共用, firebase-admin沒有onAuthStateChanged 這個 function */
             this.auth().onAuthStateChanged((user) => {
                 const event = require('../event').default;
                 event.emitAuthStateChanged(user);

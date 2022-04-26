@@ -26,7 +26,8 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
 
@@ -57,7 +58,12 @@ const LESS_MODULES = [
 
 const VIEW_IMPORTS =
     [
-
+        {
+            from: `@material-ui/icons/AccountCircle`,
+            views: ['AccountCircle'],
+            simplePath: true, /** 就是只要material-ui/icons/menu */
+        }
+        ,
         {
             from: `@material-ui/icons/menu`,
             views: ['MenuIcon'],
@@ -2804,7 +2810,7 @@ class StoreBuilder extends BaseBuilder {
             /** ${node.getFieldName()} 是在 array.mustache gen出來的 */
 
             if (node.isFetchOnlyLogin()) {
-                defaultStmt = `UserInfoRef.isLoginInSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
+                defaultStmt = `UserInfoRef.isLoginWithSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
             }
             return `${node.getFieldName()} : ${defaultStmt},`;
         }
@@ -4344,7 +4350,7 @@ class AppBuilder extends ComponentBuilder {
             const stmts = []
             if (component.loginOnlyPage) {
                 stmts.push(
-                    'if(!UserInfoRef.isLoginInSucceed() && component !== undefined) {',
+                    'if(!UserInfoRef.isLoginWithSucceed() && component !== undefined) {',
                     'component.enableLoginConfirmDialog()',
                     'return;}',
                 )
@@ -5820,7 +5826,7 @@ class ProjectFileHandler extends PathBase {
                 const onClickStmts = [];
                 if (node.hasLoginRequiredDialog()) {
                     onClickStmts.push(
-                        `if(!UserInfoRef.isLoginInSucceed()) {
+                        `if(!UserInfoRef.isLoginWithSucceed()) {
                         self.enableLoginConfirmDialog();
                         return;
                     }`

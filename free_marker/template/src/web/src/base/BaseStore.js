@@ -10,8 +10,8 @@ import {
 } from "mobx";
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
-import config from '../config';
-import ClientRemoteApi from './ClientRemoteApi'
+import Config from '../config';
+import ClientRemoteApi from './ClientRemoteApi';
 
 class BaseStore extends ClientRemoteApi {
 
@@ -226,7 +226,6 @@ class BaseStore extends ClientRemoteApi {
     @action
     setInitialFetchSucceed() {
         this.initialFetchSucceed = true;
-        console.log(`有set成功嗎?`);
     }
 
     isInitialFetchSucceed() {

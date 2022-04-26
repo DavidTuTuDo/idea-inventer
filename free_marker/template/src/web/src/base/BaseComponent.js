@@ -183,7 +183,7 @@ class BaseComponent extends React.Component {
         return 5;
     }
 
-    disapearKeyboard(){
+    disapearKeyboard() {
         document.activeElement.blur();
     }
 
@@ -197,7 +197,7 @@ class BaseComponent extends React.Component {
         let modifier = 1;
         let isScrollToEnd = currentScroll + modifier > documentHeight
         /** modifier 距離底部的threshold */
-        if (isScrollDown  && isScrollToEnd) {
+        if (isScrollDown && isScrollToEnd) {
             /** Scroll達底部了 */
             // console.log(`window.scrollY:${window.scrollY}, currentScroll:${currentScroll}, documentHeight:${documentHeight}`);
             if (!this.getStore().isInitialFetchSucceed()) {
@@ -281,6 +281,15 @@ class BaseComponent extends React.Component {
 
     setLoadingViewVisibility(show = true) {
         this.getStore().setState(show ? 'loading' : 'stable');
+    }
+
+    async executeAsyncTaskWithLoading(task) {
+        try {
+            this.setLoadingViewVisibility()
+            await task();
+        } finally {
+            this.setLoadingViewVisibility(false)
+        }
     }
 
     isNavigationView() {
@@ -826,7 +835,7 @@ class BaseComponent extends React.Component {
 
     async invokeLoginBehavior() {
         await Util.syncDelay(10);
-        if (!UserInfo.isLoginInSucceed())
+        if (!UserInfo.isLoginWithSucceed())
             Application.getNavigatorRef().onNavigatorToolBarLoginButtonClicked()
     }
 
@@ -839,7 +848,7 @@ class BaseComponent extends React.Component {
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
 
-    getKeywords(){
+    getKeywords() {
         return Application.getNavigatorStore().getKeywords();
     }
 
@@ -866,7 +875,7 @@ class BaseComponent extends React.Component {
 
     }
 
-    getStyleByElement(element,attribute){
+    getStyleByElement(element, attribute) {
         const style = window.getComputedStyle(element, null)
         const value = style.getPropertyValue(attribute);
         return value;
@@ -875,8 +884,8 @@ class BaseComponent extends React.Component {
     /** 修改所有className 的elements */
     adjustBunchOfFontSizeByClassName(className, enlarge = true, delta = 1) {
         const elements = this.getElementsByClassName(className);
-        for(const element of elements) {
-            const originValue = parseFloat(this.getStyleByElement(element,'font-size'))
+        for (const element of elements) {
+            const originValue = parseFloat(this.getStyleByElement(element, 'font-size'))
             const nextValue = enlarge ? originValue + delta : originValue - delta;
             element.style.fontSize = `${nextValue}px`;
         }

@@ -1,3 +1,4 @@
+import ModularizedAccountFuncAreaOfIdStore from "./ModularizedAccountFuncAreaOfIdStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,24 +21,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorDrawerStore from "./BaseNavigatorDrawerStore";
+import BaseAccountFuncAreaOfIdStore from "./BaseAccountFuncAreaOfIdStore";
 
-class ModularizedNavigatorDrawerStore extends BaseNavigatorDrawerStore {
+class AccountFuncAreaOfIdStore extends ModularizedAccountFuncAreaOfIdStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  async fetch(view) {
-    const result = await super.fetch(view);
-    if(UserInfoRef.isLoginWithSucceed()){
-      result.shortcuts.push(...result.myShortcuts)
-    }
-    return result;
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedNavigatorDrawerStore;
+export default AccountFuncAreaOfIdStore;

@@ -6,16 +6,17 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
+import NavigatorKeyword from "./navigatorKeyword";
 import NavigatorUserInfo from "./navigatorUserInfo";
-import NavigatorDrawerShortcut from "./navigatorDrawerShortcut";
-import NavigatorDrawerMyShortcut from "./navigatorDrawerMyShortcut";
-import NavigatorDrawer from "./navigatorDrawer";
 import NavigatorCredential from "./navigatorCredential";
-import NavigatorAppBarToolBar from "./navigatorAppBarToolBar";
-import NavigatorAppBar from "./navigatorAppBar";
+import NavigatorDrawerShortcut from "./navigatorDrawerShortcut";
+import NavigatorDrawer from "./navigatorDrawer";
+import NavigatorToolBarSuggestComplete from "./navigatorToolBarSuggestComplete";
+import NavigatorToolBarComplete from "./navigatorToolBarComplete";
+import NavigatorToolBar from "./navigatorToolBar";
 import Navigator from "./navigator";
-import MainTest from "./mainTest";
 import MainProduct from "./mainProduct";
+import MainTest from "./mainTest";
 import Main from "./main";
 
 class Store extends BaseStore {

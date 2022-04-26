@@ -49,7 +49,7 @@
     "@firebase/storage": "^0.5.6",
     "@firebase/functions": "^0.7.6",
     "configerer": "^1.0.11",
-    "utiller": "^1.0.112",
+    "utiller": "^1.0.113",
     "crypto-browserify": "^3.12.0",
     "firebase": "^8.2.10",
     "history": "^4.10.1",

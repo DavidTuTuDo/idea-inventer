@@ -9,12 +9,33 @@ import application from '../';
 import firebaser from './CommonFirebaseHelper'
 import Cookie from '../cookie';
 import Configer from '../config';
+import {
+    makeAutoObservable,
+    makeObservable,
+    action,
+    observable,
+    comparer,
+    computed,
+    autorun,
+    runInAction,
+} from "mobx";
+import BaseComponent from "./BaseComponent";
 
 class UserInfo {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
+    @observable
+    isLoginSucceed = false;
+
+    @observable
+    isAdminUser = false;
+
+    @observable
+    isPurchaseUser = false;
+
     constructor(props) {
+        makeObservable(this);
     }
 
     /** -------------------- async api -------------------- **/
@@ -38,13 +59,18 @@ class UserInfo {
         return {};
     }
 
-    isLoginInSucceed() {
-        return !_.isNull(firebaser.getCurrentUser());
+    @action
+    handleLoginState() {
+        this.isLoginSucceed = !_.isNull(firebaser.getCurrentUser());
+        this.isAdminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
     }
 
-    isAdmin(){
-        const isAdmin = this.isLoginInSucceed() && _.isEqual(this.getUid(true),Configer.superUserUid);
-        return isAdmin;
+    isLoginWithSucceed() {
+        return this.isLoginSucceed;
+    }
+
+    isAdmin() {
+        return this.isAdminUser;
     }
 
     getUid(allowCache = true) {
@@ -57,6 +83,27 @@ class UserInfo {
             if (!_.isEmpty(uid)) return uid;
         }
         return 'empty';
+    }
+
+    async performLoginBehavior(task, view) {
+        await this.executeAsyncTask(async () => {
+            await firebaser.signInWithGoogle(task, view);
+        }, view);
+    }
+
+    async executeAsyncTask(task, view) {
+        if (view instanceof BaseComponent)
+            await view.executeAsyncTaskWithLoading(task)
+        else
+            await task();
+    }
+
+    async logout(view) {
+        await this.executeAsyncTask(async () => {
+            Util.appendInfo('logout executed');
+            await firebaser.logout();
+        }, view);
+
     }
 }
 

@@ -103,14 +103,14 @@ class SheetStore extends BaseSheetStore {
     }
 
     async updateFavoriteToggleState(idOfCurrentGuitarPu) {
-        if(UserInfoRef.isLoginInSucceed()) {
+        if(UserInfoRef.isLoginWithSucceed()) {
             const item = await this.apiOfFavorite.fetchFavoritePuItem(this.getComponent(), undefined, idOfCurrentGuitarPu);
             this.getAdjustCenter().getJoinToFavorite().setToggle(item.exists);
         }
     }
 
     async submitFavoritePuState(join = false) {
-        if(UserInfoRef.isLoginInSucceed()) {
+        if(UserInfoRef.isLoginWithSucceed()) {
             if (join) {
                 await this.apiOfFavorite.submitFavoritePuItem(this.getComponent(), undefined, {
                     idOfGuitarPu: this.getCurrentPu().getId(),

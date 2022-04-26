@@ -1,4 +1,3 @@
-import ModularizedNavigatorAppBarToolBarStore from "./ModularizedNavigatorAppBarToolBarStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,9 +20,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorAppBarToolBarStore from "./BaseNavigatorAppBarToolBarStore";
+import BaseAccountStore from "./BaseAccountStore";
 
-class NavigatorAppBarToolBarStore extends ModularizedNavigatorAppBarToolBarStore {
+class ModularizedAccountStore extends BaseAccountStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +31,4 @@ class NavigatorAppBarToolBarStore extends ModularizedNavigatorAppBarToolBarStore
   }
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorAppBarToolBarStore;
+export default ModularizedAccountStore;

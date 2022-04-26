@@ -962,7 +962,7 @@ class Utiller {
     }
 
     getVisibleOrNone(judgement) {
-        return {display: judgement ? 'visible' : 'none'};
+        return {display: judgement ? 'inherit' : 'none'};
     }
 
     stringToInteger(string) {

@@ -1,3 +1,4 @@
+import ModularizedNavigatorToolBarStore from "./ModularizedNavigatorToolBarStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,9 +21,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorDrawerStore from "./BaseNavigatorDrawerStore";
+import BaseNavigatorToolBarStore from "./BaseNavigatorToolBarStore";
 
-class ModularizedNavigatorDrawerStore extends BaseNavigatorDrawerStore {
+class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -30,14 +31,10 @@ class ModularizedNavigatorDrawerStore extends BaseNavigatorDrawerStore {
     super(props);
   }
 
-  async fetch(view) {
-    const result = await super.fetch(view);
-    if(UserInfoRef.isLoginWithSucceed()){
-      result.shortcuts.push(...result.myShortcuts)
-    }
-    return result;
+  getTitle() {
+    return '測試';
   }
 
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedNavigatorDrawerStore;
+export default NavigatorToolBarStore;

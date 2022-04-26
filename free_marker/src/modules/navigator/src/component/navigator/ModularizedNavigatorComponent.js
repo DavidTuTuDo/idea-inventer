@@ -29,7 +29,8 @@ import * as MUIcon from '@material-ui/icons';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
-import {isMobile} from 'react-device-detect'
+import {isMobile} from 'react-device-detect';
+import BaseUserInfo from "../../base/BaseUserInfo";
 
 const useStyles = theme => ({
     paper: {
@@ -47,34 +48,29 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         super(props);
     }
 
-    getInjectStyleOfNavigatorToolBarToEditModeButton(toolBar) {
-        if (isMobile) return Util.getVisibleOrNone(false);
-        const result = Util.getVisibleOrHidden(UserInfo.isAdmin());
-        return result;
-    }
-
     componentDidMount() {
         super.componentDidMount();
         this.getStore().forceToStable();
     }
 
-    onNavigatorToolBarToEditModeButtonClicked(param) {
-        Router.gotoEditPage(this);
-    }
-
     onAuthStateChangedReceive = (user) => {
         const store = this.getStore();
-        if (UserInfo.isLoginInSucceed()) {
-            Util.appendInfo('登入成功, 所以寫入資料', user)
+        BaseUserInfo.handleLoginState();
+        if (UserInfo.isLoginWithSucceed()) {
+            Util.appendInfo('登入成功, 所以寫入資料')
+            store.getUserInfo().submitUserInfo(this, user.uid, user);
             /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
             const credential = Cookie.getCredential();
             Cookie.setUser(user);
             store.setUserInfo(user);
             store.setCredential(credential);
+        } else {
+            store.setCredential(undefined);
+            store.setUserInfo(undefined);
+            Cookie.removeCredential()
+            Cookie.removeUser();
         }
-        Util.appendInfo('Navigator收到登入狀態改變的事件', user)
-        store.updateLoginButtonStatus();
-        store.updateEditButtonStatus();
+        Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${UserInfo.isLoginWithSucceed()} `, user);
     }
 
     onNavigatorToolBarTitleTypographyClicked(param) {
@@ -82,20 +78,10 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     onNavigatorToolBarLoginButtonClicked(param) {
-        const self = this;
-        if (UserInfo.isLoginInSucceed()) {
-            this.getStore().logout().then();
-            self.reloadPage()
-        } else {
-            const asyncTask = async (authResult) => {
-                Cookie.setCredential(authResult.credential);
-                const userInfo = authResult.user;
-                await this.getStore().setUserInfo(userInfo);
-                await this.getStore().getUserInfo().submitUserInfo(self, userInfo.uid, userInfo);
-                self.reloadPage();
-            }
-            CommonFirebaseHelper.signInWithGoogle(asyncTask).then();
-        }
+        BaseUserInfo.performLoginBehavior(async (authResult) => {
+            /** 只有在登入傳回直裡面有credential */
+            Cookie.setCredential(authResult.credential);
+        }).then();
     }
 
     onDrawerClosed() {
@@ -252,6 +238,14 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         const keyword = param.object;
         if (!Util.isUndefinedNullEmpty(keyword))
             this.getStore().getToolBar().getComplete().setInput(keyword.getValue());
+    }
+
+    getInjectStyleOfNavigatorToolBarAccountIconButton() {
+        return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed());
+    }
+
+    getInjectStyleOfNavigatorToolBarLoginButton(toolBar) {
+        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed());
     }
 
     /** -------------------- async api -------------------- **/

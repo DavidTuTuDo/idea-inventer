@@ -185,7 +185,7 @@ class ExamStore extends BaseExamStore {
     }
 
     async submitQuestionRecord(question) {
-        if (!this.isHistoryWrongPage() && UserInfo.isLoginInSucceed()) {
+        if (!this.isHistoryWrongPage() && UserInfo.isLoginWithSucceed()) {
             const record = new TestingRecordStore();
             try {
                 await record.submitTestingRecords(undefined, undefined, {
@@ -237,7 +237,7 @@ class ExamStore extends BaseExamStore {
     async incrementCountsOfExamToday() {
         const self = this;
         const today = Util.getTodayTimeFormat();
-        if (UserInfo.isLoginInSucceed()) {
+        if (UserInfo.isLoginWithSucceed()) {
             const store = new ExamCountsOfExamTodayStore()
             const info = await store.fetchCountsOfExamToday();
             _.isEqual(info.today, today) ?

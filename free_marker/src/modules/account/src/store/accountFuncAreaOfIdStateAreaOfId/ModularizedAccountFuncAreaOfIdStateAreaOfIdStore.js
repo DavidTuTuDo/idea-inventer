@@ -20,24 +20,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorDrawerStore from "./BaseNavigatorDrawerStore";
+import BaseAccountFuncAreaOfIdStateAreaOfIdStore from "./BaseAccountFuncAreaOfIdStateAreaOfIdStore";
 
-class ModularizedNavigatorDrawerStore extends BaseNavigatorDrawerStore {
+class ModularizedAccountFuncAreaOfIdStateAreaOfIdStore extends BaseAccountFuncAreaOfIdStateAreaOfIdStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
-
-  async fetch(view) {
-    const result = await super.fetch(view);
-    if(UserInfoRef.isLoginWithSucceed()){
-      result.shortcuts.push(...result.myShortcuts)
-    }
-    return result;
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedNavigatorDrawerStore;
+export default ModularizedAccountFuncAreaOfIdStateAreaOfIdStore;
