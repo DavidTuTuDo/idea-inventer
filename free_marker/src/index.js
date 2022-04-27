@@ -2596,9 +2596,9 @@ class PathBase {
         this.genSourcePath = libpath.join(this.genRootPath, 'src');
         this.genComponentRootPath = libpath.join(this.genSourcePath, 'component')
         this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
-        this.pathOfSource = libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS);
+        this.pathOfSourceJS = libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS);
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(this.pathOfSource)).default);
+        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(this.pathOfSourceJS)).default);
 
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
@@ -3542,7 +3542,7 @@ class ComponentBuilder extends BaseBuilder {
             [], [], [], `super.componentWillUnmount()`, ...this.componentDetachStmt);
 
         baseGenerator.appendFunction('isDisposableComponent',
-            [],[],[],`return ${componentNode.disposablePage}`);
+            [], [], [], `return ${componentNode.disposablePage}`);
         /** index.js */
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
@@ -6138,9 +6138,17 @@ class ProjectFileHandler extends PathBase {
 
     async incrementProjectVersion() {
         const origin = this.nodeOfAncestor.version;
-        const stringOfVersion = Util.isValidVersionOfString(origin) ? Util.getStringOfVersionIncrement(origin) : '1.0.1';
-        this.nodeOfAncestor.version = stringOfVersion;
-        // this.freeMarkerSourcePath
+        const stringOfLatestVersion = Util.isValidVersionOfString(origin) ? Util.getStringOfVersionIncrement(origin) : '1.0.1';
+        this.nodeOfAncestor.version = stringOfLatestVersion;
+        await this.rewriteVersionOfSourceJs(stringOfLatestVersion);
+    }
+
+    async rewriteVersionOfSourceJs(version) {
+        const contents = Util.getFileContextInRaw(this.pathOfSourceJS).split(`\n`);
+        const index = _.findIndex(contents, (each) => _.startsWith(_.trim(each), 'version'));
+        /** 故意空4格 */
+        contents[index] = `    version: '${version}',`;
+        Util.appendFile(this.pathOfSourceJS, contents.join(`\n`), true, true);
     }
 
     async execute() {
@@ -6321,12 +6329,14 @@ class BuildApplication {
 
     async deployWebProd() {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
-        await web.cleanGenDirectory();
-        await web.execute();
-        await web.buildProdWebDistToProjectThanDeploy();
-        Util.appendInfo(
-            `web deploy succeed`
-        );
+        // await web.cleanGenDirectory();
+        await web.incrementProjectVersion();
+        console.log(web.nodeOfAncestor.version);
+        // await web.execute();
+        // await web.buildProdWebDistToProjectThanDeploy();
+        // Util.appendInfo(
+        //     `web deploy succeed`
+        // );
     }
 
     async buildCloudFunctions(deploy = true) {
