@@ -49,6 +49,18 @@ class BaseComponent extends React.Component {
         super(props);
     }
 
+    isDisposableComponent() {
+        return false;
+    }
+
+    /** dialog不會透過Router,得在constructor裏面clean() */
+    cleanDisposableDialogComponent() {
+        if (this.isDialogComponent() && this.isDisposableComponent()) {
+            this.getStore().clean();
+
+        }
+    }
+
     isDetailPage() {
         return !Util.isUndefinedNullEmpty(this.uidOfDetail)
     }
@@ -113,8 +125,11 @@ class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
-        Router.setCurrentComponent(this);
-        Application.setLatestComponent(this);
+        if(!this.isDialogComponent()) {
+            Router.setCurrentComponent(this);
+            Application.setLatestComponent(this);
+        }
+        this.cleanDisposableDialogComponent();
         this.viewInitial();
         if (this.isNotNavigatorNComponentView()) {
             window.addEventListener('scroll', this.onScrollToBottomListener, true);
@@ -670,9 +685,9 @@ class BaseComponent extends React.Component {
      * extra.type: |'error','success','info','warning' |
      * extra.func.tack 只能放 async task */
     setSnackViewVisibility(visible, message, extra = this.defaultSnackExtra()) {
-        const self = this;
+        const self = this.getComponentInstance();
 
-        if (visible && this.getStore().getSnackVisibility()) {
+        if (visible && self.getStore().getSnackVisibility()) {
             self.getStore().setSnackVisibility(false);
             Util.syncDelay(10).then(() => {
                 sync();

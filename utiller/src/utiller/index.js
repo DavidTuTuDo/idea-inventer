@@ -19,9 +19,32 @@ String.format = function () {
 
 class Utiller {
 
-    mapOfIdNTimeoutId = {}
+    mapOfIdNTimeoutId = {}/**   Key : idOfSetTimout */
 
-    /**   Key : idOfSetTimout */
+    /** '1.九.1' => false
+     *  '1.2.3' => true
+     * */
+    isValidVersionOfString(versionName) {
+        if (this.isUndefinedNullEmpty(versionName)) {
+            return false;
+        }
+
+        const numbers = versionName.split('.');
+        for (const number of numbers) {
+            const toNum = _.toNumber(number);
+            if (!_.isNumber(toNum) || isNaN(toNum))
+                return false;
+        }
+        return true;
+    }
+
+    /** 1.0.1 => 1.0.2 */
+    getStringOfVersionIncrement(stringOfVersion, delta = 1) {
+        const numbers = stringOfVersion.split('.').map((each) => _.toNumber(each));
+        const last = numbers.length - 1;
+        numbers[last] = numbers[last] + delta;
+        return numbers.join('.');
+    }
 
 
     constructor() {
@@ -1248,6 +1271,9 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            // const util = new Utiller();
+            // console.log(_.isNumber(_.toNumber('九')));
+            // console.log(util.isValidVersionOfString('21323.2312.1'));
             // console.log(util.getArrayOfSize([1,2,3,4,5],9999));
             // console.log(util.nth([1,2,3],-1000));
             // console.log(util.containsBy(['A', 'V', 'C'], 'C'))

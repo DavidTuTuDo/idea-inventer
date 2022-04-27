@@ -2596,9 +2596,9 @@ class PathBase {
         this.genSourcePath = libpath.join(this.genRootPath, 'src');
         this.genComponentRootPath = libpath.join(this.genSourcePath, 'component')
         this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
-
+        this.pathOfSource = libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS);
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS))).default);
+        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(this.pathOfSource)).default);
 
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
@@ -3527,7 +3527,7 @@ class ComponentBuilder extends BaseBuilder {
         function getStmtsOfGetStore() {
             const stmts = [];
             stmts.push(`const store = this.props.${componentNode.getPreciseStoreName()}`)
-            stmts.push(`store.setComponent(this)`)
+            stmts.push(`store.setComponent(this.getComponentInstance())`)
             stmts.push(`return store;`)
             return stmts;
         }
@@ -3541,6 +3541,8 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendFunction('componentWillUnmount',
             [], [], [], `super.componentWillUnmount()`, ...this.componentDetachStmt);
 
+        baseGenerator.appendFunction('isDisposableComponent',
+            [],[],[],`return ${componentNode.disposablePage}`);
         /** index.js */
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
@@ -6132,6 +6134,13 @@ class ProjectFileHandler extends PathBase {
 
     async cleanGenDirectory() {
         await Util.cleanAllFiles(this.genRootPath);
+    }
+
+    async incrementProjectVersion() {
+        const origin = this.nodeOfAncestor.version;
+        const stringOfVersion = Util.isValidVersionOfString(origin) ? Util.getStringOfVersionIncrement(origin) : '1.0.1';
+        this.nodeOfAncestor.version = stringOfVersion;
+        // this.freeMarkerSourcePath
     }
 
     async execute() {

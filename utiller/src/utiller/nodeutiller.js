@@ -470,7 +470,7 @@ class NodeUtiller extends Utiller {
             this.cleanFileContent(path);
             newlineOnceFileNotEmpty = false;
             this.persistByPath(path);
-        } else if (this.isEmptyFile(path)){
+        } else if (this.isEmptyFile(path)) {
             newlineOnceFileNotEmpty = false;
         }
 
@@ -728,12 +728,8 @@ class NodeUtiller extends Utiller {
     async upgradePackageJsonVersion(path) {
         if (_.isEqual('package.json', this.getPathInfo(path).fileNameExtension)) {
             const json = this.getJsonObjByFilePath(path);
-            const numbers = json.version.split('.').map((each) => _.toNumber(each));
-            const last = numbers.length - 1;
-            numbers[last] = numbers[last] + 1;
-            json.version = numbers.join('.')
+            json.version = this.getStringOfVersionIncrement(json.version);
             await this.writeJsonThanPrettier(path, json)
-
             return {version: json.version, moduleName: json.name};
         } else {
             throw new ERROR(8020, `path is not package.json, which is ${path}`)
@@ -796,6 +792,7 @@ class NodeUtiller extends Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new NodeUtiller();
+            // console.log(utiller.getStringOfVersionIncrement('1.0.3'))
             // utiller.appendFile(`./test/2.js`, '2saads\n\nwqeadsdas', true, true);
             // utiller.rewriteFile2File('./test/2.js','./test/1.js');
             // console.log(uii.isValidFilePath('aa/cc/vv.ss'));

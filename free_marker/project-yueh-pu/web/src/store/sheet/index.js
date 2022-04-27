@@ -84,6 +84,7 @@ const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RUL
  */
 
 const SEPARATOR_OF_CHORD = '།';
+const SEPARATOR_OF_TONALITY = '|';
 
 class SheetStore extends BaseSheetStore {
     /** -------------------- fields -------------------- **/
@@ -157,7 +158,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     normalizeTonality(string) {
-        return string.split(SEPARATOR_OF_CHORD).shift();
+        return string.split(SEPARATOR_OF_TONALITY).shift();
     }
 
 

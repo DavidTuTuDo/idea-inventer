@@ -146,7 +146,6 @@ class AlertDialog extends React.Component {
                 dialog={this}
                 {...this.getStore().getExtraParamObject()} />
         </DialogContent>
-        return null;
     }
 
     hasCustomView() {
