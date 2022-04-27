@@ -1,4 +1,3 @@
-import ModularizedNavigatorUserInfoStore from "./ModularizedNavigatorUserInfoStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,9 +20,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorUserInfoStore from "./BaseNavigatorUserInfoStore";
+import BaseAccountFuncAreaOfNameStateAreaOfNameStore from "./BaseAccountFuncAreaOfNameStateAreaOfNameStore";
 
-class NavigatorUserInfoStore extends ModularizedNavigatorUserInfoStore {
+class ModularizedAccountFuncAreaOfNameStateAreaOfNameStore extends BaseAccountFuncAreaOfNameStateAreaOfNameStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +31,4 @@ class NavigatorUserInfoStore extends ModularizedNavigatorUserInfoStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorUserInfoStore;
+export default ModularizedAccountFuncAreaOfNameStateAreaOfNameStore;

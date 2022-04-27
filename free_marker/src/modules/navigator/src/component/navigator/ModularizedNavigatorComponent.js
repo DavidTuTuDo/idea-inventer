@@ -28,7 +28,6 @@ import Collapse from '@material-ui/core/Collapse';
 import * as MUIcon from '@material-ui/icons';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 import {isMobile} from 'react-device-detect';
 import BaseUserInfo from "../../base/BaseUserInfo";
 
@@ -53,35 +52,12 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         this.getStore().forceToStable();
     }
 
-    onAuthStateChangedReceive = (user) => {
-        const store = this.getStore();
-        BaseUserInfo.handleLoginState();
-        if (UserInfo.isLoginWithSucceed()) {
-            Util.appendInfo('登入成功, 所以寫入資料')
-            store.getUserInfo().submitUserInfo(this, user.uid, user);
-            /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
-            const credential = Cookie.getCredential();
-            Cookie.setUser(user);
-            store.setUserInfo(user);
-            store.setCredential(credential);
-        } else {
-            store.setCredential(undefined);
-            store.setUserInfo(undefined);
-            Cookie.removeCredential()
-            Cookie.removeUser();
-        }
-        Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${UserInfo.isLoginWithSucceed()} `, user);
-    }
-
     onNavigatorToolBarTitleTypographyClicked(param) {
-        Router.gotoMainPage(this);
+        Router.gotoMainPage(this.getComponentInstance());
     }
 
     onNavigatorToolBarLoginButtonClicked(param) {
-        BaseUserInfo.performLoginBehavior(async (authResult) => {
-            /** 只有在登入傳回直裡面有credential */
-            Cookie.setCredential(authResult.credential);
-        }).then();
+        BaseUserInfo.performLoginBehavior(this.getComponentInstance()).then();
     }
 
     onDrawerClosed() {

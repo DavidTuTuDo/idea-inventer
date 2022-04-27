@@ -1,4 +1,4 @@
-import BaseStore from "./BaseStore";
+import BaseAdminRemoteApi from "./BaseAdminRemoteApi";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -6,8 +6,9 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
+import CommonRemoteApi from "../base/CommonRemoteApi";
 
-class Store extends BaseStore {
+class AdminRemoteApi extends BaseAdminRemoteApi {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,4 +17,4 @@ class Store extends BaseStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default Store;
+export default new AdminRemoteApi();

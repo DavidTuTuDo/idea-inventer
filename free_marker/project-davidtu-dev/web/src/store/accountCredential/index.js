@@ -1,4 +1,4 @@
-import ModularizedNavigatorUserInfoStore from "./ModularizedNavigatorUserInfoStore";
+import ModularizedAccountCredentialStore from "./ModularizedAccountCredentialStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -10,6 +10,7 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
 import {
   makeAutoObservable,
   makeObservable,
@@ -20,9 +21,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseNavigatorUserInfoStore from "./BaseNavigatorUserInfoStore";
+import BaseAccountCredentialStore from "./BaseAccountCredentialStore";
 
-class NavigatorUserInfoStore extends ModularizedNavigatorUserInfoStore {
+class AccountCredentialStore extends ModularizedAccountCredentialStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -31,4 +32,4 @@ class NavigatorUserInfoStore extends ModularizedNavigatorUserInfoStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default NavigatorUserInfoStore;
+export default AccountCredentialStore;

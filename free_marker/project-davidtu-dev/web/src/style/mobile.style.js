@@ -83,6 +83,8 @@ class MobileStyle {
 
   AccountFuncAreaOfEditToEditModeButton = {};
 
+  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
   AccountFuncAreaOfEditLogoutButton = {};
 
   AccountFuncAreaOfEditDiv = {};
@@ -96,6 +98,26 @@ class MobileStyle {
   AccountFuncAreaOfIdStateAreaOfIdDiv = {};
 
   AccountFuncAreaOfIdDiv = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+  AccountFuncAreaOfEmailDiv = {};
+
+  AccountSpaceDiv = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+  AccountFuncAreaOfNameDiv = {};
+
+  AccountUrlOfHeadPhotoAvatar = {};
 
   AccountPaper = {};
 

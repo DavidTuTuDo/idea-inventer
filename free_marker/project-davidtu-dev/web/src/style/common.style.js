@@ -83,6 +83,8 @@ class CommonStyle {
 
   AccountFuncAreaOfEditToEditModeButton = {};
 
+  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
   AccountFuncAreaOfEditLogoutButton = {};
 
   AccountFuncAreaOfEditDiv = {};
@@ -96,6 +98,26 @@ class CommonStyle {
   AccountFuncAreaOfIdStateAreaOfIdDiv = {};
 
   AccountFuncAreaOfIdDiv = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+  AccountFuncAreaOfEmailDiv = {};
+
+  AccountSpaceDiv = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+  AccountFuncAreaOfNameDiv = {};
+
+  AccountUrlOfHeadPhotoAvatar = {};
 
   AccountPaper = {};
 

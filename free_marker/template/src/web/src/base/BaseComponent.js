@@ -21,7 +21,7 @@ import {
     List,
 } from "@material-ui/core";
 import MuiAlert from '@material-ui/core/Alert';
-import {Application} from '../index.js';
+import {Application} from '../';
 import Config from '../config';
 import {observer} from "mobx-react";
 import Countdown from "react-countdown";
@@ -114,6 +114,7 @@ class BaseComponent extends React.Component {
 
     componentDidMount() {
         Router.setCurrentComponent(this);
+        Application.setLatestComponent(this);
         this.viewInitial();
         if (this.isNotNavigatorNComponentView()) {
             window.addEventListener('scroll', this.onScrollToBottomListener, true);

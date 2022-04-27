@@ -1,4 +1,4 @@
-import BaseStore from "./BaseStore";
+import BaseConfig from "./BaseConfig";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -7,7 +7,7 @@ import {
 import _ from "lodash";
 import libpath from "path";
 
-class Store extends BaseStore {
+class Config extends BaseConfig {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,4 +16,4 @@ class Store extends BaseStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default Store;
+export default new Config();

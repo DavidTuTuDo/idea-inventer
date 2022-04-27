@@ -7,8 +7,6 @@ import {
 import _ from "lodash";
 import libpath from "path";
 import NavigatorKeyword from "./navigatorKeyword";
-import NavigatorUserInfo from "./navigatorUserInfo";
-import NavigatorCredential from "./navigatorCredential";
 import NavigatorDrawerShortcut from "./navigatorDrawerShortcut";
 import NavigatorDrawer from "./navigatorDrawer";
 import NavigatorToolBarSuggestComplete from "./navigatorToolBarSuggestComplete";

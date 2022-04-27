@@ -1349,6 +1349,10 @@ class CodegenNode {
         return this.isAttributeView('img');
     }
 
+    isAvatarView() {
+        return this.isAttributeView('Avatar');
+    }
+
     isTextFieldView() {
         return this.isAttributeView('TextField');
     }
@@ -2002,7 +2006,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfSetter() {
-        return Util.camel('set', this.getFieldName());
+        return `set${_.upperFirst(this.getFieldName())}`;
     }
 
     getFunctionNameOfModifiedSetter() {
@@ -4434,6 +4438,9 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`{createBrowserHistory}`, `history`);
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
+        appGenerator.appendImport(`Config`, `./config`);
+        appGenerator.appendImport(`BaseComponent`, `./base/BaseComponent`);
+
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendClass(`BaseApp`);
         appGenerator.appendFunction(`mount`, [], [], [],
@@ -4445,6 +4452,15 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendFunction(`pushPage`, [`page`], [], [], `this.extraPages.push(page)`)
         appGenerator.appendFunction(`getExtraPages`, [], [], [],
             `/** --- push <Router /> in to pages */`, `return this.extraPages`);
+        appGenerator.appendField(`latestComponent`);
+        appGenerator.appendFunction(Util.camel('get', 'latestComponent'), [], [], [],
+            `return this.latestComponent;`
+        )
+
+        appGenerator.appendFunction(Util.camel('set', 'latestComponent'), ['component'], [], [],
+            `if(component instanceof BaseComponent && component.isNotNavigatorNComponentView())`,
+                `this.latestComponent = component.getComponentInstance()`
+        )
         for (const component of this.getGenComponent()) {
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
@@ -4527,7 +4543,8 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
 
         await appGenerator.needIndexFile('App', [], false, [
-                `const self = new App().mount()`,
+                `const self = new App()`,
+                `self.mount()`,
                 `module.hot.accept()`,
                 `Util.setEnvironment(Config.env)`,
                 `export {self as Application};`
@@ -5682,7 +5699,7 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
-            } else if (node.isImageView()) {
+            } else if (node.isImageView() && node.isAvatarView()) {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
@@ -5933,7 +5950,7 @@ class ProjectFileHandler extends PathBase {
         function toEditorPageStruct(node) {
 
             if (node.isColumnAttribute() && !node.isCollection()) {
-                if (node.isImageView()) {
+                if (node.isImageView() || node.isImageView()) {
                     node.needImageDialog = false;
                     node.appendViewProps({
                         onClick: `###(param) => self.onImageEditorClicked({
