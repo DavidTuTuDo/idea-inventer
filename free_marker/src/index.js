@@ -5699,7 +5699,7 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
-            } else if (node.isImageView() && node.isAvatarView()) {
+            } else if (node.isImageView() || node.isAvatarView()) {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */

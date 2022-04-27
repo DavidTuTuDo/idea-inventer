@@ -87,9 +87,9 @@ class MobileStyle {
 
   AccountFuncAreaOfEditLogoutButton = {};
 
-  AccountFuncAreaOfEditDiv = {};
+  AccountFuncAreaOfEditCopyUserIdButton = {};
 
-  AccountFuncAreaOfIdCopyUserIdButton = {};
+  AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
 

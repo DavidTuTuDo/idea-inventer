@@ -87,9 +87,9 @@ class CommonStyle {
 
   AccountFuncAreaOfEditLogoutButton = {};
 
-  AccountFuncAreaOfEditDiv = {};
+  AccountFuncAreaOfEditCopyUserIdButton = {};
 
-  AccountFuncAreaOfIdCopyUserIdButton = {};
+  AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
 

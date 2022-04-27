@@ -29,6 +29,16 @@ class ModularizedAccountStore extends BaseAccountStore {
   constructor(props) {
     super(props);
   }
+
+  async onInitialFetchSucceed(collection) {
+    super.onInitialFetchSucceed(collection);
+    const userInfo = this.getUserInfo();
+    this.setUrlOfHeadPhoto(userInfo.getPhotoURL());
+    this.getFuncAreaOfEmail().getStateAreaOfEmail().setValueOfEmail(userInfo.getEmail())
+    this.getFuncAreaOfName().getStateAreaOfName().setValueOfName(userInfo.getDisplayName())
+    this.getFuncAreaOfId().getStateAreaOfId().setValueOfId(userInfo.getUid());
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default ModularizedAccountStore;

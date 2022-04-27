@@ -29,8 +29,8 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         })
     }
 
-    onAccountFuncAreaOfIdCopyUserIdButtonClicked(param) {
-        super.onAccountFuncAreaOfIdCopyUserIdButtonClicked(param);
+    onAccountFuncAreaOfEditCopyUserIdButtonClicked(param) {
+        this.copyTextToClipboard(UserInfo.getUid());
     }
 
     getInjectStyleOfAccountFuncAreaOfEditToEditModeButton(funcAreaOfEdit) {

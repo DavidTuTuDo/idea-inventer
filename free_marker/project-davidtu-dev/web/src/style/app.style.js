@@ -87,9 +87,9 @@ class AppStyle {
 
   AccountFuncAreaOfEditLogoutButton = {};
 
-  AccountFuncAreaOfEditDiv = {};
+  AccountFuncAreaOfEditCopyUserIdButton = {};
 
-  AccountFuncAreaOfIdCopyUserIdButton = {};
+  AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
 

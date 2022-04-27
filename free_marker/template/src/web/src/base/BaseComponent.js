@@ -807,6 +807,12 @@ class BaseComponent extends React.Component {
         this.showInfoSnackMessage(`已複製連結`);
     }
 
+    copyTextToClipboard(text) {
+        navigator.clipboard.writeText(text);
+        this.showInfoSnackMessage(`已新增至剪貼簿`);
+    }
+
+
     renderGlobalDialogView = () => {
         const self = this;
         const dialog = self.getStore().getGlobalDialogContent();

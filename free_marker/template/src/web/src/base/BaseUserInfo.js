@@ -5,7 +5,6 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import application from '../';
 import firebaser from './CommonFirebaseHelper'
 import Cookie from '../cookie';
 import Configer from '../config';
@@ -61,8 +60,8 @@ class UserInfo {
     async specificBehaviorOfLoginStateChange(user) {
         if (this.isValidUser(user)) {
             const credential = Cookie.getCredential();
-            await this.user.submitUserInfo(undefined, undefined, user);
-            await this.crendential.submitCredential(undefined, undefined, credential);
+            await this.user.submitUserInfo(Application.getLatestComponent(), undefined, user);
+            await this.crendential.submitCredential(Application.getLatestComponent(), undefined, credential);
             /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
             Cookie.setUser(user);
             Util.appendInfo('登入成功, 所以寫入資料')

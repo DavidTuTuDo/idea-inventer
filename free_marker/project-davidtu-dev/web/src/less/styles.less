@@ -152,9 +152,9 @@
 /** following for account  component used  */
 
 .AccountPaper:extend(.CenterInParentColumn) {
-  width: 70vw;
-  min-height: 40vh;
-  gap: 15px;
+  width: 85vw;
+  min-height: 50vh;
+  gap: 3px;
   @media @mobile {
     /** empty style */
   }
@@ -162,10 +162,24 @@
     /** empty style */
   }
   @media @desktop {
-    max-width: 500px;
+    max-width: 550px;
   }
 }
 .AccountUrlOfHeadPhotoAvatar {
+  width: 60px;
+  height: 60px;
+  @media @mobile {
+    margin-bottom: 20px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    margin-bottom: 40px;
+  }
+}
+.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -176,18 +190,9 @@
     /** empty style */
   }
 }
-.AccountFuncAreaOfNameDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AccountFuncAreaOfNameStateAreaOfNameDiv {
+.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
+  width: 80%;
+  justify-content: space-between;
   @media @mobile {
     /** empty style */
   }
@@ -221,6 +226,9 @@
   }
 }
 .AccountSpaceDiv {
+  height: 1px;
+  width: 80%;
+  background-color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
   }
@@ -231,7 +239,7 @@
     /** empty style */
   }
 }
-.AccountFuncAreaOfEmailDiv {
+.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -242,7 +250,7 @@
     /** empty style */
   }
 }
-.AccountFuncAreaOfEmailStateAreaOfEmailDiv {
+.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -255,7 +263,7 @@
 }
 .AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
   @media @mobile {
-    /** empty style */
+    font-size: 0.9rem;
   }
   @media @tablet {
     /** empty style */
@@ -266,7 +274,7 @@
 }
 .AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
   @media @mobile {
-    /** empty style */
+    font-size: 0.8rem;
   }
   @media @tablet {
     /** empty style */
@@ -275,7 +283,7 @@
     /** empty style */
   }
 }
-.AccountFuncAreaOfIdDiv:extend(.CenterInParentRow) {
+.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
   gap: 10px;
   @media @mobile {
     /** empty style */
@@ -287,7 +295,7 @@
     /** empty style */
   }
 }
-.AccountFuncAreaOfIdStateAreaOfIdDiv {
+.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -300,7 +308,7 @@
 }
 .AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
   @media @mobile {
-    /** empty style */
+    font-size: 0.9rem;
   }
   @media @tablet {
     /** empty style */
@@ -311,18 +319,7 @@
 }
 .AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
   @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AccountFuncAreaOfIdCopyUserIdButton {
-  @media @mobile {
-    /** empty style */
+    font-size: 0.8rem;
   }
   @media @tablet {
     /** empty style */
@@ -333,6 +330,18 @@
 }
 .AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
   gap: 10px;
+  margin-top: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditCopyUserIdButton {
   @media @mobile {
     /** empty style */
   }
