@@ -1,3 +1,4 @@
+import ModularizedAccountCredentialStore from "./ModularizedAccountCredentialStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,27 +21,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseAccountStore from "./BaseAccountStore";
+import BaseAccountCredentialStore from "./BaseAccountCredentialStore";
 
-class ModularizedAccountStore extends BaseAccountStore {
+class AccountCredentialStore extends ModularizedAccountCredentialStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
-
   }
-
-  async onInitialFetchSucceed(collection) {
-    const user = Cookie.getUser();
-    if(UserInfoRef.isValidUser(user)) {
-      this.setUrlOfHeadPhoto(user.photoURL);
-      this.getFuncAreaOfEmail().getStateAreaOfEmail().setValueOfEmail(user.email)
-      this.getFuncAreaOfName().getStateAreaOfName().setValueOfName(user.displayName)
-      this.getFuncAreaOfId().getStateAreaOfId().setValueOfId(user.uid);
-    }
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedAccountStore;
+export default AccountCredentialStore;

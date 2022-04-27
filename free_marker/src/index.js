@@ -26,8 +26,8 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
 
@@ -3496,10 +3496,14 @@ class ComponentBuilder extends BaseBuilder {
         if (!componentNode.isDisableInitFetch()) {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
+                `let result = {}`,
                 `if(!self.getStore().isInitialFetchSucceed() && this.enableInitFetch) {`,
                 `self.getStore().fetch(this).then((collection) => {
-                    return self.getStore().onInitialFetchSucceed(collection)
-                }).then((result) => { Util.appendInfo('${componentNode.getName()} page initial fetch completed')})}`
+                    result = collection;                 
+                }).finally(() => {
+                Util.appendInfo('${componentNode.getName()} page initial fetch completed')
+                self.getStore().onInitialFetchSucceed(result)})`,
+                `} else { self.getStore().onInitialFetchSucceed() }`
             )
             baseGenerator.appendField('enableInitFetch', true)
             baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
@@ -4459,7 +4463,7 @@ class AppBuilder extends ComponentBuilder {
 
         appGenerator.appendFunction(Util.camel('set', 'latestComponent'), ['component'], [], [],
             `if(component instanceof BaseComponent && component.isNotNavigatorNComponentView())`,
-                `this.latestComponent = component.getComponentInstance()`
+            `this.latestComponent = component.getComponentInstance()`
         )
         for (const component of this.getGenComponent()) {
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
@@ -5171,7 +5175,11 @@ class ProjectFileHandler extends PathBase {
                         continue;
                     }
                 }
-                Util.rewriteFile2File(from, dest);
+                Util.copySingleFile(from, dest, '', true);
+                /** 這真的太浪費時間了
+                 * Util.rewriteFile2File(from, dest);
+                 * */
+
             }
         }
     }

@@ -89,9 +89,13 @@ class CommonStyle {
 
   NavigatorDrawerDrawer = {};
 
-  NavigatorToolBarLoginButton = {};
+  NavigatorToolBarAccountHeadAccountCircle = {};
 
-  NavigatorToolBarToEditModeButton = {};
+  NavigatorToolBarAccountReactFragmentWrap = {};
+
+  NavigatorToolBarAccountIconButton = {};
+
+  NavigatorToolBarLoginButton = {};
 
   NavigatorToolBarCompleteInputFormWrap = {};
 
@@ -110,6 +114,48 @@ class CommonStyle {
   NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
+
+  /** => following for account  component  */
+
+  AccountFuncAreaOfEditToEditModeButton = {};
+
+  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditLogoutButton = {};
+
+  AccountFuncAreaOfEditCopyUserIdButton = {};
+
+  AccountFuncAreaOfEditDiv = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+
+  AccountFuncAreaOfIdDiv = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+  AccountFuncAreaOfEmailDiv = {};
+
+  AccountSpaceDiv = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+  AccountFuncAreaOfNameDiv = {};
+
+  AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountPaper = {};
 
   /** => following for noteEditor  component  */
 

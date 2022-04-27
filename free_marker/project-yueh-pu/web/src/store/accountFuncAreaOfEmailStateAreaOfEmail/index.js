@@ -1,3 +1,4 @@
+import ModularizedAccountFuncAreaOfEmailStateAreaOfEmailStore from "./ModularizedAccountFuncAreaOfEmailStateAreaOfEmailStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,27 +21,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseAccountStore from "./BaseAccountStore";
+import BaseAccountFuncAreaOfEmailStateAreaOfEmailStore from "./BaseAccountFuncAreaOfEmailStateAreaOfEmailStore";
 
-class ModularizedAccountStore extends BaseAccountStore {
+class AccountFuncAreaOfEmailStateAreaOfEmailStore extends ModularizedAccountFuncAreaOfEmailStateAreaOfEmailStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
-
   }
-
-  async onInitialFetchSucceed(collection) {
-    const user = Cookie.getUser();
-    if(UserInfoRef.isValidUser(user)) {
-      this.setUrlOfHeadPhoto(user.photoURL);
-      this.getFuncAreaOfEmail().getStateAreaOfEmail().setValueOfEmail(user.email)
-      this.getFuncAreaOfName().getStateAreaOfName().setValueOfName(user.displayName)
-      this.getFuncAreaOfId().getStateAreaOfId().setValueOfId(user.uid);
-    }
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedAccountStore;
+export default AccountFuncAreaOfEmailStateAreaOfEmailStore;

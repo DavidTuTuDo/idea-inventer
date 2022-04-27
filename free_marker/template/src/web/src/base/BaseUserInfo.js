@@ -23,6 +23,7 @@ import EventBus from "./CommonEventBus";
 import AccountUserInfo from "../store/accountUserInfo";
 import AccountCredential from "../store/accountCredential";
 import {Application} from "../";
+import CommonPoolHelper from "./CommonPoolHelper";
 
 class UserInfo {
     /** -------------------- fields -------------------- **/
@@ -37,9 +38,13 @@ class UserInfo {
     @observable
     isPurchaseUser = false;
 
+    @observable
+    isAuthProcessingState = false;
+
     constructor(props) {
         makeObservable(this);
         this.subscribeAuthStateChanged();
+        this.signInWithCredential().then();
         this.user = new AccountUserInfo();
         this.crendential = new AccountCredential()
     }
@@ -53,7 +58,7 @@ class UserInfo {
         return user && !_.isEmpty(user.uid);
     }
 
-    onAuthStateChangedReceive =(user) => {
+    onAuthStateChangedReceive = (user) => {
         this.specificBehaviorOfLoginStateChange(user).then()
     }
 
@@ -122,17 +127,24 @@ class UserInfo {
         return 'empty';
     }
 
-    async performLoginBehavior(view) {
-        await this.executeAsyncTask(async () => {
-            Util.appendInfo('454841, login by google account');
+    performLoginBehavior = async (view) => {
+        if (this.isAuthProcessing()) {
+            view.showWarningSnackMessage(`認證流程處理中，請稍後再試`);
+            return;
+        }
 
-            await firebaser.signInWithGoogle(async (authResult) => {
-                /** 只有在登入傳回直裡面有credential */
-                const credential = authResult.credential;
-                Util.appendInfo('4548412, retrieve credential:', credential);
-                Cookie.setCredential(credential);
-            }, view)
-        });
+        const func = async () => {
+            await this.executeAsyncTask(async () => {
+                Util.appendInfo('454841, login by google account');
+                await firebaser.signInWithGoogle(async (authResult) => {
+                    /** 只有在登入傳回直裡面有credential */
+                    const credential = authResult.credential;
+                    Util.appendInfo('4548412, retrieve credential:', credential);
+                    Cookie.setCredential(credential);
+                }, view)
+            })
+        };
+        await this.authProcessBehavior(func);
     }
 
     async executeAsyncTask(task, view) {
@@ -142,13 +154,52 @@ class UserInfo {
             await task();
     }
 
-    async logout(view) {
-        await this.executeAsyncTask(async () => {
-            Util.appendInfo('45d4741, logout executed');
-            await firebaser.logout();
-        }, view);
-
+    async authProcessBehavior(functionOfAsyncTask) {
+        try {
+            this.setAuthProcessing(false);
+            await functionOfAsyncTask();
+        } finally {
+            this.setAuthProcessing(true);
+        }
     }
+
+    async logout(view) {
+        const func = async () => {
+            await this.executeAsyncTask(async () => {
+                Util.appendInfo('45d4741, logout executed');
+                await firebaser.logout();
+                Application.getAccountStore().clean()
+            }, view);
+        }
+        await this.authProcessBehavior(func);
+    }
+
+    @action
+    setAuthProcessing(ing) {
+        this.isAuthProcessingState = ing;
+    }
+
+    isAuthProcessing() {
+        return this.isAuthProcessingState;
+    }
+
+    signInWithCredential = async () => {
+        const self = this;
+        if (Cookie.hasCredential() && !this.isLoginWithSucceed()) {
+            const func = async () => {
+                try {
+                    const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
+                    Cookie.setCredential(result.credential);
+                } catch (error) {
+                    Util.appendError(error);
+                    Cookie.removeCredential();
+                }
+            }
+            await this.authProcessBehavior(func);
+        }
+        CommonPoolHelper.enableParallelMode();
+    }
+
 }
 
 export default new UserInfo();

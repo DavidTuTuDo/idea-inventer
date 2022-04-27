@@ -50,21 +50,6 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         this.getToolBar().getComplete().setSelectedComplete(null);
     }
 
-    async signInWithCredential() {
-        if (Cookie.hasCredential() && !UserInfo.isLoginWithSucceed()) {
-            try {
-                const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
-                if (result !== undefined) {
-                    this.setCredential(result.credential);
-                }
-            } catch (error) {
-                Util.appendError(error);
-                Cookie.removeCredential();
-            }
-        }
-        CommonPoolHelper.enableParallelMode();
-    }
-
     @action
     updateEditButtonStatus() {
         const self = this;
@@ -72,31 +57,11 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         self.getToolBar().setToEditMode(editButton);
     }
 
-    /**
-     * @deprecated 根本沒用到
-     */
-    async reAuthenticateWithCredential() {
-        Util.appendInfo(`reAuthenticateWithCredential start`);
-        if (Cookie.hasCredential()) {
-            await Util.syncDelay(10);
-            try {
-                const result = await firebaser.reAuthWithCredential(Cookie.getCredential());
-                if (result !== undefined) {
-                }
-                Util.appendInfo(`reAuthenticateWithCredential succeed`);
-            } catch (error) {
-                Util.appendError(error);
-                Cookie.removeCredential();
-            }
-        }
-    }
-
     /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);
         makeObservable(this);
-        this.signInWithCredential().then();
         this.setState('stable');
     }
 

@@ -528,7 +528,7 @@
     /** empty style */
   }
 }
-.SheetAdjustCenterToggleWrapperDiv {
+.SheetAdjustCenterToggleWrapperDiv:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -563,7 +563,6 @@
 }
 .SheetAdjustCenterToggleWrapperHideChordLabelTypography {
   color: #1976d2;
-  font-weight: bold;
   @media @mobile {
     /** empty style */
   }
@@ -869,6 +868,242 @@
     /** empty style */
   }
 }
+/** following for account  component used  */
+
+.AccountPaper:extend(.CenterInParentColumn) {
+  width: 90vw;
+  min-height: 50vh;
+  gap: 3px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    max-width: 550px;
+  }
+}
+.AccountUrlOfHeadPhotoAvatar {
+  width: 60px;
+  height: 60px;
+  @media @mobile {
+    margin-bottom: 20px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    margin-bottom: 40px;
+  }
+}
+.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
+  width: 80%;
+  justify-content: space-between;
+  @media @mobile {
+    width: 90%;
+  }
+  @media @tablet {
+    width: 90%;
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountSpaceDiv {
+  height: 1px;
+  width: 80%;
+  background-color: rgba(0, 0, 0, 0.3);
+  @media @mobile {
+    width: 90%;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    font-size: 0.8rem;
+  }
+  @media @desktop {
+    font-size: 0.9rem;
+  }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
+  @media @mobile {
+    font-size: 0.7rem;
+  }
+  @media @tablet {
+    font-size: 0.7rem;
+  }
+  @media @desktop {
+    font-size: 0.8rem;
+  }
+}
+.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    font-size: 0.8rem;
+  }
+  @media @desktop {
+    font-size: 0.9rem;
+  }
+}
+.AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
+  @media @mobile {
+    font-size: 0.7rem;
+  }
+  @media @tablet {
+    font-size: 0.7rem;
+  }
+  @media @desktop {
+    font-size: 0.8rem;
+  }
+}
+.AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  margin-top: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditCopyUserIdButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditLogoutButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditLogoutReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditToEditModeButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for navigator  component used  */
 
 .NavigatorDiv {
@@ -983,8 +1218,21 @@
     /** empty style */
   }
 }
-.NavigatorToolBarToEditModeButton {
-  margin-right: 10px;
+.NavigatorToolBarLoginButton {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAccountIconButton {
+  background-color: rgba(255, 255, 255, 0.9);
+  height: 32px;
+  width: 32px;
   @media @mobile {
     /** empty style */
   }
@@ -995,9 +1243,22 @@
     /** empty style */
   }
 }
-.NavigatorToolBarLoginButton {
+.NavigatorToolBarAccountReactFragmentWrap {
   @media @mobile {
-    font-size: 0.8rem;
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAccountHeadAccountCircle {
+  height: 40px;
+  width: 40px;
+  @media @mobile {
+    /** empty style */
   }
   @media @tablet {
     /** empty style */
@@ -1418,6 +1679,20 @@
   }
 }
 .MainEditorInterestingOfFunctionSubTitleTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** ======== following for homeless ========= */
+
+.NavigatorToolBarToEditModeButton {
+  margin-right: 10px;
   @media @mobile {
     /** empty style */
   }

@@ -28,16 +28,8 @@ import Collapse from '@material-ui/core/Collapse';
 import * as MUIcon from '@material-ui/icons';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import {isMobile} from 'react-device-detect';
 import BaseUserInfo from "../../base/BaseUserInfo";
 
-const useStyles = theme => ({
-    paper: {
-        marginTop: "50px",
-        width: isMobile ? '55%' : '40%',
-        backgroundColor: '#000000'
-    }
-});
 
 class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     /** -------------------- fields -------------------- **/

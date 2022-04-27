@@ -355,8 +355,12 @@ class NodeUtiller extends Utiller {
 
     /** 將檔案清除乾淨, 但不刪掉檔案, 這樣hot reload的監聽才不會遺失*/
     cleanFileContent(path) {
-        fs.truncateSync(path, 0);
-        this.appendInfo(`${path} 內容被清除！`);
+        this.syncDeleteFile(path)
+        /** 太浪費時間了
+         * fs.truncateSync(path, 0);
+         this.appendInfo(`${path} 內容被清除！`);
+         * */
+
     }
 
     async syncWithExistPackage(path = '../') {
@@ -462,13 +466,13 @@ class NodeUtiller extends Utiller {
             throw new ERROR(9999, `不是個合法的file路徑 ==> '' ${path} ''`);
         }
 
-        this.persistByPath(path);
-
-        if (forceDelete)
+        if (forceDelete) {
             this.cleanFileContent(path);
-
-        if (this.isEmptyFile(path))
             newlineOnceFileNotEmpty = false;
+            this.persistByPath(path);
+        } else if (this.isEmptyFile(path)){
+            newlineOnceFileNotEmpty = false;
+        }
 
         fs.appendFileSync(path, `${newlineOnceFileNotEmpty ? '\n' : ''}${data}`, options);
     }

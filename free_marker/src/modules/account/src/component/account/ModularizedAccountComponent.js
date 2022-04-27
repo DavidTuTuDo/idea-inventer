@@ -20,6 +20,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
 
     constructor(props) {
         super(props);
+        this.setEnableInitFetch(false);
     }
 
     onAccountFuncAreaOfEditLogoutButtonClicked(param) {
