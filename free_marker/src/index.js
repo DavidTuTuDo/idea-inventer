@@ -6340,14 +6340,14 @@ class BuildApplication {
 
     async deployWebProd() {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
-        // await web.cleanGenDirectory();
+        await web.cleanGenDirectory();
         await web.incrementProjectVersion();
         console.log(web.nodeOfAncestor.version);
-        // await web.execute();
-        // await web.buildProdWebDistToProjectThanDeploy();
-        // Util.appendInfo(
-        //     `web deploy succeed`
-        // );
+        await web.execute();
+        await web.buildProdWebDistToProjectThanDeploy();
+        Util.appendInfo(
+            `web deploy succeed`
+        );
     }
 
     async buildCloudFunctions(deploy = true) {
