@@ -25,8 +25,8 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
-// const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
@@ -190,10 +190,11 @@ class CodegenNode {
     injectView = false;
     /** 產生出 injectView function 可以override */
 
-    listEmptyTip = {enable: true, customView: undefined, stringOfTip: ''};
+    listEmptyTip = {enable: true, customView: undefined, stringOfTip: '', isDefaultValue: true};
     /** 當陣列需要有無資料提示時
      *
      * custView 和 stringOfTip還沒實作
+     * isDefaultValue 代表在source.js裡面沒有定義過
      * */
 
     /** 讓一些type 是 number, 有一個懶人的increment submit method*/
@@ -1933,7 +1934,12 @@ class CodegenNode {
 
     getDefaultValueByType(isAdmin) {
         if (this.defaultValue) {
-            return JSON.stringify(this.defaultValue);
+            const stringOfDefault = JSON.stringify(this.defaultValue);
+            if (this.isArray()) {
+                return `${stringOfDefault}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
+            }
+            return stringOfDefault;
+
         }
 
         if (this.type === 'string') {
@@ -1948,12 +1954,12 @@ class CodegenNode {
             return `this.getObjectOfCurrentTimeStamp()`;
         }
 
-        if (this.type === 'array') {
+        if (this.isArray()) {
             return `[]`;
         }
 
-        if (this.type === 'object') {
-            return isAdmin ? `{}` : `new ${_.upperFirst(this.name)}()`;
+        if (this.isObject()) {
+            return isAdmin ? `{}` : `new ${this.getClassName()}({parentNode: this})`;
         }
 
         if (this.type === 'number') {
@@ -5568,7 +5574,7 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
                     paramStmt = `latestValue`;
                 } else if (node.isSliderView()) {
-                    paramStmt = `getLatestValueByEvent(event)`;
+                    paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
                     stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else {
@@ -5647,8 +5653,10 @@ class ProjectFileHandler extends PathBase {
 
                     /** TextField type={`search`} */
                     /** node.appendViewProps({type: 'search'}) */
-
                 }
+
+                if (!node.isEditPage())
+                    node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             }
 
             /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
@@ -5705,8 +5713,6 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTextFieldView() || node.isRadioView() || node.isSliderView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
-                if (!node.isEditPage())
-                    node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
             } else if (node.isImageView() || node.isAvatarView()) {
@@ -5871,6 +5877,11 @@ class ProjectFileHandler extends PathBase {
                 }
                 node.appendViewProps({onClick: `###(event) => {${onClickStmts.join('\n')}}`})
             }
+
+            if (!node.isPathArray() && node.listEmptyTip.isDefaultValue) {
+                node.disableListEmptyTip()
+            }
+
             this.enrichNodesOfBehavior(...node.getChildren());
         }
     }

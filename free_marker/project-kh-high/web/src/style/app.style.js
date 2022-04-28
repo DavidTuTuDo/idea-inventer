@@ -9,8 +9,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -177,9 +175,13 @@ class AppStyle {
 
   NavigatorDrawerDrawer = {};
 
-  NavigatorToolBarLoginButton = {};
+  NavigatorToolBarAccountHeadAccountCircle = {};
 
-  NavigatorToolBarToEditModeButton = {};
+  NavigatorToolBarAccountReactFragmentWrap = {};
+
+  NavigatorToolBarAccountIconButton = {};
+
+  NavigatorToolBarLoginButton = {};
 
   NavigatorToolBarCompleteInputFormWrap = {};
 
@@ -198,6 +200,48 @@ class AppStyle {
   NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
+
+  /** => following for account  component  */
+
+  AccountFuncAreaOfEditToEditModeButton = {};
+
+  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditLogoutButton = {};
+
+  AccountFuncAreaOfEditCopyUserIdButton = {};
+
+  AccountFuncAreaOfEditDiv = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+
+  AccountFuncAreaOfIdDiv = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+  AccountFuncAreaOfEmailDiv = {};
+
+  AccountSpaceDiv = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+  AccountFuncAreaOfNameDiv = {};
+
+  AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountPaper = {};
 
   /** => following for myFatefulQuestions  component  */
 

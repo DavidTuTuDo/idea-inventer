@@ -28,8 +28,8 @@ class ExamFilterStore extends BaseExamFilterStore {
 
     @action
     setSubject(subject) {
-        this.getRandomTest().setBtnOfStartExam(`${subject}${this.getRandomTest().getBtnOfStartExam()}`)
-        this.getHistoryTest().setBtnWithHistory(`${subject}${this.getHistoryTest().getBtnWithHistory()}`)
+        this.getRandomTest().setBtnOfStartExam(`${subject}隨機測驗`)
+        this.getHistoryTest().setBtnWithHistory(`${subject}考古題`)
     }
 
     /** -------------------- async api -------------------- **/

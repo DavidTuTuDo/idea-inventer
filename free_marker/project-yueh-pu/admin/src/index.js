@@ -166,7 +166,7 @@ import {configerer} from "configerer";
             /** decode */
             const origin = Util.getDecryptString(string);
 
-            const after = Util.replaceAllWithSets(origin,
+            let latest = Util.replaceAllWithSets(origin,
                 {from: '▲', to: '🌕'},
                 {from: '★', to: '🌓'},
                 {from: '△', to: '🌑'},
@@ -182,11 +182,16 @@ import {configerer} from "configerer";
                 {from: '\\[間奏4\\]', to: '(橋段IV)'},
                 {from: '\\(End\\)', to: '(終止)'},
             )
-            // console.log(origin)
-            // console.log('\n\n\n\n\n\n\n\n')
-            // console.log(after)
 
-            return Util.getEncryptString(after);
+            /**   本來以為加個空白就能搞定對齊問題, 沒那麼簡單
+             latest = Util.getStringHandledByEachLine(latest, (each, index, all) => {
+                const isMatch = each.match(new RegExp('^[🌓🌑🌙🌕].+', 'g'));
+                if (!isMatch) {
+                    all[index] = ` ${each}`;
+                }
+            })
+             */
+            return Util.getEncryptString(latest);
             /** encode */
         }
 
@@ -338,6 +343,18 @@ import {configerer} from "configerer";
         await api.submitGuitarpus(...submits);
     }
 
+    async function updateSpecificGuitarPu(id = 'Wipyxry0V0CKLkPxjaS1') {
+        const records = await database.fetchRecords('TONE', new Builder().equal('idOfRemote', id).stmt())
+        const record = _.head(records);
+        const guitar = getSubmitGuitarPuItem(record)
+        await api.updateGuitarpuItem(guitar.id,
+            {
+                currentContext: guitar.currentContext,
+                originalContext: guitar.originalContext
+            }
+        )
+    }
+
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
 
@@ -351,8 +368,11 @@ import {configerer} from "configerer";
     // await syncRemoteIdWithToneAndSinger()
     // await submitShortcut();
 
-    await updateTonesWithSameRemoteId();
-})();
+    // await updateTonesWithSameRemoteId();
 
+
+
+    // await updateSpecificGuitarPu();
+})();
 
 
