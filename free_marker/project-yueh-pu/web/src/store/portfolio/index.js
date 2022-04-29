@@ -42,17 +42,16 @@ class PortfolioStore extends BasePortfolioStore {
                 const rhythms = _.remove(suggests, (each) => _.isEqual(each.type, 11))
                 /** 先抓出type = 11, 歌曲的關鍵字*/
                 this.pushNextRhythmIDs(...rhythms.map((each) => each.uid));
-
                 if (_.size(suggests) > 0) {
+                    console.log(_.size(suggests));
                     /** 表示只剩下歌手的關鍵字 */
                     const idsOfSinger = Util.getArrayOfSize(suggests, 10).map((each) => each.uid)
                     /** 因為firestore只接受10個條件*/
                     const api = new Rhythm();
                     const nexts = await api.fetchRhythmsOfLimitation(this.getComponent(),
-                        {where: (stmt) => stmt.where('idOfSinger', 'in', idsOfSinger)})
+                        'in','idOfSinger', ...idsOfSinger);
                     this.pushNextRhythmIDs(...nexts.map((each) => each.id));
                 }
-
                 break;
             /** 利用id去搜尋歌手作品清單*/
             case 'list':

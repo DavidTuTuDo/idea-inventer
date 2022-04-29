@@ -1,3 +1,4 @@
+import BaseSheetGuitarpuFloatAreaStore from "./BaseSheetGuitarpuFloatAreaStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -20,28 +21,15 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseAccountStore from "./BaseAccountStore";
+import BaseStore from "../../base/BaseStore";
 
-class ModularizedAccountStore extends BaseAccountStore {
+class SheetGuitarpuFloatAreaStore extends BaseSheetGuitarpuFloatAreaStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
-
   }
-
-  async onInitialFetchSucceed(collection) {
-    await super.onInitialFetchSucceed(collection);
-    const user = Cookie.getUser();
-    if(UserInfoRef.isValidUser(user)) {
-      this.setUrlOfHeadPhoto(user.photoURL);
-      this.getFuncAreaOfEmail().getStateAreaOfEmail().setValueOfEmail(user.email)
-      this.getFuncAreaOfName().getStateAreaOfName().setValueOfName(user.displayName)
-      this.getFuncAreaOfId().getStateAreaOfId().setValueOfId(user.uid);
-    }
-  }
-
   /** -------------------- async api -------------------- **/
 }
-export default ModularizedAccountStore;
+export default SheetGuitarpuFloatAreaStore;

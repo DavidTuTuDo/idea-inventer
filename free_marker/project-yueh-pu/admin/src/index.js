@@ -89,7 +89,7 @@ import {configerer} from "configerer";
     async function deploySingers(popularLevel) {
         const singers = await database.fetchRecords('SINGER', new Builder().gt('songCounts', 0).and().gte('popularLevel', popularLevel).stmt());
         console.log('所有singer => ' + _.size(singers))
-        const removeItems = _.remove(singers, (singer) => Util.isUndefinedNullEmpty(singer.idOfRemote));
+        const removeItems = _.remove(singers, (singer) => !Util.isUndefinedNullEmpty(singer.idOfRemote));
         console.log('所有singer 扣掉 已經有idOfRemote => ' + _.size(singers))
         await api.submitSingers(...singers.map((singer) => {
             return {
@@ -145,7 +145,9 @@ import {configerer} from "configerer";
 
     async function deployGuitarPuByPopularLevel(n) {
         const tones = await database.fetchRecords('TONE', new Builder().gte('popularLevel', n).stmt())
-        _.remove(tones, (tone) => Util.isUndefinedNullEmpty(tone.idOfRemote))
+        console.log('所有tones => ' + _.size(tones))
+        _.remove(tones, (tone) => !Util.isUndefinedNullEmpty(tone.idOfRemote))
+        console.log('所有tones 扣掉 已經有idOfRemote => ' + _.size(tones))
         await deployGuitarPu(...tones);
     }
 
@@ -380,11 +382,10 @@ import {configerer} from "configerer";
     // await deployAllSingerTone(500);
     // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
-    await deployKeywords();
+    // await deployKeywords();
     // await syncRemoteIdWithToneAndSingerAndRhythm()
     // await submitShortcut();
     // await updateTonesWithSameRemoteId();
-
     // console.log(await getObjectOfSingerUrlAsKey());
     // await updateSpecificGuitarPu();
 })();

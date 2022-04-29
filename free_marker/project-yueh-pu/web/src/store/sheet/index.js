@@ -134,6 +134,7 @@ class SheetStore extends BaseSheetStore {
         this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
         this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
         this.getComponent().showInfoSnackMessage(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+        this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
     }
 
     getStringOfSuggestDescription(tone) {

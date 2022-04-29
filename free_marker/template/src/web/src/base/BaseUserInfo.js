@@ -156,10 +156,10 @@ class UserInfo {
 
     async authProcessBehavior(functionOfAsyncTask) {
         try {
-            this.setAuthProcessing(false);
+            this.setAuthProcessing(true);
             await functionOfAsyncTask();
         } finally {
-            this.setAuthProcessing(true);
+            this.setAuthProcessing(false);
         }
     }
 

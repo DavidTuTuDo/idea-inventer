@@ -315,7 +315,7 @@
 }
 /** following for sheet  component used  */
 
-.SheetDiv {
+.SheetDiv:extend(.CenterInParentColumn) {
   margin-top: 20px;
   @media @mobile {
     /** empty style */
@@ -328,6 +328,7 @@
   }
 }
 .SheetGuitarpuDiv {
+  z-index: 3;
   @media @mobile {
     /** empty style */
   }
@@ -367,6 +368,47 @@
   }
 }
 .SheetGuitarpuDivSkeleton {
+  width: 100vw;
+  height: 30vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetGuitarpuFloatAreaOuterDiv:extend(.CenterInParentRelative) {
+  height: 95%;
+  width: 95%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    max-width: 880px;
+  }
+}
+.SheetGuitarpuFloatAreaMarkOfYuehImg {
+  opacity: 0.1;
+  width: 100%;
+  @media @mobile {
+    width: 100%;
+  }
+  @media @tablet {
+    width: 100%;
+  }
+  @media @desktop {
+    width: 85%;
+  }
+}
+.SheetGuitarpuFloatAreaMarkOfYuehDivWrap:extend(.CenterInParentColumn) {
+  width: 100%;
+  height: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -387,6 +429,19 @@
   }
   @media @desktop {
     font-size: 1rem;
+  }
+}
+.SheetNameOfSongAndSingerTypography {
+  margin-top: 5px;
+  color: rgba(0, 0, 0, 0.2);
+  @media @mobile {
+    font-size: 1.3rem;
+  }
+  @media @tablet {
+    font-size: 1.4rem;
+  }
+  @media @desktop {
+    font-size: 2.2rem;
   }
 }
 .SheetAdjustSwipeableDrawer {
@@ -874,6 +929,8 @@
   width: 90vw;
   min-height: 50vh;
   gap: 3px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -1679,20 +1736,6 @@
   }
 }
 .MainEditorInterestingOfFunctionSubTitleTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-/** ======== following for homeless ========= */
-
-.NavigatorToolBarToEditModeButton {
-  margin-right: 10px;
   @media @mobile {
     /** empty style */
   }

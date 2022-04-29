@@ -247,7 +247,15 @@ class CommonStyle {
 
   SheetAdjustSwipeableDrawer = {};
 
+  SheetNameOfSongAndSingerTypography = {};
+
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
+
+  SheetGuitarpuFloatAreaMarkOfYuehImg = {};
+
+  SheetGuitarpuFloatAreaOuterDiv = {};
 
   SheetGuitarpuDivSkeleton = {};
 

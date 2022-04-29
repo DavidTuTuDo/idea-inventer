@@ -247,7 +247,15 @@ class AppStyle {
 
   SheetAdjustSwipeableDrawer = {};
 
+  SheetNameOfSongAndSingerTypography = {};
+
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
+
+  SheetGuitarpuFloatAreaMarkOfYuehImg = {};
+
+  SheetGuitarpuFloatAreaOuterDiv = {};
 
   SheetGuitarpuDivSkeleton = {};
 
