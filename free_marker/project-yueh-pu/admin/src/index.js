@@ -332,6 +332,7 @@ import {configerer} from "configerer";
         return obj;
     }
 
+    /** 同步遠端的document id */
     async function syncRemoteIdWithToneAndSingerAndRhythm() {
         const singers = await api.fetchSingers();
         for (const singer of singers) {
@@ -383,11 +384,12 @@ import {configerer} from "configerer";
     // await deployMainPageHotRhythm(20);
     // await deployMainPageHotSingers(20);
     // await deployKeywords();
-    // await syncRemoteIdWithToneAndSingerAndRhythm()
     // await submitShortcut();
     // await updateTonesWithSameRemoteId();
     // console.log(await getObjectOfSingerUrlAsKey());
     // await updateSpecificGuitarPu();
+
+    // await syncRemoteIdWithToneAndSingerAndRhythm()
 })();
 
 
