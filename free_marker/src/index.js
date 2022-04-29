@@ -25,9 +25,9 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
-const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-// const CURRENT_PROJECT = './project-davidtu-dev';
+// const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './projdect-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 /** source.js 是專有名詞的概念*/
 

@@ -120,7 +120,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     })
 
     MUIconView = observer(({name}) => {
-
             const CustomView = MUIcon[name];
             if (CustomView !== undefined)
                 return <CustomView className={'BaseShortcutMUIconView'}/>

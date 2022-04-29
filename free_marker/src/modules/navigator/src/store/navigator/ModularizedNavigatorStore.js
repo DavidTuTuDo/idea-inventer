@@ -57,6 +57,11 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         self.getToolBar().setToEditMode(editButton);
     }
 
+    async onInitialFetchSucceed(collection) {
+        await super.onInitialFetchSucceed(collection)
+        this.fuse = new Fuse(this.getKeywords() ?? [], {shouldSort: true, includeScore: true, keys: ['label', 'value']})
+    }
+
     /** -------------------- functions -------------------- **/
 
     constructor(props) {
@@ -68,16 +73,13 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     @action
     async invalidateSuggestion(keyword) {
         const self = this;
-        if (!Util.isUndefinedNullEmpty(keyword)) {
+        if (!Util.isUndefinedNullEmpty(keyword) && this.fuse) {
             Util.executeTimeoutTask(async () => {
-                const keywords = self.getKeywords() ?? [];
-                const fuse = new Fuse(keywords, {shouldSort: true, includeScore: true, keys: ['label', 'value']})
-                const suggests = fuse.search(keyword).map(each => each.item);
+                const suggests = this.fuse.search(keyword).map(each => each.item);
                 self.getToolBar().setSuggestCompletes(...suggests);
-            }, 600, "NAVIGATOR_SEARCH_FUNCTION");
+            }, 500, "NAVIGATOR_SEARCH_FUNCTION");
         }
     }
-
 
 }
 
