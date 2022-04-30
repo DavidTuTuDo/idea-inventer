@@ -249,13 +249,13 @@ class AppStyle {
 
   SheetNameOfSongAndSingerTypography = {};
 
-  SheetGuitarpuCurrentContextTypography = {};
-
   SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
 
   SheetGuitarpuFloatAreaMarkOfYuehImg = {};
 
   SheetGuitarpuFloatAreaOuterDiv = {};
+
+  SheetGuitarpuCurrentContextTypography = {};
 
   SheetGuitarpuDivSkeleton = {};
 

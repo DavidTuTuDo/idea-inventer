@@ -249,13 +249,13 @@ class MobileStyle {
 
   SheetNameOfSongAndSingerTypography = {};
 
-  SheetGuitarpuCurrentContextTypography = {};
-
   SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
 
   SheetGuitarpuFloatAreaMarkOfYuehImg = {};
 
   SheetGuitarpuFloatAreaOuterDiv = {};
+
+  SheetGuitarpuCurrentContextTypography = {};
 
   SheetGuitarpuDivSkeleton = {};
 

@@ -94,6 +94,10 @@ class BaseStore extends ClientRemoteApi {
         return !this.isInitialFetchCompleted() && !isLoadingOrError
     }
 
+    isErrorState(){
+        return _.isEqual(this.state,'error');
+    }
+
     getGlobalDialogContent() {
         return this.globalDialogContent;
     }

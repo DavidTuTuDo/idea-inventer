@@ -249,13 +249,13 @@ class CommonStyle {
 
   SheetNameOfSongAndSingerTypography = {};
 
-  SheetGuitarpuCurrentContextTypography = {};
-
   SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
 
   SheetGuitarpuFloatAreaMarkOfYuehImg = {};
 
   SheetGuitarpuFloatAreaOuterDiv = {};
+
+  SheetGuitarpuCurrentContextTypography = {};
 
   SheetGuitarpuDivSkeleton = {};
 

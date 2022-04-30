@@ -225,7 +225,7 @@ class BaseComponent extends React.Component {
                 return;
             }
 
-            if(!this.getStore().isFetchAbleToGo()) {
+            if(this.getStore().isErrorState()) {
                 Util.appendInfo(`發生異常錯誤，不能執行後續工作。`);
                 return;
             }
@@ -263,7 +263,7 @@ class BaseComponent extends React.Component {
         try {
             self.jobExecutorLock = true;
             for (const job of this.jobsOfScrollToBottom)
-                await job();
+                await job(self);
 
         } catch (error) {
             Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
@@ -276,7 +276,7 @@ class BaseComponent extends React.Component {
     /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() */
     invalidateNextPageBehavior = async () => {
         if (
-            this.getStore().isFetchAbleToGo() &&
+            !this.getStore().isErrorState() &&
             this.getStore().hasNextPage() &&
             this.hasScrollToBottomTask() &&
             !this.canVerticalScrollable()
@@ -785,7 +785,6 @@ class BaseComponent extends React.Component {
     /** path:'https://' or route:'pageName:...params'*/
     handleCustomRouter = (routeString = '') => {
         const words = routeString.split(':')
-        console.log(words);
         const type = words.shift();
         switch (type) {
             case 'path':

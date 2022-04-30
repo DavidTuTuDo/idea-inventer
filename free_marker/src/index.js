@@ -1397,6 +1397,10 @@ class CodegenNode {
         return this.isAttributeView('Slider');
     }
 
+    isFloatBackgroundView() {
+        return this.isAttributeView('FloatBackgroundView');
+    }
+
     isAttributeView(view) {
         return this.isAttribute() && _.isEqual(this.getView(), view);
     }
@@ -2175,6 +2179,10 @@ class CodegenNode {
         const child = CodegenNode.enrich(obj);
         child.parent = this;
         this.appendChildren(child);
+    }
+
+    deleteChildrenByNode(node) {
+        _.remove(this.children, (child) => _.isEqual(node, child));
     }
 
     /** 就是在baseStore 已經定義過了, 再gen出來會有conflict */
@@ -5433,6 +5441,23 @@ class ProjectFileHandler extends PathBase {
                         readOnly: true,
                     })
                 }
+            }
+
+            if (node.isFloatBackgroundView()) {
+                const clone = _.cloneDeep(node.raw);
+                clone.view = 'img';
+                clone.wrapView = 'div';
+                const float = {
+                    name: 'floatArea',
+                    outer: true,
+                    view: 'div',
+                    type: 'object',
+                    children: [
+                        clone
+                    ]
+                }
+                node.getParentNode().appendChildrenWithJson(float);
+                node.getParentNode().deleteChildrenByNode(node);
             }
 
             if (node.isSimpleSwitch()) {
