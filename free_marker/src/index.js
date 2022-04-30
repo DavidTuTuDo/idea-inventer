@@ -29,6 +29,8 @@ const ID_OF_CHEAP_ARRAY = 'contents';
 const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
+const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
+const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -89,6 +91,10 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+
+    maxSizeOfFetchItem = 50;
+    /** 一個collection 最多能拿的比數, 不然邏輯沒寫好, client端就能把一整串collection給download下來 */
 
     disposablePage = true;
     /**
@@ -687,6 +693,10 @@ class CodegenNode {
         if (this.paginate)
             return this.paginate.size;
         return -1;
+    }
+
+    getMaxSizePerRequest() {
+        return this.maxSizeOfFetchItem;
     }
 
     getPaginateThreshold() {
@@ -1895,6 +1905,8 @@ class CodegenNode {
 
     /** type = array 而且有path 的話, 會製造出太多document, fetch all的話就會花太多費用, 像是keywords, 或是首頁的banner
      *  不需要用 firestore compound queries function 的就應該設計成這樣.
+     *
+     *  cheep array 關鍵在於 remote fetch io上面的hack, 畫面上沒有任何差異
      * */
     isCheapArray() {
         return this.isArray() && !!this.cheap;
@@ -3090,8 +3102,11 @@ class RemoteFunctionHandler {
             const stmts = [];
             if (self.isWebPlatform())
                 stmts.push(...node.getConditions().map((each) => `${each}`));
-            if (!isFetchAll && node.hasPaginate() && self.isWebPlatform()) {
-                stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.sizeOfPerPage)}`)
+            if (!isFetchAll && self.isWebPlatform()) {
+                if(node.hasPaginate())
+                    stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_SIZE_PER_PAGE})}`)
+                else
+                    stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_MAX_SIZE_OF_REQUEST})}`)
             }
             return stmts.join(',');
         }
@@ -3231,9 +3246,10 @@ class RemoteFunctionHandler {
 
 
                 } else if (node.isPathArray()) {
+                    generator.appendField(FIELD_NAME_OF_MAX_SIZE_OF_REQUEST, node.getMaxSizePerRequest(), [], [], 'static')
 
                     if (isWebPlatform() && node.hasPaginate()) {
-                        generator.appendField('sizeOfPerPage', node.getPaginateSize(), [], [], 'static')
+                        generator.appendField(FIELD_NAME_OF_SIZE_PER_PAGE, node.getPaginateSize(), [], [], 'static')
                         generator.appendAsyncFunction(node.getFunctionNameOfNextFetch(), [
                                 ...node.getParamsOfPath(self.platform),
                                 `lastItem`,
