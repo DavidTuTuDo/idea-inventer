@@ -381,8 +381,8 @@ import {configerer} from "configerer";
 
     // 這五個是initialize一組的
     // await deployAllSingerTone(500);
-    // await deployMainPageHotRhythm(20);
-    // await deployMainPageHotSingers(20);
+    await deployMainPageHotRhythm(20);
+    await deployMainPageHotSingers(20);
     // await deployKeywords();
     // await submitShortcut();
     // await updateTonesWithSameRemoteId();

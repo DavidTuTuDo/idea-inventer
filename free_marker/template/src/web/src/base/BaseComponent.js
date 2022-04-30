@@ -111,6 +111,10 @@ class BaseComponent extends React.Component {
 
     componentWillUnmount() {
         /** 執行unsubscribe */
+
+        /** unmount 應該要把當前的toast 關掉, 才不會遺留錯誤資訊到下一個頁面 */
+        this.setSnackViewVisibility(false);
+
         while (this.listOfFunctionOfUnsubscribe.length > 0) {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
             unSub();
@@ -125,7 +129,7 @@ class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
-        if(!this.isDialogComponent()) {
+        if (!this.isDialogComponent()) {
             Router.setCurrentComponent(this);
             Application.setLatestComponent(this);
         }
@@ -689,19 +693,22 @@ class BaseComponent extends React.Component {
 
         if (visible && self.getStore().getSnackVisibility()) {
             self.getStore().setSnackVisibility(false);
-            Util.syncDelay(10).then(() => {
-                sync();
+            Util.syncDelay(1).then(() => {
+                /** 為了等待響應mobx的行為 ,syncDelay會把行為放在下一個stack */
+                sync().then();
             })
         } else {
-            sync()
+            sync().then()
         }
 
-        function sync() {
+        async function sync() {
             extra = Util.mergeObject(self.defaultSnackExtra(), extra);
             self.durationOfSnackVisible = extra.duration;
             self.snackExtraTaskFunction = extra.func;
             self.snackMessage = message;
             self.snackMessageType = extra.type;
+            await Util.syncDelay(1);
+            /** 因為snackMessage set之後會響應mobx的行為,syncDelay會把setVisible放在下一個stack */
             self.getStore().setSnackVisibility(visible);
         }
     }

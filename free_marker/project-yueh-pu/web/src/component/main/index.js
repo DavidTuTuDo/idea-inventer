@@ -50,10 +50,28 @@ class MainComponent extends BaseMainComponent {
                 Router.gotoSheetDetailPage(this, rhythm.uid);
                 break;
             case 'randomEric':
-                this.gotoSingerRandomRhythm('niyTvtrrHV4h22xjoJ96').then()
+                this.gotoSingerRandomRhythm('9UHXP0nujftiTWTxGSva').then()
                 break;
             case 'randomGEM':
-                this.gotoSingerRandomRhythm('9kTdLItmUY231jq8QB33').then()
+                this.gotoSingerRandomRhythm('Y1SB30qmG7qvcYK7hOQg').then()
+                break;
+            case 'randomMayday':
+                this.gotoSingerRandomRhythm('Pn84Semny282MbWnKY2C').then()
+                break;
+            case 'randomLin':
+                this.gotoSingerRandomRhythm('Urnw1dN0NGg2LB3zu1K4').then()
+                break;
+            case 'randomJay':
+                this.gotoSingerRandomRhythm('QXodheBMMm97TZt7AlTY').then()
+                break;
+            case 'randomAlin':
+                this.gotoSingerRandomRhythm('wRJ8dKprAu23D4o6y2ji').then()
+                break;
+            case 'randomFive':
+                this.gotoSingerRandomRhythm('dWChuHedUIMm17qHuOkl').then()
+                break;
+            case 'randomMei':
+                this.gotoSingerRandomRhythm('dTlaBS0zJ83Sgpoiewas').then()
                 break;
             default:
                 break
