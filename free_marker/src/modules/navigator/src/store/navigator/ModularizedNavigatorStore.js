@@ -57,8 +57,8 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         self.getToolBar().setToEditMode(editButton);
     }
 
-    async onInitialFetchSucceed(collection) {
-        await super.onInitialFetchSucceed(collection)
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted(collection)
         this.fuse = new Fuse(this.getKeywords() ?? [], {shouldSort: true, includeScore: true, keys: ['label', 'value']})
     }
 

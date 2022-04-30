@@ -34,6 +34,11 @@ class SheetComponent extends BaseSheetComponent {
         super(props);
     }
 
+    getInjectStyleOfSheetNameOfSongAndSingerTypography() {
+        const visible = _.size(this.getStore().getGuitarpus()) > 0;
+        return Util.getVisibleOrNone(visible);
+    }
+
     onSheetGuitarpuDivClicked(param) {
         this.getStore().toggleIsAdjustVisible();
     }

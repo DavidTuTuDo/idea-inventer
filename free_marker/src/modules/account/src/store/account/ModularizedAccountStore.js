@@ -31,8 +31,8 @@ class ModularizedAccountStore extends BaseAccountStore {
 
   }
 
-  async onInitialFetchSucceed(collection) {
-    await super.onInitialFetchSucceed(collection);
+  async onInitialFetchCompleted(collection) {
+    await super.onInitialFetchCompleted(collection);
     const user = Cookie.getUser();
     if(UserInfoRef.isValidUser(user)) {
       this.setUrlOfHeadPhoto(user.photoURL);

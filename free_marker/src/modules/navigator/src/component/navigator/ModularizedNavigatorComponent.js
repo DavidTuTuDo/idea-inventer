@@ -41,7 +41,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     componentDidMount() {
         super.componentDidMount();
-        this.getStore().forceToStable();
     }
 
     onNavigatorToolBarTitleTypographyClicked(param) {

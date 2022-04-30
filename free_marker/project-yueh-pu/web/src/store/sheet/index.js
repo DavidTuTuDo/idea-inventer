@@ -99,19 +99,19 @@ class SheetStore extends BaseSheetStore {
 
     async fetch(view) {
         const result = await super.fetch(view);
-        await this.updateFavoriteToggleState(result.guitarpus ? result.guitarpus[0].id : '');
+        await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? result.guitarpus[0].id : '');
         return result;
     }
 
     async updateFavoriteToggleState(idOfCurrentGuitarPu) {
-        if(UserInfoRef.isLoginWithSucceed()) {
+        if (UserInfoRef.isLoginWithSucceed()) {
             const item = await this.apiOfFavorite.fetchFavoritePuItem(this.getComponent(), undefined, idOfCurrentGuitarPu);
             this.getAdjustCenter().getJoinToFavorite().setToggle(item.exists);
         }
     }
 
     async submitFavoritePuState(join = false) {
-        if(UserInfoRef.isLoginWithSucceed()) {
+        if (UserInfoRef.isLoginWithSucceed()) {
             if (join) {
                 await this.apiOfFavorite.submitFavoritePuItem(this.getComponent(), undefined, {
                     idOfGuitarPu: this.getCurrentPu().getId(),
@@ -120,21 +120,24 @@ class SheetStore extends BaseSheetStore {
                     id: this.getCurrentPu().getId(),
                 });
             } else {
-                await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(),undefined,this.getCurrentPu().getId());
+                await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), undefined, this.getCurrentPu().getId());
             }
         }
     }
 
     @action
-    async onInitialFetchSucceed() {
-        await super.onInitialFetchSucceed();
-        this.getCurrentPu().setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
-        this.getCurrentPu().setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
-        this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
-        this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
-        this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
-        this.getComponent().showInfoSnackMessage(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
-        this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+    async onInitialFetchCompleted() {
+        await super.onInitialFetchCompleted();
+
+        if (!Util.isUndefinedNullEmpty(this.getCurrentPu())) {
+            this.getCurrentPu().setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
+            this.getCurrentPu().setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
+            this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
+            this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
+            this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
+            this.getComponent().showInfoSnackMessage(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+            this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+        }
     }
 
     getStringOfSuggestDescription(tone) {

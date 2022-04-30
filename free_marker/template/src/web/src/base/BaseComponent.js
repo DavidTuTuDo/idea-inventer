@@ -220,25 +220,30 @@ class BaseComponent extends React.Component {
         if (isScrollDown && isScrollToEnd) {
             /** Scroll達底部了 */
             // console.log(`window.scrollY:${window.scrollY}, currentScroll:${currentScroll}, documentHeight:${documentHeight}`);
-            if (!this.getStore().isInitialFetchSucceed()) {
-                Util.appendInfo(`初始任務尚未完成, 不能執行後續工作`);
+            if (!this.getStore().isInitialFetchCompleted()) {
+                Util.appendInfo(`初始任務尚未完成，不能執行後續工作。`);
+                return;
+            }
+
+            if(!this.getStore().isFetchAbleToGo()) {
+                Util.appendInfo(`發生異常錯誤，不能執行後續工作。`);
                 return;
             }
 
             if (!self.jobExecutorLock) {
                 if (!this.hasScrollToBottomTask()) {
-                    Util.appendInfo(`當前沒有觸底任務`);
+                    Util.appendInfo(`當前沒有觸底任務。`);
                     return;
                 }
 
                 if (!this.getStore().hasNextPage()) {
-                    Util.appendInfo(`已沒有下一頁的資料`);
+                    Util.appendInfo(`已沒有下一頁的資料。`);
                     return;
                 }
 
                 this.jobExecutor().then();
             } else {
-                Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫`);
+                Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫。`);
             }
         }
     }
@@ -270,7 +275,9 @@ class BaseComponent extends React.Component {
 
     /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() */
     invalidateNextPageBehavior = async () => {
-        if (this.getStore().hasNextPage() &&
+        if (
+            this.getStore().isFetchAbleToGo() &&
+            this.getStore().hasNextPage() &&
             this.hasScrollToBottomTask() &&
             !this.canVerticalScrollable()
         ) {
@@ -360,7 +367,7 @@ class BaseComponent extends React.Component {
     }
 
     onRetryClicked(viewParam) {
-        this.componentDidMount();
+        Router.routeToHomePage(this);
     }
 
     renderErrorView = () => {
@@ -371,7 +378,7 @@ class BaseComponent extends React.Component {
 
                 <Typography
                     className={'BaseComponentErrorViewTitleTypography'}>
-                    發生錯誤
+                    發生技術問題
                 </Typography>
 
                 <Typography
@@ -383,7 +390,7 @@ class BaseComponent extends React.Component {
                     variant={'outlined'}
                     color={'primary'}
                     onClick={(viewParam) => this.onRetryClicked(viewParam)}
-                    className={'BaseComponentErrorViewRetryButton'}>重試</Button>
+                    className={'BaseComponentErrorViewRetryButton'}>返回首頁</Button>
             </Paper>
         )
     }
@@ -432,7 +439,7 @@ class BaseComponent extends React.Component {
     }
 
     shouldDisplayLoadingArea(items = []) {
-        return !this.getStore().isInitialFetchSucceed() && _.size(items) < 1
+        return !this.getStore().isInitialFetchCompleted() && _.size(items) < 1
     }
 
     renderListEmptyView = (items = [], hasPath) => {

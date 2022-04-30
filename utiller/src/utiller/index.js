@@ -625,6 +625,14 @@ class Utiller {
         return obj === undefined || _.isEmpty(obj) || obj === null
     }
 
+    isOrConditionOfUndefinedNullEmpty(...objs) {
+        for (const obj of objs) {
+            if (this.isUndefinedNullEmpty(obj))
+                return true;
+        }
+        return false;
+    }
+
     /** this method mutates segments */
     getStringHandledByEachLine(string, predict = (segment, index, segments) => true) {
         const segments = string.split('\n');
@@ -1271,7 +1279,6 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const util = new Utiller();
             // console.log(_.isNumber(_.toNumber('九')));
             // console.log(util.isValidVersionOfString('21323.2312.1'));
             // console.log(util.getArrayOfSize([1,2,3,4,5],9999));

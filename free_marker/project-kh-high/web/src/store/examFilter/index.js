@@ -19,7 +19,7 @@ class ExamFilterStore extends BaseExamFilterStore {
         super(props);
     }
 
-    async onInitialFetchSucceed(collection) {
+    async onInitialFetchCompleted(collection) {
         const exams = this.getExamHistoryInfo().getHistoryExams();
         this.getHistoryTest().setSelectors(...exams);
         this.getHistoryTest().setSelectedSelector(_.last(exams).value)

@@ -1,4 +1,6 @@
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
+import libpath from "path";
+import Config from "../config";
 
 class BaseRouter {
 
@@ -34,6 +36,11 @@ class BaseRouter {
                 return index === 1 ? `${each}editor` : each
             })
         return newbie.join('/');
+    }
+
+    routeToHomePage(component) {
+        this.routeTo(component, '/');
+        return libpath.join(Config.host,'/');
     }
 
     getPathOfDeEditorRoute = () => {

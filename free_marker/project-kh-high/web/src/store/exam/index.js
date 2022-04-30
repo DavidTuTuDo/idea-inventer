@@ -203,8 +203,8 @@ class ExamStore extends BaseExamStore {
         }
     }
 
-    async onInitialFetchSucceed(collection) {
-        await super.onInitialFetchSucceed(collection)
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted(collection)
         await this.incrementCountsOfExamToday()
         this.renewTimeStamp();
     }

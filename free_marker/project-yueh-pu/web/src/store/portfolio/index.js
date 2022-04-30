@@ -63,6 +63,7 @@ class PortfolioStore extends BasePortfolioStore {
                 return await super.fetch(this.getComponent());
                 break;
             default:
+                this.setErrorMsg(`帶入參數錯誤`)
                 /** 顯示沒有搜尋項目*/
                 break;
         }

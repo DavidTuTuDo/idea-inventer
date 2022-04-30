@@ -2853,8 +2853,8 @@ class StoreBuilder extends BaseBuilder {
             if (node.needDetail) {
                 stmt.push(
                     `if(view.isDetailPage()){`,
-                    ` const item = await this.${node.getFunctionNameOfFetchItem()}(view, view.getUidOfDetail());`,
-                    `return [item]`,
+                    `const item = await this.${node.getFunctionNameOfFetchItem()}(view, view.getUidOfDetail());`,
+                    `return item.exists ? [item] : []`,
                     `}`)
             }
             return stmt
@@ -2970,7 +2970,7 @@ class StoreBuilder extends BaseBuilder {
                     }
                 ))
 
-        /** 因為defaultValue沒有被storem包裝過, 所以建構子要弄一下*/
+        /** 因為defaultValue沒有被store包裝過, 所以建構子要弄一下*/
         baseGenerator.appendFunction('setDefaultValues', [], [], [],
             ...getDefaultValueSetterStmts(node)
         )
@@ -3103,7 +3103,7 @@ class RemoteFunctionHandler {
             if (self.isWebPlatform())
                 stmts.push(...node.getConditions().map((each) => `${each}`));
             if (!isFetchAll && self.isWebPlatform()) {
-                if(node.hasPaginate())
+                if (node.hasPaginate())
                     stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_SIZE_PER_PAGE})}`)
                 else
                     stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_MAX_SIZE_OF_REQUEST})}`)
@@ -3463,15 +3463,30 @@ class ComponentBuilder extends BaseBuilder {
 
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('Style', '../../style');
+
+        const paramsOfPath = [];
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
             const paramOf = Util.camel('param', 'of', normalizeParam);
             baseGenerator.appendConstructor(`this.${paramOf}= this.props.match.params.${normalizeParam}`);
+            paramsOfPath.push(paramOf);
             baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${paramOf}:$\{this.${paramOf}\}\`)`);
         }
 
+        if (_.size(paramsOfPath) > 0) {
+            /** 這個邏輯必須在fetch之前 */
+            this.appendStmtIntoComponentDidMount(`if(Util.isOrConditionOfUndefinedNullEmpty(${paramsOfPath.map((each) => `this.${each}`).join(',')})){
+                this.getStore().setErrorMsg('網址參數異常');
+            }`)
+        }
+
         if (componentNode.detailPage) {
-            baseGenerator.appendConstructor(`this.setUidOfDetail(this.props.match.params.${KEYWORD_OF_UID_OF_DETAIL})`);
+            this.appendStmtIntoComponentDidMount(`
+               const uid = this.props.match.params.${KEYWORD_OF_UID_OF_DETAIL};
+            if(Util.isOrConditionOfUndefinedNullEmpty(uid))
+                this.getStore().setErrorMsg('網址參數異常');
+            else
+                this.setUidOfDetail(uid)`);
         }
 
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
@@ -3519,17 +3534,20 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(
                 `const self = this;`,
                 `let result = {}`,
-                `if(!self.getStore().isInitialFetchSucceed() && this.enableInitFetch) {`,
+                `if(self.getStore().isFetchAbleToGo() && this.isEnableInitFetch()) {`,
                 `self.getStore().fetch(this).then((collection) => {
                     result = collection;                 
                 }).finally(() => {
                 Util.appendInfo('${componentNode.getName()} page initial fetch completed')
-                self.getStore().onInitialFetchSucceed(result)})`,
-                `} else { self.getStore().onInitialFetchSucceed() }`
+                self.getStore().onInitialFetchCompleted(result)})`,
+                `} else { self.getStore().onInitialFetchCompleted() }`
             )
             baseGenerator.appendField('enableInitFetch', true)
-            baseGenerator.appendFunction(`setEnableInitFetch`, ['enable'], [], [],
+            baseGenerator.appendFunction({name: `setEnableInitFetch`, arrow: true}, ['enable'], [], [],
                 `this.enableInitFetch = enable`);
+
+            baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
+                `return this.enableInitFetch`);
         }
 
         /** 2022.04.25本來以為離開頁面就要清空所有, 但這樣ios swipe-back 體驗會變得很糟糕

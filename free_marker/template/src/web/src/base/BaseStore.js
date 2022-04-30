@@ -25,7 +25,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     @observable
-    initialFetchSucceed = false;
+    initialFetchCompleted = false;
 
     @observable
     state = 'stable';
@@ -89,6 +89,11 @@ class BaseStore extends ClientRemoteApi {
         this.globalDialogContent = dialogContent;
     }
 
+    isFetchAbleToGo() {
+        const isLoadingOrError = Util.isOrEquals(this.getState(), 'error', 'loading');
+        return !this.isInitialFetchCompleted() && !isLoadingOrError
+    }
+
     getGlobalDialogContent() {
         return this.globalDialogContent;
     }
@@ -132,17 +137,16 @@ class BaseStore extends ClientRemoteApi {
     }
 
     @action
-    forceToStable() {
-        this.state = 'stable';
-    }
-
-    @action
     setState(state) {
         if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {
             this.state = state;
         } else {
             Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);
         }
+    }
+
+    getState() {
+        return this.state;
     }
 
     isGlobalLoading() {
@@ -155,6 +159,7 @@ class BaseStore extends ClientRemoteApi {
 
     @action
     setErrorMsg(message) {
+        this.state = `error`;
         this.errorMsg = message;
     }
 
@@ -216,20 +221,20 @@ class BaseStore extends ClientRemoteApi {
     }
 
 
-    async onInitialFetchSucceed(collection) {
-        this.setInitialFetchSucceed();
+    async onInitialFetchCompleted(collection) {
+        this.setInitialFetchCompleted();
         if (this.getComponent() !== undefined) {
             await this.getComponent().invalidateNextPageBehavior();
         }
     }
 
     @action
-    setInitialFetchSucceed() {
-        this.initialFetchSucceed = true;
+    setInitialFetchCompleted() {
+        this.initialFetchCompleted = true;
     }
 
-    isInitialFetchSucceed() {
-        return this.initialFetchSucceed;
+    isInitialFetchCompleted() {
+        return this.initialFetchCompleted;
     }
 
     getImageDialogParam() {
@@ -264,7 +269,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     clean() {
-        this.initialFetchSucceed = false;
+        this.initialFetchCompleted = false;
         this.hasNextPageItems = true;
         this.setState('stable');
     }
