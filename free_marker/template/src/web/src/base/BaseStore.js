@@ -75,7 +75,11 @@ class BaseStore extends ClientRemoteApi {
         this.component = component;
     }
 
-    getComponent() {
+    /** 如果dialog要拿到自己的component, 而不是外層的component, 要設定為true */
+    getComponent(isDialog = false) {
+        if (isDialog)
+            return this.component;
+
         if (this.component)
             return this.component.getComponentInstance();
     }
@@ -94,8 +98,8 @@ class BaseStore extends ClientRemoteApi {
         return !this.isInitialFetchCompleted() && !isLoadingOrError
     }
 
-    isErrorState(){
-        return _.isEqual(this.state,'error');
+    isErrorState() {
+        return _.isEqual(this.state, 'error');
     }
 
     getGlobalDialogContent() {

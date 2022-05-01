@@ -74,6 +74,13 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
         }
     }
 
+    isValidOfParamOfAid(aid) {
+        return true;
+    }
+
+    isValidOfParamOfCid(cid) {
+        return this.constraintOfParam(cid);
+    }
 
     /** -------------------- async api -------------------- **/
 }

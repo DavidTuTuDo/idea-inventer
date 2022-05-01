@@ -66,19 +66,19 @@ class ExamStore extends BaseExamStore {
         return this.freeze;
     }
 
-    fetchExamsTestingRecords = async (clearAll = false) => {
+    fetchExamsTestingRecords = async (view, clearAll = false) => {
         const questions = [];
         this.summarizeFilterConditionChanged();
         if (clearAll) {
             this.cleanTestingRecords();
             this.cleanQuestions();
         }
-        const items = await this.fetchTestingRecords(this.getComponent());
+        const items = await this.fetchTestingRecords(view);
         const questionIds = items.map((each) => each.qid);
         this.setQuestionConditions(this.getInArrayConditions(questionIds));
-        this.setNextQuestionPageMode('custom');
+        this.setNextQuestionPageMode('default');
         if (!clearAll) {
-            const qs = await this.fetchQuestions(this.getComponent());
+            const qs = await this.fetchQuestions(view);
             questions.push(...qs)
         }
 
@@ -95,8 +95,9 @@ class ExamStore extends BaseExamStore {
         if (!_.isEqual('all', subject))
             conditions.push({where: (stmt) => stmt.where('subject', '==', subject)})
 
-        if (!_.isEqual('all', replyType))
+        if (!_.isEqual('all', replyType)){
             conditions.push({where: (stmt) => stmt.where('isWrongReply', '==', _.isEqual(replyType, 'wrong'))})
+        }
         switch (orderByWhat) {
             case 'duration':
                 conditions.push({orderBy: (stmt) => stmt.orderBy('duration', 'desc')})
@@ -111,7 +112,7 @@ class ExamStore extends BaseExamStore {
     getExamFilterTips = () => {
         const filter = Cookie.getExamFilter();
         const subject = filter.subject; // 'string'
-        const type = !!this.freeze ? 'freeze' : filter.type; // 'string' /** */
+        const type = this.isFreezePage() ? 'freeze' : filter.type; // 'string' /** */
         const range = filter.range; // [100, 105]
         const countsOfExam = filter.countsOfExam; //25 or 40
         const qid = filter.qid
@@ -122,6 +123,7 @@ class ExamStore extends BaseExamStore {
         const {range, subject, type, countsOfExam, qid} = this.getExamFilterTips();
         // console.log({range, subject, type, countsOfExam, qid})
         const questions = [];
+
         // console.log(range);
         function getRandomCondition() {
             const conditions = [];
@@ -140,7 +142,7 @@ class ExamStore extends BaseExamStore {
                 const year = mTimesAndYear.shift();
                 const times = mTimesAndYear.pop();
 
-                Util.appendInfo('year:'+year, 'times:'+times, 'complete:'+_.head(range));
+                Util.appendInfo('year:' + year, 'times:' + times, 'complete:' + _.head(range));
                 this.setQuestionConditions([
                     {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
                     {where: (stmt) => stmt.where('year', '==', _.toNumber(year))},
@@ -157,7 +159,7 @@ class ExamStore extends BaseExamStore {
                 break;
             case 'historyWrong':
                 this.getComponent().setScrollToBottomJobs(this.fetchExamsTestingRecords)
-                const qs = await this.fetchExamsTestingRecords(true);
+                const qs = await this.fetchExamsTestingRecords(this.getComponent(),true);
                 questions.push(...qs)
                 break;
             case 'freeze':

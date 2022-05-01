@@ -23,7 +23,7 @@ class ExamFilterStore extends BaseExamFilterStore {
         const exams = this.getExamHistoryInfo().getHistoryExams();
         this.getHistoryTest().setSelectors(...exams);
         this.getHistoryTest().setSelectedSelector(_.last(exams).value)
-        this.getComponent().validateRangeByValue(3);
+        this.getComponent(true).validateRangeByValue(3);
     }
 
     @action

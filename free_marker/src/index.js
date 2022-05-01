@@ -25,8 +25,8 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
-// const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -3472,20 +3472,24 @@ class ComponentBuilder extends BaseBuilder {
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('Style', '../../style');
 
-        const paramsOfPath = [];
+        const paramsOfPath = [];/**{name:functionName}*/
         for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
             const paramOf = Util.camel('param', 'of', normalizeParam);
+            const functionName = Util.camel('isValidOf', paramOf);
             baseGenerator.appendConstructor(`this.${paramOf}= this.props.match.params.${normalizeParam}`);
-            paramsOfPath.push(paramOf);
+            paramsOfPath.push({functionName, param: paramOf});
             baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${paramOf}:$\{this.${paramOf}\}\`)`);
+            baseGenerator.appendFunction(functionName, [param], [], [],
+                'return false;'
+            )
         }
 
         if (_.size(paramsOfPath) > 0) {
             /** 這個邏輯必須在fetch之前 */
-            this.appendStmtIntoComponentDidMount(`if(Util.isOrConditionOfUndefinedNullEmpty(${paramsOfPath.map((each) => `this.${each}`).join(',')})){
-                this.getStore().setErrorMsg('網址參數異常');
-            }`)
+            this.appendStmtIntoComponentDidMount(
+                `if(!Util.and(${paramsOfPath.map((each) => `this.${each.functionName}(this.${each.param})`).join(',')}))
+                this.getStore().setErrorMsg('網址參數異常')`)
         }
 
         if (componentNode.detailPage) {
@@ -3575,7 +3579,7 @@ class ComponentBuilder extends BaseBuilder {
         function getStmtsOfGetStore() {
             const stmts = [];
             stmts.push(`const store = this.props.${componentNode.getPreciseStoreName()}`)
-            stmts.push(`store.setComponent(this.getComponentInstance())`)
+            stmts.push(`store.setComponent(this)`)
             stmts.push(`return store;`)
             return stmts;
         }

@@ -47,6 +47,10 @@ class MyFatefulQuestionsComponent extends BaseMyFatefulQuestionsComponent {
     }
   }
 
+  isValidOfParamOfType(type) {
+    return this.constraintOfParam(type,'favorite','stupidAsk','kindlyReply');
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default MyFatefulQuestionsComponent;

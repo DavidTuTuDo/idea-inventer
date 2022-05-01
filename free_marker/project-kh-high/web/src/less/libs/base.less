@@ -63,16 +63,19 @@
 }
 
 .PaperOfSimpleGrid:extend(.CenterInParentColumn) {
-  height: 60px;
+
   background-color: rgba(188, 188, 188, 0.3);
   @media @mobile {
     /** empty style */
+    height: 55px;
   }
   @media @tablet {
     /** empty style */
+    height: 55px;
   }
   @media @desktop {
     /** empty style */
+    height: 60px;
   }
 }
 
@@ -83,9 +86,13 @@
   }
   @media @tablet {
     /** empty style */
+    font-size: 1.1rem;
+
   }
   @media @desktop {
     /** empty style */
+    font-size: 1.2rem;
+
   }
 }
 
@@ -96,9 +103,12 @@
   }
   @media @tablet {
     /** empty style */
+    font-size: 0.8rem;
+
   }
   @media @desktop {
     /** empty style */
+    font-size: 1.0rem;
   }
 }
 
@@ -279,7 +289,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   padding: 30px;
 }
 

@@ -51,13 +51,17 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
                 items.push(...await (new WhoknowzAnswerStore()).fetchAnswers(this.getComponent(),
                     ...this.getCompoundQueryStmts(true)));
                 break;
+            default:
+                this.setErrorMsg(`帶入參數錯誤`)
+
         }
-        await this.fatefulItemAdapter(items)
+        if (!this.isErrorState())
+            await this.fatefulItemAdapter(items)
     }
 
     getCompoundQueryStmts = (onlySelf) => {
-        const stmts =  [];
-        if(onlySelf) {
+        const stmts = [];
+        if (onlySelf) {
             stmts.push({where: (stmt) => stmt.where('userId', '==', UserInfo.getUid())})
         }
         stmts.push({orderBy: (stmt) => stmt.orderBy('updateTime', 'desc')}, ...this.getSelectSubjectStmts());

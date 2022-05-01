@@ -55,10 +55,14 @@ class BaseComponent extends React.Component {
 
     /** dialog不會透過Router,得在constructor裏面clean() */
     cleanDisposableDialogComponent() {
-        if (this.isDialogComponent() && this.isDisposableComponent()) {
+        if ((this.isDialogComponent() || this.isComponentView()) && this.isDisposableComponent()) {
             this.getStore().clean();
 
         }
+    }
+
+    isParamFromPathValid(param) {
+        return !Util.isUndefinedNullEmpty(param);
     }
 
     isDetailPage() {
@@ -155,13 +159,10 @@ class BaseComponent extends React.Component {
         return (!this.isNavigator() && !this.isComponentView());
     }
 
-    onAuthStateChangedReceive = (user) => {
-        if (this.isNotNavigatorNComponentView() && user !== null) {
-            this.componentWillUnmount();
-            this.componentDidMount();
-        }
+    /** 放在alert view 裏面使用 */
+    isDialogComponent() {
+        return this.props.dialog !== undefined;
     }
-
 
     viewInitial() {
         this.fileChooserInputRef = React.createRef();
@@ -175,10 +176,6 @@ class BaseComponent extends React.Component {
 
     reloadPage = () => {
         window.location.reload();
-    }
-
-    isDialogComponent() {
-        return this.props.dialog !== undefined;
     }
 
     centerInParent(direction) {
@@ -203,7 +200,7 @@ class BaseComponent extends React.Component {
         return 5;
     }
 
-    disapearKeyboard() {
+    disappearKeyboard() {
         document.activeElement.blur();
     }
 
@@ -225,7 +222,7 @@ class BaseComponent extends React.Component {
                 return;
             }
 
-            if(this.getStore().isErrorState()) {
+            if (this.getStore().isErrorState()) {
                 Util.appendInfo(`發生異常錯誤，不能執行後續工作。`);
                 return;
             }
@@ -264,7 +261,7 @@ class BaseComponent extends React.Component {
             self.jobExecutorLock = true;
             for (const job of this.jobsOfScrollToBottom)
                 await job(self);
-
+            /**self 就是 component本身,因為client第一個參數都是view, 方便呼叫loading */
         } catch (error) {
             Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
         } finally {
@@ -768,7 +765,11 @@ class BaseComponent extends React.Component {
             date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)}/>
     })
 
-    getComponentInstance = () => {
+    /** 通常呼叫這個method, 是要呼叫loading狀態, 所以忽略dialog狀態內的*/
+    getComponentInstance = (isDialog = false) => {
+        if (isDialog)
+            return this;
+
         if (this.isDialogComponent()) {
             return this.props.component;
         } else {
@@ -943,6 +944,18 @@ class BaseComponent extends React.Component {
         if (event && event.target)
             return event.target.value;
         return '';
+    }
+
+    constraintOfParam(param, ...allows) {
+        let isValid = true;
+
+        if (Util.isUndefinedNullEmpty(param))
+            isValid = false;
+
+        if (Util.isOrEquals(param, ...allows))
+            isValid = true;
+
+        return isValid;
     }
 
 }

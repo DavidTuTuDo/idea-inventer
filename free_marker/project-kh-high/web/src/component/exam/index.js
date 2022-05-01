@@ -21,16 +21,12 @@ class ExamComponent extends BaseExamComponent {
 
     constructor(props) {
         super(props);
-        if (!!this.props.freeze) {
-            this.getStore().setFreezeQuestion(this.props.question)
-            this.clearScrollToBottomJobs();
-        }
     }
 
     getChoiceStatement(choice) {
         const question = choice.getParentNode();
         const statement = super.getChoiceStatement(choice);
-        return question.isChoiceDependOnAttachImage() ? `如圖示的 (${statement}) `:statement;
+        return question.isChoiceDependOnAttachImage() ? `如圖示的 (${statement}) ` : statement;
     }
 
     onOrderByWhatSelectedChange(value) {
@@ -92,6 +88,17 @@ class ExamComponent extends BaseExamComponent {
 
     getInjectStyleOfExamQuestionOptionalChoiceStatementButton(choice) {
         return this.handleStatementBorderWidthBehavior(choice, true);
+    }
+
+    componentDidMount() {
+        const isFreezeUsage = !!this.props.freeze;
+        if (isFreezeUsage) {
+            this.getStore().setFreezePage(true)
+            this.clearScrollToBottomJobs();
+        }
+        super.componentDidMount();
+        if (isFreezeUsage)
+            this.getStore().setFreezeQuestion(this.props.question);
     }
 
     getInjectStyleOfExamQuestionChoiceDiv(choice) {
