@@ -17,8 +17,6 @@ class AppStyle {
 
   MainEditorStickyBottomAreaDiv = {};
 
-  MainEditorVoiceIdTextField = {};
-
   MainEditorVoicePopularLevelTextField = {};
 
   MainEditorVoicePathOfResourceTextField = {};

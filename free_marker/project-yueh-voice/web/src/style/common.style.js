@@ -17,8 +17,6 @@ class CommonStyle {
 
   MainEditorStickyBottomAreaDiv = {};
 
-  MainEditorVoiceIdTextField = {};
-
   MainEditorVoicePopularLevelTextField = {};
 
   MainEditorVoicePathOfResourceTextField = {};

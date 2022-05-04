@@ -15,15 +15,32 @@ import fetch from 'node-fetch';
 (async () => {
 
     const api = new Api();
-    const listener = new Listener();
 
-    // const voices = await api.fetchVoices();
-    // console.log(voices[0].pathOfResource);
-    const url = 'https://firebasestorage.googleapis.com/v0/b/yueh-voice.appspot.com/o/voice%2FqngV7sGt0tN4Eijv2DlUQhHE9ry2%2F%E5%91%8A%E4%BA%94%E4%BA%BA-%E5%9C%A8%E9%80%99%E5%BA%A7%E5%9F%8E%E5%B8%82%E9%81%BA%E5%A4%B1%E4%BA%86%E4%BD%A0.mp3?alt=media&token=698cfe2f-d47e-4f72-b5a4-d2aac87ca43e';
+    async function submitShortcut() {
+        await api.deleteShortcuts();
+        await api.submitShortcuts(
+            {
+                title: '回到首頁',
+                icon: 'muIcon:Bedtime',
+                route: `route:main`,
+                indexOfSequence: 0,
+            },
+            {
+                title: '明悅-悅譜',
+                icon: 'muIcon:School',
+                route: 'path:https://yueh-pu.web.app/',
+                indexOfSequence: 1,
+            },
+            {
+                title: '明悅-悅考',
+                icon: 'muIcon:School',
+                route: 'path:https://kh-high.web.app/',
+                indexOfSequence: 2,
+            }
+        )
+    }
 
-    const metadata = await getMetadata(url);
-    console.log(metadata);
-
+    await submitShortcut();
 
 })();
 

@@ -169,7 +169,7 @@ class BaseComponent extends React.Component {
         if ((!this.isNavigator()) && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
             if (!this.isComponentView())
-                this.getStore().setAppBarHeight(isMobile ? 60 : 64);
+                this.getStore().setAppBarHeight(isMobile ? 60 : 60);
         }
         this.imageDialogRef = React.createRef();
     }

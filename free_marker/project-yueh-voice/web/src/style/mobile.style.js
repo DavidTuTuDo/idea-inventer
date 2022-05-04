@@ -17,8 +17,6 @@ class MobileStyle {
 
   MainEditorStickyBottomAreaDiv = {};
 
-  MainEditorVoiceIdTextField = {};
-
   MainEditorVoicePopularLevelTextField = {};
 
   MainEditorVoicePathOfResourceTextField = {};
