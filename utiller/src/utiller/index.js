@@ -345,6 +345,55 @@ class Utiller {
         return result;
     }
 
+    getFileNameFromPath(path, extension = false) {
+        const segments = path.split('/');
+        const target = segments.pop();
+        return extension ? target : target.split('.').shift();
+    }
+
+    /** http://wnj.cdji/david.mp3 => david.mp3 */
+    getFileNameExtensionFromPath(path) {
+        const name = path.split('/').pop()
+        return name;
+    }
+
+    /** http://wnj.cdji/david.mp3 => mp3 */
+    getExtensionFromPath(path) {
+        const name = path.split('/').pop()
+        const segments = name.split('.');
+        return _.size(segments) > 1 ? segments.pop() : '';
+    }
+
+    /** ../folderName/fileName.xxx  => ./folderName */
+    getFolderPathOfSpecificPath(path) {
+        const splited = path.split('/');
+        splited.pop();
+        return splited.join('/');
+    }
+
+    /** absolute=> /acc/bbv/{target}/index.js 檢查有沒有在他下面 */
+    isUnderTargetPath(absolute, target) {
+        const segments = absolute.split('/');
+        return this.has(segments, target);
+    }
+
+    /** 取得檔案的目錄, path => c://folderName/fileName.js to c://folderName */
+    getFileDirPath(path, slash = true) {
+        return _.join(_.initial(_.split(path, '/')), '/') + (slash ? '/' : '');
+    }
+
+    /** path ==> /asd/cc/dfj/jei3.mp3 => */
+    isPathEqualsFileType(path, type) {
+        const extension = path.split('.').pop();
+        return _.isEqual(extension, type);
+    }
+
+    /** 是一個/a/b/c.js 的檔案路徑 */
+    isValidFilePath(path) {
+        const extension = this.getExtensionFromPath(path);
+        return _.size(extension) > 0;
+    }
+
     /** 拿前面n個items */
     getArrayOfSize(array, n = 1) {
         return _.take(array, n);
@@ -355,9 +404,12 @@ class Utiller {
         return _.take(shuffled, n);
     }
 
-    getRandomItemOfArray(array) {
+    /** ignore 就是黑名單的意思 */
+    getRandomItemOfArray(array,...ignores) {
         if (!_.isArray(array)) throw new ERROR(9999, `why are you so stupid, typeof array should be array, not ==> ${array} `)
-        const item = this.getShuffledArrayWithLimitCount(array, 1);
+        const filter = _.without(array,...ignores);
+        const target = _.size(filter)  > 0 ? filter : array;
+        const item = this.getShuffledArrayWithLimitCount(target, 1);
         return item.length > 0 ? item[0] : undefined;
     }
 
@@ -1275,10 +1327,60 @@ class Utiller {
         const slice = _.remove(array, (each, index) => index < n);
         return slice;
     }
+
+    /**
+     * 如果有paginate, 有可能讓功能錯亂
+     const array = [0,1,2,3,4,5,6,7];
+     console.log(util.moveIndexOfArray(array,1,0));const array = [0,1,2,3,4,5,6,7];
+     console.log(util.moveIndexOfArray(array,1,0));
+     [
+       1, 0, 2, 3,
+       4, 5, 6, 7
+     ]
+     */
+    moveIndexOfArray(array, from, to) {
+        /* #move - Moves an array item from one position in an array to another.
+           Note: This is a pure function so a new array will be returned, instead
+           of altering the array argument.
+          Arguments:
+          1. array     (String) : Array in which to move an item.         (required)
+          2. moveIndex (Object) : The index of the item to move.          (required)
+          3. toIndex   (Object) : The index to move item at moveIndex to. (required)
+        */
+        const item = array[from];
+        const length = array.length;
+        const diff = from - to;
+
+        if (diff > 0) {
+            // move left
+            return [
+                ...array.slice(0, to),
+                item,
+                ...array.slice(to, from),
+                ...array.slice(from + 1, length)
+            ];
+        } else if (diff < 0) {
+            // move right
+            const targetIndex = to + 1;
+            return [
+                ...array.slice(0, from),
+                ...array.slice(from + 1, targetIndex),
+                item,
+                ...array.slice(targetIndex, length)
+            ];
+        }
+        return array;
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            const util = new Utiller();
+            // util.moveIndexOfArray(array,1,0);
+            // const array = [0,1,2,3,4,5,6,7];
+            // console.log(util.moveIndexOfArray(array,1,0));
+            // console.log(util.nth([1,2,3,4,5],5))
+            // console.log(util.getFileNameFromPath('disjfoisd.mp3',true));
             // console.log(_.isNumber(_.toNumber('九')));
             // console.log(util.isValidVersionOfString('21323.2312.1'));
             // console.log(util.getArrayOfSize([1,2,3,4,5],9999));

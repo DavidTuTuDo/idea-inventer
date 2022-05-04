@@ -25,9 +25,12 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
+
+const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
+
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -61,14 +64,24 @@ const LESS_MODULES = [
 const VIEW_IMPORTS =
     [
         {
+            from: `react-h5-audio-player`,
+            views: ['AudioPlayer'],
+            simplePath: true,
+        },
+        {
             from: `@material-ui/icons/AccountCircle`,
             views: ['AccountCircle'],
-            simplePath: true, /** 就是只要material-ui/icons/menu */
-        }
-        ,
+            simplePath: true,
+        },
         {
             from: `@material-ui/icons/menu`,
             views: ['MenuIcon'],
+            simplePath: true, /** 就是只要material-ui/icons/menu */
+        },
+        {
+
+            from: `@material-ui/icons/MoreHoriz`,
+            views: ['MoreHoriz'],
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
@@ -289,8 +302,8 @@ class CodegenNode {
     readOnly = false;
     /** 用來標示這個遠端的欄位在client端只能讀取, TextField也會readOnly */
 
-    storageFolder = 'public';
-    /** 用來標記圖片上傳到storage哪個資料夾 */
+    storageFolder;
+    /**  default path public 用來標記圖片上傳到storage哪個資料夾 */
 
     path;
     /** 用來當Router,記得記得字首要有slash */
@@ -661,7 +674,7 @@ class CodegenNode {
     }
 
     getStorageFolderName() {
-        return this.storageFolder;
+        return this.storageFolder ?? 'public';
     }
 
     getFunctionNameOfFetchCondition() {
@@ -669,9 +682,8 @@ class CodegenNode {
     }
 
     hasStorageFolder() {
-        return !!this.storageFolder;
+        return !Util.isUndefinedNullEmpty(this.storageFolder);
     }
-
 
     isCollectionPath() {
         if (this.hasPath()) {
@@ -1360,6 +1372,10 @@ class CodegenNode {
         return this.isAttributeView('img');
     }
 
+    isAudioPlayer() {
+        return this.isAttributeView('AudioPlayer');
+    }
+
     isAvatarView() {
         return this.isAttributeView('Avatar');
     }
@@ -1720,6 +1736,14 @@ class CodegenNode {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'clicked');
     }
 
+    getFunctionNameOfPlayEnd() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'ended');
+    }
+
+    getFunctionNameOfPlayError() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'error');
+    }
+
     getFunctionNameOfSearchPressed() {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'search', 'pressed');
     }
@@ -1732,19 +1756,28 @@ class CodegenNode {
         this.path = path;
     }
 
-    /** 得到 /username/${username}/id/${id} 這樣的字串 */
     getPathOfRouterString() {
         if (!this.hasPath()) return '';
+        return this.getStringOfRouter(this.getPath());
+    }
 
-        const params = this.getParamsOfPath();
+    /** 得到 /username/${username}/id/${id} 這樣的字串 */
+    getStringOfRouter(string) {
+        const params = this.getParamsOfString('undefined', string);
+        /** undefined 是不要第一個param是 view */
         const path = [];
-        for (const segment of this.getPath().split('/')) {
+        for (const segment of string.split('/')) {
             if (_.startsWith(segment, ':'))
                 path.push(`\$\{${params.shift()}\}`);
             else
                 path.push(segment);
         }
-        return path.join('/');
+        return path.join('/')
+    }
+
+    getStorageFolderOfRouterString() {
+        if (!this.hasStorageFolder()) return '';
+        return this.getStringOfRouter(this.getStorageFolderName());
     }
 
     /** /result/:resultId/id/:id => 把result它給拉出來 */
@@ -1754,39 +1787,44 @@ class CodegenNode {
         return segment.shift();
     }
 
-    /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
-    getParamsOfPath(platform, ...others) {
+    getParamsOfPath(platform = 'web', ...others) {
+        return this.getParamsOfString(platform, this.getPath(), ...others);
+    }
+
+    getParamsOfString(platform = 'web', string, ...others) {
         const params = [];
         if (_.isEqual(platform, 'web')) {
             params.push('view');
         }
 
-        if (!this.hasPath()) {
+        if (Util.isUndefinedNullEmpty(string)) {
             params.push(...others)
             return params;
         }
 
-        for (const segment of this.path.split('/')) {
-            if (_.startsWith(segment, ':')) {
-                let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
-                if (_.isEqual(param, 'uid') && _.isEqual(platform, 'web')) {
-                    param += '= UserInfoRef.getUid()';
-                }
-
-                if (_.isEqual(platform, 'route')) {
-                    param += ` = ''`;
-                }
-                params.push(param);
-            }
-        }
-
+        params.push(...this.getSplitParamsOfString(string));
         params.push(...others);
 
         if (_.isEqual('paramsOfRoute', platform) && this.detailPage) {
             params.push(KEYWORD_OF_UID_OF_DETAIL);
         }
-
         return params;
+    }
+
+    /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
+    getSplitParamsOfString(string) {
+        const params = [];
+        for (const segment of string.split('/')) {
+            if (_.startsWith(segment, ':')) {
+                let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
+                params.push(param);
+            }
+        }
+        return params;
+    }
+
+    getParamsOfStorageFolder(platform, ...others) {
+        return this.getParamsOfString(platform, this.getStorageFolderName(), ...others);
     }
 
     getStringOfParamsOfPath(platform, ...others) {
@@ -2672,6 +2710,7 @@ class PathBase {
                                    functionName,
                                    className,
                                    projectName,
+                                   title,
                                    projectVersion,
                                    projectDescription,
                                    fieldClass,
@@ -2690,6 +2729,7 @@ class PathBase {
             modifiedFieldName: `${Util.camel(`modified`, fieldName)}`,
             defaultValue,
             fieldUrl,
+            title,
             className,
             projectName,
             projectVersion,
@@ -3105,6 +3145,90 @@ class RemoteFunctionHandler {
 
     buildFetchSubmitApi = (node, recursively = false) => {
         const self = this;
+        const generator = self.generator;
+
+        function isWebPlatform() {
+            return self.platform === 'web';
+        }
+
+        function isAdminPlatform() {
+            return self.platform === 'admin';
+        }
+
+        function appendViewInParamStmt(comma = true) {
+            return isWebPlatform() ? `${comma ? ',' : ''}view` : ``;
+        }
+
+        function appendDefaultValueOfParams(...params) {
+            const latest = [];
+            if (isWebPlatform()) {
+                latest.push(params.map(param => {
+                    if (_.isEqual(param.trim(), 'id')) {
+                        return `${param} = this.getId()`;
+                    } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
+                        return `${param} = this.rawData()`;
+                    } else if (_.isEqual(param.trim(), 'restful')) {
+                        return `restful = {status: 'succeed', message: 'default reason'}`;
+                    } else if (_.isEqual(param.trim(), 'uid')) {
+                        return `${param} = UserInfoRef.getUid()`;
+                    } else if (_.isEqual(param.trim(), 'route')) {
+                        return `${param} = ''`;
+                    }
+                    return param;
+                }))
+            } else {
+                latest.push(...params);
+            }
+            return latest;
+        }
+
+        function houseKeepingStmt() {
+            if (isWebPlatform()) {
+                return [`if(this.hasParent())`,
+                    `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`];
+            } else
+                return [];
+        }
+
+        function getFetchStmt() {
+            if (isWebPlatform()) return [`this.clean()`, `this.initial(item)`];
+            return [];
+        }
+
+        function generateApiFunction(node, name, params = [], logicStmts = [], type, isAsync = true, uploadFile = false) {
+            const defaultParam = uploadFile ? node.getParamsOfStorageFolder(self.platform) : node.getParamsOfPath(self.platform);
+            const preStmts = [`const self = this`];
+            preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
+                `const path = \`${node.getPathOfRouterString()}\``
+            )
+
+            let stmts = [];
+            if (isAsync) {
+                stmts.push(`const task = async () => {`)
+                stmts.push(...logicStmts);
+                stmts.push(`}`);
+                if (isWebPlatform())
+                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${uploadFile ? 'folder' : 'path'}${appendViewInParamStmt()})`)
+                else
+                    stmts.push(`return await task()`);
+            } else {
+                stmts.push(...logicStmts);
+            }
+
+            const pramsOfWhole = appendDefaultValueOfParams(...defaultParam, ...params);
+            const stmtsOfWhole = [...preStmts, ...stmts];
+            if (isAsync) {
+                generator.appendAsyncFunction(name, pramsOfWhole, [], [],
+                    ...stmtsOfWhole)
+            } else {
+                generator.appendFunction(name, pramsOfWhole, [], [],
+                    ...stmtsOfWhole)
+            }
+        }
+
+        function getCommentDescription(node) {
+            return `\/\/ ${node.getType()}:${node.getDescription()}`
+        }
 
         function getConditionStmts(isFetchAll = false) {
             const stmts = [];
@@ -3122,80 +3246,6 @@ class RemoteFunctionHandler {
         if (node.isCollection()) {
             const contents = [];
             const children = [];
-            const generator = this.generator;
-
-            function isWebPlatform() {
-                return self.platform === 'web';
-            }
-
-            function isAdminPlatform() {
-                return self.platform === 'admin';
-            }
-
-            function appendViewInParamStmt(comma = true) {
-                return isWebPlatform() ? `${comma ? ',' : ''}view` : ``;
-            }
-
-            function houseKeepingStmt() {
-                if (isWebPlatform()) {
-                    return [`if(this.hasParent())`,
-                        `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`];
-                } else
-                    return [];
-            }
-
-            function getFetchStmt() {
-                if (isWebPlatform()) return [`this.clean()`, `this.initial(item)`];
-                return [];
-            }
-
-            function generateApiFunction(name, params = [], logicStmts = [], type, isAsync = true) {
-                const defaultParam = node.getParamsOfPath(self.platform);
-                const preStmts = [
-                    `const self = this`,
-                    `const path = \`${node.getPathOfRouterString()}\``
-                ];
-
-                let stmts = [];
-                if (isAsync) {
-                    stmts.push(`const task = async () => {`)
-                    stmts.push(...logicStmts);
-                    stmts.push(`}`);
-                    if (isWebPlatform())
-                        stmts.push(`return await self.runUIAsyncTask(task, '${type}', path${appendViewInParamStmt()})`)
-                    else
-                        stmts.push(`return await task()`);
-                } else {
-                    stmts.push(...logicStmts);
-                }
-
-                if (isWebPlatform()) {
-                    params = params.map(param => {
-                        if (_.isEqual(param.trim(), 'id')) {
-                            return `${param} = this.getId()`;
-                        } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
-                            return `${param} = this.rawData()`;
-                        } else if (_.isEqual(param.trim(), 'restful')) {
-                            return `restful = {status: 'succeed', message: 'default reason'}`;
-                        }
-                        return param;
-                    })
-                }
-
-                const pramsOfWhole = [...defaultParam, ...params];
-                const stmtsOfWhole = [...preStmts, ...stmts];
-                if (isAsync) {
-                    generator.appendAsyncFunction(name, pramsOfWhole, [], [],
-                        ...stmtsOfWhole)
-                } else {
-                    generator.appendFunction(name, pramsOfWhole, [], [],
-                        ...stmtsOfWhole)
-                }
-            }
-
-            function getCommentDescription(node) {
-                return `\/\/ ${node.getType()}:${node.getDescription()}`
-            }
 
             if (generator === undefined)
                 throw new ERROR(8016)
@@ -3203,6 +3253,17 @@ class RemoteFunctionHandler {
             for (const child of node.getPreciseAttributeChildren()) {
                 if (child.isReservedAttribute()) continue;
                 if (!child.isColumnAttribute()) continue;
+
+
+                if (child.hasStorageFolder()) {
+                    generateApiFunction(
+                        child, Util.camel('uploadStorageOf', child.getName()),
+                        ['blob'],
+                        [
+                            `return await self.uploadStorageFile(blob, folder);`,
+                        ], `upload storage file`, true, true)
+                }
+
                 if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
                                     object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};${getCommentDescription(child)}`);
@@ -3235,7 +3296,7 @@ class RemoteFunctionHandler {
                 if (node.isCheapArray()) {
 
                     generateApiFunction(
-                        Util.camel('submit', node.getFieldName()),
+                        node, Util.camel('submit', node.getFieldName()),
                         ['...items'],
                         [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
                             `return await self.submitObject(path,{
@@ -3243,12 +3304,15 @@ class RemoteFunctionHandler {
                                     updateTime:this._firebase().getServerTimeSymbol(),
                             },'${ID_OF_CHEAP_ARRAY}')`], `submit cheap  items`)
 
-                    generateApiFunction(node.getFunctionNameOfFetch(),
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfFetch(),
                         [],
                         [`const result = await self.fetchObject(path,'${ID_OF_CHEAP_ARRAY}')`,
                             `return result.${ID_OF_CHEAP_ARRAY} ?? []`], `fetch cheap items`);
 
                     generateApiFunction(
+                        node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
                         [], [`return _.size(await self.${node.getFunctionNameOfFetch()}())`], `fetch cheap size`)
 
@@ -3267,12 +3331,15 @@ class RemoteFunctionHandler {
                         )
 
                         /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
-                        generateApiFunction(node.getFunctionNameOfPureFetch(),
+                        generateApiFunction(
+                            node,
+                            node.getFunctionNameOfPureFetch(),
                             ['...conditions'],
                             [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`], `fetch items without limit condition`);
                     }
 
                     generateApiFunction(
+                        node,
                         Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
                         ['id'],
                         [`return this.firestoreDocRef(path, id)`],
@@ -3281,6 +3348,7 @@ class RemoteFunctionHandler {
                     )
 
                     generateApiFunction(
+                        node,
                         Util.camel(node.getFunctionNameOfFetch(), 'of', 'limitation'),
                         [`action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'],
                         [`return await this.fetchItemsOfLimitation(path, action, fieldName, ...valuesOfComparison)`],
@@ -3288,11 +3356,13 @@ class RemoteFunctionHandler {
                     )
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfFetch(),
                         ['...conditions'],
                         [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`], `fetch items`);
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfFetchItem(),
                         [`id`],
                         ['const item =  await self.fetchItem(path, id)',
@@ -3301,27 +3371,32 @@ class RemoteFunctionHandler {
 
                     /** admins only , delete collection all */
                     generateApiFunction(
+                        node,
                         Util.camel(`delete`, node.getFieldName()),
                         ['all = false', '...conditions'],
                         [`return await self.deleteItems(path,all,...conditions)`], 'delete items')
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfSubmitItem(),
                         [`item`],
                         [`const commitment = this.${functionNameOfNormalize}(item)`,
                             `return await self.submitItem(path, commitment);`], 'submit item')
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfUpdateItem(),
                         [`id`, `item`],
                         [`return await self.updateItem(path, id , item)`], 'update item')
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfUpdateItemAtomically(),
                         ['id', 'predict = async (item,transaction) => item'],
                         [`return await self.updateItemAtomically(path,id,predict)`], 'update item atomically')
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfDeleteItem(),
                         [`id`],
                         [`const result = await self.deleteItem(path, id)`,
@@ -3329,22 +3404,26 @@ class RemoteFunctionHandler {
                             `return result`], 'delete item')
 
                     generateApiFunction(
+                        node,
                         Util.camel('submit', node.getFieldName()),
                         ['...items'],
                         [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
                             `return await self.submitItems(path,...commitments)`], `submit items`)
 
                     generateApiFunction(
+                        node,
                         Util.camel('update', node.getFieldName()),
                         ['...items'],
                         [`await self.updateItems(path,...items)`], `update items`)
 
                     generateApiFunction(
+                        node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
                         [], [`return await self.fetchSizeOfCollection(path)`], `fetch size`)
 
                     if (this.isAdminPlatform() && node.isRestfulBean()) {
                         generateApiFunction(
+                            node,
                             Util.camel(`restful`, node.getFunctionNameOfSubmitItem()),
                             ['item', 'restful'],
                             [`const commitment = this.${functionNameOfNormalize}({...item, ...restful})`,
@@ -3354,6 +3433,7 @@ class RemoteFunctionHandler {
 
                 } else if (node.isObject()) {
                     generateApiFunction(
+                        node,
                         Util.camel('get', node.getName(), 'doc', 'ref'),
                         [],
                         [`return this.firestoreDocRef(path,'${node.getName()}')`],
@@ -3361,6 +3441,7 @@ class RemoteFunctionHandler {
                         false)
 
                     generateApiFunction(
+                        node,
                         Util.camel(node.getFunctionNameOfSubmit()),
                         [`object`],
                         [
@@ -3368,6 +3449,7 @@ class RemoteFunctionHandler {
                             `return await self.submitObject(path, commitment,'${node.getName()}')`], `submit object`)
 
                     generateApiFunction(
+                        node,
                         node.getFunctionNameOfFetch(),
                         [],
                         [
@@ -3378,16 +3460,19 @@ class RemoteFunctionHandler {
                         ], `fetch object`)
 
                     generateApiFunction(
+                        node,
                         Util.camel('update', node.getFieldName()),
                         [`object`],
                         [`return await self.updateObject(path, '${node.getName()}',object)`], `update object`);
 
                     generateApiFunction(
+                        node,
                         Util.camel('update', node.getFieldName(), 'atomically'),
                         [`predict = async (object,transaction) => object`],
                         [`return await self.updateObjectAtomically(path, '${node.getName()}',predict)`], `update object atomically`);
 
                     generateApiFunction(
+                        node,
                         Util.camel('delete', node.getFieldName()),
                         [],
                         [`return await self.deleteObject(path, '${node.getName()}')`], `delete object`);
@@ -3395,12 +3480,12 @@ class RemoteFunctionHandler {
                     for (const child of node.getPreciseColumnChildren()) {
                         if (child.hasIncrementUsage()) {
                             generateApiFunction(
+                                node,
                                 Util.camel('submit', 'increment', child.getFieldName()),
                                 [],
                                 [
                                     `return await self.updateObject(path, '${node.getName()}',{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})},)`
                                 ], `update(increment) object`);
-
                         }
                     }
                 } else {
@@ -3473,7 +3558,7 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendImport('Style', '../../style');
 
         const paramsOfPath = [];/**{name:functionName}*/
-        for (const param of componentNode.getParamsOfPath()) {
+        for (const param of componentNode.getParamsOfPath('undefined')) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
             const paramOf = Util.camel('param', 'of', normalizeParam);
             const functionName = Util.camel('isValidOf', paramOf);
@@ -4382,7 +4467,11 @@ class AppBuilder extends ComponentBuilder {
 
     async buildHtmlIndexAssetsFile() {
         const path = Util.persistByPath(libpath.join(this.genRootPath, 'dist'));
-        this.appendMustacheFile('index.html', libpath.join(path, 'index.html'));
+        this.appendMustacheFile(
+            'index.html.mustache',
+            libpath.join(path, 'index.html'),
+            {title: this.nodeOfAncestor.title}
+        );
     }
 
     async buildCloudFunctionsApi() {
@@ -5287,12 +5376,12 @@ class ProjectFileHandler extends PathBase {
                 }
             }
         }
-
-        await this.recursiveDoingOfNodeEachStruct((node) => node.isImageView() && node.hasStorageFolder(), task)
+        await this.recursiveDoingOfNodeEachStruct((node) => node.hasStorageFolder(), task)
         const stmts = [];
         for (const name in permissions) {
             const _stmt = [];
-            _stmt.push(`match ${libpath.join('/', name)}/{fileId} {`);
+            const normalize = name.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
+            _stmt.push(`match ${libpath.join('/', normalize)}/{fileId} {`);
             const permission = permissions[name];
             for (const type in permission) {
                 _stmt.push(`allow ${type}: if ${permission[type]}`)
@@ -5355,7 +5444,22 @@ class ProjectFileHandler extends PathBase {
         await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes}), 'firestore:indexes', deploy)
     }
 
+
+    getFirebaseRuleOfMatchRoute(node) {
+        const path = node.getPath();
+        const wildcard = `{${node.getName()}}`;
+        const normalize = path.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
+        if (node.isObject()) {
+            return libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
+        } else if (node.isArray()) {
+            return libpath.join('/', normalize, wildcard);
+        } else {
+            throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
+        }
+    }
+
     async generateFireStoreRules(deploy = true) {
+        const self = this;
         const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
         const stmts = [];
 
@@ -5365,7 +5469,7 @@ class ProjectFileHandler extends PathBase {
             if (disable) return '';
 
             if (Util.isOrEquals(type, 'update')) {
-                const path = libpath.join('/databases/$(database)/documents', Util.getStringOfPop(getFirestoreRoute(node), `\/`),
+                const path = libpath.join('/databases/$(database)/documents', Util.getStringOfPop(self.getFirebaseRuleOfMatchRoute(node), `\/`),
                     `$(request.resource.id)`)
                 const getAfter = `getAfter(${path})`;
                 const stmt = `&& ${getAfter}.data.updateTime == request.time`;
@@ -5374,26 +5478,13 @@ class ProjectFileHandler extends PathBase {
             return '';
         }
 
-        function getFirestoreRoute(node) {
-            const path = node.getPath();
-            const wildcard = `{${node.getName()}}`;
-            const normalize = path.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
-            if (node.isObject()) {
-                return libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
-            } else if (node.isArray()) {
-                return libpath.join('/', normalize, wildcard);
-            } else {
-                throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
-            }
-        }
-
         const task = async (node) => {
             const _stmts = [];
             const permission = node.getPermission();
             for (const each in permission) {
                 _stmts.push(`allow ${each}: if ${permission[each]} ${appendGetAfterStmts(each, node)};`)
             }
-            stmts.push(`match ${getFirestoreRoute(node)} {`, ..._stmts, '}');
+            stmts.push(`match ${self.getFirebaseRuleOfMatchRoute(node)} {`, ..._stmts, '}');
         }
         await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
@@ -5449,6 +5540,9 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isFloatBackgroundView()) {
                 const clone = _.cloneDeep(node.raw);
+                if(!node.getParentNode().hasWrap()) {
+                    node.getParentNode().setWrapView('div');
+                }
                 clone.view = 'img';
                 clone.wrapView = 'div';
                 const float = {
@@ -5778,7 +5872,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
-            } else if (node.isImageView() || node.isAvatarView()) {
+            } else if (node.isAudioPlayer() || node.isImageView() || node.isAvatarView()) {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
@@ -5910,6 +6004,28 @@ class ProjectFileHandler extends PathBase {
                     params: ['param'],
                     loginOnly: node.hasLoginRequiredDialog(),
                 })
+            }
+
+            if (node.isAudioPlayer()) {
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfPlayEnd(),
+                    params: ['param'],
+                })
+
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfPlayError(),
+                    params: ['param'],
+                })
+
+                node.appendViewProps(
+                    {
+                        onError: `###(param) => self.${node.getFunctionNameOfPlayError()}(param)`
+                    },
+                    {
+                        onEnded: `###(param) => self.${node.getFunctionNameOfPlayEnd()}(param)`
+                    }
+                )
+
             }
 
             if (node.isClickView()) {

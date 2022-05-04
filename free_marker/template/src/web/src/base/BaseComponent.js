@@ -527,6 +527,11 @@ class BaseComponent extends React.Component {
         this.enableFileSelectView(accepts, multiple)
     }
 
+    enableVoiceSelectView(multiple = false) {
+        const accepts = `audio/*`;
+        this.enableFileSelectView(accepts, multiple)
+    }
+
     renderGlobalLoadingView() {
         if (this.isNavigator()) {
             return undefined;

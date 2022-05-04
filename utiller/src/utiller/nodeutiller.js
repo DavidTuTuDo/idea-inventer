@@ -23,12 +23,6 @@ class NodeUtiller extends Utiller {
         return `${splited.join('/')}/.idea`;
     }
 
-    /** path ==> /asd/cc/dfj/jei3.mp3 => */
-    isPathEqualsFileType(path, type) {
-        const extension = path.split('.').pop();
-        return _.isEqual(extension, type);
-    }
-
     /** {numpages, numrender, info, text, version} */
     async getPDFText(path) {
         let dataBuffer = fs.readFileSync(path);
@@ -223,11 +217,6 @@ class NodeUtiller extends Utiller {
         }
     }
 
-    /** 取得檔案的目錄, path => c://folderName/fileName.js to c://folderName */
-    getFileDirPath(path, slash = true) {
-        return _.join(_.initial(_.split(path, '/')), '/') + (slash ? '/' : '');
-    }
-
     /** 刪掉自己, force能夠強制刪除 自己root_dir 以外的path */
     async deleteSelfByPath(path, force) {
         if (fs.existsSync(path)) {
@@ -248,12 +237,6 @@ class NodeUtiller extends Utiller {
         for (const path of pathes) {
             await this.deleteSelfByPath(path.absolute, force);
         }
-    }
-
-    /** absolute=> /acc/bbv/{target}/index.js 檢查有沒有在他下面 */
-    isUnderTargetPath(absolute, target) {
-        const segments = absolute.split('/');
-        return this.has(segments, target);
     }
 
     /** 取得folder底下的file counts*/
@@ -360,7 +343,6 @@ class NodeUtiller extends Utiller {
          * fs.truncateSync(path, 0);
          this.appendInfo(`${path} 內容被清除！`);
          * */
-
     }
 
     async syncWithExistPackage(path = '../') {
@@ -548,13 +530,6 @@ class NodeUtiller extends Utiller {
         fs.writeFileSync(path, data);
     }
 
-    /** ../folderName/fileName.xxx  => ./folderName */
-    getFolderPathOfSpecificPath(path) {
-        const splited = path.split('/');
-        splited.pop();
-        return splited.join('/');
-    }
-
     /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
      * release folder 會被自動ignore到
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
@@ -680,25 +655,6 @@ class NodeUtiller extends Utiller {
     getAdminCredential() {
         return this.getJsonObjByFilePath(
             '/Users/davidtu/cross-achieve/mimi/idea-inventer/firebaser/key/mimi19up-firebase-adminsdk.json')
-    }
-
-    /** http://wnj.cdji/david.mp3 => david.mp3 */
-    getFileNameExtensionFromPath(path) {
-        const name = path.split('/').pop()
-        return name;
-    }
-
-    /** http://wnj.cdji/david.mp3 => mp3 */
-    getExtensionFromPath(path) {
-        const name = path.split('/').pop()
-        const segments = name.split('.');
-        return _.size(segments) > 1 ? segments.pop() : '';
-    }
-
-    /** 是一個/a/b/c.js 的檔案路徑 */
-    isValidFilePath(path) {
-        const extension = this.getExtensionFromPath(path);
-        return _.size(extension) > 0;
     }
 
     isEmptyFile(path) {

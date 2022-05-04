@@ -29,6 +29,10 @@ class ModularizedNavigatorToolBarCompleteStore extends BaseNavigatorToolBarCompl
   constructor(props) {
     super(props);
   }
+
+  getLabelOfInput() {
+    return `無搜尋的項目`;
+  }
   /** -------------------- async api -------------------- **/
 }
 export default ModularizedNavigatorToolBarCompleteStore;

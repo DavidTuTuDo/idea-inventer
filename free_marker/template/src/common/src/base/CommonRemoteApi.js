@@ -1,7 +1,6 @@
-import {utiller as Util, exceptioner as ERROR, pooller} from 'utiller';
+import {exceptioner as ERROR, utiller as Util} from 'utiller';
 import _ from 'lodash';
 import moment from 'moment';
-import config from '../config';
 import libpath from 'path';
 import firebase from "./CommonFirebaseHelper";
 
@@ -479,6 +478,14 @@ class CommonRemoteApi {
                 }
             }
         }
+    }
+
+    async uploadStorageFile(blob, folder = 'public', type = 'file') {
+        const ref = firebase.storage().ref();
+        const uploadPath = libpath.join('./', folder, blob.name);
+        Util.appendInfo(`firebase storage upload file path => ${uploadPath}`);
+        const uploadTask = await ref.child(uploadPath).put(blob);
+        return await uploadTask.ref.getDownloadURL();
     }
 
 }

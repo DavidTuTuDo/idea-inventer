@@ -5,6 +5,7 @@ import libpath from 'path';
 import CommonPoolHelper from "./CommonPoolHelper";
 import CommonRemoteApi from "./CommonRemoteApi";
 import BaseComponent from "./BaseComponent";
+import firebase from "./CommonFirebaseHelper";
 
 class ClientRemoteApi extends CommonRemoteApi {
 
@@ -18,7 +19,7 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     async batchSubmitItem(path, ...objects) {
-        const _async = async () => super.batchSubmitItem(path, ...objects);
+        const _async = async () => super.submitItems(path, ...objects);
         return await CommonPoolHelper.submitTo('submit', _async);
     }
 
@@ -68,7 +69,11 @@ class ClientRemoteApi extends CommonRemoteApi {
     async deleteObject(path, objName) {
         const _async = async () => super.deleteObject(path, objName);
         return await CommonPoolHelper.submitTo('submit', _async)
+    }
 
+    async uploadStorageFile(blob, folder = 'public', type = 'file') {
+        const _async = async () => super.uploadStorageFile(blob, folder, type);
+        return await CommonPoolHelper.submitTo('submit', _async, 'high', `upload ${type}`);
     }
 
     async callCloudFunctions(functionName, data = {}) {

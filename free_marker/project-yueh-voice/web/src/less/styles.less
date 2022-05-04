@@ -1,0 +1,1006 @@
+@mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+@tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
+@desktop: ~"only screen and (min-width: 601px)";
+@import "./libs/slideshow.less";
+@import "./libs/firebaseui.less";
+@import "./libs/base.less";
+/** following for main  component used  */
+
+.MainDiv:extend(.CenterInParentColumn) {
+  background-color: black;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainFuncAreaDiv:extend(.CenterInParentRow) {
+  margin: 10px;
+  gap: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainFuncAreaUploadVoiceButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainFuncAreaDeleteAllButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoicePaper:extend(.CenterInParentRow) {
+  justify-content: space-between;
+  padding-left: 5px;
+  padding-right: 5px;
+  background-color: rgba(255, 255, 255, 0.2);
+  @media @mobile {
+    width: 95vw;
+    min-height: 55px;
+  }
+  @media @tablet {
+    width: 95vw;
+    min-height: 55px;
+  }
+  @media @desktop {
+    width: 60vw;
+    max-width: 500px;
+    min-height: 58px;
+  }
+}
+.MainVoiceDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceDivList:extend(.CenterInParentColumn) {
+  padding-top: 10px;
+  padding-bottom: 5px;
+  gap: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoicePaperSkeleton {
+  width: 100vw;
+  height: 25vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceEnableSwitch {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceExecutingCoveredOuterDiv:extend(.MainVoicePaper) {
+  pointer-events: none;
+  background-color: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  z-index: 3;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceTitleAreaDiv:extend(.CenterInParentColumn) {
+  gap: 3px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceTitleAreaNameTypography {
+  color: white;
+  @media @mobile {
+    font-size: 0.9rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceTitleAreaSingerTypography {
+  color: rgba(255, 255, 255, 0.4);
+  @media @mobile {
+    font-size: 0.6rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceExtraIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainVoiceExtraIconMoreHoriz {
+  color: white;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainStickyBottomAreaDiv {
+  width: 100vw;
+  position: sticky;
+  position: -webkit-sticky;
+  bottom: 0px;
+  z-index: 3;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainStickyBottomAreaSrcOfPVoiceAudioPlayer {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainStickyBottomAreaFuncOfPlayRuleDiv {
+  position: absolute;
+  z-index: 3;
+  bottom: 5px;
+  left: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton {
+  border-color: #868686;
+  color: #868686;
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainStickyBottomAreaFuncOfPlayRuleEnableAllButton:extend(.MainStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton) {
+  margin-left: 8px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainFloatAreaOuterDiv:extend(.CenterInParentRelative) {
+  pointer-events: none;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainFloatAreaLogoImg {
+  opacity: 0.1;
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 70%;
+    /** empty style */
+  }
+}
+.MainFloatAreaLogoDivWrap:extend(.CenterInParentColumn) {
+  height: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for account  component used  */
+
+.AccountPaper:extend(.CenterInParentColumn) {
+  width: 90vw;
+  min-height: 50vh;
+  gap: 3px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    max-width: 550px;
+  }
+}
+.AccountUrlOfHeadPhotoAvatar {
+  width: 60px;
+  height: 60px;
+  @media @mobile {
+    margin-bottom: 20px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    margin-bottom: 40px;
+  }
+}
+.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
+  width: 80%;
+  justify-content: space-between;
+  @media @mobile {
+    width: 90%;
+  }
+  @media @tablet {
+    width: 90%;
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountSpaceDiv {
+  height: 1px;
+  width: 80%;
+  background-color: rgba(0, 0, 0, 0.3);
+  @media @mobile {
+    width: 90%;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    font-size: 0.8rem;
+  }
+  @media @desktop {
+    font-size: 0.9rem;
+  }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
+  @media @mobile {
+    font-size: 0.7rem;
+  }
+  @media @tablet {
+    font-size: 0.7rem;
+  }
+  @media @desktop {
+    font-size: 0.8rem;
+  }
+}
+.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    font-size: 0.8rem;
+  }
+  @media @desktop {
+    font-size: 0.9rem;
+  }
+}
+.AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
+  @media @mobile {
+    font-size: 0.7rem;
+  }
+  @media @tablet {
+    font-size: 0.7rem;
+  }
+  @media @desktop {
+    font-size: 0.8rem;
+  }
+}
+.AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  margin-top: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditCopyUserIdButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditLogoutButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditLogoutReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountFuncAreaOfEditToEditModeButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for navigator  component used  */
+
+.NavigatorDiv {
+  flex-grow: 1;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarToolbar {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAppBarWrap {
+  background-color: #111111;
+  @media @mobile {
+    height: 60px;
+    display: flex;
+    justify-content: center;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarMenuIconButton {
+  margin-right: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarMenuIconMenuIcon {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarTitleTypography {
+  width: 80px;
+  font-size: 1.4rem;
+  @media @mobile {
+    font-size: 1rem;
+    width: 50px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCompleteAutocomplete {
+  flex-grow: 1;
+  margin-right: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCompleteInputTextField {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  @media @mobile {
+    width: 95%;
+  }
+  @media @tablet {
+    width: 95%;
+  }
+  @media @desktop {
+    width: 70%;
+    max-width: 500px;
+  }
+}
+.NavigatorToolBarCompleteInputFormWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarLoginButton {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAccountIconButton {
+  background-color: rgba(255, 255, 255, 0.9);
+  height: 32px;
+  width: 32px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAccountReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAccountHeadAccountCircle {
+  height: 40px;
+  width: 40px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerDrawer {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutListItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutListList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutListItemSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutTitleTypography {
+  font-size: 3rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerShortcutIconImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for main editor component used  */
+
+.MainEditorDiv:extend(.MainDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorDivWrap:extend(.MainDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorFuncAreaDiv:extend(.MainFuncAreaDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoicePaper:extend(.MainVoicePaper) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceDivWrap:extend(.MainVoiceDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceDivList:extend(.MainVoiceDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceExecutingCoveredOuterDiv:extend(.MainVoiceExecutingCoveredOuterDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceTitleAreaDiv:extend(.MainVoiceTitleAreaDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceTitleAreaNameTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceTitleAreaSingerTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceDurationTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceExtraIconButton:extend(.MainVoiceExtraIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceExtraIconMoreHoriz:extend(.MainVoiceExtraIconMoreHoriz) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceIndexOfSequenceTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoicePathOfResourceTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoicePopularLevelTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorVoiceIdTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorStickyBottomAreaDiv:extend(.MainStickyBottomAreaDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorStickyBottomAreaFuncOfPlayRuleDiv:extend(.MainStickyBottomAreaFuncOfPlayRuleDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorFloatAreaOuterDiv:extend(.MainFloatAreaOuterDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}

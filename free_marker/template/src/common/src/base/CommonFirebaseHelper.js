@@ -184,18 +184,6 @@ class CommonFirebaseHelper extends BaseFirebase {
         }
     }
 
-    async uploadImage(blob, folder = 'public') {
-        const asyncTask = async () => {
-            const ref = this.storage().ref();
-            const uploadPath = libpath.join('./', folder, blob.name);
-            Util.appendInfo(`storage upload path => ${uploadPath}`);
-            const uploadTask = await ref.child(uploadPath).put(blob);
-            const url = await uploadTask.ref.getDownloadURL();
-            return url;
-        }
-        return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'uploadImage');
-    }
-
     getFieldNameOfDocumentId() {
         return this.getFirestoreLibrary().FieldPath.documentId();
     }

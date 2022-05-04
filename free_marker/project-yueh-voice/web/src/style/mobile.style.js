@@ -1,0 +1,191 @@
+import {
+  utiller as Util,
+  exceptioner as ERROR,
+  pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+import libpath from "path";
+
+class MobileStyle {
+  /** -------------------- fields -------------------- **/
+
+  /** => following for main editor component  */
+
+  MainEditorFloatAreaOuterDiv = {};
+
+  MainEditorStickyBottomAreaFuncOfPlayRuleDiv = {};
+
+  MainEditorStickyBottomAreaDiv = {};
+
+  MainEditorVoiceIdTextField = {};
+
+  MainEditorVoicePopularLevelTextField = {};
+
+  MainEditorVoicePathOfResourceTextField = {};
+
+  MainEditorVoiceIndexOfSequenceTextField = {};
+
+  MainEditorVoiceExtraIconMoreHoriz = {};
+
+  MainEditorVoiceExtraIconButton = {};
+
+  MainEditorVoiceDurationTextField = {};
+
+  MainEditorVoiceTitleAreaSingerTextField = {};
+
+  MainEditorVoiceTitleAreaNameTextField = {};
+
+  MainEditorVoiceTitleAreaDiv = {};
+
+  MainEditorVoiceExecutingCoveredOuterDiv = {};
+
+  MainEditorVoiceDivList = {};
+
+  MainEditorVoiceDivWrap = {};
+
+  MainEditorVoicePaper = {};
+
+  MainEditorFuncAreaDiv = {};
+
+  MainEditorDivWrap = {};
+
+  MainEditorDiv = {};
+
+  /** => following for navigator  component  */
+
+  NavigatorDrawerShortcutIconImg = {};
+
+  NavigatorDrawerShortcutTitleTypography = {};
+
+  NavigatorDrawerShortcutListItemSkeleton = {};
+
+  NavigatorDrawerShortcutListList = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerDrawer = {};
+
+  NavigatorToolBarAccountHeadAccountCircle = {};
+
+  NavigatorToolBarAccountReactFragmentWrap = {};
+
+  NavigatorToolBarAccountIconButton = {};
+
+  NavigatorToolBarLoginButton = {};
+
+  NavigatorToolBarCompleteInputFormWrap = {};
+
+  NavigatorToolBarCompleteInputTextField = {};
+
+  NavigatorToolBarCompleteAutocomplete = {};
+
+  NavigatorToolBarTitleTypography = {};
+
+  NavigatorToolBarMenuIconMenuIcon = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarAppBarWrap = {};
+
+  NavigatorToolBarToolbar = {};
+
+  NavigatorDiv = {};
+
+  /** => following for account  component  */
+
+  AccountFuncAreaOfEditToEditModeButton = {};
+
+  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditLogoutButton = {};
+
+  AccountFuncAreaOfEditCopyUserIdButton = {};
+
+  AccountFuncAreaOfEditDiv = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+
+  AccountFuncAreaOfIdDiv = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+  AccountFuncAreaOfEmailDiv = {};
+
+  AccountSpaceDiv = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+  AccountFuncAreaOfNameDiv = {};
+
+  AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountPaper = {};
+
+  /** => following for main  component  */
+
+  MainFloatAreaLogoDivWrap = {};
+
+  MainFloatAreaLogoImg = {};
+
+  MainFloatAreaOuterDiv = {};
+
+  MainStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
+
+  MainStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton = {};
+
+  MainStickyBottomAreaFuncOfPlayRuleDiv = {};
+
+  MainStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
+
+  MainStickyBottomAreaDiv = {};
+
+  MainVoiceExtraIconMoreHoriz = {};
+
+  MainVoiceExtraIconButton = {};
+
+  MainVoiceTitleAreaSingerTypography = {};
+
+  MainVoiceTitleAreaNameTypography = {};
+
+  MainVoiceTitleAreaDiv = {};
+
+  MainVoiceExecutingCoveredOuterDiv = {};
+
+  MainVoiceEnableSwitch = {};
+
+  MainVoicePaperSkeleton = {};
+
+  MainVoiceDivList = {};
+
+  MainVoiceDivWrap = {};
+
+  MainVoicePaper = {};
+
+  MainFuncAreaDeleteAllButton = {};
+
+  MainFuncAreaUploadVoiceButton = {};
+
+  MainFuncAreaDiv = {};
+
+  MainDivWrap = {};
+
+  MainDiv = {};
+
+  /** -------------------- functions -------------------- **/
+
+  constructor(props) {}
+  /** -------------------- async api -------------------- **/
+}
+export default new MobileStyle();
