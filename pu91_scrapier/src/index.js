@@ -23,11 +23,11 @@ import {databazer as SQL} from 'databazer';
 
         async function persistRankTable() {
             const tableName = Config.RANK_TABLE_NAME;
-            await database.dropTable(tableName);
             for (const maintype in Config.RANK_TABLE_TYPE) {
                 Util.appendInfo(`正在fetch 排行榜上  "${maintype}" 的 RANK...`)
                 const ranks = await fetchRankTable(Config.RANK_TABLE_TYPE[maintype].ID, Config.RANK_TABLE_TYPE[maintype].SORT)
 
+                await database.dropTable(tableName);
                 for (const rank of ranks) {
                     for (const each of _.reverse(rank.items)) {
                         const obj = {}
