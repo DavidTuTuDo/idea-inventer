@@ -208,11 +208,24 @@ class SheetStore extends BaseSheetStore {
     }
 
     setVisibleOfChordInContext(hide = false) {
+        function getStringOfRemoveChordsAndSeparator(paragraph) {
+            const after = Util.replaceAllWithSets(paragraph,{from:SEPARATOR_OF_CHORD, to:' '}, {from:'－',to:' '},{from:'-',to:' '});
+            const reg = new RegExp(`^[A-G]`, 'g');
+            return Util.getStringHandledByEachLine(after,
+                (segment, index, segments) => {
+                    if (reg.test(_.trim(segment))) {
+                        Util.replaceArrayByContentIndex(segments, segment, '');
+                    }
+                },
+                ' ',
+            );
+        }
+
         const segments = this.getOriginalPuContext().split('\n');
         if (hide) {
             for (const segment of segments) {
                 if (this.isGuitarChordParagraph(segment))
-                    Util.replaceArrayByContentIndex(segments, segment, '');
+                    Util.replaceArrayByContentIndex(segments, segment, getStringOfRemoveChordsAndSeparator(segment));
             }
         }
         this.updatePuContext(segments.join('\n'));

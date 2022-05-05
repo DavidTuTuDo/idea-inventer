@@ -23,50 +23,49 @@ if (configerer.DEBUG_MODE) {
             // console.log(AtoZ.substr(0,length));
 
 
-            async function runTaskWithTimeout() {
-                const timeout = (ms, message) => {
-                    return new Promise((_, reject) => {
-                        setTimeout(() => {
-                            reject(new Error(message));
-                        }, ms);
-                    });
-                };
-
-                try {
-                    await Promise.race([
-                        timeout(3000, 'timeout happen'), // 3000 = the maximum time to wait
-                        (async () => {
-                            // ..
-                            console.log('task start')
-                            await wait(4000);
-                        })()
-                    ]);
-
-                    /** assume this is async function*/
-                    console.log('task complete')
-                } catch (error) {
-                    console.log('catch error', error.message);
-                } finally {
-                    console.log('task finally')
-                }
-            }
-
-            const timeout = (ms, message) => {
-                return new Promise((_, reject) => {
-                    setTimeout(() => {
-                        reject(new Error(message));
-                    }, ms);
-                });
-            };
-
-            async function wait(ms) {
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve(ms);
-                    }, ms);
-                });
-            }
-
+            // async function runTaskWithTimeout() {
+            //     const timeout = (ms, message) => {
+            //         return new Promise((_, reject) => {
+            //             setTimeout(() => {
+            //                 reject(new Error(message));
+            //             }, ms);
+            //         });
+            //     };
+            //
+            //     try {
+            //         await Promise.race([
+            //             timeout(3000, 'timeout happen'), // 3000 = the maximum time to wait
+            //             (async () => {
+            //                 // ..
+            //                 console.log('task start')
+            //                 await wait(4000);
+            //             })()
+            //         ]);
+            //
+            //         /** assume this is async function*/
+            //         console.log('task complete')
+            //     } catch (error) {
+            //         console.log('catch error', error.message);
+            //     } finally {
+            //         console.log('task finally')
+            //     }
+            // }
+            //
+            // const timeout = (ms, message) => {
+            //     return new Promise((_, reject) => {
+            //         setTimeout(() => {
+            //             reject(new Error(message));
+            //         }, ms);
+            //     });
+            // };
+            //
+            // async function wait(ms) {
+            //     return new Promise(resolve => {
+            //         setTimeout(() => {
+            //             resolve(ms);
+            //         }, ms);
+            //     });
+            // }
             // await runTaskWithTimeout();
             // const array = [1,2,3,4,5,6,7,8];
             // console.log(_.nth(array,-9 % _.size(array)));
@@ -102,6 +101,10 @@ if (configerer.DEBUG_MODE) {
             // let pattern = new RegExp('^' + '@[desktop|mobile|desktop]', 'i');
             //
             // console.log(pattern.test(line2));
+            const string = 'G/B Am 我';
+            const sample = 'G/B';
+            const reg = new RegExp(`^[A-G]`,'gm');
+            console.log(reg.test(sample));
 
         }
     )();

@@ -686,12 +686,12 @@ class Utiller {
     }
 
     /** this method mutates segments */
-    getStringHandledByEachLine(string, predict = (segment, index, segments) => true) {
-        const segments = string.split('\n');
+    getStringHandledByEachLine(string, predict = (segment, index, segments) => true,separator = '\n') {
+        const segments = string.split(separator);
         for (const segment of segments) {
             predict(segment, _.indexOf(segments, segment), segments);
         }
-        return segments.join('\n');
+        return segments.join(separator);
     }
 
     getSegmentsOfEachLine(string) {
