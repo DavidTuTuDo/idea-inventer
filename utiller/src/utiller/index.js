@@ -405,10 +405,10 @@ class Utiller {
     }
 
     /** ignore 就是黑名單的意思 */
-    getRandomItemOfArray(array,...ignores) {
+    getRandomItemOfArray(array, ...ignores) {
         if (!_.isArray(array)) throw new ERROR(9999, `why are you so stupid, typeof array should be array, not ==> ${array} `)
-        const filter = _.without(array,...ignores);
-        const target = _.size(filter)  > 0 ? filter : array;
+        const filter = _.without(array, ...ignores);
+        const target = _.size(filter) > 0 ? filter : array;
         const item = this.getShuffledArrayWithLimitCount(target, 1);
         return item.length > 0 ? item[0] : undefined;
     }
@@ -686,7 +686,7 @@ class Utiller {
     }
 
     /** this method mutates segments */
-    getStringHandledByEachLine(string, predict = (segment, index, segments) => true,separator = '\n') {
+    getStringHandledByEachLine(string, predict = (segment, index, segments) => true, separator = '\n') {
         const segments = string.split(separator);
         for (const segment of segments) {
             predict(segment, _.indexOf(segments, segment), segments);
@@ -1329,16 +1329,19 @@ class Utiller {
     }
 
     /**
-     * 如果有paginate, 有可能讓功能錯亂
+     *
+     * 把array裏面的'指定index' 移動到 '特定index'
+     *
      const array = [0,1,2,3,4,5,6,7];
-     console.log(util.moveIndexOfArray(array,1,0));const array = [0,1,2,3,4,5,6,7];
-     console.log(util.moveIndexOfArray(array,1,0));
+     console.log(util.getArrayOfMoveToSpecificIndex(array,1,0));const array = [0,1,2,3,4,5,6,7];
+     console.log(util.getArrayOfMoveToSpecificIndex(array,1,0));
      [
-       1, 0, 2, 3,
-       4, 5, 6, 7
+     1, 0, 2, 3,
+     4, 5, 6, 7
      ]
+     |-------如果有paginate, 有可能讓功能錯亂-------|
      */
-    moveIndexOfArray(array, from, to) {
+    getArrayOfMoveToSpecificIndex(array, from, to) {
         /* #move - Moves an array item from one position in an array to another.
            Note: This is a pure function so a new array will be returned, instead
            of altering the array argument.
@@ -1371,14 +1374,52 @@ class Utiller {
         }
         return array;
     }
+
+    /** 把array裏面的項目移動到指定的index
+     *
+     *  const array = ['a','b','c','d'];
+        console.log(util.getArrayOfMoveItemToSpecificIndex(array,array[1],0));
+     //[ 'b', 'a', 'c', 'd' ]
+     * */
+    getArrayOfMoveItemToSpecificIndex(array, item, indexOfDestination) {
+        const indexOfItem = _.indexOf(array,item);
+        return this.getArrayOfMoveToSpecificIndex(array,indexOfItem,indexOfDestination);
+    }
+
+    /**
+     *
+     *  把指定的array item 放到頭尾
+     *
+     *  const array = ['a','b','c','d'];
+     *  console.log(util.getArrayOfMoveSpecificItemToAside(array,array[1]));
+     *[ 'a', 'c', 'd', 'b' ]
+     */
+    getArrayOfMoveSpecificItemToAside(array, item, toTail = true) {
+        const indexOfItem = _.indexOf(array,item);
+        return this.getArrayOfMoveSpecificIndexToAside(array, indexOfItem, toTail);
+    }
+
+    /** 把指定的index放到頭尾
+     *
+     *  const array = ['a','b','c','d'];
+     console.log(util.getArrayOfMoveSpecificIndexToAside(array,3,false));
+     [ 'd', 'a', 'b', 'c' ]
+     * */
+    getArrayOfMoveSpecificIndexToAside(array, index, toTail = true) {
+        const indexOfLast = _.size(array) - 1;
+        return this.getArrayOfMoveToSpecificIndex(array, index, toTail ? indexOfLast : 0);
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const util = new Utiller();
-            // util.moveIndexOfArray(array,1,0);
+            // const util = new Utiller();
+            // const array = ['a','b','c','d'];
+            // console.log(util.getArrayOfMoveSpecificIndexToAside(array,1,true));
+            // util.getArrayOfMoveToSpecificIndex(array,1,0);
             // const array = [0,1,2,3,4,5,6,7];
-            // console.log(util.moveIndexOfArray(array,1,0));
+            // console.log(util.getArrayOfMoveToSpecificIndex(array,1,0));
             // console.log(util.nth([1,2,3,4,5],5))
             // console.log(util.getFileNameFromPath('disjfoisd.mp3',true));
             // console.log(_.isNumber(_.toNumber('九')));

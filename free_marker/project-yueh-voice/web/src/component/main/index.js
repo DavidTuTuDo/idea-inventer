@@ -47,9 +47,8 @@ class MainComponent extends BaseMainComponent {
         const event = param.view;
         const voice = param.object;
         const enable = this.getCheckStateByEvent(event);
-        if (!enable) {
-            this.getStore().moveVoiceToLast(voice);
-        }
+        if (!enable && voice)
+            voice.moveSelfToAside();
     }
 
     onMainVoiceEnableSwitchClicked(param) {

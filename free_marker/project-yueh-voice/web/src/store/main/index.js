@@ -80,13 +80,6 @@ class MainStore extends BaseMainStore {
         }
     }
 
-    moveVoiceToLast(voice) {
-        const indexOfVoice = _.indexOf(this.getVoices(), voice);
-        const indexOfEnd = _.size(this.getVoices()) - 1;
-        const array = Util.moveIndexOfArray(this.getVoices(), indexOfVoice, indexOfEnd);
-        this.setVoices(...array);
-    }
-
     getCurrentVoice = () => {
         return _.find(this.getVoices(), (voice) => _.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
     }

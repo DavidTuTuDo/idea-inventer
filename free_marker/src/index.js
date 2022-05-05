@@ -26,9 +26,9 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_CHEAP_ARRAY = 'contents';
 
-// const CURRENT_PROJECT = './project-yueh-voice';
+const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -2957,6 +2957,12 @@ class StoreBuilder extends BaseBuilder {
             baseGenerator.appendFunction('remove', [], [], ['type是array, 才會被gen出的method'],
                 `if(this.getParentNode())`,
                 `this.getParentNode().remove${_.upperFirst(node.getFieldName())}(this)`
+            )
+
+            baseGenerator.appendFunction('moveSelfToAside', ['toTail = true'], ['action'], ['把自己移動到array的頭或尾'],
+                `if(this.getParentNode()){`,
+                `const items = this.getParentNode().get${_.upperFirst(node.getFieldName())}();`,
+                `this.getParentNode().set${_.upperFirst(node.getFieldName())}(...Util.getArrayOfMoveSpecificItemToAside(items, this, toTail))}`,
             )
         }
 
