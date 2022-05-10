@@ -93,16 +93,6 @@ class MobileStyle {
 
   /** => following for celestial  component  */
 
-  EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
-
-  EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton = {};
-
-  EpisodeStickyBottomAreaFuncOfPlayRuleDiv = {};
-
-  EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
-
-  EpisodeStickyBottomAreaDiv = {};
-
   CelestialMinorAreaContentOfLyricTypography = {};
 
   CelestialMinorAreaTitleOfLyricTypography = {};
