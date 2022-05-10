@@ -39,10 +39,6 @@ class EpisodeComponent extends BaseEpisodeComponent {
     this.enableVoiceSelectView(true);
   }
 
-  onMainFuncAreaUploadVoiceButtonClicked(param) {
-
-  }
-
   onFilesSelected(files) {
     this.getStore().uploadVoices(files).then();
   }

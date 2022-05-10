@@ -31,7 +31,7 @@ import {configerer} from "configerer";
         let guitars = await getObjectOfToneUrlAsKey()
         console.log(ranks);
         if(_.size(ranks) > 5) {
-            await api.submitHotRhythms(...ranks.map((each) => {
+            await api.submitHotRhythms(ranks.map((each) => {
                 return {
                     name: each.name,
                     singer: each.singer,
@@ -56,7 +56,7 @@ import {configerer} from "configerer";
             {limit: (stmt) => stmt.limit(n)}
         )), n)
         if(_.size(singers) > 5) {
-            await api.submitHotSingers(...singers.map((each, index) => {
+            await api.submitHotSingers(singers.map((each, index) => {
                 return {
                     name: each.name,
                     singer: each.singer,
@@ -131,7 +131,7 @@ import {configerer} from "configerer";
             }
         }));
         /** extra 放進去會超過一個document的上限 */
-        await api.submitKeywords(...keywords);
+        await api.submitKeywords(keywords);
     }
 
     async function deployAllSingerTone(popularLevel) {

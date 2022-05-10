@@ -32,8 +32,7 @@ class EpisodeStore extends BaseEpisodeStore {
   /** -------------------- functions -------------------- **/
 
   randomPlay = false;
-
-
+  
   constructor(props) {
     super(props);
     this.storeOfVoice = new Voice();
@@ -46,7 +45,7 @@ class EpisodeStore extends BaseEpisodeStore {
       const pathOfResource = await this.storeOfVoice.uploadStorageOfPathOfResource(this.getComponent(), undefined, file.blob);
       items.push({name, pathOfResource});
     }
-    await this.storeOfVoice.submitVoices(this.getComponent(), ...items);
+    await this.storeOfVoice.submitVoices(this.getComponent(), items);
   }
 
   setCurrentVoice(path) {
