@@ -32,7 +32,7 @@ class EpisodeStore extends BaseEpisodeStore {
   /** -------------------- functions -------------------- **/
 
   randomPlay = false;
-  
+
   constructor(props) {
     super(props);
     this.storeOfVoice = new Voice();
@@ -88,8 +88,8 @@ class EpisodeStore extends BaseEpisodeStore {
   }
 
   performNextVoice = async () => {
-    /**  檢查 ignnore*/
-    /**   檢查隨機 */
+    /** 檢查 ignore */
+    /** 檢查隨機 */
     if (_.isEqual(undefined, this.getCurrentVoice())) {
       /**
        * 因為 this.setCurrentVoice(''),會讓audio player在呼叫onError | onEnd 在觸發一次performNextVoice
