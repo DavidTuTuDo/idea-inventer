@@ -3315,18 +3315,18 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(
                         node, Util.camel('submit', node.getFieldName()),
-                        ['...items'],
+                        ['items',`id = '${ID_OF_CHEAP_ARRAY}'`],
                         [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
                             `return await self.submitObject(path,{
                                     ${ID_OF_CHEAP_ARRAY}:commitments,
                                     updateTime:this._firebase().getServerTimeSymbol(),
-                            },'${ID_OF_CHEAP_ARRAY}')`], `submit cheap  items`)
+                            }, id)`], `submit cheap  items`)
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        [],
-                        [`const result = await self.fetchObject(path,'${ID_OF_CHEAP_ARRAY}')`,
+                        [`id = '${ID_OF_CHEAP_ARRAY}'`],
+                        [`const result = await self.fetchObject(path, id)`,
                             `return result.${ID_OF_CHEAP_ARRAY} ?? []`], `fetch cheap items`);
 
                     generateApiFunction(
