@@ -105,6 +105,8 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    imitate = false;
+    /** 如果是ref,然後把整個節點給取代掉 */
 
     maxSizeOfFetchItem = 50;
     /** 一個collection 最多能拿的比數, 不然邏輯沒寫好, client端就能把一整串collection給download下來 */
@@ -287,7 +289,7 @@ class CodegenNode {
     ref;
     /** 用來標記這個node的內容, 免得重複的再type一遍 */
 
-    independence;
+    independence = false
     /** 用來標記這個node的如果是ref, 而且還是獨立的一個store */
 
     mother;
@@ -558,12 +560,17 @@ class CodegenNode {
         return this.isArray() && this.hasPath();
     }
 
-    isReference() {
-        return this.ref;
+    isReferenceNode() {
+        return CodegenNode.isCodegenNode(this.ref);
     }
 
     needEmptyTip() {
         return this.listEmptyTip && this.listEmptyTip.enable;
+    }
+
+    hasReferenceParent() {
+        const parent = this.getParentBy((node) => node.isReferenceNode())
+        return parent !== undefined;
     }
 
     /** 設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
@@ -1863,10 +1870,12 @@ class CodegenNode {
     getParentBy(predicate = (node) => (true)) {
         let currentNode = this;
         while (currentNode.isValidNode()) {
-            if (predicate(currentNode)) break;
+            if (predicate(currentNode)) {
+                return currentNode;
+            }
             currentNode = currentNode.getParentNode();
         }
-        return currentNode;
+        return undefined;
     }
 
     getFunctionNameOfInjectStyle(isWrap = false) {
@@ -2134,13 +2143,10 @@ class CodegenNode {
 
     static find(node, predicate) {
         const nodes = [];
-        if (predicate(node)) {
+        if (CodegenNode.isCodegenNode(node) && predicate(node)) {
             nodes.push(node)
         }
         for (const child of node.getChildren()) {
-            if (node.isImitate)
-                continue;
-
             nodes.push(...CodegenNode.find(child, predicate))
         }
         return nodes;
@@ -2763,7 +2769,7 @@ class PathBase {
         const total = [];
 
         function appendStore(node, list = []) {
-            if (CodegenNode.isCodegenNode(node) && node.isCollection() && !node.isReference()) {
+            if (CodegenNode.isCodegenNode(node) && node.isCollection() && !node.isReferenceNode()) {
                 list.push(node.getStoreFolderName())
                 for (const child of node.getChildren()) {
                     appendStore(child, list);
@@ -2853,13 +2859,17 @@ class StoreBuilder extends BaseBuilder {
             if (child.isArray()) {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
 
-                if (child.ref && !child.independence)
+                if (child.isReferenceNode() && !child.independence)
                     generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
                 else {
                     generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
                     await this.buildBaseStore(child)
                 }
             } else if (child.isObject()) {
+                if (child.isReferenceNode() && !child.independence) {
+                    generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
+                    continue;
+                }
                 generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
                 propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
                 await this.buildBaseStore(child)
@@ -2980,8 +2990,10 @@ class StoreBuilder extends BaseBuilder {
             }
         }
 
-        const types = [{name: `rawData`, fetcher: (node) => node.getPreciseColumnChildren()},
-            {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}];
+        const types = [
+            {name: `rawData`, fetcher: (node) => node.getPreciseColumnChildren()},
+            {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}
+        ];
 
         types.map(type => {
             baseGenerator.appendFunction(type.name, [], [], [],
@@ -3830,9 +3842,18 @@ class ComponentBuilder extends BaseBuilder {
         return stmt;
     }
 
-    /** 把組合出className必備存起來 {node,type: 'wrap'|'default'|'List'|'listWrap'|'Label'} ,後續要產生出less style才有根據 */
-    storeClassName(className) {
-        this.classNames.push(className);
+    /** 把組合出className必備存起來
+     *  {node,type: 'wrap'|'default'|'List'|'listWrap'|'Label'}
+     *  後續要產生出less style才有根據
+     *  {node, type: 'list'}
+     *  */
+    storeClassName(info = {}) {
+        if(info.node.hasReferenceParent()) {
+            Util.appendInfo(`${info.node.getName()} 是Reference node`);
+            return;
+        }
+
+        this.classNames.push(info);
     }
 
     getJSXStringsByNode = (generator, node) => {
@@ -4931,7 +4952,7 @@ class AppBuilder extends ComponentBuilder {
             for (const clazzName in existedLessAttributeObj) {
                 const object = existedLessAttributeObj[clazzName];
                 if (object.isModified) {
-                    generator.appendInClassTail(`.${clazzName} {${this.getVarietyDeviceStmts(existedLessAttributeObj[clazzName])}}`);
+                    generator.appendInClassTail(`.${object.complete} {${this.getVarietyDeviceStmts(existedLessAttributeObj[clazzName])}}`);
                 }
             }
         }
@@ -5546,7 +5567,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isFloatBackgroundView()) {
                 const clone = _.cloneDeep(node.raw);
-                if(!node.getParentNode().hasWrap()) {
+                if (!node.getParentNode().hasWrap()) {
                     node.getParentNode().setWrapView('div');
                 }
                 clone.view = 'img';
@@ -5911,7 +5932,7 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.isReference()) {
+            if (node.isReferenceNode()) {
                 const targetName = node.ref;
                 const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
                 /** 目前先抓第一個當目標*/
@@ -5919,18 +5940,27 @@ class ProjectFileHandler extends PathBase {
                     throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
                 }
 
-                node.ref = _nodes[0];
-                node.type = node.ref.type;
-                /** 因為還沒機上 view的關係 所以不會產出view
-                 * node.view = node.ref.view
-                 * node.listView = node.ref.listView
-                 * node.wrapView = node.ref.wrapView
-                 * */
-                if (node.independence) {
-                    for (const raw of node.ref.raw.children) {
-                        node.appendChildrenWithJsons(raw)
+                const nodeOfReference = _.head(_nodes);
+                if (node.imitate) {
+                    const nodeOfImitate = _.clone(nodeOfReference);
+                    nodeOfImitate.ref = nodeOfReference;
+                    Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
+                    console.log('我來看看');
+                } else {
+                    node.ref = nodeOfReference;
+                    node.type = nodeOfReference.type;
+                    /** 因為還沒機上 view的關係 所以不會產出view
+                     * node.view = node.ref.view
+                     * node.listView = node.ref.listView
+                     * node.wrapView = node.ref.wrapView
+                     * */
+                    if (node.independence) {
+                        for (const raw of node.ref.raw.children) {
+                            node.appendChildrenWithJsons(raw)
+                        }
                     }
                 }
+
             }
 
             if (node.isAutoCompleteView()) {

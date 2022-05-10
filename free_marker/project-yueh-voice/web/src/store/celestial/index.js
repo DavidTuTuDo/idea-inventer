@@ -1,4 +1,4 @@
-import BaseMainFloatAreaStore from "./BaseMainFloatAreaStore";
+import BaseCelestialStore from "./BaseCelestialStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,9 +21,11 @@ import {
   autorun,
   runInAction,
 } from "mobx";
+import MinorArea from "../celestialMinorArea";
+import CoreArea from "../celestialCoreArea";
 import BaseStore from "../../base/BaseStore";
 
-class MainFloatAreaStore extends BaseMainFloatAreaStore {
+class CelestialStore extends BaseCelestialStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +34,4 @@ class MainFloatAreaStore extends BaseMainFloatAreaStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainFloatAreaStore;
+export default CelestialStore;

@@ -101,11 +101,19 @@ if (configerer.DEBUG_MODE) {
             // let pattern = new RegExp('^' + '@[desktop|mobile|desktop]', 'i');
             //
             // console.log(pattern.test(line2));
-            const string = 'G/B Am 我';
-            const sample = 'G/B';
-            const reg = new RegExp(`^[A-G]`,'gm');
-            console.log(reg.test(sample));
+            // const string = 'G/B Am 我';
+            // const sample = 'G/B';
+            // const reg = new RegExp(`^[A-G]`,'gm');
+            // console.log(reg.test(sample));
+            const node0 = {z: 10}
+            const node1 = {a: node0, b: 200}
+            const node2 = {...node1.a, ...{e: 5}};
 
+            console.log('node1 = ', node1.a);
+            console.log('node2 = ', node2);
+            node0.z = 200;
+            console.log('node1 = ', node1.a);
+            console.log('node2 = ', node2);
         }
     )();
 }

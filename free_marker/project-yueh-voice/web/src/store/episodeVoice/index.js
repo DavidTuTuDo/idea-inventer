@@ -1,4 +1,4 @@
-import BaseMainStickyBottomAreaStore from "./BaseMainStickyBottomAreaStore";
+import BaseEpisodeVoiceStore from "./BaseEpisodeVoiceStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class MainStickyBottomAreaStore extends BaseMainStickyBottomAreaStore {
+class EpisodeVoiceStore extends BaseEpisodeVoiceStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class MainStickyBottomAreaStore extends BaseMainStickyBottomAreaStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainStickyBottomAreaStore;
+export default EpisodeVoiceStore;

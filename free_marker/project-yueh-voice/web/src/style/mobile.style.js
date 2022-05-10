@@ -9,46 +9,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** => following for main editor component  */
-
-  MainEditorFloatAreaOuterDiv = {};
-
-  MainEditorStickyBottomAreaFuncOfPlayRuleDiv = {};
-
-  MainEditorStickyBottomAreaDiv = {};
-
-  MainEditorVoicePopularLevelTextField = {};
-
-  MainEditorVoicePathOfResourceTextField = {};
-
-  MainEditorVoiceIndexOfSequenceTextField = {};
-
-  MainEditorVoiceExtraIconMoreHoriz = {};
-
-  MainEditorVoiceExtraIconButton = {};
-
-  MainEditorVoiceDurationTextField = {};
-
-  MainEditorVoiceTitleAreaSingerTextField = {};
-
-  MainEditorVoiceTitleAreaNameTextField = {};
-
-  MainEditorVoiceTitleAreaDiv = {};
-
-  MainEditorVoiceExecutingCoveredOuterDiv = {};
-
-  MainEditorVoiceDivList = {};
-
-  MainEditorVoiceDivWrap = {};
-
-  MainEditorVoicePaper = {};
-
-  MainEditorFuncAreaDiv = {};
-
-  MainEditorDivWrap = {};
-
-  MainEditorDiv = {};
-
   /** => following for navigator  component  */
 
   NavigatorDrawerShortcutIconImg = {};
@@ -131,53 +91,87 @@ class MobileStyle {
 
   AccountPaper = {};
 
+  /** => following for celestial  component  */
+
+  EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
+
+  EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton = {};
+
+  EpisodeStickyBottomAreaFuncOfPlayRuleDiv = {};
+
+  EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
+
+  EpisodeStickyBottomAreaDiv = {};
+
+  CelestialMinorAreaContentOfLyricTypography = {};
+
+  CelestialMinorAreaTitleOfLyricTypography = {};
+
+  CelestialMinorAreaDiv = {};
+
+  CelestialCoreAreaDataOfReleaseTypography = {};
+
+  CelestialCoreAreaTitleTypography = {};
+
+  CelestialCoreAreaImageOfCelestialDivWrap = {};
+
+  CelestialCoreAreaImageOfCelestialImg = {};
+
+  CelestialCoreAreaDiv = {};
+
+  CelestialDiv = {};
+
+  /** => following for episode  component  */
+
+  EpisodeFloatAreaLogoDivWrap = {};
+
+  EpisodeFloatAreaLogoImg = {};
+
+  EpisodeFloatAreaOuterDiv = {};
+
+  EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
+
+  EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton = {};
+
+  EpisodeStickyBottomAreaFuncOfPlayRuleDiv = {};
+
+  EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
+
+  EpisodeStickyBottomAreaDiv = {};
+
+  EpisodeVoiceExtraIconMoreHoriz = {};
+
+  EpisodeVoiceExtraIconButton = {};
+
+  EpisodeVoiceTitleAreaSingerTypography = {};
+
+  EpisodeVoiceTitleAreaNameTypography = {};
+
+  EpisodeVoiceTitleAreaDiv = {};
+
+  EpisodeVoiceExecutingCoveredOuterDiv = {};
+
+  EpisodeVoiceEnableSwitch = {};
+
+  EpisodeVoicePaperSkeleton = {};
+
+  EpisodeVoiceDivList = {};
+
+  EpisodeVoiceDivWrap = {};
+
+  EpisodeVoicePaper = {};
+
+  EpisodeFuncAreaDeleteAllButton = {};
+
+  EpisodeFuncAreaUploadVoiceButton = {};
+
+  EpisodeFuncAreaDiv = {};
+
+  EpisodeDivWrap = {};
+
+  EpisodeDiv = {};
+
   /** => following for main  component  */
-
-  MainFloatAreaLogoDivWrap = {};
-
-  MainFloatAreaLogoImg = {};
-
-  MainFloatAreaOuterDiv = {};
-
-  MainStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
-
-  MainStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton = {};
-
-  MainStickyBottomAreaFuncOfPlayRuleDiv = {};
-
-  MainStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
-
-  MainStickyBottomAreaDiv = {};
-
-  MainVoiceExtraIconMoreHoriz = {};
-
-  MainVoiceExtraIconButton = {};
-
-  MainVoiceTitleAreaSingerTypography = {};
-
-  MainVoiceTitleAreaNameTypography = {};
-
-  MainVoiceTitleAreaDiv = {};
-
-  MainVoiceExecutingCoveredOuterDiv = {};
-
-  MainVoiceEnableSwitch = {};
-
-  MainVoicePaperSkeleton = {};
-
-  MainVoiceDivList = {};
-
-  MainVoiceDivWrap = {};
-
-  MainVoicePaper = {};
-
-  MainFuncAreaDeleteAllButton = {};
-
-  MainFuncAreaUploadVoiceButton = {};
-
-  MainFuncAreaDiv = {};
-
-  MainDivWrap = {};
 
   MainDiv = {};
 

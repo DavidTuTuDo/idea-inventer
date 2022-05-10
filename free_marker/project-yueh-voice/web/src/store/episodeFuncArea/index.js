@@ -1,4 +1,4 @@
-import BaseMainStickyBottomAreaFuncOfPlayRuleStore from "./BaseMainStickyBottomAreaFuncOfPlayRuleStore";
+import BaseEpisodeFuncAreaStore from "./BaseEpisodeFuncAreaStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class MainStickyBottomAreaFuncOfPlayRuleStore extends BaseMainStickyBottomAreaFuncOfPlayRuleStore {
+class EpisodeFuncAreaStore extends BaseEpisodeFuncAreaStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class MainStickyBottomAreaFuncOfPlayRuleStore extends BaseMainStickyBottomAreaFu
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainStickyBottomAreaFuncOfPlayRuleStore;
+export default EpisodeFuncAreaStore;

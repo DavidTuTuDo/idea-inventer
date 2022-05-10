@@ -19,7 +19,7 @@
     "moment": "^2.29.1",
     "puppeteer": "^5.4.1",
     "scraper": "file:../scraper",
-    "utiller": "^1.0.113"
+    "utiller": "^1.0.124"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

@@ -18,7 +18,9 @@
     /** empty style */
   }
 }
-.MainDivWrap {
+/** following for episode  component used  */
+
+.EpisodeDiv {
   @media @mobile {
     /** empty style */
   }
@@ -29,7 +31,18 @@
     /** empty style */
   }
 }
-.MainFuncAreaDiv:extend(.CenterInParentRow) {
+.EpisodeDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpisodeFuncAreaDiv:extend(.CenterInParentRow) {
   margin: 10px;
   gap: 20px;
   @media @mobile {
@@ -42,7 +55,7 @@
     /** empty style */
   }
 }
-.MainFuncAreaUploadVoiceButton {
+.EpisodeFuncAreaUploadVoiceButton {
   @media @mobile {
     /** empty style */
   }
@@ -53,7 +66,7 @@
     /** empty style */
   }
 }
-.MainFuncAreaDeleteAllButton {
+.EpisodeFuncAreaDeleteAllButton {
   @media @mobile {
     /** empty style */
   }
@@ -64,7 +77,7 @@
     /** empty style */
   }
 }
-.MainVoicePaper:extend(.CenterInParentRow) {
+.EpisodeVoicePaper:extend(.CenterInParentRow) {
   justify-content: space-between;
   padding-left: 5px;
   padding-right: 5px;
@@ -83,7 +96,7 @@
     min-height: 58px;
   }
 }
-.MainVoiceDivWrap {
+.EpisodeVoiceDivWrap {
   @media @mobile {
     /** empty style */
   }
@@ -94,7 +107,7 @@
     /** empty style */
   }
 }
-.MainVoiceDivList:extend(.CenterInParentColumn) {
+.EpisodeVoiceDivList:extend(.CenterInParentColumn) {
   padding-top: 10px;
   padding-bottom: 5px;
   gap: 5px;
@@ -108,7 +121,7 @@
     /** empty style */
   }
 }
-.MainVoicePaperSkeleton {
+.EpisodeVoicePaperSkeleton {
   width: 100vw;
   height: 25vh;
   @media @mobile {
@@ -121,7 +134,7 @@
     /** empty style */
   }
 }
-.MainVoiceEnableSwitch {
+.EpisodeVoiceEnableSwitch {
   @media @mobile {
     /** empty style */
   }
@@ -132,7 +145,7 @@
     /** empty style */
   }
 }
-.MainVoiceExecutingCoveredOuterDiv:extend(.MainVoicePaper) {
+.EpisodeVoiceExecutingCoveredOuterDiv:extend(.EpisodeVoicePaper) {
   pointer-events: none;
   background-color: rgba(0, 0, 0, 0.7);
   position: absolute;
@@ -147,7 +160,7 @@
     /** empty style */
   }
 }
-.MainVoiceTitleAreaDiv:extend(.CenterInParentColumn) {
+.EpisodeVoiceTitleAreaDiv:extend(.CenterInParentColumn) {
   gap: 3px;
   @media @mobile {
     /** empty style */
@@ -159,7 +172,7 @@
     /** empty style */
   }
 }
-.MainVoiceTitleAreaNameTypography {
+.EpisodeVoiceTitleAreaNameTypography {
   color: white;
   @media @mobile {
     font-size: 0.9rem;
@@ -171,7 +184,7 @@
     /** empty style */
   }
 }
-.MainVoiceTitleAreaSingerTypography {
+.EpisodeVoiceTitleAreaSingerTypography {
   color: rgba(255, 255, 255, 0.4);
   @media @mobile {
     font-size: 0.6rem;
@@ -183,7 +196,7 @@
     /** empty style */
   }
 }
-.MainVoiceExtraIconButton {
+.EpisodeVoiceExtraIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -194,7 +207,7 @@
     /** empty style */
   }
 }
-.MainVoiceExtraIconMoreHoriz {
+.EpisodeVoiceExtraIconMoreHoriz {
   color: white;
   @media @mobile {
     /** empty style */
@@ -206,7 +219,7 @@
     /** empty style */
   }
 }
-.MainStickyBottomAreaDiv {
+.EpisodeStickyBottomAreaDiv {
   width: 100vw;
   position: sticky;
   position: -webkit-sticky;
@@ -222,7 +235,7 @@
     /** empty style */
   }
 }
-.MainStickyBottomAreaSrcOfPVoiceAudioPlayer {
+.EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer {
   @media @mobile {
     /** empty style */
   }
@@ -233,7 +246,7 @@
     /** empty style */
   }
 }
-.MainStickyBottomAreaFuncOfPlayRuleDiv {
+.EpisodeStickyBottomAreaFuncOfPlayRuleDiv {
   position: absolute;
   z-index: 3;
   bottom: 5px;
@@ -248,7 +261,8 @@
     /** empty style */
   }
 }
-.MainStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton {
+
+.EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton {
   border-color: #868686;
   color: #868686;
   @media @mobile {
@@ -261,7 +275,7 @@
     /** empty style */
   }
 }
-.MainStickyBottomAreaFuncOfPlayRuleEnableAllButton:extend(.MainStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton) {
+.EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton:extend(.EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton) {
   margin-left: 8px;
   @media @mobile {
     /** empty style */
@@ -273,7 +287,8 @@
     /** empty style */
   }
 }
-.MainFloatAreaOuterDiv:extend(.CenterInParentRelative) {
+
+.EpisodeFloatAreaOuterDiv {
   pointer-events: none;
   position: absolute;
   width: 100vw;
@@ -288,7 +303,7 @@
     /** empty style */
   }
 }
-.MainFloatAreaLogoImg {
+.EpisodeFloatAreaLogoImg {
   opacity: 0.1;
   width: 100%;
   @media @mobile {
@@ -301,7 +316,7 @@
     width: 70%;
   }
 }
-.MainFloatAreaLogoDivWrap:extend(.CenterInParentColumn) {
+.EpisodeFloatAreaLogoDivWrap {
   height: 100%;
   @media @mobile {
     /** empty style */
@@ -313,6 +328,108 @@
     /** empty style */
   }
 }
+/** following for celestial  component used  */
+
+.CelestialDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialCoreAreaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialCoreAreaImageOfCelestialImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialCoreAreaImageOfCelestialDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialCoreAreaTitleTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialCoreAreaDataOfReleaseTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialMinorAreaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialMinorAreaTitleOfLyricTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialMinorAreaContentOfLyricTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
 /** following for account  component used  */
 
 .AccountPaper:extend(.CenterInParentColumn) {
@@ -772,217 +889,6 @@
   }
 }
 .NavigatorDrawerShortcutIconImg {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-/** following for main editor component used  */
-
-.MainEditorDiv:extend(.MainDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorDivWrap:extend(.MainDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorFuncAreaDiv:extend(.MainFuncAreaDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoicePaper:extend(.MainVoicePaper) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceDivWrap:extend(.MainVoiceDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceDivList:extend(.MainVoiceDivList) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceExecutingCoveredOuterDiv:extend(.MainVoiceExecutingCoveredOuterDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceTitleAreaDiv:extend(.MainVoiceTitleAreaDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceTitleAreaNameTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceTitleAreaSingerTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceDurationTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceExtraIconButton:extend(.MainVoiceExtraIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceExtraIconMoreHoriz:extend(.MainVoiceExtraIconMoreHoriz) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoiceIndexOfSequenceTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoicePathOfResourceTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorVoicePopularLevelTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorStickyBottomAreaDiv:extend(.MainStickyBottomAreaDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorStickyBottomAreaFuncOfPlayRuleDiv:extend(.MainStickyBottomAreaFuncOfPlayRuleDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainEditorFloatAreaOuterDiv:extend(.MainFloatAreaOuterDiv) {
   @media @mobile {
     /** empty style */
   }

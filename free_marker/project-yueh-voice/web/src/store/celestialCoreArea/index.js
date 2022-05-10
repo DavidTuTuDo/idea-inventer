@@ -1,4 +1,4 @@
-import BaseMainFuncAreaStore from "./BaseMainFuncAreaStore";
+import BaseCelestialCoreAreaStore from "./BaseCelestialCoreAreaStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -21,9 +21,10 @@ import {
   autorun,
   runInAction,
 } from "mobx";
+import Func from "../celestialCoreAreaFunc";
 import BaseStore from "../../base/BaseStore";
 
-class MainFuncAreaStore extends BaseMainFuncAreaStore {
+class CelestialCoreAreaStore extends BaseCelestialCoreAreaStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +33,4 @@ class MainFuncAreaStore extends BaseMainFuncAreaStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainFuncAreaStore;
+export default CelestialCoreAreaStore;

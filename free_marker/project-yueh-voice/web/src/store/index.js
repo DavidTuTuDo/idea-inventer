@@ -23,7 +23,6 @@ import AccountFuncAreaOfEmail from "./accountFuncAreaOfEmail";
 import AccountFuncAreaOfNameStateAreaOfName from "./accountFuncAreaOfNameStateAreaOfName";
 import AccountFuncAreaOfName from "./accountFuncAreaOfName";
 import Account from "./account";
-import Main from "./main";
 
 class Store extends BaseStore {
   /** -------------------- fields -------------------- **/

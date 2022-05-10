@@ -1,4 +1,4 @@
-import BaseMainVoiceStore from "./BaseMainVoiceStore";
+import BaseEpisodeFloatAreaStore from "./BaseEpisodeFloatAreaStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class MainVoiceStore extends BaseMainVoiceStore {
+class EpisodeFloatAreaStore extends BaseEpisodeFloatAreaStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class MainVoiceStore extends BaseMainVoiceStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default MainVoiceStore;
+export default EpisodeFloatAreaStore;
