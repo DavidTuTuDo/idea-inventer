@@ -26,6 +26,7 @@ const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'`;
+const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
 const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
@@ -106,6 +107,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    implementActions = false;
+    /** 如果ref對象是一個component,會有onClick, injectStyle事件, 可以選擇要不要產生override的method */
+
     imitate = false;
     /** 如果是ref,然後把整個節點給取代掉 */
 
@@ -134,8 +138,6 @@ class CodegenNode {
     search = false;
     /** 讓手機(android ios)keyboard產生搜尋按鈕,  產生onXXXSearchPress(), */
 
-    simpleProps = [];
-    /** 有些props沒有key <View {...params} 就要定義在這裡*/
 
     /** Switch之類的元件 在onChange會更動store setter,如果要disable, 要設為true*/
     disableOnChangeSetter = false;
@@ -380,6 +382,9 @@ class CodegenNode {
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
 
+    simpleProps = [];
+    /** 有些props沒有key <View {...params} 就要定義在這裡*/
+
     props = {};
     /** 用在加上view額外的props,<div ...props/> */
 
@@ -395,7 +400,7 @@ class CodegenNode {
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    wrapInjectStyle;
+    injectWrapStyle;
     /** 如果wrap有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
     injectProps;
@@ -673,6 +678,14 @@ class CodegenNode {
         return node;
     }
 
+    getParamsInRouter(...others) {
+        return this.getNodeOfComponent().getParamsInPath(...others);
+    }
+
+    needImplementAction() {
+        return this.isReferenceStructNode() && this.implementActions;
+    }
+
     isStructNode() {
         const parent = this.getParentNode();
         return parent.isComponentNode();
@@ -801,7 +814,8 @@ class CodegenNode {
         return this.isAttribute() && this.hasValidAttributeParent() || this.needParentParam();
     }
 
-    getObservableName() {
+    /** arrayItem 和 array 目前傻傻分不清楚, 先by case 處理*/
+    getObservableName(force = false) {
         let objName = '';
         if (this.allowOfParam()) {
             switch (this.getType()) {
@@ -809,6 +823,10 @@ class CodegenNode {
                     objName = this.getName();
                     break;
                 case 'array':
+                    if(force) {
+                        objName = this.getName();
+                        break;
+                    }
                 case 'object':
                     objName = this.getPreciseAttributeParentName();
                     break;
@@ -1002,11 +1020,20 @@ class CodegenNode {
         this.listContents.push(...contents);
     }
 
+    getSimpleProps() {
+        return this.simpleProps;
+    }
+
+    appendSimpleProps(...props) {
+        this.simpleProps.push(...props);
+    }
+
     appendContent(...contents) {
         this.contents.push(...contents);
     }
 
     appendMethod(...methods) {
+        this.getNodeOfComponent().methods.push(...methods);
         this.methods.push(...methods)
     }
 
@@ -1312,15 +1339,15 @@ class CodegenNode {
         return !!this.injectStyle && this.injectStyle;
     }
 
-    needWrapInjectStyle() {
-        return !!this.wrapInjectStyle && this.wrapInjectStyle;
+    needInjectWrapStyle() {
+        return !!this.injectWrapStyle && this.injectWrapStyle;
     }
 
     needInjectView() {
         return !!this.injectView && this.injectView;
     }
 
-    needInjectPropsCallBack() {
+    needInjectProps() {
         return !!this.injectProps && this.injectProps;
     }
 
@@ -1815,7 +1842,7 @@ class CodegenNode {
     }
 
     /** 得到陣列 [tenant = 'school', group = 'classroom', uid = UserInfo.getUid()] 包含預設值'*/
-    getParamsOfPath(...others) {
+    getParamsInPath(...others) {
         return this.getParamsOfString(this.getPath(), ...others);
     }
 
@@ -1825,7 +1852,7 @@ class CodegenNode {
 
     /** 得到字串 'tenant = 'school', group = 'classroom', uid = UserInfo.getUid()' 包含預設值'*/
     getStringOfParamsOfPath(...others) {
-        return this.getParamsOfPath(...others).join(',');
+        return this.getParamsInPath(...others).join(',');
     }
 
     /**回傳string 'tenant, group ,uid'*/
@@ -2794,28 +2821,33 @@ class BaseBuilder extends PathBase {
         super(props);
     }
 
+    getNormalizeFieldOfParamInPath(param) {
+        return Util.camel('param', 'of', param);
+    }
+
+    getParamsOfDefaultValue(params) {
+        return params.map(param => {
+            if (_.isEqual(param.trim(), 'id')) {
+                return `${param} = this.getId()`;
+            } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
+                return `${param} = this.rawData()`;
+            } else if (_.isEqual(param.trim(), 'restful')) {
+                return `restful = {status: 'succeed', message: 'default reason'}`;
+            } else if (_.isEqual(param.trim(), 'uid')) {
+                return `${param} = UserInfoRef.getUid()`;
+            } else if (_.isEqual(param.trim(), 'route')) {
+                return `${param} = ''`;
+            }
+            return param;
+        })
+    }
     /** type 可以是 fetch|submit, submit,就會依據node的type去做事*/
     getParamsInFunctionByPlatform(node, type = 'fetch', uploadFile = false, isArgument = false) {
         const self = this;
 
-        function appendDefaultValueOfParams(params) {
-            return params.map(param => {
-                if (_.isEqual(param.trim(), 'id')) {
-                    return `${param} = this.getId()`;
-                } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
-                    return `${param} = this.rawData()`;
-                } else if (_.isEqual(param.trim(), 'restful')) {
-                    return `restful = {status: 'succeed', message: 'default reason'}`;
-                } else if (_.isEqual(param.trim(), 'uid')) {
-                    return `${param} = UserInfoRef.getUid()`;
-                } else if (_.isEqual(param.trim(), 'route')) {
-                    return `${param} = ''`;
-                }
-                return param;
-            })
-        }
 
-        let params = uploadFile ? node.getParamsOfStorageFolder() : node.getParamsOfPath();
+
+        let params = uploadFile ? node.getParamsOfStorageFolder() : node.getParamsInPath();
         switch (type) {
             case 'fetch object':
             case 'fetch items of cheap':
@@ -2881,7 +2913,7 @@ class BaseBuilder extends PathBase {
         }
 
         if (self.isWebPlatform()) {
-            const paramsOfLatest = isArgument ? params : appendDefaultValueOfParams(params);
+            const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValue(params);
             return ['view', ...paramsOfLatest];
         }
         return params;
@@ -2946,7 +2978,7 @@ class StoreBuilder extends BaseBuilder {
                         isCheapArray: child.isCheapArray(),
                         type: child.type,
                         defaultValue,
-                        paramString: child.getStringOfParamsOfPath(),
+                        paramString: this.getParamsOfDefaultValue(child.getParamsInPath()).join(','),
                         argumentString: child.getStringOfArgumentsOfPath(),
                         stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch'),
                         stringOfArgumentInFetch: this.getArgumentOfFunctionInFunction(child, 'fetch'),
@@ -3062,7 +3094,6 @@ class StoreBuilder extends BaseBuilder {
             return stmts;
         }
 
-
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
@@ -3079,11 +3110,19 @@ class StoreBuilder extends BaseBuilder {
             propsStmt.push(...propStmt);
         }
 
+        if (node.isStructNode()) {
+            for (const param of node.getParamsInRouter()) {
+                baseGenerator.appendFunction({name: Util.camel(`getParamOf`, param, `InPath`), arrow: true}, [], [], [],
+                    `return this.getComponent(true).${this.getNormalizeFieldOfParamInPath(param)}`
+                )
+            }
+        }
+
         /** 這邊專門處理remote fetch 的邏輯 */
         new RemoteFunctionHandler(self.props, baseGenerator).buildFetchSubmitApi(node);
         new RemoteFunctionHandler(self.props, baseGenerator).buildListenerFunction(node);
 
-        if (node.isCollection() && node.hasPath()) {
+        if (node.isObject() || node.isPathArray()) {
             baseGenerator.appendAsyncFunction(`fetch`, this.getParamsInFunctionByPlatform(node, 'fetch'),
                 [], [], ...getStmtsOfFetch(node));
         }
@@ -3237,7 +3276,7 @@ class RemoteFunctionHandler extends BaseBuilder {
     }
 
     buildListenerFunction(node, recursively = false) {
-        const defaultParam = node.getParamsOfPath();
+        const defaultParam = node.getParamsInPath();
         const pathStmt = `const path = \`${node.getPathOfRouterString()}\``;
 
         if (node.isCollection()) {
@@ -3443,7 +3482,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `fetch items of pure`);
                     }
 
-                generateApiFunction(
+                    generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
                         [`return this.firestoreDocRef(path, id)`],
@@ -3650,23 +3689,22 @@ class ComponentBuilder extends BaseBuilder {
         this.importComponentDefault(baseGenerator);
         baseGenerator.appendImport('Style', '../../style');
 
-        const paramsOfPath = [];/**{name:functionName}*/
-        for (const param of componentNode.getParamsOfPath()) {
-            const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
-            const paramOf = Util.camel('param', 'of', normalizeParam);
-            const functionName = Util.camel('isValidOf', paramOf);
-            baseGenerator.appendConstructor(`this.${paramOf}= this.props.match.params.${normalizeParam}`);
-            paramsOfPath.push({functionName, param: paramOf});
-            baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${paramOf}:$\{this.${paramOf}\}\`)`);
-            baseGenerator.appendFunction(functionName, [param], [], [],
+        const paramsInPath = [];/**{name:functionName}*/
+        for (const param of componentNode.getParamsInRouter()) {
+            const fieldNameOfParam = this.getNormalizeFieldOfParamInPath(param);
+            const functionNameOfParamConstraint = Util.camel('isValidOf', fieldNameOfParam);
+            baseGenerator.appendConstructor(`this.${fieldNameOfParam} = this.isComponentView()? this.props.${fieldNameOfParam} : this.props.match.params.${param}`);
+            paramsInPath.push({functionNameOfParamConstraint, param: fieldNameOfParam});
+            baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${fieldNameOfParam}:$\{this.${fieldNameOfParam}\}\`)`);
+            baseGenerator.appendFunction(functionNameOfParamConstraint, [param], [], [],
                 'return false;'
             )
         }
 
-        if (_.size(paramsOfPath) > 0) {
+        if (_.size(paramsInPath) > 0) {
             /** 這個邏輯必須在fetch之前 */
             this.appendStmtIntoComponentDidMount(
-                `if(!Util.and(${paramsOfPath.map((each) => `this.${each.functionName}(this.${each.param})`).join(',')}))
+                `if(!Util.and(${paramsInPath.map((each) => `this.${each.functionNameOfParamConstraint}(this.${each.param})`).join(',')}))
                 this.getStore().setErrorMsg('網址參數異常')`)
         }
 
@@ -3756,7 +3794,7 @@ class ComponentBuilder extends BaseBuilder {
 
         function getStmtsOfGetStore() {
             const stmts = [];
-            stmts.push(`const store = this.props.${componentNode.getPreciseStoreName()}`)
+            stmts.push(`const store = this.isComponentView() ? this.props.${FIELD_NAME_OF_INJECT_STORE} : this.props.${componentNode.getPreciseStoreName()}`)
             stmts.push(`store.setComponent(this)`)
             stmts.push(`return store;`)
             return stmts;
@@ -3956,13 +3994,24 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isReferenceStructNode()) {
                 props.component = '###this';
                 props.isComponentView = '###true';
+                props[FIELD_NAME_OF_INJECT_STORE] = `###this.getStore().get${node.getClassName()}()`;
+                /** 找出paramsInPath */
+                for (const param of node.getParamsInRouter()) {
+                    const fieldName = self.getNormalizeFieldOfParamInPath(param);
+                    const functionNameOfInject = Util.camel('getInjectPropOf', fieldName);
+                    generator.appendFunction(functionNameOfInject, [], [], [], `Util.appendInfo('${functionNameOfInject}() not implemented')`);
+                    props[fieldName] = `###self.${functionNameOfInject}()`;
+                }
 
-                /** 找出paramsOfPath */
-
-
-                /** 找出所有getInject, onClick事件 */
-
-
+                if (node.needImplementAction()) {
+                    /** 產生component底下所有的onClick injectStyle override method */
+                    for (const method of node.getNodeOfComponent().getFunctionMethods()) {
+                        props[method.functionName] = `###self.${method.functionName}()`;
+                        generator.appendFunction(method.functionName, [], [], [],
+                            `/** component view override method param content (${method.params.join(',')}), 
+                            回傳 typeof === function, 就可以覆蓋原本的實作 */`);
+                    }
+                }
                 const className = _.upperFirst(node.getName());
                 generator.appendImport(className, `../${node.getName()}`)
                 viewJsxStmt = self.getJSXStrings({
@@ -3981,20 +4030,12 @@ class ComponentBuilder extends BaseBuilder {
                     props,
                 })
             }
-
             return viewJsxStmt;
-        }
-
-        function injectStyleBehavior(node, props, clazzName, wrap = false) {
-            const param = node.getObservableName();
-            const injectFunctionName = node.getFunctionNameOfInjectStyle(wrap);
-            props.style = `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(wrap ? node.getWrapStyle() : node.getStyle())},...Style.${clazzName}}`;
-            generator.appendFunction(injectFunctionName, [param]);
         }
 
         function appendOnChangedStmt() {
             generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value'], [], [],
-                `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not override')`)
+                `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not implemented')`)
             return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
         }
 
@@ -4166,27 +4207,7 @@ class ComponentBuilder extends BaseBuilder {
             className,
             ...node.getViewProps(),
         };
-        const simpleProps = node.simpleProps;
-
-        if (node.needInjectView()) {
-            const param = node.getObservableName();
-            const nameOfInjectView = node.getFunctionNameOfInjectView();
-            generator.appendFunction(nameOfInjectView, [param], [], [], [], `return null`);
-            contentStmts.push(`{this.${nameOfInjectView}(${param})}`);
-        }
-
-        if (node.needInjectStyle()) {
-            injectStyleBehavior(node, props, className, false)
-        } else {
-            props.style = `###{...${JSON.stringify(node.getStyle())},...Style.${className}}`;
-        }
-
-        if (node.needInjectPropsCallBack()) {
-            const param = node.getObservableName();
-            const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
-            simpleProps.push(`...self.${functionNameOfInjectProps}(${param})`);
-            generator.appendFunction(functionNameOfInjectProps, [param]);
-        }
+        const simpleProps = node.getSimpleProps();
 
         if (node.isArray()) {
             props.key = `${node.getUniqueIdStmt()}`;
@@ -4205,19 +4226,11 @@ class ComponentBuilder extends BaseBuilder {
             const clazzName = node.getClassNameOfLessUsage('wrap');
             this.storeClassName({node, type: 'wrap'});
 
-
             const propOfWrap = {
                 className: `${clazzName}`,
                 style: `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`,
                 ...node.getWrapProps(),
             }
-
-            if (node.needWrapInjectStyle()) {
-                injectStyleBehavior(node, propOfWrap, clazzName, true);
-            } else {
-                propOfWrap.style = `###{...${JSON.stringify(node.getWrapStyle())},...Style.${clazzName}}`;
-            }
-
 
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
@@ -4658,7 +4671,7 @@ class AppBuilder extends ComponentBuilder {
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
-                ['component', ...nodeOfComponent.getParamsOfPath(), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
+                ['component', ...nodeOfComponent.getParamsInPath(), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
                 [],
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
@@ -4696,7 +4709,7 @@ class AppBuilder extends ComponentBuilder {
     async buildAppIndexFiles() {
         /** 產生出key, 這樣每次path的param有改變,都會reload page*/
         function getPropOfKey(component) {
-            const params = component.getParamsOfPath();
+            const params = component.getParamsInPath();
             if (component.detailPage)
                 params.push(KEYWORD_OF_UID_OF_DETAIL);
 
@@ -5654,7 +5667,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     /** 放一些SimpleViewPager, SimpleGrid*/
-    enrichNodeWithCustomViewDefined(...nodes) {
+    enrichNodeWithCustomViewDefined(nodes) {
         for (const node of nodes) {
             if (node.isPathArray() && !node.isCheapArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
@@ -5844,12 +5857,12 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
-            this.enrichNodeWithCustomViewDefined(...node.getChildren());
+            this.enrichNodeWithCustomViewDefined(node.getChildren());
         }
     }
 
     /** 針對view的種類, 增加與store互動的規則 例如TextField就要有onChange */
-    enrichNodesOfBehavior(...nodes) {
+    enrichNodesOfBehavior(nodes) {
 
         function getStmtOfEventInValidate(node, functionName) {
             const stmts = [];
@@ -6036,41 +6049,6 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.isReferenceNode()) {
-                const targetName = node.ref;
-                const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
-                /** 目前先抓第一個當目標*/
-                if (_.isEmpty(_nodes)) {
-                    throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
-                }
-
-                let nodeOfReference = _.head(_nodes);
-
-                if (nodeOfReference.isComponentNode()) {
-                    nodeOfReference = nodeOfReference.getStruct();
-                }
-
-                if (node.imitate) {
-                    const nodeOfImitate = _.clone(nodeOfReference);
-                    nodeOfImitate.ref = nodeOfReference;
-                    Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
-                } else {
-                    node.ref = nodeOfReference;
-                    node.type = nodeOfReference.type;
-                    /** 因為還沒機上 view的關係 所以不會產出view
-                     * node.view = node.ref.view
-                     * node.listView = node.ref.listView
-                     * node.wrapView = node.ref.wrapView
-                     * */
-                    if (node.independence) {
-                        for (const raw of node.ref.raw.children) {
-                            node.appendChildrenWithJsons(raw)
-                        }
-                    }
-                }
-
-            }
-
             if (node.isAutoCompleteView()) {
                 const name = Util.camel(`suggest`, node.getName());
                 const plural = 's';
@@ -6205,7 +6183,98 @@ class ProjectFileHandler extends PathBase {
                 node.disableListEmptyTip()
             }
 
-            this.enrichNodesOfBehavior(...node.getChildren());
+            injectStyleBehavior(node);
+
+            if (node.needInjectView()) {
+                const param = node.getObservableName(true);
+                const nameOfInjectView = node.getFunctionNameOfInjectView();
+                node.appendMethod({
+                    functionName: nameOfInjectView,
+                    params: [param],
+                })
+                node.appendContent(`{this.${nameOfInjectView}(${param})}`)
+            }
+
+            if (node.needInjectProps()) {
+                const param = node.getObservableName(true);
+                const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
+                node.appendSimpleProps(`...self.${functionNameOfInjectProps}(${param})`)
+                node.appendMethod({
+                    functionName: functionNameOfInjectProps,
+                    params: [param],
+                })
+            }
+
+            this.enrichNodesOfBehavior(node.getChildren());
+        }
+
+        function injectStyleBehavior(node) {
+            let clazzNameOFDefault = node.getClassNameOfLessUsage();
+            const param = node.getObservableName(true);
+
+            if (node.needInjectStyle()) {
+                const injectFunctionName = node.getFunctionNameOfInjectStyle(false);
+                node.appendMethod({
+                    functionName: injectFunctionName,
+                    params: [param],
+                })
+                node.appendViewProps({style: `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+            } else {
+                node.appendViewProps({style: `###{...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+            }
+
+            /** 這個做法有點危險, 如果裏面是指標, 那之前所有的內容都會被更改 */
+            const clazzNameOfWrap = node.getClassNameOfLessUsage('wrap');
+            if (node.needInjectWrapStyle()) {
+                const injectFunctionName = node.getFunctionNameOfInjectStyle(true);
+                node.appendMethod({
+                    functionName: injectFunctionName,
+                    params: [param],
+                })
+                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+            } else {
+                node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+            }
+        }
+    }
+
+    enrichReferenceNode(nodes) {
+        for (const node of nodes) {
+            if (node.isReferenceNode()) {
+                const targetName = node.ref;
+                const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
+                /** 目前先抓第一個當目標*/
+                if (_.isEmpty(_nodes)) {
+                    throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
+                }
+
+                let nodeOfReference = _.head(_nodes);
+
+                if (nodeOfReference.isComponentNode()) {
+                    nodeOfReference = nodeOfReference.getStruct();
+                }
+
+                if (node.imitate) {
+                    const nodeOfImitate = _.clone(nodeOfReference);
+                    nodeOfImitate.ref = nodeOfReference;
+                    nodeOfImitate.implementActions = node.implementActions;
+                    Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
+                } else {
+                    node.ref = nodeOfReference;
+                    node.type = nodeOfReference.type;
+                    /** 因為還沒機上 view的關係 所以不會產出view
+                     * node.view = node.ref.view
+                     * node.listView = node.ref.listView
+                     * node.wrapView = node.ref.wrapView
+                     * */
+                    if (node.independence) {
+                        for (const raw of node.ref.raw.children) {
+                            node.appendChildrenWithJsons(raw)
+                        }
+                    }
+                }
+            }
+            this.enrichReferenceNode(node.getChildren());
         }
     }
 
@@ -6383,15 +6452,16 @@ class ProjectFileHandler extends PathBase {
             CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
         }
 
-        this.enrichNodeWithCustomViewDefined(...source.getComponents().map(component => component.getStruct()));
+        const nodes = source.getComponents().map(component => component.getStruct())
+        this.enrichNodeWithCustomViewDefined(nodes);
 
         if (needEditComponent && _.isEqual(this.env, 'dev')) {
             /** 編輯模式只有在dev */
             source.getComponents().push(...getEditorComponents());
         }
 
-        this.enrichNodesOfBehavior(...source.getComponents().map(component => component.getStruct()));
-
+        this.enrichNodesOfBehavior(nodes);
+        this.enrichReferenceNode(nodes)
     }
 
     getAppBuildParam = () => {
@@ -6450,7 +6520,6 @@ class ProjectFileHandler extends PathBase {
         for (const each of files) {
             await Util.executeCommandLine(`lessc ${each.absolute} ${libpath.join(each.dirPath, `${each.fileName}.css`)}`);
         }
-
     }
 
     buildCustomizePackages = async () => {

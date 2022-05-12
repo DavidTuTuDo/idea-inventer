@@ -27,6 +27,10 @@ class MainComponent extends BaseMainComponent {
         super(props);
     }
 
+    getInjectPropOfParamOfUid() {
+        return 'jiowejfoisdfds';
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

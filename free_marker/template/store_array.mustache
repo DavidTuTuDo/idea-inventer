@@ -100,8 +100,8 @@ this.remove{{{functionName}}}ByIndex(...indexes);
         const fatefulItems = [];
         for (const item of items) {
         const id = '';
-        const item = await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
-        fatefulItems.push(item.value);
+        const result = await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
+        fatefulItems.push(result.value);
         }
         this.push{{{functionName}}}(...fatefulItems)
         }

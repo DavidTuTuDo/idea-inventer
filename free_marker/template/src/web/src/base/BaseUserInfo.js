@@ -66,8 +66,8 @@ class UserInfo {
         if (this.isValidUser(user)) {
             const credential = Cookie.getCredential();
             /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
-            await this.user.submitUserInfo(undefined, undefined, user);
-            await this.crendential.submitCredential(undefined, undefined, credential);
+            await this.user.submitUserInfo(undefined, user);
+            await this.crendential.submitCredential(undefined,credential);
             /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
             Cookie.setUser(user);
             Util.appendInfo('登入成功, 所以寫入資料')

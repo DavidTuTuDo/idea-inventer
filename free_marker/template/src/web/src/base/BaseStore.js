@@ -75,9 +75,9 @@ class BaseStore extends ClientRemoteApi {
         this.component = component;
     }
 
-    /** 如果dialog要拿到自己的component, 而不是外層的component, 要設定為true */
-    getComponent(isDialog = false) {
-        if (isDialog)
+    /** 如果dialog | componentView 要拿到自己的component, 而不是外層的component, selfOnly要設定為true */
+    getComponent(selfOnly = false) {
+        if (selfOnly)
             return this.component;
 
         if (this.component)
