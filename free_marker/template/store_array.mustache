@@ -3,9 +3,17 @@
 {{{functionName就是Questions}}}
 {{{fieldClass就是Question}}}
 {{{hasPath就是true/flase}}}
+{{{paginateSize 就是page size}}}
+
 {{{argumentString 就是 view uid}}}
 {{{paramString view uid = userInfo.getUid}}}
-{{{paginateSize 就是page size}}}
+{{{stringOfParamInFetch view uid = userInfo.getUid}}}
+{{{stringOfArgumentInFetch 就是 view uid}}}
+{{{stringOfParamInSubmitItems view uid = userInfo.getUid}}}
+{{{stringOfArgumentInSubmitItems view uid}}}
+{{{stringOfParamInSubmitItem view uid = userInfo.getUid}}}
+{{{stringOfArgumentInSubmitItem view uid}}}
+
 
 @action
 set{{{functionName}}}(...items) {
@@ -64,27 +72,54 @@ this.remove{{{functionName}}}ByIndex(...indexes);
 }
 
 {{#hasPath}}
-    {{{這裡就是放if的邏輯}}}
-    submit{{{functionName}}} = async (view,...objs) => {
-    const fatefulItems = [];
-    for (const obj of objs) {
-    const item = await new {{{fieldClass}}}(obj).submit{{{fieldClass}}}Item(view);
-    fatefulItems.push(item.value);
-    }
-    this.push{{{functionName}}}(...fatefulItems)
-    }
+    {{{這裡就是放if暨hasPath的邏輯}}}
 
-    update{{{functionName}}} = async (view) => {
-    await new {{{fieldClass}}}().submit{{{functionName}}}(view,
-    ...this.get{{{functionName}}}().map((each) => each.rawData()))
-    }
+    {{#isCheapArray}}
+        {{{這裡就是放if暨isCheapArray的邏輯}}}
 
-    submit{{{fieldClass}}} = async (view, obj = {}) => {
-    return await this.submit{{{functionName}}}(view, obj);
-    }
+        /** this is method of cheap array */
+        submit{{{functionName}}} = async ({{{stringOfParamInSubmitItems}}}) => {
+        const api = new {{{fieldClass}}};
+        const origin = await api.fetch{{{functionName}}}({{{stringOfArgumentInFetch}}});
+        const latest = origin.push(...items);
+        await api.submit{{{functionName}}}(view, latest, id, {{{argumentString}}})
+        this.push{{{functionName}}}(...items)
+        }
+
+        /** this is method of cheap array */
+        update{{{functionName}}} = async (view, id = 'contents',{{{paramString}}}) => {
+        const latest = this.get{{{functionName}}}().map((each) => each.rawData())
+        await new {{{fieldClass}}}().submit{{{functionName}}}(view,latest, id, {{{argumentString}}})
+        }
+
+    {{/isCheapArray}}
+    {{^isCheapArray}}
+        {{{這裡就是放else暨不等於isCheapArray的邏輯}}}
+
+        submit{{{functionName}}} = async ({{{stringOfParamInSubmitItems}}}) => {
+        const fatefulItems = [];
+        for (const item of items) {
+        const id = '';
+        const item = await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
+        fatefulItems.push(item.value);
+        }
+        this.push{{{functionName}}}(...fatefulItems)
+        }
+
+        update{{{functionName}}} = async (view,{{{paramString}}}) => {
+        const items = this.get{{{functionName}}}().map((each) => each.rawData());
+        await new {{{fieldClass}}}().submit{{{functionName}}}({{{stringOfArgumentInSubmitItems}}})
+        }
+
+        submit{{{fieldClass}}} = async ({{{stringOfParamInSubmitItem}}}) => {
+        return await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
+        }
+
+    {{/isCheapArray}}
+
 {{/hasPath}}
 {{^hasPath}}
-    {{{這裡就是放else的邏輯}}}
+    {{{這裡就是放else暨不等於hasPath的邏輯}}}
 {{/hasPath}}
 
 {{#hasPaginate}}
@@ -113,21 +148,21 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     this.next{{{fieldClass}}}PageMode =  mode;
     }
 
-    fetch{{{functionName}}} = async ({{{paramString}}}) => {
+    fetch{{{functionName}}} = async ({{{stringOfParamInFetch}}}) => {
     const self = this;
     const fatefulItems = [];
     switch (self.getNext{{{fieldClass}}}PageMode()) {
     case "in-array":
-    const itemsOfNextIds = await self.fetch{{{fieldClass}}}ByNextIds({{{argumentString}}});
+    const itemsOfNextIds = await self.fetch{{{fieldClass}}}ByNextIds({{{stringOfArgumentInFetch}}});
     fatefulItems.push(...itemsOfNextIds);
     break;
     case "paging":
-    const itemsOfNextPage = await self.fetch{{{fieldClass}}}NextPageItems({{{argumentString}}});
+    const itemsOfNextPage = await self.fetch{{{fieldClass}}}NextPageItems({{{stringOfArgumentInFetch}}});
     fatefulItems.push(...itemsOfNextPage);
     break;
     default:
     const queryItems = await new {{{fieldClass}}}().fetch(
-    {{{argumentString}}},
+    {{{stringOfArgumentInFetch}}},
     ...this.get{{{fieldClass}}}Conditions()
     )
     fatefulItems.push(...queryItems)
@@ -142,24 +177,24 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     return fatefulItems;
     };
 
-    fetch{{{fieldClass}}}NextPageItems = async ({{{paramString}}}) => {
-    const conditions = this.getStartAfterConditions(_.last(this.get{{{functionName}}}()));
+    fetch{{{fieldClass}}}NextPageItems = async ({{{stringOfParamInFetch}}}) => {
+    const conditionsOfNext = this.getStartAfterConditions(_.last(this.get{{{functionName}}}()));
     const fatefulItems = await new {{{fieldClass}}}().fetch(
-    {{{argumentString}}},
+    {{{stringOfArgumentInFetch}}},
     ...this.get{{{fieldClass}}}Conditions(),
-    ...conditions
+    ...conditionsOfNext
     );
     return fatefulItems;
     }
 
-    fetch{{{fieldClass}}}ByNextIds = async ({{{paramString}}}) => {
+    fetch{{{fieldClass}}}ByNextIds = async ({{{stringOfParamInFetch}}}) => {
     const self = this;
     const targets = _.remove(self.getNext{{{fieldClass}}}IDs(), (each, index) => {
     return index < {{{fieldClass}}}.sizeOfPerPage;
     })
     if (!_.isEmpty(targets)) {
     return await new {{{fieldClass}}}().fetch(
-    {{{argumentString}}},
+    {{{stringOfArgumentInFetch}}},
     ...this.getInArrayConditions(targets),
     ...this.get{{{fieldClass}}}Conditions()
     );
@@ -171,9 +206,9 @@ this.remove{{{functionName}}}ByIndex(...indexes);
 {{^hasPaginate}}
     {{{這裡就是放else的邏輯}}}
     {{#hasPath}}
-        fetch{{{functionName}}} = async ({{{paramString}}}) => {
+        fetch{{{functionName}}} = async ({{{stringOfParamInFetch}}}) => {
         return await new {{{fieldClass}}}().fetch(
-        {{{argumentString}}},
+        {{{stringOfArgumentInFetch}}},
         ...this.get{{{fieldClass}}}Conditions()
         )
         }

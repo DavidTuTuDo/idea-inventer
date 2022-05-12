@@ -24,7 +24,8 @@ const KEYWORD_OF_UID_OF_DETAIL = 'uidOfDetail';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
-const ID_OF_CHEAP_ARRAY = 'contents';
+const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
+const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'`;
 
 const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
@@ -561,7 +562,7 @@ class CodegenNode {
     }
 
     isReferenceNode() {
-        return CodegenNode.isCodegenNode(this.ref);
+        return !!this.ref;
     }
 
     needEmptyTip() {
@@ -668,12 +669,13 @@ class CodegenNode {
     }
 
     getNodeOfComponent() {
-        const node = this.getParentBy((node) => node.isStructNode());
+        const node = this.getParentBy((node) => node.isComponentNode());
         return node;
     }
 
     isStructNode() {
-        return !!this.struct;
+        const parent = this.getParentNode();
+        return parent.isComponentNode();
     }
 
     isRootNode() {
@@ -1273,10 +1275,16 @@ class CodegenNode {
         } else {
             const exist = {}
             for (const child of this.getPreciseViewChildren()) {
+
+                if (child.isReferenceStructNode()) {
+                    continue;
+                }
+
                 const view = child.getViewClassNameOfRenderView();
                 if (!!!exist[view] && !useViewModuleAndComponentModuleMechanism)
                     stmt.push(`const ${view} = self.${view}`)
                 exist[view] = true;
+
             }
         }
 
@@ -1770,7 +1778,7 @@ class CodegenNode {
 
     /** 得到 /username/${username}/id/${id} 這樣的字串 */
     getStringOfRouter(string) {
-        const params = this.getParamsOfString('undefined', string);
+        const params = this.getParamsOfString(string);
         /** undefined 是不要第一個param是 view */
         const path = [];
         for (const segment of string.split('/')) {
@@ -1794,30 +1802,6 @@ class CodegenNode {
         return segment.shift();
     }
 
-    getParamsOfPath(platform = 'web', ...others) {
-        return this.getParamsOfString(platform, this.getPath(), ...others);
-    }
-
-    getParamsOfString(platform = 'web', string, ...others) {
-        const params = [];
-        if (_.isEqual(platform, 'web')) {
-            params.push('view');
-        }
-
-        if (Util.isUndefinedNullEmpty(string)) {
-            params.push(...others)
-            return params;
-        }
-
-        params.push(...this.getSplitParamsOfString(string));
-        params.push(...others);
-
-        if (_.isEqual('paramsOfRoute', platform) && this.detailPage) {
-            params.push(KEYWORD_OF_UID_OF_DETAIL);
-        }
-        return params;
-    }
-
     /** /id/:id/userId/:id 把這種概念的param 給拉出來 */
     getSplitParamsOfString(string) {
         const params = [];
@@ -1830,39 +1814,36 @@ class CodegenNode {
         return params;
     }
 
-    getParamsOfStorageFolder(platform, ...others) {
-        return this.getParamsOfString(platform, this.getStorageFolderName(), ...others);
+    /** 得到陣列 [tenant = 'school', group = 'classroom', uid = UserInfo.getUid()] 包含預設值'*/
+    getParamsOfPath(...others) {
+        return this.getParamsOfString(this.getPath(), ...others);
     }
 
-    getStringOfParamsOfPath(platform, ...others) {
-        return this.getParamsOfPath(platform, ...others).join(',');
+    getParamsOfStorageFolder(...others) {
+        return this.getParamsOfString(this.getStorageFolderName(), ...others);
     }
 
-    /**回傳string 'uid,oid,year'*/
-    getStringOfArgumentsOfPath(isWebPlatform = true, ...others) {
-        return this.getArgumentsOfPath(isWebPlatform, ...others).join(',');
+    /** 得到字串 'tenant = 'school', group = 'classroom', uid = UserInfo.getUid()' 包含預設值'*/
+    getStringOfParamsOfPath(...others) {
+        return this.getParamsOfPath(...others).join(',');
     }
 
-    /**回傳陣列 [uid,oid,year]*/
-    getArgumentsOfPath(isWebPlatform = true, ...others) {
+    /**回傳string 'tenant, group ,uid'*/
+    getStringOfArgumentsOfPath(...others) {
+        return this.getStringOfParamsOfPath(...others);
+    }
+
+    getParamsOfString(string, ...others) {
         const params = [];
 
-        if (isWebPlatform) {
-            params.push('view');
-        }
-
-        if (!this.hasPath()) {
+        if (Util.isUndefinedNullEmpty(string)) {
             params.push(...others)
             return params;
         }
 
-        for (const segment of this.path.split('/')) {
-            if (_.startsWith(segment, ':')) {
-                let param = Util.getNormalizedStringNotEndWith(Util.getNormalizedStringNotStartWith(segment, ':'), '?')
-                params.push(param);
-            }
-        }
+        params.push(...this.getSplitParamsOfString(string));
         params.push(...others);
+
         return params;
     }
 
@@ -1900,7 +1881,7 @@ class CodegenNode {
         }
 
         while (!!current) {
-            if (!current.isValidNode() || current.isStructNode())
+            if (!current.isValidNode() || current.isComponentNode())
                 break;
 
             if (validate(current)) {
@@ -1916,6 +1897,11 @@ class CodegenNode {
         const clone = _.clone(this);
         clone.setType('arrayItem');
         return clone;
+    }
+
+    /** 指這個節點代表一個component view */
+    isReferenceStructNode() {
+        return this.isReferenceNode() && this.isStructNode();
     }
 
     /** 如果要用在程式內的view做一些邏輯上的injectStyle,injectView,injectProps 或是onClicked ,中間的unique function name統一都用這個 */
@@ -1960,7 +1946,7 @@ class CodegenNode {
      *  cheep array 關鍵在於 remote fetch io上面的hack, 畫面上沒有任何差異
      * */
     isCheapArray() {
-        return this.isArray() && !!this.cheap;
+        return this.isArray() && _.isEqual(this.cheap, true);
     }
 
     isArray() {
@@ -2040,7 +2026,7 @@ class CodegenNode {
     }
 
     isComponentNode() {
-        return this.isStructNode();
+        return !!this.struct;
     }
 
     getParamOfRenderView() {
@@ -2230,7 +2216,7 @@ class CodegenNode {
     }
 
     /** 就是在baseStore 已經定義過了, 再gen出來會有conflict */
-    isReservedAttribute() {
+    isPreservedAttribute() {
         return Util.isOrEquals(this.getName(), 'updateTime');
     }
 
@@ -2646,8 +2632,10 @@ class PathBase {
     platform; // web, admin,function, platform
     genComponentRootPath; // gen/app/src/component
     genStoreRootPath; // gen/app/src/store
+    props;
 
     constructor(props) {
+        this.props = props;
         if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
             throw new ERROR(8018, `platform ==> ''${props.platform}''`)
         }
@@ -2708,6 +2696,7 @@ class PathBase {
     }
 
     getMustacheRenderValues = ({
+                                   isCheapArray = false,
                                    hasPath,
                                    name,
                                    fieldName,
@@ -2722,13 +2711,20 @@ class PathBase {
                                    fieldClass,
                                    hasPaginate,
                                    paginateSize,
-                                   paramString,
                                    argumentString,
+                                   paramString,
+                                   stringOfParamInFetch,
+                                   stringOfArgumentInFetch,
+                                   stringOfParamInSubmitItems,
+                                   stringOfArgumentInSubmitItems,
+                                   stringOfParamInSubmitItem,
+                                   stringOfArgumentInSubmitItem,
                                    superUserUid,
                                }) => {
         return {
             hasPath,
             name,
+            isCheapArray,
             fieldName,
             functionName: functionName ? functionName : _.upperFirst(fieldName),
             modifiedFunctionName: `Modified${_.upperFirst(fieldName)}`,
@@ -2743,8 +2739,14 @@ class PathBase {
             fieldClass,
             hasPaginate,
             paginateSize,
-            paramString,
             argumentString,
+            paramString,
+            stringOfParamInFetch,
+            stringOfArgumentInFetch,
+            stringOfParamInSubmitItems,
+            stringOfArgumentInSubmitItems,
+            stringOfParamInSubmitItem,
+            stringOfArgumentInSubmitItem,
             superUserUid,
         }
     }
@@ -2791,6 +2793,107 @@ class BaseBuilder extends PathBase {
     constructor(props) {
         super(props);
     }
+
+    /** type 可以是 fetch|submit, submit,就會依據node的type去做事*/
+    getParamsInFunctionByPlatform(node, type = 'fetch', uploadFile = false, isArgument = false) {
+        const self = this;
+
+        function appendDefaultValueOfParams(params) {
+            return params.map(param => {
+                if (_.isEqual(param.trim(), 'id')) {
+                    return `${param} = this.getId()`;
+                } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
+                    return `${param} = this.rawData()`;
+                } else if (_.isEqual(param.trim(), 'restful')) {
+                    return `restful = {status: 'succeed', message: 'default reason'}`;
+                } else if (_.isEqual(param.trim(), 'uid')) {
+                    return `${param} = UserInfoRef.getUid()`;
+                } else if (_.isEqual(param.trim(), 'route')) {
+                    return `${param} = ''`;
+                }
+                return param;
+            })
+        }
+
+        let params = uploadFile ? node.getParamsOfStorageFolder() : node.getParamsOfPath();
+        switch (type) {
+            case 'fetch object':
+            case 'fetch items of cheap':
+            case `fetch items of pure`:
+            case 'fetch items':
+            case 'fetch':
+                if (node.isCheapArray()) {
+                    params = [STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params];
+                } else if (node.isPathArray()) {
+                    params = [...params, `...conditions`];
+                } else {
+                    /** object */
+                }
+                break;
+            case `fetch next items`:
+                params = [...params, 'lastItem', '...conditions']
+                break;
+            case `submit items of cheap`:
+                params = ['items', STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params]
+                break;
+            case `fetch size of cheap`:
+                params = [STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params];
+                break;
+            case `fetch items of limitation`:
+                params = [...params, `action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'];
+                break;
+            case `delete items`:
+                params = ['all = false', 'conditions', ...params];
+                break;
+            case `fetch item's doc ref`:
+            case 'fetch item':
+            case `delete item`:
+                params = ['id', ...params];
+                break;
+            case `submit item`:
+            case `update item`:
+                params = ['item', 'id', ...params];
+                break;
+            case `submit items`:
+            case `update items`:
+                params = ['items', ...params];
+                break;
+            case `update item atomically`:
+                params = ['predict = async (item, transaction) => item', 'id', ...params]
+            case `submit object`:
+            case `update object`:
+                params = ['object', ...params];
+                break;
+            case `update object atomically`:
+                params = [`predict = async (object,transaction) => object`, ...params]
+                break;
+            case `upload storage file`:
+                params = ['blob', ...params];
+                break;
+            case `fetch without condition`:
+            case `delete object`:
+            case `increment attr of object`:
+            case `fetch size`:
+            case `get object doc ref`:
+                break;
+            default:
+                throw new ERROR(9999, `65284161, 走到這裡要注意有bug type='${type}'`);
+        }
+
+        if (self.isWebPlatform()) {
+            const paramsOfLatest = isArgument ? params : appendDefaultValueOfParams(params);
+            return ['view', ...paramsOfLatest];
+        }
+        return params;
+    }
+
+    getArgumentOfFunctionInFunction(node, type) {
+        return this.getParamsInFunctionByPlatform(node, type, false, true).map((param) => param.split('=').shift());
+    }
+
+    getStringOfArgumentOfFunctionInFunction(node, type) {
+        return this.getArgumentOfFunctionInFunction(node, type).join(',');
+    }
 }
 
 class StoreBuilder extends BaseBuilder {
@@ -2828,7 +2931,7 @@ class StoreBuilder extends BaseBuilder {
     async buildFieldAttribute(generator, node) {
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
-            if (child.isReservedAttribute()) continue;
+            if (child.isPreservedAttribute()) continue;
 
             const propStmt = [];
             const fieldName = child.getFieldName();
@@ -2840,10 +2943,17 @@ class StoreBuilder extends BaseBuilder {
                         name: child.getName(),
                         fieldName,
                         hasPath: child.hasPath(),
+                        isCheapArray: child.isCheapArray(),
                         type: child.type,
                         defaultValue,
-                        paramString: child.getStringOfParamsOfPath('web'),
-                        argumentString: child.getStringOfArgumentsOfPath(true),
+                        paramString: child.getStringOfParamsOfPath(),
+                        argumentString: child.getStringOfArgumentsOfPath(),
+                        stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch'),
+                        stringOfArgumentInFetch: this.getArgumentOfFunctionInFunction(child, 'fetch'),
+                        stringOfParamInSubmitItems: this.getParamsInFunctionByPlatform(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
+                        stringOfArgumentInSubmitItems: this.getArgumentOfFunctionInFunction(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
+                        stringOfParamInSubmitItem: this.getParamsInFunctionByPlatform(child, 'submit item'),
+                        stringOfArgumentInSubmitItem: this.getArgumentOfFunctionInFunction(child, 'submit item'),
                         hasPaginate: child.hasPaginate(),
                         paginateSize: child.getPaginateSize(),
                         fieldClass: child.getClassName(),
@@ -2883,6 +2993,7 @@ class StoreBuilder extends BaseBuilder {
     }
 
     async buildBaseStore(node) {
+        const self = this;
 
         function getInitFetchStmt(node) {
             let defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` :
@@ -2907,16 +3018,50 @@ class StoreBuilder extends BaseBuilder {
         }
 
         function getStmtOfFetchByDetail(node) {
-            const stmt = []
+            const stmts = []
             if (node.needDetail) {
-                stmt.push(
+                stmts.push(
                     `if(view.isDetailPage()){`,
                     `const item = await this.${node.getFunctionNameOfFetchItem()}(view, view.getUidOfDetail());`,
                     `return item.exists ? [item] : []`,
                     `}`)
             }
-            return stmt
+            return stmts;
         }
+
+        function getStmtsOfFetch(node) {
+            const stmts = [];
+            switch (node.getType()) {
+                case 'object':
+                    const contents = [
+                        `{`,
+                        (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')})),` : `...{},`,
+                        ..._.map(node.getPreciseAttributeChildren(), (child) => {
+                            if (child.isDisableInitFetch()) return '';
+                            /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
+                            return (child.isPathArray()) || child.isObject() ? getInitFetchStmt(child) : ``
+                        }),
+                        `}`,
+                    ];
+                    stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
+                    break
+                case 'array':
+                    if (node.isPathArray()) {
+                        stmts.push(`return await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')})`);
+                    } else if (node.isCheapArray()) {
+                        stmts.push(
+                            ...getStmtOfFetchByDetail(node),
+                            `return await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')}, ${STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY})`);
+                    } else {
+                        throw new ERROR(9999, '48144544142854 不能跑進來這裡')
+                    }
+                    break
+                default:
+                    throw new ERROR(9999, '4845441351854 不能跑進來這裡')
+            }
+            return stmts;
+        }
+
 
         const folderName = node.getStoreFolderName();
         const className = node.getStoreClassName();
@@ -2935,32 +3080,12 @@ class StoreBuilder extends BaseBuilder {
         }
 
         /** 這邊專門處理remote fetch 的邏輯 */
-        new RemoteFunctionHandler(baseGenerator).buildFetchSubmitApi(node);
-        new RemoteFunctionHandler(baseGenerator).buildListenerFunction(node);
+        new RemoteFunctionHandler(self.props, baseGenerator).buildFetchSubmitApi(node);
+        new RemoteFunctionHandler(self.props, baseGenerator).buildListenerFunction(node);
 
-        if (node.isObject()) {
-            const contents = [
-                `{`,
-                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true)})),` : `...{},`,
-                ..._.map(node.getPreciseAttributeChildren(), (child) => {
-                    if (child.isDisableInitFetch()) return '';
-                    /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
-                    return (child.isPathArray()) || child.isObject() ? getInitFetchStmt(child) : ``
-                }),
-                `}`,
-            ]
-            baseGenerator.appendAsyncFunction('fetch', [...node.getParamsOfPath('web')], [], [],
-                ...this.getDecorateFetchStrings(node.isObject(), ...contents)
-            )
-        } else if (node.isCheapArray()) {
-            baseGenerator.appendAsyncFunction('fetch',
-                [...node.getParamsOfPath('web')], [], [],
-                `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true)})`);
-        } else if (node.isPathArray()) {
-            baseGenerator.appendAsyncFunction('fetch',
-                [...node.getParamsOfPath('web', '...conditions')], [], [],
-                ...getStmtOfFetchByDetail(node),
-                `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...conditions')})`);
+        if (node.isCollection() && node.hasPath()) {
+            baseGenerator.appendAsyncFunction(`fetch`, this.getParamsInFunctionByPlatform(node, 'fetch'),
+                [], [], ...getStmtsOfFetch(node));
         }
 
         if (node.isArray()) {
@@ -2977,7 +3102,7 @@ class StoreBuilder extends BaseBuilder {
         }
 
         for (const child of node.getPreciseAttributeChildren()) {
-            if (child.hasPath() && child.isArray()) {
+            if (child.isPathArray()) {
                 const fieldName = Util.camel('conditions', 'of', child.getName());
                 baseGenerator.appendField(fieldName, '[]')
                 baseGenerator.appendFunction(Util.camel('set', child.getName(), 'conditions'), ['conditions'], [], [],
@@ -3088,19 +3213,13 @@ class StoreBuilder extends BaseBuilder {
     }
 }
 
-class RemoteFunctionHandler {
+class RemoteFunctionHandler extends BaseBuilder {
 
-    constructor(classGenerator, platform = 'web') {
+    generator = undefined;
+
+    constructor(props, classGenerator) {
+        super(props);
         this.generator = classGenerator;
-        this.platform = platform;
-    }
-
-    isAdminPlatform() {
-        return _.isEqual('admin', this.platform);
-    }
-
-    isWebPlatform() {
-        return _.isEqual('web', this.platform);
     }
 
     appendParamIfPlatformEqualsWeb(isString = false) {
@@ -3165,43 +3284,12 @@ class RemoteFunctionHandler {
         const self = this;
         const generator = self.generator;
 
-        function isWebPlatform() {
-            return self.platform === 'web';
-        }
-
-        function isAdminPlatform() {
-            return self.platform === 'admin';
-        }
-
         function appendViewInParamStmt(comma = true) {
-            return isWebPlatform() ? `${comma ? ',' : ''}view` : ``;
-        }
-
-        function appendDefaultValueOfParams(...params) {
-            const latest = [];
-            if (isWebPlatform()) {
-                latest.push(params.map(param => {
-                    if (_.isEqual(param.trim(), 'id')) {
-                        return `${param} = this.getId()`;
-                    } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
-                        return `${param} = this.rawData()`;
-                    } else if (_.isEqual(param.trim(), 'restful')) {
-                        return `restful = {status: 'succeed', message: 'default reason'}`;
-                    } else if (_.isEqual(param.trim(), 'uid')) {
-                        return `${param} = UserInfoRef.getUid()`;
-                    } else if (_.isEqual(param.trim(), 'route')) {
-                        return `${param} = ''`;
-                    }
-                    return param;
-                }))
-            } else {
-                latest.push(...params);
-            }
-            return latest;
+            return self.isWebPlatform() ? `${comma ? ',' : ''}view` : ``;
         }
 
         function houseKeepingStmt() {
-            if (isWebPlatform()) {
+            if (self.isWebPlatform()) {
                 return [`if(this.hasParent())`,
                     `this.getParentNode().${node.getFunctionNameRemoveItems()}(this)`];
             } else
@@ -3209,39 +3297,8 @@ class RemoteFunctionHandler {
         }
 
         function getFetchStmt() {
-            if (isWebPlatform()) return [`this.clean()`, `this.initial(item)`];
+            if (self.isWebPlatform()) return [`this.clean()`, `this.initial(item)`];
             return [];
-        }
-
-        function generateApiFunction(node, name, params = [], logicStmts = [], type, isAsync = true, uploadFile = false) {
-            const defaultParam = uploadFile ? node.getParamsOfStorageFolder(self.platform) : node.getParamsOfPath(self.platform);
-            const preStmts = [`const self = this`];
-            preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
-                `const path = \`${node.getPathOfRouterString()}\``
-            )
-
-            let stmts = [];
-            if (isAsync) {
-                stmts.push(`const task = async () => {`)
-                stmts.push(...logicStmts);
-                stmts.push(`}`);
-                if (isWebPlatform())
-                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${uploadFile ? 'folder' : 'path'}${appendViewInParamStmt()})`)
-                else
-                    stmts.push(`return await task()`);
-            } else {
-                stmts.push(...logicStmts);
-            }
-
-            const pramsOfWhole = appendDefaultValueOfParams(...defaultParam, ...params);
-            const stmtsOfWhole = [...preStmts, ...stmts];
-            if (isAsync) {
-                generator.appendAsyncFunction(name, pramsOfWhole, [], [],
-                    ...stmtsOfWhole)
-            } else {
-                generator.appendFunction(name, pramsOfWhole, [], [],
-                    ...stmtsOfWhole)
-            }
         }
 
         function getCommentDescription(node) {
@@ -3261,6 +3318,36 @@ class RemoteFunctionHandler {
             return stmts.join(',');
         }
 
+        function generateApiFunction(node, name, logicStmts = [], type, isAsync = true, uploadFile = false) {
+            const preStmts = [`const self = this`];
+            preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
+                `const path = \`${node.getPathOfRouterString()}\``
+            )
+
+            let stmts = [];
+            if (isAsync) {
+                stmts.push(`const task = async () => {`)
+                stmts.push(...logicStmts);
+                stmts.push(`}`);
+                if (self.isWebPlatform())
+                    stmts.push(`return await self.runUIAsyncTask(task, '${type}', ${uploadFile ? 'folder' : 'path'}${appendViewInParamStmt()})`)
+                else
+                    stmts.push(`return await task()`);
+            } else {
+                stmts.push(...logicStmts);
+            }
+
+            const pramsOfWhole = self.getParamsInFunctionByPlatform(node, type, uploadFile);
+            const stmtsOfWhole = [...preStmts, ...stmts];
+            if (isAsync) {
+                generator.appendAsyncFunction(name, pramsOfWhole, [], [],
+                    ...stmtsOfWhole)
+            } else {
+                generator.appendFunction(name, pramsOfWhole, [], [],
+                    ...stmtsOfWhole)
+            }
+        }
+
         if (node.isCollection()) {
             const contents = [];
             const children = [];
@@ -3269,14 +3356,12 @@ class RemoteFunctionHandler {
                 throw new ERROR(8016)
 
             for (const child of node.getPreciseAttributeChildren()) {
-                if (child.isReservedAttribute()) continue;
+                if (child.isPreservedAttribute()) continue;
                 if (!child.isColumnAttribute()) continue;
-
 
                 if (child.hasStorageFolder()) {
                     generateApiFunction(
                         child, Util.camel('uploadStorageOf', child.getName()),
-                        ['blob'],
                         [
                             `return await self.uploadStorageFile(blob, folder);`,
                         ], `upload storage file`, true, true)
@@ -3284,13 +3369,13 @@ class RemoteFunctionHandler {
 
                 if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
-                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};${getCommentDescription(child)}`);
+                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
                 } else {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                object.${child.getFieldName()} : ${child.getDefaultValueByType(isAdminPlatform())};${getCommentDescription(child)}`);
+                object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
                 }
                 children.push(child.getFieldName());
             }
@@ -3315,145 +3400,135 @@ class RemoteFunctionHandler {
 
                     generateApiFunction(
                         node, Util.camel('submit', node.getFieldName()),
-                        ['items',`id = '${ID_OF_CHEAP_ARRAY}'`],
                         [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
                             `return await self.submitObject(path,{
-                                    ${ID_OF_CHEAP_ARRAY}:commitments,
+                                    ${ID_OF_DEFAULT_CHEAP_ARRAY}:commitments,
                                     updateTime:this._firebase().getServerTimeSymbol(),
-                            }, id)`], `submit cheap  items`)
+                            }, id)`],
+                        `submit items of cheap`)
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        [`id = '${ID_OF_CHEAP_ARRAY}'`],
-                        [`const result = await self.fetchObject(path, id)`,
-                            `return result.${ID_OF_CHEAP_ARRAY} ?? []`], `fetch cheap items`);
+                        [`const result = await self.fetchObject(path, ${STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY})`,
+                            `return result.${ID_OF_DEFAULT_CHEAP_ARRAY} ?? []`],
+                        `fetch items of cheap`);
 
                     generateApiFunction(
                         node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [], [`return _.size(await self.${node.getFunctionNameOfFetch()}())`], `fetch cheap size`)
+                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(view,${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')}))`],
+                        `fetch size of cheap`)
 
 
                 } else if (node.isPathArray()) {
                     generator.appendField(FIELD_NAME_OF_MAX_SIZE_OF_REQUEST, node.getMaxSizePerRequest(), [], [], 'static')
 
-                    if (isWebPlatform() && node.hasPaginate()) {
+                    if (self.isWebPlatform() && node.hasPaginate()) {
                         generator.appendField(FIELD_NAME_OF_SIZE_PER_PAGE, node.getPaginateSize(), [], [], 'static')
-                        generator.appendAsyncFunction(node.getFunctionNameOfNextFetch(), [
-                                ...node.getParamsOfPath(self.platform),
-                                `lastItem`,
-                                `...conditions`], [], [],
-                            `const startAfterConditions = this.getStartAfterConditions(lastItem);`,
-                            `return await this.${node.getFunctionNameOfFetch()}(${node.getStringOfArgumentsOfPath(true, '...startAfterConditions', '...conditions')})`
-                        )
+
+                        generateApiFunction(
+                            node,
+                            node.getFunctionNameOfNextFetch(),
+                            [
+                                `const startAfterConditions = this.getStartAfterConditions(lastItem);`,
+                                `return await this.${node.getFunctionNameOfFetch()}(${this.getArgumentOfFunctionInFunction(node, 'fetch without condition')}, ...startAfterConditions, ...conditions)`],
+                            `fetch next items`);
 
                         /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
                         generateApiFunction(
                             node,
                             node.getFunctionNameOfPureFetch(),
-                            ['...conditions'],
-                            [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`], `fetch items without limit condition`);
+                            [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`],
+                            `fetch items of pure`);
                     }
 
-                    generateApiFunction(
+                generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
-                        ['id'],
                         [`return this.firestoreDocRef(path, id)`],
-                        `get item doc ref`,
+                        `fetch item's doc ref`,
                         false,
                     )
 
                     generateApiFunction(
                         node,
                         Util.camel(node.getFunctionNameOfFetch(), 'of', 'limitation'),
-                        [`action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'],
                         [`return await this.fetchItemsOfLimitation(path, action, fieldName, ...valuesOfComparison)`],
-                        `get items with limitation`
+                        `fetch items of limitation`
                     )
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        ['...conditions'],
-                        [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`], `fetch items`);
+                        [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`],
+                        `fetch items`);
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetchItem(),
-                        [`id`],
                         ['const item =  await self.fetchItem(path, id)',
                             ...getFetchStmt(),
-                            `return item`], `fetch item`)
+                            `return item`],
+                        `fetch item`)
 
                     /** admins only , delete collection all */
                     generateApiFunction(
                         node,
                         Util.camel(`delete`, node.getFieldName()),
-                        ['all = false', '...conditions'],
-                        [`return await self.deleteItems(path,all,...conditions)`], 'delete items')
+                        [`return await self.deleteItems(path,all,...conditions)`],
+                        'delete items')
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfSubmitItem(),
-                        [`item`],
                         [`const commitment = this.${functionNameOfNormalize}(item)`,
-                            `return await self.submitItem(path, commitment);`], 'submit item')
+                            `return await self.submitItem(path, commitment, id);`],
+                        'submit item')
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfUpdateItem(),
-                        [`id`, `item`],
-                        [`return await self.updateItem(path, id , item)`], 'update item')
+                        [`return await self.updateItem(path, item, id)`],
+                        'update item')
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfUpdateItemAtomically(),
-                        ['id', 'predict = async (item,transaction) => item'],
-                        [`return await self.updateItemAtomically(path,id,predict)`], 'update item atomically')
+                        [`return await self.updateItemAtomically(path,predict,id)`],
+                        'update item atomically')
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfDeleteItem(),
-                        [`id`],
                         [`const result = await self.deleteItem(path, id)`,
                             ...houseKeepingStmt(),
-                            `return result`], 'delete item')
+                            `return result`],
+                        'delete item')
 
                     generateApiFunction(
                         node,
                         Util.camel('submit', node.getFieldName()),
-                        ['...items'],
                         [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
-                            `return await self.submitItems(path,...commitments)`], `submit items`)
+                            `return await self.submitItems(path, ...commitments)`],
+                        `submit items`)
 
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName()),
-                        ['...items'],
-                        [`await self.updateItems(path,...items)`], `update items`)
+                        [`await self.updateItems(path, ...items)`],
+                        `update items`)
 
                     generateApiFunction(
                         node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [], [`return await self.fetchSizeOfCollection(path)`], `fetch size`)
-
-                    if (this.isAdminPlatform() && node.isRestfulBean()) {
-                        generateApiFunction(
-                            node,
-                            Util.camel(`restful`, node.getFunctionNameOfSubmitItem()),
-                            ['item', 'restful'],
-                            [`const commitment = this.${functionNameOfNormalize}({...item, ...restful})`,
-                                `return await self.submitItem(path, commitment);`], 'submit item')
-                    }
-
+                        [`return await self.fetchSizeOfCollection(path)`],
+                        `fetch size`)
 
                 } else if (node.isObject()) {
                     generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'doc', 'ref'),
-                        [],
                         [`return this.firestoreDocRef(path,'${node.getName()}')`],
                         `get object doc ref`,
                         false)
@@ -3461,49 +3536,49 @@ class RemoteFunctionHandler {
                     generateApiFunction(
                         node,
                         Util.camel(node.getFunctionNameOfSubmit()),
-                        [`object`],
                         [
                             `const commitment = this.${functionNameOfNormalize}(object)`,
-                            `return await self.submitObject(path, commitment,'${node.getName()}')`], `submit object`)
+                            `return await self.submitObject(path, commitment,'${node.getName()}')`],
+                        `submit object`)
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        [],
                         [
                             `const object = await self.fetchObject(path,'${node.getName()}')`,
                             `${this.isWebPlatform() ? 'this.clean()' : ''}`,
                             `${this.isWebPlatform() ? 'this.initial(object)' : ''}`,
                             `return object`
-                        ], `fetch object`)
+                        ],
+                        `fetch object`)
 
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName()),
-                        [`object`],
-                        [`return await self.updateObject(path, '${node.getName()}',object)`], `update object`);
+                        [`return await self.updateObject(path, '${node.getName()}',object)`],
+                        `update object`);
 
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName(), 'atomically'),
-                        [`predict = async (object,transaction) => object`],
-                        [`return await self.updateObjectAtomically(path, '${node.getName()}',predict)`], `update object atomically`);
+                        [`return await self.updateObjectAtomically(path, '${node.getName()}',predict)`],
+                        `update object atomically`);
 
                     generateApiFunction(
                         node,
                         Util.camel('delete', node.getFieldName()),
-                        [],
-                        [`return await self.deleteObject(path, '${node.getName()}')`], `delete object`);
+                        [`return await self.deleteObject(path, '${node.getName()}')`],
+                        `delete object`);
 
                     for (const child of node.getPreciseColumnChildren()) {
                         if (child.hasIncrementUsage()) {
                             generateApiFunction(
                                 node,
                                 Util.camel('submit', 'increment', child.getFieldName()),
-                                [],
                                 [
                                     `return await self.updateObject(path, '${node.getName()}',{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})},)`
-                                ], `update(increment) object`);
+                                ],
+                                `increment attr of object`);
                         }
                     }
                 } else {
@@ -3576,7 +3651,7 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendImport('Style', '../../style');
 
         const paramsOfPath = [];/**{name:functionName}*/
-        for (const param of componentNode.getParamsOfPath('undefined')) {
+        for (const param of componentNode.getParamsOfPath()) {
             const normalizeParam = Util.getNormalizedStringNotEndWith(param, '?');
             const paramOf = Util.camel('param', 'of', normalizeParam);
             const functionName = Util.camel('isValidOf', paramOf);
@@ -3712,7 +3787,7 @@ class ComponentBuilder extends BaseBuilder {
             moduleGenerator.needSignature(false);
             moduleGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
             this.importComponentDefault(moduleGenerator);
-            await moduleGenerator.persist()
+            await moduleGenerator.persist();
         } else {
             baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
         }
@@ -3848,7 +3923,7 @@ class ComponentBuilder extends BaseBuilder {
      *  {node, type: 'list'}
      *  */
     storeClassName(info = {}) {
-        if(info.node.hasReferenceParent()) {
+        if (info.node.hasReferenceParent()) {
             Util.appendInfo(`${info.node.getName()} 是Reference node`);
             return;
         }
@@ -3876,13 +3951,37 @@ class ComponentBuilder extends BaseBuilder {
                 props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
 
-            const viewJsxStmt = self.getJSXStrings({
-                generator,
-                customViewNode: node,
-                tag: node.getViewClassNameOfRenderView(),
-                typeOfClass: 'component',
-                props,
-            })
+            let viewJsxStmt;
+
+            if (node.isReferenceStructNode()) {
+                props.component = '###this';
+                props.isComponentView = '###true';
+
+                /** 找出paramsOfPath */
+
+
+                /** 找出所有getInject, onClick事件 */
+
+
+                const className = _.upperFirst(node.getName());
+                generator.appendImport(className, `../${node.getName()}`)
+                viewJsxStmt = self.getJSXStrings({
+                    generator,
+                    customViewNode: node,
+                    tag: className,
+                    typeOfClass: 'component',
+                    props,
+                })
+            } else {
+                viewJsxStmt = self.getJSXStrings({
+                    generator,
+                    customViewNode: node,
+                    tag: node.getViewClassNameOfRenderView(),
+                    typeOfClass: 'component',
+                    props,
+                })
+            }
+
             return viewJsxStmt;
         }
 
@@ -4360,6 +4459,8 @@ class ComponentBuilder extends BaseBuilder {
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
             if (existedFunctions[functionName]) continue;
 
+            /** 避免掉進去遞迴build */
+            if (child.isReferenceStructNode()) continue;
 
             for (const method of child.getFunctionMethods()) {
                 generator.appendFunction(method.functionName,
@@ -4557,7 +4658,7 @@ class AppBuilder extends ComponentBuilder {
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
-                ['component', ...nodeOfComponent.getParamsOfPath('route'), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
+                ['component', ...nodeOfComponent.getParamsOfPath(), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
                 [],
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
@@ -4593,10 +4694,13 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildAppIndexFiles() {
-
         /** 產生出key, 這樣每次path的param有改變,都會reload page*/
         function getPropOfKey(component) {
-            const paramsOfProp = component.getParamsOfPath('paramsOfRoute').map((each) => `\$\{props.match.params.${each}\}`);
+            const params = component.getParamsOfPath();
+            if (component.detailPage)
+                params.push(KEYWORD_OF_UID_OF_DETAIL);
+
+            const paramsOfProp = params.map((each) => `\$\{props.match.params.${each}\}`);
             if (_.size(paramsOfProp) > 0) {
                 return {key: `###\`${paramsOfProp.join('')}\``}
             } else {
@@ -5091,13 +5195,13 @@ class AppBuilder extends ComponentBuilder {
         const to = libpath.join(this.genSourcePath, 'less');
         Util.copyFromFolderToDestFolder(less, to);
     }
+
 }
 
 class ProjectFileHandler extends PathBase {
 
     constructor(props) {
         super(props);
-        this.props = props;
         this.deployRemoteRules = true;
         this.needDeployCloudFunctions = true;
     }
@@ -5940,12 +6044,16 @@ class ProjectFileHandler extends PathBase {
                     throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
                 }
 
-                const nodeOfReference = _.head(_nodes);
+                let nodeOfReference = _.head(_nodes);
+
+                if (nodeOfReference.isComponentNode()) {
+                    nodeOfReference = nodeOfReference.getStruct();
+                }
+
                 if (node.imitate) {
                     const nodeOfImitate = _.clone(nodeOfReference);
                     nodeOfImitate.ref = nodeOfReference;
                     Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
-                    console.log('我來看看');
                 } else {
                     node.ref = nodeOfReference;
                     node.type = nodeOfReference.type;

@@ -133,7 +133,7 @@ class BaseComponent extends React.Component {
     }
 
     componentDidMount() {
-        if (!this.isDialogComponent()) {
+        if (!this.isDialogComponent() && !this.isComponentView()) {
             Router.setCurrentComponent(this);
             Application.setLatestComponent(this);
         }
@@ -145,23 +145,25 @@ class BaseComponent extends React.Component {
     }
 
     /**
+     * 把component放在alertView裏面使用
+     * 放在alert view 裏面使用 */
+    isDialogComponent() {
+        return this.props.dialog !== undefined;
+    }
+
+    /**
      如果Component被當作View使用..............
      <ExamQuestionView
      freeze={true}
-     componentView={true}
+     isComponentView={true}
      question={whoknowz.question}/>
      * */
     isComponentView = () => {
-        return !!this.props.isComponentView;
+        return _.isEqual(this.props.isComponentView,true);
     }
 
     isNotNavigatorNComponentView() {
         return (!this.isNavigator() && !this.isComponentView());
-    }
-
-    /** 放在alert view 裏面使用 */
-    isDialogComponent() {
-        return this.props.dialog !== undefined;
     }
 
     viewInitial() {
@@ -772,10 +774,10 @@ class BaseComponent extends React.Component {
 
     /** 通常呼叫這個method, 是要呼叫loading狀態, 所以忽略dialog狀態內的*/
     getComponentInstance = (isDialog = false) => {
-        if (isDialog)
+        if (!isDialog)
             return this;
 
-        if (this.isDialogComponent()) {
+        if (this.isDialogComponent() || this.isComponentView()) {
             return this.props.component;
         } else {
             return this;

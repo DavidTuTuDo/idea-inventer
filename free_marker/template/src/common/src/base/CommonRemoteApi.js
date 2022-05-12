@@ -76,29 +76,29 @@ class CommonRemoteApi {
             await batch.commit();
     }
 
-    async submitItems(path, ...objects) {
-        const size = objects.length
+    async submitItems(path, ...items) {
+        const size = items.length
         Util.appendInfo(`batch submit => path:${path}, size:${size} start`);
-        await this.batchBracket(objects, (batch, object) => {
-            const pk = _.toString(object.id);
+        await this.batchBracket(items, (batch, item) => {
+            const pk = _.toString(item.id);
             if (!_.isEmpty(pk)) {
-                batch.set(this.firestoreDocRef(path, pk), object)
+                batch.set(this.firestoreDocRef(path, pk), item)
             } else {
-                batch.set(this.firestoreDocRef(path), object)
+                batch.set(this.firestoreDocRef(path), item)
             }
         })
         return {message: `batch submit path:${path}, size:${size} succeed`}
     }
 
-    async updateItems(path, ...objects) {
-        const size = objects.length
-        Util.appendInfo(`batch update path:${path}, size:${objects.length}`);
-        await this.batchBracket(objects, (batch, object) => {
-            const id = object.id;
+    async updateItems(path, ...items) {
+        const size = items.length
+        Util.appendInfo(`batch update path:${path}, size:${items.length}`);
+        await this.batchBracket(items, (batch, item) => {
+            const id = item.id;
             if (Util.isUndefinedNullEmpty(id)) {
-                throw new ERROR(2001, `ERROR ===> ${object}`)
+                throw new ERROR(2001, `ERROR ===> ${item}`)
             } else {
-                batch.update(this.firestoreDocRef(path, id), object);
+                batch.update(this.firestoreDocRef(path, id), item);
             }
         })
         return {message: `batch update path:${path}, size:${size} succeed`}
@@ -126,14 +126,13 @@ class CommonRemoteApi {
         return list.length;
     }
 
-    async submitItem(path, object) {
-        const id = object.id ? object.id : '';
+    async submitItem(path, item, id) {
         Util.appendInfo(`submit item => path:${path}/${id}`);
-        let obj = object;
-        if (id && !_.isEmpty(id)) {
-            await this.firestoreDocRef(path, id).set(object);
+        let obj = item;
+        if (!Util.isUndefinedNullEmpty(id)) {
+            await this.firestoreDocRef(path, id).set(item);
         } else {
-            const docRef = await this.collectionRef(path).add(object);
+            const docRef = await this.collectionRef(path).add(item);
             obj.id = docRef.id;
         }
 
@@ -144,10 +143,17 @@ class CommonRemoteApi {
         }
     }
 
-    async updateItem(path, id, item) {
+    async updateItem(path, item, id) {
+        if (Util.isUndefinedNullEmpty(id)) {
+            throw new ERROR(9999, '474845146564 updateItem 的id 不能為空值')
+        }
         Util.appendInfo(`update item => path:/${path}/${id}`);
         await this.firestoreDocRef(path, id).update(item);
-        return true;
+        return {
+            succeed: true,
+            message: `update path:${path}/${id} succeed`,
+            value: item,
+        }
     }
 
     /** firestore transaction 的呼叫入口*/
@@ -167,7 +173,11 @@ class CommonRemoteApi {
             }
      *
      * */
-    async updateDocumentAtomically(path, id, predict = async (collection, transaction) => collection) {
+    async updateDocumentAtomically(path, predict = async (collection, transaction) => collection, id) {
+        if (Util.isUndefinedNullEmpty(id)) {
+            throw new ERROR(9999, '474845146451964 updateDocumentAtomically 的id 不能為空值')
+        }
+
         const behavior = async (transaction) => {
             const ref = this.firestoreDocRef(path, id);
             const node = await transaction.get(ref);
@@ -183,8 +193,8 @@ class CommonRemoteApi {
         return await this.runTransaction(behavior);
     }
 
-    async updateItemAtomically(path, id, predict = (item, transaction) => item) {
-        return await this.updateDocumentAtomically(path, id, predict);
+    async updateItemAtomically(path, predict = (item, transaction) => item, id) {
+        return await this.updateDocumentAtomically(path, predict, id);
     }
 
     async deleteItem(path, id) {
@@ -273,7 +283,7 @@ class CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all, ...conditions) {
+    async deleteItems(path, all, conditions) {
         Util.appendInfo(`delete items ${path}`);
         const sortedCondition = this.orderConditionByRules(conditions);
         const refs = [];
@@ -327,12 +337,12 @@ class CommonRemoteApi {
         return await this.firestoreDocRef(path, objName).update(updatedObject);
     }
 
-    async updateObjectAtomically(path, objName, predict = (object, transaction) => object) {
-        return await this.updateDocumentAtomically(path, objName, predict);
+    async updateObjectAtomically(path, predict = (object, transaction) => object, objName) {
+        return await this.updateDocumentAtomically(path, predict, objName);
     }
 
     async deleteObject(path, objName) {
-        path = libpath.join(path, 'attrs');
+        path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`delete object => path:/${path}/${objName}`);
         return await this.firestoreDocRef(path, objName).delete();
     }
@@ -401,9 +411,9 @@ class CommonRemoteApi {
 
     listenObject(path, objName, callback = (data, error) => {
     }) {
-        const fullpath = libpath.join(path, "attrs");
-        Util.appendInfo(`listenObject path:/${fullpath}/${objName}`);
-        const query = this.firestoreDocRef(fullpath, objName);
+        path = this.getNormalizePathOfObjectApi(path);
+        Util.appendInfo(`listenObject path:/${path}/${objName}`);
+        const query = this.firestoreDocRef(path, objName);
 
         const functionOfUnsubscribe = query.onSnapshot(
             (doc) => {
