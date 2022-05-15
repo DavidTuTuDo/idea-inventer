@@ -107,6 +107,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    nodeOfOrigin = undefined
+    /** 如果用到ref 要拿到原始節點 */
+
     implementActions = false;
     /** 如果ref對象是一個component,會有onClick, injectStyle事件, 可以選擇要不要產生override的method */
 
@@ -570,6 +573,15 @@ class CodegenNode {
         return !!this.ref;
     }
 
+    /** 在source.js 提示這個節點要超展開為 reference node, 這個method 應該只能用在還build store,component */
+    isReferenceNotice() {
+        return !!this.ref && _.isString(this.ref);
+    }
+
+    isReferenceImitateNode() {
+        return this.isReferenceNode() && _.isEqual(this.getNodeOfOrigin().imitate, true);
+    }
+
     needEmptyTip() {
         return this.listEmptyTip && this.listEmptyTip.enable;
     }
@@ -682,8 +694,12 @@ class CodegenNode {
         return this.getNodeOfComponent().getParamsInPath(...others);
     }
 
+    getNodeOfOrigin() {
+        return this.nodeOfOrigin ?? {};
+    }
+
     needImplementAction() {
-        return this.isReferenceStructNode() && this.implementActions;
+        return this.isReferenceStructNode() && this.getNodeOfOrigin().implementActions;
     }
 
     isStructNode() {
@@ -823,7 +839,7 @@ class CodegenNode {
                     objName = this.getName();
                     break;
                 case 'array':
-                    if(force) {
+                    if (force) {
                         objName = this.getName();
                         break;
                     }
@@ -991,7 +1007,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1473,18 +1489,21 @@ class CodegenNode {
      * 但設計了incestAttribute(), 要把grandson,和child 歸為同一個generation
      *
      * precise代表的是正確的父子關係,例如incest value, 如果要找到正確的父類, 就要透過 Precise
+     *
+     * force就是不要拿 ref 的 nodeOfOrigin, 因為imitate ref的 less 的className要唯一
      * */
 
-    getPreciseViewParent() {
-        return this.getPreciseParent((node) => node.isIncestView(), (node) => node.isView());
+    getPreciseViewParent(force = false) {
+        return this.getPreciseParent((node) => node.isIncestView(), (node) => node.isView(), force);
     }
 
     getPreciseAttributeParent() {
         return this.getPreciseParent((node) => node.isIncestAttribute(), (node) => node.isAttribute());
     }
 
-    getPreciseParent(isIncest, isNode) {
-        let parent = this.getParentNode();
+    getPreciseParent(isIncest, isNode, force = false) {
+        const nodeOfTarget = this.isReferenceImitateNode() && !force ? this.getNodeOfOrigin() : this;
+        let parent = nodeOfTarget.getParentNode();
 
         if (isIncest(this)) {
             parent = parent.getParentNode();
@@ -1939,7 +1958,7 @@ class CodegenNode {
     }
 
     getPreciseViewGenealogyNodes(excludeSelf = false) {
-        return this.getGenealogyNodes((node) => node.isView(), (node) => node.getPreciseViewParent(), excludeSelf)
+        return this.getGenealogyNodes((node) => node.isView(), (node) => node.getPreciseViewParent(true), excludeSelf)
     }
 
     getPreciseAttributeGenealogyNodes(excludeSelf = false) {
@@ -2841,10 +2860,10 @@ class BaseBuilder extends PathBase {
             return param;
         })
     }
+
     /** type 可以是 fetch|submit, submit,就會依據node的type去做事*/
     getParamsInFunctionByPlatform(node, type = 'fetch', uploadFile = false, isArgument = false) {
         const self = this;
-
 
 
         let params = uploadFile ? node.getParamsOfStorageFolder() : node.getParamsInPath();
@@ -3961,11 +3980,6 @@ class ComponentBuilder extends BaseBuilder {
      *  {node, type: 'list'}
      *  */
     storeClassName(info = {}) {
-        if (info.node.hasReferenceParent()) {
-            Util.appendInfo(`${info.node.getName()} 是Reference node`);
-            return;
-        }
-
         this.classNames.push(info);
     }
 
@@ -4058,7 +4072,6 @@ class ComponentBuilder extends BaseBuilder {
             }
             return stmts;
         }
-
 
         function getStmtsOfSelectImageButton(node) {
             const stmts = []
@@ -4386,7 +4399,6 @@ class ComponentBuilder extends BaseBuilder {
     normalizeJSXString(strings) {
         _.remove(strings, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
-
 
     appendRenderViewFunctions(node, generator, isEditPage) {
 
@@ -5048,6 +5060,7 @@ class AppBuilder extends ComponentBuilder {
             for (const className of info.classNames) {
                 const node = className.node;
                 const type = className.type;
+
                 const preciselyClazzName = node.getClassNameOfLessUsage(className.type);
                 const existObj = existedLessAttributeObj[preciselyClazzName]; /** 從file裡面找出定義過的屬性敘述*/
 
@@ -6239,8 +6252,9 @@ class ProjectFileHandler extends PathBase {
     }
 
     enrichReferenceNode(nodes) {
+
         for (const node of nodes) {
-            if (node.isReferenceNode()) {
+            if (node.isReferenceNotice()) {
                 const targetName = node.ref;
                 const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
                 /** 目前先抓第一個當目標*/
@@ -6256,23 +6270,20 @@ class ProjectFileHandler extends PathBase {
 
                 if (node.imitate) {
                     const nodeOfImitate = _.clone(nodeOfReference);
+                    /**  clone的物件 */
                     nodeOfImitate.ref = nodeOfReference;
-                    nodeOfImitate.implementActions = node.implementActions;
+                    nodeOfImitate.nodeOfOrigin = node;
+                    /**  source.js 上的點 */
                     Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
-                } else {
+                }
+
+                if (node.independence) {
                     node.ref = nodeOfReference;
-                    node.type = nodeOfReference.type;
-                    /** 因為還沒機上 view的關係 所以不會產出view
-                     * node.view = node.ref.view
-                     * node.listView = node.ref.listView
-                     * node.wrapView = node.ref.wrapView
-                     * */
-                    if (node.independence) {
-                        for (const raw of node.ref.raw.children) {
-                            node.appendChildrenWithJsons(raw)
-                        }
+                    for (const raw of nodeOfReference.raw.children) {
+                        node.appendChildrenWithJsons(raw)
                     }
                 }
+
             }
             this.enrichReferenceNode(node.getChildren());
         }
@@ -6480,6 +6491,8 @@ class ProjectFileHandler extends PathBase {
             if (FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT))
                 continue;
             const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
+            _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
+            /** 表示這可能是reference node產生出來className, 所以要filter */
             totalClassNames.push({component, classNames});
         }
         const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
@@ -6494,6 +6507,8 @@ class ProjectFileHandler extends PathBase {
                 continue;
 
             const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
+            _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
+            /** 表示這可能是reference node產生出來className, 所以要filter */
             totalClassNames.push({component, classNames});
             totalEvents.push(...events);
 
