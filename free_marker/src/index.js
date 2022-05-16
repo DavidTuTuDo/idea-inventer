@@ -3121,6 +3121,11 @@ class StoreBuilder extends BaseBuilder {
                     `return this.getComponent(true).${this.getNormalizeFieldOfParamInPath(param)}`
                 )
             }
+            if(node.getNodeOfComponent().detailPage) {
+                baseGenerator.appendFunction({name: 'getUidOfDetail', arrow: true}, [], [], [],
+                    `return this.getComponent(true).getUidOfDetail()`
+                )
+            }
         }
 
         /** 這邊專門處理remote fetch 的邏輯 */
@@ -5651,8 +5656,8 @@ class ProjectFileHandler extends PathBase {
         listenerGenerator.needIndexFile('AdminListenerApi');
 
         for (const component of this.nodeOfAncestor.getComponents()) {
-            new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
-            new RemoteFunctionHandler(listenerGenerator, this.platform).buildListenerFunction(component.getStruct(), true)
+            new RemoteFunctionHandler(this.props, apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
+            new RemoteFunctionHandler(this.props, listenerGenerator).buildListenerFunction(component.getStruct(), true)
         }
 
         await listenerGenerator.persist();
@@ -6328,7 +6333,7 @@ class ProjectFileHandler extends PathBase {
         apiGenerator.needIndexFile('AdminRemoteApi', [], true);
 
         for (const component of this.nodeOfAncestor.getComponents()) {
-            new RemoteFunctionHandler(apiGenerator, this.platform).buildFetchSubmitApi(component.getStruct(), true)
+            new RemoteFunctionHandler(this.props, apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
         }
 
         await apiGenerator.persist();
