@@ -25,7 +25,6 @@ import {
     Avatar
 } from '@material-ui/core';
 import Collapse from '@material-ui/core/Collapse';
-import * as MUIcon from '@material-ui/icons';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import BaseUserInfo from "../../base/BaseUserInfo";
@@ -118,16 +117,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
             {content} </ListItemIcon>)
     })
 
-    MUIconView = observer(({name}) => {
-            const CustomView = MUIcon[name];
-            if (CustomView !== undefined)
-                return <CustomView className={'BaseShortcutMUIconView'}/>
-            else {
-                const Random = _.sample(MUIcon);
-                return <Random className={'BaseShortcutMUIconView'}/>
-            }
-        }
-    )
+
 
     DrawerShortcutCollapseView = observer(({shortcut}) => {
         const classes = this.props.classes;

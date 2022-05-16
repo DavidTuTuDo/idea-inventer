@@ -52,6 +52,12 @@ class Utiller {
         this.env = 'dev';
     }
 
+
+    performActionWithoutTimingIssue(task = () => true,wait = 10){
+       this.syncDelay(wait).then(() => task())
+    }
+
+
     /**
      * 執行為了避免沒意義的任務重複執行, 像是search 輸入關鍵字後, 不應該每次onchange就呼叫一次建議列表, 應該等到打完後500ms後在去 執行搜尋任務
      * */

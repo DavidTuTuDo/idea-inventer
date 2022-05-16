@@ -1,11 +1,8 @@
 import _ from 'lodash'
 import React from "react";
 import moment from 'moment';
-
-
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import Store from "./BaseStore";
-import AlertDialog from './AlertDialog';
 import {
     Typography,
     LinearProgress,
@@ -31,10 +28,13 @@ import ImageDialogView from './ImageDialogView';
 import UserInfo from '../base/BaseUserInfo';
 import EventBus from "./CommonEventBus";
 import "../less";
+import MuiComponent from './MUIComponent';
 import ArrowBackIosRounded from "@material-ui/icons/ArrowBackIosRounded";
 import ArrowForwardIosRounded from "@material-ui/icons/ArrowForwardIosRounded";
+import AlertDialog from "./AlertDialog";
+import AlertMenu from "./AlertMenu";
 
-class BaseComponent extends React.Component {
+class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
     style = {};
     componentStyle = {}
@@ -159,7 +159,7 @@ class BaseComponent extends React.Component {
      question={whoknowz.question}/>
      * */
     isComponentView = () => {
-        return _.isEqual(this.props.isComponentView,true);
+        return _.isEqual(this.props.isComponentView, true);
     }
 
     isNotNavigatorNComponentView() {
@@ -343,15 +343,6 @@ class BaseComponent extends React.Component {
             task: task,
         });
         this.getLoginDialogRef().open();
-    }
-
-
-    gotoUrlWithNewTabDirectly(url) {
-        window.open(url, "_blank");
-    }
-
-    gotoExternalUrlDirectly(url) {
-        window.location.replace(url)
     }
 
     renderViewByStatus() {
@@ -579,18 +570,6 @@ class BaseComponent extends React.Component {
         this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip : ``);
     }
 
-
-    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons, component}) {
-        return (<AlertDialog
-            title={title}
-            content={content}
-            submitAsyncTask={task}
-            needActionButtons={needActionButtons}
-            customView={customView}
-            paramObject={paramObject}
-            component={component}
-            ref={ref}/>)
-    }
 
     renderImageDialog = () => {
         const self = this;
@@ -830,14 +809,6 @@ class BaseComponent extends React.Component {
         }
     }
 
-    handleTextString(object) {
-        if (typeof object === 'string') {
-            return object
-        } else {
-            return _.toString(object)
-        }
-    }
-
     copyCurrentLinkToClipboard() {
         navigator.clipboard.writeText(this.getCurrentWebSiteLink())
         this.showInfoSnackMessage(`已複製連結`);
@@ -873,7 +844,17 @@ class BaseComponent extends React.Component {
             content: "此功能必須登入,點擊確認後將喚起登入頁面",
             task: async () => await self.invokeLoginBehavior()
         })
-        this.getLoginDialogRef().open();
+        Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
+    }
+
+    enableAlertDialog = (title = '標題', content = '內容', task = async () => true) => {
+        const self = this;
+        this.getStore().setGlobalDialogContent({
+            title,
+            content,
+            task
+        })
+        Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
     }
 
     async invokeLoginBehavior() {
@@ -895,64 +876,6 @@ class BaseComponent extends React.Component {
         return Application.getNavigatorStore().getKeywords();
     }
 
-    getElementByClassName(className) {
-        const element = document.getElementsByClassName(className)[0];
-        return element;
-    }
-
-    getElementsByClassName(className) {
-        const elements = document.getElementsByClassName(className);
-        return elements;
-    }
-
-    /**
-     *
-     * @param className
-     * @param attribute font-size
-     */
-    getStyleByElementClassName(className, attribute) {
-        const view = this.getElementByClassName(className);
-        const style = window.getComputedStyle(view, null)
-        const value = style.getPropertyValue(attribute);
-        return value;
-
-    }
-
-    getStyleByElement(element, attribute) {
-        const style = window.getComputedStyle(element, null)
-        const value = style.getPropertyValue(attribute);
-        return value;
-    }
-
-    /** 修改所有className 的elements */
-    adjustBunchOfFontSizeByClassName(className, enlarge = true, delta = 1) {
-        const elements = this.getElementsByClassName(className);
-        for (const element of elements) {
-            const originValue = parseFloat(this.getStyleByElement(element, 'font-size'))
-            const nextValue = enlarge ? originValue + delta : originValue - delta;
-            element.style.fontSize = `${nextValue}px`;
-        }
-    }
-
-    adjustFontSizeByClassName(className, enlarge = true, delta = 1) {
-        const element = this.getElementByClassName(className);
-        const originValue = parseFloat(this.getStyleByElementClassName(className, 'font-size'))
-        const nextValue = enlarge ? originValue + delta : originValue - delta;
-        element.style.fontSize = `${nextValue}px`;
-    }
-
-    getCheckStateByEvent(event) {
-        if (event && event.target)
-            return event.target.checked;
-        return false;
-    }
-
-    getLatestValueByEvent(event) {
-        if (event && event.target)
-            return event.target.value;
-        return '';
-    }
-
     constraintOfParam(param, ...allows) {
         let isValid = true;
 
@@ -963,6 +886,28 @@ class BaseComponent extends React.Component {
             isValid = true;
 
         return isValid;
+    }
+
+    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons, component}) {
+        return (<AlertDialog
+            title={title}
+            content={content}
+            submitAsyncTask={task}
+            needActionButtons={needActionButtons}
+            customView={customView}
+            paramObject={paramObject}
+            component={component}
+            ref={ref}/>)
+    }
+
+    renderAlertMenu({ref, items, component}) {
+        return (
+            <AlertMenu
+                component={component}
+                items={items}
+                ref={ref}
+            />
+        )
     }
 
 }

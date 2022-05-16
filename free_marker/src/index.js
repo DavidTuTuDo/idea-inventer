@@ -107,6 +107,10 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    alertMenu = {
+        items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginOnly:false} */
+    }
+
     nodeOfOrigin = undefined
     /** 如果用到ref 要拿到原始節點 */
 
@@ -827,31 +831,7 @@ class CodegenNode {
     }
 
     allowOfParam() {
-        return this.isAttribute() && this.hasValidAttributeParent() || this.needParentParam();
-    }
-
-    /** arrayItem 和 array 目前傻傻分不清楚, 先by case 處理*/
-    getObservableName(force = false) {
-        let objName = '';
-        if (this.allowOfParam()) {
-            switch (this.getType()) {
-                case 'arrayItem':
-                    objName = this.getName();
-                    break;
-                case 'array':
-                    if (force) {
-                        objName = this.getName();
-                        break;
-                    }
-                case 'object':
-                    objName = this.getPreciseAttributeParentName();
-                    break;
-                default:
-                    objName = this.getPreciseAttributeParentName();
-                    break;
-            }
-        }
-        return objName;
+        return (this.isAttribute() && this.hasValidAttributeParent()) || this.needParentParam() || this.isIncestAttribute();
     }
 
     isScrollingHideDependOnRootNode() {
@@ -1007,7 +987,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1081,24 +1061,17 @@ class CodegenNode {
         this.wrapContents.push(...contents);
     }
 
-    getWrapContents() {
-        const stmt = [];
-        const wrapContents = this.wrapContents ? this.wrapContents : [];
-        stmt.push(...wrapContents);
-        this.appendAlertDialogStmts(stmt)
-        return stmt;
-    }
-
     appendAlertDialogStmts(stmt) {
         const self = this;
 
         function getTaskStmts() {
             if (self.hasConfirmDialog())
-                return `task:async() => self.${self.getFunctionNameOfClicked()}({view:${self.getViewParamVariable()},object:${self.getParamOfRenderView()}})`;
+                return `task:async() => self.${self.getFunctionNameOfClicked()}(objectOfParam)`;
         }
 
         function getActionButtonStmts() {
-            return `needActionButtons:${self.getAlertDialog().needActionButtons}`
+            const need = self.getAlertDialog().needActionButtons ?? true;
+            return `needActionButtons:${need}`
         }
 
         function getCustomViewStmts() {
@@ -1108,7 +1081,7 @@ class CodegenNode {
         }
 
         function getParamObject() {
-            const param = self.getParamOfRenderView();
+            const param = self.getObservableName();
             if (!_.isEmpty(param)) {
                 return `paramObject:${param}`;
             }
@@ -1117,7 +1090,7 @@ class CodegenNode {
         if (this.hasAlertDialog()) {
 
             const props = [
-                `ref:${this.getAlertDialogVariable()}`,
+                `ref:${this.getFieldNameOfAlertDialog()}`,
                 `title:${JSON.stringify(self.getAlertDialog().title)}`,
                 `content:${JSON.stringify(self.getAlertDialog().content)}`,
                 `component:self`,
@@ -1156,6 +1129,10 @@ class CodegenNode {
         return !_.isEmpty(this.getAlertDialog().content) || !_.isEmpty(this.getAlertDialog().customView);
     }
 
+    hasAlertMenu() {
+        return _.size(this.alertMenu.items) > 0;
+    }
+
     getAlertDialog() {
         return Util.mergeObject(this.defaultAlertDialog, this.alertDialog);
     }
@@ -1191,15 +1168,20 @@ class CodegenNode {
         }
     }
 
-    getWrapView() {
-        if (this.wrapView) {
+    getWrapView(needDefault = true) {
+        if (!needDefault) {
             return this.wrapView;
+        } else {
+            return this.wrapView ?? 'div';
         }
-        return 'div';
     }
 
     setWrapView(view) {
         this.wrapView = view;
+    }
+
+    withoutWrapView() {
+        return Util.isUndefinedNullEmpty(this.getWrapView(false));
     }
 
     getListView() {
@@ -1279,13 +1261,12 @@ class CodegenNode {
         return Util.camel('clean', this.getName(), 'conditions')
     }
 
-    getAlertDialogVariable() {
+    getFieldNameOfAlertDialog() {
         return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref');
     }
 
-
-    getViewParamVariable() {
-        return Util.camel(this.getName(), this.getView(), 'View', 'Param');
+    getFieldNameOfAlertMenu() {
+        return Util.camel(this.getName(), this.getView(), 'alertMenu', 'ref');
     }
 
     isWrapByAppBarView() {
@@ -1297,10 +1278,15 @@ class CodegenNode {
         const self = this
         const stmt = [];
         if (this.hasAlertDialog()) {
-            stmt.push(`const ${this.getAlertDialogVariable()} = React.createRef()`);
+            stmt.push(`const ${this.getFieldNameOfAlertDialog()} = React.createRef()`);
+        }
 
-            if (this.hasConfirmDialog())
-                stmt.push(`let ${this.getViewParamVariable()}`);
+        if (this.hasAlertMenu()) {
+            stmt.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
+        }
+
+        if (_.size(this.getFunctionMethods()) > 0) {
+            stmt.push(`const objectOfParam = { object: ${this.getObservableName()}} /** {object,view} */`);
         }
 
         if (this.isWrapByAppBarView() && this.isScrollingHideDependOnRootNode()) {
@@ -1379,6 +1365,14 @@ class CodegenNode {
         if (this.hasAlertDialog() && !this.hasWrap())
             this.appendAlertDialogStmts(stmts);
         return stmts;
+    }
+
+    getWrapContents() {
+        const stmt = [];
+        const wrapContents = this.wrapContents ? this.wrapContents : [];
+        stmt.push(...wrapContents);
+        this.appendAlertDialogStmts(stmt)
+        return stmt;
     }
 
     isNumber() {
@@ -1518,13 +1512,6 @@ class CodegenNode {
 
     isIncestAttribute() {
         return this.incest && this.incest.attribute;
-    }
-
-    /** parent 是 array 的意思 */
-    isChildOfArray() {
-        if (!this.hasValidParent()) return false;
-        const parent = this.getPreciseAttributeParent();
-        return _.isEqual(parent.getType(), 'array');
     }
 
     hasValidParent() {
@@ -1672,22 +1659,6 @@ class CodegenNode {
         this.listEmptyTip = {enable: false}
     }
 
-    getParamStmtOfInvalidate() {
-        let object = '';
-        if (this.isAutoCompleteView()) {
-            object = 'value'
-        } else if (Util.isOrEquals(this.type, 'arrayItem', 'array'))
-            object = this.getName();
-        else if (this.allowOfParam()) {
-            object = this.getPreciseAttributeParent().getName();
-        }
-
-        if (!_.isEmpty(object)) {
-            return `,object:${object}`;
-        }
-        return '';
-    }
-
     hasCookiePassword() {
         return !!this.password && _.size(this.password) > 0;
     }
@@ -1793,8 +1764,12 @@ class CodegenNode {
         this.click = click
     }
 
-    getFunctionNameOfClicked() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'clicked');
+    getFunctionNameOfClicked(extra) {
+        const items = [];
+        if (!Util.isUndefinedNullEmpty(extra)) {
+            items.push(extra);
+        }
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), ...items, 'clicked');
     }
 
     getFunctionNameOfPlayEnd() {
@@ -2075,17 +2050,28 @@ class CodegenNode {
         return !!this.struct;
     }
 
-    getParamOfRenderView() {
-        const params = [];
-        if (this.isAttribute() && this.isArrayItem()) {
-            params.push(this.getName());
-        } else if (this.allowOfParam()) {
-            const node = this.getPreciseAttributeParent();
-            if (node.isValidNode())
-                params.push(node.getName());
+    /** arrayItem 和 array 目前傻傻分不清楚, 先by case 處理*/
+    getObservableName(force = false) {
+        let objName = 'undefined';
+        if (this.allowOfParam()) {
+            switch (this.getType()) {
+                case 'arrayItem':
+                    objName = this.getName();
+                    break;
+                case 'array':
+                    if (force) {
+                        objName = this.getName();
+                        break;
+                    }
+                case 'object':
+                    objName = this.getPreciseAttributeParentName();
+                    break;
+                default:
+                    objName = this.getPreciseAttributeParentName();
+                    break;
+            }
         }
-
-        return params.join(',');
+        return objName;
     }
 
     getViewClassNameOfRenderView() {
@@ -3994,7 +3980,7 @@ class ComponentBuilder extends BaseBuilder {
         /** */
         function getJsxViewStmt(node) {
             const props = {}
-            const param = node.getParamOfRenderView();
+            const param = node.getObservableName();
             if (!_.isEmpty(param)) {
                 props[param] = `###${param}`
             }
@@ -4413,7 +4399,7 @@ class ComponentBuilder extends BaseBuilder {
         function appendFunctionWithFields(node) {
 
             function getStringOfParamOfRenderView(node) {
-                const params = [node.getParamOfRenderView()];
+                const params = [node.getObservableName()];
                 if (node.isViewPropsFunctionalized()) {
                     params.push(STRING_OF_INJECT_PARAM);
                 }
@@ -5870,6 +5856,36 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            if (node.hasAlertMenu()) {
+
+                if (node.withoutWrapView()) {
+                    node.setWrapView('React.Fragment');
+                }
+
+                const stringsOfItem = [];
+
+                for (const item of node.alertMenu.items) {
+                    const functionName = node.getFunctionNameOfClicked(item.name);
+                    node.appendMethod(
+                        {
+                            functionName,
+                            params: ['param']
+                        });
+
+                    stringsOfItem.push(`{ label:'${item.label}', 
+                    icon:'${item.icon}', 
+                    loginOnly:${item.loginOnly ?? 'false'}, 
+                    notice:${JSON.stringify(item.notice)},
+                    onClick:self.${functionName}(objectOfParam) }`);
+                }
+
+
+                const content = `{self.renderAlertMenu({ref:${node.getFieldNameOfAlertMenu()},
+                component:self,items:[${stringsOfItem.join(',')}]})}`
+
+                node.appendWrapContents(content);
+            }
+
             this.enrichNodeWithCustomViewDefined(node.getChildren());
         }
     }
@@ -5879,6 +5895,7 @@ class ProjectFileHandler extends PathBase {
 
         function getStmtOfEventInValidate(node, functionName) {
             const stmts = [];
+            stmts.push(`objectOfParam.view = event;`);
 
             if (node.isAttribute() && !node.disableOnChangeSetter) {
                 let paramStmt = '';
@@ -5890,6 +5907,7 @@ class ProjectFileHandler extends PathBase {
                 } else if (node.isSliderView()) {
                     paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
+                    stmts.push(`objectOfParam.object = value`)
                     stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else {
                     /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
@@ -5898,8 +5916,7 @@ class ProjectFileHandler extends PathBase {
                 if (!Util.isUndefinedNullEmpty(paramStmt))
                     stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
             }
-
-            stmts.push(`self.${functionName}({view:event${node.getParamStmtOfInvalidate()}})`);
+            stmts.push(`self.${functionName}(objectOfParam)`);
             return stmts.join('\n');
         }
 
@@ -6044,8 +6061,9 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.hasAlertDialog() && _.isEqual(node.getWrapView(), 'div')) {
-                node.setWrapView('React.Fragment');
+            if (node.hasAlertDialog()) {
+                if (node.withoutWrapView())
+                    node.setWrapView('React.Fragment');
             }
 
             if (node.isViewPropsFunctionalized()) {
@@ -6179,13 +6197,16 @@ class ProjectFileHandler extends PathBase {
                     }`
                     )
                 }
-
                 if (node.hasConfirmDialog()) {
-                    onClickStmts.push(
-                        `${node.getViewParamVariable()} = event;
-                    ${node.getAlertDialogVariable()}.current.open()`)
+                    onClickStmts.push(`objectOfParam.view = event;`)
+                    onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
                 } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
-                    onClickStmts.push(`${node.getAlertDialogVariable()}.current.open();`)
+                    onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
+                } else if (node.hasAlertMenu()) {
+                    onClickStmts.push(`event.stopPropagation()`)
+                    onClickStmts.push(`objectOfParam.view = event`)
+                    onClickStmts.push(`${node.getFieldNameOfAlertMenu()}.current.setAnchor(event.currentTarget);`)
+                    onClickStmts.push(`${node.getFieldNameOfAlertMenu()}.current.open();`)
                 } else {
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 }
@@ -6268,9 +6289,10 @@ class ProjectFileHandler extends PathBase {
                     nodeOfReference = nodeOfReference.getStruct();
                 }
 
+                node.ref = nodeOfReference;
                 if (node.imitate) {
                     const nodeOfImitate = _.clone(nodeOfReference);
-                    /**  clone的物件 */
+                    /**  clone 的物件 */
                     nodeOfImitate.ref = nodeOfReference;
                     nodeOfImitate.nodeOfOrigin = node;
                     /**  source.js 上的點 */
@@ -6278,7 +6300,6 @@ class ProjectFileHandler extends PathBase {
                 }
 
                 if (node.independence) {
-                    node.ref = nodeOfReference;
                     for (const raw of nodeOfReference.raw.children) {
                         node.appendChildrenWithJsons(raw)
                     }

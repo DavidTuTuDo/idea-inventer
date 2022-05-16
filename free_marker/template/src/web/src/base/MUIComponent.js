@@ -1,0 +1,100 @@
+import React from "react";
+import {observer} from "mobx-react";
+import * as MUIcon from "@material-ui/icons";
+import _ from "lodash";
+
+class MuiComponent extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    MUIconView = observer(({name}) => {
+            const CustomView = MUIcon[name];
+            if (CustomView !== undefined)
+                return <CustomView
+                    className={'BaseShortcutMUIconView'}/>
+            else {
+                const Random = _.sample(MUIcon);
+                return <Random
+                    className={'BaseShortcutMUIconView'}/>
+            }
+        }
+    )
+
+    getElementByClassName(className) {
+        const element = document.getElementsByClassName(className)[0];
+        return element;
+    }
+
+    getElementsByClassName(className) {
+        const elements = document.getElementsByClassName(className);
+        return elements;
+    }
+
+    handleTextString(object) {
+        if (typeof object === 'string') {
+            return object
+        } else {
+            return _.toString(object)
+        }
+    }
+
+    gotoUrlWithNewTabDirectly(url) {
+        window.open(url, "_blank");
+    }
+
+    gotoExternalUrlDirectly(url) {
+        window.location.replace(url)
+    }
+
+    /**
+     * @param className
+     * @param attribute font-size
+     */
+    getStyleByElementClassName(className, attribute) {
+        const view = this.getElementByClassName(className);
+        const style = window.getComputedStyle(view, null)
+        const value = style.getPropertyValue(attribute);
+        return value;
+
+    }
+
+    getStyleByElement(element, attribute) {
+        const style = window.getComputedStyle(element, null)
+        const value = style.getPropertyValue(attribute);
+        return value;
+    }
+
+    /** 修改所有className 的elements */
+    adjustBunchOfFontSizeByClassName(className, enlarge = true, delta = 1) {
+        const elements = this.getElementsByClassName(className);
+        for (const element of elements) {
+            const originValue = parseFloat(this.getStyleByElement(element, 'font-size'))
+            const nextValue = enlarge ? originValue + delta : originValue - delta;
+            element.style.fontSize = `${nextValue}px`;
+        }
+    }
+
+    adjustFontSizeByClassName(className, enlarge = true, delta = 1) {
+        const element = this.getElementByClassName(className);
+        const originValue = parseFloat(this.getStyleByElementClassName(className, 'font-size'))
+        const nextValue = enlarge ? originValue + delta : originValue - delta;
+        element.style.fontSize = `${nextValue}px`;
+    }
+
+    getCheckStateByEvent(event) {
+        if (event && event.target)
+            return event.target.checked;
+        return false;
+    }
+
+    getLatestValueByEvent(event) {
+        if (event && event.target)
+            return event.target.value;
+        return '';
+    }
+
+}
+
+export default MuiComponent;

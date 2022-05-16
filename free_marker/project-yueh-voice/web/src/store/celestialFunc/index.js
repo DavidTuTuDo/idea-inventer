@@ -1,4 +1,4 @@
-import BaseCelestialMinorAreaStore from "./BaseCelestialMinorAreaStore";
+import BaseCelestialFuncStore from "./BaseCelestialFuncStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 
-class CelestialMinorAreaStore extends BaseCelestialMinorAreaStore {
+class CelestialFuncStore extends BaseCelestialFuncStore {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -32,4 +32,4 @@ class CelestialMinorAreaStore extends BaseCelestialMinorAreaStore {
   }
   /** -------------------- async api -------------------- **/
 }
-export default CelestialMinorAreaStore;
+export default CelestialFuncStore;

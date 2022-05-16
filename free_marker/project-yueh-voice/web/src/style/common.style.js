@@ -93,21 +93,29 @@ class CommonStyle {
 
   /** => following for celestial  component  */
 
-  CelestialMinorAreaContentOfLyricTypography = {};
+  CelestialPieceMinorAreaContentOfLyricTypography = {};
 
-  CelestialMinorAreaTitleOfLyricTypography = {};
+  CelestialPieceMinorAreaTitleOfLyricTypography = {};
 
-  CelestialMinorAreaDiv = {};
+  CelestialPieceMinorAreaDiv = {};
 
-  CelestialCoreAreaDataOfReleaseTypography = {};
+  CelestialPieceDataOfReleaseTypography = {};
 
-  CelestialCoreAreaTitleTypography = {};
+  CelestialPieceTitleTypography = {};
 
-  CelestialCoreAreaImageOfCelestialDivWrap = {};
+  CelestialPieceImageDivWrap = {};
 
-  CelestialCoreAreaImageOfCelestialImg = {};
+  CelestialPieceImageImg = {};
 
-  CelestialCoreAreaDiv = {};
+  CelestialPieceDivSkeleton = {};
+
+  CelestialPieceDivList = {};
+
+  CelestialPieceDiv = {};
+
+  CelestialFuncGotoAlbumButton = {};
+
+  CelestialFuncDiv = {};
 
   CelestialDiv = {};
 
@@ -130,6 +138,8 @@ class CommonStyle {
   EpisodeStickyBottomAreaDiv = {};
 
   EpisodeVoiceExtraIconMoreHoriz = {};
+
+  EpisodeVoiceExtraReactFragmentWrap = {};
 
   EpisodeVoiceExtraIconButton = {};
 

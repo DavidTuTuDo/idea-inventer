@@ -21,8 +21,9 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import MinorArea from "../celestialMinorArea";
-import CoreArea from "../celestialCoreArea";
+import StickyBottomArea from "../episodeStickyBottomArea";
+import Piece from "../celestialPiece";
+import Func from "../celestialFunc";
 import BaseStore from "../../base/BaseStore";
 
 class CelestialStore extends BaseCelestialStore {

@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from 'prop-types';
 import {
     Dialog,
     DialogActions,
@@ -12,6 +11,7 @@ import {action, makeObservable, observable} from "mobx";
 import {observer, inject} from "mobx-react";
 import {utiller as Util } from "utiller";
 import _ from 'lodash';
+import MuiComponent from "./MUIComponent";
 
 class DialogStore {
 
@@ -46,7 +46,7 @@ class DialogStore {
 }
 
 @observer
-class AlertDialog extends React.Component {
+class AlertDialog extends MuiComponent {
 
     constructor(props) {
         super(props);
