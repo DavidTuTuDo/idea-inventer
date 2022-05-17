@@ -3742,7 +3742,7 @@ class ComponentBuilder extends BaseBuilder {
 
             this.appendStmtIntoComponentDidMount(`
             this.${componentNode.getFieldNameOfDetailUid()} = this.props.match.params.${componentNode.getFieldNameOfDetailUid()};
-            if(Util.isOrConditionOfUndefinedNullEmpty(uid))
+            if(Util.isOrConditionOfUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
                 this.getStore().setErrorMsg('網址參數異常');`);
         }
 

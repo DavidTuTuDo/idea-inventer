@@ -105,7 +105,7 @@ class SheetStore extends BaseSheetStore {
 
     async updateFavoriteToggleState(idOfCurrentGuitarPu) {
         if (UserInfoRef.isLoginWithSucceed()) {
-            const item = await this.apiOfFavorite.fetchFavoritePuItem(this.getComponent(), undefined, idOfCurrentGuitarPu);
+            const item = await this.apiOfFavorite.fetchFavoritePuItem(this.getComponent(), idOfCurrentGuitarPu);
             this.getAdjustCenter().getJoinToFavorite().setToggle(item.exists);
         }
     }
@@ -113,14 +113,14 @@ class SheetStore extends BaseSheetStore {
     async submitFavoritePuState(join = false) {
         if (UserInfoRef.isLoginWithSucceed()) {
             if (join) {
-                await this.apiOfFavorite.submitFavoritePuItem(this.getComponent(), undefined, {
+                await this.apiOfFavorite.submitFavoritePuItem(this.getComponent(), {
                     idOfGuitarPu: this.getCurrentPu().getId(),
                     name: this.getCurrentPu().getName(),
                     singer: this.getCurrentPu().getSinger(),
                     id: this.getCurrentPu().getId(),
                 });
             } else {
-                await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), undefined, this.getCurrentPu().getId());
+                await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), this.getCurrentPu().getId());
             }
         }
     }
