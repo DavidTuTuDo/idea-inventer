@@ -101,7 +101,9 @@ class AppStyle {
 
   CelestialPieceDataOfReleaseTypography = {};
 
-  CelestialPieceTitleTypography = {};
+  CelestialPieceSingerTypography = {};
+
+  CelestialPieceNameTypography = {};
 
   CelestialPieceImageDivWrap = {};
 

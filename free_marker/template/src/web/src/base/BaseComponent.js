@@ -40,7 +40,6 @@ class BaseComponent extends MuiComponent {
     componentStyle = {}
     jobsOfScrollToBottom = [];
     jobExecutorLock = false;
-    uidOfDetail = undefined;
     loginDialogRef = React.createRef();
 
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
@@ -66,16 +65,7 @@ class BaseComponent extends MuiComponent {
     }
 
     isDetailPage() {
-        return !Util.isUndefinedNullEmpty(this.uidOfDetail)
-    }
-
-    setUidOfDetail(uid) {
-        Util.appendInfo(`${this.getComponentName()} has idOfDetail ==> '${uid}'`);
-        this.uidOfDetail = uid;
-    }
-
-    getUidOfDetail() {
-        return this.uidOfDetail;
+        return false;
     }
 
     arrowOfBackward() {

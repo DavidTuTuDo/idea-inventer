@@ -101,7 +101,9 @@ class CommonStyle {
 
   CelestialPieceDataOfReleaseTypography = {};
 
-  CelestialPieceTitleTypography = {};
+  CelestialPieceSingerTypography = {};
+
+  CelestialPieceNameTypography = {};
 
   CelestialPieceImageDivWrap = {};
 

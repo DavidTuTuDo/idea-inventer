@@ -20,7 +20,6 @@ const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
 const useViewModuleAndComponentModuleMechanism = false;
 const KEYWORD_OF_MODULARIZED = 'Modularized';
-const KEYWORD_OF_UID_OF_DETAIL = 'uidOfDetail';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
@@ -28,9 +27,9 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
-const CURRENT_PROJECT = './project-yueh-voice';
+// const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -691,6 +690,14 @@ class CodegenNode {
 
     getNodeOfComponent() {
         const node = this.getParentBy((node) => node.isComponentNode());
+        return node;
+    }
+
+    getNodeOfStruct() {
+        if (this.isComponentNode()) {
+            return this.getStruct();
+        }
+        const node = this.getParentBy((node) => node.isStructNode());
         return node;
     }
 
@@ -2118,6 +2125,14 @@ class CodegenNode {
         this.name = name;
     }
 
+    getFunctionNameOfDetailUidGetter() {
+        return Util.camel('get', this.getFieldNameOfDetailUid());
+    }
+
+    getFieldNameOfDetailUid() {
+        return Util.camel('uid', 'of', this.getNodeOfComponent().getName(), 'detail');
+    }
+
     getPlatform() {
         /** */
         return this.platform;
@@ -2924,12 +2939,12 @@ class BaseBuilder extends PathBase {
         return params;
     }
 
-    getArgumentOfFunctionInFunction(node, type) {
+    getArgumentsInFunction(node, type) {
         return this.getParamsInFunctionByPlatform(node, type, false, true).map((param) => param.split('=').shift());
     }
 
-    getStringOfArgumentOfFunctionInFunction(node, type) {
-        return this.getArgumentOfFunctionInFunction(node, type).join(',');
+    getStringOfArgumentInFunction(node, type) {
+        return this.getArgumentsInFunction(node, type).join(',');
     }
 }
 
@@ -2986,11 +3001,11 @@ class StoreBuilder extends BaseBuilder {
                         paramString: this.getParamsOfDefaultValue(child.getParamsInPath()).join(','),
                         argumentString: child.getStringOfArgumentsOfPath(),
                         stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch'),
-                        stringOfArgumentInFetch: this.getArgumentOfFunctionInFunction(child, 'fetch'),
+                        stringOfArgumentInFetch: this.getArgumentsInFunction(child, 'fetch'),
                         stringOfParamInSubmitItems: this.getParamsInFunctionByPlatform(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
-                        stringOfArgumentInSubmitItems: this.getArgumentOfFunctionInFunction(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
+                        stringOfArgumentInSubmitItems: this.getArgumentsInFunction(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
                         stringOfParamInSubmitItem: this.getParamsInFunctionByPlatform(child, 'submit item'),
-                        stringOfArgumentInSubmitItem: this.getArgumentOfFunctionInFunction(child, 'submit item'),
+                        stringOfArgumentInSubmitItem: this.getArgumentsInFunction(child, 'submit item'),
                         hasPaginate: child.hasPaginate(),
                         paginateSize: child.getPaginateSize(),
                         fieldClass: child.getClassName(),
@@ -3059,7 +3074,7 @@ class StoreBuilder extends BaseBuilder {
             if (node.needDetail) {
                 stmts.push(
                     `if(view.isDetailPage()){`,
-                    `const item = await this.${node.getFunctionNameOfFetchItem()}(view, view.getUidOfDetail());`,
+                    `const item = await this.${node.getFunctionNameOfFetchItem()}(view, view.${node.getFunctionNameOfDetailUidGetter()}());`,
                     `return item.exists ? [item] : []`,
                     `}`)
             }
@@ -3072,7 +3087,7 @@ class StoreBuilder extends BaseBuilder {
                 case 'object':
                     const contents = [
                         `{`,
-                        (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')})),` : `...{},`,
+                        (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{},`,
                         ..._.map(node.getPreciseAttributeChildren(), (child) => {
                             if (child.isDisableInitFetch()) return '';
                             /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
@@ -3084,11 +3099,11 @@ class StoreBuilder extends BaseBuilder {
                     break
                 case 'array':
                     if (node.isPathArray()) {
-                        stmts.push(`return await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')})`);
+                        stmts.push(...getStmtOfFetchByDetail(node));
+                        stmts.push(`return await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})`);
                     } else if (node.isCheapArray()) {
                         stmts.push(
-                            ...getStmtOfFetchByDetail(node),
-                            `return await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')}, ${STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY})`);
+                            `return await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')}, ${STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY})`);
                     } else {
                         throw new ERROR(9999, '48144544142854 不能跑進來這裡')
                     }
@@ -3121,9 +3136,9 @@ class StoreBuilder extends BaseBuilder {
                     `return this.getComponent(true).${this.getNormalizeFieldOfParamInPath(param)}`
                 )
             }
-            if(node.getNodeOfComponent().detailPage) {
-                baseGenerator.appendFunction({name: 'getUidOfDetail', arrow: true}, [], [], [],
-                    `return this.getComponent(true).getUidOfDetail()`
+            if (node.getNodeOfComponent().detailPage) {
+                baseGenerator.appendFunction({name: node.getFunctionNameOfDetailUidGetter(), arrow: true}, [], [], [],
+                    `return this.getComponent(true).${node.getFunctionNameOfDetailUidGetter()}()`
                 )
             }
         }
@@ -3466,7 +3481,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(view,${self.getStringOfArgumentOfFunctionInFunction(node, 'fetch')}))`],
+                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(view,${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
                         `fetch size of cheap`)
 
 
@@ -3481,7 +3496,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             node.getFunctionNameOfNextFetch(),
                             [
                                 `const startAfterConditions = this.getStartAfterConditions(lastItem);`,
-                                `return await this.${node.getFunctionNameOfFetch()}(${this.getArgumentOfFunctionInFunction(node, 'fetch without condition')}, ...startAfterConditions, ...conditions)`],
+                                `return await this.${node.getFunctionNameOfFetch()}(${this.getArgumentsInFunction(node, 'fetch without condition')}, ...startAfterConditions, ...conditions)`],
                             `fetch next items`);
 
                         /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
@@ -3719,12 +3734,16 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (componentNode.detailPage) {
+            baseGenerator.appendFunction('isDetailPage', [], [], [],
+                'return true');
+
+            baseGenerator.appendFunction(componentNode.getFunctionNameOfDetailUidGetter(), [], [], [],
+                `return this.${componentNode.getFieldNameOfDetailUid()}`);
+
             this.appendStmtIntoComponentDidMount(`
-               const uid = this.props.match.params.${KEYWORD_OF_UID_OF_DETAIL};
+            this.${componentNode.getFieldNameOfDetailUid()} = this.props.match.params.${componentNode.getFieldNameOfDetailUid()};
             if(Util.isOrConditionOfUndefinedNullEmpty(uid))
-                this.getStore().setErrorMsg('網址參數異常');
-            else
-                this.setUidOfDetail(uid)`);
+                this.getStore().setErrorMsg('網址參數異常');`);
         }
 
         if (_.isEqual(componentNode.getName(), componentNode.getParentNode().getNavigationComponentName())) {
@@ -4664,7 +4683,7 @@ class AppBuilder extends ComponentBuilder {
 
         function appendGotoFunction(generator, nodeOfComponent, isDetail = false) {
             const route = libpath.join(nodeOfComponent.getPathOfRouterString(),
-                isDetail ? `\$\{${KEYWORD_OF_UID_OF_DETAIL}\}` : '',
+                isDetail ? `\$\{${nodeOfComponent.getFieldNameOfDetailUid()}\}` : '',
                 nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
             )
 
@@ -4674,7 +4693,7 @@ class AppBuilder extends ComponentBuilder {
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
-                ['component', ...nodeOfComponent.getParamsInPath(), ...[isDetail ? KEYWORD_OF_UID_OF_DETAIL : undefined]],
+                ['component', ...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined]],
                 [],
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
@@ -4714,7 +4733,7 @@ class AppBuilder extends ComponentBuilder {
         function getPropOfKey(component) {
             const params = component.getParamsInPath();
             if (component.detailPage)
-                params.push(KEYWORD_OF_UID_OF_DETAIL);
+                params.push(component.getFieldNameOfDetailUid());
 
             const paramsOfProp = params.map((each) => `\$\{props.match.params.${each}\}`);
             if (_.size(paramsOfProp) > 0) {
@@ -4772,7 +4791,7 @@ class AppBuilder extends ComponentBuilder {
             );
             this.removeJSXSign(renderStmts);
 
-            const path = libpath.join(component.path, component.detailPage ? `:${KEYWORD_OF_UID_OF_DETAIL}?` : '');
+            const path = libpath.join(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
 
             childrenStmt.push(...this.getJSXStrings({
                 tag: `Route`,

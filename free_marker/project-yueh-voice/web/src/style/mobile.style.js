@@ -101,7 +101,9 @@ class MobileStyle {
 
   CelestialPieceDataOfReleaseTypography = {};
 
-  CelestialPieceTitleTypography = {};
+  CelestialPieceSingerTypography = {};
+
+  CelestialPieceNameTypography = {};
 
   CelestialPieceImageDivWrap = {};
 

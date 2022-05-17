@@ -40,7 +40,9 @@ import fetch from 'node-fetch';
         )
     }
 
-    await submitShortcut();
+    await api.submitPieces({})
+
+    // await submitShortcut();
 
 })();
 
