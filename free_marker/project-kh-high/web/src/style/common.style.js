@@ -9,6 +9,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionYearTextField = {};
@@ -139,7 +141,7 @@ class CommonStyle {
 
   MainEditorEnterPointDivList = {};
 
-  MainEditorEnterPointReactFragmentWrap = {};
+  MainEditorEnterPointDivWrap = {};
 
   MainEditorEnterPointPaper = {};
 
@@ -301,7 +303,7 @@ class CommonStyle {
 
   /** => following for purchase  component  */
 
-  PurchasePurchasePlanBuyReactFragmentWrap = {};
+  PurchasePurchasePlanBuyDivWrap = {};
 
   PurchasePurchasePlanBuyButton = {};
 

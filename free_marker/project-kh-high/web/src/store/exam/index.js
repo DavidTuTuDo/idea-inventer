@@ -190,14 +190,14 @@ class ExamStore extends BaseExamStore {
         if (!this.isHistoryWrongPage() && UserInfo.isLoginWithSucceed()) {
             const record = new TestingRecordStore();
             try {
-                await record.submitTestingRecords(undefined, undefined, {
+                await record.submitTestingRecords(undefined,  [{
                     id: question.getId(),
                     qid: question.getId(),
                     duration: Util.getDurationOfMillionSec(this.currentTimeStamp),
                     subject: question.getSubject(),
                     myWrongAnswer: question.isAnswerWrong() ? question.getReply() : '',
                     isWrongReply: question.isAnswerWrong(),
-                })
+                }])
             } finally {
                 this.renewTimeStamp();
             }
@@ -227,7 +227,7 @@ class ExamStore extends BaseExamStore {
     }
 
     async submitToFavoriteQuestion(question) {
-        await (new WhoknowzFavoriteStore()).submitFavoriteItem(this.getComponent(), undefined, {
+        await (new WhoknowzFavoriteStore()).submitFavoriteItem(this.getComponent(), {
             id: question.id,
             qid: question.id,
             subject: question.subject,
@@ -244,7 +244,7 @@ class ExamStore extends BaseExamStore {
             const info = await store.fetchCountsOfExamToday();
             _.isEqual(info.today, today) ?
                 await store.submitIncrementCounts() :
-                await store.submitCountsOfExamToday(undefined, undefined, {today: Util.getTodayTimeFormat(), counts: 1})
+                await store.submitCountsOfExamToday(undefined, {today: Util.getTodayTimeFormat(), counts: 1})
         } else {
             const info = Cookie.getCountsOfExamToday();
             let counts = info ? (_.isEqual(today, info.today) ? (info.counts + 1) : 1) : 1

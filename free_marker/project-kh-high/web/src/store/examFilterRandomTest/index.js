@@ -13,7 +13,6 @@ class ExamFilterRandomTestStore extends BaseExamFilterRandomTestStore {
 
   constructor(props) {
     super(props);
-    this.setRangeOfYear([104,109]);
   }
 
   /** -------------------- async api -------------------- **/

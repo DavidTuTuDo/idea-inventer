@@ -741,9 +741,9 @@ class BaseComponent extends MuiComponent {
             date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)}/>
     })
 
-    /** 通常呼叫這個method, 是要呼叫loading狀態, 所以忽略dialog狀態內的*/
-    getComponentInstance = (isDialog = false) => {
-        if (!isDialog)
+    /** 通常呼叫這個method, 是要呼叫loading狀態, 例如dialog要拿到自己的component instance, 要forceSelf = true */
+    getComponentInstance = (forceSelf = false) => {
+        if (forceSelf)
             return this;
 
         if (this.isDialogComponent() || this.isComponentView()) {

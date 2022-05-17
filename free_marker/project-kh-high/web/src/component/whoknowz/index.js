@@ -10,6 +10,7 @@ import {inject} from "mobx-react";
 import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
 import ExamQuestionView from "../exam";
 import React from 'react';
+import ExamStore from '../../store/exam'
 @inject("whoknowz")
 @observer
 class WhoknowzComponent extends BaseWhoknowzComponent {
@@ -20,12 +21,15 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
         super(props);
         this.getStore().setConfuseId(this.paramOfCid);
         this.getStore().setAnswerId(this.paramOfAid);
-
+        this.exam = new ExamStore();
     }
 
     getInjectViewOfWhoknowzQuestionDiv(whoknowz) {
+        const self = this
         return <ExamQuestionView
             freeze={true}
+            component={this}
+            injectStore={this.exam}
             isComponentView={true}
             question={whoknowz.question}/>
     }
@@ -33,14 +37,6 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
 
     onWhoknowzFastCenterCopylinkButtonClicked(param) {
         this.copyCurrentLinkToClipboard();
-    }
-
-    onAskmrlinButtonClicked(param) {
-        this.askMrLin(`請您教教我這題,謝謝!
-        \n\n\n
-        \n\n\n
-        \n\n\n
-        ${this.getCurrentWebSiteLink()}`);
     }
 
     askMrLin(message = '') {
@@ -80,6 +76,14 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
 
     isValidOfParamOfCid(cid) {
         return this.constraintOfParam(cid);
+    }
+
+    onWhoknowzFastCenterAskmrlinButtonClicked(param) {
+        this.askMrLin(`請您教教我這題,謝謝!
+        \n\n\n
+        \n\n\n
+        \n\n\n
+        ${this.getCurrentWebSiteLink()}`);
     }
 
     /** -------------------- async api -------------------- **/

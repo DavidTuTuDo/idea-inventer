@@ -28,8 +28,8 @@ const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
 // const CURRENT_PROJECT = './project-yueh-voice';
-// const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -1089,7 +1089,7 @@ class CodegenNode {
 
         function getParamObject() {
             const param = self.getObservableName();
-            if (!_.isEmpty(param)) {
+            if (!Util.isUndefinedNullEmpty(param)) {
                 return `paramObject:${param}`;
             }
         }
@@ -1293,7 +1293,8 @@ class CodegenNode {
         }
 
         if (_.size(this.getFunctionMethods()) > 0) {
-            stmt.push(`const objectOfParam = { object: ${this.getObservableName()}} /** {object,view} */`);
+            const content = !Util.isUndefinedNullEmpty(this.getObservableName()) ? `object: ${this.getObservableName()}` : '';
+            stmt.push(`const objectOfParam = { ${content}} /** {object,view} */`);
         }
 
         if (this.isWrapByAppBarView() && this.isScrollingHideDependOnRootNode()) {
@@ -2059,7 +2060,7 @@ class CodegenNode {
 
     /** arrayItem 和 array 目前傻傻分不清楚, 先by case 處理*/
     getObservableName(force = false) {
-        let objName = 'undefined';
+        let objName;
         if (this.allowOfParam()) {
             switch (this.getType()) {
                 case 'arrayItem':
@@ -4005,7 +4006,7 @@ class ComponentBuilder extends BaseBuilder {
         function getJsxViewStmt(node) {
             const props = {}
             const param = node.getObservableName();
-            if (!_.isEmpty(param)) {
+            if (!Util.isUndefinedNullEmpty(param)) {
                 props[param] = `###${param}`
             }
 
@@ -4424,6 +4425,7 @@ class ComponentBuilder extends BaseBuilder {
 
             function getStringOfParamOfRenderView(node) {
                 const params = [node.getObservableName()];
+                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
                 if (node.isViewPropsFunctionalized()) {
                     params.push(STRING_OF_INJECT_PARAM);
                 }
@@ -4682,6 +4684,11 @@ class AppBuilder extends ComponentBuilder {
         }
 
         function appendGotoFunction(generator, nodeOfComponent, isDetail = false) {
+            function getArrayWithDefaultValue(array) {
+                _.remove(array, (each) => Util.isUndefinedNullEmpty(each))
+                return array.map((each) => `${each} = ''`)
+            }
+
             const route = libpath.join(nodeOfComponent.getPathOfRouterString(),
                 isDetail ? `\$\{${nodeOfComponent.getFieldNameOfDetailUid()}\}` : '',
                 nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
@@ -4693,7 +4700,7 @@ class AppBuilder extends ComponentBuilder {
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
-                ['component', ...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined]],
+                ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined]])],
                 [],
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
@@ -6244,22 +6251,26 @@ class ProjectFileHandler extends PathBase {
             injectStyleBehavior(node);
 
             if (node.needInjectView()) {
-                const param = node.getObservableName(true);
+                const params = [node.getObservableName(true)];
+                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
+
                 const nameOfInjectView = node.getFunctionNameOfInjectView();
                 node.appendMethod({
                     functionName: nameOfInjectView,
-                    params: [param],
+                    params
                 })
-                node.appendContent(`{this.${nameOfInjectView}(${param})}`)
+                node.appendContent(`{this.${nameOfInjectView}(${params.join(',')})}`)
             }
 
             if (node.needInjectProps()) {
-                const param = node.getObservableName(true);
+                const params = [node.getObservableName(true)];
+                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
+
                 const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
-                node.appendSimpleProps(`...self.${functionNameOfInjectProps}(${param})`)
+                node.appendSimpleProps(`...self.${functionNameOfInjectProps}(${params.join(',')})`)
                 node.appendMethod({
                     functionName: functionNameOfInjectProps,
-                    params: [param],
+                    params,
                 })
             }
 
@@ -6268,15 +6279,15 @@ class ProjectFileHandler extends PathBase {
 
         function injectStyleBehavior(node) {
             let clazzNameOFDefault = node.getClassNameOfLessUsage();
-            const param = node.getObservableName(true);
-
+            const params = [node.getObservableName(true)];
+            _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
             if (node.needInjectStyle()) {
                 const injectFunctionName = node.getFunctionNameOfInjectStyle(false);
                 node.appendMethod({
                     functionName: injectFunctionName,
-                    params: [param],
+                    params,
                 })
-                node.appendViewProps({style: `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+                node.appendViewProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
             } else {
                 node.appendViewProps({style: `###{...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
             }
@@ -6508,16 +6519,15 @@ class ProjectFileHandler extends PathBase {
             CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
         }
 
-        const nodes = source.getComponents().map(component => component.getStruct())
-        this.enrichNodeWithCustomViewDefined(nodes);
+        const getNodes = () => source.getComponents().map(component => component.getStruct())
 
+        this.enrichNodeWithCustomViewDefined(getNodes());
         if (needEditComponent && _.isEqual(this.env, 'dev')) {
             /** 編輯模式只有在dev */
             source.getComponents().push(...getEditorComponents());
         }
-
-        this.enrichNodesOfBehavior(nodes);
-        this.enrichReferenceNode(nodes)
+        this.enrichNodesOfBehavior(getNodes());
+        this.enrichReferenceNode(getNodes())
     }
 
     getAppBuildParam = () => {

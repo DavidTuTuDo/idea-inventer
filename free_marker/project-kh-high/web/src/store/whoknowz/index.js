@@ -49,7 +49,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
         this.question.initial(question);
     }
 
-    getHeadConfuse(){
+    getHeadConfuse() {
         const confuse = _.head(this.getConfuses());
         return confuse === undefined ? {} : confuse;
     }
@@ -60,11 +60,11 @@ class WhoknowzStore extends BaseWhoknowzStore {
     }
 
     isMathOrEnglish() {
-        return this.question !== undefined && Util.isOrEquals(this.question.getSubject(), '數學', '英文');
+        return this.question !== undefined && Util.isOrEquals(this.question.getSubject(), '數學B', '數學A', '數學', '數學(舊制)', '英文');
     }
 
     async fetch() {
-        Util.appendInfo(this.getClassName(),' fetch... 被執行了');
+        Util.appendInfo(this.getClassName(), ' fetch... 被執行了');
         const confuse = await (new ConfuseStore()).fetchConfuseItem(this.getComponent(), this.cid);
 
         this.setConfuses(confuse);
@@ -72,12 +72,12 @@ class WhoknowzStore extends BaseWhoknowzStore {
         this.setQuestion(question);
         this.invalidateSubmitString();
 
-        if(this.isConfuserOwner()) {
+        if (this.isConfuserOwner()) {
             this.setAnswerConditions([{
-                where:(stmt) => stmt.where('cid','==',this.getHeadConfuse().getId())
+                where: (stmt) => stmt.where('cid', '==', this.getHeadConfuse().getId())
             }])
             await this.fetchAnswers(this.getComponent());
-        } else if(this.hasTargetAnswerId()){
+        } else if (this.hasTargetAnswerId()) {
             this.setAnswerConditions(this.getInArrayConditions([this.aid]));
             await this.fetchAnswers(this.getComponent());
         } else {
@@ -87,9 +87,9 @@ class WhoknowzStore extends BaseWhoknowzStore {
 
     @action
     invalidateSubmitString() {
-        if(this.getIsAnswerReply()) {
+        if (this.getIsAnswerReply()) {
             this.setSubmit(`答案已送出`)
-        } else if(this.isConfuserOwner()) {
+        } else if (this.isConfuserOwner()) {
             this.setSubmit(`本人無法回答`)
         } else {
             this.removeSubmit()
@@ -98,7 +98,7 @@ class WhoknowzStore extends BaseWhoknowzStore {
 
     async submitConfirmedAnswer() {
         const answer = _.head(this.getAnswers())
-        if(answer.getAnswerByText().length <= 10) {
+        if (answer.getAnswerByText().length <= 10) {
             this.getComponent().showWarningSnackMessage(`文字答案至少需要到10個字元,方便過濾無意義回答`);
         } else {
             this.setIsAnswerReply(true);
@@ -113,10 +113,11 @@ class WhoknowzStore extends BaseWhoknowzStore {
 
     isAnswerReliedOrOwner() {
         return (!!this.getIsAnswerReply() ||
-        this.isConfuserOwner())
+            this.isConfuserOwner())
     }
 
 
     /** -------------------- async api -------------------- **/
 }
+
 export default WhoknowzStore;

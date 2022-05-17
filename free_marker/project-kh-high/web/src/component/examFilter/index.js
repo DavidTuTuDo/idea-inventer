@@ -58,7 +58,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     gotoExamPageWithCookie = (obj) => {
         this.dismiss();
-        Util.syncDelay(200).then((result) => {
+        Util.syncDelay(50).then((result) => {
             Cookie.setExamFilter(obj);
             Router.gotoExamPage(this.getComponentInstance())
         })

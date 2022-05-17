@@ -146,7 +146,7 @@ class ExamComponent extends BaseExamComponent {
         const self = this;
         const question = param.object;
         this.getStore().submitConfusedQuestion(question).then((cid) => {
-            self.gotoUrlWithNewTabDirectly(Router.gotoWhoknowzPage(undefined, cid));
+            Router.gotoWhoknowzPage(self, cid);
         })
     }
 
