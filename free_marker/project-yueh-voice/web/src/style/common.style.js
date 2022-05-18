@@ -99,9 +99,11 @@ class CommonStyle {
 
   CelestialPieceMinorAreaDiv = {};
 
-  CelestialPieceDataOfReleaseTypography = {};
+  CelestialPieceSingerAreaDataOfReleaseTypography = {};
 
-  CelestialPieceSingerTypography = {};
+  CelestialPieceSingerAreaSingerTypography = {};
+
+  CelestialPieceSingerAreaDiv = {};
 
   CelestialPieceNameTypography = {};
 
@@ -114,6 +116,8 @@ class CommonStyle {
   CelestialPieceDivList = {};
 
   CelestialPieceDiv = {};
+
+  CelestialFuncCopyLinkButton = {};
 
   CelestialFuncGotoAlbumButton = {};
 
@@ -162,6 +166,10 @@ class CommonStyle {
   EpisodeVoiceDivWrap = {};
 
   EpisodeVoicePaper = {};
+
+  EpisodeFuncAreaNameOfSingerTextField = {};
+
+  EpisodeFuncAreaNameOfEpisodeTextField = {};
 
   EpisodeFuncAreaDeleteAllButton = {};
 

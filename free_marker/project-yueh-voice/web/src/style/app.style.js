@@ -99,9 +99,11 @@ class AppStyle {
 
   CelestialPieceMinorAreaDiv = {};
 
-  CelestialPieceDataOfReleaseTypography = {};
+  CelestialPieceSingerAreaDataOfReleaseTypography = {};
 
-  CelestialPieceSingerTypography = {};
+  CelestialPieceSingerAreaSingerTypography = {};
+
+  CelestialPieceSingerAreaDiv = {};
 
   CelestialPieceNameTypography = {};
 
@@ -114,6 +116,8 @@ class AppStyle {
   CelestialPieceDivList = {};
 
   CelestialPieceDiv = {};
+
+  CelestialFuncCopyLinkButton = {};
 
   CelestialFuncGotoAlbumButton = {};
 
@@ -162,6 +166,10 @@ class AppStyle {
   EpisodeVoiceDivWrap = {};
 
   EpisodeVoicePaper = {};
+
+  EpisodeFuncAreaNameOfSingerTextField = {};
+
+  EpisodeFuncAreaNameOfEpisodeTextField = {};
 
   EpisodeFuncAreaDeleteAllButton = {};
 

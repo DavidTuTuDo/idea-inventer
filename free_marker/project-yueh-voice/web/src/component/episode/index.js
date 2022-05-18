@@ -24,6 +24,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
+import {isMobile} from "react-device-detect";
 
 @inject("episode")
 @observer
@@ -93,23 +94,41 @@ class EpisodeComponent extends BaseEpisodeComponent {
         this.getStore().performNextVoice();
     }
 
-    isValidOfParamOfUid(uid) {
-        return this.isParamFromPathValid(uid);
+    isValidOfParamOfIdOfEpisode(idOfEpisode) {
+        return this.isParamFromPathValid(idOfEpisode);
+    }
+
+    getVoiceSinger(voice) {
+        const singer = super.getVoiceSinger(voice);
+        if (voice.getCovered()) {
+            {
+                return `covered by ${singer}`;
+            }
+        }
+        return `original by ${singer}`;
+    }
+
+    onEpisodeVoiceExtraIconButtonShareClicked(param) {
+        const self = this;
+        const voice = param.object;
+        return async () => {
+            if (!Util.isUndefinedNullEmpty(voice.getIdOfCelestial())) {
+                self.copyTextToClipboard(Router.getUrlOfCelestialDetailPage(voice.getIdOfCelestial()), `已將'分享連結'新增至剪貼簿`)
+            }
+        };
     }
 
     onEpisodeVoiceExtraIconButtonDownloadClicked(param) {
         const voice = param.object;
         return async () => {
-            Util.appendInfo(voice.getName());
+            if (!Util.isUndefinedNullEmpty(voice.getPathOfResource())) {
+                this.gotoUrlWithNewTabDirectly(voice.getPathOfResource());
+            }
         };
     }
 
-    onEpisodeVoiceExtraIconButtonShareClicked(param) {
-        const voice = param.object;
-        const event = param.view;
-        return async () => {
-            Util.appendInfo(voice.getName());
-        };
+    getInjectPropsOfEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer(stickyBottomArea) {
+        return isMobile ? {customVolumeControls: []} : {};
     }
 
     /** -------------------- async api -------------------- **/

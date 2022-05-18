@@ -27,8 +27,8 @@ class MainComponent extends BaseMainComponent {
         super(props);
     }
 
-    getInjectPropOfParamOfUid() {
-        return 'jiowejfoisdfds';
+    getInjectPropOfParamOfIdOfEpisode() {
+        return 'contents';
     }
 
     /** -------------------- async api -------------------- **/

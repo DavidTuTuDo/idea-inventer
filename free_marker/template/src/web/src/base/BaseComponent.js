@@ -799,16 +799,42 @@ class BaseComponent extends MuiComponent {
         }
     }
 
-    copyCurrentLinkToClipboard() {
+    copyCurrentLinkToClipboard(message =`已複製當前的連結`) {
         navigator.clipboard.writeText(this.getCurrentWebSiteLink())
-        this.showInfoSnackMessage(`已複製連結`);
+        this.getComponentInstance().showInfoSnackMessage(message);
     }
 
-    copyTextToClipboard(text) {
+    copyTextToClipboard(text,message = `已將內容新增至剪貼簿`) {
         navigator.clipboard.writeText(text);
-        this.showInfoSnackMessage(`已新增至剪貼簿`);
+        this.getComponentInstance().showInfoSnackMessage(message);
     }
 
+    copyToClipboard(textToCopy) {
+        // navigator clipboard api needs a secure context (https)
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard api method'
+            return new Promise((res, rej) => {
+                // here the magic happens
+                navigator.clipboard.writeText(textToCopy);
+            });
+        } else {
+            // text area method
+            let textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            // make the textarea out of viewport
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            return new Promise((res, rej) => {
+                // here the magic happens
+                document.execCommand('copy') ? res() : rej();
+                textArea.remove();
+            });
+        }
+    }
 
     renderGlobalDialogView = () => {
         const self = this;

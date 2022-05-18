@@ -30,6 +30,10 @@ get{{{functionName}}}() {
 return this.{{{fieldName}}};
 }
 
+get{{{fieldClass}}}OfHead = () => {
+return _.head(this.get{{{functionName}}}());
+}
+
 @action
 clean{{{functionName}}}(){
 this.{{{fieldName}}}.length = 0;

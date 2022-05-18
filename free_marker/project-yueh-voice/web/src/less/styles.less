@@ -8,6 +8,7 @@
 
 .MainDiv:extend(.CenterInParentColumn) {
   background-color: black;
+  min-height: 40vh;
   @media @mobile {
     /** empty style */
   }
@@ -20,8 +21,9 @@
 }
 /** following for episode  component used  */
 
-.EpisodeDiv {
+.EpisodeDiv:extend(.CenterInParentColumn) {
   background-color: black;
+  min-height: 40vh;
   @media @mobile {
     /** empty style */
   }
@@ -45,7 +47,7 @@
 }
 .EpisodeFuncAreaDiv:extend(.CenterInParentRow) {
   margin: 10px;
-  gap: 20px;
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -68,6 +70,32 @@
   }
 }
 .EpisodeFuncAreaDeleteAllButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpisodeFuncAreaNameOfEpisodeTextField {
+  background-color: white;
+  border-radius: 3px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpisodeFuncAreaNameOfSingerTextField {
+  background-color: white;
+  border-radius: 3px;
   @media @mobile {
     /** empty style */
   }
@@ -110,6 +138,7 @@
 }
 .EpisodeVoiceDivList:extend(.CenterInParentColumn) {
   padding-top: 10px;
+  min-height: 20vh;
   padding-bottom: 5px;
   gap: 5px;
   @media @mobile {
@@ -340,18 +369,24 @@
 }
 /** following for celestial  component used  */
 
-.CelestialDiv {
+.CelestialDiv:extend(.CenterInHorizontalColumn) {
+  padding-top: 80px;
+  background-color: black;
+  min-height: 80vh;
   @media @mobile {
-    /** empty style */
+    padding-top: 100px;
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    padding-top: 130px;
   }
 }
 .CelestialFuncDiv {
+  position: absolute;
+  left: 10px;
+  top: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -373,7 +408,8 @@
     /** empty style */
   }
 }
-.CelestialPieceDiv {
+.CelestialFuncCopyLinkButton {
+  margin-left: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -382,6 +418,19 @@
   }
   @media @desktop {
     /** empty style */
+  }
+}
+.CelestialPieceDiv:extend(.CenterInHorizontalColumn) {
+  padding: 10px;
+  margin-bottom: 40px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    margin-bottom: 80px;
   }
 }
 .CelestialPieceDivList {
@@ -396,6 +445,8 @@
   }
 }
 .CelestialPieceDivSkeleton {
+  width: 100vw;
+  height: 30vh;
   @media @mobile {
     /** empty style */
   }
@@ -407,6 +458,11 @@
   }
 }
 .CelestialPieceImageImg {
+  width: 65vw;
+  height: 65vw;
+  border-radius: 10px;
+  object-fit: cover;
+  opacity: 0.8;
   @media @mobile {
     /** empty style */
   }
@@ -414,10 +470,12 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    max-width: 500px;
+    max-height: 500px;
   }
 }
 .CelestialPieceImageDivWrap {
+  overflow: hidden;
   @media @mobile {
     /** empty style */
   }
@@ -429,6 +487,21 @@
   }
 }
 .CelestialPieceNameTypography {
+  margin-top: 15px;
+  color: white;
+  font-size: 1.4rem;
+  @media @mobile {
+    font-size: 1.3rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CelestialPieceSingerAreaDiv:extend(.CenterInParentRow) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -439,7 +512,8 @@
     /** empty style */
   }
 }
-.CelestialPieceSingerTypography {
+.CelestialPieceSingerAreaSingerTypography {
+  color: rgba(255, 255, 255, 0.3);
   @media @mobile {
     /** empty style */
   }
@@ -450,7 +524,8 @@
     /** empty style */
   }
 }
-.CelestialPieceDataOfReleaseTypography {
+.CelestialPieceSingerAreaDataOfReleaseTypography {
+  color: rgba(255, 255, 255, 0.3);
   @media @mobile {
     /** empty style */
   }
@@ -462,6 +537,8 @@
   }
 }
 .CelestialPieceMinorAreaDiv {
+  margin-top: 40px;
+  display: none;
   @media @mobile {
     /** empty style */
   }
@@ -473,6 +550,7 @@
   }
 }
 .CelestialPieceMinorAreaTitleOfLyricTypography {
+  color: white;
   @media @mobile {
     /** empty style */
   }
@@ -484,6 +562,7 @@
   }
 }
 .CelestialPieceMinorAreaContentOfLyricTypography {
+  color: white;
   @media @mobile {
     /** empty style */
   }

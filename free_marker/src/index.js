@@ -27,8 +27,8 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
-// const CURRENT_PROJECT = './project-yueh-voice';
-const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-voice';
+// const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
@@ -2989,7 +2989,7 @@ class StoreBuilder extends BaseBuilder {
             const propStmt = [];
             const fieldName = child.getFieldName();
             const defaultValue = child.getDefaultValueByType();
-            generator.appendField(fieldName, defaultValue, ['observable']);
+            generator.appendField(fieldName, defaultValue, ['observable'], [`${child.getDescription()}`]);
             generator.insertBatchLinesIntoFunctionSection(
                 this.getFunctionsDependOnFieldType(child.type,
                     {
@@ -3475,7 +3475,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        [`const result = await self.fetchObject(path, ${STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY})`,
+                        [`const result = await self.fetchObject(path, id)`,
                             `return result.${ID_OF_DEFAULT_CHEAP_ARRAY} ?? []`],
                         `fetch items of cheap`);
 
@@ -4694,19 +4694,35 @@ class AppBuilder extends ComponentBuilder {
                 nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
             )
 
+            const params = ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined]])];
+
             generator.appendFunction({
                     name: Util.camel('goto', nodeOfComponent.name,
                         nodeOfComponent.isEditPage() ? 'editor' : '',
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
-                ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined]])],
+                params,
                 [],
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
                 ...getStmtsOfRenewStore(nodeOfComponent),
                 `const route = \`${route}\``,
                 `this.routeTo(component, route);`,
+                `return libpath.join(Config.host,route);`
+            )
+
+
+            generator.appendFunction({
+                    name: Util.camel('getUrlOf', nodeOfComponent.name,
+                        nodeOfComponent.isEditPage() ? 'editor' : '',
+                        isDetail ? 'detail' : '', 'page'),
+                    arrow: true
+                },
+                _.tail(params),
+                [],
+                [],
+                `const route = \`${route}\``,
                 `return libpath.join(Config.host,route);`
             )
 

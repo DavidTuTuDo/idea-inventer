@@ -99,9 +99,11 @@ class MobileStyle {
 
   CelestialPieceMinorAreaDiv = {};
 
-  CelestialPieceDataOfReleaseTypography = {};
+  CelestialPieceSingerAreaDataOfReleaseTypography = {};
 
-  CelestialPieceSingerTypography = {};
+  CelestialPieceSingerAreaSingerTypography = {};
+
+  CelestialPieceSingerAreaDiv = {};
 
   CelestialPieceNameTypography = {};
 
@@ -114,6 +116,8 @@ class MobileStyle {
   CelestialPieceDivList = {};
 
   CelestialPieceDiv = {};
+
+  CelestialFuncCopyLinkButton = {};
 
   CelestialFuncGotoAlbumButton = {};
 
@@ -162,6 +166,10 @@ class MobileStyle {
   EpisodeVoiceDivWrap = {};
 
   EpisodeVoicePaper = {};
+
+  EpisodeFuncAreaNameOfSingerTextField = {};
+
+  EpisodeFuncAreaNameOfEpisodeTextField = {};
 
   EpisodeFuncAreaDeleteAllButton = {};
 
