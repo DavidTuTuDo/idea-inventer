@@ -3402,13 +3402,14 @@ class RemoteFunctionHandler extends BaseBuilder {
                 stmts.push(...logicStmts);
             }
 
+            const comment = `${node.getPreciseAttributeParentName()}-${node.getName()}:${type}`;
             const pramsOfWhole = self.getParamsInFunctionByPlatform(node, type, uploadFile);
             const stmtsOfWhole = [...preStmts, ...stmts];
             if (isAsync) {
-                generator.appendAsyncFunction(name, pramsOfWhole, [], [],
+                generator.appendAsyncFunction(name, pramsOfWhole, [], [comment],
                     ...stmtsOfWhole)
             } else {
-                generator.appendFunction(name, pramsOfWhole, [], [],
+                generator.appendFunction(name, pramsOfWhole, [], [comment],
                     ...stmtsOfWhole)
             }
         }
@@ -3479,10 +3480,17 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `return result.${ID_OF_DEFAULT_CHEAP_ARRAY} ?? []`],
                         `fetch items of cheap`);
 
+                    function needView() {
+                        if(self.isWebPlatform()) {
+                            return 'view,';
+                        }
+                        return '';
+                    }
+
                     generateApiFunction(
                         node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(view,${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
+                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(${needView()}${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
                         `fetch size of cheap`)
 
 

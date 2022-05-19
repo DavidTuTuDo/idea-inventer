@@ -9,7 +9,6 @@ import libpath from 'path';
 import config from './config';
 import moment from 'moment';
 import {configerer} from "configerer";
-import * as mm from 'music-metadata-browser';
 import fetch from 'node-fetch';
 
 (async () => {
@@ -39,8 +38,6 @@ import fetch from 'node-fetch';
             }
         )
     }
-
-    await api.submitPieces({})
 
     // await submitShortcut();
 

@@ -113,7 +113,7 @@ class EpisodeComponent extends BaseEpisodeComponent {
         const voice = param.object;
         return async () => {
             if (!Util.isUndefinedNullEmpty(voice.getIdOfCelestial())) {
-                self.copyTextToClipboard(Router.getUrlOfCelestialDetailPage(voice.getIdOfCelestial()), `已將'分享連結'新增至剪貼簿`)
+                self.copyTextToClipboard(Router.getUrlOfCelestialDetailPage(voice.getIdOfCelestial()), `已將分享連結 新增至 剪貼簿`)
             }
         };
     }

@@ -28,7 +28,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     getInjectPropOfParamOfIdOfEpisode() {
-        return 'contents';
+        return 'david.tu.guitar';
     }
 
     /** -------------------- async api -------------------- **/

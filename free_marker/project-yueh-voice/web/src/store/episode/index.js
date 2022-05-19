@@ -71,7 +71,8 @@ class EpisodeStore extends BaseEpisodeStore {
             const idOfCelestial = resultOfCelestial.value.id;
             itemsOfCelestialVoice.push({pathOfResource, idOfCelestial, name, singer: nameOfSinger, covered});
         }
-        await this.storeOfVoice.submitVoices(this.getComponent(), itemsOfCelestialVoice, nameOfEpisode);
+        const origin = await this.storeOfVoice.fetchVoices(this.getComponent(), nameOfEpisode);
+        await this.storeOfVoice.submitVoices(this.getComponent(), [...itemsOfCelestialVoice, ...origin], nameOfEpisode);
     }
 
     setCurrentVoice(path) {
