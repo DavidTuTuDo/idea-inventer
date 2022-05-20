@@ -14,6 +14,7 @@ import {
     exceptioner as ERROR,
     pooller as InfinitePool,
 } from "utiller";
+import UserInfoRef from "../../base/BaseUserInfo";
 
 const useStyles = theme => ({
     paper: {
@@ -28,6 +29,11 @@ const useStyles = theme => ({
 class NavigatorComponent extends ModularizedNavigatorComponent {
 
     onSearchPressed(content) {
+        if(!UserInfoRef.isLoginWithSucceed()) {
+            this.showWarningSnackMessage(`請IG詢問 明悅 如何開通搜尋功能`);
+            return;
+        }
+
         if (_.isObject(content) && content.type) {
             switch (content.type) {
                 case 11:

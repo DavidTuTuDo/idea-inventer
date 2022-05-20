@@ -92,12 +92,12 @@ class Utiller {
         this.env = env;
     }
 
-    getEnvironment() {
+    getEnvironment = () => {
         return this.env;
     }
 
-    isProductionEnvironment() {
-        return _.isEqual(this.env, 'prod');
+    isProductionEnvironment = () => {
+        return _.isEqual(this.getEnvironment(), 'prod');
     }
 
     appendInfo(...logs) {

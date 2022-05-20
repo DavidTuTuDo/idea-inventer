@@ -89,8 +89,6 @@ class SheetComponent extends BaseSheetComponent {
          *
          * 顯示出來的toast會咬住最上層的touch event, 讓體驗變差勁
          * */
-
-        return;
         const message = `完成 「${text}」`;
         if (_.isEqual(type, 'info'))
             this.showInfoSnackMessage(message);

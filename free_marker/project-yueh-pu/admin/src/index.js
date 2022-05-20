@@ -10,6 +10,8 @@ import config from './config';
 import moment from 'moment';
 import {configerer} from "configerer";
 
+/** 超過這個數量就用最浪費資源的方式 */
+const THRESHOLD_OF_BATCH_MODE = 100;
 
 (async () => {
 
@@ -30,7 +32,7 @@ import {configerer} from "configerer";
         const ranks = await fetchTopSongsOfRank(n);
         let guitars = await getObjectOfToneUrlAsKey()
         console.log(ranks);
-        if(_.size(ranks) > 5) {
+        if (_.size(ranks) > 5) {
             await api.submitHotRhythms(ranks.map((each) => {
                 return {
                     name: each.name,
@@ -41,6 +43,7 @@ import {configerer} from "configerer";
                 }
             }))
         }
+
         function getDocumentId(rank, guitars) {
             const url = rank.url;
             // console.log(rank.WEEK,' 歌名: ', rank.name, 'url:', rank.url);
@@ -55,7 +58,7 @@ import {configerer} from "configerer";
             {orderBy: (stmt) => stmt.orderBy("popularLevel", 'desc')},
             {limit: (stmt) => stmt.limit(n)}
         )), n)
-        if(_.size(singers) > 5) {
+        if (_.size(singers) > 0) {
             await api.submitHotSingers(singers.map((each, index) => {
                 return {
                     name: each.name,
@@ -85,21 +88,38 @@ import {configerer} from "configerer";
     async function deploySingers(popularLevel) {
         const singers = await database.fetchRecords('SINGER', new Builder().gt('songCounts', 0).and().gte('popularLevel', popularLevel).stmt());
         console.log('所有singer => ' + _.size(singers))
-        const removeItems = _.remove(singers, (singer) => !Util.isUndefinedNullEmpty(singer.idOfRemote));
+        _.remove(singers, (singer) => !Util.isUndefinedNullEmpty(singer.idOfRemote));
+        _.remove(singers, (singer) => Util.isUndefinedNullEmpty(singer.url));
         console.log('所有singer 扣掉 已經有idOfRemote,剩下 => ' + _.size(singers))
-        await api.submitSingers(...singers.map((singer) => {
-            return {
-                name: singer.name,
-                nicknames: singer.names.split(`#&#@#`).map(each => {
-                    return {statement: each}
-                }),
-                type: singer.type,
-                uuidOfSinger: singer.url,
-                popularLevel: singer.popularLevel,
-                countsOfRhythm: singer.songCounts,
+        if (_.size(singers) > THRESHOLD_OF_BATCH_MODE) {
+            await api.submitSingers(singers.map((singer) => getNormalizedSingerItem(singer)));
+            await syncSingerRemoteIdIntoLocalStorage();
+        } else {
+            /** 數量低於 THRESHOLD_OF_BATCH_MODE, 所以one by one上傳 */
+            for (const singer of singers) {
+                const resultOfSinger = await api.submitSingerItem(getNormalizedSingerItem(singer));
+                /** 更新idOfRemote到本端db */
+                if (resultOfSinger.succeed) {
+                    await database.updateRecords('SINGER', {idOfRemote: resultOfSinger.value.id},
+                        new Builder().equal('url', resultOfSinger.value.uuidOfSinger).stmt())
+                }
+
             }
-        }));
+        }
         return singers;
+    }
+
+    function getNormalizedSingerItem(singer) {
+        return {
+            name: singer.name,
+            nicknames: singer.names.split(`#&#@#`).map(each => {
+                return {statement: each}
+            }),
+            type: singer.type,
+            uuidOfSinger: singer.url,
+            popularLevel: singer.popularLevel,
+            countsOfRhythm: singer.songCounts,
+        }
     }
 
     async function deployKeywords() {
@@ -135,24 +155,39 @@ import {configerer} from "configerer";
     }
 
     async function deployAllSingerTone(popularLevel) {
-        const singers = await deploySingers(popularLevel);
-        if (_.size(singers) > 0) {
-            /** 如果singer > 0 代表 有新的歌手 */
-            await syncSingerRemoteIdIntoLocalStorage()
-        }
-        const tones = await deployGuitarPuByPopularLevel(popularLevel);
-        if (_.size(tones) > 0) {
-            /** 如果tones > 0 代表 有新的GuitarPu */
-            await syncRemoteIdWithToneAndRhythmIntoLocalStorage()
-        }
+        await deploySingers(popularLevel);
+        await deployGuitarPuByPopularLevel(popularLevel);
     }
 
     async function deployGuitarPuByPopularLevel(n) {
         const tones = await database.fetchRecords('TONE', new Builder().gte('popularLevel', n).stmt())
         console.log('所有tones => ' + _.size(tones))
         _.remove(tones, (tone) => !Util.isUndefinedNullEmpty(tone.idOfRemote))
+        _.remove(tones, (tone) => Util.isUndefinedNullEmpty(tone.url))
+
         console.log('所有tones 扣掉 已經有idOfRemote,剩下 => ' + _.size(tones))
-        await deployGuitarPu(...tones);
+
+        if (_.size(tones) > THRESHOLD_OF_BATCH_MODE) {
+            await deployGuitarPu(tones);
+            await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
+        } else {
+            const singers = await getObjectOfSingerUrlAsKey();
+            for (const tone of tones) {
+                const resultOfGuitar = await api.submitGuitarpuItem(getSubmitGuitarPuItemWithNormalized(tone, singers));
+                if (resultOfGuitar.succeed) {
+                    const resultOfRhythm = await api.submitRhythmItem({
+                        ...resultOfGuitar.value,
+                        idOfGuitarPu: resultOfGuitar.value.id
+                    }, resultOfGuitar.value.id);
+                    /** 更新idOfRemote到本端db */
+                    await database.updateRecords('TONE', {
+                            idOfRemote: resultOfGuitar.value.id,
+                            idOfRhythm: resultOfRhythm.value.id
+                        },
+                        new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
+                }
+            }
+        }
         return tones;
     }
 
@@ -176,51 +211,52 @@ import {configerer} from "configerer";
         return tonesOfLocalDatabase
     }
 
-    async function deployGuitarPu(...tones) {
+    /** 粗暴的部署一拖拉庫的guitar pu,非常非常浪費firebase的點數 */
+    async function deployGuitarPu(tones) {
         const singers = await getObjectOfSingerUrlAsKey();
-        await api.submitGuitarpus(...(tones.map((each) => getSubmitGuitarPuItem(each, singers))));
+        await api.submitGuitarpus(tones.map((each) => getSubmitGuitarPuItemWithNormalized(each, singers)));
         const guitars = await api.fetchGuitarpus();
         /** 部署Rhythms*/
 
-        await api.submitRhythms(...guitars.map(guitar => {
+        await api.submitRhythms(guitars.map(guitar => {
             return {...guitar, idOfGuitarPu: guitar.id};
         }));
     }
 
-    function getSubmitGuitarPuItem(tone, singers) {
+    function refactorTone(string) {
+        /** decode */
+        const origin = Util.getDecryptString(string);
 
-        function refactorTone(string) {
-            /** decode */
-            const origin = Util.getDecryptString(string);
+        let latest = Util.replaceAllWithSets(origin,
+            {from: '▲', to: '🌕'},
+            {from: '★', to: '🌓'},
+            {from: '△', to: '🌑'},
+            {from: '✩', to: '🌙'},
+            {from: '☆', to: '🌙'},
+            {from: '\\|', to: '།'},
+            {from: '\\[前奏\\]', to: '(開始)'},
+            {from: '\\[尾奏\\]', to: '(結束)'},
+            {from: '\\[間奏\\]', to: '(橋段)'},
+            {from: '\\[間奏1\\]', to: '(橋段I)'},
+            {from: '\\[間奏2\\]', to: '(橋段II)'},
+            {from: '\\[間奏3\\]', to: '(橋段III)'},
+            {from: '\\[間奏4\\]', to: '(橋段IV)'},
+            {from: '\\(End\\)', to: '(終止)'},
+        )
 
-            let latest = Util.replaceAllWithSets(origin,
-                {from: '▲', to: '🌕'},
-                {from: '★', to: '🌓'},
-                {from: '△', to: '🌑'},
-                {from: '✩', to: '🌙'},
-                {from: '☆', to: '🌙'},
-                {from: '\\|', to: '།'},
-                {from: '\\[前奏\\]', to: '(開始)'},
-                {from: '\\[尾奏\\]', to: '(結束)'},
-                {from: '\\[間奏\\]', to: '(橋段)'},
-                {from: '\\[間奏1\\]', to: '(橋段I)'},
-                {from: '\\[間奏2\\]', to: '(橋段II)'},
-                {from: '\\[間奏3\\]', to: '(橋段III)'},
-                {from: '\\[間奏4\\]', to: '(橋段IV)'},
-                {from: '\\(End\\)', to: '(終止)'},
-            )
-
-            /**   本來以為加個空白就能搞定對齊問題, 沒那麼簡單
-             latest = Util.getStringHandledByEachLine(latest, (each, index, all) => {
+        /**   本來以為加個空白就能搞定對齊問題, 沒那麼簡單
+         latest = Util.getStringHandledByEachLine(latest, (each, index, all) => {
                 const isMatch = each.match(new RegExp('^[🌓🌑🌙🌕].+', 'g'));
                 if (!isMatch) {
                     all[index] = ` ${each}`;
                 }
             })
-             */
-            return Util.getEncryptString(latest);
-            /** encode */
-        }
+         */
+        return Util.getEncryptString(latest);
+        /** encode */
+    }
+
+    function getSubmitGuitarPuItemWithNormalized(tone, singers) {
 
         const objOfTones = getMapOfTonalitySpeed(tone.tkInfo);
         // '原調': 'E', '速度': '59', '男調': 'A', '女調': 'E'
@@ -366,14 +402,14 @@ import {configerer} from "configerer";
         const tones = await fetchTonesContainRemoteId();
         const objectOfSinger = await getObjectOfSingerUrlAsKey();
 
-        const submits = tones.map(tone => getSubmitGuitarPuItem(tone, objectOfSinger));
+        const submits = tones.map(tone => getSubmitGuitarPuItemWithNormalized(tone, objectOfSinger));
         await api.submitGuitarpus(...submits);
     }
 
     async function updateSpecificGuitarPu(id = 'Wipyxry0V0CKLkPxjaS1') {
         const records = await database.fetchRecords('TONE', new Builder().equal('idOfRemote', id).stmt())
         const record = _.head(records);
-        const guitar = getSubmitGuitarPuItem(record)
+        const guitar = getSubmitGuitarPuItemWithNormalized(record)
         await api.updateGuitarpuItem(guitar.id,
             {
                 currentContext: guitar.currentContext,
@@ -382,22 +418,60 @@ import {configerer} from "configerer";
         )
     }
 
+    async function updateSpecificToneOfGuitarPu(id = '2qKAHVsPo4wriTPjSR3X', tone) {
+        const pu = await api.fetchGuitarpuItem(id);
+        if (pu) {
+            pu.currentContext = tone;
+            pu.originalContext = tone;
+            await api.submitGuitarpuItem(pu, id);
+        }
+    }
+
+
+    /** 這五個是initialize一組的, 如果跑了91pu scrapy */
+    async function deployLatestSheet() {
+        await deployAllSingerTone(499);
+        await deployKeywords();
+        await deployMainPageHotRhythm(20);
+        await deployMainPageHotSingers(20);
+    }
+
+    /** 用uid把tone給persistent 方便拉上來當範本 */
+    async function persistPuByIdOfRemoteGuitar(idOfGuitarPu) {
+        const content = await database.fetchRecord('TONE', new Builder().equal('idOfRemote', idOfGuitarPu).stmt());
+        console.log(content);
+        const path = Util.persistByPath(`./temp/${content.name}`)
+        Util.appendFile(libpath.join(path, 'pu.txt'), Util.getDecryptString(content.tone))
+    }
+
+    /** 把deploy/pu.txt 和 deploy/config.json */
+    async function deployPuIntoDataBase() {
+        const content = Util.getJsonObjByFilePath('./deploy/config.json');
+        content.tone = Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'));
+        content.updateTime = Util.getCurrentTimeStamp();
+        console.log(content);
+        console.log(`\n\n\n10秒後部署到database\n...\n...\n...`);
+        await Util.syncDelay(10000);
+        await database.insertRecord('TONE', content);
+    }
+
+    // await deployKeywords();
+    // await deployLatestSheet();
+    // await deployPuIntoDataBase();
+    // await updateSpecificToneOfGuitarPu('2qKAHVsPo4wriTPjSR3X', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'))))
+    // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
+    // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
-
     // await accumulatePopularLevelOfSinger()
-
-    // 這五個是initialize一組的
-    await deployAllSingerTone(500);
-    await deployKeywords();
-    await deployMainPageHotRhythm(20);
-    await deployMainPageHotSingers(20);
 
     // await submitShortcut();
     // await updateTonesWithSameRemoteId();
     // console.log(await getObjectOfSingerUrlAsKey());
     // await updateSpecificGuitarPu();
-    // await syncRemoteIdWithToneAndRhythmIntoLocalStorage()
+    // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
+    // await deployAllSingerTone(499)
+    // await deployKeywords();
 })();
 
 
