@@ -27,9 +27,9 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
-// const CURRENT_PROJECT = './project-yueh-voice';
+const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -4717,7 +4717,7 @@ class AppBuilder extends ComponentBuilder {
                 ...getStmtsOfRenewStore(nodeOfComponent),
                 `const route = \`${route}\``,
                 `this.routeTo(component, route);`,
-                `return libpath.join(Config.host,route);`
+                `return new URL(route, Config.host).href;`,
             )
 
 
@@ -4731,7 +4731,7 @@ class AppBuilder extends ComponentBuilder {
                 [],
                 [],
                 `const route = \`${route}\``,
-                `return libpath.join(Config.host,route);`
+                `return new URL(route, Config.host).href;`
             )
 
         }
