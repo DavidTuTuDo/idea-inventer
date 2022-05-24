@@ -863,7 +863,7 @@ class CodegenNode {
             return `###\`\${${this.getName()}.getId()}\${index})\``;
         } else {
             if (this.isArray())
-                return `###\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\``;
+                return `###\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\$\{Util.getRandomHash(8)\}\``;
             else
                 return `${Util.getRandomHash('20')}`
         }
