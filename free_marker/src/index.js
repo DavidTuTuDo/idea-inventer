@@ -24,7 +24,7 @@ const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inv
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
 const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
-const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id = '${ID_OF_DEFAULT_CHEAP_ARRAY}'`;
+const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
 const CURRENT_PROJECT = './project-yueh-voice';
@@ -946,7 +946,19 @@ class CodegenNode {
     }
 
     getFunctionNameOfSubmit() {
-        return Util.camel('submit', this.getName());
+        return Util.camel('submit', this.getFieldName());
+    }
+
+    getFunctionNameOfFetchDocumentIds() {
+        return Util.camel('fetchDocumentIds', 'of', this.getName());
+    }
+
+    getFunctionNameOfGetter() {
+        return Util.camel('get', this.getName());
+    }
+
+    getFunctionNameOfGetters() {
+        return Util.camel('get', this.getFieldName());
     }
 
     getFunctionNameOfBatchUpdate() {
@@ -2846,12 +2858,15 @@ class BaseBuilder extends PathBase {
         return Util.camel('param', 'of', param);
     }
 
-    getParamsOfDefaultValue(params) {
+    getParamsOfDefaultValue(params, node, mustache = false) {
         return params.map(param => {
             if (_.isEqual(param.trim(), 'id')) {
-                return `${param} = this.getId()`;
+                if (node.isCheapArray() && mustache)
+                    return `${param} = 'contents'`;
+                else
+                    return `${param} = this.getId()`;
             } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
-                return `${param} = this.rawData()`;
+                return `${param} = this`;
             } else if (_.isEqual(param.trim(), 'restful')) {
                 return `restful = {status: 'succeed', message: 'default reason'}`;
             } else if (_.isEqual(param.trim(), 'uid')) {
@@ -2864,12 +2879,15 @@ class BaseBuilder extends PathBase {
     }
 
     /** type 可以是 fetch|submit, submit,就會依據node的type去做事*/
-    getParamsInFunctionByPlatform(node, type = 'fetch', uploadFile = false, isArgument = false) {
+    getParamsInFunctionByPlatform(node, type = 'fetch', uploadFile = false, isArgument = false, mustache) {
         const self = this;
 
 
         let params = uploadFile ? node.getParamsOfStorageFolder() : node.getParamsInPath();
         switch (type) {
+            case 'fetch cheap ids of array':
+            case 'fetch ids of array':
+                break;
             case 'fetch object':
             case 'fetch items of cheap':
             case `fetch items of pure`:
@@ -2888,6 +2906,12 @@ class BaseBuilder extends PathBase {
                 break;
             case `submit items of cheap`:
                 params = ['items', STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params]
+                break;
+            case `submit item of cheap`:
+                params = ['item', 'id', ...params]
+                break;
+            case `delete item of cheap`:
+                params = ['item', 'id', ...params]
                 break;
             case `fetch size of cheap`:
                 params = [STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params];
@@ -2934,7 +2958,7 @@ class BaseBuilder extends PathBase {
         }
 
         if (self.isWebPlatform()) {
-            const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValue(params);
+            const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValue(params, node, mustache);
             return ['view', ...paramsOfLatest];
         }
         return params;
@@ -3001,11 +3025,11 @@ class StoreBuilder extends BaseBuilder {
                         defaultValue,
                         paramString: this.getParamsOfDefaultValue(child.getParamsInPath()).join(','),
                         argumentString: child.getStringOfArgumentsOfPath(),
-                        stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch'),
+                        stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch', false, false, true),
                         stringOfArgumentInFetch: this.getArgumentsInFunction(child, 'fetch'),
-                        stringOfParamInSubmitItems: this.getParamsInFunctionByPlatform(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
+                        stringOfParamInSubmitItems: this.getParamsInFunctionByPlatform(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items', false, false, true),
                         stringOfArgumentInSubmitItems: this.getArgumentsInFunction(child, child.isCheapArray() ? 'submit items of cheap' : 'submit items'),
-                        stringOfParamInSubmitItem: this.getParamsInFunctionByPlatform(child, 'submit item'),
+                        stringOfParamInSubmitItem: this.getParamsInFunctionByPlatform(child, 'submit item', false, false, true),
                         stringOfArgumentInSubmitItem: this.getArgumentsInFunction(child, 'submit item'),
                         hasPaginate: child.hasPaginate(),
                         paginateSize: child.getPaginateSize(),
@@ -3181,7 +3205,7 @@ class StoreBuilder extends BaseBuilder {
         }
 
         const types = [
-            {name: `rawData`, fetcher: (node) => node.getPreciseColumnChildren()},
+            {name: `columnData`, fetcher: (node) => node.getPreciseColumnChildren()},
             {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}
         ];
 
@@ -3464,9 +3488,23 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                 if (node.isCheapArray()) {
 
+                    function needView() {
+                        if (self.isWebPlatform()) {
+                            return 'view,';
+                        }
+                        return '';
+                    }
+
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfFetchDocumentIds(),
+                        [
+                            `return this.fetchIdsOfDocument(path)`],
+                        `fetch cheap ids of array`);
+
                     generateApiFunction(
                         node, Util.camel('submit', node.getFieldName()),
-                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
+                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}({...item, id}))`,
                             `return await self.submitObject(path,{
                                     ${ID_OF_DEFAULT_CHEAP_ARRAY}:commitments,
                                     updateTime:this._firebase().getServerTimeSymbol(),
@@ -3480,12 +3518,33 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `return result.${ID_OF_DEFAULT_CHEAP_ARRAY} ?? []`],
                         `fetch items of cheap`);
 
-                    function needView() {
-                        if(self.isWebPlatform()) {
-                            return 'view,';
-                        }
-                        return '';
-                    }
+
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfSubmitItem(),
+                        [
+                            `const hasParent = this.getParentNode && this.getParentNode()`,
+                            `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
+                            `all.push(this.${functionNameOfNormalize}({...item,id}))`,
+                            `await self.${node.getFunctionNameOfSubmit()}(${needView()} all, id)`,
+                            `const result = hasParent ? this.getParentNode().pushVoice(item) : true`,
+                            `return result;`
+                        ],
+                        `submit item of cheap`);
+
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfDeleteItem(),
+                        [
+                            `const hasParent = this.getParentNode && this.getParentNode()`,
+                            `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
+                            `_.remove(all, item);`,
+                            `await self.${node.getFunctionNameOfSubmit()}(${needView()} all, id)`,
+                            `const result = hasParent ? this.getParentNode().${Util.camel('remove', node.getFieldName())}(item) : true`,
+                            `return result;`
+                        ],
+                        `delete item of cheap`);
+
 
                     generateApiFunction(
                         node,
@@ -3581,7 +3640,7 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                     generateApiFunction(
                         node,
-                        Util.camel('submit', node.getFieldName()),
+                        node.getFunctionNameOfSubmit(),
                         [`const commitments = items.map((item) => this.${functionNameOfNormalize}(item))`,
                             `return await self.submitItems(path, ...commitments)`],
                         `submit items`)
@@ -3597,6 +3656,13 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
                         [`return await self.fetchSizeOfCollection(path)`],
                         `fetch size`)
+
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfFetchDocumentIds(),
+                        [
+                            `return this.fetchIdsOfDocument(path)`],
+                        `fetch ids of array`);
 
                 } else if (node.isObject()) {
                     generateApiFunction(
@@ -4303,9 +4369,9 @@ class ComponentBuilder extends BaseBuilder {
                     `/** 快速複製一個相同屬性的項目,除了id以外 */`,
                     `const parentNode = ${node.getName()}.getParentNode()`,
                     `if(parentNode !== undefined) {`,
-                    `const clonedObject = _.cloneDeep(${node.getName()}.rawData())`,
+                    `const clonedObject = _.cloneDeep(${node.getName()}.columnData())`,
                     `delete clonedObject.id`,
-                    `await parentNode.${Util.camel('submit', node.getName())}(self, clonedObject)`,
+                    `await parentNode.${node.getFunctionNameOfSubmit()}(self, clonedObject)`,
                     `}`,
                     `break;`,
                     `case 'recover':`,
@@ -4328,7 +4394,8 @@ class ComponentBuilder extends BaseBuilder {
                     `return  async (type) => {`,
                     `switch (type) {`,
                     `case 'create':`,
-                    `await ${parentName}.${node.getFunctionNameOfSubmit()}(self)`,
+                    `/** 新增一筆空資料 */`,
+                    `await ${parentName}.${node.getFunctionNameOfSubmit()}(self, {})`,
                     `break;`,
                     `case 'batchUpdate':`,
                     `await ${parentName}.${node.getFunctionNameOfBatchUpdate()}(self)`,
@@ -5723,18 +5790,20 @@ class ProjectFileHandler extends PathBase {
     /** 放一些SimpleViewPager, SimpleGrid*/
     enrichNodeWithCustomViewDefined(nodes) {
         for (const node of nodes) {
-            if (node.isPathArray() && !node.isCheapArray()) {
+            if (node.isPathArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
                 if (!Util.has(children, 'id')) {
                     node.appendChildrenWithJsons({
                         name: 'id',
                         type: 'string',
                         column: true,
-                        description: '我是uid,不能被更改',
+                        defaultValue: node.isCheapArray() ? 'contents' : '',
+                        description: node.isCheapArray() ? '注意!這裡的id是指cheap array的document id' : '我是unique id,不能被更改',
                         readOnly: true,
                     })
                 }
             }
+
 
             if (node.isFloatBackgroundView()) {
                 const clone = _.cloneDeep(node.raw);

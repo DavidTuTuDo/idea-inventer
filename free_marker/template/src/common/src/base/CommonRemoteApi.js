@@ -55,6 +55,12 @@ class CommonRemoteApi {
         return await func(data);
     }
 
+    /** 取得collection所有的document ids */
+    async fetchIdsOfDocument(path) {
+        const list = await this.collectionRef(path).listDocuments();
+        return _.isArray(list) ? list.map((each) => each.id) : [];
+    }
+
     /** predicate 裏面放batch要做的動作 set,update,delete */
     async batchBracket(objects, predicate = (batch, object) => {
     }) {

@@ -114,6 +114,12 @@ class EpisodeStore extends BaseEpisodeStore {
         return _.find(this.getVoices(), (voice) => _.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
     }
 
+    async deleteVoicePrecisely(voice) {
+        const idOfCelestial = voice.getIdOfCelestial();
+        await this.storeOfPiece.deletePieceItem(this.getComponent(), idOfCelestial);
+        await voice.deleteVoiceItem();
+    }
+
     performNextVoice = async () => {
         /** 檢查 ignore */
         /** 檢查隨機 */

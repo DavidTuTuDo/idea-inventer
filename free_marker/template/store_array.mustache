@@ -92,16 +92,17 @@ this.remove{{{functionName}}}ByIndex(...indexes);
 
         /** this is method of cheap array */
         update{{{functionName}}} = async (view, id = 'contents',{{{paramString}}}) => {
-        const latest = this.get{{{functionName}}}().map((each) => each.rawData())
+        const latest = this.get{{{functionName}}}().map((each) => each.columnData())
         await new {{{fieldClass}}}().submit{{{functionName}}}(view,latest, id, {{{argumentString}}})
         }
 
     {{/isCheapArray}}
     {{^isCheapArray}}
         {{{這裡就是放else暨不等於isCheapArray的邏輯}}}
-
+        /** 這function主要是為了editor設計 */
         submit{{{functionName}}} = async ({{{stringOfParamInSubmitItems}}}) => {
         const fatefulItems = [];
+        items = _.isArray(items) ? items : [items];
         for (const item of items) {
         const id = '';
         const result = await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
@@ -111,12 +112,8 @@ this.remove{{{functionName}}}ByIndex(...indexes);
         }
 
         update{{{functionName}}} = async (view,{{{paramString}}}) => {
-        const items = this.get{{{functionName}}}().map((each) => each.rawData());
+        const items = this.get{{{functionName}}}().map((each) => each.columnData());
         await new {{{fieldClass}}}().submit{{{functionName}}}({{{stringOfArgumentInSubmitItems}}})
-        }
-
-        submit{{{fieldClass}}} = async ({{{stringOfParamInSubmitItem}}}) => {
-        return await new {{{fieldClass}}}().submit{{{fieldClass}}}Item({{{stringOfArgumentInSubmitItem}}});
         }
 
     {{/isCheapArray}}

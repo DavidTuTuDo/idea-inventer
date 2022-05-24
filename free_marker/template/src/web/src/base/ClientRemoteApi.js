@@ -23,6 +23,11 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('submit', _async);
     }
 
+    async fetchIdsOfDocument(path) {
+        const _async = async () => super.fetchIdsOfDocument(path);
+        return await CommonPoolHelper.submitTo('fetch', _async);
+    }
+
     async fetchSizeOfCollection(path) {
         const _async = async () => super.fetchSizeOfCollection(path);
         return await CommonPoolHelper.submitTo('fetch', _async);

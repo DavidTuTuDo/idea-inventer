@@ -127,6 +127,23 @@ class EpisodeComponent extends BaseEpisodeComponent {
         };
     }
 
+    onEpisodeVoiceExtraIconButtonDeleteClicked(param) {
+        const self = this;
+        const voice = param.object;
+        return async () => {
+            if (UserInfoRef.isAdmin()) {
+                await this.getStore().deleteVoicePrecisely(voice);
+            } else {
+                self.showWarningSnackMessage(`您沒有權限`);
+            }
+        };
+    }
+
+    getEpisodeVoices(episode) {
+        const list  = super.getEpisodeVoices(episode);
+        return _.orderBy(list,(each) => each.getName())
+    }
+
     getInjectPropsOfEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer(stickyBottomArea) {
         return isMobile ? {customVolumeControls: []} : {};
     }
