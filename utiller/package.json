@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.125",
+  "version": "1.0.126",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,8 @@
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "pdf-parse": "^1.1.1",
-    "prompt": "^1.1.0"
+    "prompt": "^1.1.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

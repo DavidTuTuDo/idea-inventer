@@ -4,6 +4,7 @@ import CryptoJS from "crypto-js";
 import {configerer} from "configerer";
 import ERROR from '../exceptioner';
 import moment from "moment";
+import {v4} from "uuid";
 
 String.format = function () {
     let param = [];
@@ -46,6 +47,10 @@ class Utiller {
         return numbers.join('.');
     }
 
+    getUuidOfV4() {
+        return v4();
+    }
+
 
     constructor() {
         this.init();
@@ -53,8 +58,8 @@ class Utiller {
     }
 
 
-    performActionWithoutTimingIssue(task = () => true,wait = 10){
-       this.syncDelay(wait).then(() => task())
+    performActionWithoutTimingIssue(task = () => true, wait = 10) {
+        this.syncDelay(wait).then(() => task())
     }
 
 
@@ -1384,12 +1389,12 @@ class Utiller {
     /** 把array裏面的項目移動到指定的index
      *
      *  const array = ['a','b','c','d'];
-        console.log(util.getArrayOfMoveItemToSpecificIndex(array,array[1],0));
+     console.log(util.getArrayOfMoveItemToSpecificIndex(array,array[1],0));
      //[ 'b', 'a', 'c', 'd' ]
      * */
     getArrayOfMoveItemToSpecificIndex(array, item, indexOfDestination) {
-        const indexOfItem = _.indexOf(array,item);
-        return this.getArrayOfMoveToSpecificIndex(array,indexOfItem,indexOfDestination);
+        const indexOfItem = _.indexOf(array, item);
+        return this.getArrayOfMoveToSpecificIndex(array, indexOfItem, indexOfDestination);
     }
 
     /**
@@ -1401,7 +1406,7 @@ class Utiller {
      *[ 'a', 'c', 'd', 'b' ]
      */
     getArrayOfMoveSpecificItemToAside(array, item, toTail = true) {
-        const indexOfItem = _.indexOf(array,item);
+        const indexOfItem = _.indexOf(array, item);
         return this.getArrayOfMoveSpecificIndexToAside(array, indexOfItem, toTail);
     }
 
@@ -1421,6 +1426,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const util = new Utiller();
+            // console.log(util.getUuidOfV4());
             // const array = ['a','b','c','d'];
             // console.log(util.getArrayOfMoveSpecificIndexToAside(array,1,true));
             // util.getArrayOfMoveToSpecificIndex(array,1,0);

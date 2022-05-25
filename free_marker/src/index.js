@@ -859,14 +859,10 @@ class CodegenNode {
     }
 
     getUniqueIdStmt() {
-        if (this.hasPath() && !this.isCheapArray()) {
-            return `###\`\${${this.getName()}.getId()}\${index})\``;
-        } else {
-            if (this.isArray())
-                return `###\`${this.getClassNameOfLessUsage()}\$\{_.indexOf(${this.getFieldName()},${this.getName()})}\$\{Util.getRandomHash(8)\}\``;
-            else
-                return `${Util.getRandomHash('20')}`
-        }
+        if (this.hasPath() && !this.isCheapArray())
+            return `###${this.getName()}.getId()`;
+        else
+            return `###${this.getName()}.getIdOfUniqueView()`;
     }
 
     isEditPage() {
@@ -3538,10 +3534,8 @@ class RemoteFunctionHandler extends BaseBuilder {
                         [
                             `const hasParent = this.getParentNode && this.getParentNode()`,
                             `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
-                            `_.remove(all, item);`,
-                            `await self.${node.getFunctionNameOfSubmit()}(${needView()} all, id)`,
-                            `const result = hasParent ? this.getParentNode().${Util.camel('remove', node.getFieldName())}(item) : true`,
-                            `return result;`
+                            `await self.${node.getFunctionNameOfSubmit()}(${needView()} _.without(all, item), id)`,
+                            `return hasParent ? this.getParentNode().${Util.camel('remove', node.getFieldName())}(item) : true`,
                         ],
                         `delete item of cheap`);
 

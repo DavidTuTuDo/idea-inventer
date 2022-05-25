@@ -15,6 +15,8 @@ import ClientRemoteApi from './ClientRemoteApi';
 
 class BaseStore extends ClientRemoteApi {
 
+    idOfUniqueView = Util.getUuidOfV4();
+
     component;
 
     @observable
@@ -61,14 +63,12 @@ class BaseStore extends ClientRemoteApi {
 
     hasNextPageItems = true;
 
-    idOfCurrentStore = Util.getRandomHash(10);
-
     constructor(props) {
         super(props);
     }
 
     getIdOfStore() {
-        return this.idOfCurrentStore;
+        return this.idOfUniqueView;
     }
 
     setComponent(component) {
@@ -113,6 +113,10 @@ class BaseStore extends ClientRemoteApi {
 
     getAppBarHeight() {
         return this.appBarHeight;
+    }
+
+    getIdOfUniqueView() {
+        return this.idOfUniqueView;
     }
 
     getSnackVisibility() {
