@@ -29,6 +29,8 @@ class CommonStyle {
 
   MainEditorInterestingOfFunctionPaper = {};
 
+  MainEditorHotSingerIdTextField = {};
+
   MainEditorHotSingerStatementTextField = {};
 
   MainEditorHotSingerIdOfSingerTextField = {};
@@ -42,6 +44,8 @@ class CommonStyle {
   MainEditorHotSingerDivWrap = {};
 
   MainEditorHotSingerCard = {};
+
+  MainEditorHotRhythmIdTextField = {};
 
   MainEditorHotRhythmIdOfGuitarPuTextField = {};
 

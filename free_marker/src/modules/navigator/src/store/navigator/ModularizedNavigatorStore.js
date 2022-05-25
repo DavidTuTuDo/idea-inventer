@@ -47,7 +47,10 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     }
 
     clearKeywordDetail() {
-        this.getToolBar().getComplete().setSelectedComplete(null);
+        this.getToolBar().getComplete().removeSelectedComplete();
+        this.getToolBar().getComplete().removeInput();
+        this.getToolBar().getComplete().toggleKeyOfComplete();
+        this.getToolBar().cleanSuggestCompletes();
     }
 
     @action

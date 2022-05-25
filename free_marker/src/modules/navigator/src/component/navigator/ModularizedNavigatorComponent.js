@@ -133,7 +133,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
                     className={'BaseShortcutNestedListView'}
                     component="div" disablePadding>
                     {subs.map(shortcut => <DrawerShortcutView
-                        key={`key${_.indexOf(subs, shortcut)}`}
+                        key={shortcut.getIdOfUniqueView()}
                         shortcut={shortcut}/>)}
                 </List>
             </Collapse>
@@ -173,7 +173,8 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         this.disappearKeyboard()
         const selected = this.getStore().getSuggestKeywordDetail();
         if (!Util.isUndefinedNullEmpty(selected)) {
-            this.onSearchPressed(selected.data());
+            const data = _.cloneDeep(selected.data());
+            this.onSearchPressed(data);
             this.getStore().clearKeywordDetail();
         } else {
             this.onSearchPressed(complete.getInput())

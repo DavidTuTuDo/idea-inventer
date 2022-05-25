@@ -18,7 +18,7 @@
 @action
 set{{{functionName}}}(...items) {
 const self = this;
-if(items !== undefined && _.isArray(items)) {
+if(_.isArray(items)) {
 this.{{{fieldName}}}.length = 0;
 this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
 } else {

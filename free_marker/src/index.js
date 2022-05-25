@@ -27,9 +27,9 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
-const CURRENT_PROJECT = './project-yueh-voice';
+// const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -2014,6 +2014,10 @@ class CodegenNode {
         return _.isEqual(this.type, 'object');
     }
 
+    isObjectOfEmpty() {
+        return _.isEqual(this.type, 'objectOfEmpty');
+    }
+
     needParentParam() {
         return !!this.needParam && this.needParam
     }
@@ -2042,6 +2046,10 @@ class CodegenNode {
 
         if (this.isArray()) {
             return `[]`;
+        }
+
+        if(this.isObjectOfEmpty()) {
+            return `{}`;
         }
 
         if (this.isObject()) {
@@ -3036,7 +3044,7 @@ class StoreBuilder extends BaseBuilder {
             else if (child.isBoolean())
                 propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
             else
-                propStmt.push(`if(obj && !_.isEmpty(obj.${fieldName}))`);
+                propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
 
             if (child.isArray()) {
@@ -6248,7 +6256,14 @@ class ProjectFileHandler extends PathBase {
 
                 node.appendChildrenWithJsons({
                     name: Util.camel(`selected`, node.getName()),
-                    type: 'string',
+                    type: 'objectOfEmpty',
+                    description: `用來放置collapse suggestion被選中的那個物件`
+                })
+
+                node.appendChildrenWithJsons({
+                    name: Util.camel(`key`, 'of', node.getName()),
+                    type: 'boolean',
+                    description: `用來force ${node.getName()} re-render`
                 })
 
                 node.appendViewProps({
@@ -6263,6 +6278,7 @@ class ProjectFileHandler extends PathBase {
                     isOptionEqualToValue: `###(option, value) => true`
                 })
 
+                node.appendViewProps({key: `###${node.getName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`})
             }
 
             if (node.needOnChangeBehavior()) {

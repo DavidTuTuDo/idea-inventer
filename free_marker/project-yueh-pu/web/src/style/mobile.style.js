@@ -29,6 +29,8 @@ class MobileStyle {
 
   MainEditorInterestingOfFunctionPaper = {};
 
+  MainEditorHotSingerIdTextField = {};
+
   MainEditorHotSingerStatementTextField = {};
 
   MainEditorHotSingerIdOfSingerTextField = {};
@@ -42,6 +44,8 @@ class MobileStyle {
   MainEditorHotSingerDivWrap = {};
 
   MainEditorHotSingerCard = {};
+
+  MainEditorHotRhythmIdTextField = {};
 
   MainEditorHotRhythmIdOfGuitarPuTextField = {};
 

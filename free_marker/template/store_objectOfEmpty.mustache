@@ -1,0 +1,24 @@
+{{{name就是question}}}
+{{{fieldName就是questions}}}
+{{{functionName就是Questions}}}
+{{{fieldClass就是Question}}}
+{{{hasPath就是true/flase}}}
+get{{{functionName}}}() {
+    return this.{{{fieldName}}};
+}
+
+@action
+remove{{functionName}}() {
+    this.{{fieldName}} = {{{defaultValue}}};
+}
+
+@action
+set{{functionName}}(param) {
+    if(param !== undefined) {
+        this.{{{fieldName}}} = param;
+    } else {
+        this.{{{fieldName}}} = {{{defaultValue}}};
+    }
+}
+
+

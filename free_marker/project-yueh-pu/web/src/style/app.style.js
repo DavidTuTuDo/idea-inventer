@@ -29,6 +29,8 @@ class AppStyle {
 
   MainEditorInterestingOfFunctionPaper = {};
 
+  MainEditorHotSingerIdTextField = {};
+
   MainEditorHotSingerStatementTextField = {};
 
   MainEditorHotSingerIdOfSingerTextField = {};
@@ -42,6 +44,8 @@ class AppStyle {
   MainEditorHotSingerDivWrap = {};
 
   MainEditorHotSingerCard = {};
+
+  MainEditorHotRhythmIdTextField = {};
 
   MainEditorHotRhythmIdOfGuitarPuTextField = {};
 
