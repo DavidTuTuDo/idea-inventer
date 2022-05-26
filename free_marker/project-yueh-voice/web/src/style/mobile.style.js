@@ -141,6 +141,8 @@ class MobileStyle {
 
   EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
 
+  EpisodeStickyBottomAreaNameOfPlayingStatementTypography = {};
+
   EpisodeStickyBottomAreaDiv = {};
 
   EpisodeVoiceExtraIconMoreHoriz = {};

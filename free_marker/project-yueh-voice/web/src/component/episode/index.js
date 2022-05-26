@@ -90,6 +90,12 @@ class EpisodeComponent extends BaseEpisodeComponent {
         this.getStore().performNextVoice();
     }
 
+    onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerPlay(param) {
+        // super.onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerPlay(param);
+        console.log('我什麼時候被呼叫')
+        this.getStore().invalidateCurrentAlert();
+    }
+
     onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerError(param) {
         this.getStore().performNextVoice();
     }

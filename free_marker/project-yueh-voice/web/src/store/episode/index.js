@@ -120,6 +120,10 @@ class EpisodeStore extends BaseEpisodeStore {
         await voice.deleteVoiceItem();
     }
 
+    invalidateCurrentAlert = async () => {
+        this.getStickyBottomArea().setNameOfPlayingStatement(`正在播放:${this.getCurrentVoice().getName()}`);
+    }
+
     performNextVoice = async () => {
         /** 檢查 ignore */
         /** 檢查隨機 */

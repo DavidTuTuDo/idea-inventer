@@ -141,6 +141,8 @@ class AppStyle {
 
   EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
 
+  EpisodeStickyBottomAreaNameOfPlayingStatementTypography = {};
+
   EpisodeStickyBottomAreaDiv = {};
 
   EpisodeVoiceExtraIconMoreHoriz = {};

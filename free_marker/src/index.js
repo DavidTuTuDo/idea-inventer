@@ -27,8 +27,8 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
-// const CURRENT_PROJECT = './project-yueh-voice';
-const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-voice';
+// const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './projdect-davidtu-dev';
 
@@ -1792,6 +1792,10 @@ class CodegenNode {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'ended');
     }
 
+    getFunctionNameOfOnPlay() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Play');
+    }
+
     getFunctionNameOfPlayError() {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'error');
     }
@@ -2048,7 +2052,7 @@ class CodegenNode {
             return `[]`;
         }
 
-        if(this.isObjectOfEmpty()) {
+        if (this.isObjectOfEmpty()) {
             return `{}`;
         }
 
@@ -6304,12 +6308,20 @@ class ProjectFileHandler extends PathBase {
                     params: ['param'],
                 })
 
+                node.appendMethod({
+                    functionName: node.getFunctionNameOfOnPlay(),
+                    params: ['param'],
+                })
+
                 node.appendViewProps(
                     {
                         onError: `###(param) => self.${node.getFunctionNameOfPlayError()}(param)`
                     },
                     {
                         onEnded: `###(param) => self.${node.getFunctionNameOfPlayEnd()}(param)`
+                    },
+                    {
+                        onPlay: `###(param) => self.${node.getFunctionNameOfOnPlay()}(param)`
                     }
                 )
 

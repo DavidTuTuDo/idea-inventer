@@ -141,6 +141,8 @@ class CommonStyle {
 
   EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer = {};
 
+  EpisodeStickyBottomAreaNameOfPlayingStatementTypography = {};
+
   EpisodeStickyBottomAreaDiv = {};
 
   EpisodeVoiceExtraIconMoreHoriz = {};
