@@ -147,7 +147,7 @@ class EpisodeComponent extends BaseEpisodeComponent {
 
     getEpisodeVoices(episode) {
         const list  = super.getEpisodeVoices(episode);
-        return _.orderBy(list,(each) => each.getName())
+        return _.orderBy(list,(each) => each.getName(),'desc');
     }
 
     getInjectPropsOfEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer(stickyBottomArea) {

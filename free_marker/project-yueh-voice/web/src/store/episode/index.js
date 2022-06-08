@@ -136,6 +136,7 @@ class EpisodeStore extends BaseEpisodeStore {
             return;
         }
 
+        await Util.syncDelay(500);
         let next = undefined;
         if (this.randomPlay) {
             next = Util.getRandomItemOfArray(this.getVoices().filter((voice) => voice.enable), this.getCurrentVoice());
