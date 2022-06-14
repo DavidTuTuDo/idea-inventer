@@ -311,7 +311,7 @@ class CommonRemoteApi {
         })
     }
 
-    async submitObject(path, object, objName) {
+    async submitObject(path, object, objName='contents') {
         const commitment = object;
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`submit object => ${path}/${objName}`);

@@ -430,10 +430,10 @@ const THRESHOLD_OF_BATCH_MODE = 100;
 
     /** 這五個是initialize一組的, 如果跑了91pu scrapy */
     async function deployLatestSheet() {
-        await deployAllSingerTone(499);
+        await deployAllSingerTone(495);
         await deployKeywords();
-        await deployMainPageHotRhythm(20);
-        await deployMainPageHotSingers(20);
+        await deployMainPageHotRhythm(25);
+        await deployMainPageHotSingers(25);
     }
 
     /** 用uid把tone給persistent 方便拉上來當範本 */
@@ -454,6 +454,8 @@ const THRESHOLD_OF_BATCH_MODE = 100;
         await Util.syncDelay(10000);
         await database.insertRecord('TONE', content);
     }
+
+    // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
 
     // await deployKeywords();
     // await deployLatestSheet();
