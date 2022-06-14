@@ -937,6 +937,10 @@ class CodegenNode {
         return Util.camel('delete', this.getName(), 'item')
     }
 
+    getFunctionNameOfDelete() {
+        return Util.camel('delete', this.getFieldName())
+    }
+
     getFunctionNameOfSubmitItem() {
         return Util.camel('submit', this.getName(), 'item');
     }
@@ -2921,6 +2925,9 @@ class BaseBuilder extends PathBase {
             case `delete item of cheap`:
                 params = ['item', 'id', ...params]
                 break;
+            case `delete cheap`:
+                params = ['id', ...params]
+                break;
             case `fetch size of cheap`:
                 params = [STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params];
                 break;
@@ -3535,7 +3542,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
                             `all.push(this.${functionNameOfNormalize}({...item,id}))`,
                             `await self.${node.getFunctionNameOfSubmit()}(${needView()} all, id)`,
-                            `const result = hasParent ? this.getParentNode().pushVoice(item) : true`,
+                            `const result = hasParent ? this.getParentNode().push${_.upperFirst(node.getName())}(item) : true`,
                             `return result;`
                         ],
                         `submit item of cheap`);
@@ -3551,6 +3558,12 @@ class RemoteFunctionHandler extends BaseBuilder {
                         ],
                         `delete item of cheap`);
 
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfDelete(),
+                        [`return await self.deleteObject(path, id);`],
+                        `delete cheap`,
+                    )
 
                     generateApiFunction(
                         node,
@@ -3711,7 +3724,7 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                     generateApiFunction(
                         node,
-                        Util.camel('delete', node.getFieldName()),
+                        node.getFunctionNameOfDelete(),
                         [`return await self.deleteObject(path, '${node.getName()}')`],
                         `delete object`);
 

@@ -131,7 +131,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
         const keywords = [];
         keywords.push(...singers.map((singer) => {
             return {
-                value: singer.name,
+                // value: singer.name,
                 label: singer.name,
                 popularLevel: singer.popularLevel,
                 type: 12,
@@ -142,8 +142,8 @@ const THRESHOLD_OF_BATCH_MODE = 100;
 
         keywords.push(...rhythms.map((rhythm) => {
             return {
-                value: rhythm.name,
-                label: rhythm.name,
+                // value: rhythm.singer,
+                label: `${rhythm.singer}-${rhythm.name}`,
                 popularLevel: rhythm.popularLevel,
                 type: 11,
                 uid: rhythm.idOfRhythm,
@@ -456,8 +456,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     }
 
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
-
-    // await deployKeywords();
+    await deployKeywords();
     // await deployLatestSheet();
     // await deployPuIntoDataBase();
     // await updateSpecificToneOfGuitarPu('LvNdtfmogv0Jf3Svhu36', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'))))

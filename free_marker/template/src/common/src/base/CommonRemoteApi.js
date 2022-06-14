@@ -347,7 +347,7 @@ class CommonRemoteApi {
         return await this.updateDocumentAtomically(path, predict, objName);
     }
 
-    async deleteObject(path, objName) {
+    async deleteObject(path, objName = 'contents') {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`delete object => path:/${path}/${objName}`);
         return await this.firestoreDocRef(path, objName).delete();
