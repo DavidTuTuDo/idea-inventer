@@ -1,0 +1,38 @@
+import {
+  utiller as Util,
+  exceptioner as ERROR,
+  pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+import libpath from "path";
+import { Application } from "../.";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
+import {
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
+} from "mobx";
+import BaseNavigatorToolBarCompleteStore from "./BaseNavigatorToolBarCompleteStore";
+
+class ModularizedNavigatorToolBarCompleteStore extends BaseNavigatorToolBarCompleteStore {
+  /** -------------------- fields -------------------- **/
+  /** -------------------- functions -------------------- **/
+
+  constructor(props) {
+    super(props);
+  }
+
+  getLabelOfInput() {
+    return `無搜尋的項目`;
+  }
+  /** -------------------- async api -------------------- **/
+}
+export default ModularizedNavigatorToolBarCompleteStore;

@@ -29,8 +29,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
-// const CURRENT_PROJECT = './projdect-davidtu-dev';
+// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -5429,7 +5429,7 @@ class ProjectFileHandler extends PathBase {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/component/${module}`,
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/component/${module}`,
                     file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
@@ -5437,7 +5437,15 @@ class ProjectFileHandler extends PathBase {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'store'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/store/`,
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/store/`,
+                    file.dirName, file.fileNameExtension);
+                Util.copySingleFileConservative(pathOfDestination, file);
+            }
+
+            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'func'),
+                (each) => _.startsWith(_.toLower(each.dirName), module) &&
+                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/functions/src/func/`,
                     file.dirName, file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
@@ -5447,8 +5455,8 @@ class ProjectFileHandler extends PathBase {
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
             if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
-                await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less`));
-                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/src/less/styles.less`));
+                await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less`));
+                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less/styles.less`));
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
@@ -5562,7 +5570,7 @@ class ProjectFileHandler extends PathBase {
         /** 順序會影響檔案的priority */
         const pathsOfModuleComponent =
             this.isWebPlatform() ?
-                this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each)) : [];
+                this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each, 'web')) : [];
         /** ex: ./src/modules/navigator */
 
         const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
@@ -6476,6 +6484,17 @@ class ProjectFileHandler extends PathBase {
     async forCloudFunctions() {
         const source = this.nodeOfAncestor;
         const functions = source.getCloudFunctions();
+        for (const component of _.filter(source.getComponents(), (each) => !each.isEditPage())) {
+            const bunchOfCloudFunction = component.cloudFunctions;
+            if (_.isArray(bunchOfCloudFunction)) {
+                functions.push(...bunchOfCloudFunction.map((each) => {
+                    each.isModuleComponent = true;
+                    return each;
+                }))
+            }
+        }
+
+
         Util.persistByPath(this.genRootPath);
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'functions.package.json'),
             this.genRootPath, 'package.json', true);
@@ -6495,7 +6514,6 @@ class ProjectFileHandler extends PathBase {
         }
 
         await apiGenerator.persist();
-
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'));
         appGenerator.appendImport('* as functions', 'firebase-functions')
         appGenerator.appendImport('admin', 'firebase-admin')
@@ -6512,13 +6530,25 @@ class ProjectFileHandler extends PathBase {
 
     async buildFunctionImplement(func) {
         const {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params} = func.getCloudFunctionInfo()
-
         const baseClass = `Base${fieldName}`;
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction(functionNameOfHandleBy,
             [...params], [], []);
-        generator.needIndexFile(fieldName, [], true);
+
+        if (func.isModuleComponent) {
+            const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
+            const moduleGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`));
+            moduleGenerator.appendClass(moduleClassName, {name: baseClass, from: `./${baseClass}`});
+            moduleGenerator.needIndexFile(`${fieldName}`);
+            moduleGenerator.needSignature(false);
+            moduleGenerator.appendAsyncFunction(functionNameOfHandleBy,
+                [...params], [], []);
+            await moduleGenerator.persist();
+        } else {
+            generator.needIndexFile(fieldName, [], true);
+        }
+
         await generator.persist();
     }
 

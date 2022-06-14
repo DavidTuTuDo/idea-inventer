@@ -1,0 +1,48 @@
+import {
+  utiller as Util,
+  exceptioner as ERROR,
+  pooller as InfinitePool,
+} from "utiller";
+import _ from "lodash";
+import libpath from "path";
+import { Application } from "../.";
+import Config from "../../config";
+import Router from "../../router";
+import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
+import {
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
+} from "mobx";
+import BaseNavigatorDrawerShortcutStore from "./BaseNavigatorDrawerShortcutStore";
+
+class ModularizedNavigatorDrawerShortcutStore extends BaseNavigatorDrawerShortcutStore {
+  /** -------------------- fields -------------------- **/
+  /** -------------------- functions -------------------- **/
+
+  constructor(props) {
+    super(props);
+  }
+
+  isSubOpen() {
+    return this.getOpen() === 1;
+  }
+
+  @action
+  setSubOpen(open) {
+    this.setOpen(open ? 1 : 0);
+  }
+
+  hasSubItems() {
+    return this.getSubs().length > 0;
+  }
+
+  /** -------------------- async api -------------------- **/
+}
+export default ModularizedNavigatorDrawerShortcutStore;
