@@ -5573,7 +5573,7 @@ class ProjectFileHandler extends PathBase {
      * */
     overrideEachFilesFromFolder(...excludes) {
         /** 順序會影響檔案的priority */
-        
+
         const pathsOfModuleComponent = this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each, this.platform));
         /** ex: ./src/modules/navigator */
 
@@ -7127,8 +7127,8 @@ if (configerer.DEBUG_MODE) {
                     await builder.buildAdmin();
                     break;
                 case 'persistent':
-                    // await builder.persistent('web');
-                    // await builder.persistent('admin');
+                    await builder.persistent('web');
+                    await builder.persistent('admin');
                     await builder.persistent('functions');
                     break;
                 case 'newLessFileOnly':
