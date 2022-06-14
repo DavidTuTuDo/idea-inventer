@@ -5442,8 +5442,13 @@ class ProjectFileHandler extends PathBase {
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
 
+            const componentOfModule = _.find(this.getComponents(), (each) => !each.isEditPage() && _.isEqual(module, each.getName()));
+            if (Util.isUndefinedNullEmpty(componentOfModule)) {
+                continue;
+            }
+
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'func'),
-                (each) => _.startsWith(_.toLower(each.dirName), module) &&
+                (each) => Util.has(_.map(componentOfModule.getCloudFunctions(), (each) => each.getName()), each.dirName) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
                 const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/functions/src/func/`,
                     file.dirName, file.fileNameExtension);
@@ -5568,9 +5573,8 @@ class ProjectFileHandler extends PathBase {
      * */
     overrideEachFilesFromFolder(...excludes) {
         /** 順序會影響檔案的priority */
-        const pathsOfModuleComponent =
-            this.isWebPlatform() ?
-                this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each, 'web')) : [];
+        
+        const pathsOfModuleComponent = this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each, this.platform));
         /** ex: ./src/modules/navigator */
 
         const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
@@ -7053,6 +7057,7 @@ class BuildApplication {
 
     async persistent(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
+        handler.enrichComponentStructs();
         await handler.persistModuleComponentFiles()
         handler.persistBaseFilesToFreeMarkerTemplate();
         handler.persistCustomizePackages()
@@ -7122,8 +7127,8 @@ if (configerer.DEBUG_MODE) {
                     await builder.buildAdmin();
                     break;
                 case 'persistent':
-                    await builder.persistent('web');
-                    await builder.persistent('admin');
+                    // await builder.persistent('web');
+                    // await builder.persistent('admin');
                     await builder.persistent('functions');
                     break;
                 case 'newLessFileOnly':
