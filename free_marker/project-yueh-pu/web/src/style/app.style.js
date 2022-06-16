@@ -119,6 +119,10 @@ class AppStyle {
 
   NavigatorDiv = {};
 
+  /** => following for epay  component  */
+
+  EpayDiv = {};
+
   /** => following for account  component  */
 
   AccountFuncAreaOfEditToEditModeButton = {};

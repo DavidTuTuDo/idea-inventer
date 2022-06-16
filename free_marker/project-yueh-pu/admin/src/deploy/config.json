@@ -7,8 +7,9 @@
   "composer":"曲：周興哲",
   "tkInfo": "原調：F 速度：80 男調：Bb 女調：F",
   "sfzf":"",
+  "url":"https://yueh-pu.web.app/續寫",
   "updateTime": 100,
   "singerId": "883",
-  "singerUrl": "/singer/2015/0804/430.html"
-
+  "singerUrl": "/singer/2015/0804/430.html",
+  "description": "要用textMate編輯pu.txt 不然空白會被吃掉"
 }
