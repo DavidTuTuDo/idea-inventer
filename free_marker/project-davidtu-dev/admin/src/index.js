@@ -40,11 +40,15 @@ import moment from 'moment';
             })
     }
 
+    async function submitProduct() {
+        await api.submitProducts()
+    }
+
     // console.log(await api.fetchTest());
     // const pool = new InfinitePool(3);
     // await pool.runByTimes(subtractOneTransaction, 2);
     // await api.updateTestTransaction((object) => { return {title:"杜明岳"}})
-    await api.updateProductItem(`53dNl6edK7K3tGLBj71n`,api.normalizeProduct({count:101},true))
+    // await api.updateProductItem(`53dNl6edK7K3tGLBj71n`,api.normalizeProduct({count:101},true))
 })();
 
 

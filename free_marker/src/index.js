@@ -2070,7 +2070,7 @@ class CodegenNode {
     }
 
     getFunctionNameInStoreGetter() {
-        return Util.camel('get', this.getFieldName());
+        return `get${_.upperFirst(this.getFieldName())}`;
     }
 
     /** 這個目的就是在View再運用store的值可以上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
@@ -2761,6 +2761,21 @@ class PathBase {
             this.getStringFromMustache(templateFileName, param),
             true,
             true);
+    }
+
+    getAllCloudFunctions() {
+        const source = this.nodeOfAncestor;
+        const functions = source.getCloudFunctions();
+        for (const component of _.filter(source.getComponents(), (each) => !each.isEditPage())) {
+            const bunchOfCloudFunction = component.getCloudFunctions();
+            if (_.isArray(bunchOfCloudFunction)) {
+                functions.push(...bunchOfCloudFunction.map((each) => {
+                    each.isModuleComponent = true;
+                    return each;
+                }))
+            }
+        }
+        return functions;
     }
 
     getStringFromMustache(templateFileName, variable = {}) {
@@ -3573,7 +3588,8 @@ class RemoteFunctionHandler extends BaseBuilder {
 
 
                 } else if (node.isPathArray()) {
-                    generator.appendField(FIELD_NAME_OF_MAX_SIZE_OF_REQUEST, node.getMaxSizePerRequest(), [], [], 'static')
+                    if (self.isWebPlatform())
+                        generator.appendField(FIELD_NAME_OF_MAX_SIZE_OF_REQUEST, node.getMaxSizePerRequest(), [], [], 'static')
 
                     if (self.isWebPlatform() && node.hasPaginate()) {
                         generator.appendField(FIELD_NAME_OF_SIZE_PER_PAGE, node.getPaginateSize(), [], [], 'static')
@@ -4740,7 +4756,7 @@ class AppBuilder extends ComponentBuilder {
             `BaseMyCloudFunctions`, {name: `ClientRemoteApi`, from: '../base/ClientRemoteApi'}
         )
 
-        for (const _func of this.nodeOfAncestor.getCloudFunctions()) {
+        for (const _func of this.getAllCloudFunctions()) {
             if (_.isEqual(_func.getType(), 'httpOnCall')) {
                 baseFunctionGenerator.appendAsyncFunction(
                     `${Util.camel(_func.getType(), _func.getName())}`,
@@ -6485,20 +6501,8 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
+
     async forCloudFunctions() {
-        const source = this.nodeOfAncestor;
-        const functions = source.getCloudFunctions();
-        for (const component of _.filter(source.getComponents(), (each) => !each.isEditPage())) {
-            const bunchOfCloudFunction = component.cloudFunctions;
-            if (_.isArray(bunchOfCloudFunction)) {
-                functions.push(...bunchOfCloudFunction.map((each) => {
-                    each.isModuleComponent = true;
-                    return each;
-                }))
-            }
-        }
-
-
         Util.persistByPath(this.genRootPath);
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'functions.package.json'),
             this.genRootPath, 'package.json', true);
@@ -6522,7 +6526,7 @@ class ProjectFileHandler extends PathBase {
         appGenerator.appendImport('* as functions', 'firebase-functions')
         appGenerator.appendImport('admin', 'firebase-admin')
 
-        for (const func of functions) {
+        for (const func of this.getAllCloudFunctions()) {
             await this.buildFunctionImplement(func);
             const functionName = func.getName();
             const fieldName = _.upperFirst(functionName);
@@ -6544,10 +6548,9 @@ class ProjectFileHandler extends PathBase {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
             const moduleGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`));
             moduleGenerator.appendClass(moduleClassName, {name: baseClass, from: `./${baseClass}`});
-            moduleGenerator.needIndexFile(`${fieldName}`);
             moduleGenerator.needSignature(false);
-            moduleGenerator.appendAsyncFunction(functionNameOfHandleBy,
-                [...params], [], []);
+            moduleGenerator.appendAsyncFunction(functionNameOfHandleBy, [...params], [], []);
+            moduleGenerator.needIndexFile(`${fieldName}`, [], true);
             await moduleGenerator.persist();
         } else {
             generator.needIndexFile(fieldName, [], true);
@@ -6983,6 +6986,16 @@ class BuildApplication {
         );
     }
 
+    /** 就是改code 不要rebuild細節 直接打包到部署目錄*/
+    async refreshFunctionsFolder(deploy = true) {
+        const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        functions.setFunctionNeedDeploy(deploy);
+        await functions.functionsGenerateRelease()
+        Util.appendInfo(
+            `functions refresh done`
+        );
+    }
+
     async generateReleaseFunctionsModule() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         await functions.functionsGenerateRelease();
@@ -7087,6 +7100,9 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'functionsOnly':
                     await builder.buildCloudFunctions();
+                    break;
+                case 'refreshFunctionFolder':
+                    await builder.refreshFunctionsFolder();
                     break;
                 case 'deployFunctionsToProduction':
                     await builder.deployFunctionsToProd();
