@@ -21,7 +21,6 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import Product from "../mainProduct";
 import Test from "../mainTest";
 import BaseStore from "../../base/BaseStore";
 

@@ -1,6 +1,8 @@
 @mobile: ~'only screen and (min-width: 320px) and (max-width: 600px)';
 @tablet: ~'only screen and (min-width: 320px) and (max-width: 600px)';
 @desktop: ~'only screen and (min-width: 601px)';
+@import '../../../node_modules/react-h5-audio-player/lib/styles.less';
+
 
 .CenterInParentRow {
   flex-direction: row;
@@ -9,6 +11,20 @@
   align-items: center;
 }
 
+.CenterInParentColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.CenterInHorizontalColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+
 .TailInParentRow {
   display: flex;
   flex-direction: row;
@@ -16,14 +32,9 @@
 }
 
 .ImageOfViewPager {
-  position: absolute;
-  left: -1000%;
-  right: -1000%;
-  top: -1000%;
-  bottom: -1000%;
-  margin: auto;
-  min-height: 100%;
-  min-width: 100%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 }
 
 .SliderOfViewPager {
@@ -37,7 +48,8 @@
     margin-top: 0;
   }
   @media @desktop {
-    height: 380px;
+    height: 40vh;
+    max-height: 400px;
     margin-top: 5px;
     max-width: 880px;
   }
@@ -55,24 +67,27 @@
     /** empty style */
   }
   @media @desktop {
+    height: 40vh;
     max-width: 880px;
-    height: 380px;
+    max-height: 400px;
     overflow: hidden;
     position: relative;
   }
 }
 
 .PaperOfSimpleGrid:extend(.CenterInParentColumn) {
-  height: 60px;
   background-color: rgba(188, 188, 188, 0.3);
   @media @mobile {
     /** empty style */
+    height: 55px;
   }
   @media @tablet {
     /** empty style */
+    height: 55px;
   }
   @media @desktop {
     /** empty style */
+    height: 60px;
   }
 }
 
@@ -83,30 +98,71 @@
   }
   @media @tablet {
     /** empty style */
+    font-size: 1.1rem;
+
   }
   @media @desktop {
     /** empty style */
+    font-size: 1.2rem;
+
   }
 }
 
-.SubTitleOfSimpleGridItem{
+.SubTitleOfSimpleGridItem {
   @media @mobile {
     /** empty style */
     font-size: 0.8rem;
   }
   @media @tablet {
     /** empty style */
+    font-size: 0.8rem;
+
+  }
+  @media @desktop {
+    /** empty style */
+    font-size: 1.0rem;
+  }
+}
+
+.BaseAlertMenu {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+
   }
   @media @desktop {
     /** empty style */
   }
 }
 
-.CenterInParentColumn {
-  flex-direction: column;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.BaseAlertMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.BaseAlertMenuItemIcon {
+  height: 5px;
+  @media @mobile {
+    /** empty style */
+
+  }
+  @media @tablet {
+    /** empty style */
+
+  }
+  @media @desktop {
+    /** empty style */
+  }
 }
 
 .ContainerOfHorizontalScroll {
@@ -279,7 +335,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   padding: 30px;
 }
 
@@ -355,14 +412,13 @@
 
 .RootViewDiv {
   position: relative;
-
   @media @mobile {
     /** empty style */
-    overflow-x: hidden;
+    //overflow-x: hidden;
   }
   @media @tablet {
     /** empty style */
-    overflow-x: hidden;
+    //overflow-x: hidden;
   }
   @media @desktop {
   }

@@ -9,25 +9,9 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
-
-  MainEditorProductUpdateTimeTextField = {};
-
-  MainEditorProductColorTextField = {};
-
-  MainEditorProductCountTextField = {};
-
-  MainEditorProductNameTextField = {};
-
-  MainEditorProductIdTextField = {};
-
-  MainEditorProductDivListWrap = {};
-
-  MainEditorProductDivList = {};
-
-  MainEditorProductDivWrap = {};
-
-  MainEditorProductDiv = {};
 
   MainEditorTestSubTitleTextField = {};
 
@@ -79,6 +63,10 @@ class CommonStyle {
 
   NavigatorDiv = {};
 
+  /** => following for epay  component  */
+
+  EpayDiv = {};
+
   /** => following for account  component  */
 
   AccountFuncAreaOfEditToEditModeButton = {};
@@ -121,25 +109,17 @@ class CommonStyle {
 
   AccountPaper = {};
 
+  /** => following for epayTest  component  */
+
+  EpayTestCheckoutByEcPayButton = {};
+
+  EpayTestCheckoutByLinePayButton = {};
+
+  EpayTestCreatePreciseOrderButton = {};
+
+  EpayTestDiv = {};
+
   /** => following for main  component  */
-
-  MainProductUpdateTimeTypography = {};
-
-  MainProductColorTypography = {};
-
-  MainProductCountTypography = {};
-
-  MainProductNameTypography = {};
-
-  MainProductIdTypography = {};
-
-  MainProductDivListWrap = {};
-
-  MainProductDivSkeleton = {};
-
-  MainProductDivList = {};
-
-  MainProductDiv = {};
 
   MainTestSubTitleTypography = {};
 

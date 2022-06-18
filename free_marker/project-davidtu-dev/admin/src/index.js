@@ -35,14 +35,28 @@ import moment from 'moment';
             async (item, transaction) => {
                 const old = item.subTitle;
                 const latest = old + 1;
-                transaction.set(api.getProductItemDocRef(),api.normalizeProduct({name:`香蕉 ${latest}`}))
+                transaction.set(api.getProductItemDocRef(), api.normalizeProduct({name: `香蕉 ${latest}`}))
                 return {subTitle: latest}
             })
     }
 
-    async function submitProduct() {
-        await api.submitProducts()
+    async function submitSampleProduct() {
+        await api.submitProducts([{
+            name: 'iphone13 pro',
+            price: 100,
+            countOfCurrent: 30,
+        }, {
+            name: 'iphone12',
+            price: 80,
+            countOfCurrent: 20,
+        }, {
+            name: 'iphone11',
+            price: 50,
+            countOfCurrent: 50,
+        }])
     }
+
+    await submitSampleProduct();
 
     // console.log(await api.fetchTest());
     // const pool = new InfinitePool(3);
