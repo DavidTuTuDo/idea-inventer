@@ -424,6 +424,27 @@ class Utiller {
         return item.length > 0 ? item[0] : undefined;
     }
 
+
+    /**
+     * util.getMergedArray(
+        [{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
+        [{id: 321, age: 13}, {id: 123, age: 30}],
+     'id')
+     *
+     * result:
+     [
+        { id: 123, age: 30, name: 'david' },
+        { id: 321, age: 13, name: 'Joe' }
+     ]
+     *
+     */
+    getMergedArray(array1, array2, attribute = 'id') {
+        return array1.map(itm => ({
+            ...array2.find((item) => (item[attribute] === itm[attribute]) && item),
+            ...itm
+        }));
+    }
+
     getShuffledItemFromArray(arr) {
         let shuffled = _.shuffle(arr);
         return shuffled[0];
@@ -1425,7 +1446,6 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const util = new Utiller();
             // console.log(util.getUuidOfV4());
             // const array = ['a','b','c','d'];
             // console.log(util.getArrayOfMoveSpecificIndexToAside(array,1,true));

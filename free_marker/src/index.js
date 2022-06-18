@@ -2190,7 +2190,7 @@ class CodegenNode {
                 params.push('request', 'response');
                 break;
             case 'httpOnCall':
-                params.push('data', 'context');
+                params.push('data', 'session');
                 typeOfFunction = 'https.onCall';
                 break;
             default:
@@ -2967,6 +2967,7 @@ class BaseBuilder extends PathBase {
                 break;
             case `update item atomically`:
                 params = ['predict = async (item, transaction) => item', 'id', ...params]
+                break;
             case `submit object`:
             case `update object`:
                 params = ['object', ...params];
@@ -6837,6 +6838,7 @@ class ProjectFileHandler extends PathBase {
         await this.buildLessToCss();
     }
 
+    /** */
     async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
             Util.cleanAllFiles(libpath.join(this.genRootPath, 'release'));

@@ -533,7 +533,7 @@ class NodeUtiller extends Utiller {
     /** 用來pack lib_project, 不然其他import lib_project的專案會無法讀懂es6
      * release folder 會被自動ignore到
      * exclude 裡面可以放專案名稱, 例如 free_marker,question_update */
-    async generatePackage(path = './', deployToNPMServer = false, ...exclude) {
+    async generatePackage(path = './', deployToNPMServer = false, forceInstallNodeModule = true, ...exclude) {
         let packagejsons = this.findFilePathByExtension(path, ['json'], 'node_modules', 'release');
         packagejsons = _.filter(packagejsons,
             (each) => _.isEqual(each.fileName, 'package'));
@@ -578,8 +578,12 @@ class NodeUtiller extends Utiller {
                         undefined, true);
 
                     /** 安裝一個沒有devDependency 的node_module */
-                    await this.executeCommandLine(`
-                cd ${release} && yarn install --production`);
+                    if (forceInstallNodeModule || !this.isPathExist(libpath.join(release, 'node_module'))) {
+                        await this.executeCommandLine(`cd ${release} && yarn install --production`);
+                    } else {
+                        this.appendInfo(`ignore node-module install behavior`);
+                    }
+
                     this.appendInfo(`build ${path} succeed`);
 
                     /** 部署到 local server*/

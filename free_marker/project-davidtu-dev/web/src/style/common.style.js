@@ -9,8 +9,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for main editor component  */
 
   MainEditorTestSubTitleTextField = {};
