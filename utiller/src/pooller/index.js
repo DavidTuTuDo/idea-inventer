@@ -342,15 +342,15 @@ class InfinitePool {
 
         this.enableTaskSleepInterval(_.isNumber(interval), interval);
         this.setState(configerer.POOLLER_STATE.RUN_INFINITE);
-        while (this.ruleOfInfiniteRun()) {
+        while (!this.ruleOfStopInfiniteRun()) {
             this.printLogMessage(`415123, runInInfinite() 正在無限Loop中, ${this.getLogMessageOfExecutingTaskQueueCount()}`)
             await this.#run();
         }
     }
 
     /** 我的設計是,如果放到了executingQueue裡面,就必須執行完畢,清空executingTaskQueue才能真正的結束*/
-    ruleOfInfiniteRun = () => {
-        return this.isRunning() || !this.isExecutingTaskQueueEmpty()
+    ruleOfStopInfiniteRun = () => {
+        return !this.isRunning() && this.isExecutingTaskQueueEmpty()
     }
 
     isExecutingTaskQueueEmpty = () => {
@@ -373,22 +373,26 @@ class InfinitePool {
         this.add(functionOfAsyncTask);
         this.appendParamInToQueue(...params)
         this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
-        while (this.ruleOfInfiniteRun() && _.size(this.queueOfWaitingParam) > 0) {
+        while (!this.ruleOfStopInfiniteRun() && _.size(this.queueOfWaitingParam) > 0) {
             await this.#run();
         }
     }
 
     runByEachTask = async (tasks = []) => {
-        this.id = Util.getRandomHash(3);
+        const self = this;
+        this.id = Util.getRandomHash(15);
         this.beforeRun();
         this.adds(tasks);
         this.setState(configerer.POOLLER_STATE.RUN_BY_EACH_TASK);
-        while (this.ruleOfInfiniteRun()) {
+        while (!this.ruleOfStopInfiniteRun()) {
             await this.#run(this.id);
             if (this.getCountOfAssignTaskInQueue() <= 0) {
                 this.terminate();
-                this.printLogMessage(`788121, runByEachTask() 因為 taskOfWaitingQueue 清空而停止`)
+                this.printLogMessage(`788121, runByEachTask() 因為 taskOfWaitingQueue 清空而停止`);
             }
+
+            /** 為了讓while不要停止運算 !this.ruleOfStopInfiniteRun(),不然 runByTask不會停止 */
+            await Util.syncDelay(10);
         }
     }
 
@@ -401,7 +405,7 @@ class InfinitePool {
         this.beforeRun();
         this.setState(configerer.POOLLER_STATE.RUN_BY_TIMES);
 
-        while (this.ruleOfInfiniteRun() && this.countsOfRunByTimes > 0) {
+        while (!this.ruleOfStopInfiniteRun() && this.countsOfRunByTimes > 0) {
             await this.#run();
         }
 
@@ -769,20 +773,38 @@ class InfinitePool {
     async exampleOfRunByParam() {
         const oneToTen = _.range(1, 10);
         const pool = new InfinitePool(5);
+        Util.appendInfo(`....start method of runByParams`);
+
         await pool.runByParams(async (param) => {
             const ms = await Util.syncDelayRandom();
             console.log(param, `${ms} ms`);
         }, ...oneToTen)
+        Util.appendInfo(`....finish method of runByParams`);
+
     }
 
-    async exampleOfRunByCount() {
-        const pool = new InfinitePool(1);
+    async exampleOfRunByTask() {
+        const pool = new InfinitePool(10);
+        const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each));
+        Util.appendInfo(`....start method of exampleOfRunByTask`);
+        const all = await pool.runByEachTask(tasks);
+        Util.appendInfo(all);
+        Util.appendInfo(`....finish method of exampleOfRunByTask`);
+
+    }
+
+    async exampleOfRunByTimes() {
+        const pool = new InfinitePool(5);
         let time = 0
+        Util.appendInfo(`....start method of runByTimes`);
+
         await pool.runByTimes(async () => {
             await Util.syncDelay(1000);
             time++
             console.log(`execute the ${time} time`)
-        }, 20)
+        }, 10)
+        Util.appendInfo(`....finish method of runByTimes`);
+
     }
 
     async exampleOfInfiniteUnStopLoopingIssue() {
@@ -834,7 +856,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool().exampleOfInfiniteUnStopLoopingIssue()
+        await new InfinitePool().exampleOfRunByTask()
     })();
 
 }

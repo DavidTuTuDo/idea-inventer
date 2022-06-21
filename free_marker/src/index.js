@@ -29,8 +29,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -105,6 +105,9 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    modulesOfIgnore = [];
+    /** 要忽略的 componentModule(...epay,navigator,account) */
 
     alertMenu = {
         items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginOnly:false} */
@@ -603,7 +606,8 @@ class CodegenNode {
     }
 
     getListOfModuleComponent() {
-        return Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE).map((each) => _.trim(each));
+        const list = Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE).map((each) => _.trim(each));
+        return _.filter(list, (each) => !Util.has(this.modulesOfIgnore,each,true));
     }
 
     /** exclude => 要略過的資料夾名稱 */
@@ -1006,7 +1010,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -3102,6 +3106,47 @@ class StoreBuilder extends BaseBuilder {
 
     async buildBaseStore(node) {
         const self = this;
+
+        function getChildFetchStmt() {
+            const stmts = _.map(node.getPreciseAttributeChildren(), (child) => {
+                return `async () => { result.${child.getFieldName()} = ${getInitFetchStmt(child)} }`
+            })
+            return `${stmts.join(',')}`
+        }
+
+        function getObjectOfV2(stmts) {
+            const contents = [
+                `{`,
+                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{}`,
+                `}`,
+            ];
+            contents.push(`await new InfinitePool(5).runByEachTask([
+                      ${getChildFetchStmt()}
+                    ])`)
+            stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
+        }
+
+
+        function getInitFetchStmtV2(node) {
+            let defaultStmt = `this.${node.getFieldName()} /** prepare with default value */`;
+
+            const ruleOfRequiredAsyncTask = node.isPathArray() || node.isObject();
+            if (ruleOfRequiredAsyncTask) {
+                defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` :
+                    `await this.${Util.camel('fetch', node.getFieldName())}(view)`
+                /** ${node.getFieldName()} 是在 array.mustache gen出來的 */
+
+
+                if (node.isFetchOnlyLogin()) {
+                    defaultStmt = `UserInfoRef.isLoginWithSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
+                }
+
+                if (node.isDisableInitFetch()) {
+                    defaultStmt = `this.${node.getFieldName()} /** node.isDisableInitFetch() */`
+                }
+            }
+            return defaultStmt;
+        }
 
         function getInitFetchStmt(node) {
             let defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` :
@@ -6682,7 +6727,9 @@ class ProjectFileHandler extends PathBase {
 
         const source = this.nodeOfAncestor;
         for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
-            CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
+            if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
+                CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
+            }
         }
 
         const getNodes = () => source.getComponents().map(component => component.getStruct())

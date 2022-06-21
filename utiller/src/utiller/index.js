@@ -138,7 +138,7 @@ class Utiller {
 
     /** this is used for unit test,
      * param 是給 runInBackground 用的 => param */
-    asyncUnitTaskFunction = (millionSec = 2000, _funparam = "預設的param", errorSimulator) => async (param) => {
+    asyncUnitTaskFunction = (millionSec = 2000, _funparam = "預設的param", errorSimulator) => async (param = this.getRandomHash(10)) => {
         const randomValue = this.getRandomValue(millionSec, (millionSec * 1.2));
         try {
             const symbol = randomValue;
@@ -243,10 +243,16 @@ class Utiller {
 
     /** 如果是array,用 indexOf檢查each
      *  如果是object,看有沒有這個key
-     *  如果是string, 就檢查有沒有包含 */
-    has(collection, item) {
+     *  如果是string, 就檢查有沒有包含
+     *  precisely 就是用findIndex,去比較value
+     *
+     *  */
+    has(collection, item, precisely = false) {
         if (_.isArray(collection)) {
-            return _.indexOf(collection, item) > -1;
+            if (precisely)
+                return _.findIndex(collection, (each) => _.isEqual(item, each)) > -1;
+            else
+                return _.indexOf(collection, item) > -1;
         }
         if (_.isObject(item)) {
             return collection[item];
@@ -427,14 +433,14 @@ class Utiller {
 
     /**
      * util.getMergedArray(
-        [{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
-        [{id: 321, age: 13}, {id: 123, age: 30}],
+     [{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
+     [{id: 321, age: 13}, {id: 123, age: 30}],
      'id')
      *
      * result:
      [
-        { id: 123, age: 30, name: 'david' },
-        { id: 321, age: 13, name: 'Joe' }
+     { id: 123, age: 30, name: 'david' },
+     { id: 321, age: 13, name: 'Joe' }
      ]
      *
      */
@@ -1446,6 +1452,8 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            const utiller = new Utiller();
+            console.log(utiller.has(['epay'], 'epay', true));
             // console.log(util.getUuidOfV4());
             // const array = ['a','b','c','d'];
             // console.log(util.getArrayOfMoveSpecificIndexToAside(array,1,true));

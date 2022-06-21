@@ -7,9 +7,9 @@ class CommonPoolHelper {
         this.queues = {};
         this.paralledMode = false;
         this.queues[`default`] = new InfinitePool(1, `default`).runByEachTaskInBackGround();
-        this.queues[`fetch`] = new InfinitePool(3, `fetch`).runByEachTaskInBackGround();
-        this.queues[`submit`] = new InfinitePool(3, `submit`).runByEachTaskInBackGround();
-        this.queues[`functions`] = new InfinitePool(3, `functions`).runByEachTaskInBackGround();
+        this.queues[`fetch`] = new InfinitePool(15, `fetch`).runByEachTaskInBackGround();
+        this.queues[`submit`] = new InfinitePool(15, `submit`).runByEachTaskInBackGround();
+        this.queues[`functions`] = new InfinitePool(15, `functions`).runByEachTaskInBackGround();
     }
 
 

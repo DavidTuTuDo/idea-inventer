@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorInterestingOfFunctionSubTitleTextField = {};
@@ -118,10 +120,6 @@ class AppStyle {
   NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
-
-  /** => following for epay  component  */
-
-  EpayDiv = {};
 
   /** => following for account  component  */
 
