@@ -607,7 +607,7 @@ class CodegenNode {
 
     getListOfModuleComponent() {
         const list = Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE).map((each) => _.trim(each));
-        return _.filter(list, (each) => !Util.has(this.modulesOfIgnore,each,true));
+        return _.filter(list, (each) => !Util.has(this.modulesOfIgnore, each, true));
     }
 
     /** exclude => 要略過的資料夾名稱 */
@@ -3107,21 +3107,28 @@ class StoreBuilder extends BaseBuilder {
     async buildBaseStore(node) {
         const self = this;
 
-        function getChildFetchStmt() {
+        function getChildFetchStmtV2() {
             const stmts = _.map(node.getPreciseAttributeChildren(), (child) => {
-                return `async () => { result.${child.getFieldName()} = ${getInitFetchStmt(child)} }`
+                return `async () => { 
+                result.${child.getFieldName()} = ${getInitFetchStmtV2(child)};
+                }`
             })
             return `${stmts.join(',')}`
         }
 
-        function getObjectOfV2(stmts) {
+        function getCountOfThread(node) {
+            const count = _.size(node.getPreciseAttributeChildren());
+            return count > 1 ? count : 1;
+        }
+
+        function enrichStmtsOfObjectOfV2(node, stmts) {
             const contents = [
                 `{`,
                 (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{}`,
                 `}`,
             ];
-            contents.push(`await new InfinitePool(5).runByEachTask([
-                      ${getChildFetchStmt()}
+            contents.push(`await new InfinitePool(${getCountOfThread(node)}).runByEachTask([
+                      ${getChildFetchStmtV2()}
                     ])`)
             stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
         }
@@ -3146,6 +3153,20 @@ class StoreBuilder extends BaseBuilder {
                 }
             }
             return defaultStmt;
+        }
+
+        function enrichStmtsOfObjectOfV1(node, stmts) {
+            const contents = [
+                `{`,
+                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{},`,
+                ..._.map(node.getPreciseAttributeChildren(), (child) => {
+                    if (child.isDisableInitFetch()) return '';
+                    /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
+                    return (child.isPathArray()) || child.isObject() ? getInitFetchStmt(child) : ``
+                }),
+                `}`,
+            ];
+            stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
         }
 
         function getInitFetchStmt(node) {
@@ -3186,17 +3207,7 @@ class StoreBuilder extends BaseBuilder {
             const stmts = [];
             switch (node.getType()) {
                 case 'object':
-                    const contents = [
-                        `{`,
-                        (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{},`,
-                        ..._.map(node.getPreciseAttributeChildren(), (child) => {
-                            if (child.isDisableInitFetch()) return '';
-                            /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
-                            return (child.isPathArray()) || child.isObject() ? getInitFetchStmt(child) : ``
-                        }),
-                        `}`,
-                    ];
-                    stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
+                    enrichStmtsOfObjectOfV2(node, stmts);
                     break
                 case 'array':
                     if (node.isPathArray()) {

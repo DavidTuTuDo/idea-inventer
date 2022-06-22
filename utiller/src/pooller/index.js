@@ -227,7 +227,7 @@ class InfinitePool {
 
             self.updateExecuteTaskState(hashOfTask);
             assignedTask(param).then((result) => {
-                    this.printLogMessage(`984545, 客端委託的任務,resolve回應: ${result}`)
+                    this.printLogMessage(`984545, 客端委託的任務(TASK HASH:${hashOfTask}),resolve回應: ${result}`)
                     assignedTaskResult = result
                     isAssignedTaskCompleted = true;
                 }
@@ -239,7 +239,7 @@ class InfinitePool {
             ).finally(() => {
                 clearTimeout(timeoutHash);
                 resolve();
-                this.printLogMessage(`98942, taskWrapper()裡面第一個promise(為了timeout設計)完成了`)
+                this.printLogMessage(`98942,(TASK HASH:${hashOfTask}) taskWrapper()裡面第一個promise(為了timeout設計)完成了`)
 
             })
         }).then((result) => {
@@ -247,6 +247,7 @@ class InfinitePool {
                 if (!isAssignedTaskCompleted) {
                     throw assignedTaskError;
                 } else {
+                    this.printLogMessage(`9894841,(TASK HASH:${hashOfTask}) taskWrapper()裡面第二個promise(整個任務)完成了`)
                     return `${this.getLogMessageOfTaskHash(hashOfTask)} completed`;
                 }
             }
@@ -393,7 +394,9 @@ class InfinitePool {
 
             /** 為了讓while不要停止運算 !this.ruleOfStopInfiniteRun(),不然 runByTask不會停止 */
             await Util.syncDelay(10);
+            this.printLogMessage(`788143, runByEachTask() 為了讓while不要停止運算`);
         }
+        this.printLogMessage(`7881952, runByEachTask() 結束了while()`);
     }
 
     /** run times wound be depend on times, task would by loop and sync in given order
@@ -486,6 +489,7 @@ class InfinitePool {
 
     /** 依照config 把委託任務放置到Queue裡面 */
     async syncTaskDispatcher() {
+        this.printLogMessage(`448984466, 走進來了 syncTaskDispatcher()`)
         const initialTaskShouldNotRun = this.disableFirstRun && !this.isFirstTaskCompleted()
         const isExecutingTaskAlmostFull = this.queueOfExecutingTask.length >= this.maximumOfWorker - 1;
         /** 因為走能到syncTaskDispatcher表示其中一個工作完成了, 這個瞬間不可能 === maximumOfWorker,
@@ -509,8 +513,9 @@ class InfinitePool {
                 this.printLogMessage(`848451  也許有未知的isssue,保險起見break,是不是在這裡無限迴圈跑跑跑`, true);
                 break;
             }
-
         }
+        this.printLogMessage(`4489844821, 離開了 syncTaskDispatcher()`)
+
     }
 
     /** 把assignedTask 加入到 QueueOfExecutingTask 的規則*/
@@ -541,6 +546,12 @@ class InfinitePool {
     getLogMessageOfExecutingTaskQueueCount = () => {
         return `ExecutingTaskQueueCount: ${_.size(this.queueOfExecutingTask)}`
     }
+
+    getLogMessageOfAssignTaskQueueCount = () => {
+        return `AssignTaskQueueCount: ${this.getCountOfAssignTaskInQueue()}`
+    }
+
+
     getLogMessageOfTaskHash = (hash) => {
         return `TASK HASH: ${hash}`
     }
@@ -556,12 +567,15 @@ class InfinitePool {
         const self = this;
 
         async function execute() {
-            const tasks = self.queueOfExecutingTask.filter((each) => _.isEqual(each.state, 'NOT')).map((each) => {
-                const task = each.task;
-                return task();
+            const tasks = _.filter(self.queueOfExecutingTask, (each) => _.isEqual(each.state, 'NOT')).map((each) => {
+                const taskWrapper = each.task;
+                return taskWrapper();
             })
             /** Util.appendInfo(`\n\n正要執行的隊列`,self.queueOfExecutingTask) */
-            return await Promise.race(tasks);
+            self.printLogMessage(`454652321, 開始任務(taskWrapper): run() 裡面的execute開始執行, task(state = NOT)的長度 ${_.size(tasks)}`);
+            const result = _.size(tasks) > 0 ? await Promise.race(tasks) : '4542131684, task is empty';
+            self.printLogMessage(`54121445161, 結束任務(taskWrapper): run() 裡面的execute結束執行`);
+            return result;
         }
 
         await this.syncTaskDispatcher();
@@ -570,13 +584,16 @@ class InfinitePool {
             /** 當pool已經被要求停止時, executeQueue裡面還有未做完的任務*/
             this.printLogMessage(`4512211, 開始任務(taskWrapper): ${this.getLogMessageOfExecutingTaskQueueCount()}`)
             const task = await execute();
-            this.printLogMessage(`4512213 完畢任務(taskWrapper:${task}), ${this.getLogMessageOfExecutingTaskQueueCount()}`);
+            this.printLogMessage(`4512213 完畢任務(taskWrapper:${task}), ${this.getLogMessageOfExecutingTaskQueueCount()}, ${this.getLogMessageOfAssignTaskQueueCount()}`);
         } else {
             this.printLogMessage(`4574152 不應該走到這裏,但是 minor issue`, true)
         }
 
         if (this.queueOfExecutingTask.length > this.maximumOfWorker)
             this.printLogMessage(`4512214 一定是改壞了!!!!!!!!!!, ${this.getLogMessageOfExecutingTaskQueueCount} `, true);
+
+        self.printLogMessage(`5478421212, 離開 run()`);
+
 
     }
 
@@ -605,6 +622,7 @@ class InfinitePool {
     removeResolveOrRejectPromiseByHash = (hash, result) => {
         const callbackWrapper = this.mapOfHashNCallbackWrapper[hash];
         if (callbackWrapper !== undefined) {
+            this.printLogMessage(`5644153248, removeResolveOrRejectPromiseByHash 拿掉了完成的任務(${this.getLogMessageOfTaskHash(hash)})`)
             callbackWrapper(result);
             delete this.mapOfHashNCallbackWrapper[hash];
         }
@@ -612,7 +630,7 @@ class InfinitePool {
     }
 
     removePromiseFromExecutingQueue = (hash) => {
-        this.printLogMessage(`QueueOfExecutingTask 拿掉了完成的任務 ${this.getLogMessageOfTaskHash(hash)}`)
+        this.printLogMessage(`56448412, QueueOfExecutingTask 拿掉了完成的任務 ${this.getLogMessageOfTaskHash(hash)}`)
         _.remove(this.queueOfExecutingTask, (each) => _.isEqual(hash, each.hash));
     }
 
@@ -784,7 +802,7 @@ class InfinitePool {
     }
 
     async exampleOfRunByTask() {
-        const pool = new InfinitePool(10);
+        const pool = new InfinitePool(3);
         const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each));
         Util.appendInfo(`....start method of exampleOfRunByTask`);
         const all = await pool.runByEachTask(tasks);
@@ -856,7 +874,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool().exampleOfRunByTask()
+        // await new InfinitePool().exampleOfRunByTask()
     })();
 
 }
