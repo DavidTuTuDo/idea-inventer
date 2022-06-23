@@ -109,6 +109,8 @@ class AppStyle {
 
   /** => following for epayTest  component  */
 
+  EpayTestEcPayCheckoutViewDiv = {};
+
   EpayTestCheckoutByEcPayButton = {};
 
   EpayTestCheckoutByLinePayButton = {};

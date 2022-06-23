@@ -109,6 +109,8 @@ class MobileStyle {
 
   /** => following for epayTest  component  */
 
+  EpayTestEcPayCheckoutViewDiv = {};
+
   EpayTestCheckoutByEcPayButton = {};
 
   EpayTestCheckoutByLinePayButton = {};

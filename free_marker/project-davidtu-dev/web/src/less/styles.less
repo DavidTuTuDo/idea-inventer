@@ -52,7 +52,8 @@
 }
 /** following for epayTest  component used  */
 
-.EpayTestDiv {
+.EpayTestDiv:extend(.CenterInParentColumn) {
+  gap: 25px;
   @media @mobile {
     /** empty style */
   }
@@ -86,6 +87,20 @@
   }
 }
 .EpayTestCheckoutByEcPayButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayTestEcPayCheckoutViewDiv {
+  min-width: 300px;
+  min-height: 300px;
+  background-color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
   }

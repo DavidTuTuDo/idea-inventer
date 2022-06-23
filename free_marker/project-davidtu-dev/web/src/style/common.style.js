@@ -109,6 +109,8 @@ class CommonStyle {
 
   /** => following for epayTest  component  */
 
+  EpayTestEcPayCheckoutViewDiv = {};
+
   EpayTestCheckoutByEcPayButton = {};
 
   EpayTestCheckoutByLinePayButton = {};

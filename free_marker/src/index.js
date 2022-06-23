@@ -27,10 +27,10 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 
-const CURRENT_PROJECT = './project-yueh-voice';
+// const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
-// const CURRENT_PROJECT = './project-davidtu-dev';
+const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -194,7 +194,10 @@ class CodegenNode {
     raw;
     /** 沒有被enrich的node*/
 
-    linepay;
+    ecpay = {};
+    /** 放ecpay的資訊 */
+
+    linepay = {};
     /** 放linepay secret info */
 
     schedule
@@ -1010,7 +1013,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -2710,6 +2713,7 @@ class PathBase {
     genStoreRootPath; // gen/app/src/store
     props;
 
+
     constructor(props) {
         this.props = props;
         if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
@@ -2736,6 +2740,10 @@ class PathBase {
 
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
+    }
+
+    isProduction() {
+        return _.isEqual(this.env, 'prod');
     }
 
 
@@ -5467,7 +5475,7 @@ class ProjectFileHandler extends PathBase {
         }, sourceObj.watermark);
         baseConfigGenerator.appendField(`platform`, JSON.stringify(this.platform));
         baseConfigGenerator.appendField(`env`, JSON.stringify(this.env));
-        baseConfigGenerator.appendField(`host`, JSON.stringify(_.isEqual(this.env, 'dev') ? sourceObj.host.dev : sourceObj.host.prod));
+        baseConfigGenerator.appendField(`host`, JSON.stringify(this.isProduction() ? sourceObj.host.prod : sourceObj.host.dev));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
 
@@ -5475,7 +5483,8 @@ class ProjectFileHandler extends PathBase {
         switch (this.platform) {
             case 'admin':
             case 'functions':
-                baseConfigGenerator.appendField(`linepay`, JSON.stringify(sourceObj.linepay));
+                baseConfigGenerator.appendField(`ecpay`, JSON.stringify(this.isProduction() ? sourceObj.ecpay.prod : sourceObj.ecpay.dev));
+                baseConfigGenerator.appendField(`linepay`, JSON.stringify(this.isProduction() ? sourceObj.linepay.prod : sourceObj.linepay.dev));
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
                 baseConfigGenerator.appendField(`server`, JSON.stringify(sourceObj.server));
                 break;

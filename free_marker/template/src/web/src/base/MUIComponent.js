@@ -2,7 +2,12 @@ import React from "react";
 import {observer} from "mobx-react";
 import * as MUIcon from "@material-ui/icons";
 import _ from "lodash";
-
+import {Parser} from 'html-to-react'
+import {
+    utiller as Util,
+    exceptioner as ERROR,
+    pooller as InfinitePool,
+} from "utiller";
 class MuiComponent extends React.Component {
 
     constructor(props) {
@@ -32,8 +37,17 @@ class MuiComponent extends React.Component {
         return elements;
     }
 
+    isHtmlStringFormat(string) {
+        return /<[a-z]+\d?(\s+[\w-]+=("[^"]*"|'[^']*'))*\s*\/?>|&#?\w+;/i.test(string);
+    }
+
     handleTextString(object) {
         if (typeof object === 'string') {
+            if (this.isHtmlStringFormat(object)) {
+                const content = Parser().parse(object);
+                Util.appendInfo(`handleTextString() get textOfHtml format`,content);
+                return content;
+            }
             return object
         } else {
             return _.toString(object)
@@ -64,6 +78,11 @@ class MuiComponent extends React.Component {
         const style = window.getComputedStyle(element, null)
         const value = style.getPropertyValue(attribute);
         return value;
+    }
+
+    renderHtmlOfDocument(textOfRender) {
+        if(this.isHtmlStringFormat(textOfRender))
+        document.write(textOfRender);
     }
 
     /** 修改所有className 的elements */

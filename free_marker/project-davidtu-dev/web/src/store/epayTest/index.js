@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseStore from "../../base/BaseStore";
 import Functions from "../../functions";
-import EPayProductStore from "../epayProduct";
+import EPayProductStore from "../epayPreciseProduct";
 
 class EpayTestStore extends BaseEpayTestStore {
     /** -------------------- fields -------------------- **/
@@ -35,7 +35,7 @@ class EpayTestStore extends BaseEpayTestStore {
     }
 
     async performEPayBehavior() {
-        const products = await this.storeOfEPayProduct.fetchProducts(this.getComponent());
+        const products = await this.storeOfEPayProduct.fetchPreciseProducts(this.getComponent());
 
         const productOne = Util.getRandomItemOfArray(products);
         const productTwo = Util.getRandomItemOfArray(products);
@@ -49,9 +49,13 @@ class EpayTestStore extends BaseEpayTestStore {
                 count: Util.getRandomValue(1, 3)
             }
         ]
+        await Functions.httpOnCallCreateEPayPreciseOrder(this.getComponent(), {items});
+    }
 
 
-        Functions.httpOnCallCreateEPayPreciseOrder(this.getComponent(), {items}).then();
+    async performCheckoutByEPayBehavior() {
+        const textOfRender = await Functions.httpOnCallCheckoutByByEcPay(this.getComponent(), {});
+        this.getComponent().renderHtmlOfDocument(textOfRender);
     }
 
     /** -------------------- async api -------------------- **/

@@ -16,13 +16,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         super(props);
     }
 
-    async handleHttpOnCall(data, context) {
+    async handleHttpOnCall(data, session) {
         console.log(`following are data info`);
         console.log(data);
         console.log(`--------------- end of data ---------------\n\n\n`);
 
         const items = data.items;
-        const noteOfPreciseOrder = data.noteOfPreciseOrder;
+        const remarkOfPreciseOrder = data.remarkOfPreciseOrder?? '無備註內容';
         const products = await Api.fetchPreciseProductsOfLimitation('in', 'id', ...items.map(item => item.id))
         if (_.size(_.difference(items.map(item => item.id), products.map(product => product.id))) > 0) {
             throw new ERROR(9999, '484117145 您提出的訂單內容與現有商品規格不合，本次交易不成立')
@@ -67,9 +67,9 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         /** 成立訂單 */
         const result = await Api.submitPreciseOrderItem({
-            idOfUser: this.getUid(context),
-            textOfContract: this.getTextOfContract(itemsOfPrecisely, noteOfPreciseOrder),
-            note: noteOfPreciseOrder,
+            idOfUser: this.getUid(session),
+            textOfContract: this.getTextOfContract(itemsOfPrecisely, remarkOfPreciseOrder),
+            remark: remarkOfPreciseOrder,
             priceOfTotal: this.getTotalPrice(itemsOfPrecisely),
             items: this.getItemsOfOrder(itemsOfPrecisely),
         })
@@ -94,14 +94,14 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return _.sum(items.map((item) => item.count * item.price));
     }
 
-    getTextOfContract(items, note) {
+    getTextOfContract(items, remark) {
         const stmts = items.map(item => {
             return `${item.name} x ${item.count} = ${item.count * item.price} 元`
         })
         stmts.push(`\n\n總價 ${this.getTotalPrice(items)} 元`);
 
-        if (!Util.isUndefinedNullEmpty(note))
-            stmts.push(`\n\n\n※備註: ${note}`);
+        if (!Util.isUndefinedNullEmpty(remark))
+            stmts.push(`\n\n\n※備註: ${remark}`);
 
         return stmts.join('\n');
     }

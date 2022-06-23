@@ -764,6 +764,10 @@ class Utiller {
         return moment(ts ? ts : undefined).format("YYYY-MM-DD")
     }
 
+    getECPayCurrentTimeFormat(ts) {
+        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
+    }
+
     /** 取得 YYY-MM-DD-HH-mm-ss */
     getCurrentTimeFormat(ts) {
         return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss")
@@ -1452,8 +1456,9 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new Utiller();
-            console.log(utiller.has(['epay'], 'epay', true));
+            // const utiller = new Utiller();
+            // console.log(utiller.getECPayCurrentTimeFormat());
+            // console.log(utiller.has(['epay'], 'epay', true));
             // console.log(util.getUuidOfV4());
             // const array = ['a','b','c','d'];
             // console.log(util.getArrayOfMoveSpecificIndexToAside(array,1,true));

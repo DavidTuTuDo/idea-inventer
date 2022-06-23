@@ -94,12 +94,15 @@ class ClientRemoteApi extends CommonRemoteApi {
         const path = `call functions => '${functionName}' `;
         const type = `firebase/functions`
         try {
+            Util.appendInfo(`ready to process firebase-functions '${functionName}' `);
             self.handleApiExecute(path, type, view);
             const general = await task();
             const result = general.data;
             if (!result.succeed) {
+                Util.appendInfo(`firebase-functions '${functionName}' process fail`);
                 throw new Error(result.data);
             } else {
+                Util.appendInfo(`firebase-functions '${functionName}' process succeed`,result.data);
                 return result.data;
             }
         } catch (error) {
