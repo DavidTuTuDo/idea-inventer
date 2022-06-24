@@ -111,6 +111,8 @@ class MobileStyle {
 
   EpayTestEcPayCheckoutViewDiv = {};
 
+  EpayTestIdOfCurrentPreciseOrderTypography = {};
+
   EpayTestCheckoutByEcPayButton = {};
 
   EpayTestCheckoutByLinePayButton = {};

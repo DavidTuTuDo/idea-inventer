@@ -11,11 +11,18 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
     constructor(props) {
         super(props);
         this.handlerOfECPay = new ECPay(config.ecpay);
+        Util.setLocaleOfMoment('zh-tw');
     }
 
     async handleHttpOnCall(data, session) {
+        console.log(`CheckoutByByECPay帶進來的資訊:`,data);
+
         const idOfPreciseOrder = data.idOfPreciseOrder ?? 'Bq5lSfszDiSsmEa42kw0'
         /** 訂單編號*/
+        if(Util.isUndefinedNullEmpty(idOfPreciseOrder)) {
+            throw new ERROR(9999, `8181231 沒有訂單內容`)
+        }
+
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         if (detailOfPreciseOrder.exists) {
             console.log(`準備好detailOfPreciseOrder`)
@@ -24,9 +31,9 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
             console.log(`準備去拿ECPay的result`, this.getDetailOfOrder(detailOfPreciseOrder));
             const result = this.handlerOfECPay.payment_client.aio_check_out_all(this.getDetailOfOrder(detailOfPreciseOrder));
             console.log(result);
-            return result;
+            return {textOfRender :result};
         } else {
-            throw new ERROR(9999, `訂單內容不存在${data.idOfPreciseOrder}`)
+            throw new ERROR(9999, `8871231 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`)
         }
     }
 
@@ -42,9 +49,9 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
             MerchantTradeNo: order.id, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
             MerchantTradeDate: Util.getECPayCurrentTimeFormat(), //ex: 2017/02/13 15:45:30
             TotalAmount: `${order.priceOfTotal}`,
-            TradeDesc: `線上交易(訂單編號:${order.id})`,
+            TradeDesc: `綠界第三方支付(${order.titleOfOrder})`,
             ItemName: this.normalizeDescOfItemName(order.textOfContract),
-            ReturnURL: 'http://192.168.0.1',
+            ReturnURL: config.urlOfConfirmedByByEcPay,
             // ChooseSubPayment: 'Credit',
             // OrderResultURL: 'http://192.168.0.1/payment_result',
             // NeedExtraPaidInfo: '1',

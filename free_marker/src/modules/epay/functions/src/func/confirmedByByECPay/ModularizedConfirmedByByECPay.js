@@ -15,7 +15,10 @@ class ModularizedConfirmedByByECPay extends BaseConfirmedByByECPay {
     super(props);
   }
 
-  async handleHttpOnCall(data, session) {}
+  async handleHttpOnRequest(request, response) {
+    console.log('client端帶上來的資訊有以下:', request);
+    return {name: 'david', age: 34, gender: 'male'};
+  }
   /** -------------------- async api -------------------- **/
 }
 export default ModularizedConfirmedByByECPay;

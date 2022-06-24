@@ -32,7 +32,7 @@ class EpayTestComponent extends BaseEpayTestComponent {
     }
 
     onEpayTestCreatePreciseOrderButtonClicked(param) {
-       this.getStore().performEPayBehavior().then();
+       this.getStore().performEPayCreateOrderBehavior().then();
     }
 
     onEpayTestCheckoutByEcPayButtonClicked(param) {

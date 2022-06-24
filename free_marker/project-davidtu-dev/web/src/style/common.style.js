@@ -111,6 +111,8 @@ class CommonStyle {
 
   EpayTestEcPayCheckoutViewDiv = {};
 
+  EpayTestIdOfCurrentPreciseOrderTypography = {};
+
   EpayTestCheckoutByEcPayButton = {};
 
   EpayTestCheckoutByLinePayButton = {};

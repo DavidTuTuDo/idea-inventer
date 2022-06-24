@@ -106,6 +106,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    localeOfServer = 'us-central1';
+    /** firebase 的 firestore storage function,都可以選擇server的locale, default value就是'us-central1' */
+
     modulesOfIgnore = [];
     /** 要忽略的 componentModule(...epay,navigator,account) */
 
@@ -204,7 +207,25 @@ class CodegenNode {
     /** firebase-function 的規則 'every 2 minute' */
 
     cloudFunctions
-    /** 用來定義serverless的functions */
+    /** 用來定義serverless的functions
+     *
+     * type : [httpOnCall,schedule,httpOnRequest]
+     *
+     {
+            name: 'fetchLinePayInfo',
+            type: 'httpOnCall',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
+        },
+     {
+            name: 'confirmLinePayInfo',
+            type: 'httpOnCall',
+        },
+     {
+            name: 'autoIncrementNumber',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
+            type: 'schedule',
+            schedule: 'every 4 hours' // support hours,min,
+        },
+
+     * */
 
     password;
 
@@ -529,10 +550,16 @@ class CodegenNode {
         return this.methods;
     }
 
+
+    getHostOfCloudFunction() {
+        const node = this.getRootNode();
+        return `https://${node.localeOfServer}-${node.getName()}.cloudfunctions.net`;
+        /** dev:  http://localhost:5001/${node.getName()}/${node.localeOfServer}; */
+    }
+
     needTestButton() {
         return this.isContainer() && !!this.testButton
     }
-
 
     isViewDefinedInProps() {
         return this.nameOfProp && !Util.isUndefinedNullEmpty(this.nameOfProp.name);
@@ -5497,6 +5524,13 @@ class ProjectFileHandler extends PathBase {
                 break;
         }
 
+        for (const cloud of this.getAllCloudFunctions()) {
+            if (Util.isOrEquals(cloud.type, 'httpOnCall', 'httpOnRequest')) {
+                baseConfigGenerator.appendField(Util.camel(`urlOf`, cloud.name),
+                    `'${new URL(cloud.name, sourceObj.getHostOfCloudFunction()).href}' /** ${cloud.type} */`)
+            }
+        }
+
         await baseConfigGenerator.needIndexFile('Config', [], true);
         await baseConfigGenerator.persist();
     }
@@ -7034,6 +7068,11 @@ class BuildApplication {
         await functions.deployFunctionsToProd();
     }
 
+    async deployFunctionsWithoutBuild() {
+        const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        await functions.deployFunctionsToProd();
+    }
+
     async deployWebProd() {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
         await web.cleanGenDirectory();
@@ -7179,6 +7218,9 @@ if (configerer.DEBUG_MODE) {
                 case 'deployWebToProduction':
                     await builder.deployWebProd();
                     break;
+                case 'deployFunctionsWithoutBuild':
+                    await builder.deployFunctionsWithoutBuild();
+                    break;
                 case 'deployPlatformToProd':
                     await builder.deployFunctionsToProd();
                     await builder.deployWebProd();
@@ -7215,6 +7257,12 @@ if (configerer.DEBUG_MODE) {
                     await builder.persistent('web');
                     await builder.persistent('admin');
                     await builder.persistent('functions');
+                    break;
+                case 'persistentFunctionsOnly':
+                    await builder.persistent('functions');
+                    break;
+                case 'persistentWebOnly':
+                    await builder.persistent('web');
                     break;
                 case 'newLessFileOnly':
                     await builder.buildLessFilesOnly();

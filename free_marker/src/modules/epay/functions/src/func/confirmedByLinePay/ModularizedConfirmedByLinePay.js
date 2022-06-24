@@ -15,7 +15,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
     super(props);
   }
 
-  async handleHttpOnCall(data, session) {}
+  async handleHttpOnRequest(request, response) {}
   /** -------------------- async api -------------------- **/
 }
 export default ModularizedConfirmedByLinePay;

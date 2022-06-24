@@ -47,6 +47,10 @@ class Utiller {
         return numbers.join('.');
     }
 
+    setLocaleOfMoment(locale = 'en'){
+        moment.locale(locale);
+    }
+
     getUuidOfV4() {
         return v4();
     }

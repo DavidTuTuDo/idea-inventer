@@ -111,6 +111,8 @@ class AppStyle {
 
   EpayTestEcPayCheckoutViewDiv = {};
 
+  EpayTestIdOfCurrentPreciseOrderTypography = {};
+
   EpayTestCheckoutByEcPayButton = {};
 
   EpayTestCheckoutByLinePayButton = {};

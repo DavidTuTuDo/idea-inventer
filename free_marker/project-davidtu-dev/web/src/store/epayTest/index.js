@@ -34,7 +34,7 @@ class EpayTestStore extends BaseEpayTestStore {
         this.storeOfEPayProduct = new EPayProductStore();
     }
 
-    async performEPayBehavior() {
+    async performEPayCreateOrderBehavior() {
         const products = await this.storeOfEPayProduct.fetchPreciseProducts(this.getComponent());
 
         const productOne = Util.getRandomItemOfArray(products);
@@ -49,14 +49,16 @@ class EpayTestStore extends BaseEpayTestStore {
                 count: Util.getRandomValue(1, 3)
             }
         ]
-        await Functions.httpOnCallCreateEPayPreciseOrder(this.getComponent(), {items});
+        const result = await Functions.httpOnCallCreateEPayPreciseOrder(this.getComponent(), {items});
+        this.setIdOfCurrentPreciseOrder(result.idOfPreciseOrder);
     }
 
 
     async performCheckoutByEPayBehavior() {
-        const textOfRender = await Functions.httpOnCallCheckoutByByEcPay(this.getComponent(), {});
-        this.getComponent().renderHtmlOfDocument(textOfRender);
+        const result = await Functions.httpOnCallCheckoutByByEcPay(this.getComponent(), {idOfPreciseOrder:this.getIdOfCurrentPreciseOrder()});
+        this.getComponent().renderHtmlOfDocument(result.textOfRender);
     }
+
 
     /** -------------------- async api -------------------- **/
 }
