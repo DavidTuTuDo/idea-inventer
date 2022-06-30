@@ -745,8 +745,8 @@ class NodeUtiller extends Utiller {
 
         this.appendFile(destination, content, true, true);
         this.appendInfo(`rewrite from:${from} => dest:${destination} succeed`);
-
     }
+
 }
 
 if (configerer.DEBUG_MODE) {

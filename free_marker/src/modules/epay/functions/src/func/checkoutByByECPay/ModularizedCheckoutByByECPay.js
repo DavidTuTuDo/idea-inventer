@@ -44,6 +44,24 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
             {from: `\n`, to: '#'})
     }
 
+    /**
+     * @deprecated
+     * 當消費者付款完成後，綠界會將付款結果參數以幕前(Client POST)回傳到該網址。詳細說明請參考付款結果通知 這樣就不會呼叫RETURN URL*/
+    getURLOfOrderResultURL() {
+        throw new ERROR(9999, `4844132132, 應用必須實作 getURLOfOrderResultURL()`);
+    }
+
+    /** 消費者點選此按鈕後，會將頁面導回到此設定的網址
+     注意事項：
+     導回時不會帶付款結果到此網址，只是將頁面導回而已。
+     設定此參數，綠界會在付款完成或取號完成頁面上顯示[返回商店]的按鈕。
+     設定此參數，發生簡訊 OTP 驗證失敗時，頁面上會顯示[返回商店]的按鈕。
+     若未設定此參數，則綠界付款完成頁或取號完成頁面，不會顯示[返回商店]的按鈕。
+     若導回網址未使用 https 時，部份瀏覽器可能會出現警告訊息。  */
+    getURLOfClientBackURL() {
+        throw new ERROR(9999, `8787444512, 應用必須設定 getURLOfClientBackURL()`);
+    }
+
     getDetailOfOrder(order) {
         return {
             MerchantTradeNo: order.id, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
@@ -52,10 +70,10 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
             TradeDesc: `綠界第三方支付(${order.titleOfOrder})`,
             ItemName: this.normalizeDescOfItemName(order.textOfContract),
             ReturnURL: config.urlOfConfirmedByByEcPay,
-            // ChooseSubPayment: 'Credit',
-            // OrderResultURL: 'http://192.168.0.1/payment_result',
+            ClientBackURL: this.getURLOfClientBackURL(),
+            // OrderResultURL: this.getURLOfOrderResultURL(),
             // NeedExtraPaidInfo: '1',
-            // ClientBackURL: 'https://www.google.com',
+            // ChooseSubPayment: 'Credit',
             // ItemURL: 'http://item.test.tw',
             // Remark: '交易備註',
             // HoldTradeAMT: '1',

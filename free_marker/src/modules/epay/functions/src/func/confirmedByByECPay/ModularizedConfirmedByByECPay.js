@@ -1,24 +1,110 @@
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import {exceptioner as ERROR, utiller as Util,} from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import BaseConfirmedByByECPay from "./BaseConfirmedByByECPay";
+import Config from '../../config';
+import Api from '../../api';
+
+const CONTENT_OF_ECPAY_RETURN_URL = {
+    CustomField1: '',
+    CustomField2: '',
+    CustomField3: '',
+    CustomField4: '',
+    MerchantID: '2000132',
+    MerchantTradeNo: 'qFNuLPLmucnakEdPNaKF',
+    PaymentDate: '2022/06/27 17:52:10',
+    PaymentType: 'Credit_CreditCard',
+    PaymentTypeChargeFee: '6',
+    RtnCode: '1',
+    RtnMsg: '交易成功',
+    SimulatePaid: '0',
+    StoreID: '',
+    TradeAmt: '300',
+    TradeDate: '2022/06/27 17:50:30',
+    TradeNo: '2206271750301713',
+    CheckMacValue: 'D6E44FA517E976265D4EBC0A186AC54F404E61EFDC8611A12336C7216A578F92',
+}
+
+
+
+const SEPARATOR_OF_PAYMENT = '།།';
+const TYPE_OF_THIRD_PARTY = 'ECPAY';
 
 class ModularizedConfirmedByByECPay extends BaseConfirmedByByECPay {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    isValidOfContent(data) {
+        return !!Util.and(
+            !Util.isUndefinedNullEmpty(data.CheckMacValue),
+            !Util.isUndefinedNullEmpty(data.MerchantTradeNo),
+            !Util.isUndefinedNullEmpty(data.MerchantID),
+        );
+    }
 
-  async handleHttpOnRequest(request, response) {
-    console.log('client端帶上來的資訊有以下:', request);
-    return {name: 'david', age: 34, gender: 'male'};
-  }
-  /** -------------------- async api -------------------- **/
+    constructor(props) {
+        super(props);
+        Util.setLocaleOfMoment('zh-tw');
+    }
+
+    async handleHttpOnRequest(request, response) {
+        Util.appendInfo('client端帶上來的資訊有以下:', request.body);
+        return await this.handlePreciseOrderByECPay(request.body);
+    }
+
+    async handlePreciseOrderByECPay(contentOfSucceed) {
+
+        if (!this.isValidOfContent(contentOfSucceed)) {
+            Util.appendInfo(`5481213501, content of ReturnUrl 不正確`);
+            throw new ERROR(9999, `5481213501, content of ReturnUrl 不正確`);
+        }
+
+        const computedMacValue = Util.getECPayCheckMacValue(
+            contentOfSucceed,
+            Config.ecpay.MercProfile.HashKey,
+            Config.ecpay.MercProfile.HashIV,
+        )
+
+        if (!_.isEqual(computedMacValue, contentOfSucceed.CheckMacValue)) {
+            /** 判斷檢查碼 [CheckMacValue] */
+            Util.appendInfo(`54821154, 訂單(${contentOfSucceed.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
+            throw new ERROR(9999, `54821154, 訂單(${contentOfSucceed.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
+        }
+
+        const preciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed.MerchantTradeNo);
+        if (!preciseOrder.exists) {
+            Util.appendInfo(`488843213, ECPAY呼叫RETURN URL時, 沒有找到訂單(${contentOfSucceed.MerchantTradeNo})`);
+            throw new ERROR(9999, `488843213, ECPAY呼叫RETURN URL時, 沒有找到訂單(${contentOfSucceed.MerchantTradeNo})`);
+        }
+
+        if (_.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
+            await Api.updatePreciseOrderItem(
+                {
+                    stateOfPayment: 'succeed',
+                    procedureOfPayment: `${TYPE_OF_THIRD_PARTY}${SEPARATOR_OF_PAYMENT}${contentOfSucceed.PaymentType}`,
+                    timeOfPayment: Util.getCurrentTimeStamp(),
+                    hashOfThirdPartyTrade: `${contentOfSucceed.TradeNo}`,
+                    messageOfPayment: `${contentOfSucceed.RtnMsg}`,
+
+                },
+                preciseOrder.id
+            );
+            Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
+            return '1|OK';
+        } else {
+            await Api.updatePreciseOrderItem(
+                {
+                    stateOfPayment: 'fail',
+                    messageOfPayment: `${contentOfSucceed.RtnMsg}`,
+                },
+                preciseOrder.id,
+            );
+            /**  OrderOfPrecise 應該要 更改 state = fail, 失敗的理由 => contentOfSucceed.RtnMsg */
+            Util.appendInfo(`5482114456, 訂單(${contentOfSucceed.MerchantTradeNo}) RtnCode不合規範`);
+            throw new ERROR(9999, `5482114456, 訂單(${contentOfSucceed.MerchantTradeNo}) RtnCode不合規範`);
+        }
+    }
+
+    /** -------------------- async api -------------------- **/
 }
+
 export default ModularizedConfirmedByByECPay;

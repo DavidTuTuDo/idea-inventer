@@ -106,6 +106,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    isRegularResponse = true;
+    /** 用來控制回傳是否為{succeed:boolean, data:Object}
+     *
+     * 若為false, 回傳 method();
+     * */
+
     localeOfServer = 'us-central1';
     /** firebase 的 firestore storage function,都可以選擇server的locale, default value就是'us-central1' */
 
@@ -212,12 +218,15 @@ class CodegenNode {
      * type : [httpOnCall,schedule,httpOnRequest]
      *
      {
-            name: 'fetchLinePayInfo',
+            name: 'checkoutByByECPay',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
             type: 'httpOnCall',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
+            description: '用ECPay付費',
         },
      {
-            name: 'confirmLinePayInfo',
-            type: 'httpOnCall',
+            name: 'confirmedByByECPay',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
+            type: 'httpOnRequest',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
+            description: 'ECPay收到款項後,回呼叫的api,裡面會將order改成succeed,扣掉庫存,消費者拿到應有的權利',
+            isRegularResponse: false, //用來控制回傳不要是{succeed, data:}
         },
      {
             name: 'autoIncrementNumber',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
@@ -2475,6 +2484,11 @@ class ClassGenerator {
             return _.isEqual(func.getType(), 'httpOnCall');
         }
 
+
+        function needRegularResponse() {
+            return _.isEqual(func.isRegularResponse, true);
+        }
+
         function getStmtsByType() {
             const _stmts = [`let result = {};`,
                 `let succeed = true;`,
@@ -2485,7 +2499,11 @@ class ClassGenerator {
                 `result = error.message;`,
                 `}`])
             if (isHttpRequest()) {
-                _stmts.push('response.send({succeed,data:result});');
+                if (needRegularResponse())
+                    _stmts.push('response.send({succeed,data:result});');
+                else {
+                    _stmts.push('response.send(result);');
+                }
             }
 
             if (isHttpOnCall()) {
@@ -7211,6 +7229,10 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'refreshFunctionFolder':
                     await builder.refreshFunctionsFolder();
+                    break;
+                case 'refreshFunctionFolderThenDeploy':
+                    await builder.refreshFunctionsFolder();
+                    await builder.deployFunctionsWithoutBuild();
                     break;
                 case 'deployFunctionsToProduction':
                     await builder.deployFunctionsToProd();

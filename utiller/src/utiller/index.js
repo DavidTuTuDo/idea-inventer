@@ -39,6 +39,10 @@ class Utiller {
         return true;
     }
 
+    getSeparatorOfUnique() {
+        return '།།';
+    }
+
     /** 1.0.1 => 1.0.2 */
     getStringOfVersionIncrement(stringOfVersion, delta = 1) {
         const numbers = stringOfVersion.split('.').map((each) => _.toNumber(each));
@@ -47,7 +51,7 @@ class Utiller {
         return numbers.join('.');
     }
 
-    setLocaleOfMoment(locale = 'en'){
+    setLocaleOfMoment(locale = 'en') {
         moment.locale(locale);
     }
 
@@ -1456,11 +1460,60 @@ class Utiller {
         return this.getArrayOfMoveToSpecificIndex(array, index, toTail ? indexOfLast : 0);
     }
 
+    getECPayCheckMacValue(data, hashKey = '5294y06JbISpM5x9', hashIV = 'v77hoKGq4kWxNNIS') {
+        const clone = _.cloneDeep(data);
+        delete clone.CheckMacValue;
+        const keys = Object.keys(clone).sort((l, r) => l > r ? 1 : -1);
+        let checkValue = '';
+        for (const key of keys) {
+            checkValue += `${key}=${clone[key]}&`
+        }
+        checkValue = `HashKey=${hashKey}&${checkValue}HashIV=${hashIV}`; // There is already an & in the end of checkValue
+        checkValue = encodeURIComponent(checkValue).toLowerCase();
+        checkValue = checkValue.replace(/%20/g, '+')
+            .replace(/%2d/g, '-')
+            .replace(/%5f/g, '_')
+            .replace(/%2e/g, '.')
+            .replace(/%21/g, '!')
+            .replace(/%2a/g, '*')
+            .replace(/%28/g, '(')
+            .replace(/%29/g, ')')
+            .replace(/%20/g, '+');
+
+        checkValue = Crypto.createHash('sha256').update(checkValue).digest('hex');
+        checkValue = checkValue.toUpperCase();
+        return checkValue;
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            // const data = {
+            //     CustomField1: '',
+            //     CustomField2: '',
+            //     CustomField3: '',
+            //     CustomField4: '',
+            //     MerchantID: '2000132',
+            //     MerchantTradeNo: 'x7H4EVJ9UBdKOh0ipama',
+            //     PaymentDate: '2022/06/30 01:10:02',
+            //     PaymentType: 'Credit_CreditCard',
+            //     PaymentTypeChargeFee: '6',
+            //     RtnCode: '1',
+            //     RtnMsg: '交易成功',
+            //     SimulatePaid: '0',
+            //     StoreID: '',
+            //     TradeAmt: '300',
+            //     TradeDate: '2022/06/30 01:09:13',
+            //     TradeNo: '2206300109135811',
+            //     CheckMacValue: '8DEA413ABB0AAD935B04B1DEC7A5FE38F28E02E158E0E5FE6FAA691D5DB81FBC',
+            // }
+
             // const utiller = new Utiller();
+            // console.log(utiller.getECPayCheckMacValue(data))
+            // console.log(data.CheckMacValue)
+            //
+            // console.log(_.isEqual(utiller.getECPayCheckMacValue(data),data.CheckMacValue))
             // console.log(utiller.getECPayCurrentTimeFormat());
             // console.log(utiller.has(['epay'], 'epay', true));
             // console.log(util.getUuidOfV4());
