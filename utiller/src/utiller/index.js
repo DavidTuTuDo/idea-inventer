@@ -5,6 +5,7 @@ import {configerer} from "configerer";
 import ERROR from '../exceptioner';
 import moment from "moment";
 import {v4} from "uuid";
+import {parse} from "node-html-parser";
 
 String.format = function () {
     let param = [];
@@ -502,7 +503,7 @@ class Utiller {
     }
 
     printf() {
-        this.appendInfo('i can use in node.js react.js');
+        this.appendInfo('i can use in web || react.js');
     }
 
     isKeywordRule(constraint) {

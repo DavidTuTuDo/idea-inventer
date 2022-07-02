@@ -106,8 +106,11 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    deployToRemote = true;
+    /** 用來控制cloudfunctions要不要部署到遠端 */
+
     isRegularResponse = true;
-    /** 用來控制回傳是否為{succeed:boolean, data:Object}
+    /** 用來控制cloudfunctions傳是否為{succeed:boolean, data:Object}
      *
      * 若為false, 回傳 method();
      * */
@@ -2476,14 +2479,21 @@ class ClassGenerator {
     appendCloudFunctionStatement(func, ...extra) {
         const self = this;
 
-        function isHttpRequest() {
-            return _.isEqual(func.getType(), 'httpOnRequest');
-        }
+        function getStringOfFunctionFinally() {
+            const _stmts = [];
+            if (_.isEqual(func.getType(), 'httpOnRequest')) {
+                if (needRegularResponse())
+                    _stmts.push('response.send({succeed,data:result});');
+                else {
+                    _stmts.push('response.send(result);');
+                }
+            }
 
-        function isHttpOnCall() {
-            return _.isEqual(func.getType(), 'httpOnCall');
+            if (_.isEqual(func.getType(), 'httpOnCall')) {
+                _stmts.push('return {succeed,data:result};');
+            }
+            return _stmts.join('\n');
         }
-
 
         function needRegularResponse() {
             return _.isEqual(func.isRegularResponse, true);
@@ -2497,18 +2507,9 @@ class ClassGenerator {
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,
                 `result = error.message;`,
-                `}`])
-            if (isHttpRequest()) {
-                if (needRegularResponse())
-                    _stmts.push('response.send({succeed,data:result});');
-                else {
-                    _stmts.push('response.send(result);');
-                }
-            }
-
-            if (isHttpOnCall()) {
-                _stmts.push('return {succeed,data:result};');
-            }
+                `}`,
+                `${getStringOfFunctionFinally()}`
+            ])
             return _stmts;
         }
 
@@ -3759,14 +3760,17 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfSubmitItem(),
-                        [`const commitment = this.${functionNameOfNormalize}(item)`,
+                        [
+                            `const commitment = this.${functionNameOfNormalize}(item)`,
                             `return await self.submitItem(path, commitment, id);`],
                         'submit item')
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfUpdateItem(),
-                        [`return await self.updateItem(path, item, id)`],
+                        [
+                            `const commitment = this.${functionNameOfNormalize}(item, true)`,
+                            `return await self.updateItem(path, commitment, id)`],
                         'update item')
 
                     generateApiFunction(
@@ -3793,7 +3797,9 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName()),
-                        [`await self.updateItems(path, ...items)`],
+                        [
+                            `const commitments = items.map(item => this.${functionNameOfNormalize}(item, true))`,
+                            `await self.updateItems(path, ...commitments)`],
                         `update items`)
 
                     generateApiFunction(
@@ -5483,6 +5489,7 @@ class ProjectFileHandler extends PathBase {
         super(props);
         this.deployRemoteRules = true;
         this.needDeployCloudFunctions = true;
+        this.enrichComponentStructs(this.isWebPlatform());
     }
 
     disableRulesRemoteDeploy() {
@@ -5528,6 +5535,8 @@ class ProjectFileHandler extends PathBase {
         switch (this.platform) {
             case 'admin':
             case 'functions':
+                baseConfigGenerator.appendField(`TYPE_OF_THIRD_PARTY_ECPAY`, JSON.stringify('ECPAY'));
+                baseConfigGenerator.appendField(`TYPE_OF_THIRD_PARTY_LINEPAY`, JSON.stringify('LINEPAY'));
                 baseConfigGenerator.appendField(`ecpay`, JSON.stringify(this.isProduction() ? sourceObj.ecpay.prod : sourceObj.ecpay.dev));
                 baseConfigGenerator.appendField(`linepay`, JSON.stringify(this.isProduction() ? sourceObj.linepay.prod : sourceObj.linepay.dev));
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));
@@ -5544,7 +5553,7 @@ class ProjectFileHandler extends PathBase {
 
         for (const cloud of this.getAllCloudFunctions()) {
             if (Util.isOrEquals(cloud.type, 'httpOnCall', 'httpOnRequest')) {
-                baseConfigGenerator.appendField(Util.camel(`urlOf`, cloud.name),
+                baseConfigGenerator.appendField(`urlOf${_.upperFirst(cloud.name)}`,
                     `'${new URL(cloud.name, sourceObj.getHostOfCloudFunction()).href}' /** ${cloud.type} */`)
             }
         }
@@ -6820,7 +6829,6 @@ class ProjectFileHandler extends PathBase {
     }
 
     async forNewLess() {
-        this.enrichComponentStructs(this.isWebPlatform());
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
             return {name: each.getName(), editor: each.isEditPage()}
         }))
@@ -6887,7 +6895,9 @@ class ProjectFileHandler extends PathBase {
     }
 
     async deployFunctionsToProd() {
-        await this.executeCommandToFirebaseRemote(`firebase deploy --only functions`)
+        const clouds = this.getAllCloudFunctions();
+        const command = _.filter(clouds, (cloud) => cloud.deployToRemote).map(cloud => `functions:${cloud.getName()}`).join(',');
+        await this.executeCommandToFirebaseRemote(`firebase deploy --only "${command}"`)
     }
 
     async cleanGenDirectory() {
@@ -6910,7 +6920,6 @@ class ProjectFileHandler extends PathBase {
     }
 
     async execute() {
-        this.enrichComponentStructs(this.isWebPlatform());
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
             return {name: each.getName(), editor: each.isEditPage()}
         }))

@@ -2,7 +2,7 @@ import {exceptioner as ERROR, utiller as Util,} from "utiller";
 import BaseCheckoutByByECPay from "./BaseCheckoutByByECPay";
 import ECPay from 'ecpay_aio_nodejs';
 import Api from '../../api';
-import config from '../../config';
+import Config from '../../config';
 
 class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
     /** -------------------- fields -------------------- **/
@@ -10,28 +10,40 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
 
     constructor(props) {
         super(props);
-        this.handlerOfECPay = new ECPay(config.ecpay);
+        this.handlerOfECPay = new ECPay(Config.ecpay);
         Util.setLocaleOfMoment('zh-tw');
     }
 
     async handleHttpOnCall(data, session) {
-        console.log(`CheckoutByByECPay帶進來的資訊:`,data);
-
+        console.log(`CheckoutByByECPay帶進來的資訊:`, data);
         const idOfPreciseOrder = data.idOfPreciseOrder ?? 'Bq5lSfszDiSsmEa42kw0'
         /** 訂單編號*/
-        if(Util.isUndefinedNullEmpty(idOfPreciseOrder)) {
+        if (Util.isUndefinedNullEmpty(idOfPreciseOrder)) {
             throw new ERROR(9999, `8181231 沒有訂單內容`)
         }
 
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         if (detailOfPreciseOrder.exists) {
-            console.log(`準備好detailOfPreciseOrder`)
-            console.log(detailOfPreciseOrder);
-            console.log(`\n\n`);
-            console.log(`準備去拿ECPay的result`, this.getDetailOfOrder(detailOfPreciseOrder));
-            const result = this.handlerOfECPay.payment_client.aio_check_out_all(this.getDetailOfOrder(detailOfPreciseOrder));
-            console.log(result);
-            return {textOfRender :result};
+            const dataOfECPayOrder = this.getDetailOfOrder(detailOfPreciseOrder);
+            console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
+            let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
+
+            result = Util.getStringOfHandledHtml(result, (document) => {
+                const element = document.getElementById('CheckMacValue');
+                element.setAttribute('value', Util.getECPayCheckMacValue(
+                    dataOfECPayOrder,
+                    Config.ecpay.MercProfile.HashKey,
+                    Config.ecpay.MercProfile.HashIV,
+                ));
+            });
+
+            await Api.updatePreciseOrderItem({
+                    procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_ECPAY,
+                    contentOfRender: result
+                }, detailOfPreciseOrder.id
+            )
+
+            return {textOfRender: result};
         } else {
             throw new ERROR(9999, `8871231 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`)
         }
@@ -69,8 +81,10 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
             TotalAmount: `${order.priceOfTotal}`,
             TradeDesc: `綠界第三方支付(${order.titleOfOrder})`,
             ItemName: this.normalizeDescOfItemName(order.textOfContract),
-            ReturnURL: config.urlOfConfirmedByByEcPay,
+            ReturnURL: Config.urlOfConfirmedByByECPay,
             ClientBackURL: this.getURLOfClientBackURL(),
+            ExpireDate: 1,
+            PaymentInfoURL: Config.urlOfPaymentInfoByECPay,
             // OrderResultURL: this.getURLOfOrderResultURL(),
             // NeedExtraPaidInfo: '1',
             // ChooseSubPayment: 'Credit',

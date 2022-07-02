@@ -1,10 +1,9 @@
 import ERROR from './exceptioner';
 import pooller from './pooller';
-import {configerer} from "configerer";
-
+import _ from 'lodash';
 
 let instance = undefined;
-if (configerer.IS_NODE_ENV) {
+if (process !== undefined && !_.isUndefined(process.version) && !_.isEmpty(process.version)) {
     const self = require('./utiller/nodeutiller');
     instance = new self.default();
 } else {

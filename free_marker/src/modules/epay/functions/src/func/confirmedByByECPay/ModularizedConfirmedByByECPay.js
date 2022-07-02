@@ -25,10 +25,6 @@ const CONTENT_OF_ECPAY_RETURN_URL = {
 }
 
 
-
-const SEPARATOR_OF_PAYMENT = '།།';
-const TYPE_OF_THIRD_PARTY = 'ECPAY';
-
 class ModularizedConfirmedByByECPay extends BaseConfirmedByByECPay {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
@@ -80,7 +76,7 @@ class ModularizedConfirmedByByECPay extends BaseConfirmedByByECPay {
             await Api.updatePreciseOrderItem(
                 {
                     stateOfPayment: 'succeed',
-                    procedureOfPayment: `${TYPE_OF_THIRD_PARTY}${SEPARATOR_OF_PAYMENT}${contentOfSucceed.PaymentType}`,
+                    procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                     timeOfPayment: Util.getCurrentTimeStamp(),
                     hashOfThirdPartyTrade: `${contentOfSucceed.TradeNo}`,
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`,
