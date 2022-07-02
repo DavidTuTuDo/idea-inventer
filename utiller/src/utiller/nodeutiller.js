@@ -14,6 +14,9 @@ import {parse} from 'node-html-parser';
 class NodeUtiller extends Utiller {
 
     /**================================= only in node.js ================================= */
+    /** 是否把log message 存到 info.txt*/
+    isPersistIntoLogFile = true;
+
 
     findSpecificFolderByPath(path, folderName) {
         const absolute = libpath.resolve(path);
@@ -426,13 +429,19 @@ class NodeUtiller extends Utiller {
         return this.appendLog(configerer.PATH_ERROR_LOG, messages, true);
     }
 
+    disableLogMessagePersistent() {
+        this.isPersistIntoLogFile = false;
+    }
+
     appendLog(path, messages, error = false) {
         if (!this.isProductionEnvironment()) {
             error ? console.error(...messages) : console.log(...messages);
         }
 
-        const messageOfSpecificLog = `${this.getCurrentTimeFormat()} ${error ? `ERROR` : `LOG`} : ${this.getLogString(messages)}`;
-        this.appendFile(path, messageOfSpecificLog);
+        if (this.isPersistIntoLogFile) {
+            const messageOfSpecificLog = `${this.getCurrentTimeFormat()} ${error ? `ERROR` : `LOG`} : ${this.getLogString(messages)}`;
+            this.appendFile(path, messageOfSpecificLog);
+        }
     }
 
     getLogString(datas) {

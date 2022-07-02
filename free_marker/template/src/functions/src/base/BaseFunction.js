@@ -1,7 +1,7 @@
-import config from "../config";
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from "lodash";
 import * as functions from 'firebase-functions';
+import Config from "../config";
 
 class BaseFunction {
 
@@ -31,6 +31,20 @@ class BaseFunction {
 
     getEmailAddress(context) {
         return context.auth.token.email || null;
+    }
+
+    isECPayCheckMacValueValid(data, key, iv,idOfError = '') {
+        const computedMacValue = Util.getECPayCheckMacValue(
+            data,
+            key,
+            iv,
+        )
+
+        if (!_.isEqual(computedMacValue, data.CheckMacValue)) {
+            /** 判斷檢查碼 [CheckMacValue] */
+            Util.appendInfo(`${idOfError}, 訂單(${data.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
+            throw new ERROR(9999, `${idOfError}, 訂單(${data.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
+        }
     }
 
 }

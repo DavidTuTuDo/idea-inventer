@@ -4,8 +4,8 @@ import CryptoJS from "crypto-js";
 import {configerer} from "configerer";
 import ERROR from '../exceptioner';
 import moment from "moment";
+import 'moment-timezone';
 import {v4} from "uuid";
-import {parse} from "node-html-parser";
 
 String.format = function () {
     let param = [];
@@ -721,7 +721,9 @@ class Utiller {
     }
 
     isUndefinedNullEmpty(obj) {
-        return obj === undefined || _.isEmpty(obj) || obj === null
+        const first = obj === undefined || obj === null;
+        const second = _.isString(obj) || _.isArray(obj) ? _.isEmpty(obj) : false;
+        return first || second;
     }
 
     isOrConditionOfUndefinedNullEmpty(...objs) {
@@ -818,6 +820,13 @@ class Utiller {
             }
         }
         return base.valueOf();
+    }
+
+    /** 把 YYYY-MM-DD HH:mm:ss 轉換成 timestamp
+     * 請注意 DD HH 之間有一個空格
+     * */
+    getTimeStampByStringFormat(string) {
+        return moment(string, 'YYYY/MM/DD HH:mm:ss').tz('UTC').valueOf();
     }
 
     /** 要記住timestamp 可以轉換成西元時間(timestamp),或是期間(duration) 把duration time-stamp 轉成 02:13.445 */
@@ -1486,10 +1495,45 @@ class Utiller {
         return checkValue;
     }
 
+    /**
+     * @param content = object
+     * @param rules {KEY:predicate} | 'KEY', rules如果只放字串, rule = KEY就代表這個欄位不得為isUndefinedEmpty(), 如果是物件 => {key:predicate}
+     * @param idOfError 用在每個呼叫的method, 有個stack trace的概念
+     *
+     *
+     *   console.log(utiller.isPayloadObjectValid({a: 3, b: 4}, ['a',{b:(value) => value > 5}]));
+     *   //ATTRIBUTE:'b' is not valid of custom rule
+     */
+    isPayloadObjectValid(content, rules = [], idOfError = this.getRandomHash(10)) {
+        if (this.isUndefinedNullEmpty(content)) {
+            throw new ERROR(9999, `${idOfError} content(pay-load) is undefined || empty`);
+        }
+
+        for (const rule of rules) {
+            if (_.isString(rule)) {
+                if (this.isUndefinedNullEmpty(content[rule])) {
+                    throw new ERROR(9999, `${idOfError} ATTRIBUTE:'${rule}' is not Exist`);
+                }
+            } else if (_.isObject(rule)) {
+                const key = this.getObjectKey(rule);
+                const predicate = this.getObjectValue(rule);
+                if (!predicate(content[key])) {
+                    throw new ERROR(9999, `${idOfError} ATTRIBUTE:'${key}' is not valid of custom rule`);
+                }
+            }
+        }
+        return true;
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            const utiller = new Utiller();
+            const time = utiller.getTimeStampByStringFormat('2022/07/03 15:04:19');
+            console.log(utiller.getECPayCurrentTimeFormat(time));
+            // console.log(utiller.getTimeStampByStringFormat('2022/07/03 15:04:19'));
+            // console.log(utiller.isPayloadObjectValid({a: 3, b: 4}, ['a', {b: (value) => value > 5}]));
             // const data = {
             //     CustomField1: '',
             //     CustomField2: '',

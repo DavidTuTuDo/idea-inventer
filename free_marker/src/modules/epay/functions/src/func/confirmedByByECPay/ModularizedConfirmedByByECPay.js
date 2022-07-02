@@ -49,27 +49,18 @@ class ModularizedConfirmedByByECPay extends BaseConfirmedByByECPay {
 
     async handlePreciseOrderByECPay(contentOfSucceed) {
 
-        if (!this.isValidOfContent(contentOfSucceed)) {
-            Util.appendInfo(`5481213501, content of ReturnUrl 不正確`);
-            throw new ERROR(9999, `5481213501, content of ReturnUrl 不正確`);
-        }
+        Util.isPayloadObjectValid(contentOfSucceed,['CheckMacValue','MerchantTradeNo','MerchantID','PaymentType'],5481213501);
 
-        const computedMacValue = Util.getECPayCheckMacValue(
-            contentOfSucceed,
-            Config.ecpay.MercProfile.HashKey,
-            Config.ecpay.MercProfile.HashIV,
-        )
-
-        if (!_.isEqual(computedMacValue, contentOfSucceed.CheckMacValue)) {
-            /** 判斷檢查碼 [CheckMacValue] */
-            Util.appendInfo(`54821154, 訂單(${contentOfSucceed.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
-            throw new ERROR(9999, `54821154, 訂單(${contentOfSucceed.MerchantTradeNo}) CheckMacValue 檢查碼失敗`);
-        }
+        this.isECPayCheckMacValueValid(contentOfSucceed,Config.ecpay.MercProfile.HashKey,Config.ecpay.MercProfile.HashIV, 415641542115);
 
         const preciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed.MerchantTradeNo);
         if (!preciseOrder.exists) {
             Util.appendInfo(`488843213, ECPAY呼叫RETURN URL時, 沒有找到訂單(${contentOfSucceed.MerchantTradeNo})`);
             throw new ERROR(9999, `488843213, ECPAY呼叫RETURN URL時, 沒有找到訂單(${contentOfSucceed.MerchantTradeNo})`);
+        }
+
+        if(!_.isEqual(preciseOrder.stateOfPayment,'wait')) {
+            throw new ERROR(9999, `48884745, 訂單(${contentOfSucceed.MerchantTradeNo}) 狀態已無法更改`);
         }
 
         if (_.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {

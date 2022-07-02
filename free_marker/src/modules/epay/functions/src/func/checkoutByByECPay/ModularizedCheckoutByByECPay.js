@@ -85,6 +85,7 @@ class ModularizedCheckoutByByECPay extends BaseCheckoutByByECPay {
             ClientBackURL: this.getURLOfClientBackURL(),
             ExpireDate: 1,
             PaymentInfoURL: Config.urlOfPaymentInfoByECPay,
+            StoreExpireDate: 1440,/** 代表一天的秒數 */
             // OrderResultURL: this.getURLOfOrderResultURL(),
             // NeedExtraPaidInfo: '1',
             // ChooseSubPayment: 'Credit',

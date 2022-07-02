@@ -2518,7 +2518,7 @@ class ClassGenerator {
         stmts.push(`exports.${functionName} = functions.${typeOfFunction}(async (${params.join(',')}) => {`)
         stmts.push(...getStmtsByType(params));
         stmts.push(`})`);
-        this.appendInClassTail(this.context, ...stmts, ...extra)
+        this.appendInClassTail(this.context, ...['Util.disableLogMessagePersistent();'],...stmts, ...extra)
     }
 
     appendAsyncFunction(functionName, params = [], macros = [], comments = [], ...contents) {
@@ -3024,14 +3024,14 @@ class BaseBuilder extends PathBase {
                 params = ['items', ...params];
                 break;
             case `update item atomically`:
-                params = ['predict = async (item, transaction) => item', 'id', ...params]
+                params = ['predicate = async (item, transaction) => item', 'id', ...params]
                 break;
             case `submit object`:
             case `update object`:
                 params = ['object', ...params];
                 break;
             case `update object atomically`:
-                params = [`predict = async (object,transaction) => object`, ...params]
+                params = [`predicate = async (object,transaction) => object`, ...params]
                 break;
             case `upload storage file`:
                 params = ['blob', ...params];
@@ -3776,7 +3776,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfUpdateItemAtomically(),
-                        [`return await self.updateItemAtomically(path,predict,id)`],
+                        [`return await self.updateItemAtomically(path,predicate,id)`],
                         'update item atomically')
 
                     generateApiFunction(
@@ -3851,7 +3851,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName(), 'atomically'),
-                        [`return await self.updateObjectAtomically(path, '${node.getName()}',predict)`],
+                        [`return await self.updateObjectAtomically(path, '${node.getName()}',predicate)`],
                         `update object atomically`);
 
                     generateApiFunction(
