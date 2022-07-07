@@ -16,6 +16,8 @@ export {playground as playground}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+            const latest = _.flattenDeep([['1','2','3'],['bbb','vccc','ddd'],['#$%#$','@!#12','@!#1']]);
+            console.log(latest);
             // const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             // const oneToTen = '123456789';
             // const length = 5
@@ -114,8 +116,7 @@ if (configerer.DEBUG_MODE) {
             // console.log(node2);
             // console.log(node1);
             // /** 如果你想複製一個節點node, 可以用 clone = _.clone(node), clone的節點可以新增屬性 不會影響node, 但如果更動與node相關的屬性, node也會連動更改*/
-
-            console.log(_.tail([1]));
+            // console.log(_.tail([1]));
         }
     )();
 }

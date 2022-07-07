@@ -22,18 +22,20 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         console.log(`--------------- end of data ---------------\n\n\n`);
 
         const items = data.items;
-        const remarkOfPreciseOrder = data.remarkOfPreciseOrder?? '無備註內容';
+        this.remarkOfPreciseOrder = data.remarkOfPreciseOrder ?? '無備註內容';
+        this.imageUrlOfHeadPhoto = data.imageUrlOfHeadPhoto;
+
         const products = await Api.fetchPreciseProductsOfLimitation('in', 'id', ...items.map(item => item.id))
         if (_.size(_.difference(items.map(item => item.id), products.map(product => product.id))) > 0) {
             throw new ERROR(9999, '484117145 您提出的訂單內容與現有商品規格不合，本次交易不成立')
         }
 
-        const itemsOfPrecisely = Util.getMergedArray(items, products, 'id');
+        this.itemsOfPrecisely = Util.getMergedArrayBy(items, products, 'id');
         /** [{name,count,id,countOfCurrent(庫存量)}]*/
-        console.log(itemsOfPrecisely);
+
 
         /** 計算剩餘數量足夠否 */
-        for (const item of itemsOfPrecisely) {
+        for (const item of this.itemsOfPrecisely) {
             if (item.count > item.countOfCurrent) {
                 throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
             }
@@ -42,7 +44,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         /** 利用atomically method 扣掉數量, 過程中發現其中一個商品數量不足, 得再atomically加回去 再吐回去一個商品數量不足的警告*/
 
         try {
-            for (const item of itemsOfPrecisely) {
+            for (const item of this.itemsOfPrecisely) {
                 await Api.updatePreciseProductItemAtomically(async (product) => {
                     if (product.countOfCurrent > item.count) {
                         return {countOfCurrent: product.countOfCurrent - item.count}
@@ -53,7 +55,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 item.succeedOfTransaction = true;
             }
         } catch (error) {
-            for (const item of _.filter(itemsOfPrecisely, (item) => item.succeedOfTransaction)) {
+            for (const item of _.filter(this.itemsOfPrecisely, (item) => item.succeedOfTransaction)) {
                 await Api.updatePreciseProductItemAtomically(async (product) => {
                     return {countOfCurrent: product.countOfCurrent + item.count}
                 }, item.id)
@@ -62,16 +64,17 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         }
 
         /** 計算總價 */
-        const priceOfTotal = _.sum(itemsOfPrecisely.map((item) => item.count * item.price))
+        const priceOfTotal = _.sum(this.itemsOfPrecisely.map((item) => item.count * item.price))
         console.log(`priceOfTotal:${priceOfTotal}`);
 
         /** 成立訂單 */
         const result = await Api.submitPreciseOrderItem({
             idOfUser: this.getUid(session),
-            textOfContract: this.getTextOfContract(itemsOfPrecisely, remarkOfPreciseOrder),
-            remark: remarkOfPreciseOrder,
-            priceOfTotal: this.getTotalPrice(itemsOfPrecisely),
-            items: this.getItemsOfOrder(itemsOfPrecisely),
+            textOfContract: this.getTextOfContract(this.itemsOfPrecisely, this.remarkOfPreciseOrder),
+            remark: this.remarkOfPreciseOrder,
+            priceOfTotal: this.getTotalPrice(this.itemsOfPrecisely),
+            imageUrlOfHeadPhoto: this.getImageUrlOfHeadPhoto(),
+            items: this.getItemsOfOrder(this.itemsOfPrecisely),
         })
 
         if (result.succeed) {
@@ -79,6 +82,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         } else {
             throw new ERROR(9999, `474445787 創建PreciseOrder時失敗，未知原因。`);
         }
+    }
+
+    getImageUrlOfHeadPhoto() {
+        const urlsOfProductImage = _.flattenDeep(this.itemsOfPrecisely.map(item => item.photos)).map((photo => photo.url));
+        return Util.getValueOfPriority(this.imageUrlOfHeadPhoto, _.head(urlsOfProductImage));
     }
 
     getItemsOfOrder(items) {

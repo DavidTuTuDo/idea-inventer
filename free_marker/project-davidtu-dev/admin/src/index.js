@@ -41,19 +41,36 @@ import moment from 'moment';
     }
 
     async function submitSampleProduct() {
-        await api.submitProducts([{
-            name: 'iphone13 pro',
-            price: 100,
-            countOfCurrent: 30,
-        }, {
-            name: 'iphone12',
-            price: 80,
-            countOfCurrent: 20,
-        }, {
-            name: 'iphone11',
-            price: 50,
-            countOfCurrent: 50,
-        }])
+        // console.log(await api.collectionRef('/productsOfEPay').listDocuments())
+        await api.deletePreciseProducts(true);
+        // await api.submitPreciseProducts([{
+        //     name: 'iphone13 pro',
+        //     price: 100,
+        //     countOfCurrent: 300,
+        //     maxCountOfPerOrder: 10,
+        //     photos: [{
+        //         statement: 'iphone13pro 樣板',
+        //         url: 'https://cs-a.ecimg.tw/items/DYARCHA900BUHR3/000001_1634635600.png'
+        //     }]
+        // }, {
+        //     name: 'iphone12',
+        //     price: 80,
+        //     countOfCurrent: 300,
+        //     maxCountOfPerOrder: 10,
+        //     photos: [{
+        //         statement: 'iphone12 樣板',
+        //         url: 'https://mrmad.com.tw/wp-content/uploads/2020/10/iphone-12-vs-iphone-11.jpg'
+        //     }]
+        // }, {
+        //     name: 'iphone11',
+        //     price: 50,
+        //     countOfCurrent: 300,
+        //     maxCountOfPerOrder: 10,
+        //     photos: [{
+        //         statement: 'iphone11 樣板',
+        //         url: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2019/09/iphone11-1-920x613.jpg'
+        //     }]
+        // }])
     }
 
     await submitSampleProduct();

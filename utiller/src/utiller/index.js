@@ -441,7 +441,7 @@ class Utiller {
 
 
     /**
-     * util.getMergedArray(
+     * util.getMergedArrayBy(
      [{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
      [{id: 321, age: 13}, {id: 123, age: 30}],
      'id')
@@ -453,9 +453,11 @@ class Utiller {
      ]
      *
      */
-    getMergedArray(array1, array2, attribute = 'id') {
+    getMergedArrayBy(array1, array2, predicate) {
+        /** predicate可以只帶入屬性質 */
+        predicate = _.isString(predicate) ? (a, b) => _.isEqual(a[predicate], b[predicate]) : predicate;
         return array1.map(itm => ({
-            ...array2.find((item) => (item[attribute] === itm[attribute]) && item),
+            ...array2.find((item) => predicate(itm, item) && item),
             ...itm
         }));
     }
@@ -607,6 +609,15 @@ class Utiller {
         } catch (error) {
             return 0;
         }
+    }
+
+    /** 如果有優先順序的值,需要檢查是否isUndefinedEmpty,這樣程式邏輯就不用一直 if else switch */
+    getValueOfPriority(...compares) {
+        for (const compare of compares) {
+            if (!this.isUndefinedNullEmpty(compare))
+                return compare;
+        }
+        return undefined;
     }
 
     async asyncPool(poolLimit, array, iteratorFn) {
@@ -1529,10 +1540,14 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new Utiller();
-            const time = utiller.getTimeStampByStringFormat('2022/07/03 15:04:19');
-            console.log(utiller.getECPayCurrentTimeFormat(time));
-            // console.log(utiller.getTimeStampByStringFormat('2022/07/03 15:04:19'));
+            // const utiller = new Utiller();
+            // const latest = utiller.getMergedArrayBy([{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
+            //     [{id: 321, age: 13}, {id: 123, age: 30}],
+            //     'id')
+            // console.log(latest);
+            // const time = utiller.getTimeStampByStringFormat('2022/07/03 15:04:19');
+            // console.log(utiller.getECPayCurrentTimeFormat(time));
+            // // console.log(utiller.getTimeStampByStringFormat('2022/07/03 15:04:19'));
             // console.log(utiller.isPayloadObjectValid({a: 3, b: 4}, ['a', {b: (value) => value > 5}]));
             // const data = {
             //     CustomField1: '',

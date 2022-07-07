@@ -232,7 +232,7 @@ class CommonRemoteApi {
         return all;
     }
 
-    orderConditionByRules(conditions) {
+    orderConditionByRules(conditions = []) {
         /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
         const raw = [];
         for (const condition of conditions) {
@@ -289,7 +289,7 @@ class CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all, conditions) {
+    async deleteItems(path, all, conditions=[]) {
         Util.appendInfo(`delete items ${path}`);
         const sortedCondition = this.orderConditionByRules(conditions);
         const refs = [];

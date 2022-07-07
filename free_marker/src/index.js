@@ -2958,7 +2958,9 @@ class BaseBuilder extends PathBase {
                 return `${param} = UserInfoRef.getUid()`;
             } else if (_.isEqual(param.trim(), 'route')) {
                 return `${param} = ''`;
-            }
+            } else if (_.isEqual(param.trim(), 'conditions')) {
+            return `${param} = []`;
+        }
             return param;
         })
     }
@@ -3754,7 +3756,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel(`delete`, node.getFieldName()),
-                        [`return await self.deleteItems(path,all,...conditions)`],
+                        [`return await self.deleteItems(path, all, conditions)`],
                         'delete items')
 
                     generateApiFunction(
