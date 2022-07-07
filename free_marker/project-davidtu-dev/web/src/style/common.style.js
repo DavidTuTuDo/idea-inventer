@@ -9,6 +9,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorTestSubTitleTextField = {};
@@ -109,7 +111,9 @@ class CommonStyle {
 
   /** => following for epayTest  component  */
 
-  EpayTestEcPayCheckoutViewDiv = {};
+  EpayTestFindEPayPageByIdButton = {};
+
+  EpayTestIdOfPreciseOrderInputTextField = {};
 
   EpayTestIdOfCurrentPreciseOrderTypography = {};
 

@@ -31,12 +31,12 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         }
 
         this.itemsOfPrecisely = Util.getMergedArrayBy(items, products, 'id');
-        /** [{name,count,id,countOfCurrent(庫存量)}]*/
+        /** [{name,quantity,id,quantityOfCurrent(庫存量)}]*/
 
 
         /** 計算剩餘數量足夠否 */
         for (const item of this.itemsOfPrecisely) {
-            if (item.count > item.countOfCurrent) {
+            if (item.quantity > item.quantityOfCurrent) {
                 throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
             }
         }
@@ -46,10 +46,10 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         try {
             for (const item of this.itemsOfPrecisely) {
                 await Api.updatePreciseProductItemAtomically(async (product) => {
-                    if (product.countOfCurrent > item.count) {
-                        return {countOfCurrent: product.countOfCurrent - item.count}
+                    if (product.quantityOfCurrent > item.quantity) {
+                        return {quantityOfCurrent: product.quantityOfCurrent - item.quantity}
                     } else {
-                        throw new ERROR(9999, `4647894135 考慮百萬分之一的可能，countOfCurrent < count，取消交易，並且atomically修改回所有髒掉的數量。`)
+                        throw new ERROR(9999, `4647894135 考慮百萬分之一的可能，quantityOfCurrent < quantity，取消交易，並且atomically修改回所有髒掉的數量。`)
                     }
                 }, item.id)
                 item.succeedOfTransaction = true;
@@ -57,14 +57,14 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         } catch (error) {
             for (const item of _.filter(this.itemsOfPrecisely, (item) => item.succeedOfTransaction)) {
                 await Api.updatePreciseProductItemAtomically(async (product) => {
-                    return {countOfCurrent: product.countOfCurrent + item.count}
+                    return {quantityOfCurrent: product.quantityOfCurrent + item.quantity}
                 }, item.id)
             }
             throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
         }
 
         /** 計算總價 */
-        const priceOfTotal = _.sum(this.itemsOfPrecisely.map((item) => item.count * item.price))
+        const priceOfTotal = _.sum(this.itemsOfPrecisely.map((item) => item.quantity * item.price))
         console.log(`priceOfTotal:${priceOfTotal}`);
 
         /** 成立訂單 */
@@ -91,20 +91,23 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
     getItemsOfOrder(items) {
         return items.map(item => {
+            const photo = _.head(item.photos);
             return {
-                idOfProduct: item.id,
-                count: item.count,
+                idOfPreciseProduct: item.id,
+                quantity: item.quantity,
+                imageUrlOfProduct: Util.isUndefinedNullEmpty(photo) ? '' : photo.url,
+                note:`無單品項備註內容`
             }
         })
     }
 
     getTotalPrice(items) {
-        return _.sum(items.map((item) => item.count * item.price));
+        return _.sum(items.map((item) => item.quantity * item.price));
     }
 
     getTextOfContract(items, remark) {
         const stmts = items.map(item => {
-            return `${item.name} x ${item.count} = ${item.count * item.price} 元`
+            return `${item.name} x ${item.quantity} = ${item.quantity * item.price} 元`
         })
         stmts.push(`\n\n總價 ${this.getTotalPrice(items)} 元`);
 

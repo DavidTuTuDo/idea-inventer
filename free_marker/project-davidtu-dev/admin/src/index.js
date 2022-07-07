@@ -41,38 +41,47 @@ import moment from 'moment';
     }
 
     async function submitSampleProduct() {
-        // console.log(await api.collectionRef('/productsOfEPay').listDocuments())
+        await api.deletePreciseOrders(true);
         await api.deletePreciseProducts(true);
-        // await api.submitPreciseProducts([{
-        //     name: 'iphone13 pro',
-        //     price: 100,
-        //     countOfCurrent: 300,
-        //     maxCountOfPerOrder: 10,
-        //     photos: [{
-        //         statement: 'iphone13pro 樣板',
-        //         url: 'https://cs-a.ecimg.tw/items/DYARCHA900BUHR3/000001_1634635600.png'
-        //     }]
-        // }, {
-        //     name: 'iphone12',
-        //     price: 80,
-        //     countOfCurrent: 300,
-        //     maxCountOfPerOrder: 10,
-        //     photos: [{
-        //         statement: 'iphone12 樣板',
-        //         url: 'https://mrmad.com.tw/wp-content/uploads/2020/10/iphone-12-vs-iphone-11.jpg'
-        //     }]
-        // }, {
-        //     name: 'iphone11',
-        //     price: 50,
-        //     countOfCurrent: 300,
-        //     maxCountOfPerOrder: 10,
-        //     photos: [{
-        //         statement: 'iphone11 樣板',
-        //         url: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2019/09/iphone11-1-920x613.jpg'
-        //     }]
-        // }])
+        await api.submitPreciseProducts([{
+            name: 'iphone13 pro',
+            price: 100,
+            quantityOfCurrent: 300,
+            maxCountOfPerOrder: 10,
+            photos: [{
+                statement: 'iphone13pro 樣板',
+                url: 'https://cs-a.ecimg.tw/items/DYARCHA900BUHR3/000001_1634635600.png'
+            }]
+        }, {
+            name: 'iphone12',
+            price: 80,
+            quantityOfCurrent: 300,
+            maxCountOfPerOrder: 10,
+            photos: [{
+                statement: 'iphone12 樣板',
+                url: 'https://mrmad.com.tw/wp-content/uploads/2020/10/iphone-12-vs-iphone-11.jpg'
+            }]
+        }, {
+            name: 'iphone11',
+            price: 50,
+            quantityOfCurrent: 300,
+            maxCountOfPerOrder: 10,
+            photos: [{
+                statement: 'iphone11 樣板',
+                url: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2019/09/iphone11-1-920x613.jpg'
+            }]
+        }])
     }
 
+    async function sampleOfFetchUrl() {
+        const products = await api.fetchPreciseProducts();
+        const urls = _.head(_.flattenDeep(products.map(item => item.photos)).map((item => item.url)));
+        console.log(urls);
+
+         // console.log(_.head(_.flattenDeep([...urls])))
+        // return Util.getValueOfPriority(this.imageUrlOfHeadPhoto, );
+    }
+    // await sampleOfFetchUrl();
     await submitSampleProduct();
 
     // console.log(await api.fetchTest());

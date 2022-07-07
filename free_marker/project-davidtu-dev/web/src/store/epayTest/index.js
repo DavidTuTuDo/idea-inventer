@@ -24,6 +24,7 @@ import {
 import BaseStore from "../../base/BaseStore";
 import Functions from "../../functions";
 import EPayProductStore from "../epayPreciseProduct";
+import EpayOrderStore from "../epayPreciseOrder";
 
 class EpayTestStore extends BaseEpayTestStore {
     /** -------------------- fields -------------------- **/
@@ -32,6 +33,7 @@ class EpayTestStore extends BaseEpayTestStore {
     constructor(props) {
         super(props);
         this.storeOfEPayProduct = new EPayProductStore();
+        this.storeOfEPayOrder = new EpayOrderStore();
     }
 
     async performEPayCreateOrderBehavior() {
@@ -43,10 +45,10 @@ class EpayTestStore extends BaseEpayTestStore {
         const items = [
             {
                 id: productOne.id,
-                count: Util.getRandomValue(1, 3)
+                quantity: Util.getRandomValue(1, 3)
             }, {
                 id: productTwo.id,
-                count: Util.getRandomValue(1, 3)
+                quantity: Util.getRandomValue(1, 3)
             }
         ]
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this.getComponent(), {items});
@@ -55,8 +57,19 @@ class EpayTestStore extends BaseEpayTestStore {
 
 
     async performCheckoutByEPayBehavior() {
-        const result = await Functions.httpOnCallCheckoutByByEcPay(this.getComponent(), {idOfPreciseOrder:this.getIdOfCurrentPreciseOrder()});
+        const result = await Functions.httpOnCallCheckoutByByEcPay(this.getComponent(), {idOfPreciseOrder: this.getIdOfCurrentPreciseOrder()});
         this.getComponent().renderHtmlOfDocument(result.textOfRender);
+    }
+
+    async performECPayPageById() {
+        const id = this.getIdOfPreciseOrderInput();
+        if (!Util.isUndefinedNullEmpty(id)) {
+            const order = await this.storeOfEPayOrder.fetchPreciseOrderItem(this.getComponent(), id);
+            const textOfRender = order.contentOfRender;
+            this.getComponent().renderHtmlOfDocument(textOfRender);
+        } else {
+            this.getComponent().showInfoSnackMessage(`輸入匡不可為空`)
+        }
     }
 
 
