@@ -1,4 +1,4 @@
-import ModularizedCheckoutByLinePay from "./ModularizedCheckoutByLinePay";
+import ModularizedCheckoutByECPay from "./ModularizedCheckoutByECPay";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -6,9 +6,9 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseCheckoutByLinePay from "./BaseCheckoutByLinePay";
+import BaseCheckoutByECPay from "./BaseCheckoutByECPay";
 
-class CheckoutByLinePay extends ModularizedCheckoutByLinePay {
+class CheckoutByECPay extends ModularizedCheckoutByECPay {
   /** -------------------- fields -------------------- **/
   /** -------------------- functions -------------------- **/
 
@@ -16,9 +16,13 @@ class CheckoutByLinePay extends ModularizedCheckoutByLinePay {
     super(props);
   }
 
-  getBranchName() {
-    return `明悅科技`
+  getURLOfOrderResultURL() {
+    return 'https://www.google.com/'
+  }
+
+  getURLOfClientBackURL() {
+    return 'https://www.google.com/'
   }
   /** -------------------- async api -------------------- **/
 }
-export default new CheckoutByLinePay();
+export default new CheckoutByECPay();

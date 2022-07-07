@@ -2518,7 +2518,7 @@ class ClassGenerator {
         stmts.push(`exports.${functionName} = functions.${typeOfFunction}(async (${params.join(',')}) => {`)
         stmts.push(...getStmtsByType(params));
         stmts.push(`})`);
-        this.appendInClassTail(this.context, ...['Util.disableLogMessagePersistent();'],...stmts, ...extra)
+        this.appendInClassTail(this.context, ...['Util.disableLogMessagePersistent();'], ...stmts, ...extra)
     }
 
     appendAsyncFunction(functionName, params = [], macros = [], comments = [], ...contents) {
@@ -2959,8 +2959,8 @@ class BaseBuilder extends PathBase {
             } else if (_.isEqual(param.trim(), 'route')) {
                 return `${param} = ''`;
             } else if (_.isEqual(param.trim(), 'conditions')) {
-            return `${param} = []`;
-        }
+                return `${param} = []`;
+            }
             return param;
         })
     }
@@ -4877,7 +4877,7 @@ class AppBuilder extends ComponentBuilder {
         for (const _func of this.getAllCloudFunctions()) {
             if (_.isEqual(_func.getType(), 'httpOnCall')) {
                 baseFunctionGenerator.appendAsyncFunction(
-                    `${Util.camel(_func.getType(), _func.getName())}`,
+                    `${_.lowerFirst(_func.getType())}${_.upperFirst(_func.getName())}`,
                     ['view', 'data'],
                     [], [],
                     `return await this.runUIAsyncCloudFunctionsTask('${_func.getName()}', data, view);`

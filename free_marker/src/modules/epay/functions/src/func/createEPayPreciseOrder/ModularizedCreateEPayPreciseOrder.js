@@ -17,10 +17,6 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     async handleHttpOnCall(data, session) {
-        console.log(`following are data info`);
-        console.log(data);
-        console.log(`--------------- end of data ---------------\n\n\n`);
-
         const items = data.items;
         this.remarkOfPreciseOrder = data.remarkOfPreciseOrder ?? '無備註內容';
         this.imageUrlOfHeadPhoto = data.imageUrlOfHeadPhoto;
@@ -65,7 +61,6 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         /** 計算總價 */
         const priceOfTotal = _.sum(this.itemsOfPrecisely.map((item) => item.quantity * item.price))
-        console.log(`priceOfTotal:${priceOfTotal}`);
 
         /** 成立訂單 */
         const result = await Api.submitPreciseOrderItem({
@@ -95,8 +90,10 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             return {
                 idOfPreciseProduct: item.id,
                 quantity: item.quantity,
+                name: item.name,
+                price: item.price,
                 imageUrlOfProduct: Util.isUndefinedNullEmpty(photo) ? '' : photo.url,
-                note:`無單品項備註內容`
+                note: item.note ?? `無單品項備註內容`
             }
         })
     }

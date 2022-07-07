@@ -36,7 +36,10 @@ class EpayTestComponent extends BaseEpayTestComponent {
     }
 
     onEpayTestCheckoutByEcPayButtonClicked(param) {
-        this.getStore().performCheckoutByEPayBehavior().then();
+        this.getStore().performCheckoutByECPayBehavior().then();
+    }
+    onEpayTestCheckoutByLinePayButtonClicked(param) {
+        this.getStore().performCheckoutByLinePayBehavior().then();
     }
 
     onEpayTestFindEPayPageByIdButtonClicked(param) {

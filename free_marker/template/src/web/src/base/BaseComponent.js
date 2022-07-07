@@ -122,6 +122,18 @@ class BaseComponent extends MuiComponent {
         return document.body.scrollHeight > window.innerHeight;
     }
 
+    /**
+     *
+     * @param urlsOfLinePay : {app:'',web:''}
+     */
+    routeToLinePayCheckoutPage(urlsOfLinePay) {
+        if (isMobile) {
+            this.gotoExternalUrlDirectly(urlsOfLinePay.app);
+        } else {
+            this.gotoExternalUrlDirectly(urlsOfLinePay.web);
+        }
+    }
+
     componentDidMount() {
         if (!this.isDialogComponent() && !this.isComponentView()) {
             Router.setCurrentComponent(this);
@@ -799,12 +811,12 @@ class BaseComponent extends MuiComponent {
         }
     }
 
-    copyCurrentLinkToClipboard(message =`已複製當前的連結`) {
+    copyCurrentLinkToClipboard(message = `已複製當前的連結`) {
         navigator.clipboard.writeText(this.getCurrentWebSiteLink())
         this.getComponentInstance().showInfoSnackMessage(message);
     }
 
-    copyTextToClipboard(text,message = `已將內容新增至剪貼簿`) {
+    copyTextToClipboard(text, message = `已將內容新增至剪貼簿`) {
         navigator.clipboard.writeText(text);
         this.getComponentInstance().showInfoSnackMessage(message);
     }
