@@ -453,12 +453,17 @@ class Utiller {
      ]
      *
      */
-    getMergedArrayBy(array1, array2, predicate) {
+    getMergedArrayBy(array1 = [], array2 = [], predicate) {
         /** predicate可以只帶入屬性質 */
-        predicate = _.isString(predicate) ? (a, b) => _.isEqual(a[predicate], b[predicate]) : predicate;
-        return array1.map(itm => ({
-            ...array2.find((item) => predicate(itm, item) && item),
-            ...itm
+        if (_.isString(predicate)) {
+            const attribute = predicate;
+            predicate = (item1, item2) => _.isEqual(item1[attribute], item2[attribute]);
+        } else {
+            predicate = _.isFunction(predicate) ? predicate : () => true;
+        }
+        return array1.map(item1 => ({
+            ..._.find(array2, (item2) => predicate(item1, item2)),
+            ...item1
         }));
     }
 
@@ -1536,11 +1541,99 @@ class Utiller {
         return true;
     }
 
+    /**
+     * 做個總和
+     *
+     const result = utiller.getArrayOfSummarizeBy([{name:'david',count:5},{name:'nina',count:3},{name:'david',count:3},{name:'joe',count:3},{name:'joe',count:4}]
+     ,'name','count');
+     console.log(result);
+     [
+     { name: 'david', count: 8 },
+     { name: 'nina', count: 3 },
+     { name: 'joe', count: 7 }
+     ]
+     *
+     */
+    getArrayOfSummarizeBy(array, keyOfId, keyOfSum) {
+        const obj = {};
+        for (const item of array) {
+            const key = item[keyOfId];
+            if (obj[key] !== undefined) {
+                obj[key] = obj[key] + item[keyOfSum]
+            } else {
+                obj[key] = item[keyOfSum];
+            }
+        }
+
+        const items = [];
+        for (const key in obj) {
+            const _obj = {};
+            _obj[keyOfId] = key;
+            _obj[keyOfSum] = obj[key];
+            items.push(_obj);
+        }
+        return items;
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new Utiller();
+            const utiller = new Utiller();
+            // const a = [{id: '0hTkFVNvnO85r2mHfEYs', quantity: 6},
+            //     {id: 'Oo6GAvITixzVhxpNa4l0', quantity: 1},
+            //     {id: 'EiyyzfsgEOFrUvhkClTQ', quantity: 3}];
+            // const b = [
+            //     {
+            //         traits: [],
+            //         price: 50,
+            //         note: '',
+            //         id: '0hTkFVNvnO85r2mHfEYs',
+            //         levels: [],
+            //         maxCountOfPerOrder: 10,
+            //         types: [],
+            //         photos: [[Object]],
+            //         description: '',
+            //         quantityOfCurrent: 293,
+            //         name: 'iphone11',
+            //     },
+            //     {
+            //         description: '',
+            //         id: 'EiyyzfsgEOFrUvhkClTQ',
+            //         name: 'iphoneX',
+            //         quantityOfCurrent: 289,
+            //         price: 40,
+            //         note: '',
+            //         maxCountOfPerOrder: 10,
+            //         levels: [],
+            //         types: [],
+            //         photos: [[Object]],
+            //         traits: [],
+            //     },
+            //     {
+            //         description: '',
+            //         note: '',
+            //         name: 'iphone13 pro',
+            //         maxCountOfPerOrder: 10,
+            //         quantityOfCurrent: 288,
+            //         id: 'Oo6GAvITixzVhxpNa4l0',
+            //         levels: [],
+            //         price: 100,
+            //         types: [],
+            //         photos: [[Object]],
+            //         traits: [],
+            //     }]
+            //
+            // const result = utiller.getMergedArrayBy(a, b, 'id');
+            // console.log(result);
+
+
+            // const result = utiller.getArrayOfSummarizeBy([{name: 'david', count: 5}, {
+            //         name: 'nina',
+            //         count: 3
+            //     }, {name: 'david', count: 3}, {name: 'joe', count: 3}, {name: 'joe', count: 4}]
+            //     , 'name', 'count');
+            // console.log(result);
             // const latest = utiller.getMergedArrayBy([{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
             //     [{id: 321, age: 13}, {id: 123, age: 30}],
             //     'id')
@@ -1568,7 +1661,6 @@ if (configerer.DEBUG_MODE) {
             //     TradeNo: '2206300109135811',
             //     CheckMacValue: '8DEA413ABB0AAD935B04B1DEC7A5FE38F28E02E158E0E5FE6FAA691D5DB81FBC',
             // }
-
             // const utiller = new Utiller();
             // console.log(utiller.getECPayCheckMacValue(data))
             // console.log(data.CheckMacValue)

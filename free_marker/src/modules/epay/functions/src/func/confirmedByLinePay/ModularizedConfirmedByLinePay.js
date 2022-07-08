@@ -64,7 +64,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
     }
 
     async handleHttpOnCall(data, session) {
-        Util.validatePayloadObjectValid(data, ['idOfPreciseOrder', 'idOfTransaction', '49898481236'])
+        Util.validatePayloadObjectValid(data, ['idOfPreciseOrder', 'idOfTransaction'], '49898481236');
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(data.idOfPreciseOrder);
         this.validatePreciseOrder(itemOfPreciseOrder, false, '7448487434');
 
@@ -82,9 +82,11 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                     stateOfPayment: 'succeed',
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
                     timeOfPayment: Util.getCurrentTimeStamp(),
+                    idOfThirdPartyTradeNo: data.idOfTransaction,
                     messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
                 }
             }, itemOfPreciseOrder.id);
+            return {message: `confirmed by ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed`};
         } else {
             throw new ERROR(9999, `98895454354 LinePay線上付款款時發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[resultOfLinePayConfirm.returnCode]})`)
         }

@@ -20,7 +20,6 @@ import BaseComponent from "../../base/BaseComponent";
 import Functions from '../../functions';
 
 
-
 @inject("epayTest")
 @observer
 class EpayTestComponent extends BaseEpayTestComponent {
@@ -32,18 +31,23 @@ class EpayTestComponent extends BaseEpayTestComponent {
     }
 
     onEpayTestCreatePreciseOrderButtonClicked(param) {
-       this.getStore().performEPayCreateOrderBehavior().then();
+        this.getStore().performEPayCreateOrderBehavior().then();
     }
 
     onEpayTestCheckoutByEcPayButtonClicked(param) {
         this.getStore().performCheckoutByECPayBehavior().then();
     }
+
     onEpayTestCheckoutByLinePayButtonClicked(param) {
         this.getStore().performCheckoutByLinePayBehavior().then();
     }
 
-    onEpayTestFindEPayPageByIdButtonClicked(param) {
+    onEpayTestFindEcPayPageByIdButtonClicked(param) {
         this.getStore().performECPayPageById().then();
+    }
+
+    onEpayTestFindLinePayPageByIdButtonClicked(param) {
+        this.getStore().performLinePayPageById().then();
     }
 
     /** -------------------- async api -------------------- **/

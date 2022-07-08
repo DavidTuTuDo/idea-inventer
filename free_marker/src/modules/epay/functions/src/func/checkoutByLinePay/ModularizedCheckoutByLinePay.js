@@ -65,7 +65,6 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                     quantity: item.quantity,
                     price: item.price,
                     imageUrl: item.imageUrlOfProduct,
-
                 }
             })
         }
@@ -83,15 +82,15 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                 }
             ],
             redirectUrls: {
-                confirmUrl: libpath.join(Config.host, 'purchaseSucceed'),
-                cancelUrl: libpath.join(Config.host, 'purchaseFail'),
+                confirmUrl: libpath.join(Config.host, 'epayBehaviorOfConfirmLinePay'),
+                cancelUrl: libpath.join(Config.host, 'epayPurchaseOfHistory/pending'),
             },
             options: {
                 extra: {
                     branchName: this.getBranchName()
                 },
                 display: {
-                    locale:'zh_TW'
+                    locale: 'zh_TW'
                 }
             }
         };
@@ -106,14 +105,14 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         const self = this;
         const idOfPreciseOrder = data.idOfPreciseOrder;
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(itemOfPreciseOrder, true,'45421321');
+        this.validatePreciseOrder(itemOfPreciseOrder, true, '45421321');
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder);
         const resultOfLinePayRequest = await this.linePayerRef.request(payloadOfLinePay);
         if (_.isEqual(resultOfLinePayRequest.returnCode, '0000')) {
 
             await Api.updatePreciseOrderItemAtomically((latestItem, transaction) => {
                 latestItem.exists = true;
-                self.validatePreciseOrder(latestItem, true,'15544713');
+                self.validatePreciseOrder(latestItem, true, '15544713');
                 return {
                     procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_LINEPAY,
                     idOfThirdPartyTradeNo: resultOfLinePayRequest.info.transactionId,

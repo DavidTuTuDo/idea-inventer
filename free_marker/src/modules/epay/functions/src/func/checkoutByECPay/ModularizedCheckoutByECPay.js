@@ -16,7 +16,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
 
   async handleHttpOnCall(data, session) {
     console.log(`CheckoutByByECPay帶進來的資訊:`, data);
-    const idOfPreciseOrder = data.idOfPreciseOrder ?? 'Bq5lSfszDiSsmEa42kw0'
+    const idOfPreciseOrder = data.idOfPreciseOrder;
     /** 訂單編號*/
     if (Util.isUndefinedNullEmpty(idOfPreciseOrder)) {
       throw new ERROR(9999, `8181231 沒有訂單內容`)

@@ -17,7 +17,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     async handleHttpOnCall(data, session) {
-        const items = data.items;
+        const items = Util.getArrayOfSummarizeBy(data.items, 'id', 'quantity');
+        if (1 > _.size(items)) {
+            throw new ERROR(9999, '484118756 並沒有商品內容');
+        }
+
         this.remarkOfPreciseOrder = data.remarkOfPreciseOrder ?? '無備註內容';
         this.imageUrlOfHeadPhoto = data.imageUrlOfHeadPhoto;
 
@@ -29,12 +33,17 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         this.itemsOfPrecisely = Util.getMergedArrayBy(items, products, 'id');
         /** [{name,quantity,id,quantityOfCurrent(庫存量)}]*/
 
-
         /** 計算剩餘數量足夠否 */
         for (const item of this.itemsOfPrecisely) {
             if (item.quantity > item.quantityOfCurrent) {
                 throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
             }
+        }
+
+        /** 計算總價 */
+        const priceOfTotal = this.getTotalPrice(this.itemsOfPrecisely);
+        if(priceOfTotal> 20000) {
+            throw new ERROR(9999, '989474156214 目前不支援單筆超過兩萬的訂單')
         }
 
         /** 利用atomically method 扣掉數量, 過程中發現其中一個商品數量不足, 得再atomically加回去 再吐回去一個商品數量不足的警告*/
@@ -58,9 +67,6 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             }
             throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
         }
-
-        /** 計算總價 */
-        const priceOfTotal = _.sum(this.itemsOfPrecisely.map((item) => item.quantity * item.price))
 
         /** 成立訂單 */
         const result = await Api.submitPreciseOrderItem({

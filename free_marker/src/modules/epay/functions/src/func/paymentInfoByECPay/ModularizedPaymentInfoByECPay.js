@@ -63,7 +63,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
 
     async handleHttpOnRequest(request, response) {
         const contentOfPaymentInfo = request.body;
-        Util.appendInfo(`以下是PaymentInfoByECPay的帶入內容v2:`, contentOfPaymentInfo);
+        Util.appendInfo(`以下是PaymentInfoByECPay的帶入內容:`, contentOfPaymentInfo);
 
 
         /** isValidPaymentInfo */
@@ -88,6 +88,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         const idOfOrder = itemOfPreciseOrder.id;
         Util.appendInfo(`87412316842. 訂單(${itemOfPreciseOrder.id})的採用 '${typeOfPayment}' 付費方式`);
         if (_.startsWith(typeOfPayment, 'CVS')) {
+
             /** 當user選擇超商付款時 */
             await Api.updatePreciseOrderItemAtomically((itemOfOrder) => {
                 this.isValidOfEPayOrderUpdate(itemOfOrder);
@@ -99,6 +100,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 }, true);
             }, idOfOrder)
         } else if (_.startsWith(typeOfPayment, 'ATM')) {
+
             /** 當user選擇ATM付款時 */
             console.log(Util.getTimeStampByStringFormat(`${timeOfExpired} 23:59:59`));
             await Api.updatePreciseOrderItemAtomically((itemOfOrder) => {

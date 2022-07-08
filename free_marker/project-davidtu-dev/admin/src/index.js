@@ -70,7 +70,27 @@ import moment from 'moment';
                 statement: 'iphone11 樣板',
                 url: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2019/09/iphone11-1-920x613.jpg'
             }]
-        }])
+        },
+            {
+                name: 'iphoneX',
+                price: 40,
+                quantityOfCurrent: 300,
+                maxCountOfPerOrder: 10,
+                photos: [{
+                    statement: 'iphoneX 樣板',
+                    url: 'https://www.trustedreviews.com/wp-content/uploads/sites/54/2019/09/iphone11-1-920x613.jpg'
+                }]
+            }
+            , {
+                name: 'iphone8',
+                price: 30,
+                quantityOfCurrent: 300,
+                maxCountOfPerOrder: 10,
+                photos: [{
+                    statement: 'iphone8 樣板',
+                    url: 'https://mrmad.com.tw/wp-content/uploads/2020/10/iphone-12-vs-iphone-11.jpg'
+                }]
+            }])
     }
 
     async function sampleOfFetchUrl() {
@@ -78,9 +98,10 @@ import moment from 'moment';
         const urls = _.head(_.flattenDeep(products.map(item => item.photos)).map((item => item.url)));
         console.log(urls);
 
-         // console.log(_.head(_.flattenDeep([...urls])))
+        // console.log(_.head(_.flattenDeep([...urls])))
         // return Util.getValueOfPriority(this.imageUrlOfHeadPhoto, );
     }
+
     // await sampleOfFetchUrl();
     await submitSampleProduct();
 

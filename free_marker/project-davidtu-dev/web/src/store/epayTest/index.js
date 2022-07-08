@@ -40,7 +40,12 @@ class EpayTestStore extends BaseEpayTestStore {
         const products = await this.storeOfEPayProduct.fetchPreciseProducts(this.getComponent());
 
         const productOne = Util.getRandomItemOfArray(products);
+        await Util.syncDelay(100);
         const productTwo = Util.getRandomItemOfArray(products);
+        await Util.syncDelay(100);
+        const productThree = Util.getRandomItemOfArray(products);
+        await Util.syncDelay(100);
+        const productFour = Util.getRandomItemOfArray(products);
 
         const items = [
             {
@@ -48,6 +53,12 @@ class EpayTestStore extends BaseEpayTestStore {
                 quantity: Util.getRandomValue(1, 3)
             }, {
                 id: productTwo.id,
+                quantity: Util.getRandomValue(1, 3)
+            }, {
+                id: productThree.id,
+                quantity: Util.getRandomValue(1, 3)
+            }, {
+                id: productFour.id,
                 quantity: Util.getRandomValue(1, 3)
             }
         ]
@@ -71,6 +82,17 @@ class EpayTestStore extends BaseEpayTestStore {
             const order = await this.storeOfEPayOrder.fetchPreciseOrderItem(this.getComponent(), id);
             const textOfRender = order.contentOfRender;
             this.getComponent().renderHtmlOfDocument(textOfRender);
+        } else {
+            this.getComponent().showInfoSnackMessage(`輸入匡不可為空`)
+        }
+    }
+
+    async performLinePayPageById() {
+        const id = this.getIdOfPreciseOrderInput();
+        if (!Util.isUndefinedNullEmpty(id)) {
+            const order = await this.storeOfEPayOrder.fetchPreciseOrderItem(this.getComponent(), id);
+            const textOfRender = order.contentOfRender;
+            this.getComponent().routeToLinePayCheckoutPage(JSON.parse(textOfRender))
         } else {
             this.getComponent().showInfoSnackMessage(`輸入匡不可為空`)
         }

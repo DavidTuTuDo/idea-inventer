@@ -677,6 +677,10 @@ class BaseComponent extends MuiComponent {
         this.setSnackViewVisibility(true, message, {type: `info`})
     }
 
+    showErrorSnackMessage(message) {
+        this.setSnackViewVisibility(true, message, {type: `error`})
+    }
+
     /**
      * extra.type: |'error','success','info','warning' |
      * extra.func.tack 只能放 async task */

@@ -125,7 +125,9 @@ class CommonStyle {
 
   /** => following for epayTest  component  */
 
-  EpayTestFindEPayPageByIdButton = {};
+  EpayTestFindLinePayPageByIdButton = {};
+
+  EpayTestFindEcPayPageByIdButton = {};
 
   EpayTestIdOfPreciseOrderInputTextField = {};
 

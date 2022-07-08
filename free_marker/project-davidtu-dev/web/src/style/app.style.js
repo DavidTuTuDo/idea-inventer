@@ -125,7 +125,9 @@ class AppStyle {
 
   /** => following for epayTest  component  */
 
-  EpayTestFindEPayPageByIdButton = {};
+  EpayTestFindLinePayPageByIdButton = {};
+
+  EpayTestFindEcPayPageByIdButton = {};
 
   EpayTestIdOfPreciseOrderInputTextField = {};
 
