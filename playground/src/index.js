@@ -16,8 +16,18 @@ export {playground as playground}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const latest = _.flattenDeep([['1','2','3'],['bbb','vccc','ddd'],['#$%#$','@!#12','@!#1']]);
-            console.log(latest);
+            // const latest = _.flattenDeep([['1','2','3'],['bbb','vccc','ddd'],['#$%#$','@!#12','@!#1']]);
+            // console.log(latest);
+
+            // const sample = {
+            //     abc: {aa: 'aa', bb: 'bb'},
+            //     def: {cc: 'cc', dd: 'dd'}
+            // }
+            // const copyOfDEF = sample.def;
+            // delete sample.def;
+            // console.log(sample, copyOfDEF);
+
+
             // const AtoZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
             // const oneToTen = '123456789';
             // const length = 5

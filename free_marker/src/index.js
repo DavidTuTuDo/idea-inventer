@@ -106,6 +106,13 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    forceToComponentModule = false;
+    /** 強轉成 component module*/
+
+    componentsOfExtra = [];
+    /** component module裡面可以再放components, 讓一系列相同概念的邏輯可放在一起 */
+
+
     deployToRemote = true;
     /** 用來控制cloudfunctions要不要部署到遠端 */
 
@@ -643,8 +650,7 @@ class CodegenNode {
      * module class 會persist到 free_marker/src/modules/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
     isModuleComponent() {
         const ancestor = this.getNodeOfComponent();
-        const modules = Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE);
-        return Util.has(modules, ancestor.getName());
+        return ancestor.forceToComponentModule ?? false;
     }
 
     getListOfModuleComponent() {
@@ -5574,7 +5580,7 @@ class ProjectFileHandler extends PathBase {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
                 (each) => _.startsWith(_.toLower(each.dirName), module) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/component/${module}`,
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/component/${file.dirName}`,
                     file.fileNameExtension);
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
@@ -6811,7 +6817,14 @@ class ProjectFileHandler extends PathBase {
         const source = this.nodeOfAncestor;
         for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
             if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
-                CodegenNode.appendChildInArray(source.getComponents(), require(file.absolute).default)
+                const content = require(file.absolute).default;
+                const componentsOfExtra = content.componentsOfExtra ?? [];
+                delete content.componentsOfExtra;
+                for (const rawOfComponent of [content, ...componentsOfExtra]) {
+                    /** rawOfComponent 代表沒有被enrich過 */
+                    rawOfComponent.forceToComponentModule = true;
+                    CodegenNode.appendChildInArray(source.getComponents(), rawOfComponent)
+                }
             }
         }
 

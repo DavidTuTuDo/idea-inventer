@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorTestSubTitleTextField = {};
@@ -61,9 +63,23 @@ class AppStyle {
 
   NavigatorDiv = {};
 
+  /** => following for epayPurchaseOfHistory  component  */
+
+  EpayPurchaseOfHistoryMessageOfFreezeTypography = {};
+
+  EpayPurchaseOfHistoryDiv = {};
+
+  /** => following for epayBehaviorOfConfirmLinePay  component  */
+
+  EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
+
+  EpayBehaviorOfConfirmLinePayDiv = {};
+
   /** => following for epay  component  */
 
-  EpayDiv = {};
+  EpayMessageOfEPayTypography = {};
+
+  EpayView = {};
 
   /** => following for account  component  */
 
