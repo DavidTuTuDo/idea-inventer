@@ -6,7 +6,6 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseCheckoutByECPay from "./BaseCheckoutByECPay";
 
 class CheckoutByECPay extends ModularizedCheckoutByECPay {
   /** -------------------- fields -------------------- **/

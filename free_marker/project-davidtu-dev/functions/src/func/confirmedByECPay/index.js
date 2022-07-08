@@ -6,7 +6,6 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseConfirmedByECPay from "./BaseConfirmedByECPay";
 
 class ConfirmedByECPay extends ModularizedConfirmedByECPay {
   /** -------------------- fields -------------------- **/

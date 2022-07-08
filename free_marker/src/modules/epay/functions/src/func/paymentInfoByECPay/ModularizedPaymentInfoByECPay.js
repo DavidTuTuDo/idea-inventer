@@ -67,7 +67,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
 
 
         /** isValidPaymentInfo */
-        Util.isPayloadObjectValid(contentOfPaymentInfo, ['CheckMacValue', 'MerchantTradeNo', 'MerchantID', 'PaymentType'], 5481213501);
+        Util.validatePayloadObjectValid(contentOfPaymentInfo, ['CheckMacValue', 'MerchantTradeNo', 'MerchantID', 'PaymentType'], 5481213501);
 
         /** 檢查 CheckMacValue */
         this.isECPayCheckMacValueValid(contentOfPaymentInfo, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, 48415468462);
@@ -120,12 +120,17 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         return 'update ECPAY paymentInfo succeed';
     }
 
-    isValidOfEPayOrderUpdate(item) {
-        const keywords = _.split(item.procedureOfPayment, Util.getSeparatorOfUnique()) /** 第一個是TYPE_OF_THIRD_PARTY(EPAY,LINEPAY), 第二個是付款方式(CVS,ATM,CREDIT)*/
+    isValidOfEPayOrderUpdate = (item) => {
+        const keywords = _.split(item.procedureOfPayment, Util.getSeparatorOfUnique())
+        /** 第一個是TYPE_OF_THIRD_PARTY(EPAY,LINEPAY), 第二個是付款方式(CVS,ATM,CREDIT)*/
+        item.exists = true;
+        this.validatePreciseOrder(item, false, '4844314411201');
+
         if (_.size(keywords) > 1) {
             Util.appendInfo(`87412316842. 訂單(${item.id})的付費方式(${item.procedureOfPayment})已無法更改`);
             throw new ERROR(9999, `87412316842. 訂單(${item.id})的付費方式(${item.procedureOfPayment})已無法更改`)
         }
+
     }
 
     /** -------------------- async api -------------------- **/

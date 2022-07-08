@@ -1512,10 +1512,10 @@ class Utiller {
      * @param idOfError 用在每個呼叫的method, 有個stack trace的概念
      *
      *
-     *   console.log(utiller.isPayloadObjectValid({a: 3, b: 4}, ['a',{b:(value) => value > 5}]));
+     *   console.log(utiller.validatePayloadObjectValid({a: 3, b: 4}, ['a',{b:(value) => value > 5}]));
      *   //ATTRIBUTE:'b' is not valid of custom rule
      */
-    isPayloadObjectValid(content, rules = [], idOfError = this.getRandomHash(10)) {
+    validatePayloadObjectValid(content, rules = [], idOfError = this.getRandomHash(10)) {
         if (this.isUndefinedNullEmpty(content)) {
             throw new ERROR(9999, `${idOfError} content(pay-load) is undefined || empty`);
         }
@@ -1548,7 +1548,7 @@ if (configerer.DEBUG_MODE) {
             // const time = utiller.getTimeStampByStringFormat('2022/07/03 15:04:19');
             // console.log(utiller.getECPayCurrentTimeFormat(time));
             // // console.log(utiller.getTimeStampByStringFormat('2022/07/03 15:04:19'));
-            // console.log(utiller.isPayloadObjectValid({a: 3, b: 4}, ['a', {b: (value) => value > 5}]));
+            // console.log(utiller.validatePayloadObjectValid({a: 3, b: 4}, ['a', {b: (value) => value > 5}]));
             // const data = {
             //     CustomField1: '',
             //     CustomField2: '',

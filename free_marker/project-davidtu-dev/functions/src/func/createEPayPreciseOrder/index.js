@@ -6,7 +6,6 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import BaseCreateEPayPreciseOrder from "./BaseCreateEPayPreciseOrder";
 
 class CreateEPayPreciseOrder extends ModularizedCreateEPayPreciseOrder {
   /** -------------------- fields -------------------- **/

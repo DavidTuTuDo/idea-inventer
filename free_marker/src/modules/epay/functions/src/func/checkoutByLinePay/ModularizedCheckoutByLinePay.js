@@ -72,7 +72,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
 
         return {
             amount: itemOfPreciseOrder.priceOfTotal,
-            currency: 'TWD',
+            currency: itemOfPreciseOrder.typeOfCurrency,
             orderId: itemOfPreciseOrder.id,
             packages: [
                 {
@@ -89,6 +89,9 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
             options: {
                 extra: {
                     branchName: this.getBranchName()
+                },
+                display: {
+                    locale:'zh_TW'
                 }
             }
         };
@@ -103,16 +106,16 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         const self = this;
         const idOfPreciseOrder = data.idOfPreciseOrder;
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(itemOfPreciseOrder, '45421321');
+        this.validatePreciseOrder(itemOfPreciseOrder, true,'45421321');
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder);
         const resultOfLinePayRequest = await this.linePayerRef.request(payloadOfLinePay);
         if (_.isEqual(resultOfLinePayRequest.returnCode, '0000')) {
 
             await Api.updatePreciseOrderItemAtomically((latestItem, transaction) => {
                 latestItem.exists = true;
-                self.validatePreciseOrder(latestItem,'15544713');
+                self.validatePreciseOrder(latestItem, true,'15544713');
                 return {
-                    procedureOfPayment: 'LinePay',
+                    procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_LINEPAY,
                     idOfThirdPartyTradeNo: resultOfLinePayRequest.info.transactionId,
                     infoOfPayment: resultOfLinePayRequest.info.paymentAccessToken,
                     contentOfRender: `${JSON.stringify(resultOfLinePayRequest.info.paymentUrl)}`
@@ -123,7 +126,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                 web: resultOfLinePayRequest.info.paymentUrl.web
             };
         } else {
-            throw new ERROR(9999, `LinePay付款發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT[resultOfLinePayRequest.returnCode]})`)
+            throw new ERROR(9999, `4541214474 LinePay申請線上付款發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT[resultOfLinePayRequest.returnCode]})`)
         }
     }
 
