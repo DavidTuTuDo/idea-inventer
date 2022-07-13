@@ -16,6 +16,10 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         super(props);
     }
 
+    preCheckOfCustomizeRule() {
+        throw new ERROR(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
+    }
+
     async handleHttpOnCall(data, session) {
         const items = Util.getArrayOfSummarizeBy(data.items, 'id', 'quantity');
         if (1 > _.size(items)) {
@@ -45,6 +49,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if(priceOfTotal> 20000) {
             throw new ERROR(9999, '989474156214 目前不支援單筆超過兩萬的訂單')
         }
+
+        this.preCheckOfCustomizeRule();
 
         /** 利用atomically method 扣掉數量, 過程中發現其中一個商品數量不足, 得再atomically加回去 再吐回去一個商品數量不足的警告*/
 

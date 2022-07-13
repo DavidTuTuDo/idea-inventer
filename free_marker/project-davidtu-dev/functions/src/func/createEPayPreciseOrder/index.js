@@ -14,6 +14,10 @@ class CreateEPayPreciseOrder extends ModularizedCreateEPayPreciseOrder {
   constructor(props) {
     super(props);
   }
+
+  preCheckOfCustomizeRule(){
+    Util.appendInfo(`488154543545 preCheckOfCustomizeRule succeed`);
+  }
   /** -------------------- async api -------------------- **/
 }
 export default new CreateEPayPreciseOrder();

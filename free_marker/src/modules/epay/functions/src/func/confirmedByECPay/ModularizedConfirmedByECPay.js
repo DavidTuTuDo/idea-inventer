@@ -64,6 +64,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                 },
                 preciseOrder.id
             );
+            this. customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
             return '1|OK';
         } else {
@@ -80,6 +81,10 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
         }
     }
 
+    customizeBehaviorOfSucceedTrade(){
+        throw new ERROR(9999, `47498454876 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
+        insert(例專案:月薪) 應該要增加 工作行事曆到甲方`)
+    }
     /** -------------------- async api -------------------- **/
 }
 

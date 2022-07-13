@@ -14,6 +14,10 @@ class ConfirmedByLinePay extends ModularizedConfirmedByLinePay {
   constructor(props) {
     super(props);
   }
+
+  customizeBehaviorOfSucceedTrade(){
+    Util.appendInfo(`48453134213, customizeBehaviorOfSucceedTrade() completed`);
+  }
   /** -------------------- async api -------------------- **/
 }
 export default new ConfirmedByLinePay();

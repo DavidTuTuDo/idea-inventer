@@ -14,6 +14,10 @@ class ConfirmedByECPay extends ModularizedConfirmedByECPay {
   constructor(props) {
     super(props);
   }
+
+  customizeBehaviorOfSucceedTrade(){
+    Util.appendInfo(`4844456187122, customizeBehaviorOfSucceedTrade() completed`);
+  }
   /** -------------------- async api -------------------- **/
 }
 export default new ConfirmedByECPay();
