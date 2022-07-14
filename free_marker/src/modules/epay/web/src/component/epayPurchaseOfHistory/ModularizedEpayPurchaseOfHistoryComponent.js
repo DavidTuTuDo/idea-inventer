@@ -22,9 +22,8 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     isValidOfParamOfTypeOfTab(string) {
-        return Util.containsBy(['completed', 'pending', 'canceled', 'refund'], string);
+        return Util.containsBy(['completed', 'pending', 'failure'], string);
     }
-
 
     /** -------------------- async api -------------------- **/
 }

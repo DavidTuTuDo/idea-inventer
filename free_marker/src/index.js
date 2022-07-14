@@ -26,6 +26,7 @@ const FILENAME_OF_SOURCE_JS = `source.js`;
 const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
+const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
@@ -94,7 +95,7 @@ const VIEW_IMPORTS =
             from: `@material-ui/core`,
             views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
-                'Drawer', 'ListItem', 'List']
+                'Drawer', 'ListItem', 'List', 'Tabs', 'Tab',]
         },
         {
             from: `react-slideshow-image`,
@@ -105,6 +106,8 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    valueOfTabDefault = '';
 
     forceToComponentModule = false;
     /** 強轉成 component module*/
@@ -195,6 +198,7 @@ class CodegenNode {
 
     needDetail;
     /** 當type === array, 而且想獲得uidOfDetail,必須加上這個屬性*/
+
     detailPage;
     /** 想要產出path/{uidOfDetail}/的概念*/
 
@@ -521,8 +525,6 @@ class CodegenNode {
 
     click;
 
-    change = false;
-
     defaultValue;
     /** 可以指定attribute的default value */
 
@@ -569,6 +571,9 @@ class CodegenNode {
         return this.methods;
     }
 
+    getValueOfTabDefault() {
+        return this.valueOfTabDefault;
+    }
 
     getHostOfCloudFunction() {
         const node = this.getRootNode();
@@ -664,12 +669,13 @@ class CodegenNode {
     }
 
     /** 像是Switch, ToogleButton這類*/
-    needOnChangeBehavior() {
-        return this.change || Util.or(
-            this.isSliderView(),
-            this.isSwitchView(),
-            this.isTextFieldView(),
-            this.isAutoCompleteView(),
+    needOnChangeBehavior = (type = 'default') => {
+        return Util.or(
+            this.isSliderView(type),
+            this.isSwitchView(type),
+            this.isTextFieldView(type),
+            this.isAutoCompleteView(type),
+            this.isTabListView(type),
         );
     }
 
@@ -882,7 +888,7 @@ class CodegenNode {
 
     isContainer() {
         return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper'
-            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer');
+            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment');
     }
 
     getFunctionNameOfObservableObject() {
@@ -1099,7 +1105,7 @@ class CodegenNode {
         this.contents.push(...contents);
     }
 
-    appendMethod(...methods) {
+    appendMethods(...methods) {
         this.getNodeOfComponent().methods.push(...methods);
         this.methods.push(...methods)
     }
@@ -1492,57 +1498,79 @@ class CodegenNode {
         return !!this.outer && this.outer
     }
 
-    isImageView() {
-        return this.isAttributeView('img');
+    isImageView(type = 'default') {
+        return this.isAttributeView('img', type);
     }
 
-    isAudioPlayer() {
-        return this.isAttributeView('AudioPlayer');
+    isAudioPlayer(type = 'default') {
+        return this.isAttributeView('AudioPlayer', type);
     }
 
-    isAvatarView() {
-        return this.isAttributeView('Avatar');
+    isAvatarView(type = 'default') {
+        return this.isAttributeView('Avatar', type);
     }
 
-    isTextFieldView() {
-        return this.isAttributeView('TextField');
+    isTextFieldView(type = 'default') {
+        return this.isAttributeView('TextField', type);
     }
 
+    isTabItemView(type = 'default') {
+        return this.isAttributeView('Tab', type);
+    }
 
-    isSimpleViewPager() {
+    isTabListView = (type = 'default') => {
+        return this.isAttributeView('Tabs', type) || this.isAttributeView('TabList', type);
+    }
+
+    isSimpleViewPager(type = 'default') {
         return this.isArray() && this.isAttributeView('SimpleViewPager');
     }
 
-    isSimpleGrid() {
+    isSimpleGrid(type = 'default') {
         return this.isArray() && this.isAttributeView('SimpleGrid');
     }
 
-    isSimpleSwitch() {
+    isSimpleSwitch(type = 'default') {
         return this.isObject() && this.isAttributeView('SimpleSwitch');
     }
 
-    isAutoCompleteView() {
+    isAutoCompleteView(type = 'default') {
         return this.isAttributeView('Autocomplete')
     }
 
-    isRadioView() {
+    isRadioView(type = 'default') {
         return this.isAttributeView('Radio');
     }
 
-    isSwitchView() {
+    isSwitchView(type = 'default') {
         return this.isAttributeView('Switch');
     }
 
-    isSliderView() {
+    isSliderView(type = 'default') {
         return this.isAttributeView('Slider');
     }
 
-    isFloatBackgroundView() {
+    isFloatBackgroundView(type = 'default') {
         return this.isAttributeView('FloatBackgroundView');
     }
 
-    isAttributeView(view) {
-        return this.isAttribute() && _.isEqual(this.getView(), view);
+    isAttributeView(view, type = 'default') {
+        const self = this;
+
+        function getViewOfTarget() {
+            switch (type) {
+                case 'list':
+                    return self.getListView();
+                case 'wrap':
+                    return self.getWrapView();
+                case 'listWrap':
+                    return self.getListWrapView();
+                default:
+                    return self.getView();
+            }
+        }
+
+        return this.isAttribute() && _.isEqual(getViewOfTarget(), view);
     }
 
     /** 就是指number, string 這類的物件啦 */
@@ -2083,7 +2111,7 @@ class CodegenNode {
     }
 
     getDefaultValueByType(isAdmin) {
-        if (this.defaultValue) {
+        if (!Util.isUndefinedNullEmpty(this.defaultValue)) {
             const stringOfDefault = JSON.stringify(this.defaultValue);
             if (this.isArray()) {
                 return `${stringOfDefault}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
@@ -4129,6 +4157,10 @@ class ComponentBuilder extends BaseBuilder {
 
     getJSXStrings(param) {
         function normalize(value) {
+            if (_.isNumber(value)) {
+                return `{${value}}`;
+            }
+
             if (_.isString(value) && _.startsWith(value, `###`)) {
                 return `{${Util.getStringOfDropHeadSign(value, `#`)}}`;
             }
@@ -4136,6 +4168,7 @@ class ComponentBuilder extends BaseBuilder {
             if (_.isBoolean(value)) {
                 return `{${_.toString(value)}}`;
             }
+
             return `{${JSON.stringify(value)}}`;
         }
 
@@ -4185,11 +4218,6 @@ class ComponentBuilder extends BaseBuilder {
         for (const key in props) {
             const value = props[key];
 
-            if (_.isBoolean(value)) {
-                /** boolean always pass, 忘繼為什麼要 continued */
-            } else {
-                if (!!!props[key]) continue
-            }
             stmt.push(`${key}=${normalize(props[key])}\n`);
         }
 
@@ -5713,7 +5741,6 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-
     /** 就是把像是index file, 這樣的手寫檔案放到 genSrc,的相對位置
      * exclude = {
      *      type:
@@ -6109,6 +6136,19 @@ class ProjectFileHandler extends PathBase {
                 );
             }
 
+            const objectOfAppend = {
+                label: {
+                    name: 'label',
+                    type: 'string',
+                    description: `作為UI顯示用的顯示字樣`
+                },
+                value: {
+                    name: 'value',
+                    type: 'string',
+                    description: `作為邏輯判斷的依據`,
+                }
+            }
+
             if (node.isSimpleSelected()) {
 
                 if (!node.isArray()) {
@@ -6123,16 +6163,6 @@ class ProjectFileHandler extends PathBase {
 
                 node.setDefaultValue(node.getDefaultValueOfSimpleSelected())
 
-                const objectOfAppend = {
-                    label: {
-                        name: 'label',
-                        type: 'string',
-                    },
-                    value: {
-                        name: 'value',
-                        type: 'string',
-                    }
-                }
 
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
@@ -6160,19 +6190,29 @@ class ProjectFileHandler extends PathBase {
                 for (const key in objectOfAppend) {
                     node.appendChildrenWithJsons(objectOfAppend[key]);
                 }
+            } else if (node.isTabItemView()) {
+                objectOfAppend.type = {
+                    name: 'type',
+                    type: 'string',
+                    description: `因為tab的value是number,不方便作為邏輯一目瞭然的判斷,增加type的選項`,
+                }
+                objectOfAppend.value.type = 'number';
+                objectOfAppend.value.defaultValue = node.getValueOfTabDefault();
+                node.click = true;
+                for (const key in objectOfAppend) {
+                    node.appendChildrenWithJsons(objectOfAppend[key]);
+                }
             }
 
             if (node.hasAlertMenu()) {
-
                 if (node.withoutWrapView()) {
                     node.setWrapView('React.Fragment');
                 }
 
                 const stringsOfItem = [];
-
                 for (const item of node.alertMenu.items) {
                     const functionName = node.getFunctionNameOfClicked(item.name);
-                    node.appendMethod(
+                    node.appendMethods(
                         {
                             functionName,
                             params: ['param']
@@ -6198,6 +6238,31 @@ class ProjectFileHandler extends PathBase {
 
     /** 針對view的種類, 增加與store互動的規則 例如TextField就要有onChange */
     enrichNodesOfBehavior(nodes) {
+
+        function appendPropsOfNode(node, functionOfView, props = [], methods = [], nodesOfParent = []) {
+            for (const type of TYPES_OF_PROPS_VIEW) {
+                if (functionOfView(type)) {
+                    switch (type) {
+                        case 'list':
+                            node.appendListProps(...props)
+                            break;
+                        case 'listWrap':
+                            node.appendListWrapProps(...props)
+                            break;
+                        case 'wrap':
+                            node.appendWrapProps(...props)
+                            break;
+                        case 'default':
+                            node.appendViewProps(...props)
+                            break;
+                    }
+                    node.appendMethods(...methods);
+
+                    for (const _node of nodesOfParent)
+                        node.getParentNode().appendChildrenWithJsons(_node)
+                }
+            }
+        }
 
         function getStmtOfEventInValidate(node, functionName) {
             const stmts = [];
@@ -6282,7 +6347,7 @@ class ProjectFileHandler extends PathBase {
                     }`
                     })
 
-                    node.appendMethod({
+                    node.appendMethods({
                         functionName: node.getFunctionNameOfSearchPressed(),
                         params: [node.getFieldName(), node.getPreciseAttributeParentName()],
                         loginOnly: node.hasLoginRequiredDialog(),
@@ -6348,12 +6413,15 @@ class ProjectFileHandler extends PathBase {
                 )
             }
 
+
             if (node.isTextFieldView() || node.isRadioView() || node.isSliderView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
             } else if (node.isAudioPlayer() || node.isImageView() || node.isAvatarView()) {
                 node.appendViewProps({src: `###${node.getName()}`})
+            } else if (node.isTabItemView()) {
+                node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
                 node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
@@ -6461,30 +6529,41 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({key: `###${node.getName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`})
             }
 
-            if (node.needOnChangeBehavior()) {
-                node.appendViewProps({
-                    onChange: `###(event,value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`
-                })
+            appendPropsOfNode(node, node.needOnChangeBehavior,
+                [{onChange: `###(event,value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`},
 
-                node.appendMethod({
+                ],
+                [{
                     functionName: node.getFunctionNameOfOnChanged(),
                     params: ['param'],
                     loginOnly: node.hasLoginRequiredDialog(),
-                })
-            }
+                }],
+            )
+
+            appendPropsOfNode(node, node.isTabListView,
+                [{value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}],
+                [],
+                [
+                    {
+                        name: `valueOfSelectedTab`,
+                        type: `number`,
+                        defaultValue: node.getValueOfTabDefault(),
+                    }
+                ]
+            )
 
             if (node.isAudioPlayer()) {
-                node.appendMethod({
+                node.appendMethods({
                     functionName: node.getFunctionNameOfPlayEnd(),
                     params: ['param'],
                 })
 
-                node.appendMethod({
+                node.appendMethods({
                     functionName: node.getFunctionNameOfPlayError(),
                     params: ['param'],
                 })
 
-                node.appendMethod({
+                node.appendMethods({
                     functionName: node.getFunctionNameOfOnPlay(),
                     params: ['param'],
                 })
@@ -6504,7 +6583,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isClickView()) {
-                node.appendMethod({
+                node.appendMethods({
                     functionName: node.getFunctionNameOfClicked(),
                     params: ['param'],
                     loginOnly: node.hasLoginRequiredDialog(),
@@ -6522,6 +6601,9 @@ class ProjectFileHandler extends PathBase {
                 if (node.hasConfirmDialog()) {
                     onClickStmts.push(`objectOfParam.view = event;`)
                     onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
+                } else if (node.isTabItemView()) {
+                    onClickStmts.push(`self.getStore().setValueOfSelectedTab(${node.getName()}.getValue())`)
+                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
                     onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
                 } else if (node.hasAlertMenu()) {
@@ -6544,9 +6626,8 @@ class ProjectFileHandler extends PathBase {
             if (node.needInjectView()) {
                 const params = [node.getObservableName(true)];
                 _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
-
                 const nameOfInjectView = node.getFunctionNameOfInjectView();
-                node.appendMethod({
+                node.appendMethods({
                     functionName: nameOfInjectView,
                     params
                 })
@@ -6559,12 +6640,11 @@ class ProjectFileHandler extends PathBase {
 
                 const functionNameOfInjectProps = node.getFunctionNameOfInjectProps();
                 node.appendSimpleProps(`...self.${functionNameOfInjectProps}(${params.join(',')})`)
-                node.appendMethod({
+                node.appendMethods({
                     functionName: functionNameOfInjectProps,
                     params,
                 })
             }
-
             this.enrichNodesOfBehavior(node.getChildren());
         }
 
@@ -6574,7 +6654,7 @@ class ProjectFileHandler extends PathBase {
             _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
             if (node.needInjectStyle()) {
                 const injectFunctionName = node.getFunctionNameOfInjectStyle(false);
-                node.appendMethod({
+                node.appendMethods({
                     functionName: injectFunctionName,
                     params,
                 })
@@ -6587,11 +6667,11 @@ class ProjectFileHandler extends PathBase {
             const clazzNameOfWrap = node.getClassNameOfLessUsage('wrap');
             if (node.needInjectWrapStyle()) {
                 const injectFunctionName = node.getFunctionNameOfInjectStyle(true);
-                node.appendMethod({
+                node.appendMethods({
                     functionName: injectFunctionName,
-                    params: [param],
+                    params,
                 })
-                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${param}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
             } else {
                 node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
             }
@@ -6730,7 +6810,7 @@ class ProjectFileHandler extends PathBase {
         function toEditorPageStruct(node) {
 
             if (node.isColumnAttribute() && !node.isCollection()) {
-                if (node.isImageView() || node.isImageView()) {
+                if (node.isImageView()) {
                     node.needImageDialog = false;
                     node.appendViewProps({
                         onClick: `###(param) => self.onImageEditorClicked({

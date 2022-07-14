@@ -29,7 +29,6 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
     }
 
     async onInitialFetchCompleted(collection) {
-        this.setMessageOfFreeze(`${this.getMessageOfFreeze()} ==> ${this.getParamOfTypeOfTabInPath()}`)
     }
 
 }
