@@ -65,7 +65,73 @@ class AppStyle {
 
   /** => following for epayPurchaseOfHistory  component  */
 
-  EpayPurchaseOfHistoryMessageOfFreezeTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButton = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfFuncDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoTopicTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoCopyButton = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoCodeTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTotalPriceLabelOfTotalPriceTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTotalPriceDiv = {};
+
+  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionPriceTypography = {};
+
+  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionQuantityTypography = {};
+
+  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionSpecificOfProductTypography = {};
+
+  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionNameOfProductDivWrap = {};
+
+  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionNameOfProductTypography = {};
+
+  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionDiv = {};
+
+  EpayPurchaseOfHistoryOrderBriefImageOfProductPhotoImg = {};
+
+  EpayPurchaseOfHistoryOrderBriefDivList = {};
+
+  EpayPurchaseOfHistoryOrderBriefDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailExtraIconButton = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdentityOfOrderButton = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopDiv = {};
+
+  EpayPurchaseOfHistoryOrderDivList = {};
+
+  EpayPurchaseOfHistoryOrderCard = {};
+
+  EpayPurchaseOfHistoryTabTabsList = {};
+
+  EpayPurchaseOfHistoryTabTab = {};
 
   EpayPurchaseOfHistoryDiv = {};
 
@@ -77,9 +143,11 @@ class AppStyle {
 
   /** => following for epay  component  */
 
+  EpayStatementTypography = {};
+
   EpayMessageOfEPayTypography = {};
 
-  EpayView = {};
+  EpayDiv = {};
 
   /** => following for account  component  */
 

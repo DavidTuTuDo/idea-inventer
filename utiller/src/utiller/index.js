@@ -866,15 +866,15 @@ class Utiller {
     }
 
     getMinuteFormatOfDuration(ds) {
-        moment.duration(ds).asMinutes();
+        return moment.duration(ds).asMinutes();
     }
 
     getSecondFormatOfDuration(ds) {
-        moment.duration(ds).asSeconds();
+        return moment.duration(ds).asSeconds();
     }
 
     getDayFormatOfDuration(ds) {
-        moment.duration(ds).asDays();
+        return moment.duration(ds).asDays();
     }
 
     /** param可以是timeStamp,也可是date,或是string

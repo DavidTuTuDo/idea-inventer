@@ -1,36 +1,34 @@
 import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
+  utiller as Util,
+  exceptioner as ERROR,
+  pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import {Application} from "../../";
+import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import {
-    makeAutoObservable,
-    makeObservable,
-    action,
-    observable,
-    comparer,
-    computed,
-    autorun,
-    runInAction,
+  makeAutoObservable,
+  makeObservable,
+  action,
+  observable,
+  comparer,
+  computed,
+  autorun,
+  runInAction,
 } from "mobx";
 import BaseEpayPurchaseOfHistoryStore from "./BaseEpayPurchaseOfHistoryStore";
 
 class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistoryStore {
+  /** -------------------- fields -------------------- **/
+  /** -------------------- functions -------------------- **/
 
-    constructor(props) {
-        super(props);
-    }
-
-    async onInitialFetchCompleted(collection) {
-    }
-
+  constructor(props) {
+    super(props);
+  }
+  /** -------------------- async api -------------------- **/
 }
-
 export default ModularizedEpayPurchaseOfHistoryStore;

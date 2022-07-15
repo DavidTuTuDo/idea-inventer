@@ -5,7 +5,7 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import { Application } from "../.";
+import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";

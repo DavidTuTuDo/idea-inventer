@@ -9,8 +9,8 @@ import {configerer} from "configerer";
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
  */
 
-let FAST_DEVELOP_MODE = false;
-let TARGET_COMPONENT = 'exam';
+let ENABLE_FAST_DEVELOP_MODE = false;
+let TARGET_COMPONENT_FAST_DEVELOP_MODE = 'exam';
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
@@ -5550,6 +5550,8 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildConfig() {
+        if(this.isWebPlatform() && ENABLE_FAST_DEVELOP_MODE) return;
+
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
@@ -5783,19 +5785,18 @@ class ProjectFileHandler extends PathBase {
                 const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, sourcePath));
 
                 const destFolder = Util.getFileDirPath(dest);
+
                 if (!fs.existsSync(destFolder)) {
                     Util.appendError(`overrideIndexFiles warning ,dest folder not exist
                     destFolder=> ''${destFolder}'' || sourceFileName=>''${from}''`);
                     Util.persistByPath(Util.getFileDirPath(dest));
-                    if (FAST_DEVELOP_MODE) {
-                        Util.appendError(`fast developer won't persist folder`)
-                        continue;
-                    }
                 }
+
                 Util.copySingleFile(from, dest, '', true);
                 /** 這真的太浪費時間了
                  * Util.rewriteFile2File(from, dest);
                  * */
+                Util.appendInfo(`成功複製檔案至 ${dest}`);
 
             }
         }
@@ -6530,9 +6531,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             appendPropsOfNode(node, node.needOnChangeBehavior,
-                [{onChange: `###(event,value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`},
-
-                ],
+                [{onChange: `###(event,value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
                 [{
                     functionName: node.getFunctionNameOfOnChanged(),
                     params: ['param'],
@@ -6541,8 +6540,7 @@ class ProjectFileHandler extends PathBase {
             )
 
             appendPropsOfNode(node, node.isTabListView,
-                [{value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}],
-                [],
+                [{value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}], [],
                 [
                     {
                         name: `valueOfSelectedTab`,
@@ -6931,7 +6929,7 @@ class ProjectFileHandler extends PathBase {
 
         const totalClassNames = [];
         for (let component of this.nodeOfAncestor.components) {
-            if (FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT))
+            if (ENABLE_FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT_FAST_DEVELOP_MODE))
                 continue;
             const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
             _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
@@ -6946,7 +6944,7 @@ class ProjectFileHandler extends PathBase {
         const totalClassNames = [];
         const totalEvents = [];
         for (let component of this.nodeOfAncestor.components) {
-            if (FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT))
+            if (ENABLE_FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT_FAST_DEVELOP_MODE))
                 continue;
 
             const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
@@ -6961,14 +6959,16 @@ class ProjectFileHandler extends PathBase {
         const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(paramProps).buildStoreIndexFiles();
-        await new AppBuilder(paramProps).buildWebpackNPackageJson();
-        await new AppBuilder(paramProps).buildCloudFunctionsApi();
-        await new AppBuilder(paramProps).buildRouterFile();
-        await new AppBuilder(paramProps).buildCookieFiles();
-        await new AppBuilder(paramProps).buildEventFolder(totalEvents);
-        await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
-        await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
-        await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
+        if (!ENABLE_FAST_DEVELOP_MODE) {
+            await new AppBuilder(paramProps).buildWebpackNPackageJson();
+            await new AppBuilder(paramProps).buildCloudFunctionsApi();
+            await new AppBuilder(paramProps).buildRouterFile();
+            await new AppBuilder(paramProps).buildCookieFiles();
+            await new AppBuilder(paramProps).buildEventFolder(totalEvents);
+            await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
+            await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
+            await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
+        }
         await new AppBuilder(paramProps).buildAppIndexFiles();
         this.buildDistAssetFolder();
     }
@@ -6981,6 +6981,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     buildCustomizePackages = async () => {
+        if(this.isWebPlatform() && ENABLE_FAST_DEVELOP_MODE) return;
         await new AppBuilder(this.props).buildCustomizeFiles(
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
@@ -7015,14 +7016,24 @@ class ProjectFileHandler extends PathBase {
     }
 
     async execute() {
+
+        function isCleanCurrentFile(file) {
+            return _.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) ||
+                (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')) ||
+                (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileNameExtension, 'index.js')) ||
+                (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'BaseApp.js')) ||
+                (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'index.js'))
+        }
+
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
             return {name: each.getName(), editor: each.isEditPage()}
         }))
 
-        FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
-        TARGET_COMPONENT = this.nodeOfAncestor.rapidBuild.componentName;
+        ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
+        TARGET_COMPONENT_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.componentName;
 
-        await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
+        await Util.cleanChildFiles(this.genRootPath, (each) => ENABLE_FAST_DEVELOP_MODE ?
+            isCleanCurrentFile(each) : true, 'node_modules');
         switch (this.platform) {
             case 'web':
                 await this.forWeb();
@@ -7036,6 +7047,7 @@ class ProjectFileHandler extends PathBase {
             default:
                 throw new ERROR(8014, `type ==> ${this.platform}`)
         }
+
         await this.buildCustomizePackages();
         await this.buildConfig();
         this.overrideEachFilesFromFolder(
@@ -7051,6 +7063,7 @@ class ProjectFileHandler extends PathBase {
                 keyword: 'png'
             }, ...this.getIgnoredFilesByPlatform()
         );
+
         if (this.isWebPlatform()) {
             await new AppBuilder(this.props).overrideLessFile();
         }
@@ -7320,7 +7333,7 @@ if (configerer.DEBUG_MODE) {
                 projectRootPath: CURRENT_PROJECT,
             }
             const builder = new BuildApplication(props)
-
+            const timeOfStart = Util.getCurrentTimeStamp();
             switch (Util.getNodeEnvVariable('type')) {
                 case 'functionsGenerateRelease':
                     await builder.generateReleaseFunctionsModule();
@@ -7407,6 +7420,7 @@ if (configerer.DEBUG_MODE) {
                     break
             }
 
+            Util.appendInfo(`${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
         }
     )();
 }

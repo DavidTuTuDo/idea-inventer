@@ -255,7 +255,7 @@ if (configerer.DEBUG_MODE) {
             // console.log(result);
             // result.forEach((doc) => {console.log(doc.data())})
 
-            console.log(result.data());
+            // console.log(result.data());
             // const snapshot = await handler.getToneListByKeyword('Bedasds');
             // const handler = new firebaser();gs();
             // const snapshot = await handler.getSingerListByKeyword('陳');
