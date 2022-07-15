@@ -333,8 +333,9 @@ class NodeUtiller extends Utiller {
             for (const file of files) {
                 if (this.isImageFile(file)) continue;
                 this.cleanFileContent(file.absolute);
+                this.appendInfo(`成功 cleanChildFiles() -> '${file.path}'`)
             }
-            await this.syncDelay(10);
+            await this.syncDelay(1);
             return files;
         }
         return false;

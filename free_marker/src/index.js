@@ -2646,6 +2646,28 @@ class ClassGenerator {
 
 
     async persist() {
+        if (ENABLE_FAST_DEVELOP_MODE) {
+            const folderName = Util.getFolderNameOfFilePath(this.filePath);
+            const ruleOfAllowFile = Util.or(
+                (_.startsWith(Util.getFileNameFromPath(this.filePath), `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
+                (_.startsWith(Util.getFileNameFromPath(this.filePath), `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
+                    Util.isEmptyFile(this.filePath)), /** 不存在的 ModularizedXXX 才建立,FAST MODE不會override files */
+                (_.startsWith(folderName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
+                    _.isEqual(Util.getFileNameFromPath(this.filePath, true), 'index.js') &&
+                    Util.isEmptyFile(this.filePath)), /** 不存在的 {TARGET_COMPONENT_FAST_DEVELOP_MODE}/index.js 才建立,FAST MODE不會override files */
+                _.isEqual(folderName, 'style'),
+                _.isEqual(folderName, 'less'),
+                _.isEqual(folderName, 'src'),
+                _.isEqual(folderName, 'store'),
+            )
+
+            if (!ruleOfAllowFile) {
+                console.log(`FAST MODE=>檔案不會建立, folderName=>'${folderName}':'${this.filePath}'`)
+                /** 當fast build的時候, 只保留/style/. /less/. /TARGET_COMPONENT_FAST_DEVELOP_MODE開頭/.  */
+                return;
+            }
+        }
+
         const stmts = [];
         if (_.size(this.classes) === 1) {
             if (!this.disableExportStmt) {
@@ -5386,12 +5408,9 @@ class AppBuilder extends ComponentBuilder {
         generator.disableDefaultImports();
         await generator.persist();
 
-        if (!fs.existsSync(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'))) {
-            this.appendMustacheFile('less.index.mustache',
-                Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
-            );
-            Util.appendInfo(`persist ./less/index.js succeed`);
-        }
+        await Util.deleteFileOrFolder(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'));
+        this.appendMustacheFile('less.index.mustache', Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js')));
+        Util.appendInfo(`persist ./less/index.js succeed`);
     }
 
     /**
@@ -5506,6 +5525,7 @@ class AppBuilder extends ComponentBuilder {
         Util.appendFile(file.absolute, latest, false, true);
     }
 
+    /** free_marker/template/.  */
     async overrideLessFile() {
         const less = libpath.join(this.freeMarkerRootPath, `less`);
         const files = Util.findFilePathBy(less);
@@ -5532,7 +5552,7 @@ class ProjectFileHandler extends PathBase {
         this.deployRemoteRules = false;
     }
 
-    buildDistAssetFolder() {
+    async buildDistAssetFolder() {
         const imageSrcFolder = libpath.join(this.projectPlatformPath, 'images');
         if (fs.existsSync(imageSrcFolder)) {
             Util.copyFromFolderToDestFolder(imageSrcFolder,
@@ -5550,8 +5570,6 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildConfig() {
-        if(this.isWebPlatform() && ENABLE_FAST_DEVELOP_MODE) return;
-
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
@@ -6929,8 +6947,6 @@ class ProjectFileHandler extends PathBase {
 
         const totalClassNames = [];
         for (let component of this.nodeOfAncestor.components) {
-            if (ENABLE_FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT_FAST_DEVELOP_MODE))
-                continue;
             const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
             _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
             /** 表示這可能是reference node產生出來className, 所以要filter */
@@ -6944,9 +6960,6 @@ class ProjectFileHandler extends PathBase {
         const totalClassNames = [];
         const totalEvents = [];
         for (let component of this.nodeOfAncestor.components) {
-            if (ENABLE_FAST_DEVELOP_MODE && !_.isEqual(component.getName(), TARGET_COMPONENT_FAST_DEVELOP_MODE))
-                continue;
-
             const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
             _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
             /** 表示這可能是reference node產生出來className, 所以要filter */
@@ -6959,6 +6972,10 @@ class ProjectFileHandler extends PathBase {
         const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(paramProps).buildStoreIndexFiles();
+        await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
+        await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
+        await new AppBuilder(paramProps).buildAppIndexFiles();
+        await this.buildDistAssetFolder();
         if (!ENABLE_FAST_DEVELOP_MODE) {
             await new AppBuilder(paramProps).buildWebpackNPackageJson();
             await new AppBuilder(paramProps).buildCloudFunctionsApi();
@@ -6966,11 +6983,7 @@ class ProjectFileHandler extends PathBase {
             await new AppBuilder(paramProps).buildCookieFiles();
             await new AppBuilder(paramProps).buildEventFolder(totalEvents);
             await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
-            await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
-            await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         }
-        await new AppBuilder(paramProps).buildAppIndexFiles();
-        this.buildDistAssetFolder();
     }
 
     async buildLessToCss() {
@@ -6981,7 +6994,6 @@ class ProjectFileHandler extends PathBase {
     }
 
     buildCustomizePackages = async () => {
-        if(this.isWebPlatform() && ENABLE_FAST_DEVELOP_MODE) return;
         await new AppBuilder(this.props).buildCustomizeFiles(
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
@@ -7018,11 +7030,15 @@ class ProjectFileHandler extends PathBase {
     async execute() {
 
         function isCleanCurrentFile(file) {
-            return _.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) ||
-                (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')) ||
-                (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileNameExtension, 'index.js')) ||
-                (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'BaseApp.js')) ||
+            return Util.or(
+                (_.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) && _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
+                _.isEqual(file.dirName, 'less'),
+                _.isEqual(file.dirName, 'style'),
+                (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')),
+                (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileNameExtension, 'index.js')),
+                (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'BaseApp.js')),
                 (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'index.js'))
+            )
         }
 
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
@@ -7034,6 +7050,8 @@ class ProjectFileHandler extends PathBase {
 
         await Util.cleanChildFiles(this.genRootPath, (each) => ENABLE_FAST_DEVELOP_MODE ?
             isCleanCurrentFile(each) : true, 'node_modules');
+
+
         switch (this.platform) {
             case 'web':
                 await this.forWeb();
@@ -7050,28 +7068,35 @@ class ProjectFileHandler extends PathBase {
 
         await this.buildCustomizePackages();
         await this.buildConfig();
-        this.overrideEachFilesFromFolder(
-            `common.style.js`
-            , `app.style.js`
-            , `mobile.style.js`
-            , `styles.less`
-            , {
-                type: 'extension',
-                keyword: 'svg'
-            }, {
-                type: 'extension',
-                keyword: 'png'
-            }, ...this.getIgnoredFilesByPlatform()
-        );
+        if (!ENABLE_FAST_DEVELOP_MODE)
+            this.overrideEachFilesFromFolder(
+                `common.style.js`
+                , `app.style.js`
+                , `mobile.style.js`
+                , `styles.less`
+                , {
+                    type: 'extension',
+                    keyword: 'svg'
+                }, {
+                    type: 'extension',
+                    keyword: 'css'
+                }, {
+                    type: 'extension',
+                    keyword: 'map'
+                }, {
+                    type: 'extension',
+                    keyword: 'png'
+                }, ...this.getIgnoredFilesByPlatform()
+            );
 
         if (this.isWebPlatform()) {
             await new AppBuilder(this.props).overrideLessFile();
         }
 
-        await this.removeEmptyFolder();
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
+        await this.removeEmptyFolder();
     }
 
     /** */
@@ -7291,21 +7316,6 @@ class BuildApplication {
 
     async overrideFiles(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
-        handler.overrideEachFilesFromFolder(
-            `common.style.js`
-            , `app.style.js`
-            , `mobile.style.js`
-            , `common.less`
-            , `app.less`
-            , `mobile.less`
-            , {
-                type: 'extension',
-                keyword: 'svg'
-            }, {
-                type: 'extension',
-                keyword: 'png'
-            }
-        );
         Util.appendInfo(
             `build ${platform}/src/base/... succeed!`
         );

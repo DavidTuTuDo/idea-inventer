@@ -392,9 +392,24 @@ class Utiller {
 
     /** ../folderName/fileName.xxx  => ./folderName */
     getFolderPathOfSpecificPath(path) {
-        const splited = path.split('/');
-        splited.pop();
-        return splited.join('/');
+        const split = path.split('/');
+        split.pop();
+        return split.join('/');
+    }
+
+    /**
+     * 取得folderName
+     *
+     * console.log(utiller.getFolderNameOfFilePath(`das/asdiasjiosd/jif/d.js`)); // jif
+     *
+     * */
+    getFolderNameOfFilePath(path) {
+        if (this.isValidFilePath(path)) {
+            const splits = path.split('/');
+            return _.nth(splits, -2);
+        } else {
+            throw new ERROR(9999, `64255615 path is not valid '${path}'`)
+        }
     }
 
     /** absolute=> /acc/bbv/{target}/index.js 檢查有沒有在他下面 */
@@ -1579,133 +1594,7 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new Utiller();
-            // const a = [{id: '0hTkFVNvnO85r2mHfEYs', quantity: 6},
-            //     {id: 'Oo6GAvITixzVhxpNa4l0', quantity: 1},
-            //     {id: 'EiyyzfsgEOFrUvhkClTQ', quantity: 3}];
-            // const b = [
-            //     {
-            //         traits: [],
-            //         price: 50,
-            //         note: '',
-            //         id: '0hTkFVNvnO85r2mHfEYs',
-            //         levels: [],
-            //         maxCountOfPerOrder: 10,
-            //         types: [],
-            //         photos: [[Object]],
-            //         description: '',
-            //         quantityOfCurrent: 293,
-            //         name: 'iphone11',
-            //     },
-            //     {
-            //         description: '',
-            //         id: 'EiyyzfsgEOFrUvhkClTQ',
-            //         name: 'iphoneX',
-            //         quantityOfCurrent: 289,
-            //         price: 40,
-            //         note: '',
-            //         maxCountOfPerOrder: 10,
-            //         levels: [],
-            //         types: [],
-            //         photos: [[Object]],
-            //         traits: [],
-            //     },
-            //     {
-            //         description: '',
-            //         note: '',
-            //         name: 'iphone13 pro',
-            //         maxCountOfPerOrder: 10,
-            //         quantityOfCurrent: 288,
-            //         id: 'Oo6GAvITixzVhxpNa4l0',
-            //         levels: [],
-            //         price: 100,
-            //         types: [],
-            //         photos: [[Object]],
-            //         traits: [],
-            //     }]
-            //
-            // const result = utiller.getMergedArrayBy(a, b, 'id');
-            // console.log(result);
-
-
-            // const result = utiller.getArrayOfSummarizeBy([{name: 'david', count: 5}, {
-            //         name: 'nina',
-            //         count: 3
-            //     }, {name: 'david', count: 3}, {name: 'joe', count: 3}, {name: 'joe', count: 4}]
-            //     , 'name', 'count');
-            // console.log(result);
-            // const latest = utiller.getMergedArrayBy([{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
-            //     [{id: 321, age: 13}, {id: 123, age: 30}],
-            //     'id')
-            // console.log(latest);
-            // const time = utiller.getTimeStampByStringFormat('2022/07/03 15:04:19');
-            // console.log(utiller.getECPayCurrentTimeFormat(time));
-            // // console.log(utiller.getTimeStampByStringFormat('2022/07/03 15:04:19'));
-            // console.log(utiller.validatePayloadObjectValid({a: 3, b: 4}, ['a', {b: (value) => value > 5}]));
-            // const data = {
-            //     CustomField1: '',
-            //     CustomField2: '',
-            //     CustomField3: '',
-            //     CustomField4: '',
-            //     MerchantID: '2000132',
-            //     MerchantTradeNo: 'x7H4EVJ9UBdKOh0ipama',
-            //     PaymentDate: '2022/06/30 01:10:02',
-            //     PaymentType: 'Credit_CreditCard',
-            //     PaymentTypeChargeFee: '6',
-            //     RtnCode: '1',
-            //     RtnMsg: '交易成功',
-            //     SimulatePaid: '0',
-            //     StoreID: '',
-            //     TradeAmt: '300',
-            //     TradeDate: '2022/06/30 01:09:13',
-            //     TradeNo: '2206300109135811',
-            //     CheckMacValue: '8DEA413ABB0AAD935B04B1DEC7A5FE38F28E02E158E0E5FE6FAA691D5DB81FBC',
-            // }
             // const utiller = new Utiller();
-            // console.log(utiller.getECPayCheckMacValue(data))
-            // console.log(data.CheckMacValue)
-            //
-            // console.log(_.isEqual(utiller.getECPayCheckMacValue(data),data.CheckMacValue))
-            // console.log(utiller.getECPayCurrentTimeFormat());
-            // console.log(utiller.has(['epay'], 'epay', true));
-            // console.log(util.getUuidOfV4());
-            // const array = ['a','b','c','d'];
-            // console.log(util.getArrayOfMoveSpecificIndexToAside(array,1,true));
-            // util.getArrayOfMoveToSpecificIndex(array,1,0);
-            // const array = [0,1,2,3,4,5,6,7];
-            // console.log(util.getArrayOfMoveToSpecificIndex(array,1,0));
-            // console.log(util.nth([1,2,3,4,5],5))
-            // console.log(util.getFileNameFromPath('disjfoisd.mp3',true));
-            // console.log(_.isNumber(_.toNumber('九')));
-            // console.log(util.isValidVersionOfString('21323.2312.1'));
-            // console.log(util.getArrayOfSize([1,2,3,4,5],9999));
-            // console.log(util.nth([1,2,3],-1000));
-            // console.log(util.containsBy(['A', 'V', 'C'], 'C'))
-            // console.log('why ==> ',new ERROR(1234))
-            // util.getStringOfPop([],',');
-            // util.constraintOfParam([], 'array',{logic:_.size([]) > 1, message:'should larger than 1'});
-            // const obj1 = {a:1,b:4,c:3,d:8};
-            // const obj2 = {a:1,b:4,c:3};
-            // console.log(util.isContainAndEqual(obj1,obj2))
-            // const string = '(有)些(社)會現象與行為表現往往會引發㆟們的民族主義聯想，㆘列何者在民族主義的立場㆖是合宜的？'
-            // const array = [{aa: '1'}, {aa: '2'}, {aa: '3'}];
-            // const object = {aa: '1', bb: '2', cc: '3'};
-            // util.exeAll(object, (each) => each + 1)
-            // util.exeAll(array, (each) => {
-            //     each.aa = each.aa + 1
-            // });
-            // console.log(object);
-            // console.log(array);
-            // console.log(util.toObjectMap([{aa:'1'},{aa:'2'},{aa:'3'}], {to: 'index'}, {to: 'second', from:'aa', func: (each) => each + 2}))
-            // console.log(util.startWithRegex('@sjasidoas @you', '@[can|you|one]'));
-            // console.log(util.toSpaceLessString('4  5  .'));
-            // const after = util.getTimeStampAfterCondition(undefined, {days: 0, minutes: -20, second: 3})
-            // const duration = util.getDurationOfMillionSec(after);
-            // console.log(duration)
-            // console.log(util.getTimeFormatOfDurationToDay(duration));
-            // console.log(moment.duration(duration).asDays())
-            // console.log(util.getCurrentTimeStamp());
-            // console.log(moment('12312321312').valueOf())
         }
     )();
 }

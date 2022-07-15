@@ -16,6 +16,7 @@ export {playground as playground}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+        console.log(Util.getFolderNameOfFilePath('a/c/d/js.js'));
             // const latest = _.flattenDeep([['1','2','3'],['bbb','vccc','ddd'],['#$%#$','@!#12','@!#1']]);
             // console.log(latest);
 
