@@ -107,6 +107,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    labelView = {
+        enable: false,
+        defaultValue: ``,
+    }
+    /** 利用outer,view child的方式,增加一個label概念 姓名: David*/
+
     valueOfTabDefault = '';
 
     forceToComponentModule = false;
@@ -565,6 +571,10 @@ class CodegenNode {
         for (const key in node) {
             self[key] = node[key];
         }
+    }
+
+    hasLabelView() {
+        return this.labelView && this.labelView.enable;
     }
 
     getFunctionMethods() {
@@ -1064,7 +1074,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
     }
@@ -1663,6 +1673,11 @@ class CodegenNode {
             for (const grandson of child.getChildren()) {
                 if (isIncest(grandson) && isNode(grandson)) {
                     children.push(grandson)
+
+                    for (const sonOfThird of grandson.getChildren()) {
+                        if (isIncest(sonOfThird) && isNode(sonOfThird))
+                            children.push(sonOfThird)
+                    }
                 }
             }
         }
@@ -1837,7 +1852,7 @@ class CodegenNode {
             default:
                 throw new ERROR(8017, `type can't be ==> ${type}`)
         }
-        return Util.upperCamel(...parentNames, this.isOuter() ? 'outer' : '', viewName, prefix);
+        return Util.upperCamel(...parentNames, viewName, prefix);
     }
 
     /** 放在css用來做key => ExamEditorQuestionCard */
@@ -6123,6 +6138,18 @@ class ProjectFileHandler extends PathBase {
                         description: '用來顯示標題'
                     }
                 )
+            }
+
+            if (node.hasLabelView()) {
+                node.setWrapView('div');
+                node.appendChildrenWithJsons({
+                    name: `labelOf${_.upperFirst(node.getName())}`,
+                    type: `string`,
+                    view: `Typography`,
+                    outer: true,
+                    incest: {view: false, attribute: true},
+                    defaultValue: node.labelView.defaultValue,
+                });
             }
 
             if (node.isSimpleViewPager()) {

@@ -413,6 +413,7 @@
 }
 .EpayPurchaseOfHistoryOrderAreaOfTotalPriceDiv:extend(.CenterInParentRow) {
   justify-content: flex-end;
+  min-height: 50px;
   @media @mobile {
     /** empty style */
   }
@@ -445,9 +446,11 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDiv:extend(.CenterInParentRow) {
-  background-color: lightgray;
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDiv:extend(.CenterInParentColumn) {
   min-height: 70px;
+  width: 100%;
+  border-bottom: 1px solid #bbb;
+  padding: 3px;
   @media @mobile {
     /** empty style */
   }
@@ -458,7 +461,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDivWrap:extend(.CenterInParentColumn) {
   @media @mobile {
     /** empty style */
   }
@@ -469,7 +472,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoDiv:extend(.CenterInParentRow) {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -480,7 +483,10 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoCodeTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap:extend(.CenterInParentRow) {
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -491,18 +497,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoCopyButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoTopicTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleLabelOfRuleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -524,7 +519,120 @@
     /** empty style */
   }
 }
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineLabelOfDeadlineTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainLabelOfDomainTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeDiv:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+  align-items: center;
+  gap: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeLabelOfCodeTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCopyButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EpayPurchaseOfHistoryOrderAreaOfFuncDiv {
+  padding: 8px;
   @media @mobile {
     /** empty style */
   }
@@ -536,20 +644,6 @@
   }
 }
 .EpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayTestEcPayCheckoutViewDiv {
-  min-width: 300px;
-  min-height: 300px;
-  background-color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
   }

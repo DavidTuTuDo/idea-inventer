@@ -69,17 +69,35 @@ class CommonStyle {
 
   EpayPurchaseOfHistoryOrderAreaOfFuncDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCopyButton = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoTopicTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeLabelOfCodeTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoCopyButton = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoCodeTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoSectionOfInfoDiv = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeDiv = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainLabelOfDomainTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainDivWrap = {};
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineLabelOfDeadlineTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineDivWrap = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleLabelOfRuleTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDivWrap = {};
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDiv = {};
 
