@@ -98,7 +98,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
 
     /** 店家名稱 */
     getBranchName() {
-        throw new ERROR(9999, `58641845 必須在index.js實作getBranchName()`)
+        this.appendErrorLog(9999, `58641845 必須在index.js實作getBranchName()`)
     }
 
     async handleHttpOnCall(data, session) {
@@ -125,7 +125,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                 web: resultOfLinePayRequest.info.paymentUrl.web
             };
         } else {
-            throw new ERROR(9999, `4541214474 LinePay申請線上付款發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT[resultOfLinePayRequest.returnCode]})`)
+            this.appendErrorLog(9999, `4541214474 LinePay申請線上付款發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT[resultOfLinePayRequest.returnCode]})`)
         }
     }
 

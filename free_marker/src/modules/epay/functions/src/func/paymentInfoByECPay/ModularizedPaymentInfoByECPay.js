@@ -75,11 +75,11 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfPaymentInfo.MerchantTradeNo);
 
         if (!itemOfPreciseOrder.exists) {
-            throw new ERROR(9999, `544813554 訂單(${contentOfPaymentInfo.MerchantTradeNo}) 不存在`)
+            this.appendErrorLog(9999,`544813554 訂單(${contentOfPaymentInfo.MerchantTradeNo}) 不存在`);
         }
 
-        if (!_.isEqual('wait', itemOfPreciseOrder.stateOfPayment)) {
-            throw new ERROR(9999, `544813554 訂單(${itemOfPreciseOrder.id}) 已無法跟改狀態`)
+        if (!_.isEqual('pending', itemOfPreciseOrder.stateOfPayment)) {
+            this.appendErrorLog(9999,`544813554 訂單(${itemOfPreciseOrder.id}) 已無法跟改狀態`);
         }
 
         /** 利用 PaymentType(CVS-CVS,ATM-BOT) 去更新訂單狀態 */
@@ -115,10 +115,9 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 , idOfOrder)
 
         } else {
-            Util.appendInfo(`654481345 還不支援當前的PaymentType ${typeOfPayment})`);
-            throw new ERROR(9999, `654481345 還不支援當前的PaymentType ${typeOfPayment})`)
+            this.appendErrorLog(9999,`654481345 還不支援當前的PaymentType ${typeOfPayment})`)
         }
-        Util.appendInfo(`588784546546 成功更新EC-PAYMENT-INFO,訂單(${itemOfPreciseOrder.id})`);
+        this.appendInfo(`588784546546 成功更新EC-PAYMENT-INFO,訂單(${itemOfPreciseOrder.id})`);
         return 'update ECPAY paymentInfo succeed';
     }
 

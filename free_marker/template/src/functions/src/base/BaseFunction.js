@@ -13,8 +13,9 @@ class BaseFunction {
     }
 
 
-    appendError(...msgs) {
-        functions.logger.error(...msgs);
+    appendErrorLog(code,message) {
+        functions.logger.error(message);
+        throw new ERROR(code, message);
     }
 
     isLoginUser(context) {
@@ -54,15 +55,15 @@ class BaseFunction {
      * */
     validatePreciseOrder(itemOfPreciseOrder, forRequest = true, idOfError = '') {
         if (!itemOfPreciseOrder.exists) {
-            throw new ERROR(9999, `8871231-${idOfError} 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`)
+            this.appendErrorLog(9999,`8871231-${idOfError} 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`);
         }
 
-        if (!_.isEqual('wait', itemOfPreciseOrder.stateOfPayment)) {
-            throw new ERROR(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`)
+        if (!_.isEqual('pending', itemOfPreciseOrder.stateOfPayment)) {
+            this.appendErrorLog(9999,`8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`);
         }
 
         if (forRequest && !Util.isUndefinedNullEmpty(itemOfPreciseOrder.procedureOfPayment)) {
-            throw new ERROR(9999, `8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`)
+            this.appendErrorLog(9999,`8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
         }
     }
 

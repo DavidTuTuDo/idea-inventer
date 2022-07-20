@@ -79,7 +79,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 item.exists = true;
                 this.validatePreciseOrder(item, false, '74484874345');
                 return {
-                    stateOfPayment: 'succeed',
+                    stateOfPayment: 'completed',
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
                     timeOfPayment: Util.getCurrentTimeStamp(),
                     idOfThirdPartyTradeNo: data.idOfTransaction,
@@ -89,13 +89,13 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             this.customizeBehaviorOfSucceedTrade();
             return {message: `confirmed by ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed`};
         } else {
-            throw new ERROR(9999, `98895454354 LinePay線上付款款時發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[resultOfLinePayConfirm.returnCode]})`)
+            this.appendErrorLog(9999, `98895454354 LinePay線上付款款時發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[resultOfLinePayConfirm.returnCode]})`);
         }
     }
 
-    customizeBehaviorOfSucceedTrade(){
-        throw new ERROR(9999, `47498412486 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
-        insert(例專案:月薪) 應該要增加 工作行事曆到甲方`)
+    customizeBehaviorOfSucceedTrade() {
+        this.appendErrorLog(9999, `47498412486 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
+        insert(例專案:月薪) 應該要增加 工作行事曆到甲方`);
     }
 
     /** -------------------- async api -------------------- **/

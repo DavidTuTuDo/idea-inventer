@@ -25,6 +25,16 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         return Util.containsBy(['completed', 'pending', 'failure'], string);
     }
 
+    onEpayPurchaseOfHistoryTabTabClicked(param) {
+        const tab = param.object;
+        Router.gotoEpayPurchaseOfHistoryPage(this,tab.getType());
+    }
+
+    componentDidMount() {
+        super.componentDidMount();
+        this.getStore().setCurrentTabByType(this.paramOfTypeOfTab)
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

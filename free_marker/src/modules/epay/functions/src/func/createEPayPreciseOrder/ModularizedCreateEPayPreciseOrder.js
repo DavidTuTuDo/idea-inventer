@@ -17,13 +17,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     preCheckOfCustomizeRule() {
-        throw new ERROR(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
+        this.appendErrorLog(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`)
     }
 
     async handleHttpOnCall(data, session) {
         const items = Util.getArrayOfSummarizeBy(data.items, 'id', 'quantity');
         if (1 > _.size(items)) {
-            throw new ERROR(9999, '484118756 並沒有商品內容');
+            this.appendErrorLog(9999, '484118756  帶上來的參數裡,並沒有商品內容')
         }
 
         this.remarkOfPreciseOrder = data.remarkOfPreciseOrder ?? '無備註內容';
@@ -31,7 +31,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         const products = await Api.fetchPreciseProductsOfLimitation('in', 'id', ...items.map(item => item.id))
         if (_.size(_.difference(items.map(item => item.id), products.map(product => product.id))) > 0) {
-            throw new ERROR(9999, '484117145 您提出的訂單內容與現有商品規格不合，本次交易不成立')
+            this.appendErrorLog(9999, '484117145 您提出的訂單內容與現有商品規格不合，本次交易不成立')
         }
 
         this.itemsOfPrecisely = Util.getMergedArrayBy(items, products, 'id');
@@ -40,18 +40,16 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         /** 計算剩餘數量足夠否 */
         for (const item of this.itemsOfPrecisely) {
             if (item.quantity > item.quantityOfCurrent) {
-                throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
+                this.appendErrorLog(9999, '989473454 庫存不足，本次交易不成立。')
             }
         }
 
         /** 計算總價 */
         const priceOfTotal = this.getTotalPrice(this.itemsOfPrecisely);
-        if(priceOfTotal> 20000) {
-            throw new ERROR(9999, '989474156214 目前不支援單筆超過兩萬的訂單')
+        if (priceOfTotal > 20000) {
+            this.appendErrorLog(9999, '989474156214 目前不支援單筆超過兩萬的訂單')
         }
-
         this.preCheckOfCustomizeRule();
-
         /** 利用atomically method 扣掉數量, 過程中發現其中一個商品數量不足, 得再atomically加回去 再吐回去一個商品數量不足的警告*/
 
         try {
@@ -60,7 +58,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     if (product.quantityOfCurrent > item.quantity) {
                         return {quantityOfCurrent: product.quantityOfCurrent - item.quantity}
                     } else {
-                        throw new ERROR(9999, `4647894135 考慮百萬分之一的可能，quantityOfCurrent < quantity，取消交易，並且atomically修改回所有髒掉的數量。`)
+                        this.appendErrorLog(9999, `4647894135 考慮百萬分之一的可能，quantityOfCurrent < quantity，取消交易，並且atomically修改回所有髒掉的數量。`)
                     }
                 }, item.id)
                 item.succeedOfTransaction = true;
@@ -71,7 +69,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     return {quantityOfCurrent: product.quantityOfCurrent + item.quantity}
                 }, item.id)
             }
-            throw new ERROR(9999, '989473454 庫存不足，本次交易不成立。')
+            this.appendErrorLog(9999, '989473454 庫存不足，本次交易不成立。');
         }
 
         /** 成立訂單 */
@@ -87,7 +85,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (result.succeed) {
             return {idOfPreciseOrder: result.value.id};
         } else {
-            throw new ERROR(9999, `474445787 創建PreciseOrder時失敗，未知原因。`);
+            this.appendErrorLog(9999, `474445787 創建PreciseOrder時失敗，未知原因。`);
         }
     }
 

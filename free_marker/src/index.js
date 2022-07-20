@@ -976,6 +976,7 @@ class CodegenNode {
         return Util.isOrEquals(this.getView(), 'FormControlLabel')
     }
 
+    /** 如果node有paginate 屬性時, onBottomTab會呼叫到這一個method*/
     getFunctionNameOfFetch() {
         return Util.camel(`fetch`, this.getFieldName())
     }
@@ -3248,7 +3249,7 @@ class StoreBuilder extends BaseBuilder {
             return count > 1 ? count : 1;
         }
 
-        function enrichStmtsOfObjectOfV2(node, stmts) {
+        function enrichStmtsOfObject(node, stmts) {
             const contents = [
                 `{`,
                 (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{}`,
@@ -3282,31 +3283,6 @@ class StoreBuilder extends BaseBuilder {
             return defaultStmt;
         }
 
-        function enrichStmtsOfObjectOfV1(node, stmts) {
-            const contents = [
-                `{`,
-                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{},`,
-                ..._.map(node.getPreciseAttributeChildren(), (child) => {
-                    if (child.isDisableInitFetch()) return '';
-                    /** array 要有 path,才可以當作建構fetch, object下面可能有array 或 value, 所以一定要fetch */
-                    return (child.isPathArray()) || child.isObject() ? getInitFetchStmt(child) : ``
-                }),
-                `}`,
-            ];
-            stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
-        }
-
-        function getInitFetchStmt(node) {
-            let defaultStmt = node.isObject() ? `await new ${node.getClassName()}().fetch(view)` :
-                `await this.${Util.camel('fetch', node.getFieldName())}(view)`
-            /** ${node.getFieldName()} 是在 array.mustache gen出來的 */
-
-            if (node.isFetchOnlyLogin()) {
-                defaultStmt = `UserInfoRef.isLoginWithSucceed() ? ${defaultStmt}: this.${node.getFieldName()}`
-            }
-            return `${node.getFieldName()} : ${defaultStmt},`;
-        }
-
         function getDefaultValueSetterStmts(node) {
             const stmts = [];
             for (const child of node.getPreciseAttributeChildren()) {
@@ -3334,7 +3310,7 @@ class StoreBuilder extends BaseBuilder {
             const stmts = [];
             switch (node.getType()) {
                 case 'object':
-                    enrichStmtsOfObjectOfV2(node, stmts);
+                    enrichStmtsOfObject(node, stmts);
                     break
                 case 'array':
                     if (node.isPathArray()) {
@@ -7072,8 +7048,10 @@ class ProjectFileHandler extends PathBase {
             return {name: each.getName(), editor: each.isEditPage()}
         }))
 
-        ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
-        TARGET_COMPONENT_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.componentName;
+        if (this.isWebPlatform()) {
+            ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
+            TARGET_COMPONENT_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.componentName;
+        }
 
         await Util.cleanChildFiles(this.genRootPath, (each) => ENABLE_FAST_DEVELOP_MODE ?
             isCleanCurrentFile(each) : true, 'node_modules');
