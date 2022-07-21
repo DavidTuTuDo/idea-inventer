@@ -94,7 +94,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 this.isValidOfEPayOrderUpdate(itemOfOrder);
                 return Api.normalizePreciseOrder({
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
-                    timeOfExpireDate: Util.getTimeStampByStringFormat(timeOfExpired),//CVS ExpireDate: '2022/07/03 15:04:19',
+                    timeOfExpired: Util.getTimeStampByStringFormat(timeOfExpired),//CVS ExpireDate: '2022/07/03 15:04:19',
                     idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
                     infoOfPayment: contentOfPaymentInfo.PaymentNo,
                 }, true);
@@ -107,7 +107,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                     this.isValidOfEPayOrderUpdate(itemOfOrder)
                     return Api.normalizePreciseOrder({
                         procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
-                        timeOfExpireDate: Util.getTimeStampByStringFormat(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
+                        timeOfExpired: Util.getTimeStampByStringFormat(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
                         infoOfPayment: `${contentOfPaymentInfo.BankCode}${Util.getSeparatorOfUnique()}${contentOfPaymentInfo.vAccount}`,
                     }, true);

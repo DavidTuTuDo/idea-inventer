@@ -112,17 +112,6 @@
     /** empty style */
   }
 }
-.EpayStatementTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .EpayBehaviorOfConfirmLinePayDiv {
   @media @mobile {
     /** empty style */
@@ -237,7 +226,18 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdentityOfOrderButton {
+.EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll {
   @media @mobile {
     /** empty style */
   }
@@ -330,8 +330,7 @@
 }
 .EpayPurchaseOfHistoryOrderBriefImageOfProductPhotoImg {
   flex-grow: 2;
-  min-height: 40px;
-  background-color: #008800;
+  width: 40px;
   @media @mobile {
     /** empty style */
   }
@@ -414,6 +413,7 @@
 .EpayPurchaseOfHistoryOrderAreaOfTotalPriceDiv:extend(.CenterInParentRow) {
   justify-content: flex-end;
   min-height: 50px;
+  border-bottom: 1px solid #bbb;
   @media @mobile {
     /** empty style */
   }
@@ -446,11 +446,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDiv:extend(.CenterInParentColumn) {
-  min-height: 70px;
-  width: 100%;
-  border-bottom: 1px solid #bbb;
-  padding: 3px;
+.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleDiv {
   @media @mobile {
     /** empty style */
   }
@@ -461,7 +457,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDivWrap:extend(.CenterInParentColumn) {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -472,18 +468,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap:extend(.CenterInParentRow) {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap:extend(.CenterInParentRow) {
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
@@ -497,7 +482,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleLabelOfRuleTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleLabelOfRuleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -508,7 +493,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv {
   @media @mobile {
     /** empty style */
   }
@@ -519,7 +504,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineTypography {
   @media @mobile {
     /** empty style */
   }
@@ -530,7 +515,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineLabelOfDeadlineTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -541,7 +526,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography {
   @media @mobile {
     /** empty style */
   }
@@ -552,7 +537,10 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv:extend(.CenterInParentColumn) {
+  width: 100%;
+  border-bottom: 1px solid #bbb;
+  padding: 3px;
   @media @mobile {
     /** empty style */
   }
@@ -563,7 +551,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainLabelOfDomainTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDivWrap:extend(.CenterInParentColumn) {
   @media @mobile {
     /** empty style */
   }
@@ -574,9 +562,42 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeDiv:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
-  align-items: center;
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainLabelOfDomainTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeDiv:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
   gap: 5px;
+  align-items: center;
   @media @mobile {
     /** empty style */
   }
@@ -587,7 +608,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeTypography {
   @media @mobile {
     /** empty style */
   }
@@ -598,7 +619,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap) {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -609,7 +630,7 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeLabelOfCodeTypography {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography {
   @media @mobile {
     /** empty style */
   }
@@ -620,7 +641,18 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCopyButton {
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll {
   @media @mobile {
     /** empty style */
   }

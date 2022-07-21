@@ -67,37 +67,43 @@ class AppStyle {
 
   EpayPurchaseOfHistoryOrderAreaOfFuncDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCopyButton = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeLabelOfCodeTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeDivWrap = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeCodeTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoAreaOfCodeDiv = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainLabelOfDomainTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainDivWrap = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainLabelOfDomainTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDomainTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineLabelOfDeadlineTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineDivWrap = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDeadlineTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleLabelOfRuleTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleDivWrap = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoRuleTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDivWrap = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentInfoDiv = {};
+  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleDiv = {};
 
   EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
 
@@ -133,7 +139,9 @@ class AppStyle {
 
   EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdentityOfOrderButton = {};
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
 
   EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
 
@@ -158,8 +166,6 @@ class AppStyle {
   EpayBehaviorOfConfirmLinePayDiv = {};
 
   /** => following for epay  component  */
-
-  EpayStatementTypography = {};
 
   EpayMessageOfEPayTypography = {};
 

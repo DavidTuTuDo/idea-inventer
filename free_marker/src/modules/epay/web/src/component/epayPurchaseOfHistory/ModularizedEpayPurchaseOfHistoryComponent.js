@@ -27,12 +27,32 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
     onEpayPurchaseOfHistoryTabTabClicked(param) {
         const tab = param.object;
-        Router.gotoEpayPurchaseOfHistoryPage(this,tab.getType());
+        if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab))
+            Router.gotoEpayPurchaseOfHistoryPage(this, tab.getType());
     }
 
     componentDidMount() {
         super.componentDidMount();
         this.getStore().setCurrentTabByType(this.paramOfTypeOfTab)
+    }
+
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButton(areaOfTop) {
+        const order = areaOfTop.getParentNode();
+        return Util.getVisibleOrNone(_.isEqual(order.getStateOfPayment(), 'pending'));
+    }
+
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv(order) {
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getTypeOfPayment(), 'atm', 'cvs'));
+    }
+
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfFuncDiv(order) {
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getTypeOfPayment(), 'atm', 'cvs'));
+    }
+
+    onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
+        return () => {
+            console.log(`onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked 被點擊了`)
+        }
     }
 
     /** -------------------- async api -------------------- **/

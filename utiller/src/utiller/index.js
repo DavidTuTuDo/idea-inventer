@@ -468,7 +468,7 @@ class Utiller {
      ]
      *
      */
-    getMergedArrayBy(array1 = [], array2 = [], predicate) {
+    getMergedArrayBy(major = [], sub = [], predicate) {
         /** predicate可以只帶入屬性質 */
         if (_.isString(predicate)) {
             const attribute = predicate;
@@ -476,8 +476,8 @@ class Utiller {
         } else {
             predicate = _.isFunction(predicate) ? predicate : () => true;
         }
-        return array1.map(item1 => ({
-            ..._.find(array2, (item2) => predicate(item1, item2)),
+        return major.map(item1 => ({
+            ..._.find(sub, (item2) => predicate(item1, item2)),
             ...item1
         }));
     }
@@ -810,6 +810,10 @@ class Utiller {
         return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
     }
 
+    getCurrentTimeFormatV2(ts) {
+        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
+    }
+
     /** 取得 YYY-MM-DD-HH-mm-ss */
     getCurrentTimeFormat(ts) {
         return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss")
@@ -835,19 +839,23 @@ class Utiller {
      * ts => 1643434497341
      再利用 getCurrentTimeStamp(ts) => 2022-01-29
      */
-    getTimeStampAfterCondition(target = this.getCurrentTimeStamp(), param = {
+    getTimeStampWithConditions(param = {
         days: 0,
         months: 0,
         years: 0,
         minutes: 0,
         seconds: 0
-    }) {
+    }, target = this.getCurrentTimeStamp()) {
         let base = moment(target);
         for (const each in param) {
             const number = param[each];
             const unit = each;
-            if (number !== 0) {
-                base = base.add(number, unit);
+            if (number > 0) {
+                base = base.add(number,unit);
+            }
+
+            if (number < 0) {
+                base = base.subtract(Math.abs(number),unit);
             }
         }
         return base.valueOf();
@@ -1595,6 +1603,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getECPayCurrentTimeFormat(utiller.getTimeStampWithConditions({days: -1})))
         }
     )();
 }

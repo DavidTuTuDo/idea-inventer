@@ -87,6 +87,12 @@ const VIEW_IMPORTS =
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
+
+            from: `@material-ui/icons/CopyAll`,
+            views: ['CopyAll'],
+            simplePath: true, /** 就是只要material-ui/icons/menu */
+        },
+        {
             from: `@material-ui/icons/Search`,
             views: ['SearchIcon'],
             simplePath: true, /** 就是只要material-ui/icons/Search */
@@ -107,6 +113,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    implementsOfAlertItemClicked = [];
+    /** alertMenu的 items,在點擊後的事件實作 */
+
     labelView = {
         enable: false,
         defaultValue: ``,
@@ -120,7 +129,6 @@ class CodegenNode {
 
     componentsOfExtra = [];
     /** component module裡面可以再放components, 讓一系列相同概念的邏輯可放在一起 */
-
 
     deployToRemote = true;
     /** 用來控制cloudfunctions要不要部署到遠端 */
@@ -1364,32 +1372,32 @@ class CodegenNode {
     /**isView 就是指gen出view class, 不然就是component */
     getSelfVariableStmts() {
         const self = this
-        const stmt = [];
+        const stmts = [];
         if (this.hasAlertDialog()) {
-            stmt.push(`const ${this.getFieldNameOfAlertDialog()} = React.createRef()`);
+            stmts.push(`const ${this.getFieldNameOfAlertDialog()} = React.createRef()`);
         }
 
         if (this.hasAlertMenu()) {
-            stmt.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
+            stmts.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
         }
 
         if (_.size(this.getFunctionMethods()) > 0) {
             const content = !Util.isUndefinedNullEmpty(this.getObservableName()) ? `object: ${this.getObservableName()}` : '';
-            stmt.push(`const objectOfParam = { ${content}} /** {object,view} */`);
+            stmts.push(`const objectOfParam = { ${content}} /** {object,view} */`);
         }
 
         if (this.isWrapByAppBarView() && this.isScrollingHideDependOnRootNode()) {
-            stmt.push(`const ScrollingHideWrap = self.HideOnScroll`);
+            stmts.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
         if (this.isAutoCompleteView()) {
-            stmt.push(`/** force update AutoCompleteView view usage */`)
-            stmt.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, `suggest`, this.getName())}s())+Util.getRandomHash()`)
+            stmts.push(`/** force update AutoCompleteView view usage */`)
+            stmts.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, `suggest`, this.getName())}s())+Util.getRandomHash()`)
         }
 
         if (this.isArray() && !this.isSimpleSelected() && !useViewModuleAndComponentModuleMechanism) {
             const className = this.getArrayItemNode().getViewClassNameOfRenderView();
-            stmt.push(`const ${className} = self.${className}`);
+            stmts.push(`const ${className} = self.${className}`);
         } else {
             const exist = {}
             for (const child of this.getPreciseViewChildren()) {
@@ -1400,26 +1408,30 @@ class CodegenNode {
 
                 const view = child.getViewClassNameOfRenderView();
                 if (!!!exist[view] && !useViewModuleAndComponentModuleMechanism)
-                    stmt.push(`const ${view} = self.${view}`)
+                    stmts.push(`const ${view} = self.${view}`)
                 exist[view] = true;
 
             }
+        }
+
+        if(this.hasAlertMenu()){
+            stmts.push(`const implementsOfAlertItemClicked = [${this.implementsOfAlertItemClicked.join(',')}]`)
         }
 
         /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
         if (this.allowOfParam()) {
             /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
             if (useViewModuleAndComponentModuleMechanism) {
-                stmt.push(`const ${this.isArrayItem() ? this.getFieldName() : this.getPreciseAttributeParentName()}
+                stmts.push(`const ${this.isArrayItem() ? this.getFieldName() : this.getPreciseAttributeParentName()}
                      = self.${self.getFunctionNameOfObservableObject()}()`)
             }
 
             if (this.isAttribute() && !this.isArrayItem()) {
-                stmt.push(`const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`)
+                stmts.push(`const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`)
             }
         }
 
-        return stmt;
+        return stmts;
     }
 
     hasCookies() {
@@ -2094,6 +2106,10 @@ class CodegenNode {
         return _.isEqual(this.type, 'array');
     }
 
+    isArrayOfField() {
+        return _.isEqual(this.type, 'arrayOfField');
+    }
+
     isCollection() {
         return this.isArray() || this.isObject() || this.isArrayItem()
     }
@@ -2118,6 +2134,7 @@ class CodegenNode {
         return _.isEqual(this.type, 'object');
     }
 
+    /** 用來放setter getter*/
     isObjectOfEmpty() {
         return _.isEqual(this.type, 'objectOfEmpty');
     }
@@ -2129,11 +2146,15 @@ class CodegenNode {
     getDefaultValueByType(isAdmin) {
         if (!Util.isUndefinedNullEmpty(this.defaultValue)) {
             const stringOfDefault = JSON.stringify(this.defaultValue);
+
+            if (this.isArrayOfField()) {
+                return stringOfDefault;
+            }
+
             if (this.isArray()) {
                 return `${stringOfDefault}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
             }
             return stringOfDefault;
-
         }
 
         if (this.type === 'string') {
@@ -3227,7 +3248,8 @@ class StoreBuilder extends BaseBuilder {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
             propStmt.push(`}`);
-            propsStmt.push(...propStmt);
+            if (!child.isArrayOfField())
+                propsStmt.push(...propStmt);
         }
         return propsStmt;
     }
@@ -6227,29 +6249,40 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.hasAlertMenu()) {
+
                 if (node.withoutWrapView()) {
                     node.setWrapView('React.Fragment');
                 }
 
                 const stringsOfItem = [];
+                const implementsOfClicked = []
                 for (const item of node.alertMenu.items) {
+
                     const functionName = node.getFunctionNameOfClicked(item.name);
+                    implementsOfClicked.push(`{"id":${item.id},"onClick":self.${functionName}(objectOfParam)}`);
                     node.appendMethods(
                         {
                             functionName,
                             params: ['param']
                         });
 
-                    stringsOfItem.push(`{ label:'${item.label}', 
-                    icon:'${item.icon}', 
-                    loginOnly:${item.loginOnly ?? 'false'}, 
-                    notice:${JSON.stringify(item.notice)},
-                    onClick:self.${functionName}(objectOfParam) }`);
+                    stringsOfItem.push(`{ "label":"${item.label}",
+                    "icon":"${item.icon}",
+                    "id":${item.id},
+                    "loginOnly":${item.loginOnly ?? "false"},
+                    "notice":${JSON.stringify(item.notice)} }`);
                 }
 
+                const fieldNameOfItems = `itemsOf${_.upperFirst(node.getName())}`;
+                node.implementsOfAlertItemClicked = implementsOfClicked;
+                node.getPreciseAttributeParent().appendChildrenWithJsons({
+                    name: fieldNameOfItems,
+                    type: 'arrayOfField',
+                    defaultValue: JSON.parse(`[${stringsOfItem.join(',')}]`),
+                })
 
                 const content = `{self.renderAlertMenu({ref:${node.getFieldNameOfAlertMenu()},
-                component:self,items:[${stringsOfItem.join(',')}]})}`
+                component:self,items:Util.getMergedArrayBy(${node.getPreciseAttributeParentName()}.get${_.upperFirst(fieldNameOfItems)}(), implementsOfAlertItemClicked, 'id')})}`
 
                 node.appendWrapContents(content);
             }
@@ -7391,6 +7424,7 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'persistentBuildWeb':
                     await builder.persistent('web');
+                    await Util.syncDelay(500);
                     await builder.buildWeb();
                     break;
                 case 'persistentBuildAdmin':
