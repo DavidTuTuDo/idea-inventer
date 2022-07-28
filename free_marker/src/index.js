@@ -2848,11 +2848,6 @@ class PathBase {
     genStoreRootPath; // gen/app/src/store
     props;
 
-    cleanCache() {
-        this.nodeOfAncestor = undefined;
-        this.structs = undefined;
-    }
-
     constructor(props) {
         this.props = props;
         if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
@@ -2884,7 +2879,6 @@ class PathBase {
     isProduction() {
         return _.isEqual(this.env, 'prod');
     }
-
 
     getStructs() {
         return this.nodeOfAncestor.components.map(component => component.struct);
@@ -5091,8 +5085,9 @@ class AppBuilder extends ComponentBuilder {
             `if(component instanceof BaseComponent && component.isNotNavigatorNComponentView())`,
             `this.latestComponent = component.getComponentInstance()`
         )
+        console.log(this.getGenComponent());
         for (const component of this.getGenComponent()) {
-            console.log(this.getGenComponent());
+
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
 
@@ -7366,7 +7361,6 @@ class BuildApplication {
 
     async persistent(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
-        handler.enrichComponentStructs();
         await handler.persistModuleComponentFiles()
         handler.persistBaseFilesToFreeMarkerTemplate();
         handler.persistCustomizePackages()
