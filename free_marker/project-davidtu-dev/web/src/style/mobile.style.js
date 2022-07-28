@@ -9,6 +9,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorTestSubTitleTextField = {};
@@ -20,18 +22,6 @@ class MobileStyle {
   MainEditorTestDiv = {};
 
   MainEditorDiv = {};
-
-  /** => following for navigator  component  */
-
-  /** => following for epay  component  */
-
-  /** => following for account  component  */
-
-  /** => following for navigator  component  */
-
-  /** => following for epay  component  */
-
-  /** => following for account  component  */
 
   /** => following for navigator  component  */
 
@@ -125,9 +115,11 @@ class MobileStyle {
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentRuleDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTotalPriceLabelOfTotalPriceTypography = {};
+  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceDivWrap = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
 
   EpayPurchaseOfHistoryOrderAreaOfTotalPriceDiv = {};
 
@@ -162,6 +154,10 @@ class MobileStyle {
   EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
 
   EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap = {};
 
   EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
 

@@ -78,6 +78,10 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
     }
 
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv(order) {
+        return Util.getVisibleOrNone(!_.isEqual('completed', order.getStateOfPayment()));
+    }
+
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
         const funcOfArea = param.object;
         const order = funcOfArea.getParentNode();
@@ -86,7 +90,6 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         }
     }
 
-    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedEpayPurchaseOfHistoryComponent;
