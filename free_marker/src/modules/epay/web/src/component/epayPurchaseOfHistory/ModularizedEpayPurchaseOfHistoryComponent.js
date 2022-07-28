@@ -38,7 +38,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButton(areaOfTop) {
         const order = areaOfTop.getParentNode();
-        return Util.getVisibleOrNone(_.isEqual(order.getStateOfPayment(), 'pending'));
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(), 'waiting', 'pending'));
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv(order) {
@@ -46,12 +46,43 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfFuncDiv(order) {
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getTypeOfPayment(), 'atm', 'cvs'));
+        /**
+         * 1. linepay 未付款
+         * 2. 未選擇付款方式
+         * */
+        return Util.getVisibleOrNone(
+            Util.or(
+                this.isUnknownOrder(order),
+                this.isWaitingToLinePay(order)
+            )
+        );
+    }
+
+    /** 沒有選擇付費方式的order(下完訂單就把頁面關掉)*/
+    isUnknownOrder(order) {
+        return _.isEqual(order.getTypeOfPayment(), 'unknown');
+    }
+
+    /** 還沒付費的linepay order(走到Line-Pay,把付費頁面關掉) */
+    isWaitingToLinePay(order) {
+        return _.isEqual(order.getTypeOfPayment(), 'linepay') && _.isEqual(order.getStateOfPayment(), 'waiting')
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
         return () => {
             console.log(`onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked 被點擊了`)
+        }
+    }
+
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
+        return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
+    }
+
+    onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
+        const funcOfArea = param.object;
+        const order = funcOfArea.getParentNode();
+        if (this.isWaitingToLinePay(order)) {
+            this.routeToLinePayCheckoutPage(order.getRaw().contentOfRender);
         }
     }
 

@@ -111,13 +111,14 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         if (_.isEqual(resultOfLinePayRequest.returnCode, '0000')) {
 
             await Api.updatePreciseOrderItemAtomically((latestItem, transaction) => {
-                latestItem.exists = true;
                 self.validatePreciseOrder(latestItem, true, '15544713');
                 return {
                     procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_LINEPAY,
+                    stateOfPayment: 'waiting',
                     idOfThirdPartyTradeNo: resultOfLinePayRequest.info.transactionId,
                     infoOfPayment: resultOfLinePayRequest.info.paymentAccessToken,
-                    contentOfRender: `${JSON.stringify(resultOfLinePayRequest.info.paymentUrl)}`
+                    contentOfRender: `${JSON.stringify(resultOfLinePayRequest.info.paymentUrl)}`,
+                    timesOfTransaction: latestItem.timesOfTransaction + 1,
                 }
             }, itemOfPreciseOrder.id);
             return {

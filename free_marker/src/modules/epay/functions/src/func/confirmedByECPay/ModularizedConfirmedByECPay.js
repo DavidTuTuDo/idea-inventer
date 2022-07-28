@@ -52,7 +52,6 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
         if (_.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
             await Api.updatePreciseOrderItemAtomically(
                 (item, transaction) => {
-                    item.exists = true;
                     this.validatePreciseOrder(item, false, '848646546542');
                     return {
                         stateOfPayment: 'completed',
@@ -68,22 +67,26 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
             return '1|OK';
         } else {
-            await Api.updatePreciseOrderItem(
-                {
-                    stateOfPayment: 'failure',
-                    messageOfPayment: `${contentOfSucceed.RtnMsg}`,
+            await Api.updatePreciseOrderItemAtomically(
+                (item, transaction) => {
+                    this.validatePreciseOrder(item, false, '848646546542');
+                    return {
+                        stateOfPayment: 'failure',
+                        messageOfPayment: `${contentOfSucceed.RtnMsg}`,
+                    }
                 },
-                preciseOrder.id,
+                preciseOrder.id
             );
             /**  OrderOfPrecise 應該要 更改 state = failure, 失敗的理由 => contentOfSucceed.RtnMsg */
-            this.appendErrorLog(9999,`5482114456, 訂單(${contentOfSucceed.MerchantTradeNo}) RtnCode不合規範`)
+            this.appendErrorLog(9999, `5482114456, 訂單(${contentOfSucceed.MerchantTradeNo}) RtnCode不合規範`)
         }
     }
 
-    customizeBehaviorOfSucceedTrade(){
-        this.appendErrorLog(9999,`47498454876 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
+    customizeBehaviorOfSucceedTrade() {
+        this.appendErrorLog(9999, `47498454876 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
         insert(例專案:月薪) 應該要增加 工作行事曆到甲方`)
     }
+
     /** -------------------- async api -------------------- **/
 }
 

@@ -191,6 +191,7 @@ class CommonRemoteApi {
                 throw new ERROR(9999, `document ${libpath.join(path, id)} not exist`)
             }
             const collection = node.data();
+            collection.exists = true;
             const updateContent = await predict(collection, transaction);
             transaction.update(ref, updateContent);
             Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, updateContent);

@@ -10,7 +10,6 @@ import {
 } from "mobx";
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
-import Config from '../config';
 import ClientRemoteApi from './ClientRemoteApi';
 
 class BaseStore extends ClientRemoteApi {

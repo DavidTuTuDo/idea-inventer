@@ -74,13 +74,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
 
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfPaymentInfo.MerchantTradeNo);
 
-        if (!itemOfPreciseOrder.exists) {
-            this.appendErrorLog(9999,`544813554 訂單(${contentOfPaymentInfo.MerchantTradeNo}) 不存在`);
-        }
-
-        if (!_.isEqual('pending', itemOfPreciseOrder.stateOfPayment)) {
-            this.appendErrorLog(9999,`544813554 訂單(${itemOfPreciseOrder.id}) 已無法跟改狀態`);
-        }
+        this.validatePreciseOrder(itemOfPreciseOrder,false, '15984422')
 
         /** 利用 PaymentType(CVS-CVS,ATM-BOT) 去更新訂單狀態 */
         const typeOfPayment = contentOfPaymentInfo.PaymentType;
@@ -91,24 +85,25 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
 
             /** 當user選擇超商付款時 */
             await Api.updatePreciseOrderItemAtomically((itemOfOrder) => {
-                this.isValidOfEPayOrderUpdate(itemOfOrder);
+                this.validatePreciseOrder(itemOfPreciseOrder,false, '15984422')
                 return Api.normalizePreciseOrder({
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                     timeOfExpired: Util.getTimeStampByStringFormat(timeOfExpired),//CVS ExpireDate: '2022/07/03 15:04:19',
                     idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
-                    infoOfPayment: contentOfPaymentInfo.PaymentNo,
+                    stateOfPayment: 'waiting',
+                    infoOfPayment: `${contentOfPaymentInfo.PaymentNo}${Util.getSeparatorOfUnique()}`,
                 }, true);
-            }, idOfOrder)
+                }, idOfOrder)
         } else if (_.startsWith(typeOfPayment, 'ATM')) {
 
             /** 當user選擇ATM付款時 */
-            console.log(Util.getTimeStampByStringFormat(`${timeOfExpired} 23:59:59`));
             await Api.updatePreciseOrderItemAtomically((itemOfOrder) => {
-                    this.isValidOfEPayOrderUpdate(itemOfOrder)
+                    this.validatePreciseOrder(itemOfPreciseOrder,false, '15984423')
                     return Api.normalizePreciseOrder({
                         procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: Util.getTimeStampByStringFormat(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
+                        stateOfPayment: 'waiting',
                         infoOfPayment: `${contentOfPaymentInfo.BankCode}${Util.getSeparatorOfUnique()}${contentOfPaymentInfo.vAccount}`,
                     }, true);
                 }
@@ -119,19 +114,6 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         }
         this.appendInfo(`588784546546 成功更新EC-PAYMENT-INFO,訂單(${itemOfPreciseOrder.id})`);
         return 'update ECPAY paymentInfo succeed';
-    }
-
-    isValidOfEPayOrderUpdate = (item) => {
-        const keywords = _.split(item.procedureOfPayment, Util.getSeparatorOfUnique())
-        /** 第一個是TYPE_OF_THIRD_PARTY(EPAY,LINEPAY), 第二個是付款方式(CVS,ATM,CREDIT)*/
-        item.exists = true;
-        this.validatePreciseOrder(item, false, '4844314411201');
-
-        if (_.size(keywords) > 1) {
-            Util.appendInfo(`87412316842. 訂單(${item.id})的付費方式(${item.procedureOfPayment})已無法更改`);
-            throw new ERROR(9999, `87412316842. 訂單(${item.id})的付費方式(${item.procedureOfPayment})已無法更改`)
-        }
-
     }
 
     /** -------------------- async api -------------------- **/

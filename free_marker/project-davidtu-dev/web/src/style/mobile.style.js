@@ -23,6 +23,18 @@ class MobileStyle {
 
   /** => following for navigator  component  */
 
+  /** => following for epay  component  */
+
+  /** => following for account  component  */
+
+  /** => following for navigator  component  */
+
+  /** => following for epay  component  */
+
+  /** => following for account  component  */
+
+  /** => following for navigator  component  */
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -62,6 +74,14 @@ class MobileStyle {
   NavigatorDiv = {};
 
   /** => following for epayPurchaseOfHistory  component  */
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonDivWrap = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonTypography = {};
+
+  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv = {};
 
   EpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButton = {};
 

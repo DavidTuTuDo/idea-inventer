@@ -23,30 +23,34 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         }
 
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        if (detailOfPreciseOrder.exists) {
-            const dataOfECPayOrder = this.getPayoadOfECPayAIORequest(detailOfPreciseOrder);
-            console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
-            let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
 
-            result = Util.getStringOfHandledHtml(result, (document) => {
-                const element = document.getElementById('CheckMacValue');
-                element.setAttribute('value', Util.getECPayCheckMacValue(
-                    dataOfECPayOrder,
-                    Config.ecpay.MercProfile.HashKey,
-                    Config.ecpay.MercProfile.HashIV,
-                ));
-            });
+        this.validatePreciseOrder(detailOfPreciseOrder, true, '598498742')
 
-            await Api.updatePreciseOrderItem({
+        const dataOfECPayOrder = this.getPayoadOfECPayAIORequest(detailOfPreciseOrder);
+        console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
+        let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
+
+        result = Util.getStringOfHandledHtml(result, (document) => {
+            const element = document.getElementById('CheckMacValue');
+            element.setAttribute('value', Util.getECPayCheckMacValue(
+                dataOfECPayOrder,
+                Config.ecpay.MercProfile.HashKey,
+                Config.ecpay.MercProfile.HashIV,
+            ));
+        });
+
+        await Api.updatePreciseOrderItemAtomically((order, transaction) => {
+            order.exists = true;
+            this.validatePreciseOrder(order, true, '598498742');
+                return {
                     procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_ECPAY,
-                    contentOfRender: result
-                }, detailOfPreciseOrder.id
-            )
+                    contentOfRender: result,
+                    timesOfTransaction: order.timesOfTransaction + 1,
+                }
+            }, detailOfPreciseOrder.id
+        )
 
-            return {textOfRender: result};
-        } else {
-            this.appendErrorLog(9999, `8871231 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`);
-        }
+        return {textOfRender: result};
     }
 
     normalizeDescOfItemName(string) {

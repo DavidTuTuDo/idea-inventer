@@ -68,7 +68,7 @@ class EpayTestStore extends BaseEpayTestStore {
 
     async performCheckoutByLinePayBehavior() {
         const result = await Functions.httpOnCallCheckoutByLinePay(this.getComponent(), {idOfPreciseOrder: this.getIdOfCurrentPreciseOrder()});
-        this.getComponent().routeToLinePayCheckoutPage(result)
+        this.getComponent().routeToLinePayCheckoutPage(JSON.stringify(result));
     }
 
     async performCheckoutByECPayBehavior() {
@@ -92,7 +92,7 @@ class EpayTestStore extends BaseEpayTestStore {
         if (!Util.isUndefinedNullEmpty(id)) {
             const order = await this.storeOfEPayOrder.fetchPreciseOrderItem(this.getComponent(), id);
             const textOfRender = order.contentOfRender;
-            this.getComponent().routeToLinePayCheckoutPage(JSON.parse(textOfRender))
+            this.getComponent().routeToLinePayCheckoutPage(textOfRender)
         } else {
             this.getComponent().showInfoSnackMessage(`輸入匡不可為空`)
         }

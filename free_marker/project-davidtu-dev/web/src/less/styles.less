@@ -429,7 +429,9 @@
 }
 /** following for epayPurchaseOfHistory  component used  */
 
-.EpayPurchaseOfHistoryDiv {
+.EpayPurchaseOfHistoryDiv:extend(.CenterInParentColumn) {
+  min-width: 400px;
+  padding-bottom: 50px;
   @media @mobile {
     /** empty style */
   }
@@ -834,7 +836,6 @@
 }
 .EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv:extend(.CenterInParentColumn) {
   width: 100%;
-  border-bottom: 1px solid #bbb;
   padding: 3px;
   @media @mobile {
     /** empty style */
@@ -960,6 +961,7 @@
 }
 .EpayPurchaseOfHistoryOrderAreaOfFuncDiv {
   padding: 8px;
+  border-top: 1px solid #bbb;
   @media @mobile {
     /** empty style */
   }
@@ -971,6 +973,50 @@
   }
 }
 .EpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1212,6 +1258,18 @@
     /** empty style */
   }
 }
+/** following for account  component used  */
+
+/** following for epay  component used  */
+
+/** following for navigator  component used  */
+
+/** following for account  component used  */
+
+/** following for epay  component used  */
+
+/** following for navigator  component used  */
+
 /** following for main editor component used  */
 
 .MainEditorDiv:extend(.MainDiv) {

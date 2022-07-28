@@ -74,9 +74,9 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
         }
 
         const resultOfLinePayConfirm = await this.linePayerRef.confirm(payloadOfConfirmLinePay, data.idOfTransaction);
-        if (_.isEqual(resultOfLinePayConfirm.returnCode, '0000')) {
+        const codeOfReturn = resultOfLinePayConfirm.returnCode;
+        if (_.isEqual(codeOfReturn, '0000')) {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
-                item.exists = true;
                 this.validatePreciseOrder(item, false, '74484874345');
                 return {
                     stateOfPayment: 'completed',
@@ -89,7 +89,15 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             this.customizeBehaviorOfSucceedTrade();
             return {message: `confirmed by ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed`};
         } else {
-            this.appendErrorLog(9999, `98895454354 LinePay線上付款款時發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[resultOfLinePayConfirm.returnCode]})`);
+            await Api.updatePreciseOrderItemAtomically((item, transaction) => {
+                this.validatePreciseOrder(item, false, '74484874345');
+                return {
+                    procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
+                    timeOfPayment: Util.getCurrentTimeStamp(),
+                    messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
+                }
+            }, itemOfPreciseOrder.id);
+            this.appendErrorLog(9999, `98895454354 訂單('${itemOfPreciseOrder.id}')LinePay線上付款款時發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]})`);
         }
     }
 

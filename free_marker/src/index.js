@@ -287,7 +287,7 @@ class CodegenNode {
     listEmptyTip = {enable: true, customView: undefined, stringOfTip: '', isDefaultValue: true};
     /** 當陣列需要有無資料提示時
      *
-     * custView 和 stringOfTip還沒實作
+     * customView 和 stringOfTip還沒實作
      * isDefaultValue 代表在source.js裡面沒有定義過
      * */
 
@@ -1414,7 +1414,7 @@ class CodegenNode {
             }
         }
 
-        if(this.hasAlertMenu()){
+        if (this.hasAlertMenu()) {
             stmts.push(`const implementsOfAlertItemClicked = [${this.implementsOfAlertItemClicked.join(',')}]`)
         }
 
@@ -2404,11 +2404,6 @@ class CodegenNode {
         _.remove(this.children, (child) => _.isEqual(node, child));
     }
 
-    /** 就是在baseStore 已經定義過了, 再gen出來會有conflict */
-    isPreservedAttribute() {
-        return Util.isOrEquals(this.getName(), 'updateTime');
-    }
-
 }
 
 class ClassGenerator {
@@ -2578,6 +2573,7 @@ class ClassGenerator {
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,
                 `result = error.message;`,
+                `functions.logger.error(result);`,
                 `}`,
                 `${getStringOfFunctionFinally()}`
             ])
@@ -2852,6 +2848,10 @@ class PathBase {
     genStoreRootPath; // gen/app/src/store
     props;
 
+    cleanCache() {
+        this.nodeOfAncestor = undefined;
+        this.structs = undefined;
+    }
 
     constructor(props) {
         this.props = props;
@@ -3192,8 +3192,6 @@ class StoreBuilder extends BaseBuilder {
     async buildFieldAttribute(generator, node) {
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
-            if (child.isPreservedAttribute()) continue;
-
             const propStmt = [];
             const fieldName = child.getFieldName();
             const defaultValue = child.getDefaultValueByType();
@@ -3658,7 +3656,6 @@ class RemoteFunctionHandler extends BaseBuilder {
                 throw new ERROR(8016)
 
             for (const child of node.getPreciseAttributeChildren()) {
-                if (child.isPreservedAttribute()) continue;
                 if (!child.isColumnAttribute()) continue;
 
                 if (child.hasStorageFolder()) {
@@ -5095,6 +5092,7 @@ class AppBuilder extends ComponentBuilder {
             `this.latestComponent = component.getComponentInstance()`
         )
         for (const component of this.getGenComponent()) {
+            console.log(this.getGenComponent());
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
 
@@ -6031,6 +6029,11 @@ class ProjectFileHandler extends PathBase {
     /** 放一些SimpleViewPager, SimpleGrid*/
     enrichNodeWithCustomViewDefined(nodes) {
         for (const node of nodes) {
+
+            if (Util.isOrEquals(node.getName(), 'updateTime', 'exist', 'exists')) {
+                throw new ERROR(9999, `46468464121, ${node.getName()} 是保留字,不能當作屬性`)
+            }
+
             if (node.isPathArray()) {
                 const children = node.getPreciseAttributeChildren().map(child => child.getName().trim());
                 if (!Util.has(children, 'id')) {
@@ -6594,7 +6597,9 @@ class ProjectFileHandler extends PathBase {
             )
 
             appendPropsOfNode(node, node.isTabListView,
-                [{value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}], [],
+                [
+                    {centered: `###true`},
+                    {value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}], [],
                 [
                     {
                         name: `valueOfSelectedTab`,

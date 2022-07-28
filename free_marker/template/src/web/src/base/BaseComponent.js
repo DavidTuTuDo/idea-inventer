@@ -126,7 +126,13 @@ class BaseComponent extends MuiComponent {
      *
      * @param urlsOfLinePay : {app:'',web:''}
      */
-    routeToLinePayCheckoutPage(urlsOfLinePay) {
+    routeToLinePayCheckoutPage(stringOfRaw) {
+        const urlsOfLinePay = JSON.parse(stringOfRaw);
+
+        if(Util.isUndefinedNullEmpty(urlsOfLinePay)) {
+            throw new ERROR(999,`446846132 urlsOfLinePay格式不正確`)
+        }
+
         if (isMobile) {
             this.gotoExternalUrlDirectly(urlsOfLinePay.app);
         } else {

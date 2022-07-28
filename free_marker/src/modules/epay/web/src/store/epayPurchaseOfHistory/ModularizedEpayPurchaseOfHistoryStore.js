@@ -22,6 +22,7 @@ import {
 } from "mobx";
 import EpayPreciseOrderStore from "../epayPreciseOrder";
 import BaseEpayPurchaseOfHistoryStore from './BaseEpayPurchaseOfHistoryStore';
+import {object} from "prop-types";
 
 class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistoryStore {
     /** -------------------- fields -------------------- **/
@@ -32,10 +33,18 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         this.api = new EpayPreciseOrderStore();
     }
 
+    conditionsOfDefault(state) {
+        const states = _.isEqual(state, 'pending') ? ['pending', 'waiting'] : [state];
+
+        return [
+            {where: (stmt) => stmt.where('stateOfPayment', 'in', states)}
+        ];
+    }
+
     async fetch(view) {
         const state = this.getParamOfTypeOfTabInPath();
         const orders = await this.api.fetchPreciseOrders(this.getComponent(),
-            {where: (stmt) => stmt.where('stateOfPayment', '==', state)},
+            ...this.conditionsOfDefault(state)
         );
         this.pushOrders(...orders.map(order => this.normalizeOrder(order)));
     }
@@ -114,7 +123,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 linepay: `LINE-PAY線上支付`,
                 atm: `銀行轉帳`,
                 webatm: `網銀付款`,
-                unknown: `尚未選擇付款方式`,
+                unknown: `尚未選擇`,
             });
         }
 
@@ -142,7 +151,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
 
         function getStringOfCode() {
             return getByEachPaymentType({
-                cvs: order.infoOfPayment,
+                cvs: _.split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift(),
                 atm: _.split(order.infoOfPayment, Util.getSeparatorOfUnique()).pop(),
                 credit: ``,
                 linepay: ``,
@@ -158,6 +167,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 case 'failure':
                     return `已失效`;
                 case 'pending':
+                case 'waiting':
                     return `待付款`;
                 default:
                     return `未歸類`;
@@ -169,6 +179,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         }
 
         return {
+            raw: order,
             typeOfPayment: getStringOfPaymentType(),
             stateOfPayment: order.stateOfPayment,
             areaOfTop: {
@@ -191,7 +202,6 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 }
             },
         }
-
     }
 
     setCurrentTabByType(type) {

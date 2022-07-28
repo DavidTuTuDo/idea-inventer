@@ -13,6 +13,7 @@ import NavigatorToolBarSuggestComplete from "./navigatorToolBarSuggestComplete";
 import NavigatorToolBarComplete from "./navigatorToolBarComplete";
 import NavigatorToolBar from "./navigatorToolBar";
 import Navigator from "./navigator";
+import EpayPurchaseOfHistoryOrderAreaOfPaymentFailure from "./epayPurchaseOfHistoryOrderAreaOfPaymentFailure";
 import EpayPurchaseOfHistoryOrderAreaOfFunc from "./epayPurchaseOfHistoryOrderAreaOfFunc";
 import EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCode from "./epayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCode";
 import EpayPurchaseOfHistoryOrderAreaOfPaymentDetail from "./epayPurchaseOfHistoryOrderAreaOfPaymentDetail";
