@@ -6956,8 +6956,11 @@ class ProjectFileHandler extends PathBase {
             if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
                 const content = require(file.absolute).default;
 
-                if (Util.has(source.getComponents().map((each) => each.getName()), content.name))
+                if (Util.has(source.getComponents().map((each) => each.getName()), content.name)){
+                    /** 必免重復的component 被匯入 */
                     continue;
+                }
+
 
                 const componentsOfExtra = content.componentsOfExtra ?? [];
                 delete content.componentsOfExtra;
