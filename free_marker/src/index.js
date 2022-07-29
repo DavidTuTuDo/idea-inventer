@@ -2880,6 +2880,12 @@ class PathBase {
         return _.isEqual(this.env, 'prod');
     }
 
+    cleanCache() {
+        this.nodeOfAncestor = undefined;
+        this.structs = undefined;
+        this.props = undefined;
+    }
+
     getStructs() {
         return this.nodeOfAncestor.components.map(component => component.struct);
     }
@@ -5087,7 +5093,6 @@ class AppBuilder extends ComponentBuilder {
         )
         console.log(this.getGenComponent());
         for (const component of this.getGenComponent()) {
-
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
 
@@ -6950,6 +6955,10 @@ class ProjectFileHandler extends PathBase {
         for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
             if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
                 const content = require(file.absolute).default;
+
+                if (Util.has(source.getComponents().map((each) => each.getName()), content.name))
+                    continue;
+
                 const componentsOfExtra = content.componentsOfExtra ?? [];
                 delete content.componentsOfExtra;
                 for (const rawOfComponent of [content, ...componentsOfExtra]) {
@@ -7367,6 +7376,8 @@ class BuildApplication {
         handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
         handler.persistLessLibs();
+        Util.appendInfo(`persist ${platform} done`);
+
     }
 
 }
@@ -7423,7 +7434,6 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'persistentBuildWeb':
                     await builder.persistent('web');
-                    await Util.syncDelay(500);
                     await builder.buildWeb();
                     break;
                 case 'persistentBuildAdmin':
