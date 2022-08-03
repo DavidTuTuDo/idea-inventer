@@ -36,6 +36,7 @@ const CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
+const SIGN_OF_EMPTY_STORE = 'pure';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -146,7 +147,7 @@ class CodegenNode {
     /** 要忽略的 componentModule(...epay,navigator,account) */
 
     alertMenu = {
-        items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginOnly:false} */
+        items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginO`nly:false} */
     }
 
     nodeOfOrigin = undefined
@@ -3002,14 +3003,19 @@ class PathBase {
     }
 
     getGenComponent() {
-        return this.getComponents().map((each) => Util.camel(each.getName(), each.isEditPage() ? 'editor' : ''));
+        const components = this.getComponents().map((each) => Util.camel(each.getName(), each.isEditPage() ? 'editor' : ''));
+        return _.without(components, SIGN_OF_EMPTY_STORE);
     }
 
     getAllStore() {
         const total = [];
 
         function appendStore(node, list = []) {
-            if (CodegenNode.isCodegenNode(node) && node.isCollection() && !node.isReferenceNode()) {
+            if (CodegenNode.isCodegenNode(node) &&
+                node.isCollection() &&
+                !node.isReferenceNode() &&
+                !_.isEqual(node.getName(), SIGN_OF_EMPTY_STORE)) {
+
                 list.push(node.getStoreFolderName())
                 for (const child of node.getChildren()) {
                     appendStore(child, list);
@@ -3281,7 +3287,6 @@ class StoreBuilder extends BaseBuilder {
             stmts.push(...self.getDecorateFetchStrings(node.isObject(), ...contents));
         }
 
-
         function getInitFetchStmtV2(node) {
             let defaultStmt = `this.${node.getFieldName()} /** prepare with default value */`;
 
@@ -3436,7 +3441,11 @@ class StoreBuilder extends BaseBuilder {
 
                     }
                 ).join(','), '}')
-        })
+        });
+
+        if (_.isEqual(folderName, SIGN_OF_EMPTY_STORE)) {
+            return;
+        }
 
         baseGenerator.appendFunction('clean', [], ['action'], [],
             `super.clean()`,
@@ -3984,6 +3993,11 @@ class ComponentBuilder extends BaseBuilder {
     async buildBaseComponent(componentNode) {
 
         const baseComponentName = componentNode.getStruct().getName();
+        if (_.isEqual(baseComponentName, SIGN_OF_EMPTY_STORE)) {
+            return;
+        }
+
+
         const baseClassName = `Base${_.upperFirst(baseComponentName)}Component`;
         const moduleClassName = `${KEYWORD_OF_MODULARIZED}${_.upperFirst(baseComponentName)}Component`;
 
@@ -5091,7 +5105,6 @@ class AppBuilder extends ComponentBuilder {
             `if(component instanceof BaseComponent && component.isNotNavigatorNComponentView())`,
             `this.latestComponent = component.getComponentInstance()`
         )
-        console.log(this.getGenComponent());
         for (const component of this.getGenComponent()) {
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
@@ -6956,7 +6969,7 @@ class ProjectFileHandler extends PathBase {
             if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
                 const content = require(file.absolute).default;
 
-                if (Util.has(source.getComponents().map((each) => each.getName()), content.name)){
+                if (Util.has(source.getComponents().map((each) => each.getName()), content.name)) {
                     /** 必免重復的component 被匯入 */
                     continue;
                 }
@@ -7008,11 +7021,15 @@ class ProjectFileHandler extends PathBase {
         const totalClassNames = [];
         const totalEvents = [];
         for (let component of this.nodeOfAncestor.components) {
-            const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
-            _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
-            /** 表示這可能是reference node產生出來className, 所以要filter */
-            totalClassNames.push({component, classNames});
-            totalEvents.push(...events);
+            const result = await new ComponentBuilder(this.props).buildBaseComponent(component);
+            if (result !== undefined) {
+                const classNames = result.classNames;
+                const events = result.events;
+                _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
+                /** 表示這可能是reference node產生出來className, 所以要filter */
+                totalClassNames.push({component, classNames});
+                totalEvents.push(...events);
+            }
 
             if (!component.isEditPage() && component.getStruct().isAttribute())
                 await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
