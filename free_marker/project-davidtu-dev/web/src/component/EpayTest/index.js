@@ -50,6 +50,10 @@ class EpayTestComponent extends BaseEpayTestComponent {
         this.getStore().performLinePayPageById().then();
     }
 
+    onEpayTestCancelPreciseOrderButtonClicked(param) {
+        this.getStore().performEPayCancelOrderBehavior().then();
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

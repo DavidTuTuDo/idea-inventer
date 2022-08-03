@@ -844,18 +844,19 @@ class Utiller {
         months: 0,
         years: 0,
         minutes: 0,
-        seconds: 0
+        seconds: 0,
+        hours: 0,
     }, target = this.getCurrentTimeStamp()) {
         let base = moment(target);
         for (const each in param) {
             const number = param[each];
             const unit = each;
             if (number > 0) {
-                base = base.add(number,unit);
+                base = base.add(number, unit);
             }
 
             if (number < 0) {
-                base = base.subtract(Math.abs(number),unit);
+                base = base.subtract(Math.abs(number), unit);
             }
         }
         return base.valueOf();
@@ -865,7 +866,15 @@ class Utiller {
      * 請注意 DD HH 之間有一個空格
      * */
     getTimeStampByStringFormat(string) {
-        return moment(string, 'YYYY/MM/DD HH:mm:ss').tz('UTC').valueOf();
+        return this.getTimeStampFromSpecificFormat(string, 'YYYY/MM/DD HH:mm:ss').valueOf();
+    }
+
+    getTimeStampFromSpecificFormat(string, format = 'YYYY/MM/DD HH:mm:ss') {
+        return moment(string, format).valueOf();
+    }
+
+    getTimeStampFromECPayStringFormat(string) {
+        return this.getTimeStampFromSpecificFormat(string, 'YYYY/MM/DD HH:mm:ss').valueOf();
     }
 
     /** 要記住timestamp 可以轉換成西元時間(timestamp),或是期間(duration) 把duration time-stamp 轉成 02:13.445 */

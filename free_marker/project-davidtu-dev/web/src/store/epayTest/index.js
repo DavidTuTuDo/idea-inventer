@@ -66,6 +66,12 @@ class EpayTestStore extends BaseEpayTestStore {
         this.setIdOfCurrentPreciseOrder(result.idOfPreciseOrder);
     }
 
+    async performEPayCancelOrderBehavior() {
+        await Functions.httpOnCallCancelPreciseOrder(this.getComponent(), {idOfPreciseOrder: this.getIdOfCurrentPreciseOrder()});
+        this.getComponent().showInfoSnackMessage(`已成功cancel ${this.getIdOfCurrentPreciseOrder()}`)
+
+    }
+
     async performCheckoutByLinePayBehavior() {
         const result = await Functions.httpOnCallCheckoutByLinePay(this.getComponent(), {idOfPreciseOrder: this.getIdOfCurrentPreciseOrder()});
         this.getComponent().routeToLinePayCheckoutPage(JSON.stringify(result));

@@ -2,6 +2,7 @@ import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from "lodash";
 import * as functions from 'firebase-functions';
 import Config from "../config";
+import Api from '../api';
 
 class BaseFunction {
 
@@ -12,26 +13,52 @@ class BaseFunction {
         functions.logger.log(...msgs);
     }
 
+    /**
+     * 應該要依照locale 去換算出 2022/03/12 12:10:39 *
+     * 因為server在美國 UTC+8
+     * @param string 2022/12/12 11:12:14
+     * @param locale 用來換算多少
+     */
+    getUTCTimestampFromECPayTimeString(string, locale = 'zh_tw') {
+        const offset = this.getOffSetByLocation(locale);
+        return Util.getTimeStampWithConditions({hours: offset}, Util.getTimeStampFromECPayStringFormat(string))
+    }
 
-    appendErrorLog(code,message) {
+    getOffSetByLocation(locale) {
+        switch (_.toLower(locale)) {
+            case 'zh_tw':
+                return -8;
+            default:
+                return 0;
+        }
+    }
+
+    appendErrorLog(code, message) {
         functions.logger.error(message);
         throw new ERROR(code, message);
     }
 
-    isLoginUser(context) {
-        return context.auth && context.auth.uid;
+    isLoginUser(session) {
+        return session.auth && session.auth.uid;
     }
 
-    getUid(context) {
-        return context.auth.uid;
+    async isAdminUser(session) {
+        if (this.isLoginUser(session)) {
+            return await Api.isAdminUser();
+        }
+        return false;
     }
 
-    getPictureUrl(context) {
-        return context.auth.token.name || null;
+    getUid(session) {
+        return session.auth.uid;
     }
 
-    getEmailAddress(context) {
-        return context.auth.token.email || null;
+    getPictureUrl(session) {
+        return session.auth.token.name || null;
+    }
+
+    getEmailAddress(session) {
+        return session.auth.token.email || null;
     }
 
     isECPayCheckMacValueValid(data, key, iv, idOfError = '') {
@@ -53,21 +80,21 @@ class BaseFunction {
      * isCreatePaymentProcedure 用於檢查是否訂單用於向第三方建立出訂單, 例如checkoutByXXX(EPAY LINE-PAY), 這就要用來檢查是否已經有選定的支付方式
      *
      * */
-    validatePreciseOrder(itemOfPreciseOrder, isCreatePaymentProcedure = true, idOfError = '') {
+    validatePreciseOrder(itemOfPreciseOrder, isPayingProcedure = true, idOfError = '') {
         if (!itemOfPreciseOrder.exists) {
-            this.appendErrorLog(9999,`8871231-${idOfError} 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`);
+            this.appendErrorLog(9999, `8871231-${idOfError} 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`);
         }
 
         if (_.isEqual('completed', itemOfPreciseOrder.stateOfPayment)) {
-            this.appendErrorLog(9999,`8871453-${idOfError} 訂單內容已完成手續, 無法再更改狀態`);
+            this.appendErrorLog(9999, `8871453-${idOfError} 訂單內容已完成手續, 無法再更改狀態`);
         }
 
-        if (isCreatePaymentProcedure && !_.isEqual('pending', itemOfPreciseOrder.stateOfPayment)) {
-            this.appendErrorLog(9999,`8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`);
+        if (isPayingProcedure && !_.isEqual('pending', itemOfPreciseOrder.stateOfPayment)) {
+            this.appendErrorLog(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`);
         }
 
-        if (isCreatePaymentProcedure && !_.isEqual(`unknown`,itemOfPreciseOrder.procedureOfPayment)) {
-            this.appendErrorLog(9999,`8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
+        if (isPayingProcedure && !_.isEqual(`unknown`, itemOfPreciseOrder.procedureOfPayment)) {
+            this.appendErrorLog(9999, `8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
         }
     }
 
@@ -81,6 +108,20 @@ class BaseFunction {
             result += `支付方式:${strings.shift()}`;
         return result;
     }
+
+    validateIdOfDocument(id, idOfError, name = 'document') {
+        if (Util.isUndefinedNullEmpty(id)) {
+            this.appendErrorLog(9999, `4846846519-${idOfError} 沒有提供合理${name}編號`);
+        }
+    }
+
+    validateIsLoginUser(session, idOfError) {
+        if (!this.isLoginUser(session)) {
+            this.appendErrorLog(9999, `4845461513-${idOfError} 必須登入才能呼叫此功能`);
+        }
+    }
+
+
 }
 
 

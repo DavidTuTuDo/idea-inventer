@@ -201,6 +201,9 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                     code: getStringOfCode(),
                 }
             },
+            areaOfPaymentFailure:{
+                reason:`${Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfCancel))} ${order.messageOfPayment}`,
+            }
         }
     }
 

@@ -50,12 +50,8 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
          * 1. linepay 未付款
          * 2. 未選擇付款方式
          * */
-        return Util.getVisibleOrNone(
-            Util.or(
-                this.isUnknownOrder(order),
-                this.isWaitingToLinePay(order)
-            )
-        );
+        return Util.getVisibleOrNone(this.isWaitingPendingState(order)
+            && Util.or(this.isUnknownOrder(order), this.isWaitingToLinePay(order)));
     }
 
     /** 沒有選擇付費方式的order(下完訂單就把頁面關掉)*/
@@ -66,6 +62,10 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     /** 還沒付費的linepay order(走到Line-Pay,把付費頁面關掉) */
     isWaitingToLinePay(order) {
         return _.isEqual(order.getTypeOfPayment(), 'linepay') && _.isEqual(order.getStateOfPayment(), 'waiting')
+    }
+
+    isWaitingPendingState(order) {
+        return _.isEqual(order.getStateOfPayment(), 'pending') || _.isEqual(order.getStateOfPayment(), 'waiting')
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
