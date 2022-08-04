@@ -40,11 +40,11 @@ class EpayTestStore extends BaseEpayTestStore {
         const products = await this.storeOfEPayProduct.fetchPreciseProducts(this.getComponent());
 
         const productOne = Util.getRandomItemOfArray(products);
-        await Util.syncDelay(100);
+        await Util.syncDelay(10);
         const productTwo = Util.getRandomItemOfArray(products);
-        await Util.syncDelay(100);
+        await Util.syncDelay(10);
         const productThree = Util.getRandomItemOfArray(products);
-        await Util.syncDelay(100);
+        await Util.syncDelay(10);
         const productFour = Util.getRandomItemOfArray(products);
 
         const items = [
@@ -62,6 +62,7 @@ class EpayTestStore extends BaseEpayTestStore {
                 quantity: Util.getRandomValue(1, 3)
             }
         ]
+
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this.getComponent(), {items});
         this.setIdOfCurrentPreciseOrder(result.idOfPreciseOrder);
     }

@@ -90,7 +90,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             return _.startsWith(getKeywordOfProcedure(), 'unknown');
         }
 
-        function getByEachPaymentType(map) {
+        function getByEachPaymentProcess(map) {
             let target = undefined;
             if (isATM()) {
                 target = {atm: map.atm};
@@ -117,7 +117,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         }
 
         function getStringOfRule() {
-            return getByEachPaymentType({
+            return getByEachPaymentProcess({
                 cvs: `超商代碼`,
                 credit: `信用卡支付`,
                 linepay: `LINE-PAY線上支付`,
@@ -127,8 +127,8 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             });
         }
 
-        function getStringOfPaymentType() {
-            return getByEachPaymentType({
+        function getStringOfPaymentProcess() {
+            return getByEachPaymentProcess({
                 cvs: `cvs`,
                 credit: `credit`,
                 linepay: `linepay`,
@@ -139,7 +139,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         }
 
         function getStringOfDomain() {
-            return getByEachPaymentType({
+            return getByEachPaymentProcess({
                 cvs: `全家、7-11、萊爾富`,
                 atm: `分行代碼(${_.split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift()})`,
                 credit: ``,
@@ -150,7 +150,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         }
 
         function getStringOfCode() {
-            return getByEachPaymentType({
+            return getByEachPaymentProcess({
                 cvs: _.split(order.infoOfPayment, Util.getSeparatorOfUnique()).shift(),
                 atm: _.split(order.infoOfPayment, Util.getSeparatorOfUnique()).pop(),
                 credit: ``,
@@ -180,7 +180,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
 
         return {
             raw: order,
-            typeOfPayment: getStringOfPaymentType(),
+            processOfPayment: getStringOfPaymentProcess(),
             stateOfPayment: order.stateOfPayment,
             areaOfTop: {
                 stringOfOrderIdentity: order.id,

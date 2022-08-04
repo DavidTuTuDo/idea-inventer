@@ -82,6 +82,11 @@ const VIEW_IMPORTS =
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
+            from: `@material-ui/icons/ChevronRight`,
+            views: ['ChevronRight'],
+            simplePath: true, /** 就是只要material-ui/icons/menu */
+        },
+        {
 
             from: `@material-ui/icons/MoreHoriz`,
             views: ['MoreHoriz'],
