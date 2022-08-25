@@ -117,7 +117,6 @@ class SheetStore extends BaseSheetStore {
                     idOfGuitarPu: this.getCurrentPu().getId(),
                     name: this.getCurrentPu().getName(),
                     singer: this.getCurrentPu().getSinger(),
-                    id: this.getCurrentPu().getId(),
                 });
             } else {
                 await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), this.getCurrentPu().getId());

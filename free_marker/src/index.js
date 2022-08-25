@@ -30,8 +30,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -2251,6 +2251,10 @@ class CodegenNode {
         return `set${_.upperFirst(this.getFieldName())}`;
     }
 
+    getFunctionNameOfPushIntoArray() {
+        return `push${_.upperFirst(this.getFieldName())}`;
+    }
+
     getFunctionNameOfModifiedSetter() {
         return Util.camel('set', `modified`, this.getName());
     }
@@ -3237,8 +3241,8 @@ class StoreBuilder extends BaseBuilder {
             propStmt.push(`{`);
 
             if (child.isArray()) {
-                propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
-
+                if (!child.hasPaginate())
+                    propStmt.push(`this.${child.getFunctionNameOfPushIntoArray()}(...obj.${fieldName})`);
                 if (child.isReferenceNode() && !child.independence)
                     generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
                 else {

@@ -1,4 +1,4 @@
-wimport {inject} from "mobx-react";
+import {inject} from "mobx-react";
 import BasePortfolioComponent from "./BasePortfolioComponent";
 import {
     utiller as Util,

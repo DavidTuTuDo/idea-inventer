@@ -42,13 +42,17 @@ this.{{{fieldName}}}.length = 0;
 @action
 push{{{functionName}}}(...items) {
 const self = this;
-this.{{{fieldName}}}.push(...items.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+const itemsOfSorted = self.ruleOfPreviouslySort(items);
+this.{{{fieldName}}}.push(...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+self.invalidate();
 }
 
 @action
 push{{{functionName}}}ByIndex(index, ...params) {
 const self = this;
-Util.insertToArray(this.{{{fieldName}}},index, ...params.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+const itemsOfSorted = self.ruleOfPreviouslySort(params);
+Util.insertToArray(this.{{{fieldName}}},index, ...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+self.invalidate();
 }
 
 push{{{fieldClass}}} = (item = {}) => {

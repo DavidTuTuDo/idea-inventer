@@ -35,6 +35,14 @@ class PersonalRhythmComponent extends BasePersonalRhythmComponent {
         Router.gotoSheetDetailPage(this, rhythm.getIdOfGuitarPu());
     }
 
+    getInjectStyleOfPersonalRhythmFavoritePuTitleTypography(favoritePu) {
+        return Util.getVisibleOrNone(favoritePu.getNeedTitle());
+    }
+
+    onPersonalRhythmFavoritePuExtraIconButtonDeleteOrderClicked(param) {
+        super.onPersonalRhythmFavoritePuExtraIconButtonDeleteOrderClicked(param);
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

@@ -175,13 +175,23 @@ class MobileStyle {
 
   /** => following for personalRhythm  component  */
 
-  PersonalRhythmFavoritePuSingerTypography = {};
+  PersonalRhythmFavoritePuExtraIconMoreHoriz = {};
+
+  PersonalRhythmFavoritePuExtraReactFragmentWrap = {};
+
+  PersonalRhythmFavoritePuExtraIconButton = {};
 
   PersonalRhythmFavoritePuNameTypography = {};
+
+  PersonalRhythmFavoritePuTitleDivWrap = {};
+
+  PersonalRhythmFavoritePuTitleTypography = {};
 
   PersonalRhythmFavoritePuCardSkeleton = {};
 
   PersonalRhythmFavoritePuDivList = {};
+
+  PersonalRhythmFavoritePuDivWrap = {};
 
   PersonalRhythmFavoritePuCard = {};
 
@@ -257,7 +267,7 @@ class MobileStyle {
 
   SheetGuitarpuFloatAreaMarkOfYuehImg = {};
 
-  SheetGuitarpuFloatAreaOuterDiv = {};
+  SheetGuitarpuFloatAreaDiv = {};
 
   SheetGuitarpuCurrentContextTypography = {};
 

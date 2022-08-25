@@ -175,13 +175,23 @@ class CommonStyle {
 
   /** => following for personalRhythm  component  */
 
-  PersonalRhythmFavoritePuSingerTypography = {};
+  PersonalRhythmFavoritePuExtraIconMoreHoriz = {};
+
+  PersonalRhythmFavoritePuExtraReactFragmentWrap = {};
+
+  PersonalRhythmFavoritePuExtraIconButton = {};
 
   PersonalRhythmFavoritePuNameTypography = {};
+
+  PersonalRhythmFavoritePuTitleDivWrap = {};
+
+  PersonalRhythmFavoritePuTitleTypography = {};
 
   PersonalRhythmFavoritePuCardSkeleton = {};
 
   PersonalRhythmFavoritePuDivList = {};
+
+  PersonalRhythmFavoritePuDivWrap = {};
 
   PersonalRhythmFavoritePuCard = {};
 
@@ -257,7 +267,7 @@ class CommonStyle {
 
   SheetGuitarpuFloatAreaMarkOfYuehImg = {};
 
-  SheetGuitarpuFloatAreaOuterDiv = {};
+  SheetGuitarpuFloatAreaDiv = {};
 
   SheetGuitarpuCurrentContextTypography = {};
 

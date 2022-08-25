@@ -326,6 +326,15 @@ class BaseStore extends ClientRemoteApi {
         return this.hasNextPageItems = has;
     }
 
+    /** 當fetch回來的item 要再經過一次sort的機制*/
+    ruleOfPreviouslySort(items) {
+        return items;
+    }
+
+    /** 目前是設計為資料獲取後, 可以有一個hook做一些邏輯 */
+    invalidate() {
+    }
+
 }
 
 export default BaseStore

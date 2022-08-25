@@ -9,8 +9,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for main editor component  */
 
   MainEditorInterestingOfFunctionSubTitleTextField = {};
@@ -177,13 +175,23 @@ class AppStyle {
 
   /** => following for personalRhythm  component  */
 
-  PersonalRhythmFavoritePuSingerTypography = {};
+  PersonalRhythmFavoritePuExtraIconMoreHoriz = {};
+
+  PersonalRhythmFavoritePuExtraReactFragmentWrap = {};
+
+  PersonalRhythmFavoritePuExtraIconButton = {};
 
   PersonalRhythmFavoritePuNameTypography = {};
+
+  PersonalRhythmFavoritePuTitleDivWrap = {};
+
+  PersonalRhythmFavoritePuTitleTypography = {};
 
   PersonalRhythmFavoritePuCardSkeleton = {};
 
   PersonalRhythmFavoritePuDivList = {};
+
+  PersonalRhythmFavoritePuDivWrap = {};
 
   PersonalRhythmFavoritePuCard = {};
 
@@ -259,7 +267,7 @@ class AppStyle {
 
   SheetGuitarpuFloatAreaMarkOfYuehImg = {};
 
-  SheetGuitarpuFloatAreaOuterDiv = {};
+  SheetGuitarpuFloatAreaDiv = {};
 
   SheetGuitarpuCurrentContextTypography = {};
 

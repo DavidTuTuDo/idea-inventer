@@ -13,8 +13,8 @@ class ClientRemoteApi extends CommonRemoteApi {
         super(props);
     }
 
-    async submitItem(path, object) {
-        const _async = async () => super.submitItem(path, object);
+    async submitItem(path, object, id) {
+        const _async = async () => super.submitItem(path, object, id);
         return await CommonPoolHelper.submitTo('submit', _async, 'low', 'submitItem');
     }
 
@@ -66,8 +66,8 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('fetch', asyncTask);
     }
 
-    async updateObject(path, objName,updatedObject) {
-        const asyncTask = async () => super.updateObject(path, objName,updatedObject);
+    async updateObject(path, objName, updatedObject) {
+        const asyncTask = async () => super.updateObject(path, objName, updatedObject);
         return await CommonPoolHelper.submitTo('submit', asyncTask)
     }
 
@@ -102,7 +102,7 @@ class ClientRemoteApi extends CommonRemoteApi {
                 Util.appendInfo(`firebase-functions '${functionName}' process fail`);
                 throw new Error(result.data);
             } else {
-                Util.appendInfo(`firebase-functions '${functionName}' process succeed`,result.data);
+                Util.appendInfo(`firebase-functions '${functionName}' process succeed`, result.data);
                 return result.data;
             }
         } catch (error) {

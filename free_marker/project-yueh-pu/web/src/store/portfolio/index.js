@@ -37,19 +37,18 @@ class PortfolioStore extends BasePortfolioStore {
             case 'search':
                 const keywords = Application.getNavigatorStore().getKeywords().map(each => each.data()) ?? [];
                 const fuse = new Fuse(keywords, {includeScore: true, keys: ['label', 'value']})
-                const suggests = fuse.search(view.paramOfId).map((each) => each.item) //_.orderBy(fuse.search(view.paramOfId), 'score', 'asc')
+                let suggests = fuse.search(view.paramOfId).map((each) => each.item) //_.orderBy(fuse.search(view.paramOfId), 'score', 'asc')
                 // console.log('suggests ==> ', 'search keyword ==> ', view.paramOfId, '\n\n', suggests);
                 const rhythms = _.remove(suggests, (each) => _.isEqual(each.type, 11))
                 /** 先抓出type = 11, 歌曲的關鍵字*/
                 this.pushNextRhythmIDs(...rhythms.map((each) => each.uid));
                 if (_.size(suggests) > 0) {
-                    console.log(_.size(suggests));
                     /** 表示只剩下歌手的關鍵字 */
                     const idsOfSinger = Util.getArrayOfSize(suggests, 10).map((each) => each.uid)
                     /** 因為firestore只接受10個條件*/
                     const api = new Rhythm();
                     const nexts = await api.fetchRhythmsOfLimitation(this.getComponent(),
-                        'in','idOfSinger', ...idsOfSinger);
+                        'in', 'idOfSinger', ...idsOfSinger);
                     this.pushNextRhythmIDs(...nexts.map((each) => each.id));
                 }
                 break;
@@ -58,6 +57,7 @@ class PortfolioStore extends BasePortfolioStore {
                 this.setRhythmConditions(
                     [
                         {where: (stmt) => stmt.where('idOfSinger', '==', view.paramOfId)},
+                        {orderBy: (stmt) => stmt.orderBy('popularLevel', 'desc')}
                     ]
                 );
                 return await super.fetch(this.getComponent());
