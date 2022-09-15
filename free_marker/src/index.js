@@ -54,7 +54,6 @@ const LESS_MODULES = [
     },
 ]
 
-
 /**
  * true, 就是區分component 和 view 概念, component會參照到view底下的module作為
  * 優點是 viewMoudule可以reuse, 缺點是會產出很多folder
@@ -7119,7 +7118,7 @@ class ProjectFileHandler extends PathBase {
             return {name: each.getName(), editor: each.isEditPage()}
         }))
 
-        if (this.isWebPlatform()) {
+        if (this.isWebPlatform() && !this.isProduction()) {
             ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
             TARGET_COMPONENT_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.componentName;
         }

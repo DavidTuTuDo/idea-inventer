@@ -456,8 +456,8 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     }
 
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
-    await deployKeywords();
-    // await deployLatestSheet();
+    // await deployKeywords();
+    await deployLatestSheet();
     // await deployPuIntoDataBase();
     // await updateSpecificToneOfGuitarPu('LvNdtfmogv0Jf3Svhu36', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'))))
     // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
