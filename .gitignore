@@ -3,6 +3,7 @@ gen
 # Logs
 logs
 *.log
+/_gen_elder_kh_high/
 *.txt
 *.css.map
 *.css
