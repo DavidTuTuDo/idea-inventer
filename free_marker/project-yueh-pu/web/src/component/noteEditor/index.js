@@ -29,7 +29,7 @@ class NoteEditorComponent extends BaseNoteEditorComponent {
 
     constructor(props) {
         super(props);
-        this.getStore().setNoteId(this.getComponentInstance().getUidOfDetail())
+        this.getStore().setNoteId(this.getComponentInstance().getUidOfSheetDetail())
     }
 
     onNoteEditorFunctionAreaSubmitButtonClicked(param) {

@@ -43,7 +43,7 @@ class NoteEditorStore extends BaseNoteEditorStore {
     async fetch() {
         const result = await super.fetch(this.getComponent());
         /** fetch content from remote */
-        const noteOfGuitarPu = await this.apiOfGuitarNote.fetchGuitarPuNoteItem(this.getComponent(), undefined, this.idOfNote);
+        const noteOfGuitarPu = await this.apiOfGuitarNote.fetchGuitarPuNoteItem(this.getComponent(), this.idOfNote);
         if (noteOfGuitarPu.exists) {
             this.setContent(noteOfGuitarPu.statement);
         }
@@ -57,11 +57,11 @@ class NoteEditorStore extends BaseNoteEditorStore {
                 this.getFunctionArea().setSubmit('儲存');
                 break
             case false:
-                const result = await this.apiOfGuitarNote.submitGuitarPuNoteItem(this.getComponent(), undefined, {
+                const result = await this.apiOfGuitarNote.submitGuitarPuNoteItem(this.getComponent(),  {
                     idOfGuitarPu: this.idOfNote,
                     statement: this.getContent(),
-                    id: this.idOfNote
-                });
+
+                },this.idOfNote);
                 this.getComponent().showInfoSnackMessage('已更新 筆記內容');
                 this.setContentDisabled(true);
                 this.getFunctionArea().setSubmit('編輯');
