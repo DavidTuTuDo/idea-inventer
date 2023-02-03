@@ -105,9 +105,14 @@ class SheetStore extends BaseSheetStore {
 
     async updateFavoriteToggleState(idOfCurrentGuitarPu) {
         if (UserInfoRef.isLoginWithSucceed()) {
-            const item = await this.apiOfFavorite.fetchFavoritePuItem(this.getComponent(), idOfCurrentGuitarPu);
-            this.getAdjustCenter().getJoinToFavorite().setToggle(item.exists);
+            this.getAdjustCenter().getJoinToFavorite().setToggle(!Util.isUndefinedNullEmpty(await this.getFavoritePuByIdOfGuitarPu(idOfCurrentGuitarPu)));
         }
+    }
+
+    async getFavoritePuByIdOfGuitarPu(idOfGuitarPu) {
+       const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(),
+            UserInfoRef.getUid(),{where:(stmt) => stmt.where('idOfGuitarPu','==',idOfGuitarPu)})
+        return _.head(items);
     }
 
     async submitFavoritePuState(join = false) {
@@ -119,7 +124,12 @@ class SheetStore extends BaseSheetStore {
                     singer: this.getCurrentPu().getSinger(),
                 });
             } else {
-                await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), this.getCurrentPu().getId());
+                const item = await this.getFavoritePuByIdOfGuitarPu(this.getCurrentPu().getId());
+                if(item) {
+                    console.log(item);
+                    await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), item.id);
+                }
+
             }
         }
     }
