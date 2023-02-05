@@ -29,8 +29,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 
 // const CURRENT_PROJECT = './project-yueh-voice';
-// const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -213,7 +213,7 @@ class CodegenNode {
      * */
 
     testButton = false;
-    /** 就是在colletion view 加一個測試按鈕*/
+    /** 就是在collection view 加一個測試按鈕*/
 
     needDetail;
     /** 當type === array, 而且想獲得uidOfDetail,必須加上這個屬性*/
@@ -1131,7 +1131,7 @@ class CodegenNode {
 
     appendMethods(...methods) {
         this.getNodeOfComponent().methods.push(...methods);
-        this.methods.push(...methods)
+        this.methods.push(...methods);
     }
 
     hasPermission() {
@@ -3240,9 +3240,11 @@ class StoreBuilder extends BaseBuilder {
             propStmt.push(`{`);
 
             if (child.isArray()) {
-                if (!child.hasPaginate())
-                    propStmt.push(`this.${child.getFunctionNameOfPushIntoArray()}(...obj.${fieldName})`);
-                if (child.isReferenceNode() && !child.independence)
+                if (!child.hasPaginate()) {
+                    /** 因為invalidate做在pushXXX裏面 所以才會出現initial 要pushXXX,在悅譜-我的最愛 有這個奇怪的設計 hack */
+                    propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
+                }
+                    if (child.isReferenceNode() && !child.independence)
                     generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
                 else {
                     generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
@@ -3316,7 +3318,8 @@ class StoreBuilder extends BaseBuilder {
             return defaultStmt;
         }
 
-        function getDefaultValueSetterStmts(node) {
+        /** 2023/02/05 在宣告時就把物件包成store了
+         function getDefaultValueSetterStmts(node) {
             const stmts = [];
             for (const child of node.getPreciseAttributeChildren()) {
                 if (child.isCollection()) {
@@ -3326,6 +3329,7 @@ class StoreBuilder extends BaseBuilder {
             }
             return stmts;
         }
+         */
 
         function getStmtOfFetchByDetail(node) {
             const stmts = []
@@ -3477,15 +3481,18 @@ class StoreBuilder extends BaseBuilder {
                     }
                 ))
 
-        /** 因為defaultValue沒有被store包裝過, 所以建構子要弄一下*/
-        baseGenerator.appendFunction('setDefaultValues', [], [], [],
-            ...getDefaultValueSetterStmts(node)
-        )
-
+        /** 因為defaultValue沒有被store包裝過, 所以建構子要弄一下
+         ** 2023/02/05 在宣告時就把物件包成store了
+         baseGenerator.appendFunction('setDefaultValues', [], [], [],
+         ...getDefaultValueSetterStmts(node)
+         )
+         * */
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
             `super.initial(obj)`,
             ...propsStmt);
-        baseGenerator.appendConstructor(`makeObservable(this)`, `this.setDefaultValues()`, `this.initial(props)`);
+        baseGenerator.appendConstructor(
+            `makeObservable(this)`,
+            `this.initial(props)`);
         this.importStoreDefault(baseGenerator);
 
         if (node.isModuleComponent()) {
@@ -6319,6 +6326,7 @@ class ProjectFileHandler extends PathBase {
     enrichNodesOfBehavior(nodes) {
 
         function appendPropsOfNode(node, functionOfView, props = [], methods = [], nodesOfParent = []) {
+            let alreadyAppendMethod = false
             for (const type of TYPES_OF_PROPS_VIEW) {
                 if (functionOfView(type)) {
                     switch (type) {
@@ -6335,7 +6343,10 @@ class ProjectFileHandler extends PathBase {
                             node.appendViewProps(...props)
                             break;
                     }
-                    node.appendMethods(...methods);
+                    if (!alreadyAppendMethod) {
+                        node.appendMethods(...methods);
+                        alreadyAppendMethod = true;
+                    }
 
                     for (const _node of nodesOfParent)
                         node.getParentNode().appendChildrenWithJsons(_node)
