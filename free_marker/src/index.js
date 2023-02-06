@@ -409,7 +409,7 @@ class CodegenNode {
      *
      * */
 
-    editIgnore;
+    editIgnore = false;
     /** 用來提示這個node不要被editlize給處理到 */
 
     editor;
@@ -650,6 +650,10 @@ class CodegenNode {
 
     isPathArray() {
         return this.isArray() && this.hasPath();
+    }
+
+    isColumnArray() {
+        return this.isArray() && this.column;
     }
 
     isReferenceNode() {
@@ -6949,7 +6953,7 @@ class ProjectFileHandler extends PathBase {
                 delete node.view;
             }
 
-            if (node.isPathArray()) {
+            if (node.isColumnArray() || node.isPathArray()) {
                 node.disableSelectedArray();
 
                 if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
@@ -6967,7 +6971,6 @@ class ProjectFileHandler extends PathBase {
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
                 node.appendWrapStyle({...style, borderColor: 'red'});
                 node.appendListStyle({...style, borderColor: 'blue'});
-
                 node.appendListContents([`{this.renderCollectionEditorView(
                    ${node.getFunctionNameOfCollectionEditorWithParam()}, ${_.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
@@ -6981,8 +6984,9 @@ class ProjectFileHandler extends PathBase {
             }
 
             for (const child of node.getChildren()) {
-                if (!!!child.editIgnore)
+                if (!child.editIgnore) {
                     toEditorPageStruct(child);
+                }
             }
         }
 
