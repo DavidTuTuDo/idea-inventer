@@ -96,7 +96,6 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     validateRangeByValue(value) {
         const max = this.getStore().getExamHistoryInfo().getMaxYear();
-        const min = max - value;
         this.getStore().getRandomTest().setRangeOfYear([max - value, max])
     }
 

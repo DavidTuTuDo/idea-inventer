@@ -3244,7 +3244,7 @@ class StoreBuilder extends BaseBuilder {
                     /** 因為invalidate做在pushXXX裏面 所以才會出現initial 要pushXXX,在悅譜-我的最愛 有這個奇怪的設計 hack */
                     propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
                 }
-                    if (child.isReferenceNode() && !child.independence)
+                if (child.isReferenceNode() && !child.independence)
                     generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
                 else {
                     generator.appendImport(child.getClassName(), `../${child.getStoreFolderName()}`)
@@ -6370,6 +6370,8 @@ class ProjectFileHandler extends PathBase {
                 } else if (node.isAutoCompleteView()) {
                     stmts.push(`objectOfParam.object = value`)
                     stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
+                } else if (node.isSimpleSelected() && node.isButton()) {
+                    stmts.push(`objectOfParam.object = ${node.getName()}`)
                 } else {
                     /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
                 }
@@ -6687,6 +6689,7 @@ class ProjectFileHandler extends PathBase {
                     }`
                     )
                 }
+
                 if (node.hasConfirmDialog()) {
                     onClickStmts.push(`objectOfParam.view = event;`)
                     onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
