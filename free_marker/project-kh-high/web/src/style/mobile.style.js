@@ -47,6 +47,8 @@ class MobileStyle {
 
   ExamEditorQuestionChoiceImageDivList = {};
 
+  ExamEditorQuestionChoiceImageDivWrap = {};
+
   ExamEditorQuestionChoiceImageDiv = {};
 
   ExamEditorQuestionChoiceStatementDivWrap = {};
@@ -55,6 +57,8 @@ class MobileStyle {
 
   ExamEditorQuestionChoiceDivList = {};
 
+  ExamEditorQuestionChoiceDivWrap = {};
+
   ExamEditorQuestionChoiceDiv = {};
 
   ExamEditorQuestionTopicImageUrlTextField = {};
@@ -62,6 +66,8 @@ class MobileStyle {
   ExamEditorQuestionTopicImageUrlImg = {};
 
   ExamEditorQuestionTopicImageDivList = {};
+
+  ExamEditorQuestionTopicImageDivWrap = {};
 
   ExamEditorQuestionTopicImageDiv = {};
 
@@ -77,13 +83,15 @@ class MobileStyle {
 
   ExamEditorQuestionTopicOfAssistantImageDivList = {};
 
+  ExamEditorQuestionTopicOfAssistantImageDivWrap = {};
+
   ExamEditorQuestionTopicOfAssistantImageDiv = {};
 
   ExamEditorQuestionTopicOfAssistantNameTextField = {};
 
   ExamEditorQuestionTopicOfAssistantDiv = {};
 
-  ExamEditorQuestionAlertOuterDiv = {};
+  ExamEditorQuestionAlertDiv = {};
 
   ExamEditorQuestionDivList = {};
 
@@ -95,17 +103,21 @@ class MobileStyle {
 
   ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
 
-  ExamEditorHistoryFilterOrderByWhatMenuItem = {};
+  ExamEditorHistoryFilterOrderByWhatDivList = {};
 
-  ExamEditorHistoryFilterOrderByWhatTextFieldList = {};
+  ExamEditorHistoryFilterOrderByWhatDivWrap = {};
+
+  ExamEditorHistoryFilterOrderByWhatDiv = {};
 
   ExamEditorHistoryFilterWhichSubjectValueTextField = {};
 
   ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
 
-  ExamEditorHistoryFilterWhichSubjectMenuItem = {};
+  ExamEditorHistoryFilterWhichSubjectDivList = {};
 
-  ExamEditorHistoryFilterWhichSubjectTextFieldList = {};
+  ExamEditorHistoryFilterWhichSubjectDivWrap = {};
+
+  ExamEditorHistoryFilterWhichSubjectDiv = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
 
@@ -113,9 +125,11 @@ class MobileStyle {
 
   ExamEditorHistoryFilterReplyTypeLabelTextField = {};
 
-  ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
+  ExamEditorHistoryFilterReplyTypeDivList = {};
 
-  ExamEditorHistoryFilterReplyTypeRadioGroupList = {};
+  ExamEditorHistoryFilterReplyTypeDivWrap = {};
+
+  ExamEditorHistoryFilterReplyTypeDiv = {};
 
   ExamEditorHistoryFilterDivWrap = {};
 
@@ -411,7 +425,7 @@ class MobileStyle {
 
   ExamQuestionAlertAlertImageImg = {};
 
-  ExamQuestionAlertOuterDiv = {};
+  ExamQuestionAlertDiv = {};
 
   ExamQuestionCardSkeleton = {};
 

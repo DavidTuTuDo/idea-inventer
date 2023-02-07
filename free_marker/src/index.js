@@ -413,7 +413,7 @@ class CodegenNode {
     /** 用來提示這個node不要被editlize給處理到 */
 
     editor;
-    /** 用來提示這個component需要產生編輯頁面 */
+    /** 用來提示這個component需要產生編輯頁面(EditableComponent) */
 
     originalView;
     /** 當被改成editMode之後 還是要有可以找到原始的view, 因為我會把type是string||number 強制把view改成TextField */
@@ -427,8 +427,8 @@ class CodegenNode {
     nameModified;
     /** 在editMode下, 如果被改過View, 這邊就會是true */
 
-    editPage = false;
-    /** 用來註記是一個editPage */
+    isEditableComponent = false;
+    /** 用來註記是一個edit component,edit component是指一個把一個UI改成編輯頁面的功能, 不需要再另外刻畫一個*/
 
     params;
     /** 目前用來做events 帶的參數 */
@@ -695,14 +695,17 @@ class CodegenNode {
         return Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (file) => _.isEqual(file.extension, 'less'));
     }
 
-    /** 像是Switch, ToogleButton這類*/
-    needOnChangeBehavior = (type = 'default') => {
+    /** 像是Switch, ToggleButton這類
+     *
+     * 因為我把needOnChangeBehavior這個method當作參參數傳遞, 會產生裏面呼叫的this 和 node 是不一樣的指標(例如this.view !== node.view),
+     * 可能還不懂call by reference的實作, 只好把物件(node)傳遞進來     * */
+    needOnChangeBehavior(type = 'default', node = this) {
         return Util.or(
-            this.isSliderView(type),
-            this.isSwitchView(type),
-            this.isTextFieldView(type),
-            this.isAutoCompleteView(type),
-            this.isTabListView(type),
+            node.isSliderView(type),
+            node.isSwitchView(type),
+            node.isTextFieldView(type),
+            node.isAutoCompleteView(type),
+            node.isTabListView(type),
         );
     }
 
@@ -935,8 +938,8 @@ class CodegenNode {
         return this.readOnly
     }
 
-    setIsEditPage(edit) {
-        this.editPage = edit;
+    setIsEditableComponent(edit) {
+        this.isEditableComponent = edit;
     }
 
     isDisableInitFetch() {
@@ -950,9 +953,9 @@ class CodegenNode {
             return `###${this.getName()}.getIdOfUniqueView()`;
     }
 
-    isEditPage() {
+    isPreciselyEditableComponent() {
         const nodeOfComponent = this.getNodeOfComponent();
-        return nodeOfComponent.editPage;
+        return nodeOfComponent.isEditableComponent;
     }
 
     isColumnAttribute() {
@@ -1542,16 +1545,16 @@ class CodegenNode {
         return this.isAttributeView('Avatar', type);
     }
 
-    isTextFieldView(type = 'default') {
-        return this.isAttributeView('TextField', type);
+    isTextFieldView(type = 'default', node = this) {
+        return this.isAttributeView('TextField', type, node);
     }
 
     isTabItemView(type = 'default') {
         return this.isAttributeView('Tab', type);
     }
 
-    isTabListView = (type = 'default') => {
-        return this.isAttributeView('Tabs', type) || this.isAttributeView('TabList', type);
+    isTabListView(type = 'default', node = this) {
+        return node.isAttributeView('Tabs', type) || node.isAttributeView('TabList', type);
     }
 
     isSimpleViewPager(type = 'default') {
@@ -1566,39 +1569,40 @@ class CodegenNode {
         return this.isObject() && this.isAttributeView('SimpleSwitch');
     }
 
-    isAutoCompleteView(type = 'default') {
-        return this.isAttributeView('Autocomplete')
+    isAutoCompleteView(type = 'default', node = this) {
+        return node.isAttributeView('Autocomplete')
     }
 
     isRadioView(type = 'default') {
         return this.isAttributeView('Radio');
     }
 
-    isSwitchView(type = 'default') {
-        return this.isAttributeView('Switch');
+    isSwitchView(type = 'default', node = this) {
+        return node.isAttributeView('Switch');
     }
 
-    isSliderView(type = 'default') {
-        return this.isAttributeView('Slider');
+    isSliderView(type = 'default', node = this) {
+        return node.isAttributeView('Slider');
     }
 
     isFloatBackgroundView(type = 'default') {
         return this.isAttributeView('FloatBackgroundView');
     }
 
-    isAttributeView(view, type = 'default') {
-        const self = this;
+    isAttributeView(view, type = 'default', node = this) {
 
         function getViewOfTarget() {
             switch (type) {
                 case 'list':
-                    return self.getListView();
+                    return node.getListView();
                 case 'wrap':
-                    return self.getWrapView();
+                    return node.getWrapView();
                 case 'listWrap':
-                    return self.getListWrapView();
+                    return node.getListWrapView();
+                case 'default':
+                    return node.getView();
                 default:
-                    return self.getView();
+                    throw new ERROR(9999, `849879841475871 當然不能走到這裡 ${type}`);
             }
         }
 
@@ -2273,7 +2277,7 @@ class CodegenNode {
 
     /** 只有componentNode 可以用這個method*/
     getPreciseStoreName() {
-        return this.isEditPage() ? this.getStruct().getOriginalName() : this.getStruct().getName()
+        return this.isPreciselyEditableComponent() ? this.getStruct().getOriginalName() : this.getStruct().getName()
     }
 
     setName(name) {
@@ -2930,7 +2934,7 @@ class PathBase {
     getAllCloudFunctions() {
         const source = this.nodeOfAncestor;
         const functions = source.getCloudFunctions();
-        for (const component of _.filter(source.getComponents(), (each) => !each.isEditPage())) {
+        for (const component of _.filter(source.getComponents(), (each) => !each.isPreciselyEditableComponent())) {
             const bunchOfCloudFunction = component.getCloudFunctions();
             if (_.isArray(bunchOfCloudFunction)) {
                 functions.push(...bunchOfCloudFunction.map((each) => {
@@ -3015,7 +3019,7 @@ class PathBase {
     }
 
     getGenComponent() {
-        const components = this.getComponents().map((each) => Util.camel(each.getName(), each.isEditPage() ? 'editor' : ''));
+        const components = this.getComponents().map((each) => Util.camel(each.getName(), each.isPreciselyEditableComponent() ? 'editor' : ''));
         return _.without(components, SIGN_OF_EMPTY_STORE);
     }
 
@@ -3036,7 +3040,7 @@ class PathBase {
             return list;
         }
 
-        for (const node of this.getStructs().filter(each => !each.isEditPage())) {
+        for (const node of this.getStructs().filter(each => !each.isPreciselyEditableComponent())) {
             total.push(...appendStore(node))
         }
         return total;
@@ -4027,7 +4031,7 @@ class ComponentBuilder extends BaseBuilder {
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
         // baseGenerator.appendImport(`{styled, alpha}`, '@mui/material/styles');
         baseGenerator.appendClass(baseClassName,
-            (componentNode.isEditPage() || componentNode.needEditorBase) ? {
+            (componentNode.isPreciselyEditableComponent() || componentNode.needEditorBase) ? {
                 name: 'BaseEditorComponent',
                 from: '../../base/BaseEditorComponent'
             } : {
@@ -4106,7 +4110,7 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDetach([`this.${functionOfUnsubscribe}()`])
         }
 
-        this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator, componentNode.isEditPage());
+        this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator, componentNode.isPreciselyEditableComponent());
 
         if (componentNode.hasTitle()) {
             baseGenerator.appendField(`stringOfPageTitle`, `"${componentNode.getTitle()}"`)
@@ -4485,7 +4489,7 @@ class ComponentBuilder extends BaseBuilder {
                     ...arrayItemViewStmts, `)}`, ...node.getListContents(), ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
 
-            if (!node.isEditPage() && node.needLoadingSkeleton()) {
+            if (!node.isPreciselyEditableComponent() && node.needLoadingSkeleton()) {
 
                 const clazzName = node.getClassNameOfLessUsage('skeleton');
                 this.storeClassName({node, type: 'skeleton'});
@@ -5025,7 +5029,7 @@ class AppBuilder extends ComponentBuilder {
 
             generator.appendFunction({
                     name: Util.camel('goto', nodeOfComponent.name,
-                        nodeOfComponent.isEditPage() ? 'editor' : '',
+                        nodeOfComponent.isPreciselyEditableComponent() ? 'editor' : '',
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
@@ -5042,7 +5046,7 @@ class AppBuilder extends ComponentBuilder {
 
             generator.appendFunction({
                     name: Util.camel('getUrlOf', nodeOfComponent.name,
-                        nodeOfComponent.isEditPage() ? 'editor' : '',
+                        nodeOfComponent.isPreciselyEditableComponent() ? 'editor' : '',
                         isDetail ? 'detail' : '', 'page'),
                     arrow: true
                 },
@@ -5260,7 +5264,7 @@ class AppBuilder extends ComponentBuilder {
                         generator.appendField(name, `{}`);
                     }
                 }
-                const isEditPage = info.component.isEditPage();
+                const isEditPage = info.component.isPreciselyEditableComponent();
                 generator.insertBatchLinesIntoFieldSection(`\n\n/** => following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component  */\n\n`)
                 generator.needSignature(false);
                 generator.setSingleton(true);
@@ -5414,7 +5418,7 @@ class AppBuilder extends ComponentBuilder {
          * classNameInfos: [ {component:componentNode, classNames:['List','Wrap'] }...]
          * */
         for (const info of classNameInfos) {
-            const isEditPage = info.component.isEditPage();
+            const isEditPage = info.component.isPreciselyEditableComponent();
             generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
 
             for (const className of info.classNames) {
@@ -5491,7 +5495,7 @@ class AppBuilder extends ComponentBuilder {
 
             const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`));
             for (const info of classNameInfos) {
-                const isEditPage = info.component.isEditPage();
+                const isEditPage = info.component.isPreciselyEditableComponent();
                 generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
                 for (const className of info.classNames) {
                     /** 注意!! 是用 remove,會mutate 原本的 array */
@@ -5684,7 +5688,7 @@ class ProjectFileHandler extends PathBase {
                 Util.copySingleFileConservative(pathOfDestination, file);
             }
 
-            const componentOfModule = _.find(this.getComponents(), (each) => !each.isEditPage() && _.isEqual(module, each.getName()));
+            const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) {
                 continue;
             }
@@ -6330,9 +6334,19 @@ class ProjectFileHandler extends PathBase {
     enrichNodesOfBehavior(nodes) {
 
         function appendPropsOfNode(node, functionOfView, props = [], methods = [], nodesOfParent = []) {
-            let alreadyAppendMethod = false
             for (const type of TYPES_OF_PROPS_VIEW) {
-                if (functionOfView(type)) {
+                if (node.isPreciselyEditableComponent()
+                    && _.isEqual(node.getNodeOfComponent().getName(), 'exam')
+                    && _.isEqual(node.getName(), 'year')
+                    && _.isEqual(node.getPreciseAttributeParentName(), 'question')
+                ) {
+                    // console.log(`${node.getPreciseAttributeParentName()}-${node.getName()}`, functionOfView(type), type, node.getView());
+                    console.log(`node.isAttributeView(${type}) ==> `, node.isAttributeView('TextField', type, node))
+                    console.log(`node.isTextFieldView(${type}) ==> `, node.isTextFieldView(type, node))
+                    console.log(`node.needOnChangeBehavior(${type}) ==> `, node.needOnChangeBehavior(type, node))
+                }
+
+                if (functionOfView(type, node)) {
                     switch (type) {
                         case 'list':
                             node.appendListProps(...props)
@@ -6347,14 +6361,14 @@ class ProjectFileHandler extends PathBase {
                             node.appendViewProps(...props)
                             break;
                     }
-                    if (!alreadyAppendMethod) {
-                        node.appendMethods(...methods);
-                        alreadyAppendMethod = true;
-                    }
-
-                    for (const _node of nodesOfParent)
-                        node.getParentNode().appendChildrenWithJsons(_node)
                 }
+            }
+
+            if (functionOfView('default', node)) {
+                node.appendMethods(...methods);
+
+                for (const _node of nodesOfParent)
+                    node.getParentNode().appendChildrenWithJsons(_node)
             }
         }
 
@@ -6414,7 +6428,7 @@ class ProjectFileHandler extends PathBase {
                 /** 因為editor後 會把Typography 改成 TextField, 但是 store沒有gen出 getLabelOf${name} 的實作 */
                 node.appendViewProps(
                     {
-                        label: node.isEditPage() ? node.getDescription() :
+                        label: node.isPreciselyEditableComponent() ? node.getDescription() :
                             `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDescription)}()`
                     }
                 )
@@ -6453,7 +6467,7 @@ class ProjectFileHandler extends PathBase {
                     /** node.appendViewProps({type: 'search'}) */
                 }
 
-                if (!node.isEditPage())
+                if (!node.isPreciselyEditableComponent())
                     node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             }
 
@@ -6891,7 +6905,7 @@ class ProjectFileHandler extends PathBase {
                     const editorComponent = _.cloneDeep(component);
                     editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
                     editorComponent.setEvents([]);
-                    editorComponent.setIsEditPage(true)
+                    editorComponent.setIsEditableComponent(true)
                     editorComponent.setPath(editorComponent.getPath() + `editor`);
                     editorComponent.getStruct().setOriginalName(editorComponent.getStruct().getName());
                     editorComponent.getStruct().setNameModified(true);
@@ -7028,7 +7042,7 @@ class ProjectFileHandler extends PathBase {
 
     async forNewLess() {
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
-            return {name: each.getName(), editor: each.isEditPage()}
+            return {name: each.getName(), editor: each.isPreciselyEditableComponent()}
         }))
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
 
@@ -7057,7 +7071,7 @@ class ProjectFileHandler extends PathBase {
                 totalEvents.push(...events);
             }
 
-            if (!component.isEditPage() && component.getStruct().isAttribute())
+            if (!component.isPreciselyEditableComponent() && component.getStruct().isAttribute())
                 await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
         }
         const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
@@ -7133,7 +7147,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
-            return {name: each.getName(), editor: each.isEditPage()}
+            return {name: each.getName(), editor: each.isPreciselyEditableComponent()}
         }))
 
         if (this.isWebPlatform() && !this.isProduction()) {
