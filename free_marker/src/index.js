@@ -3704,9 +3704,14 @@ class RemoteFunctionHandler extends BaseBuilder {
                 } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
-                } else {
+                } else if (child.isObject()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                this.getColumnData(object.${child.getFieldName()}) : ${child.getDefaultValueByType(self.isAdminPlatform())}.columnData();${getCommentDescription(child)}`);
+                } else if (child.isArray()) {
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                } else {
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
                 }
                 children.push(child.getFieldName());
             }

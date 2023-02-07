@@ -335,6 +335,18 @@ class BaseStore extends ClientRemoteApi {
     invalidate() {
     }
 
+    getColumnData(object) {
+        if (object instanceof BaseStore)
+            return object.columnData()
+        else
+            return object;
+    }
+
+    /** 每個子類Class要各自實作 */
+    columnData() {
+        return {}
+    }
+
 }
 
 export default BaseStore
