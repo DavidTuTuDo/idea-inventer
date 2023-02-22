@@ -41,7 +41,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             q.type = q.nameOfExam;
             return q;
         })
-        await api.submitQuestions(...questions);
+        // console.log(...questions)
+        await api.submitQuestions(questions);
     }
 
     async function beforeStartService() {
@@ -338,8 +339,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     }
 
     // await batchDoing();
-    // await deployQuestions({dbpath:'gsat-92.db',year: -1});
-    await submitSubjectMap()
+    await deployQuestions({dbpath:'gsat-112.db',year: 112});
+    // await submitSubjectMap()
     // await testBatchFunctions();
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);

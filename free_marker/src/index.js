@@ -563,12 +563,16 @@ class CodegenNode {
     alertDialog;
 
     defaultAlertDialog = {
-        customView: undefined, /** 指component的className */
-        needActionButtons: true, /** 是否需要dialog預設的按鈕功能 */
+        customView: undefined,
+        /** 指component的className */
+        needActionButtons: true,
+        /** 是否需要dialog預設的按鈕功能 */
         title: undefined,
         content: undefined,
-        component: this, /** 在dialog裡面的view 會拿不到history, 會造成無法導頁, 所以要把喚起dialog的 component instance 帶進去 */
-        paramObject: 'some object', /** 帶入到customView 裡面的變數 */
+        component: this,
+        /** 在dialog裡面的view 會拿不到history, 會造成無法導頁, 所以要把喚起dialog的 component instance 帶進去 */
+        paramObject: 'some object',
+        /** 帶入到customView 裡面的變數 */
         independentClick: false, /** 獨立觸發dialog的事件, 不然預設都會在click事件裡面觸發. 就是你要拿ref自己控制open() close()會用到 */
     };
 
@@ -3705,15 +3709,25 @@ class RemoteFunctionHandler extends BaseBuilder {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
                 } else if (child.isObject()) {
-                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                    if (self.isWebPlatform())
+                        contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.getColumnData(object.${child.getFieldName()}) : ${child.getDefaultValueByType(self.isAdminPlatform())}.columnData();${getCommentDescription(child)}`);
+                    else
+                        appendGeneralStmts(contents, child);
                 } else if (child.isArray()) {
-                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                    if (self.isWebPlatform())
+                        contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                    else
+                        appendGeneralStmts(contents, child);
                 } else {
-                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                    appendGeneralStmts(contents, child);
                 }
                 children.push(child.getFieldName());
+            }
+
+            function appendGeneralStmts(contents, child) {
+                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
             }
 
             if (!node.isCheapArray()) {

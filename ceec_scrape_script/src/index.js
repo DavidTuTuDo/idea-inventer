@@ -300,7 +300,7 @@ if (configerer.DEBUG_MODE) {
 
             /** 拿到 100-110 */
             // await handler.goThroughGSAT('./gsat-91-sin-formal.db', '自然', 91, {enable: false, min: 90, max: 95});
-            await handler.goThroughGSAT('./gsat-111.db', undefined, 111, {enable: false, min: 90, max: 95});
+            await handler.goThroughGSAT('./gsat-112.db', undefined, 112, {enable: false, min: 90, max: 95});
         }
     )();
 }
