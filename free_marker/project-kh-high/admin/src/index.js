@@ -19,6 +19,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     const api = new Api();
     const listener = new Listener();
 
+    /** 部署新的題目到雲端 */
     async function deployQuestions({dbpath = '', year = 120}) {
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
@@ -62,7 +63,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                 icon: 'muIcon:Rule',
                 route: `route:historyWrong`,
                 indexOfSequence: 2,
-            },
+            }
+            ,
             {
                 title: '問過的問題',
                 icon: 'muIcon:HistoryToggleOff',
@@ -132,8 +134,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             maxYear: 111,
             minYear: 91,
             marks: [{value: 91, label: '91年'}, {value: 100, label: '100年'},
-                {value: 105, label: '105年'}, {
-                    value: 111, label: '111年'
+                {value: 106, label: '106年'}, {
+                    value: 112, label: '112年'
                 }],
             historyExams: [
                 {value: '91-1', label: '91年'},
@@ -158,7 +160,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                 {value: '108-1', label: '108年'},
                 {value: '109-1', label: '109年'},
                 {value: '110-1', label: '110年'},
-                {value: '111-1', label: '110年'},
+                {value: '111-1', label: '111年'},
             ]
         })
         await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
@@ -221,19 +223,20 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     async function batchDeleteSubjectMap() {
         for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在刪除 SubjectIds ${year}`);
-            await api.deleteSubjectIds(false, {where: (stmt) => stmt.where('year', '==', year)});
+            await api.deleteSubjectIds(false, [{where: (stmt) => stmt.where('year', '==', year)}]);
         }
 
 
     }
 
+    /** 用來作隨機測驗的idMaps, 例如 107-112 隨機題目的id fetch */
     async function submitSubjectMap() {
         await batchDeleteSubjectMap();
         for (const year of OFFICIAL_YEARS_OF_YEARS) {
             console.log(`正在fetch ${year}`);
             const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
             console.log(`submit id/map year=> ${year}年`, questions.length);
-            await api.submitSubjectIds(...questions.map(q => {
+            await api.submitSubjectIds(questions.map(q => {
                 return {quid: q.id, year: q.year, subject: q.subject, timesOfYear: q.timesOfYear}
             }));
         }
@@ -338,8 +341,13 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         }))
     }
 
+
     // await batchDoing();
-    await deployQuestions({dbpath:'gsat-112.db',year: 112});
+
+
+    // await deployQuestions({dbpath:'gsat-112.db',year: 112});
+
+
     // await submitSubjectMap()
     // await testBatchFunctions();
     // await api.deleteQuestions(true);
@@ -348,7 +356,6 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     // await beforeStartService();
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
-    // await submitSubjectMap()
     // console.log((await sampleFetch()).length)
 })();
 
