@@ -172,7 +172,8 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
          * */
         this.disappearKeyboard()
         const selected = this.getStore().getSuggestKeywordDetail();
-        if (!Util.isUndefinedNullEmpty(selected)) {
+
+        if (!Util.isUndefinedNullEmpty(selected) && selected.data) {
             const data = _.cloneDeep(selected.data());
             this.onSearchPressed(data);
             this.getStore().clearKeywordDetail();
