@@ -26,6 +26,18 @@ class Utiller {
     /** '1.九.1' => false
      *  '1.2.3' => true
      * */
+
+    /**
+    * 刪除物件裡面特別的屬性，預設是刪除value為undefined
+    *
+    * */
+    removeAttributeBy(object, predicate = (value) => _.isUndefined(value)) {
+        for(const key in object){
+            if(predicate(object[key])){
+                delete object[key];
+            }
+        }
+    }
     isValidVersionOfString(versionName) {
         if (this.isUndefinedNullEmpty(versionName)) {
             return false;
@@ -1612,6 +1624,10 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // const obj = {time :undefined,name: 'david'};
+            // utiller.removeAttributeBy(obj);
+            // console.log(obj);
+
             // console.log(utiller.getECPayCurrentTimeFormat(utiller.getTimeStampWithConditions({days: -1})))
         }
     )();

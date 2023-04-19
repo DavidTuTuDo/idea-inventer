@@ -28,11 +28,11 @@ const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 
-// const CURRENT_PROJECT = './project-yueh-voice';
+const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 
-const CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -6324,13 +6324,20 @@ class ProjectFileHandler extends PathBase {
                             params: ['param']
                         });
 
-                    stringsOfItem.push(`{ "label":"${item.label}",
-                    "icon":"${item.icon}",
-                    "id":${item.id},
-                    "loginOnly":${item.loginOnly ?? "false"},
-                    "notice":${JSON.stringify(item.notice)} }`);
-                }
 
+                    const objectOfItem = {};
+                    objectOfItem.label = item.label;
+                    objectOfItem.icon = item.icon;
+                    objectOfItem.id = item.id;
+                    objectOfItem.loginOnly = item.loginOnly ?? "false";
+                    objectOfItem.notice = item.notice;
+
+                    Util.removeAttributeBy(objectOfItem);
+                    /** 清除掉value為undefined,因為JSON.parse會過不了 */
+                    stringsOfItem.push(JSON.stringify(objectOfItem));
+
+                }
+                console.log(`[${stringsOfItem.join(',')}]`);
                 const fieldNameOfItems = `itemsOf${_.upperFirst(node.getName())}`;
                 node.implementsOfAlertItemClicked = implementsOfClicked;
                 node.getPreciseAttributeParent().appendChildrenWithJsons({
@@ -6380,15 +6387,17 @@ class ProjectFileHandler extends PathBase {
                             node.appendViewProps(...props)
                             break;
                     }
+
+                    for (const _node of nodesOfParent)
+                        node.getParentNode().appendChildrenWithJsons(_node)
                 }
             }
 
             if (functionOfView('default', node)) {
                 node.appendMethods(...methods);
-
-                for (const _node of nodesOfParent)
-                    node.getParentNode().appendChildrenWithJsons(_node)
             }
+
+
         }
 
         function getStmtOfEventInValidate(node, functionName) {

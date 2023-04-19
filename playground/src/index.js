@@ -19,8 +19,8 @@ const text = '[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":
 if (configerer.DEBUG_MODE) {
     (async () => {
             // console.log(Util.getFolderNameOfFilePath('a/c/d/js.js'));
-            const abc = JSON.parse(`[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":true,"notice":{"title":"確認是否更改","content":"訂單付款方式僅能更改一次,是否確定更改?"},"onClick": }]`);
-            console.log(abc);
+            // const abc = JSON.parse(`[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":true,"notice":{"title":"確認是否更改","content":"訂單付款方式僅能更改一次,是否確定更改?"},"onClick": }]`);
+            // console.log(abc);
 
             // const latest = _.flattenDeep([['1','2','3'],['bbb','vccc','ddd'],['#$%#$','@!#12','@!#1']]);
             // console.log(latest);
@@ -133,6 +133,64 @@ if (configerer.DEBUG_MODE) {
             // console.log(node1);
             // /** 如果你想複製一個節點node, 可以用 clone = _.clone(node), clone的節點可以新增屬性 不會影響node, 但如果更動與node相關的屬性, node也會連動更改*/
             // console.log(_.tail([1]));
+
+            const test = `[{ "label":"刪除",
+                    "icon":"CancelScheduleSend",
+                    "id":1,
+                    "loginOnly":true,
+                    "notice":{"title":"執行刪除","content":"是否從我的最愛中刪除"} }]`;
+
+            const test2 =`[
+            {   
+                "label":"下載檔案",
+                "icon":"CloudDownload",
+                "id":undefined,
+                "loginOnly":true,
+                "notice":{"title":"執行動作","content":"是否確下載檔案至本端?"} 
+            },
+            { 
+                "label":"分享連結",
+                "icon":"Share",
+                "id":undefined,
+                "loginOnly":false,
+                "notice":undefined 
+            },
+           { 
+                "label":"刪除",
+                "icon":"DeleteForever",
+                "id":undefined,
+                "loginOnly":true,
+                "notice":{"title":"執行刪除","content":"是否確任刪除?"} }
+                ]`;
+
+            console.log(JSON.parse(test2));
+
+            // JSON.parse(`[
+            //     {
+            //         "label":"下載檔案",
+            //         "icon":"CloudDownload",
+            //         "id":undefined,
+            //         "loginOnly":true,
+            //         "notice":{"title":"執行動作","content":"是否確下載檔案至本端?"}
+            //     },
+            //     {
+            //         "label":"分享連結",
+            //         "icon":"Share",
+            //         "id":undefined,
+            //         "loginOnly":false,
+            //         "notice":undefined
+            //     },
+            //     {
+            //         "label":"刪除",
+            //         "icon":"DeleteForever",
+            //         "id":undefined,
+            //         "loginOnly":true,
+            //         "notice":{"title":"執行刪除","content":"是否確任刪除?"}
+            //     }
+            //     ]`
+            // )
+
+
         }
     )();
 }
