@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for navigator  component  */
 
   NavigatorDrawerShortcutIconImg = {};
@@ -131,7 +133,7 @@ class AppStyle {
 
   EpisodeFloatAreaLogoImg = {};
 
-  EpisodeFloatAreaOuterDiv = {};
+  EpisodeFloatAreaDiv = {};
 
   EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
 
@@ -157,7 +159,7 @@ class AppStyle {
 
   EpisodeVoiceTitleAreaDiv = {};
 
-  EpisodeVoiceExecutingCoveredOuterDiv = {};
+  EpisodeVoiceExecutingCoveredDiv = {};
 
   EpisodeVoiceEnableSwitch = {};
 

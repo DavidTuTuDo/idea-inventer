@@ -9,6 +9,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for navigator  component  */
 
   NavigatorDrawerShortcutIconImg = {};
@@ -131,7 +133,7 @@ class CommonStyle {
 
   EpisodeFloatAreaLogoImg = {};
 
-  EpisodeFloatAreaOuterDiv = {};
+  EpisodeFloatAreaDiv = {};
 
   EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton = {};
 
@@ -157,7 +159,7 @@ class CommonStyle {
 
   EpisodeVoiceTitleAreaDiv = {};
 
-  EpisodeVoiceExecutingCoveredOuterDiv = {};
+  EpisodeVoiceExecutingCoveredDiv = {};
 
   EpisodeVoiceEnableSwitch = {};
 

@@ -91,8 +91,6 @@ class EpisodeComponent extends BaseEpisodeComponent {
     }
 
     onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerPlay(param) {
-        // super.onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerPlay(param);
-        console.log('我什麼時候被呼叫')
         this.getStore().invalidateCurrentAlert();
     }
 
