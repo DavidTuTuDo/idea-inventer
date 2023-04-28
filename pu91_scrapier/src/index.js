@@ -148,7 +148,7 @@ import {databazer as SQL} from 'databazer';
                 _page = await browser.newPage();
                 _page.setDefaultNavigationTimeout(60000);
                 if (Config.MAIN_MSG.SHOW_SUCCEED) {
-                    Util.appendInfo(`正在 ${song.name} 下載頁面.... `);
+                    Util.appendInfo(`正在 ${song.name} 樂譜頁面.... `);
                 }
                 await _page.goto(path.join(Config.BASE_URL, song.url),
                     {waitUntil: 'networkidle2'}
@@ -161,7 +161,7 @@ import {databazer as SQL} from 'databazer';
                 throw new Error(error);
             } finally {
                 if (_page !== undefined) {
-                    Util.appendInfo(`已經將 ${song.name} 頁面正常關閉....`);
+                    Util.appendInfo(`已經將 ${song.name} 頁面關閉....`);
                     await _page.close();
                 }
             }
@@ -228,6 +228,21 @@ import {databazer as SQL} from 'databazer';
                 }
             } else {
                 Util.appendInfo(`沒有未完成的歌手了....睡個 ${await Util.syncDelayRandom()} mms`);
+            }
+        }
+
+        /** 更新每個tone 的 popularLevel */
+        async function updateTonePopularLevel() {
+            const toneOfExist = tonesOfExist.pop();
+            Util.appendInfo(`###### 還有 ${_.size(tonesOfExist)} 尚未更新完POPULAR-LEVEL ######`);
+
+            const latest = await fetchTone(toneOfExist);
+            try {
+                const toneOfLatest = latest.getNormalizeToneObject();
+                await database.updateRecords('TONE', {popularLevel: toneOfLatest.popularLevel}, SQL.Builder().equal(Config.UID, toneOfExist.uid).stmt());
+                Util.appendInfo(`更新了 ${toneOfExist.name} POPULAR-LEVEL ${toneOfExist.popularLevel} -> ${toneOfLatest.popularLevel}`);
+            } catch (error) {
+                Util.appendError(`456541565 updateTonePopularLevel() 出現錯誤了, ${error.message}`)
             }
         }
 
@@ -406,12 +421,15 @@ import {databazer as SQL} from 'databazer';
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
             // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
-            // /** 猛抓LATEST TABLE的歌曲*/
+            /** 猛抓LATEST TABLE的歌曲*/
             joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
-            // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
+            /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
             joinTaskToPool(4, "TONE FETCHER", true, persistTone, tenSecs);
             // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
+            /** 更新POPULAR LEVEL的腳本 */
+            joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
+
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
@@ -445,13 +463,17 @@ import {databazer as SQL} from 'databazer';
             timeStamp: new Date(),
             'dbName': Config.BASE_DATABASE_PATH
         });
+
         Util.syncDeleteFile(Config.PATH_ERROR_LOG);
         Util.syncDeleteFile(Config.PATH_INFO_LOG);
+
+        /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
+        const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
+            .lte('popularLevel', 50000).stmt(), 'name', 'url', 'uid', 'popularLevel');
+        Util.appendInfo(`有 ${_.size(tonesOfExist)} 的熱門程度低於 50000`);
         await persist91puEveryThing();
         // await latestSongPersist();
         // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-
-
         // await browser.close();
         if (Config.MAIN_MSG.SHOW_SUCCEED)
             Util.appendInfo(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
