@@ -257,7 +257,7 @@ import {databazer as SQL} from 'databazer';
                     await database.updateRecords('TONE', {popularLevel: song.popularLevel}, SQL.Builder().equal('url', song.url).stmt());
                     Util.appendInfo(`更新了 ${song.name} POPULAR-LEVEL 提升為 ${song.popularLevel}`);
                 }
-                Util.appendInfo(`###### 還有 ${_.size(tonesOfExist)}歌手尚未更新完POPULAR-LEVEL ######`);
+                Util.appendInfo(`###### 還有 ${_.size(singersOfExist)}歌手尚未更新完POPULAR-LEVEL ######`);
             } catch (error) {
                 Util.appendError(`dsfkpsdf156sdf updateTonePopularLevel() 出現錯誤了, ${error.message}, 把singer(${singer.name}) 加回佇列`);
                 singersOfExist.push(singer);
@@ -489,7 +489,7 @@ import {databazer as SQL} from 'databazer';
 
         /** 準備為了寫入前奏的圖文 */
         const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
-            .lte('popularLevel', 500).stmt(), 'name', 'url', 'uid', 'popularLevel');
+            .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
 
         /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
         const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
