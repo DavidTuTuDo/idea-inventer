@@ -21,7 +21,8 @@
     "puppeteer": "^5.4.1",
     "query-string": "^7.0.1",
     "react-countdown": "^2.3.2",
-    "himalaya": "^1.1.0"
+    "himalaya": "^1.1.0",
+    "download-file": "^0.1.5"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

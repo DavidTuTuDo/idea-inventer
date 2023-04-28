@@ -11,6 +11,7 @@ import sla from './analysis/SongListAnalysis.js';
 import Config from './config';
 import {utiller as Util, exceptioner as ERROR, pooller as Pooller} from 'utiller';
 import {databazer as SQL} from 'databazer';
+import browserer from "./browser";
 
 (async () => {
         async function syncDelay(delayInms) {
@@ -262,9 +263,31 @@ import {databazer as SQL} from 'databazer';
                 Util.appendError(`dsfkpsdf156sdf updateTonePopularLevel() 出現錯誤了, ${error.message}, 把singer(${singer.name}) 加回佇列`);
                 singersOfExist.push(singer);
             }
-
         }
 
+        async function downloadPreludeOfTone() {
+            const tone = tonesOfExist.shift();
+            if (!Util.isUndefinedNullEmpty(tone) && !Util.isUndefinedNullEmpty(tone.url)) {
+                const url = tone.url;
+                const stringOfUrl = url.split('/').pop();
+                const uidOfTone = stringOfUrl.split('.').shift();
+                const urlOfPreludeOfPhoto = path.join(Config.PATH_OF_GUITAR_INFO_PHOTO, uidOfTone);
+                const urlOfPreludeOfC = `${urlOfPreludeOfPhoto}-C.png`;
+                const urlOfPreludeOfG = `${urlOfPreludeOfPhoto}-G.png`;
+                try {
+                    Util.appendInfo(tone.name);
+                    Util.appendInfo(new URL(urlOfPreludeOfG, Config.BASE_URL).href);
+                    Util.appendInfo(new URL(urlOfPreludeOfC, Config.BASE_URL).href);
+                    await browserer.download(new URL(urlOfPreludeOfG, Config.BASE_URL).href, `./前奏譜/${tone.name}`, `CAm譜.png`);
+                    await browserer.download(new URL(urlOfPreludeOfC, Config.BASE_URL).href, `./前奏譜/${tone.name}`, `GEm譜.png`);
+                } catch (error) {
+                    Util.appendError(`41321513 ${error.message}`)
+                }
+            } else {
+                await Util.syncDelay(5000);
+                Util.appendInfo(`45141434168 沒有tone了, 睡睡睡`);
+            }
+        }
 
         async function persistTone() {
             let song = undefined;
@@ -450,6 +473,8 @@ import {databazer as SQL} from 'databazer';
             /** 更新POPULAR LEVEL的腳本 */
             joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
 
+            joinTaskToPool(3, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
+
 
             while (true) {
                 const random = Util.getRandomValue(5000, 8000)
@@ -487,10 +512,12 @@ import {databazer as SQL} from 'databazer';
         Util.syncDeleteFile(Config.PATH_ERROR_LOG);
         Util.syncDeleteFile(Config.PATH_INFO_LOG);
 
+        const browserUtil = new browserer(true);
+        await browserUtil.init();
+
         /** 準備為了寫入前奏的圖文 */
         const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
             .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
-
         /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
         const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
             .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid');

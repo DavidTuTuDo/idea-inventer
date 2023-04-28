@@ -26,6 +26,7 @@ const Config = {
     TONES_ROOT: './Tones/',
     BASE_DATABASE_PATH: `./guitar_pu_from_91.db`,
     PATH_SAMPLE_OBJECT_ROOT: './ObjectSamples/',
+    PATH_OF_GUITAR_INFO_PHOTO: '/uploads/six-line/',
     PATH_FILE_COMPLETED_SINGERS: './cache/completed_singer.txt',
     PATH_FILE_COMPLETED_TONES: './cache/completed_tone.txt',
     PATH_SAMPLE_URL_SONG_LIST: 'https://www.91pu.com.tw/singer/2015/0525/28.html',
