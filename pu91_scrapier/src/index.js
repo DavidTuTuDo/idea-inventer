@@ -231,8 +231,9 @@ import {databazer as SQL} from 'databazer';
             }
         }
 
-        /** 更新每個tone 的 popularLevel */
-        async function updateTonePopularLevel() {
+        /**@deprecate
+         * 更新每個tone 的 popularLevel */
+        async function updateTonePopularLevelInSlowMode() {
             const toneOfExist = tonesOfExist.pop();
             Util.appendInfo(`###### 還有 ${_.size(tonesOfExist)} 尚未更新完POPULAR-LEVEL ######`);
 
@@ -242,9 +243,28 @@ import {databazer as SQL} from 'databazer';
                 await database.updateRecords('TONE', {popularLevel: toneOfLatest.popularLevel}, SQL.Builder().equal(Config.UID, toneOfExist.uid).stmt());
                 Util.appendInfo(`更新了 ${toneOfExist.name} POPULAR-LEVEL ${toneOfExist.popularLevel} -> ${toneOfLatest.popularLevel}`);
             } catch (error) {
-                Util.appendError(`456541565 updateTonePopularLevel() 出現錯誤了, ${error.message}`)
+                Util.appendError(`dsamksad updateTonePopularLevelInSlowMode() 出現錯誤了, ${error.message}`)
             }
         }
+
+        async function updateTonePopularLevel() {
+            const singer = singersOfExist.shift();
+
+            try {
+                const songs = await fetchSongsOfSingersPage(path.join(Config.BASE_URL, singer.url));
+                for (const song of songs) {
+                    if (Util.isUndefinedNullEmpty(song.url)) continue;
+                    await database.updateRecords('TONE', {popularLevel: song.popularLevel}, SQL.Builder().equal('url', song.url).stmt());
+                    Util.appendInfo(`更新了 ${song.name} POPULAR-LEVEL 提升為 ${song.popularLevel}`);
+                }
+                Util.appendInfo(`###### 還有 ${_.size(tonesOfExist)}歌手尚未更新完POPULAR-LEVEL ######`);
+            } catch (error) {
+                Util.appendError(`dsfkpsdf156sdf updateTonePopularLevel() 出現錯誤了, ${error.message}, 把singer(${singer.name}) 加回佇列`);
+                singersOfExist.push(singer);
+            }
+
+        }
+
 
         async function persistTone() {
             let song = undefined;
@@ -417,7 +437,7 @@ import {databazer as SQL} from 'databazer';
 
             // /** 抓所有歌手 */
             // joinTaskToPool(1, "SINGER FETCHER", false, persistSingers, oneHour);
-            // /** 抓取排行版上的資訊們 */
+            /** 抓取排行版上的資訊們 */
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
             // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
@@ -467,10 +487,14 @@ import {databazer as SQL} from 'databazer';
         Util.syncDeleteFile(Config.PATH_ERROR_LOG);
         Util.syncDeleteFile(Config.PATH_INFO_LOG);
 
-        /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
+        /** 準備為了寫入前奏的圖文 */
         const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
-            .lte('popularLevel', 50000).stmt(), 'name', 'url', 'uid', 'popularLevel');
-        Util.appendInfo(`有 ${_.size(tonesOfExist)} 的熱門程度低於 50000`);
+            .lte('popularLevel', 500).stmt(), 'name', 'url', 'uid', 'popularLevel');
+
+        /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
+        const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
+            .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid');
+
         await persist91puEveryThing();
         // await latestSongPersist();
         // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
