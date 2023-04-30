@@ -8,6 +8,7 @@ logs
 *.css.map
 *.css
 *.db
+prelude/
 yarn.lock
 package-lock.json
 source_workspace.xml

@@ -232,22 +232,6 @@ import browserer from "./browser";
             }
         }
 
-        /**@deprecate
-         * 更新每個tone 的 popularLevel */
-        async function updateTonePopularLevelInSlowMode() {
-            const toneOfExist = tonesOfExist.pop();
-            Util.appendInfo(`###### 還有 ${_.size(tonesOfExist)} 尚未更新完POPULAR-LEVEL ######`);
-
-            const latest = await fetchTone(toneOfExist);
-            try {
-                const toneOfLatest = latest.getNormalizeToneObject();
-                await database.updateRecords('TONE', {popularLevel: toneOfLatest.popularLevel}, SQL.Builder().equal(Config.UID, toneOfExist.uid).stmt());
-                Util.appendInfo(`更新了 ${toneOfExist.name} POPULAR-LEVEL ${toneOfExist.popularLevel} -> ${toneOfLatest.popularLevel}`);
-            } catch (error) {
-                Util.appendError(`dsamksad updateTonePopularLevelInSlowMode() 出現錯誤了, ${error.message}`)
-            }
-        }
-
         async function updateTonePopularLevel() {
             const singer = singersOfExist.shift();
 
@@ -278,8 +262,9 @@ import browserer from "./browser";
                     Util.appendInfo(tone.name);
                     Util.appendInfo(new URL(urlOfPreludeOfG, Config.BASE_URL).href);
                     Util.appendInfo(new URL(urlOfPreludeOfC, Config.BASE_URL).href);
-                    await browserer.download(new URL(urlOfPreludeOfG, Config.BASE_URL).href, `./前奏譜/${tone.name}`, `CAm譜.png`);
-                    await browserer.download(new URL(urlOfPreludeOfC, Config.BASE_URL).href, `./前奏譜/${tone.name}`, `GEm譜.png`);
+                    await browserer.download(new URL(urlOfPreludeOfG, Config.BASE_URL).href, `./prelude/${tone.uid}-${tone.name}`, `CAm譜.png`);
+                    await browserer.download(new URL(urlOfPreludeOfC, Config.BASE_URL).href, `./prelude/${tone.uid}-${tone.name}`, `GEm譜.png`);
+                    Util.appendInfo(`###### 還有 ${_.size(tonesOfExist)}尚未下載完前奏譜 ######`);
                 } catch (error) {
                     Util.appendError(`41321513 ${error.message}`)
                 }
@@ -468,12 +453,13 @@ import browserer from "./browser";
             joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
             joinTaskToPool(4, "TONE FETCHER", true, persistTone, tenSecs);
-            // /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
+            /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
             /** 更新POPULAR LEVEL的腳本 */
             joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
 
-            joinTaskToPool(3, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
+            /** 抓出前奏譜的loop */
+            // joinTaskToPool(8, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
 
 
             while (true) {
@@ -517,7 +503,7 @@ import browserer from "./browser";
 
         /** 準備為了寫入前奏的圖文 */
         const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
-            .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
+            .gte('popularLevel',5000).orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
         /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
         const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
             .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid');
