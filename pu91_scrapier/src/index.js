@@ -394,6 +394,19 @@ import browserer from "./browser";
             }
         }
 
+        async function delete91PreludeEmptyFolder() {
+            for (const file of Util.getChildPathByPath('./prelude')) {
+                if (Util.isDirectory(file.absolute) && _.size(Util.getChildPathByPath(file.absolute)) < 2) {
+                    console.log(file)
+                    await Util.deleteFileOrFolder(file.path, true);
+                    await syncDelay(1);
+                } else {
+                    // if (Util.isDirectory(file.absolute))
+                    //     console.log(`${file.dirName} 有 ${_.size(Util.getChildPathByPath(file.absolute))} 檔案個數`)
+                }
+            }
+        }
+
         async function persist91puEveryThing(singerType = 6) {
             const poollers = [];
 
@@ -432,7 +445,6 @@ import browserer from "./browser";
             const twoSecs = 2 * 1000;
             const fourSecs = 4 * 1000;
             const tenSecs = 10 * 1000;
-
             const oneMin = 6 * tenSecs;
             const twoMin = 2 * oneMin;
             const fiveMin = 5 * oneMin;
@@ -457,7 +469,6 @@ import browserer from "./browser";
             // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
             /** 更新POPULAR LEVEL的腳本 */
             joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
-
             /** 抓出前奏譜的loop */
             // joinTaskToPool(8, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
 
@@ -482,6 +493,10 @@ import browserer from "./browser";
             }
         }
 
+
+        // await delete91PreludeEmptyFolder();
+        // return;
+
         const database = new SQL(Config.BASE_DATABASE_PATH);
         await database.init();
 
@@ -503,12 +518,12 @@ import browserer from "./browser";
 
         /** 準備為了寫入前奏的圖文 */
         const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
-            .gte('popularLevel',5000).orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
+            .gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
         /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
         const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
             .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid');
 
-        await persist91puEveryThing();
+        // await persist91puEveryThing();
         // await latestSongPersist();
         // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
         // await browser.close();

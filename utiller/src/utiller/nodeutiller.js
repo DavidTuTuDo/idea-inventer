@@ -676,6 +676,10 @@ class NodeUtiller extends Utiller {
         return !this.isPathExist(path) || _.isEqual('', this.getFileContextInRaw(path).trim())
     }
 
+    isEmptyFolder(path) {
+        return fs.readdirSync(path).length === 0;
+    }
+
     /** 把檔案弄得好看一點 */
     async prettier(path) {
         await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
