@@ -22,6 +22,14 @@ service firebase.storage {
         return request.resource.size < 20 * 1024 * 1024;
     }
 
+    function sizeLowerThan25MB() {
+        return request.resource.size < 25 * 1024 * 1024;
+    }
+
+    function sizeLowerThan30MB() {
+        return request.resource.size < 30 * 1024 * 1024;
+    }
+
     function sizeLowerThan2MB() {
         return request.resource.size < 2 * 1024 * 1024;
     }
