@@ -18,6 +18,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     const api = new Api();
     const listener = new Listener();
     const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
+    const pathOfPreludes = `/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/prelude`;
     await database.init();
 
     /** 找出週 rank*/
@@ -455,6 +456,43 @@ const THRESHOLD_OF_BATCH_MODE = 100;
         await database.insertRecord('TONE', content);
     }
 
+    async function uploadPreludeImage() {
+        for(const folder of Util.getChildPathByPath(pathOfPreludes)) {
+            if(Util.isDirectory(folder.absolute) && _.size(Util.getChildPathByPath(folder.absolute)) > 1){
+                 console.log(folder.dirName);
+                 /** 從database 裡面找出 tone的document id*/
+
+                 /** 上傳C/G調的圖片，取得DownloadURL */
+
+                 /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
+            }
+        }
+        return;
+        const storage = firebase.storage();
+        const bucket = storage.bucket();
+        const config = {
+            action: 'read',
+            expires: '02-14-2100',
+        };
+
+        const options = {
+            destination: 'preludes/test.png',
+
+            preconditionOpts: {
+                /** 這樣寫就能override相同fileName的檔案 */
+                ifGenerationMatch: 0,
+                ifGenerationNotMatch: 0,
+                ifMetagenerationMatch: 0,
+                ifMetagenerationNotMatch: 0,
+            },
+        };
+        await bucket.upload('./test.png', options);
+        /** 取得upload image的download url */
+        const url = await bucket.file('preludes/test.png').getSignedUrl(config);
+        console.log(url);
+    }
+
+    // await uploadPreludeImage();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
     // await deployKeywords();
     await deployLatestSheet();
