@@ -20,6 +20,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     const database = new Databaser('/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/guitar_pu_from_91.db');
     const pathOfPreludes = `/Users/davidtu/cross-achieve/high/idea-inventer/pu91_scrapier/prelude`;
     await database.init();
+    const bucket = firebase.storage().bucket();
 
     /** 找出週 rank*/
 
@@ -457,39 +458,68 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     }
 
     async function uploadPreludeImage() {
-        for(const folder of Util.getChildPathByPath(pathOfPreludes)) {
-            if(Util.isDirectory(folder.absolute) && _.size(Util.getChildPathByPath(folder.absolute)) > 1){
-                 console.log(folder.dirName);
-                 /** 從database 裡面找出 tone的document id*/
+        const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt())
+        const tones = {};
+        for (const tone of raws) {
+            tones[_.toString(tone.uid)] = tone;
+        }
 
-                 /** 上傳C/G調的圖片，取得DownloadURL */
+        for (const folder of Util.getChildPathByPath(pathOfPreludes)) {
+            if (Util.isDirectory(folder.absolute) && _.size(Util.getChildPathByPath(folder.absolute)) > 1) {
+                const trait = folder.dirName.split(`-`);
+                /** 從database 裡面找出 tone的document id*/
+                const uid = _.toString(trait.shift());
+                /** url的末碼*/
+                const name = trait.pop();
+                const record = tones[uid];
 
-                 /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
+                /** 上傳C/G調的圖片，取得url of download */
+                const files = Util.getChildPathByPath(folder.absolute);
+                const fileOfC = _.find(files, (item) => _.startsWith(item.fileName, 'CAm'));
+                const fileOfG = _.find(files, (item) => _.startsWith(item.fileName, 'GEm'));
+                const prefix = `preludes/${_.trim(record.singer)}-${_.trim(record.name)}`;
+                const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `preludes/${prefix}-CAm.png`)
+                const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `preludes/${prefix}-GEm.png`)
+                /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
+
+                await database.lazyInsertRecord('TONE', {
+                    ...record,
+                    pathOfPreludeC: urlOfC,
+                    pathOfPreludeG: urlOfG,
+                    hasPrelude: true,
+                })
+                Util.appendInfo(`完成了 ${prefix} 的prelude上傳工程`);
+                await Util.syncDelay(10);
             }
         }
-        return;
-        const storage = firebase.storage();
-        const bucket = storage.bucket();
+    }
+
+    /** *
+     * 上傳file到firebase storage，然後回傳download url
+     * @param pathOfLocalFile 本地端的file路徑 => './test.png'
+     * @param destinationOfRemote 遠端的storage路徑 => 'preludes/test.png'
+     * @returns download-url 下載路徑
+     */
+    async function uploadFileToPublicStorage(pathOfLocalFile, destinationOfRemote) {
+        console.log(`local:`, pathOfLocalFile, `remote:`, destinationOfRemote);
         const config = {
             action: 'read',
             expires: '02-14-2100',
         };
 
         const options = {
-            destination: 'preludes/test.png',
-
+            destination: destinationOfRemote,
             preconditionOpts: {
                 /** 這樣寫就能override相同fileName的檔案 */
-                ifGenerationMatch: 0,
-                ifGenerationNotMatch: 0,
-                ifMetagenerationMatch: 0,
-                ifMetagenerationNotMatch: 0,
+                // ifGenerationMatch: 1,
+                // ifGenerationNotMatch: 1,
+                // ifMetagenerationMatch: 1,
+                // ifMetagenerationNotMatch: 1,
             },
         };
-        await bucket.upload('./test.png', options);
-        /** 取得upload image的download url */
-        const url = await bucket.file('preludes/test.png').getSignedUrl(config);
-        console.log(url);
+        await bucket.upload(pathOfLocalFile, options);
+        const urlOfDownload = await bucket.file(destinationOfRemote).getSignedUrl(config);
+        return urlOfDownload;
     }
 
     // await uploadPreludeImage();
