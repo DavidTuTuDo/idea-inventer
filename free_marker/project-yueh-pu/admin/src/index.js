@@ -478,8 +478,8 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 const fileOfC = _.find(files, (item) => _.startsWith(item.fileName, 'CAm'));
                 const fileOfG = _.find(files, (item) => _.startsWith(item.fileName, 'GEm'));
                 const prefix = `preludes/${_.trim(record.singer)}-${_.trim(record.name)}`;
-                const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `preludes/${prefix}-CAm.png`)
-                const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `preludes/${prefix}-GEm.png`)
+                const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `${prefix}-CAm.png`)
+                const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `${prefix}-GEm.png`)
                 /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
 
                 await database.lazyInsertRecord('TONE', {
@@ -522,6 +522,12 @@ const THRESHOLD_OF_BATCH_MODE = 100;
         return urlOfDownload;
     }
 
+    async function updatePopularLevelOfEachTone() {
+        const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt(),'popularLevel','idOfRemote')
+
+    }
+
+    // await updatePopularLevelOfEachTone();
     // await uploadPreludeImage();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
     // await deployKeywords();

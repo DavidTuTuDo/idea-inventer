@@ -468,7 +468,7 @@ import browserer from "./browser";
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             // joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
             /** 更新POPULAR LEVEL的腳本 */
-            joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
+            // joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
             /** 抓出前奏譜的loop */
             // joinTaskToPool(8, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
 
@@ -523,10 +523,10 @@ import browserer from "./browser";
         const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
             .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid');
 
-        // await persist91puEveryThing();
+        await persist91puEveryThing();
         // await latestSongPersist();
         // /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
-        // await browser.close();
+        await browser.close();
         if (Config.MAIN_MSG.SHOW_SUCCEED)
             Util.appendInfo(`＝＝＝＝＝＝＝＝＝＝＝＝＝瀏覽器已關閉＝＝＝＝＝＝＝＝＝＝＝＝＝`);
         return 0;

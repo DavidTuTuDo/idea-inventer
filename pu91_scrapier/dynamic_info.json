@@ -1,6 +1,6 @@
 {
-  "cancel": false,
+  "cancel": true,
   "host": "David",
-  "timeStamp": "2023-04-30T03:38:06.308Z",
+  "timeStamp": "2023-07-04T06:02:08.350Z",
   "dbName": "./guitar_pu_from_91.db"
 }
