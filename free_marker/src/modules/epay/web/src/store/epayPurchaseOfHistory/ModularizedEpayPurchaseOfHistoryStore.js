@@ -62,7 +62,8 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
 
         function getKeywordOfProcedure() {
             const split = _.split(order.procedureOfPayment, Util.getSeparatorOfUnique());
-            return _.toLower(split.pop());
+            const target =  _.toLower(split.pop());
+            return target;
         }
 
         function isATM() {
@@ -97,7 +98,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             } else if (isCVS()) {
                 target = {cvs: map.cvs};
             } else if (isCredit()) {
-                target = {credit: map.cvs};
+                target = {credit: map.credit};
             } else if (isLinePay()) {
                 target = {linepay: map.linepay};
             } else if (isWebATM()) {
@@ -105,7 +106,8 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             } else if (isUnknown()) {
                 target = {unknown: map.unknown};
             } else {
-                throw new ERROR(9999, `54564564371 不應該走到這裡`)
+                target = {error: map.error};
+                // throw new ERROR(9999, `54564564371 不應該走到這裡`)
             }
 
 
@@ -124,6 +126,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 atm: `銀行轉帳`,
                 webatm: `網銀付款`,
                 unknown: `尚未選擇`,
+                error: `未知的錯誤`,
             });
         }
 
@@ -135,6 +138,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 atm: `atm`,
                 webatm: `webatm`,
                 unknown: `unknown`,
+                error: `error`,
             });
         }
 
@@ -146,6 +150,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 linepay: ``,
                 webatm: ``,
                 unknown: ``,
+                error: ``,
             });
         }
 
@@ -157,6 +162,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 linepay: ``,
                 webatm: ``,
                 unknown: ``,
+                error: ``,
             });
         }
 

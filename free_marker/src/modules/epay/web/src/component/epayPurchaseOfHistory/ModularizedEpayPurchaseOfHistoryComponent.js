@@ -74,6 +74,11 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         }
     }
 
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv(order){
+        return Util.getVisibleOrNone(_.isEqual('pending', order.getStateOfPayment()), true);
+
+    }
+
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
         return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
     }

@@ -28,16 +28,17 @@ class Utiller {
      * */
 
     /**
-    * 刪除物件裡面特別的屬性，預設是刪除value為undefined
-    *
-    * */
+     * 刪除物件裡面特別的屬性，預設是刪除value為undefined
+     *
+     * */
     removeAttributeBy(object, predicate = (value) => _.isUndefined(value)) {
-        for(const key in object){
-            if(predicate(object[key])){
+        for (const key in object) {
+            if (predicate(object[key])) {
                 delete object[key];
             }
         }
     }
+
     isValidVersionOfString(versionName) {
         if (this.isUndefinedNullEmpty(versionName)) {
             return false;
@@ -1164,8 +1165,8 @@ class Utiller {
         return {visibility: judgement ? 'visible' : 'hidden'};
     }
 
-    getVisibleOrNone(judgement) {
-        return {display: judgement ? 'inherit' : 'none'};
+    getVisibleOrNone(judgement, flex = false) {
+        return {display: judgement ? flex ? 'flex' : 'inherit' : 'none'};
     }
 
     stringToInteger(string) {
