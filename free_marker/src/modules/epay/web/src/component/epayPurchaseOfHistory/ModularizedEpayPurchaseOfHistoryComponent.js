@@ -74,18 +74,49 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         }
     }
 
-    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv(order){
-        return Util.getVisibleOrNone(_.isEqual('pending', order.getStateOfPayment()), true);
+    getAreaOfPaymentDeadlineDeadline(areaOfPaymentDeadline) {
+        const order = areaOfPaymentDeadline.getParentNode();
+        console.log('order',order);
+        console.log('areaOfPaymentDeadline',areaOfPaymentDeadline);
 
+        switch (order.getStateOfPayment()) {
+            case 'pending':
+                return areaOfPaymentDeadline.getDeadline();
+            case 'waiting':
+                return areaOfPaymentDeadline.getDeadline();
+            case 'completed':
+                return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
+            case 'failure':
+                return areaOfPaymentDeadline.getDeadline();
+        }
+        return areaOfPaymentDeadline.getDeadline();
+    }
+
+    getAreaOfPaymentDeadlineLabelOfDeadline(areaOfPaymentDeadline) {
+        const order = areaOfPaymentDeadline.getParentNode();
+        switch (order.getStateOfPayment()) {
+            case 'pending':
+            case 'waiting':
+                return "訂單時間："
+            case 'completed':
+                return "完成時間："
+            case 'failure':
+                return "截止時間："
+        }
+        return areaOfPaymentDeadline.getLabelOfDeadline();
+    }
+
+    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv(order) {
+        return Util.getVisibleOrNone(_.isEqual('pending', order.getStateOfPayment()), true);
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
         return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
     }
 
-    getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv(order) {
-        return Util.getVisibleOrNone(!_.isEqual('completed', order.getStateOfPayment()));
-    }
+    // getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv(order) {
+    //     return Util.getVisibleOrNone(!_.isEqual('completed', order.getStateOfPayment()));
+    // }
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
         const funcOfArea = param.object;
@@ -94,6 +125,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
             this.routeToLinePayCheckoutPage(order.getRaw().contentOfRender);
         }
     }
+
 
 }
 

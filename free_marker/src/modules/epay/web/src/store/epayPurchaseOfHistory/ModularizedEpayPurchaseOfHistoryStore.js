@@ -188,6 +188,10 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             raw: order,
             processOfPayment: getStringOfPaymentProcess(),
             stateOfPayment: order.stateOfPayment,
+            timeOfCreate: order.timeOfCreate,
+            timeOfExpired: order.timeOfExpired,
+            timeOfPayment: order.timeOfPayment,
+            timeOfCancel: order.timeOfCancel,
             areaOfTop: {
                 stringOfOrderIdentity: order.id,
                 stateOfOrder: getStringOfPaymentState(),
@@ -200,6 +204,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             areaOfPaymentDeadline: {
                 deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired)),
             },
+
             areaOfPaymentDetail: {
                 domain: getStringOfDomain(),
                 specificOfProduct: getStringOfSpecific(),
