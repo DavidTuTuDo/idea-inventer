@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorTestSubTitleTextField = {};
@@ -125,6 +127,8 @@ class AppStyle {
 
   EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconChevronRight = {};
 
+  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap = {};
+
   EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton = {};
 
   EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography = {};
@@ -194,6 +198,24 @@ class AppStyle {
   EpayPurchaseOfHistoryTabTab = {};
 
   EpayPurchaseOfHistoryDiv = {};
+
+  /** => following for methodOfPayment  component  */
+
+  MethodOfPaymentOptionDescriptionTypography = {};
+
+  MethodOfPaymentOptionImageImg = {};
+
+  MethodOfPaymentOptionNameTypography = {};
+
+  MethodOfPaymentOptionCardSkeleton = {};
+
+  MethodOfPaymentOptionDivList = {};
+
+  MethodOfPaymentOptionCard = {};
+
+  MethodOfPaymentTitleTypography = {};
+
+  MethodOfPaymentPaper = {};
 
   /** => following for epayBehaviorOfConfirmLinePay  component  */
 

@@ -102,8 +102,29 @@ import moment from 'moment';
         // return Util.getValueOfPriority(this.imageUrlOfHeadPhoto, );
     }
 
+    async function uploadPaymentOptions() {
+        await api.submitOptions([{
+            name: 'Line Pay',
+            image: '',
+            description: '',
+            indexOfSequence: 3,
+            idOfUnique: 'linepay',
+        },
+            {
+                name: '綠界支付',
+                image: '',
+                description: '信用卡、ATM、超商支付',
+                indexOfSequence: 2,
+                idOfUnique: 'ecpay',
+            }
+
+        ])
+    }
+
+    await uploadPaymentOptions();
+
     // await sampleOfFetchUrl();
-    await submitSampleProduct();
+    // await submitSampleProduct();
 
     // console.log(await api.fetchTest());
     // const pool = new InfinitePool(3);

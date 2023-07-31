@@ -26,7 +26,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
 
         this.validatePreciseOrder(detailOfPreciseOrder, true, '598498742')
 
-        const dataOfECPayOrder = this.getPayoadOfECPayAIORequest(detailOfPreciseOrder);
+        const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(detailOfPreciseOrder);
         console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
         let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
 
@@ -78,7 +78,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         this.appendErrorLog(9999, `8787444512, 應用必須設定 getURLOfClientBackURL()`);
     }
 
-    getPayoadOfECPayAIORequest(order) {
+    getPayloadOfECPayAIORequest(order) {
         return {
             MerchantTradeNo: order.id, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
             MerchantTradeDate: Util.getECPayCurrentTimeFormat(), //ex: 2017/02/13 15:45:30

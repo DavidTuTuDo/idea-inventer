@@ -97,11 +97,11 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         switch (order.getStateOfPayment()) {
             case 'pending':
             case 'waiting':
-                return "訂單時間："
+                return "截止時間："
             case 'completed':
                 return "完成時間："
             case 'failure':
-                return "截止時間："
+                return "訂單時間："
         }
         return areaOfPaymentDeadline.getLabelOfDeadline();
     }
@@ -114,9 +114,16 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
     }
 
-    // getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv(order) {
-    //     return Util.getVisibleOrNone(!_.isEqual('completed', order.getStateOfPayment()));
-    // }
+    onEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButtonClicked(param) {
+        const target = param.object;
+        const order = target.getParentNode().getParentNode();
+
+    }
+
+    popPaymentTypeChooseDialog(){
+
+    }
+
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
         const funcOfArea = param.object;

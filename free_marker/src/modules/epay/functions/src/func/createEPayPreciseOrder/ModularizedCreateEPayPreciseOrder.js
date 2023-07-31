@@ -78,6 +78,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             textOfContract: this.getTextOfContract(this.itemsOfPrecisely, this.remarkOfPreciseOrder),
             remark: this.remarkOfPreciseOrder,
             timeOfExpired: Util.getTimeStampWithConditions({days: 1}),
+            timeOfCreate : Util.getCurrentTimeStamp(),
             priceOfTotal: this.getTotalPrice(this.itemsOfPrecisely),
             imageUrlOfHeadPhoto: this.getImageUrlOfHeadPhoto(),
             items: this.getItemsOfOrder(this.itemsOfPrecisely),
