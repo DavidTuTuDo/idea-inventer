@@ -938,6 +938,11 @@ class BaseComponent extends MuiComponent {
             ref={ref}/>)
     }
 
+    isWrapByDialog(){
+        const dialog = this.props.dialog;
+        return dialog instanceof  AlertDialog;
+    }
+
     renderAlertMenu({ref, items, component}) {
         return (
             <AlertMenu

@@ -107,7 +107,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual('pending', order.getStateOfPayment()), true);
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(),'pending','waiting'), true);
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
@@ -119,11 +119,6 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         const order = target.getParentNode().getParentNode();
 
     }
-
-    popPaymentTypeChooseDialog(){
-
-    }
-
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
         const funcOfArea = param.object;

@@ -74,6 +74,12 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             return _.startsWith(getKeywordOfProcedure(), 'webatm');
         }
 
+
+        function isECPay() {
+            return _.startsWith(getKeywordOfProcedure(), 'ecpay');
+        }
+
+
         function isCVS() {
             return _.startsWith(getKeywordOfProcedure(), 'cvs');
         }
@@ -105,7 +111,10 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 target = {webatm: map.webatm};
             } else if (isUnknown()) {
                 target = {unknown: map.unknown};
-            } else {
+            } else if(isECPay()) {
+                target = {ecpay: map.ecpay};
+
+            }else {
                 target = {error: map.error};
                 // throw new ERROR(9999, `54564564371 不應該走到這裡`)
             }
@@ -126,6 +135,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 atm: `銀行轉帳`,
                 webatm: `網銀付款`,
                 unknown: `尚未選擇`,
+                ecpay: `綠界支付`,
                 error: `未知的錯誤`,
             });
         }
@@ -138,6 +148,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 atm: `atm`,
                 webatm: `webatm`,
                 unknown: `unknown`,
+                ecpay: `ecpay`,
                 error: `error`,
             });
         }
@@ -151,6 +162,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 webatm: ``,
                 unknown: ``,
                 error: ``,
+                ecpay: ``,
             });
         }
 
@@ -163,6 +175,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 webatm: ``,
                 unknown: ``,
                 error: ``,
+                ecpay: ``,
             });
         }
 

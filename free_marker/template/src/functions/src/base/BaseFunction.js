@@ -89,13 +89,18 @@ class BaseFunction {
             this.appendErrorLog(9999, `8871453-${idOfError} 訂單內容已完成手續, 無法再更改狀態`);
         }
 
-        if (isPayingProcedure && !_.isEqual('pending', itemOfPreciseOrder.stateOfPayment)) {
+        if (isPayingProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, 'unknown','pending', 'waiting')) {
             this.appendErrorLog(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`);
         }
 
-        if (isPayingProcedure && !_.isEqual(`unknown`, itemOfPreciseOrder.procedureOfPayment)) {
-            this.appendErrorLog(9999, `8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
-        }
+        // // if (isPayingProcedure && !_.isEqual(`unknown`, itemOfPreciseOrder.procedureOfPayment)) {
+        // //     this.appendErrorLog(9999, `8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
+        // }
+    }
+
+    /** 如果是CVS OR ATM 就不能再改變付款狀態了*/
+    isPayByCVSorATM() {
+
     }
 
     getStringOfNormalizeProcedureOfPayment(string) {

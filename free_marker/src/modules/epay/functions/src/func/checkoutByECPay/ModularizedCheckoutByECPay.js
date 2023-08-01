@@ -3,6 +3,7 @@ import BaseCheckoutByECPay from "./BaseCheckoutByECPay";
 import ECPay from 'ecpay_aio_nodejs';
 import Api from '../../api';
 import Config from '../../config';
+import _ from "lodash";
 
 class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     /** -------------------- fields -------------------- **/
@@ -22,9 +23,18 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             this.appendErrorLog(9999, `8181231 沒有訂單內容`);
         }
 
-        const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-
+        let detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         this.validatePreciseOrder(detailOfPreciseOrder, true, '598498742')
+
+        /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */
+        if (Util.isOrEquals(detailOfPreciseOrder.procedureOfPayment, Config.TYPE_OF_THIRD_PARTY_ECPAY, Config.TYPE_OF_THIRD_PARTY_LINEPAY)) {
+            await Api.deletePreciseOrderItem(detailOfPreciseOrder.id);
+            delete detailOfPreciseOrder.id;
+            console.log('檢查看看之前', detailOfPreciseOrder.timeOfExpired);
+            const result = await Api.submitPreciseOrderItem({...detailOfPreciseOrder});
+            detailOfPreciseOrder = result.value;
+            console.log('檢查看看之後', detailOfPreciseOrder.timeOfExpired);
+        }
 
         const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(detailOfPreciseOrder);
         console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
@@ -40,8 +50,8 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         });
 
         await Api.updatePreciseOrderItemAtomically((order, transaction) => {
-            order.exists = true;
-            this.validatePreciseOrder(order, true, '598498742');
+                order.exists = true;
+                this.validatePreciseOrder(order, true, '598498742');
                 return {
                     procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_ECPAY,
                     contentOfRender: result,

@@ -33,7 +33,7 @@ class CommonRemoteApi {
     }
 
     toFireBaseTimestampObject(obj) {
-        if (obj instanceof firebase.FirebaseTimestamp) {
+        if (obj instanceof firebase.getFirestoreLibrary().Timestamp) {
             return obj;
         } else {
             try {
