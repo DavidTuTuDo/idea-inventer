@@ -43,7 +43,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv(order) {
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getTypeOfPayment(), 'atm', 'cvs'));
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getProcessOfPayment(), 'atm', 'cvs'), true);
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfFuncDiv(order) {
@@ -70,7 +70,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
-        return async () =>  {
+        return async () => {
             const order = param.object.getParentNode();
             await this.performCancelUnpaidPreciseOrderBehavior(order.raw.id);
         }
@@ -78,7 +78,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
     async performCancelUnpaidPreciseOrderBehavior(idOfPreciseOrder) {
         const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), {idOfPreciseOrder});
-        Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(),'failure');
+        Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(), 'failure');
     }
 
     getAreaOfPaymentDeadlineDeadline(areaOfPaymentDeadline) {
@@ -112,17 +112,13 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv(order) {
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(),'pending','waiting'), true);
+        const condition1 = Util.isOrEquals(order.getStateOfPayment(), 'pending', 'waiting');
+        const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), 'atm', 'cvs')
+        return Util.getVisibleOrNone(condition1 && condition2, true);
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
         return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
-    }
-
-    onEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButtonClicked(param) {
-        const target = param.object;
-        const order = target.getParentNode().getParentNode();
-
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
@@ -132,8 +128,6 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
             this.routeToLinePayCheckoutPage(order.getRaw().contentOfRender);
         }
     }
-
-
 
 
 }
