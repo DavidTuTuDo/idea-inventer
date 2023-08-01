@@ -118,7 +118,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()));
+        return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()),true);
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {

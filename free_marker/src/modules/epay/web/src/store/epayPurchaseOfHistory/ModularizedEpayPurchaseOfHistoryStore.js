@@ -226,7 +226,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 }
             },
             areaOfPaymentFailure:{
-                reason:`${Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfCancel))} ${order.messageOfPayment}`,
+                reason:`${order.messageOfPayment}`,
             }
         }
     }

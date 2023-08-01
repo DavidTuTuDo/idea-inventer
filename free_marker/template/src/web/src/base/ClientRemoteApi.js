@@ -13,6 +13,13 @@ class ClientRemoteApi extends CommonRemoteApi {
         super(props);
     }
 
+    normalizeTimestamp(obj) {
+        if (obj instanceof this.FirebaseTimestampClass())
+            return obj.toMillis();
+        else
+            return obj;
+    }
+
     async submitItem(path, object, id) {
         const _async = async () => super.submitItem(path, object, id);
         return await CommonPoolHelper.submitTo('submit', _async, 'low', 'submitItem');
