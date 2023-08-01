@@ -816,28 +816,28 @@ class Utiller {
 
     /** 取得 YYYY-MM-DD */
     getTodayTimeFormat(ts) {
-        return moment(ts ? ts : undefined).format("YYYY-MM-DD")
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD")
     }
 
     getECPayCurrentTimeFormat(ts) {
-        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
     }
 
     getCurrentTimeFormatV2(ts) {
-        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
     }
 
     getCurrentTimeFormatYMDHM(ts) {
-        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm")
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm")
     }
 
     getCurrentTimeFormatYMDHMS(ts) {
-        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
     }
 
     /** 取得 YYY-MM-DD-HH-mm-ss */
     getCurrentTimeFormat(ts) {
-        return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss")
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD-HH-mm-ss")
     }
 
     getCurrentMillionSecTimeFormat(ts) {

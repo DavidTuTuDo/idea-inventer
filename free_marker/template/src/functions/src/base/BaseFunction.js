@@ -26,6 +26,15 @@ class BaseFunction extends ClientRemoteApi {
         return Util.getTimeStampWithConditions({hours: offset}, Util.getTimeStampFromECPayStringFormat(string))
     }
 
+    async incrementProductCountsAtomically(itemOfPreciseOrder) {
+        for (const item of itemOfPreciseOrder.items) {
+            const product = await Api.fetchPreciseProductItem(item.idOfPreciseProduct);
+            await Api.updatePreciseProductItemAtomically(async (product, transaction) => {
+                return {quantityOfCurrent: product.quantityOfCurrent + item.quantity}
+            }, product.id)
+        }
+    }
+
     getOffSetByLocation(locale) {
         switch (_.toLower(locale)) {
             case 'zh_tw':

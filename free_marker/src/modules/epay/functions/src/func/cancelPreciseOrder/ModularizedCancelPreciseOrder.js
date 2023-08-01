@@ -9,6 +9,7 @@ import BaseCancelPreciseOrder from "./BaseCancelPreciseOrder";
 import Api from '../../api';
 import Config from "../../config";
 
+
 class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
@@ -41,16 +42,11 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
             return Api.normalizePreciseOrder({
                 stateOfPayment: 'failure',
                 timeOfCancel: Util.getCurrentTimeStamp(),
-                messageOfPayment: `${user.typeOfUser}取消訂單`
+                messageOfPayment: `${user.typeOfUser}於 ${Util.getCurrentTimeFormatYMDHM()} 取消訂單 `
             }, true);
         }, itemOfPreciseOrder.id)
 
-        for (const item of itemOfPreciseOrder.items) {
-            const product = await Api.fetchPreciseProductItem(item.idOfPreciseProduct);
-            await Api.updatePreciseProductItemAtomically(async (product, transaction) => {
-                return {quantityOfCurrent: product.quantityOfCurrent + item.quantity}
-            }, product.id)
-        }
+        await this.incrementProductCountsAtomically(itemOfPreciseOrder);
     }
 
     customizeBehaviorOfFailureTrade() {

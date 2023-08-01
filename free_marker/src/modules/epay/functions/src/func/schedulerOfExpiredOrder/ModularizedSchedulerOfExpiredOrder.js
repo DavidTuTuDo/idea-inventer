@@ -28,11 +28,17 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
         const expired = _.map(results, result => {
             return {
                 ...result,
-                messageOfPayment: `已超過付費期限${Util.getCurrentTimeFormatYMDHM(this.normalizeTimestamp(result.timeOfExpired))}`,
+                messageOfPayment: `已超過付費期限 ${Util.getCurrentTimeFormatYMDHM(this.normalizeTimestamp(result.timeOfExpired))}`,
                 stateOfPayment: `failure`,
             }
         })
+
         await Api.updatePreciseOrders(expired);
+
+        for(const order of orders) {
+            await this.incrementProductCountsAtomically(order);
+        }
+
     }
 
     /** -------------------- async api -------------------- **/

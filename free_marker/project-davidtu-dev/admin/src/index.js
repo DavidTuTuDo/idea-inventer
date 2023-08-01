@@ -132,7 +132,7 @@ import moment from 'moment';
         const expired = _.map(results, result => {
             return {
                 ...result,
-                messageOfPayment: `已超過付費期限${Util.getCurrentTimeFormatYMDHM(api.normalizeTimestamp(result.timeOfExpired))}`,
+                messageOfPayment: `已超過付費期限 ${Util.getCurrentTimeFormatYMDHM(api.normalizeTimestamp(result.timeOfExpired))}`,
                 stateOfPayment: `failure`,
             }
         })
