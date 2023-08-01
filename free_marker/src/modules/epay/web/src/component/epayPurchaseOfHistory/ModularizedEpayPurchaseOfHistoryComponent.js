@@ -12,6 +12,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseEpayPurchaseOfHistoryComponent from "./BaseEpayPurchaseOfHistoryComponent";
+import Functions from "../../functions";
 
 class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistoryComponent {
     /** -------------------- fields -------------------- **/
@@ -69,15 +70,19 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
-        return () => {
-            console.log(`onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked 被點擊了`)
+        return async () =>  {
+            const order = param.object.getParentNode();
+            await this.performCancelUnpaidPreciseOrderBehavior(order.raw.id);
         }
+    }
+
+    async performCancelUnpaidPreciseOrderBehavior(idOfPreciseOrder) {
+        const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), {idOfPreciseOrder});
+        Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(),'failure');
     }
 
     getAreaOfPaymentDeadlineDeadline(areaOfPaymentDeadline) {
         const order = areaOfPaymentDeadline.getParentNode();
-        console.log('order',order);
-        console.log('areaOfPaymentDeadline',areaOfPaymentDeadline);
 
         switch (order.getStateOfPayment()) {
             case 'pending':
@@ -127,6 +132,8 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
             this.routeToLinePayCheckoutPage(order.getRaw().contentOfRender);
         }
     }
+
+
 
 
 }

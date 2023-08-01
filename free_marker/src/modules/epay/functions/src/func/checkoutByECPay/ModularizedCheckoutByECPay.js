@@ -30,11 +30,10 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         if (Util.isOrEquals(detailOfPreciseOrder.procedureOfPayment, Config.TYPE_OF_THIRD_PARTY_ECPAY, Config.TYPE_OF_THIRD_PARTY_LINEPAY)) {
             await Api.deletePreciseOrderItem(detailOfPreciseOrder.id);
             delete detailOfPreciseOrder.id;
-            console.log('檢查看看之前', detailOfPreciseOrder.timeOfExpired);
             const result = await Api.submitPreciseOrderItem({...detailOfPreciseOrder});
             detailOfPreciseOrder = result.value;
-            console.log('檢查看看之後', detailOfPreciseOrder.timeOfExpired);
         }
+        /** -------------------------------------------------------------------------------- **/
 
         const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(detailOfPreciseOrder);
         console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
@@ -59,7 +58,6 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
                 }
             }, detailOfPreciseOrder.id
         )
-
         return {textOfRender: result};
     }
 
