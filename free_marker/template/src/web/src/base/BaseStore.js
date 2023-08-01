@@ -206,13 +206,6 @@ class BaseStore extends ClientRemoteApi {
         this.updateTime = time;
     }
 
-    normalizeTimestamp(obj) {
-        if (obj instanceof this.FirebaseTimestampClass())
-            return obj.toMillis();
-        else
-            return obj;
-    }
-
     getUpdateTime() {
         return this.normalizeTimestamp(this.updateTime);
     }

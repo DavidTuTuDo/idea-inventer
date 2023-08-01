@@ -3,10 +3,12 @@ import _ from "lodash";
 import * as functions from 'firebase-functions';
 import Config from "../config";
 import Api from '../api';
+import ClientRemoteApi from '../base/CommonRemoteApi';
 
-class BaseFunction {
+class BaseFunction extends ClientRemoteApi {
 
-    constructor() {
+    constructor(props) {
+        super(props);
     }
 
     appendLog(...msgs) {
@@ -89,7 +91,7 @@ class BaseFunction {
             this.appendErrorLog(9999, `8871453-${idOfError} 訂單內容已完成手續, 無法再更改狀態`);
         }
 
-        if (isPayingProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, 'unknown','pending', 'waiting')) {
+        if (isPayingProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, 'unknown', 'pending', 'waiting')) {
             this.appendErrorLog(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`);
         }
 

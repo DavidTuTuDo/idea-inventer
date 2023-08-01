@@ -16,6 +16,13 @@ class CommonRemoteApi {
         return firebase.firestore();
     }
 
+    normalizeTimestamp(obj) {
+        if (obj instanceof this.FirebaseTimestampClass())
+            return obj.toMillis();
+        else
+            return obj;
+    }
+
     getFieldNameOfDocumentId() {
         return firebase.getFieldNameOfDocumentId();
     }

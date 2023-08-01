@@ -827,6 +827,14 @@ class Utiller {
         return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
     }
 
+    getCurrentTimeFormatYMDHM(ts) {
+        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm")
+    }
+
+    getCurrentTimeFormatYMDHMS(ts) {
+        return moment(ts ? ts : undefined).format("YYYY/MM/DD HH:mm:ss")
+    }
+
     /** 取得 YYY-MM-DD-HH-mm-ss */
     getCurrentTimeFormat(ts) {
         return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss")

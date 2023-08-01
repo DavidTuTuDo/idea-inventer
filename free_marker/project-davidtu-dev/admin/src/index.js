@@ -121,11 +121,30 @@ import moment from 'moment';
         ])
     }
 
-    await uploadPaymentOptions();
+    async function expiredOrderBehavior() {
+        console.log('執行 SchedulerOfExpiredOrder 腳本');
+        const orders = await api.fetchPreciseOrdersOfLimitation('in', 'stateOfPayment', 'pending', 'waiting');
+        /** 比對當前時間是否 > expired time，如果過期了 1.把狀態改成failure, 還有增加失效原因 */
+        const currentTimeStamp = Util.getCurrentTimeStamp()
+        const results = _.filter(orders, (order) => {
+            return currentTimeStamp >  api.normalizeTimestamp(order.timeOfExpired);
+        })
+        const expired = _.map(results, result => {
+            return {
+                ...result,
+                messageOfPayment: `已超過付費期限${Util.getCurrentTimeFormatYMDHM(api.normalizeTimestamp(result.timeOfExpired))}`,
+                stateOfPayment: `failure`,
+            }
+        })
+        await api.updatePreciseOrders(expired);
+    }
+    await expiredOrderBehavior();
 
+
+
+    // await uploadPaymentOptions();
     // await sampleOfFetchUrl();
     // await submitSampleProduct();
-
     // console.log(await api.fetchTest());
     // const pool = new InfinitePool(3);
     // await pool.runByTimes(subtractOneTransaction, 2);
