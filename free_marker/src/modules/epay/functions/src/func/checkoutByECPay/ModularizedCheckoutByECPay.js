@@ -4,6 +4,8 @@ import ECPay from 'ecpay_aio_nodejs';
 import Api from '../../api';
 import Config from '../../config';
 import _ from "lodash";
+import libpath from "path";
+
 
 class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     /** -------------------- fields -------------------- **/
@@ -83,7 +85,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
      若未設定此參數，則綠界付款完成頁或取號完成頁面，不會顯示[返回商店]的按鈕。
      若導回網址未使用 https 時，部份瀏覽器可能會出現警告訊息。  */
     getURLOfClientBackURL() {
-        this.appendErrorLog(9999, `8787444512, 應用必須設定 getURLOfClientBackURL()`);
+        return libpath.join(Config.host, 'epayPurchaseOfHistory/pending/');
     }
 
     getPayloadOfECPayAIORequest(order) {
