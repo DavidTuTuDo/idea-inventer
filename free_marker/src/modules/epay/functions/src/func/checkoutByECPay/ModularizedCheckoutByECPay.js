@@ -70,12 +70,6 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             {from: `\n`, to: '#'})
     }
 
-    /**
-     * @deprecated
-     * 當消費者付款完成後，綠界會將付款結果參數以幕前(Client POST)回傳到該網址。詳細說明請參考付款結果通知 這樣就不會呼叫RETURN URL*/
-    getURLOfOrderResultURL() {
-        this.appendErrorLog(9999, `4844132132, 應用必須實作 getURLOfOrderResultURL()`);
-    }
 
     /** 消費者點選此按鈕後，會將頁面導回到此設定的網址
      注意事項：
@@ -85,9 +79,17 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
      若未設定此參數，則綠界付款完成頁或取號完成頁面，不會顯示[返回商店]的按鈕。
      若導回網址未使用 https 時，部份瀏覽器可能會出現警告訊息。  */
     getURLOfClientBackURL() {
-        return libpath.join(Config.host, 'epayPurchaseOfHistory/pending/');
+        return new URL(`epayPurchaseOfHistory/completed`, Config.host).href;
     }
 
+    /**
+     * @deprecated 用不到
+     * 消費者付款完成後，綠界科技會以 Client POST 方式
+     * 傳送付款結果並將使用者的畫面轉導到商家指定的頁面
+     * 當消費者付款完成後，綠界會將付款結果參數以幕前(Client POST)回傳到該網址。詳細說明請參考付款結果通知 這樣就不會呼叫RETURN URL*/
+    getURLOfOrderResultURL() {
+        return `必須是post的api`
+    }
     getPayloadOfECPayAIORequest(order) {
         return {
             MerchantTradeNo: order.id, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93

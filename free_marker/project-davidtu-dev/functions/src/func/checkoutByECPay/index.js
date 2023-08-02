@@ -15,13 +15,6 @@ class CheckoutByECPay extends ModularizedCheckoutByECPay {
     super(props);
   }
 
-  getURLOfOrderResultURL() {
-    return 'https://www.google.com/'
-  }
-
-  getURLOfClientBackURL() {
-    return 'https://www.google.com/'
-  }
   /** -------------------- async api -------------------- **/
 }
 export default new CheckoutByECPay();
