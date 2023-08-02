@@ -281,6 +281,10 @@ class MobileStyle {
 
   /** => following for main  component  */
 
+  MainTestGotoHistoryButton = {};
+
+  MainTestEpayTestButton = {};
+
   MainTestSubTitleTypography = {};
 
   MainTestTitleTypography = {};

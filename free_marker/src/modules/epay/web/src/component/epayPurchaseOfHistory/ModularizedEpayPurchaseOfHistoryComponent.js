@@ -118,7 +118,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()),true);
+        return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()), true);
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
@@ -129,6 +129,17 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         }
     }
 
+    onEpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconButtonClicked(param) {
+        const ref = param.object;
+        const order = ref.getParentNode().getParentNode();
+        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.infoOfPayment))
+    }
+
+    onEpayPurchaseOfHistoryOrderAreaOfTopCopyIdIconButtonClicked(param) {
+        const ref = param.object;
+        const order = ref.getParentNode();
+        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.id))
+    }
 
 }
 

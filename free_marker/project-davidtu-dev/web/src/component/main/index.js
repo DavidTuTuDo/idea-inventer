@@ -27,6 +27,15 @@ class MainComponent extends BaseMainComponent {
   constructor(props) {
     super(props);
   }
+
+  onMainTestEpayTestButtonClicked(param) {
+    Router.gotoEpayTestPage(this.getComponentInstance());
+  }
+
+  onMainTestGotoHistoryButtonClicked(param) {
+    Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(),'pending');
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default MainComponent;

@@ -281,6 +281,10 @@ class AppStyle {
 
   /** => following for main  component  */
 
+  MainTestGotoHistoryButton = {};
+
+  MainTestEpayTestButton = {};
+
   MainTestSubTitleTypography = {};
 
   MainTestTitleTypography = {};

@@ -1628,11 +1628,19 @@ class Utiller {
         return items;
     }
 
+    getHeadStringSplitBy(string, sign = this.getSeparatorOfUnique()) {
+        return _.split(string, sign).shift();
+    }
+
+    getTailStringSplitBy(string, sign = this.getSeparatorOfUnique()) {
+        return _.split(string, sign).pop();
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getTailStringSplitBy('325/2/32/1','/'))
             // const obj = {time :undefined,name: 'david'};
             // utiller.removeAttributeBy(obj);
             // console.log(obj);
