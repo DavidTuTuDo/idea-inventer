@@ -9,17 +9,7 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** => following for main editor component  */
-
-  MainEditorTestSubTitleTextField = {};
-
-  MainEditorTestTitleTextField = {};
-
-  MainEditorTestDivWrap = {};
-
-  MainEditorTestDiv = {};
-
-  MainEditorDiv = {};
+  /** following for homeless */
 
   /** => following for navigator  component  */
 
@@ -197,23 +187,23 @@ class AppStyle {
 
   EpayPurchaseOfHistoryDiv = {};
 
-  /** => following for methodOfPayment  component  */
+  /** => following for epayMethodOfPayment  component  */
 
-  MethodOfPaymentOptionDescriptionTypography = {};
+  EpayMethodOfPaymentOptionDescriptionTypography = {};
 
-  MethodOfPaymentOptionImageImg = {};
+  EpayMethodOfPaymentOptionImageImg = {};
 
-  MethodOfPaymentOptionNameTypography = {};
+  EpayMethodOfPaymentOptionNameTypography = {};
 
-  MethodOfPaymentOptionCardSkeleton = {};
+  EpayMethodOfPaymentOptionCardSkeleton = {};
 
-  MethodOfPaymentOptionDivList = {};
+  EpayMethodOfPaymentOptionDivList = {};
 
-  MethodOfPaymentOptionCard = {};
+  EpayMethodOfPaymentOptionCard = {};
 
-  MethodOfPaymentTitleTypography = {};
+  EpayMethodOfPaymentTitleTypography = {};
 
-  MethodOfPaymentPaper = {};
+  EpayMethodOfPaymentPaper = {};
 
   /** => following for epayBehaviorOfConfirmLinePay  component  */
 

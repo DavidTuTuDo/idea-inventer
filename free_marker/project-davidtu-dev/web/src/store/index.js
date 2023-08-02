@@ -28,8 +28,6 @@ import EpayPurchaseOfHistoryOrderAreaOfTop from "./epayPurchaseOfHistoryOrderAre
 import EpayPurchaseOfHistoryOrder from "./epayPurchaseOfHistoryOrder";
 import EpayPurchaseOfHistoryTab from "./epayPurchaseOfHistoryTab";
 import EpayPurchaseOfHistory from "./epayPurchaseOfHistory";
-import MethodOfPaymentOption from "./methodOfPaymentOption";
-import MethodOfPayment from "./methodOfPayment";
 import EpayBehaviorOfConfirmLinePay from "./epayBehaviorOfConfirmLinePay";
 import EpayPreciseOrderItem from "./epayPreciseOrderItem";
 import EpayPreciseOrder from "./epayPreciseOrder";
