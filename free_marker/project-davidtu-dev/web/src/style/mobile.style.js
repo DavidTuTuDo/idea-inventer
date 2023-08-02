@@ -9,7 +9,17 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
+  /** => following for main editor component  */
+
+  MainEditorTestSubTitleTextField = {};
+
+  MainEditorTestTitleTextField = {};
+
+  MainEditorTestDivWrap = {};
+
+  MainEditorTestDiv = {};
+
+  MainEditorDiv = {};
 
   /** => following for navigator  component  */
 

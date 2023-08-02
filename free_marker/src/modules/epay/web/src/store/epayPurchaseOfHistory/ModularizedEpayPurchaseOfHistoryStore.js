@@ -34,6 +34,13 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
     }
 
     conditionsOfDefault(state) {
+        /** all的話就全拿 */
+        if (_.isEqual(state, 'all')) {
+            console.log(`因為我就拿到了${state}`,'all');
+            return [];
+            /** 如果return undefined會拿不到資料 */
+        }
+
         const states = _.isEqual(state, 'pending') ? ['pending', 'waiting'] : [state];
 
         return [
@@ -62,7 +69,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
 
         function getKeywordOfProcedure() {
             const split = _.split(order.procedureOfPayment, Util.getSeparatorOfUnique());
-            const target =  _.toLower(split.pop());
+            const target = _.toLower(split.pop());
             return target;
         }
 
@@ -111,10 +118,10 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                 target = {webatm: map.webatm};
             } else if (isUnknown()) {
                 target = {unknown: map.unknown};
-            } else if(isECPay()) {
+            } else if (isECPay()) {
                 target = {ecpay: map.ecpay};
 
-            }else {
+            } else {
                 target = {error: map.error};
                 // throw new ERROR(9999, `54564564371 不應該走到這裡`)
             }
@@ -225,8 +232,8 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
                     code: getStringOfCode(),
                 }
             },
-            areaOfPaymentFailure:{
-                reason:`${order.messageOfPayment}`,
+            areaOfPaymentFailure: {
+                reason: `${order.messageOfPayment}`,
             }
         }
     }
