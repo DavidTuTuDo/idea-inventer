@@ -20,6 +20,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
     constructor(props) {
         super(props);
+        this.registerScrollToBottomJob(this.getStore().fetch)
     }
 
     isValidOfParamOfTypeOfTab(string) {
@@ -28,8 +29,10 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
     onEpayPurchaseOfHistoryTabTabClicked(param) {
         const tab = param.object;
-        if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab))
+        if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) {
             Router.gotoEpayPurchaseOfHistoryPage(this, tab.getType());
+        }
+
     }
 
     componentDidMount() {

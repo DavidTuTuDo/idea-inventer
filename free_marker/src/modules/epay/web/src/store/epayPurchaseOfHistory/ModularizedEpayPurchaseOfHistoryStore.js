@@ -31,12 +31,12 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
     constructor(props) {
         super(props);
         this.api = new EpayPreciseOrderStore();
+
     }
 
     conditionsOfDefault(state) {
         /** all的話就全拿 */
         if (_.isEqual(state, 'all')) {
-            console.log(`因為我就拿到了${state}`,'all');
             return [];
             /** 如果return undefined會拿不到資料 */
         }
@@ -48,16 +48,19 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         ];
     }
 
-    async fetch(view) {
+     fetch = async (view) => {
         const state = this.getParamOfTypeOfTabInPath();
-        const orders = await this.api.fetchPreciseOrders(this.getComponent(),
-            ...this.conditionsOfDefault(state)
-        );
-        this.pushOrders(...orders.map(order => this.normalizeOrder(order)));
+        const ordersOfRemote = []
+        if (_.size(this.getOrders()) > 0) {
+            ordersOfRemote.push(...await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...this.conditionsOfDefault(state)))
+        } else {
+            ordersOfRemote.push(...await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfDefault(state)));
+        }
+        this.pushOrders(...ordersOfRemote.map(order => this.normalizeOrder(order)));
     }
 
-
     normalizeOrder(order) {
+
         function normalizeBriefFromOrderItem(item) {
             return {
                 imageOfProductPhoto: item.imageUrlOfProduct,
