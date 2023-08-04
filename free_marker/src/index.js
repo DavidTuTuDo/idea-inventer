@@ -6360,6 +6360,7 @@ class ProjectFileHandler extends PathBase {
     enrichNodesOfBehavior(nodes) {
 
         function appendPropsOfNode(node, functionOfView, props = [], methods = [], nodesOfParent = []) {
+
             for (const type of TYPES_OF_PROPS_VIEW) {
                 if (node.isPreciselyEditableComponent()
                     && _.isEqual(node.getNodeOfComponent().getName(), 'exam')
@@ -6376,15 +6377,20 @@ class ProjectFileHandler extends PathBase {
                     switch (type) {
                         case 'list':
                             node.appendListProps(...props)
+                            node.appendMethods(...methods);
                             break;
                         case 'listWrap':
                             node.appendListWrapProps(...props)
+                            node.appendMethods(...methods);
                             break;
                         case 'wrap':
                             node.appendWrapProps(...props)
+                            node.appendMethods(...methods);
+
                             break;
                         case 'default':
                             node.appendViewProps(...props)
+                            node.appendMethods(...methods);
                             break;
                     }
 
@@ -6393,10 +6399,10 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
-            if (functionOfView('default', node)) {
-                node.appendMethods(...methods);
-            }
-
+            // Util.appendFile('./watchdog.txt',`node ===> ${node.getView()}`);
+            // if (functionOfView('default', node)) {
+            //     node.appendMethods(...methods);
+            // }
 
         }
 
