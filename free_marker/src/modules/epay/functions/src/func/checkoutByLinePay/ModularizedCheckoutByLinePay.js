@@ -82,8 +82,8 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                 }
             ],
             redirectUrls: {
-                confirmUrl: libpath.join(Config.host, 'epayBehaviorOfConfirmLinePay'),
-                cancelUrl: libpath.join(Config.host, 'epayPurchaseOfHistory/pending'),
+                confirmUrl: new URL('epayBehaviorOfConfirmLinePay', Config.host).href,
+                cancelUrl: new URL('epayPurchaseOfHistory/all', Config.host).href,
             },
             options: {
                 extra: {

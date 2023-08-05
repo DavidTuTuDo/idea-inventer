@@ -6337,7 +6337,7 @@ class ProjectFileHandler extends PathBase {
                     stringsOfItem.push(JSON.stringify(objectOfItem));
 
                 }
-                console.log(`[${stringsOfItem.join(',')}]`);
+                // console.log(`[${stringsOfItem.join(',')}]`);
                 const fieldNameOfItems = `itemsOf${_.upperFirst(node.getName())}`;
                 node.implementsOfAlertItemClicked = implementsOfClicked;
                 node.getPreciseAttributeParent().appendChildrenWithJsons({

@@ -40,10 +40,10 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
                 idOfPreciseOrder: objectOfLinePayInfo.orderId,
                 idOfTransaction: objectOfLinePayInfo.transactionId,
             });
-            Router.gotoEpayPurchaseOfHistoryPage(this.getComponent(), 'completed');
+            Router.gotoEpayPurchaseOfHistoryPage(this.getComponent(), 'all');
         } catch (error) {
             this.getComponent().showErrorSnackMessage(error.message);
-            Router.gotoEpayPurchaseOfHistoryPage(this.getComponent(), 'pending');
+            Router.gotoEpayPurchaseOfHistoryPage(this.getComponent(), 'all');
         }
     }
 

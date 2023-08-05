@@ -13,13 +13,15 @@ class playground {
 
 export {playground as playground}
 
-const text = '[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":true,"notice":{"title":"確認是否更改","content":"訂單付款方式僅能更改一次,是否確定更改?"},"onClick":self.onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonChangeProcedureOfPaymentClicked(objectOfParam) },{ "label":"刪除訂單","icon":"CancelScheduleSend","loginOnly":true,"notice":{"title":"執行刪除","content":"是否確任刪除訂單?"},"onClick":self.onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(objectOfParam) }]'
+// const text = '[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":true,"notice":{"title":"確認是否更改","content":"訂單付款方式僅能更改一次,是否確定更改?"},"onClick":self.onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonChangeProcedureOfPaymentClicked(objectOfParam) },{ "label":"刪除訂單","icon":"CancelScheduleSend","loginOnly":true,"notice":{"title":"執行刪除","content":"是否確任刪除訂單?"},"onClick":self.onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(objectOfParam) }]'
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const browser = new Browser(true);
-            await browser.init();
-            browser.printf();
+            // const browser = new Browser(true);
+            // await browser.init();
+            // browser.printf();
+            // console.log('dsasad')
+            console.log(new URL('3333','https://1232.32.tw',).href)
             // console.log(Util.getFolderNameOfFilePath('a/c/d/js.js'));
             // const abc = JSON.parse(`[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":true,"notice":{"title":"確認是否更改","content":"訂單付款方式僅能更改一次,是否確定更改?"},"onClick": }]`);
             // console.log(abc);
