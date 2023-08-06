@@ -57,6 +57,9 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             ordersOfRemote.push(...await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfDefault(state)));
         }
         this.pushOrders(...ordersOfRemote.map(order => this.normalizeOrder(order)));
+        if(_.size(ordersOfRemote) === 0) {
+            this.setHasPageItems(false);
+        }
     }
 
     normalizeOrder(order) {

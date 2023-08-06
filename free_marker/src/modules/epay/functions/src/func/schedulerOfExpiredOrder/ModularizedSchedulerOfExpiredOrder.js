@@ -23,19 +23,20 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
         /** 比對當前時間是否 > expired time，如果過期了 1.把狀態改成failure, 還有增加失效原因 */
         const currentTimeStamp = Util.getCurrentTimeStamp()
         const results = _.filter(orders, (order) => {
-            return currentTimeStamp >  this.normalizeTimestamp(order.timeOfExpired);
+            return currentTimeStamp > this.normalizeTimestamp(order.timeOfExpired);
         })
         const expired = _.map(results, result => {
             return {
                 ...result,
-                messageOfPayment: `已超過付費期限 ${Util.getCurrentTimeFormatYMDHM(this.normalizeTimestamp(result.timeOfExpired))}`,
+                messageOfPayment: `已超過付費期限`,
                 stateOfPayment: `failure`,
+                timeOfHouseKeeping: currentTimeStamp,
             }
         })
 
         await Api.updatePreciseOrders(expired);
 
-        for(const order of orders) {
+        for (const order of orders) {
             await this.incrementProductCountsAtomically(order);
         }
 

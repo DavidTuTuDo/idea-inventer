@@ -118,6 +118,7 @@ class BaseComponent extends MuiComponent {
         }
     }
 
+    /** 意指面畫面還沒產出捲軸效果，可以補花(例如item合計有30個，但fetch一次只拿5個，而產生捲軸效果的threshold是10個，那畫面就會再繼續自動fetch，直到產生捲軸效果)*/
     canVerticalScrollable() {
         return document.body.scrollHeight > window.innerHeight;
     }
@@ -129,8 +130,8 @@ class BaseComponent extends MuiComponent {
     routeToLinePayCheckoutPage(stringOfRaw) {
         const urlsOfLinePay = JSON.parse(stringOfRaw);
 
-        if(Util.isUndefinedNullEmpty(urlsOfLinePay)) {
-            throw new ERROR(999,`446846132 urlsOfLinePay格式不正確`)
+        if (Util.isUndefinedNullEmpty(urlsOfLinePay)) {
+            throw new ERROR(999, `446846132 urlsOfLinePay格式不正確`)
         }
 
         if (isMobile) {
@@ -214,17 +215,21 @@ class BaseComponent extends MuiComponent {
         document.activeElement.blur();
     }
 
-    onScrollToBottomListener = (event) => {
-        const self = this;
+    isValidOfScrollToBottom = () => {
         let documentHeight = document.body.scrollHeight;
         let currentScroll = window.scrollY + window.innerHeight;
         let isScrollDown = window.scrollY > 0;
         /** 應該要記錄scrollY, 然後判斷偏移量 */
-
         let modifier = 1;
         let isScrollToEnd = currentScroll + modifier > documentHeight
+        return isScrollDown && isScrollToEnd;
+    }
+
+    onScrollToBottomListener = (event) => {
+        const self = this;
+
         /** modifier 距離底部的threshold */
-        if (isScrollDown && isScrollToEnd) {
+        if (this.isValidOfScrollToBottom()) {
             /** Scroll達底部了 */
             // console.log(`window.scrollY:${window.scrollY}, currentScroll:${currentScroll}, documentHeight:${documentHeight}`);
             if (!this.getStore().isInitialFetchCompleted()) {
@@ -280,8 +285,9 @@ class BaseComponent extends MuiComponent {
         }
     }
 
-    /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() */
+    /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() 一定要實作hasNextPage的邏輯 */
     invalidateNextPageBehavior = async () => {
+        await Util.syncDelay(50);
         if (
             !this.getStore().isErrorState() &&
             this.getStore().hasNextPage() &&
@@ -938,9 +944,9 @@ class BaseComponent extends MuiComponent {
             ref={ref}/>)
     }
 
-    isWrapByDialog(){
+    isWrapByDialog() {
         const dialog = this.props.dialog;
-        return dialog instanceof  AlertDialog;
+        return dialog instanceof AlertDialog;
     }
 
     renderAlertMenu({ref, items, component}) {

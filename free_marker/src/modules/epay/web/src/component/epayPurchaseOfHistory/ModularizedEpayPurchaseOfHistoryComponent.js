@@ -95,7 +95,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
             case 'completed':
                 return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
             case 'failure':
-                return areaOfPaymentDeadline.getDeadline();
+                return Util.getCurrentTimeFormatV2(order.getTimeOfCreate());
         }
         return areaOfPaymentDeadline.getDeadline();
     }
