@@ -24,7 +24,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     }
 
     isValidOfParamOfTypeOfTab(string) {
-        return Util.containsBy(['all','completed', 'pending', 'failure'], string);
+        return Util.containsBy(['all', 'completed', 'pending', 'failure'], string);
     }
 
     onEpayPurchaseOfHistoryTabTabClicked(param) {
@@ -142,6 +142,15 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
         const ref = param.object;
         const order = ref.getParentNode();
         this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.id))
+    }
+
+    getInjectPropsOfEpayPurchaseOfHistoryOrderAreaOfInputMessageValueTextField(areaOfInputMessage) {
+        const order = areaOfInputMessage.getParentNode();
+        return {
+            InputProps: {
+                readOnly: Util.isOrEquals(order.getStateOfPayment(), 'completed', 'failure'),
+            }
+        }
     }
 
 }
