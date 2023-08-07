@@ -4147,6 +4147,9 @@ class ComponentBuilder extends BaseBuilder {
                 `if(self.getStore().isFetchAbleToGo() && this.isEnableInitFetch()) {`,
                 `self.getStore().fetch(this).then((collection) => {
                     result = collection;                 
+                })
+                .catch((error) => {
+                    self.getStore().setHasPageItems(false);   
                 }).finally(() => {
                 Util.appendInfo('${componentNode.getName()} page initial fetch completed')
                 self.getStore().onInitialFetchCompleted(result)})`,
