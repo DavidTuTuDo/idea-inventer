@@ -1101,7 +1101,7 @@ class CodegenNode {
     static doNotEnrichAttribute() {
         return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host','payload']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload']
     }
 
     setListContents(contents) {
@@ -2568,6 +2568,7 @@ class ClassGenerator {
 
         function getStringOfFunctionFinally() {
             const _stmts = [];
+
             if (_.isEqual(func.getType(), 'httpOnRequest')) {
                 if (needRegularResponse())
                     _stmts.push('response.send({succeed,data:result});');
@@ -2603,6 +2604,8 @@ class ClassGenerator {
 
         const {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params} = func.getCloudFunctionInfo()
         let stmts = [];
+
+        stmts.push(`\n/** payload:${JSON.stringify(func.payload ?? 'needless payload')} */\n`)
         stmts.push(`exports.${functionName} = functions.${typeOfFunction}(async (${params.join(',')}) => {`)
         stmts.push(...getStmtsByType(params));
         stmts.push(`})`);
@@ -5001,7 +5004,7 @@ class AppBuilder extends ComponentBuilder {
                 baseFunctionGenerator.appendAsyncFunction(
                     `${_.lowerFirst(_func.getType())}${_.upperFirst(_func.getName())}`,
                     ['view', 'data'],
-                    [], [`payload:${JSON.stringify(_func.payload)}`],
+                    [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`],
                     `return await this.runUIAsyncCloudFunctionsTask('${_func.getName()}', data, view);`
                 )
             }
@@ -6901,7 +6904,7 @@ class ProjectFileHandler extends PathBase {
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction(functionNameOfHandleBy,
-            [...params], [], []);
+            [...params], [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
 
         if (func.isModuleComponent) {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
