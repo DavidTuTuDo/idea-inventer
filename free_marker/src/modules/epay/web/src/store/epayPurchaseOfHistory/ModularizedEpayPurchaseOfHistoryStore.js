@@ -230,7 +230,9 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             areaOfPaymentDeadline: {
                 deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired)),
             },
-
+            areaOfInputMessage:{
+                value: order.remark,
+            },
             areaOfPaymentDetail: {
                 domain: getStringOfDomain(),
                 specificOfProduct: getStringOfSpecific(),

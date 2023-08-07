@@ -33,6 +33,7 @@ class BaseFunction extends ClientRemoteApi {
                 return {quantityOfCurrent: product.quantityOfCurrent + item.quantity}
             }, product.id)
         }
+        await Api.updatePreciseOrderItem({isRestoreItems: true}, itemOfPreciseOrder.id);
     }
 
     getOffSetByLocation(locale) {
@@ -135,6 +136,27 @@ class BaseFunction extends ClientRemoteApi {
         if (!this.isLoginUser(session)) {
             this.appendErrorLog(9999, `4845461513-${idOfError} 必須登入才能呼叫此功能`);
         }
+    }
+
+    /** { typeOfUser:'買家'|'賣家'|'管理員', allowUpdate: false }*/
+    async getLoginUserInfo(order, session) {
+        let typeOfUser = '';
+        let allowUpdate = false;
+
+        if (_.isEqual(this.getUid(session), order.idOfUser)) {
+            typeOfUser = '買家';
+            allowUpdate = true;
+        } else if (_.isEqual(this.getUid(session), order.idOfSeller)) {
+            typeOfUser = '賣家';
+            allowUpdate = true;
+        } else if (await this.isAdminUser(session)) {
+            typeOfUser = '管理員';
+            allowUpdate = true;
+        } else {
+            typeOfUser = '未知';
+            allowUpdate = false;
+        }
+        return {typeOfUser, allowUpdate}
     }
 
 

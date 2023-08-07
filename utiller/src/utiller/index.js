@@ -1572,6 +1572,14 @@ class Utiller {
      *
      *   console.log(utiller.validatePayloadObjectValid({a: 3, b: 4}, ['a',{b:(value) => value > 5}]));
      *   //ATTRIBUTE:'b' is not valid of custom rule
+     *
+     *   utiller.validatePayloadObjectValid({id: 'djksaio', num: 3, items: [1, 2, 3]},
+     *                 [
+     *                     {'id': (value) => _.isString(value)},
+     *                     {'num': (v) => _.isNumber(v)},
+     *                     {items: (v) => _.isArray(v)}
+     *                  ])
+     *   // =>true
      */
     validatePayloadObjectValid(content, rules = [], idOfError = this.getRandomHash(10)) {
         if (this.isUndefinedNullEmpty(content)) {

@@ -75,11 +75,27 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
         return async () => {
             const order = param.object.getParentNode();
-            await this.performCancelUnpaidPreciseOrderBehavior(order.raw.id);
+            await this.remoteCancelUnpaidPreciseOrderBehavior(order.raw.id);
         }
     }
 
-    async performCancelUnpaidPreciseOrderBehavior(idOfPreciseOrder) {
+    onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonUpdateRemarkClicked(param) {
+        return async () => {
+            const order = param.object.getParentNode();
+            const latestRemarkOfOrder = order.getAreaOfInputMessage().getValue();
+            await this.remoteUpdateOrderRemarkBehavior(order.raw.id, latestRemarkOfOrder);
+        }
+    }
+
+    async remoteUpdateOrderRemarkBehavior(idOfPreciseOrder, remarkOfPreciseOrder) {
+        const result = await Functions.httpOnCallUpdatePreciseOrderRemarkContent(this.getComponentInstance(), {
+            idOfPreciseOrder,
+            remarkOfPreciseOrder
+        });
+        this.showInfoSnackMessage(`更新${idOfPreciseOrder} 備註成功`);
+    }
+
+    async remoteCancelUnpaidPreciseOrderBehavior(idOfPreciseOrder) {
         const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), {idOfPreciseOrder});
         Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(), 'failure');
     }
