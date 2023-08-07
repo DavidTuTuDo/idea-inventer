@@ -1101,7 +1101,7 @@ class CodegenNode {
     static doNotEnrichAttribute() {
         return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host','payload']
     }
 
     setListContents(contents) {
@@ -5001,7 +5001,7 @@ class AppBuilder extends ComponentBuilder {
                 baseFunctionGenerator.appendAsyncFunction(
                     `${_.lowerFirst(_func.getType())}${_.upperFirst(_func.getName())}`,
                     ['view', 'data'],
-                    [], [],
+                    [], [`payload:${JSON.stringify(_func.payload)}`],
                     `return await this.runUIAsyncCloudFunctionsTask('${_func.getName()}', data, view);`
                 )
             }

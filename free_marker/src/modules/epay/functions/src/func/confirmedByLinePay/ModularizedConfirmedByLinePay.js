@@ -94,6 +94,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 return {
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
                     timeOfPayment: Util.getCurrentTimeStamp(),
+                    stateOfPayment: 'failure',
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
                 }
             }, itemOfPreciseOrder.id);
