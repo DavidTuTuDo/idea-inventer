@@ -36,19 +36,23 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
 
     conditionsOfDefault(state) {
         /** all的話就全拿 */
+        const conditionOfDefault = {where: (stmt) => stmt.where('idOfUser', '==', UserInfoRef.getUid())}
+
+
         if (_.isEqual(state, 'all')) {
-            return [];
+            return [conditionOfDefault];
             /** 如果return undefined會拿不到資料 */
         }
 
         const states = _.isEqual(state, 'pending') ? ['pending', 'waiting'] : [state];
 
         return [
-            {where: (stmt) => stmt.where('stateOfPayment', 'in', states)}
+            {where: (stmt) => stmt.where('stateOfPayment', 'in', states)},
+            conditionOfDefault
         ];
     }
 
-     fetch = async (view) => {
+    fetch = async (view) => {
         const state = this.getParamOfTypeOfTabInPath();
         const ordersOfRemote = []
         if (_.size(this.getOrders()) > 0) {
@@ -57,7 +61,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             ordersOfRemote.push(...await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfDefault(state)));
         }
         this.pushOrders(...ordersOfRemote.map(order => this.normalizeOrder(order)));
-        if(_.size(ordersOfRemote) === 0) {
+        if (_.size(ordersOfRemote) === 0) {
             this.setHasPageItems(false);
         }
     }
@@ -230,7 +234,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
             areaOfPaymentDeadline: {
                 deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired)),
             },
-            areaOfInputMessage:{
+            areaOfInputMessage: {
                 value: order.remark,
             },
             areaOfPaymentDetail: {
@@ -246,8 +250,10 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
         }
     }
 
-    setCurrentTabByType(type) {
+    async setCurrentTabByType(type) {
         const tab = _.find(this.getTabs(), (tab) => _.isEqual(tab.getType(), type));
+        this.setValueOfSelectedTab(-1000);
+        await Util.syncDelay(100);
         this.setValueOfSelectedTab(tab.getValue());
     }
 

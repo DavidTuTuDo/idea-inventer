@@ -37,7 +37,7 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
     componentDidMount() {
         super.componentDidMount();
-        this.getStore().setCurrentTabByType(this.paramOfTypeOfTab)
+        this.getStore().setCurrentTabByType(this.paramOfTypeOfTab).then();
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButton(areaOfTop) {

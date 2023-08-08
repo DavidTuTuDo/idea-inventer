@@ -5007,7 +5007,7 @@ class AppBuilder extends ComponentBuilder {
                 baseFunctionGenerator.appendAsyncFunction(
                     `${_.lowerFirst(_func.getType())}${_.upperFirst(_func.getName())}`,
                     ['view', 'data'],
-                    [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`],
+                    [], [`payload:${JSON.stringify(_func.payload ?? 'needless payload')}`],
                     `return await this.runUIAsyncCloudFunctionsTask('${_func.getName()}', data, view);`
                 )
             }
