@@ -29,8 +29,19 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
+    /** 讓fetch功能改成手動的模式，因為共用history 和 favorite */
+    controlOfManual = false
+
+    enableManual() {
+        this.controlOfManual = true
+    }
+
     constructor(props) {
         super(props);
+    }
+
+    async fetch(view) {
+        return this.controlOfManual ? {} : super.fetch(view);
     }
 
     ruleOfPreviouslySort(items) {
@@ -43,12 +54,13 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
         return latest;
     }
 
+
     @action
     invalidate() {
         const itemsOfPu = this.getFavoritePus();
-        for(const item of itemsOfPu){
+        for (const item of itemsOfPu) {
             item.setNeedTitle(true);
-            const index = _.indexOf(itemsOfPu,item);
+            const index = _.indexOf(itemsOfPu, item);
             if (index > 0) {
                 const itemOfPreview = itemsOfPu[index - 1];
                 if (_.isEqual(itemOfPreview.singer, item.singer)) {
@@ -56,7 +68,7 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
                 }
             }
         }
-        this.setGuitarPuNotes(..._.orderBy(itemsOfPu,['singer','name']));
+        this.setFavoritePus(..._.orderBy(itemsOfPu, ['singer', 'name']));
     }
 
     /** -------------------- async api -------------------- **/

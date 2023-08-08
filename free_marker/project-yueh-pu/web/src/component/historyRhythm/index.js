@@ -27,6 +27,8 @@ class HistoryRhythmComponent extends BaseHistoryRhythmComponent {
   constructor(props) {
     super(props);
   }
+
+
   /** -------------------- async api -------------------- **/
 }
 export default HistoryRhythmComponent;

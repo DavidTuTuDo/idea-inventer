@@ -11,7 +11,8 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import FavoritePu from "../personalRhythmFavoritePu"
+import FavoritePu from "../personalRhythmFavoritePu";
+import HistoryPu from '../historyRhythmPuOfRecord';
 import {
     makeAutoObservable,
     makeObservable,
@@ -93,13 +94,22 @@ class SheetStore extends BaseSheetStore {
     constructor(props) {
         super(props);
         this.apiOfFavorite = new FavoritePu();
+        this.apiOfHistory = new HistoryPu();
     }
 
     /** -------------------- async api -------------------- **/
 
     async fetch(view) {
         const result = await super.fetch(view);
-        await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? result.guitarpus[0].id : '');
+        if (_.size(result.guitarpus) > 0) {
+            const pu = result.guitarpus[0];
+            await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? pu.id : '');
+            await this.apiOfHistory.submitPuOfRecordItem(view, {
+                idOfGuitarPu: pu.id,
+                name: pu.name,
+                singer: pu.singer,
+            })
+        }
         return result;
     }
 
@@ -110,8 +120,8 @@ class SheetStore extends BaseSheetStore {
     }
 
     async getFavoritePuByIdOfGuitarPu(idOfGuitarPu) {
-       const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(),
-            UserInfoRef.getUid(),{where:(stmt) => stmt.where('idOfGuitarPu','==',idOfGuitarPu)})
+        const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(),
+            UserInfoRef.getUid(), {where: (stmt) => stmt.where('idOfGuitarPu', '==', idOfGuitarPu)})
         return _.head(items);
     }
 
@@ -125,7 +135,7 @@ class SheetStore extends BaseSheetStore {
                 });
             } else {
                 const item = await this.getFavoritePuByIdOfGuitarPu(this.getCurrentPu().getId());
-                if(item) {
+                if (item) {
                     console.log(item);
                     await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), item.id);
                 }
@@ -218,7 +228,10 @@ class SheetStore extends BaseSheetStore {
 
     setVisibleOfChordInContext(hide = false) {
         function getStringOfRemoveChordsAndSeparator(paragraph) {
-            const after = Util.replaceAllWithSets(paragraph,{from:SEPARATOR_OF_CHORD, to:' '}, {from:'－',to:' '},{from:'-',to:' '});
+            const after = Util.replaceAllWithSets(paragraph, {from: SEPARATOR_OF_CHORD, to: ' '}, {
+                from: '－',
+                to: ' '
+            }, {from: '-', to: ' '});
             const reg = new RegExp(`^[A-G]`, 'g');
             return Util.getStringHandledByEachLine(after,
                 (segment, index, segments) => {
