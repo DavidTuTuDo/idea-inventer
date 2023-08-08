@@ -28,6 +28,8 @@ import NoteEditor from "./noteEditor";
 import PersonalRhythmGuitarPuNote from "./personalRhythmGuitarPuNote";
 import PersonalRhythmFavoritePu from "./personalRhythmFavoritePu";
 import PersonalRhythm from "./personalRhythm";
+import HistoryRhythmPuOfRecord from "./historyRhythmPuOfRecord";
+import HistoryRhythm from "./historyRhythm";
 import ArtistSingerNickname from "./artistSingerNickname";
 import ArtistSinger from "./artistSinger";
 import Artist from "./artist";

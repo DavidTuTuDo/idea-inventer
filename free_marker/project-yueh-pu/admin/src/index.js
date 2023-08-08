@@ -306,7 +306,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     async function submitShortcut() {
         await api.deleteShortcuts();
         await api.submitShortcuts(
-            {
+            [{
                 title: '回到首頁',
                 icon: 'muIcon:Bedtime',
                 route: `route:main`,
@@ -319,9 +319,15 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 indexOfSequence: 1,
             },
             {
+                title: '歷史搜尋',
+                icon: 'muIcon:History',
+                route: `route:historyRhythm`,
+                indexOfSequence: 2,
+            },
+            {
                 title: '相關網站',
                 icon: 'muIcon:Whatshot',
-                indexOfSequence: 2,
+                indexOfSequence: 3,
                 subs: [
                     {
                         title: '91譜',
@@ -330,7 +336,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                         indexOfSequence: 1,
                     }
                 ]
-            },
+            }]
         )
     }
 
@@ -523,7 +529,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     }
 
     async function updatePopularLevelOfEachTone() {
-        const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt(),'popularLevel','idOfRemote')
+        const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt(), 'popularLevel', 'idOfRemote')
 
     }
 

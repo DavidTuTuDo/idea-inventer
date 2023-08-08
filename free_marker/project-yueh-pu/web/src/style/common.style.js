@@ -197,6 +197,10 @@ class CommonStyle {
 
   PersonalRhythmDiv = {};
 
+  /** => following for historyRhythm  component  */
+
+  HistoryRhythmDiv = {};
+
   /** => following for artist  component  */
 
   ArtistDiv = {};

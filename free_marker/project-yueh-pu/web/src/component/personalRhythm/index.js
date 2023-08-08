@@ -43,7 +43,6 @@ class PersonalRhythmComponent extends BasePersonalRhythmComponent {
         const self = this;
         return async () => {
             const favoritePu = param.object;
-            console.log(favoritePu);
             favoritePu.deleteFavoritePuItem(self).then((result) => {
                 this.showInfoSnackMessage(`已成功刪除「${favoritePu.name}」`)
             })
