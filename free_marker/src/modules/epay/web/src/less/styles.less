@@ -147,19 +147,22 @@
   }
 }
 .EpayMethodOfPaymentPaper {
+  padding: 20px;
+  min-width: 350px;
+  min-height: 400px;
   @media @mobile {
-    /** empty style */
+    min-height: 500px;
+    padding: 12px;
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
-    padding: 10pt;
-    width: 300pt;
-    min-height: 400px;
+    /** empty style */
   }
 }
 .EpayMethodOfPaymentTitleTypography:extend(.CenterInParentRow) {
+  font-size: 1.1rem;
   @media @mobile {
     /** empty style */
   }
@@ -171,6 +174,8 @@
   }
 }
 .EpayMethodOfPaymentOptionCard:extend(.CenterInParentColumn) {
+  width: 200px;
+  height: 200px;
   @media @mobile {
     /** empty style */
   }
@@ -178,21 +183,21 @@
     /** empty style */
   }
   @media @desktop {
-    width: 200px;
-    height: 180px;
-    margin-bottom: 10px;
+    width: 250px;
+    height: 250px;
   }
 }
 .EpayMethodOfPaymentOptionDivList:extend(.CenterInParentColumn) {
+  margin-top: 30px;
+  gap: 20px;
   @media @mobile {
-    /** empty style */
+    gap: 30px;
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
-    gap: 10px;
-    margin-top: 20px;
+    /** empty style */
   }
 }
 .EpayMethodOfPaymentOptionCardSkeleton {
@@ -207,6 +212,7 @@
   }
 }
 .EpayMethodOfPaymentOptionNameTypography {
+  background: #eeeeee;
   @media @mobile {
     /** empty style */
   }
@@ -218,6 +224,11 @@
   }
 }
 .EpayMethodOfPaymentOptionImageImg {
+  object-fit: cover;
+  border-radius: 5px;
+  margin-top: 2px;
+  width: 70%;
+  height: 70%;
   @media @mobile {
     /** empty style */
   }
@@ -225,18 +236,18 @@
     /** empty style */
   }
   @media @desktop {
-    width: 80pt;
+    /** empty style */
   }
 }
 .EpayMethodOfPaymentOptionDescriptionTypography {
   @media @mobile {
-    /** empty style */
+    font-size: 0.8rem;
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    font-size: 0.9rem;
   }
 }
 .EpayPurchaseOfHistoryDiv:extend(.CenterInParentColumn) {
