@@ -5035,6 +5035,7 @@ class AppBuilder extends ComponentBuilder {
             const stmts = [];
             const nameOfStore = nodeOfComponent.getStruct().getName();
             if (nodeOfComponent.disposablePage) {
+                stmts.push(`if(!this.isGotoSameRoute(route))`)
                 stmts.push(`Application.getStore().${Util.camel('renew', nameOfStore)}()`);
             }
             return stmts;
@@ -5063,9 +5064,10 @@ class AppBuilder extends ComponentBuilder {
                 [],
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
-                ...getStmtsOfRenewStore(nodeOfComponent),
                 `const route = \`${route}\``,
+                ...getStmtsOfRenewStore(nodeOfComponent),
                 `this.routeTo(component, route);`,
+                `this.setCurrentRoute(route)`,
                 `return new URL(route, Config.host).href;`,
             )
 

@@ -1,6 +1,7 @@
 import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import libpath from "path";
 import Config from "../config";
+import _ from "lodash";
 
 class BaseRouter {
 
@@ -8,8 +9,21 @@ class BaseRouter {
 
     currentComponent = undefined;
 
+    currentRoute = '';
     setCurrentComponent = (component) => {
         this.currentComponent = component;
+    }
+
+    setCurrentRoute(route) {
+        this.currentRoute = route;
+    }
+
+    getCurrentRoute(route) {
+        return this.currentRoute;
+    }
+
+    isGotoSameRoute(route) {
+        return _.isEqual(this.currentRoute, route);
     }
 
     routeTo(component, path) {
@@ -17,7 +31,7 @@ class BaseRouter {
             const history = component.props.history;
             history.push(path);
         } else {
-            Util.appendError(`component為undefined,可能是為了拿url [${path}]`)
+            Util.appendError(`45665512 component為undefined,可能是為了拿url [${path}]`)
         }
     }
 
@@ -40,7 +54,7 @@ class BaseRouter {
 
     routeToHomePage(component) {
         this.routeTo(component, '/');
-        return libpath.join(Config.host,'/');
+        return libpath.join(Config.host, '/');
     }
 
     getPathOfDeEditorRoute = () => {
