@@ -32,7 +32,7 @@ class PersonalRhythmComponent extends BasePersonalRhythmComponent {
 
     onPersonalRhythmFavoritePuCardClicked(param) {
         const rhythm = param.object;
-        Router.gotoSheetDetailPage(this, rhythm.getIdOfGuitarPu());
+        Router.gotoSheetDetailPage(this.getComponentInstance(), rhythm.getIdOfGuitarPu());
     }
 
     getInjectStyleOfPersonalRhythmFavoritePuTitleTypography(favoritePu) {

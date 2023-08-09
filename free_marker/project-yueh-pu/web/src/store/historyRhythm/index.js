@@ -1,28 +1,6 @@
 import BaseHistoryRhythmStore from "./BaseHistoryRhythmStore";
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import {utiller as Util,} from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import {Application} from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {
-    makeAutoObservable,
-    makeObservable,
-    action,
-    observable,
-    comparer,
-    computed,
-    autorun,
-    runInAction,
-} from "mobx";
-import PersonalRhythm from "../personalRhythm";
-import BaseStore from "../../base/BaseStore";
 
 class HistoryRhythmStore extends BaseHistoryRhythmStore {
     /** -------------------- fields -------------------- **/
@@ -33,23 +11,36 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
         this.personalRhythm.enableManual();
     }
 
-    async fetch(view) {
-        const result = {
-            ...{},
-        };
-        await new InfinitePool(1).runByEachTask([
-            async () => {
-                result.puOfRecords = UserInfoRef.isLoginWithSucceed()
-                    ? await this.fetchPuOfRecords(view)
-                    : this.puOfRecords;
-            },
-        ]);
-        this.fromJson(result);
-        return result;
+    fetchNext = async (view) => {
+        if (this.getLengthOfPuOfRecord() > 0) {
+            const origins = await this.fetchPuOfRecords(view);
+            const items = this.getHackToFavItemsFromRecords(origins);
+            this.getPersonalRhythm().pushFavoritePus(...items)
+            this.pushPuOfRecords(...origins);
+            /** 為了讓fetchPuOfRecordNextPageItems可以抓到lastItem */
+        }
     }
 
-    async onInitialFetchCompleted(collection) {
-        this.personalRhythm.push
+    getHackToFavItemsFromRecords(itemsOfRecord = []) {
+        return itemsOfRecord.map(record => {
+            return {
+                ...record,
+                name: `[${record.singer}]${record.name}`,
+                needTitle: true,
+                title: Util.getCurrentTimeFormatYMDHM(this.normalizeTimestamp(record.updateTime))
+            }
+        });
+    }
+
+    fetch = async (view) => {
+        this.setState('loading');
+        const origins = await this.fetchPuOfRecords(view);
+        const items = this.getHackToFavItemsFromRecords(origins);
+        this.getPersonalRhythm().setFavoritePus(...items);
+        this.setPuOfRecords(...origins);
+        /** 為了讓fetchPuOfRecordNextPageItems可以抓到lastItem */
+
+        if (_.size(origins) === 0) this.setHasPageItems(false);
     }
 
     /** -------------------- async api -------------------- **/

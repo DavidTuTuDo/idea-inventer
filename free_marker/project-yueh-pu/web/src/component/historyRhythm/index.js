@@ -26,7 +26,10 @@ class HistoryRhythmComponent extends BaseHistoryRhythmComponent {
 
   constructor(props) {
     super(props);
+    this.registerScrollToBottomJob(this.getStore().fetchNext)
   }
+
+
 
 
   /** -------------------- async api -------------------- **/

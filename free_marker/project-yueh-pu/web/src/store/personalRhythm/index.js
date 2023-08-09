@@ -41,10 +41,13 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
     }
 
     async fetch(view) {
-        return this.controlOfManual ? {} : super.fetch(view);
+        return this.controlOfManual ? await Util.syncDelay(1500) : await super.fetch(view);
     }
 
     ruleOfPreviouslySort(items) {
+        if (this.controlOfManual)
+            return items;
+
         let latest = items.map(item => {
             return {
                 ...item,
@@ -57,6 +60,9 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
 
     @action
     invalidate() {
+        if (this.controlOfManual)
+            return;
+
         const itemsOfPu = this.getFavoritePus();
         for (const item of itemsOfPu) {
             item.setNeedTitle(true);

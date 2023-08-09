@@ -38,6 +38,10 @@ get{{{fieldClass}}}OfLast = () => {
 return _.last(this.get{{{functionName}}}());
 }
 
+getLengthOf{{{fieldClass}}} = () => {
+return _.size(this.get{{{functionName}}}());
+}
+
 @action
 clean{{{functionName}}}(){
 this.{{{fieldName}}}.length = 0;

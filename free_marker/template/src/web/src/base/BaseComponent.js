@@ -295,6 +295,7 @@ class BaseComponent extends MuiComponent {
             !this.canVerticalScrollable()
         ) {
             Util.appendInfo(`補花功能啟動`)
+            await Util.syncDelay(50);
             await this.jobExecutor()
         }
     }

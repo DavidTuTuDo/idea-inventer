@@ -4149,7 +4149,8 @@ class ComponentBuilder extends BaseBuilder {
                     result = collection;                 
                 })
                 .catch((error) => {
-                    self.getStore().setHasPageItems(false);   
+                    self.getStore().setHasPageItems(false);
+                    Util.appendError(error.message);
                 }).finally(() => {
                 Util.appendInfo('${componentNode.getName()} page initial fetch completed')
                 self.getStore().onInitialFetchCompleted(result)})`,
