@@ -482,7 +482,6 @@ class CodegenNode {
     injectListStyle;
     /** 如果array有list style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-
     injectListWrapStyle;
     /** 如果array有list wrap style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
@@ -1470,6 +1469,14 @@ class CodegenNode {
         return !!this.injectWrapStyle && this.injectWrapStyle;
     }
 
+    needInjectListStyle() {
+        return !!this.injectListStyle && this.injectListStyle;
+    }
+
+    needInjectListWrapStyle() {
+        return !!this.injectListWrapStyle && this.injectListWrapStyle;
+    }
+
     needInjectView() {
         return !!this.injectView && this.injectView;
     }
@@ -2037,8 +2044,9 @@ class CodegenNode {
         return undefined;
     }
 
-    getFunctionNameOfInjectStyle(isWrap = false) {
-        return Util.camel(`get${isWrap ? 'Wrap' : ''}InjectStyleOf`, this.getPreciseNameOfAttributeView());
+    /** 1:'' 2:'Wrap' 3:'List' 4:'ListWrap' */
+    getFunctionNameOfInjectStyle(type = '') {
+        return Util.camel(`get${type}InjectStyleOf`, this.getPreciseNameOfAttributeView());
     }
 
     getFunctionNameOfInjectView() {
@@ -4476,6 +4484,10 @@ class ComponentBuilder extends BaseBuilder {
             generator.appendImport(nameOfCustomView, `../${nameOfCustomView}`);
         }
 
+        function getStmtsOfInjectListStyle(node) {
+            return node.needInjectListStyle() ? `...self.${node.getFunctionNameOfInjectStyle('List')}(${node.getFieldName()}),` : '';
+        }
+
         /** type是array就必須的包上一成List,可以調整物件方向 */
         if (node.isArray()) {
             const clazzName = node.getClassNameOfLessUsage('list');
@@ -4483,8 +4495,15 @@ class ComponentBuilder extends BaseBuilder {
 
             const props = {
                 className: clazzName,
-                style: `###{...${JSON.stringify(node.getListStyle())},...Style.${clazzName}}`,
+                style: `###{${getStmtsOfInjectListStyle(node)}...${JSON.stringify(node.getListStyle())},...Style.${clazzName}}`,
                 ...node.getListProps(),
+            }
+
+            if (node.needInjectListStyle()) {
+                node.appendMethods({
+                    functionName: node.getFunctionNameOfInjectStyle('List'),
+                    param: [node.getFieldName()]
+                })
             }
 
             const itemViewProps = {};
@@ -4519,7 +4538,7 @@ class ComponentBuilder extends BaseBuilder {
                 tag: node.getListView(),
                 props,
                 typeOfClass: 'component',
-                contents: [`{${node.getFieldName()}.map((${node.getName()},index) => `,
+                contents: [`{${node.getFieldName()}.map((${node.getName()}, index) => `,
                     ...arrayItemViewStmts, `)}`, ...node.getListContents(), ...getStmtsOfRenderEmptyView(node), ...getStmtsOfSelectImageButton(node)]
             })
 
@@ -4543,9 +4562,21 @@ class ComponentBuilder extends BaseBuilder {
                 arrayStmts = [`self.shouldDisplayLoadingArea(${node.getFieldName()}) ?`, ...stmtOfSkeleton, ` : `, ...arrayStmts]
             }
 
+            function getStmtsOfInjectListWrapStyle(node) {
+                return node.needInjectListStyle() ? `...self.${node.getFunctionNameOfInjectStyle('ListWrap')}(${node.getFieldName()}),` : '';
+            }
+
             if (node.hasListWrap()) {
                 const clazzName = node.getClassNameOfLessUsage('listWrap');
                 this.storeClassName({node, type: 'listWrap'});
+
+                if (node.needInjectListWrapStyle()) {
+                    node.appendMethods({
+                        functionName: node.getFunctionNameOfInjectStyle('ListWrap'),
+                        param: [node.getFieldName()]
+                    })
+                }
+
                 return this.getJSXStrings(
                     {
                         generator,
@@ -4553,7 +4584,7 @@ class ComponentBuilder extends BaseBuilder {
                         typeOfClass: 'component',
                         props: {
                             className: clazzName,
-                            style: `###{...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
+                            style: `###{${getStmtsOfInjectListWrapStyle(node)}...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
                             ...node.getListWrapProps(),
                         },
                         contents: [...node.getListWrapContents(), ...arrayStmts]
@@ -6814,7 +6845,7 @@ class ProjectFileHandler extends PathBase {
             const params = [node.getObservableName(true)];
             _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
             if (node.needInjectStyle()) {
-                const injectFunctionName = node.getFunctionNameOfInjectStyle(false);
+                const injectFunctionName = node.getFunctionNameOfInjectStyle();
                 node.appendMethods({
                     functionName: injectFunctionName,
                     params,
@@ -6827,7 +6858,7 @@ class ProjectFileHandler extends PathBase {
             /** 這個做法有點危險, 如果裏面是指標, 那之前所有的內容都會被更改 */
             const clazzNameOfWrap = node.getClassNameOfLessUsage('wrap');
             if (node.needInjectWrapStyle()) {
-                const injectFunctionName = node.getFunctionNameOfInjectStyle(true);
+                const injectFunctionName = node.getFunctionNameOfInjectStyle('Wrap');
                 node.appendMethods({
                     functionName: injectFunctionName,
                     params,
