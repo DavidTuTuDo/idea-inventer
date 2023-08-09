@@ -29,8 +29,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 
 // const CURRENT_PROJECT = './project-yueh-voice';
-// const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -472,11 +472,19 @@ class CodegenNode {
     listWrapProps = {};
     /** 用在加上Array Container額外再包一層的props,<div ...props/> */
 
+
     injectStyle;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
     injectWrapStyle;
     /** 如果wrap有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
+
+    injectListStyle;
+    /** 如果array有list style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
+
+
+    injectListWrapStyle;
+    /** 如果array有list wrap style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
     injectProps;
     /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
@@ -6863,7 +6871,6 @@ class ProjectFileHandler extends PathBase {
                         node.appendChildrenWithJsons(raw)
                     }
                 }
-
             }
             this.enrichReferenceNode(node.getChildren());
         }

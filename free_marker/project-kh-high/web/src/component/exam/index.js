@@ -178,6 +178,11 @@ class ExamComponent extends BaseExamComponent {
 
     }
 
+    getInjectStyleOfExamQuestionSelectorOfMathFormControlLabel(selectorOfMath) {
+        return Util.getVisibleOrNone(this.getStore().isMathEditorEnable(), true);
+    }
+
+
     /** -------------------- async api -------------------- **/
 }
 

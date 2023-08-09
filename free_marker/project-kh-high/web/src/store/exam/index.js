@@ -36,6 +36,18 @@ class ExamStore extends BaseExamStore {
         this.freeze = frz;
     }
 
+    @action
+    enableOfMathEditor = false;
+
+    enableMathEditor() {
+        this.enableOfMathEditor = true;
+    }
+
+    @action
+    isMathEditorEnable() {
+        return this.enableOfMathEditor;
+    }
+
     constructor() {
         super();
         this.currentTimeStamp = Util.getCurrentTimeStamp();
