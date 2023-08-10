@@ -825,8 +825,12 @@ class CodegenNode {
         return this.storageFolder ?? 'public';
     }
 
-    getFunctionNameOfFetchCondition() {
+    getFunctionNameOfGetCondition() {
         return Util.camel('get', this.getName(), 'conditions');
+    }
+
+    getFunctionNameOfPushCondition() {
+        return Util.camel('push', this.getName(), 'conditions');
     }
 
     hasStorageFolder() {
@@ -3457,7 +3461,9 @@ class StoreBuilder extends BaseBuilder {
                     `this.${fieldName} = conditions`)
                 baseGenerator.appendFunction(child.getFunctionNameOfClearCondition(), [], [], [],
                     `this.${fieldName}.length = 0`)
-                baseGenerator.appendFunction(child.getFunctionNameOfFetchCondition(), [], [], [],
+                baseGenerator.appendFunction(child.getFunctionNameOfPushCondition(), ['condition'], [], [],
+                    `this.${fieldName}.push(condition)`)
+                baseGenerator.appendFunction(child.getFunctionNameOfGetCondition(), [], [], [],
                     `return this.${fieldName}`)
             }
         }
@@ -4431,9 +4437,9 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendOnChangedStmt() {
-            generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value'], [], [],
+            generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value', `${node.getPreciseAttributeParentName()}`], [], [],
                 `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not implemented')`)
-            return `self.${node.getFunctionNameOfOnSelectedChange()}(value)`
+            return `self.${node.getFunctionNameOfOnSelectedChange()}(value, ${node.getPreciseAttributeParentName()})`
         }
 
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
@@ -4669,7 +4675,6 @@ class ComponentBuilder extends BaseBuilder {
                 contents: [...origin]
             })
         }
-
         return origin;
     }
 

@@ -279,6 +279,7 @@ class BaseComponent extends MuiComponent {
             /**self 就是 component本身,因為client第一個參數都是view, 方便呼叫loading */
         } catch (error) {
             Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
+            self.getStore().setHasPageItems(false);
         } finally {
             self.jobExecutorLock = false
             await this.invalidateNextPageBehavior();

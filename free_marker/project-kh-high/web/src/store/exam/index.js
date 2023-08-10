@@ -36,18 +36,6 @@ class ExamStore extends BaseExamStore {
         this.freeze = frz;
     }
 
-    @action
-    enableOfMathEditor = false;
-
-    enableMathEditor() {
-        this.enableOfMathEditor = true;
-    }
-
-    @action
-    isMathEditorEnable() {
-        return this.enableOfMathEditor;
-    }
-
     constructor() {
         super();
         this.currentTimeStamp = Util.getCurrentTimeStamp();
@@ -107,7 +95,7 @@ class ExamStore extends BaseExamStore {
         if (!_.isEqual('all', subject))
             conditions.push({where: (stmt) => stmt.where('subject', '==', subject)})
 
-        if (!_.isEqual('all', replyType)){
+        if (!_.isEqual('all', replyType)) {
             conditions.push({where: (stmt) => stmt.where('isWrongReply', '==', _.isEqual(replyType, 'wrong'))})
         }
         switch (orderByWhat) {
@@ -132,7 +120,8 @@ class ExamStore extends BaseExamStore {
     }
 
     async fetch(view) {
-        const {range, subject, type, countsOfExam, qid} = this.getExamFilterTips();
+
+        let {range, subject, type, countsOfExam, qid} = this.getExamFilterTips();
         // console.log({range, subject, type, countsOfExam, qid})
         const questions = [];
 
@@ -153,14 +142,28 @@ class ExamStore extends BaseExamStore {
                 const mTimesAndYear = _.head(range).split('-');
                 const year = mTimesAndYear.shift();
                 const times = mTimesAndYear.pop();
+                let isMath = false;
+                let typeOfMath = [];
 
-                Util.appendInfo('year:' + year, 'times:' + times, 'complete:' + _.head(range));
-                this.setQuestionConditions([
+                if (Util.isOrEquals(subject, '數學A', '數學B')) {
+                    isMath = true;
+                    typeOfMath = _.isEqual(_.last(subject), 'A') ? [0, 1] : [0, 2];
+                    subject = '數學';
+                }
+
+                const conditionsOfHistory = [
                     {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
                     {where: (stmt) => stmt.where('year', '==', _.toNumber(year))},
                     {where: (stmt) => stmt.where('timesOfYear', '==', _.toNumber(times))},
                     {orderBy: (stmt) => stmt.orderBy("qid")}
-                ]);
+                ]
+
+                if (isMath) {
+                    conditionsOfHistory.push({where: (stmt) => stmt.where('typeOfMath', 'in', typeOfMath)})
+                }
+
+                Util.appendInfo('year:' + year, 'times:' + times, 'complete:' + _.head(range));
+                this.setQuestionConditions(conditionsOfHistory);
                 break;
             case 'random':
                 /** 隨機測驗 */
@@ -171,7 +174,7 @@ class ExamStore extends BaseExamStore {
                 break;
             case 'historyWrong':
                 this.getComponent().setScrollToBottomJobs(this.fetchExamsTestingRecords)
-                const qs = await this.fetchExamsTestingRecords(this.getComponent(),true);
+                const qs = await this.fetchExamsTestingRecords(this.getComponent(), true);
                 questions.push(...qs)
                 break;
             case 'freeze':
@@ -202,7 +205,7 @@ class ExamStore extends BaseExamStore {
         if (!this.isHistoryWrongPage() && UserInfo.isLoginWithSucceed()) {
             const record = new TestingRecordStore();
             try {
-                await record.submitTestingRecords(undefined,  [{
+                await record.submitTestingRecords(undefined, [{
                     id: question.getId(),
                     qid: question.getId(),
                     duration: Util.getDurationOfMillionSec(this.currentTimeStamp),

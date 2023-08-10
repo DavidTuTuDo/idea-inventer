@@ -175,11 +175,10 @@ class ExamComponent extends BaseExamComponent {
         const reply = choice.getStatement();
         const optional = choice.getParentNode();
         optional.setReply(reply);
-
     }
 
     getInjectStyleOfExamQuestionSelectorOfMathFormControlLabel(selectorOfMath) {
-        return Util.getVisibleOrNone(this.getStore().isMathEditorEnable(), true);
+        return Util.getVisibleOrNone(false);
     }
 
 

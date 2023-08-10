@@ -4,6 +4,136 @@
 @import "./libs/slideshow.less";
 @import "./libs/firebaseui.less";
 @import "./libs/base.less";
+/** following for editorOfSubject  component used  */
+
+.EditorOfSubjectDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  height: 70px;
+  gap: 20px;
+  background: #eeeeee;
+  postion: sticky;
+  top: 0px;
+  z-index: 100;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementYearTextFieldList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementYearMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementTotalOfSubjectQTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementTotalOfSubjectQDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementTotalOfSubjectQLabelOfTotalOfSubjectQTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementTotalOfClassifyQTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementTotalOfClassifyQDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementTotalOfClassifyQLabelOfTotalOfClassifyQTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EditorOfSubjectAreaOfStatementUpdateButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for examFilter  component used  */
 
 .ExamFilterDiv:extend(.CenterInParentColumn) {
@@ -814,6 +944,8 @@
   }
 }
 .ExamQuestionChoiceDivList {
+  display: flex;
+  flex-direction: column;
   @media @mobile {
     /** empty style */
   }
@@ -885,6 +1017,56 @@
     width: 55vw;
     max-width: 400px;
     margin: 3px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionSelectorOfMathRadioGroupList {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background: #eeeeee;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionSelectorOfMathFormControlLabel {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionSelectorOfMathLabelTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamQuestionSelectorOfMathValueRadio {
+  @media @mobile {
+    /** empty style */
   }
   @media @tablet {
     /** empty style */
@@ -2827,6 +3009,51 @@
     /** empty style */
   }
 }
+.ExamEditorQuestionSelectorOfMathRadioGroupList:extend(.ExamQuestionSelectorOfMathRadioGroupList) {
+  display: none;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionSelectorOfMathFormControlLabel:extend(.ExamQuestionSelectorOfMathFormControlLabel) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionSelectorOfMathLabelTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionSelectorOfMathValueTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .ExamEditorQuestionOptionalDiv:extend(.ExamQuestionOptionalDiv) {
   @media @mobile {
     /** empty style */
@@ -2971,6 +3198,17 @@
   }
 }
 .ExamEditorQuestionYearTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ExamEditorQuestionTypeOfMathTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -3302,5 +3540,110 @@
   }
   @media @desktop {
     /** empty style */
+  }
+}
+.EpayBehaviorOfConfirmLinePayDiv {
+  margin-top: 50px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayMethodOfPaymentPaper {
+  padding: 20px;
+  min-width: 350px;
+  min-height: 400px;
+  @media @mobile {
+    min-height: 500px;
+    padding: 12px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayMethodOfPaymentTitleTypography:extend(.CenterInParentRow) {
+  font-size: 1.1rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayMethodOfPaymentOptionCard:extend(.CenterInParentColumn) {
+  width: 200px;
+  height: 200px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 250px;
+    height: 250px;
+  }
+}
+.EpayMethodOfPaymentOptionDivList:extend(.CenterInParentColumn) {
+  margin-top: 30px;
+  gap: 20px;
+  @media @mobile {
+    gap: 30px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayMethodOfPaymentOptionNameTypography {
+  background: #eeeeee;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayMethodOfPaymentOptionImageImg {
+  object-fit: cover;
+  border-radius: 5px;
+  margin-top: 2px;
+  width: 70%;
+  height: 70%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EpayMethodOfPaymentOptionDescriptionTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 0.9rem;
   }
 }

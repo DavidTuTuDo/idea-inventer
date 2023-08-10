@@ -22,6 +22,12 @@ class ExamEditorComponent extends BaseExamEditorComponent {
         super(props);
     }
 
+    getListInjectStyleOfExamEditorQuestionChoiceDiv(param) {
+    }
+
+    getListInjectStyleOfExamEditorQuestionOptionalDiv(param) {
+    }
+
     getInjectStyleOfExamEditorHistoryFilterDiv(examEditor) {
         return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
     }

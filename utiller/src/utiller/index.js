@@ -1647,6 +1647,7 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+           console.log(_.last('數學A'));
             // const utiller = new Utiller();
             // console.log(utiller.getTailStringSplitBy('325/2/32/1','/'))
             // const obj = {time :undefined,name: 'david'};

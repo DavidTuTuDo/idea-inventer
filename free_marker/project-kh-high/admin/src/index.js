@@ -166,7 +166,15 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
 
         await api.submitPurchasePlans(
-            {id: 1001, pid: 1001, name: '1個月', price: 60, priceTip: '平均一個月60元', fullName: '明悅科技-1個月', duration: '31d'},
+            {
+                id: 1001,
+                pid: 1001,
+                name: '1個月',
+                price: 60,
+                priceTip: '平均一個月60元',
+                fullName: '明悅科技-1個月',
+                duration: '31d'
+            },
             {
                 id: 1002,
                 pid: 1002,
@@ -242,8 +250,8 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         }
     }
 
-    async function batchDoing(){
-        const ids =[
+    async function batchDoing() {
+        const ids = [
             "yVF1wzFDJTVhpPVmq4I4",
             "LuhrfegQ23bPvGeJqUhK",
             "Pa3ZFORBmelHeTPiBtkx",
@@ -282,11 +290,11 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             "GIAJHDBFE"
         ]
 
-        const combines = _.zip(ids,answsers);
+        const combines = _.zip(ids, answsers);
         // console.log(combines)
 
 
-        for(const each of combines) {
+        for (const each of combines) {
             const item = await api.fetchQuestionItem(each.shift());
             const answerString = each.pop();
             delete item._doc;
@@ -296,7 +304,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             const as = answerString.split('')
             const waitForSubmits = [];
             let index = 32;
-            for(const a of as) {
+            for (const a of as) {
                 const deepClone = _.cloneDeep(item);
                 deepClone.qid = index;
                 deepClone.topic.name = `請依照題目作答 ${index}`;
@@ -340,6 +348,21 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             }
         }))
     }
+
+    async function updateQuestionOfMathType() {
+        const questions = await api.fetchQuestions(
+            {where: (stmt) => stmt.where('subject', '==', '社會')},
+        )
+
+        await api.updateQuestions(questions.map((question) => {
+            return {
+                id: question.id,
+                typeOfMath: -1
+            }
+        }))
+    }
+
+    await updateQuestionOfMathType();
 
 
     // await batchDoing();

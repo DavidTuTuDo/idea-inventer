@@ -9,9 +9,9 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for exam editor component  */
+
+  ExamEditorQuestionTypeOfMathTextField = {};
 
   ExamEditorQuestionYearTextField = {};
 
@@ -40,6 +40,14 @@ class AppStyle {
   ExamEditorQuestionOptionalDivList = {};
 
   ExamEditorQuestionOptionalDiv = {};
+
+  ExamEditorQuestionSelectorOfMathValueTextField = {};
+
+  ExamEditorQuestionSelectorOfMathLabelTextField = {};
+
+  ExamEditorQuestionSelectorOfMathFormControlLabel = {};
+
+  ExamEditorQuestionSelectorOfMathRadioGroupList = {};
 
   ExamEditorQuestionChoiceImageUrlTextField = {};
 
@@ -385,6 +393,14 @@ class AppStyle {
 
   ExamQuestionOptionalDiv = {};
 
+  ExamQuestionSelectorOfMathValueRadio = {};
+
+  ExamQuestionSelectorOfMathLabelTypography = {};
+
+  ExamQuestionSelectorOfMathFormControlLabel = {};
+
+  ExamQuestionSelectorOfMathRadioGroupList = {};
+
   ExamQuestionChoiceImageUrlImg = {};
 
   ExamQuestionChoiceImageDivList = {};
@@ -530,6 +546,30 @@ class AppStyle {
   ExamFilterRandomTestDiv = {};
 
   ExamFilterDiv = {};
+
+  /** => following for editorOfSubject  component  */
+
+  EditorOfSubjectAreaOfStatementUpdateButton = {};
+
+  EditorOfSubjectAreaOfStatementTotalOfClassifyQLabelOfTotalOfClassifyQTypography = {};
+
+  EditorOfSubjectAreaOfStatementTotalOfClassifyQDivWrap = {};
+
+  EditorOfSubjectAreaOfStatementTotalOfClassifyQTypography = {};
+
+  EditorOfSubjectAreaOfStatementTotalOfSubjectQLabelOfTotalOfSubjectQTypography = {};
+
+  EditorOfSubjectAreaOfStatementTotalOfSubjectQDivWrap = {};
+
+  EditorOfSubjectAreaOfStatementTotalOfSubjectQTypography = {};
+
+  EditorOfSubjectAreaOfStatementYearMenuItem = {};
+
+  EditorOfSubjectAreaOfStatementYearTextFieldList = {};
+
+  EditorOfSubjectAreaOfStatementDiv = {};
+
+  EditorOfSubjectDiv = {};
 
   /** -------------------- functions -------------------- **/
 
