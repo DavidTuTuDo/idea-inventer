@@ -245,7 +245,13 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)});
             console.log(`submit id/map year=> ${year}年`, questions.length);
             await api.submitSubjectIds(questions.map(q => {
-                return {quid: q.id, year: q.year, subject: q.subject, timesOfYear: q.timesOfYear}
+                return {
+                    quid: q.id,
+                    year: q.year,
+                    subject: q.subject,
+                    timesOfYear: q.timesOfYear,
+                    typeOfMath: q.typeOfMath
+                }
             }));
         }
     }
@@ -362,7 +368,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
         }))
     }
 
-    await updateQuestionOfMathType();
+    // await updateQuestionOfMathType();
 
 
     // await batchDoing();
@@ -371,7 +377,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     // await deployQuestions({dbpath:'gsat-112.db',year: 112});
 
 
-    // await submitSubjectMap()
+    await submitSubjectMap()
     // await testBatchFunctions();
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
@@ -418,7 +424,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 //
 // =================================
 //
-// packages: [
+// packages: [s
 //     {
 //         id: 'Item20191015001',
 //         amount: 100,

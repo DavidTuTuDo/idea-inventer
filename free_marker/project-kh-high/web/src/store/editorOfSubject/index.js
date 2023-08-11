@@ -106,7 +106,6 @@ class EditorOfSubjectStore extends BaseEditorOfSubjectStore {
                     return -1;
             }
         }
-
         return await this.apiOfQuestion.updateQuestionItem(this.getComponent(), {typeOfMath: getIntegerOfValue(value)}, question.getId());
     }
 

@@ -126,14 +126,30 @@ class ExamStore extends BaseExamStore {
         const questions = [];
 
         // console.log(range);
+        let isMath = false;
+        let typeOfMath = [];
+        if (Util.isOrEquals(subject, '數學A', '數學B')) {
+            isMath = true;
+            typeOfMath = _.isEqual(_.last(subject), 'A') ? [0, 1] : [0, 2];
+            subject = '數學';
+        }
+
         function getRandomCondition() {
             const conditions = [];
             if (!_.isEqual('綜合題目', subject)) {
                 conditions.push({where: (stmt) => stmt.where('subject', '==', _.trim(subject))});
             }
+
             conditions.push({where: (stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))});
             conditions.push({where: (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))});
+            handleConditionsBySubjectName(conditions);
             return conditions;
+        }
+
+        function handleConditionsBySubjectName(condition) {
+            if (isMath) {
+                condition.push({where: (stmt) => stmt.where('typeOfMath', 'in', typeOfMath)})
+            }
         }
 
         switch (type) {
@@ -142,14 +158,6 @@ class ExamStore extends BaseExamStore {
                 const mTimesAndYear = _.head(range).split('-');
                 const year = mTimesAndYear.shift();
                 const times = mTimesAndYear.pop();
-                let isMath = false;
-                let typeOfMath = [];
-
-                if (Util.isOrEquals(subject, '數學A', '數學B')) {
-                    isMath = true;
-                    typeOfMath = _.isEqual(_.last(subject), 'A') ? [0, 1] : [0, 2];
-                    subject = '數學';
-                }
 
                 const conditionsOfHistory = [
                     {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
@@ -158,10 +166,7 @@ class ExamStore extends BaseExamStore {
                     {orderBy: (stmt) => stmt.orderBy("qid")}
                 ]
 
-                if (isMath) {
-                    conditionsOfHistory.push({where: (stmt) => stmt.where('typeOfMath', 'in', typeOfMath)})
-                }
-
+                handleConditionsBySubjectName(conditionsOfHistory)
                 Util.appendInfo('year:' + year, 'times:' + times, 'complete:' + _.head(range));
                 this.setQuestionConditions(conditionsOfHistory);
                 break;
