@@ -149,6 +149,7 @@ class BaseComponent extends MuiComponent {
         this.cleanDisposableDialogComponent();
         this.viewInitial();
         if (this.isNotNavigatorNComponentView()) {
+            window.removeEventListener('scroll', this.onScrollToBottomListener, true)
             window.addEventListener('scroll', this.onScrollToBottomListener, true);
         }
     }
@@ -267,7 +268,7 @@ class BaseComponent extends MuiComponent {
     jobExecutor = async () => {
         const self = this;
         if (self.jobExecutorLock) {
-            Util.appendError(`self.jobExecutorLock是true,不能跑進來才對...`);
+            Util.appendError(`894165 self.jobExecutorLock是true,不能跑進來才對...`);
             return;
         }
 

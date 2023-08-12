@@ -25,16 +25,13 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
-
+import Question from "../../store/examQuestion";
 @inject("editorOfSubject")
 @observer
 class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
-    constructor(props) {
-        super(props);
-    }
 
     getListInjectStyleOfExamQuestionChoiceDiv(param) {
         return Util.getVisibleOrNone(false);
@@ -51,14 +48,23 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     onSelectorOfMathSelectedChange(value, question) {
         const self = this;
         this.getStore().updateMathABOfQuestion(value, question).then((result) => {
-            self.showInfoSnackMessage(`${question.getYear()}${question.getSubject()}-第${question.getQid()}題 已更新`);
+            self.showInfoSnackMessage(`${question.getYear()}${question.getSubject()}-第${question.getQid()}題 更新為「${self.getLabelByValue(value)}」`);
+            console.log(self.getLabelByValue(value));
         })
+    }
+
+    getLabelByValue(value){
+        const question = new Question();
+        const types = question.getSelectorOfMaths().map((each) => each.data())
+        const item = _.find(types,type => _.isEqual(type.value,value));
+        return item ? item.label: 'error';
     }
 
     onYearSelectedChange(value) {
         this.getStore().setHasPageItems(true);
         this.getStore().cleanQuestions();
-        this.getStore().fetch(this.getComponentInstance());
+        this.getStore().setInitialFetchCompleted(false);
+        this.componentDidMount();
     }
 
     getInjectStyleOfExamQuestionFunctionCenterDiv(question) {
@@ -77,7 +83,7 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
         super.getInjectStyleOfExamQuestionSelectorOfMathFormControlLabel(selectorOfMath);
     }
 
-    onEditorOfSubjectAreaOfStatementUpdateButtonClicked(param){
+    onEditorOfSubjectAreaOfStatementUpdateButtonClicked(param) {
         this.getStore().updateStatementOfMathTypeStuff().then()
     }
 

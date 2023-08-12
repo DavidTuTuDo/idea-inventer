@@ -206,6 +206,13 @@ class BaseStore extends ClientRemoteApi {
         this.updateTime = time;
     }
 
+    normalizeTimestamp(obj) {
+        if (obj instanceof this.FirebaseTimestampClass())
+            return obj.toMillis();
+        else
+            return obj;
+    }
+
     getUpdateTime() {
         return this.normalizeTimestamp(this.updateTime);
     }
@@ -230,15 +237,18 @@ class BaseStore extends ClientRemoteApi {
 
 
     async onInitialFetchCompleted(collection) {
-        this.setInitialFetchCompleted();
+        if (this.isInitialFetchCompleted())
+            return await Util.syncDelay(1);
+
+        this.setInitialFetchCompleted(true);
         if (this.getComponent() !== undefined) {
             await this.getComponent().invalidateNextPageBehavior();
         }
     }
 
     @action
-    setInitialFetchCompleted() {
-        this.initialFetchCompleted = true;
+    setInitialFetchCompleted(finished) {
+        this.initialFetchCompleted = finished;
     }
 
     isInitialFetchCompleted() {
