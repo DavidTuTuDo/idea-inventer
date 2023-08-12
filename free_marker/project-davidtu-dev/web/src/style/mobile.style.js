@@ -19,6 +19,20 @@ class MobileStyle {
 
   MainEditorTestDiv = {};
 
+  MainEditorBannerImageTextField = {};
+
+  MainEditorBannerImageDivWrap = {};
+
+  MainEditorBannerImageImg = {};
+
+  MainEditorBannerRouteTextField = {};
+
+  MainEditorBannerSwiperSlide = {};
+
+  MainEditorBannerSwiperList = {};
+
+  MainEditorBannerSwiperSlide = {};
+
   MainEditorDiv = {};
 
   /** => following for navigator  component  */
@@ -300,6 +314,16 @@ class MobileStyle {
   MainTestTitleTypography = {};
 
   MainTestDiv = {};
+
+  MainBannerImageDivWrap = {};
+
+  MainBannerImageImg = {};
+
+  MainBannerSwiperSlide = {};
+
+  MainBannerSwiperList = {};
+
+  MainBannerSwiperSlide = {};
 
   MainDiv = {};
 

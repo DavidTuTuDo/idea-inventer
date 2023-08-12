@@ -51,6 +51,7 @@ import AccountFuncAreaOfName from "./accountFuncAreaOfName";
 import Account from "./account";
 import EpayTest from "./epayTest";
 import MainTest from "./mainTest";
+import MainBanner from "./mainBanner";
 import Main from "./main";
 
 class Store extends BaseStore {

@@ -113,6 +113,11 @@ const VIEW_IMPORTS =
             views: ['Fade', 'Slide'],
             /** Fade就是有漸入漸出的效果,  Slide就可以滑動 */
             object: true,/** 就是要加上bracket {Fade} */
+        },
+        {
+            from: `swiper/react`,
+            views: ['Swiper', "SwiperSlide"],
+            object: true,
         }
     ]
 
@@ -587,6 +592,21 @@ class CodegenNode {
 
     customizes = [];
 
+    /**
+     * 設計那種children不能被observeble包住的狀況，他就必須待在array裏面(ex Swiper )
+     * (O)<Swiper
+     *        items.map(item =>
+     *              <SwiperSlide
+     *                  ...children
+     *
+     *  (X) <Swiper
+     *        <MainBannerImageDivWrapView />
+     *
+     *   <MainBannerImageDivWrapView />
+     *      <SwiperSlide />
+     * */
+    disableObservable = false;
+
     /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
 
     constructor(node) {
@@ -932,7 +952,7 @@ class CodegenNode {
     }
 
     isContainer() {
-        return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper'
+        return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide'
             , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment');
     }
 
@@ -1441,6 +1461,13 @@ class CodegenNode {
             }
         }
 
+        if (!this.isArrayItem() && this.disableObservable) {
+            for (const child of this.getPreciseViewChildren()) {
+                const view = child.getViewClassNameOfRenderView();
+                stmts.push(`const ${view} = self.${view}`)
+            }
+        }
+
         if (this.hasAlertMenu()) {
             stmts.push(`const implementsOfAlertItemClicked = [${this.implementsOfAlertItemClicked.join(',')}]`)
         }
@@ -1578,6 +1605,10 @@ class CodegenNode {
 
     isTabListView(type = 'default', node = this) {
         return node.isAttributeView('Tabs', type) || node.isAttributeView('TabList', type);
+    }
+
+    isSimperSwiper(type = 'default') {
+        return this.isArray() && this.isAttributeView('SimpleSwiper');
     }
 
     isSimpleViewPager(type = 'default') {
@@ -4372,7 +4403,7 @@ class ComponentBuilder extends BaseBuilder {
         this.classNames.push(info);
     }
 
-    getJSXStringsByNode = (generator, node) => {
+    getJSXStringsByNode = (generator, node, propsOfExtra) => {
         /**
          contentStmts 是指 ===>  <View > {contentStmts} <View>
          如果子節點是object或是array, 就產生出{this.getObjectOrArrayView(param)}
@@ -4392,7 +4423,7 @@ class ComponentBuilder extends BaseBuilder {
                 props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
 
-            let viewJsxStmt;
+            let viewJsxStmt = [];
 
             if (node.isReferenceStructNode()) {
                 props.component = '###this';
@@ -4422,7 +4453,7 @@ class ComponentBuilder extends BaseBuilder {
                     customViewNode: node,
                     tag: className,
                     typeOfClass: 'component',
-                    props,
+                    props: {...props, ...propsOfExtra},
                 })
             } else {
                 viewJsxStmt = self.getJSXStrings({
@@ -4430,7 +4461,7 @@ class ComponentBuilder extends BaseBuilder {
                     customViewNode: node,
                     tag: node.getViewClassNameOfRenderView(),
                     typeOfClass: 'component',
-                    props,
+                    props: {...props, ...propsOfExtra},
                 })
             }
             return viewJsxStmt;
@@ -4516,13 +4547,14 @@ class ComponentBuilder extends BaseBuilder {
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
             const arrayItemNode = node.getArrayItemNode();
-            let arrayItemViewStmts = this.getJSXStrings({
+            let arrayItemViewStmts = node.disableObservable ? self.getJSXStringsByNode(generator, arrayItemNode, itemViewProps) : this.getJSXStrings({
                 generator,
                 customViewNode: arrayItemNode,
                 typeOfClass: 'component',
                 tag: `${arrayItemNode.getViewClassNameOfRenderView()}`,
                 props: itemViewProps,
             })
+
 
             if (node.isSimpleSelected()) {
                 props['onChange'] = `###(event)=>{
@@ -6259,6 +6291,35 @@ class ProjectFileHandler extends PathBase {
                     incest: {view: false, attribute: true},
                     defaultValue: node.labelView.defaultValue,
                 });
+            }
+
+            if (node.isSimperSwiper()) {
+                node.setView('SwiperSlide');
+                node.setClick(true);
+                node.setListView('Swiper');
+                node.disableListEmptyTip();
+                node.appendListProps(
+                    {navigation: true},
+                    {pagination: {clickable: true}},
+                    {scrollbar: {draggable: true}},
+                )
+
+                node.appendChildrenWithJsons({
+                        column: true,
+                        name: 'route',
+                        type: 'string',
+                        description: '點擊圖片後的導頁',
+                    },
+                    {
+                        column: true,
+                        name: 'image',
+                        view: 'img',
+                        needWatermark: true,
+                        description: '顯示的頁面',
+                        wrapView: 'div',
+                        type: 'string',
+                    }
+                );
             }
 
             if (node.isSimpleViewPager()) {

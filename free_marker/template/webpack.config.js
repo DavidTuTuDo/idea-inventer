@@ -13,10 +13,9 @@ const self = {
                 use: ['babel-loader'],
             },
             {
-                test: /\.css$/,
-                exclude: /node_modules/,
-                use: ['style-loader', 'css-loader']
-            },
+                test: /\.(sass|less|css)$/,
+                use: ['style-loader', 'css-loader', 'less-loader']
+            }
         ]
     },
     resolve: {
