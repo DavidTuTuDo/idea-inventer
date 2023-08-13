@@ -4708,7 +4708,7 @@ class ComponentBuilder extends BaseBuilder {
         let origin = this.getJSXStrings({
             tag: node.getView(true),
             generator,
-            props,
+            props:{...props,...propsOfExtra},
             simpleProps,
             typeOfClass: 'component',
             contents: [...contentStmts, ...node.getContents()],
@@ -4727,7 +4727,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
                 generator,
-                props: propOfWrap,
+                props: {...propOfWrap, ...propsOfExtra},
                 typeOfClass: 'component',
                 contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
             })
@@ -4737,7 +4737,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: 'ScrollingHideWrap',
                 typeOfClass: 'component',
-                props,
+                props:{...props,...propsOfExtra},
                 simpleProps: ['...self.props'],
                 contents: [...origin]
             })
@@ -6336,7 +6336,6 @@ class ProjectFileHandler extends PathBase {
                 const functionNameOfSwipe = node.getFunctionNameOfSwiper();
                 const functionNameOfSlide = node.getFunctionNameOfSwipeSlide();
                 node.setView('SwiperSlide');
-                node.setClick(true);
                 node.appendImportStmt({part: '', from: 'swiper/css'});
                 node.appendImportStmt({part: '', from: 'swiper/css/pagination'});
                 node.appendImportStmt({part: '{Pagination, Autoplay}', from: 'swiper/modules'});

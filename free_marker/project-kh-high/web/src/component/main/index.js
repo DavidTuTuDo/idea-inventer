@@ -32,7 +32,7 @@ class MainComponent extends BaseMainComponent {
         super.componentDidMount();
     }
 
-    onMainViewPagerDivClicked(param) {
+    onMainViewPagerImageImgClicked(param) {
         this.gotoUrlWithNewTab(param.object.route)
     }
 
