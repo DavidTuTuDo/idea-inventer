@@ -9,6 +9,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for exam editor component  */
 
   ExamEditorQuestionTypeOfMathTextField = {};
@@ -176,6 +178,10 @@ class AppStyle {
   MainEditorViewPagerRouteTextField = {};
 
   MainEditorViewPagerIdTextField = {};
+
+  MainEditorViewPagerDivWrap = {};
+
+  MainEditorViewPagerDiv = {};
 
   MainEditorViewPagerDivList = {};
 
@@ -493,11 +499,13 @@ class AppStyle {
 
   MainViewPagerImageImg = {};
 
-  MainViewPagerDivSkeleton = {};
+  MainViewPagerSwiperSlideSkeleton = {};
 
-  MainViewPagerSlideList = {};
+  MainViewPagerSwiperSlide = {};
 
-  MainViewPagerDiv = {};
+  MainViewPagerSwiperList = {};
+
+  MainViewPagerSwiperSlide = {};
 
   MainDiv = {};
 

@@ -29,9 +29,9 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 
 // const CURRENT_PROJECT = './project-yueh-voice';
-// const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -6340,7 +6340,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendImportStmt({part: '', from: 'swiper/css'});
                 node.appendImportStmt({part: '', from: 'swiper/css/pagination'});
                 node.appendImportStmt({part: '{Pagination, Autoplay}', from: 'swiper/modules'});
-
+                node.disableObservable = true;
                 node.appendListProps({
                     onSwiper: `###(swiper) => {self.${functionNameOfSwipe}(swiper)}`
                 });
@@ -7191,11 +7191,11 @@ class ProjectFileHandler extends PathBase {
             if (node.isColumnArray() || node.isPathArray()) {
                 node.disableSelectedArray();
 
-                if (Util.isOrEquals(node.getListView(), 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
+                if (Util.isOrEquals(node.getListView(), 'Swiper','TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
                     node.setListView('div');
                 }
 
-                if (Util.isOrEquals(node.getView(), 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
+                if (Util.isOrEquals(node.getView(), 'SwiperSlide','MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
                     node.setView('div');
                 }
 

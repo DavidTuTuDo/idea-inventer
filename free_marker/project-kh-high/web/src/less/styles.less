@@ -27,7 +27,6 @@
   top: 0px;
   z-index: 100;
   @media @mobile {
-    /** empty style */
     gap: 8px;
   }
   @media @tablet {
@@ -61,7 +60,6 @@
 }
 .EditorOfSubjectAreaOfStatementTotalOfSubjectQTypography {
   @media @mobile {
-    /** empty style */
     font-size: 0.9rem;
   }
   @media @tablet {
@@ -84,7 +82,6 @@
 }
 .EditorOfSubjectAreaOfStatementTotalOfSubjectQLabelOfTotalOfSubjectQTypography {
   @media @mobile {
-    /** empty style */
     font-size: 0.9rem;
   }
   @media @tablet {
@@ -96,7 +93,6 @@
 }
 .EditorOfSubjectAreaOfStatementTotalOfClassifyQTypography {
   @media @mobile {
-    /** empty style */
     font-size: 0.9rem;
   }
   @media @tablet {
@@ -119,7 +115,6 @@
 }
 .EditorOfSubjectAreaOfStatementTotalOfClassifyQLabelOfTotalOfClassifyQTypography {
   @media @mobile {
-    /** empty style */
     font-size: 0.9rem;
   }
   @media @tablet {
@@ -418,7 +413,7 @@
     /** empty style */
   }
 }
-.MainViewPagerDiv {
+.MainViewPagerSwiperSlide {
   @media @mobile {
     /** empty style */
   }
@@ -429,7 +424,8 @@
     /** empty style */
   }
 }
-.MainViewPagerSlideList:extend(.SliderOfViewPager) {
+.MainViewPagerSwiperList:extend(.SliderOfViewPager) {
+  background: #7f7f7f;
   @media @mobile {
     /** empty style */
   }
@@ -440,7 +436,18 @@
     /** empty style */
   }
 }
-.MainViewPagerDivSkeleton {
+.MainViewPagerSwiperSlide {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainViewPagerSwiperSlideSkeleton {
   width: 100vw;
   height: 20vh;
   @media @mobile {
@@ -498,7 +505,7 @@
   }
 }
 .MainEnterPointGridList {
-  margin-top: 40px;
+  margin-top: 10px;
   padding: 5px;
   @media @mobile {
     /** empty style */
@@ -1051,7 +1058,6 @@
 .ExamQuestionSelectorOfMathFormControlLabel {
   @media @mobile {
     /** empty style */
-
   }
   @media @tablet {
     /** empty style */
@@ -2321,6 +2327,28 @@
     /** empty style */
   }
 }
+.MainEditorViewPagerDiv:extend(.MainViewPagerDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorViewPagerDivWrap:extend(.MainViewPagerDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .MainEditorViewPagerIdTextField:extend(.BaseEditorTextField) {
   @media @mobile {
     /** empty style */
@@ -2377,6 +2405,10 @@
   }
 }
 .MainEditorEnterPointPaper:extend(.MainEnterPointPaper) {
+  min-height: 150px;
+  width: 100%;
+  flex-direction: row;
+
   @media @mobile {
     /** empty style */
   }
@@ -3226,431 +3258,4 @@
     /** empty style */
   }
 }
-/** ======== following for homeless ========= */
 
-.EpayTestDiv:extend(.CenterInParentColumn) {
-  gap: 25px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryDiv:extend(.CenterInParentColumn) {
-  min-width: 400px;
-  padding-bottom: 50px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderCard {
-  padding: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    min-width: 500px;
-  }
-}
-.EpayPurchaseOfHistoryOrderDivList:extend(.CenterInParentColumn) {
-  gap: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfTopDiv:extend(.CenterInParentRow) {
-  justify-content: space-between;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadDiv:extend(.CenterInParentRow) {
-  gap: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailDiv:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderBriefDiv:extend(.CenterInParentRow) {
-  justify-content: flex-start;
-  gap: 5px;
-  border-bottom: 1px solid #bbb;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderBriefImageOfProductPhotoImg {
-  flex-grow: 2;
-  width: 40px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionDiv:extend(.CenterInParentColumn) {
-  align-items: flex-end;
-  flex-grow: 5;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionNameOfProductDivWrap {
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfTotalPriceDiv:extend(.CenterInParentRow) {
-  justify-content: flex-end;
-  min-height: 50px;
-  border-bottom: 1px solid #bbb;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv:extend(.CenterInParentRow) {
-  min-height: 50px;
-  border-bottom: 1px solid #bbb;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv:extend(.CenterInParentRow) {
-  justify-content: flex-end;
-  flex-grow: 1;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfInputMessageDiv:extend(.CenterInParentColumn) {
-  align-items: flex-start;
-  gap: 3px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap:extend(.CenterInParentRow) {
-  justify-content: space-between;
-  align-items: flex-end;
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv:extend(.CenterInParentColumn) {
-  width: 100%;
-  padding: 3px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDivWrap:extend(.CenterInParentColumn) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeDiv:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
-  gap: 5px;
-  align-items: center;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfFuncDiv {
-  padding: 8px;
-  border-top: 1px solid #bbb;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonDivWrap:extend(.EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayBehaviorOfConfirmLinePayDiv {
-  margin-top: 50px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayMethodOfPaymentPaper {
-  padding: 20px;
-  min-width: 350px;
-  min-height: 400px;
-  @media @mobile {
-    min-height: 500px;
-    padding: 12px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayMethodOfPaymentTitleTypography:extend(.CenterInParentRow) {
-  font-size: 1.1rem;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayMethodOfPaymentOptionCard:extend(.CenterInParentColumn) {
-  width: 200px;
-  height: 200px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 250px;
-    height: 250px;
-  }
-}
-.EpayMethodOfPaymentOptionDivList:extend(.CenterInParentColumn) {
-  margin-top: 30px;
-  gap: 20px;
-  @media @mobile {
-    gap: 30px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayMethodOfPaymentOptionNameTypography {
-  background: #eeeeee;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayMethodOfPaymentOptionImageImg {
-  object-fit: cover;
-  border-radius: 5px;
-  margin-top: 2px;
-  width: 70%;
-  height: 70%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EpayMethodOfPaymentOptionDescriptionTypography {
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    font-size: 0.9rem;
-  }
-}
