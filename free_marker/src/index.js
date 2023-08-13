@@ -123,6 +123,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 用來作為swipe autoloop的欄位*/
+    autoplay = {
+        delay: 0,
+        disableOnInteraction: false,
+    };
+
     implementsOfAlertItemClicked = [];
     /** alertMenu的 items,在點擊後的事件實作 */
 
@@ -216,6 +222,13 @@ class CodegenNode {
      *
      * 如果要建立override的method,就在這裡加上
      * */
+
+    /** 用套件會需要相對應的import
+     * {part:'',from:'swiper/css/pagination'}
+     * {part:'',from:'swiper'}
+     *
+     * */
+    stmtsOfImport = [];
 
     testButton = false;
     /** 就是在collection view 加一個測試按鈕*/
@@ -956,6 +969,16 @@ class CodegenNode {
             , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment');
     }
 
+    getFunctionNameOfSwiper() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe');
+    }
+
+
+
+    getFunctionNameOfSwipeSlide() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Slide');
+    }
+
     getFunctionNameOfObservableObject() {
         return Util.camel('get', 'observable', this.getObservableName());
     }
@@ -1132,7 +1155,7 @@ class CodegenNode {
     static doNotEnrichAttribute() {
         return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload','autoplay']
     }
 
     setListContents(contents) {
@@ -1174,6 +1197,14 @@ class CodegenNode {
     appendMethods(...methods) {
         this.getNodeOfComponent().methods.push(...methods);
         this.methods.push(...methods);
+    }
+
+    appendImportStmt(...stmt) {
+        this.stmtsOfImport.push(...stmt);
+    }
+
+    getStmtsOfImport() {
+        return this.stmtsOfImport;
     }
 
     hasPermission() {
@@ -1609,6 +1640,10 @@ class CodegenNode {
 
     isSimperSwiper(type = 'default') {
         return this.isArray() && this.isAttributeView('SimpleSwiper');
+    }
+
+    hasAutoPlayＭechanism() {
+        return this.autoplay && this.autoplay.delay > 0
     }
 
     isSimpleViewPager(type = 'default') {
@@ -4941,6 +4976,10 @@ class ComponentBuilder extends BaseBuilder {
                 )
             }
 
+            for (const _import of child.getStmtsOfImport()) {
+                generator.appendImport(_import.part, _import.from);
+            }
+
             if (child.isArray()) {
                 if (child.hasPaginate()) {
                     generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
@@ -6294,11 +6333,39 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isSimperSwiper()) {
+                const functionNameOfSwipe = node.getFunctionNameOfSwiper();
+                const functionNameOfSlide = node.getFunctionNameOfSwipeSlide();
                 node.setView('SwiperSlide');
                 node.setClick(true);
+                node.appendImportStmt({part: '', from: 'swiper/css'});
+                node.appendImportStmt({part: '', from: 'swiper/css/pagination'});
+                node.appendImportStmt({part: '{Pagination, Autoplay}', from: 'swiper/modules'});
+
+                node.appendListProps({
+                    onSwiper: `###(swiper) => {self.${functionNameOfSwipe}(swiper)}`
+                });
+                node.appendListProps({
+                    onSlideChange: `###() => {self.${functionNameOfSlide}()}`
+                })
+
+                if(node.hasAutoPlayＭechanism()){
+                    node.appendListProps({autoplay:node.autoplay})
+                }
+
+                node.appendMethods({
+                        functionName: functionNameOfSwipe,
+                        params: ['swiper']
+                    },
+                    {
+                        functionName: functionNameOfSlide,
+                        params: [],
+                    }
+                )
+
                 node.setListView('Swiper');
                 node.disableListEmptyTip();
                 node.appendListProps(
+                    {modules: `###[Pagination, Autoplay]`},
                     {navigation: true},
                     {pagination: {clickable: true}},
                     {scrollbar: {draggable: true}},
@@ -6317,6 +6384,7 @@ class ProjectFileHandler extends PathBase {
                         needWatermark: true,
                         description: '顯示的頁面',
                         wrapView: 'div',
+                        click:true,
                         type: 'string',
                     }
                 );
@@ -7009,7 +7077,13 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildFunctionImplement(func) {
-        const {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params} = func.getCloudFunctionInfo()
+        const {
+            functionName,
+            fieldName,
+            functionNameOfHandleBy,
+            typeOfFunction,
+            params
+        } = func.getCloudFunctionInfo()
         const baseClass = `Base${fieldName}`;
         const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})

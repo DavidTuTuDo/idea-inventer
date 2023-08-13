@@ -17,7 +17,6 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
-import 'swiper/css';
 @inject("main")
 @observer
 class MainComponent extends BaseMainComponent {
@@ -34,6 +33,16 @@ class MainComponent extends BaseMainComponent {
 
   onMainTestGotoHistoryButtonClicked(param) {
     Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(),'pending');
+  }
+
+  // onMainBannerSwiperSlideClicked(param) {
+  //   const item = param.object;
+  //   console.log(item);
+  // }
+
+  onMainBannerImageImgClicked(param) {
+    console.log(param.object);
+    this.getComponentInstance().showInfoSnackMessage(param.object.route);
   }
 
   /** -------------------- async api -------------------- **/
