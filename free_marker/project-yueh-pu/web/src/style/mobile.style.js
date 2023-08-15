@@ -9,6 +9,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for main editor component  */
 
   MainEditorInterestingOfFunctionSubTitleTextField = {};
@@ -70,6 +72,10 @@ class MobileStyle {
   MainEditorPromotedBannerRouteTextField = {};
 
   MainEditorPromotedBannerIdTextField = {};
+
+  MainEditorPromotedBannerDivWrap = {};
+
+  MainEditorPromotedBannerDiv = {};
 
   MainEditorPromotedBannerDivList = {};
 
@@ -331,11 +337,13 @@ class MobileStyle {
 
   MainPromotedBannerImageImg = {};
 
-  MainPromotedBannerDivSkeleton = {};
+  MainPromotedBannerSwiperSlideSkeleton = {};
 
-  MainPromotedBannerSlideList = {};
+  MainPromotedBannerSwiperSlide = {};
 
-  MainPromotedBannerDiv = {};
+  MainPromotedBannerSwiperList = {};
+
+  MainPromotedBannerSwiperSlide = {};
 
   MainDiv = {};
 
