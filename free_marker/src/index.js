@@ -27,7 +27,7 @@ const ID_OF_DEFAULT_CHEAP_ARRAY = `contents`;
 const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
-
+const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
 const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
@@ -577,7 +577,7 @@ class CodegenNode {
     admin;
 
     /**
-     * 目前機制有設計為1.ConfirmDialog 和 2.CustViewDialog
+     * 目前機制有設計為1.ConfirmDialog 和 2.CustomViewDialog
      * 1.當有些按鈕需要double check, 必須搭配wrap:true 使用 alertDialog:{ content:string, title:string }
      * 2.當dialog是customView {  customView:functionName, needActionButtons:false },
      * customView 會拿到 {dialog,paramObject} 的 this.props,
@@ -630,12 +630,20 @@ class CodegenNode {
         }
     }
 
+    isSelected() {
+        return _.isObject(this.select) && _.isArray(this.select.values);
+    }
+
     hasLabelView() {
         return this.labelView && this.labelView.enable;
     }
 
     getFunctionMethods() {
         return this.methods;
+    }
+
+    hasDescription() {
+        return !Util.isUndefinedNullEmpty(this.description);
     }
 
     getValueOfTabDefault() {
@@ -974,7 +982,6 @@ class CodegenNode {
     }
 
 
-
     getFunctionNameOfSwipeSlide() {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Slide');
     }
@@ -1155,7 +1162,7 @@ class CodegenNode {
     static doNotEnrichAttribute() {
         return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload','autoplay']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay']
     }
 
     setListContents(contents) {
@@ -1303,6 +1310,11 @@ class CodegenNode {
         return !_.isEmpty(this.getAlertDialog().content) || !_.isEmpty(this.getAlertDialog().customView);
     }
 
+    /** 就是只有 title 和 content 那種確認視窗的 dialog */
+    hasGeneralDialog() {
+        return !_.isEmpty(this.getAlertDialog().content) || !_.isEmpty(this.getAlertDialog().title);
+    }
+
     hasAlertMenu() {
         return _.size(this.alertMenu.items) > 0;
     }
@@ -1382,6 +1394,10 @@ class CodegenNode {
 
     getType() {
         return this.type;
+    }
+
+    hasDefaultValue() {
+        return !Util.isUndefinedNullEmpty(this.defaultValue);
     }
 
     setView(view) {
@@ -2175,6 +2191,13 @@ class CodegenNode {
         return this.getGenealogyNodes((node) => node.isAttribute(), (node) => node.getPreciseAttributeParent(), excludeSelf)
     }
 
+    getPreciseAttributeGenealogyName() {
+        const nodes = this.getPreciseAttributeGenealogyNodes();
+        const parentNames = _.reverse(nodes.map((node) => node.getName()));
+        return Util.camel(...parentNames);
+
+    }
+
     /** 因為array 的 child 如果找parent, 會是一個array的node, 沒有有用的資訊, 所以要再往上找*/
     getParentNode() {
         if (this.parent === undefined) {
@@ -2244,6 +2267,10 @@ class CodegenNode {
 
     needParentParam() {
         return !!this.needParam && this.needParam
+    }
+
+    getDefaultValue() {
+        return this.defaultValue;
     }
 
     getDefaultValueByType(isAdmin) {
@@ -2567,6 +2594,28 @@ class ClassGenerator {
         Util.insertToArray(this.context, this.getIndexOfFieldSign(), ...stmt);
     }
 
+
+    /** type =>|field|function|api|default ， 端看要加在哪個自定義區塊*/
+    appendComment(stmt, type = 'default') {
+        let index = -1;
+        stmt = `\n/** ${stmt} */\n`
+        switch (type) {
+            case 'field':
+                index = this.getIndexOfFieldSign();
+                break;
+            case 'function':
+                index = this.getIndexOfFunctionSign();
+                break;
+            case 'api':
+                index = this.getIndexOfRestfulApiSign();
+                break;
+        }
+        if (index > 0)
+            Util.insertToArray(this.context, index, stmt);
+        else
+            this.context.push(stmt);
+    }
+
     appendSeparator(sep) {
         const stmt = [];
         stmt.push('\n');
@@ -2735,17 +2784,20 @@ class ClassGenerator {
         } else {
             stmt.push(`class ${className}${extendz ? ` extends ${extendz}` : ' '} {`);
         }
-
         stmt.push(`\n`);
         stmt.push(SIGN_OF_FIELD_START);
         stmt.push(`\n`);
+        stmt.push(`\n`);
         stmt.push(SIGN_OF_FUNCTION_START);
+        stmt.push(`\n`);
         stmt.push(`\n`);
         stmt.push(SIGN_OF_RESTFUL_API_START);
         stmt.push(`\n`);
-        stmt.push(`}`);
         stmt.push(`\n`);
 
+        stmt.push(`}`);
+        stmt.push(`\n`);
+        stmt.push(`\n`);
         this.context.push(...stmt);
         this.classes.push(className);
         this.hasExtends = !!extendz;
@@ -2852,7 +2904,8 @@ class ClassGenerator {
 
         if (this.needCreatedIndexFile) {
             const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
-            index.imports = this.imports;
+            index.imports = _.clone(this.imports);
+            // index.appendImport(this.getMainClassName(), `./${this.getMainClassName()}`);
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
             index.setSingleton(this.indexFileSingleton);
             index.needSignature(false);
@@ -3305,6 +3358,7 @@ class StoreBuilder extends BaseBuilder {
     }
 
     async buildFieldAttribute(generator, node) {
+
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
             const propStmt = [];
@@ -3489,6 +3543,7 @@ class StoreBuilder extends BaseBuilder {
                     `return this.getComponent(true).${this.getNormalizeFieldOfParamInPath(param)}`
                 )
             }
+
             if (node.getNodeOfComponent().detailPage) {
                 baseGenerator.appendFunction({name: node.getFunctionNameOfDetailUidGetter(), arrow: true}, [], [], [],
                     `return this.getComponent(true).${node.getFunctionNameOfDetailUidGetter()}()`
@@ -4708,7 +4763,7 @@ class ComponentBuilder extends BaseBuilder {
         let origin = this.getJSXStrings({
             tag: node.getView(true),
             generator,
-            props:{...props,...propsOfExtra},
+            props: {...props, ...propsOfExtra},
             simpleProps,
             typeOfClass: 'component',
             contents: [...contentStmts, ...node.getContents()],
@@ -4737,7 +4792,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: 'ScrollingHideWrap',
                 typeOfClass: 'component',
-                props:{...props,...propsOfExtra},
+                props: {...props, ...propsOfExtra},
                 simpleProps: ['...self.props'],
                 contents: [...origin]
             })
@@ -5032,6 +5087,106 @@ class AppBuilder extends ComponentBuilder {
         baseEventGenerator.needIndexFile('Event', [], true)
         await baseEventGenerator.persist();
 
+    }
+
+    async buildL18n() {
+
+        await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true);
+        const mapOfKeyValue = {}
+
+        /**type用來歸類class append 的內容 field|comment|*/
+        function appendMapOfKeyValue(key, value, type = 'field') {
+            mapOfKeyValue[key] = {value, type};
+        }
+
+        function recursiveOfDoingSomethingMinor(arrayOfDefaultValue, child, sign = '') {
+            if (!_.isArray(arrayOfDefaultValue)) {
+                return;
+            }
+
+            for (const obj of arrayOfDefaultValue) {
+                for (const key in obj) {
+                    const value = obj[key];
+                    if (_.isArray(value)) {
+                        const latest = Util.camel(sign, key);
+                        recursiveOfDoingSomethingMinor(value, child, latest)
+                    }
+
+                    if (_.isString(value) && !_.isEqual(key, 'value')) {
+                        appendMapOfKeyValue(Util.camel(
+                            child.getPreciseAttributeGenealogyName(),
+                            sign,
+                            key,
+                            `${_.indexOf(arrayOfDefaultValue, obj)}`), value)
+                    }
+                }
+            }
+        }
+
+        function recursiveOfDoingSomethingMajor(child) {
+            if (child.hasDefaultValue()) {
+                switch (child.getType()) {
+                    case 'string':
+                        appendMapOfKeyValue(Util.camel(child.getPreciseAttributeGenealogyName()), `${child.getDefaultValue()}`);
+                        break;
+                    case 'array':
+                        recursiveOfDoingSomethingMinor(
+                            child.isSelected() ? child.select.values : child.getDefaultValue(), child);
+                        break;
+                }
+            }
+
+            if (child.hasGeneralDialog()) {
+                const alert = child.getAlertDialog();
+                appendMapOfKeyValue(Util.camel('dialog', 'content', 'of', child.getPreciseAttributeGenealogyName()), alert.content);
+                appendMapOfKeyValue(Util.camel('dialog', 'title', 'of', child.getPreciseAttributeGenealogyName()), alert.title);
+            }
+
+            /**
+
+             2023.08.19 description放進去會爆量，先不處理，因為目前也只有editor頁面會出現
+
+             if(child.hasDescription()){
+                appendMapOfKeyValue(Util.camel('description','of',child.getPreciseAttributeGenealogyName()), child.getDescription());
+             }
+
+             */
+            if (child.hasChildren()) {
+                for (const grandson of child.getPreciseAttributeChildren()) {
+                    recursiveOfDoingSomethingMajor(grandson);
+                }
+            }
+        }
+
+        for (const component of this.nodeOfAncestor.components) {
+
+            appendMapOfKeyValue(component.getName(), `以上為 ${component.getName()} 需要的字串`, 'comment')
+            if (!Util.isUndefinedNullEmpty(component.title))
+                mapOfKeyValue[Util.camel('page', 'title', 'of', component.getPreciseAttributeGenealogyName())] = component.title;
+
+            for (const child of component.getStruct().getPreciseAttributeChildren()) {
+                recursiveOfDoingSomethingMajor(child)
+            }
+        }
+
+        for (const lang of LANGUAGES_OF_SUPPORT) {
+            const baseI18nGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `BaseMyI18n.js`));
+            baseI18nGenerator.appendClass('BaseMyI18n', {name: 'BaseI18n', from: `../../base/BaseI18n`});
+
+            _.each(mapOfKeyValue, (object, key, all) => {
+                switch (object.type) {
+                    case 'field':
+                        baseI18nGenerator.appendField(`${key}`, `${JSON.stringify(object.value)}`)
+                        break;
+                    case 'comment':
+                        baseI18nGenerator.appendComment(object.value, 'field');
+                        break;
+                }
+            })
+
+            baseI18nGenerator.needIndexFile('I18n', [], true);
+            await baseI18nGenerator.persist();
+        }
     }
 
     async buildCookieFiles() {
@@ -6347,8 +6502,8 @@ class ProjectFileHandler extends PathBase {
                     onSlideChange: `###() => {self.${functionNameOfSlide}()}`
                 })
 
-                if(node.hasAutoPlayＭechanism()){
-                    node.appendListProps({autoplay:node.autoplay})
+                if (node.hasAutoPlayＭechanism()) {
+                    node.appendListProps({autoplay: node.autoplay})
                 }
 
                 node.appendMethods({
@@ -6383,7 +6538,7 @@ class ProjectFileHandler extends PathBase {
                         needWatermark: true,
                         description: '顯示的頁面',
                         wrapView: 'div',
-                        click:true,
+                        click: true,
                         type: 'string',
                     }
                 );
@@ -7190,11 +7345,11 @@ class ProjectFileHandler extends PathBase {
             if (node.isColumnArray() || node.isPathArray()) {
                 node.disableSelectedArray();
 
-                if (Util.isOrEquals(node.getListView(), 'Swiper','TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
+                if (Util.isOrEquals(node.getListView(), 'Swiper', 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
                     node.setListView('div');
                 }
 
-                if (Util.isOrEquals(node.getView(), 'SwiperSlide','MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
+                if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
                     node.setView('div');
                 }
 
