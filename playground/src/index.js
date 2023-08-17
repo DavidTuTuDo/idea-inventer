@@ -16,8 +16,23 @@ export {playground as playground}
 
 // const text = '[{ "label":"更換付款方式","icon":"ChangeCircle","loginOnly":true,"notice":{"title":"確認是否更改","content":"訂單付款方式僅能更改一次,是否確定更改?"},"onClick":self.onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonChangeProcedureOfPaymentClicked(objectOfParam) },{ "label":"刪除訂單","icon":"CancelScheduleSend","loginOnly":true,"notice":{"title":"執行刪除","content":"是否確任刪除訂單?"},"onClick":self.onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(objectOfParam) }]'
 
+class AAA {
+    properties = 1;
+}
+
+class BBB extends AAA {
+    properties = 2;
+
+}
+
 if (configerer.DEBUG_MODE) {
     (async () => {
+
+        const bbb = new BBB();
+        console.log(bbb.properties);
+
+
+
 
 
             // const browser = new Browser(true);
