@@ -30,8 +30,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
-// const CURRENT_PROJECT = './project-davidtu-dev';
+// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -698,6 +698,10 @@ class CodegenNode {
 
     getFunctionNameOfSelectGetter() {
         return Util.camel('get', this.getFieldNameOfSelected());
+    }
+
+    getFieldNameOfPageTitle() {
+        return Util.camel('page', 'title', 'of', this.getPreciseAttributeGenealogyName());
     }
 
     isPathArray() {
@@ -1929,6 +1933,7 @@ class CodegenNode {
         this.title = title;
     }
 
+    /** web page 顯示在橫槓上的字樣 */
     getTitle() {
         return this.title ? this.title : '';
     }
@@ -2232,6 +2237,7 @@ class CodegenNode {
         return _.isEqual(this.type, 'array');
     }
 
+    /** 就是單純的array,不需要store包過的應用，目前使用在"點點點"出來的彈跳選單 */
     isArrayOfField() {
         return _.isEqual(this.type, 'arrayOfField');
     }
@@ -2274,16 +2280,97 @@ class CodegenNode {
     }
 
     getDefaultValueByType(isAdmin) {
-        if (!Util.isUndefinedNullEmpty(this.defaultValue)) {
-            const stringOfDefault = JSON.stringify(this.defaultValue);
+
+        const self = this;
+
+        function refactorI18nMapOfArrayDefaultValue(arrayOfDefaultValue, sign) {
+            for (const obj of arrayOfDefaultValue) {
+                for (const key in obj) {
+                    const value = obj[key];
+                    if (_.isArray(value)) {
+                        const latest = Util.camel(sign, key);
+                        refactorI18nMapOfArrayDefaultValue(value, latest)
+                    }
+
+                    if (_.isString(value) && !_.isEqual(key, 'value')) {
+                        const valueOfI18n = Util.camel(
+                            self.getPreciseAttributeGenealogyName(),
+                            sign,
+                            key,
+                            `${_.indexOf(arrayOfDefaultValue, obj)}`);
+                        obj[key] = `###i18n.${valueOfI18n}`;
+                    }
+                }
+            }
+        }
+
+        function toNormalizeString(array) {
+            const stmts = [];
+            for (const object of array) {
+                const _stmts = [];
+                for (const keyOfMajor in object) {
+                    const valueOfMajor = object[keyOfMajor];
+                    if (_.isArray(valueOfMajor)) {
+                        _stmts.push(`${keyOfMajor}:${toNormalizeString(valueOfMajor)}`)
+                        continue;
+                    }
+
+                    if (_.isObject(valueOfMajor)) {
+                        const __stmts = [];
+                        for (const keyOfMinor in valueOfMajor) {
+                            const valueOfMinor = valueOfMajor[keyOfMinor];
+                            if (_.isArray(valueOfMinor)) {
+                                __stmts.push(`${keyOfMinor}:${toNormalizeString(valueOfMinor)}`);
+                                continue;
+                            }
+
+                            if (_.isString(valueOfMinor)) {
+                                const latest = Util.camel(
+                                    self.getPreciseAttributeGenealogyName(),
+                                    keyOfMajor, keyOfMinor, `${_.indexOf(array, object)}`);
+                                __stmts.push(`${keyOfMinor}: i18n.${latest}`)
+                            }
+                        }
+                        _stmts.push(`${keyOfMajor}:{${__stmts.join(',')}}`)
+                        continue;
+                    }
+
+                    if (_.isString(valueOfMajor)) {
+                        const latest = _.startsWith(valueOfMajor, '###') ? Util.getStringOfDropHeadSign(valueOfMajor, `#`) : `'${valueOfMajor}'`;
+                        _stmts.push(`${keyOfMajor}:${latest}`);
+                    } else {
+                        _stmts.push(`${keyOfMajor}:${_.toString(valueOfMajor)}`)
+                    }
+                }
+                stmts.push(`{${_stmts.join(',')}}`);
+            }
+
+            return `[${stmts.join(',')}]`;
+
+        }
+
+        if (!Util.isUndefinedNullEmpty(this.getDefaultValue())) {
+            const stringOfDefault = JSON.stringify(this.getDefaultValue());
+            if (isAdmin)
+                return stringOfDefault;
 
             if (this.isArrayOfField()) {
-                return stringOfDefault;
+                const latest = _.cloneDeep(this.getDefaultValue());
+                refactorI18nMapOfArrayDefaultValue(latest);
+                return `${toNormalizeString(latest)}`;
             }
 
             if (this.isArray()) {
-                return `${stringOfDefault}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
+                const latest = _.cloneDeep(this.getDefaultValue());
+                refactorI18nMapOfArrayDefaultValue(latest);
+                return `${toNormalizeString(latest)}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
             }
+
+            if (this.isString()) {
+                const i18nOfDefaultValue = Util.camel(this.getPreciseAttributeGenealogyName());
+                return `i18n.${i18nOfDefaultValue}`;
+            }
+
             return stringOfDefault;
         }
 
@@ -2854,6 +2941,8 @@ class ClassGenerator {
                 _.isEqual(folderName, 'less'),
                 _.isEqual(folderName, 'src'),
                 _.isEqual(folderName, 'store'),
+                _.isEqual(folderName, 'i18n'),
+                Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT),
             )
 
             if (!ruleOfAllowFile) {
@@ -3549,6 +3638,23 @@ class StoreBuilder extends BaseBuilder {
                     `return this.getComponent(true).${node.getFunctionNameOfDetailUidGetter()}()`
                 )
             }
+
+            if (node.getNodeOfComponent().hasPath()) {
+                /** page title 的部分 */
+
+                const stringOfPageTitle = node.getFieldNameOfPageTitle();
+                baseGenerator.appendField(stringOfPageTitle,
+                    `i18n.${stringOfPageTitle}`,
+                    ['observable']
+                );
+
+                baseGenerator.appendFunction(Util.camel('set', stringOfPageTitle), ['title'], ['action'],
+                    [], `this.${stringOfPageTitle} = title`);
+
+                baseGenerator.appendFunction(Util.camel('get', stringOfPageTitle), [], [],
+                    [], `return this.${stringOfPageTitle}`);
+            }
+
         }
 
         /** 這邊專門處理remote fetch 的邏輯 */
@@ -3674,6 +3780,7 @@ class StoreBuilder extends BaseBuilder {
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`Cookie`, '../../cookie');
         generator.appendImport(`Router`, '../../router');
+        generator.appendImport(`i18n`, '../../i18n');
         generator.appendImport(`Config`, '../../config');
         generator.appendImport(`{Application}`, '../../');
     }
@@ -3893,7 +4000,6 @@ class RemoteFunctionHandler extends BaseBuilder {
                 )
 
                 if (node.isCheapArray()) {
-
                     function needView() {
                         if (self.isWebPlatform()) {
                             return 'view,';
@@ -5089,7 +5195,7 @@ class AppBuilder extends ComponentBuilder {
 
     }
 
-    async buildL18n() {
+    async buildi18n() {
 
         await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true);
         const mapOfKeyValue = {}
@@ -5105,19 +5211,36 @@ class AppBuilder extends ComponentBuilder {
             }
 
             for (const obj of arrayOfDefaultValue) {
-                for (const key in obj) {
-                    const value = obj[key];
-                    if (_.isArray(value)) {
-                        const latest = Util.camel(sign, key);
-                        recursiveOfDoingSomethingMinor(value, child, latest)
+                for (const keyOfMajor in obj) {
+                    const valueOfMajor = obj[keyOfMajor];
+                    if (_.isArray(valueOfMajor)) {
+                        const latest = Util.camel(sign, keyOfMajor);
+                        recursiveOfDoingSomethingMinor(valueOfMajor, child, latest)
                     }
 
-                    if (_.isString(value) && !_.isEqual(key, 'value')) {
+                    if (_.isObject(valueOfMajor)) {
+                        for (const keyOfMinor in valueOfMajor) {
+                            const valueOfMinor = valueOfMajor[keyOfMinor];
+                            if (_.isArray(valueOfMinor)) {
+                                const latest = Util.camel(sign, keyOfMinor);
+                                recursiveOfDoingSomethingMinor(valueOfMinor, child, latest);
+                            }
+
+                            if (_.isString(valueOfMinor)) {
+                                appendMapOfKeyValue(Util.camel(
+                                        child.getPreciseAttributeGenealogyName(),
+                                        keyOfMajor, keyOfMinor, `${_.indexOf(arrayOfDefaultValue, obj)}`),
+                                    valueOfMinor)
+                            }
+                        }
+                    }
+
+                    if (_.isString(valueOfMajor) && !_.isEqual(keyOfMajor, 'value')) {
                         appendMapOfKeyValue(Util.camel(
                             child.getPreciseAttributeGenealogyName(),
                             sign,
-                            key,
-                            `${_.indexOf(arrayOfDefaultValue, obj)}`), value)
+                            keyOfMajor,
+                            `${_.indexOf(arrayOfDefaultValue, obj)}`), valueOfMajor)
                     }
                 }
             }
@@ -5125,6 +5248,7 @@ class AppBuilder extends ComponentBuilder {
 
         function recursiveOfDoingSomethingMajor(child) {
             if (child.hasDefaultValue()) {
+
                 switch (child.getType()) {
                     case 'string':
                         appendMapOfKeyValue(Util.camel(child.getPreciseAttributeGenealogyName()), `${child.getDefaultValue()}`);
@@ -5133,6 +5257,10 @@ class AppBuilder extends ComponentBuilder {
                         recursiveOfDoingSomethingMinor(
                             child.isSelected() ? child.select.values : child.getDefaultValue(), child);
                         break;
+                    case 'arrayOfField':
+                        recursiveOfDoingSomethingMinor(child.getDefaultValue(), child)
+                        break;
+
                 }
             }
 
@@ -5159,13 +5287,14 @@ class AppBuilder extends ComponentBuilder {
         }
 
         for (const component of this.nodeOfAncestor.components) {
-
             appendMapOfKeyValue(component.getName(), `以上為 ${component.getName()} 需要的字串`, 'comment')
-            if (!Util.isUndefinedNullEmpty(component.title))
-                mapOfKeyValue[Util.camel('page', 'title', 'of', component.getPreciseAttributeGenealogyName())] = component.title;
+            if (!Util.isUndefinedNullEmpty(component.hasPath()))
+                appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 
             for (const child of component.getStruct().getPreciseAttributeChildren()) {
-                recursiveOfDoingSomethingMajor(child)
+                /** ref 的東西就不要錯頻道，本來屬於episode, 結果跑去main(因為main ref:episode)*/
+                if (!child.isReferenceNode())
+                    recursiveOfDoingSomethingMajor(child);
             }
         }
 
@@ -5176,7 +5305,7 @@ class AppBuilder extends ComponentBuilder {
             _.each(mapOfKeyValue, (object, key, all) => {
                 switch (object.type) {
                     case 'field':
-                        baseI18nGenerator.appendField(`${key}`, `${JSON.stringify(object.value)}`)
+                        baseI18nGenerator.appendField(key, JSON.stringify(object.value));
                         break;
                     case 'comment':
                         baseI18nGenerator.appendComment(object.value, 'field');
@@ -5187,6 +5316,8 @@ class AppBuilder extends ComponentBuilder {
             baseI18nGenerator.needIndexFile('I18n', [], true);
             await baseI18nGenerator.persist();
         }
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.i18n.index.js'),
+            libpath.join(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
     }
 
     async buildCookieFiles() {
@@ -6665,7 +6796,7 @@ class ProjectFileHandler extends PathBase {
                     objectOfItem.label = item.label;
                     objectOfItem.icon = item.icon;
                     objectOfItem.id = item.id;
-                    objectOfItem.loginOnly = item.loginOnly ?? "false";
+                    objectOfItem.loginOnly = item.loginOnly ?? false;
                     objectOfItem.notice = item.notice;
 
                     Util.removeAttributeBy(objectOfItem);
@@ -7389,7 +7520,6 @@ class ProjectFileHandler extends PathBase {
                     continue;
                 }
 
-
                 const componentsOfExtra = content.componentsOfExtra ?? [];
                 delete content.componentsOfExtra;
                 for (const rawOfComponent of [content, ...componentsOfExtra]) {
@@ -7433,6 +7563,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     async forWeb() {
+        const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
         const totalClassNames = [];
         const totalEvents = [];
         for (let component of this.nodeOfAncestor.components) {
@@ -7449,12 +7580,12 @@ class ProjectFileHandler extends PathBase {
             if (!component.isPreciselyEditableComponent() && component.getStruct().isAttribute())
                 await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
         }
-        const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
         await new StoreBuilder(paramProps).buildStoreIndexFiles();
         await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildAppIndexFiles();
+        await new AppBuilder(paramProps).buildi18n();
         await this.buildDistAssetFolder();
         if (!ENABLE_FAST_DEVELOP_MODE) {
             await new AppBuilder(paramProps).buildWebpackNPackageJson();
