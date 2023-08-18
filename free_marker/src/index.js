@@ -30,8 +30,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -746,6 +746,23 @@ class CodegenNode {
         return _.filter(list, (each) => !Util.has(this.modulesOfIgnore, each, true));
     }
 
+    getFieldNameOfDialogContent() {
+        return Util.camel('dialog', 'content', 'of', this.getPreciseAttributeGenealogyName());
+    }
+
+    getFunctionNameOfDialogContentGetterWithBracket() {
+        return `${Util.camel('get', this.getFieldNameOfDialogContent())}()`;
+    }
+
+    getFunctionNameOfDialogTitleGetterWithBracket() {
+        return `${Util.camel('get', this.getFieldNameOfDialogTitle())}()`;
+    }
+
+    getFieldNameOfDialogTitle() {
+        return Util.camel('dialog', 'title', 'of', this.getPreciseAttributeGenealogyName());
+
+    }
+
     /** exclude => 要略過的資料夾名稱 */
     getLessFilesOfModuleComponent(...exclude) {
         return Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (file) => _.isEqual(file.extension, 'less'));
@@ -1272,18 +1289,28 @@ class CodegenNode {
             }
         }
 
-        if (this.hasAlertDialog()) {
+        function getStmtOfDialogTitle(){
+            const dialog = self.getAlertDialog();
+            return _.isEmpty(dialog.title) ?  '' : `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
+        }
 
+        function getStmtOfDialogContent(){
+            const dialog = self.getAlertDialog();
+            return _.isEmpty(dialog.content) ?  '' : `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
+        }
+
+        if (this.hasAlertDialog()) {
+            const dialog = self.getAlertDialog();
             const props = [
                 `ref:${this.getFieldNameOfAlertDialog()}`,
-                `title:${JSON.stringify(self.getAlertDialog().title)}`,
-                `content:${JSON.stringify(self.getAlertDialog().content)}`,
                 `component:self`,
             ];
             props.push(getActionButtonStmts());
             props.push(getTaskStmts());
             props.push(getCustomViewStmts());
             props.push(getParamObject());
+            props.push(getStmtOfDialogContent());
+            props.push(getStmtOfDialogTitle());
             _.remove(props, (each) => _.isEmpty(each))
             stmt.push(`{
             this.renderAlertDialog(
@@ -1291,7 +1318,6 @@ class CodegenNode {
             ${props.join(',')}
             })}`)
         }
-
     }
 
     needEditPage() {
@@ -1316,7 +1342,7 @@ class CodegenNode {
 
     /** 就是只有 title 和 content 那種確認視窗的 dialog */
     hasGeneralDialog() {
-        return !_.isEmpty(this.getAlertDialog().content) || !_.isEmpty(this.getAlertDialog().title);
+        return !_.isEmpty(this.getAlertDialog().content) && !_.isEmpty(this.getAlertDialog().title);
     }
 
     hasAlertMenu() {
@@ -1508,7 +1534,6 @@ class CodegenNode {
                 if (!!!exist[view] && !useViewModuleAndComponentModuleMechanism)
                     stmts.push(`const ${view} = self.${view}`)
                 exist[view] = true;
-
             }
         }
 
@@ -1925,8 +1950,9 @@ class CodegenNode {
         return `Base${this.getStoreClassName()}Store`;
     }
 
-    hasTitle() {
-        return (!_.isUndefined(this.title));
+    hasPageTitle() {
+        const node = this.getNodeOfComponent();
+        return !Util.isUndefinedNullEmpty(node.hasPath()) && !Util.isUndefinedNullEmpty(node.getTitle());
     }
 
     setTitle(title) {
@@ -3301,6 +3327,30 @@ class BaseBuilder extends PathBase {
         return Util.camel('param', 'of', param);
     }
 
+    /**
+     * @param fieldName
+     * @param onlyName 只需要functionName
+     * @returns {string}
+     */
+    getFunctionNameOfSimpleSetter(fieldName, params = [], onlyName = true) {
+        const functionName = Util.camel(`set`, fieldName);
+        if (onlyName)
+            return functionName
+        return `${functionName}(${params.join(',')})`;
+    }
+
+    /**
+     * @param fieldName
+     * @param onlyName 只需要functionName
+     * @returns {string}
+     */
+    getFunctionNameOfSimpleGetter(fieldName, onlyName = true) {
+        const functionName = Util.camel(`get`, fieldName);
+        if (onlyName)
+            return functionName;
+        return `${functionName}()`;
+    }
+
     getParamsOfDefaultValue(params, node, mustache = false) {
         return params.map(param => {
             if (_.isEqual(param.trim(), 'id')) {
@@ -3513,6 +3563,7 @@ class StoreBuilder extends BaseBuilder {
             } else {
                 propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
+
             propStmt.push(`}`);
             if (!child.isArrayOfField())
                 propsStmt.push(...propStmt);
@@ -3595,6 +3646,18 @@ class StoreBuilder extends BaseBuilder {
             return stmts;
         }
 
+        function appendI18nFieldSetterGetter(generator, fieldName) {
+            generator.appendField(fieldName,
+                `i18n.${fieldName}`,
+                ['observable']
+            );
+            generator.appendFunction(self.getFunctionNameOfSimpleSetter(fieldName), ['param'], ['action'],
+                [], `this.${fieldName} = param`);
+
+            generator.appendFunction(self.getFunctionNameOfSimpleGetter(fieldName), [], [],
+                [], `return this.${fieldName}`);
+        }
+
         function getStmtsOfFetch(node) {
             const stmts = [];
             switch (node.getType()) {
@@ -3647,23 +3710,13 @@ class StoreBuilder extends BaseBuilder {
                 )
             }
 
-            if (node.getNodeOfComponent().hasPath()) {
+            if (node.hasPageTitle()) {
                 /** page title 的部分 */
-
-                const stringOfPageTitle = node.getFieldNameOfPageTitle();
-                baseGenerator.appendField(stringOfPageTitle,
-                    `i18n.${stringOfPageTitle}`,
-                    ['observable']
-                );
-
-                baseGenerator.appendFunction(Util.camel('set', stringOfPageTitle), ['title'], ['action'],
-                    [], `this.${stringOfPageTitle} = title`);
-
-                baseGenerator.appendFunction(Util.camel('get', stringOfPageTitle), [], [],
-                    [], `return this.${stringOfPageTitle}`);
+                appendI18nFieldSetterGetter(baseGenerator, node.getFieldNameOfPageTitle());
             }
 
         }
+
 
         /** 這邊專門處理remote fetch 的邏輯 */
         new RemoteFunctionHandler(self.props, baseGenerator).buildFetchSubmitApi(node);
@@ -3700,6 +3753,13 @@ class StoreBuilder extends BaseBuilder {
                     `this.${fieldName}.push(condition)`)
                 baseGenerator.appendFunction(child.getFunctionNameOfGetCondition(), [], [], [],
                     `return this.${fieldName}`)
+            }
+
+            if (child.hasGeneralDialog()) {
+                _.each([child.getFieldNameOfDialogTitle(),
+                    child.getFieldNameOfDialogContent()], (fieldName) => {
+                    appendI18nFieldSetterGetter(baseGenerator, fieldName);
+                })
             }
         }
 
@@ -4044,7 +4104,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         node.getFunctionNameOfSubmitItem(),
                         [
                             `const hasParent = this.getParentNode && this.getParentNode()`,
-                            `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
+                            `const all = hasParent ? this.getParentNode().${self.getFunctionNameOfSimpleGetter(node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
                             `all.push(this.${functionNameOfNormalize}({...item,id}))`,
                             `await self.${node.getFunctionNameOfSubmit()}(${needView()} all, id)`,
                             `const result = hasParent ? this.getParentNode().push${_.upperFirst(node.getName())}(item) : true`,
@@ -4391,10 +4451,14 @@ class ComponentBuilder extends BaseBuilder {
 
         this.appendRenderViewFunctions(componentNode.getStruct(), baseGenerator, componentNode.isPreciselyEditableComponent());
 
-        if (componentNode.hasTitle()) {
-            baseGenerator.appendField(`stringOfPageTitle`, `"${componentNode.getTitle()}"`)
-            this.appendStmtIntoComponentDidMount(`document.title = this.stringOfPageTitle`);
+        if (componentNode.hasPageTitle()) {
+            this.appendStmtIntoComponentDidMount(`this.invalidatePageTitle()`);
         }
+
+        baseGenerator.appendFunction(
+            {name: `invalidatePageTitle`, arrow: true}, [], [], [],
+            `document.title = this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)}`
+        )
 
         /** this.containedFetchAttribute(componentNode.getStruct())  讓每個component都執行fetch*/
         if (!componentNode.isDisableInitFetch()) {
@@ -5274,8 +5338,8 @@ class AppBuilder extends ComponentBuilder {
 
             if (child.hasGeneralDialog()) {
                 const alert = child.getAlertDialog();
-                appendMapOfKeyValue(Util.camel('dialog', 'content', 'of', child.getPreciseAttributeGenealogyName()), alert.content);
-                appendMapOfKeyValue(Util.camel('dialog', 'title', 'of', child.getPreciseAttributeGenealogyName()), alert.title);
+                appendMapOfKeyValue(child.getFieldNameOfDialogContent(), alert.content);
+                appendMapOfKeyValue(child.getFieldNameOfDialogTitle(), alert.title);
             }
 
             /**
@@ -5296,7 +5360,7 @@ class AppBuilder extends ComponentBuilder {
 
         for (const component of this.nodeOfAncestor.components) {
             appendMapOfKeyValue(component.getName(), `以上為 ${component.getName()} 需要的字串`, 'comment')
-            if (!Util.isUndefinedNullEmpty(component.hasPath()))
+            if (component.hasPageTitle())
                 appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 
             for (const child of component.getStruct().getPreciseAttributeChildren()) {
