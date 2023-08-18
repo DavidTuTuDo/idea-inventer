@@ -6,14 +6,13 @@ import {
 import _ from "lodash";
 import libpath from "path";
 import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
 import {Application} from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseAccountComponent from "./BaseAccountComponent";
-import UserInfo from "../../base/BaseUserInfo";
-
+import UserInfoRef from "../../base/BaseUserInfo";
+import {instance } from '../../i18n';
 class ModularizedAccountComponent extends BaseAccountComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
@@ -31,15 +30,20 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     }
 
     onAccountFuncAreaOfEditCopyUserIdButtonClicked(param) {
-        this.copyTextToClipboard(UserInfo.getUid());
+        this.copyTextToClipboard(UserInfoRef.getUid());
     }
 
     getInjectStyleOfAccountFuncAreaOfEditToEditModeButton(funcAreaOfEdit) {
-        return Util.getVisibleOrNone(UserInfo.isAdmin());
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
     }
 
     onAccountFuncAreaOfEditToEditModeButtonClicked(param) {
         Router.gotoEditPage(this.getComponentInstance());
+    }
+
+    onLangSelectedChange(value, funcAreaOfEdit) {
+        console.log(value)
+        instance.setLanguage(value);
     }
 
     /** -------------------- async api -------------------- **/

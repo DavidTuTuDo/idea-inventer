@@ -9,8 +9,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for main editor component  */
 
   MainEditorInterestingOfFunctionSubTitleTextField = {};
@@ -134,6 +132,10 @@ class CommonStyle {
   AccountFuncAreaOfEditLogoutButton = {};
 
   AccountFuncAreaOfEditCopyUserIdButton = {};
+
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
 
   AccountFuncAreaOfEditDiv = {};
 
@@ -350,6 +352,8 @@ class CommonStyle {
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}
+
   /** -------------------- async api -------------------- **/
 }
+
 export default new CommonStyle();

@@ -15,6 +15,7 @@ import NavigatorToolBar from "./navigatorToolBar";
 import Navigator from "./navigator";
 import AccountCredential from "./accountCredential";
 import AccountUserInfo from "./accountUserInfo";
+import AccountFuncAreaOfEditLang from "./accountFuncAreaOfEditLang";
 import AccountFuncAreaOfEdit from "./accountFuncAreaOfEdit";
 import AccountFuncAreaOfIdStateAreaOfId from "./accountFuncAreaOfIdStateAreaOfId";
 import AccountFuncAreaOfId from "./accountFuncAreaOfId";
@@ -48,11 +49,14 @@ import Main from "./main";
 
 class Store extends BaseStore {
   /** -------------------- fields -------------------- **/
+
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
+
   /** -------------------- async api -------------------- **/
 }
+
 export default Store;

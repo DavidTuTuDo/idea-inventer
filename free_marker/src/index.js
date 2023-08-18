@@ -3848,7 +3848,7 @@ class StoreBuilder extends BaseBuilder {
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`Cookie`, '../../cookie');
         generator.appendImport(`Router`, '../../router');
-        generator.appendImport(`i18n`, '../../i18n');
+        generator.appendImport(`{i18n}`, '../../i18n');
         generator.appendImport(`Config`, '../../config');
         generator.appendImport(`{Application}`, '../../');
     }
@@ -5359,7 +5359,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         for (const component of this.nodeOfAncestor.components) {
-            appendMapOfKeyValue(component.getName(), `以上為 ${component.getName()} 需要的字串`, 'comment')
+            appendMapOfKeyValue(component.getName(), ` ${component.getName()}  ↑ 需要的字串`, 'comment')
             if (component.hasPageTitle())
                 appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 
