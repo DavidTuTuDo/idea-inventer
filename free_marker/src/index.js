@@ -2283,6 +2283,9 @@ class CodegenNode {
 
         const self = this;
 
+        /**
+         * i18n設計
+         * 把array 的 defaultValue {aa:'aa',b:1}=> {aa:i18n.aa,,b=1 }*/
         function refactorI18nMapOfArrayDefaultValue(arrayOfDefaultValue, sign) {
             for (const obj of arrayOfDefaultValue) {
                 for (const key in obj) {
@@ -2304,14 +2307,19 @@ class CodegenNode {
             }
         }
 
-        function toNormalizeString(array) {
+        /**
+         *  const object = {aa:i18n.aa}
+         *  用JSON.stringify(object) 會變成 {aa,'i18n.aa'}
+         *  所以用字串去輪詢內容而組合成需要的字串
+         * */
+        function toNormalizeArrayString(array) {
             const stmts = [];
             for (const object of array) {
                 const _stmts = [];
                 for (const keyOfMajor in object) {
                     const valueOfMajor = object[keyOfMajor];
                     if (_.isArray(valueOfMajor)) {
-                        _stmts.push(`${keyOfMajor}:${toNormalizeString(valueOfMajor)}`)
+                        _stmts.push(`${keyOfMajor}:${toNormalizeArrayString(valueOfMajor)}`)
                         continue;
                     }
 
@@ -2320,7 +2328,7 @@ class CodegenNode {
                         for (const keyOfMinor in valueOfMajor) {
                             const valueOfMinor = valueOfMajor[keyOfMinor];
                             if (_.isArray(valueOfMinor)) {
-                                __stmts.push(`${keyOfMinor}:${toNormalizeString(valueOfMinor)}`);
+                                __stmts.push(`${keyOfMinor}:${toNormalizeArrayString(valueOfMinor)}`);
                                 continue;
                             }
 
@@ -2357,13 +2365,13 @@ class CodegenNode {
             if (this.isArrayOfField()) {
                 const latest = _.cloneDeep(this.getDefaultValue());
                 refactorI18nMapOfArrayDefaultValue(latest);
-                return `${toNormalizeString(latest)}`;
+                return `${toNormalizeArrayString(latest)}`;
             }
 
             if (this.isArray()) {
                 const latest = _.cloneDeep(this.getDefaultValue());
                 refactorI18nMapOfArrayDefaultValue(latest);
-                return `${toNormalizeString(latest)}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
+                return `${toNormalizeArrayString(latest)}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
             }
 
             if (this.isString()) {
