@@ -4428,8 +4428,7 @@ class ComponentBuilder extends BaseBuilder {
 
         if (_.size(paramsInPath) > 0) {
             /** 這個邏輯必須在fetch之前 */
-            this.appendStmtIntoComponentDidMount(
-                `if(!Util.and(${paramsInPath.map((each) => `this.${each.functionNameOfParamConstraint}(this.${each.param})`).join(',')}))
+            this.appendStmtIntoComponentDidMount(`if(!Util.and(${paramsInPath.map((each) => `this.${each.functionNameOfParamConstraint}(this.${each.param})`).join(',')}))
                 this.getStore().setErrorMsg('網址參數異常')`)
         }
 
@@ -5389,7 +5388,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         for (const component of this.nodeOfAncestor.components) {
-            appendMapOfKeyValue(component.getName(), ` ${component.getName()}  ↑ 需要的字串`, 'comment')
+            appendMapOfKeyValue(component.getName(), `${component.getName()} ↑ 需要的字串`, 'comment')
             if (component.hasPageTitle())
                 appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 

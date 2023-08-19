@@ -36,7 +36,12 @@ class SheetComponent extends BaseSheetComponent {
 
     getInjectStyleOfSheetNameOfSongAndSingerTypography() {
         const visible = _.size(this.getStore().getGuitarpus()) > 0;
-        return Util.getVisibleOrNone(visible);
+        return Util.getVisibleOrNone(visible, true);
+    }
+
+    getInjectStyleOfSheetTipOfLoadingTypography(sheet) {
+        const visible = !_.size(this.getStore().getGuitarpus()) > 0;
+        return Util.getVisibleOrNone(visible, true);
     }
 
     onSheetGuitarpuDivClicked(param) {
@@ -74,7 +79,7 @@ class SheetComponent extends BaseSheetComponent {
 
     onSheetAdjustCenterToFemaleTonalityButtonClicked(param) {
         this.getStore().transpositionByGender('female')
-        this.showMessageOfSucceedOnTonalityChange(this.getCenterToFemaleTonality(param.object),'warning');
+        this.showMessageOfSucceedOnTonalityChange(this.getCenterToFemaleTonality(param.object), 'warning');
     }
 
     onSheetAdjustCenterToOriginalTonalityButtonClicked(param) {

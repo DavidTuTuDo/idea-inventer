@@ -273,6 +273,8 @@ class AppStyle {
 
   SheetAdjustSwipeableDrawer = {};
 
+  SheetTipOfLoadingTypography = {};
+
   SheetNameOfSongAndSingerTypography = {};
 
   SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};

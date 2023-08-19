@@ -273,6 +273,8 @@ class CommonStyle {
 
   SheetAdjustSwipeableDrawer = {};
 
+  SheetTipOfLoadingTypography = {};
+
   SheetNameOfSongAndSingerTypography = {};
 
   SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
