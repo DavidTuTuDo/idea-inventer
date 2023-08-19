@@ -19,7 +19,7 @@ class DialogStore {
     visibility = false;
 
     @observable
-    extraParamObject = {}
+    propsOfCustomView = {}
 
     constructor() {
         makeObservable(this);
@@ -29,8 +29,8 @@ class DialogStore {
         return this.visibility;
     }
 
-    getExtraParamObject() {
-        return this.extraParamObject;
+    getPropsOfCustomView() {
+        return this.propsOfCustomView;
     }
 
     @action
@@ -39,8 +39,8 @@ class DialogStore {
     }
 
     @action
-    setCustomViewParam(object) {
-        this.extraParamObject = object;
+    setPropsOfCustomView(object) {
+        this.propsOfCustomView = object;
     }
 
 }
@@ -61,7 +61,7 @@ class AlertDialog extends MuiComponent {
             return
         }
         if (paramObject !== undefined) {
-            this.getStore().setCustomViewParam(paramObject);
+            this.getStore().setPropsOfCustomView(paramObject);
         }
         this.getStore().setVisibility(true);
 
@@ -144,7 +144,7 @@ class AlertDialog extends MuiComponent {
                 component={component}
                 paramObject={paramObject}
                 dialog={this}
-                {...this.getStore().getExtraParamObject()} />
+                {...this.getStore().getPropsOfCustomView()} />
         </DialogContent>
     }
 

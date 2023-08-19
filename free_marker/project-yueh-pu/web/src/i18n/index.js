@@ -9,19 +9,25 @@ import {
     autorun,
     computed,
 } from "mobx";
+import {Application} from "../index";
+import _ from "lodash";
 
-class I18nUtil {
-
-    constructor() {
-        makeObservable(this);
-    }
+class I18n {
 
     @observable
     language = 'zh_TW';
 
+    constructor() {
+        makeObservable(this);
+        autorun(() => {
+            Util.appendInfo(`i18n autorun, current language => ${this.language}`);
+            _.each(Application.getStoreObject(), (store) => store.refreshLocally());
+
+        })
+    }
+
     @action
     setLanguage(lang) {
-        console.log('嘿嘿');
         this.language = lang;
     }
 
@@ -29,35 +35,20 @@ class I18nUtil {
         return this.language;
     }
 
-    @computed get sample() {
-        console.log(`被呼叫了！！！ ${this.language}`)
-        return '123';
-    }
-    getExportLang () {
-        let CURRENT;
+    location() {
         switch (this.language) {
             case 'zh_TW':
-                CURRENT = TW;
-                Util.appendInfo(`哦哦被呼喚了 ${this.language}`)
-                break;
+                return TW;
             case 'zh_CN':
-                CURRENT = CN;
-                Util.appendInfo(`哦哦被呼喚了 ${this.language}`)
-                break;
+                return CN;
             case 'en_US':
-                CURRENT = EN;
-                Util.appendInfo(`哦哦被呼喚了 ${this.language}`)
-                break;
+                return EN;
             default:
-                CURRENT = TW;
-                break;
+                return TW;
         }
-        return CURRENT;
     }
 
     /** -------------------- async api -------------------- **/
 }
 
-const instance = new I18nUtil();
-const current = instance.getExportLang();
-export {instance as instance, current as i18n};
+export default new I18n();

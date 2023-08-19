@@ -21,6 +21,7 @@ import {
   runInAction,
 } from "mobx";
 import BaseAccountStore from "./BaseAccountStore";
+import i18n from "../../i18n";
 
 class ModularizedAccountStore extends BaseAccountStore {
   /** -------------------- fields -------------------- **/
@@ -40,6 +41,8 @@ class ModularizedAccountStore extends BaseAccountStore {
       this.getFuncAreaOfName().getStateAreaOfName().setValueOfName(user.displayName)
       this.getFuncAreaOfId().getStateAreaOfId().setValueOfId(user.uid);
     }
+    this.getFuncAreaOfEdit().setSelectedLang(i18n.getLanguage());
+
   }
 
   /** -------------------- async api -------------------- **/

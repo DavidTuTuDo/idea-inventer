@@ -140,6 +140,9 @@ class CodegenNode {
 
     valueOfTabDefault = '';
 
+    l10n = false;
+    /** 代表這個欄位要做i18n功能,怕命名和codegen的i18n打架, 所以取名叫l10n */
+
     forceToComponentModule = false;
     /** 強轉成 component module*/
 
@@ -674,6 +677,10 @@ class CodegenNode {
         this.type = type;
     }
 
+    needI18nBehaivor() {
+        return this.l10n;
+    }
+
     getFieldNameOfSelected() {
         return Util.camel('selected', this.getName());
     }
@@ -1136,6 +1143,10 @@ class CodegenNode {
         return Util.camel('get', this.getFieldName());
     }
 
+    getFunctionNameOfClean() {
+        return Util.camel('clean', this.getFieldName());
+    }
+
     getFunctionNameOfBatchUpdate() {
         return Util.camel('update', this.getFieldName());
     }
@@ -1289,14 +1300,14 @@ class CodegenNode {
             }
         }
 
-        function getStmtOfDialogTitle(){
+        function getStmtOfDialogTitle() {
             const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.title) ?  '' : `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
+            return _.isEmpty(dialog.title) ? '' : `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
         }
 
-        function getStmtOfDialogContent(){
+        function getStmtOfDialogContent() {
             const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.content) ?  '' : `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
+            return _.isEmpty(dialog.content) ? '' : `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
         }
 
         if (this.hasAlertDialog()) {
@@ -2327,7 +2338,7 @@ class CodegenNode {
                             sign,
                             key,
                             `${_.indexOf(arrayOfDefaultValue, obj)}`);
-                        obj[key] = `###i18n.${valueOfI18n}`;
+                        obj[key] = `###i18n.location().${valueOfI18n}`;
                     }
                 }
             }
@@ -2362,7 +2373,7 @@ class CodegenNode {
                                 const latest = Util.camel(
                                     self.getPreciseAttributeGenealogyName(),
                                     keyOfMajor, keyOfMinor, `${_.indexOf(array, object)}`);
-                                __stmts.push(`${keyOfMinor}: i18n.${latest}`)
+                                __stmts.push(`${keyOfMinor}: i18n.location().${latest}`)
                             }
                         }
                         _stmts.push(`${keyOfMajor}:{${__stmts.join(',')}}`)
@@ -2402,7 +2413,7 @@ class CodegenNode {
 
             if (this.isString()) {
                 const i18nOfDefaultValue = Util.camel(this.getPreciseAttributeGenealogyName());
-                return `i18n.${i18nOfDefaultValue}`;
+                return `i18n.location().${i18nOfDefaultValue}`;
             }
 
             return stringOfDefault;
@@ -2493,11 +2504,11 @@ class CodegenNode {
     }
 
     getFunctionNameOfSetter() {
-        return `set${_.upperFirst(this.getFieldName())}`;
+        return Util.camel('set', this.getFieldName());
     }
 
     getFunctionNameOfPushIntoArray() {
-        return `push${_.upperFirst(this.getFieldName())}`;
+        return Util.camel('push', this.getFieldName());
     }
 
     getFunctionNameOfModifiedSetter() {
@@ -3648,7 +3659,7 @@ class StoreBuilder extends BaseBuilder {
 
         function appendI18nFieldSetterGetter(generator, fieldName) {
             generator.appendField(fieldName,
-                `i18n.${fieldName}`,
+                `i18n.location().${fieldName}`,
                 ['observable']
             );
             generator.appendFunction(self.getFunctionNameOfSimpleSetter(fieldName), ['param'], ['action'],
@@ -3813,6 +3824,25 @@ class StoreBuilder extends BaseBuilder {
                     }
                 ))
 
+        baseGenerator.appendFunction('refreshLocally', [], ['action'], ['用來做i18n功能'],
+            `super.refreshLocally()`,
+            ...node.getPreciseAttributeChildren()
+                .map((child) => {
+                        if (child.isCheapArray() || child.isPathArray()) {
+                            return `_.each(this.${child.getFunctionNameOfGetters()}() , (item) => item.refreshLocally())`
+                        } else if (child.isArray()) {
+                            return `this.${child.getFunctionNameOfSetter()}(...${child.getDefaultValueByType()})`;
+                        } else if (child.isObject()) {
+                            return `this.${child.getFieldName()}.refreshLocally()`;
+                        } else {
+                            if (child.isString() && child.needI18nBehaivor())
+                                return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
+                            return '';
+                        }
+                    }
+                ))
+
+
         /** 因為defaultValue沒有被store包裝過, 所以建構子要弄一下
          ** 2023/02/05 在宣告時就把物件包成store了
          baseGenerator.appendFunction('setDefaultValues', [], [], [],
@@ -3848,7 +3878,7 @@ class StoreBuilder extends BaseBuilder {
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`Cookie`, '../../cookie');
         generator.appendImport(`Router`, '../../router');
-        generator.appendImport(`{i18n}`, '../../i18n');
+        generator.appendImport(`i18n`, '../../i18n');
         generator.appendImport(`Config`, '../../config');
         generator.appendImport(`{Application}`, '../../');
     }
@@ -6624,6 +6654,7 @@ class ProjectFileHandler extends PathBase {
                         view: 'Typography',
                         defaultValue: node.labelOfSwitch,
                         name: 'label',
+                        l10n: true,
                         type: 'string',
                     })
             }
@@ -6685,6 +6716,7 @@ class ProjectFileHandler extends PathBase {
                     type: `string`,
                     view: `Typography`,
                     outer: true,
+                    l10n: true,
                     incest: {view: false, attribute: true},
                     defaultValue: node.labelView.defaultValue,
                 });
@@ -6781,6 +6813,7 @@ class ProjectFileHandler extends PathBase {
                 label: {
                     name: 'label',
                     type: 'string',
+                    l10n: true,
                     description: `作為UI顯示用的顯示字樣`
                 },
                 value: {
@@ -6882,6 +6915,7 @@ class ProjectFileHandler extends PathBase {
                 node.getPreciseAttributeParent().appendChildrenWithJsons({
                     name: fieldNameOfItems,
                     type: 'arrayOfField',
+                    l10n: true,
                     defaultValue: JSON.parse(`[${stringsOfItem.join(',')}]`),
                 })
 
@@ -6985,6 +7019,7 @@ class ProjectFileHandler extends PathBase {
                         name: nameOfDescription,
                         type: 'string',
                         editIgnore: true,
+                        l10n: true,
                         defaultValue: node.getDescription(),
                     }
                 )

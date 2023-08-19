@@ -16,6 +16,7 @@ class CommonFirebaseHelper extends BaseFirebase {
             this.auth().onAuthStateChanged((user) => {
                 const event = require('../event').default;
                 event.emitAuthStateChanged(user);
+                Util.appendInfo(`登入後發布event了`)
             })
         }
 

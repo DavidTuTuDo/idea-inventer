@@ -18,6 +18,10 @@ class BaseStore extends ClientRemoteApi {
 
     component;
 
+    refreshLocally() {
+
+    }
+
     @observable
     globalDialogContent = {
         task: async () => {

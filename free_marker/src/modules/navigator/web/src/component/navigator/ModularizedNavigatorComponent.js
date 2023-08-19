@@ -185,6 +185,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     /** content 可能是string | {suggestedObject}*/
     onSearchPressed(content) {
         Util.appendInfo("onSearchPressed not implemented");
+
     }
 
     onNavigatorToolBarCompleteInputTextFieldChange(param) {
@@ -199,12 +200,13 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorToolBarAccountIconButton() {
-        return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed());
+        return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(),true);
     }
 
     getInjectStyleOfNavigatorToolBarLoginButton(toolBar) {
-        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed());
+        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed(),true);
     }
+
 
     /** -------------------- async api -------------------- **/
 }

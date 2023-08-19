@@ -59,6 +59,7 @@ class UserInfo {
     }
 
     onAuthStateChangedReceive = (user) => {
+        Util.appendInfo('4565231213 收到authStateChanged 通知，我改變了')
         this.specificBehaviorOfLoginStateChange(user).then()
     }
 

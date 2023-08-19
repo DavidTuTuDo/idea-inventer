@@ -12,7 +12,7 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseAccountComponent from "./BaseAccountComponent";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {instance } from '../../i18n';
+import i18n from '../../i18n';
 class ModularizedAccountComponent extends BaseAccountComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
@@ -43,7 +43,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
 
     onLangSelectedChange(value, funcAreaOfEdit) {
         console.log(value)
-        instance.setLanguage(value);
+        i18n.setLanguage(value);
     }
 
     /** -------------------- async api -------------------- **/
