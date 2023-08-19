@@ -143,7 +143,7 @@ class CodegenNode {
     l10n = false;
     /** 代表這個欄位要做i18n功能,怕命名和codegen的i18n打架, 所以取名叫l10n */
 
-    forceToComponentModule = false;
+    isCommonModule = false;
     /** 強轉成 component module*/
 
     componentsOfExtra = [];
@@ -741,11 +741,13 @@ class CodegenNode {
         return parent !== undefined;
     }
 
-    /** 設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
-     * module class 會persist到 free_marker/src/modules/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
+    /**
+     * 1.可以從任何一個節點找到node of component, 然後判斷是否為editable
+     * 2.設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
+     * 3.module class 會persist到 free_marker/src/modules/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
     isModuleComponent() {
         const ancestor = this.getNodeOfComponent();
-        return ancestor.forceToComponentModule ?? false;
+        return ancestor.isCommonModule ?? false;
     }
 
     getListOfModuleComponent() {
@@ -1046,6 +1048,7 @@ class CodegenNode {
             return `###${this.getName()}.getIdOfUniqueView()`;
     }
 
+    /** 可以從任何一個節點找到node of component, 然後判斷是否為editable */
     isPreciselyEditableComponent() {
         const nodeOfComponent = this.getNodeOfComponent();
         return nodeOfComponent.isEditableComponent;
@@ -3218,7 +3221,7 @@ class PathBase {
             const bunchOfCloudFunction = component.getCloudFunctions();
             if (_.isArray(bunchOfCloudFunction)) {
                 functions.push(...bunchOfCloudFunction.map((each) => {
-                    each.isModuleComponent = true;
+                    each.isModule = true;
                     return each;
                 }))
             }
@@ -5296,14 +5299,15 @@ class AppBuilder extends ComponentBuilder {
 
     }
 
-    async buildi18n() {
+    async buildI18n() {
 
         await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true);
-        const mapOfKeyValue = {}
+        const arrayOfI18nKeyValue = [];
 
         /**type用來歸類class append 的內容 field|comment|*/
         function appendMapOfKeyValue(key, value, type = 'field') {
-            mapOfKeyValue[key] = {value, type};
+            arrayOfI18nKeyValue.push({key, value, type})
+            // mapOfKeyValue[key] = {value, type};
         }
 
         function recursiveOfDoingSomethingMinor(arrayOfDefaultValue, child, sign = '') {
@@ -5387,8 +5391,8 @@ class AppBuilder extends ComponentBuilder {
             }
         }
 
-        for (const component of this.nodeOfAncestor.components) {
-            appendMapOfKeyValue(component.getName(), `${component.getName()} ↑ 需要的字串`, 'comment')
+        for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'], ['desc'])) {
+            appendMapOfKeyValue(component.getName(), `${component.getName()}${component.editor ? '-editor' : ''} 需要的字串`, 'comment')
             if (component.hasPageTitle())
                 appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 
@@ -5400,23 +5404,33 @@ class AppBuilder extends ComponentBuilder {
         }
 
         for (const lang of LANGUAGES_OF_SUPPORT) {
-            const baseI18nGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `BaseMyI18n.js`));
-            baseI18nGenerator.appendClass('BaseMyI18n', {name: 'BaseI18n', from: `../../base/BaseI18n`});
+            const classNameOfBase = `BaseMyI18n`;
+            const classNameOfModularized = `${KEYWORD_OF_MODULARIZED}MyI18n`;
+            const classNameOfIndex = `I18n`;
 
-            _.each(mapOfKeyValue, (object, key, all) => {
+            const base = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfBase}.js`));
+            base.appendClass(classNameOfBase, {name: classNameOfBase, from: `../../base/BaseI18n`});
+            const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`))
+            modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
+            const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfIndex}.js`))
+            index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
+            index.setSingleton(true);
+
+            _.each(_.reverse(arrayOfI18nKeyValue), (object, index, all) => {
                 switch (object.type) {
                     case 'field':
-                        baseI18nGenerator.appendField(key, JSON.stringify(object.value));
+                        base.appendField(object.key, JSON.stringify(object.value));
                         break;
                     case 'comment':
-                        baseI18nGenerator.appendComment(object.value, 'field');
+                        base.appendComment(object.value, 'field');
                         break;
                 }
             })
-
-            baseI18nGenerator.needIndexFile('I18n', [], true);
-            await baseI18nGenerator.persist();
+            await base.persist();
+            await modularized.persist();
+            await index.persist();
         }
+
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.i18n.index.js'),
             libpath.join(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
     }
@@ -6940,9 +6954,9 @@ class ProjectFileHandler extends PathBase {
                     && _.isEqual(node.getPreciseAttributeParentName(), 'question')
                 ) {
                     // console.log(`${node.getPreciseAttributeParentName()}-${node.getName()}`, functionOfView(type), type, node.getView());
-                    console.log(`node.isAttributeView(${type}) ==> `, node.isAttributeView('TextField', type, node))
-                    console.log(`node.isTextFieldView(${type}) ==> `, node.isTextFieldView(type, node))
-                    console.log(`node.needOnChangeBehavior(${type}) ==> `, node.needOnChangeBehavior(type, node))
+                    // console.log(`node.isAttributeView(${type}) ==> `, node.isAttributeView('TextField', type, node))
+                    // console.log(`node.isTextFieldView(${type}) ==> `, node.isTextFieldView(type, node))
+                    // console.log(`node.needOnChangeBehavior(${type}) ==> `, node.needOnChangeBehavior(type, node))
                 }
 
                 if (functionOfView(type, node)) {
@@ -7481,7 +7495,7 @@ class ProjectFileHandler extends PathBase {
         generator.appendAsyncFunction(functionNameOfHandleBy,
             [...params], [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
 
-        if (func.isModuleComponent) {
+        if (func.isCommonModule) {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
             const moduleGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`));
             moduleGenerator.appendClass(moduleClassName, {name: baseClass, from: `./${baseClass}`});
@@ -7630,7 +7644,7 @@ class ProjectFileHandler extends PathBase {
                 delete content.componentsOfExtra;
                 for (const rawOfComponent of [content, ...componentsOfExtra]) {
                     /** rawOfComponent 代表沒有被enrich過 */
-                    rawOfComponent.forceToComponentModule = true;
+                    rawOfComponent.isCommonModule = true;
                     CodegenNode.appendChildInArray(source.getComponents(), rawOfComponent)
                 }
             }
@@ -7653,7 +7667,7 @@ class ProjectFileHandler extends PathBase {
 
     async forNewLess() {
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
-            return {name: each.getName(), editor: each.isPreciselyEditableComponent()}
+            return {name: each.getName(), editor: each.isPreciselyEditableComponent(), module: each.isModuleComponent()}
         }))
         await Util.cleanChildFiles(this.genRootPath, (each) => true, 'node_modules');
 
@@ -7691,7 +7705,7 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildAppIndexFiles();
-        await new AppBuilder(paramProps).buildi18n();
+        await new AppBuilder(paramProps).buildI18n();
         await this.buildDistAssetFolder();
         if (!ENABLE_FAST_DEVELOP_MODE) {
             await new AppBuilder(paramProps).buildWebpackNPackageJson();
@@ -7759,7 +7773,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
-            return {name: each.getName(), editor: each.isPreciselyEditableComponent()}
+            return {name: each.getName(), editor: each.isPreciselyEditableComponent(), module: each.isModuleComponent()}
         }))
 
         if (this.isWebPlatform() && !this.isProduction()) {
