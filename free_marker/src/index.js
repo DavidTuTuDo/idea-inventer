@@ -5307,7 +5307,6 @@ class AppBuilder extends ComponentBuilder {
         /**type用來歸類class append 的內容 field|comment|*/
         function appendMapOfKeyValue(key, value, type = 'field') {
             arrayOfI18nKeyValue.push({key, value, type})
-            // mapOfKeyValue[key] = {value, type};
         }
 
         function recursiveOfDoingSomethingMinor(arrayOfDefaultValue, child, sign = '') {
@@ -5391,7 +5390,7 @@ class AppBuilder extends ComponentBuilder {
             }
         }
 
-        for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'], ['desc'])) {
+        for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
             appendMapOfKeyValue(component.getName(), `${component.getName()}${component.editor ? '-editor' : ''} 需要的字串`, 'comment')
             if (component.hasPageTitle())
                 appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
