@@ -131,6 +131,12 @@ class CodegenNode {
         disableOnInteraction: false,
     };
 
+    /**
+     * 定義在structs那一層
+     * { sample:'範例',example:'超級範例' }
+     **/
+    textsOfI18n = {};
+
     implementsOfAlertItemClicked = [];
     /** alertMenu的 items,在點擊後的事件實作 */
 
@@ -647,12 +653,20 @@ class CodegenNode {
         return this.methods;
     }
 
+    getStructs() {
+        return this.getNodeOfComponent().getComponents().map(component => component.getStruct());
+    }
+
     hasDescription() {
         return !Util.isUndefinedNullEmpty(this.description);
     }
 
     getValueOfTabDefault() {
         return this.valueOfTabDefault;
+    }
+
+    getCustomTextOfI18n() {
+        return this.getNodeOfStruct().textsOfI18n;
     }
 
     getHostOfCloudFunction() {
@@ -1199,7 +1213,7 @@ class CodegenNode {
     static doNotEnrichAttribute() {
         return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
 
     setListContents(contents) {
@@ -5303,9 +5317,6 @@ class AppBuilder extends ComponentBuilder {
 
     async buildI18n() {
 
-        await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true);
-        const arrayOfI18nKeyValue = [];
-
         /**type用來歸類class append 的內容 field|comment|*/
         function appendMapOfKeyValue(key, value, type = 'field') {
             arrayOfI18nKeyValue.push({key, value, type})
@@ -5392,6 +5403,9 @@ class AppBuilder extends ComponentBuilder {
             }
         }
 
+        await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true);
+        const arrayOfI18nKeyValue = [];
+
         for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
             appendMapOfKeyValue(component.getName(), `${component.getName()}${component.isPreciselyEditableComponent() ? '-editor' : ''} 需要的字串`, 'comment')
             if (component.hasPageTitle())
@@ -5402,6 +5416,11 @@ class AppBuilder extends ComponentBuilder {
                 if (!child.isReferenceNode())
                     recursiveOfDoingSomethingMajor(child);
             }
+
+            _.each(component.getCustomTextOfI18n(), (value, key) => {
+                appendMapOfKeyValue(Util.camel(component.getStruct().getName(), key), value);
+            })
+
         }
 
         const mapOfI18nStmtsOfCommonModule = {};
@@ -6285,6 +6304,9 @@ class ProjectFileHandler extends PathBase {
             return stmts.join('\n\n');
         }
 
+        if (!this.isWebPlatform()) {
+            return;
+        }
 
         const modules = _.filter(this.nodeOfAncestor.getComponents(), (component) => component.isModuleComponent()).map(each => each.getName());
         /** 拿到 module components ['account', 'navigator']*/
@@ -7800,6 +7822,7 @@ class ProjectFileHandler extends PathBase {
                 for (const rawOfComponent of [content, ...componentsOfExtra]) {
                     /** rawOfComponent 代表沒有被enrich過 */
                     rawOfComponent.isCommonModule = true;
+
                     CodegenNode.appendChildInArray(source.getComponents(), rawOfComponent)
                 }
             }
@@ -8213,6 +8236,7 @@ class BuildApplication {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
         await handler.persistModuleComponentFiles()
         handler.persistBaseFilesToFreeMarkerTemplate();
+        await handler.rewriteModulesI18nFiles();
         handler.persistCustomizePackages()
         handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
