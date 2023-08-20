@@ -6161,7 +6161,7 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    async modifiedI18nFile() {
+    async rewriteModulesI18nFiles() {
 
         /** stmt = main-editor 需要的字串
          *
@@ -6205,7 +6205,8 @@ class ProjectFileHandler extends PathBase {
         }
 
         /**
-         *  return : [{
+         *  return : [
+         *     {
          *      name: 'portfolio',
          *      comment: '/** portfolio 需要的字串 ',
          *          i18n: {
@@ -6214,12 +6215,12 @@ class ProjectFileHandler extends PathBase {
          *                  portfolioRhythmUuidOfSinger: '-1'
          *          }
          *      },
-         *  {   name: 'artist', comment: '/** artist 需要的字串 ', i18n: {} },
-         *  {
+         *     {
          *      name: 'historyRhythm',
          *          comment: '/** historyRhythm 需要的字串 ',
          *      i18n: { pageTitleOfHistoryRhythm: '歷史搜尋' }
-         *  }]
+         *     }
+         * ]
          */
         function getObjectOfComponentI18n(pathOfi18nFile) {
             /** 取得字串 */
@@ -6247,6 +6248,30 @@ class ProjectFileHandler extends PathBase {
             return sum;
         }
 
+        /**
+         *object {
+         *   name: 'navigator',
+         *   comment: '/** navigator 需要的字串 ',
+         * i18n:{
+         *
+         *     navigatorToolBarTitle: '明悅科技',
+         *
+         *    navigatorToolBarCompleteLabelOfInput: '沒有解釋',
+         *
+         *    navigatorToolBarLogin: '登入',
+         *
+         *     navigatorKeywordId: 'contents'
+         *     }
+         */
+        function getStringOfModularizedStatement(object) {
+            const stmts = [];
+            stmts.push(object.comment);
+            _.each(object.i18n, (value, key) => {
+                stmts.push(`${key} = ${value};`)
+            })
+            return stmts.join('\n\n');
+        }
+
 
         const modules = _.filter(this.nodeOfAncestor.getComponents(), (component) => component.isModuleComponent()).map(each => each.getName());
         /** 拿到 module components ['account', 'navigator']*/
@@ -6260,14 +6285,18 @@ class ProjectFileHandler extends PathBase {
             for (const nameOfComponent of modules) {
                 const filtersOfBase = _.filter(sumsOfBase, (obj) => _.startsWith(obj.name, nameOfComponent));
                 const filtersOfModule = _.filter(sumsOfModules, (obj) => _.startsWith(obj.name, nameOfComponent));
+
+                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${nameOfComponent}/web/src/i18n/${lang}/i18n.txt`)
+                await Util.deleteSelfByPath(destination, true);
+                await Util.persistByPath(destination);
                 for (const filterOfBase of filtersOfBase) {
                     const targetWriteIntoModuleI18n = filterOfBase;
                     const filterOfModule = _.find(filtersOfModule, (each) => _.isEqual(each.name, filterOfBase.name));
-                    if(filterOfModule) {
+                    if (filterOfModule)
                         targetWriteIntoModuleI18n.i18n = Util.mergeObject(filterOfBase.i18n, filterOfModule.i18n);
-                    }
-                    Util.appendInfo(`\n語言:${lang}`,`\n模組:${nameOfComponent}`,`\ncontent:`, targetWriteIntoModuleI18n);
+                    Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n);
                     /** write into module i18n */
+                    Util.appendFile(destination, getStringOfModularizedStatement(targetWriteIntoModuleI18n), true, false);
                 }
             }
         }
@@ -8181,7 +8210,7 @@ class BuildApplication {
 
     async modifiedI18n(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
-        await handler.modifiedI18nFile();
+        await handler.rewriteModulesI18nFiles();
     }
 
 }
