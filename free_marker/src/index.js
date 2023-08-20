@@ -3098,7 +3098,7 @@ class ClassGenerator {
         return this.getIndexOf(SIGN_OF_FIELD_START);
     }
 
-    insertBatchLinesIntoFunctionSection(lines) {
+    appendBatchLinesIntoFunctionSection(lines) {
         Util.insertToArray(this.context, this.getIndexOfFunctionSign(), ...lines);
     }
 
@@ -3106,7 +3106,7 @@ class ClassGenerator {
         Util.insertToArray(this.context, this.getIndexOfRestfulApiSign(), ...lines);
     }
 
-    insertBatchLinesIntoFieldSection(lines) {
+    appendBatchLinesIntoFieldSection(lines) {
         Util.insertToArray(this.context, this.getIndexOfFieldSign(), ...lines);
     }
 
@@ -3527,7 +3527,7 @@ class StoreBuilder extends BaseBuilder {
             const fieldName = child.getFieldName();
             const defaultValue = child.getDefaultValueByType();
             generator.appendField(fieldName, defaultValue, ['observable'], [`${child.getDescription()}`]);
-            generator.insertBatchLinesIntoFunctionSection(
+            generator.appendBatchLinesIntoFunctionSection(
                 this.getFunctionsDependOnFieldType(child.type,
                     {
                         name: child.getName(),
@@ -5402,6 +5402,16 @@ class AppBuilder extends ComponentBuilder {
                     recursiveOfDoingSomethingMajor(child);
             }
         }
+
+        const mapOfI18nStmtsOfCommonModule = {};
+        for (const _module of _.filter(this.nodeOfAncestor.components, (com) => com.isModuleComponent())) {
+            for (const lang of LANGUAGES_OF_SUPPORT) {
+                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${_module.getName()}/web/src/i18n/${lang}/i18n.txt`)
+                if (Util.isPathExist(destination))
+                    Util.appendMapOfKeyArray(mapOfI18nStmtsOfCommonModule, lang, Util.getFileContextInRaw(destination));
+            }
+        }
+
         /** 為了視覺上合理化 */
         const arrayOfI18nReverse = _.reverse(arrayOfI18nKeyValue)
         for (const lang of LANGUAGES_OF_SUPPORT) {
@@ -5413,6 +5423,8 @@ class AppBuilder extends ComponentBuilder {
             base.appendClass(classNameOfBase, {name: classNameOfBase, from: `../../base/BaseI18n`});
             const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`))
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
+            if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
+                modularized.appendBatchLinesIntoFieldSection(['\n\n',...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
             const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfIndex}.js`))
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
             index.setSingleton(true);
@@ -5810,7 +5822,7 @@ class AppBuilder extends ComponentBuilder {
                     }
                 }
                 const isEditPage = info.component.isPreciselyEditableComponent();
-                generator.insertBatchLinesIntoFieldSection(`\n\n/** => following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component  */\n\n`)
+                generator.appendBatchLinesIntoFieldSection(`\n\n/** => following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component  */\n\n`)
                 generator.needSignature(false);
                 generator.setSingleton(true);
             }
@@ -5821,7 +5833,7 @@ class AppBuilder extends ComponentBuilder {
                     if (!_.isEqual(origins[name], {}))
                         generator.appendField(name, JSON.stringify(origins[name]));
                 }
-                generator.insertBatchLinesIntoFieldSection(`\n\n/** following for homeless */\n\n`)
+                generator.appendBatchLinesIntoFieldSection(`\n\n/** following for homeless */\n\n`)
             }
             await generator.persist();
         }
@@ -6267,7 +6279,7 @@ class ProjectFileHandler extends PathBase {
             const stmts = [];
             stmts.push(object.comment);
             _.each(object.i18n, (value, key) => {
-                stmts.push(`${key} = ${value};`)
+                stmts.push(`${key} = "${value}";`)
             })
             return stmts.join('\n\n');
         }

@@ -467,6 +467,23 @@ class Utiller {
         return item.length > 0 ? item[0] : undefined;
     }
 
+    /**
+     *  const aaa = {};
+     *  utiller.appendMapOfKeyArray(aaa, 'a', 11);
+     *  utiller.appendMapOfKeyArray(aaa, 'c', 13);
+     *  utiller.appendMapOfKeyArray(aaa, 'a', 23);
+     *  utiller.appendMapOfKeyArray(aaa, 'c', 'vsdd')
+     *  utiller.appendMapOfKeyArray(aaa, 'a', 'sd');
+     *  console.log(aaa);
+     *  // { a: [ 11, 23, 'sd' ], c: [ 13, 'vsdd' ] }
+     * */
+    appendMapOfKeyArray(object, key, ...value) {
+        if (this.isUndefinedNullEmpty(object[key])) {
+            object[key] = [...value]
+        } else {
+            object[key].push(...value);
+        }
+    }
 
     /**
      * util.getMergedArrayBy(
@@ -722,7 +739,7 @@ class Utiller {
         let hasIndex = true;
         let indexOfLatest = 0;
         while (hasIndex) {
-            indexOfLatest = _.findIndex(array, predicate, indexOfLatest+1);
+            indexOfLatest = _.findIndex(array, predicate, indexOfLatest + 1);
             if (indexOfLatest > -1) {
                 indexes.push(indexOfLatest);
             } else {
@@ -1701,7 +1718,14 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new Utiller();
+            const utiller = new Utiller();
+            const aaa = {};
+            utiller.appendMapOfKeyArray(aaa, 'a', 11);
+            utiller.appendMapOfKeyArray(aaa, 'c', 13);
+            utiller.appendMapOfKeyArray(aaa, 'a', 23);
+            utiller.appendMapOfKeyArray(aaa, 'c', 'vsdd')
+            utiller.appendMapOfKeyArray(aaa, 'a', 'sd');
+            console.log(aaa);
             // console.log(utiller.getTailStringSplitBy('325/2/32/1','/'))
             // const obj = {time :undefined,name: 'david'};
             // utiller.removeAttributeBy(obj);
