@@ -5426,7 +5426,7 @@ class AppBuilder extends ComponentBuilder {
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
             if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
                 modularized.appendBatchLinesIntoFieldSection(['\n\n', ...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
-            const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfIndex}.js`))
+            const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `index.js`))
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
             index.setSingleton(true);
 
