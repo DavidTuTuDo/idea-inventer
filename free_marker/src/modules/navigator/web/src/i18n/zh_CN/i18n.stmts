@@ -1,0 +1,9 @@
+/** navigator 需要的字串 */
+
+navigatorToolBarTitle = "CN明悅科技";
+
+navigatorToolBarCompleteLabelOfInput = "沒有解釋";
+
+navigatorToolBarLogin = "CN登入";
+
+navigatorKeywordId = "contents";

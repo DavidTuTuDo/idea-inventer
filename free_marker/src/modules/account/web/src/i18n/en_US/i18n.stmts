@@ -1,0 +1,43 @@
+/** account 需要的字串 */
+
+accountFuncAreaOfNameStateAreaOfNameLabelOfName = "US顯示名稱";
+
+accountFuncAreaOfNameStateAreaOfNameValueOfName = "US讀取中...";
+
+accountFuncAreaOfEmailStateAreaOfEmailLabelOfEmail = "電子郵件信箱";
+
+accountFuncAreaOfEmailStateAreaOfEmailValueOfEmail = "讀取中...";
+
+accountFuncAreaOfIdStateAreaOfIdLabelOfId = "個人令牌";
+
+accountFuncAreaOfIdStateAreaOfIdValueOfId = "讀取中...";
+
+accountFuncAreaOfEditLangLabel0 = "繁體中文";
+
+accountFuncAreaOfEditLangLabel1 = "简体中文";
+
+accountFuncAreaOfEditLangLabel2 = "English";
+
+accountFuncAreaOfEditCopyUserId = "複製令牌";
+
+accountFuncAreaOfEditLogout = "登出";
+
+dialogContentOfAccountFuncAreaOfEditLogout = "是否確定登出?";
+
+dialogTitleOfAccountFuncAreaOfEditLogout = "再次確認";
+
+accountFuncAreaOfEditToEditMode = "編輯模式";
+
+accountFuncAreaOfEditSelectedLang = "zh_TW";
+
+accountCredentialAccessToken = "empty";
+
+accountCredentialIdToken = "empty";
+
+accountCredentialOauthIdToken = "empty";
+
+accountCredentialOauthAccessToken = "empty";
+
+accountCredentialProviderId = "goooogle.com";
+
+accountCredentialSignInMethod = "goooogle.com";

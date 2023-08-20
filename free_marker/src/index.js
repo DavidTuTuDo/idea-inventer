@@ -38,6 +38,7 @@ const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
 const SIGN_OF_EMPTY_STORE = 'pure';
+const FILE_EXTENSION_OF_I18N = 'i18n.stmts';
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -5406,7 +5407,7 @@ class AppBuilder extends ComponentBuilder {
         const mapOfI18nStmtsOfCommonModule = {};
         for (const _module of _.filter(this.nodeOfAncestor.components, (com) => com.isModuleComponent())) {
             for (const lang of LANGUAGES_OF_SUPPORT) {
-                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${_module.getName()}/web/src/i18n/${lang}/i18n.txt`)
+                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${_module.getName()}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
                 if (Util.isPathExist(destination))
                     Util.appendMapOfKeyArray(mapOfI18nStmtsOfCommonModule, lang, Util.getFileContextInRaw(destination));
             }
@@ -5424,7 +5425,7 @@ class AppBuilder extends ComponentBuilder {
             const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`))
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
             if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
-                modularized.appendBatchLinesIntoFieldSection(['\n\n',...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
+                modularized.appendBatchLinesIntoFieldSection(['\n\n', ...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
             const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfIndex}.js`))
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
             index.setSingleton(true);
@@ -6298,7 +6299,7 @@ class ProjectFileHandler extends PathBase {
                 const filtersOfBase = _.filter(sumsOfBase, (obj) => _.startsWith(obj.name, nameOfComponent));
                 const filtersOfModule = _.filter(sumsOfModules, (obj) => _.startsWith(obj.name, nameOfComponent));
 
-                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${nameOfComponent}/web/src/i18n/${lang}/i18n.txt`)
+                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${nameOfComponent}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
                 await Util.deleteSelfByPath(destination, true);
                 await Util.persistByPath(destination);
                 for (const filterOfBase of filtersOfBase) {
