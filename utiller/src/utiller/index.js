@@ -716,6 +716,22 @@ class Utiller {
         return tmp
     }
 
+    /** 用_.findIndex(比較內文的方式) 去找出array裡所有符合條件的 */
+    findIndexes(array, predicate) {
+        const indexes = [];
+        let hasIndex = true;
+        let indexOfLatest = 0;
+        while (hasIndex) {
+            indexOfLatest = _.findIndex(array, predicate, indexOfLatest+1);
+            if (indexOfLatest > -1) {
+                indexes.push(indexOfLatest);
+            } else {
+                hasIndex = false;
+            }
+        }
+        return indexes;
+    }
+
     /** 找到關鍵字所有的index */
     indexesOf(arr, val) {
         const indexes = []
@@ -1007,6 +1023,7 @@ class Utiller {
     }
 
     /** 放在後面的priority 越大 */
+
     mergeObject(...obj) {
         return _.merge(...obj);
     }
@@ -1642,6 +1659,43 @@ class Utiller {
 
     getTailStringSplitBy(string, sign = this.getSeparatorOfUnique()) {
         return _.split(string, sign).pop();
+    }
+
+    /** 把array根據indexes分割成slices(array)
+     * array = [0,1,2,3,4,5,6,7]
+     * indexes = [0,3,5,7];
+     * return [... [array1(0,3) ],[array2(3,5)],[array3(5,7)] ],
+     * */
+    getSlicesByIndexes(array = [], indexes = []) {
+        const slices = [];
+        _.each(indexes, (each, index, arrayOfIndexes) => {
+            if (_.isEqual(index, indexes.length - 1))
+                return false;
+
+            const slice = _.slice(array, each, indexes[index + 1]);
+            slices.push(slice);
+        })
+        return slices;
+    }
+
+    /** 用_.findIndex(比較內文的方式) 去找出array裡所有符合條件的
+     * array = [-2, -1, 65, -4, 77]
+     * predicate = (item) => item > 1;
+     * return [3,5]
+     * */
+    findIndexes(array, predicate) {
+        const indexes = [];
+        let hasIndex = true;
+        let indexOfLatest = 0;
+        while (hasIndex) {
+            indexOfLatest = _.findIndex(array, predicate, indexOfLatest + 1);
+            if (indexOfLatest > -1) {
+                indexes.push(indexOfLatest);
+            } else {
+                hasIndex = false;
+            }
+        }
+        return indexes;
     }
 }
 

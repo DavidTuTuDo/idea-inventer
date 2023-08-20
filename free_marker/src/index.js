@@ -4,6 +4,7 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
+import {compile} from "@babel/cli/lib/babel/util";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -5391,7 +5392,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
-            appendMapOfKeyValue(component.getName(), `${component.getName()}${component.editor ? '-editor' : ''} 需要的字串`, 'comment')
+            appendMapOfKeyValue(component.getName(), `${component.getName()}${component.isPreciselyEditableComponent() ? '-editor' : ''} 需要的字串`, 'comment')
             if (component.hasPageTitle())
                 appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 
@@ -5401,7 +5402,8 @@ class AppBuilder extends ComponentBuilder {
                     recursiveOfDoingSomethingMajor(child);
             }
         }
-
+        /** 為了視覺上合理化 */
+        const arrayOfI18nReverse = _.reverse(arrayOfI18nKeyValue)
         for (const lang of LANGUAGES_OF_SUPPORT) {
             const classNameOfBase = `BaseMyI18n`;
             const classNameOfModularized = `${KEYWORD_OF_MODULARIZED}MyI18n`;
@@ -5415,7 +5417,7 @@ class AppBuilder extends ComponentBuilder {
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
             index.setSingleton(true);
 
-            _.each(_.reverse(arrayOfI18nKeyValue), (object, index, all) => {
+            _.each(arrayOfI18nReverse, (object, index, all) => {
                 switch (object.type) {
                     case 'field':
                         base.appendField(object.key, JSON.stringify(object.value));
@@ -6156,6 +6158,118 @@ class ProjectFileHandler extends PathBase {
             Util.copyFromFolderToDestFolder(images,
                 Util.persistByPath(libpath.join(this.projectPlatformPath, 'images'))
             );
+        }
+    }
+
+    async modifiedI18nFile() {
+
+        /** stmt = main-editor 需要的字串
+         *
+         * return {
+         *     comment: 'main-editor 需要的字串',
+         *     name : main-editor',
+         * }
+         * */
+        function getComponentNameByStmt(stmt) {
+            const segments = _.split(stmt, ' ');
+            return {name: segments[1], comment: stmt};
+        }
+
+        /**
+         [
+         'pageTitleOfMain = "悅譜-首頁";'
+         'mainTitleOfHotRhythm = "熱門歌曲";'
+         'mainHotRhythmName = "如果不可以";'
+         'mainHotRhythmSinger = "明悅";'
+         ]
+         */
+        function getObjectOfKeyMapBySlice(array) {
+            const result = {}
+            if (_.size(array) > 0) {
+                const latest = _.each(array, (raw, index, array) => {
+                    if (!_.endsWith(_.trim(raw), ';')) {
+                        array[index] = `${raw} ${array[index + 1]}`;
+                        array[index + 1] = '?;';
+                    }
+                })
+                const segments = _.remove(latest, (each) => !_.isEqual(each, '?;'));
+                /** Util.appendFile('./watchdog1.txt', segments.join('\n,'), true, true); */
+                const content = _.map(segments, each => `"${Util.replaceAllWithSets(each, {
+                    from: ' = ',
+                    to: '":'
+                }, {from: ';', to: ''})}`).join(',\n');
+                /** Util.appendFile('./watchdog2.txt', content, true, true); */
+                return JSON.parse(`{${content}}`);
+            }
+            return result;
+        }
+
+        /**
+         *  return : [{
+         *      name: 'portfolio',
+         *      comment: '/** portfolio 需要的字串 ',
+         *          i18n: {
+         *              pageTitleOfPortfolio: '歌曲列表',
+         *                  portfolioRhythmUuidOfSong: '-1',
+         *                  portfolioRhythmUuidOfSinger: '-1'
+         *          }
+         *      },
+         *  {   name: 'artist', comment: '/** artist 需要的字串 ', i18n: {} },
+         *  {
+         *      name: 'historyRhythm',
+         *          comment: '/** historyRhythm 需要的字串 ',
+         *      i18n: { pageTitleOfHistoryRhythm: '歷史搜尋' }
+         *  }]
+         */
+        function getObjectOfComponentI18n(pathOfi18nFile) {
+            /** 取得字串 */
+            const segments = _.remove(Util.getSegmentsOfEachLine(Util.getFileContextInRaw(pathOfi18nFile)).map((statement) => _.trim(statement)),
+                (each) => !Util.isUndefinedNullEmpty(each));
+
+            /** 藉由'/**'ˊ找到每個component的f起始index  例:[0,3,5,11,15] */
+            const itemsOfLatest = _.slice(segments, _.indexOf(segments, SIGN_OF_FIELD_START) + 1, _.indexOf(segments, SIGN_OF_FUNCTION_START));
+
+            /** 藉由index組合出slice array ['/** exam 的需要字串',`aa='bb'`.`bb='cc'`] */
+            const indexes = [0, ...Util.findIndexes(itemsOfLatest, (item) => _.startsWith(item, '/** ')), itemsOfLatest.length];
+
+            /** 取得slice array [['XXX需要的字串'],[aa='bb';],[cc='dd';]],*/
+            const slices = Util.getSlicesByIndexes(itemsOfLatest, indexes);
+
+            const sum = [];/** {navigator:{aa:'bb',cc:'dd'}}*/
+            for (const slice of slices) {
+                const stmtOfComponent = slice.shift();
+                /** console.log(stmtOfComponent, slice); */
+                sum.push({
+                    ...getComponentNameByStmt(stmtOfComponent),
+                    i18n: getObjectOfKeyMapBySlice(slice)
+                })
+            }
+            return sum;
+        }
+
+
+        const modules = _.filter(this.nodeOfAncestor.getComponents(), (component) => component.isModuleComponent()).map(each => each.getName());
+        /** 拿到 module components ['account', 'navigator']*/
+
+        for (const lang of LANGUAGES_OF_SUPPORT) {
+            const modularized = libpath.join(this.genSourcePath, 'i18n', lang, 'ModularizedMyI18n.js');
+            const base = libpath.join(this.genSourcePath, 'i18n', lang, 'BaseMyI18n.js');
+
+            const sumsOfModules = getObjectOfComponentI18n(modularized);
+            const sumsOfBase = getObjectOfComponentI18n(base);
+            for (const nameOfComponent of modules) {
+                const filtersOfBase = _.filter(sumsOfBase, (obj) => _.startsWith(obj.name, nameOfComponent));
+                const filtersOfModule = _.filter(sumsOfModules, (obj) => _.startsWith(obj.name, nameOfComponent));
+                for (const filterOfBase of filtersOfBase) {
+                    const targetWriteIntoModuleI18n = filterOfBase;
+                    const filterOfModule = _.find(filtersOfModule, (each) => _.isEqual(each.name, filterOfBase.name));
+                    if(filterOfModule) {
+                        targetWriteIntoModuleI18n.i18n = Util.mergeObject(filterOfBase.i18n, filterOfModule.i18n);
+                    }
+                    Util.appendInfo(`\n語言:${lang}`,`\n模組:${nameOfComponent}`,`\ncontent:`, targetWriteIntoModuleI18n);
+                    /** write into module i18n */
+                }
+            }
         }
     }
 
@@ -8065,6 +8179,11 @@ class BuildApplication {
 
     }
 
+    async modifiedI18n(platform = 'web') {
+        const handler = new ProjectFileHandler(this.getBuildObject(platform));
+        await handler.modifiedI18nFile();
+    }
+
 }
 
 export {BuildApplication as BuildApplication};
@@ -8157,9 +8276,12 @@ if (configerer.DEBUG_MODE) {
                 case 'buildStoreIndexJson':
                     await builder.buildIndexRule();
                     break;
+                case 'developLatestFunction':
+                    await builder.modifiedI18n();
+                    break;
                 default:
                     Util.appendInfo('jo4你');
-                    await builder.test();
+
                     break
             }
 
