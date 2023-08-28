@@ -5440,7 +5440,7 @@ class AppBuilder extends ComponentBuilder {
             const classNameOfIndex = `I18n`;
 
             const base = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfBase}.js`));
-            base.appendClass(classNameOfBase, {name: classNameOfBase, from: `../../base/BaseI18n`});
+            base.appendClass(classNameOfBase, {name: 'BaseI18n', from: `../../base/BaseI18n`});
             const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`))
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
             if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
@@ -7997,6 +7997,9 @@ class ProjectFileHandler extends PathBase {
                 }, {
                     type: 'extension',
                     keyword: 'png'
+                },{
+                    type: 'extension',
+                    keyword: 'stmts'
                 }, ...this.getIgnoredFilesByPlatform()
             );
 

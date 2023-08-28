@@ -1,12 +1,12 @@
 /** account 需要的字串 */
 
-accountFuncAreaOfNameStateAreaOfNameLabelOfName = "CN顯示名稱";
+accountFuncAreaOfNameStateAreaOfNameLabelOfName = "顯示名稱";
 
-accountFuncAreaOfNameStateAreaOfNameValueOfName = "CN讀取中...";
+accountFuncAreaOfNameStateAreaOfNameValueOfName = "讀取中...";
 
-accountFuncAreaOfEmailStateAreaOfEmailLabelOfEmail = "CN電子郵件信箱";
+accountFuncAreaOfEmailStateAreaOfEmailLabelOfEmail = "電子郵件信箱";
 
-accountFuncAreaOfEmailStateAreaOfEmailValueOfEmail = "CN讀取中...";
+accountFuncAreaOfEmailStateAreaOfEmailValueOfEmail = "讀取中...";
 
 accountFuncAreaOfIdStateAreaOfIdLabelOfId = "個人令牌";
 

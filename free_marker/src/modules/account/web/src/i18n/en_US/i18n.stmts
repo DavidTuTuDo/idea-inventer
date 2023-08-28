@@ -1,8 +1,8 @@
 /** account 需要的字串 */
 
-accountFuncAreaOfNameStateAreaOfNameLabelOfName = "US顯示名稱";
+accountFuncAreaOfNameStateAreaOfNameLabelOfName = "顯示名稱";
 
-accountFuncAreaOfNameStateAreaOfNameValueOfName = "US讀取中...";
+accountFuncAreaOfNameStateAreaOfNameValueOfName = "讀取中...";
 
 accountFuncAreaOfEmailStateAreaOfEmailLabelOfEmail = "電子郵件信箱";
 

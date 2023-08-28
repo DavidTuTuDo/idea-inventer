@@ -7,3 +7,7 @@ navigatorToolBarCompleteLabelOfInput = "沒有解釋";
 navigatorToolBarLogin = "登入";
 
 navigatorKeywordId = "contents";
+
+navigatorSample = "範例";
+
+navigatorExample = "超級範例";
