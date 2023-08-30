@@ -63,18 +63,17 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
         if (this.controlOfManual)
             return;
 
-        const itemsOfPu = this.getFavoritePus();
+        const itemsOfPu = _.orderBy(this.getFavoritePus(), ['singer', 'name'])
         for (const item of itemsOfPu) {
             item.setNeedTitle(true);
             const index = _.indexOf(itemsOfPu, item);
             if (index > 0) {
                 const itemOfPreview = itemsOfPu[index - 1];
-                if (_.isEqual(itemOfPreview.singer, item.singer)) {
+                if (_.isEqual(itemOfPreview.singer, item.singer))
                     item.setNeedTitle(false);
-                }
             }
         }
-        this.setFavoritePus(..._.orderBy(itemsOfPu, ['singer', 'name']));
+        this.setFavoritePus(...itemsOfPu);
     }
 
     /** -------------------- async api -------------------- **/

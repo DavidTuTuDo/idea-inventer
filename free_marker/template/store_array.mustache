@@ -140,6 +140,8 @@ this.remove{{{functionName}}}ByIndex(...indexes);
 
     {{{name}}}NextIds = [];
 
+    lastItemOf{{{fieldClass}}} = undefined;
+
     pushNext{{{fieldClass}}}IDs= (...ids)=> {
     this.{{{name}}}NextIds.push(...ids);
     this.next{{{fieldClass}}}PageMode = 'in-array';
@@ -171,6 +173,7 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     break;
     case "paging":
     const itemsOfNextPage = await self.fetch{{{fieldClass}}}NextPageItems({{{stringOfArgumentInFetch}}});
+    this.lastItemOf{{{fieldClass}}} = _.last(itemsOfNextPage);
     fatefulItems.push(...itemsOfNextPage);
     break;
     default:
@@ -182,7 +185,7 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     break;
     }
 
-    if(fatefulItems < {{{fieldClass}}}.sizeOfPerPage) {
+    if(_.size(fatefulItems) < {{{fieldClass}}}.sizeOfPerPage) {
     this.setHasPageItems(false);
     }
 
@@ -191,7 +194,7 @@ this.remove{{{functionName}}}ByIndex(...indexes);
     };
 
     fetch{{{fieldClass}}}NextPageItems = async ({{{stringOfParamInFetch}}}) => {
-    const conditionsOfNext = this.getStartAfterConditions(_.last(this.get{{{functionName}}}()));
+    const conditionsOfNext = this.getStartAfterConditions(this.lastItemOf{{{fieldClass}}});
     const fatefulItems = await new {{{fieldClass}}}().fetch(
     {{{stringOfArgumentInFetch}}},
     ...this.get{{{fieldClass}}}Conditions(),

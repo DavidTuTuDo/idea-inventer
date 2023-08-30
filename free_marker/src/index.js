@@ -3833,6 +3833,7 @@ class StoreBuilder extends BaseBuilder {
                             if (child.hasPaginate()) {
                                 stmts.push(`this.${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
                                 stmts.push(`this.${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
+                                stmts.push(`this.${Util.camel('last', 'item', 'of', child.getName())} = undefined`);
                             }
                             return stmts.join('\n');
                         } else if (child.isObject()) {
