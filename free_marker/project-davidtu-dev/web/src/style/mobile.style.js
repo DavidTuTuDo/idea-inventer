@@ -75,10 +75,6 @@ class MobileStyle {
 
   NavigatorDiv = {};
 
-  /** => following for epayPurchaseCheckout  component  */
-
-  EpayPurchaseCheckoutDiv = {};
-
   /** => following for epayPurchaseOfHistory  component  */
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
@@ -251,6 +247,10 @@ class MobileStyle {
 
   AccountFuncAreaOfEditCopyUserIdButton = {};
 
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
+
   AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
@@ -330,6 +330,8 @@ class MobileStyle {
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}
+
   /** -------------------- async api -------------------- **/
 }
+
 export default new MobileStyle();

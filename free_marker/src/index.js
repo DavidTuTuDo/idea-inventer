@@ -31,8 +31,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
-// const CURRENT_PROJECT = './project-davidtu-dev';
+// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -136,6 +136,11 @@ class CodegenNode {
      * { sample:'範例',example:'超級範例' }
      **/
     textsOfI18n = {};
+
+    /**
+     * 檢查是不是extra component，會造成 i18n duplicated
+     * */
+    isExtraComponent = false;
 
     implementsOfAlertItemClicked = [];
     /** alertMenu的 items,在點擊後的事件實作 */
@@ -693,7 +698,7 @@ class CodegenNode {
         this.type = type;
     }
 
-    needI18nBehaivor() {
+    needI18nBehavior() {
         return this.l10n;
     }
 
@@ -2749,7 +2754,7 @@ class ClassGenerator {
     /** type =>|field|function|api|default ， 端看要加在哪個自定義區塊*/
     appendComment(stmt, type = 'default') {
         let index = -1;
-        stmt = `\n/** ${stmt} */\n`
+        stmt = `\n/** ${stmt} */`
         switch (type) {
             case 'field':
                 index = this.getIndexOfFieldSign();
@@ -3855,7 +3860,7 @@ class StoreBuilder extends BaseBuilder {
                         } else if (child.isObject()) {
                             return `this.${child.getFieldName()}.refreshLocally()`;
                         } else {
-                            if (child.isString() && child.needI18nBehaivor())
+                            if (child.isString() && child.needI18nBehavior())
                                 return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
                             return '';
                         }
@@ -5323,6 +5328,7 @@ class AppBuilder extends ComponentBuilder {
             arrayOfI18nKeyValue.push({key, value, type})
         }
 
+        /** 把type=array的 defaultValue，再透過遞迴抓出來定義出新的i18n變數名稱 */
         function recursiveOfDoingSomethingMinor(arrayOfDefaultValue, child, sign = '') {
             if (!_.isArray(arrayOfDefaultValue)) {
                 return;
@@ -5389,13 +5395,11 @@ class AppBuilder extends ComponentBuilder {
             }
 
             /**
-
              2023.08.19 description放進去會爆量，先不處理，因為目前也只有editor頁面會出現
 
              if(child.hasDescription()){
                 appendMapOfKeyValue(Util.camel('description','of',child.getPreciseAttributeGenealogyName()), child.getDescription());
              }
-
              */
             if (child.hasChildren()) {
                 for (const grandson of child.getPreciseAttributeChildren()) {
@@ -5425,7 +5429,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         const mapOfI18nStmtsOfCommonModule = {};
-        for (const _module of _.filter(this.nodeOfAncestor.components, (com) => com.isModuleComponent())) {
+        for (const _module of _.filter(this.nodeOfAncestor.components, (com) => com.isModuleComponent() && !com.isExtraComponent)) {
             for (const lang of LANGUAGES_OF_SUPPORT) {
                 const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${_module.getName()}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
                 if (Util.isPathExist(destination))
@@ -6205,7 +6209,7 @@ class ProjectFileHandler extends PathBase {
          * */
         function getComponentNameByStmt(stmt) {
             const segments = _.split(stmt, ' ');
-            return {name: segments[1], comment: stmt};
+            return {name: segments[1], comment: _.trim(stmt)};
         }
 
         /**
@@ -6298,18 +6302,19 @@ class ProjectFileHandler extends PathBase {
          */
         function getStringOfModularizedStatement(object) {
             const stmts = [];
-            stmts.push(object.comment);
+            stmts.push(...['\n', object.comment]);
             _.each(object.i18n, (value, key) => {
                 stmts.push(`${key} = "${value}";`)
             })
-            return stmts.join('\n\n');
+            return stmts.join('\n');
         }
 
         if (!this.isWebPlatform()) {
             return;
         }
 
-        const modules = _.filter(this.nodeOfAncestor.getComponents(), (component) => component.isModuleComponent()).map(each => each.getName());
+        const modules = _.filter(this.nodeOfAncestor.getComponents(),
+            (component) => component.isModuleComponent() && !component.isExtraComponent).map(each => each.getName());
         /** 拿到 module components ['account', 'navigator']*/
 
         for (const lang of LANGUAGES_OF_SUPPORT) {
@@ -6319,6 +6324,7 @@ class ProjectFileHandler extends PathBase {
             const sumsOfModules = getObjectOfComponentI18n(modularized);
             const sumsOfBase = getObjectOfComponentI18n(base);
             for (const nameOfComponent of modules) {
+
                 const filtersOfBase = _.filter(sumsOfBase, (obj) => _.startsWith(obj.name, nameOfComponent));
                 const filtersOfModule = _.filter(sumsOfModules, (obj) => _.startsWith(obj.name, nameOfComponent));
 
@@ -6330,9 +6336,10 @@ class ProjectFileHandler extends PathBase {
                     const filterOfModule = _.find(filtersOfModule, (each) => _.isEqual(each.name, filterOfBase.name));
                     if (filterOfModule)
                         targetWriteIntoModuleI18n.i18n = Util.mergeObject(filterOfBase.i18n, filterOfModule.i18n);
-                    Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n);
+                    /** Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n); */
                     /** write into module i18n */
-                    Util.appendFile(destination, getStringOfModularizedStatement(targetWriteIntoModuleI18n), true, false);
+                    Util.appendFile(destination, getStringOfModularizedStatement(targetWriteIntoModuleI18n), false, false);
+                    Util.appendInfo(`檔案寫入至 ${destination}`);
                 }
             }
         }
@@ -7818,12 +7825,14 @@ class ProjectFileHandler extends PathBase {
                     continue;
                 }
 
-                const componentsOfExtra = content.componentsOfExtra ?? [];
+                const componentsOfExtra = _.isArray(content.componentsOfExtra) ?
+                    content.componentsOfExtra.map((component) => {
+                        return {...component, isExtraComponent: true};
+                    }) : [];
                 delete content.componentsOfExtra;
                 for (const rawOfComponent of [content, ...componentsOfExtra]) {
                     /** rawOfComponent 代表沒有被enrich過 */
                     rawOfComponent.isCommonModule = true;
-
                     CodegenNode.appendChildInArray(source.getComponents(), rawOfComponent)
                 }
             }
@@ -7952,7 +7961,12 @@ class ProjectFileHandler extends PathBase {
         }
 
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
-            return {name: each.getName(), editor: each.isPreciselyEditableComponent(), module: each.isModuleComponent()}
+            return {
+                name: each.getName(),
+                editor: each.isPreciselyEditableComponent(),
+                module: each.isModuleComponent(),
+                extra: each.isExtraComponent
+            }
         }))
 
         if (this.isWebPlatform() && !this.isProduction()) {
@@ -7998,7 +8012,7 @@ class ProjectFileHandler extends PathBase {
                 }, {
                     type: 'extension',
                     keyword: 'png'
-                },{
+                }, {
                     type: 'extension',
                     keyword: 'stmts'
                 }, ...this.getIgnoredFilesByPlatform()

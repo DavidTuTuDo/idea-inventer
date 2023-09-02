@@ -75,10 +75,6 @@ class AppStyle {
 
   NavigatorDiv = {};
 
-  /** => following for epayPurchaseCheckout  component  */
-
-  EpayPurchaseCheckoutDiv = {};
-
   /** => following for epayPurchaseOfHistory  component  */
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
@@ -251,6 +247,10 @@ class AppStyle {
 
   AccountFuncAreaOfEditCopyUserIdButton = {};
 
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
+
   AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
@@ -330,6 +330,8 @@ class AppStyle {
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}
+
   /** -------------------- async api -------------------- **/
 }
+
 export default new AppStyle();

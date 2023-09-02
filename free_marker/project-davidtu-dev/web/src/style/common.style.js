@@ -75,10 +75,6 @@ class CommonStyle {
 
   NavigatorDiv = {};
 
-  /** => following for epayPurchaseCheckout  component  */
-
-  EpayPurchaseCheckoutDiv = {};
-
   /** => following for epayPurchaseOfHistory  component  */
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
@@ -251,6 +247,10 @@ class CommonStyle {
 
   AccountFuncAreaOfEditCopyUserIdButton = {};
 
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
+
   AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
@@ -330,6 +330,8 @@ class CommonStyle {
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}
+
   /** -------------------- async api -------------------- **/
 }
+
 export default new CommonStyle();

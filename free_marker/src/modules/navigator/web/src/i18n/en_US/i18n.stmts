@@ -1,13 +1,9 @@
+
+
 /** navigator 需要的字串 */
-
 navigatorToolBarTitle = "明悅科技";
-
 navigatorToolBarCompleteLabelOfInput = "沒有解釋";
-
 navigatorToolBarLogin = "登入";
-
 navigatorKeywordId = "contents";
-
 navigatorSample = "範例";
-
 navigatorExample = "超級範例";
