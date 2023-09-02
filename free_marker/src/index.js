@@ -11,7 +11,7 @@ import {compile} from "@babel/cli/lib/babel/util";
  */
 
 let ENABLE_FAST_DEVELOP_MODE = false;
-let TARGET_COMPONENT_FAST_DEVELOP_MODE = 'exam';
+let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
@@ -671,7 +671,7 @@ class CodegenNode {
     }
 
     getCustomTextOfI18n() {
-        return this.getNodeOfStruct().textsOfI18n;
+        return this.getNodeOfStruct().textsOfI18n ?? {};
     }
 
     getHostOfCloudFunction() {
@@ -5423,7 +5423,7 @@ class AppBuilder extends ComponentBuilder {
             }
 
             _.each(component.getCustomTextOfI18n(), (value, key) => {
-                appendMapOfKeyValue(Util.camel(component.getStruct().getName(), key), value);
+                appendMapOfKeyValue(Util.camel(component.getStruct().getName(),'custom', key), value);
             })
 
         }
