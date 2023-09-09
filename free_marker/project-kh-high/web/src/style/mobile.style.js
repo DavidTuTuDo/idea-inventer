@@ -239,6 +239,10 @@ class MobileStyle {
 
   AccountFuncAreaOfEditCopyUserIdButton = {};
 
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
+
   AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
@@ -580,6 +584,8 @@ class MobileStyle {
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}
+
   /** -------------------- async api -------------------- **/
 }
+
 export default new MobileStyle();

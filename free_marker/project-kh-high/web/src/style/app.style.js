@@ -239,6 +239,10 @@ class AppStyle {
 
   AccountFuncAreaOfEditCopyUserIdButton = {};
 
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
+
   AccountFuncAreaOfEditDiv = {};
 
   AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
@@ -580,6 +584,8 @@ class AppStyle {
   /** -------------------- functions -------------------- **/
 
   constructor(props) {}
+
   /** -------------------- async api -------------------- **/
 }
+
 export default new AppStyle();

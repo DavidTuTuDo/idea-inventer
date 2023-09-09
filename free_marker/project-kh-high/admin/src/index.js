@@ -250,7 +250,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                     year: q.year,
                     subject: q.subject,
                     timesOfYear: q.timesOfYear,
-                    typeOfMath: q.typeOfMath
+                    typeOfMath: q.typeOfMath,
                 }
             }));
         }
@@ -367,6 +367,18 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             }
         }))
     }
+
+
+    async function fetchMath(year) {
+        const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)},
+            {where: (stmt) => stmt.where('subject', '==', '數學')});
+
+        console.log(questions.map((question) => {
+            return {typeOfMath: question.typeOfMath, year: question.year}
+        }));
+    }
+
+    // await fetchMath(108);
 
     // await updateQuestionOfMathType();
 
