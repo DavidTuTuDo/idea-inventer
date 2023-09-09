@@ -35,6 +35,11 @@ service firebase.storage {
     }
 
 
+match /public/{fileId} {
+allow write: if isAdmin() && sizeLowerThan5MB()
+allow read: if alwaysTrue()
+}
+
 /** --- documents--- **/
 
     }

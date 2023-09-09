@@ -30,8 +30,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
-const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -729,7 +729,12 @@ class CodegenNode {
     }
 
     getFieldNameOfPageTitle() {
-        return Util.camel('page', 'title', 'of', this.getPreciseAttributeGenealogyName());
+
+        function normalize(title) {
+            return _.split(title, 'Editor').shift();
+        }
+
+        return Util.camel('page', 'title', 'of', normalize(this.getPreciseAttributeGenealogyName()));
     }
 
     isPathArray() {
@@ -5423,7 +5428,7 @@ class AppBuilder extends ComponentBuilder {
             }
 
             _.each(component.getCustomTextOfI18n(), (value, key) => {
-                appendMapOfKeyValue(Util.camel(component.getStruct().getName(),'custom', key), value);
+                appendMapOfKeyValue(Util.camel(component.getStruct().getName(), 'custom', key), value);
             })
 
         }
