@@ -152,8 +152,9 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 // extra: `11是代表rhythm,12代表singer`,
             }
         }));
-        /** extra 放進去會超過一個document的上限 */
-        await api.submitKeywords(keywords);
+        /** extra 放進去會超過一個document的上限 必須>500! 不然keyword的已經exceed 一個document 可以放進去的數量*/
+        await api.submitKeywords( _.filter(keywords,(item) => item.popularLevel > 500)
+        );
     }
 
     async function deployAllSingerTone(popularLevel) {
@@ -312,31 +313,31 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 route: `route:main`,
                 indexOfSequence: 0,
             }
-            , {
+                , {
                 title: '我的最愛',
                 icon: 'muIcon:FavoriteBorder',
                 route: `route:personalRhythm`,
                 indexOfSequence: 1,
             },
-            {
-                title: '歷史搜尋',
-                icon: 'muIcon:History',
-                route: `route:historyRhythm`,
-                indexOfSequence: 2,
-            },
-            {
-                title: '相關網站',
-                icon: 'muIcon:Whatshot',
-                indexOfSequence: 3,
-                subs: [
-                    {
-                        title: '91譜',
-                        icon: 'muIcon:School',
-                        route: 'path:https://www.91pu.com.tw/',
-                        indexOfSequence: 1,
-                    }
-                ]
-            }]
+                {
+                    title: '歷史搜尋',
+                    icon: 'muIcon:History',
+                    route: `route:historyRhythm`,
+                    indexOfSequence: 2,
+                },
+                {
+                    title: '相關網站',
+                    icon: 'muIcon:Whatshot',
+                    indexOfSequence: 3,
+                    subs: [
+                        {
+                            title: '91譜',
+                            icon: 'muIcon:School',
+                            route: 'path:https://www.91pu.com.tw/',
+                            indexOfSequence: 1,
+                        }
+                    ]
+                }]
         )
     }
 
