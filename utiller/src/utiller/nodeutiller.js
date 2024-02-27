@@ -105,7 +105,9 @@ class NodeUtiller extends Utiller {
             isFile: false,
             isDirectory: true,
             dirName: undefined,
+            folderName: undefined,
             dirPath: undefined,
+            folderPath: undefined,
             extension: undefined,
             fileName: undefined,
             fileNameExtension: undefined,
@@ -113,15 +115,16 @@ class NodeUtiller extends Utiller {
         }
 
         if (this.isFile(absolute)) {
-
             obj['extension'] = absolute.split('\.').pop();
             const fileNameStrings = absolute.split('\/').pop().split('\.');
             fileNameStrings.pop()
             /** 要是遇到 asd.sdsd.js 就麻煩了 */
             obj['fileName'] = fileNameStrings.join('\.');
             obj['dirName'] = _.nth(absolute.split('\/'), -2);
+            obj['folderName'] = _.nth(absolute.split('\/'), -2);
             obj['isFile'] = true;
             obj['dirPath'] = this.getFolderPathOfSpecificPath(absolute);
+            obj['folderPath'] = this.getFolderPathOfSpecificPath(absolute);
             obj['isDirectory'] = false;
             obj['fileNameExtension'] = `${obj.fileName}.${obj.extension}`;
             obj['lastModifiedTime'] = this.getFileLastModifiedTime(absolute);
