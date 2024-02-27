@@ -109,7 +109,7 @@ class CommonRemoteApi {
         await this.batchBracket(items, (batch, item) => {
             const id = item.id;
             if (Util.isUndefinedNullEmpty(id)) {
-                throw new ERROR(2001, `ERROR ===> ${item}`)
+                throw new ERROR(2001, `ERROR ===> ${JSON.stringify(item)}`)
             } else {
                 batch.update(this.firestoreDocRef(path, id), item);
             }

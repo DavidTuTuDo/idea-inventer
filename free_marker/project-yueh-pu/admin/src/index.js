@@ -153,7 +153,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
             }
         }));
         /** extra 放進去會超過一個document的上限 必須>500! 不然keyword的已經exceed 一個document 可以放進去的數量*/
-        await api.submitKeywords( _.filter(keywords,(item) => item.popularLevel > 500)
+        await api.submitKeywords(_.filter(keywords, (item) => item.popularLevel > 500)
         );
     }
 
@@ -465,7 +465,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     }
 
     async function uploadPreludeImage() {
-        const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt())
+        const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 1000).orderBy({'popularLevel': 'DESC'}).stmt())
         const tones = {};
         for (const tone of raws) {
             tones[_.toString(tone.uid)] = tone;
@@ -484,7 +484,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 const files = Util.getChildPathByPath(folder.absolute);
                 const fileOfC = _.find(files, (item) => _.startsWith(item.fileName, 'CAm'));
                 const fileOfG = _.find(files, (item) => _.startsWith(item.fileName, 'GEm'));
-                const prefix = `preludes/${_.trim(record.singer)}-${_.trim(record.name)}`;
+                const prefix = `preludes/${_.trim(record.uid)}-${_.trim(record.name)}`;
                 const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `${prefix}-CAm.png`)
                 const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `${prefix}-GEm.png`)
                 /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
@@ -531,9 +531,32 @@ const THRESHOLD_OF_BATCH_MODE = 100;
 
     async function updatePopularLevelOfEachTone() {
         const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 5000).orderBy({'popularLevel': 'DESC'}).stmt(), 'popularLevel', 'idOfRemote')
-
     }
 
+    /** 利用batch的方式把preludes sync 到 firestore上面 */
+    async function syncPreludeInfo() {
+        const pus = await database.fetchRecords('TONE', new Builder().equal('hasPrelude', 1).stmt());
+        const items = pus.map(pu => {
+            return {
+                id: pu.idOfRemote,
+                uid: pu.uid,
+                hasPrelude: true,
+                pathOfPreludeC: pu.pathOfPreludeC,
+                pathOfPreludeG: pu.pathOfPreludeG,
+            }
+        });
+        const deploy = await api.updateGuitarpus(items);
+        Util.appendInfo(deploy.message);
+    }
+
+    /** 利用batch的方式把preludes sync 到 firestore上面 */
+    async function fetchGuitarPuContainsPrelude(){
+        const pus = await api.fetchGuitarpus({where: (stmt) => stmt.where('hasPrelude', '==', true)},{limit: (stmt) => stmt.limit(20)});
+        Util.appendInfo(pus);
+    }
+
+    // await syncPreludeInfo();
+    // await fetchGuitarPuContainsPrelude();
     // await updatePopularLevelOfEachTone();
     // await uploadPreludeImage();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
@@ -554,6 +577,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
     // await deployAllSingerTone(499)
     // await deployKeywords();
+    
 })();
 
 
