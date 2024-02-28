@@ -269,6 +269,12 @@ class CommonStyle {
 
   SheetAdjustCenterTonalityWrapperDiv = {};
 
+  SheetAdjustCenterPreludeWrapperPreludeOfGButton = {};
+
+  SheetAdjustCenterPreludeWrapperPreludeOfCButton = {};
+
+  SheetAdjustCenterPreludeWrapperDiv = {};
+
   SheetAdjustCenterDiv = {};
 
   SheetAdjustSwipeableDrawer = {};
@@ -284,6 +290,14 @@ class CommonStyle {
   SheetGuitarpuFloatAreaDiv = {};
 
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuImageOfPreludeImg = {};
+
+  SheetGuitarpuSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuSpeedOfRhythmDivWrap = {};
+
+  SheetGuitarpuSpeedOfRhythmTypography = {};
 
   SheetGuitarpuDivSkeleton = {};
 

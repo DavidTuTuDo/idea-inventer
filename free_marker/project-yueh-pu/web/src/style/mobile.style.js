@@ -269,6 +269,12 @@ class MobileStyle {
 
   SheetAdjustCenterTonalityWrapperDiv = {};
 
+  SheetAdjustCenterPreludeWrapperPreludeOfGButton = {};
+
+  SheetAdjustCenterPreludeWrapperPreludeOfCButton = {};
+
+  SheetAdjustCenterPreludeWrapperDiv = {};
+
   SheetAdjustCenterDiv = {};
 
   SheetAdjustSwipeableDrawer = {};
@@ -284,6 +290,14 @@ class MobileStyle {
   SheetGuitarpuFloatAreaDiv = {};
 
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuImageOfPreludeImg = {};
+
+  SheetGuitarpuSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuSpeedOfRhythmDivWrap = {};
+
+  SheetGuitarpuSpeedOfRhythmTypography = {};
 
   SheetGuitarpuDivSkeleton = {};
 

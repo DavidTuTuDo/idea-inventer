@@ -149,6 +149,7 @@ class SheetStore extends BaseSheetStore {
         await super.onInitialFetchCompleted();
 
         if (!Util.isUndefinedNullEmpty(this.getCurrentPu())) {
+            this.getCurrentPu().setSpeedOfRhythm(this.getCurrentPu().getSpeed())
             this.getCurrentPu().setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
             this.getCurrentPu().setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
             this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
@@ -223,7 +224,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     getCurrentPu() {
-        return _.head(this.getGuitarpus());
+        return _.head(this.getGuitarpus()) ?? {};
     }
 
     setVisibleOfChordInContext(hide = false) {

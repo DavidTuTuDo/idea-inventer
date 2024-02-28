@@ -34,6 +34,19 @@ class SheetComponent extends BaseSheetComponent {
         super(props);
     }
 
+    getInjectStyleOfSheetAdjustCenterPreludeWrapperDiv(center) {
+        const visible = _.size(this.getStore().getGuitarpus()) > 0;
+        let hasPrelude = false;
+        if (visible) {
+            hasPrelude = this.getStore().getCurrentPu().getHasPrelude();
+        }
+        return Util.getVisibleOrNone((visible && hasPrelude), true);
+    }
+
+    getInjectStyleOfSheetGuitarpuImageOfPreludeImg(guitarpu) {
+        return Util.getVisibleOrNone(this.getStore().getCurrentPu().getVisibleOfPrelude(), true);
+    }
+
     getInjectStyleOfSheetNameOfSongAndSingerTypography() {
         const visible = _.size(this.getStore().getGuitarpus()) > 0;
         return Util.getVisibleOrNone(visible, true);
@@ -85,6 +98,16 @@ class SheetComponent extends BaseSheetComponent {
     onSheetAdjustCenterToOriginalTonalityButtonClicked(param) {
         this.getStore().transpositionByGender('original')
         this.showMessageOfSucceedOnTonalityChange(this.getCenterToOriginalTonality(param.object));
+    }
+
+    onSheetAdjustCenterPreludeOfGButtonClicked(param) {
+        this.getStore().getCurrentPu().setVisibleOfPrelude(true);
+        this.getStore().getCurrentPu().setImageOfPrelude(this.getStore().getCurrentPu().getPathOfPreludeG());
+    }
+
+    onSheetAdjustCenterPreludeOfCButtonClicked(param) {
+        this.getStore().getCurrentPu().setVisibleOfPrelude(true);
+        this.getStore().getCurrentPu().setImageOfPrelude(this.getStore().getCurrentPu().getPathOfPreludeC());
     }
 
     showMessageOfSucceedOnTonalityChange(text, type = 'info') {

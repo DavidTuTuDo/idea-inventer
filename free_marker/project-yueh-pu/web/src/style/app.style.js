@@ -269,6 +269,12 @@ class AppStyle {
 
   SheetAdjustCenterTonalityWrapperDiv = {};
 
+  SheetAdjustCenterPreludeWrapperPreludeOfGButton = {};
+
+  SheetAdjustCenterPreludeWrapperPreludeOfCButton = {};
+
+  SheetAdjustCenterPreludeWrapperDiv = {};
+
   SheetAdjustCenterDiv = {};
 
   SheetAdjustSwipeableDrawer = {};
@@ -284,6 +290,14 @@ class AppStyle {
   SheetGuitarpuFloatAreaDiv = {};
 
   SheetGuitarpuCurrentContextTypography = {};
+
+  SheetGuitarpuImageOfPreludeImg = {};
+
+  SheetGuitarpuSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuSpeedOfRhythmDivWrap = {};
+
+  SheetGuitarpuSpeedOfRhythmTypography = {};
 
   SheetGuitarpuDivSkeleton = {};
 
