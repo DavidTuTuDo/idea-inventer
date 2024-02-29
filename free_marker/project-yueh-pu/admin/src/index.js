@@ -464,7 +464,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
         await database.insertRecord('TONE', content);
     }
 
-    async function uploadPreludeImage() {
+    async function uploadPreludeImagesToStorage() {
         const raws = await database.fetchRecords('TONE', new Builder().gte('popularLevel', 1000).orderBy({'popularLevel': 'DESC'}).stmt())
         const tones = {};
         for (const tone of raws) {
@@ -479,6 +479,9 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 /** url的末碼*/
                 const name = trait.pop();
                 const record = tones[uid];
+
+                if(record.hasPrelude) continue;
+                /** 已經有前奏就不要再duplicated */
 
                 /** 上傳C/G調的圖片，取得url of download */
                 const files = Util.getChildPathByPath(folder.absolute);
@@ -534,7 +537,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     }
 
     /** 利用batch的方式把preludes sync 到 firestore上面 */
-    async function syncPreludeInfo() {
+    async function syncPreludeInfoToRemoteFirestore() {
         const pus = await database.fetchRecords('TONE', new Builder().equal('hasPrelude', 1).stmt());
         const items = pus.map(pu => {
             return {
@@ -555,12 +558,17 @@ const THRESHOLD_OF_BATCH_MODE = 100;
         Util.appendInfo(pus);
     }
 
-    // await syncPreludeInfo();
-    // await fetchGuitarPuContainsPrelude();
+    /** 更新遠端prelude的程序 */
+    async function updatePreludeToRemoteWholeProcess(){
+        await uploadPreludeImagesToStorage();
+        await syncPreludeInfoToRemoteFirestore();
+    }
+    /** 每次都要跑 */
+    await accumulatePopularLevelOfSinger();
     // await updatePopularLevelOfEachTone();
-    // await uploadPreludeImage();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
     // await deployKeywords();
+    // await updatePreludeToRemoteWholeProcess();
     await deployLatestSheet();
     // await deployPuIntoDataBase();
     // await updateSpecificToneOfGuitarPu('LvNdtfmogv0Jf3Svhu36', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'))))
@@ -568,16 +576,15 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
-    // await accumulatePopularLevelOfSinger()
+
 
     // await submitShortcut();
     // await updateTonesWithSameRemoteId();
     // console.log(await getObjectOfSingerUrlAsKey());
     // await updateSpecificGuitarPu();
     // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
-    // await deployAllSingerTone(499)
     // await deployKeywords();
-    
+
 })();
 
 

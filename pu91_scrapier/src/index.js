@@ -13,6 +13,9 @@ import {utiller as Util, exceptioner as ERROR, pooller as Pooller} from 'utiller
 import {databazer as SQL} from 'databazer';
 import browserer from "./browser";
 
+const THRESHOLD_OF_UPDATE_POPULAR_LEVEL = 500;
+const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
+
 (async () => {
         async function syncDelay(delayInms) {
             return new Promise(resolve => {
@@ -239,8 +242,13 @@ import browserer from "./browser";
                 const songs = await fetchSongsOfSingersPage(path.join(Config.BASE_URL, singer.url));
                 for (const song of songs) {
                     if (Util.isUndefinedNullEmpty(song.url)) continue;
-                    await database.updateRecords('TONE', {popularLevel: song.popularLevel}, SQL.Builder().equal('url', song.url).stmt());
-                    Util.appendInfo(`更新了 ${song.name} POPULAR-LEVEL 提升為 ${song.popularLevel}`);
+
+                    if(song.popularLevel > THRESHOLD_OF_UPDATE_POPULAR_LEVEL) {
+                        /** 如果 popularLevel > 500 再更新資料庫， 不然會把hack的popularLevel 給改掉 */
+                        await database.updateRecords('TONE', {popularLevel: song.popularLevel}, SQL.Builder().equal('url', song.url).stmt());
+                        Util.appendInfo(`更新了 ${song.name} POPULAR-LEVEL 提升為 ${song.popularLevel}`);
+                    }
+
                 }
                 Util.appendInfo(`###### 還有 ${_.size(singersOfExist)}歌手尚未更新完POPULAR-LEVEL ######`);
             } catch (error) {
@@ -469,8 +477,8 @@ import browserer from "./browser";
             const oneHour = 2 * halfHour;
 
 
-            // /** 抓所有歌手 */
-            // joinTaskToPool(1, "SINGER FETCHER", false, persistSingers, oneHour);
+            /** 抓所有歌手 */
+            joinTaskToPool(1, "SINGER FETCHER", false, persistSingers, oneHour);
             /** 抓取排行版上的資訊們 */
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
@@ -483,7 +491,8 @@ import browserer from "./browser";
             joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
             /** 更新POPULAR LEVEL的腳本 */
             joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
-            /** 抓出前奏譜的loop */
+
+            /** 抓出前奏譜的loop，單獨作業，目前大概有6千多筆網頁要跑*/
             // joinTaskToPool(8, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
 
 
@@ -532,7 +541,7 @@ import browserer from "./browser";
 
         /** 準備為了寫入前奏的圖文 */
         const tonesOfExist = await database.fetchRecords('TONE', SQL.Builder()
-            .gte('popularLevel', 2000).orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
+            .gte('popularLevel', THRESHOLD_OF_SEARCH_POPULAR_LEVEL).orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid', 'popularLevel');
         /** 找出tones更新popularLevel，不然有些歌突然爆紅都不知道 */
         const singersOfExist = await database.fetchRecords('SINGER', SQL.Builder()
             .orderBy({'popularLevel': 'DESC'}).stmt(), 'name', 'url', 'uid');
