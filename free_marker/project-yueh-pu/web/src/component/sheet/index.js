@@ -34,13 +34,12 @@ class SheetComponent extends BaseSheetComponent {
         super(props);
     }
 
-    getInjectStyleOfSheetAdjustCenterPreludeWrapperDiv(center) {
-        const visible = _.size(this.getStore().getGuitarpus()) > 0;
-        let hasPrelude = false;
-        if (visible) {
-            hasPrelude = this.getStore().getCurrentPu().getHasPrelude();
-        }
-        return Util.getVisibleOrNone((visible && hasPrelude), true);
+    getInjectStyleOfSheetGuitarpuLabelOfSpeedOfRhythmTypography(guitarpu) {
+        return Util.getVisibleOrNone(this.getStore().getCurrentPu().getSpeed() > 1, true);
+    }
+
+    getInjectStyleOfSheetGuitarpuSpeedOfRhythmTypography(guitarpu) {
+        return Util.getVisibleOrNone(this.getStore().getCurrentPu().getSpeed() > 1, true);
     }
 
     getInjectStyleOfSheetGuitarpuImageOfPreludeImg(guitarpu) {

@@ -236,7 +236,13 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
         }
 
         async function updateTonePopularLevel() {
+            if(_.size(singersOfExist) < 1) {
+                await Util.syncDelay(2000)
+                Util.appendInfo(`115412321 singersOfExist is Empty`);
+            }
+
             const singer = singersOfExist.shift();
+
 
             try {
                 const songs = await fetchSongsOfSingersPage(path.join(Config.BASE_URL, singer.url));

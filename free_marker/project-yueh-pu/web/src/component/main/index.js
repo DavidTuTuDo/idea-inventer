@@ -58,6 +58,9 @@ class MainComponent extends BaseMainComponent {
             case 'randomGEM':
                 this.gotoSingerRandomRhythm('Y1SB30qmG7qvcYK7hOQg').then()
                 break;
+            case 'preludes':
+                Router.gotoPortfolioPage(this, 'preludes',Util.getRandomHash(10))
+                break;
             case 'randomMayday':
                 this.gotoSingerRandomRhythm('Pn84Semny282MbWnKY2C').then()
                 break;

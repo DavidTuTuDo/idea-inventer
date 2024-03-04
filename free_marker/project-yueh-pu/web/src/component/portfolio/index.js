@@ -40,7 +40,7 @@ class PortfolioComponent extends BasePortfolioComponent {
     }
 
     isValidOfParamOfType(type) {
-        return this.constraintOfParam(type, 'list', 'search');
+        return this.constraintOfParam(type, 'list', 'search', 'preludes');
     }
 
     /** -------------------- async api -------------------- **/

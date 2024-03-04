@@ -507,19 +507,19 @@ class CodegenNode {
     /** 用在加上Array Container額外再包一層的props,<div ...props/> */
 
 
-    injectStyle;
+    injectStyle = false;
     /** 如果有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    injectWrapStyle;
+    injectWrapStyle = false;
     /** 如果wrap有style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    injectListStyle;
+    injectListStyle = false;
     /** 如果array有list style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    injectListWrapStyle;
+    injectListWrapStyle = false;
     /** 如果array有list wrap style的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
-    injectProps;
+    injectProps = false;
     /** 如果有props的屬性需要透過邏輯判斷,就設為true,這樣會產出method */
 
     navigation;
@@ -583,7 +583,7 @@ class CodegenNode {
 
     parent;
 
-    click;
+    click = false;
 
     defaultValue;
     /** 可以指定attribute的default value */
@@ -6920,6 +6920,8 @@ class ProjectFileHandler extends PathBase {
                     view: `Typography`,
                     outer: true,
                     l10n: true,
+                    click : node.click,
+                    injectStyle: node.injectStyle,
                     incest: {view: false, attribute: true},
                     defaultValue: node.labelView.defaultValue,
                 });

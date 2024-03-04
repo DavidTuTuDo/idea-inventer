@@ -13,6 +13,9 @@ import {configerer} from "configerer";
 /** 超過這個數量就用最浪費資源的方式 */
 const THRESHOLD_OF_BATCH_MODE = 100;
 
+/** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
+const THRESHOLD_OF_KEYWORD_MATCH = 550;
+
 (async () => {
 
     const api = new Api();
@@ -153,7 +156,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
             }
         }));
         /** extra 放進去會超過一個document的上限 必須>500! 不然keyword的已經exceed 一個document 可以放進去的數量*/
-        await api.submitKeywords(_.filter(keywords, (item) => item.popularLevel > 500)
+        await api.submitKeywords(_.filter(keywords, (item) => item.popularLevel >= THRESHOLD_OF_KEYWORD_MATCH)
         );
     }
 
@@ -288,6 +291,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
             speed: info['速度'] ? _.toNumber(info['速度']) : -1,
             singer: tone.singer,
             name: tone.name,
+            uid: tone.id, /** database 裡面的column id */
             uuidOfSong: tone.url,
             uuidOfSinger: tone.singerUrl,
             composer: tone.composer,
@@ -480,7 +484,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 const name = trait.pop();
                 const record = tones[uid];
 
-                if(record.hasPrelude) continue;
+                if (record.hasPrelude) continue;
                 /** 已經有前奏就不要再duplicated */
 
                 /** 上傳C/G調的圖片，取得url of download */
@@ -539,7 +543,7 @@ const THRESHOLD_OF_BATCH_MODE = 100;
     /** 利用batch的方式把preludes sync 到 firestore上面 */
     async function syncPreludeInfoToRemoteFirestore() {
         const pus = await database.fetchRecords('TONE', new Builder().equal('hasPrelude', 1).stmt());
-        const items = pus.map(pu => {
+        const itemsOfTone = pus.map(pu => {
             return {
                 id: pu.idOfRemote,
                 uid: pu.uid,
@@ -548,22 +552,34 @@ const THRESHOLD_OF_BATCH_MODE = 100;
                 pathOfPreludeG: pu.pathOfPreludeG,
             }
         });
-        const deploy = await api.updateGuitarpus(items);
-        Util.appendInfo(deploy.message);
+
+        const itemsOfRhythm = pus.map(pu => {
+            return {
+                id: pu.idOfRhythm,
+                hasPrelude: true,
+            }
+        });
+
+        const deployToTone = await api.updateGuitarpus(itemsOfTone);
+        Util.appendInfo(deployToTone.message);
+        const deployToRhythm = await api.updateRhythms(itemsOfRhythm);
+        Util.appendInfo(deployToRhythm.message);
     }
 
     /** 利用batch的方式把preludes sync 到 firestore上面 */
-    async function fetchGuitarPuContainsPrelude(){
-        const pus = await api.fetchGuitarpus({where: (stmt) => stmt.where('hasPrelude', '==', true)},{limit: (stmt) => stmt.limit(20)});
+    async function fetchGuitarPuContainsPrelude() {
+        const pus = await api.fetchGuitarpus({where: (stmt) => stmt.where('hasPrelude', '==', true)}, {limit: (stmt) => stmt.limit(20)});
         Util.appendInfo(pus);
     }
 
     /** 更新遠端prelude的程序 */
-    async function updatePreludeToRemoteWholeProcess(){
+    async function updatePreludeToRemoteWholeProcess() {
         await uploadPreludeImagesToStorage();
         await syncPreludeInfoToRemoteFirestore();
     }
+
     /** 每次都要跑 */
+    // await syncPreludeInfoToRemoteFirestore();
     await accumulatePopularLevelOfSinger();
     // await updatePopularLevelOfEachTone();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');

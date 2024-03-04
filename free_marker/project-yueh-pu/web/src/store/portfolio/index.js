@@ -34,6 +34,15 @@ class PortfolioStore extends BasePortfolioStore {
 
     async fetch(view) {
         switch (view.paramOfType) {
+            case 'preludes':
+                console.log('有進來嗎?');
+                this.setRhythmConditions(
+                    [
+                        {where: (stmt) => stmt.where('hasPrelude', '==', true)},
+                        {orderBy: (stmt) => stmt.orderBy('popularLevel', 'desc')}
+                    ]
+                );
+                return await super.fetch(this.getComponent());
             case 'search':
                 const keywords = Application.getNavigatorStore().getKeywords().map(each => each.data()) ?? [];
                 const fuse = new Fuse(keywords, {includeScore: true, keys: ['label', 'value']})
@@ -61,7 +70,6 @@ class PortfolioStore extends BasePortfolioStore {
                     ]
                 );
                 return await super.fetch(this.getComponent());
-                break;
             default:
                 this.setErrorMsg(`帶入參數錯誤`)
                 /** 顯示沒有搜尋項目*/
