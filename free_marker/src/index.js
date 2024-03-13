@@ -5700,6 +5700,19 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendFunction(`mount`, [], [], [],
             `ReactDOM.render(this.getRenderView(),
                     document.getElementById('app'))`);
+
+        /**
+         *
+         * 如果升級到mobx6 react-mobx18.2
+         *
+        appGenerator.appendFunction(`mount`, [], [], [],
+            `const container = document.getElementById('app');`,
+            `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
+            `root.render(this.getRenderView())`,
+        );
+
+         */
+
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
         appGenerator.appendField(`extraPages`, '[]');
@@ -6516,7 +6529,8 @@ class ProjectFileHandler extends PathBase {
                     _.isEqual(each.extension, `less`) ||
                     _.isEqual(each.fileNameExtension, `app.style.js`) ||
                     _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
-                    _.isEqual(each.fileNameExtension, `common.style.js`)
+                    _.isEqual(each.fileNameExtension, `common.style.js`) ||
+                    (_.isEqual(each.folderName, 'i18n') && _.isEqual(each.fileNameExtension, `index.js`))
                 )
             },
             'node_modules');
@@ -6920,7 +6934,7 @@ class ProjectFileHandler extends PathBase {
                     view: `Typography`,
                     outer: true,
                     l10n: true,
-                    click : node.click,
+                    click: node.click,
                     injectStyle: node.injectStyle,
                     incest: {view: false, attribute: true},
                     defaultValue: node.labelView.defaultValue,
@@ -7910,6 +7924,8 @@ class ProjectFileHandler extends PathBase {
             await new AppBuilder(paramProps).buildEventFolder(totalEvents);
             await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
         }
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.html'), this.genRootPath, 'template.html', true);
+
     }
 
     async buildLessToCss() {

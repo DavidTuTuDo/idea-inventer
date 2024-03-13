@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.180",
+  "version": "1.0.183",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "dependencies": {
     "bl": "^4.1.0",
     "configerer": "^1.0.11",
-    "crypto-js": "^4.0.0",
+    "crypto-js": "^4.2.0",
     "del": "^6.0.0",
     "fs-extra": "^9.1.0",
     "lodash": "^4.17.20",

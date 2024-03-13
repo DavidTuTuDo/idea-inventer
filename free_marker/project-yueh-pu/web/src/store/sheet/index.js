@@ -162,7 +162,7 @@ class SheetStore extends BaseSheetStore {
 
     getStringOfSuggestDescription(tone) {
         const result = this.getSuggestTonalityCapoLevel(tone);
-        return ` ${result.from} 調\n(彈${result.to} 夾${result.level}格)`
+        return `${result.from}調\n(彈${result.to}夾${result.level}格)`
     }
 
     getTonalityOfFemale() {

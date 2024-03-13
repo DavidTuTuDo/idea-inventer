@@ -802,8 +802,8 @@ class InfinitePool {
     }
 
     async exampleOfRunByTask() {
-        const pool = new InfinitePool(3);
-        const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each));
+        const pool = new InfinitePool(1);
+        const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each*1000));
         Util.appendInfo(`....start method of exampleOfRunByTask`);
         const all = await pool.runByEachTask(tasks);
         Util.appendInfo(all);
@@ -823,6 +823,38 @@ class InfinitePool {
         }, 10)
         Util.appendInfo(`....finish method of runByTimes`);
 
+    }
+
+
+    async exampleOfAsyncTaskOfFunctionInside() {
+        const result = [];
+        await new InfinitePool(2).runByEachTask([
+            async () => {
+                const item = Util.asyncUnitTaskFunction(1000);
+                result.push(await item());
+            },
+            async () => {
+                const item = await Util.asyncUnitTaskFunction(3000);
+                result.push(await item());
+            },
+            async () => {
+                const item = await Util.asyncUnitTaskFunction(4000);
+                result.push(await item());
+            },
+            async () => {
+                const item = await Util.asyncUnitTaskFunction(9000);
+                result.push(await item());
+            },
+            async () => {
+                const item = await Util.asyncUnitTaskFunction(6000);
+                result.push(await item());
+            },
+            async () => {
+                const item = await Util.asyncUnitTaskFunction(6000);
+                result.push(await item());
+            },
+        ])
+        Util.appendInfo(result);
     }
 
     async exampleOfInfiniteUnStopLoopingIssue() {
@@ -870,11 +902,48 @@ class InfinitePool {
             }
         }
     }
+
+    async sampleOfEachTaskInFreeMarker(){
+        const test = [];
+        await new InfinitePool(3).runByEachTask([
+            async () => {
+                const answer = await Util.syncDelayRandom(2000, 5000);
+                console.log(answer);
+                test.push(answer)
+            },
+            async () => {
+                const answer = await Util.syncDelayRandom(2000, 5000);
+                console.log(answer);
+                test.push(answer);
+            },
+            async () => {
+                const answer = await Util.syncDelayRandom(2000, 5000);
+                console.log(answer);
+                test.push(answer);
+            },
+            async () => {
+                const answer = await Util.syncDelayRandom(2000, 5000);
+                console.log(answer);
+                test.push(answer);
+            },
+            async () => {
+                const answer = await Util.syncDelayRandom(2000, 5000);
+                console.log(answer);
+                test.push(answer);
+            },
+            async () => {
+                const answer = await Util.syncDelayRandom(2000, 5000);
+                console.log(answer);
+                test.push(answer);
+            },
+        ]);
+        console.log('我好了！！', test);
+    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool().exampleOfRunByTask()
+        await new InfinitePool(1).sampleOfEachTaskInFreeMarker()
     })();
 
 }

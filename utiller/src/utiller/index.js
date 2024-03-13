@@ -1,5 +1,4 @@
 import _ from "lodash";
-import Crypto from "crypto";
 import CryptoJS from "crypto-js";
 import {configerer} from "configerer";
 import ERROR from '../exceptioner';
@@ -177,6 +176,20 @@ class Utiller {
 
     }
 
+    test = (word) => {
+        return async () => {
+            await Util.syncDelay(3000);
+            console.log('經過了三秒')
+            await Util.syncDelay(4000);
+            console.log('經過了四秒')
+            await Util.syncDelay(5000);
+            console.log('經過了五秒')
+            await Util.syncDelay(6000);
+            console.log('經過了六秒')
+            return `3423809432804 ${word}`
+        }
+    }
+
     /** 就是把 target 放到 condition 裡面處理, 然後取代原本的target*/
     accumulate(target, conditions) {
         let beginning = target;
@@ -310,9 +323,21 @@ class Utiller {
         return this.getStringOfHeadMatch(string, `(?<=\\${left})${rule}+?(?=\\${right})`)
     }
 
-    getRandomHash(size = 30) {
-        const random = Crypto.randomBytes(size).toString('hex');
-        return random;
+    getRandomHash(length = 20) {
+        const randomBytes = CryptoJS.lib.WordArray.random(length);
+        const base64String = CryptoJS.enc.Base64.stringify(randomBytes);
+        // 根據需要調整格式
+        return base64String.substring(0, length);
+    }
+
+    getRandomHashV2(length) {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            const randomIndex = Math.floor(Math.random() * characters.length);
+            result += characters.charAt(randomIndex);
+        }
+        return result;
     }
 
     /** alwaysTheSame 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
@@ -1593,7 +1618,10 @@ class Utiller {
             .replace(/%29/g, ')')
             .replace(/%20/g, '+');
 
-        checkValue = Crypto.createHash('sha256').update(checkValue).digest('hex');
+        /** checkValue = Crypto.createHash('sha256').update(checkValue).digest('hex');
+         * 之前用crypto做出來的，後來crypto-browsify多年沒有更新，所以都要用CryptoJS處理 2024/03/12
+         * */
+        checkValue = CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex)
         checkValue = checkValue.toUpperCase();
         return checkValue;
     }
@@ -1720,12 +1748,13 @@ if (configerer.DEBUG_MODE) {
     (async () => {
             const utiller = new Utiller();
             const aaa = {};
-            utiller.appendMapOfKeyArray(aaa, 'a', 11);
-            utiller.appendMapOfKeyArray(aaa, 'c', 13);
-            utiller.appendMapOfKeyArray(aaa, 'a', 23);
-            utiller.appendMapOfKeyArray(aaa, 'c', 'vsdd')
-            utiller.appendMapOfKeyArray(aaa, 'a', 'sd');
-            console.log(aaa);
+            // utiller.appendMapOfKeyArray(aaa, 'a', 11);
+            // utiller.appendMapOfKeyArray(aaa, 'c', 13);
+            // utiller.appendMapOfKeyArray(aaa, 'a', 23);
+            // utiller.appendMapOfKeyArray(aaa, 'c', 'vsdd')
+            // utiller.appendMapOfKeyArray(aaa, 'a', 'sd');
+
+            // console.log(utiller.getECPayCheckMacValue('30'));
             // console.log(utiller.getTailStringSplitBy('325/2/32/1','/'))
             // const obj = {time :undefined,name: 'david'};
             // utiller.removeAttributeBy(obj);
