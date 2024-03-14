@@ -454,13 +454,13 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
         const content = await database.fetchRecord('TONE', new Builder().equal('idOfRemote', idOfGuitarPu).stmt());
         console.log(content);
         const path = Util.persistByPath(`./temp/${content.name}`)
-        Util.appendFile(libpath.join(path, 'pu.txt'), Util.getDecryptString(content.tone))
+        Util.appendFile(libpath.join(path, 'pu.text'), Util.getDecryptString(content.tone))
     }
 
-    /** 把deploy/pu.txt 和 deploy/config.json */
+    /** 把deploy/pu.text 和 deploy/config.json */
     async function deployPuIntoDataBase() {
         const content = Util.getJsonObjByFilePath('./deploy/config.json');
-        content.tone = Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'));
+        content.tone = Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'));
         content.updateTime = Util.getCurrentTimeStamp();
         console.log(content);
         console.log(`\n\n\n10秒後部署到database\n...\n...\n...`);
@@ -587,7 +587,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
     // await updatePreludeToRemoteWholeProcess();
     await deployLatestSheet();
     // await deployPuIntoDataBase();
-    // await updateSpecificToneOfGuitarPu('LvNdtfmogv0Jf3Svhu36', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.txt'))))
+    // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
     // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
     // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
     // await deployGuitarPuByPopularLevel(2000);

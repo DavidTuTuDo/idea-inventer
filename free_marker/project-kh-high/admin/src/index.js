@@ -386,7 +386,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     // await batchDoing();
 
 
-    // await deployQuestions({dbpath:'gsat-112.db',year: 112});
+    // await deployQuestions({dbpath:'gsat-113.db',year: 113});
 
 
     await submitSubjectMap()

@@ -4,10 +4,10 @@ gen
 logs
 *.log
 /_gen_elder_kh_high/
-*.txt
 *.css.map
 *.css
 *.db
+*.txt
 prelude/
 yarn.lock
 package-lock.json
