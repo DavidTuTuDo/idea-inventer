@@ -8372,6 +8372,9 @@ if (configerer.DEBUG_MODE) {
                 case 'persistentWebOnly':
                     await builder.persistent('web');
                     break;
+                case 'persistentAdminOnly':
+                    await builder.persistent('admin');
+                    break;
                 case 'newLessFileOnly':
                     await builder.buildLessFilesOnly();
                     break;
