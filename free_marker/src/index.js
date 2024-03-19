@@ -6678,7 +6678,7 @@ class ProjectFileHandler extends PathBase {
             stmts.push(_stmt.join('\n'));
         }
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
-        await this.buildDeployDocument('storage.rules', base.join('\n'), 'storage:rules', deploy)
+        await this.buildDeployDocument('storage.rules', base.join('\n'), 'storage', deploy)
     }
 
     async buildDeployDocument(fileName, conclusion, commandLine = 'firestore:indexes', deploy, prettier = false) {
@@ -6701,6 +6701,7 @@ class ProjectFileHandler extends PathBase {
         await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
         const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
         const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
+        await this.buildDistAssetFolder();
         Util.persistByPath(pathOfDestination);
         Util.cleanAllFiles(pathOfDestination);
         Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);

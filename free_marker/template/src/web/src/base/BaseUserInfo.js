@@ -20,7 +20,7 @@ import {
 } from "mobx";
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
-import AccountUserInfo from "../store/accountUserInfo";
+import AccountUser from "../store/accountUser";
 import AccountCredential from "../store/accountCredential";
 import {Application} from "../";
 import CommonPoolHelper from "./CommonPoolHelper";
@@ -45,7 +45,7 @@ class UserInfo {
         makeObservable(this);
         this.subscribeAuthStateChanged();
         this.signInWithCredential().then();
-        this.user = new AccountUserInfo();
+        this.apiOfUser = new AccountUser();
         this.crendential = new AccountCredential()
     }
 
@@ -67,8 +67,8 @@ class UserInfo {
         if (this.isValidUser(user)) {
             const credential = Cookie.getCredential();
             /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
-            await this.user.submitUserInfo(undefined, user);
-            await this.crendential.submitCredential(undefined,credential);
+            await this.apiOfUser.submitUserItem(undefined, {...user, id: user.uid}, user.uid);
+            await this.crendential.submitCredential(undefined, credential);
             /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
             Cookie.setUser(user);
             Util.appendInfo('登入成功, 所以寫入資料')

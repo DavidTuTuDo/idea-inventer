@@ -32,6 +32,10 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
             new Builder().gt('WEEK', 0).orderBy({WEEK: 'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
     }
 
+    async function allowAllUserReadPermission() {
+
+    }
+
     /** 找出週 rank 對應的tone*/
     async function deployMainPageHotRhythm(n) {
         const ranks = await fetchTopSongsOfRank(n);
@@ -578,14 +582,36 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
         await syncPreludeInfoToRemoteFirestore();
     }
 
+    async function moveUserInfoToUser() {
+        const ids = await api.fetchDocumentIdsOfUser();
+        for (const id of ids) {
+            const user = await api.fetchUserInfo(id);
+            const result = await api.submitUserItem({...user, id, isAdmin: false}, id);
+        }
+    }
+
+    async function updateUserInfoToUser() {
+        const ids = await api.fetchDocumentIdsOfUser();
+        for (const id of ids) {
+            const result = await api.updateUserItem({id: id}, id);
+        }
+    }
+
+    async function deleteUserInfoToUser() {
+        const ids = await api.fetchDocumentIdsOfUser();
+        for (const id of ids) {
+            const result = await api.deleteObject(`users/${id}/attrs`, 'userInfo');
+            console.log(result);
+        }
+    }
+
     /** 每次都要跑 */
     // await syncPreludeInfoToRemoteFirestore();
-    await accumulatePopularLevelOfSinger();
     // await updatePopularLevelOfEachTone();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
     // await deployKeywords();
     // await updatePreludeToRemoteWholeProcess();
-    await deployLatestSheet();
+
     // await deployPuIntoDataBase();
     // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
     // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
@@ -601,6 +627,10 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
     // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
     // await deployKeywords();
 
+    // await updatePreludeToRemoteWholeProcess();
+    // await deployLatestSheet();
+
+    await deleteUserInfoToUser();
 })();
 
 
