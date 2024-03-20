@@ -2,6 +2,8 @@ const path = require('path');
 const webpack = require('webpack');
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+
 const self = {
     entry: {
         main: path.resolve(__dirname, './src/index.js')
@@ -11,6 +13,10 @@ const self = {
         filename: '[name].[contenthash].js',
         clean: true,
         assetModuleFilename: '[name][ext]',
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin()],
     },
     module: {
         rules: [

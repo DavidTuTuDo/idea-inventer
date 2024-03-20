@@ -582,29 +582,6 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
         await syncPreludeInfoToRemoteFirestore();
     }
 
-    async function moveUserInfoToUser() {
-        const ids = await api.fetchDocumentIdsOfUser();
-        for (const id of ids) {
-            const user = await api.fetchUserInfo(id);
-            const result = await api.submitUserItem({...user, id, isAdmin: false}, id);
-        }
-    }
-
-    async function updateUserInfoToUser() {
-        const ids = await api.fetchDocumentIdsOfUser();
-        for (const id of ids) {
-            const result = await api.updateUserItem({id: id}, id);
-        }
-    }
-
-    async function deleteUserInfoToUser() {
-        const ids = await api.fetchDocumentIdsOfUser();
-        for (const id of ids) {
-            const result = await api.deleteObject(`users/${id}/attrs`, 'userInfo');
-            console.log(result);
-        }
-    }
-
     /** 每次都要跑 */
     // await syncPreludeInfoToRemoteFirestore();
     // await updatePopularLevelOfEachTone();
@@ -627,10 +604,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
     // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
     // await deployKeywords();
 
-    // await updatePreludeToRemoteWholeProcess();
-    // await deployLatestSheet();
+    await updatePreludeToRemoteWholeProcess();
+    await deployLatestSheet();
 
-    await deleteUserInfoToUser();
 })();
 
 

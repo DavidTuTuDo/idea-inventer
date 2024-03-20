@@ -40,7 +40,6 @@ import EpayPreciseProductPhoto from "./epayPreciseProductPhoto";
 import EpayPreciseProduct from "./epayPreciseProduct";
 import Epay from "./epay";
 import AccountCredential from "./accountCredential";
-import AccountUserInfo from "./accountUserInfo";
 import AccountFuncAreaOfEdit from "./accountFuncAreaOfEdit";
 import AccountFuncAreaOfIdStateAreaOfId from "./accountFuncAreaOfIdStateAreaOfId";
 import AccountFuncAreaOfId from "./accountFuncAreaOfId";

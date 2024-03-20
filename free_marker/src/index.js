@@ -30,8 +30,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
-// const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-kh-high';
+// const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -6697,15 +6697,17 @@ class ProjectFileHandler extends PathBase {
         await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase use ${this.nodeOfAncestor.getProjectName()} && ${command}`);
     }
 
-    async buildProdWebDistToProjectThanDeploy() {
+    async buildProdWebDistToProjectThanDeploy(deploy = true) {
         await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
         const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
         const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
         await this.buildDistAssetFolder();
-        Util.persistByPath(pathOfDestination);
-        Util.cleanAllFiles(pathOfDestination);
-        Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
-        await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
+        if(deploy) {
+            Util.persistByPath(pathOfDestination);
+            Util.cleanAllFiles(pathOfDestination);
+            Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
+            await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
+        }
     }
 
     async generateFireIndexRules(deploy = true) {
@@ -8186,13 +8188,13 @@ class BuildApplication {
         await functions.deployFunctionsToProd();
     }
 
-    async deployWebProd() {
+    async deployWebProd(deploy = true) {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
         await web.cleanGenDirectory();
         await web.incrementProjectVersion();
         console.log(web.nodeOfAncestor.version);
         await web.execute();
-        await web.buildProdWebDistToProjectThanDeploy();
+        await web.buildProdWebDistToProjectThanDeploy(deploy);
         Util.appendInfo(
             `web deploy succeed`
         );
@@ -8326,6 +8328,9 @@ if (configerer.DEBUG_MODE) {
                     break;
                 case 'deployWebToProduction':
                     await builder.deployWebProd();
+                    break;
+                case 'buildWebToProduction':
+                    await builder.deployWebProd(false);
                     break;
                 case 'deployFunctionsWithoutBuild':
                     await builder.deployFunctionsWithoutBuild();

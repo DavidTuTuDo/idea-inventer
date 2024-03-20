@@ -1,4 +1,4 @@
-import ModularizedAccountUserInfoStore from "./ModularizedAccountUserInfoStore";
+import ModularizedAccountFuncAreaOfEditLangStore from "./ModularizedAccountFuncAreaOfEditLangStore";
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -8,6 +8,7 @@ import _ from "lodash";
 import libpath from "path";
 import { Application } from "../../";
 import Config from "../../config";
+import i18n from "../../i18n";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
@@ -21,15 +22,18 @@ import {
   autorun,
   runInAction,
 } from "mobx";
-import BaseAccountUserInfoStore from "./BaseAccountUserInfoStore";
+import BaseAccountFuncAreaOfEditLangStore from "./BaseAccountFuncAreaOfEditLangStore";
 
-class AccountUserInfoStore extends ModularizedAccountUserInfoStore {
+class AccountFuncAreaOfEditLangStore extends ModularizedAccountFuncAreaOfEditLangStore {
   /** -------------------- fields -------------------- **/
+
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
+
   /** -------------------- async api -------------------- **/
 }
-export default AccountUserInfoStore;
+
+export default AccountFuncAreaOfEditLangStore;

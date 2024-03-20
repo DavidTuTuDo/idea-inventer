@@ -379,17 +379,9 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     }
 
     // await fetchMath(108);
-
     // await updateQuestionOfMathType();
-
-
     // await batchDoing();
-
-
     // await deployQuestions({dbpath:'gsat-113.db',year: 113});
-
-
-    await submitSubjectMap()
     // await testBatchFunctions();
     // await api.deleteQuestions(true);
     // await api.deleteConfuses(true);
@@ -398,6 +390,9 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     // await backgroundService();
     // await api.submitUserBeingAdmin(`BYnJOAlUa5aCnpxvoeiIyCzRXSt1`);
     // console.log((await sampleFetch()).length)
+
+    await submitSubjectMap()
+
 })();
 
 

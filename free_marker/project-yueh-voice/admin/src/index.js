@@ -39,6 +39,28 @@ import fetch from 'node-fetch';
         )
     }
 
+    async function moveUserInfoToUser() {
+        const ids = await api.fetchDocumentIdsOfUser();
+        for (const id of ids) {
+            const user = await api.fetchUserInfo(id);
+            const result = await api.submitUserItem({...user, id, isAdmin: false}, id);
+        }
+    }
+
+    async function updateUserInfoToUser() {
+        const ids = await api.fetchDocumentIdsOfUser();
+        for (const id of ids) {
+            const result = await api.updateUserItem({id: id}, id);
+        }
+    }
+
+    async function deleteUserInfoToUser() {
+        const ids = await api.fetchDocumentIdsOfUser();
+        for (const id of ids) {
+            const result = await api.deleteObject(`users/${id}/attrs`, 'userInfo');
+            console.log(result);
+        }
+    }
     // await submitShortcut();
 
 

@@ -121,7 +121,8 @@ class EpisodeStore extends BaseEpisodeStore {
     }
 
     invalidateCurrentAlert = async () => {
-        this.getStickyBottomArea().setNameOfPlayingStatement(`正在播放:${this.getCurrentVoice().getName()}`);
+        if (this.getCurrentVoice() !== undefined)
+            this.getStickyBottomArea().setNameOfPlayingStatement(`正在播放:${this.getCurrentVoice().getName()}`);
     }
 
     performNextVoice = async () => {
