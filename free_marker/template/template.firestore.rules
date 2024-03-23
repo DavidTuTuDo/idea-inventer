@@ -6,6 +6,10 @@ service cloud.firestore {
             return  request.auth.uid == uid;
         }
 
+        function isAllowRead(){
+            return  request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.allowRead == true;
+        }
+
         function isAdmin(){
             return  request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
         }

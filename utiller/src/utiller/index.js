@@ -824,7 +824,7 @@ class Utiller {
 
     isUndefinedNullEmpty(obj) {
         const first = obj === undefined || obj === null;
-        const second = _.isString(obj) || _.isArray(obj) ? _.isEmpty(obj) : false;
+        const second = _.isString(obj) || (_.isArray(obj) || _.isObject(obj)) ? _.isEmpty(obj) : false;
         return first || second;
     }
 

@@ -13,16 +13,15 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.11",
-    "utiller": "^1.0.173",
-    "databazer": "^1.0.11",
+    "crypto-js": "^4.0.0",
+    "databazer": "^1.0.12",
+    "download-file": "^0.1.5",
+    "himalaya": "^1.1.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "crypto-js": "^4.0.0",
-    "puppeteer": "^5.4.1",
+    "puppeteer": "^22.6.0",
     "query-string": "^7.0.1",
-    "react-countdown": "^2.3.2",
-    "himalaya": "^1.1.0",
-    "download-file": "^0.1.5"
+    "utiller": "^1.0.185"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

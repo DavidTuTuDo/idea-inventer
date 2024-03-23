@@ -67,8 +67,18 @@ class UserInfo {
         if (this.isValidUser(user)) {
             const credential = Cookie.getCredential();
             /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
-            await this.apiOfUser.submitUserItem(undefined, {...user, id: user.uid}, user.uid);
-            await this.crendential.submitCredential(undefined, credential);
+            if (await this.apiOfUser.fetchUserIsExist(user.uid)) {
+                await this.apiOfUser.updateUserItem(Application.getLatestComponent(), {
+                    ...user,
+                    updateTime: -1
+                }, user.uid);
+            } else {
+                await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
+                    ...user,
+                    id: user.uid
+                }, user.uid);
+            }
+            await this.crendential.submitCredential(Application.getLatestComponent(), credential, user.uid);
             /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
             Cookie.setUser(user);
             Util.appendInfo('登入成功, 所以寫入資料')

@@ -529,9 +529,9 @@ export {SqliteHandler as databazer, ConditionBuilder as builder}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // const h = new SqliteHandler('./secret_infos_latest.db');
-        // await h.init()
-        // console.log(await h.getCountsOfRecord('SINGER'))
+        const h = new SqliteHandler('./secret_infos_latest.db');
+        await h.init()
+        console.log(await h.getCountsOfRecord('SINGER'))
 
     })();
 

@@ -30,8 +30,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
-const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -4530,7 +4530,7 @@ class ComponentBuilder extends BaseBuilder {
                 })
                 .catch((error) => {
                     self.getStore().setHasPageItems(false);
-                    Util.appendError(error.message);
+                    self.onInitialErrorHappened(error);
                 }).finally(() => {
                 Util.appendInfo('${componentNode.getName()} page initial fetch completed')
                 self.getStore().onInitialFetchCompleted(result)})`,
@@ -5705,11 +5705,11 @@ class AppBuilder extends ComponentBuilder {
          *
          * 如果升級到mobx6 react-mobx18.2
          *
-        appGenerator.appendFunction(`mount`, [], [], [],
-            `const container = document.getElementById('app');`,
-            `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
-            `root.render(this.getRenderView())`,
-        );
+         appGenerator.appendFunction(`mount`, [], [], [],
+         `const container = document.getElementById('app');`,
+         `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
+         `root.render(this.getRenderView())`,
+         );
 
          */
 
@@ -6702,7 +6702,7 @@ class ProjectFileHandler extends PathBase {
         const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
         const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
         await this.buildDistAssetFolder();
-        if(deploy) {
+        if (deploy) {
             Util.persistByPath(pathOfDestination);
             Util.cleanAllFiles(pathOfDestination);
             Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);

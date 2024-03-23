@@ -39,6 +39,9 @@ class BaseStore extends ClientRemoteApi {
     errorMsg = 'unknown error';
 
     @observable
+    messageOfListIsEmpty = 'unknown error';
+
+    @observable
     globalLoadingState = false;
 
     @observable
@@ -89,6 +92,15 @@ class BaseStore extends ClientRemoteApi {
 
     isWrapByAlertDialog = () => {
         return  !_.isUndefinedNullEmpty(this.props.dialog);
+    }
+
+    @action
+    setMessageOfListIsEmpty(text) {
+        this.messageOfListIsEmpty = text;
+    }
+
+    getMessageOfListIsEmpty() {
+        return this.messageOfListIsEmpty;
     }
 
     @action
@@ -238,7 +250,6 @@ class BaseStore extends ClientRemoteApi {
     getSelectorParam() {
         return this.selectorParams;
     }
-
 
     async onInitialFetchCompleted(collection) {
         if (this.isInitialFetchCompleted())

@@ -81,9 +81,7 @@
     "readable-stream": "^4.5.2",
     "swiper": "^10.1.0",
     "universal-cookie": "^4.0.4",
-    "utiller": "^1.0.183",
+    "utiller": "^1.0.185",
     "watermarkjs": "^2.1.1"
   }
 }
-
-

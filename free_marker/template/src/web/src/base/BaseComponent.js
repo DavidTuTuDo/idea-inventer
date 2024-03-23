@@ -483,7 +483,7 @@ class BaseComponent extends MuiComponent {
         return (
             <div className={`BaseListEmptyDiv`}>
                 <Typography
-                    className={`BaseListEmptyTypography`}>非常抱歉!目前沒有資料</Typography>
+                    className={`BaseListEmptyTypography`}>{this.getStore().getMessageOfListIsEmpty()}</Typography>
                 {renderRetryButton()}
             </div>
         )
@@ -921,6 +921,10 @@ class BaseComponent extends MuiComponent {
 
     getKeywords() {
         return Application.getNavigatorStore().getKeywords();
+    }
+
+    onInitialErrorHappened(error) {
+        Util.appendError(error.message);
     }
 
     constraintOfParam(param, ...allows) {

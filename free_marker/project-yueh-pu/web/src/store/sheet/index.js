@@ -13,6 +13,7 @@ import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import FavoritePu from "../personalRhythmFavoritePu";
 import HistoryPu from '../historyRhythmPuOfRecord';
+import GuitarPu from '../sheetGuitarpu';
 import {
     makeAutoObservable,
     makeObservable,
@@ -147,16 +148,21 @@ class SheetStore extends BaseSheetStore {
     @action
     async onInitialFetchCompleted() {
         await super.onInitialFetchCompleted();
+        const pu = this.getCurrentPu();
+        await Util.syncDelay(1);
 
-        if (!Util.isUndefinedNullEmpty(this.getCurrentPu())) {
-            this.getCurrentPu().setSpeedOfRhythm(this.getCurrentPu().getSpeed())
-            this.getCurrentPu().setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
-            this.getCurrentPu().setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
+        if (pu instanceof GuitarPu) {
+            pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed())
+            pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
+            pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
             this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
             this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
             this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
-            this.getComponent().showInfoSnackMessage(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+            this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
             this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+        } else {
+            this.setMessageOfListIsEmpty(`網路連線可能不穩。\n\n\n\n使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
+            this.setTipOfLoading(``);
         }
     }
 
@@ -367,6 +373,7 @@ class SheetStore extends BaseSheetStore {
     isGuitarChordParagraph(string) {
         return _.size(Util.indexesOf(string, SEPARATOR_OF_CHORD)) > 1
     }
+
 }
 
 export default SheetStore;

@@ -14,7 +14,7 @@ import {configerer} from "configerer";
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 550;
+const THRESHOLD_OF_KEYWORD_MATCH = 580;
 
 (async () => {
 
@@ -183,18 +183,24 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
         } else {
             const singers = await getObjectOfSingerUrlAsKey();
             for (const tone of tones) {
-                const resultOfGuitar = await api.submitGuitarpuItem(getSubmitGuitarPuItemWithNormalized(tone, singers));
-                if (resultOfGuitar.succeed) {
-                    const resultOfRhythm = await api.submitRhythmItem({
-                        ...resultOfGuitar.value,
-                        idOfGuitarPu: resultOfGuitar.value.id
-                    }, resultOfGuitar.value.id);
-                    /** 更新idOfRemote到本端db */
-                    await database.updateRecords('TONE', {
-                            idOfRemote: resultOfGuitar.value.id,
-                            idOfRhythm: resultOfRhythm.value.id
-                        },
-                        new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
+                try {
+                    const resultOfGuitar = await api.submitGuitarpuItem(getSubmitGuitarPuItemWithNormalized(tone, singers));
+                    if (resultOfGuitar.succeed) {
+                        const resultOfRhythm = await api.submitRhythmItem({
+                            ...resultOfGuitar.value,
+                            idOfGuitarPu: resultOfGuitar.value.id
+                        }, resultOfGuitar.value.id);
+                        /** 更新idOfRemote到本端db */
+
+                        await database.updateRecords('TONE', {
+                                idOfRemote: resultOfGuitar.value.id,
+                                idOfRhythm: resultOfRhythm.value.id
+                            },
+                            new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
+                        Util.appendInfo(`${tone.getName()} 成功 submit`)
+                    }
+                } catch (error) {
+                    Util.appendError(`${tone.name} submit fail, 略過本次submit,err`);
                 }
             }
         }
@@ -447,7 +453,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
 
     /** 這五個是initialize一組的, 如果跑了91pu scrapy */
     async function deployLatestSheet() {
-        await deployAllSingerTone(495);
+        await deployAllSingerTone(550);
         await deployKeywords();
         await deployMainPageHotRhythm(25);
         await deployMainPageHotSingers(25);
@@ -582,30 +588,39 @@ const THRESHOLD_OF_KEYWORD_MATCH = 550;
         await syncPreludeInfoToRemoteFirestore();
     }
 
+    async function updateUserAllowRead() {
+        const result = await api.fetchUsers();
+        console.log(result.map(each => each.displayName));
+        console.log(await api.updateUsers(result.map(each => {
+            return {allowRead: true, id: each.uid}
+        })));
+    }
+
     /** 每次都要跑 */
-    // await syncPreludeInfoToRemoteFirestore();
-    // await updatePopularLevelOfEachTone();
-    // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
-    // await deployKeywords();
-    // await updatePreludeToRemoteWholeProcess();
+        // await syncPreludeInfoToRemoteFirestore();
+        // await updatePopularLevelOfEachTone();
+        // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
+        // await deployKeywords();
+        // await updatePreludeToRemoteWholeProcess();
 
-    // await deployPuIntoDataBase();
-    // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
-    // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
-    // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
-    // await deployGuitarPuByPopularLevel(2000);
-    // await deploySingers(2000);
+        // await deployPuIntoDataBase();
+        // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
+        // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
+        // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
+        // await deployGuitarPuByPopularLevel(2000);
+        // await deploySingers(2000);
 
 
-    // await submitShortcut();
-    // await updateTonesWithSameRemoteId();
-    // console.log(await getObjectOfSingerUrlAsKey());
-    // await updateSpecificGuitarPu();
-    // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
-    // await deployKeywords();
+        // await submitShortcut();
+        // await updateTonesWithSameRemoteId();
+        // console.log(await getObjectOfSingerUrlAsKey());
+        // await updateSpecificGuitarPu();
+        // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
+        // await deployKeywords();
 
-    await updatePreludeToRemoteWholeProcess();
-    await deployLatestSheet();
+        await updatePreludeToRemoteWholeProcess();
+        await deployLatestSheet();
+        // await updateUserAllowRead();
 
 })();
 
