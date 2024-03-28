@@ -183,24 +183,20 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
         } else {
             const singers = await getObjectOfSingerUrlAsKey();
             for (const tone of tones) {
-                try {
-                    const resultOfGuitar = await api.submitGuitarpuItem(getSubmitGuitarPuItemWithNormalized(tone, singers));
-                    if (resultOfGuitar.succeed) {
-                        const resultOfRhythm = await api.submitRhythmItem({
-                            ...resultOfGuitar.value,
-                            idOfGuitarPu: resultOfGuitar.value.id
-                        }, resultOfGuitar.value.id);
-                        /** 更新idOfRemote到本端db */
+                const resultOfGuitar = await api.submitGuitarpuItem(getSubmitGuitarPuItemWithNormalized(tone, singers));
+                if (resultOfGuitar.succeed) {
+                    const resultOfRhythm = await api.submitRhythmItem({
+                        ...resultOfGuitar.value,
+                        idOfGuitarPu: resultOfGuitar.value.id
+                    }, resultOfGuitar.value.id);
+                    /** 更新idOfRemote到本端db */
 
-                        await database.updateRecords('TONE', {
-                                idOfRemote: resultOfGuitar.value.id,
-                                idOfRhythm: resultOfRhythm.value.id
-                            },
-                            new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
-                        Util.appendInfo(`${tone.getName()} 成功 submit`)
-                    }
-                } catch (error) {
-                    Util.appendError(`${tone.name} submit fail, 略過本次submit,err`);
+                    await database.updateRecords('TONE', {
+                            idOfRemote: resultOfGuitar.value.id,
+                            idOfRhythm: resultOfRhythm.value.id
+                        },
+                        new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
+                    Util.appendInfo(`79874615 ${tone.singer}-${tone.name} 成功 submit`)
                 }
             }
         }
@@ -571,9 +567,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
         });
 
         const deployToTone = await api.updateGuitarpus(itemsOfTone);
-        Util.appendInfo(deployToTone.message);
+        Util.appendInfo(`81561212 ${deployToTone.message}`);
         const deployToRhythm = await api.updateRhythms(itemsOfRhythm);
-        Util.appendInfo(deployToRhythm.message);
+        Util.appendInfo(`15444231 ${deployToRhythm.message}`);
     }
 
     /** 利用batch的方式把preludes sync 到 firestore上面 */
@@ -597,30 +593,30 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
     }
 
     /** 每次都要跑 */
-        // await syncPreludeInfoToRemoteFirestore();
-        // await updatePopularLevelOfEachTone();
-        // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
-        // await deployKeywords();
-        // await updatePreludeToRemoteWholeProcess();
+    // await syncPreludeInfoToRemoteFirestore();
+    // await updatePopularLevelOfEachTone();
+    // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
+    // await deployKeywords();
+    // await updatePreludeToRemoteWholeProcess();
 
-        // await deployPuIntoDataBase();
-        // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
-        // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
-        // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
-        // await deployGuitarPuByPopularLevel(2000);
-        // await deploySingers(2000);
+    // await deployPuIntoDataBase();
+    // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
+    // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
+    // await genRhythmByGuitarPuID('2qKAHVsPo4wriTPjSR3X');
+    // await deployGuitarPuByPopularLevel(2000);
+    // await deploySingers(2000);
 
 
-        // await submitShortcut();
-        // await updateTonesWithSameRemoteId();
-        // console.log(await getObjectOfSingerUrlAsKey());
-        // await updateSpecificGuitarPu();
-        // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
-        // await deployKeywords();
+    // await submitShortcut();
+    // await updateTonesWithSameRemoteId();
+    // console.log(await getObjectOfSingerUrlAsKey());
+    // await updateSpecificGuitarPu();
+    // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
+    // await deployKeywords();
 
-        await updatePreludeToRemoteWholeProcess();
-        await deployLatestSheet();
-        // await updateUserAllowRead();
+    await updatePreludeToRemoteWholeProcess();
+    await deployLatestSheet();
+    // await updateUserAllowRead();
 
 })();
 

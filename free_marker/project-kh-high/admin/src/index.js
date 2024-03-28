@@ -21,6 +21,18 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 
     /** 部署新的題目到雲端 */
     async function deployQuestions({dbpath = '', year = 120}) {
+        function getTypeOfMathBySubjectName(subject) {
+            if(_.isEqual(subject,'數學A')) {
+                return 1;
+            }
+
+            if(_.isEqual(subject,'數學B')) {
+                return 2;
+            }
+
+            return -1;
+        }
+
         const db = new Databaser(`/Users/davidtu/cross-achieve/high/idea-inventer/ceec_scrape_script/${dbpath}`);
         await db.init();
 
@@ -37,7 +49,9 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                     }
                 )
 
-            q.timesOfYear = _.isEqual(q.extra, '正式') ? 1 : 2
+            q.subject = _.startsWith(q.subject,'數學') ? '數學' : q.subject;
+            q.timesOfYear = _.isEqual(q.extra, '正式') ? 1 : 2;
+            q.typeOfMath = getTypeOfMathBySubjectName(q.subject);
             delete q.uid;
             q.type = q.nameOfExam;
             return q;
@@ -233,8 +247,6 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
             console.log(`正在刪除 SubjectIds ${year}`);
             await api.deleteSubjectIds(false, [{where: (stmt) => stmt.where('year', '==', year)}]);
         }
-
-
     }
 
     /** 用來作隨機測驗的idMaps, 例如 107-112 隨機題目的id fetch */
@@ -369,16 +381,33 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
     }
 
 
-    async function fetchMath(year) {
+    async function fetchMath(year, type = 'A') {
         const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)},
-            {where: (stmt) => stmt.where('subject', '==', '數學')});
+            {where: (stmt) => stmt.where(`subject`, '==', `數學${type}`)});
 
         console.log(questions.map((question) => {
-            return {typeOfMath: question.typeOfMath, year: question.year}
+            return {typeOfMath: question.typeOfMath, year: question.year, id: question.id, uid: question.uid}
         }));
     }
 
-    // await fetchMath(108);
+    async function updateMathQuestionAttr(year, type) {
+        const questions = await api.fetchQuestions({where: (stmt) => stmt.where('year', '==', year)},
+            {where: (stmt) => stmt.where(`subject`, '==', `數學${type}`)});
+
+        await api.updateQuestions(questions.map(question => {
+            return {subject: '數學', id: question.id, typeOfMath: _.isEqual(type, 'A') ? 1 : 2}
+        }));
+
+        console.log(`updateMathQuestionAttr(${year}, 數學${type}) succeed`);
+    }
+
+
+    // await api.updateQuestions((questions.map(question => {
+    //     return {subject: `數學`, id: question.id}})))
+
+
+    // await updateMathQuestionAttr(113, 'B');
+    // await fetchMath(113, 'B');
     // await updateQuestionOfMathType();
     // await batchDoing();
     // await deployQuestions({dbpath:'gsat-113.db',year: 113});
