@@ -7,10 +7,10 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Typography from "@material-ui/core/Typography";
-import Skeleton from "@material-ui/core/Skeleton";
+import Typography from "@mui/material/Typography";
+import Skeleton from "@mui/material/Skeleton";
 import {observer} from "mobx-react";
-import Card from "@material-ui/core/Card";
+import Card from "@mui/material/Card";
 import Style from "../../style";
 import React from "react";
 import UserInfoRef from "../../base/BaseUserInfo";

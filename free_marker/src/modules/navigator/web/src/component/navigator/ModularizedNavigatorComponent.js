@@ -6,12 +6,8 @@
 import {observer, inject} from "mobx-react";
 import BaseNavigatorComponent from "./BaseNavigatorComponent";
 import Router from '../../router';
-import Config from '../../config';
-import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
-import {withStyles} from '@material-ui/styles';
 import UserInfo from '../../base/BaseUserInfo';
-import Style from "../../style";
 import React from "react";
 import {
     List,
@@ -23,10 +19,10 @@ import {
     ListSubheader,
     ListItemAvatar,
     Avatar
-} from '@material-ui/core';
-import Collapse from '@material-ui/core/Collapse';
+} from '@mui/material';
+import Collapse from '@mui/material/Collapse';
 import _ from 'lodash';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import BaseUserInfo from "../../base/BaseUserInfo";
 
 

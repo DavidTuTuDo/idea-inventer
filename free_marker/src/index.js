@@ -73,39 +73,39 @@ const VIEW_IMPORTS =
             simplePath: true,
         },
         {
-            from: `@material-ui/icons/AccountCircle`,
+            from: `@mui/icons-material/AccountCircle`,
             views: ['AccountCircle'],
             simplePath: true,
         },
         {
-            from: `@material-ui/icons/menu`,
+            from: `@mui/icons-material/menu`,
             views: ['MenuIcon'],
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
-            from: `@material-ui/icons/ChevronRight`,
+            from: `@mui/icons-material/ChevronRight`,
             views: ['ChevronRight'],
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
 
-            from: `@material-ui/icons/MoreHoriz`,
+            from: `@mui/icons-material/MoreHoriz`,
             views: ['MoreHoriz'],
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
 
-            from: `@material-ui/icons/CopyAll`,
+            from: `@mui/icons-material/CopyAll`,
             views: ['CopyAll'],
             simplePath: true, /** 就是只要material-ui/icons/menu */
         },
         {
-            from: `@material-ui/icons/Search`,
+            from: `@mui/icons-material/Search`,
             views: ['SearchIcon'],
             simplePath: true, /** 就是只要material-ui/icons/Search */
         },
         {
-            from: `@material-ui/core`,
+            from: `@mui/material`,
             views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List', 'Tabs', 'Tab',]

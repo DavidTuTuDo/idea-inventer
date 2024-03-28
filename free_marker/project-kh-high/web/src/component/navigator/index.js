@@ -8,7 +8,7 @@ import Router from '../../router';
 import Config from '../../config';
 import Cookie from '../../cookie';
 import {utiller as Util} from "utiller";
-import {withStyles} from '@material-ui/styles';
+import {withStyles} from '@mui/styles';
 import UserInfo from '../../base/BaseUserInfo';
 import Style from "../../style";
 import React from "react";
@@ -22,11 +22,11 @@ import {
     ListSubheader,
     ListItemAvatar,
     Avatar
-} from '@material-ui/core';
-import Collapse from '@material-ui/core/Collapse';
-import * as MUIcon from '@material-ui/icons';
+} from '@mui/material';
+import Collapse from '@mui/material/Collapse';
+import * as MUIcon from '@mui/icons-material';
 import _ from 'lodash';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 import {isMobile} from 'react-device-detect'
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";

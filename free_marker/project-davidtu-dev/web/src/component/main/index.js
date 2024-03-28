@@ -7,7 +7,7 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import { observer } from "mobx-react";
 import Style from "../../style";
 import React from "react";

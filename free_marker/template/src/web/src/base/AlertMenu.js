@@ -3,13 +3,13 @@ import {
     Menu,
     MenuItem,
     ListItemIcon,
-} from '@material-ui/core';
+} from '@mui/material';
 import {action, makeObservable, observable} from "mobx";
 import {observer, inject} from "mobx-react";
 import {utiller as Util} from "utiller";
 import UserInfoRef from "./BaseUserInfo";
 import _ from 'lodash';
-import * as MUIcon from '@material-ui/icons';
+import * as MUIcon from '@mui/icons-material';
 import MuiComponent from "./MUIComponent";
 
 class MenuStore {

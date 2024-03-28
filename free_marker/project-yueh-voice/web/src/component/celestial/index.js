@@ -7,9 +7,9 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import AudioPlayer from "react-h5-audio-player";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
 import {observer} from "mobx-react";
 import Style from "../../style";
 import React from "react";

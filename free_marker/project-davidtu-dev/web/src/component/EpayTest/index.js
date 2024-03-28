@@ -8,7 +8,7 @@ import {
 import _ from "lodash";
 import libpath from "path";
 import {observer} from "mobx-react";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import Style from "../../style";
 import React from "react";
 import UserInfoRef from "../../base/BaseUserInfo";

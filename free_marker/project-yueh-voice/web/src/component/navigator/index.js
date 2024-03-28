@@ -2,7 +2,7 @@ import {observer, inject} from "mobx-react";
 import Router from '../../router';
 import Config from '../../config';
 import Cookie from '../../cookie';
-import {withStyles} from '@material-ui/styles';
+import {withStyles} from '@mui/styles';
 import Style from "../../style";
 import React from "react";
 import _ from 'lodash';

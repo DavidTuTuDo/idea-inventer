@@ -21,6 +21,7 @@ class I18n {
         makeObservable(this);
         autorun(() => {
             Util.appendInfo(`i18n autorun, current language => ${this.language}`);
+            if(Application)
             _.each(Application.getStoreObject(), (store) => store.refreshLocally());
 
         })

@@ -1,6 +1,6 @@
 import React from "react";
 import {observer} from "mobx-react";
-import * as MUIcon from "@material-ui/icons";
+import * as MUIcon from "@mui/icons-material";
 import _ from "lodash";
 import {Parser} from 'html-to-react'
 import {

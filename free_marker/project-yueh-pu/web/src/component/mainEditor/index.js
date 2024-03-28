@@ -10,7 +10,7 @@ import _ from "lodash";
 import libpath from "path";
 import MainStore from "../../store/main";
 import Style from "../../style";
-import MenuIcon from "@material-ui/icons/menu";
+import MenuIcon from "@mui/icons-material/menu";
 import React from "react";
 import { Application } from "../../";
 import Config from "../../config";

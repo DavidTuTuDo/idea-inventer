@@ -16,8 +16,8 @@ import {
     Snackbar,
     IconButton,
     List,
-} from "@material-ui/core";
-import MuiAlert from '@material-ui/core/Alert';
+} from "@mui/material";
+import MuiAlert from '@mui/material/Alert';
 import {Application} from '../';
 import Config from '../config';
 import {observer} from "mobx-react";
@@ -29,8 +29,8 @@ import UserInfo from '../base/BaseUserInfo';
 import EventBus from "./CommonEventBus";
 import "../less";
 import MuiComponent from './MUIComponent';
-import ArrowBackIosRounded from "@material-ui/icons/ArrowBackIosRounded";
-import ArrowForwardIosRounded from "@material-ui/icons/ArrowForwardIosRounded";
+import ArrowBackIosRounded from "@mui/icons-material/ArrowBackIosRounded";
+import ArrowForwardIosRounded from "@mui/icons-material/ArrowForwardIosRounded";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
 
