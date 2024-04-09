@@ -30,8 +30,8 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
-const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-kh-high';
+const CURRENT_PROJECT = './project-yueh-pu';
 // const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -8188,12 +8188,17 @@ class BuildApplication {
         await functions.deployFunctionsToProd();
     }
 
-    async deployWebProd(deploy = true) {
+    /** buildWebpackOnly：只想透過source code編譯出bundle，目前用於做downsize處理，如果沒有做過web build,但 buildWebpackOnly = true 會報錯 */
+    async deployWebProd(deploy = true, buildWebpackOnly = false) {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
-        await web.cleanGenDirectory();
-        await web.incrementProjectVersion();
-        console.log(web.nodeOfAncestor.version);
-        await web.execute();
+        if(!buildWebpackOnly) {
+            await web.cleanGenDirectory();
+            if (deploy)
+                await web.incrementProjectVersion();
+            console.log(web.nodeOfAncestor.version);
+            await web.execute();
+        }
+
         await web.buildProdWebDistToProjectThanDeploy(deploy);
         Util.appendInfo(
             `web deploy succeed`
@@ -8330,7 +8335,7 @@ if (configerer.DEBUG_MODE) {
                     await builder.deployWebProd();
                     break;
                 case 'buildWebToProduction':
-                    await builder.deployWebProd(false);
+                    await builder.deployWebProd(false, true);
                     break;
                 case 'deployFunctionsWithoutBuild':
                     await builder.deployFunctionsWithoutBuild();

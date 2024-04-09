@@ -230,7 +230,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     getCurrentPu() {
-        return _.head(this.getGuitarpus()) ?? {};
+        return _.head(this.getGuitarpus()) ?? new GuitarPu();
     }
 
     setVisibleOfChordInContext(hide = false) {
