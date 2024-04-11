@@ -100,7 +100,6 @@ if (process.env.typeOfEnv === 'prod') {
         static: {
             directory: path.resolve(__dirname, './dist'),
         },
-        hot: true,
         port: 8080,
         client: {overlay: {warnings: false}},
         open: true,
