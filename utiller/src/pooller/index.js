@@ -943,7 +943,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool(1).sampleOfEachTaskInFreeMarker()
+        // await new InfinitePool(1).sampleOfEachTaskInFreeMarker()
     })();
 
 }
