@@ -6,10 +6,11 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    TextField
 } from '@mui/material';
 import {action, makeObservable, observable} from "mobx";
 import {observer, inject} from "mobx-react";
-import {utiller as Util } from "utiller";
+import {utiller as Util} from "utiller";
 import _ from 'lodash';
 import MuiComponent from "./MUIComponent";
 
@@ -124,27 +125,50 @@ class AlertDialog extends MuiComponent {
         return null;
     }
 
+
+    renderTextField() {
+        const textInput = this.props.textInput;
+
+        if (textInput && textInput.enable) {
+            return <TextField
+                autoFocus
+                required
+                margin="dense"
+                value={textInput.value}
+                label={textInput.label}
+                type={textInput.type}
+                fullWidth
+                variant="standard"
+                onChange={(event) => {
+                    textInput.onTextFieldChange(event);
+                }}
+            />
+        } else
+            return null;
+    }
+
     renderContent() {
-        const self = this;
-        const content = this.props.content;
-        if (_.isString(content) && !_.isEmpty(content)) {
-            return <DialogContent>
-                <DialogContentText>
-                    {content}
-                </DialogContentText>
-            </DialogContent>
-        }
         const CustomView = this.props.customView;
         const paramObject = this.props.paramObject;
         const component = this.props.component;
+        const content = this.props.content;
 
-        return <DialogContent
-            className={'BaseAlertDialogContent'}>
-            <CustomView
-                component={component}
-                paramObject={paramObject}
-                dialog={this}
-                {...this.getStore().getPropsOfCustomView()} />
+        if (this.hasCustomView())
+            return <DialogContent
+                className={'BaseAlertDialogContent'}>
+                <CustomView
+                    component={component}
+                    paramObject={paramObject}
+                    dialog={this}
+                    {...this.getStore().getPropsOfCustomView()} />
+            </DialogContent>
+
+
+        return <DialogContent>
+            <DialogContentText>
+                {content}
+            </DialogContentText>
+            {this.renderTextField()}
         </DialogContent>
     }
 

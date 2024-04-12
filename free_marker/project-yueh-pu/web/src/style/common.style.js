@@ -125,6 +125,14 @@ class CommonStyle {
 
   /** => following for account  component  */
 
+  AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+
+  AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+
   AccountFuncAreaOfEditToEditModeButton = {};
 
   AccountFuncAreaOfEditLogoutReactFragmentWrap = {};

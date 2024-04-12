@@ -14,6 +14,7 @@ import NavigatorToolBarComplete from "./navigatorToolBarComplete";
 import NavigatorToolBar from "./navigatorToolBar";
 import Navigator from "./navigator";
 import AccountCredential from "./accountCredential";
+import AccountUser from "./accountUser";
 import AccountFuncAreaOfEditLang from "./accountFuncAreaOfEditLang";
 import AccountFuncAreaOfEdit from "./accountFuncAreaOfEdit";
 import AccountFuncAreaOfIdStateAreaOfId from "./accountFuncAreaOfIdStateAreaOfId";

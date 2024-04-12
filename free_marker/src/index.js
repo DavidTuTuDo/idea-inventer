@@ -608,13 +608,21 @@ class CodegenNode {
         /** 指component的className */
         needActionButtons: true,
         /** 是否需要dialog預設的按鈕功能 */
-        title: undefined,
-        content: undefined,
+        title: '',
+        content: '',
         component: this,
         /** 在dialog裡面的view 會拿不到history, 會造成無法導頁, 所以要把喚起dialog的 component instance 帶進去 */
         paramObject: 'some object',
         /** 帶入到customView 裡面的變數 */
-        independentClick: false, /** 獨立觸發dialog的事件, 不然預設都會在click事件裡面觸發. 就是你要拿ref自己控制open() close()會用到 */
+        independentClick: false,
+        /** 獨立觸發dialog的事件, 不然預設都會在click事件裡面觸發. 就是你要拿ref自己控制open() close()會用到 */
+        textInput: {
+            value: '', /** 輸入框的預設值 */
+            enable: false,
+            type: 'text', /** email,phone,*/
+            label: '輸入的範例', /** */
+        }
+        /** 如果要產生button按下去之後，可以輸入alertDialog */
     };
 
     /** 放admin的json file*/
@@ -793,9 +801,28 @@ class CodegenNode {
         return `${Util.camel('get', this.getFieldNameOfDialogTitle())}()`;
     }
 
+    getFunctionNameOfDialogInputValueGetterWithBracket() {
+        return `${Util.camel('get', this.getFieldNameOfDialogInputValue())}()`;
+    }
+
+    getFunctionNameOfDialogInputValueSetter() {
+        return `${Util.camel('set', this.getFieldNameOfDialogInputValue())}`;
+    }
+
+    getFunctionNameOfDialogInputLabelGetterWithBracket() {
+        return `${Util.camel('get', this.getFieldNameOfDialogInputLabel())}()`;
+    }
+
     getFieldNameOfDialogTitle() {
         return Util.camel('dialog', 'title', 'of', this.getPreciseAttributeGenealogyName());
+    }
 
+    getFieldNameOfDialogInputValue() {
+        return Util.camel('dialog', 'input', 'value', 'of', this.getPreciseAttributeGenealogyName());
+    }
+
+    getFieldNameOfDialogInputLabel() {
+        return Util.camel('dialog', 'input', 'label', 'of', this.getPreciseAttributeGenealogyName());
     }
 
     /** exclude => 要略過的資料夾名稱 */
@@ -1221,7 +1248,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -1330,13 +1357,26 @@ class CodegenNode {
         }
 
         function getStmtOfDialogTitle() {
-            const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.title) ? '' : `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
+            return `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
         }
 
         function getStmtOfDialogContent() {
-            const dialog = self.getAlertDialog();
-            return _.isEmpty(dialog.content) ? '' : `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
+            return `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
+        }
+
+        function getStmtDialogInput() {
+            const stmts = [];
+            if (self.hasInputFieldDialog()) {
+                stmts.push(`textInput:{enable:true`);
+                stmts.push(`label:${self.getObservableName()}.${self.getFunctionNameOfDialogInputLabelGetterWithBracket()}`)
+                stmts.push(`value:${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueGetterWithBracket()}`)
+                stmts.push(`onTextFieldChange:(event) => {${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueSetter()}(self.getLatestValueByEvent(event))}`)
+                stmts.push(`type:'${self.getAlertDialog().textInput.type}'}`);
+                return stmts.join(',');
+            }
+            return '';
+
+
         }
 
         if (this.hasAlertDialog()) {
@@ -1349,6 +1389,7 @@ class CodegenNode {
             props.push(getTaskStmts());
             props.push(getCustomViewStmts());
             props.push(getParamObject());
+            props.push(getStmtDialogInput())
             props.push(getStmtOfDialogContent());
             props.push(getStmtOfDialogTitle());
             _.remove(props, (each) => _.isEmpty(each))
@@ -1377,12 +1418,11 @@ class CodegenNode {
     }
 
     hasAlertDialog() {
-        return !_.isEmpty(this.getAlertDialog().content) || !_.isEmpty(this.getAlertDialog().customView);
+        return !_.isEmpty(this.getAlertDialog().title) || !_.isEmpty(this.getAlertDialog().customView);
     }
 
-    /** 就是只有 title 和 content 那種確認視窗的 dialog */
-    hasGeneralDialog() {
-        return !_.isEmpty(this.getAlertDialog().content) && !_.isEmpty(this.getAlertDialog().title);
+    hasInputFieldDialog() {
+        return this.getAlertDialog().textInput.enable;
     }
 
     hasAlertMenu() {
@@ -1395,7 +1435,7 @@ class CodegenNode {
 
     /** 就是點擊要再確認的那種dialog */
     hasConfirmDialog() {
-        return this.hasAlertDialog() && this.getAlertDialog().content;
+        return this.hasAlertDialog() && !_.isEmpty(this.getAlertDialog().title);
     }
 
     hasLoginRequiredDialog() {
@@ -3795,9 +3835,16 @@ class StoreBuilder extends BaseBuilder {
                     `return this.${fieldName}`)
             }
 
-            if (child.hasGeneralDialog()) {
+            if (child.hasConfirmDialog()) {
                 _.each([child.getFieldNameOfDialogTitle(),
                     child.getFieldNameOfDialogContent()], (fieldName) => {
+                    appendI18nFieldSetterGetter(baseGenerator, fieldName);
+                })
+            }
+
+            if (child.hasInputFieldDialog()) {
+                _.each([child.getFieldNameOfDialogInputValue(),
+                    child.getFieldNameOfDialogInputLabel()], (fieldName) => {
                     appendI18nFieldSetterGetter(baseGenerator, fieldName);
                 })
             }
@@ -5393,10 +5440,16 @@ class AppBuilder extends ComponentBuilder {
                 }
             }
 
-            if (child.hasGeneralDialog()) {
+            if (child.hasConfirmDialog()) {
                 const alert = child.getAlertDialog();
                 appendMapOfKeyValue(child.getFieldNameOfDialogContent(), alert.content);
                 appendMapOfKeyValue(child.getFieldNameOfDialogTitle(), alert.title);
+            }
+
+            if (child.hasInputFieldDialog()) {
+                const input = child.getAlertDialog().textInput;
+                appendMapOfKeyValue(child.getFieldNameOfDialogInputValue(), input.value);
+                appendMapOfKeyValue(child.getFieldNameOfDialogInputLabel(), input.label);
             }
 
             /**
@@ -5405,6 +5458,7 @@ class AppBuilder extends ComponentBuilder {
              if(child.hasDescription()){
                 appendMapOfKeyValue(Util.camel('description','of',child.getPreciseAttributeGenealogyName()), child.getDescription());
              }
+
              */
             if (child.hasChildren()) {
                 for (const grandson of child.getPreciseAttributeChildren()) {
@@ -8191,7 +8245,7 @@ class BuildApplication {
     /** buildWebpackOnly：只想透過source code編譯出bundle，目前用於做downsize處理，如果沒有做過web build,但 buildWebpackOnly = true 會報錯 */
     async deployWebProd(deploy = true, buildWebpackOnly = false) {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
-        if(!buildWebpackOnly) {
+        if (!buildWebpackOnly) {
             await web.cleanGenDirectory();
             if (deploy)
                 await web.incrementProjectVersion();
