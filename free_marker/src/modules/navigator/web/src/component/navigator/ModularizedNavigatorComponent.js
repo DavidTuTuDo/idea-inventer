@@ -200,7 +200,11 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorToolBarLoginButton(toolBar) {
-        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed(),true);
+        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing() ,true);
+    }
+
+    getInjectStyleOfNavigatorToolBarTipOfLoadingCircularProgress(toolBar) {
+        return Util.getVisibleOrNone(UserInfo.isAuthProcessing() ,true);
     }
 
 

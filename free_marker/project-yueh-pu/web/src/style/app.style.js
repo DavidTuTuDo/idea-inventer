@@ -97,6 +97,8 @@ class AppStyle {
 
   NavigatorDrawerDrawer = {};
 
+  NavigatorToolBarTipOfLoadingCircularProgress = {};
+
   NavigatorToolBarAccountHeadAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};

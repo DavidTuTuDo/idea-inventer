@@ -97,6 +97,8 @@ class CommonStyle {
 
   NavigatorDrawerDrawer = {};
 
+  NavigatorToolBarTipOfLoadingCircularProgress = {};
+
   NavigatorToolBarAccountHeadAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};

@@ -97,6 +97,8 @@ class MobileStyle {
 
   NavigatorDrawerDrawer = {};
 
+  NavigatorToolBarTipOfLoadingCircularProgress = {};
+
   NavigatorToolBarAccountHeadAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};

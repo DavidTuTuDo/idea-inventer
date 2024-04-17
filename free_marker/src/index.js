@@ -31,8 +31,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+const CURRENT_PROJECT = './project-yueh-pu';
+// const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -108,7 +108,7 @@ const VIEW_IMPORTS =
             from: `@mui/material`,
             views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
-                'Drawer', 'ListItem', 'List', 'Tabs', 'Tab',]
+                'Drawer', 'ListItem', 'List', 'Tabs', 'Tab','CircularProgress']
         },
         {
             from: `react-slideshow-image`,

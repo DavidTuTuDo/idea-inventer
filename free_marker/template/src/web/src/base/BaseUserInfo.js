@@ -29,6 +29,7 @@ class UserInfo {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
+
     @observable
     isLoginSucceed = false;
 
@@ -39,7 +40,7 @@ class UserInfo {
     isPurchaseUser = false;
 
     @observable
-    isAuthProcessingState = false;
+    isAuthProcessingState = true;
 
     constructor(props) {
         makeObservable(this);
@@ -63,6 +64,7 @@ class UserInfo {
         this.specificBehaviorOfLoginStateChange(user).then()
     }
 
+    /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
         if (this.isValidUser(user)) {
             const credential = Cookie.getCredential();
@@ -117,6 +119,7 @@ class UserInfo {
     invalidateLoginState() {
         this.isLoginSucceed = !_.isNull(firebaser.getCurrentUser());
         this.isAdminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
+        this.setAuthProcessing(false);
     }
 
     isLoginWithSucceed() {
@@ -140,6 +143,7 @@ class UserInfo {
     }
 
     performLoginBehavior = async (view) => {
+        const self = this;
         if (this.isAuthProcessing()) {
             view.showWarningSnackMessage(`認證流程處理中，請稍後再試`);
             return;
@@ -150,9 +154,15 @@ class UserInfo {
                 Util.appendInfo('454841, login by google account');
                 await firebaser.signInWithGoogle(async (authResult) => {
                     /** 只有在登入傳回直裡面有credential */
-                    const credential = authResult.credential;
-                    Util.appendInfo('4548412, retrieve credential:', credential);
-                    Cookie.setCredential(credential);
+                    if (authResult != undefined) {
+                        const credential = authResult.credential;
+                        Util.appendInfo('4548412, retrieve credential:', credential);
+                        Cookie.setCredential(credential);
+                        /** 拿到authResult,會觸發 firebase 的 listner ==> this.auth().onAuthStateChanged((user) */
+                    } else {
+                        Util.appendInfo(`4548414, didn't retrieve credential`);
+                        self.setAuthProcessing(false);
+                    }
                 }, view)
             })
         };
@@ -167,12 +177,8 @@ class UserInfo {
     }
 
     async authProcessBehavior(functionOfAsyncTask) {
-        try {
-            this.setAuthProcessing(true);
-            await functionOfAsyncTask();
-        } finally {
-            this.setAuthProcessing(false);
-        }
+        this.setAuthProcessing(true);
+        await functionOfAsyncTask();
     }
 
     async logout(view) {
@@ -188,6 +194,7 @@ class UserInfo {
 
     @action
     setAuthProcessing(ing) {
+        Util.appendInfo(`認證流程狀況 ==> `, ing);
         this.isAuthProcessingState = ing;
     }
 
@@ -196,8 +203,10 @@ class UserInfo {
     }
 
     signInWithCredential = async () => {
+        Util.appendInfo(`45431646 進入認證流程`);
         const self = this;
         if (Cookie.hasCredential() && !this.isLoginWithSucceed()) {
+            Util.appendInfo(`45431696 有cookie，和google hand shake取得latest token`);
             const func = async () => {
                 try {
                     const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
@@ -208,6 +217,8 @@ class UserInfo {
                 }
             }
             await this.authProcessBehavior(func);
+        } else {
+            Util.appendInfo(`45431616 沒有cookie，和google hand shake取得latest token`);
         }
         CommonPoolHelper.enableParallelMode();
     }

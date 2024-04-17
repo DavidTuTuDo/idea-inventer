@@ -16,7 +16,7 @@ class CommonFirebaseHelper extends BaseFirebase {
             this.auth().onAuthStateChanged((user) => {
                 const event = require('../event').default;
                 event.emitAuthStateChanged(user);
-                Util.appendInfo(`登入後發布event了`)
+                Util.appendInfo(`8745412, 登入後發布event了`)
             })
         }
 
@@ -89,7 +89,9 @@ class CommonFirebaseHelper extends BaseFirebase {
     }
 
     async signInWithGoogle(asyncTask = async (result) => result) {
-        const result = await this.auth().signInWithPopup(this.getGoogleAuthProvider());
+        const result = await this.auth().signInWithPopup(this.getGoogleAuthProvider()).catch(error => {
+            Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`)
+        });
         await asyncTask(result);
     }
 
