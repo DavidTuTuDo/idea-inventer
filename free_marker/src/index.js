@@ -31,8 +31,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-yueh-voice';
 // const CURRENT_PROJECT = './project-kh-high';
-const CURRENT_PROJECT = './project-yueh-pu';
-// const CURRENT_PROJECT = './project-davidtu-dev';
+// const CURRENT_PROJECT = './project-yueh-pu';
+const CURRENT_PROJECT = './project-davidtu-dev';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -1357,12 +1357,16 @@ class CodegenNode {
         }
 
         function getStmtOfDialogTitle() {
-            return `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
+            const dialog = self.getAlertDialog();
+            return _.isEmpty(dialog.title) ? '' : `title: ${self.getObservableName()}.${self.getFunctionNameOfDialogTitleGetterWithBracket()}`;
         }
 
+
         function getStmtOfDialogContent() {
-            return `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
+            const dialog = self.getAlertDialog();
+            return _.isEmpty(dialog.content) ? '' : `content: ${self.getObservableName()}.${self.getFunctionNameOfDialogContentGetterWithBracket()}`;
         }
+
 
         function getStmtDialogInput() {
             const stmts = [];
@@ -5866,7 +5870,6 @@ class AppBuilder extends ComponentBuilder {
         await appGenerator.needIndexFile('App', [], false, [
                 `const self = new App()`,
                 `self.mount()`,
-                `module.hot.accept()`,
                 `Util.setEnvironment(Config.env)`,
                 `export {self as Application};`
             ],

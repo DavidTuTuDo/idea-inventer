@@ -28,11 +28,11 @@ class BBB extends AAA {
 if (configerer.DEBUG_MODE) {
     (async () => {
 
-        const bbb = new BBB();
-        console.log(bbb.properties);
+        // const bbb = new BBB();
+        // console.log(bbb.properties);
 
 
-
+        console.log(_.size(`fdipsjfoijsdoifdso`))
 
 
             // const browser = new Browser(true);

@@ -939,7 +939,7 @@ class BaseComponent extends MuiComponent {
         return isValid;
     }
 
-    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons, component}) {
+    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons, textInput,component}) {
         return (<AlertDialog
             title={title}
             content={content}
@@ -947,6 +947,7 @@ class BaseComponent extends MuiComponent {
             needActionButtons={needActionButtons}
             customView={customView}
             paramObject={paramObject}
+            textInput={textInput}
             component={component}
             ref={ref}/>)
     }
