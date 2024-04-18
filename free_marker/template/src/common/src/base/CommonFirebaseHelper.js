@@ -16,11 +16,11 @@ class CommonFirebaseHelper extends BaseFirebase {
             this.auth().onAuthStateChanged((user) => {
                 const event = require('../event').default;
                 event.emitAuthStateChanged(user);
-                Util.appendInfo(`8745412, 登入後發布event了`)
+                Util.appendInfo(`8745412, 登入後發布event了`, user)
             })
         }
 
-        if (_.isEqual(Config.env,'dev') && _.isEqual(Config.platform, 'web')) {
+        if (_.isEqual(Config.env, 'dev') && _.isEqual(Config.platform, 'web')) {
             this.functions().useEmulator("localhost", 5002);
         }
     }

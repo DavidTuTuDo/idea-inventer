@@ -60,36 +60,43 @@ class UserInfo {
     }
 
     onAuthStateChangedReceive = (user) => {
-        Util.appendInfo('4565231213 收到authStateChanged 通知，我改變了')
+        Util.appendInfo('4565231213 收到authStateChanged 通知，我改變了 =>',user)
         this.specificBehaviorOfLoginStateChange(user).then()
     }
 
     /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
-        if (this.isValidUser(user)) {
-            const credential = Cookie.getCredential();
-            /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
-            if (await this.apiOfUser.fetchUserIsExist(user.uid)) {
-                await this.apiOfUser.updateUserItem(Application.getLatestComponent(), {
-                    ...user,
-                    updateTime: -1
-                }, user.uid);
-            } else {
-                await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
-                    ...user,
-                    id: user.uid
-                }, user.uid);
+
+        try {
+            if (this.isValidUser(user)) {
+                const credential = Cookie.getCredential();
+                /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
+                if (await this.apiOfUser.fetchUserIsExist(user.uid)) {
+                    await this.apiOfUser.updateUserItem(Application.getLatestComponent(), {
+                        ...user,
+                        updateTime: -1
+                    }, user.uid);
+                } else {
+                    await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
+                        ...user,
+                        id: user.uid
+                    }, user.uid);
+                }
+                await this.crendential.submitCredential(Application.getLatestComponent(), credential, user.uid);
+                /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
+                Cookie.setUser(user);
+                Util.appendInfo('登入成功, 所以寫入資料')
+                Util.appendInfo('user info:', user);
+                Util.appendInfo('user credential:', credential);
             }
-            await this.crendential.submitCredential(Application.getLatestComponent(), credential, user.uid);
-            /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
-            Cookie.setUser(user);
-            Util.appendInfo('登入成功, 所以寫入資料')
-            Util.appendInfo('user info:', user);
-            Util.appendInfo('user credential:', credential);
-        } else {
+        } catch (error) {
+            Util.appendError(`87878798 發生錯誤 ===> `, error.message);
             Cookie.removeCredential()
             Cookie.removeUser();
+            await firebaser.logout();
+            this.invalidateLoginState();
         }
+
         this.invalidateLoginState();
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
@@ -104,7 +111,7 @@ class UserInfo {
          const emailVerified = user.emailVerified;
          const uid = user.uid;
          */
-
+        Util.appendInfo(`6721721739812 getCurrentUser() 被呼叫！`)
         let user = firebaser.getCurrentUser();
         if (Util.exist(user)) return user;
 
@@ -151,14 +158,16 @@ class UserInfo {
 
         const func = async () => {
             await this.executeAsyncTask(async () => {
+
                 Util.appendInfo('454841, login by google account');
+
                 await firebaser.signInWithGoogle(async (authResult) => {
                     /** 只有在登入傳回直裡面有credential */
                     if (authResult != undefined) {
                         const credential = authResult.credential;
                         Util.appendInfo('4548412, retrieve credential:', credential);
                         Cookie.setCredential(credential);
-                        /** 拿到authResult,會觸發 firebase 的 listner ==> this.auth().onAuthStateChanged((user) */
+                        /** 拿到authResult,會觸發 firebase 的 listener ==> this.auth().onAuthStateChanged((user) */
                     } else {
                         Util.appendInfo(`4548414, didn't retrieve credential`);
                         self.setAuthProcessing(false);
@@ -218,7 +227,7 @@ class UserInfo {
             }
             await this.authProcessBehavior(func);
         } else {
-            Util.appendInfo(`45431616 沒有cookie，和google hand shake取得latest token`);
+            Util.appendInfo(`45431616 沒有cookie，需要和google hand shake取得latest token`);
         }
         CommonPoolHelper.enableParallelMode();
     }

@@ -49,6 +49,8 @@ class MobileStyle {
 
   NavigatorDrawerDrawer = {};
 
+  NavigatorToolBarTipOfLoadingCircularProgress = {};
+
   NavigatorToolBarAccountHeadAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};
@@ -238,6 +240,14 @@ class MobileStyle {
   EpayDiv = {};
 
   /** => following for account  component  */
+
+  AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+
+  AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
 
   AccountFuncAreaOfEditToEditModeButton = {};
 
