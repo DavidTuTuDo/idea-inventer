@@ -106,9 +106,9 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: [ 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
-                'Drawer', 'ListItem', 'List', 'Tabs', 'Tab','CircularProgress']
+                'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
         },
         {
             from: `react-slideshow-image`,
@@ -152,6 +152,8 @@ class CodegenNode {
     /** 利用outer,view child的方式,增加一個label概念 姓名: David*/
 
     valueOfTabDefault = '';
+
+    useCopyRightView = {enable: true, view: 'infoOfCopyRight'};
 
     l10n = false;
     /** 代表這個欄位要做i18n功能,怕命名和codegen的i18n打架, 所以取名叫l10n */
@@ -757,6 +759,10 @@ class CodegenNode {
         return !!this.ref;
     }
 
+    hasCopyRightView() {
+        return this.useCopyRightView.enable;
+    }
+
     /** 在source.js 提示這個節點要超展開為 reference node, 這個method 應該只能用在還build store,component */
     isReferenceNotice() {
         return !!this.ref && _.isString(this.ref);
@@ -1248,7 +1254,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['useCopyRightView','textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -1716,7 +1722,7 @@ class CodegenNode {
 
     getNavigationComponentName() {
         let name = ''
-        if (this.hasNavigation()) {
+        if (this.hasNavigationView()) {
             name = this.navigation.view;
         }
         return name;
@@ -1730,7 +1736,7 @@ class CodegenNode {
         return !!this.listWrapView && !_.isEmpty(this.listWrapView);
     }
 
-    hasNavigation() {
+    hasNavigationView() {
         return !!this.navigation && !!this.navigation.view
 
     }
@@ -5834,13 +5840,17 @@ class AppBuilder extends ComponentBuilder {
             tag: 'Provider',
             generator: appGenerator,
             simpleProps: ['...this.getStoreObject()'],
-            contents: [this.nodeOfAncestor.hasNavigation() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt]
+            contents: [this.nodeOfAncestor.hasNavigationView() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt,
+                this.nodeOfAncestor.hasCopyRightView() ? '{this.getCopyRightView(this.history)}' : '']
         })
 
         const whole = providerStmt;
         this.removeJSXSign(whole);
-        if (this.nodeOfAncestor.hasNavigation())
+        if (this.nodeOfAncestor.hasNavigationView())
             appGenerator.appendFunction('getNavigationView', ['history'], [], [], `return (${this.getNavigationStmt(this.nodeOfAncestor.navigation).join('')})`)
+
+        if (this.nodeOfAncestor.hasCopyRightView())
+            appGenerator.appendFunction('getCopyRightView', ['history'], [], [], `return (${this.getCopyRightStmt(this.nodeOfAncestor.useCopyRightView).join('')})`)
 
         appGenerator.appendFunction('getStoreObject', [], [], [],
             'const stores = {}',
@@ -5863,8 +5873,12 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendFunction({
             name: `getNavigatorRef`,
             arrow: true
-        }, [], [], [], `return this.navigatorRef.current`)
-        appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`)
+        }, [], [], [], `return this.navigatorRef.current`);
+        if (this.nodeOfAncestor.hasNavigationView())
+            appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`);
+        if (this.nodeOfAncestor.hasCopyRightView())
+            appGenerator.appendConstructor(`this.copyRightRef = React.createRef()`)
+
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
 
         await appGenerator.needIndexFile('App', [], false, [
@@ -5890,6 +5904,20 @@ class AppBuilder extends ComponentBuilder {
             }));
             this.removeJSXSign(stmt);
         }
+        return stmt;
+    }
+
+    getCopyRightStmt(copyRight) {
+        const stmt = [];
+        stmt.push(...this.getJSXStrings({
+            /** 因為import 是大寫, 所以這裡只好hack*/
+            tag: _.upperFirst(copyRight.view),
+            props: {
+                ref: `###this.copyRightRef`,
+                history: `###history`
+            }
+        }));
+        this.removeJSXSign(stmt);
         return stmt;
     }
 

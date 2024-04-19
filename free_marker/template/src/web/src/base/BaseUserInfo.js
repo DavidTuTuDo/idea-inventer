@@ -218,7 +218,7 @@ class UserInfo {
             Util.appendInfo(`45431696 有cookie，和google hand shake取得latest token`);
             const func = async () => {
                 try {
-                    const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
+                    const result =  await firebaser.signInWithExistedCredential(Cookie.getCredential());
                     Cookie.setCredential(result.credential);
                 } catch (error) {
                     Util.appendError(error);
