@@ -12,30 +12,29 @@
     "updateConfigerer": "npm update configerer --save"
   },
   "engines": {
-    "node": "14"
+    "node": "18"
   },
   "main": "./index.js",
   "dependencies": {
+    "@babel/runtime": "^7.16.5",
+    "configerer": "^1.0.11",
+    "ecpay_aio_nodejs": "^1.0.2",
     "firebase-admin": "^9.2.0",
     "firebase-functions": "^3.11.0",
-    "configerer": "^1.0.11",
-    "utiller": "^1.0.185",
     "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "@babel/runtime": "^7.16.5",
-    "ecpay_aio_nodejs": "^1.0.2"
+    "utiller": "^1.0.185"
   },
   "devDependencies": {
-    "firebase-functions-test": "^0.2.0",
-    "@babel/cli": "^7.12.8",
-    "@babel/core": "^7.12.9",
-    "@babel/plugin-proposal-class-properties": "^7.12.1",
-    "@babel/plugin-proposal-decorators": "^7.12.1",
-    "@babel/plugin-transform-runtime": "^7.12.1",
-    "@babel/preset-env": "^7.12.7",
-    "@babel/register": "^7.12.1",
-    "@babel/preset-react": "^7.12.13"
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.4",
+    "@babel/plugin-proposal-decorators": "^7.24.1",
+    "@babel/plugin-transform-class-properties": "^7.24.1",
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.24.1",
+    "firebase-functions-test": "^0.2.0"
   },
   "private": true,
   "author": "davidtu<freshingmoon0725@gmail.com>"

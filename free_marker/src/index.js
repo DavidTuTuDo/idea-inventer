@@ -3322,6 +3322,10 @@ class PathBase {
         return _.isEqual(this.platform, 'admin')
     }
 
+    isAdminORFunctionsPlatform() {
+        return this.isAdminPlatform() || this.isFunctionsPlatform();
+    }
+
     appendMustacheFile(templateFileName, destFileName, param = {}) {
         Util.appendFile(
             libpath.resolve(destFileName),
@@ -4182,20 +4186,20 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                 if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
-                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
                 } else if (child.isObject()) {
                     if (self.isWebPlatform())
                         contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                this.getColumnData(object.${child.getFieldName()}) : ${child.getDefaultValueByType(self.isAdminPlatform())}.columnData();${getCommentDescription(child)}`);
+                this.getColumnData(object.${child.getFieldName()}) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}.columnData();${getCommentDescription(child)}`);
                     else
                         appendGeneralStmts(contents, child);
                 } else if (child.isArray()) {
                     if (self.isWebPlatform())
                         contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
                     else
                         appendGeneralStmts(contents, child);
                 } else {
@@ -4205,7 +4209,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             }
 
             function appendGeneralStmts(contents, child) {
-                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminPlatform())};${getCommentDescription(child)}`);
+                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
             }
 
             if (!node.isCheapArray()) {
