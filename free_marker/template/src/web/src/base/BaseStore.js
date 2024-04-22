@@ -36,16 +36,16 @@ class BaseStore extends ClientRemoteApi {
     state = 'stable';
 
     @observable
-    errorMsg = 'unknown error';
+    errorMsg = '未知的錯誤';
 
     @observable
-    messageOfListIsEmpty = 'unknown error';
+    messageOfListIsEmpty = '目前遠端沒有資料';
 
     @observable
     globalLoadingState = false;
 
     @observable
-    globalLoadingTip = '正在載入中';
+    globalLoadingTip = '正在載入中．．．';
 
     parentNode;
 
