@@ -77,6 +77,28 @@ class AppStyle {
 
   NavigatorDiv = {};
 
+  /** => following for infoOfCopyRight  component  */
+
+  InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
+
+  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaRuleOfPrivacyButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaDiv = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaDiv = {};
+
+  InfoOfCopyRightUpperGroupDiv = {};
+
+  InfoOfCopyRightDiv = {};
+
   /** => following for epayPurchaseOfHistory  component  */
 
   EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};

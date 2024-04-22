@@ -65,6 +65,7 @@ const LESS_MODULES = [
  *
  * */
 
+const DEFAULT_IMPORT_ROUTE_OF_VIEW = '';
 const VIEW_IMPORTS =
     [
         {
@@ -75,6 +76,16 @@ const VIEW_IMPORTS =
         {
             from: `@mui/icons-material/AccountCircle`,
             views: ['AccountCircle'],
+            simplePath: true,
+        },
+        {
+            from: `@mui/icons-material/MailOutlined`,
+            views: ['MailOutlined'],
+            simplePath: true,
+        },
+        {
+            from: `@mui/icons-material/PhoneOutlined`,
+            views: ['PhoneOutlined'],
             simplePath: true,
         },
         {
@@ -106,7 +117,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: [ 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
         },
@@ -145,10 +156,27 @@ class CodegenNode {
     implementsOfAlertItemClicked = [];
     /** alertMenu的 items,在點擊後的事件實作 */
 
+    /** 如果只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
     labelView = {
         enable: false,
         defaultValue: ``,
+        labelIcon: {
+            enable: false,
+            view: `PhoneOutlined`,
+            props: {},
+        }
     }
+
+    defaultLabelViewIcon = {
+        enable: false,
+        defaultValue: ``,
+        labelIcon: {
+            enable: false,
+            view: `PhoneOutlined`,
+            props: {},
+        }
+    }
+
     /** 利用outer,view child的方式,增加一個label概念 姓名: David*/
 
     valueOfTabDefault = '';
@@ -662,6 +690,10 @@ class CodegenNode {
 
     hasLabelView() {
         return this.labelView && this.labelView.enable;
+    }
+
+    hasLabelViewIcon() {
+        return this.labelView && this.labelView.labelIcon && this.labelView.labelIcon.enable;
     }
 
     getFunctionMethods() {
@@ -1254,7 +1286,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['useCopyRightView','textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -1813,6 +1845,10 @@ class CodegenNode {
         return this.isAttributeView('FloatBackgroundView');
     }
 
+    isCustomImageButton(type = 'default') {
+        return _.isEqual(this.getView(), 'CustomImageButton');
+    }
+
     isAttributeView(view, type = 'default', node = this) {
 
         function getViewOfTarget() {
@@ -2059,6 +2095,10 @@ class CodegenNode {
     }
 
     hasChildren() {
+        if (this.children !== undefined && !_.isArray(this.children)) {
+            throw new ERROR(9999, `${this.getName()} 宣告的 children 必須是array`);
+        }
+
         return (_.isArray(this.children) && this.children.length > 0);
     }
 
@@ -6285,10 +6325,15 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildDistAssetFolder() {
-        const imageSrcFolder = libpath.join(this.projectPlatformPath, 'images');
-        if (fs.existsSync(imageSrcFolder)) {
-            Util.copyFromFolderToDestFolder(imageSrcFolder,
-                Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
+
+        const imagesOfModules = this.nodeOfAncestor.getListOfModuleComponent().map(module => libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/images`));
+        const imageSourceFolders = [...imagesOfModules, libpath.join(this.projectPlatformPath, 'images')];
+        for (const imageSourceFolder of imageSourceFolders) {
+
+            if (fs.existsSync(imageSourceFolder)) {
+                Util.copyFromFolderToDestFolder(imageSourceFolder,
+                    Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
+            }
         }
     }
 
@@ -6941,6 +6986,18 @@ class ProjectFileHandler extends PathBase {
                 node.getParentNode().deleteChildrenByNode(node);
             }
 
+            if (node.isCustomImageButton()) {
+                node.setView('IconButton');
+                node.needParam = true;
+                node.appendChildrenWithJsons({
+                    name: `imgOf${_.upperFirst(node.getName())}`,
+                    view: `img`,
+                    type: `string`,
+                    incest: {view: false, attribute: true},
+                    defaultValue: `${node.defaultValue}`
+                })
+            }
+
             if (node.isSimpleSwitch()) {
                 node.setView('FormControlLabel');
                 node.appendChildrenWithJsons(
@@ -7016,6 +7073,25 @@ class ProjectFileHandler extends PathBase {
 
             if (node.hasLabelView()) {
                 node.setWrapView('div');
+
+                if (node.hasLabelViewIcon()) {
+                    node.appendChildrenWithJsons({
+                        name: `btnOf${_.upperFirst(node.getName())}`,
+                        needParam: true,
+                        outer: true,
+                        incest: {view: false, attribute: true},
+                        view: 'IconButton',
+                        injectStyle: node.injectStyle,
+                        props: node.labelView.labelIcon.props ?? {},
+                        children: [
+                            {
+                                name: `icon`,
+                                view: node.labelView.labelIcon.view,
+                            }
+                        ]
+                    })
+                }
+
                 node.appendChildrenWithJsons({
                     name: `labelOf${_.upperFirst(node.getName())}`,
                     type: `string`,
@@ -7027,7 +7103,10 @@ class ProjectFileHandler extends PathBase {
                     incest: {view: false, attribute: true},
                     defaultValue: node.labelView.defaultValue,
                 });
+
+
             }
+
 
             if (node.isSimperSwiper()) {
                 const functionNameOfSwipe = node.getFunctionNameOfSwiper();

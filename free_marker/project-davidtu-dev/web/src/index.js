@@ -19,13 +19,16 @@ import { Provider } from "mobx-react";
 
 class App extends BaseApp {
   /** -------------------- fields -------------------- **/
+
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
+
   /** -------------------- async api -------------------- **/
 }
+
 const self = new App();
 self.mount();
 Util.setEnvironment(Config.env);

@@ -13,6 +13,10 @@ import NavigatorToolBarSuggestComplete from "./navigatorToolBarSuggestComplete";
 import NavigatorToolBarComplete from "./navigatorToolBarComplete";
 import NavigatorToolBar from "./navigatorToolBar";
 import Navigator from "./navigator";
+import InfoOfCopyRightUpperGroupRightArea from "./infoOfCopyRightUpperGroupRightArea";
+import InfoOfCopyRightUpperGroupLeftArea from "./infoOfCopyRightUpperGroupLeftArea";
+import InfoOfCopyRightUpperGroup from "./infoOfCopyRightUpperGroup";
+import InfoOfCopyRight from "./infoOfCopyRight";
 import EpayPurchaseOfHistoryOrderAreaOfPaymentFailure from "./epayPurchaseOfHistoryOrderAreaOfPaymentFailure";
 import EpayPurchaseOfHistoryOrderAreaOfFunc from "./epayPurchaseOfHistoryOrderAreaOfFunc";
 import EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCode from "./epayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCode";
@@ -39,6 +43,8 @@ import EpayPreciseProductPhoto from "./epayPreciseProductPhoto";
 import EpayPreciseProduct from "./epayPreciseProduct";
 import Epay from "./epay";
 import AccountCredential from "./accountCredential";
+import AccountUser from "./accountUser";
+import AccountFuncAreaOfEditLang from "./accountFuncAreaOfEditLang";
 import AccountFuncAreaOfEdit from "./accountFuncAreaOfEdit";
 import AccountFuncAreaOfIdStateAreaOfId from "./accountFuncAreaOfIdStateAreaOfId";
 import AccountFuncAreaOfId from "./accountFuncAreaOfId";
@@ -54,11 +60,14 @@ import Main from "./main";
 
 class Store extends BaseStore {
   /** -------------------- fields -------------------- **/
+
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
     super(props);
   }
+
   /** -------------------- async api -------------------- **/
 }
+
 export default Store;
