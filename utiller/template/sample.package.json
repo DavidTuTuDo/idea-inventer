@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.11",
-    "utiller": "^1.0.185",
+    "utiller": "^1.0.187",
     "linepayer": "^1.0.4",
     "databazer": "^1.0.12",
     "lodash": "^4.17.20",
@@ -24,6 +24,7 @@
     "@babel/plugin-transform-class-properties": "^7.24.1",
     "@babel/plugin-transform-runtime": "^7.24.3",
     "@babel/preset-env": "^7.24.4",
-    "@babel/preset-react": "^7.24.1"
+    "@babel/preset-react": "^7.24.1",
+    "@babel/register": "^7.23.7"
   }
 }

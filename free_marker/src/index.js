@@ -3106,6 +3106,8 @@ class ClassGenerator {
                 _.isEqual(folderName, 'src'),
                 _.isEqual(folderName, 'store'),
                 _.isEqual(folderName, 'i18n'),
+                _.isEqual(folderName, 'config'),
+
                 Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT),
             )
 
@@ -6498,6 +6500,8 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildConfig() {
+        Util.appendInfo('<<<<<<<<<我進來了拔  1541511231')
+
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
         baseConfigGenerator.appendClass(`BaseConfig`);
@@ -6514,6 +6518,7 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`host`, JSON.stringify(this.isProduction() ? sourceObj.host.prod : sourceObj.host.dev));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
+        baseConfigGenerator.appendField(`VERSION_OF_PACKAGE_JSON`, JSON.stringify(Util.getVersionOfJsFile(this.pathOfSourceJS)));
 
 
         switch (this.platform) {
@@ -8129,15 +8134,7 @@ class ProjectFileHandler extends PathBase {
         const origin = this.nodeOfAncestor.version;
         const stringOfLatestVersion = Util.isValidVersionOfString(origin) ? Util.getStringOfVersionIncrement(origin) : '1.0.1';
         this.nodeOfAncestor.version = stringOfLatestVersion;
-        await this.rewriteVersionOfSourceJs(stringOfLatestVersion);
-    }
-
-    async rewriteVersionOfSourceJs(version) {
-        const contents = Util.getFileContextInRaw(this.pathOfSourceJS).split(`\n`);
-        const index = _.findIndex(contents, (each) => _.startsWith(_.trim(each), 'version'));
-        /** 故意空4格 */
-        contents[index] = `    version: '${version}',`;
-        Util.appendFile(this.pathOfSourceJS, contents.join(`\n`), true, true);
+        await Util.rewriteAttributeOfSourceJs(this.pathOfSourceJS, {version: stringOfLatestVersion});
     }
 
     async execute() {
@@ -8147,6 +8144,7 @@ class ProjectFileHandler extends PathBase {
                 (_.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) && _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
                 _.isEqual(file.dirName, 'less'),
                 _.isEqual(file.dirName, 'style'),
+                _.isEqual(file.dirName, 'config'),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileNameExtension, 'index.js')),
                 (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'BaseApp.js')),
@@ -8363,7 +8361,7 @@ class BuildApplication {
             await web.cleanGenDirectory();
             if (deploy)
                 await web.incrementProjectVersion();
-            console.log(web.nodeOfAncestor.version);
+            Util.appendInfo(web.nodeOfAncestor.version);
             await web.execute();
         }
 

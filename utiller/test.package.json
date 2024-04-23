@@ -1,21 +1,30 @@
 {
-  "name": "${packageName}",
-  "version": "1.0.1",
+  "name": "ugly",
+  "version": "2.6.101",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage",
-    "gen": "npx babel ./temp --out-dir ./lib"
+    "gen": "npx babel ./temp --out-dir ./release/lib",
+    "updateUtiller": "npm update utiller --save",
+    "updateConfigerer": "npm update configerer --save"
   },
-  "author": "",
+  "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "bl": "^4.1.0",
     "configerer": "^1.0.11",
-    "utiller": "^1.0.187",
-    "linepayer": "^1.0.4",
-    "databazer": "^1.0.12",
+    "crypto-js": "^4.2.0",
+    "del": "^6.0.0",
+    "fs-extra": "^9.1.0",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.34",
+    "node-html-parser": "^5.3.3",
+    "pdf-parse": "^1.1.1",
+    "prompt": "^1.1.0",
+    "swiper": "^10.1.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",

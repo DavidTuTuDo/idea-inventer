@@ -19,7 +19,7 @@
     "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller": "^1.0.185"
+    "utiller": "^1.0.187"
   },
   "devDependencies": {
     "@babel/core": "^7.24.4",

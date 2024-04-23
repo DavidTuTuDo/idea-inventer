@@ -6,7 +6,7 @@ import {configerer} from "configerer";
 import Utiller from "./index";
 import ERROR from '../exceptioner/index';
 import pdf from 'pdf-parse';
-import del from 'del';
+import del, {type} from 'del';
 import fse from 'fs-extra';
 import prompt from 'prompt';
 import {parse} from 'node-html-parser';
@@ -538,7 +538,6 @@ class NodeUtiller extends Utiller {
         return fs.readFileSync(path, 'utf-8');
     }
 
-
     writeFileInJSON(path, param) {
         let data = JSON.stringify(param, null, 2);
         fs.writeFileSync(path, data);
@@ -704,7 +703,7 @@ class NodeUtiller extends Utiller {
 
     /** increment version number,  回傳latest version, name */
     async upgradePackageJsonVersion(path) {
-        if (_.isEqual('package.json', this.getPathInfo(path).fileNameExtension)) {
+        if (_.isEqual('json', this.getPathInfo(path).extension)) {
             const json = this.getJsonObjByFilePath(path);
             json.version = this.getStringOfVersionIncrement(json.version);
             await this.writeJsonThanPrettier(path, json)
@@ -712,6 +711,80 @@ class NodeUtiller extends Utiller {
         } else {
             throw new ERROR(8020, `path is not package.json, which is ${path}`)
         }
+    }
+
+    /** rewrite file of *.json with attributes => {version:'1.0.1'}, {name:'david'}
+     *
+     * console.log(await utiller.reWriteJsonAttribute(`./test.package.json`,{name:'ugly'},{version:'2.6.101'}));
+     * */
+    async reWriteJsonAttribute(path, ...attrs) {
+        if (_.isEqual('json', this.getPathInfo(path).extension)) {
+            const json = this.getJsonObjByFilePath(path);
+            for (const attr of attrs) {
+                if (!_.isObject(attr)) {
+                    throw new ERROR(9999, `84451515 attr is not object, which is 'type=${typeof attr} => ${attr}'`)
+                }
+                json[this.getObjectKey(attr)] = this.getObjectValue(attr);
+            }
+
+            await this.writeJsonThanPrettier(path, json)
+            return {version: json.version, moduleName: json.name};
+        } else {
+            throw new ERROR(9999, `reWriteJsonAttribute() => path is not package.json, which is ${path}`)
+        }
+    }
+
+    getVersionOfPackageJson(path) {
+        return this.getAttributeValueOfJson(path, 'version', '1.0.0')
+    }
+
+    /** 取得*.json 裡面的file*/
+    getAttributeValueOfJson(path, key, defaultValue = undefined) {
+        if (_.isEqual('json', this.getPathInfo(path).extension)) {
+            const json = this.getJsonObjByFilePath(path);
+            return json[key] ?? defaultValue;
+        } else {
+            throw new ERROR(8020, `path is not package.json, which is ${path}`)
+        }
+    }
+
+    /**  找到 js file 裡面宣告version的value ==> version:'1.0.60'} */
+    getVersionOfJsFile(path) {
+        return this.getAttributeValueOfJsFile(path, 'version', 'project without version notice')
+    }
+
+    /**  找到 js file 裡面宣告attribute的 value ==> 例:version:'1.0.60'} */
+    getAttributeValueOfJsFile(path, key, defaultValue = undefined) {
+        if (_.isEqual(this.getExtensionFromPath(path), 'js')) {
+            const source = require(libpath.resolve(path)).default;
+            return source[key] ?? defaultValue;
+        } else {
+            throw new ERROR(8020, `path is not js file, which is ${path}`)
+        }
+    }
+
+    /** 更新js file裏面attribute
+     * attr => {verison:1.0.32}
+     * console.log(await utiller.rewriteAttributeOfSourceJs(`./test.source.js`, {name: 'ugly-tu'}, {version: '3.9.123'}));
+     * */
+    async rewriteAttributeOfSourceJs(path, ...attrs) {
+        if(!this.isPathExist(path)) {
+            throw new ERROR(9999, `4849813 ${path} is not exist`);
+        }
+
+        for (const attr of attrs) {
+            if (!_.isObject(attr)) {
+                throw new ERROR(9999, `4984651 attr is not object, which is 'type=${typeof attr} => ${attr}'`)
+            }
+            const key = this.getObjectKey(attr);
+            const value = this.getObjectValue(attr);
+            const contents = this.getFileContextInRaw(path).split(`\n`);
+            const index = _.findIndex(contents, (each) => _.startsWith(_.trim(each), `${key}`));
+            /** 故意空4格 */
+            contents[index] = `    ${key}: '${value}',`;
+            this.appendFile(path, contents.join(`\n`), true, true);
+        }
+        return attrs;
     }
 
     async getAnswerFromPromptQ(configs = [{
@@ -788,7 +861,8 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new NodeUtiller();
+            const utiller = new NodeUtiller();
+            // console.log(utiller.getVersionOfJsFile(`./source.js`));
             // for(const index of _.range(1,100)){
             //
             // }

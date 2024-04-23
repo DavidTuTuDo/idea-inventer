@@ -1746,20 +1746,18 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new Utiller();
-            const aaa = {};
+            // const utiller = new Utiller();
+            // const aaa = {};
             // utiller.appendMapOfKeyArray(aaa, 'a', 11);
             // utiller.appendMapOfKeyArray(aaa, 'c', 13);
             // utiller.appendMapOfKeyArray(aaa, 'a', 23);
             // utiller.appendMapOfKeyArray(aaa, 'c', 'vsdd')
             // utiller.appendMapOfKeyArray(aaa, 'a', 'sd');
-
             // console.log(utiller.getECPayCheckMacValue('30'));
             // console.log(utiller.getTailStringSplitBy('325/2/32/1','/'))
-            const obj = {time :undefined,name: 'david'};
-            utiller.removeAttributeBy(obj);
-            console.log(obj);
-
+            // const obj = {time :undefined,name: 'david'};
+            // utiller.removeAttributeBy(obj);
+            // console.log(obj);
             // console.log(utiller.getECPayCurrentTimeFormat(utiller.getTimeStampWithConditions({days: -1})))
         }
     )();
