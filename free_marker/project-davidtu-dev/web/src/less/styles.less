@@ -6,7 +6,8 @@
 @import "./libs/base.less";
 /** following for main  component used  */
 
-.MainDiv {
+.MainDiv:extend(.CenterInParentColumn) {
+
   @media @mobile {
     /** empty style */
   }
@@ -33,7 +34,8 @@
   width: 800px;
   background: #eeeeee;
   @media @mobile {
-    /** empty style */
+    width: 100vw;
+    height: 35vh;
   }
   @media @tablet {
     /** empty style */
@@ -80,7 +82,8 @@
     /** empty style */
   }
 }
-.MainTestDiv {
+.MainTestDiv:extend(.CenterInParentColumn) {
+  gap:10px;
   @media @mobile {
     /** empty style */
   }

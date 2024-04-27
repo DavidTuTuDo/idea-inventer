@@ -1,7 +1,9 @@
 @desktop: ~"only screen and (min-width: 601px)";
 @tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 @mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
-.InfoOfCopyRightDiv {
+.InfoOfCopyRightDiv:extend(.CenterInParentColumn) {
+  width: 100vw;
+  align-items: flex-end;
   @media @mobile {
     /** empty style */
   }
@@ -12,19 +14,20 @@
     /** empty style */
   }
 }
+
 .InfoOfCopyRightUpperGroupDiv:extend(.CenterInParentRow) {
   justify-content: space-between;
-  width: 100vw;
   @media @mobile {
-    /** empty style */
+    width: 100vw;
   }
   @media @tablet {
-    width: 80vw;
+    width: 100vw;
   }
   @media @desktop {
     max-width: 800px;
   }
 }
+
 .InfoOfCopyRightUpperGroupLeftAreaDiv:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
@@ -36,6 +39,7 @@
     /** empty style */
   }
 }
+
 .InfoOfCopyRightUpperGroupLeftAreaContactButton {
   @media @mobile {
     /** empty style */
@@ -47,6 +51,19 @@
     /** empty style */
   }
 }
+
+.InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
 .InfoOfCopyRightUpperGroupLeftAreaBusinessButton {
   @media @mobile {
     /** empty style */
@@ -58,6 +75,19 @@
     /** empty style */
   }
 }
+
+.InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
 .InfoOfCopyRightUpperGroupRightAreaDiv:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
@@ -69,17 +99,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupRightAreaRuleOfPrivacyButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
+
 .InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton {
   @media @mobile {
     /** empty style */
@@ -91,7 +111,532 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupRightAreaRightButton {
+
+.InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightUpperGroupRightAreaSeparatorTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightUpperGroupRightAreaCprtButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaFbIconButton {
+  @media @mobile {
+    /** empty style */
+    width: 35px;
+    height: 35px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg {
+  @media @mobile {
+    width: 28px;
+    height: 28px;
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+/** following for infoOfCopyRightContact  component used  */
+
+.InfoOfCopyRightContactCard {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaContactTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactLowerAreaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactLowerAreaIntroduceTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContactLowerAreaDetailsTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+/** following for infoOfCopyRightContent  component used  */
+
+.InfoOfCopyRightContentPaper {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentUpperAreaDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentUpperAreaAdvantageStmtTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectCard {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectDivList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectCardSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectImageImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectImageDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectImageSimulatorDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+
+.InfoOfCopyRightContentProjectTitleTypography {
   @media @mobile {
     /** empty style */
   }
