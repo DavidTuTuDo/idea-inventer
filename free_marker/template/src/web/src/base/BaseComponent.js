@@ -939,12 +939,24 @@ class BaseComponent extends MuiComponent {
         return isValid;
     }
 
-    renderAlertDialog({ref, title, content, task, customView, paramObject, needActionButtons, textInput,component}) {
+    renderAlertDialog({
+                          ref,
+                          title,
+                          content,
+                          task,
+                          customView,
+                          paramObject,
+                          needActionButtons,
+                          textInput,
+                          component,
+                          enableCancel
+                      }) {
         return (<AlertDialog
             title={title}
             content={content}
             submitAsyncTask={task}
             needActionButtons={needActionButtons}
+            enableCancel={enableCancel}
             customView={customView}
             paramObject={paramObject}
             textInput={textInput}

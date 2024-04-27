@@ -53,6 +53,7 @@ class AlertDialog extends MuiComponent {
         super(props);
         this.dialog = new DialogStore();
         this.onSubmitClick = props.onSubmitClick;
+        this.enableCancel = props.enableCancel ?? true;
     }
 
     /** object 是可以帶到customView裡面的變數 */
@@ -90,6 +91,7 @@ class AlertDialog extends MuiComponent {
             <Dialog
                 className={"BaseAlertDialog"}
                 {...this.injectPaperProps()}
+                scroll={'boby'}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
 
@@ -165,7 +167,8 @@ class AlertDialog extends MuiComponent {
 
 
         return <DialogContent>
-            <DialogContentText>
+            <DialogContentText
+                whiteSpace={'pre-line'}>
                 {content}
             </DialogContentText>
             {this.renderTextField()}
@@ -183,13 +186,22 @@ class AlertDialog extends MuiComponent {
         if (!needActionButtons) return null;
 
         return <DialogActions>
-            <Button onClick={self.close} color="primary">
-                取消
-            </Button>
+
+            {this.renderCancelButton()}
+
             <Button onClick={async () => await self.onSubmitClicked()} color="primary" autoFocus>
                 確認
             </Button>
         </DialogActions>
+    }
+
+    renderCancelButton = () => {
+        if (!this.enableCancel)
+            return null
+        return (<Button onClick={self.close} color="primary">
+            取消
+        </Button>)
+
     }
 
 }

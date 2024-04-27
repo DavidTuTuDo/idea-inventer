@@ -651,8 +651,11 @@ class CodegenNode {
             enable: false,
             type: 'text', /** email,phone,*/
             label: '輸入的範例', /** */
-        }
-        /** 如果要產生button按下去之後，可以輸入alertDialog */
+        },
+        /** 如果要產生button按下去之後，可以輸入textField的alertDialog */
+        enableCancel: true,
+        /** 取消鍵的控制，例如合約型態的就enable=false **/
+
     };
 
     /** 放admin的json file*/
@@ -1381,6 +1384,11 @@ class CodegenNode {
             return `needActionButtons:${need}`
         }
 
+        function getEnableCancelStmts() {
+            const need = self.getAlertDialog().enableCancel ?? true;
+            return `enableCancel:${need}`
+        }
+
         function getCustomViewStmts() {
             if (self.hasCustomViewDialog()) {
                 return `customView:${self.getAlertDialog().customView}`;
@@ -1428,6 +1436,7 @@ class CodegenNode {
                 `component:self`,
             ];
             props.push(getActionButtonStmts());
+            props.push(getEnableCancelStmts());
             props.push(getTaskStmts());
             props.push(getCustomViewStmts());
             props.push(getParamObject());
