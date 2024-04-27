@@ -1477,7 +1477,7 @@ class CodegenNode {
 
     /** 就是點擊要再確認的那種dialog */
     hasConfirmDialog() {
-        return this.hasAlertDialog() && !_.isEmpty(this.getAlertDialog().title);
+        return this.hasAlertDialog();
     }
 
     hasLoginRequiredDialog() {
@@ -6500,7 +6500,6 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildConfig() {
-        Util.appendInfo('<<<<<<<<<我進來了拔  1541511231')
 
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
