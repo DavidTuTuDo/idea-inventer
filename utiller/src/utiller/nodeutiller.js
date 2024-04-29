@@ -687,10 +687,16 @@ class NodeUtiller extends Utiller {
         await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
     }
 
+    /**
+     * 檔案最後編輯時間！
+     console.log('older ==> ',utiller.getFileLastModifiedTime('./folderOfTestUsage/history_older.js'));
+     console.log('latest ==> ',utiller.getFileLastModifiedTime('./folderOfTestUsage/history_latest.js'));
+     console.log('compare latestTime > olderTime ?? ==> ',utiller.getFileLastModifiedTime('./folderOfTestUsage/history_latest.js') > utiller.getFileLastModifiedTime('./folderOfTestUsage/history_older.js'));
+     */
     getFileLastModifiedTime(path) {
         /**
-         * onsole.log(`File Data Last Modified: ${stats.mtime}`);
-         console.log(`File Status Last Modified: ${stats.ctime}`);
+         * console.log(`File Data Last Modified: ${stats.mtime}`);
+         * console.log(`File Status Last Modified: ${stats.ctime}`);
          */
         const stats = fs.statSync(path);
         return stats.mtimeMs;
@@ -862,6 +868,7 @@ class NodeUtiller extends Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             const utiller = new NodeUtiller();
+
             // console.log(utiller.getVersionOfJsFile(`./source.js`));
             // for(const index of _.range(1,100)){
             //
