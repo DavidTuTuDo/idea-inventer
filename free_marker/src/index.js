@@ -315,21 +315,21 @@ class CodegenNode {
      * type : [httpOnCall,schedule,httpOnRequest]
      *
      {
-            name: 'checkoutByByECPay',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
-            type: 'httpOnCall',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
-            description: '用ECPay付費',
-        },
+     name: 'checkoutByByECPay',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
+     type: 'httpOnCall',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
+     description: '用ECPay付費',
+     },
      {
-            name: 'confirmedByByECPay',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
-            type: 'httpOnRequest',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
-            description: 'ECPay收到款項後,回呼叫的api,裡面會將order改成succeed,扣掉庫存,消費者拿到應有的權利',
-            isRegularResponse: false, //用來控制回傳不要是{succeed, data:}
-        },
+     name: 'confirmedByByECPay',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
+     type: 'httpOnRequest',//functions.https.onCall(async (data, context) => {}) context 裏面有uid 或登入資訊
+     description: 'ECPay收到款項後,回呼叫的api,裡面會將order改成succeed,扣掉庫存,消費者拿到應有的權利',
+     isRegularResponse: false, //用來控制回傳不要是{succeed, data:}
+     },
      {
-            name: 'autoIncrementNumber',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
-            type: 'schedule',
-            schedule: 'every 4 hours' // support hours,min,
-        },
+     name: 'autoIncrementNumber',//functions.pubsub.schedule('every 5 minutes').onRun(async (context) => {})
+     type: 'schedule',
+     schedule: 'every 4 hours' // support hours,min,
+     },
 
      * */
 
@@ -382,10 +382,10 @@ class CodegenNode {
      type== radio可以listProps ｛ row: true}
 
      type==spinner 可以 listProps: {
-                                    label: "選擇科目",
-                                    select: true,
-                                    color: "primary",
-                                },
+     label: "選擇科目",
+     select: true,
+     color: "primary",
+     },
      *2022/03/31筆記有註記
      * MUI底下設計的select是看不懂被observer包裝過的元件, 所以array的子類們, 不會用observer修飾 2021/11/08 筆記有相繫
      * */
@@ -2944,11 +2944,11 @@ class ClassGenerator {
 
     /**
      func = {
-        name: functionName
-        arrow: 箭頭函數, 可以省去this的領域問題
-        decorator: 有沒有需要修飾 像是observer(({store}) => ...functionStmt)
-        async: 註記是否需要非同步
-      }
+     name: functionName
+     arrow: 箭頭函數, 可以省去this的領域問題
+     decorator: 有沒有需要修飾 像是observer(({store}) => ...functionStmt)
+     async: 註記是否需要非同步
+     }
      */
     appendFunction(func, params = [], macros = [], comments = [], ...contents) {
         const stmts = this.getFunctionContent(
@@ -3768,15 +3768,15 @@ class StoreBuilder extends BaseBuilder {
 
         /** 2023/02/05 在宣告時就把物件包成store了
          function getDefaultValueSetterStmts(node) {
-            const stmts = [];
-            for (const child of node.getPreciseAttributeChildren()) {
-                if (child.isCollection()) {
-                    stmts.push(`this.${Util.camel(`set`, child.getFieldName())}(
-                    ${child.isArray() ? '...' : ''}this.${child.getFieldName()})`)
-                }
-            }
-            return stmts;
-        }
+         const stmts = [];
+         for (const child of node.getPreciseAttributeChildren()) {
+         if (child.isCollection()) {
+         stmts.push(`this.${Util.camel(`set`, child.getFieldName())}(
+         ${child.isArray() ? '...' : ''}this.${child.getFieldName()})`)
+         }
+         }
+         return stmts;
+         }
          */
 
         function getStmtOfFetchByDetail(node) {
@@ -4659,15 +4659,15 @@ class ComponentBuilder extends BaseBuilder {
         /** 2022.04.25本來以為離開頁面就要清空所有, 但這樣ios swipe-back 體驗會變得很糟糕
          this.appendStmtIntoComponentDetach(`this.getStore().clean()`);
          for (const child of componentNode.getStruct().getChildren()) {
-                if (child.isPathArray()) {
-                    this.appendStmtIntoComponentDetach(`this.getStore().${child.getFunctionNameOfClearCondition()}()`);
-                }
+         if (child.isPathArray()) {
+         this.appendStmtIntoComponentDetach(`this.getStore().${child.getFunctionNameOfClearCondition()}()`);
+         }
 
-                if (child.hasPaginate()) {
-                    this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
-                    this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
-                }
-            }
+         if (child.hasPaginate()) {
+         this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('set', 'next', child.getName(), 'page', 'mode')}('paging')`);
+         this.appendStmtIntoComponentDetach(`this.getStore().${Util.camel('clean', child.getName(), 'Next', 'Ids')}()`);
+         }
+         }
          */
 
         function getStmtsOfGetStore() {
@@ -4724,13 +4724,13 @@ class ComponentBuilder extends BaseBuilder {
      *
      * ////////////// sample: ///////////////
      praam :{
-            tag: node.view,
-            simpleProps = [...string], 就是沒有key的prop {...params};
-            props: { style: {height: 80},className:'className' }, ### means 不需要 single quatation
-            contents: [`Util.appendInfo()`,`Util.appendError()`],
-            children:['children1','children2'],
-            typeOfClass: 'component'|'store'|'others'
-        }
+     tag: node.view,
+     simpleProps = [...string], 就是沒有key的prop {...params};
+     props: { style: {height: 80},className:'className' }, ### means 不需要 single quatation
+     contents: [`Util.appendInfo()`,`Util.appendError()`],
+     children:['children1','children2'],
+     typeOfClass: 'component'|'store'|'others'
+     }
 
      * output:
      <Paper
@@ -5519,11 +5519,9 @@ class AppBuilder extends ComponentBuilder {
 
             /**
              2023.08.19 description放進去會爆量，先不處理，因為目前也只有editor頁面會出現
-
              if(child.hasDescription()){
-                appendMapOfKeyValue(Util.camel('description','of',child.getPreciseAttributeGenealogyName()), child.getDescription());
+             appendMapOfKeyValue(Util.camel('description','of',child.getPreciseAttributeGenealogyName()), child.getDescription());
              }
-
              */
             if (child.hasChildren()) {
                 for (const grandson of child.getPreciseAttributeChildren()) {
@@ -6567,7 +6565,7 @@ class ProjectFileHandler extends PathBase {
 
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
-                (each) => _.startsWith(_.toLower(each.dirName), module) &&
+                (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
                 const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/component/${file.dirName}`,
                     file.fileNameExtension);
@@ -6575,7 +6573,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'store'),
-                (each) => _.startsWith(_.toLower(each.dirName), module) &&
+                (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
                 const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/store/`,
                     file.dirName, file.fileNameExtension);

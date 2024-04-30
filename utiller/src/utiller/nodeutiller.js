@@ -682,9 +682,11 @@ class NodeUtiller extends Utiller {
         return fs.readdirSync(path).length === 0;
     }
 
-    /** 把檔案弄得好看一點 */
-    async prettier(path) {
-        await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)}`)
+    /** 把檔案弄得好看一點
+     * width 是指一行能塞下多少的字元
+     * */
+    async prettier(path, width = 200) {
+        await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)} --print-width ${width}`)
     }
 
     /**
@@ -774,7 +776,7 @@ class NodeUtiller extends Utiller {
      * console.log(await utiller.rewriteAttributeOfSourceJs(`./test.source.js`, {name: 'ugly-tu'}, {version: '3.9.123'}));
      * */
     async rewriteAttributeOfSourceJs(path, ...attrs) {
-        if(!this.isPathExist(path)) {
+        if (!this.isPathExist(path)) {
             throw new ERROR(9999, `4849813 ${path} is not exist`);
         }
 

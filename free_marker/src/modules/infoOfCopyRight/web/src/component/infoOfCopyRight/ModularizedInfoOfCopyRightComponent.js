@@ -23,7 +23,7 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     }
 
     onInfoOfCopyRightUpperGroupRightAreaCprtButtonClicked(param) {
-        this.showInfoSnackMessage(`當前版本：${Config.VERSION_OF_PACKAGE_JSON}`)
+        this.showInfoSnackMessage(`當前版本：${Config.VERSION_OF_PACKAGE_JSON}`);
     }
 
     /** -------------------- async api -------------------- **/
