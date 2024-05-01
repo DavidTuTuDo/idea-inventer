@@ -91,7 +91,7 @@ class AlertDialog extends MuiComponent {
             <Dialog
                 className={"BaseAlertDialog"}
                 {...this.injectPaperProps()}
-                scroll={'boby'}
+                scroll={'paper'}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
 
