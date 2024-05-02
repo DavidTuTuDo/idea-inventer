@@ -223,8 +223,19 @@
 }
 .InfoOfCopyRightContactCard:extend(.CenterInParentColumn) {
   align-items: flex-start;
-  padding: 20px;
+  padding: 30px;
   gap: 20px;
+  @media @mobile {
+    padding: 10px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactUpperAreaDiv {
   @media @mobile {
     /** empty style */
   }
@@ -246,7 +257,26 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv {
+.InfoOfCopyRightContactUpperAreaContactDivWrap:extend(.CenterInParentColumn) {
+  width: fit-content;
+  padding: 6px;
+  padding-left: 9px;
+  background: #d2d2d2;
+  border-radius: 15px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv:extend(.CenterInParentColumn) {
+  margin-top: 20px;
+  gap: 10px;
+  align-items: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -258,6 +288,18 @@
   }
 }
 .InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap:extend(.CenterInParentRow) {
+  justify-content: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -290,7 +332,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -301,7 +343,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -345,7 +387,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -435,7 +477,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactLowerAreaDiv {
+.InfoOfCopyRightContactLowerAreaDiv:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -457,7 +499,18 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactLowerAreaDetailsTypography {
+.InfoOfCopyRightContactLowerAreaIntroduceDivWrap:extend(.InfoOfCopyRightContactUpperAreaContactDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactLowerAreaDetailsTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   margin-top: 20px;
   @media @mobile {
     /** empty style */
