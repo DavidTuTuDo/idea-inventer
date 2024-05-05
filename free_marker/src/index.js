@@ -116,6 +116,11 @@ const VIEW_IMPORTS =
             simplePath: true, /** 就是只要material-ui/icons/Search */
         },
         {
+            from: `@mui/icons-material/StarRounded`,
+            views: ['StarRounded'],
+            simplePath: true, /** 就是只要material-ui/icons/Search */
+        },
+        {
             from: `@mui/material`,
             views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
@@ -697,6 +702,10 @@ class CodegenNode {
 
     hasLabelViewIcon() {
         return this.labelView && this.labelView.labelIcon && this.labelView.labelIcon.enable;
+    }
+
+    hasDefaultValueOfLabelView() {
+        return this.hasLabelView() && !_.isEmpty(this.labelView.defaultValue);
     }
 
     getFunctionMethods() {
@@ -2756,6 +2765,7 @@ class CodegenNode {
             for (const child of nodeOfRaw) {
                 child.parent = parent;
                 child.mother = nodeOfRaw;
+                // Util.insertToArray(involution, 0, this.enrich(child, involution))
                 involution.push(this.enrich(child, involution));
             }
         } else if (_.isObject(nodeOfRaw)) {
@@ -7107,17 +7117,18 @@ class ProjectFileHandler extends PathBase {
                     })
                 }
 
-                node.appendChildrenWithJsons({
-                    name: `labelOf${_.upperFirst(node.getName())}`,
-                    type: `string`,
-                    view: `Typography`,
-                    outer: true,
-                    l10n: true,
-                    click: node.click,
-                    injectStyle: node.injectStyle,
-                    incest: {view: false, attribute: true},
-                    defaultValue: node.labelView.defaultValue,
-                });
+                if (node.hasDefaultValueOfLabelView())
+                    node.appendChildrenWithJsons({
+                        name: `labelOf${_.upperFirst(node.getName())}`,
+                        type: `string`,
+                        view: `Typography`,
+                        outer: true,
+                        l10n: true,
+                        click: node.click,
+                        injectStyle: node.injectStyle,
+                        incest: {view: false, attribute: true},
+                        defaultValue: node.labelView.defaultValue,
+                    });
 
 
             }

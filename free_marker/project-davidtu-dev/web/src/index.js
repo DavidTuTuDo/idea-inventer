@@ -1,10 +1,6 @@
 import "./less";
 import BaseApp from "./BaseApp";
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseComponent from "./base/BaseComponent";

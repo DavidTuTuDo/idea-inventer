@@ -523,6 +523,8 @@
   }
 }
 .InfoOfCopyRightContentPaper {
+  padding: 5px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -530,7 +532,8 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    padding: 10px;
+    width: 650px;
   }
 }
 .InfoOfCopyRightContentUpperAreaDiv {
@@ -555,7 +558,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectCard {
+.InfoOfCopyRightContentProjectDiv {
   @media @mobile {
     /** empty style */
   }
@@ -563,10 +566,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    min-height: 280px;
   }
 }
-.InfoOfCopyRightContentProjectDivList {
+.InfoOfCopyRightContentProjectDivList:extend(.CenterInParentColumn) {
+  gap: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -574,10 +578,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
-.InfoOfCopyRightContentProjectCardSkeleton {
+.InfoOfCopyRightContentProjectDivSkeleton {
   @media @mobile {
     /** empty style */
   }
@@ -589,6 +594,9 @@
   }
 }
 .InfoOfCopyRightContentProjectImageImg {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -599,7 +607,26 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectImageDivWrap {
+.InfoOfCopyRightContentProjectImageCardWrap {
+  height: 180px;
+  width: 280px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    height: 200px;
+    width: 280px;
+  }
+}
+.InfoOfCopyRightContentProjectUpperAreaDiv:extend(.CenterInParentRow) {
+  padding-left: 5px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+  margin-top: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -610,7 +637,33 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectImageSimulatorDiv {
+.InfoOfCopyRightContentProjectUpperAreaTitleTypography {
+  font-weight: bold;
+  font-size: 1rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 1.2rem;
+  }
+}
+.InfoOfCopyRightContentProjectUpperAreaTraitTypography {
+  font-size: 0.8rem;
+  margin-top: 2px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 0.9rem;
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionDiv {
   @media @mobile {
     /** empty style */
   }
@@ -621,7 +674,58 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectTitleTypography {
+.InfoOfCopyRightContentProjectDescriptionDivList:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementTypography {
+  font-size: 0.7rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 0.8rem;
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementDivWrap:extend(.CenterInParentRow) {
+  margin-top: 3px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton {
+  width: 18px;
+  height: 18px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded {
+  width: 15px;
+  height: 15px;
   @media @mobile {
     /** empty style */
   }
