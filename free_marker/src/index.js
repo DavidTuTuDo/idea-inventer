@@ -660,7 +660,8 @@ class CodegenNode {
         /** 如果要產生button按下去之後，可以輸入textField的alertDialog */
         enableCancel: true,
         /** 取消鍵的控制，例如合約型態的就enable=false **/
-
+        fullWidth: false,
+        /** 讓dialog可以橫幅滿版，不然web最多到600px,mobile最多到350px **/
     };
 
     /** 放admin的json file*/
@@ -1434,8 +1435,10 @@ class CodegenNode {
                 return stmts.join(',');
             }
             return '';
+        }
 
-
+        function getStmtOfFullWidth() {
+            return self.hasFullWidthOfDialog() ? `fullWidth:true` : ``;
         }
 
         if (this.hasAlertDialog()) {
@@ -1452,6 +1455,7 @@ class CodegenNode {
             props.push(getStmtDialogInput())
             props.push(getStmtOfDialogContent());
             props.push(getStmtOfDialogTitle());
+            props.push(getStmtOfFullWidth());
             _.remove(props, (each) => _.isEmpty(each))
             stmt.push(`{
             this.renderAlertDialog(
@@ -1483,6 +1487,10 @@ class CodegenNode {
 
     hasInputFieldDialog() {
         return this.getAlertDialog().textInput.enable;
+    }
+
+    hasFullWidthOfDialog() {
+        return this.getAlertDialog().fullWidth;
     }
 
     hasAlertMenu() {
@@ -2459,13 +2467,25 @@ class CodegenNode {
 
         /**
          * i18n設計
+         *
+         * 把ancestor 裡的面遞迴nodes 改成如下 {
+         *       id: i18n.location().infoOfCopyRightContentProjectId2,
+         *       title: i18n.location().infoOfCopyRightContentProjectTitle2,
+         *       image: i18n.location().infoOfCopyRightContentProjectImage2,
+         *       trait: i18n.location().infoOfCopyRightContentProjectTrait2,
+         *       descriptions: [{ statement: i18n.location().infoOfCopyRightContentProjectDescriptions2Statement0 }, { statement: i18n.location().infoOfCopyRightContentProjectDescriptions2Statement1 }],
+         *     }
+         *
          * 把array 的 defaultValue {aa:'aa',b:1}=> {aa:i18n.aa,,b=1 }*/
+
+
+
         function refactorI18nMapOfArrayDefaultValue(arrayOfDefaultValue, sign) {
             for (const obj of arrayOfDefaultValue) {
                 for (const key in obj) {
                     const value = obj[key];
                     if (_.isArray(value)) {
-                        const latest = Util.camel(sign, key);
+                        const latest = Util.camel(sign, key, `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         refactorI18nMapOfArrayDefaultValue(value, latest)
                     }
 
@@ -5465,7 +5485,7 @@ class AppBuilder extends ComponentBuilder {
                 for (const keyOfMajor in obj) {
                     const valueOfMajor = obj[keyOfMajor];
                     if (_.isArray(valueOfMajor)) {
-                        const latest = Util.camel(sign, keyOfMajor);
+                        const latest = Util.camel(sign, keyOfMajor, `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         recursiveOfDoingSomethingMinor(valueOfMajor, child, latest)
                     }
 
@@ -5496,6 +5516,25 @@ class AppBuilder extends ComponentBuilder {
                 }
             }
         }
+
+        /**
+         * 讓18n.js 可以有mapValue轉換如下
+         *
+         *     infoOfCopyRightContentProjectId2 = "12345";
+         *
+         *     infoOfCopyRightContentProjectTitle2 = "專案二";
+         *
+         *     infoOfCopyRightContentProjectImage2 = "https://s.yimg.com/cv/apiv2/social/images/yahoo_default_logo-1200x1200.png";
+         *
+         *     infoOfCopyRightContentProjectTrait2 = "模擬考題";
+         *
+         *     infoOfCopyRightContentProjectDescriptions2Statement0 = "描述一二三四五六";
+         *
+         *     infoOfCopyRightContentProjectDescriptions2Statement1 = "描述一二三四五六";
+         *
+         *     infoOfCopyRightContentProjectId3 = "123456";
+         *
+         */
 
         function recursiveOfDoingSomethingMajor(child) {
             if (child.hasDefaultValue()) {

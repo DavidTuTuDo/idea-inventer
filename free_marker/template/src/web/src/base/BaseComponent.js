@@ -949,7 +949,8 @@ class BaseComponent extends MuiComponent {
                           needActionButtons,
                           textInput,
                           component,
-                          enableCancel
+                          enableCancel,
+                          fullWidth = false,
                       }) {
         return (<AlertDialog
             title={title}
@@ -961,6 +962,7 @@ class BaseComponent extends MuiComponent {
             paramObject={paramObject}
             textInput={textInput}
             component={component}
+            fullWidth={fullWidth}
             ref={ref}/>)
     }
 

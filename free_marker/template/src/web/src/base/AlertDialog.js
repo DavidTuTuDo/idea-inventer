@@ -54,6 +54,7 @@ class AlertDialog extends MuiComponent {
         this.dialog = new DialogStore();
         this.onSubmitClick = props.onSubmitClick;
         this.enableCancel = props.enableCancel ?? true;
+        this.fullWidth = props.fullWidth;
     }
 
     /** object 是可以帶到customView裡面的變數 */
@@ -92,8 +93,8 @@ class AlertDialog extends MuiComponent {
                 className={"BaseAlertDialog"}
                 {...this.injectPaperProps()}
                 scroll={'paper'}
-                fullWidth={true}
-                maxWidth={false}
+                fullWidth={!!self.fullWidth}
+                maxWidth={!self.fullWidth}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
 
