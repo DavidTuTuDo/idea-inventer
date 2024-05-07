@@ -54,7 +54,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
 
     onAccountFuncAreaOfEditBtnOfJoinReaderButtonClicked(param) {
         const object = param.object;
-        const hash = object.getDialogInputValueOfAccountFuncAreaOfEditBtnOfJoinAdmin();
+        const hash = object.getDialogInputValueOfAccountFuncAreaOfEditBtnOfJoinReader();
         if (_.size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), {allowRead: true}, hash).then((result) => {
                 this.showInfoSnackMessage(`升級 ${hash} 為 ALLOW READ 成功`);
