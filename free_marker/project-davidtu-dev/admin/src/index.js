@@ -127,7 +127,7 @@ import moment from 'moment';
         /** 比對當前時間是否 > expired time，如果過期了 1.把狀態改成failure, 還有增加失效原因 */
         const currentTimeStamp = Util.getCurrentTimeStamp()
         const results = _.filter(orders, (order) => {
-            return currentTimeStamp >  api.normalizeTimestamp(order.timeOfExpired);
+            return currentTimeStamp > api.normalizeTimestamp(order.timeOfExpired);
         })
         const expired = _.map(results, result => {
             return {
@@ -138,9 +138,28 @@ import moment from 'moment';
         })
         await api.updatePreciseOrders(expired);
     }
+
+    async function updateCPRT() {
+        await api.submitInfoOfCopyRight({
+            fb: `https://www.facebook.com/david.tu.587`,
+            ig: `https://www.instagram.com/david.tu.guitar`,
+            line: `davidtu0725`
+        })
+    }
+
+    async function updateCPRTContent() {
+        await api.submitInfoOfCopyRightContact({
+            fb: `https://www.facebook.com/david.tu.587`,
+            ig: `https://www.instagram.com/david.tu.guitar`,
+            line: `davidtu0725`,
+            phone: `+886982763479`,
+            email: `freshingmoon0725@gmail.com`,
+        })
+    }
+
     await expiredOrderBehavior();
-
-
+    // await updateCPRT();
+    // await updateCPRTContent()
 
     // await uploadPaymentOptions();
     // await sampleOfFetchUrl();

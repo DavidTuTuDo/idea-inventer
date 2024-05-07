@@ -33,6 +33,7 @@ import ArrowBackIosRounded from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRounded from "@mui/icons-material/ArrowForwardIosRounded";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
+import copy from 'copy-to-clipboard';
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -831,40 +832,13 @@ class BaseComponent extends MuiComponent {
     }
 
     copyCurrentLinkToClipboard(message = `已複製當前的連結`) {
-        navigator.clipboard.writeText(this.getCurrentWebSiteLink())
+        copy(this.getCurrentWebSiteLink());
         this.getComponentInstance().showInfoSnackMessage(message);
     }
 
     copyTextToClipboard(text, message = `已將內容新增至剪貼簿`) {
-        navigator.clipboard.writeText(text);
+        copy(text);
         this.getComponentInstance().showInfoSnackMessage(message);
-    }
-
-    copyToClipboard(textToCopy) {
-        // navigator clipboard api needs a secure context (https)
-        if (navigator.clipboard && window.isSecureContext) {
-            // navigator clipboard api method'
-            return new Promise((res, rej) => {
-                // here the magic happens
-                navigator.clipboard.writeText(textToCopy);
-            });
-        } else {
-            // text area method
-            let textArea = document.createElement("textarea");
-            textArea.value = textToCopy;
-            // make the textarea out of viewport
-            textArea.style.position = "fixed";
-            textArea.style.left = "-999999px";
-            textArea.style.top = "-999999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            return new Promise((res, rej) => {
-                // here the magic happens
-                document.execCommand('copy') ? res() : rej();
-                textArea.remove();
-            });
-        }
     }
 
     renderGlobalDialogView = () => {
@@ -981,6 +955,62 @@ class BaseComponent extends MuiComponent {
         )
     }
 
+    invokeEMailBehavior(email, subject = '', body = '', children = '') {
+        if (!Util.isUndefinedNullEmpty(email)) {
+            this.copyTextToClipboard(email);
+            let params = subject || body ? "?" : "";
+            if (subject) params += `subject=${encodeURIComponent(subject)}`;
+            if (body) params += `${subject ? "&" : ""}body=${encodeURIComponent(body)}`;
+            const link = document.createElement(`a`);
+            link.target = `_blank`;
+            link.rel = `noopener noreferrer`;
+            link.href = `mailto:${email}${params}`;
+            link.text = children;
+            link.click();
+        }
+    }
+
+    invokePhoneBehavior(phone) {
+        if (!Util.isUndefinedNullEmpty(phone)) {
+            this.copyTextToClipboard(phone);
+            const link = document.createElement(`a`);
+            link.target = `_blank`;
+            link.rel = `noopener noreferrer`;
+            link.href = `tel:${phone}`;
+            link.click();
+        }
+    }
+
+    invokeInstagramApp = (website) => {
+        const forceToWebsite = true;
+
+        const username = Util.getTailStringSplitBy(website, '/');
+        if (isMobile && !forceToWebsite) {
+            window.open(`instagram://user?username=${username}`, '_blank');
+        } else {
+            this.copyTextToClipboard(website, `已複製網址至剪貼簿`)
+            this.gotoUrlWithNewTab(website)
+        }
+    }
+
+    invokeFacebookApp = (website) => {
+        const forceToWebsite = true;
+        const idOfPage = Util.getTailStringSplitBy(website, '/');
+        if (isMobile && !forceToWebsite) {
+            window.open(`fb://page/${idOfPage}`, '_blank');
+        } else {
+            this.copyTextToClipboard(website, `已複製網址至剪貼簿`)
+            this.gotoUrlWithNewTab(website)
+        }
+    }
+
+    invokeLineApp = (idOfLine, message) => {
+        if (isMobile) {
+            this.openLineChatAccountWithMessage(idOfLine, message)
+        } else {
+            this.copyTextToClipboard(idOfLine, `已複製Line ID至剪貼簿`)
+        }
+    };
 }
 
 export default BaseComponent;

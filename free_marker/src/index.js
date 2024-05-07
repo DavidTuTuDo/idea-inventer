@@ -33,7 +33,6 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // const CURRENT_PROJECT = './project-kh-high';
 // const CURRENT_PROJECT = './project-yueh-pu';
 const CURRENT_PROJECT = './project-davidtu-dev';
-
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -666,7 +665,9 @@ class CodegenNode {
 
     /** 放admin的json file*/
 
+    /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
     customizes = [];
+
 
     /**
      * 設計那種children不能被observeble包住的狀況，他就必須待在array裏面(ex Swiper )
@@ -683,7 +684,8 @@ class CodegenNode {
      * */
     disableObservable = false;
 
-    /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
+    /** 設計了defaultValue 然後想要快速地取消掉 */
+    disableDefaultValue = false;
 
     constructor(node) {
         this.raw = node;
@@ -2457,8 +2459,12 @@ class CodegenNode {
         return !!this.needParam && this.needParam
     }
 
+    useDefaultValue() {
+        return !this.disableDefaultValue;
+    }
+
     getDefaultValue() {
-        return this.defaultValue;
+        return this.useDefaultValue() ? this.defaultValue : undefined;
     }
 
     getDefaultValueByType(isAdmin) {
@@ -7058,7 +7064,7 @@ class ProjectFileHandler extends PathBase {
                     view: `img`,
                     type: `string`,
                     incest: {view: false, attribute: true},
-                    defaultValue: `${node.defaultValue}`
+                    defaultValue: `${node.getDefaultValue()}`
                 })
             }
 

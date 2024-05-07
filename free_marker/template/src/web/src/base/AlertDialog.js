@@ -94,7 +94,7 @@ class AlertDialog extends MuiComponent {
                 {...this.injectPaperProps()}
                 scroll={'paper'}
                 fullWidth={!!self.fullWidth}
-                maxWidth={!self.fullWidth}
+                maxWidth={false}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
 
@@ -199,9 +199,10 @@ class AlertDialog extends MuiComponent {
     }
 
     renderCancelButton = () => {
+
         if (!this.enableCancel)
             return null
-        return (<Button onClick={self.close} color="primary">
+        return (<Button onClick={this.close} color="primary">
             取消
         </Button>)
 
