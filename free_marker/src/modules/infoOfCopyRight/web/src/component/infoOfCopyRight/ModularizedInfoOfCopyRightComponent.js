@@ -35,7 +35,7 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     }
 
     onInfoOfCopyRightGroupOfSocialMediaLineIconButtonClicked(param) {
-        this.invokeLineApp(this.getStore().getLine(), `明悅您好，請問你軟體開發的問題`);
+        this.invokeLineApp(this.getStore().getLine());
 
     }
 

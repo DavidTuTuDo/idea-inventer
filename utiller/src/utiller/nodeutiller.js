@@ -804,6 +804,23 @@ class NodeUtiller extends Utiller {
         return await prompt.get(configs);
     }
 
+    /**
+     * [{
+     *         name: 'name',
+     *         require: true,
+     *         description: 'type the name',
+     *     },{
+     *         name: 'age',
+     *         require: true,
+     *         description: 'type the age',
+     *     }]
+     *
+     * result:{ name: 'david', age: '18' }
+     * */
+    async getObjectFromPromptQ(...configs) {
+        prompt.start()
+        return await prompt.get(configs);
+    }
 
     /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
     async generateTempFolderWithCleanSrc(path) {
@@ -869,8 +886,8 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new NodeUtiller();
-
+            // const utiller = new NodeUtiller();
+            // console.log(await utiller.getObjectFromPromptQ({name:'order',require:true,description:'what u what'}));
             // console.log(utiller.getVersionOfJsFile(`./source.js`));
             // for(const index of _.range(1,100)){
             //

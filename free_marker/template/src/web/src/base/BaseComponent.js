@@ -1005,11 +1005,7 @@ class BaseComponent extends MuiComponent {
     }
 
     invokeLineApp = (idOfLine, message) => {
-        if (isMobile) {
-            this.openLineChatAccountWithMessage(idOfLine, message)
-        } else {
-            this.copyTextToClipboard(idOfLine, `已複製Line ID至剪貼簿`)
-        }
+        this.gotoExternalUrlDirectly(`https://line.me/ti/p/~${idOfLine}`);
     };
 }
 

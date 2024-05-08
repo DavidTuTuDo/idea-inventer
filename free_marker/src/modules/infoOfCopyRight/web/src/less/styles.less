@@ -2,7 +2,8 @@
 @tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 @mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
 .InfoOfCopyRightDiv:extend(.CenterInParentColumn) {
-  margin-top: 30px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   width: 100vw;
   align-items: flex-end;
   @media @mobile {
@@ -12,6 +13,8 @@
     /** empty style */
   }
   @media @desktop {
+    margin-top: 20px;
+    margin-bottom: 20px;
     max-width: 800px;
   }
 }
@@ -40,6 +43,7 @@
   }
 }
 .InfoOfCopyRightUpperGroupLeftAreaContactButton {
+  height: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -61,7 +65,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupLeftAreaBusinessButton {
+.InfoOfCopyRightUpperGroupLeftAreaBusinessButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
   @media @mobile {
     /** empty style */
   }
@@ -94,7 +98,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton {
+.InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
   @media @mobile {
     /** empty style */
   }
@@ -127,7 +131,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupRightAreaCprtButton {
+.InfoOfCopyRightUpperGroupRightAreaCprtButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
   @media @mobile {
     /** empty style */
   }
@@ -139,6 +143,7 @@
   }
 }
 .InfoOfCopyRightGroupOfSocialMediaDiv {
+  margin-right: 5px;
   @media @mobile {
     /** empty style */
   }

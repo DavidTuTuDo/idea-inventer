@@ -29,10 +29,11 @@ const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
-// const CURRENT_PROJECT = './project-yueh-voice';
-// const CURRENT_PROJECT = './project-kh-high';
-// const CURRENT_PROJECT = './project-yueh-pu';
-const CURRENT_PROJECT = './project-davidtu-dev';
+let CURRENT_PROJECT = undefined;
+// let CURRENT_PROJECT = './project-yueh-voice';
+// let CURRENT_PROJECT = './project-kh-high';
+// let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -6579,8 +6580,9 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`host`, JSON.stringify(this.isProduction() ? sourceObj.host.prod : sourceObj.host.dev));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
-        baseConfigGenerator.appendField(`VERSION_OF_PACKAGE_JSON`, JSON.stringify(Util.getVersionOfJsFile(this.pathOfSourceJS)));
-
+        const version = Util.getStringOfVersionIncrement(Util.getVersionOfJsFile(this.pathOfSourceJS));
+        baseConfigGenerator.appendField(`VERSION_OF_PACKAGE_JSON`, JSON.stringify(version));
+        Util.appendInfo(`75645461 VERSION_OF_PACKAGE_JSON ==> ${version}`);
 
         switch (this.platform) {
             case 'admin':
@@ -8529,112 +8531,135 @@ class BuildApplication {
 
 }
 
-export {BuildApplication as BuildApplication};
+class ScheduleManager {
+
+    projectsOfPath;
+
+    behavior;
+
+    constructor(behavior, ...projectsOfPath) {
+        this.behavior = behavior;
+        this.projectsOfPath = projectsOfPath;
+    }
+
+    async execute() {
+        for (const project of this.projectsOfPath) {
+            await this.handler(this.behavior, project);
+        }
+        return `4888446 projects=>'${this.projectsOfPath}'  execute succeed`;
+    }
+
+    async handler(behavior, pathOfProject) {
+        const props = {
+            projectRootPath: pathOfProject,
+        }
+        const builder = new BuildApplication(props)
+        const timeOfStart = Util.getCurrentTimeStamp();
+        switch (behavior) {
+            case 'functionsGenerateRelease':
+                await builder.generateReleaseFunctionsModule();
+                break;
+            case 'fastFunctionsOnly':
+                await builder.buildCloudFunctions(false);
+                break;
+            case 'functionsOnly':
+                await builder.buildCloudFunctions();
+                break;
+            case 'refreshFunctionFolder':
+                await builder.refreshFunctionsFolder();
+                break;
+            case 'refreshFunctionFolderThenDeploy':
+                await builder.refreshFunctionsFolder();
+                await builder.deployFunctionsWithoutBuild();
+                break;
+            case 'deployFunctionsToProduction':
+                await builder.deployFunctionsToProd();
+                break;
+            case 'deployWebToProduction':
+                await builder.deployWebProd();
+                break;
+            case 'buildWebToProduction':
+                await builder.deployWebProd(false, true);
+                break;
+            case 'deployFunctionsWithoutBuild':
+                await builder.deployFunctionsWithoutBuild();
+                break;
+            case 'deployPlatformToProd':
+                await builder.deployFunctionsToProd();
+                await builder.deployWebProd();
+                break;
+            case 'persistentFunctions':
+                await builder.persistent('functions');
+                await builder.buildCloudFunctions();
+                break;
+            case 'adminOnly':
+                await builder.buildAdmin();
+                break;
+            case 'webOnly':
+                await builder.buildWeb();
+                break;
+            case 'persistentBuildWeb':
+                await builder.persistent('web');
+                await builder.buildWeb();
+                break;
+            case 'persistentBuildAdmin':
+                await builder.persistent('admin');
+                await builder.buildAdmin();
+                break;
+            case 'BuildQuickAdmin':
+                await builder.persistent('admin');
+                await builder.buildAdmin(false);
+                break;
+            case 'persistentBuild':
+                await builder.persistent('web');
+                await builder.persistent('admin');
+                await builder.buildWeb();
+                await builder.buildAdmin();
+                break;
+            case 'persistent':
+                await builder.persistent('web');
+                await builder.persistent('admin');
+                await builder.persistent('functions');
+                break;
+            case 'persistentFunctionsOnly':
+                await builder.persistent('functions');
+                break;
+            case 'persistentWebOnly':
+                await builder.persistent('web');
+                break;
+            case 'persistentAdminOnly':
+                await builder.persistent('admin');
+                break;
+            case 'newLessFileOnly':
+                await builder.buildLessFilesOnly();
+                break;
+            case 'buildAllPlatform':
+                await builder.buildWeb();
+                await builder.buildAdmin();
+                await builder.buildCloudFunctions();
+                break;
+            case 'buildStoreIndexJson':
+                await builder.buildIndexRule();
+                break;
+            case 'developLatestFunction':
+                await builder.modifiedI18n();
+                break;
+            default:
+                Util.appendInfo(`874845 behavior=>'${behavior}' jo4你怪怪的`);
+                break
+        }
+        Util.appendInfo(`專案[${pathOfProject}] 耗時 ${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
+    }
+
+}
 
 if (configerer.DEBUG_MODE) {
-
     (async () => {
-            const props = {
-                projectRootPath: CURRENT_PROJECT,
-            }
-            const builder = new BuildApplication(props)
-            const timeOfStart = Util.getCurrentTimeStamp();
-            switch (Util.getNodeEnvVariable('type')) {
-                case 'functionsGenerateRelease':
-                    await builder.generateReleaseFunctionsModule();
-                    break;
-                case 'fastFunctionsOnly':
-                    await builder.buildCloudFunctions(false);
-                    break;
-                case 'functionsOnly':
-                    await builder.buildCloudFunctions();
-                    break;
-                case 'refreshFunctionFolder':
-                    await builder.refreshFunctionsFolder();
-                    break;
-                case 'refreshFunctionFolderThenDeploy':
-                    await builder.refreshFunctionsFolder();
-                    await builder.deployFunctionsWithoutBuild();
-                    break;
-                case 'deployFunctionsToProduction':
-                    await builder.deployFunctionsToProd();
-                    break;
-                case 'deployWebToProduction':
-                    await builder.deployWebProd();
-                    break;
-                case 'buildWebToProduction':
-                    await builder.deployWebProd(false, true);
-                    break;
-                case 'deployFunctionsWithoutBuild':
-                    await builder.deployFunctionsWithoutBuild();
-                    break;
-                case 'deployPlatformToProd':
-                    await builder.deployFunctionsToProd();
-                    await builder.deployWebProd();
-                    break;
-                case 'persistentFunctions':
-                    await builder.persistent('functions');
-                    await builder.buildCloudFunctions();
-                    break;
-                case 'adminOnly':
-                    await builder.buildAdmin();
-                    break;
-                case 'webOnly':
-                    await builder.buildWeb();
-                    break;
-                case 'persistentBuildWeb':
-                    await builder.persistent('web');
-                    await builder.buildWeb();
-                    break;
-                case 'persistentBuildAdmin':
-                    await builder.persistent('admin');
-                    await builder.buildAdmin();
-                    break;
-                case 'BuildQuickAdmin':
-                    await builder.persistent('admin');
-                    await builder.buildAdmin(false);
-                    break;
-                case 'persistentBuild':
-                    await builder.persistent('web');
-                    await builder.persistent('admin');
-                    await builder.buildWeb();
-                    await builder.buildAdmin();
-                    break;
-                case 'persistent':
-                    await builder.persistent('web');
-                    await builder.persistent('admin');
-                    await builder.persistent('functions');
-                    break;
-                case 'persistentFunctionsOnly':
-                    await builder.persistent('functions');
-                    break;
-                case 'persistentWebOnly':
-                    await builder.persistent('web');
-                    break;
-                case 'persistentAdminOnly':
-                    await builder.persistent('admin');
-                    break;
-                case 'newLessFileOnly':
-                    await builder.buildLessFilesOnly();
-                    break;
-                case 'buildAllPlatform':
-                    await builder.buildWeb();
-                    await builder.buildAdmin();
-                    await builder.buildCloudFunctions();
-                    break;
-                case 'buildStoreIndexJson':
-                    await builder.buildIndexRule();
-                    break;
-                case 'developLatestFunction':
-                    await builder.modifiedI18n();
-                    break;
-                default:
-                    Util.appendInfo('jo4你');
 
-                    break
-            }
+        let projects = [CURRENT_PROJECT];
+        const behavior = Util.getNodeEnvVariable('type');
+        const worker = new ScheduleManager(behavior, ...projects);
+        Util.appendInfo(await worker.execute());
 
-            Util.appendInfo(`${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
-        }
-    )();
+    })();
 }
