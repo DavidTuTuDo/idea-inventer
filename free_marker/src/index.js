@@ -8075,7 +8075,8 @@ class ProjectFileHandler extends PathBase {
         const source = this.nodeOfAncestor;
         for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
             if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
-                const content = require(file.absolute).default;
+                /** require的default在一個process只會被new一次，為了設計build queue['project-kh-high','project-yueh-pu']，使用了clone */
+                const content = _.clone(require(file.absolute).default);
 
                 if (Util.has(source.getComponents().map((each) => each.getName()), content.name)) {
                     /** 必免重復的component 被匯入 */
@@ -8478,6 +8479,7 @@ class BuildApplication {
         Util.appendInfo(
             `admin done`
         );
+        admin.cleanCache();
     }
 
     async buildIndexRule() {
@@ -8604,6 +8606,9 @@ class ScheduleManager {
                 break;
             case 'BuildQuickAdmin':
                 await builder.persistent('admin');
+                await builder.buildAdmin(false);
+                break;
+            case 'BuildQuickAdminWithoutPersist':
                 await builder.buildAdmin(false);
                 break;
             case 'persistentBuild':
