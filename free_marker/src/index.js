@@ -181,6 +181,8 @@ class CodegenNode {
             props: {},
         }
     }
+    email = '';
+    /** firebase 的註冊帳號，用來切換身份deploy|rules */
 
     /** 利用outer,view child的方式,增加一個label概念 姓名: David*/
 
@@ -8222,6 +8224,9 @@ class ProjectFileHandler extends PathBase {
                 extra: each.isExtraComponent
             }
         }))
+
+        if (!_.isEmpty(this.nodeOfAncestor.email))
+            await Util.executeCommandLine(`firebase login:use ${this.nodeOfAncestor.email}`)
 
         if (this.isWebPlatform() && !this.isProduction()) {
             ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
