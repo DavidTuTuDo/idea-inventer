@@ -611,7 +611,8 @@ class CodegenNode {
     plural;
     /** 用於產出合理的function name,可以有 object,array,number,string 如果type是 array, 就必些要有 plural */
 
-    title;
+    title = '';
+    /** 用在網頁上的大標題 */
 
     url;
     /** 如果物件有對應到資料庫,就可以指定 */
@@ -3892,11 +3893,8 @@ class StoreBuilder extends BaseBuilder {
                 )
             }
 
-            if (node.hasPageTitle()) {
-                /** page title 的部分 */
-                appendI18nFieldSetterGetter(baseGenerator, node.getFieldNameOfPageTitle());
-            }
-
+            /** page title 的部分 */
+            appendI18nFieldSetterGetter(baseGenerator, node.getFieldNameOfPageTitle());
         }
 
 
@@ -5591,8 +5589,8 @@ class AppBuilder extends ComponentBuilder {
 
         for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
             appendMapOfKeyValue(component.getName(), `${component.getName()}${component.isPreciselyEditableComponent() ? '-editor' : ''} 需要的字串`, 'comment')
-            if (component.hasPageTitle())
-                appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
+
+            appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
 
             for (const child of component.getStruct().getPreciseAttributeChildren()) {
                 /** ref 的東西就不要錯頻道，本來屬於episode, 結果跑去main(因為main ref:episode)*/
@@ -6937,7 +6935,6 @@ class ProjectFileHandler extends PathBase {
         await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes}), 'firestore:indexes', deploy)
     }
 
-
     getFirebaseRuleOfMatchRoute(node) {
         const path = node.getPath();
         const wildcard = `{${node.getName()}}`;
@@ -7892,7 +7889,6 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-
     async forCloudFunctions() {
         Util.persistByPath(this.genRootPath);
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'functions.package.json'),
@@ -7975,7 +7971,7 @@ class ProjectFileHandler extends PathBase {
             for (let component of source.getComponents()) {
                 if (component.needEditPage()) {
                     const editorComponent = _.cloneDeep(component);
-                    editorComponent.setTitle(`${editorComponent.getTitle()} editor`);
+                    editorComponent.setTitle(`${editorComponent.getTitle()}`);
                     editorComponent.setEvents([]);
                     editorComponent.setIsEditableComponent(true)
                     editorComponent.setPath(editorComponent.getPath() + `editor`);
@@ -8216,6 +8212,7 @@ class ProjectFileHandler extends PathBase {
             )
         }
 
+        Util.appendInfo(`441548741532 編譯內容為：`)
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
             return {
                 name: each.getName(),
@@ -8284,7 +8281,6 @@ class ProjectFileHandler extends PathBase {
         await this.removeEmptyFolder();
     }
 
-    /** */
     async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
             Util.cleanAllFiles(libpath.join(this.genRootPath, 'release'));
@@ -8367,7 +8363,7 @@ class BuildApplication {
 
     constructor(object = {projectRootPath: './'}) {
         if (!Util.isPathExist(object.projectRootPath)) {
-            throw new ERROR(9999, `${object.projectRootPath} 這個專案位置不存在`)
+            throw new ERROR(9999, `${object.projectRootPath} 48784546 這個專案位置不存在`)
         }
 
         this.projectRootPath = libpath.resolve(object.projectRootPath);
@@ -8645,7 +8641,7 @@ class ScheduleManager {
                 await builder.modifiedI18n();
                 break;
             default:
-                Util.appendInfo(`874845 behavior=>'${behavior}' jo4你怪怪的`);
+                Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);
                 break
         }
         Util.appendInfo(`專案[${pathOfProject}] 耗時 ${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
@@ -8656,10 +8652,35 @@ class ScheduleManager {
 if (configerer.DEBUG_MODE) {
     (async () => {
 
-        let projects = [CURRENT_PROJECT];
+        async function getProjectsByPromptInput() {
+            const pathOfTarget = `/Users/davidtu/cross-achieve/high/idea-inventer/free_marker`;
+            const folders = Util.findFilePathBy(pathOfTarget, (file) => (_.isEqual(file.fileNameExtension, 'source.js')
+                && _.startsWith(file.folderName, 'project-')), `node_modules`).map(file => file.folderName);
+
+
+            if (_.isEmpty(folders))
+                return Util.appendInfo(`548441 valid project not existed in ${pathOfTarget}`);
+
+            const result = await Util.getObjectFromPromptQ({
+                name: `indexes`,
+                require: true,
+                description: `select build project:\n\n${folders.map((name, index) => `${index}:${name}`)
+                    .join('\n')}\n\nplease type the index`
+            });
+
+            if (_.isEmpty(result.indexes))
+                return Util.appendInfo(`489498444 get error of input => ${result}`);
+
+            const indexes = result.indexes.split('').map((each) => _.toNumber(each));
+
+            return Util.getSliceArrayOfSpecificIndexes(folders, ...indexes);
+        }
+
+        const projects = CURRENT_PROJECT ? [CURRENT_PROJECT] : await getProjectsByPromptInput();
         const behavior = Util.getNodeEnvVariable('type');
         const worker = new ScheduleManager(behavior, ...projects);
-        Util.appendInfo(await worker.execute());
+        const msg = await worker.execute();
+        Util.appendInfo(msg);
 
     })();
 }

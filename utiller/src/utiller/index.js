@@ -774,6 +774,24 @@ class Utiller {
         return indexes;
     }
 
+    /**
+     * 得到slice array 從指定的index
+     * console.log(utiller.getSliceArrayOfSpecificIndexes(['a','v','c','d'], 1, 2, 3));
+     * [ 'v', 'c', 'd' ]
+     * */
+    getSliceArrayOfSpecificIndexes(array,...indexes) {
+        const items = [];
+        const size = _.size(array);
+        for(const index of indexes) {
+            if(!_.isNumber(index))
+                throw new ERROR(9999, `59941278 index should be number => ${index}, ${array}`);
+            if(index > size-1)
+                throw new ERROR(9999, `5994123 index=>${index} is not valid, exceed than array size=${size}, ${array}`);
+            items.push(_.nth(array,index));
+        }
+        return items;
+    }
+
     /** 找到關鍵字所有的index */
     indexesOf(arr, val) {
         const indexes = []
@@ -1747,6 +1765,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getSliceArrayOfSpecificIndexes(['a','v','c','d'], 4,2));
             // const aaa = {};
             // utiller.appendMapOfKeyArray(aaa, 'a', 11);
             // utiller.appendMapOfKeyArray(aaa, 'c', 13);

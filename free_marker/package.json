@@ -17,7 +17,7 @@
     "moment": "^2.29.1",
     "mustache": "^4.1.0",
     "prettier": "^3.2.5",
-    "utiller": "^1.0.188"
+    "utiller": "^1.0.192"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",
