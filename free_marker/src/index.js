@@ -30,7 +30,7 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 let CURRENT_PROJECT = undefined;
-// let CURRENT_PROJECT = './project-yueh-voice';
+// let CURRENT_PROJECT = './pr1oject-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
@@ -65,7 +65,6 @@ const LESS_MODULES = [
  *
  * */
 
-const DEFAULT_IMPORT_ROUTE_OF_VIEW = '';
 const VIEW_IMPORTS =
     [
         {
@@ -74,51 +73,8 @@ const VIEW_IMPORTS =
             simplePath: true,
         },
         {
-            from: `@mui/icons-material/AccountCircle`,
-            views: ['AccountCircle'],
-            simplePath: true,
-        },
-        {
-            from: `@mui/icons-material/MailOutlined`,
-            views: ['MailOutlined'],
-            simplePath: true,
-        },
-        {
-            from: `@mui/icons-material/PhoneOutlined`,
-            views: ['PhoneOutlined'],
-            simplePath: true,
-        },
-        {
-            from: `@mui/icons-material/menu`,
-            views: ['MenuIcon'],
-            simplePath: true, /** 就是只要material-ui/icons/menu */
-        },
-        {
-            from: `@mui/icons-material/ChevronRight`,
-            views: ['ChevronRight'],
-            simplePath: true, /** 就是只要material-ui/icons/menu */
-        },
-        {
-
-            from: `@mui/icons-material/MoreHoriz`,
-            views: ['MoreHoriz'],
-            simplePath: true, /** 就是只要material-ui/icons/menu */
-        },
-        {
-
-            from: `@mui/icons-material/CopyAll`,
-            views: ['CopyAll'],
-            simplePath: true, /** 就是只要material-ui/icons/menu */
-        },
-        {
-            from: `@mui/icons-material/Search`,
-            views: ['SearchIcon'],
-            simplePath: true, /** 就是只要material-ui/icons/Search */
-        },
-        {
-            from: `@mui/icons-material/StarRounded`,
-            views: ['StarRounded'],
-            simplePath: true, /** 就是只要material-ui/icons/Search */
+            from: `@mui/icons-material`,
+            views: ['SearchRounded','MenuRounded','AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded'],
         },
         {
             from: `@mui/material`,
@@ -4813,7 +4769,8 @@ class ComponentBuilder extends BaseBuilder {
                 for (const _import of VIEW_IMPORTS) {
                     if (Util.has(_import.views, param.tag)) {
                         param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag,
-                            `${_import.from}${_import.object | _import.simplePath ? `` : `/${param.tag}`}`)
+                            `${_import.from}${_import.object || _import.simplePath ? `` : `/${param.tag}`}`)
+                        break;
                     }
                 }
             }
@@ -8225,8 +8182,12 @@ class ProjectFileHandler extends PathBase {
             }
         }))
 
-        if (!_.isEmpty(this.nodeOfAncestor.email))
-            await Util.executeCommandLine(`firebase login:use ${this.nodeOfAncestor.email}`)
+        try {
+            if (!_.isEmpty(this.nodeOfAncestor.email))
+                await Util.executeCommandLine(`firebase login:use ${this.nodeOfAncestor.email}`)
+        } catch (error) {
+            Util.appendInfo(`156651343 firebase login:use 同一個帳號會報錯，可忽略 其他部分請參考 ${error.message}`);
+        }
 
         if (this.isWebPlatform() && !this.isProduction()) {
             ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
