@@ -4,7 +4,6 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
-import {compile} from "@babel/cli/lib/babel/util";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -74,7 +73,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/icons-material`,
-            views: ['SearchRounded','MenuRounded','AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded'],
+            views: ['SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded'],
         },
         {
             from: `@mui/material`,
@@ -595,6 +594,7 @@ class CodegenNode {
      * paramObject預設會是點擊事件的parent node.
      *
      **/
+
     alertDialog;
 
     defaultAlertDialog = {
@@ -8622,8 +8622,17 @@ class ScheduleManager {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+        /** 紀錄最近一次回答的內容，不然每次都要打字再Enter好懶 */
+        const FILENAME_OF_LATEST_REPLY = `temp/ReplyOfLastTime.json`;
+        const ATTRIBUTE_NAME_OF_INDEXES = `indexes`;
 
         async function getProjectsByPromptInput() {
+            function getStringOfLatestReply() {
+                const raw = Util.getFileContextInRaw(FILENAME_OF_LATEST_REPLY);
+                let answerOfLastTime = _.isEmpty(raw) ? undefined : JSON.parse(raw)
+                return answerOfLastTime ? answerOfLastTime[ATTRIBUTE_NAME_OF_INDEXES] : undefined;
+            }
+
             const pathOfTarget = `/Users/davidtu/cross-achieve/high/idea-inventer/free_marker`;
             const folders = Util.findFilePathBy(pathOfTarget, (file) => (_.isEqual(file.fileNameExtension, 'source.js')
                 && _.startsWith(file.folderName, 'project-')), `node_modules`).map(file => file.folderName);
@@ -8632,18 +8641,23 @@ if (configerer.DEBUG_MODE) {
             if (_.isEmpty(folders))
                 return Util.appendInfo(`548441 valid project not existed in ${pathOfTarget}`);
 
+
+            const replyOfLatest = getStringOfLatestReply();
             const result = await Util.getObjectFromPromptQ({
-                name: `indexes`,
-                require: true,
+                name: ATTRIBUTE_NAME_OF_INDEXES,
+                type: 'string',
+                require: false,
+                default: replyOfLatest ? `${replyOfLatest}` : undefined,
                 description: `select build project:\n\n${folders.map((name, index) => `${index}:${name}`)
-                    .join('\n')}\n\nplease type the index`
+                    .join('\n')}\n\nplease type the index${replyOfLatest ? `(default:${replyOfLatest})` : ''}`
             });
 
             if (_.isEmpty(result.indexes))
                 return Util.appendInfo(`489498444 get error of input => ${result}`);
 
-            const indexes = result.indexes.split('').map((each) => _.toNumber(each));
 
+            await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, false);
+            const indexes = result.indexes.split('').map((each) => _.toNumber(each));
             return Util.getSliceArrayOfSpecificIndexes(folders, ...indexes);
         }
 

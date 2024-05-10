@@ -473,6 +473,12 @@ class NodeUtiller extends Utiller {
         fs.appendFileSync(path, `${newlineOnceFileNotEmpty ? '\n' : ''}${data}`, options);
     }
 
+    /** 常常要把JSON的內容印出來，所以這個很方便 */
+    async persistJsonFilePrettier(path, object, ignoreP = false) {
+        this.appendFile(path, JSON.stringify(object), true, true);
+        if (!ignoreP) await this.prettier(path, 120);
+    }
+
     /** 快速把資料結構印出來看 */
     printCollectionToFile(collection) {
         const fileName = `./logs/__temp_${this.getCurrentTimeFormat()}.txt`;
