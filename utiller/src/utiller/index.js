@@ -1639,9 +1639,26 @@ class Utiller {
         /** checkValue = Crypto.createHash('sha256').update(checkValue).digest('hex');
          * 之前用crypto做出來的，後來crypto-browsify多年沒有更新，所以都要用CryptoJS處理 2024/03/12
          * */
-        checkValue = CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex)
-        checkValue = checkValue.toUpperCase();
-        return checkValue;
+        return _.toUpper(CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex)) ;
+    }
+
+    /**
+     * 把一段html文字轉換成類似document的結構 處理後再回傳文字
+
+     // const result = utiller.getStringOfHandleHtml('<form id="_form_aiochk" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5" method="post"><input type="hidden" name="MerchantTradeNo" id="MerchantTradeNo" value="sO6E2IilSGYpCChDqrI2" /><input type="hidden" name="MerchantTradeDate" id="MerchantTradeDate" value="2022/07/02 05:16:32" />' +
+     //     '<input type="hidden" name="TotalAmount" id="TotalAmount" value="350" /><input type="hidden" name="TradeDesc" id="TradeDesc" value="綠界第三方支付(明悅科技-線上支付)" /><input type="hidden" name="ItemName" id="ItemName" value="iphone13 pro x 2 = 200 元#iphone11 x 3 = 150 元#總價 350 元##※備註: 無備註內容" /><input type="hidden" name="ReturnURL" id="ReturnURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/confirmedByByECPay" /><input type="hidden" name="ClientBackURL" id="ClientBackURL" value="https://www.google.com/" /><input type="hidden" name="ExpireDate" id="ExpireDate" value="1" /><input type="hidden" name="PaymentInfoURL" id="PaymentInfoURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/paymentInfoByECPay" /><input type="hidden" name="ChoosePayment" id="ChoosePayment" value="ALL" /><input type="hidden" name="PlatformID" id="PlatformID" value="" /><input type="hidden" name="MerchantID" id="MerchantID" value="2000132" /><input type="hidden" name="InvoiceMark" id="InvoiceMark" value="N" /><input type="hidden" name="IgnorePayment" id="IgnorePayment" value="BARCODE#AndroidPay#ApplePay" /><input type="hidden" name="DeviceSource" id="DeviceSource" value="" /><input type="hidden" name="EncryptType" id="EncryptType" value="1" /><input type="hidden" name="PaymentType" id="PaymentType" value="aio" />' +
+     //     '<input type="hidden" name="CheckMacValue" id="CheckMacValue" value="D55E9E48C6AB83C063E0E13AD1B8C2EE8FA6547A7D7FCB33860B532E97D808BC" /><script type="text/javascript">document.getElementById("_form_aiochk").submit();</script></form>'
+     //     , (document) => {
+     //         const element = document.getElementById('CheckMacValue');
+     //         element.setAttribute('value', '123456');
+     //     })
+     */
+    getStringOfHandledHtml(string, predicate = (document) => {
+        console.log(document)
+    }) {
+        const document = parse(string);
+        predicate(document);
+        return document.toString();
     }
 
     /**
@@ -1765,6 +1782,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(CryptoJS.SHA256('hashkey%3d5294y06jbispm5x9%26david%3d918%26hashiv%3dv77hokgq4kwxnnis').toString(CryptoJS.enc.Hex))
             // console.log(utiller.getSliceArrayOfSpecificIndexes(['a','v','c','d'], 4,2));
             // const aaa = {};
             // utiller.appendMapOfKeyArray(aaa, 'a', 11);

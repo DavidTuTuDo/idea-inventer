@@ -8615,7 +8615,7 @@ class ScheduleManager {
                 Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);
                 break
         }
-        Util.appendInfo(`專案[${pathOfProject}] 耗時 ${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
+        Util.appendInfo(`專案[${pathOfProject}] 執行[${behavior}] 耗時 ${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
     }
 
 }

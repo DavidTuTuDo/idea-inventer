@@ -40,6 +40,7 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
 
 
         if (_.isEqual(state, 'all')) {
+            this.clearFetchConditions();
             return [conditionOfDefault];
             /** 如果return undefined會拿不到資料 */
         }

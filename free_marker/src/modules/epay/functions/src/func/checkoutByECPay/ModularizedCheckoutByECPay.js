@@ -90,18 +90,22 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     getURLOfOrderResultURL() {
         return `必須是post的api`
     }
+
     getPayloadOfECPayAIORequest(order) {
         return {
             MerchantTradeNo: order.id, //請帶20碼uid, ex: f0a0d7e9fae1bb72bc93
             MerchantTradeDate: Util.getECPayCurrentTimeFormat(), //ex: 2017/02/13 15:45:30
-            TotalAmount: `${order.priceOfTotal}`,
+            TotalAmount: order.priceOfTotal,
             TradeDesc: `綠界第三方支付(${order.titleOfOrder})`,
             ItemName: this.normalizeDescOfItemName(order.textOfContract),
             ReturnURL: Config.urlOfConfirmedByECPay,
             ClientBackURL: this.getURLOfClientBackURL(),
-            ExpireDate: 1,
-            PaymentInfoURL: Config.urlOfPaymentInfoByECPay,
-            StoreExpireDate: 1440,/** 代表一天的秒數 */
+            ExpireDate: 1, /** ATM付款參數:單位是天(day) */
+            PaymentInfoURL: Config.urlOfPaymentInfoByECPay,/** 用來讓率介乎叫CVS|ATM關於付款資訊的內容 */
+            EncryptType: 1,
+            PaymentType: 'aio',
+            ChoosePayment: 'ALL',
+            StoreExpireDate: 1440,/** CVS付款參數:單位是分鐘(minute)，1440代表一天的秒數 */
             // OrderResultURL: this.getURLOfOrderResultURL(),
             // NeedExtraPaidInfo: '1',
             // ChooseSubPayment: 'Credit',
