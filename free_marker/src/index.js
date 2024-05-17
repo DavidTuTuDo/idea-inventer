@@ -871,6 +871,7 @@ class CodegenNode {
             node.isTextFieldView(type),
             node.isAutoCompleteView(type),
             node.isTabListView(type),
+            node.isTimeDatePickerView(type),
         );
     }
 
@@ -1819,39 +1820,39 @@ class CodegenNode {
     }
 
     isSimpleViewPager(type = 'default') {
-        return this.isArray() && this.isAttributeView('SimpleViewPager');
+        return this.isArray() && this.isAttributeView('SimpleViewPager', type);
     }
 
     isSimpleGrid(type = 'default') {
-        return this.isArray() && this.isAttributeView('SimpleGrid');
+        return this.isArray() && this.isAttributeView('SimpleGrid', type);
     }
 
     isSimpleSwitch(type = 'default') {
-        return this.isObject() && this.isAttributeView('SimpleSwitch');
+        return this.isObject() && this.isAttributeView('SimpleSwitch', type);
     }
 
     isAutoCompleteView(type = 'default', node = this) {
-        return node.isAttributeView('Autocomplete')
+        return node.isAttributeView('Autocomplete', type)
     }
 
     isRadioView(type = 'default') {
-        return this.isAttributeView('Radio');
+        return this.isAttributeView('Radio', type);
     }
 
     isSwitchView(type = 'default', node = this) {
-        return node.isAttributeView('Switch');
+        return node.isAttributeView('Switch', type);
     }
 
     isSliderView(type = 'default', node = this) {
-        return node.isAttributeView('Slider');
+        return node.isAttributeView('Slider', type);
     }
 
     isFloatBackgroundView(type = 'default') {
         return this.isAttributeView('FloatBackgroundView');
     }
 
-    isTimeDatePickerView() {
-        return this.isAttributeView('TimePicker') || this.isAttributeView('DatePicker');
+    isTimeDatePickerView(type = 'default', node = this) {
+        return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type);
     }
 
     isCustomImageButton(type = 'default') {
@@ -7401,7 +7402,6 @@ class ProjectFileHandler extends PathBase {
                         case 'wrap':
                             node.appendWrapProps(...props)
                             node.appendMethods(...methods);
-
                             break;
                         case 'default':
                             node.appendViewProps(...props)
@@ -7439,6 +7439,11 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
+                } else if (node.isTimeDatePickerView()) {
+                    stmts.length = 0;
+                    stmts.push(`const moment = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
+                    stmts.push(`objectOfParam.value = moment`)
+                    paramStmt = `moment`;
                 } else {
                     /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
                 }
@@ -7582,6 +7587,8 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isTabItemView()) {
                 node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
+            } else if (node.isTimeDatePickerView()) {
+                /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
                 node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)

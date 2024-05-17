@@ -39,10 +39,21 @@ class MainComponent extends BaseMainComponent {
   //   const item = param.object;
   //   console.log(item);
   // }
+  onMainBannerSimpleSwiperSlide() {
+    //忽略換頁通知
+  }
 
   onMainBannerImageImgClicked(param) {
     console.log(param.object);
     this.getComponentInstance().showInfoSnackMessage(param.object.route);
+  }
+
+  onMainTestClockTimePickerChange(param) {
+    console.log(param.value);
+  }
+
+  onMainTestEndDatePickerChange(param) {
+    console.log(param.value);
   }
 
   /** -------------------- async api -------------------- **/
