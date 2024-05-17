@@ -28,11 +28,11 @@ const STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY = `id`;
 const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
-let CURRENT_PROJECT = undefined;
+// let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './pr1oject-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
-// let CURRENT_PROJECT = './project-davidtu-dev';
+let CURRENT_PROJECT = './project-davidtu-dev';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -69,7 +69,7 @@ const VIEW_IMPORTS =
         {
             from: `react-h5-audio-player`,
             views: ['AudioPlayer'],
-            simplePath: true,
+            simplePath: true, /** from後面 不用接views import AudioPlayer from 'react-h5-audio-player' */
         },
         {
             from: `@mui/icons-material`,
@@ -82,15 +82,32 @@ const VIEW_IMPORTS =
                 'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
         },
         {
+            from: `@mui/x-date-pickers`,
+            views: ['LocalizationProvider', 'AdapterMoment'],
+            object: true,
+        },
+        {
+            from: `@mui/x-date-pickers-pro`,
+            views: ['DateTimeRangePicker', 'SingleInputTimeRangeField'],
+            object: true,
+        },
+        {
+            from: `@mui/x-date-pickers`,
+            views: ['TimePicker', 'DatePicker', 'DateTimePicker'],
+            object: true,
+        },
+        {
             from: `react-slideshow-image`,
             views: ['Fade', 'Slide'],
             /** Fade就是有漸入漸出的效果,  Slide就可以滑動 */
-            object: true,/** 就是要加上bracket {Fade} */
+            object: true, /** 就是要加上bracket {Fade} */
+            simplePath: true
         },
         {
             from: `swiper/react`,
             views: ['Swiper', "SwiperSlide"],
             object: true,
+            simplePath: true
         }
     ]
 
@@ -1070,7 +1087,7 @@ class CodegenNode {
 
     isContainer() {
         return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide'
-            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment');
+            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider');
     }
 
     getFunctionNameOfSwiper() {
@@ -1831,6 +1848,10 @@ class CodegenNode {
 
     isFloatBackgroundView(type = 'default') {
         return this.isAttributeView('FloatBackgroundView');
+    }
+
+    isTimeDatePickerView() {
+        return this.isAttributeView('TimePicker') || this.isAttributeView('DatePicker');
     }
 
     isCustomImageButton(type = 'default') {
@@ -4769,7 +4790,7 @@ class ComponentBuilder extends BaseBuilder {
                 for (const _import of VIEW_IMPORTS) {
                     if (Util.has(_import.views, param.tag)) {
                         param.generator.appendImport(_import.object ? `{${param.tag}}` : param.tag,
-                            `${_import.from}${_import.object || _import.simplePath ? `` : `/${param.tag}`}`)
+                            `${_import.from}${_import.simplePath ? `` : `/${param.tag}`}`)
                         break;
                     }
                 }
@@ -7026,6 +7047,12 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
+            if (node.isTimeDatePickerView()) {
+                node.setWrapView('LocalizationProvider');
+                node.appendImportStmt({part: '{AdapterMoment}', from: '@mui/x-date-pickers/AdapterMoment'});
+                node.appendWrapProps({dateAdapter: '###AdapterMoment'});
+            }
+
             if (node.isSimpleSwitch()) {
                 node.setView('FormControlLabel');
                 node.appendChildrenWithJsons(
@@ -8313,7 +8340,7 @@ class ProjectFileHandler extends PathBase {
             `node_modules`
         )))
             await Util.executeCommandLine(
-                `cd ${this.genRootPath} && npm install`
+                `cd ${this.genRootPath} && npm install --force`
             );
     }
 
