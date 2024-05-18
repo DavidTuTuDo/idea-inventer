@@ -133,7 +133,7 @@ class CodegenNode {
     implementsOfAlertItemClicked = [];
     /** alertMenu的 items,在點擊後的事件實作 */
 
-    /** 如果只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
+    /** 如果 Typoghraphy 只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
     labelView = {
         enable: false,
         defaultValue: ``,
@@ -209,6 +209,8 @@ class CodegenNode {
 
     labelOfSwitch;
     /** view為simpleSwitch時, 顯示的label */
+
+    label;
 
     skeleton = {
         enable: true,
@@ -674,6 +676,14 @@ class CodegenNode {
 
     isSelected() {
         return _.isObject(this.select) && _.isArray(this.select.values);
+    }
+
+    hasLabel() {
+        return this.label && !_.isEmpty(this.label);
+    }
+
+    getLabel() {
+        return this.label ?? '';
     }
 
     hasLabelView() {
@@ -1851,8 +1861,13 @@ class CodegenNode {
         return this.isAttributeView('FloatBackgroundView');
     }
 
+    /**
+     * onChange(event) 裡面的event = moment
+     * 再透過這些方式取得表列 const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
+     * */
     isTimeDatePickerView(type = 'default', node = this) {
-        return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type);
+        return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type) ||
+            node.isAttributeView('DateTimePicker', type);
     }
 
     isCustomImageButton(type = 'default') {
@@ -2573,7 +2588,7 @@ class CodegenNode {
         }
 
         if (this.type === 'timestamp') {
-            return `this.getObjectOfCurrentTimeStamp()`;
+            return this.isTimeDatePickerView() ? `moment()` : `this.getObjectOfCurrentTimeStamp()`;
         }
 
         if (this.isArray()) {
@@ -3730,6 +3745,11 @@ class StoreBuilder extends BaseBuilder {
             propStmt.push(`}`);
             if (!child.isArrayOfField())
                 propsStmt.push(...propStmt);
+
+            if (child.isTimeDatePickerView()) {
+                generator.appendImport('moment', `moment`)
+            }
+
         }
         return propsStmt;
     }
@@ -7161,7 +7181,6 @@ class ProjectFileHandler extends PathBase {
                         defaultValue: node.labelView.defaultValue,
                     });
 
-
             }
 
 
@@ -7440,8 +7459,11 @@ class ProjectFileHandler extends PathBase {
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
                 } else if (node.isTimeDatePickerView()) {
+                    /**
+                     * const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
+                     */
                     stmts.length = 0;
-                    stmts.push(`const moment = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
+                    stmts.push(`const moment = event`);
                     stmts.push(`objectOfParam.value = moment`)
                     paramStmt = `moment`;
                 } else {
@@ -7456,6 +7478,21 @@ class ProjectFileHandler extends PathBase {
         }
 
         for (const node of nodes) {
+
+            if (node.isTimeDatePickerView() && node.hasLabel()) {
+                const label = Util.camel('label', 'of', node.getName());
+                node.getParentNode().appendChildrenWithJsons(
+                    {
+                        name: label,
+                        type: 'string',
+                        editIgnore: true,
+                        l10n: true,
+                        defaultValue: node.getLabel(),
+                    }
+                )
+                node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
+            }
+
 
             if (node.isTextFieldView()) {
                 const nameOfDescription = Util.camel('label', 'of', node.getName());
@@ -7579,7 +7616,7 @@ class ProjectFileHandler extends PathBase {
             }
 
 
-            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView()) {
+            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
