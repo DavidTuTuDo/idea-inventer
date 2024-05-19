@@ -25,7 +25,8 @@ class CommonRemoteApi {
 
     normalizeAsMoment(param) {
         return param instanceof this.FirebaseTimestampClass() ? moment(param.toMillis()) :
-            _.isArray(param) ? param.map((each) => moment(each)) : moment(param);
+            _.isArray(param) ? param.map((each) =>
+                moment(each instanceof this.FirebaseTimestampClass() ? each.toMillis() : each)) : moment(param);
     }
 
     getFieldNameOfDocumentId() {
@@ -182,13 +183,13 @@ class CommonRemoteApi {
     /** predict 裡面寫 updateContent | 觸發throw error的規則
      *
      *      (item) => {
-                const old = item.count;
-                if (old <= 85)
-                    throw new ERROR(9999,'不能小於85');
+     const old = item.count;
+     if (old <= 85)
+     throw new ERROR(9999,'不能小於85');
 
-                const latest = old - 1;
-                return {count: latest}
-            }
+     const latest = old - 1;
+     return {count: latest}
+     }
      *
      * */
     async updateDocumentAtomically(path, predict = async (collection, transaction) => collection, id) {
@@ -302,7 +303,7 @@ class CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all, conditions=[]) {
+    async deleteItems(path, all, conditions = []) {
         Util.appendInfo(`delete items ${path}`);
         const sortedCondition = this.orderConditionByRules(conditions);
         const refs = [];
@@ -324,7 +325,7 @@ class CommonRemoteApi {
         })
     }
 
-    async submitObject(path, object, objName='contents') {
+    async submitObject(path, object, objName = 'contents') {
         const commitment = object;
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`submit object => ${path}/${objName}`);
@@ -496,8 +497,8 @@ class CommonRemoteApi {
     }
 
     async isAdminUser(uid = undefined) {
-       const user = await this.fetchItem('users',uid);
-       return user.exists && user.admin
+        const user = await this.fetchItem('users', uid);
+        return user.exists && user.admin
     }
 
     handleCommitment(update, commitment, object) {
