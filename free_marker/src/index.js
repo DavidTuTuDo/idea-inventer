@@ -88,7 +88,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/x-date-pickers-pro`,
-            views: ['DateTimeRangePicker', 'SingleInputTimeRangeField'],
+            views: ['TimeRangePicker', 'DateTimeRangePicker', 'DateRangePicker'],
             object: true,
         },
         {
@@ -257,6 +257,9 @@ class CodegenNode {
      * */
     stmtsOfImport = [];
 
+    /**
+     * { testButton: true } node.getParentNode()必須是container
+     */
     testButton = false;
     /** 就是在collection view 加一個測試按鈕*/
 
@@ -725,7 +728,7 @@ class CodegenNode {
     }
 
     needTestButton() {
-        return this.isContainer() && !!this.testButton
+        return !!this.testButton;
     }
 
     isViewDefinedInProps() {
@@ -1867,7 +1870,8 @@ class CodegenNode {
      * */
     isTimeDatePickerView(type = 'default', node = this) {
         return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type) ||
-            node.isAttributeView('DateTimePicker', type);
+            node.isAttributeView('DateTimePicker', type) || node.isAttributeView('DateTimePickerTimeRangePicker', type) ||
+            node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
     }
 
     isCustomImageButton(type = 'default') {
@@ -7649,7 +7653,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.needTestButton()) {
-                node.appendChildrenWithJsons({
+                node.getParentNode().appendChildrenWithJsons({
                     view: 'Button',
                     type: 'string',
                     name: 'testUsage',
