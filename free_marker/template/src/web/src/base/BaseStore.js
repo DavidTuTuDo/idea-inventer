@@ -7,6 +7,8 @@ import {
     computed,
     autorun,
     runInAction,
+    isObservableObject,
+    toJS,
 } from "mobx";
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
@@ -82,7 +84,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     /** 如果dialog | componentView 要拿到自己的component, 而不是外層的component, selfOnly要設定為true */
-    getComponent = (selfOnly = false)=> {
+    getComponent = (selfOnly = false) => {
         if (selfOnly)
             return this.component;
 
@@ -91,7 +93,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     isWrapByAlertDialog = () => {
-        return  !_.isUndefinedNullEmpty(this.props.dialog);
+        return !_.isUndefinedNullEmpty(this.props.dialog);
     }
 
     @action
@@ -101,6 +103,10 @@ class BaseStore extends ClientRemoteApi {
 
     getMessageOfListIsEmpty() {
         return this.messageOfListIsEmpty;
+    }
+
+    asJS(param) {
+        return isObservableObject(param) ? toJS(param) : param;
     }
 
     @action

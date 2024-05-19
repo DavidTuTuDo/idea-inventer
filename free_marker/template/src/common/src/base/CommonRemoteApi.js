@@ -23,6 +23,11 @@ class CommonRemoteApi {
             return obj;
     }
 
+    normalizeAsMoment(param) {
+        return param instanceof this.FirebaseTimestampClass() ? moment(param.toMillis()) :
+            _.isArray(param) ? param.map((each) => moment(each)) : moment(param);
+    }
+
     getFieldNameOfDocumentId() {
         return firebase.getFieldNameOfDocumentId();
     }

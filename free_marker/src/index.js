@@ -745,6 +745,10 @@ class CodegenNode {
         this.type = type;
     }
 
+    getFieldNameOfLabel(sign = '') {
+        return Util.camel('label', 'of', this.getFieldName(), sign);
+    }
+
     needI18nBehavior() {
         return this.l10n;
     }
@@ -785,11 +789,11 @@ class CodegenNode {
     }
 
     getFieldNameOfStart() {
-        return Util.camel('start', 'of', node.getFieldName());
+        return Util.camel('start', 'of', this.getFieldName());
     }
 
     getFieldNameOfEnd() {
-        return Util.camel('end', 'of', node.getFieldName());
+        return Util.camel('end', 'of', this.getFieldName());
     }
 
     isPathArray() {
@@ -1301,7 +1305,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -3441,6 +3445,7 @@ class PathBase {
                                    stringOfParamInSubmitItem,
                                    stringOfArgumentInSubmitItem,
                                    superUserUid,
+                                   isTimePickerView,
                                }) => {
         return {
             hasPath,
@@ -3469,6 +3474,7 @@ class PathBase {
             stringOfParamInSubmitItem,
             stringOfArgumentInSubmitItem,
             superUserUid,
+            isTimePickerView,
         }
     }
 
@@ -3729,6 +3735,7 @@ class StoreBuilder extends BaseBuilder {
                         hasPaginate: child.hasPaginate(),
                         paginateSize: child.getPaginateSize(),
                         fieldClass: child.getClassName(),
+                        isTimePickerView: child.isTimeDatePickerView() || child.isDateTimeRangePickerView()
                     }));
             if (child.isNumber())
                 propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
@@ -4069,7 +4076,7 @@ class StoreBuilder extends BaseBuilder {
     importStoreDefault(generator) {
         generator.appendImport(`{
         makeAutoObservable, makeObservable, action, 
-        observable, comparer, computed, autorun, runInAction}`,
+        observable, comparer, computed, autorun, runInAction,toJS}`,
             'mobx')
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`Cookie`, '../../cookie');
@@ -7481,7 +7488,7 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
-                } else if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
+                } else if (node.isTimeDatePickerView()) {
                     /**
                      * const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
                      */
@@ -7509,12 +7516,11 @@ class ProjectFileHandler extends PathBase {
         for (const node of nodes) {
 
             if (node.isTimeDatePickerView() && node.hasLabel()) {
-                const label = Util.camel('label', 'of', node.getName());
+                const label = node.getFieldNameOfLabel();
                 node.getParentNode().appendChildrenWithJsons(
                     {
                         name: label,
                         type: 'string',
-                        editIgnore: true,
                         l10n: true,
                         defaultValue: node.getLabel(),
                     }
@@ -7523,6 +7529,38 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isDateTimeRangePickerView()) {
+
+                if (node.hasLabel()) {
+                    const labels = node.getLabel();
+                    if (!_.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
+
+                    const start = node.getFieldNameOfLabel('start');
+                    const end = node.getFieldNameOfLabel('end');
+
+                    node.getParentNode().appendChildrenWithJsons(
+                        {
+                            name: start,
+                            type: 'string',
+                            l10n: true,
+                            defaultValue: labels.shift(),
+                        }
+                    )
+
+                    node.getParentNode().appendChildrenWithJsons(
+                        {
+                            name: end,
+                            type: 'string',
+                            l10n: true,
+                            defaultValue: labels.pop(),
+                        }
+                    )
+                    node.appendViewProps({
+                        localeText: `###{start:${node.getPreciseAttributeParentName()}.${Util.camel('get', start)}(), 
+                    end:${node.getPreciseAttributeParentName()}.${Util.camel('get', end)}()}`
+                    })
+
+
+                }
 
                 node.getParentNode().appendChildrenWithJsons(
                     {

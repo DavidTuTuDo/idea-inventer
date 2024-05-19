@@ -15,7 +15,14 @@ this.{{fieldName}} = {{{defaultValue}}};
 @action
 set{{functionName}}(param) {
 if(param !== undefined) {
-this.{{fieldName}} = param;
+{{#isTimePickerView}}
+    {{{這裡就是放if暨isTimePickerView的邏輯}}}
+    this.{{fieldName}} = this.normalizeAsMoment(param);
+{{/isTimePickerView}}
+{{^isTimePickerView}}
+    {{{這裡就是放else暨不等於isTimePickerView的邏輯}}}
+    this.{{fieldName}} = param;
+{{/isTimePickerView}}
 } else {
 this.{{fieldName}} = {{{defaultValue}}};
 }
