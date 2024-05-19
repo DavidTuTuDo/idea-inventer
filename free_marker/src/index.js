@@ -784,6 +784,14 @@ class CodegenNode {
         return Util.camel('page', 'title', 'of', normalize(this.getPreciseAttributeGenealogyName()));
     }
 
+    getFieldNameOfStart() {
+        return Util.camel('start', 'of', node.getFieldName());
+    }
+
+    getFieldNameOfEnd() {
+        return Util.camel('end', 'of', node.getFieldName());
+    }
+
     isPathArray() {
         return this.isArray() && this.hasPath();
     }
@@ -885,6 +893,7 @@ class CodegenNode {
             node.isAutoCompleteView(type),
             node.isTabListView(type),
             node.isTimeDatePickerView(type),
+            node.isDateTimeRangePickerView(type),
         );
     }
 
@@ -1870,7 +1879,11 @@ class CodegenNode {
      * */
     isTimeDatePickerView(type = 'default', node = this) {
         return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type) ||
-            node.isAttributeView('DateTimePicker', type) || node.isAttributeView('DateTimePickerTimeRangePicker', type) ||
+            node.isAttributeView('DateTimePicker', type);
+    }
+
+    isDateTimeRangePickerView(type = 'default', node = this) {
+        return node.isAttributeView('DateTimePickerTimeRangePicker', type) ||
             node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
     }
 
@@ -2592,7 +2605,9 @@ class CodegenNode {
         }
 
         if (this.type === 'timestamp') {
-            return this.isTimeDatePickerView() ? `moment()` : `this.getObjectOfCurrentTimeStamp()`;
+            if (this.isDateTimeRangePickerView()) return `[moment(),moment()]`
+            else if (this.isTimeDatePickerView()) return `moment()`
+            else return `this.getObjectOfCurrentTimeStamp()`;
         }
 
         if (this.isArray()) {
@@ -3750,7 +3765,7 @@ class StoreBuilder extends BaseBuilder {
             if (!child.isArrayOfField())
                 propsStmt.push(...propStmt);
 
-            if (child.isTimeDatePickerView()) {
+            if (child.isTimeDatePickerView() || child.isDateTimeRangePickerView()) {
                 generator.appendImport('moment', `moment`)
             }
 
@@ -7072,10 +7087,14 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.isTimeDatePickerView()) {
+            if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
                 node.setWrapView('LocalizationProvider');
                 node.appendImportStmt({part: '{AdapterMoment}', from: '@mui/x-date-pickers/AdapterMoment'});
                 node.appendWrapProps({dateAdapter: '###AdapterMoment'});
+            }
+
+            if (node.isDateTimeRangePickerView()) {
+                node.getParentNode()
             }
 
             if (node.isSimpleSwitch()) {
@@ -7462,7 +7481,7 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
-                } else if (node.isTimeDatePickerView()) {
+                } else if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
                     /**
                      * const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
                      */
@@ -7470,6 +7489,12 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`const moment = event`);
                     stmts.push(`objectOfParam.value = moment`)
                     paramStmt = `moment`;
+                } else if (node.isDateTimeRangePickerView()) {
+                    stmts.length = 0;
+                    stmts.push(`const moments = event`);
+                    stmts.push(`objectOfParam.value = moments`);
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(moments))`);
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(moments))`);
                 } else {
                     /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
                 }
@@ -7495,6 +7520,26 @@ class ProjectFileHandler extends PathBase {
                     }
                 )
                 node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
+            }
+
+            if (node.isDateTimeRangePickerView()) {
+
+                node.getParentNode().appendChildrenWithJsons(
+                    {
+                        name: node.getFieldNameOfStart(),
+                        type: 'timestamp',
+                        column: node.isColumnAttribute()
+                    }
+                )
+                node.getParentNode().appendChildrenWithJsons(
+                    {
+                        name: node.getFieldNameOfEnd(),
+                        type: 'timestamp',
+                        column: node.isColumnAttribute()
+                    }
+                )
+
+                node.column = false;
             }
 
 
@@ -7620,7 +7665,7 @@ class ProjectFileHandler extends PathBase {
             }
 
 
-            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView()) {
+            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
@@ -7628,7 +7673,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isTabItemView()) {
                 node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
-            } else if (node.isTimeDatePickerView()) {
+            } else if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
                 /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
