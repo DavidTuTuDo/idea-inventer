@@ -21,7 +21,11 @@ class BaseStore extends ClientRemoteApi {
     component;
 
     refreshLocally() {
+    }
 
+    /** 因為range pick view的設計有增添兩個column start-end，在inject到store之前把 view需要用到的value還原成[moement,moment]*/
+    decorate(result) {
+        return result;
     }
 
     @observable

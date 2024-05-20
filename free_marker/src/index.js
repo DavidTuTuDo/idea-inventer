@@ -3900,7 +3900,6 @@ class StoreBuilder extends BaseBuilder {
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
         const propsStmt = [];
-
         if (node.hasAttributeChildren()) {
             const propStmt = await (this.buildFieldAttribute(baseGenerator, node));
             propsStmt.push(...propStmt);
@@ -3945,7 +3944,7 @@ class StoreBuilder extends BaseBuilder {
                 `this.getParentNode().set${_.upperFirst(node.getFieldName())}(...Util.getArrayOfMoveSpecificItemToAside(items, this, toTail))}`,
             )
         }
-
+        const stmtsOfRangeNormalize = [];
         for (const child of node.getPreciseAttributeChildren()) {
             if (child.isPathArray()) {
                 const fieldName = Util.camel('conditions', 'of', child.getName());
@@ -3961,6 +3960,10 @@ class StoreBuilder extends BaseBuilder {
                     `return this.${fieldName}`)
             }
 
+            if (child.isDateTimeRangePickerView()) {
+                stmtsOfRangeNormalize.push(`result.${child.getFieldName()} = [this.normalizeAsMoment(result.${child.getFieldNameOfStart()}),this.normalizeAsMoment(result.${child.getFieldNameOfEnd()})];`)
+            }
+
             if (child.hasConfirmDialog()) {
                 _.each([child.getFieldNameOfDialogTitle(),
                     child.getFieldNameOfDialogContent()], (fieldName) => {
@@ -3974,6 +3977,11 @@ class StoreBuilder extends BaseBuilder {
                     appendI18nFieldSetterGetter(baseGenerator, fieldName);
                 })
             }
+        }
+
+        if (_.size(stmtsOfRangeNormalize) > 0) {
+            baseGenerator.appendFunction('decorate', ['result'], [], [],
+                ...stmtsOfRangeNormalize, 'return result')
         }
 
         const types = [
@@ -4086,12 +4094,15 @@ class StoreBuilder extends BaseBuilder {
         generator.appendImport(`{Application}`, '../../');
     }
 
+
     getDecorateFetchStrings(isObject = false, ...contents) {
         let normalize = contents;
         if (isObject) {
             normalize = [
                 `const result = `, ...normalize,
-                `this.fromJson(result)`
+                `this.decorate(result)`,
+                `this.fromJson(result)`,
+
             ]
         }
         normalize = [
@@ -8773,7 +8784,7 @@ class ScheduleManager {
                 Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);
                 break
         }
-        Util.appendInfo(`專案[${pathOfProject}] 執行[${behavior}] 耗時 ${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
+        Util.appendInfo(`${Util.getCurrentTimeFormatYMDHMS()} 專案[${pathOfProject}] 執行[${behavior}] 耗時 ${Util.getSecondFormatOfDuration(Util.getCurrentTimeStamp() - timeOfStart)} 秒`);
     }
 
 }
