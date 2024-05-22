@@ -6671,40 +6671,35 @@ class ProjectFileHandler extends PathBase {
     }
 
     async persistModuleComponentFiles() {
+        const self = this;
+
+        function persist(module = 'epay',folder = 'store', predict = (file) => Util.appendInfo(file.fileName)){
+            for (const file of Util.findFilePathBy(libpath.join(self.genSourcePath, folder),
+                (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
+                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
+                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, predict(file));
+
+                if(!Util.isFileEditSucceed(file.path)) {
+                    continue;
+                }
+                Util.copySingleFileConservative(pathOfDestination, file);
+            }
+        }
+
         if (!fs.existsSync(this.genSourcePath)) {
-            Util.appendInfo(`${this.genSourcePath} is note created, ignore`);
+            Util.appendInfo(`468456146 ${this.genSourcePath} is note created, ignore`);
             return
         }
 
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
-            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'component'),
-                (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
-                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/component/${file.dirName}`,
-                    file.fileNameExtension);
-                Util.copySingleFileConservative(pathOfDestination, file);
-            }
 
-            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'store'),
-                (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
-                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/store/`,
-                    file.dirName, file.fileNameExtension);
-                Util.copySingleFileConservative(pathOfDestination, file);
-            }
-
+            persist(module,'component',(file) => `${module}/web/src/component/${file.dirName}`);
+            persist(module,'store',(file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
             const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) {
                 continue;
             }
-
-            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'func'),
-                (each) => Util.has(_.map(componentOfModule.getCloudFunctions(), (each) => each.getName()), each.dirName) &&
-                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/functions/src/func/`,
-                    file.dirName, file.fileNameExtension);
-                Util.copySingleFileConservative(pathOfDestination, file);
-            }
+            persist(module,'store',(file) => `${module}/functions/src/func/${file.dirName}/${file.fileNameExtension}`);
 
             /** persist less file */
             const instance = new AppBuilder(this.getAppBuildParam());
@@ -6798,20 +6793,14 @@ class ProjectFileHandler extends PathBase {
          * 所以把libs都一起hard save
          */
 
+
         for (const file of files) {
 
-            if(_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.path)) {
-                return;
-            }
+            if(_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.path))
+                continue;
 
-            if(_.startsWith(file.fileName, KEYWORD_OF_MODULARIZED) && !Util.isFileEditSucceed(file.path)) {
-                return;
-            }
-
-            if (Util.isEmptyFile(file.path)) {
-                Util.appendInfo(`489489484 path ${file.path} is empty file, file would not persist`);
-                return;
-            }
+            if (Util.isEmptyFile(file.path))
+                continue;
 
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
