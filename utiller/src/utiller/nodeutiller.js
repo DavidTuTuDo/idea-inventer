@@ -911,8 +911,8 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const utiller = new NodeUtiller();
-            console.log(utiller.isFileEditSucceed('./test.source.json'));
+            // const utiller = new NodeUtiller();
+            // console.log(utiller.isFileEditSucceed('/Users/davidtu/cross-achieve/high/idea-inventer/gen/dading/web/src/component/establish/index.js'));
             // console.log(await utiller.getObjectFromPromptQ({name:'order',require:true,description:'what u what'}));
             // console.log(utiller.getVersionOfJsFile(`./source.js`));
             // for(const index of _.range(1,100)){

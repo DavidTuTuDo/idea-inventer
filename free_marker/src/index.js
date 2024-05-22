@@ -6799,12 +6799,17 @@ class ProjectFileHandler extends PathBase {
          */
 
         for (const file of files) {
-            if(_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.absolute)) {
+
+            if(_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.path)) {
+                return;
+            }
+
+            if(_.startsWith(file.fileName, KEYWORD_OF_MODULARIZED) && !Util.isFileEditSucceed(file.path)) {
                 return;
             }
 
             if (Util.isEmptyFile(file.path)) {
-                Util.appendInfo(`path ${file.path} is empty file, file would not persist`);
+                Util.appendInfo(`489489484 path ${file.path} is empty file, file would not persist`);
                 return;
             }
 
