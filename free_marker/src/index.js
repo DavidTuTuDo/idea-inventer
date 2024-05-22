@@ -29,10 +29,11 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
-// let CURRENT_PROJECT = './pr1oject-yueh-voice';
+// let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
-let CURRENT_PROJECT = './project-davidtu-dev';
+// let CURRENT_PROJECT = './project-davidtu-dev';
+let CURRENT_PROJECT = './project-dading';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -112,6 +113,9 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    /** firebase上專屬的id好，這才能deploy 到雲端專案的uid*/
+    idOfProject = ''
 
     /** 用來作為swipe autoloop的欄位*/
     autoplay = {
@@ -771,6 +775,15 @@ class CodegenNode {
         return root.getName();
     }
 
+    getIdOfProject() {
+        const root = this.getRootNode();
+        return root.getIdOfProject();
+    }
+
+    getIdOfProject() {
+        return this.idOfProject ?? '';
+    }
+
     setDefaultValue(value) {
         this.defaultValue = value;
     }
@@ -936,6 +949,13 @@ class CodegenNode {
             return this.select.defaultValue;
         }
         return '';
+    }
+
+    getSelectedValueOfType() {
+        if (this.select && this.select.typeOfValue) {
+            return this.select.typeOfValue;
+        }
+        return `string`;
     }
 
     isRestfulBean() {
@@ -1305,7 +1325,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -3661,7 +3681,7 @@ class BaseBuilder extends PathBase {
 
         if (self.isWebPlatform()) {
             const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValue(params, node, mustache);
-            return ['view', ...paramsOfLatest];
+            return ['view = this.getComponent()', ...paramsOfLatest];
         }
         return params;
     }
@@ -6932,11 +6952,13 @@ class ProjectFileHandler extends PathBase {
 
     /** 每次deploy 都要記得切換成對應的project */
     async executeCommandToFirebaseRemote(command) {
-        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase use ${this.nodeOfAncestor.getProjectName()} && ${command}`);
+        await Util.executeCommandLine(`cd ${this.nodeOfAncestor.getDirectoryName()} && firebase use ${this.nodeOfAncestor.getIdOfProject()} && ${command}`);
     }
 
-    async buildProdWebDistToProjectThanDeploy(deploy = true) {
-        await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
+    async buildProdWebDistToProjectThanDeploy(deploy = true, npmBuild = true) {
+        if (npmBuild)
+            await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
+
         const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
         const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
         await this.buildDistAssetFolder();
@@ -7065,6 +7087,7 @@ class ProjectFileHandler extends PathBase {
                         name: 'id',
                         type: 'string',
                         column: true,
+                        incest: node.incest,
                         defaultValue: node.isCheapArray() ? 'contents' : '',
                         description: node.isCheapArray() ? '注意!這裡的id是指cheap array的document id' : '我是unique id,不能被更改',
                         readOnly: true,
@@ -7125,11 +7148,13 @@ class ProjectFileHandler extends PathBase {
                         view: 'Switch',
                         name: 'toggle',
                         type: 'boolean',
+                        incest: node.incest,
                     },
                     {
                         nameOfProp: {
                             name: 'label'
                         },
+                        incest: node.incest,
                         view: 'Typography',
                         defaultValue: node.labelOfSwitch,
                         name: 'label',
@@ -7156,6 +7181,7 @@ class ProjectFileHandler extends PathBase {
                         column: true,
                         name: 'route',
                         type: 'string',
+                        incest: node.incest,
                         description: '點擊後的導頁'
                     },
                     {
@@ -7163,12 +7189,14 @@ class ProjectFileHandler extends PathBase {
                         name: 'xs',
                         type: 'number',
                         defaultValue: 1,
+                        incest: node.incest,
                         description: '按鈕的比重'
                     },
                     {
                         column: true,
                         name: 'indexOfSequence',
                         type: 'number',
+                        incest: node.incest,
                         description: '用來調整順序orderBy'
                     },
                     {
@@ -7176,6 +7204,7 @@ class ProjectFileHandler extends PathBase {
                         name: 'title',
                         type: 'string',
                         view: 'Typography',
+                        incest: node.incest,
                         description: '用來顯示標題'
                     },
                     {
@@ -7183,6 +7212,7 @@ class ProjectFileHandler extends PathBase {
                         name: 'subTitle',
                         type: 'string',
                         view: 'Typography',
+                        incest: node.incest,
                         description: '用來顯示標題'
                     }
                 )
@@ -7267,6 +7297,7 @@ class ProjectFileHandler extends PathBase {
                         column: true,
                         name: 'route',
                         type: 'string',
+                        incest: node.incest,
                         description: '點擊圖片後的導頁',
                     },
                     {
@@ -7277,6 +7308,7 @@ class ProjectFileHandler extends PathBase {
                         description: '顯示的頁面',
                         wrapView: 'div',
                         click: true,
+                        incest: node.incest,
                         type: 'string',
                     }
                 );
@@ -7298,6 +7330,7 @@ class ProjectFileHandler extends PathBase {
                         column: true,
                         name: 'route',
                         type: 'string',
+                        incest: node.incest,
                         description: '點擊圖片後的導頁',
                     },
                     {
@@ -7305,6 +7338,7 @@ class ProjectFileHandler extends PathBase {
                         name: 'image',
                         view: 'img',
                         needWatermark: true,
+                        incest: node.incest,
                         description: '顯示的頁面',
                         wrapView: 'div',
                         type: 'string',
@@ -7335,7 +7369,8 @@ class ProjectFileHandler extends PathBase {
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
                     type: 'string', /** succeed, fail */
-                    defaultValue: node.getSelectedDefaultValue()
+                    defaultValue: node.getSelectedDefaultValue(),
+                    incest: node.incest,
                 })
 
                 node.setDefaultValue(node.getDefaultValueOfSimpleSelected())
@@ -7346,6 +7381,16 @@ class ProjectFileHandler extends PathBase {
                         node.setListView('TextField');
                         node.setView('MenuItem');
                         node.appendListProps({select: true})
+
+                        if (node.hasLabel()) {
+                            node.getParentNode().appendChildrenWithJsons({
+                                name: node.getFieldNameOfLabel(),
+                                type: 'string', /** succeed, fail */
+                                defaultValue: node.getLabel(),
+                                incest: node.incest,
+                            })
+                        }
+                        node.appendListProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get',node.getFieldNameOfLabel())}()`})
                         break;
                     case 'button':
                         node.setListView('ButtonGroup');
@@ -7361,6 +7406,7 @@ class ProjectFileHandler extends PathBase {
                         objectOfAppend.value.view = 'Radio';
                         objectOfAppend.value.nameOfProp = {};
                         objectOfAppend.value.nameOfProp.name = 'control';
+                        objectOfAppend.incest = node.incest;
                         break;
                 }
 
@@ -7373,6 +7419,7 @@ class ProjectFileHandler extends PathBase {
                     type: 'string',
                     description: `因為tab的value是number,不方便作為邏輯一目瞭然的判斷,增加type的選項`,
                 }
+                objectOfAppend.incest = node.incest;
                 objectOfAppend.value.type = 'number';
                 objectOfAppend.value.defaultValue = node.getValueOfTabDefault();
                 node.click = true;
@@ -7419,6 +7466,7 @@ class ProjectFileHandler extends PathBase {
                     name: fieldNameOfItems,
                     type: 'arrayOfField',
                     l10n: true,
+                    incest: node.incest,
                     defaultValue: JSON.parse(`[${stringsOfItem.join(',')}]`),
                 })
 
@@ -7533,6 +7581,7 @@ class ProjectFileHandler extends PathBase {
                         name: label,
                         type: 'string',
                         l10n: true,
+                        incest: node.incest,
                         defaultValue: node.getLabel(),
                     }
                 )
@@ -7552,6 +7601,7 @@ class ProjectFileHandler extends PathBase {
                         {
                             name: start,
                             type: 'string',
+                            incest: node.incest,
                             l10n: true,
                             defaultValue: labels.shift(),
                         }
@@ -7562,6 +7612,7 @@ class ProjectFileHandler extends PathBase {
                             name: end,
                             type: 'string',
                             l10n: true,
+                            incest: node.incest,
                             defaultValue: labels.pop(),
                         }
                     )
@@ -7577,6 +7628,7 @@ class ProjectFileHandler extends PathBase {
                     {
                         name: node.getFieldNameOfStart(),
                         type: 'timestamp',
+                        incest: node.incest,
                         column: node.isColumnAttribute()
                     }
                 )
@@ -7584,6 +7636,7 @@ class ProjectFileHandler extends PathBase {
                     {
                         name: node.getFieldNameOfEnd(),
                         type: 'timestamp',
+                        incest: node.incest,
                         column: node.isColumnAttribute()
                     }
                 )
@@ -7602,6 +7655,7 @@ class ProjectFileHandler extends PathBase {
                         type: 'string',
                         editIgnore: true,
                         l10n: true,
+                        incest: node.incest,
                         defaultValue: node.getDescription(),
                     }
                 )
@@ -7612,6 +7666,7 @@ class ProjectFileHandler extends PathBase {
                         type: 'boolean',
                         editIgnore: true,
                         defaultValue: false,
+                        incest: node.incest,
                     }
                 )
 
@@ -7682,12 +7737,14 @@ class ProjectFileHandler extends PathBase {
                     column: true,
                     description: '我是server處理完的結果, 回傳succeed/fail',
                     type: 'string', /** succeed, fail */
+                    incest: node.incest,
 
                 }, {
                     name: 'message',
                     column: true,
                     description: '我是server處理完的結果, 如果fail,reason就寫在這裡',
                     type: 'string', /** fail reason */
+                    incest: node.incest,
                 })
 
             }
@@ -7734,6 +7791,7 @@ class ProjectFileHandler extends PathBase {
                     name: `${Util.camel(node.name, 'origin')}`,
                     type: `string`,
                     column: true,
+                    incest: node.incest,
                 })
             }
 
@@ -7752,7 +7810,8 @@ class ProjectFileHandler extends PathBase {
                     type: 'string',
                     name: 'testUsage',
                     click: true,
-                    defaultValue: '測試按鈕'
+                    defaultValue: '測試按鈕',
+                    incest: node.incest,
                 })
             }
 
@@ -7769,12 +7828,14 @@ class ProjectFileHandler extends PathBase {
                             type: 'string',
                             name: 'value',
                             column: true,
-                            description: '本質內容'
+                            description: '本質內容',
+                            incest: node.incest,
                         }, {
                             type: 'string',
                             name: 'label',
                             column: true,
-                            description: '顯示在屏幕上'
+                            description: '顯示在屏幕上',
+                            incest: node.incest,
                         },
                         {
                             type: 'number',
@@ -7787,18 +7848,21 @@ class ProjectFileHandler extends PathBase {
                             type: 'number',
                             column: true,
                             defaultValue: 1,
+                            incest: node.incest,
                             description: 'order時候,會desc,讓最熱門的項目留在最上方'
                         },
                         {
                             type: 'string',
                             name: 'uid',
                             column: true,
+                            incest: node.incest,
                             description: '用來放document id,由type 判斷路由'
                         },
                         {
                             type: 'string',
                             name: 'extra',
                             column: true,
+                            incest: node.incest,
                             description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
                         }
                     ]
@@ -7807,12 +7871,14 @@ class ProjectFileHandler extends PathBase {
                 node.appendChildrenWithJsons({
                     name: Util.camel(`selected`, node.getName()),
                     type: 'objectOfEmpty',
+                    incest: node.incest,
                     description: `用來放置collapse suggestion被選中的那個物件`
                 })
 
                 node.appendChildrenWithJsons({
                     name: Util.camel(`key`, 'of', node.getName()),
                     type: 'boolean',
+                    incest: node.incest,
                     description: `用來force ${node.getName()} re-render`
                 })
 
@@ -8133,6 +8199,7 @@ class ProjectFileHandler extends PathBase {
                         parent.appendChildrenWithJsons({
                             name: node.getName(),
                             view: 'TextField',
+                            incest: node.incest,
                             column: true,
                             shadow: true,
                             description: `${node.getName()} 的實體位置`,
@@ -8567,6 +8634,15 @@ class BuildApplication {
         );
     }
 
+    async deployWebProdWithoutBuild() {
+        const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
+        await web.buildProdWebDistToProjectThanDeploy(true, false);
+        Util.appendInfo(
+            `web deploy succeed`
+        );
+    }
+
+
     async buildCloudFunctions(deploy = true) {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         functions.setFunctionNeedDeploy(deploy);
@@ -8679,7 +8755,7 @@ class ScheduleManager {
         for (const project of this.projectsOfPath) {
             await this.handler(this.behavior, project);
         }
-        return `4888446 projects=>'${this.projectsOfPath}'  execute succeed`;
+        return `4888446 projects=>[${this.projectsOfPath}] execute '${this.behavior}' succeed`;
     }
 
     async handler(behavior, pathOfProject) {
@@ -8710,6 +8786,9 @@ class ScheduleManager {
                 break;
             case 'deployWebToProduction':
                 await builder.deployWebProd();
+                break;
+            case 'deployWebToProductionWithoutBuild':
+                await builder.deployWebProdWithoutBuild();
                 break;
             case 'buildWebToProduction':
                 await builder.deployWebProd(false, true);

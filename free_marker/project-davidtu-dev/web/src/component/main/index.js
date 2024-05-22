@@ -56,6 +56,10 @@ class MainComponent extends BaseMainComponent {
     console.log(param.value);
   }
 
+  onMainTestTestUsageButtonClicked(param) {
+    this.getStore().getTest().submitTest().then((result) => this.showInfoSnackMessage('上傳成功'));
+  }
+
   /** -------------------- async api -------------------- **/
 }
 export default MainComponent;
