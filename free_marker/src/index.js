@@ -6799,10 +6799,15 @@ class ProjectFileHandler extends PathBase {
          */
 
         for (const file of files) {
-            if (_.isEqual('', Util.getFileContextInRaw(file.path).trim())) {
-                Util.appendInfo(`path ${file.path} is empty file, file would not persist`);
-                return
+            if(_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.absolute)) {
+                return;
             }
+
+            if (Util.isEmptyFile(file.path)) {
+                Util.appendInfo(`path ${file.path} is empty file, file would not persist`);
+                return;
+            }
+
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
             const dest = libpath.join(this.projectPlatformSourcePath, from.split(`src`).pop());

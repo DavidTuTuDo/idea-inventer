@@ -681,7 +681,7 @@ class NodeUtiller extends Utiller {
     }
 
     isEmptyFile(path) {
-        return !this.isPathExist(path) || _.isEqual('', this.getFileContextInRaw(path).trim())
+        return !this.isPathExist(path) || _.isEmpty(this.getFileContextInRaw(path).trim())
     }
 
     isEmptyFolder(path) {
@@ -869,11 +869,50 @@ class NodeUtiller extends Utiller {
         this.appendInfo(`rewrite from:${from} => dest:${destination} succeed`);
     }
 
+    /** 取得file第一行statement */
+    getStringOfHeadOfFile(path) {
+        if (this.isPathExist(path)) {
+            const context = this.getFileContextInRaw(path)
+            return _.head(context.split('\n'));
+        }
+        return '';
+    }
+
+    /** 因為code gen有很多要js file要執行 persistent, 沒有修改過{const edit = true}的index persist就不要理它 */
+    isFileEditSucceed(path) {
+        if (!this.isPathExist(path)) {
+            return false;
+        }
+        const file = this.getPathInfo(path);
+        const context = this.getFileContextInRaw(path)
+
+        if (_.isEmpty(_.trim(context))) {
+            this.appendInfo(`74985465 path ${file.path} is empty file, file would not persist`);
+            return false;
+        }
+
+        try {
+            const stringOfHeadLine = _.head(context.split('\n'));
+            const first = _.tail(stringOfHeadLine.split(' ')).join(' ');
+            const second = this.getNormalizedStringNotEndWith(first, ';');
+            const splits = second.split('=').map(each => _.trim(each));
+            const result = `"${splits.shift()}" : ${splits.pop()}`;
+            const json = JSON.parse(`{${result}}`);
+            if (_.isEqual(this.getObjectValue(json), true))
+                return true;
+        } catch (error) {
+            this.appendError(`66445411 ${error.message}`)
+            return false;
+        }
+        return false;
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new NodeUtiller();
+            const utiller = new NodeUtiller();
+            console.log(utiller.isFileEditSucceed('./test.source.json'));
             // console.log(await utiller.getObjectFromPromptQ({name:'order',require:true,description:'what u what'}));
             // console.log(utiller.getVersionOfJsFile(`./source.js`));
             // for(const index of _.range(1,100)){

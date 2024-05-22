@@ -24,7 +24,7 @@
     "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller": "^1.0.195"
+    "utiller": "^1.0.200"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",

@@ -30,9 +30,10 @@ if (configerer.DEBUG_MODE) {
 
         // const bbb = new BBB();
         // console.log(bbb.properties);
+            const rrr = '';
+            console.log(_.isEmpty(rrr));
 
-
-        console.log(_.size(`fdipsjfoijsdoifdso`))
+        // console.log(_.size(`fdipsjfoijsdoifdso`))
 
 
             // const browser = new Browser(true);
