@@ -123,6 +123,9 @@ class CodegenNode {
         disableOnInteraction: false,
     };
 
+    /** 再nodeOfAncestor的用途就是 index.html 的tile */
+    title = '';
+
     /**
      * 定義在structs那一層
      * { sample:'範例',example:'超級範例' }
@@ -713,6 +716,10 @@ class CodegenNode {
 
     getStructs() {
         return this.getNodeOfComponent().getComponents().map(component => component.getStruct());
+    }
+
+    getTitle() {
+        return this.title;
     }
 
     hasDescription() {
@@ -3421,12 +3428,14 @@ class PathBase {
         return this.isAdminPlatform() || this.isFunctionsPlatform();
     }
 
-    appendMustacheFile(templateFileName, destFileName, param = {}) {
+    async appendMustacheFile(templateFileName, destFileName, param = {}) {
+        const filePath = libpath.resolve(destFileName);
         Util.appendFile(
-            libpath.resolve(destFileName),
+            filePath,
             this.getStringFromMustache(templateFileName, param),
             true,
             true);
+        await Util.prettier(filePath);
     }
 
     getAllCloudFunctions() {
@@ -3457,6 +3466,7 @@ class PathBase {
                                    fieldUrl,
                                    functionName,
                                    className,
+                                   titleOfProject,
                                    projectName,
                                    title,
                                    projectVersion,
@@ -3503,6 +3513,7 @@ class PathBase {
             stringOfArgumentInSubmitItem,
             superUserUid,
             isTimePickerView,
+            titleOfProject
         }
     }
 
@@ -5770,24 +5781,23 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildWebpackNPackageJson() {
-        this.appendMustacheFile('web.package.json', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('web.package.json.mustache', libpath.join(this.genRootPath,
             `package.json`
         ), {
             projectName: this.nodeOfAncestor.name,
             projectVersion: this.nodeOfAncestor.version,
             projectDescription: this.nodeOfAncestor.description
         });
-        this.appendMustacheFile('webpack.config.js', libpath.join(this.genRootPath,
-            `webpack.config.js`
-        ));
-        this.appendMustacheFile('babel.config.js', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('webpack.config.js.mustache', libpath.join(this.genRootPath,
+            `webpack.config.js`), {titleOfProject: this.nodeOfAncestor.getTitle()});
+        await this.appendMustacheFile('babel.config.js', libpath.join(this.genRootPath,
             `babel.config.js`
         ));
     }
 
     async buildHtmlIndexAssetsFile() {
         const path = Util.persistByPath(libpath.join(this.genRootPath, 'dist'));
-        this.appendMustacheFile(
+        await this.appendMustacheFile(
             'index.html.mustache',
             libpath.join(path, 'index.html'),
             {title: this.nodeOfAncestor.title}
@@ -6316,7 +6326,7 @@ class AppBuilder extends ComponentBuilder {
         await generator.persist();
 
         await Util.deleteFileOrFolder(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'));
-        this.appendMustacheFile('less.index.mustache', Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js')));
+        await this.appendMustacheFile('less.index.mustache', Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js')));
         Util.appendInfo(`persist ./less/index.js succeed`);
     }
 
@@ -7052,7 +7062,13 @@ class ProjectFileHandler extends PathBase {
 
     async forAdmin() {
         Util.persistByPath(this.genRootPath);
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'admin.package.json'), this.genRootPath, 'package.json', true);
+        await this.appendMustacheFile('admin.package.json.mustache', libpath.join(this.genRootPath,
+            `package.json`), {
+            projectName: this.nodeOfAncestor.name,
+            projectVersion: this.nodeOfAncestor.version,
+            projectDescription: this.nodeOfAncestor.description
+        });
+
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'babel.config.js'), this.genRootPath, 'babel.config.js', true);
 
         const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
@@ -8097,8 +8113,12 @@ class ProjectFileHandler extends PathBase {
 
     async forCloudFunctions() {
         Util.persistByPath(this.genRootPath);
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'functions.package.json'),
-            this.genRootPath, 'package.json', true);
+        await this.appendMustacheFile('functions.package.json.mustache', libpath.join(this.genRootPath,
+            `package.json`), {
+            projectName: this.nodeOfAncestor.name,
+            projectVersion: this.nodeOfAncestor.version,
+            projectDescription: this.nodeOfAncestor.description
+        });
 
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.babel.config.js'),
             this.genRootPath, 'babel.config.js', true);
