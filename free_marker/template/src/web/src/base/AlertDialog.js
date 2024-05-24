@@ -94,6 +94,7 @@ class AlertDialog extends MuiComponent {
                 {...this.injectPaperProps()}
                 scroll={'paper'}
                 fullWidth={!!self.fullWidth}
+                fullScreen={self.hasCustomView() ? true : false}
                 maxWidth={false}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
@@ -114,7 +115,12 @@ class AlertDialog extends MuiComponent {
                 PaperProps: {
                     style: {
                         backgroundColor: "transparent",
-                        boxShadow: "none"
+                        boxShadow: "none",
+                        flexDirection: 'row',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+
                     }
                 }
             }

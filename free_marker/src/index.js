@@ -74,7 +74,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/icons-material`,
-            views: ['SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded'],
+            views: ['PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded'],
         },
         {
             from: `@mui/material`,
@@ -623,6 +623,9 @@ class CodegenNode {
 
     alertDialog;
 
+    independentClick = false;
+    /** 如果是Button 產生fieldName 給 refOfReactRef() 可以 ref.current.click()/close()*/
+
     defaultAlertDialog = {
         customView: undefined,
         /** 指component的className */
@@ -634,8 +637,7 @@ class CodegenNode {
         /** 在dialog裡面的view 會拿不到history, 會造成無法導頁, 所以要把喚起dialog的 component instance 帶進去 */
         paramObject: 'some object',
         /** 帶入到customView 裡面的變數 */
-        independentClick: false,
-        /** 獨立觸發dialog的事件, 不然預設都會在click事件裡面觸發. 就是你要拿ref自己控制open() close()會用到 */
+
         textInput: {
             value: '', /** 輸入框的預設值 */
             enable: false,
@@ -1211,6 +1213,14 @@ class CodegenNode {
 
     isButton() {
         return _.isEqual(this.getView(), 'Button')
+    }
+
+    needIndependClick() {
+        return this.independentClick;
+    }
+
+    getFieldNameOfRef() {
+        return Util.camel('ref', 'of', this.getFieldName());
     }
 
     isIconButton() {
@@ -2522,8 +2532,6 @@ class CodegenNode {
          *
          * 把array 的 defaultValue {aa:'aa',b:1}=> {aa:i18n.aa,,b=1 }*/
 
-
-
         function refactorI18nMapOfArrayDefaultValue(arrayOfDefaultValue, sign) {
             for (const obj of arrayOfDefaultValue) {
                 for (const key in obj) {
@@ -3744,7 +3752,7 @@ class StoreBuilder extends BaseBuilder {
                         isCheapArray: child.isCheapArray(),
                         type: child.type,
                         defaultValue,
-                        paramString: this.getParamsOfDefaultValue(child.getParamsInPath()).join(','),
+                        paramString: this.getParamsOfDefaultValue(child.getParamsInPath(), child).join(','),
                         argumentString: child.getStringOfArgumentsOfPath(),
                         stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch', false, false, true),
                         stringOfArgumentInFetch: this.getArgumentsInFunction(child, 'fetch'),
@@ -3757,14 +3765,13 @@ class StoreBuilder extends BaseBuilder {
                         fieldClass: child.getClassName(),
                         isTimePickerView: child.isTimeDatePickerView() || child.isDateTimeRangePickerView()
                     }));
-            if (child.isNumber())
-                propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
-            else if (child.isBoolean())
+            if (child.isNumber() || child.isString()) {
+                propStmt.push(`if(obj && obj.${fieldName})`);
+            } else if (child.isBoolean())
                 propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
             else
                 propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
-
             if (child.isArray()) {
                 if (!child.hasPaginate()) {
                     /** 因為invalidate做在pushXXX裏面 所以才會出現initial 要pushXXX,在悅譜-我的最愛 有這個奇怪的設計 hack */
@@ -3785,7 +3792,12 @@ class StoreBuilder extends BaseBuilder {
                 propStmt.push(`this.set${_.upperFirst(fieldName)}(obj.${fieldName})`);
                 await this.buildBaseStore(child)
             } else {
-                propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
+                if (child.isNumber())
+                    propStmt.push(`this.${child.getFunctionNameOfSetter()}(Util.getNumberOfNormalize(obj.${fieldName}))`);
+                else if (child.isString())
+                    propStmt.push(`this.${child.getFunctionNameOfSetter()}(Util.getStringOfNormalize(obj.${fieldName}))`);
+                else
+                    propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
 
             propStmt.push(`}`);
@@ -4286,25 +4298,19 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `return await self.uploadStorageFile(blob, folder);`,
                         ], `upload storage file`, true, true)
                 }
-
-                if (child.isNumber()) {
-                    contents.push(`const _${child.getFieldName()} = _.isNumber(object.${child.getFieldName()}) ? 
-                                    object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
+                if (child.isString()) {
+                    contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
+                } else if (child.isNumber()) {
+                    contents.push(`const _${child.getFieldName()} = Util.getNumberOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
-                } else if (child.isObject()) {
-                    if (self.isWebPlatform())
-                        contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                } else if (child.isObject() && self.isWebPlatform()) {
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 this.getColumnData(object.${child.getFieldName()}) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}.columnData();${getCommentDescription(child)}`);
-                    else
-                        appendGeneralStmts(contents, child);
-                } else if (child.isArray()) {
-                    if (self.isWebPlatform())
-                        contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                } else if (child.isArray() && self.isWebPlatform()) {
+                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
-                    else
-                        appendGeneralStmts(contents, child);
                 } else {
                     appendGeneralStmts(contents, child);
                 }
@@ -4955,6 +4961,7 @@ class ComponentBuilder extends BaseBuilder {
                 props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
 
+
             let viewJsxStmt = [];
 
             if (node.isReferenceStructNode()) {
@@ -5175,6 +5182,9 @@ class ComponentBuilder extends BaseBuilder {
                 }
                 return ''
             }
+
+            if (child.isButton() && child.needIndependClick())
+                generator.appendField(child.getFieldNameOfRef(), 'React.createRef()')
 
             if (child.isViewDefinedInProps()) {
                 /** label = <Typography /> */
@@ -6673,13 +6683,13 @@ class ProjectFileHandler extends PathBase {
     async persistModuleComponentFiles() {
         const self = this;
 
-        function persist(module = 'epay',folder = 'store', predict = (file) => Util.appendInfo(file.fileName)){
+        function persist(module = 'epay', folder = 'store', predict = (file) => Util.appendInfo(file.fileName)) {
             for (const file of Util.findFilePathBy(libpath.join(self.genSourcePath, folder),
                 (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
                 const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, predict(file));
 
-                if(!Util.isFileEditSucceed(file.path)) {
+                if (!Util.isFileEditSucceed(file.path)) {
                     continue;
                 }
                 Util.copySingleFileConservative(pathOfDestination, file);
@@ -6693,13 +6703,13 @@ class ProjectFileHandler extends PathBase {
 
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
 
-            persist(module,'component',(file) => `${module}/web/src/component/${file.dirName}`);
-            persist(module,'store',(file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
+            persist(module, 'component', (file) => `${module}/web/src/component/${file.dirName}`);
+            persist(module, 'store', (file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
             const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) {
                 continue;
             }
-            persist(module,'store',(file) => `${module}/functions/src/func/${file.dirName}/${file.fileNameExtension}`);
+            persist(module, 'store', (file) => `${module}/functions/src/func/${file.dirName}/${file.fileNameExtension}`);
 
             /** persist less file */
             const instance = new AppBuilder(this.getAppBuildParam());
@@ -6796,7 +6806,7 @@ class ProjectFileHandler extends PathBase {
 
         for (const file of files) {
 
-            if(_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.path))
+            if (_.isEqual(file.fileNameExtension, `index.js`) && !Util.isFileEditSucceed(file.path))
                 continue;
 
             if (Util.isEmptyFile(file.path))
@@ -7218,7 +7228,8 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.hasLabelView()) {
-                node.setWrapView('div');
+                if (Util.isUndefinedNullEmpty(node.wrapView))
+                    node.setWrapView('div');
 
                 if (node.hasLabelViewIcon()) {
                     node.appendChildrenWithJsons({
@@ -7389,7 +7400,7 @@ class ProjectFileHandler extends PathBase {
                                 incest: node.incest,
                             })
                         }
-                        node.appendListProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get',node.getFieldNameOfLabel())}()`})
+                        node.appendListProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getFieldNameOfLabel())}()`})
                         break;
                     case 'button':
                         node.setListView('ButtonGroup');
@@ -7728,6 +7739,8 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isButton() || node.isIconButton()) {
                 node.setClick(true);
+                if (node.needIndependClick())
+                    node.appendViewProps({ref: `###self.${node.getFieldNameOfRef()}`})
             }
 
             if (node.isRestfulBean()) {
@@ -7971,7 +7984,7 @@ class ProjectFileHandler extends PathBase {
                 } else if (node.isTabItemView()) {
                     onClickStmts.push(`self.getStore().setValueOfSelectedTab(${node.getName()}.getValue())`)
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
-                } else if (node.hasCustomViewDialog() && !node.getAlertDialog().independentClick) {
+                } else if (node.hasCustomViewDialog()) {
                     onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
                 } else if (node.hasAlertMenu()) {
                     onClickStmts.push(`event.stopPropagation()`)
@@ -8754,7 +8767,7 @@ class ScheduleManager {
         for (const project of this.projectsOfPath) {
             await this.handler(this.behavior, project);
         }
-        return `4888446 projects=>[${this.projectsOfPath}] execute '${this.behavior}' succeed`;
+        return `4888446 projects=>[${this.projectsOfPath}]- execute '${this.behavior}' [${ENABLE_FAST_DEVELOP_MODE ? 'RAPID' : 'FULL'}] build succeed`;
     }
 
     async handler(behavior, pathOfProject) {

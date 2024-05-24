@@ -38,6 +38,30 @@ class Utiller {
         }
     }
 
+    getNumberOfNormalize(value, defaultValue) {
+        if (_.isNumber(value))
+            return value;
+        try {
+            const force = _.toNumber(value)
+            return _.isNumber(force) && !isNaN(force) ? force : defaultValue;
+        } catch (error) {
+            Util.appendError(`448561684561 ${error.message}`)
+        }
+        return defaultValue;
+    }
+
+    getStringOfNormalize(value, defaultValue) {
+        if (_.isString(value))
+            return value
+        try {
+            const force = _.toString(value);
+            return this.isOrEquals(force, '', 'undefined') ? defaultValue : force;
+        } catch (error) {
+            Util.appendError(`448616845454 ${error.message}`)
+        }
+        return defaultValue;
+    }
+
     isValidVersionOfString(versionName) {
         if (this.isUndefinedNullEmpty(versionName)) {
             return false;
@@ -779,15 +803,15 @@ class Utiller {
      * console.log(utiller.getSliceArrayOfSpecificIndexes(['a','v','c','d'], 1, 2, 3));
      * [ 'v', 'c', 'd' ]
      * */
-    getSliceArrayOfSpecificIndexes(array,...indexes) {
+    getSliceArrayOfSpecificIndexes(array, ...indexes) {
         const items = [];
         const size = _.size(array);
-        for(const index of indexes) {
-            if(!_.isNumber(index))
+        for (const index of indexes) {
+            if (!_.isNumber(index))
                 throw new ERROR(9999, `59941278 index should be number => ${index}, ${array}`);
-            if(index > size-1)
+            if (index > size - 1)
                 throw new ERROR(9999, `5994123 index=>${index} is not valid, exceed than array size=${size}, ${array}`);
-            items.push(_.nth(array,index));
+            items.push(_.nth(array, index));
         }
         return items;
     }
@@ -1639,7 +1663,7 @@ class Utiller {
         /** checkValue = Crypto.createHash('sha256').update(checkValue).digest('hex');
          * 之前用crypto做出來的，後來crypto-browsify多年沒有更新，所以都要用CryptoJS處理 2024/03/12
          * */
-        return _.toUpper(CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex)) ;
+        return _.toUpper(CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex));
     }
 
     /**
@@ -1782,6 +1806,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getStringOfNormalize(undefined, 'love'));
             // console.log(CryptoJS.SHA256('hashkey%3d5294y06jbispm5x9%26david%3d918%26hashiv%3dv77hokgq4kwxnnis').toString(CryptoJS.enc.Hex))
             // console.log(utiller.getSliceArrayOfSpecificIndexes(['a','v','c','d'], 4,2));
             // const aaa = {};

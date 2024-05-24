@@ -1,0 +1,437 @@
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import _ from "lodash";
+import libpath from "path";
+
+class AppStyle {
+  /** -------------------- fields -------------------- **/
+
+  /** following for homeless */
+
+  /** => following for infoOfCopyRightContent editor component  */
+
+  InfoOfCopyRightContentEditorProjectImageTextField = {};
+
+  InfoOfCopyRightContentEditorProjectIdTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
+
+  InfoOfCopyRightContentEditorProjectImageCardWrap = {};
+
+  InfoOfCopyRightContentEditorProjectImageImg = {};
+
+  InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
+
+  InfoOfCopyRightContentEditorProjectRouteTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDivList = {};
+
+  InfoOfCopyRightContentEditorProjectDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDiv = {};
+
+  InfoOfCopyRightContentEditorUpperAreaDiv = {};
+
+  InfoOfCopyRightContentEditorPaper = {};
+
+  /** => following for navigator  component  */
+
+  NavigatorDrawerShortcutIconImg = {};
+
+  NavigatorDrawerShortcutTitleTypography = {};
+
+  NavigatorDrawerShortcutListItemSkeleton = {};
+
+  NavigatorDrawerShortcutListList = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerDrawer = {};
+
+  NavigatorToolBarTipOfLoadingCircularProgress = {};
+
+  NavigatorToolBarAccountHeadAccountCircle = {};
+
+  NavigatorToolBarAccountReactFragmentWrap = {};
+
+  NavigatorToolBarAccountIconButton = {};
+
+  NavigatorToolBarLoginButton = {};
+
+  NavigatorToolBarCompleteInputFormWrap = {};
+
+  NavigatorToolBarCompleteInputTextField = {};
+
+  NavigatorToolBarCompleteAutocomplete = {};
+
+  NavigatorToolBarTitleTypography = {};
+
+  NavigatorToolBarMenuIconMenuRounded = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarAppBarWrap = {};
+
+  NavigatorToolBarToolbar = {};
+
+  NavigatorDiv = {};
+
+  /** => following for infoOfCopyRightContent  component  */
+
+  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+
+  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
+
+  InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
+
+  InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
+
+  InfoOfCopyRightContentProjectDescriptionDivList = {};
+
+  InfoOfCopyRightContentProjectDescriptionDiv = {};
+
+  InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
+
+  InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
+
+  InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
+
+  InfoOfCopyRightContentProjectUpperAreaDiv = {};
+
+  InfoOfCopyRightContentProjectImageCardWrap = {};
+
+  InfoOfCopyRightContentProjectImageImg = {};
+
+  InfoOfCopyRightContentProjectDivSkeleton = {};
+
+  InfoOfCopyRightContentProjectDivList = {};
+
+  InfoOfCopyRightContentProjectDiv = {};
+
+  InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
+
+  InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
+
+  InfoOfCopyRightContentUpperAreaDiv = {};
+
+  InfoOfCopyRightContentPaper = {};
+
+  /** => following for infoOfCopyRightContact  component  */
+
+  InfoOfCopyRightContactLowerAreaDetailsTypography = {};
+
+  InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
+
+  InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
+
+  InfoOfCopyRightContactLowerAreaDiv = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
+
+  InfoOfCopyRightContactUpperAreaContactDivWrap = {};
+
+  InfoOfCopyRightContactUpperAreaContactTypography = {};
+
+  InfoOfCopyRightContactUpperAreaDiv = {};
+
+  InfoOfCopyRightContactCard = {};
+
+  /** => following for infoOfCopyRight  component  */
+
+  InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
+
+  InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
+
+  InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
+
+  InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
+
+  InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
+
+  InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
+
+  InfoOfCopyRightGroupOfSocialMediaDiv = {};
+
+  InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
+
+  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
+
+  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaDiv = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaDiv = {};
+
+  InfoOfCopyRightUpperGroupDiv = {};
+
+  InfoOfCopyRightDiv = {};
+
+  /** => following for account  component  */
+
+  AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+
+  AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+
+  AccountFuncAreaOfEditToEditModeButton = {};
+
+  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
+  AccountFuncAreaOfEditLogoutButton = {};
+
+  AccountFuncAreaOfEditCopyUserIdButton = {};
+
+  AccountFuncAreaOfEditLangMenuItem = {};
+
+  AccountFuncAreaOfEditLangTextFieldList = {};
+
+  AccountFuncAreaOfEditDiv = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+
+  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+
+  AccountFuncAreaOfIdDiv = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+  AccountFuncAreaOfEmailDiv = {};
+
+  AccountSpaceDiv = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+  AccountFuncAreaOfNameDiv = {};
+
+  AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountPaper = {};
+
+  /** => following for establish  component  */
+
+  EstablishAreaOfRemoteClearReactFragmentWrap = {};
+
+  EstablishAreaOfRemoteClearButton = {};
+
+  EstablishAreaOfRemoteCancelButton = {};
+
+  EstablishAreaOfRemoteUpdateButton = {};
+
+  EstablishAreaOfRemoteSubmitButton = {};
+
+  EstablishAreaOfRemoteDiv = {};
+
+  EstablishCommentTextField = {};
+
+  EstablishSalesmanMenuItem = {};
+
+  EstablishSalesmanTextFieldList = {};
+
+  EstablishAreaOfCreditCodeOfCreditAuthTextField = {};
+
+  EstablishAreaOfCreditSerialOfCreditTextField = {};
+
+  EstablishAreaOfCreditDiv = {};
+
+  EstablishAreaOfFeePriceOfAgentTextField = {};
+
+  EstablishAreaOfFeePriceOfCreditTextField = {};
+
+  EstablishAreaOfFeePriceOfCashTextField = {};
+
+  EstablishAreaOfFeeDiv = {};
+
+  EstablishAreaOfPaymentIsPaidMenuItem = {};
+
+  EstablishAreaOfPaymentIsPaidTextFieldList = {};
+
+  EstablishAreaOfPaymentPriceOfTotalTextField = {};
+
+  EstablishAreaOfPaymentDiv = {};
+
+  EstablishAreaOfDepositIsDepositPaidMenuItem = {};
+
+  EstablishAreaOfDepositIsDepositPaidTextFieldList = {};
+
+  EstablishAreaOfDepositPriceOfDepositTextField = {};
+
+  EstablishAreaOfDepositDiv = {};
+
+  EstablishAreaOfTourAgentMenuItem = {};
+
+  EstablishAreaOfTourAgentTextFieldList = {};
+
+  EstablishAreaOfTourCountOfPeopleTextField = {};
+
+  EstablishAreaOfTourDestinationTextField = {};
+
+  EstablishAreaOfTourDiv = {};
+
+  EstablishAreaOfDateTravelLocalizationProviderWrap = {};
+
+  EstablishAreaOfDateTravelDateRangePicker = {};
+
+  EstablishAreaOfDateDiv = {};
+
+  EstablishAreaOfContactMethodOfPaymentMenuItem = {};
+
+  EstablishAreaOfContactMethodOfPaymentTextFieldList = {};
+
+  EstablishAreaOfContactPhoneTextField = {};
+
+  EstablishAreaOfContactHostTextField = {};
+
+  EstablishAreaOfContactDiv = {};
+
+  EstablishIdLabelOfIdTypography = {};
+
+  EstablishIdBtnOfIdIconCopyAll = {};
+
+  EstablishIdBtnOfIdIconButton = {};
+
+  EstablishIdDivWrap = {};
+
+  EstablishIdTypography = {};
+
+  EstablishPaper = {};
+
+  /** => following for main  component  */
+
+  MainOrderAreaOfContactPhoneLabelOfPhoneTypography = {};
+
+  MainOrderAreaOfContactPhoneBtnOfPhoneIconPhoneRounded = {};
+
+  MainOrderAreaOfContactPhoneBtnOfPhoneIconButton = {};
+
+  MainOrderAreaOfContactPhoneDivWrap = {};
+
+  MainOrderAreaOfContactPhoneTypography = {};
+
+  MainOrderAreaOfContactHostLabelOfHostTypography = {};
+
+  MainOrderAreaOfContactHostDivWrap = {};
+
+  MainOrderAreaOfContactHostTypography = {};
+
+  MainOrderAreaOfContactDiv = {};
+
+  MainOrderAreaOfHeadExtraIconMoreHoriz = {};
+
+  MainOrderAreaOfHeadExtraReactFragmentWrap = {};
+
+  MainOrderAreaOfHeadExtraIconButton = {};
+
+  MainOrderAreaOfHeadIdLabelOfIdTypography = {};
+
+  MainOrderAreaOfHeadIdBtnOfIdIconCopyAll = {};
+
+  MainOrderAreaOfHeadIdBtnOfIdIconButton = {};
+
+  MainOrderAreaOfHeadIdDivWrap = {};
+
+  MainOrderAreaOfHeadIdTypography = {};
+
+  MainOrderAreaOfHeadDiv = {};
+
+  MainOrderCardSkeleton = {};
+
+  MainOrderDivList = {};
+
+  MainOrderCard = {};
+
+  MainAreaOfFuncHistoryOfOrderButton = {};
+
+  MainAreaOfFuncSearchOfOrderButton = {};
+
+  MainAreaOfFuncCreateOfOrderReactFragmentWrap = {};
+
+  MainAreaOfFuncCreateOfOrderButton = {};
+
+  MainAreaOfFuncDiv = {};
+
+  MainDiv = {};
+
+  /** -------------------- functions -------------------- **/
+
+  constructor(props) {}
+
+  /** -------------------- async api -------------------- **/
+}
+
+export default new AppStyle();
