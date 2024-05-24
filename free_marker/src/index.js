@@ -5726,6 +5726,16 @@ class AppBuilder extends ComponentBuilder {
 
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.i18n.index.js'),
             libpath.join(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
+
+        /** 把專案裡的i18n/index複製到當前gen/i18n/index, 不然rapid build會有bug*/
+        for (const sourceFile of Util.findFilePathBy(this.projectPlatformPath,
+            (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && _.isEqual('index', each.fileName))) {
+            let ignoreThisRun = false;
+            const from = sourceFile.path;
+            const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, this.projectPlatformPath));
+            Util.copySingleFile(from, dest, '', true);
+        }
+
     }
 
     async buildCookieFiles() {
@@ -6631,7 +6641,6 @@ class ProjectFileHandler extends PathBase {
                         targetWriteIntoModuleI18n.i18n = Util.mergeObject(filterOfBase.i18n, filterOfModule.i18n);
                     /** Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n); */
                     /** write into module i18n */
-                    console.log(targetWriteIntoModuleI18n);
                     Util.appendFile(destination, getStringOfModularizedStatement(targetWriteIntoModuleI18n), false, false);
                     Util.appendInfo(`檔案寫入至 ${destination}`);
                 }
