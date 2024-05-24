@@ -6597,7 +6597,7 @@ class ProjectFileHandler extends PathBase {
             const stmts = [];
             stmts.push(...['\n', object.comment]);
             _.each(object.i18n, (value, key) => {
-                stmts.push(`${key} = "${value}";`)
+                stmts.push(`${key} = "${value.split('\n').join(`\/n`)}";`)
             })
             return stmts.join('\n');
         }
@@ -6631,6 +6631,7 @@ class ProjectFileHandler extends PathBase {
                         targetWriteIntoModuleI18n.i18n = Util.mergeObject(filterOfBase.i18n, filterOfModule.i18n);
                     /** Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n); */
                     /** write into module i18n */
+                    console.log(targetWriteIntoModuleI18n);
                     Util.appendFile(destination, getStringOfModularizedStatement(targetWriteIntoModuleI18n), false, false);
                     Util.appendInfo(`檔案寫入至 ${destination}`);
                 }
