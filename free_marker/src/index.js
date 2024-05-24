@@ -6699,10 +6699,9 @@ class ProjectFileHandler extends PathBase {
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
                 const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, predict(file));
 
-                if (!Util.isFileEditSucceed(file.path)) {
-                    continue;
+                if (Util.isFileEditSucceed(file.absolute)) {
+                    Util.copySingleFileConservative(pathOfDestination, file);
                 }
-                Util.copySingleFileConservative(pathOfDestination, file);
             }
         }
 
@@ -6713,8 +6712,9 @@ class ProjectFileHandler extends PathBase {
 
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
 
-            persist(module, 'component', (file) => `${module}/web/src/component/${file.fileNameExtension}`);
+            persist(module, 'component', (file) => `${module}/web/src/component/${file.dirName}/${file.fileNameExtension}`);
             persist(module, 'store', (file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
+
             const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) {
                 continue;
