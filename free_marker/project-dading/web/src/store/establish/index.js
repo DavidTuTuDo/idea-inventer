@@ -27,6 +27,7 @@ class EstablishStore extends BaseEstablishStore {
     constructor(props) {
         super(props);
         this.apiOfOrder = new OrderStore();
+        this.setBalanceDisabled(true);
     }
 
     async submitOrder() {
