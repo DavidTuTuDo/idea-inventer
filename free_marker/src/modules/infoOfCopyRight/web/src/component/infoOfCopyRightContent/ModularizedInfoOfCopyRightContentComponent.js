@@ -31,6 +31,10 @@ class ModularizedInfoOfCopyRightContentComponent extends BaseInfoOfCopyRightCont
         this.gotoExternalUrl(route);
     }
 
+    onInfoOfCopyRightContentCancelButtonClicked(param) {
+        this.dismiss();
+    }
+
 
     /** -------------------- async api -------------------- **/
 }

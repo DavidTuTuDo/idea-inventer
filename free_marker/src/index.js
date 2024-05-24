@@ -6713,7 +6713,7 @@ class ProjectFileHandler extends PathBase {
 
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
 
-            persist(module, 'component', (file) => `${module}/web/src/component/${file.dirName}`);
+            persist(module, 'component', (file) => `${module}/web/src/component/${file.fileNameExtension}`);
             persist(module, 'store', (file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
             const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
             if (Util.isUndefinedNullEmpty(componentOfModule)) {

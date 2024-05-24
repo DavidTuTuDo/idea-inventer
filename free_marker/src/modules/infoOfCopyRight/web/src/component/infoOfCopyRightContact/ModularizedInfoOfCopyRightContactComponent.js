@@ -1,3 +1,4 @@
+const edit = true;
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
@@ -37,6 +38,10 @@ class ModularizedInfoOfCopyRightContactComponent extends BaseInfoOfCopyRightCont
 
   onInfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButtonClicked(param) {
     this.invokeLineApp(this.getStore().getLine(), `明悅您好，請問你軟體開發的問題`);
+  }
+
+  onInfoOfCopyRightContactCancelButtonClicked(param) {
+    this.dismiss();
   }
 
   /** -------------------- async api -------------------- **/
