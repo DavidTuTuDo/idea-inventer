@@ -7479,16 +7479,7 @@ class ProjectFileHandler extends PathBase {
                         node.setListView('TextField');
                         node.setView('MenuItem');
                         node.appendListProps({select: true})
-
-                        if (node.hasLabel()) {
-                            node.getParentNode().appendChildrenWithJsons({
-                                name: node.getFieldNameOfLabel(),
-                                type: 'string', /** succeed, fail */
-                                defaultValue: node.getLabel(),
-                                incest: node.incest,
-                            })
-                        }
-                        node.appendListProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getFieldNameOfLabel())}()`})
+                        this.enrichTextFieldBehavior(node, 'list');
                         break;
                     case 'button':
                         node.setListView('ButtonGroup');
@@ -7575,6 +7566,102 @@ class ProjectFileHandler extends PathBase {
             }
 
             this.enrichNodeWithCustomViewDefined(node.getChildren());
+        }
+    }
+
+    /* typeOfView 可以是 default | list | wrap */
+    enrichTextFieldBehavior(node, typeOfView = 'default') {
+
+        function getContentOfClick(node, content) {
+            node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
+            const functionNameOfVisualIconClick = node.getFunctionNameOfClicked('VisualIcon');
+            node.appendMethods({
+                functionName: functionNameOfVisualIconClick,
+                params: ['param'],
+            })
+            return `<IconButton
+                            onClick={(event) => { self.${functionNameOfVisualIconClick}(objectOfParam);}}
+                            edge="${node.getPositionOfHelperVisual()}" >${content}</IconButton>`
+        }
+
+        const arrayOfProps = [];
+
+        if (node.hasLabel()) {
+            const label = node.getFieldNameOfLabel();
+            node.getParentNode().appendChildrenWithJsons({
+                name: label,
+                type: 'string', /** succeed, fail */
+                defaultValue: node.getLabel(),
+                incest: node.incest,
+            })
+
+            /** 因為editor後 會把Typography 改成 TextField, 但是 store沒有gen出 getLabelOf${name} 的實作 */
+            arrayOfProps.push({
+                label: node.isPreciselyEditableComponent() ? node.getDescription() :
+                    `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`
+            })
+        }
+
+        if (node.hasHelperText()) {
+            const fieldNameOfHelperText = node.getFieldNameOfHelperText();
+            node.getParentNode().appendChildrenWithJsons(
+                {
+                    name: fieldNameOfHelperText,
+                    type: 'string',
+                    editIgnore: true,
+                    l10n: true,
+                    incest: node.incest,
+                    defaultValue: node.getHelperText()
+                }
+            )
+
+            arrayOfProps.push({
+                helperText: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', fieldNameOfHelperText)}()`
+            })
+        }
+
+        if (node.hasHelperVisual()) {
+            let content = '';
+            node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
+
+            if (node.useIconAsHelpVisual()) {
+                node.appendImportStmt({
+                    part: node.getNameOfHelperVisualIcon(),
+                    from: `@mui/icons-material/${node.getNameOfHelperVisualIcon()}`
+                })
+                content = `<${node.getNameOfHelperVisualIcon()} />`;
+            } else if (node.useTextAsHelperVisual()) {
+                content = node.getTextOfHelperVisual();
+            } else {
+                throw new ERROR(9999, '87454646 useHelperVisual() should choose icon/text');
+            }
+
+            const view = `<InputAdornment position="${node.getPositionOfHelperVisual()}">${node.hasClickHelperVisual() ? getContentOfClick(node, content) : content}</InputAdornment>`;
+            const prop = `{${node.isPositionLocateAtStart() ? 'startAdornment' : 'endAdornment'}:(${view})}`;
+
+            arrayOfProps.push({InputProps: `###${prop}`})
+        }
+
+        const nameOfDisabled = Util.camel(node.getName(), 'disabled');
+        node.getParentNode().appendChildrenWithJsons(
+            {
+                name: nameOfDisabled,
+                type: 'boolean',
+                editIgnore: true,
+                defaultValue: false,
+                incest: node.incest,
+            }
+        )
+        if (!node.isPreciselyEditableComponent())
+            arrayOfProps.push({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDisabled)}()`})
+
+        switch (typeOfView) {
+            case 'default':
+                node.appendViewProps(...arrayOfProps);
+                break;
+            case 'list':
+                node.appendListProps(...arrayOfProps);
+                break;
         }
     }
 
@@ -7735,86 +7822,10 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTextFieldView()) {
                 if (node.hasDescription()) {
-                    const nameOfDescription = node.getFieldNameOfLabel();
-                    node.getParentNode().appendChildrenWithJsons(
-                        {
-                            name: nameOfDescription,
-                            type: 'string',
-                            editIgnore: true,
-                            l10n: true,
-                            incest: node.incest,
-                            defaultValue: node.getDescription(),
-                        }
-                    )
-
-                    /** 因為editor後 會把Typography 改成 TextField, 但是 store沒有gen出 getLabelOf${name} 的實作 */
-                    node.appendViewProps(
-                        {
-                            label: node.isPreciselyEditableComponent() ? node.getDescription() :
-                                `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDescription)}()`
-                        }
-                    )
+                    node.label = node.description;
                 }
 
-                if (node.hasHelperText()) {
-                    const fieldNameOfHelperText = node.getFieldNameOfHelperText();
-                    node.getParentNode().appendChildrenWithJsons(
-                        {
-                            name: fieldNameOfHelperText,
-                            type: 'string',
-                            editIgnore: true,
-                            l10n: true,
-                            incest: node.incest,
-                            defaultValue: node.getHelperText()
-                        }
-                    )
-                    node.appendViewProps(
-                        {
-                            helperText: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', fieldNameOfHelperText)}()`
-                        }
-                    )
-                }
-
-                if (node.hasHelperVisual()) {
-                    let content = '';
-                    node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
-
-                    if (node.useIconAsHelpVisual()) {
-                        node.appendImportStmt({part: node.getNameOfHelperVisualIcon(), from: `@mui/icons-material/${node.getNameOfHelperVisualIcon()}`})
-                        content = `<${node.getNameOfHelperVisualIcon()} />`;
-                    } else if (node.useTextAsHelperVisual()) {
-                        content = node.getTextOfHelperVisual();
-                    } else {
-                        throw new ERROR(9999, '87454646 useHelperVisual() should choose icon/text');
-                    }
-
-                    function getContentOfClick(content) {
-                        node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
-                        const functionNameOfVisualIconClick = node.getFunctionNameOfClicked('VisualIcon');
-                        node.appendMethods({
-                            functionName: functionNameOfVisualIconClick,
-                            params: ['param'],
-                        })
-                        return `<IconButton
-                            onClick={(event) => { self.${functionNameOfVisualIconClick}(objectOfParam);}}
-                            edge="${node.getPositionOfHelperVisual()}" >${content}</IconButton>`
-                    }
-
-                    const view = `<InputAdornment position="${node.getPositionOfHelperVisual()}">${node.hasClickHelperVisual()? getContentOfClick(content) : content}</InputAdornment>`;
-                    const prop = `{${node.isPositionLocateAtStart() ? 'startAdornment' : 'endAdornment'}:(${view})}`;
-                    node.appendViewProps({InputProps: `###${prop}`});
-                }
-
-                const nameOfDisabled = Util.camel(node.getName(), 'disabled');
-                node.getParentNode().appendChildrenWithJsons(
-                    {
-                        name: nameOfDisabled,
-                        type: 'boolean',
-                        editIgnore: true,
-                        defaultValue: false,
-                        incest: node.incest,
-                    }
-                )
+                this.enrichTextFieldBehavior(node, 'default');
 
                 if (node.isNumber()) {
                     node.appendViewProps({type: 'number'});
@@ -7850,8 +7861,6 @@ class ProjectFileHandler extends PathBase {
                     /** node.appendViewProps({type: 'search'}) */
                 }
 
-                if (!node.isPreciselyEditableComponent())
-                    node.appendViewProps({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', node.getName(), 'disabled')}()`})
             }
 
             /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
