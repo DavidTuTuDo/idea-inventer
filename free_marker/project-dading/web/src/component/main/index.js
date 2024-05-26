@@ -48,7 +48,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
-        this.getStore().toggleIsSearchOfGeneralVisible();
+        this.getStore().toggleIsFilterOfSearchOrderVisible();
     }
 
     onMainOrderExtraIconButtonContractClicked(param) {
@@ -75,7 +75,14 @@ class MainComponent extends BaseMainComponent {
     onMainOrderBtnOfPhoneIconButtonClicked(param) {
         const order = param.object;
         this.invokePhoneBehavior(order.getPhone());
+    }
 
+    onMainFilterOfSearchOrderCancelButtonClicked(param) {
+        this.getStore().toggleIsFilterOfSearchOrderVisible();
+    }
+
+    onMainFilterOfSearchOrderSubmitButtonClicked(param) {
+        this.showInfoSnackMessage(`施工中，請稍待`);
     }
 
     /** -------------------- async api -------------------- **/

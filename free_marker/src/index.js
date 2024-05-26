@@ -31,9 +31,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-// let CURRENT_PROJECT = './project-dading';
+let CURRENT_PROJECT = './project-dading';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -1407,6 +1407,7 @@ class CodegenNode {
 
     getDescription() {
         const self = this;
+
         function getDescriptionStringByName(name) {
             switch (_.toLower(name)) {
                 case 'value':
@@ -2140,6 +2141,17 @@ class CodegenNode {
             }
         }
         return children;
+    }
+
+    getPreciseAttributeNode() {
+        if (!this.isAttribute() || this.isIncestAttribute())
+            return this.getPreciseAttributeParent()
+        else
+            return this;
+    }
+
+    getPreciseAttributeName() {
+        return this.getPreciseAttributeNode().getName();
     }
 
     getPreciseAttributeParentName() {
@@ -7258,9 +7270,6 @@ class ProjectFileHandler extends PathBase {
                 node.appendWrapProps({dateAdapter: '###AdapterMoment'});
             }
 
-            if (node.isDateTimeRangePickerView()) {
-                node.getParentNode()
-            }
 
             if (node.isSimpleSwitch()) {
                 node.setView('FormControlLabel');
@@ -7747,7 +7756,7 @@ class ProjectFileHandler extends PathBase {
                     paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
                     stmts.push(`objectOfParam.object = value`)
-                    stmts.push(`${node.getName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
+                    stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
                 } else if (node.isTimeDatePickerView()) {
@@ -7799,26 +7808,25 @@ class ProjectFileHandler extends PathBase {
 
                     const start = node.getFieldNameOfLabel('start');
                     const end = node.getFieldNameOfLabel('end');
+                    console.log(`1515131313135131 有吧有進來拔 ${node.getName()},${node.getParentNode().getName()},${node.getLabel()}`)
 
                     node.getParentNode().appendChildrenWithJsons(
                         {
                             name: start,
                             type: 'string',
-                            incest: node.incest,
                             l10n: true,
-                            defaultValue: labels.shift(),
-                        }
-                    )
-
-                    node.getParentNode().appendChildrenWithJsons(
+                            incest: node.incest,
+                            defaultValue: _.head(labels)
+                        },
                         {
                             name: end,
                             type: 'string',
                             l10n: true,
                             incest: node.incest,
-                            defaultValue: labels.pop(),
+                            defaultValue: _.last(labels)
                         }
                     )
+
                     node.appendViewProps({
                         localeText: `###{start:${node.getPreciseAttributeParentName()}.${Util.camel('get', start)}(), 
                     end:${node.getPreciseAttributeParentName()}.${Util.camel('get', end)}()}`
@@ -7833,9 +7841,7 @@ class ProjectFileHandler extends PathBase {
                         type: 'timestamp',
                         incest: node.incest,
                         column: node.isColumnAttribute()
-                    }
-                )
-                node.getParentNode().appendChildrenWithJsons(
+                    },
                     {
                         name: node.getFieldNameOfEnd(),
                         type: 'timestamp',
@@ -8012,19 +8018,18 @@ class ProjectFileHandler extends PathBase {
                     name,
                     type: `array`,
                     plural,
+                    incest: node.incest,
                     children: [
                         {
                             type: 'string',
                             name: 'value',
                             column: true,
                             description: '本質內容',
-                            incest: node.incest,
                         }, {
                             type: 'string',
                             name: 'label',
                             column: true,
                             description: '顯示在屏幕上',
-                            incest: node.incest,
                         },
                         {
                             type: 'number',
@@ -8037,21 +8042,18 @@ class ProjectFileHandler extends PathBase {
                             type: 'number',
                             column: true,
                             defaultValue: 1,
-                            incest: node.incest,
                             description: 'order時候,會desc,讓最熱門的項目留在最上方'
                         },
                         {
                             type: 'string',
                             name: 'uid',
                             column: true,
-                            incest: node.incest,
                             description: '用來放document id,由type 判斷路由'
                         },
                         {
                             type: 'string',
                             name: 'extra',
                             column: true,
-                            incest: node.incest,
                             description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
                         }
                     ]
@@ -8062,28 +8064,27 @@ class ProjectFileHandler extends PathBase {
                     type: 'objectOfEmpty',
                     incest: node.incest,
                     description: `用來放置collapse suggestion被選中的那個物件`
-                })
-
-                node.appendChildrenWithJsons({
+                }, {
                     name: Util.camel(`key`, 'of', node.getName()),
                     type: 'boolean',
                     incest: node.incest,
                     description: `用來force ${node.getName()} re-render`
                 })
 
-                node.appendViewProps({
-                    options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
-                })
-
-                node.appendViewProps({
-                    filterOptions: `###(options, state) => options`
-                })
-
-                node.appendViewProps({
-                    isOptionEqualToValue: `###(option, value) => true`
-                })
-
-                node.appendViewProps({key: `###${node.getName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`})
+                node.appendViewProps(
+                    {
+                        options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
+                    },
+                    {
+                        filterOptions: `###(options, state) => options`
+                    },
+                    {
+                        isOptionEqualToValue: `###(option, value) => true`
+                    },
+                    {
+                        key: `###${node.getPreciseAttributeName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`
+                    }
+                )
             }
 
             appendPropsOfNode(node, node.needOnChangeBehavior,
