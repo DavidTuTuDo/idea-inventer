@@ -51,6 +51,8 @@ class AppStyle {
 
   InfoOfCopyRightContentEditorUpperAreaDiv = {};
 
+  InfoOfCopyRightContentEditorDivWrap = {};
+
   InfoOfCopyRightContentEditorPaper = {};
 
   /** => following for navigator  component  */
@@ -133,9 +135,15 @@ class AppStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
+  InfoOfCopyRightContentCancelButton = {};
+
+  InfoOfCopyRightContentDivWrap = {};
+
   InfoOfCopyRightContentPaper = {};
 
   /** => following for infoOfCopyRightContact  component  */
+
+  InfoOfCopyRightContactCancelButton = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -186,6 +194,8 @@ class AppStyle {
   InfoOfCopyRightContactUpperAreaContactTypography = {};
 
   InfoOfCopyRightContactUpperAreaDiv = {};
+
+  InfoOfCopyRightContactDivWrap = {};
 
   InfoOfCopyRightContactCard = {};
 
@@ -299,9 +309,13 @@ class AppStyle {
 
   EstablishCommentTextField = {};
 
-  EstablishSalesmanMenuItem = {};
+  EstablishAreaOfBalanceBalanceTextField = {};
 
-  EstablishSalesmanTextFieldList = {};
+  EstablishAreaOfBalanceSalesmanMenuItem = {};
+
+  EstablishAreaOfBalanceSalesmanTextFieldList = {};
+
+  EstablishAreaOfBalanceDiv = {};
 
   EstablishAreaOfCreditCodeOfCreditAuthTextField = {};
 
@@ -372,6 +386,16 @@ class AppStyle {
   EstablishPaper = {};
 
   /** => following for main  component  */
+
+  MainSearchOfGeneralRangeLocalizationProviderWrap = {};
+
+  MainSearchOfGeneralRangeDateRangePicker = {};
+
+  MainSearchOfGeneralIdOfOrderTextField = {};
+
+  MainSearchOfGeneralSwipeableDrawerWrap = {};
+
+  MainSearchOfGeneralDiv = {};
 
   MainOrderAreaOfContactPhoneLabelOfPhoneTypography = {};
 

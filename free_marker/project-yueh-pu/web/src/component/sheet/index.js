@@ -61,7 +61,7 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     onSheetGuitarpuDivClicked(param) {
-        this.getStore().toggleIsAdjustVisible();
+        ctoggleIsAdjustVisible();
     }
 
     onSheetAdjustCenterSharpenButtonClicked(param) {

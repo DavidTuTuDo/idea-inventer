@@ -197,6 +197,9 @@ class CodegenNode {
         items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginO`nly:false} */
     }
 
+    icon = ''
+    /** 在iconButton 和 Button都有作用 */
+
     nodeOfOrigin = undefined
     /** 如果用到ref 要拿到原始節點 */
 
@@ -299,6 +302,11 @@ class CodegenNode {
 
     schedule
     /** firebase-function 的規則 'every 2 minute' */
+
+    anchor
+    /** 1.用於swipeableDrawer 的開啟位置 [top,bottom,left,right]
+     *  2.用於Button加上icon的位置[start,end]
+     * */
 
     cloudFunctions
     /** 用來定義serverless的functions
@@ -653,12 +661,10 @@ class CodegenNode {
         fullWidth: false,
         /** 讓dialog可以橫幅滿版，不然web最多到600px,mobile最多到350px **/
     };
-
     /** 放admin的json file*/
 
-    /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
     customizes = [];
-
+    /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
 
     /**
      * 設計那種children不能被observeble包住的狀況，他就必須待在array裏面(ex Swiper )
@@ -690,6 +696,14 @@ class CodegenNode {
         position: 'end', /** end;start*/
         text: '', /** 顯示的字樣*/
         click: false,
+    }
+
+    hasIcon() {
+        return !_.isEmpty(this.icon);
+    }
+
+    getIcon() {
+        return this.icon ?? '';
     }
 
     getHelperVisual() {
@@ -1426,7 +1440,15 @@ class CodegenNode {
 
     /** 如果是dialog, 或是 pop-up 類型的view, 應該需要一個hook去開關 */
     needVisibleHook() {
-        return Util.isOrEquals(this.view, 'SwipeableDrawer')
+        return Util.isOrEquals(this.wrapView, 'SwipeableDrawer')
+    }
+
+    getAnchorOfDrawer() {
+        return this.anchor ?? 'bottom'; //[top,bottom,left,right]
+    }
+
+    getAnchorOfButton() {
+        return this.anchor ?? 'start'; //[start,end]
     }
 
     appendListContents(...contents) {
@@ -7569,6 +7591,10 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
+    appendMuiIconImport(node, icon) {
+        node.appendImportStmt({part: icon, from: `@mui/icons-material/${icon}`})
+    }
+
     /* typeOfView 可以是 default | list | wrap */
     enrichTextFieldBehavior(node, typeOfView = 'default') {
 
@@ -7625,10 +7651,7 @@ class ProjectFileHandler extends PathBase {
             node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
 
             if (node.useIconAsHelpVisual()) {
-                node.appendImportStmt({
-                    part: node.getNameOfHelperVisualIcon(),
-                    from: `@mui/icons-material/${node.getNameOfHelperVisualIcon()}`
-                })
+                this.appendMuiIconImport(node, node.getNameOfHelperVisualIcon());
                 content = `<${node.getNameOfHelperVisualIcon()} />`;
             } else if (node.useTextAsHelperVisual()) {
                 content = node.getTextOfHelperVisual();
@@ -7878,6 +7901,25 @@ class ProjectFileHandler extends PathBase {
                 node.setClick(true);
                 if (node.needIndependClick())
                     node.appendViewProps({ref: `###self.${node.getFieldNameOfRef()}`})
+
+                if (node.hasIcon()) {
+                    this.appendMuiIconImport(node, node.getIcon());
+                    switch (node.getView()) {
+                        case 'Button':
+                            const obj = {};
+                            obj[`${Util.camel(node.getAnchorOfButton(), 'icon')}`] = `###<${_.upperFirst(node.getIcon())} />`
+                            node.appendViewProps(obj);
+                            break;
+                        case 'IconButton':
+                            node.appendChildrenWithJsons({
+                                name: 'icon',
+                                view: node.getIcon()
+                            })
+                            break;
+                        default:
+                            break
+                    }
+                }
             }
 
             if (node.isRestfulBean()) {
@@ -7900,25 +7942,18 @@ class ProjectFileHandler extends PathBase {
 
             if (node.needVisibleHook()) {
                 const nameOfHook = Util.camel(`is`, node.getName(), 'visible');
-
                 node.getParentNode().appendChildrenWithJsons({
                     name: nameOfHook,
                     type: `boolean`,
                 })
-                node.appendViewProps(
-                    {
-                        open: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfHook)}()`,
-                    },
-                    {
-                        onClose: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(false)`
-                    }
-                    ,
-                    {
-                        onOpen: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(true)`
-                    }
+
+                node.appendWrapProps(
+                    {anchor: `${node.getAnchorOfDrawer()}`},
+                    {open: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfHook)}()`},
+                    {onClose: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(false)`},
+                    {onOpen: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(true)`}
                 )
             }
-
 
             if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})

@@ -48,9 +48,8 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
-        this.showInfoSnackMessage(`開發中，請稍待`);
+        this.getStore().toggleIsSearchOfGeneralVisible();
     }
-
 
     onMainOrderExtraIconButtonContractClicked(param) {
         return () => {
