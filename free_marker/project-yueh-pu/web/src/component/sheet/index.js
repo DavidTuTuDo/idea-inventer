@@ -1,3 +1,4 @@
+const edit = true;
 import {inject} from "mobx-react";
 import BaseSheetComponent from "./BaseSheetComponent";
 import {
@@ -61,7 +62,7 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     onSheetGuitarpuDivClicked(param) {
-        ctoggleIsAdjustVisible();
+        this.getStore().toggleIsAdjustVisible();
     }
 
     onSheetAdjustCenterSharpenButtonClicked(param) {
@@ -80,12 +81,12 @@ class SheetComponent extends BaseSheetComponent {
         this.adjustBunchOfFontSizeByClassName('SheetGuitarpuCurrentContextTypography', false);
     }
 
-    onSheetAdjustCenterHideChordToggleSwitchChange(param) {
-        this.getStore().setVisibleOfChordInContext(this.getCheckStateByEvent(param.view))
+    onSheetAdjustCenterToggleOfJoinToFavoriteSwitchChange(param) {
+        this.getStore().submitFavoritePuState(this.getCheckStateByEvent(param.view)).then();
     }
 
-    onSheetAdjustCenterJoinToFavoriteToggleSwitchChange(param) {
-        this.getStore().submitFavoritePuState(this.getCheckStateByEvent(param.view)).then();
+    onSheetAdjustCenterToggleOfHideChordSwitchChange(param) {
+        this.getStore().setVisibleOfChordInContext(this.getCheckStateByEvent(param.view))
     }
 
     onSheetAdjustCenterToMaleTonalityButtonClicked(param) {

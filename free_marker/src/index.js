@@ -31,9 +31,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-let CURRENT_PROJECT = './project-dading';
+// let CURRENT_PROJECT = './project-dading';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -834,6 +834,10 @@ class CodegenNode {
         return Util.camel('label', 'of', this.getFieldName(), sign);
     }
 
+    getFieldNameOfToggle(sign = '') {
+        return Util.camel('toggle', 'of', this.getFieldName(), sign);
+    }
+
     getFieldNameOfHelperText() {
         return Util.camel('helperText', 'of', this.getFieldName());
     }
@@ -1402,14 +1406,15 @@ class CodegenNode {
     }
 
     getDescription() {
+        const self = this;
         function getDescriptionStringByName(name) {
             switch (_.toLower(name)) {
                 case 'value':
-                    return '邏輯處理的值';
+                    return `${self.getName()}邏輯處理的值`;
                 case 'label':
-                    return '顯示的標籤';
+                    return `${self.getName()}顯示的標籤`;
                 default:
-                    return '沒有解釋';
+                    return `${self.getName()}沒有解釋`;
             }
         }
 
@@ -7265,18 +7270,18 @@ class ProjectFileHandler extends PathBase {
                             name: 'control'
                         },
                         view: 'Switch',
-                        name: 'toggle',
+                        name: node.getFieldNameOfToggle(),
                         type: 'boolean',
                         incest: node.incest,
                     },
                     {
                         nameOfProp: {
-                            name: 'label'
+                            name: 'label',
                         },
                         incest: node.incest,
                         view: 'Typography',
                         defaultValue: node.labelOfSwitch,
-                        name: 'label',
+                        name: node.getFieldNameOfLabel(),
                         l10n: true,
                         type: 'string',
                     })
