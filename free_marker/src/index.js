@@ -3840,7 +3840,6 @@ class StoreBuilder extends BaseBuilder {
                 `this.${store}.clean()`,
                 // `this.${store} = new ${_.upperFirst(store)}()`,
             )
-
         }
         baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}()`))
         baseGenerator.needIndexFile('Store');
