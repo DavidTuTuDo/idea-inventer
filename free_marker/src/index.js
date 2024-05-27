@@ -699,6 +699,13 @@ class CodegenNode {
         click: false,
     }
 
+    /** 用於註記這個TextField用來修飾AutoComplete*/
+    belongAutoComplete = false
+
+    isBelongAutoComplete() {
+        return !!this.belongAutoComplete;
+    }
+
     hasIcon() {
         return !_.isEmpty(this.icon);
     }
@@ -1763,6 +1770,10 @@ class CodegenNode {
         return Util.camel('clean', this.getName(), 'conditions')
     }
 
+    getFunctionNameOfAutoCompleteInvalidate() {
+        return Util.camel('invalidate', this.getName(), 'suggestion')
+    }
+
     getFieldNameOfAlertDialog() {
         return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref');
     }
@@ -1798,7 +1809,7 @@ class CodegenNode {
 
         if (this.isAutoCompleteView()) {
             stmts.push(`/** force update AutoCompleteView view usage */`)
-            stmts.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, `suggest`, this.getName())}s())+Util.getRandomHash()`)
+            stmts.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, this.getFieldNameOfSuggest())}s())+Util.getRandomHash()`)
         }
 
         if (this.isArray() && !this.isSimpleSelected() && !useViewModuleAndComponentModuleMechanism) {
@@ -2059,6 +2070,10 @@ class CodegenNode {
 
     getPreciseViewParent(force = false) {
         return this.getPreciseParent((node) => node.isIncestView(), (node) => node.isView(), force);
+    }
+
+    getFieldNameOfSuggest() {
+        return Util.camel(this.getName(), `suggest`);
     }
 
     getPreciseAttributeParent() {
@@ -3301,7 +3316,7 @@ class ClassGenerator {
                 (_.startsWith(Util.getFileNameFromPath(this.filePath), `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
                 (_.startsWith(Util.getFileNameFromPath(this.filePath), `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 ModularizedXXX 才建立,FAST MODE不會override files */
-                (_.startsWith(TARGET_COMPONENT_FAST_DEVELOP_MODE ,folderName) &&
+                (_.startsWith(TARGET_COMPONENT_FAST_DEVELOP_MODE, folderName) &&
                     _.isEqual(Util.getFileNameFromPath(this.filePath, true), 'index.js') &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 {TARGET_COMPONENT_FAST_DEVELOP_MODE}/index.js 才建立,FAST MODE不會override files */
                 _.isEqual(folderName, 'style'),
@@ -4104,7 +4119,22 @@ class StoreBuilder extends BaseBuilder {
             }
 
             if (child.isDateTimeRangePickerView()) {
+
                 stmtsOfRangeNormalize.push(`result.${child.getFieldName()} = [this.normalizeAsMoment(result.${child.getFieldNameOfStart()}),this.normalizeAsMoment(result.${child.getFieldNameOfEnd()})];`)
+            }
+
+            if (child.isAutoCompleteView()) {
+                baseGenerator.appendImport(`Fuse`, 'fuse.js');
+                baseGenerator.appendConstructor(`this.fuse = new Fuse(this.${Util.camel('get', child.getFieldNameOfSuggest())}s(),{shouldSort: true, includeScore: true, keys: ['label', 'value']})`);
+            }
+
+            if (child.isBelongAutoComplete()) {
+                baseGenerator.appendFunction({name: child.getFunctionNameOfAutoCompleteInvalidate(), async: true}, ['keyword'], [], [],
+                    `if (!_.isUndefined(keyword) && this.fuse) {`,
+                    `Util.executeTimeoutTask(async () => {`,
+                    `const suggests = this.fuse.search(keyword).map(each => each.item);`,
+                    `this.${child.getFunctionNameOfSetter()}(...suggests) },300,'ID_OF_ASYNC_HANDLE_${_.toUpper(child.getFieldName())}')}`
+                )
             }
 
             if (child.hasConfirmDialog()) {
@@ -7719,22 +7749,18 @@ class ProjectFileHandler extends PathBase {
                     switch (type) {
                         case 'list':
                             node.appendListProps(...props)
-                            node.appendMethods(...methods);
                             break;
                         case 'listWrap':
                             node.appendListWrapProps(...props)
-                            node.appendMethods(...methods);
                             break;
                         case 'wrap':
                             node.appendWrapProps(...props)
-                            node.appendMethods(...methods);
                             break;
                         case 'default':
                             node.appendViewProps(...props)
-                            node.appendMethods(...methods);
                             break;
                     }
-
+                    node.appendMethods(...methods);
                     for (const _node of nodesOfParent)
                         node.getParentNode().appendChildrenWithJsons(_node)
                 }
@@ -7752,6 +7778,8 @@ class ProjectFileHandler extends PathBase {
                 } else if (node.isTextFieldView()) {
                     stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
                     paramStmt = `latestValue`;
+                    if (node.isBelongAutoComplete())
+                        stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
                 } else if (node.isSliderView()) {
                     paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
@@ -8009,10 +8037,10 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isAutoCompleteView()) {
-                const name = Util.camel(`suggest`, node.getName());
+                const name = node.getFieldNameOfSuggest();
                 const plural = 's';
                 const fieldName = `${name}s`;
-                node.getParentNode().appendChildrenWithJson({
+                node.getParentNode().appendChildrenWithJsons({
                     name,
                     type: `array`,
                     plural,
@@ -8055,18 +8083,32 @@ class ProjectFileHandler extends PathBase {
                             description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
                         }
                     ]
-                })
-
-                node.appendChildrenWithJsons({
+                }, {
                     name: Util.camel(`selected`, node.getName()),
                     type: 'objectOfEmpty',
                     incest: node.incest,
-                    description: `用來放置collapse suggestion被選中的那個物件`
-                }, {
+                    description: `用來放置'${node.getName()}' collapse suggestion被選中的那個物件`
+                },
+                    {
                     name: Util.camel(`key`, 'of', node.getName()),
                     type: 'boolean',
                     incest: node.incest,
                     description: `用來force ${node.getName()} re-render`
+                })
+
+                node.appendChildrenWithJsons({
+                    name: Util.camel(`input`, 'of', node.getName()),
+                    incest: {view: false, attribute: true},
+                    view: 'TextField',
+                    type: 'string',
+                    props: {size: node.size},
+                    search: node.search,
+                    description: node.props.noOptionsText,
+                    belongAutoComplete: true,
+                    injectViewProp: {
+                        name: 'renderInput',
+                        functionalized: true,
+                    }
                 })
 
                 node.appendViewProps(
@@ -8080,13 +8122,13 @@ class ProjectFileHandler extends PathBase {
                         isOptionEqualToValue: `###(option, value) => true`
                     },
                     {
-                        key: `###${node.getPreciseAttributeName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`
+                        key: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`
                     }
                 )
             }
 
             appendPropsOfNode(node, node.needOnChangeBehavior,
-                [{onChange: `###(event,value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
+                [{onChange: `###(event, value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
                 [{
                     functionName: node.getFunctionNameOfOnChanged(),
                     params: ['param'],
@@ -8698,7 +8740,7 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
-        // await this.removeEmptyFolder();
+        await this.removeEmptyFolder();
     }
 
     async functionsGenerateRelease() {

@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -79,9 +77,9 @@ class MobileStyle {
 
   NavigatorToolBarLoginButton = {};
 
-  NavigatorToolBarCompleteInputFormWrap = {};
+  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
-  NavigatorToolBarCompleteInputTextField = {};
+  NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
   NavigatorToolBarCompleteAutocomplete = {};
 
@@ -417,7 +415,7 @@ class MobileStyle {
 
   MainFilterOfSearchOrderAreaOfSelectedDiv = {};
 
-  MainFilterOfSearchOrderAreaOfTravelDestinationInputTextField = {};
+  MainFilterOfSearchOrderAreaOfTravelDestinationInputOfDestinationTextField = {};
 
   MainFilterOfSearchOrderAreaOfTravelDestinationAutocomplete = {};
 

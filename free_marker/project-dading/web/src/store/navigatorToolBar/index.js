@@ -1,3 +1,4 @@
+const edit = true;
 import ModularizedNavigatorToolBarStore from "./ModularizedNavigatorToolBarStore";
 import {
     utiller as Util,
@@ -23,7 +24,6 @@ import {
     runInAction,
 } from "mobx";
 import BaseNavigatorToolBarStore from "./BaseNavigatorToolBarStore";
-import SuggestComplete from "../navigatorToolBarSuggestComplete";
 
 class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
     /** -------------------- fields -------------------- **/

@@ -1,3 +1,4 @@
+const edit = true;
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
@@ -182,11 +183,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     onSearchPressed(content) {
         Util.appendInfo("onSearchPressed not implemented");
 
-    }
-
-    onNavigatorToolBarCompleteInputTextFieldChange(param) {
-        const complete = param.object;
-        this.getStore().invalidateSuggestion(complete.getInput()).then();
     }
 
     onNavigatorToolBarCompleteAutocompleteChange(param) {

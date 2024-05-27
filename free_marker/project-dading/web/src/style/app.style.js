@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -79,9 +77,9 @@ class AppStyle {
 
   NavigatorToolBarLoginButton = {};
 
-  NavigatorToolBarCompleteInputFormWrap = {};
+  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
-  NavigatorToolBarCompleteInputTextField = {};
+  NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
   NavigatorToolBarCompleteAutocomplete = {};
 
@@ -417,7 +415,7 @@ class AppStyle {
 
   MainFilterOfSearchOrderAreaOfSelectedDiv = {};
 
-  MainFilterOfSearchOrderAreaOfTravelDestinationInputTextField = {};
+  MainFilterOfSearchOrderAreaOfTravelDestinationInputOfDestinationTextField = {};
 
   MainFilterOfSearchOrderAreaOfTravelDestinationAutocomplete = {};
 
