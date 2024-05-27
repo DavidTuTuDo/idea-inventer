@@ -1559,6 +1559,15 @@ class Utiller {
     }
 
     /**
+     * const array1 = [1, 2, 3, 4, 5];
+     * const array2 = [3, 4, 5, 6, 7];
+     * Output: [1, 2]
+     * */
+    getArrayOfInteraction(one, two) {
+        return one.filter(element => !two.includes(element));
+    }
+
+    /**
      *
      * 把array裏面的'指定index' 移動到 '特定index'
      *
@@ -1806,6 +1815,9 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // const array1 = [1, 2, 3, 4, 5];
+            // const array2 = [3, 4, 5, 6, 7];
+            // console.log(utiller.getArrayOfInteraction(array1, array2))
             // console.log(utiller.getStringOfNormalize(undefined, 'love'));
             // console.log(CryptoJS.SHA256('hashkey%3d5294y06jbispm5x9%26david%3d918%26hashiv%3dv77hokgq4kwxnnis').toString(CryptoJS.enc.Hex))
             // console.log(utiller.getSliceArrayOfSpecificIndexes(['a','v','c','d'], 4,2));

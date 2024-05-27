@@ -3296,21 +3296,20 @@ class ClassGenerator {
     async persist() {
         if (ENABLE_FAST_DEVELOP_MODE) {
             const folderName = Util.getFolderNameOfFilePath(this.filePath);
+            const fileNameExtension = Util.getFileNameExtensionFromPath(this.filePath);
             const ruleOfAllowFile = Util.or(
                 (_.startsWith(Util.getFileNameFromPath(this.filePath), `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
                 (_.startsWith(Util.getFileNameFromPath(this.filePath), `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 ModularizedXXX 才建立,FAST MODE不會override files */
-                (_.startsWith(folderName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
+                (_.startsWith(TARGET_COMPONENT_FAST_DEVELOP_MODE ,folderName) &&
                     _.isEqual(Util.getFileNameFromPath(this.filePath, true), 'index.js') &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 {TARGET_COMPONENT_FAST_DEVELOP_MODE}/index.js 才建立,FAST MODE不會override files */
                 _.isEqual(folderName, 'style'),
                 _.isEqual(folderName, 'less'),
                 _.isEqual(folderName, 'src'),
                 _.isEqual(folderName, 'store'),
-                _.isEqual(folderName, 'i18n'),
-                _.isEqual(folderName, 'config'),
-
-                Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT),
+                _.isEqual(folderName, 'config') && !_.isEqual(fileNameExtension, 'index.js'),
+                (Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT) && !_.isEqual(fileNameExtension, 'index.js')),
             )
 
             if (!ruleOfAllowFile) {
@@ -5765,7 +5764,9 @@ class AppBuilder extends ComponentBuilder {
             }
         }
 
-        await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true);
+        /**
+         * 清除i18n們
+         * await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true); */
         const arrayOfI18nKeyValue = [];
 
         for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
@@ -5829,14 +5830,14 @@ class AppBuilder extends ComponentBuilder {
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.i18n.index.js'),
             libpath.join(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
 
-        /** 把專案裡的i18n/index複製到當前gen/i18n/index, 不然rapid build會有bug*/
-        for (const sourceFile of Util.findFilePathBy(this.projectPlatformPath,
-            (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && _.isEqual('index', each.fileName))) {
-            let ignoreThisRun = false;
-            const from = sourceFile.path;
-            const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, this.projectPlatformPath));
-            Util.copySingleFile(from, dest, '', true);
-        }
+        /** 把專案裡的i18n/index複製到當前gen/i18n/index, 不然rapid build會有bug
+         for (const sourceFile of Util.findFilePathBy(this.projectPlatformPath,
+         (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && _.isEqual('index', each.fileName))) {
+         let ignoreThisRun = false;
+         const from = sourceFile.path;
+         const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, this.projectPlatformPath));
+         Util.copySingleFile(from, dest, '', true);
+         } */
 
     }
 
@@ -8615,16 +8616,18 @@ class ProjectFileHandler extends PathBase {
 
     async execute() {
 
-        function isCleanCurrentFile(file) {
+        function isRapidModeCleanFileAllowRule(file) {
             return Util.or(
-                (_.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) && _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
+                (_.startsWith(file.dirName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
+                    _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
                 _.isEqual(file.dirName, 'less'),
                 _.isEqual(file.dirName, 'style'),
-                _.isEqual(file.dirName, 'config'),
+                (_.isEqual(file.dirName, 'config') && !_.isEqual(file.fileName, 'index')),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileNameExtension, 'index.js')),
                 (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'BaseApp.js')),
-                (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileNameExtension, 'index.js'))
+                (_.isEqual(file.dirName, 'src') && _.isEqual(file.fileName, 'index')),
+                (Util.isOrEquals(file.dirName, ...LANGUAGES_OF_SUPPORT) && !_.isEqual(file.fileName, 'index')),
             )
         }
 
@@ -8646,7 +8649,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         await Util.cleanChildFiles(this.genRootPath, (each) => ENABLE_FAST_DEVELOP_MODE ?
-            isCleanCurrentFile(each) : true, 'node_modules');
+            isRapidModeCleanFileAllowRule(each) : true, 'node_modules');
 
 
         switch (this.platform) {
@@ -8696,7 +8699,7 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
-        await this.removeEmptyFolder();
+        // await this.removeEmptyFolder();
     }
 
     async functionsGenerateRelease() {

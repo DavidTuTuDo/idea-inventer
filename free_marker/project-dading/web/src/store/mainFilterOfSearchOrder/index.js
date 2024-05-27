@@ -19,6 +19,7 @@ import SuggestDestination from "../mainFilterOfSearchOrderSuggestDestination";
 import Destination from "../mainFilterOfSearchOrderDestination";
 import moment from "moment";
 import BaseStore from "../../base/BaseStore";
+import Fuse from 'fuse.js';
 
 class MainFilterOfSearchOrderStore extends BaseMainFilterOfSearchOrderStore {
   /** -------------------- fields -------------------- **/
@@ -27,10 +28,20 @@ class MainFilterOfSearchOrderStore extends BaseMainFilterOfSearchOrderStore {
 
   constructor(props) {
     super(props);
-    this.pushSuggestDestinations(...Config.COUNTRY_OF_TRAVEL)
+    this.setSuggestDestinations(...Config.COUNTRY_OF_TRAVEL);
+    this.fuse = new Fuse(Config.COUNTRY_OF_TRAVEL ?? [], {shouldSort: true, includeScore: true, keys: ['label', 'value']})
   }
 
-  /** -------------------- async api -------------------- **/
+  async invalidateDestinationSuggestion(keyword) {
+    if (!_.isUndefined(keyword) && this.fuse) {
+      Util.executeTimeoutTask(async () => {
+        const suggests = this.fuse.search(keyword).map(each => each.item);
+        this.setSuggestDestinations(...suggests);
+      }, 500);
+    }
+  }
+
+    /** -------------------- async api -------------------- **/
 }
 
 export default MainFilterOfSearchOrderStore;

@@ -85,6 +85,18 @@ class MainComponent extends BaseMainComponent {
         this.showInfoSnackMessage(`施工中，請稍待`);
     }
 
+    onMainFilterOfSearchOrderDestinationAutocompleteChange(param) {
+        const destination = param.object;
+        console.log(destination);
+    }
+
+    onMainFilterOfSearchOrderDestinationInputTextFieldChange(param) {
+        const destination = param.object;
+        this.getStore().getFilterOfSearchOrder().invalidateDestinationSuggestion(destination.getInput()).then();
+    }
+
+
+
     /** -------------------- async api -------------------- **/
 }
 
