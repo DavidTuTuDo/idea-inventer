@@ -27,15 +27,9 @@ class BBB extends AAA {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-
         // const bbb = new BBB();
         // console.log(bbb.properties);
-            const rrr = '';
-            console.log(_.isEmpty(rrr));
-
         // console.log(_.size(`fdipsjfoijsdoifdso`))
-
-
             // const browser = new Browser(true);
             // await browser.init();
             // browser.printf();
@@ -211,8 +205,7 @@ if (configerer.DEBUG_MODE) {
             //         "notice":{"title":"執行刪除","content":"是否確任刪除?"}
             //     }
             //     ]`
-            // )
-
+            //
 
         }
     )();

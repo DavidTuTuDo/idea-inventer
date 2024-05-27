@@ -1,6 +1,7 @@
 
 
 /** account 需要的字串 */
+pageTitleOfAccount = "";
 accountFuncAreaOfNameStateAreaOfNameLabelOfName = "顯示名稱";
 accountFuncAreaOfNameStateAreaOfNameValueOfName = "讀取中...";
 accountFuncAreaOfEmailStateAreaOfEmailLabelOfEmail = "電子郵件信箱";

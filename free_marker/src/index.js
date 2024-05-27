@@ -11,6 +11,7 @@ import {configerer} from "configerer";
 
 let ENABLE_FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
+/** 是array 也是 string */
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
@@ -240,14 +241,14 @@ class CodegenNode {
     /** Switch之類的元件 在onChange會更動store setter,如果要disable, 要設為true*/
     disableOnChangeSetter = false;
 
-    nameOfProp = {
+    injectViewProp = {
         name: '',
         functionalized: false
     }
     /** 如果child view是定義在props
      * 例如 <FormControlLabel label=<TypoGraphy item={child}/>,就要定義在這裡
      *
-     * nameOfProp = {
+     * injectViewProp = {
      *  name:'label',
      *  functionalized =>  <FormControlLabel label=(param)<TypoGraphy item={child,param}/>
      * }
@@ -284,7 +285,7 @@ class CodegenNode {
 
     rapidBuild = {
         enable: false,
-        componentName: 'WhatTheHell'
+        componentName: 'WhatTheHell' // 可以是string | array
     }
     /** 快速 debug 的build 設定,componentName就是只會build的 component */
 
@@ -817,12 +818,12 @@ class CodegenNode {
     }
 
     isViewDefinedInProps() {
-        return this.nameOfProp && !Util.isUndefinedNullEmpty(this.nameOfProp.name);
+        return this.injectViewProp && !Util.isUndefinedNullEmpty(this.injectViewProp.name);
     }
 
     /** (params) => (params) => <CustomView {...params} />*/
     isViewPropsFunctionalized() {
-        return this.isViewDefinedInProps() && _.isEqual(this.nameOfProp.functionalized, true);
+        return this.isViewDefinedInProps() && _.isEqual(this.injectViewProp.functionalized, true);
     }
 
 
@@ -5300,7 +5301,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (child.isViewDefinedInProps()) {
                 /** label = <Typography /> */
-                node.props[child.nameOfProp.name] = `###${appendParamStmt(child)}${getJsxViewStmt(child).join('\n')}`;
+                node.props[child.injectViewProp.name] = `###${appendParamStmt(child)}${getJsxViewStmt(child).join('\n')}`;
                 continue;
             }
 
@@ -7275,7 +7276,7 @@ class ProjectFileHandler extends PathBase {
                 node.setView('FormControlLabel');
                 node.appendChildrenWithJsons(
                     {
-                        nameOfProp: {
+                        injectViewProp: {
                             name: 'control'
                         },
                         view: 'Switch',
@@ -7284,7 +7285,7 @@ class ProjectFileHandler extends PathBase {
                         incest: node.incest,
                     },
                     {
-                        nameOfProp: {
+                        injectViewProp: {
                             name: 'label',
                         },
                         incest: node.incest,
@@ -7509,7 +7510,6 @@ class ProjectFileHandler extends PathBase {
 
                 node.setDefaultValue(node.getDefaultValueOfSimpleSelected())
 
-
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
                         node.setListView('TextField');
@@ -7526,18 +7526,18 @@ class ProjectFileHandler extends PathBase {
                         node.setListView('RadioGroup');
                         node.setView('FormControlLabel');
                         objectOfAppend.label.view = 'Typography';
-                        objectOfAppend.label.nameOfProp = {};
-                        objectOfAppend.label.nameOfProp.name = 'label';
+                        objectOfAppend.label.injectViewProp = {};
+                        objectOfAppend.label.injectViewProp.name = 'label';
                         objectOfAppend.value.view = 'Radio';
-                        objectOfAppend.value.nameOfProp = {};
-                        objectOfAppend.value.nameOfProp.name = 'control';
+                        objectOfAppend.value.injectViewProp = {};
+                        objectOfAppend.value.injectViewProp.name = 'control';
                         objectOfAppend.incest = node.incest;
                         break;
                 }
 
-                for (const key in objectOfAppend) {
+                for (const key in objectOfAppend)
                     node.appendChildrenWithJsons(objectOfAppend[key]);
-                }
+
             } else if (node.isTabItemView()) {
                 objectOfAppend.type = {
                     name: 'type',
@@ -7808,8 +7808,6 @@ class ProjectFileHandler extends PathBase {
 
                     const start = node.getFieldNameOfLabel('start');
                     const end = node.getFieldNameOfLabel('end');
-                    console.log(`1515131313135131 有吧有進來拔 ${node.getName()},${node.getParentNode().getName()},${node.getLabel()}`)
-
                     node.getParentNode().appendChildrenWithJsons(
                         {
                             name: start,
@@ -8587,6 +8585,34 @@ class ProjectFileHandler extends PathBase {
         await Util.rewriteAttributeOfSourceJs(this.pathOfSourceJS, {version: stringOfLatestVersion});
     }
 
+    async activate() {
+        const self = this;
+        const enableOfRapid = !!this.nodeOfAncestor.rapidBuild.enable;
+        const components = this.nodeOfAncestor.rapidBuild.componentName;
+
+        if (!enableOfRapid)
+            await self.execute();
+
+        if (this.isWebPlatform() && !this.isProduction() && enableOfRapid) {
+            ENABLE_FAST_DEVELOP_MODE = true;
+            switch (typeof components) {
+                case 'object':
+                    if (_.isArray(components))
+                        for (const component of components) {
+                            TARGET_COMPONENT_FAST_DEVELOP_MODE = component;
+                            await self.execute()
+                        }
+                    break;
+                case 'string':
+                    TARGET_COMPONENT_FAST_DEVELOP_MODE = components;
+                    await self.execute();
+                    break;
+                default :
+                    throw new ERROR(9999, `84515156 enable rapid build, but componentName is not valid`);
+            }
+        }
+    }
+
     async execute() {
 
         function isCleanCurrentFile(file) {
@@ -8617,11 +8643,6 @@ class ProjectFileHandler extends PathBase {
                 await Util.executeCommandLine(`firebase login:use ${this.nodeOfAncestor.email}`)
         } catch (error) {
             Util.appendInfo(`156651343 firebase login:use 同一個帳號會報錯，可忽略 其他部分請參考 ${error.message}`);
-        }
-
-        if (this.isWebPlatform() && !this.isProduction()) {
-            ENABLE_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.enable;
-            TARGET_COMPONENT_FAST_DEVELOP_MODE = this.nodeOfAncestor.rapidBuild.componentName;
         }
 
         await Util.cleanChildFiles(this.genRootPath, (each) => ENABLE_FAST_DEVELOP_MODE ?
@@ -8793,16 +8814,13 @@ class BuildApplication {
 
     async buildWeb() {
         const web = new ProjectFileHandler(this.getBuildObject('web'));
-        await web.execute();
-        Util.appendInfo(
-            `web done`
-        );
+        await web.activate();
     }
 
     async deployFunctionsToProd() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions', 'prod'));
         await functions.cleanGenDirectory();
-        await functions.execute();
+        await functions.activate();
         await functions.deployFunctionsToProd();
     }
 
@@ -8819,7 +8837,7 @@ class BuildApplication {
             if (deploy)
                 await web.incrementProjectVersion();
             Util.appendInfo(web.nodeOfAncestor.version);
-            await web.execute();
+            await web.activate();
         }
 
         await web.buildProdWebDistToProjectThanDeploy(deploy);
@@ -8840,7 +8858,7 @@ class BuildApplication {
     async buildCloudFunctions(deploy = true) {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         functions.setFunctionNeedDeploy(deploy);
-        await functions.execute();
+        await functions.activate();
         Util.appendInfo(
             `functions done`
         );
@@ -8880,7 +8898,7 @@ class BuildApplication {
         if (!deployToRemote)
             admin.disableRulesRemoteDeploy();
 
-        await admin.execute();
+        await admin.activate();
         Util.appendInfo(
             `admin done`
         );
@@ -8945,7 +8963,7 @@ class ScheduleManager {
         this.projectsOfPath = projectsOfPath;
     }
 
-    async execute() {
+    async resume() {
         for (const project of this.projectsOfPath) {
             await this.handler(this.behavior, project);
         }
@@ -9106,7 +9124,7 @@ if (configerer.DEBUG_MODE) {
         const projects = CURRENT_PROJECT ? [CURRENT_PROJECT] : await getProjectsByPromptInput();
         const behavior = Util.getNodeEnvVariable('type');
         const worker = new ScheduleManager(behavior, ...projects);
-        const msg = await worker.execute();
+        const msg = await worker.resume();
         Util.appendInfo(msg);
 
     })();

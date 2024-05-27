@@ -387,15 +387,57 @@ class AppStyle {
 
   /** => following for main  component  */
 
-  MainSearchOfGeneralRangeLocalizationProviderWrap = {};
+  MainFilterOfSearchOrderAreaOfFuncCancelButton = {};
 
-  MainSearchOfGeneralRangeDateRangePicker = {};
+  MainFilterOfSearchOrderAreaOfFuncSubmitButton = {};
 
-  MainSearchOfGeneralIdOfOrderTextField = {};
+  MainFilterOfSearchOrderAreaOfFuncDiv = {};
 
-  MainSearchOfGeneralSwipeableDrawerWrap = {};
+  MainFilterOfSearchOrderAreaOfStuffAgentMenuItem = {};
 
-  MainSearchOfGeneralDiv = {};
+  MainFilterOfSearchOrderAreaOfStuffAgentTextFieldList = {};
+
+  MainFilterOfSearchOrderAreaOfStuffSalesmanMenuItem = {};
+
+  MainFilterOfSearchOrderAreaOfStuffSalesmanTextFieldList = {};
+
+  MainFilterOfSearchOrderAreaOfStuffDiv = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedMethodOfPaymentMenuItem = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedMethodOfPaymentTextFieldList = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedIsPaidMenuItem = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedIsPaidTextFieldList = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedIsDepositPaidMenuItem = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedIsDepositPaidTextFieldList = {};
+
+  MainFilterOfSearchOrderAreaOfSelectedDiv = {};
+
+  MainFilterOfSearchOrderAreaOfTravelDestinationInputTextField = {};
+
+  MainFilterOfSearchOrderAreaOfTravelDestinationAutocomplete = {};
+
+  MainFilterOfSearchOrderAreaOfTravelRangeLocalizationProviderWrap = {};
+
+  MainFilterOfSearchOrderAreaOfTravelRangeDateRangePicker = {};
+
+  MainFilterOfSearchOrderAreaOfTravelDiv = {};
+
+  MainFilterOfSearchOrderAreaOfContactPhoneTextField = {};
+
+  MainFilterOfSearchOrderAreaOfContactHostTextField = {};
+
+  MainFilterOfSearchOrderAreaOfContactDiv = {};
+
+  MainFilterOfSearchOrderIdOfOrderTextField = {};
+
+  MainFilterOfSearchOrderSwipeableDrawerWrap = {};
+
+  MainFilterOfSearchOrderDiv = {};
 
   MainOrderAreaOfContactPhoneLabelOfPhoneTypography = {};
 
