@@ -9,4 +9,15 @@ get{{{functionName}}}() {
 return this.{{{fieldName}}};
 }
 
+@action
+push{{{functionName}}}(...array){
+this.{{{fieldName}}}.push(...array);
+}
+
+@action
+set{{{functionName}}}(...array) {
+this.{{{fieldName}}}.length = 0;
+this.{{{fieldName}}}.push(...array);
+}
+
 

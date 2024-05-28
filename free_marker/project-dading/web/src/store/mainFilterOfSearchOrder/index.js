@@ -25,7 +25,7 @@ class MainFilterOfSearchOrderStore extends BaseMainFilterOfSearchOrderStore {
 
   constructor(props) {
     super(props);
-    this.pushDestinationSuggests(...Config.COUNTRY_OF_TRAVEL);
+    this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
   }
 
 

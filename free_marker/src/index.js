@@ -2766,7 +2766,7 @@ class CodegenNode {
             else return `this.getObjectOfCurrentTimeStamp()`;
         }
 
-        if (this.isArray()) {
+        if (this.isArray() || this.isArrayOfField()) {
             return `[]`;
         }
 
@@ -2836,6 +2836,10 @@ class CodegenNode {
 
     getFunctionNameOfOnChanged() {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'change');
+    }
+
+    getFieldNameOfFuse() {
+        return Util.camel('fuse', 'Of', this.getName());
     }
 
     getFunctionNameOfSetter() {
@@ -4125,16 +4129,19 @@ class StoreBuilder extends BaseBuilder {
 
             if (child.isAutoCompleteView()) {
                 baseGenerator.appendImport(`Fuse`, 'fuse.js');
-                baseGenerator.appendConstructor(`this.fuse = new Fuse(this.${Util.camel('get', child.getFieldNameOfSuggest())}s(),{shouldSort: true, includeScore: true, keys: ['label', 'value']})`);
-            }
 
-            if (child.isBelongAutoComplete()) {
-                baseGenerator.appendFunction({name: child.getFunctionNameOfAutoCompleteInvalidate(), async: true}, ['keyword'], [], [],
-                    `if (!_.isUndefined(keyword) && this.fuse) {`,
-                    `Util.executeTimeoutTask(async () => {`,
-                    `const suggests = this.fuse.search(keyword).map(each => each.item);`,
-                    `this.${child.getFunctionNameOfSetter()}(...suggests) },300,'ID_OF_ASYNC_HANDLE_${_.toUpper(child.getFieldName())}')}`
+                baseGenerator.appendFunction(Util.camel('initial', child.getName(), 'suggest', 'behavior'), ['array'], [], [],
+                    `this.${child.getFieldNameOfFuse()} = new Fuse(array, { shouldSort: true, includeScore: true, keys: ["label", "value"] });`,
+                    `this.${Util.camel('set', child.getFieldNameOfSuggest())}s(...array)`
                 )
+
+                baseGenerator.appendFunction({name: child.getFunctionNameOfAutoCompleteInvalidate(), async: true}, ['keyword'], [], [],
+                    `if (!_.isUndefined(keyword) && this.${child.getFieldNameOfFuse()}) {`,
+                    `Util.executeTimeoutTask(async () => {`,
+                    `const suggests = this.${child.getFieldNameOfFuse()}.search(keyword).map(each => each.item);`,
+                    `this.${Util.camel('set', child.getFieldNameOfSuggest())}s(...suggests) },300,'ID_OF_ASYNC_HANDLE_${_.toUpper(child.getFieldName())}')}`
+                )
+
             }
 
             if (child.hasConfirmDialog()) {
@@ -7779,7 +7786,7 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
                     paramStmt = `latestValue`;
                     if (node.isBelongAutoComplete())
-                        stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
+                        stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
                 } else if (node.isSliderView()) {
                     paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
@@ -8041,60 +8048,60 @@ class ProjectFileHandler extends PathBase {
                 const plural = 's';
                 const fieldName = `${name}s`;
                 node.getParentNode().appendChildrenWithJsons({
-                    name,
-                    type: `array`,
-                    plural,
-                    incest: node.incest,
-                    children: [
-                        {
-                            type: 'string',
-                            name: 'value',
-                            column: true,
-                            description: '本質內容',
-                        }, {
-                            type: 'string',
-                            name: 'label',
-                            column: true,
-                            description: '顯示在屏幕上',
-                        },
-                        {
-                            type: 'number',
-                            name: 'type',
-                            column: true,
-                            description: '用來當作額router'
-                        },
-                        {
-                            name: 'popularLevel',
-                            type: 'number',
-                            column: true,
-                            defaultValue: 1,
-                            description: 'order時候,會desc,讓最熱門的項目留在最上方'
-                        },
-                        {
-                            type: 'string',
-                            name: 'uid',
-                            column: true,
-                            description: '用來放document id,由type 判斷路由'
-                        },
-                        {
-                            type: 'string',
-                            name: 'extra',
-                            column: true,
-                            description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
-                        }
-                    ]
-                }, {
-                    name: Util.camel(`selected`, node.getName()),
-                    type: 'objectOfEmpty',
-                    incest: node.incest,
-                    description: `用來放置'${node.getName()}' collapse suggestion被選中的那個物件`
-                },
+                        name,
+                        type: `array`,
+                        plural,
+                        incest: node.incest,
+                        children: [
+                            {
+                                type: 'string',
+                                name: 'value',
+                                column: true,
+                                description: '本質內容',
+                            }, {
+                                type: 'string',
+                                name: 'label',
+                                column: true,
+                                description: '顯示在屏幕上',
+                            },
+                            {
+                                type: 'number',
+                                name: 'type',
+                                column: true,
+                                description: '用來當作額router'
+                            },
+                            {
+                                name: 'popularLevel',
+                                type: 'number',
+                                column: true,
+                                defaultValue: 1,
+                                description: 'order時候,會desc,讓最熱門的項目留在最上方'
+                            },
+                            {
+                                type: 'string',
+                                name: 'uid',
+                                column: true,
+                                description: '用來放document id,由type 判斷路由'
+                            },
+                            {
+                                type: 'string',
+                                name: 'extra',
+                                column: true,
+                                description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
+                            }
+                        ]
+                    }, {
+                        name: Util.camel(`selected`, node.getName()),
+                        type: 'objectOfEmpty',
+                        incest: node.incest,
+                        description: `用來放置'${node.getName()}' collapse suggestion被選中的那個物件`
+                    },
                     {
-                    name: Util.camel(`key`, 'of', node.getName()),
-                    type: 'boolean',
-                    incest: node.incest,
-                    description: `用來force ${node.getName()} re-render`
-                })
+                        name: Util.camel(`key`, 'of', node.getName()),
+                        type: 'boolean',
+                        incest: node.incest,
+                        description: `用來force ${node.getName()} re-render`
+                    })
 
                 node.appendChildrenWithJsons({
                     name: Util.camel(`input`, 'of', node.getName()),
