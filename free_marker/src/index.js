@@ -4129,13 +4129,15 @@ class StoreBuilder extends BaseBuilder {
 
             if (child.isAutoCompleteView()) {
                 baseGenerator.appendImport(`Fuse`, 'fuse.js');
-
                 baseGenerator.appendFunction(Util.camel('initial', child.getName(), 'suggest', 'behavior'), ['array'], [], [],
                     `this.${child.getFieldNameOfFuse()} = new Fuse(array, { shouldSort: true, includeScore: true, keys: ["label", "value"] });`,
                     `this.${Util.camel('set', child.getFieldNameOfSuggest())}s(...array)`
                 )
 
-                baseGenerator.appendFunction({name: child.getFunctionNameOfAutoCompleteInvalidate(), async: true}, ['keyword'], [], [],
+                baseGenerator.appendFunction({
+                        name: child.getFunctionNameOfAutoCompleteInvalidate(),
+                        async: true
+                    }, ['keyword'], [], [],
                     `if (!_.isUndefined(keyword) && this.${child.getFieldNameOfFuse()}) {`,
                     `Util.executeTimeoutTask(async () => {`,
                     `const suggests = this.${child.getFieldNameOfFuse()}.search(keyword).map(each => each.item);`,
@@ -7791,7 +7793,11 @@ class ProjectFileHandler extends PathBase {
                     paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
                     stmts.push(`objectOfParam.object = value`)
-                    stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', 'selected', node.getName())}(value)`)
+                    stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', node.getName())}(value)`)
+                    /**
+                     const nodeOfInput = _.find(node.getPreciseAttributeParent().getPreciseAttributeChildren(), (each) => each.isBelongAutoComplete(), 0);
+                     stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', nodeOfInput.getName(), node.getName())}(value.getValue())`)
+                     */
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
                 } else if (node.isTimeDatePickerView()) {
@@ -8007,7 +8013,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isTabItemView()) {
                 node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
-            } else if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
+            } else if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView() || node.isAutoCompleteView()) {
                 /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
@@ -8090,11 +8096,6 @@ class ProjectFileHandler extends PathBase {
                                 description: '用來放解釋|額外資訊, 也許type很快就忘了起初的定義'
                             }
                         ]
-                    }, {
-                        name: Util.camel(`selected`, node.getName()),
-                        type: 'objectOfEmpty',
-                        incest: node.incest,
-                        description: `用來放置'${node.getName()}' collapse suggestion被選中的那個物件`
                     },
                     {
                         name: Util.camel(`key`, 'of', node.getName()),
