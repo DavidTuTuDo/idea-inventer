@@ -1,13 +1,59 @@
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 
 class AppStyle {
   /** -------------------- fields -------------------- **/
+
+  /** following for homeless */
+
+  /** => following for infoOfCopyRightContent editor component  */
+
+  InfoOfCopyRightContentEditorProjectImageTextField = {};
+
+  InfoOfCopyRightContentEditorProjectIdTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
+
+  InfoOfCopyRightContentEditorProjectImageCardWrap = {};
+
+  InfoOfCopyRightContentEditorProjectImageImg = {};
+
+  InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
+
+  InfoOfCopyRightContentEditorProjectRouteTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDivList = {};
+
+  InfoOfCopyRightContentEditorProjectDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDiv = {};
+
+  InfoOfCopyRightContentEditorUpperAreaDiv = {};
+
+  InfoOfCopyRightContentEditorDivWrap = {};
+
+  InfoOfCopyRightContentEditorPaper = {};
 
   /** => following for main editor component  */
 
@@ -107,15 +153,15 @@ class AppStyle {
 
   NavigatorToolBarLoginButton = {};
 
-  NavigatorToolBarCompleteInputFormWrap = {};
+  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
-  NavigatorToolBarCompleteInputTextField = {};
+  NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
   NavigatorToolBarCompleteAutocomplete = {};
 
   NavigatorToolBarTitleTypography = {};
 
-  NavigatorToolBarMenuIconMenuIcon = {};
+  NavigatorToolBarMenuIconMenuRounded = {};
 
   NavigatorToolBarMenuIconButton = {};
 
@@ -124,6 +170,148 @@ class AppStyle {
   NavigatorToolBarToolbar = {};
 
   NavigatorDiv = {};
+
+  /** => following for infoOfCopyRightContent  component  */
+
+  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+
+  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
+
+  InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
+
+  InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
+
+  InfoOfCopyRightContentProjectDescriptionDivList = {};
+
+  InfoOfCopyRightContentProjectDescriptionDiv = {};
+
+  InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
+
+  InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
+
+  InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
+
+  InfoOfCopyRightContentProjectUpperAreaDiv = {};
+
+  InfoOfCopyRightContentProjectImageCardWrap = {};
+
+  InfoOfCopyRightContentProjectImageImg = {};
+
+  InfoOfCopyRightContentProjectDivSkeleton = {};
+
+  InfoOfCopyRightContentProjectDivList = {};
+
+  InfoOfCopyRightContentProjectDiv = {};
+
+  InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
+
+  InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
+
+  InfoOfCopyRightContentUpperAreaDiv = {};
+
+  InfoOfCopyRightContentCancelButton = {};
+
+  InfoOfCopyRightContentDivWrap = {};
+
+  InfoOfCopyRightContentPaper = {};
+
+  /** => following for infoOfCopyRightContact  component  */
+
+  InfoOfCopyRightContactCancelButton = {};
+
+  InfoOfCopyRightContactLowerAreaDetailsTypography = {};
+
+  InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
+
+  InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
+
+  InfoOfCopyRightContactLowerAreaDiv = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
+
+  InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
+
+  InfoOfCopyRightContactUpperAreaContactDivWrap = {};
+
+  InfoOfCopyRightContactUpperAreaContactTypography = {};
+
+  InfoOfCopyRightContactUpperAreaDiv = {};
+
+  InfoOfCopyRightContactDivWrap = {};
+
+  InfoOfCopyRightContactCard = {};
+
+  /** => following for infoOfCopyRight  component  */
+
+  InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
+
+  InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
+
+  InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
+
+  InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
+
+  InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
+
+  InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
+
+  InfoOfCopyRightGroupOfSocialMediaDiv = {};
+
+  InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
+
+  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
+
+  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+
+  InfoOfCopyRightUpperGroupRightAreaDiv = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
+
+  InfoOfCopyRightUpperGroupLeftAreaDiv = {};
+
+  InfoOfCopyRightUpperGroupDiv = {};
+
+  InfoOfCopyRightDiv = {};
 
   /** => following for account  component  */
 
@@ -245,15 +433,15 @@ class AppStyle {
 
   SheetAdjustCenterToggleWrapperNoteButton = {};
 
-  SheetAdjustCenterToggleWrapperJoinToFavoriteLabelTypography = {};
+  SheetAdjustCenterToggleWrapperJoinToFavoriteLabelOfJoinToFavoriteTypography = {};
 
-  SheetAdjustCenterToggleWrapperJoinToFavoriteToggleSwitch = {};
+  SheetAdjustCenterToggleWrapperJoinToFavoriteToggleOfJoinToFavoriteSwitch = {};
 
   SheetAdjustCenterToggleWrapperJoinToFavoriteFormControlLabel = {};
 
-  SheetAdjustCenterToggleWrapperHideChordLabelTypography = {};
+  SheetAdjustCenterToggleWrapperHideChordLabelOfHideChordTypography = {};
 
-  SheetAdjustCenterToggleWrapperHideChordToggleSwitch = {};
+  SheetAdjustCenterToggleWrapperHideChordToggleOfHideChordSwitch = {};
 
   SheetAdjustCenterToggleWrapperHideChordFormControlLabel = {};
 
@@ -287,7 +475,9 @@ class AppStyle {
 
   SheetAdjustCenterDiv = {};
 
-  SheetAdjustSwipeableDrawer = {};
+  SheetAdjustSwipeableDrawerWrap = {};
+
+  SheetAdjustDiv = {};
 
   SheetTipOfLoadingTypography = {};
 

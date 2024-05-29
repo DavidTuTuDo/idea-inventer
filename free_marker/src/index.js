@@ -33,9 +33,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-let CURRENT_PROJECT = './project-dading';
+// let CURRENT_PROJECT = './project-dading';
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
@@ -8751,7 +8751,7 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
-        // await this.removeEmptyFolder();
+        await this.removeEmptyFolder();
     }
 
     async functionsGenerateRelease() {

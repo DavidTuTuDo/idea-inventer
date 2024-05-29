@@ -32,24 +32,6 @@ class ModularizedNavigatorToolBarStore extends BaseNavigatorToolBarStore {
         super(props);
     }
 
-    @override
-    setCompleteSuggests(...items) {
-        const self = this;
-        items = _.uniqBy(items, 'label');
-        if (items !== undefined && _.isArray(items)) {
-            this.completeSuggests.length = 0;
-            this.suggestCompletes.push(
-                ...items.map((each) =>
-                    each instanceof CompleteSuggest
-                        ? each
-                        : new CompleteSuggest({...each, parentNode: self})
-                )
-            );
-        } else {
-            this.suggestCompletes.length = 0;
-        }
-    }
-
     getLabelOfInputOfComplete() {
         return `無搜尋的項目`;
     }

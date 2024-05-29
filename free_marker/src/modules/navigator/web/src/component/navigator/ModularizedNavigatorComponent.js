@@ -162,7 +162,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         }
     }
 
-    onNavigatorToolBarCompleteInputTextFieldSearchPressed(input, complete) {
+    onNavigatorToolBarInputOfCompleteTextFieldSearchPressed(input, complete) {
         /** 先判斷autoComplete 有沒有selectedItem()
          *
          * 沒有的話再用 getInput() 去搜尋
@@ -183,12 +183,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     onSearchPressed(content) {
         Util.appendInfo("onSearchPressed not implemented");
 
-    }
-
-    onNavigatorToolBarCompleteAutocompleteChange(param) {
-        const keyword = param.object;
-        if (!Util.isUndefinedNullEmpty(keyword))
-            this.getStore().getToolBar().getComplete().setInput(keyword.getValue());
     }
 
     getInjectStyleOfNavigatorToolBarAccountIconButton() {
