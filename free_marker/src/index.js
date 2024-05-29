@@ -11,6 +11,7 @@ import {configerer} from "configerer";
 
 let ENABLE_FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
+let ENABLE_OF_PRETTIER = true;
 /** 是array 也是 string */
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
@@ -3316,12 +3317,13 @@ class ClassGenerator {
         if (ENABLE_FAST_DEVELOP_MODE) {
             const folderName = Util.getFolderNameOfFilePath(this.filePath);
             const fileNameExtension = Util.getFileNameExtensionFromPath(this.filePath);
+            const fileName = Util.getFileNameFromPath(this.filePath)
             const ruleOfAllowFile = Util.or(
-                (_.startsWith(Util.getFileNameFromPath(this.filePath), `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
-                (_.startsWith(Util.getFileNameFromPath(this.filePath), `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
+                (_.startsWith(fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),/** BaseXXX 必須建立 */
+                (_.startsWith(fileName, `${KEYWORD_OF_MODULARIZED}${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`) &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 ModularizedXXX 才建立,FAST MODE不會override files */
-                (_.startsWith(TARGET_COMPONENT_FAST_DEVELOP_MODE, folderName) &&
-                    _.isEqual(Util.getFileNameFromPath(this.filePath, true), 'index.js') &&
+                (_.startsWith(folderName, TARGET_COMPONENT_FAST_DEVELOP_MODE) &&
+                    _.isEqual(fileName, 'index') &&
                     Util.isEmptyFile(this.filePath)), /** 不存在的 {TARGET_COMPONENT_FAST_DEVELOP_MODE}/index.js 才建立,FAST MODE不會override files */
                 _.isEqual(folderName, 'style'),
                 _.isEqual(folderName, 'less'),
@@ -3332,7 +3334,7 @@ class ClassGenerator {
             )
 
             if (!ruleOfAllowFile) {
-                console.log(`FAST MODE=>檔案不會建立, folderName=>'${folderName}':'${this.filePath}'`)
+                console.log(`78673843 FAST MODE=>檔案不會建立, folderName=>'${folderName}':'${this.filePath}'`)
                 /** 當fast build的時候, 只保留/style/. /less/. /TARGET_COMPONENT_FAST_DEVELOP_MODE開頭/.  */
                 return;
             }
@@ -3372,7 +3374,8 @@ class ClassGenerator {
         Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
 
         try {
-            await Util.prettier(this.filePath);
+            if (ENABLE_OF_PRETTIER)
+                await Util.prettier(this.filePath);
         } catch (error) {
             throw new ERROR(8011, error);
         }
@@ -8748,7 +8751,7 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
-        await this.removeEmptyFolder();
+        // await this.removeEmptyFolder();
     }
 
     async functionsGenerateRelease() {

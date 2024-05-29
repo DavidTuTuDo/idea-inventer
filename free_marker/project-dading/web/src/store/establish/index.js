@@ -26,6 +26,7 @@ class EstablishStore extends BaseEstablishStore {
 
     constructor(props) {
         super(props);
+        this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
         this.apiOfOrder = new OrderStore();
         this.setBalanceDisabled(true);
     }

@@ -690,6 +690,7 @@ class NodeUtiller extends Utiller {
 
     /** 把檔案弄得好看一點
      * width 是指一行能塞下多少的字元
+     * preitter真的很花時間，所以做個enable
      * */
     async prettier(path, width = 200) {
         await this.executeCommandLine(`cd ${libpath.resolve('.')} &&  npx prettier --write ${libpath.resolve(path)} --print-width ${width}`)

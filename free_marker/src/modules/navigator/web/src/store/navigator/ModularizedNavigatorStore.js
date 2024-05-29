@@ -43,13 +43,13 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     }
 
     getSuggestKeywordDetail() {
-        return this.getToolBar().getComplete().getSelectedComplete();
+        return this.getToolBar().getSelectedComplete();
     }
 
     clearKeywordDetail() {
-        this.getToolBar().getComplete().removeSelectedComplete();
-        this.getToolBar().getComplete().removeInput();
-        this.getToolBar().getComplete().toggleKeyOfComplete();
+        this.getToolBar().removeSelectedComplete();
+        this.getToolBar().removeInput();
+        this.getToolBar().toggleKeyOfComplete();
         this.getToolBar().cleanSuggestCompletes();
     }
 
@@ -61,8 +61,10 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     }
 
     async onInitialFetchCompleted(collection) {
-        await super.onInitialFetchCompleted(collection)
-        this.fuse = new Fuse(this.getKeywords() ?? [], {shouldSort: true, includeScore: true, keys: ['label', 'value']})
+        await super.onInitialFetchCompleted(collection);
+        if (_.isArray(this.getKeywords())) {
+            this.getToolBar().initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), 'label'))
+        }
     }
 
     /** -------------------- functions -------------------- **/
@@ -71,17 +73,6 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         super(props);
         makeObservable(this);
         this.setState('stable');
-    }
-
-    @action
-    async invalidateSuggestion(keyword) {
-        const self = this;
-        if (!Util.isUndefinedNullEmpty(keyword) && this.fuse) {
-            Util.executeTimeoutTask(async () => {
-                const suggests = this.fuse.search(keyword).map(each => each.item);
-                self.getToolBar().setSuggestCompletes(...suggests);
-            }, 500, "NAVIGATOR_SEARCH_FUNCTION");
-        }
     }
 
 }
