@@ -163,7 +163,7 @@ class UserInfo {
 
                 await firebaser.signInWithGoogle(async (authResult) => {
                     /** 只有在登入傳回直裡面有credential */
-                    if (authResult != undefined) {
+                    if (authResult !== undefined) {
                         const credential = authResult.credential;
                         Util.appendInfo('4548412, retrieve credential:', credential);
                         Cookie.setCredential(credential);

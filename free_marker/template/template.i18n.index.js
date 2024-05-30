@@ -21,8 +21,11 @@ class I18n {
         makeObservable(this);
         autorun(() => {
             Util.appendInfo(`i18n autorun, current language => ${this.language}`);
-            if (Application)
-                _.each(Application.getStoreObject(), (store) => store.refreshLocally());
+            /** 不放到下一個stack queue會產生Application拿到空值的問題 */
+            Util.syncDelay(1).then((result)=> {
+                if (Application)
+                    _.each(Application.getStoreObject(), (store) => store.refreshLocally());
+            })
 
         })
     }

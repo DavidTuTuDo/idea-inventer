@@ -61,8 +61,8 @@ class MainComponent extends BaseMainComponent {
         const order = param.object;
         return () => {
             const data = order.data();
-            const normalize = Application.getEstablishStore().decorate(data);
-            Application.getEstablishStore().initial(normalize);
+            Application.getEstablishStore().clean()
+            Application.getEstablishStore().initial(data);
             this.refOfCreateOfOrder.current.click();
         }
     }

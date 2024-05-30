@@ -26,22 +26,39 @@ class EstablishStore extends BaseEstablishStore {
 
     constructor(props) {
         super(props);
-        this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
         this.apiOfOrder = new OrderStore();
+    }
+
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted(collection);
         this.setBalanceDisabled(true);
+        this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
+    }
+
+    result = () => {
+        const submit = this.data();
+        submit.destination = _.isObject(submit.destination) ? submit.destination.value : '0';
+        submit.idOfOrder = UserInfoRef.getUid()
+        return submit;
     }
 
     async submitOrder() {
-        const bean = this.data();
-        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), bean);
+        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), this.result());
         Application.getMainStore().pushOrdersByIndex(0, result.value);
         this.setId(result.value.id);
     }
 
     async updateOrder() {
-        const bean = this.data();
+        const bean = this.result();
         await this.apiOfOrder.updateOrderItem(this.getComponent(), bean, bean.id);
         Application.getMainStore().updateOrder(bean);
+    }
+
+    decorate(result) {
+        const origin = super.decorate(result);
+        const numberOfDestination = _.toNumber(origin.destination);
+        origin.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
+        return origin;
     }
 
     /** -------------------- async api -------------------- **/

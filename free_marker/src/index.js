@@ -2077,6 +2077,10 @@ class CodegenNode {
         return Util.camel(this.getName(), `suggest`);
     }
 
+    getFieldNameOfDefaultValue() {
+        return Util.camel(`default`, 'of', this.getName());
+    }
+
     getPreciseAttributeParent() {
         return this.getPreciseParent((node) => node.isIncestAttribute(), (node) => node.isAttribute());
     }
@@ -8105,7 +8109,8 @@ class ProjectFileHandler extends PathBase {
                         type: 'boolean',
                         incest: node.incest,
                         description: `用來force ${node.getName()} re-render`
-                    })
+                    },
+                )
 
                 node.appendChildrenWithJsons({
                     name: Util.camel(`input`, 'of', node.getName()),
@@ -8134,6 +8139,12 @@ class ProjectFileHandler extends PathBase {
                     },
                     {
                         key: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, `key`, 'of', node.getName())}()`
+                    },
+                    {
+                        getOptionLabel: `###(option) => option.label?? ''`
+                    },
+                    {
+                        value: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, node.getFieldName())}()`
                     }
                 )
             }
