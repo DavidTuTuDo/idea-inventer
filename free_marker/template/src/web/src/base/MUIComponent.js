@@ -8,10 +8,16 @@ import {
     exceptioner as ERROR,
     pooller as InfinitePool,
 } from "utiller";
+import {toJS, isObservable} from 'mobx';
+
 class MuiComponent extends React.Component {
 
     constructor(props) {
         super(props);
+    }
+
+    asJS(proxyOfObservable) {
+        return isObservable(proxyOfObservable) ? toJS(proxyOfObservable) : proxyOfObservable;
     }
 
     MUIconView = observer(({name}) => {
@@ -45,7 +51,7 @@ class MuiComponent extends React.Component {
         if (typeof object === 'string') {
             if (this.isHtmlStringFormat(object)) {
                 const content = Parser().parse(object);
-                Util.appendInfo(`handleTextString() get textOfHtml format`,content);
+                Util.appendInfo(`handleTextString() get textOfHtml format`, content);
                 return content;
             }
             return object
@@ -81,8 +87,8 @@ class MuiComponent extends React.Component {
     }
 
     renderHtmlOfDocument(textOfRender) {
-        if(this.isHtmlStringFormat(textOfRender))
-        document.write(textOfRender);
+        if (this.isHtmlStringFormat(textOfRender))
+            document.write(textOfRender);
     }
 
     /** 修改所有className 的elements */

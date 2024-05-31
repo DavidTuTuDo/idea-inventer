@@ -38,13 +38,9 @@ class MainComponent extends BaseMainComponent {
 
     onMainOrderExtraIconButtonDeleteClicked(param) {
         return () => {
-          this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
-          )
+            this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
+            )
         }
-    }
-
-    onMainAreaOfFuncHistoryOfOrderButtonClicked(param) {
-        this.showInfoSnackMessage(`開發中，請稍待`);
     }
 
     onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
@@ -53,7 +49,7 @@ class MainComponent extends BaseMainComponent {
 
     onMainOrderExtraIconButtonContractClicked(param) {
         return () => {
-           this.showInfoSnackMessage(`開發中，請稍待`)
+            this.showInfoSnackMessage(`開發中，請稍待`)
         }
     }
 
@@ -61,15 +57,17 @@ class MainComponent extends BaseMainComponent {
         const order = param.object;
         return () => {
             const data = order.data();
-            Application.getEstablishStore().clean()
-            Application.getEstablishStore().initial(data);
+            Application.getEstablishStore().clean();
             this.refOfCreateOfOrder.current.click();
+            Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
+                store.fromJson(order);
+            })
         }
     }
 
     onMainOrderBtnOfIdIconButtonClicked(param) {
         const order = param.object;
-        this.copyTextToClipboard(order.getId(),`已複製訂單編號至剪貼簿`)
+        this.copyTextToClipboard(order.getId(), `已複製訂單編號至剪貼簿`)
     }
 
     onMainOrderBtnOfPhoneIconButtonClicked(param) {
@@ -78,6 +76,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainFilterOfSearchOrderCancelButtonClicked(param) {
+        this.getStore().getFilterOfSearchOrder().clean();
         this.getStore().toggleIsFilterOfSearchOrderVisible();
     }
 
@@ -86,6 +85,17 @@ class MainComponent extends BaseMainComponent {
         console.log(this.getStore().getFilterOfSearchOrder().data());
     }
 
+    getInjectStyleOfMainFilterOfSearchOrderGoAheadButton(filterOfSearchOrder) {
+        return Util.getVisibleOrNone(!_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
+    }
+
+    getInjectStyleOfMainFilterOfSearchOrderPasteButton(filterOfSearchOrder) {
+        return Util.getVisibleOrNone(_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
+    }
+
+    onMainFilterOfSearchOrderClearButtonClicked(param) {
+        param.object.clean();
+    }
 
 
     /** -------------------- async api -------------------- **/

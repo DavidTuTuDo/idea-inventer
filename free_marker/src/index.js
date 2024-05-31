@@ -41,6 +41,7 @@ const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
 const SIGN_OF_EMPTY_STORE = 'pure';
 const FILE_EXTENSION_OF_I18N = 'i18n.stmts';
+
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -165,6 +166,9 @@ class CodegenNode {
     email = '';
     /** firebase 的註冊帳號，用來切換身份deploy|rules */
 
+    size = '';
+    /** autocomplete textField 會用到*/
+
     /** 利用outer,view child的方式,增加一個label概念 姓名: David*/
 
     valueOfTabDefault = '';
@@ -223,6 +227,7 @@ class CodegenNode {
     /** view為simpleSwitch時, 顯示的label */
 
     label;
+    /** 用在autoComplete TextField*/
 
     skeleton = {
         enable: true,
@@ -700,11 +705,37 @@ class CodegenNode {
         click: false,
     }
 
+    belong2TimeDatePicker = false
+
     /** 用於註記這個TextField用來修飾AutoComplete*/
-    belongAutoComplete = false
+    belong2AutoComplete = false
+
+    getSize() {
+        return this.size
+    }
+
+    isDisposablePage() {
+        return this.getNodeOfComponent().disposablePage;
+    }
+
+    getSpecificComponent(nameOfComponent) {
+        const node = this.getNodeOfSource();
+        return  _.find(node['components'],
+            (component) => _.isEqual(component.name, nameOfComponent))
+    }
+
+
+    isBelong2TimeDatePicker() {
+        return this.belong2TimeDatePicker;
+    }
+
+    hasSize() {
+        return this.size && !_.isEmpty(this.size);
+    }
+
 
     isBelongAutoComplete() {
-        return !!this.belongAutoComplete;
+        return !!this.belong2AutoComplete;
     }
 
     hasIcon() {
@@ -816,7 +847,7 @@ class CodegenNode {
     }
 
     getHostOfCloudFunction() {
-        const node = this.getRootNode();
+        const node = this.getNodeOfSource();
         return `https://${node.localeOfServer}-${node.getName()}.cloudfunctions.net`;
         /** dev:  http://localhost:5001/${node.getName()}/${node.localeOfServer}; */
     }
@@ -869,12 +900,12 @@ class CodegenNode {
 
     /** */
     getProjectName() {
-        const root = this.getRootNode();
+        const root = this.getNodeOfSource();
         return root.getName();
     }
 
     getIdOfProject() {
-        const root = this.getRootNode();
+        const root = this.getNodeOfSource();
         return root.getIdOfProject();
     }
 
@@ -993,7 +1024,10 @@ class CodegenNode {
 
     /** exclude => 要略過的資料夾名稱 */
     getLessFilesOfModuleComponent(...exclude) {
-        return Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (file) => _.isEqual(file.extension, 'less'));
+        const modulesOfAllow = this.getListOfModuleComponent();
+        const filesOfLess = modulesOfAllow.map((name) => Util.findFilePathBy(libpath.join(PATH_OF_COMPONENT_MODULE, name),
+            (file) => _.isEqual(file.extension, 'less')))
+        return _.flatten(filesOfLess);
     }
 
     /** 像是Switch, ToggleButton這類
@@ -1008,7 +1042,7 @@ class CodegenNode {
             node.isAutoCompleteView(type),
             node.isTabListView(type),
             node.isTimeDatePickerView(type),
-            node.isDateTimeRangePickerView(type),
+            node.isTimeDateRangePickerView(type),
         );
     }
 
@@ -1073,7 +1107,7 @@ class CodegenNode {
         return _.isEqual(this.type, 'arrayItem');
     }
 
-    getRootNode() {
+    getNodeOfSource() {
         const node = this.getParentBy((node) => node.isRootNode());
         return node;
     }
@@ -1253,7 +1287,7 @@ class CodegenNode {
     }
 
     isScrollingHideDependOnRootNode() {
-        const rootNode = this.getRootNode()
+        const rootNode = this.getNodeOfSource()
         return rootNode.navigation && rootNode.navigation.isScrollingHide;
     }
 
@@ -1407,11 +1441,11 @@ class CodegenNode {
     }
 
     getOriginalView() {
-        return this.originalView;
+        return this.isPreciselyEditableComponent() ? this.originalView : this.view;
     }
 
     getOriginalName() {
-        return this.originalName;
+        return this.isPreciselyEditableComponent() ? this.originalName : this.name;
     }
 
     getDescription() {
@@ -1583,6 +1617,12 @@ class CodegenNode {
             return self.hasFullWidthOfDialog() ? `fullWidth:true` : ``;
         }
 
+        function getStmtOfDisposable() {
+            if(!self.hasCustomViewDialog()) return '';
+            const nodeOfSpecificComponent = self.getSpecificComponent(self.getAlertDialog().customView);
+            return nodeOfSpecificComponent.isDisposablePage() ? `disposablePage:true` : ``;
+        }
+
         if (this.hasAlertDialog()) {
             const dialog = self.getAlertDialog();
             const props = [
@@ -1592,6 +1632,7 @@ class CodegenNode {
             props.push(getActionButtonStmts());
             props.push(getEnableCancelStmts());
             props.push(getTaskStmts());
+            props.push(getStmtOfDisposable());
             props.push(getCustomViewStmts());
             props.push(getParamObject());
             props.push(getStmtDialogInput())
@@ -2026,7 +2067,7 @@ class CodegenNode {
             node.isAttributeView('DateTimePicker', type);
     }
 
-    isDateTimeRangePickerView(type = 'default', node = this) {
+    isTimeDateRangePickerView(type = 'default', node = this) {
         return node.isAttributeView('DateTimePickerTimeRangePicker', type) ||
             node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
     }
@@ -2766,8 +2807,9 @@ class CodegenNode {
         }
 
         if (this.type === 'timestamp') {
-            if (this.isDateTimeRangePickerView()) return `[moment(),moment()]`
+            if (this.isTimeDateRangePickerView()) return `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
             else if (this.isTimeDatePickerView()) return `moment()`
+            else if (this.isBelong2TimeDatePicker()) return `null`
             else return `this.getObjectOfCurrentTimeStamp()`;
         }
 
@@ -3900,7 +3942,7 @@ class StoreBuilder extends BaseBuilder {
                         hasPaginate: child.hasPaginate(),
                         paginateSize: child.getPaginateSize(),
                         fieldClass: child.getClassName(),
-                        isTimePickerView: child.isTimeDatePickerView() || child.isDateTimeRangePickerView()
+                        isTimePickerView: child.isTimeDatePickerView() || child.isTimeDateRangePickerView()
                     }));
             if (child.isNumber() || child.isString()) {
                 propStmt.push(`if(obj && obj.${fieldName})`);
@@ -3941,7 +3983,7 @@ class StoreBuilder extends BaseBuilder {
             if (!child.isArrayOfField())
                 propsStmt.push(...propStmt);
 
-            if (child.isTimeDatePickerView() || child.isDateTimeRangePickerView()) {
+            if (child.isTimeDatePickerView() || child.isTimeDateRangePickerView()) {
                 generator.appendImport('moment', `moment`)
             }
 
@@ -4129,8 +4171,7 @@ class StoreBuilder extends BaseBuilder {
                     `return this.${fieldName}`)
             }
 
-            if (child.isDateTimeRangePickerView()) {
-
+            if (child.isTimeDateRangePickerView()) {
                 stmtsOfRangeNormalize.push(`result.${child.getFieldName()} = [this.normalizeAsMoment(result.${child.getFieldNameOfStart()}),this.normalizeAsMoment(result.${child.getFieldNameOfEnd()})];`)
             }
 
@@ -4289,9 +4330,7 @@ class StoreBuilder extends BaseBuilder {
         if (isObject) {
             normalize = [
                 `const result = `, ...normalize,
-                `this.decorate(result)`,
                 `this.fromJson(result)`,
-
             ]
         }
         normalize = [
@@ -4822,6 +4861,8 @@ class ComponentBuilder extends BaseBuilder {
                 'return false;'
             )
         }
+
+        baseGenerator.appendField(`nameOfComponent`,`'${componentNode.getName()}'`,[],[],'static')
 
         if (_.size(paramsInPath) > 0) {
             /** 這個邏輯必須在fetch之前 */
@@ -5999,7 +6040,8 @@ class AppBuilder extends ComponentBuilder {
 
         function getStmtsOfRenewStore(nodeOfComponent) {
             const stmts = [];
-            const nameOfStore = nodeOfComponent.getStruct().getName();
+            const nameOfStore = nodeOfComponent.isEditableComponent ?
+                nodeOfComponent.getStruct().getOriginalName() : nodeOfComponent.getStruct().getName();
             if (nodeOfComponent.disposablePage) {
                 stmts.push(`if(!this.isGotoSameRoute(route))`)
                 stmts.push(`Application.getStore().${Util.camel('renew', nameOfStore)}()`);
@@ -7311,7 +7353,7 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
+            if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.setWrapView('LocalizationProvider');
                 node.appendImportStmt({part: '{AdapterMoment}', from: '@mui/x-date-pickers/AdapterMoment'});
                 node.appendWrapProps({dateAdapter: '###AdapterMoment'});
@@ -7815,10 +7857,11 @@ class ProjectFileHandler extends PathBase {
                     stmts.push(`const moment = event`);
                     stmts.push(`objectOfParam.value = moment`)
                     paramStmt = `moment`;
-                } else if (node.isDateTimeRangePickerView()) {
+                } else if (node.isTimeDateRangePickerView()) {
                     stmts.length = 0;
                     stmts.push(`const moments = event`);
                     stmts.push(`objectOfParam.value = moments`);
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(moments)`)
                     stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(moments))`);
                     stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(moments))`);
                 } else {
@@ -7848,7 +7891,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
             }
 
-            if (node.isDateTimeRangePickerView()) {
+            if (node.isTimeDateRangePickerView()) {
 
                 if (node.hasLabel()) {
                     const labels = node.getLabel();
@@ -7886,13 +7929,15 @@ class ProjectFileHandler extends PathBase {
                         name: node.getFieldNameOfStart(),
                         type: 'timestamp',
                         incest: node.incest,
-                        column: node.isColumnAttribute()
+                        belong2TimeDatePicker: true,
+                        column: node.column,
                     },
                     {
                         name: node.getFieldNameOfEnd(),
                         type: 'timestamp',
                         incest: node.incest,
-                        column: node.isColumnAttribute()
+                        belong2TimeDatePicker: true,
+                        column: node.column
                     }
                 )
 
@@ -8012,7 +8057,7 @@ class ProjectFileHandler extends PathBase {
                 )
             }
 
-            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isDateTimeRangePickerView()) {
+            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
@@ -8020,7 +8065,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isTabItemView()) {
                 node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
-            } else if (node.isTimeDatePickerView() || node.isDateTimeRangePickerView() || node.isAutoCompleteView()) {
+            } else if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView() || node.isAutoCompleteView()) {
                 /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
@@ -8060,6 +8105,7 @@ class ProjectFileHandler extends PathBase {
                 const name = node.getFieldNameOfSuggest();
                 const plural = 's';
                 const fieldName = `${name}s`;
+                const label = node.getFieldNameOfLabel();
                 node.getParentNode().appendChildrenWithJsons({
                         name,
                         type: `array`,
@@ -8110,6 +8156,13 @@ class ProjectFileHandler extends PathBase {
                         incest: node.incest,
                         description: `用來force ${node.getName()} re-render`
                     },
+                    {
+                        name: label,
+                        type: `string`,
+                        incest: node.incest,
+                        l10n: true,
+                        description: node.label,
+                    }
                 )
 
                 node.appendChildrenWithJsons({
@@ -8119,7 +8172,7 @@ class ProjectFileHandler extends PathBase {
                     type: 'string',
                     props: {size: node.size},
                     search: node.search,
-                    description: node.props.noOptionsText,
+                    description: node.label,
                     belongAutoComplete: true,
                     injectViewProp: {
                         name: 'renderInput',
@@ -8128,6 +8181,9 @@ class ProjectFileHandler extends PathBase {
                 })
 
                 node.appendViewProps(
+                    {
+                        noOptionsText: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, label)}()`,
+                    },
                     {
                         options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
                     },
@@ -8147,6 +8203,11 @@ class ProjectFileHandler extends PathBase {
                         value: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, node.getFieldName())}()`
                     }
                 )
+
+                if (node.hasSize()) {
+                    node.appendViewProps({size: node.getSize()});
+
+                }
             }
 
             appendPropsOfNode(node, node.needOnChangeBehavior,
@@ -8651,14 +8712,15 @@ class ProjectFileHandler extends PathBase {
 
     async activate() {
         const self = this;
-        const enableOfRapid = !!this.nodeOfAncestor.rapidBuild.enable;
+        const enableOfRapid = this.isProduction() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
         const components = this.nodeOfAncestor.rapidBuild.componentName;
 
         if (!enableOfRapid)
-            await self.execute();
+            return await self.execute();
 
-        if (this.isWebPlatform() && !this.isProduction() && enableOfRapid) {
+        if (this.isWebPlatform() && enableOfRapid) {
             ENABLE_FAST_DEVELOP_MODE = true;
+            /** typeof [array] 會 return object */
             switch (typeof components) {
                 case 'object':
                     if (_.isArray(components))

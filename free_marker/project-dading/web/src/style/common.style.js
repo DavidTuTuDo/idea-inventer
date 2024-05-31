@@ -387,6 +387,8 @@ class CommonStyle {
 
   /** => following for main  component  */
 
+  MainFilterOfSearchOrderAreaOfFuncClearButton = {};
+
   MainFilterOfSearchOrderAreaOfFuncCancelButton = {};
 
   MainFilterOfSearchOrderAreaOfFuncSubmitButton = {};
@@ -433,7 +435,13 @@ class CommonStyle {
 
   MainFilterOfSearchOrderAreaOfContactDiv = {};
 
-  MainFilterOfSearchOrderIdOfOrderTextField = {};
+  MainFilterOfSearchOrderAreaOfIdentityGoAheadButton = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityPasteButton = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityIdOfOrderTextField = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityDiv = {};
 
   MainFilterOfSearchOrderSwipeableDrawerWrap = {};
 

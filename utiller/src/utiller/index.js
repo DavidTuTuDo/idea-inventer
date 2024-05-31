@@ -826,16 +826,24 @@ class Utiller {
         return indexes;
     }
 
-    /** modify origin array */
-    insertToArray = (array, _index, ...item) => {
-        _index = _index + 1;
+    /**
+     * 將items insert指定的index後方
+     * modify origin array
+     * 如果要insert to head, index 要給 -1
+     * const array = [3, 4, 5];
+     * utiller.insertToArray(array, -1, 'QQ', 'WW'); /** ['QQ','WW',3,4,5]
+     * utiller.insertToArray(array, 1, 'QQ', 'WW'); /** [3,'QQ','WW',4,5]
+     * utiller.insertToArray(array, 999, 'QQ', 'WW'); /**  [3,4,5,'QQ','WW']
+     * */
+
+    insertToArray = (array, index, ...item) => {
+        index = index + 1;
         /** 植樹問題拔 我想 */
-        const initial = _.slice(array, 0, _index);
-        const end = _.slice(array, _index, array.length);
+        const initial = _.slice(array, 0, index);
+        const end = _.slice(array, index, array.length);
         const combine = [...initial, ...item, ...end];
         array.length = 0;
         array.push(...combine);
-
     }
 
     /** 比較內文, 不是只比較 memory address */
@@ -1815,6 +1823,9 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // const array = [3, 4, 5];
+            // utiller.insertToArray(array, 999, 'QQ', 'WW');
+            // console.log(array);
             // const array1 = [1, 2, 3, 4, 5];
             // const array2 = [3, 4, 5, 6, 7];
             // console.log(utiller.getArrayOfInteraction(array1, array2))
@@ -1833,6 +1844,30 @@ if (configerer.DEBUG_MODE) {
             // utiller.removeAttributeBy(obj);
             // console.log(obj);
             // console.log(utiller.getECPayCurrentTimeFormat(utiller.getTimeStampWithConditions({days: -1})))
+
+            // nsertToArray = (array, _index, ...item) => {
+            //     if (_.isEmpty(array)) {
+            //         array.push(...item)
+            //     } else if (_index > _.size(array) - 1) {
+            //         throw new ERROR(9999, `4654361321 index is large than array size`)
+            //     } else if (_index === 0) {
+            //         /** push to head */
+            //         const entity = _.slice(array, 0, array.length);
+            //         array.length = 0
+            //         array.push(...item, ...entity);
+            //     } else if (_index === _.size(array) - 1) {
+            //         /** push to tail */
+            //         array.push(...item);
+            //     } else {
+            //         _index = _index + 1;
+            //         /** 植樹問題拔 我想 */
+            //         const initial = _.slice(array, 0, _index);
+            //         const end = _.slice(array, _index, array.length);
+            //         const combine = [...initial, ...item, ...end];
+            //         array.length = 0;
+            //         array.push(...combine);
+            //     }
+            // }
         }
     )();
 }

@@ -23,10 +23,16 @@ class CommonRemoteApi {
             return obj;
     }
 
+    /** null是讓mui picker沒有預設值(顯示出label)，所以特別保留 */
     normalizeAsMoment(param) {
-        return param instanceof this.FirebaseTimestampClass() ? moment(param.toMillis()) :
-            _.isArray(param) ? param.map((each) =>
-                moment(each instanceof this.FirebaseTimestampClass() ? each.toMillis() : each)) : moment(param);
+        const self = this;
+        function getSpecificExpress(pram) {
+            if (_.isNull(pram)) return pram;
+            else if(pram instanceof self.FirebaseTimestampClass()) return moment(pram.toMillis());
+            else return moment(pram);
+        }
+
+        return _.isArray(param) ? param.map((each) => getSpecificExpress(each)) : getSpecificExpress(param);
     }
 
     getFieldNameOfDocumentId() {

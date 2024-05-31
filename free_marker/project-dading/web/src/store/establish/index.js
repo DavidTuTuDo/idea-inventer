@@ -44,7 +44,7 @@ class EstablishStore extends BaseEstablishStore {
 
     async submitOrder() {
         const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), this.result());
-        Application.getMainStore().pushOrdersByIndex(0, result.value);
+        Application.getMainStore().pushOrdersByIndex(-1, result.value);
         this.setId(result.value.id);
     }
 

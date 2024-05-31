@@ -387,6 +387,8 @@ class MobileStyle {
 
   /** => following for main  component  */
 
+  MainFilterOfSearchOrderAreaOfFuncClearButton = {};
+
   MainFilterOfSearchOrderAreaOfFuncCancelButton = {};
 
   MainFilterOfSearchOrderAreaOfFuncSubmitButton = {};
@@ -433,7 +435,13 @@ class MobileStyle {
 
   MainFilterOfSearchOrderAreaOfContactDiv = {};
 
-  MainFilterOfSearchOrderIdOfOrderTextField = {};
+  MainFilterOfSearchOrderAreaOfIdentityGoAheadButton = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityPasteButton = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityIdOfOrderTextField = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityDiv = {};
 
   MainFilterOfSearchOrderSwipeableDrawerWrap = {};
 

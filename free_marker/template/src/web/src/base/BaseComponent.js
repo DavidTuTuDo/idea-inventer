@@ -924,8 +924,17 @@ class BaseComponent extends MuiComponent {
                           textInput,
                           component,
                           enableCancel,
+                          disposablePage = false,
                           fullWidth = false,
                       }) {
+
+        if (disposablePage && Application.getStoreObject()) {
+            const nameOfComponent = customView.nameOfComponent;
+            const store = Application.getStoreObject()[`${nameOfComponent}`];
+            if(store)
+                store.clean();
+        }
+
         return (<AlertDialog
             title={title}
             content={content}

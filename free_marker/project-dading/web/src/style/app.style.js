@@ -387,6 +387,8 @@ class AppStyle {
 
   /** => following for main  component  */
 
+  MainFilterOfSearchOrderAreaOfFuncClearButton = {};
+
   MainFilterOfSearchOrderAreaOfFuncCancelButton = {};
 
   MainFilterOfSearchOrderAreaOfFuncSubmitButton = {};
@@ -433,7 +435,13 @@ class AppStyle {
 
   MainFilterOfSearchOrderAreaOfContactDiv = {};
 
-  MainFilterOfSearchOrderIdOfOrderTextField = {};
+  MainFilterOfSearchOrderAreaOfIdentityGoAheadButton = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityPasteButton = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityIdOfOrderTextField = {};
+
+  MainFilterOfSearchOrderAreaOfIdentityDiv = {};
 
   MainFilterOfSearchOrderSwipeableDrawerWrap = {};
 

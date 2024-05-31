@@ -20,7 +20,18 @@ class BaseStore extends ClientRemoteApi {
 
     component;
 
+    /** 用來放initial completed 之後的任務! 例如disposable page 每次都會fetch，然後又要把bean inject value的行為機制，就要放在這裡*/
+    taskOfCompleted = [];
+
     refreshLocally() {
+    }
+
+    pushTaskOfCompleted(task = async () => true) {
+        this.taskOfCompleted.push(task)
+    }
+
+    pushTasksOfCompleted(...task) {
+        this.taskOfCompleted.push(...task)
     }
 
     /** 因為range pick view的設計有增添兩個column start-end，在inject到store之前把 view需要用到的value還原成[moement,moment]*/
@@ -213,7 +224,9 @@ class BaseStore extends ClientRemoteApi {
     }
 
     fromJson(obj) {
-        this.initial(obj)
+        this.decorate(obj);
+        this.initial(obj);
+        return obj;
     }
 
     initial(props) {
@@ -268,6 +281,11 @@ class BaseStore extends ClientRemoteApi {
         this.setInitialFetchCompleted(true);
         if (this.getComponent() !== undefined) {
             await this.getComponent().invalidateNextPageBehavior();
+        }
+
+        while (!_.isEmpty(this.taskOfCompleted)) {
+            const task = this.taskOfCompleted.shift();
+            await task(this); /** this就是store本人*/
         }
     }
 
