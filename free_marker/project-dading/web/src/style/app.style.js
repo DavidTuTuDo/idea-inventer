@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -291,11 +293,27 @@ class AppStyle {
 
   AccountPaper = {};
 
+  /** => following for addition  component  */
+
+  AdditionMemberAreaOfContactPhoneTextField = {};
+
+  AdditionMemberAreaOfContactNameTextField = {};
+
+  AdditionMemberAreaOfContactDiv = {};
+
+  AdditionMemberDivList = {};
+
+  AdditionMemberCard = {};
+
+  AdditionShowTypography = {};
+
+  AdditionPaper = {};
+
   /** => following for establish  component  */
 
-  EstablishAreaOfRemoteClearReactFragmentWrap = {};
-
   EstablishAreaOfRemoteClearButton = {};
+
+  EstablishAreaOfRemoteCancelReactFragmentWrap = {};
 
   EstablishAreaOfRemoteCancelButton = {};
 
@@ -348,6 +366,8 @@ class AppStyle {
   EstablishAreaOfTourAgentMenuItem = {};
 
   EstablishAreaOfTourAgentTextFieldList = {};
+
+  EstablishAreaOfTourCountOfPeopleReactFragmentWrap = {};
 
   EstablishAreaOfTourCountOfPeopleTextField = {};
 
@@ -488,8 +508,6 @@ class AppStyle {
   MainOrderDivList = {};
 
   MainOrderCard = {};
-
-  MainAreaOfFuncHistoryOfOrderButton = {};
 
   MainAreaOfFuncSearchOfOrderButton = {};
 

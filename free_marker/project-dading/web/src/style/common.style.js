@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -291,11 +293,27 @@ class CommonStyle {
 
   AccountPaper = {};
 
+  /** => following for addition  component  */
+
+  AdditionMemberAreaOfContactPhoneTextField = {};
+
+  AdditionMemberAreaOfContactNameTextField = {};
+
+  AdditionMemberAreaOfContactDiv = {};
+
+  AdditionMemberDivList = {};
+
+  AdditionMemberCard = {};
+
+  AdditionShowTypography = {};
+
+  AdditionPaper = {};
+
   /** => following for establish  component  */
 
-  EstablishAreaOfRemoteClearReactFragmentWrap = {};
-
   EstablishAreaOfRemoteClearButton = {};
+
+  EstablishAreaOfRemoteCancelReactFragmentWrap = {};
 
   EstablishAreaOfRemoteCancelButton = {};
 
@@ -348,6 +366,8 @@ class CommonStyle {
   EstablishAreaOfTourAgentMenuItem = {};
 
   EstablishAreaOfTourAgentTextFieldList = {};
+
+  EstablishAreaOfTourCountOfPeopleReactFragmentWrap = {};
 
   EstablishAreaOfTourCountOfPeopleTextField = {};
 
@@ -488,8 +508,6 @@ class CommonStyle {
   MainOrderDivList = {};
 
   MainOrderCard = {};
-
-  MainAreaOfFuncHistoryOfOrderButton = {};
 
   MainAreaOfFuncSearchOfOrderButton = {};
 

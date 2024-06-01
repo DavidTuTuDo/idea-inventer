@@ -42,6 +42,7 @@ const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
 const SIGN_OF_EMPTY_STORE = 'pure';
 const FILE_EXTENSION_OF_I18N = 'i18n.stmts';
 
+
 /** source.js 是專有名詞的概念*/
 
 const LESS_MODULES = [
@@ -81,7 +82,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: ['Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
         },
@@ -720,7 +721,7 @@ class CodegenNode {
 
     getSpecificComponent(nameOfComponent) {
         const node = this.getNodeOfSource();
-        return  _.find(node['components'],
+        return _.find(node['components'],
             (component) => _.isEqual(component.name, nameOfComponent))
     }
 
@@ -1618,7 +1619,7 @@ class CodegenNode {
         }
 
         function getStmtOfDisposable() {
-            if(!self.hasCustomViewDialog()) return '';
+            if (!self.hasCustomViewDialog()) return '';
             const nodeOfSpecificComponent = self.getSpecificComponent(self.getAlertDialog().customView);
             return nodeOfSpecificComponent.isDisposablePage() ? `disposablePage:true` : ``;
         }
@@ -2422,6 +2423,11 @@ class CodegenNode {
         if (!Util.isUndefinedNullEmpty(extra)) {
             items.push(extra);
         }
+
+        if (this.isTextFieldView() && this.hasHelperVisual()) {
+            items.push(this.getNameOfHelperVisualIcon(), 'icon');
+        }
+
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), ...items, 'clicked');
     }
 
@@ -4862,7 +4868,7 @@ class ComponentBuilder extends BaseBuilder {
             )
         }
 
-        baseGenerator.appendField(`nameOfComponent`,`'${componentNode.getName()}'`,[],[],'static')
+        baseGenerator.appendField(`nameOfComponent`, `'${componentNode.getName()}'`, [], [], 'static')
 
         if (_.size(paramsInPath) > 0) {
             /** 這個邏輯必須在fetch之前 */
@@ -7699,16 +7705,29 @@ class ProjectFileHandler extends PathBase {
 
     /* typeOfView 可以是 default | list | wrap */
     enrichTextFieldBehavior(node, typeOfView = 'default') {
+        const self = this;
+
+        function getContentsOfClickBehavior(node) {
+            const stmts = []
+            if (node.hasAlertDialog()) {
+                stmts.push(`objectOfParam.view = event;`);
+                stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
+            } else {
+                stmts.push(`self.${node.getFunctionNameOfClicked()}(objectOfParam);`)
+            }
+            return stmts.join(`\n`);
+        }
 
         function getContentOfClick(node, content) {
             node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
-            const functionNameOfVisualIconClick = node.getFunctionNameOfClicked('VisualIcon');
+            const functionNameOfVisualIconClick = node.getFunctionNameOfClicked();
             node.appendMethods({
-                functionName: functionNameOfVisualIconClick,
+                functionName: node.getFunctionNameOfClicked(),
                 params: ['param'],
             })
             return `<IconButton
-                            onClick={(event) => { self.${functionNameOfVisualIconClick}(objectOfParam);}}
+                            onClick={(event) => { 
+                                ${getContentsOfClickBehavior(node)}}}
                             edge="${node.getPositionOfHelperVisual()}" >${content}</IconButton>`
         }
 
@@ -7749,19 +7768,19 @@ class ProjectFileHandler extends PathBase {
         }
 
         if (node.hasHelperVisual()) {
-            let content = '';
+            let contentOfVisual = '';
             node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
 
             if (node.useIconAsHelpVisual()) {
                 this.appendMuiIconImport(node, node.getNameOfHelperVisualIcon());
-                content = `<${node.getNameOfHelperVisualIcon()} />`;
+                contentOfVisual = `<${node.getNameOfHelperVisualIcon()} />`;
             } else if (node.useTextAsHelperVisual()) {
-                content = node.getTextOfHelperVisual();
+                contentOfVisual = node.getTextOfHelperVisual();
             } else {
                 throw new ERROR(9999, '87454646 useHelperVisual() should choose icon/text');
             }
 
-            const view = `<InputAdornment position="${node.getPositionOfHelperVisual()}">${node.hasClickHelperVisual() ? getContentOfClick(node, content) : content}</InputAdornment>`;
+            const view = `<InputAdornment position="${node.getPositionOfHelperVisual()}">${node.hasClickHelperVisual() ? getContentOfClick(node, contentOfVisual) : contentOfVisual}</InputAdornment>`;
             const prop = `{${node.isPositionLocateAtStart() ? 'startAdornment' : 'endAdornment'}:(${view})}`;
 
             arrayOfProps.push({InputProps: `###${prop}`})
@@ -7946,7 +7965,7 @@ class ProjectFileHandler extends PathBase {
 
 
             if (node.isTextFieldView()) {
-                if (node.hasDescription()) {
+                if (!node.hasLabel() && node.hasDescription()) {
                     node.label = node.description;
                 }
 
