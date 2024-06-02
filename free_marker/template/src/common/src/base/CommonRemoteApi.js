@@ -26,9 +26,10 @@ class CommonRemoteApi {
     /** null是讓mui picker沒有預設值(顯示出label)，所以特別保留 */
     normalizeAsMoment(param) {
         const self = this;
+
         function getSpecificExpress(pram) {
             if (_.isNull(pram)) return pram;
-            else if(pram instanceof self.FirebaseTimestampClass()) return moment(pram.toMillis());
+            else if (pram instanceof self.FirebaseTimestampClass()) return moment(pram.toMillis());
             else return moment(pram);
         }
 
@@ -52,13 +53,16 @@ class CommonRemoteApi {
     }
 
     toFireBaseTimestampObject(obj) {
+        if (_.isNull(obj) || _.isUndefined(obj))
+            return null;
+
         if (obj instanceof firebase.getFirestoreLibrary().Timestamp) {
             return obj;
         } else {
             try {
-                const ts = moment(obj).valueOf();
-                return this.getFirebaseTimestampObject(ts);
+                return this.getFirebaseTimestampObject(moment(obj).valueOf());
             } catch (error) {
+                Util.appendError(`441513135 ${error.message}`);
                 return this.getObjectOfCurrentTimeStamp();
             }
         }
@@ -508,6 +512,9 @@ class CommonRemoteApi {
     }
 
     handleCommitment(update, commitment, object) {
+        for (const key in commitment)
+            if (_.isUndefined(commitment[key]) || _.isNull(commitment[key])) delete commitment[key]
+
         if (update) {
             for (const key in commitment) {
                 if (key in object) {

@@ -27,9 +27,9 @@ class AdditionMemberStore extends BaseAdditionMemberStore {
   }
 
   async joinMember2Order(obj = this) {
-    const nodeOfAddition = this.getParentNode();
-    nodeOfAddition.pushMember(nodeOfAddition.columnData());
-    nodeOfAddition.getComponent().showInfoSnackMessage(`新增團員成功`);
+    Application.getEstablishStore().pushMember(this.columnData())
+    this.getStoreOfComponent().getComponent().showInfoSnackMessage(`新增團員${this.getName()}成功`);
+    this.getStoreOfComponent().getComponent(true).dismiss();
     /** 還要放進 establish 裡面的 member */
   }
 

@@ -27,6 +27,11 @@ class BBB extends AAA {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+
+        const a = null;
+        console.log(a ? 'yyy':'bbb')
+            console.log(_.isUndefined(null))
+
         // const bbb = new BBB();
         // console.log(bbb.properties);
         // console.log(_.size(`fdipsjfoijsdoifdso`))

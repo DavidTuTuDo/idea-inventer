@@ -29,7 +29,7 @@ class EstablishStore extends BaseEstablishStore {
     }
 
     result = () => {
-        const submit = this.data();
+        const submit = this.columnData();
         submit.destination = _.isObject(submit.destination) ? submit.destination.value : '0';
         submit.idOfOrder = UserInfoRef.getUid()
         return submit;

@@ -184,6 +184,15 @@ class BaseStore extends ClientRemoteApi {
         return this.parentNode;
     }
 
+    /** 拿到對應component的store,這樣才能呼叫getComponent() */
+    getStoreOfComponent() {
+        let node = this;
+        while (node.getParentNode() !== undefined) {
+            node = node.getParentNode();
+        }
+        return node;
+    }
+
     hasParent() {
         return !!this.parentNode;
     }
@@ -226,6 +235,8 @@ class BaseStore extends ClientRemoteApi {
     fromJson(obj) {
         this.decorate(obj);
         this.initial(obj);
+        console.log(`2131321312`);
+        console.log(obj);
         return obj;
     }
 

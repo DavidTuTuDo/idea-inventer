@@ -38,7 +38,7 @@ class Utiller {
         }
     }
 
-    getNumberOfNormalize(value, defaultValue) {
+    getNumberOfNormalize(value, defaultValue = 0) {
         if (_.isNumber(value))
             return value;
         try {
@@ -50,14 +50,34 @@ class Utiller {
         return defaultValue;
     }
 
-    getStringOfNormalize(value, defaultValue) {
+    getBooleanOfNormalize(value, defaultValue = false) {
+        if (_.isBoolean(value))
+            return value;
+
+        if(_.isNumber(value) && _.isEqual(value,1))
+            return true;
+
+        if(_.isNumber(value) && _.isEqual(value,0))
+            return true;
+
+        try {
+            const force = JSON.parse(_.toString(value).toLowerCase())
+            return _.isBoolean(force) ? force : defaultValue;
+        } catch (error) {
+            Util.appendError(`448561684562 ${error.message}`)
+        }
+        return defaultValue;
+    }
+
+
+    getStringOfNormalize(value, defaultValue = '') {
         if (_.isString(value))
             return value
         try {
             const force = _.toString(value);
             return this.isOrEquals(force, '', 'undefined') ? defaultValue : force;
         } catch (error) {
-            Util.appendError(`448616845454 ${error.message}`)
+            Util.appendError(`448616845453 ${error.message}`)
         }
         return defaultValue;
     }
@@ -1823,6 +1843,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getBooleanOfNormalize(-5,'default'))
             // const array = [3, 4, 5];
             // utiller.insertToArray(array, 999, 'QQ', 'WW');
             // console.log(array);

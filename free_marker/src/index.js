@@ -4251,7 +4251,15 @@ class StoreBuilder extends BaseBuilder {
                             value = `this.${child.getFieldName()}.map(each => each.${type.name}())`
                         } else if (child.isObject()) {
                             value = `this.${child.getFieldName()}.${type.name}()`
-                        } else {
+                        } else if (child.isTimeStamp()) {
+                            value = `this.toFireBaseTimestampObject(this.${child.name})`
+                        } else if (child.isString()) {
+                            value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
+                        } else if (child.isNumber()) {
+                            value = `Util.getNumberOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
+                        } else if(child.isBoolean()) {
+                            value = `Util.getBooleanOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
+                        } else{
                             value = `this.${child.getFieldName()}`;
                         }
                         return `${key}:${value}`;
@@ -4521,7 +4529,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                 } else if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = Util.getNumberOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
-                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
+                    contents.push(`const _${child.getFieldName()} = !_.isUndefined(object.${child.getFieldName()}) ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
                 } else if (child.isObject() && self.isWebPlatform()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
@@ -7969,14 +7977,14 @@ class ProjectFileHandler extends PathBase {
                         type: 'timestamp',
                         incest: node.incest,
                         belong2TimeDatePicker: true,
-                        column: node.column,
+                        column: true
                     },
                     {
                         name: node.getFieldNameOfEnd(),
                         type: 'timestamp',
                         incest: node.incest,
                         belong2TimeDatePicker: true,
-                        column: node.column
+                        column: true
                     }
                 )
 
