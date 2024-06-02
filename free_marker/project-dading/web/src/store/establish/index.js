@@ -10,13 +10,6 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
-import Salesman from "../establishSalesman";
-import IsPaid from "../establishIsPaid";
-import IsDepositPaid from "../establishIsDepositPaid";
-import Agent from "../establishAgent";
-import moment from "moment";
-import MethodOfPayment from "../establishMethodOfPayment";
-import BaseStore from "../../base/BaseStore";
 import OrderStore from '../mainOrder';
 
 class EstablishStore extends BaseEstablishStore {

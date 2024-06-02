@@ -82,7 +82,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: ['Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['Checkbox', 'Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
         },
@@ -206,6 +206,9 @@ class CodegenNode {
 
     icon = ''
     /** 在iconButton 和 Button都有作用 */
+
+    checkedIcon = ''
+    /** Checkbox 用到的屬性 */
 
     nodeOfOrigin = undefined
     /** 如果用到ref 要拿到原始節點 */
@@ -747,6 +750,14 @@ class CodegenNode {
         return this.icon ?? '';
     }
 
+    hasCheckedIcon() {
+        return !_.isEmpty(this.checkedIcon);
+    }
+
+    getCheckedIcon() {
+        return this.checkedIcon ?? '';
+    }
+
     getHelperVisual() {
         return Util.mergeObject(this.defaultOfHelperVisual, this.helperVisual);
     }
@@ -1044,6 +1055,7 @@ class CodegenNode {
             node.isTabListView(type),
             node.isTimeDatePickerView(type),
             node.isTimeDateRangePickerView(type),
+            node.isCheckboxView(type),
         );
     }
 
@@ -2073,6 +2085,10 @@ class CodegenNode {
             node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
     }
 
+    isCheckboxView(type = 'default', node = this) {
+        return node.isAttributeView('Checkbox', type)
+    }
+
     isCustomImageButton(type = 'default') {
         return _.isEqual(this.getView(), 'CustomImageButton');
     }
@@ -2814,7 +2830,7 @@ class CodegenNode {
 
         if (this.type === 'timestamp') {
             if (this.isTimeDateRangePickerView()) return `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
-            else if (this.isTimeDatePickerView()) return `moment()`
+            else if (this.isTimeDatePickerView()) return `null` /** 如果要有初始時間 moment() */
             else if (this.isBelong2TimeDatePicker()) return `null`
             else return `this.getObjectOfCurrentTimeStamp()`;
         }
@@ -7470,7 +7486,7 @@ class ProjectFileHandler extends PathBase {
 
                 if (node.hasDefaultValueOfLabelView())
                     node.appendChildrenWithJsons({
-                        name: `labelOf${_.upperFirst(node.getName())}`,
+                        name: node.getFieldNameOfLabel(),
                         type: `string`,
                         view: `Typography`,
                         outer: true,
@@ -7598,6 +7614,7 @@ class ProjectFileHandler extends PathBase {
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
                     type: 'string', /** succeed, fail */
+                    column: true,
                     defaultValue: node.getSelectedDefaultValue(),
                     incest: node.incest,
                 })
@@ -7866,6 +7883,9 @@ class ProjectFileHandler extends PathBase {
                      const nodeOfInput = _.find(node.getPreciseAttributeParent().getPreciseAttributeChildren(), (each) => each.isBelongAutoComplete(), 0);
                      stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', nodeOfInput.getName(), node.getName())}(value.getValue())`)
                      */
+                } else if (node.isCheckboxView()) {
+                    stmts.push(`objectOfParam.value = value`)
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(value)`)
                 } else if (node.isSimpleSelected() && node.isButton()) {
                     stmts.push(`objectOfParam.object = ${node.getName()}`)
                 } else if (node.isTimeDatePickerView()) {
@@ -8014,6 +8034,36 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+            if (node.isCheckboxView()) {
+                if (node.hasLabel()) {
+                    if (Util.isUndefinedNullEmpty(node.wrapView))
+                        node.setWrapView('div');
+
+                    node.appendChildrenWithJsons({
+                        name: node.getFieldNameOfLabel(),
+                        type: `string`,
+                        view: `Typography`,
+                        outer: true,
+                        l10n: true,
+                        click: node.click,
+                        injectStyle: node.injectStyle,
+                        incest: {view: false, attribute: true},
+                        defaultValue: node.label,
+                    });
+                }
+
+                if (node.hasIcon()) {
+                    this.appendMuiIconImport(node, node.getIcon());
+                    this.appendMuiIconImport(node, node.getCheckedIcon());
+                    node.appendViewProps({icon: `###<${node.getIcon()} />`}, {
+                        checkedIcon: `###<${node.getCheckedIcon()} />`
+                    })
+                }
+
+                if (node.hasSize())
+                    node.appendViewProps({size: `${node.getSize()}`})
+            }
+
             if (node.isWrapByAppBarView() && !node.isScrollingHideDependOnRootNode()) {
                 node.appendWrapProps({position: 'static'})
             }
@@ -8078,7 +8128,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
-            } else if (node.isSwitchView()) {
+            } else if (node.isSwitchView() || node.isCheckboxView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
             } else if (node.isAudioPlayer() || node.isImageView() || node.isAvatarView()) {
                 node.appendViewProps({src: `###${node.getName()}`})

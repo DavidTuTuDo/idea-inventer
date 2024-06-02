@@ -5,8 +5,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -295,6 +293,58 @@ class CommonStyle {
 
   /** => following for addition  component  */
 
+  AdditionMemberAreaOfFuncCancelReactFragmentWrap = {};
+
+  AdditionMemberAreaOfFuncCancelButton = {};
+
+  AdditionMemberAreaOfFuncSubmitButton = {};
+
+  AdditionMemberAreaOfFuncDiv = {};
+
+  AdditionMemberAreaOfExtraCommentTextField = {};
+
+  AdditionMemberAreaOfExtraDiv = {};
+
+  AdditionMemberAreaOfPayPayMethodMenuItem = {};
+
+  AdditionMemberAreaOfPayPayMethodTextFieldList = {};
+
+  AdditionMemberAreaOfPayFeeOfPaidTextField = {};
+
+  AdditionMemberAreaOfPayFeeOfTotalTextField = {};
+
+  AdditionMemberAreaOfPayChargeLabelOfChargeTypography = {};
+
+  AdditionMemberAreaOfPayChargeDivWrap = {};
+
+  AdditionMemberAreaOfPayChargeCheckbox = {};
+
+  AdditionMemberAreaOfPayDiv = {};
+
+  AdditionMemberAreaOfPersonCitizenMenuItem = {};
+
+  AdditionMemberAreaOfPersonCitizenTextFieldList = {};
+
+  AdditionMemberAreaOfPersonAgeMenuItem = {};
+
+  AdditionMemberAreaOfPersonAgeTextFieldList = {};
+
+  AdditionMemberAreaOfPersonGenderMenuItem = {};
+
+  AdditionMemberAreaOfPersonGenderTextFieldList = {};
+
+  AdditionMemberAreaOfPersonPassportTextField = {};
+
+  AdditionMemberAreaOfPersonDiv = {};
+
+  AdditionMemberAreaOfPrivacySerialOfIdentityTextField = {};
+
+  AdditionMemberAreaOfPrivacyBirthdayLocalizationProviderWrap = {};
+
+  AdditionMemberAreaOfPrivacyBirthdayDatePicker = {};
+
+  AdditionMemberAreaOfPrivacyDiv = {};
+
   AdditionMemberAreaOfContactPhoneTextField = {};
 
   AdditionMemberAreaOfContactNameTextField = {};
@@ -305,9 +355,7 @@ class CommonStyle {
 
   AdditionMemberCard = {};
 
-  AdditionShowTypography = {};
-
-  AdditionPaper = {};
+  AdditionDiv = {};
 
   /** => following for establish  component  */
 
@@ -383,9 +431,9 @@ class CommonStyle {
 
   EstablishAreaOfDateDiv = {};
 
-  EstablishAreaOfContactMethodOfPaymentMenuItem = {};
+  EstablishAreaOfContactPayMethodMenuItem = {};
 
-  EstablishAreaOfContactMethodOfPaymentTextFieldList = {};
+  EstablishAreaOfContactPayMethodTextFieldList = {};
 
   EstablishAreaOfContactPhoneTextField = {};
 
@@ -425,9 +473,9 @@ class CommonStyle {
 
   MainFilterOfSearchOrderAreaOfStuffDiv = {};
 
-  MainFilterOfSearchOrderAreaOfSelectedMethodOfPaymentMenuItem = {};
+  MainFilterOfSearchOrderAreaOfSelectedPayMethodMenuItem = {};
 
-  MainFilterOfSearchOrderAreaOfSelectedMethodOfPaymentTextFieldList = {};
+  MainFilterOfSearchOrderAreaOfSelectedPayMethodTextFieldList = {};
 
   MainFilterOfSearchOrderAreaOfSelectedIsPaidMenuItem = {};
 

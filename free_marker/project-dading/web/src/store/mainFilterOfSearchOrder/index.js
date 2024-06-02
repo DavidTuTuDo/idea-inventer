@@ -10,13 +10,6 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
-import Agent from "../mainFilterOfSearchOrderAgent";
-import Salesman from "../mainFilterOfSearchOrderSalesman";
-import MethodOfPayment from "../mainFilterOfSearchOrderMethodOfPayment";
-import IsPaid from "../mainFilterOfSearchOrderIsPaid";
-import IsDepositPaid from "../mainFilterOfSearchOrderIsDepositPaid";
-import moment from "moment";
-import BaseStore from "../../base/BaseStore";
 
 class MainFilterOfSearchOrderStore extends BaseMainFilterOfSearchOrderStore {
     /** -------------------- fields -------------------- **/
