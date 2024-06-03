@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -305,6 +307,12 @@ class AppStyle {
 
   AdditionMemberAreaOfExtraDiv = {};
 
+  AdditionMemberAreaOfCreditCodeOfCreditAuthTextField = {};
+
+  AdditionMemberAreaOfCreditSerialOfCreditTextField = {};
+
+  AdditionMemberAreaOfCreditDiv = {};
+
   AdditionMemberAreaOfPayPayMethodMenuItem = {};
 
   AdditionMemberAreaOfPayPayMethodTextFieldList = {};
@@ -380,6 +388,20 @@ class AppStyle {
   EstablishAreaOfBalanceSalesmanTextFieldList = {};
 
   EstablishAreaOfBalanceDiv = {};
+
+  EstablishAreaOfGroupPersonNameChip = {};
+
+  EstablishAreaOfGroupPersonDivList = {};
+
+  EstablishAreaOfGroupPersonDiv = {};
+
+  EstablishAreaOfGroupLabelOfListLabelOfAppendChip = {};
+
+  EstablishAreaOfGroupLabelOfListDivWrap = {};
+
+  EstablishAreaOfGroupLabelOfListChip = {};
+
+  EstablishAreaOfGroupDiv = {};
 
   EstablishAreaOfCreditCodeOfCreditAuthTextField = {};
 

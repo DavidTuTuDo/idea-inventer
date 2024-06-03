@@ -61,6 +61,7 @@ class MainComponent extends BaseMainComponent {
             this.refOfCreateOfOrder.current.click();
             Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
                 const result = store.fromJson(order);
+                store.setPersons(...result.members.map((member)=> member.columnData()))
             })
         }
     }

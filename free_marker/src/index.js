@@ -127,8 +127,8 @@ class CodegenNode {
         disableOnInteraction: false,
     };
 
-    /** 再nodeOfAncestor的用途就是 index.html 的tile */
-    title = '';
+    color;
+    /** 用在Button Chip */
 
     /**
      * 定義在structs那一層
@@ -204,8 +204,11 @@ class CodegenNode {
         items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginO`nly:false} */
     }
 
-    icon = ''
+    icon
     /** 在iconButton 和 Button都有作用 */
+
+    iconOfDeleted
+    /** 用在<Chip /> */
 
     checkedIcon = ''
     /** Checkbox 用到的屬性 */
@@ -264,6 +267,9 @@ class CodegenNode {
      * }
      *
      * */
+
+    /** Chip,Button的畫面屬性 */
+    variant;
 
     methods = [];
     /** [...{params = [],functionName = 'string',loginOnly = false}]
@@ -626,6 +632,8 @@ class CodegenNode {
 
     click = false;
 
+    deleted = false;
+
     defaultValue;
     /** 可以指定attribute的default value */
 
@@ -671,6 +679,9 @@ class CodegenNode {
         /** 取消鍵的控制，例如合約型態的就enable=false **/
         fullWidth: false,
         /** 讓dialog可以橫幅滿版，不然web最多到600px,mobile最多到350px **/
+
+        deleted: false,
+        /** 放在onDeleted的邏輯裡,目前只有Chip*/
     };
     /** 放admin的json file*/
 
@@ -714,6 +725,14 @@ class CodegenNode {
     /** 用於註記這個TextField用來修飾AutoComplete*/
     belong2AutoComplete = false
 
+    hasVariant() {
+        return !_.isEmpty(this.variant);
+    }
+
+    getVariant() {
+        return this.variant ?? 'outlined'
+    }
+
     getSize() {
         return this.size
     }
@@ -748,6 +767,14 @@ class CodegenNode {
 
     getIcon() {
         return this.icon ?? '';
+    }
+
+    hasIconOfDeleted() {
+        return !_.isEmpty(this.iconOfDeleted);
+    }
+
+    getIconOfDeleted() {
+        return this.iconOfDeleted ?? 'DeleteRounded'
     }
 
     hasCheckedIcon() {
@@ -842,8 +869,16 @@ class CodegenNode {
         return this.getNodeOfComponent().getComponents().map(component => component.getStruct());
     }
 
-    getTitle() {
-        return this.title;
+    hasTitle() {
+        return !_.isEmpty(this.title);
+    }
+
+    hasColor() {
+        return !_.isEmpty(this.color);
+    }
+
+    getColor() {
+        return this.color ?? 'primary';
     }
 
     hasDescription() {
@@ -1575,7 +1610,8 @@ class CodegenNode {
 
         function getTaskStmts() {
             if (self.hasConfirmDialog())
-                return `task:async() => self.${self.getFunctionNameOfClicked()}(objectOfParam)`;
+                return `task:async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
+                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
         }
 
         function getActionButtonStmts() {
@@ -1619,7 +1655,7 @@ class CodegenNode {
                 stmts.push(`textInput:{enable:true`);
                 stmts.push(`label:${self.getObservableName()}.${self.getFunctionNameOfDialogInputLabelGetterWithBracket()}`)
                 stmts.push(`value:${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueGetterWithBracket()}`)
-                stmts.push(`onTextFieldChange:(event) => {${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueSetter()}(self.getLatestValueByEvent(event))}`)
+                stmts.push(`onTextFieldChange:(event, value) => {${self.getObservableName()}.${self.getFunctionNameOfDialogInputValueSetter()}(self.getLatestValueByEvent(event))}`)
                 stmts.push(`type:'${self.getAlertDialog().textInput.type}'}`);
                 return stmts.join(',');
             }
@@ -2021,6 +2057,18 @@ class CodegenNode {
 
     isTextFieldView(type = 'default', node = this) {
         return this.isAttributeView('TextField', type, node);
+    }
+
+    isChipView(type = 'default', node = this) {
+        return this.isAttributeView('Chip', type, node);
+    }
+
+    isAlertDialog4Deleted(){
+        return this.getAlertDialog().deleted;
+    }
+
+    isAlertDialog4Click(){
+        return !this.getAlertDialog().deleted;
     }
 
     isTabItemView(type = 'default') {
@@ -2430,6 +2478,10 @@ class CodegenNode {
         return !!this.view && !!this.click;
     }
 
+    hasDeletedView() {
+        return !!this.view && !!this.deleted;
+    }
+
     setClick(click) {
         this.click = click
     }
@@ -2445,6 +2497,10 @@ class CodegenNode {
         }
 
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), ...items, 'clicked');
+    }
+
+    getFunctionNameOfDeleted() {
+        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'deleted');
     }
 
     getFunctionNameOfPlayEnd() {
@@ -5325,9 +5381,9 @@ class ComponentBuilder extends BaseBuilder {
 
 
             if (node.isSimpleSelected()) {
-                props['onChange'] = `###(event)=>{
-                    const value = event.target.value;
-                    ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(value)
+                props['onChange'] = `###(event, value)=>{
+                    const latest = event.target.value;
+                    ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)
                     ${appendOnChangedStmt()}
                 }`;
 
@@ -7328,7 +7384,7 @@ class ProjectFileHandler extends PathBase {
          */
     }
 
-    /** 放一些SimpleViewPager, SimpleGrid*/
+    /** 有些專有名詞(SimpleViewPager, SimpleGrid)，會重新setView(latest)，而latest對應該產生的行為會實作在 enrichNodesOfBehavior */
     enrichNodeWithCustomViewDefined(nodes) {
         for (const node of nodes) {
 
@@ -8016,7 +8072,7 @@ class ProjectFileHandler extends PathBase {
 
                     /** onSearchPress() */
                     node.appendViewProps({
-                        onKeyPress: `###(event) => {
+                        onKeyPress: `###(event, value) => {
                         if(_.isEqual(event.key ,'Enter')){
                             event.preventDefault();
                             self.${node.getFunctionNameOfSearchPressed()}(${node.getFieldName()},${node.getPreciseAttributeParentName()})
@@ -8033,7 +8089,17 @@ class ProjectFileHandler extends PathBase {
                     /** TextField type={`search`} */
                     /** node.appendViewProps({type: 'search'}) */
                 }
+            }
 
+            if (node.isChipView()) {
+                if (node.hasDeletedView()) {
+                    this.appendMuiIconImport(node, node.getIconOfDeleted());
+                    node.appendViewProps({deleteIcon: `###<${node.getIconOfDeleted()} />`});
+                }
+                if (node.hasIcon()) {
+                    this.appendMuiIconImport(node, node.getIcon());
+                    node.appendViewProps({icon: `###<${node.getIcon()} />`});
+                }
             }
 
             /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
@@ -8077,7 +8143,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendWrapProps({position: 'static'})
             }
 
-            if (node.isButton() || node.isIconButton()) {
+            if (node.isChipView() || node.isButton() || node.isIconButton()) {
                 node.setClick(true);
                 if (node.needIndependClick())
                     node.appendViewProps({ref: `###self.${node.getFieldNameOfRef()}`})
@@ -8134,8 +8200,9 @@ class ProjectFileHandler extends PathBase {
                     {onOpen: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(true)`}
                 )
             }
-
-            if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
+            if (node.isChipView()) {
+                node.appendViewProps({label: `###${node.getName()}`})
+            } else if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView() || node.isCheckboxView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
@@ -8288,6 +8355,7 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
+
             appendPropsOfNode(node, node.needOnChangeBehavior,
                 [{onChange: `###(event, value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
                 [{
@@ -8337,34 +8405,43 @@ class ProjectFileHandler extends PathBase {
                         onPlay: `###(param) => self.${node.getFunctionNameOfOnPlay()}(param)`
                     }
                 )
-
             }
 
             if (node.isClickView()) {
+
                 node.appendMethods({
                     functionName: node.getFunctionNameOfClicked(),
                     params: ['param'],
                     loginOnly: node.hasLoginRequiredDialog(),
                 })
 
+                if (node.hasDeletedView()) {
+                    node.appendMethods({
+                        functionName: node.getFunctionNameOfDeleted(),
+                        params: ['param'],
+                        loginOnly: node.hasLoginRequiredDialog(),
+                    });
+                }
+
                 const onClickStmts = [];
+                const onDeleteStmts = [];
                 if (node.hasLoginRequiredDialog()) {
                     onClickStmts.push(
                         `if(!UserInfoRef.isLoginWithSucceed()) {
                         self.enableLoginConfirmDialog();
                         return;
-                    }`
-                    )
+                    }`)
                 }
 
                 if (node.hasConfirmDialog()) {
-                    onClickStmts.push(`objectOfParam.view = event;`)
-                    onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
+                    const stmts = [`objectOfParam.view = event;`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+                    node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
                 } else if (node.isTabItemView()) {
                     onClickStmts.push(`self.getStore().setValueOfSelectedTab(${node.getName()}.getValue())`)
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 } else if (node.hasCustomViewDialog()) {
-                    onClickStmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
+                    const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
+                    node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
                 } else if (node.hasAlertMenu()) {
                     onClickStmts.push(`event.stopPropagation()`)
                     onClickStmts.push(`objectOfParam.view = event`)
@@ -8373,7 +8450,19 @@ class ProjectFileHandler extends PathBase {
                 } else {
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 }
-                node.appendViewProps({onClick: `###(event) => {${onClickStmts.join('\n')}}`})
+
+                if (node.hasDeletedView() && node.isAlertDialog4Deleted()) {
+                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
+                    node.appendViewProps({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
+                    node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
+                } else if(node.hasDeletedView() && node.isAlertDialog4Click()) {
+                    /** alertDialog 不是為了deleted*/
+                    onDeleteStmts.push(...[`objectOfParam.view = event;`,`self.${node.getFunctionNameOfDeleted()}(objectOfParam)`])
+                    node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`});
+                    node.appendViewProps({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
+                }else {
+                    node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
+                }
             }
 
             if (!node.isPathArray() && node.listEmptyTip.isDefaultValue) {
@@ -8404,6 +8493,14 @@ class ProjectFileHandler extends PathBase {
                     params,
                 })
             }
+
+            if (node.hasVariant())
+                node.appendViewProps({variant: node.getVariant()})
+
+            if (node.hasColor()) {
+                node.appendViewProps({variant: node.getColor()})
+            }
+
             this.enrichNodesOfBehavior(node.getChildren());
         }
 
