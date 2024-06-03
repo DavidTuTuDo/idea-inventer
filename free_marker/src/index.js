@@ -2832,6 +2832,7 @@ class CodegenNode {
             if (this.isTimeDateRangePickerView()) return `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
             else if (this.isTimeDatePickerView()) return `null` /** 如果要有初始時間 moment() */
             else if (this.isBelong2TimeDatePicker()) return `null`
+            else if (_.isNull(this.getDefaultValue())) return `null` /** timestamp可以給初始時間 */
             else return `this.getObjectOfCurrentTimeStamp()`;
         }
 
@@ -4257,9 +4258,9 @@ class StoreBuilder extends BaseBuilder {
                             value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
                         } else if (child.isNumber()) {
                             value = `Util.getNumberOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
-                        } else if(child.isBoolean()) {
+                        } else if (child.isBoolean()) {
                             value = `Util.getBooleanOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
-                        } else{
+                        } else {
                             value = `this.${child.getFieldName()}`;
                         }
                         return `${key}:${value}`;

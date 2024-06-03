@@ -60,7 +60,7 @@ class MainComponent extends BaseMainComponent {
             Application.getEstablishStore().clean();
             this.refOfCreateOfOrder.current.click();
             Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
-                store.fromJson(order);
+                const result = store.fromJson(order);
             })
         }
     }

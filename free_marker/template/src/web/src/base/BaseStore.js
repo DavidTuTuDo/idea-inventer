@@ -235,8 +235,6 @@ class BaseStore extends ClientRemoteApi {
     fromJson(obj) {
         this.decorate(obj);
         this.initial(obj);
-        console.log(`2131321312`);
-        console.log(obj);
         return obj;
     }
 
