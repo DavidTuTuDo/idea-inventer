@@ -295,9 +295,17 @@ class AppStyle {
 
   /** => following for addition  component  */
 
+  AdditionAreaOfBatchBatchCancelChip = {};
+
+  AdditionAreaOfBatchBatchUpdateChip = {};
+
+  AdditionAreaOfBatchDiv = {};
+
   AdditionMemberAreaOfFuncCancelReactFragmentWrap = {};
 
   AdditionMemberAreaOfFuncCancelButton = {};
+
+  AdditionMemberAreaOfFuncUpdateButton = {};
 
   AdditionMemberAreaOfFuncSubmitButton = {};
 
@@ -321,13 +329,13 @@ class AppStyle {
 
   AdditionMemberAreaOfPayFeeOfTotalTextField = {};
 
-  AdditionMemberAreaOfPayChargeLabelOfChargeTypography = {};
-
-  AdditionMemberAreaOfPayChargeDivWrap = {};
-
-  AdditionMemberAreaOfPayChargeCheckbox = {};
-
   AdditionMemberAreaOfPayDiv = {};
+
+  AdditionMemberChargeLabelOfChargeTypography = {};
+
+  AdditionMemberChargeDivWrap = {};
+
+  AdditionMemberChargeCheckbox = {};
 
   AdditionMemberAreaOfPersonCitizenMenuItem = {};
 
@@ -367,15 +375,15 @@ class AppStyle {
 
   /** => following for establish  component  */
 
-  EstablishAreaOfRemoteClearButton = {};
+  EstablishAreaOfRemoteClearChip = {};
 
   EstablishAreaOfRemoteCancelReactFragmentWrap = {};
 
-  EstablishAreaOfRemoteCancelButton = {};
+  EstablishAreaOfRemoteCancelChip = {};
 
-  EstablishAreaOfRemoteUpdateButton = {};
+  EstablishAreaOfRemoteUpdateChip = {};
 
-  EstablishAreaOfRemoteSubmitButton = {};
+  EstablishAreaOfRemoteSubmitChip = {};
 
   EstablishAreaOfRemoteDiv = {};
 
@@ -383,17 +391,23 @@ class AppStyle {
 
   EstablishAreaOfBalanceBalanceTextField = {};
 
+  EstablishAreaOfBalancePriceHasPaidTextField = {};
+
   EstablishAreaOfBalanceSalesmanMenuItem = {};
 
   EstablishAreaOfBalanceSalesmanTextFieldList = {};
 
   EstablishAreaOfBalanceDiv = {};
 
+  EstablishAreaOfGroupPersonNameReactFragmentWrap = {};
+
   EstablishAreaOfGroupPersonNameChip = {};
 
   EstablishAreaOfGroupPersonDivList = {};
 
   EstablishAreaOfGroupPersonDiv = {};
+
+  EstablishAreaOfGroupLabelOfListCountOfPeopleTextField = {};
 
   EstablishAreaOfGroupLabelOfListLabelOfAppendChip = {};
 
@@ -437,25 +451,25 @@ class AppStyle {
 
   EstablishAreaOfTourAgentTextFieldList = {};
 
-  EstablishAreaOfTourCountOfPeopleReactFragmentWrap = {};
+  EstablishAreaOfTourPayMethodMenuItem = {};
 
-  EstablishAreaOfTourCountOfPeopleTextField = {};
-
-  EstablishAreaOfTourDestinationInputOfDestinationTextField = {};
-
-  EstablishAreaOfTourDestinationAutocomplete = {};
+  EstablishAreaOfTourPayMethodTextFieldList = {};
 
   EstablishAreaOfTourDiv = {};
+
+  EstablishAreaOfObjectiveCityTextField = {};
+
+  EstablishAreaOfObjectiveDestinationInputOfDestinationTextField = {};
+
+  EstablishAreaOfObjectiveDestinationAutocomplete = {};
+
+  EstablishAreaOfObjectiveDiv = {};
 
   EstablishAreaOfDateTravelLocalizationProviderWrap = {};
 
   EstablishAreaOfDateTravelDateRangePicker = {};
 
   EstablishAreaOfDateDiv = {};
-
-  EstablishAreaOfContactPayMethodMenuItem = {};
-
-  EstablishAreaOfContactPayMethodTextFieldList = {};
 
   EstablishAreaOfContactPhoneTextField = {};
 
@@ -472,6 +486,8 @@ class AppStyle {
   EstablishIdDivWrap = {};
 
   EstablishIdTypography = {};
+
+  EstablishDivWrap = {};
 
   EstablishPaper = {};
 

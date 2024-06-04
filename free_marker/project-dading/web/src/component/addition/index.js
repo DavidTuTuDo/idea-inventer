@@ -1,49 +1,71 @@
 const edit = true;
-import { inject } from "mobx-react";
+import {inject} from "mobx-react";
 import BaseAdditionComponent from "./BaseAdditionComponent";
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import Button from "@mui/material/Button";
-import Accessibility from "@mui/icons-material/Accessibility";
-import CheckBox from "@mui/material/CheckBox";
-import MenuItem from "@mui/material/MenuItem";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
-import TextField from "@mui/material/TextField";
-import { observer } from "mobx-react";
-import Card from "@mui/material/Card";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { Application } from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
+import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import {observer} from "mobx-react";
 
 @inject("addition")
 @observer
 class AdditionComponent extends BaseAdditionComponent {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  onAdditionMemberSubmitButtonClicked(param) {
-      const member = param.object;
-      member.joinMember2Order().then();
-  }
+    onAdditionMemberSubmitButtonClicked(param) {
+        const member = param.object;
+        member.joinMember2Order().then();
+    }
 
-  onAdditionMemberCancelButtonClicked(param) {
-      this.dismiss();
-  }
+    onAdditionMemberUpdateButtonClicked(param) {
+        const member = param.object;
+        member.updateMember2Order().then();
+    }
 
-  /** -------------------- async api -------------------- **/
+    onAdditionBatchCancelChipClicked(param) {
+        this.dismiss();
+    }
+
+    onAdditionMemberCancelButtonClicked(param) {
+        this.dismiss();
+    }
+
+    isBatchUpdateMode = () => {
+        return this.getStore().getIsListMode();
+    }
+
+    isSingleUpdateMode = () => {
+        return this.getStore().getIsUpdate();
+    }
+
+    getInjectStyleOfAdditionMemberAreaOfCreditDiv(member) {
+        return Util.getVisibleOrNone(member.getCharge(), true);
+    }
+
+    getInjectStyleOfAdditionMemberAreaOfPayDiv(member) {
+        return Util.getVisibleOrNone(member.getCharge(), true);
+    }
+
+    getInjectStyleOfAdditionAreaOfBatchDiv(addition) {
+        return Util.getVisibleOrNone(this.isBatchUpdateMode(), true);
+    }
+
+    getInjectStyleOfAdditionMemberAreaOfFuncDiv(member) {
+        return Util.getVisibleOrNone(!this.isBatchUpdateMode(), true);
+    }
+
+    getInjectStyleOfAdditionMemberSubmitButton(member) {
+        return Util.getVisibleOrNone(!this.isSingleUpdateMode(), true);
+    }
+
+    getInjectStyleOfAdditionMemberUpdateButton(member) {
+        return Util.getVisibleOrNone(this.isSingleUpdateMode(), true);
+    }
+
+    /** -------------------- async api -------------------- **/
 }
 
 export default AdditionComponent;

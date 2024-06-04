@@ -295,9 +295,17 @@ class CommonStyle {
 
   /** => following for addition  component  */
 
+  AdditionAreaOfBatchBatchCancelChip = {};
+
+  AdditionAreaOfBatchBatchUpdateChip = {};
+
+  AdditionAreaOfBatchDiv = {};
+
   AdditionMemberAreaOfFuncCancelReactFragmentWrap = {};
 
   AdditionMemberAreaOfFuncCancelButton = {};
+
+  AdditionMemberAreaOfFuncUpdateButton = {};
 
   AdditionMemberAreaOfFuncSubmitButton = {};
 
@@ -321,13 +329,13 @@ class CommonStyle {
 
   AdditionMemberAreaOfPayFeeOfTotalTextField = {};
 
-  AdditionMemberAreaOfPayChargeLabelOfChargeTypography = {};
-
-  AdditionMemberAreaOfPayChargeDivWrap = {};
-
-  AdditionMemberAreaOfPayChargeCheckbox = {};
-
   AdditionMemberAreaOfPayDiv = {};
+
+  AdditionMemberChargeLabelOfChargeTypography = {};
+
+  AdditionMemberChargeDivWrap = {};
+
+  AdditionMemberChargeCheckbox = {};
 
   AdditionMemberAreaOfPersonCitizenMenuItem = {};
 
@@ -367,15 +375,15 @@ class CommonStyle {
 
   /** => following for establish  component  */
 
-  EstablishAreaOfRemoteClearButton = {};
+  EstablishAreaOfRemoteClearChip = {};
 
   EstablishAreaOfRemoteCancelReactFragmentWrap = {};
 
-  EstablishAreaOfRemoteCancelButton = {};
+  EstablishAreaOfRemoteCancelChip = {};
 
-  EstablishAreaOfRemoteUpdateButton = {};
+  EstablishAreaOfRemoteUpdateChip = {};
 
-  EstablishAreaOfRemoteSubmitButton = {};
+  EstablishAreaOfRemoteSubmitChip = {};
 
   EstablishAreaOfRemoteDiv = {};
 
@@ -383,17 +391,23 @@ class CommonStyle {
 
   EstablishAreaOfBalanceBalanceTextField = {};
 
+  EstablishAreaOfBalancePriceHasPaidTextField = {};
+
   EstablishAreaOfBalanceSalesmanMenuItem = {};
 
   EstablishAreaOfBalanceSalesmanTextFieldList = {};
 
   EstablishAreaOfBalanceDiv = {};
 
+  EstablishAreaOfGroupPersonNameReactFragmentWrap = {};
+
   EstablishAreaOfGroupPersonNameChip = {};
 
   EstablishAreaOfGroupPersonDivList = {};
 
   EstablishAreaOfGroupPersonDiv = {};
+
+  EstablishAreaOfGroupLabelOfListCountOfPeopleTextField = {};
 
   EstablishAreaOfGroupLabelOfListLabelOfAppendChip = {};
 
@@ -437,25 +451,25 @@ class CommonStyle {
 
   EstablishAreaOfTourAgentTextFieldList = {};
 
-  EstablishAreaOfTourCountOfPeopleReactFragmentWrap = {};
+  EstablishAreaOfTourPayMethodMenuItem = {};
 
-  EstablishAreaOfTourCountOfPeopleTextField = {};
-
-  EstablishAreaOfTourDestinationInputOfDestinationTextField = {};
-
-  EstablishAreaOfTourDestinationAutocomplete = {};
+  EstablishAreaOfTourPayMethodTextFieldList = {};
 
   EstablishAreaOfTourDiv = {};
+
+  EstablishAreaOfObjectiveCityTextField = {};
+
+  EstablishAreaOfObjectiveDestinationInputOfDestinationTextField = {};
+
+  EstablishAreaOfObjectiveDestinationAutocomplete = {};
+
+  EstablishAreaOfObjectiveDiv = {};
 
   EstablishAreaOfDateTravelLocalizationProviderWrap = {};
 
   EstablishAreaOfDateTravelDateRangePicker = {};
 
   EstablishAreaOfDateDiv = {};
-
-  EstablishAreaOfContactPayMethodMenuItem = {};
-
-  EstablishAreaOfContactPayMethodTextFieldList = {};
 
   EstablishAreaOfContactPhoneTextField = {};
 
@@ -472,6 +486,8 @@ class CommonStyle {
   EstablishIdDivWrap = {};
 
   EstablishIdTypography = {};
+
+  EstablishDivWrap = {};
 
   EstablishPaper = {};
 

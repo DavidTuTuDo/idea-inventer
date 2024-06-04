@@ -665,6 +665,18 @@
     padding: 15px;
   }
 }
+.EstablishDivWrap:extend(.CenterInParentColumn) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishIdTypography {
   @media @mobile {
     /** empty style */
@@ -757,28 +769,6 @@
     /** empty style */
   }
 }
-.EstablishAreaOfContactPayMethodTextFieldList {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.EstablishAreaOfContactPayMethodMenuItem {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .EstablishAreaOfDateDiv {
   @media @mobile {
     /** empty style */
@@ -812,6 +802,56 @@
     /** empty style */
   }
 }
+.EstablishAreaOfObjectiveDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfObjectiveDestinationAutocomplete {
+  width: 38vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    max-width: 180px;
+    min-width: 120px;
+  }
+}
+.EstablishAreaOfObjectiveDestinationInputOfDestinationTextField {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfObjectiveCityTextField {
+  width: 38vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+    max-width: 180px;
+    min-width: 120px;
+  }
+}
 .EstablishAreaOfTourDiv:extend(.CenterInParentRow) {
   gap: 10px;
   @media @mobile {
@@ -824,20 +864,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfTourDestinationAutocomplete {
-  width: 25vw;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    max-width: 180px;
-    min-width: 120px;
-  }
-}
-.EstablishAreaOfTourDestinationInputOfDestinationTextField {
+.EstablishAreaOfTourPayMethodTextFieldList {
   @media @mobile {
     /** empty style */
   }
@@ -848,18 +875,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfTourCountOfPeopleTextField {
-  @media @mobile {
-    width: 20vw;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 120px;
-  }
-}
-.EstablishAreaOfTourCountOfPeopleReactFragmentWrap {
+.EstablishAreaOfTourPayMethodMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1062,8 +1078,9 @@
   }
 }
 .EstablishAreaOfGroupDiv:extend(.CenterInParentColumn) {
-  width: 90%;
+  width: 100%;
   padding: 5px;
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1087,6 +1104,7 @@
 }
 .EstablishAreaOfGroupLabelOfListDivWrap:extend(.CenterInParentRow) {
   justify-content: space-between;
+  width: 95%;
   @media @mobile {
     /** empty style */
   }
@@ -1108,6 +1126,19 @@
     /** empty style */
   }
 }
+.EstablishAreaOfGroupLabelOfListCountOfPeopleTextField {
+  width: 28vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+    width: 150px;
+  }
+}
 .EstablishAreaOfGroupPersonDiv {
   @media @mobile {
     /** empty style */
@@ -1122,6 +1153,7 @@
 .EstablishAreaOfGroupPersonDivList:extend(.CenterInParentRow) {
   justify-content: start;
   gap: 10px;
+  flex-wrap: wrap;
   @media @mobile {
     /** empty style */
   }
@@ -1143,10 +1175,22 @@
     /** empty style */
   }
 }
+.EstablishAreaOfGroupPersonNameReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishAreaOfBalanceDiv:extend(.CenterInParentRow) {
   gap: 10px;
   align-items: flex-start;
   margin-top: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1179,7 +1223,20 @@
     /** empty style */
   }
 }
+.EstablishAreaOfBalancePriceHasPaidTextField {
+  width: 30%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishAreaOfBalanceBalanceTextField {
+  width: 30%;
   @media @mobile {
     /** empty style */
   }
@@ -1202,7 +1259,11 @@
   }
 }
 .EstablishAreaOfRemoteDiv:extend(.CenterInParentRow) {
-  gap: 10px;
+  gap: 15px;
+  position: sticky;
+  z-index: 10;
+  bottom: 20px;
+  width: 90vw;
   @media @mobile {
     /** empty style */
   }
@@ -1213,7 +1274,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfRemoteSubmitButton {
+.EstablishAreaOfRemoteSubmitChip {
   @media @mobile {
     /** empty style */
   }
@@ -1224,7 +1285,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfRemoteUpdateButton {
+.EstablishAreaOfRemoteUpdateChip {
   @media @mobile {
     /** empty style */
   }
@@ -1235,7 +1296,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfRemoteCancelButton {
+.EstablishAreaOfRemoteCancelChip {
   @media @mobile {
     /** empty style */
   }
@@ -1257,7 +1318,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfRemoteClearButton {
+.EstablishAreaOfRemoteClearChip {
   @media @mobile {
     /** empty style */
   }
@@ -1270,7 +1331,10 @@
 }
 /** following for addition  component used  */
 
-.AdditionDiv {
+.AdditionDiv:extend(.CenterInParentColumn) {
+  gap: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1292,10 +1356,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    min-width: 520px;
   }
 }
-.AdditionMemberDivList {
+.AdditionMemberDivList:extend(.CenterInParentColumn) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1476,43 +1541,43 @@
     /** empty style */
   }
 }
+.AdditionMemberChargeCheckbox {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionMemberChargeDivWrap:extend(.CenterInParentRow) {
+  flex-direction: row-reverse;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionMemberChargeLabelOfChargeTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .AdditionMemberAreaOfPayDiv:extend(.CenterInParentRow) {
   gap: 8px;
   width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfPayChargeCheckbox {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfPayChargeDivWrap:extend(.CenterInParentColumn) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfPayChargeLabelOfChargeTypography {
-  font-size: 0.9rem;
   @media @mobile {
     /** empty style */
   }
@@ -1569,7 +1634,8 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfCreditDiv {
+.AdditionMemberAreaOfCreditDiv:extend(.CenterInParentRow) {
+  gap: 8px;
   @media @mobile {
     /** empty style */
   }
@@ -1647,6 +1713,17 @@
     /** empty style */
   }
 }
+.AdditionMemberAreaOfFuncUpdateButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .AdditionMemberAreaOfFuncCancelButton {
   @media @mobile {
     /** empty style */
@@ -1659,6 +1736,44 @@
   }
 }
 .AdditionMemberAreaOfFuncCancelReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionAreaOfBatchDiv:extend(.CenterInParentRow) {
+  gap: 15px;
+  position: sticky;
+  z-index: 10;
+  bottom: 30px;
+  width: 95vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionAreaOfBatchBatchUpdateChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionAreaOfBatchBatchCancelChip {
   @media @mobile {
     /** empty style */
   }
@@ -3298,3 +3413,6 @@
     /** empty style */
   }
 }
+/** ======== following for homeless ========= */
+
+

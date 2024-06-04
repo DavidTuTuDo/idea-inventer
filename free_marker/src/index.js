@@ -424,6 +424,8 @@ class CodegenNode {
      * }
      * */
 
+    ruleOfOuter = 'start';//['start','end']
+
     paginate;
     /** {threshold:10, size:6} ,array專用 可以指定page size, 觸及底部的threshold(就是距離底部多少就要觸發下一頁,預設是1) */
 
@@ -682,6 +684,9 @@ class CodegenNode {
 
         deleted: false,
         /** 放在onDeleted的邏輯裡,目前只有Chip*/
+
+        globalOfRef: false,
+        /** 把ref放到global */
     };
     /** 放admin的json file*/
 
@@ -735,6 +740,14 @@ class CodegenNode {
 
     getSize() {
         return this.size
+    }
+
+    getRuleOfOuter() {
+        return this.ruleOfOuter;
+    }
+
+    isAlertDialogNeedGlobalRef() {
+        return this.getAlertDialog().globalOfRef;
     }
 
     isDisposablePage() {
@@ -1605,7 +1618,7 @@ class CodegenNode {
         this.wrapContents.push(...contents);
     }
 
-    appendAlertDialogStmts(stmt) {
+    appendAlertDialogStmts(stmt, generator) {
         const self = this;
 
         function getTaskStmts() {
@@ -1673,9 +1686,16 @@ class CodegenNode {
         }
 
         if (this.hasAlertDialog()) {
-            const dialog = self.getAlertDialog();
+            const nameOfRef = this.getFieldNameOfAlertDialog();
+            if (this.isAlertDialogNeedGlobalRef()) {
+                generator.appendField(nameOfRef, 'React.createRef()');
+                generator.appendFunction(Util.camel('get', nameOfRef), [], [], [],
+                    `return this.${nameOfRef}.current`)
+            }
+
+            const stmtOfRef = this.isAlertDialogNeedGlobalRef() ? `self.${nameOfRef}` : nameOfRef
             const props = [
-                `ref:${this.getFieldNameOfAlertDialog()}`,
+                `ref:${stmtOfRef}`,
                 `component:self`,
             ];
             props.push(getActionButtonStmts());
@@ -1713,10 +1733,6 @@ class CodegenNode {
         return this.params ? this.params : [];
     }
 
-    hasAlertDialog() {
-        return !_.isEmpty(this.getAlertDialog().title) || !_.isEmpty(this.getAlertDialog().customView);
-    }
-
     hasInputFieldDialog() {
         return this.getAlertDialog().textInput.enable;
     }
@@ -1733,18 +1749,22 @@ class CodegenNode {
         return Util.mergeObject(this.defaultAlertDialog, this.alertDialog);
     }
 
-    /** 就是點擊要再確認的那種dialog */
-    hasConfirmDialog() {
-        return this.hasAlertDialog();
-    }
-
     hasLoginRequiredDialog() {
         return !!this.loginRequiredAlert;
     }
 
+    /** 就是點擊要再確認的那種dialog */
+    hasConfirmDialog() {
+        return !_.isEmpty(this.getAlertDialog().title);
+    }
+
     /** 就是客製化view那種dialog */
     hasCustomViewDialog() {
-        return this.hasAlertDialog() && this.getAlertDialog().customView;
+        return !_.isEmpty(this.getAlertDialog().customView);
+    }
+
+    hasAlertDialog() {
+        return this.hasConfirmDialog() || this.hasCustomViewDialog();
     }
 
     setContents(contents = []) {
@@ -1881,7 +1901,7 @@ class CodegenNode {
     getSelfVariableStmts() {
         const self = this
         const stmts = [];
-        if (this.hasAlertDialog()) {
+        if (this.hasAlertDialog() && !this.isAlertDialogNeedGlobalRef()) {
             stmts.push(`const ${this.getFieldNameOfAlertDialog()} = React.createRef()`);
         }
 
@@ -1980,21 +2000,21 @@ class CodegenNode {
         return !!this.path && !_.isEmpty(this.path);
     }
 
-    getContents() {
+    getContents(generator) {
         const stmts = [];
         if (!!this.contents && _.isArray(this.contents)) {
             stmts.push(...this.contents)
         }
         if (this.hasAlertDialog() && !this.hasWrap())
-            this.appendAlertDialogStmts(stmts);
+            this.appendAlertDialogStmts(stmts, generator);
         return stmts;
     }
 
-    getWrapContents() {
+    getWrapContents(generator) {
         const stmt = [];
         const wrapContents = this.wrapContents ? this.wrapContents : [];
         stmt.push(...wrapContents);
-        this.appendAlertDialogStmts(stmt)
+        this.appendAlertDialogStmts(stmt, generator)
         return stmt;
     }
 
@@ -2063,11 +2083,11 @@ class CodegenNode {
         return this.isAttributeView('Chip', type, node);
     }
 
-    isAlertDialog4Deleted(){
+    isAlertDialog4Deleted() {
         return this.getAlertDialog().deleted;
     }
 
-    isAlertDialog4Click(){
+    isAlertDialog4Click() {
         return !this.getAlertDialog().deleted;
     }
 
@@ -2851,8 +2871,9 @@ class CodegenNode {
 
         }
 
-        if (!Util.isUndefinedNullEmpty(this.getDefaultValue())) {
-            const stringOfDefault = JSON.stringify(this.getDefaultValue());
+        const defaultValue = this.getDefaultValue();
+        if (!Util.isUndefinedNullEmpty(defaultValue)) {
+            const stringOfDefault = _.startsWith(defaultValue, '###') ? Util.getStringOfDropHeadSign(defaultValue, `#`) : JSON.stringify(this.getDefaultValue());
             if (isAdmin)
                 return stringOfDefault;
 
@@ -2868,7 +2889,7 @@ class CodegenNode {
                 return `${toNormalizeArrayString(latest)}.map(each => new ${this.getClassName()}({...each, parentNode: this}))`
             }
 
-            if (this.isString()) {
+            if (this.isString() && this.needI18nBehavior()) {
                 const i18nOfDefaultValue = Util.camel(this.getPreciseAttributeGenealogyName());
                 return `i18n.location().${i18nOfDefaultValue}`;
             }
@@ -4363,7 +4384,7 @@ class StoreBuilder extends BaseBuilder {
                         } else if (child.isObject()) {
                             return `this.${child.getFieldName()}.refreshLocally()`;
                         } else {
-                            if (child.isString() && child.needI18nBehavior())
+                            if (child.isString())
                                 return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
                             return '';
                         }
@@ -5468,9 +5489,10 @@ class ComponentBuilder extends BaseBuilder {
                 return ''
             }
 
-            if (child.isButton() && child.needIndependClick())
-                generator.appendField(child.getFieldNameOfRef(), 'React.createRef()')
-
+            if (child.needIndependClick()) {
+                generator.appendField(child.getFieldNameOfRef(), 'React.createRef()');
+                child.appendViewProps({ref: `###self.${child.getFieldNameOfRef()}`})
+            }
             if (child.isViewDefinedInProps()) {
                 /** label = <Typography /> */
                 node.props[child.injectViewProp.name] = `###${appendParamStmt(child)}${getJsxViewStmt(child).join('\n')}`;
@@ -5503,7 +5525,7 @@ class ComponentBuilder extends BaseBuilder {
             props: {...props, ...propsOfExtra},
             simpleProps,
             typeOfClass: 'component',
-            contents: [...contentStmts, ...node.getContents()],
+            contents: [...contentStmts, ...node.getContents(generator)],
         });
 
         if (node.hasWrap()) {
@@ -5516,12 +5538,14 @@ class ComponentBuilder extends BaseBuilder {
                 ...node.getWrapProps(),
             }
 
+            const rule = node.getRuleOfOuter();
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
                 generator,
                 props: {...propOfWrap, ...propsOfExtra},
                 typeOfClass: 'component',
-                contents: [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents()],
+                contents: _.isEqual(rule, 'start') ? [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents(generator)] :
+                    [...origin, ...getOuterChildJSXStrings(node), ...node.getWrapContents(generator)]
             })
         }
 
@@ -7819,6 +7843,7 @@ class ProjectFileHandler extends PathBase {
             const label = node.getFieldNameOfLabel();
             node.getParentNode().appendChildrenWithJsons({
                 name: label,
+                l10n: true,
                 type: 'string', /** succeed, fail */
                 defaultValue: node.getLabel(),
                 incest: node.incest,
@@ -8145,9 +8170,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isChipView() || node.isButton() || node.isIconButton()) {
                 node.setClick(true);
-                if (node.needIndependClick())
-                    node.appendViewProps({ref: `###self.${node.getFieldNameOfRef()}`})
-
+                node.l10n = true;
                 if (node.hasIcon()) {
                     this.appendMuiIconImport(node, node.getIcon());
                     switch (node.getView()) {
@@ -8441,7 +8464,8 @@ class ProjectFileHandler extends PathBase {
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 } else if (node.hasCustomViewDialog()) {
                     const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
-                    node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
+                    node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
+                        onClickStmts.push(...stmts, `self.${node.getFunctionNameOfClicked()}(objectOfParam)`);
                 } else if (node.hasAlertMenu()) {
                     onClickStmts.push(`event.stopPropagation()`)
                     onClickStmts.push(`objectOfParam.view = event`)
@@ -8455,12 +8479,12 @@ class ProjectFileHandler extends PathBase {
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                     node.appendViewProps({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
                     node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
-                } else if(node.hasDeletedView() && node.isAlertDialog4Click()) {
+                } else if (node.hasDeletedView() && node.isAlertDialog4Click()) {
                     /** alertDialog 不是為了deleted*/
-                    onDeleteStmts.push(...[`objectOfParam.view = event;`,`self.${node.getFunctionNameOfDeleted()}(objectOfParam)`])
+                    onDeleteStmts.push(...[`objectOfParam.view = event;`, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`])
                     node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`});
                     node.appendViewProps({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
-                }else {
+                } else {
                     node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
                 }
             }
@@ -8498,7 +8522,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({variant: node.getVariant()})
 
             if (node.hasColor()) {
-                node.appendViewProps({variant: node.getColor()})
+                node.appendViewProps({color: node.getColor()})
             }
 
             this.enrichNodesOfBehavior(node.getChildren());

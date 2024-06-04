@@ -3,11 +3,7 @@
 /** infoOfCopyRight 需要的字串 */
 pageTitleOfInfoOfCopyRight = "";
 infoOfCopyRightUpperGroupLeftAreaContact = "聯絡YUEH";
-dialogContentOfInfoOfCopyRightUpperGroupLeftAreaContact = "";
-dialogTitleOfInfoOfCopyRightUpperGroupLeftAreaContact = "";
 infoOfCopyRightUpperGroupLeftAreaBusiness = "服務項目";
-dialogContentOfInfoOfCopyRightUpperGroupLeftAreaBusiness = "";
-dialogTitleOfInfoOfCopyRightUpperGroupLeftAreaBusiness = "";
 infoOfCopyRightUpperGroupRightAreaResponsibilityOff = "免責聲明";
 dialogContentOfInfoOfCopyRightUpperGroupRightAreaResponsibilityOff = "當您成為本站的用户後，您已詳細讀明確瞭解本『免責聲明』並同意，屬下列情況發生時本網站毋負任何責任: /n一、您使用本站服務之險會由您個人承。用户同意使用「本網站」各項服系基用户的個人意願,並同意自負任何風險，包括因為自「本網站」下載资料或圖片，或自「本網站」服務中得之資料導致發生任何資源流失等結果。/n二、「本網站」就各項服務，不負任何明示或默示之擔保責任。「本網站」不保證各項服務之穩定、安全、無誤、不中腳用戶明示承擔使用本服務之所有風險及可能發生之任何損害。/n三、用户在「本網站」寫物件资訊個人资料、上傳圖片等行為，純用户個人行為，「本網站」對其內容之真實性或完整性不負有任何責任。/n四、任何由於電腦病毒侵入或作、因政府管制而造成的暂時性關開等影響網路正常經營之不可抗力而造成的资料毁損、丟失、被盗用或被改等與「本網站」無關。/n五、對於用戶透過「本網站」刊登或發布虛假、違法資訊侵害他人權益及欺騙、敲詐者，純用戶個人行為「本網站」對因此而產生的一切糾紛不負任何責任!特此聲明!";
 dialogTitleOfInfoOfCopyRightUpperGroupRightAreaResponsibilityOff = "免責聲明";
@@ -16,6 +12,10 @@ infoOfCopyRightUpperGroupRightAreaCprt = "© 2024 YUEH";
 infoOfCopyRightGroupOfSocialMediaImgOfFb = "images/facebook.png";
 infoOfCopyRightGroupOfSocialMediaImgOfIg = "images/instagram.png";
 infoOfCopyRightGroupOfSocialMediaImgOfLine = "images/line.png";
+dialogContentOfInfoOfCopyRightUpperGroupLeftAreaContact = "";
+dialogTitleOfInfoOfCopyRightUpperGroupLeftAreaContact = "";
+dialogContentOfInfoOfCopyRightUpperGroupLeftAreaBusiness = "";
+dialogTitleOfInfoOfCopyRightUpperGroupLeftAreaBusiness = "";
 
 /** infoOfCopyRightContact 需要的字串 */
 pageTitleOfInfoOfCopyRightContact = "聯絡方式-明悅";

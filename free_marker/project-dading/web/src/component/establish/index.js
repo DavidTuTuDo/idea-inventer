@@ -32,27 +32,27 @@ class EstablishComponent extends BaseEstablishComponent {
         super(props);
     }
 
-    onEstablishCancelButtonClicked(param) {
+    onEstablishCancelChipClicked(param) {
         this.dismiss();
     }
 
-    onEstablishClearButtonClicked(param) {
+    onEstablishClearChipClicked(param) {
         this.getStore().clean()
     }
 
-    onEstablishSubmitButtonClicked(param) {
+    onEstablishSubmitChipClicked(param) {
         this.getStore().submitOrder().then((result) => this.showInfoSnackMessage(`新增訂單成功`))
     }
 
-    onEstablishUpdateButtonClicked(param) {
+    onEstablishUpdateChipClicked(param) {
         this.getStore().updateOrder().then((result) => this.showInfoSnackMessage(`更新訂單成功`))
     }
 
-    getInjectStyleOfEstablishSubmitButton(establish) {
+    getInjectStyleOfEstablishSubmitChip(establish) {
         return Util.getVisibleOrNone(_.isEmpty(establish.getId()), true);
     }
 
-    getInjectStyleOfEstablishUpdateButton(establish) {
+    getInjectStyleOfEstablishUpdateChip(establish) {
         return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
     }
 
@@ -69,8 +69,32 @@ class EstablishComponent extends BaseEstablishComponent {
         super.onEstablishPersonNameChipDeleted(param);
     }
 
-    onEstablishAgentMenuItemClicked(param) {
-        super.onEstablishAgentMenuItemClicked(param);
+    onEstablishLabelOfListChipClicked(param) {
+        const self = this;
+        this.getEstablishPaperAlertDialogRef().open();
+        Application.getAdditionStore().pushTasksOfCompleted((store) => {
+            store.setIsListMode(true);
+            store.setMembers(...self.getStore().getMembers())
+        })
+    }
+
+    onEstablishLabelOfAppendChipClicked(param) {
+        this.getEstablishPaperAlertDialogRef().open();
+    }
+
+    onEstablishPersonNameChipClicked(param) {
+        const person = param.object;
+        const member = this.getMemberById(person.getId()).columnData();
+        this.getEstablishPaperAlertDialogRef().open();
+        Application.getAdditionStore().pushTasksOfCompleted((store) => {
+            store.setIsUpdate(true);
+            store.setMembers(...[member]);
+        })
+    }
+
+    getMemberById(id) {
+        return _.find(this.getStore().getMembers(),
+            (member) => _.isEqual(id, member.id));
     }
 
     /** -------------------- async api -------------------- **/

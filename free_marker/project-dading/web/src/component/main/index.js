@@ -66,6 +66,8 @@ class MainComponent extends BaseMainComponent {
         }
     }
 
+
+
     onMainOrderBtnOfIdIconButtonClicked(param) {
         const order = param.object;
         this.copyTextToClipboard(order.getId(), `已複製訂單編號至剪貼簿`)

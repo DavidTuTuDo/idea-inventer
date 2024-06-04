@@ -9,7 +9,7 @@ import i18n from "../../i18n";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
+import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS, override} from "mobx";
 import OrderStore from '../mainOrder';
 
 class EstablishStore extends BaseEstablishStore {
@@ -22,9 +22,36 @@ class EstablishStore extends BaseEstablishStore {
         this.apiOfOrder = new OrderStore();
     }
 
+    @action
+    pushSingleMember(item = {}) {
+        this.pushMember(item)
+        this.pushPerson(item);
+    }
+
+    @action
+    updateSingleMember(item = {}) {
+        const member = this.getMemberById(item.id);
+        const person = this.getPersonById(item.id);
+        this.removeMembers(member);
+        this.removePersons(person);
+
+        this.pushSingleMember(item);
+    }
+
+    getMemberById =(id) => {
+        return _.find(this.getMembers(),
+            (member) => _.isEqual(id, member.id));
+    }
+
+    getPersonById =(id) => {
+        return _.find(this.getPersons(),
+            (person) => _.isEqual(id, person.id));
+    }
+
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         this.setBalanceDisabled(true);
+        this.setPriceHasPaidDisabled(true),
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 
