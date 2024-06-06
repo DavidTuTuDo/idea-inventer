@@ -337,9 +337,13 @@ class CommonStyle {
 
   AdditionMemberChargeCheckbox = {};
 
-  AdditionMemberAreaOfPersonCitizenMenuItem = {};
+  AdditionMemberAreaOfInternationCitizenMenuItem = {};
 
-  AdditionMemberAreaOfPersonCitizenTextFieldList = {};
+  AdditionMemberAreaOfInternationCitizenTextFieldList = {};
+
+  AdditionMemberAreaOfInternationPassportTextField = {};
+
+  AdditionMemberAreaOfInternationDiv = {};
 
   AdditionMemberAreaOfPersonAgeMenuItem = {};
 
@@ -348,8 +352,6 @@ class CommonStyle {
   AdditionMemberAreaOfPersonGenderMenuItem = {};
 
   AdditionMemberAreaOfPersonGenderTextFieldList = {};
-
-  AdditionMemberAreaOfPersonPassportTextField = {};
 
   AdditionMemberAreaOfPersonDiv = {};
 

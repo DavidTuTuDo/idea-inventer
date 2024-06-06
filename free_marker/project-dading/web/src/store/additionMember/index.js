@@ -30,15 +30,12 @@ class AdditionMemberStore extends BaseAdditionMemberStore {
     Application.getEstablishStore().pushSingleMember(this.columnData());
     this.getStoreOfComponent().getComponent().showInfoSnackMessage(`新增團員${this.getName()}成功`);
     this.getStoreOfComponent().getComponent(true).dismiss();
-    /** 還要放進 establish 裡面的 member */
   }
 
   async updateMember2Order(obj = this) {
     Application.getEstablishStore().updateSingleMember(this.columnData());
-    console.log(this.columnData());
     this.getStoreOfComponent().getComponent().showInfoSnackMessage(`更新團員${this.getName()}成功`);
     this.getStoreOfComponent().getComponent(true).dismiss();
-    /** 還要放進 establish 裡面的 member */
   }
 
   /** -------------------- async api -------------------- **/

@@ -38,6 +38,18 @@ class EstablishStore extends BaseEstablishStore {
         this.pushSingleMember(item);
     }
 
+    @action
+    setBatchMember(...members) {
+        this.setMembers(...members);
+        this.setPersons(...members);
+    }
+
+    @action
+    deleteMemberById = (id) => {
+        this.removeMembers(this.getMemberById(id));
+        this.removePersons(this.getPersonById(id));
+    }
+
     getMemberById =(id) => {
         return _.find(this.getMembers(),
             (member) => _.isEqual(id, member.id));
@@ -53,6 +65,13 @@ class EstablishStore extends BaseEstablishStore {
         this.setBalanceDisabled(true);
         this.setPriceHasPaidDisabled(true),
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
+        this.calculateSumOfPaid()
+    }
+
+    @action
+    calculateSumOfPaid() {
+        const sum = _.sum(this.getMembers().map(member => member.getFeeOfPaid()));
+        this.setPriceHasPaid(sum);
     }
 
     result = () => {

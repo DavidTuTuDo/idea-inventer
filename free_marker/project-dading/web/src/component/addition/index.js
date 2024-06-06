@@ -25,6 +25,11 @@ class AdditionComponent extends BaseAdditionComponent {
         member.updateMember2Order().then();
     }
 
+    onAdditionBatchUpdateChipClicked(param) {
+        const addition = param.object;
+        addition.batchUpdateMember2Order().then();
+    }
+
     onAdditionBatchCancelChipClicked(param) {
         this.dismiss();
     }

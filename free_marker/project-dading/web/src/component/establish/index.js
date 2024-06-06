@@ -41,10 +41,12 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     onEstablishSubmitChipClicked(param) {
+        this.getStore().calculateSumOfPaid();
         this.getStore().submitOrder().then((result) => this.showInfoSnackMessage(`新增訂單成功`))
     }
 
     onEstablishUpdateChipClicked(param) {
+        this.getStore().calculateSumOfPaid();
         this.getStore().updateOrder().then((result) => this.showInfoSnackMessage(`更新訂單成功`))
     }
 
@@ -66,7 +68,8 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     onEstablishPersonNameChipDeleted(param) {
-        super.onEstablishPersonNameChipDeleted(param);
+        const person = param.object;
+        this.getStore().deleteMemberById(person.getId());
     }
 
     onEstablishLabelOfListChipClicked(param) {
@@ -84,17 +87,12 @@ class EstablishComponent extends BaseEstablishComponent {
 
     onEstablishPersonNameChipClicked(param) {
         const person = param.object;
-        const member = this.getMemberById(person.getId()).columnData();
+        const member = this.getStore().getMemberById(person.getId()).columnData();
         this.getEstablishPaperAlertDialogRef().open();
         Application.getAdditionStore().pushTasksOfCompleted((store) => {
             store.setIsUpdate(true);
             store.setMembers(...[member]);
         })
-    }
-
-    getMemberById(id) {
-        return _.find(this.getStore().getMembers(),
-            (member) => _.isEqual(id, member.id));
     }
 
     /** -------------------- async api -------------------- **/

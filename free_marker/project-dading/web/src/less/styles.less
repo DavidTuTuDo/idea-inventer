@@ -663,6 +663,7 @@
   @media @desktop {
     max-width: 800px;
     padding: 15px;
+    padding-bottom: 30px;
   }
 }
 .EstablishDivWrap:extend(.CenterInParentColumn) {
@@ -735,7 +736,7 @@
   }
 }
 .EstablishAreaOfContactDiv:extend(.CenterInParentRow) {
-  gap: 5px;
+  gap: 10px;
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -748,22 +749,24 @@
   }
 }
 .EstablishAreaOfContactHostTextField {
+  width: 40%;
   @media @mobile {
-    width: 30%;
+    /** empty style */
   }
   @media @tablet {
-    width: 30%;
+    /** empty style */
   }
   @media @desktop {
     /** empty style */
   }
 }
 .EstablishAreaOfContactPhoneTextField {
+  width: 40%;
   @media @mobile {
-    width: 40%;
+    /** empty style */
   }
   @media @tablet {
-    width: 40%;
+    /** empty style */
   }
   @media @desktop {
     /** empty style */
@@ -803,6 +806,7 @@
   }
 }
 .EstablishAreaOfObjectiveDiv:extend(.CenterInParentRow) {
+  width: 100%;
   gap: 10px;
   @media @mobile {
     /** empty style */
@@ -815,7 +819,7 @@
   }
 }
 .EstablishAreaOfObjectiveDestinationAutocomplete {
-  width: 38vw;
+  width: 40%;
   @media @mobile {
     /** empty style */
   }
@@ -823,11 +827,11 @@
     /** empty style */
   }
   @media @desktop {
-    max-width: 180px;
-    min-width: 120px;
+    /** empty style */
   }
 }
 .EstablishAreaOfObjectiveDestinationInputOfDestinationTextField {
+  width: 40%;
   @media @mobile {
     /** empty style */
   }
@@ -839,7 +843,7 @@
   }
 }
 .EstablishAreaOfObjectiveCityTextField {
-  width: 38vw;
+  width: 40%;
   @media @mobile {
     /** empty style */
   }
@@ -848,12 +852,11 @@
   }
   @media @desktop {
     /** empty style */
-    max-width: 180px;
-    min-width: 120px;
   }
 }
 .EstablishAreaOfTourDiv:extend(.CenterInParentRow) {
   gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1135,7 +1138,6 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
     width: 150px;
   }
 }
@@ -1349,6 +1351,7 @@
   padding: 10px;
   padding-top: 20px;
   gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1463,18 +1466,6 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfPersonPassportTextField {
-  width: 35%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 200px;
-  }
-}
 .AdditionMemberAreaOfPersonGenderTextFieldList {
   @media @mobile {
     /** empty style */
@@ -1519,7 +1510,9 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfPersonCitizenTextFieldList {
+.AdditionMemberAreaOfInternationDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1530,7 +1523,30 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfPersonCitizenMenuItem {
+.AdditionMemberAreaOfInternationPassportTextField {
+  width: 60%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionMemberAreaOfInternationCitizenTextFieldList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionMemberAreaOfInternationCitizenMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1636,6 +1652,7 @@
 }
 .AdditionMemberAreaOfCreditDiv:extend(.CenterInParentRow) {
   gap: 8px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1647,6 +1664,7 @@
   }
 }
 .AdditionMemberAreaOfCreditSerialOfCreditTextField {
+  width: 70%;
   @media @mobile {
     /** empty style */
   }
@@ -1658,6 +1676,7 @@
   }
 }
 .AdditionMemberAreaOfCreditCodeOfCreditAuthTextField {
+  width: 30%;
   @media @mobile {
     /** empty style */
   }
@@ -3415,4 +3434,15 @@
 }
 /** ======== following for homeless ========= */
 
-
+.AdditionMemberAreaOfPersonPassportTextField {
+  width: 35%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 200px;
+  }
+}

@@ -337,9 +337,13 @@ class MobileStyle {
 
   AdditionMemberChargeCheckbox = {};
 
-  AdditionMemberAreaOfPersonCitizenMenuItem = {};
+  AdditionMemberAreaOfInternationCitizenMenuItem = {};
 
-  AdditionMemberAreaOfPersonCitizenTextFieldList = {};
+  AdditionMemberAreaOfInternationCitizenTextFieldList = {};
+
+  AdditionMemberAreaOfInternationPassportTextField = {};
+
+  AdditionMemberAreaOfInternationDiv = {};
 
   AdditionMemberAreaOfPersonAgeMenuItem = {};
 
@@ -348,8 +352,6 @@ class MobileStyle {
   AdditionMemberAreaOfPersonGenderMenuItem = {};
 
   AdditionMemberAreaOfPersonGenderTextFieldList = {};
-
-  AdditionMemberAreaOfPersonPassportTextField = {};
 
   AdditionMemberAreaOfPersonDiv = {};
 
