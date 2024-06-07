@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -389,17 +387,13 @@ class AppStyle {
 
   EstablishAreaOfRemoteDiv = {};
 
-  EstablishCommentTextField = {};
+  EstablishAreaOfOutcomeBalanceTextField = {};
 
-  EstablishAreaOfBalanceBalanceTextField = {};
+  EstablishAreaOfOutcomePriceHasPaidTextField = {};
 
-  EstablishAreaOfBalancePriceHasPaidTextField = {};
+  EstablishAreaOfOutcomePriceOfTotalTextField = {};
 
-  EstablishAreaOfBalanceSalesmanMenuItem = {};
-
-  EstablishAreaOfBalanceSalesmanTextFieldList = {};
-
-  EstablishAreaOfBalanceDiv = {};
+  EstablishAreaOfOutcomeDiv = {};
 
   EstablishAreaOfGroupPersonNameReactFragmentWrap = {};
 
@@ -409,8 +403,6 @@ class AppStyle {
 
   EstablishAreaOfGroupPersonDiv = {};
 
-  EstablishAreaOfGroupLabelOfListCountOfPeopleTextField = {};
-
   EstablishAreaOfGroupLabelOfListLabelOfAppendChip = {};
 
   EstablishAreaOfGroupLabelOfListDivWrap = {};
@@ -419,35 +411,29 @@ class AppStyle {
 
   EstablishAreaOfGroupDiv = {};
 
-  EstablishAreaOfCreditCodeOfCreditAuthTextField = {};
+  EstablishCommentTextField = {};
 
-  EstablishAreaOfCreditSerialOfCreditTextField = {};
+  EstablishAreaOfPayStatusSalesmanMenuItem = {};
 
-  EstablishAreaOfCreditDiv = {};
+  EstablishAreaOfPayStatusSalesmanTextFieldList = {};
 
-  EstablishAreaOfFeePriceOfAgentTextField = {};
+  EstablishAreaOfPayStatusStatusOfPaidMenuItem = {};
 
-  EstablishAreaOfFeePriceOfCreditTextField = {};
+  EstablishAreaOfPayStatusStatusOfPaidTextFieldList = {};
 
-  EstablishAreaOfFeePriceOfCashTextField = {};
+  EstablishAreaOfPayStatusDiv = {};
 
-  EstablishAreaOfFeeDiv = {};
+  EstablishAreaOfPartyAPriceOfDiscountTextField = {};
 
-  EstablishAreaOfPaymentIsPaidMenuItem = {};
+  EstablishAreaOfPartyAPriceOfAgentTextField = {};
 
-  EstablishAreaOfPaymentIsPaidTextFieldList = {};
+  EstablishAreaOfPartyADiv = {};
 
-  EstablishAreaOfPaymentPriceOfTotalTextField = {};
+  EstablishAreaOfPartyBPriceOfCreditTextField = {};
 
-  EstablishAreaOfPaymentDiv = {};
+  EstablishAreaOfPartyBPriceOfCashTextField = {};
 
-  EstablishAreaOfDepositIsDepositPaidMenuItem = {};
-
-  EstablishAreaOfDepositIsDepositPaidTextFieldList = {};
-
-  EstablishAreaOfDepositPriceOfDepositTextField = {};
-
-  EstablishAreaOfDepositDiv = {};
+  EstablishAreaOfPartyBDiv = {};
 
   EstablishAreaOfTourAgentMenuItem = {};
 
@@ -459,7 +445,7 @@ class AppStyle {
 
   EstablishAreaOfTourDiv = {};
 
-  EstablishAreaOfObjectiveCityTextField = {};
+  EstablishAreaOfObjectiveCountOfPeopleTextField = {};
 
   EstablishAreaOfObjectiveDestinationInputOfDestinationTextField = {};
 
@@ -517,13 +503,9 @@ class AppStyle {
 
   MainFilterOfSearchOrderAreaOfSelectedPayMethodTextFieldList = {};
 
-  MainFilterOfSearchOrderAreaOfSelectedIsPaidMenuItem = {};
+  MainFilterOfSearchOrderAreaOfSelectedStatusOfPaidMenuItem = {};
 
-  MainFilterOfSearchOrderAreaOfSelectedIsPaidTextFieldList = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedIsDepositPaidMenuItem = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedIsDepositPaidTextFieldList = {};
+  MainFilterOfSearchOrderAreaOfSelectedStatusOfPaidTextFieldList = {};
 
   MainFilterOfSearchOrderAreaOfSelectedDiv = {};
 

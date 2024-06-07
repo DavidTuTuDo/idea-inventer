@@ -35,8 +35,8 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-// let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-dading';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -120,14 +120,18 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
-    /** firebase上專屬的id好，這才能deploy 到雲端專案的uid*/
-    idOfProject = ''
+    computed = false
+    /** 在component 的get${functionName} 會產出 getComputed${node.getName()}*/
 
-    /** 用來作為swipe autoloop的欄位*/
+
+    idOfProject = ''
+    /** firebase上專屬的id好，這才能deploy 到雲端專案的uid*/
+
     autoplay = {
         delay: 0,
         disableOnInteraction: false,
     };
+    /** 用來作為swipe autoloop的欄位*/
 
     color;
     /** 用在Button Chip */
@@ -741,7 +745,7 @@ class CodegenNode {
     }
 
     getSize() {
-        return this.size
+        return this.size ?? 'medium';
     }
 
     getRuleOfOuter() {
@@ -1530,7 +1534,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['helperIcon', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['helperVisual', 'helperIcon', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -2934,6 +2938,10 @@ class CodegenNode {
 
     getFunctionNameInStoreGetter() {
         return `get${_.upperFirst(this.getFieldName())}`;
+    }
+
+    getFunctionNameInStoreComputedGetter() {
+        return Util.camel('get', 'computed', this.getFieldName());
     }
 
     /** 這個目的就是在View再運用store的值可以上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
@@ -5358,9 +5366,10 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
         if (node.hasValidParent() && node.isAttribute() && !node.isArrayItem()) {
+            const computed = _.isEqual(node.computed, true);
             generator.appendFunction(node.getFunctionNameUsingInComponentGetter(),
-                [`${node.getPreciseAttributeParentName()}`], [], [],
-                `return ${node.getPreciseAttributeParentName()}.${node.getFunctionNameInStoreGetter()}()`);
+                [`${node.getPreciseAttributeParentName()}`], [], [`${computed ? `必須在 store/${node.getPreciseAttributeParentName()}/index.js實作 @computed get ${node.getFunctionNameInStoreComputedGetter()}()` : ''}`],
+                `return ${node.getPreciseAttributeParentName()}.${computed ? node.getFunctionNameInStoreComputedGetter() : node.getFunctionNameInStoreGetter()}${computed ? '' : '()'}`);
         }
 
         if (node.hasCustomViewDialog()) {
@@ -8162,9 +8171,10 @@ class ProjectFileHandler extends PathBase {
                     })
                 }
 
-                if (node.hasSize())
-                    node.appendViewProps({size: `${node.getSize()}`})
             }
+
+            if (node.hasSize())
+                node.appendViewProps({size: `${node.getSize()}`})
 
             if (node.isWrapByAppBarView() && !node.isScrollingHideDependOnRootNode()) {
                 node.appendWrapProps({position: 'static'})
@@ -8340,14 +8350,16 @@ class ProjectFileHandler extends PathBase {
                     incest: {view: false, attribute: true},
                     view: 'TextField',
                     type: 'string',
-                    props: {size: node.size},
+                    size: node.getSize(),
                     search: node.search,
                     description: node.label,
                     belongAutoComplete: true,
                     injectViewProp: {
                         name: 'renderInput',
                         functionalized: true,
-                    }
+                    },
+                    helperVisual: node.helperVisual,
+                    helpText: node.helpText,
                 })
 
                 node.appendViewProps(
@@ -8916,7 +8928,7 @@ class ProjectFileHandler extends PathBase {
         const enableOfRapid = this.isProduction() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
         const components = this.nodeOfAncestor.rapidBuild.componentName;
 
-        if(this.isAdminPlatform())
+        if (this.isAdminPlatform())
             ENABLE_FAST_DEVELOP_MODE = false;
 
         if (!enableOfRapid)

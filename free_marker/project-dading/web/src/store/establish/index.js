@@ -22,6 +22,23 @@ class EstablishStore extends BaseEstablishStore {
         this.apiOfOrder = new OrderStore();
     }
 
+    @computed
+    get getComputedPriceOfTotal() {
+        const result = this.getCountOfPeople()*this.getPriceOfCash();
+        this.setPriceOfTotal(result);
+        return result;
+    }
+
+    @computed
+    get getComputedBalance() {
+        return 0
+    }
+
+    @computed
+    get getComputedPriceHasPaid() {
+        return 0;
+    }
+
     @action
     pushSingleMember(item = {}) {
         this.pushMember(item)
@@ -50,12 +67,12 @@ class EstablishStore extends BaseEstablishStore {
         this.removePersons(this.getPersonById(id));
     }
 
-    getMemberById =(id) => {
+    getMemberById = (id) => {
         return _.find(this.getMembers(),
             (member) => _.isEqual(id, member.id));
     }
 
-    getPersonById =(id) => {
+    getPersonById = (id) => {
         return _.find(this.getPersons(),
             (person) => _.isEqual(id, person.id));
     }
@@ -63,7 +80,9 @@ class EstablishStore extends BaseEstablishStore {
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         this.setBalanceDisabled(true);
-        this.setPriceHasPaidDisabled(true),
+        this.setPriceHasPaidDisabled(true);
+        this.setPriceOfTotal(true);
+
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
         this.calculateSumOfPaid()
     }
