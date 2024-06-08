@@ -81,7 +81,7 @@ class EstablishStore extends BaseEstablishStore {
         await super.onInitialFetchCompleted(collection);
         this.setBalanceDisabled(true);
         this.setPriceHasPaidDisabled(true);
-        this.setPriceOfTotal(true);
+        this.setPriceOfTotalDisabled(true);
 
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
         this.calculateSumOfPaid()

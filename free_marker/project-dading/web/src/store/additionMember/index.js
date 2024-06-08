@@ -6,16 +6,6 @@ import libpath from "path";
 import { Application } from "../../";
 import Config from "../../config";
 import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
-import PayMethod from "../additionMemberPayMethod";
-import Citizen from "../additionMemberCitizen";
-import Age from "../additionMemberAge";
-import Gender from "../additionMemberGender";
-import moment from "moment";
-import BaseStore from "../../base/BaseStore";
 
 class AdditionMemberStore extends BaseAdditionMemberStore {
   /** -------------------- fields -------------------- **/

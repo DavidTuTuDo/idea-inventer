@@ -291,57 +291,77 @@ class CommonStyle {
 
   AccountPaper = {};
 
+  /** => following for reimburse  component  */
+
+  ReimburseRecordAreaOfOperateFeeOfProcedureTextField = {};
+
+  ReimburseRecordAreaOfOperateRateOfCreditTextField = {};
+
+  ReimburseRecordAreaOfOperateDiv = {};
+
+  ReimburseRecordAreaOfCreditCodeOfCreditAuthTextField = {};
+
+  ReimburseRecordAreaOfCreditSerialOfCreditTextField = {};
+
+  ReimburseRecordAreaOfCreditDiv = {};
+
+  ReimburseRecordAreaOfPayCommentTextField = {};
+
+  ReimburseRecordAreaOfPayFeeOfPaidTextField = {};
+
+  ReimburseRecordAreaOfPayDiv = {};
+
+  ReimburseRecordAreaOfInfoTimeOfCheckinLocalizationProviderWrap = {};
+
+  ReimburseRecordAreaOfInfoTimeOfCheckinDatePicker = {};
+
+  ReimburseRecordAreaOfInfoPayMethodMenuItem = {};
+
+  ReimburseRecordAreaOfInfoPayMethodTextFieldList = {};
+
+  ReimburseRecordAreaOfInfoDiv = {};
+
+  ReimburseRecordDivList = {};
+
+  ReimburseRecordCard = {};
+
+  ReimburseDiv = {};
+
   /** => following for addition  component  */
 
-  AdditionAreaOfBatchBatchCancelChip = {};
+  AdditionAreaOfBatchXBatchCancelChip = {};
 
-  AdditionAreaOfBatchBatchUpdateChip = {};
+  AdditionAreaOfBatchXBatchUpdateChip = {};
 
-  AdditionAreaOfBatchDiv = {};
+  AdditionAreaOfBatchXDiv = {};
 
-  AdditionMemberAreaOfFuncCancelReactFragmentWrap = {};
+  AdditionMemberAreaOfFuncXCancelReactFragmentWrap = {};
 
-  AdditionMemberAreaOfFuncCancelButton = {};
+  AdditionMemberAreaOfFuncXCancelButton = {};
 
-  AdditionMemberAreaOfFuncUpdateButton = {};
+  AdditionMemberAreaOfFuncXUpdateButton = {};
 
-  AdditionMemberAreaOfFuncSubmitButton = {};
+  AdditionMemberAreaOfFuncXSubmitButton = {};
 
-  AdditionMemberAreaOfFuncDiv = {};
+  AdditionMemberAreaOfFuncXDiv = {};
 
-  AdditionMemberAreaOfExtraCommentTextField = {};
+  AdditionMemberCommentTextField = {};
 
-  AdditionMemberAreaOfExtraDiv = {};
+  AdditionMemberAreaOfInternationDiscountTextField = {};
 
-  AdditionMemberAreaOfCreditCodeOfCreditAuthTextField = {};
+  AdditionMemberAreaOfInternationCertificateMenuItem = {};
 
-  AdditionMemberAreaOfCreditSerialOfCreditTextField = {};
+  AdditionMemberAreaOfInternationCertificateTextFieldList = {};
 
-  AdditionMemberAreaOfCreditDiv = {};
+  AdditionMemberAreaOfInternationPassportMenuItem = {};
 
-  AdditionMemberAreaOfPayPayMethodMenuItem = {};
-
-  AdditionMemberAreaOfPayPayMethodTextFieldList = {};
-
-  AdditionMemberAreaOfPayFeeOfPaidTextField = {};
-
-  AdditionMemberAreaOfPayFeeOfTotalTextField = {};
-
-  AdditionMemberAreaOfPayDiv = {};
-
-  AdditionMemberChargeLabelOfChargeTypography = {};
-
-  AdditionMemberChargeDivWrap = {};
-
-  AdditionMemberChargeCheckbox = {};
-
-  AdditionMemberAreaOfInternationCitizenMenuItem = {};
-
-  AdditionMemberAreaOfInternationCitizenTextFieldList = {};
-
-  AdditionMemberAreaOfInternationPassportTextField = {};
+  AdditionMemberAreaOfInternationPassportTextFieldList = {};
 
   AdditionMemberAreaOfInternationDiv = {};
+
+  AdditionMemberAreaOfPersonCitizenMenuItem = {};
+
+  AdditionMemberAreaOfPersonCitizenTextFieldList = {};
 
   AdditionMemberAreaOfPersonAgeMenuItem = {};
 
@@ -386,6 +406,22 @@ class CommonStyle {
   EstablishAreaOfRemoteSubmitChip = {};
 
   EstablishAreaOfRemoteDiv = {};
+
+  EstablishAreaOfIncomeIncomeFeeReactFragmentWrap = {};
+
+  EstablishAreaOfIncomeIncomeFeeChip = {};
+
+  EstablishAreaOfIncomeIncomeDivList = {};
+
+  EstablishAreaOfIncomeIncomeDiv = {};
+
+  EstablishAreaOfIncomeListOfIncomeAppendOfIncomeChip = {};
+
+  EstablishAreaOfIncomeListOfIncomeDivWrap = {};
+
+  EstablishAreaOfIncomeListOfIncomeChip = {};
+
+  EstablishAreaOfIncomeDiv = {};
 
   EstablishAreaOfOutcomeBalanceTextField = {};
 

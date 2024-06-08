@@ -1185,6 +1185,101 @@
     width: 27%;
   }
 }
+.EstablishAreaOfIncomeDiv:extend(.CenterInParentColumn) {
+  width: 100%;
+  padding: 5px;
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfIncomeListOfIncomeChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfIncomeListOfIncomeDivWrap:extend(.CenterInParentRow) {
+  justify-content: space-between;
+  width: 95%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+    width: 500px;
+
+  }
+}
+.EstablishAreaOfIncomeListOfIncomeAppendOfIncomeChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfIncomeIncomeDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfIncomeIncomeDivList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfIncomeIncomeFeeChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfIncomeIncomeFeeReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishAreaOfRemoteDiv:extend(.CenterInParentRow) {
   gap: 15px;
   position: sticky;
@@ -1300,7 +1395,8 @@
   }
 }
 .AdditionMemberAreaOfContactDiv:extend(.CenterInParentRow) {
-  gap: 8px;
+  gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1312,6 +1408,7 @@
   }
 }
 .AdditionMemberAreaOfContactNameTextField {
+  width: 35%;
   @media @mobile {
     /** empty style */
   }
@@ -1319,10 +1416,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 35%;
   }
 }
 .AdditionMemberAreaOfContactPhoneTextField {
+  width: 65%;
   @media @mobile {
     /** empty style */
   }
@@ -1330,11 +1428,12 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 45%;
   }
 }
 .AdditionMemberAreaOfPrivacyDiv:extend(.CenterInParentRow) {
-  gap: 8px;
+  gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1346,6 +1445,7 @@
   }
 }
 .AdditionMemberAreaOfPrivacyBirthdayDatePicker {
+  width: 35%;
   @media @mobile {
     /** empty style */
   }
@@ -1353,7 +1453,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 30%;
   }
 }
 .AdditionMemberAreaOfPrivacyBirthdayLocalizationProviderWrap {
@@ -1368,6 +1468,7 @@
   }
 }
 .AdditionMemberAreaOfPrivacySerialOfIdentityTextField {
+  width: 65%;
   @media @mobile {
     /** empty style */
   }
@@ -1375,11 +1476,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 50%;
   }
 }
 .AdditionMemberAreaOfPersonDiv:extend(.CenterInParentRow) {
-  gap: 8px;
+  gap: 10px;
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -1392,6 +1493,7 @@
   }
 }
 .AdditionMemberAreaOfPersonGenderTextFieldList {
+  width: 33%;
   @media @mobile {
     /** empty style */
   }
@@ -1399,7 +1501,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 27%;
   }
 }
 .AdditionMemberAreaOfPersonGenderMenuItem {
@@ -1414,6 +1516,18 @@
   }
 }
 .AdditionMemberAreaOfPersonAgeTextFieldList {
+  width: 33%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 27%;
+  }
+}
+.AdditionMemberAreaOfPersonAgeMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1424,7 +1538,19 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfPersonAgeMenuItem {
+.AdditionMemberAreaOfPersonCitizenTextFieldList {
+  width: 33%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 27%;
+  }
+}
+.AdditionMemberAreaOfPersonCitizenMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1448,8 +1574,19 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfInternationPassportTextField {
-  width: 60%;
+.AdditionMemberAreaOfInternationPassportTextFieldList {
+  width: 33%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 27%;
+  }
+}
+.AdditionMemberAreaOfInternationPassportMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1460,7 +1597,8 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfInternationCitizenTextFieldList {
+.AdditionMemberAreaOfInternationCertificateTextFieldList {
+  width: 33%;
   @media @mobile {
     /** empty style */
   }
@@ -1471,7 +1609,7 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfInternationCitizenMenuItem {
+.AdditionMemberAreaOfInternationCertificateMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1482,7 +1620,7 @@
     /** empty style */
   }
 }
-.AdditionMemberChargeCheckbox {
+.AdditionMemberAreaOfInternationDiscountTextField {
   @media @mobile {
     /** empty style */
   }
@@ -1490,34 +1628,10 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 27%;
   }
 }
-.AdditionMemberChargeDivWrap:extend(.CenterInParentRow) {
-  flex-direction: row-reverse;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberChargeLabelOfChargeTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfPayDiv:extend(.CenterInParentRow) {
-  gap: 8px;
+.AdditionMemberCommentTextField {
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -1526,34 +1640,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 80%;
   }
 }
-.AdditionMemberAreaOfPayFeeOfTotalTextField {
-  width: 30%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 200px;
-  }
-}
-.AdditionMemberAreaOfPayFeeOfPaidTextField {
-  width: 30%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 200px;
-  }
-}
-.AdditionMemberAreaOfPayPayMethodTextFieldList {
+.AdditionMemberAreaOfFuncXDiv:extend(.CenterInParentRow) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1564,7 +1655,7 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfPayPayMethodMenuItem {
+.AdditionMemberAreaOfFuncXSubmitButton {
   @media @mobile {
     /** empty style */
   }
@@ -1575,9 +1666,7 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfCreditDiv:extend(.CenterInParentRow) {
-  gap: 8px;
-  width: 100%;
+.AdditionMemberAreaOfFuncXUpdateButton {
   @media @mobile {
     /** empty style */
   }
@@ -1588,8 +1677,7 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfCreditSerialOfCreditTextField {
-  width: 70%;
+.AdditionMemberAreaOfFuncXCancelButton {
   @media @mobile {
     /** empty style */
   }
@@ -1600,8 +1688,7 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfCreditCodeOfCreditAuthTextField {
-  width: 30%;
+.AdditionMemberAreaOfFuncXCancelReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1612,85 +1699,7 @@
     /** empty style */
   }
 }
-.AdditionMemberAreaOfExtraDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfExtraCommentTextField {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfFuncDiv:extend(.CenterInParentRow) {
-  gap: 8px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfFuncSubmitButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfFuncUpdateButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfFuncCancelButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionMemberAreaOfFuncCancelReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.AdditionAreaOfBatchDiv:extend(.CenterInParentRow) {
+.AdditionAreaOfBatchXDiv:extend(.CenterInParentRow) {
   gap: 15px;
   position: sticky;
   z-index: 10;
@@ -1706,7 +1715,7 @@
     /** empty style */
   }
 }
-.AdditionAreaOfBatchBatchUpdateChip {
+.AdditionAreaOfBatchXBatchUpdateChip {
   @media @mobile {
     /** empty style */
   }
@@ -1717,7 +1726,196 @@
     /** empty style */
   }
 }
-.AdditionAreaOfBatchBatchCancelChip {
+.AdditionAreaOfBatchXBatchCancelChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for reimburse  component used  */
+
+.ReimburseDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordCard {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordDivList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfInfoDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfInfoPayMethodTextFieldList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfInfoPayMethodMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfInfoTimeOfCheckinDatePicker {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfInfoTimeOfCheckinLocalizationProviderWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfPayDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfPayFeeOfPaidTextField {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfPayCommentTextField {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfCreditDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfCreditSerialOfCreditTextField {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfCreditCodeOfCreditAuthTextField {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfOperateDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfOperateRateOfCreditTextField {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfOperateFeeOfProcedureTextField {
   @media @mobile {
     /** empty style */
   }
@@ -3347,6 +3545,33 @@
   }
 }
 .InfoOfCopyRightContentEditorProjectImageTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** ======== following for homeless ========= */
+
+.AdditionMemberAreaOfInternationPassportTextField {
+  width: 60%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AdditionMemberAreaOfExtraDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }

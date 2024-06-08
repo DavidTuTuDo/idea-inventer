@@ -46,19 +46,11 @@ class AdditionComponent extends BaseAdditionComponent {
         return this.getStore().getIsUpdate();
     }
 
-    getInjectStyleOfAdditionMemberAreaOfCreditDiv(member) {
-        return Util.getVisibleOrNone(member.getCharge(), true);
-    }
-
-    getInjectStyleOfAdditionMemberAreaOfPayDiv(member) {
-        return Util.getVisibleOrNone(member.getCharge(), true);
-    }
-
-    getInjectStyleOfAdditionAreaOfBatchDiv(addition) {
+    getInjectStyleOfAdditionAreaOfBatchXDiv(addition) {
         return Util.getVisibleOrNone(this.isBatchUpdateMode(), true);
     }
 
-    getInjectStyleOfAdditionMemberAreaOfFuncDiv(member) {
+    getInjectStyleOfAdditionMemberAreaOfFuncXDiv(member) {
         return Util.getVisibleOrNone(!this.isBatchUpdateMode(), true);
     }
 
