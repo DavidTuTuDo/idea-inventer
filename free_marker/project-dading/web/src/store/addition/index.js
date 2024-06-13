@@ -24,7 +24,7 @@ class AdditionStore extends BaseAdditionStore {
 
   async batchUpdateMember2Order(obj = this) {
     Application.getEstablishStore().setBatchMember(...this.getMembers().map(member=> member.columnData()));
-    this.getStoreOfComponent().getComponent().showInfoSnackMessage(`批次更新成功`);
+    this.getStoreOfComponent().getComponent().showInfoSnackMessage(`批次團員更新成功`);
     this.getStoreOfComponent().getComponent(true).dismiss();
     /** 還要放進 establish 裡面的 member */
   }

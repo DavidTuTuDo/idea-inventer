@@ -4,6 +4,7 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
+import node from "@babel/register/lib/nodeWrapper";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -456,7 +457,7 @@ class CodegenNode {
     /** 用來標記這個node的內容, 免得重複的再type一遍 */
 
     independence = false
-    /** 用來標記這個node的如果是ref, 而且還是獨立的一個store */
+    /** 用來標記這個node的如果是ref,會在把source在Codegen.enrich之前就取代掉independence的節點 */
 
     mother;
     /** 註記陣列的位址, 用來獲得 indexOfCollection*/
@@ -820,6 +821,41 @@ class CodegenNode {
         return this.getHelperVisual().nameOfIcon;
     }
 
+    getStructsOfProject() {
+        return this.getComponentOfProject().map((component) => component.getStruct());
+    }
+
+    getComponentOfProject() {
+        return this.getNodeOfSource().getComponents();
+    }
+
+    getNameOfReference() {
+        return this.ref;
+    }
+
+    /** 找到當前project的reference node, 這不包括common modules*/
+    getNodeOfReference(nameOfRef = this.getNameOfReference()) {
+
+        function findNodeOfSpecificRef(...nodes) {
+            for (const node of nodes) {
+                if (_.isEqual(node.name, nameOfRef))
+                    nodesOfRef.push(node);
+                if (_.isArray(node.children))
+                    findNodeOfSpecificRef(...node.children)
+            }
+        }
+
+        const nodesOfRef = [];
+        findNodeOfSpecificRef(...this.getStructsOfProject())
+        if (_.size(nodesOfRef) > 1)
+            Util.appendInfo(`44864646 指定的ref有重複得狀態，請將ref 做 naming unique, ${nameOfRef}出現在 => [${nodesOfRef.map(node => node.getParentNode().getName())}]`)
+
+        if (_.size(nodesOfRef) === 0)
+            throw new ERROR(9999, `44864641 指定的ref => ${nameOfRef} not exist in whole project`);
+
+        return nodesOfRef.shift();
+    }
+
     useIconAsHelpVisual() {
         return !_.isEmpty(this.getHelperVisual().nameOfIcon);
     }
@@ -1013,16 +1049,11 @@ class CodegenNode {
     }
 
     isReferenceNode() {
-        return !!this.ref;
+        return !!this.ref && !_.isEmpty(this.ref);
     }
 
     hasCopyRightView() {
         return this.useCopyRightView.enable;
-    }
-
-    /** 在source.js 提示這個節點要超展開為 reference node, 這個method 應該只能用在還build store,component */
-    isReferenceNotice() {
-        return !!this.ref && _.isString(this.ref);
     }
 
     isReferenceImitateNode() {
@@ -3124,7 +3155,6 @@ class CodegenNode {
             for (const child of nodeOfRaw) {
                 child.parent = parent;
                 child.mother = nodeOfRaw;
-                // Util.insertToArray(involution, 0, this.enrich(child, involution))
                 involution.push(this.enrich(child, involution));
             }
         } else if (_.isObject(nodeOfRaw)) {
@@ -3646,6 +3676,8 @@ class PathBase {
     props;
 
     constructor(props) {
+
+
         this.props = props;
         if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
             throw new ERROR(8018, `platform ==> ''${props.platform}''`)
@@ -3667,11 +3699,62 @@ class PathBase {
         this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
         this.pathOfSourceJS = libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS);
         this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(require(libpath.resolve(this.pathOfSourceJS)).default);
+        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(this.workOfPrior(this.pathOfSourceJS));
 
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
     }
+
+    /** 把source在Codegen.enrich之前就取代掉independence的節點，未來還能發想更多功能 */
+    workOfPrior(pathOfSource) {
+
+        function append() {
+            const nodes = _.filter(arrayOfEachNode, (each) => each.independence);
+            for (const node of nodes) {
+                const nameOfReference = node.raw.ref;
+                if (_.isEmpty(nameOfReference)) {
+                    throw new ERROR(9999, `8487896 node has independence(true), but forget to ref='{nameOfNode}' `)
+                }
+                const nodeOfReference = mapOfIndexing[nameOfReference];
+                if (_.isUndefined(nodeOfReference)) {
+                    throw new ERROR(9999, `8487897 node has independence(true) & ref(${nodeOfReference}), but node(${nodeOfReference}) is not exist in project`)
+                }
+
+                _.merge(node.raw, _.cloneDeep(nodeOfReference));
+                delete node.raw.independence;
+                delete node.raw.ref;
+            }
+        }
+
+        function mapping(...nodes) {
+            for (const node of nodes) {
+                arrayOfEachNode.push({
+                    name: node.name,
+                    independence: node.independence,
+                    raw: node,
+                })
+
+                if (!!node.name)
+                    mapOfIndexing[node.name] = node;
+
+                if (_.isArray(node.children)) {
+                    mapping(...node.children);
+                }
+            }
+        }
+
+        function whatever() {
+            mapping(...source.components.map(component => component.struct))
+        }
+        const source = require(libpath.resolve(pathOfSource)).default;
+        const arrayOfEachNode = []; //[ {name:string,independence:boolean,raw:node} ]
+        const mapOfIndexing = {} //{ ...name:node }
+        whatever();
+        append();
+
+        return source;
+    }
+
 
     isProduction() {
         return _.isEqual(this.env, 'prod');
@@ -8573,23 +8656,12 @@ class ProjectFileHandler extends PathBase {
     }
 
     enrichReferenceNode(nodes) {
-
         for (const node of nodes) {
-            if (node.isReferenceNotice()) {
-                const targetName = node.ref;
-                const _nodes = CodegenNode.finds(this.getStructs(), (_node) => _.isEqual(targetName, _node.getName()))
-                /** 目前先抓第一個當目標*/
-                if (_.isEmpty(_nodes)) {
-                    throw new ERROR(7004, `not found ref, ref value is ===> ${node.ref}`);
-                }
+            if (node && node.isReferenceNode && node.isReferenceNode()) {
 
-                let nodeOfReference = _.head(_nodes);
-
-                if (nodeOfReference.isComponentNode()) {
-                    nodeOfReference = nodeOfReference.getStruct();
-                }
-
+                const nodeOfReference = node.getNodeOfReference();
                 node.ref = nodeOfReference;
+
                 if (node.imitate) {
                     const nodeOfImitate = _.clone(nodeOfReference);
                     /**  clone 的物件 */
@@ -8597,12 +8669,6 @@ class ProjectFileHandler extends PathBase {
                     nodeOfImitate.nodeOfOrigin = node;
                     /**  source.js 上的點 */
                     Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
-                }
-
-                if (node.independence) {
-                    for (const raw of nodeOfReference.raw.children) {
-                        node.appendChildrenWithJsons(raw)
-                    }
                 }
             }
             this.enrichReferenceNode(node.getChildren());

@@ -1199,6 +1199,17 @@
     /** empty style */
   }
 }
+.EstablishAreaOfIncomeReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishAreaOfIncomeListOfIncomeChip {
   @media @mobile {
     /** empty style */
@@ -1220,9 +1231,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
     width: 500px;
-
   }
 }
 .EstablishAreaOfIncomeListOfIncomeAppendOfIncomeChip {
@@ -1247,7 +1256,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfIncomeIncomeDivList {
+.EstablishAreaOfIncomeIncomeDivList:extend(.EstablishAreaOfGroupPersonDivList) {
   @media @mobile {
     /** empty style */
   }
@@ -1258,7 +1267,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfIncomeIncomeFeeChip {
+.EstablishAreaOfIncomeIncomeFeeOfPaidChip {
   @media @mobile {
     /** empty style */
   }
@@ -1269,7 +1278,7 @@
     /** empty style */
   }
 }
-.EstablishAreaOfIncomeIncomeFeeReactFragmentWrap {
+.EstablishAreaOfIncomeIncomeFeeOfPaidReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1739,7 +1748,7 @@
 }
 /** following for reimburse  component used  */
 
-.ReimburseDiv {
+.ReimburseDiv:extend(.AdditionDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -1750,7 +1759,7 @@
     /** empty style */
   }
 }
-.ReimburseRecordCard {
+.ReimburseRecordCard:extend(.AdditionMemberCard) {
   @media @mobile {
     /** empty style */
   }
@@ -1761,7 +1770,8 @@
     /** empty style */
   }
 }
-.ReimburseRecordDivList {
+.ReimburseRecordDivList:extend(.CenterInParentColumn) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1772,7 +1782,9 @@
     /** empty style */
   }
 }
-.ReimburseRecordAreaOfInfoDiv {
+.ReimburseRecordAreaOfInfoDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1784,6 +1796,7 @@
   }
 }
 .ReimburseRecordAreaOfInfoPayMethodTextFieldList {
+  width: 50%;
   @media @mobile {
     /** empty style */
   }
@@ -1791,7 +1804,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 40%;
   }
 }
 .ReimburseRecordAreaOfInfoPayMethodMenuItem {
@@ -1806,6 +1819,7 @@
   }
 }
 .ReimburseRecordAreaOfInfoTimeOfCheckinDatePicker {
+  width: 50%;
   @media @mobile {
     /** empty style */
   }
@@ -1813,7 +1827,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 40%;
   }
 }
 .ReimburseRecordAreaOfInfoTimeOfCheckinLocalizationProviderWrap {
@@ -1827,7 +1841,9 @@
     /** empty style */
   }
 }
-.ReimburseRecordAreaOfPayDiv {
+.ReimburseRecordAreaOfPayDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1839,6 +1855,7 @@
   }
 }
 .ReimburseRecordAreaOfPayFeeOfPaidTextField {
+  width: 50%;
   @media @mobile {
     /** empty style */
   }
@@ -1846,10 +1863,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 40%;
   }
 }
 .ReimburseRecordAreaOfPayCommentTextField {
+  width: 50%;
   @media @mobile {
     /** empty style */
   }
@@ -1857,10 +1875,12 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 40%;
   }
 }
-.ReimburseRecordAreaOfCreditDiv {
+.ReimburseRecordAreaOfCreditDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1872,6 +1892,7 @@
   }
 }
 .ReimburseRecordAreaOfCreditSerialOfCreditTextField {
+  width: 70%;
   @media @mobile {
     /** empty style */
   }
@@ -1879,10 +1900,11 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 60%;
   }
 }
 .ReimburseRecordAreaOfCreditCodeOfCreditAuthTextField {
+  width: 30%;
   @media @mobile {
     /** empty style */
   }
@@ -1890,10 +1912,12 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 20%;
   }
 }
-.ReimburseRecordAreaOfOperateDiv {
+.ReimburseRecordAreaOfOperateDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1905,6 +1929,31 @@
   }
 }
 .ReimburseRecordAreaOfOperateRateOfCreditTextField {
+  width: 50%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 40%;
+  }
+}
+.ReimburseRecordAreaOfOperateFeeOfProcedureTextField {
+  width: 50%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    width: 40%;
+  }
+}
+.ReimburseRecordAreaOfFuncXDiv:extend(.AdditionMemberAreaOfFuncXDiv) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1915,7 +1964,73 @@
     /** empty style */
   }
 }
-.ReimburseRecordAreaOfOperateFeeOfProcedureTextField {
+.ReimburseRecordAreaOfFuncXSubmitButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfFuncXUpdateButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfFuncXCancelButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseRecordAreaOfFuncXCancelReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseAreaOfBatchXDiv:extend(.AdditionAreaOfBatchXDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseAreaOfBatchXBatchUpdateChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ReimburseAreaOfBatchXBatchCancelChip {
   @media @mobile {
     /** empty style */
   }
@@ -1931,7 +2046,7 @@
 .AccountPaper:extend(.CenterInParentColumn) {
   width: 90vw;
   min-height: 60vh;
-  gap: 3px;
+  gap: 4px;
   padding-top: 15px;
   padding-bottom: 15px;
   @media @mobile {
@@ -3290,6 +3405,61 @@
   }
 }
 .NavigatorDrawerShortcutIconImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListItemSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutTitleTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutIconImg {
   @media @mobile {
     /** empty style */
   }

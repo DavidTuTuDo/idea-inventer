@@ -67,6 +67,35 @@ class EstablishStore extends BaseEstablishStore {
         this.removePersons(this.getPersonById(id));
     }
 
+    @action
+    pushSingleRecord(item = {}) {
+        this.pushRecord(item)
+        this.pushIncome(item);
+    }
+
+    @action
+    updateSingleRecord(item = {}) {
+        const record = this.getRecordById(item.id);
+        const income = this.getIncomeById(item.id);
+        this.removeRecords(record);
+        this.removeIncomes(income);
+
+        this.pushSingleRecord(item);
+    }
+
+    @action
+    setBatchRecord(...members) {
+        this.setMembers(...members);
+        this.setPersons(...members);
+    }
+
+    @action
+    deleteRecordById = (id) => {
+        this.removeRecords(this.getPersonById(id));
+        this.removeIncomes(this.getIncomeById(id));
+    }
+
+
     getMemberById = (id) => {
         return _.find(this.getMembers(),
             (member) => _.isEqual(id, member.id));
@@ -77,20 +106,22 @@ class EstablishStore extends BaseEstablishStore {
             (person) => _.isEqual(id, person.id));
     }
 
+    getRecordById = (id) => {
+        return _.find(this.getPersons(),
+            (record) => _.isEqual(id, record.id));
+    }
+
+    getIncomeById = (id) => {
+        return _.find(this.getIncomes(),
+            (income) => _.isEqual(id, income.id));
+    }
+
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         this.setBalanceDisabled(true);
         this.setPriceHasPaidDisabled(true);
         this.setPriceOfTotalDisabled(true);
-
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
-        this.calculateSumOfPaid()
-    }
-
-    @action
-    calculateSumOfPaid() {
-        const sum = _.sum(this.getMembers().map(member => member.getFeeOfPaid()));
-        this.setPriceHasPaid(sum);
     }
 
     result = () => {

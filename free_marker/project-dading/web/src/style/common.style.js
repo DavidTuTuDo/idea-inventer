@@ -55,6 +55,16 @@ class CommonStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -293,6 +303,22 @@ class CommonStyle {
 
   /** => following for reimburse  component  */
 
+  ReimburseAreaOfBatchXBatchCancelChip = {};
+
+  ReimburseAreaOfBatchXBatchUpdateChip = {};
+
+  ReimburseAreaOfBatchXDiv = {};
+
+  ReimburseRecordAreaOfFuncXCancelReactFragmentWrap = {};
+
+  ReimburseRecordAreaOfFuncXCancelButton = {};
+
+  ReimburseRecordAreaOfFuncXUpdateButton = {};
+
+  ReimburseRecordAreaOfFuncXSubmitButton = {};
+
+  ReimburseRecordAreaOfFuncXDiv = {};
+
   ReimburseRecordAreaOfOperateFeeOfProcedureTextField = {};
 
   ReimburseRecordAreaOfOperateRateOfCreditTextField = {};
@@ -407,9 +433,9 @@ class CommonStyle {
 
   EstablishAreaOfRemoteDiv = {};
 
-  EstablishAreaOfIncomeIncomeFeeReactFragmentWrap = {};
+  EstablishAreaOfIncomeIncomeFeeOfPaidReactFragmentWrap = {};
 
-  EstablishAreaOfIncomeIncomeFeeChip = {};
+  EstablishAreaOfIncomeIncomeFeeOfPaidChip = {};
 
   EstablishAreaOfIncomeIncomeDivList = {};
 
@@ -420,6 +446,8 @@ class CommonStyle {
   EstablishAreaOfIncomeListOfIncomeDivWrap = {};
 
   EstablishAreaOfIncomeListOfIncomeChip = {};
+
+  EstablishAreaOfIncomeReactFragmentWrap = {};
 
   EstablishAreaOfIncomeDiv = {};
 

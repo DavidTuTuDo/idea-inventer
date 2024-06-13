@@ -62,6 +62,8 @@ class MainComponent extends BaseMainComponent {
             Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
                 const result = store.fromJson(order);
                 store.setPersons(...result.members.map((member)=> member.columnData()))
+                store.setIncomes(...result.records.map((record)=> record.columnData()))
+
             })
         }
     }
