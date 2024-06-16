@@ -947,6 +947,10 @@ class Utiller {
         return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD")
     }
 
+    getSimpleTimeFormat(ts) {
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YY/MM/DD")
+    }
+
     getECPayCurrentTimeFormat(ts) {
         return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
     }
@@ -1301,6 +1305,20 @@ class Utiller {
     getVisibleOrHidden(judgement) {
         return {visibility: judgement ? 'visible' : 'hidden'};
     }
+
+    /**
+     * 將百分比轉換為浮點數
+     * @param {string} percentage - 以百分比表示的字串，例如 "50%" 或 "12.5%"
+     * @returns {number} - 對應的浮點數，例如 0.5 或 0.125
+     */
+    getNumberOfPercentageToFloat(percentage) {
+        // 移除百分比符號
+        let cleanedPercentage = percentage.replace('%', '');
+        // 將字串轉換為浮點數並除以 100
+        let floatNumber = parseFloat(cleanedPercentage) / 100;
+        return floatNumber;
+    }
+
 
     getVisibleOrNone(judgement, flex = false) {
         return {display: judgement ? flex ? 'flex' : 'inherit' : 'none'};
@@ -1843,6 +1861,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getSimpleTimeFormat());
             // console.log(utiller.getBooleanOfNormalize(-5,'default'))
             // const array = [3, 4, 5];
             // utiller.insertToArray(array, 999, 'QQ', 'WW');

@@ -4,6 +4,7 @@ import {utiller as Util} from "utiller";
 import { inject } from "mobx-react";
 import BaseReimburseComponent from "./BaseReimburseComponent";
 import { observer } from "mobx-react";
+import _ from 'lodash';
 
 @inject("reimburse")
 @observer
@@ -18,7 +19,7 @@ class ReimburseComponent extends BaseReimburseComponent {
 
   onReimburseRecordSubmitButtonClicked(param) {
     const record = param.object;
-    record.joinRecord2Order().then();;
+    record.joinRecord2Order().then();
   }
 
   onReimburseRecordUpdateButtonClicked(param) {
@@ -63,12 +64,17 @@ class ReimburseComponent extends BaseReimburseComponent {
     return Util.getVisibleOrNone(this.isSingleUpdateMode(), true);
   }
 
+  getVisibleOfCreditArea(record) {
+    const numOfSelectedMethod = _.toNumber(record.getSelectedPayMethod());
+    return Util.getVisibleOrNone(numOfSelectedMethod === 2);
+  }
+
   getInjectStyleOfReimburseRecordAreaOfOperateDiv(record) {
-    super.getInjectStyleOfReimburseRecordAreaOfOperateDiv(record);
+    return this.getVisibleOfCreditArea(record);
   }
 
   getInjectStyleOfReimburseRecordAreaOfCreditDiv(record) {
-    super.getInjectStyleOfReimburseRecordAreaOfCreditDiv(record);
+    return this.getVisibleOfCreditArea(record);
   }
 
 

@@ -624,9 +624,9 @@ class NodeUtiller extends Utiller {
     /** 用來更新樣板裡面的模組版本 */
     async updateVersionOfTemplate(dependency, newVersion) {
         const paths = [
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/web.package.json',
-            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/functions.package.json',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/web.package.json.mustache',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/functions.package.json.mustache',
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.package.json',
         ];
         for (const path of paths) {
@@ -635,6 +635,8 @@ class NodeUtiller extends Utiller {
                 if (json && json.dependencies && json.dependencies[dependency]) {
                     json.dependencies[dependency] = `^${newVersion}`
                     await this.writeJsonThanPrettier(path, json);
+                } else {
+                    
                 }
             }
         }

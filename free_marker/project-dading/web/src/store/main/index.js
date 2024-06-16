@@ -13,7 +13,7 @@ import {makeAutoObservable, makeObservable, action, observable, comparer, comput
 import Order from "../mainOrder";
 import AreaOfFunc from "../mainAreaOfFunc";
 import BaseStore from "../../base/BaseStore";
-
+import Establish from '../establish';
 
 class MainStore extends BaseMainStore {
     /** -------------------- fields -------------------- **/
@@ -22,6 +22,7 @@ class MainStore extends BaseMainStore {
 
     constructor(props) {
         super(props);
+        this.establish =  new Establish();
     }
 
     async deleteOrder(order) {
@@ -31,6 +32,17 @@ class MainStore extends BaseMainStore {
     async updateOrder(orderOfLast) {
         const order = _.find(this.getOrders(), (order) => _.isEqual(order.id, orderOfLast.id));
         order.initial(orderOfLast);
+        order.invalidate(this.establish);
+    }
+
+    async onInitialFetchCompleted(collection) {
+        const result = await super.onInitialFetchCompleted(collection);
+        this.invalidate();
+        return result
+    }
+
+    invalidate() {
+        this.getOrders().map(order => order.invalidate(this.establish))
     }
 
     /** -------------------- async api -------------------- **/

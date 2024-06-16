@@ -3,6 +3,8 @@ import BaseReimburseStore from "./BaseReimburseStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import {Application} from "../../index";
+import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS, override} from "mobx";
+
 
 class ReimburseStore extends BaseReimburseStore {
   /** -------------------- fields -------------------- **/
@@ -12,6 +14,7 @@ class ReimburseStore extends BaseReimburseStore {
   constructor(props) {
     super(props);
   }
+
 
   async batchUpdateRecord2Order(obj = this) {
     Application.getEstablishStore().setBatchRecord(...this.getRecords().map(record=> record.columnData()));

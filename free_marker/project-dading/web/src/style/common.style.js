@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -54,16 +56,6 @@ class CommonStyle {
   InfoOfCopyRightContentEditorPaper = {};
 
   /** => following for navigator  component  */
-
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -618,6 +610,26 @@ class CommonStyle {
   MainOrderAreaOfContactHostTypography = {};
 
   MainOrderAreaOfContactDiv = {};
+
+  MainOrderAreaOfDestinationDateOfStartTravelLabelOfDateOfStartTravelTypography = {};
+
+  MainOrderAreaOfDestinationDateOfStartTravelDivWrap = {};
+
+  MainOrderAreaOfDestinationDateOfStartTravelTypography = {};
+
+  MainOrderAreaOfDestinationNameOfAgentLabelOfNameOfAgentTypography = {};
+
+  MainOrderAreaOfDestinationNameOfAgentDivWrap = {};
+
+  MainOrderAreaOfDestinationNameOfAgentTypography = {};
+
+  MainOrderAreaOfDestinationNameOfDestinationLabelOfNameOfDestinationTypography = {};
+
+  MainOrderAreaOfDestinationNameOfDestinationDivWrap = {};
+
+  MainOrderAreaOfDestinationNameOfDestinationTypography = {};
+
+  MainOrderAreaOfDestinationDiv = {};
 
   MainOrderAreaOfHeadExtraIconMoreHoriz = {};
 

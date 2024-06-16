@@ -22,21 +22,66 @@ class EstablishStore extends BaseEstablishStore {
         this.apiOfOrder = new OrderStore();
     }
 
+    /** 團員的額外折扣(小孩不用床) */
     @computed
-    get getComputedPriceOfTotal() {
-        const result = this.getCountOfPeople()*this.getPriceOfCash();
-        this.setPriceOfTotal(result);
-        return result;
+    get getComputedDiscountOfMember() {
+        const totalOfMemberDiscount = _.sum(this.getMembers().map(member => member.getDiscount()))
+        return totalOfMemberDiscount > 0 ? totalOfMemberDiscount : 0;
+    }
+
+    /** 信用卡手續費總和 */
+    @computed
+    get getComputedFeeOfCreditProcedure() {
+        const totalOfCreditProcedure = _.sum(this.getRecords().map(record => record.getFeeOfProcedure()))
+        return totalOfCreditProcedure > 0 ? totalOfCreditProcedure : 0;
     }
 
     @computed
     get getComputedBalance() {
-        return 0
+        const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount())) /** 旅行社成本 */
+        const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的折扣 */
+        const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid())) /** 已實收 */
+        const feeOfProcedure = _.sum(this.records.map((record) => record.getFeeOfProcedure())) /** 信用卡手續費 */
+        return _.subtract(feeOfReceive, _.sum([expense,discount,feeOfProcedure]));
     }
 
+    /** 成本 =  旅行社報價 - 折扣 x 人數*/
+    @computed
+    get getExpenseOfProject() {
+        const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount())) /** 旅行社成本 */
+        const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的折扣 */
+        const result = _.subtract(expense, discount);
+        return result > 0 ? result : 0;
+    }
+
+    /** 甲方預估能收到的錢 */
+    @computed
+    get getComputedPriceOfTotal() {
+        let thePriceOfSelected = 0;
+        switch (this.getSelectedPayMethod()) {
+            case '2':
+                thePriceOfSelected = this.getPriceOfCredit();
+                break;
+            default:
+                thePriceOfSelected = this.getPriceOfCash();
+                break;
+        }
+
+        const price = _.multiply(this.getCountOfPeople(), thePriceOfSelected); /** 甲方開的價格 */
+        const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的額外總折扣 */
+        const result = _.subtract(price , discount);
+        this.setPriceOfTotal(result);
+        return result;
+    }
+
+    /** 已收費用(不含手續費)*/
     @computed
     get getComputedPriceHasPaid() {
-        return 0;
+        const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid())) /** 已實收 */
+        const feeOfProcedure = _.sum(this.records.map((record) => record.getFeeOfProcedure())) /** 信用卡手續費 */
+        const result = _.subtract(feeOfReceive,feeOfProcedure);
+        this.setPriceHasPaid(result);
+        return result;
     }
 
     @action
@@ -91,10 +136,9 @@ class EstablishStore extends BaseEstablishStore {
 
     @action
     deleteRecordById = (id) => {
-        this.removeRecords(this.getPersonById(id));
+        this.removeRecords(this.getRecordById(id));
         this.removeIncomes(this.getIncomeById(id));
     }
-
 
     getMemberById = (id) => {
         return _.find(this.getMembers(),
@@ -107,7 +151,7 @@ class EstablishStore extends BaseEstablishStore {
     }
 
     getRecordById = (id) => {
-        return _.find(this.getPersons(),
+        return _.find(this.getRecords(),
             (record) => _.isEqual(id, record.id));
     }
 

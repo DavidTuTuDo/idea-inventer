@@ -5,6 +5,16 @@ import _ from "lodash";
 import {observer} from "mobx-react";
 import {Application} from "../../";
 import BaseEstablishComponent from "./BaseEstablishComponent";
+import MonetizationOnRounded from "@mui/icons-material/MonetizationOnRounded";
+import PaymentRounded from "@mui/icons-material/PaymentRounded";
+import {Face3Rounded as AdultFemale} from "@mui/icons-material";
+import {FaceRounded as AdultMale} from "@mui/icons-material";
+import {TagFacesRounded as ChildBoy} from "@mui/icons-material";
+import {AddReactionRounded as ChildGirl} from "@mui/icons-material";
+import {QuestionMarkRounded as Question} from "@mui/icons-material";
+
+
+import React from 'react';
 
 @inject("establish")
 @observer
@@ -90,6 +100,69 @@ class EstablishComponent extends BaseEstablishComponent {
             store.setRecords(...self.getStore().getRecords())
         })
     }
+
+    getInjectStyleOfEstablishListOfIncomeChip(establish) {
+        return Util.getVisibleOrHidden(_.size(establish.getRecords()) > 1);
+    }
+
+    getInjectStyleOfEstablishLabelOfListChip(establish) {
+        return Util.getVisibleOrHidden(_.size(establish.getPersons()) > 1);
+    }
+
+    getInjectPropsOfEstablishPersonNameChip(person) {
+        const age = person.getSelectedAge();// 1:adult 2:child
+        const gender = person.getSelectedGender(); //1:female 2:male
+
+        let IconOfMui;
+        if (age === 1 && gender === 1) IconOfMui = AdultFemale;
+        else if (age === 1 && gender === 2) IconOfMui = AdultMale;
+        else if (age === 2 && gender === 1) IconOfMui = ChildGirl;
+        else if (age === 2 && gender === 2) IconOfMui = ChildBoy;
+        else IconOfMui = Question;
+
+        return {icon: <IconOfMui />}
+
+    }
+
+    getInjectPropsOfEstablishIncomeFeeOfPaidChip(income) {
+        return {icon: income.getSelectedPayMethod() === 2 ? <PaymentRounded/> : <MonetizationOnRounded/>}
+    }
+
+    getIncomeFeeOfPaid(income) {
+        const fee = super.getIncomeFeeOfPaid(income);
+        return `${fee} 元`
+    }
+
+    onEstablishIncomeFeeOfPaidChipClicked(param) {
+        const income = param.object;
+        const record = this.getStore().getRecordById(income.getId()).columnData();
+        this.getAreaOfIncomeDivAlertDialogRef().open();
+        Application.getReimburseStore().pushTasksOfCompleted((store) => {
+            store.setIsUpdate(true);
+            store.setRecords(...[record]);
+        })
+    }
+
+    onEstablishIncomeFeeOfPaidChipDeleted(param) {
+        const income = param.object;
+        this.getStore().deleteRecordById(income.getId());
+    }
+
+    getInjectPropsOfEstablishPriceHasPaidTextField(establish) {
+        const fee = establish.getComputedFeeOfCreditProcedure;
+        return fee > 0 ? {helperText: `不含手續費\$${fee}元`} : {};
+    }
+
+    getInjectPropsOfEstablishPriceOfTotalTextField(establish) {
+        const fee = establish.getComputedDiscountOfMember;
+        return fee > 0 ? {helperText: `團員總折扣\$${fee}元`} : {};
+    }
+
+    getInjectPropsOfEstablishBalanceTextField(establish) {
+        const fee = establish.getExpenseOfProject;
+        return fee > 0 ? {helperText: `已收-成本\$${fee}元`} : {};
+    }
+
 
     /** -------------------- async api -------------------- **/
 }
