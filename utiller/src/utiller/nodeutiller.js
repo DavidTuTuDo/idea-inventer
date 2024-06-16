@@ -623,6 +623,7 @@ class NodeUtiller extends Utiller {
 
     /** 用來更新樣板裡面的模組版本 */
     async updateVersionOfTemplate(dependency, newVersion) {
+
         const paths = [
             '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
             '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/web.package.json.mustache',
@@ -631,12 +632,20 @@ class NodeUtiller extends Utiller {
         ];
         for (const path of paths) {
             if (this.isPathExist(path)) {
+                let succeedOfPersistFile = false;
                 const json = this.getJsonObjByFilePath(path);
                 if (json && json.dependencies && json.dependencies[dependency]) {
                     json.dependencies[dependency] = `^${newVersion}`
-                    await this.writeJsonThanPrettier(path, json);
-                } else {
-                    
+                    try {
+                        await this.writeJsonThanPrettier(path, json);
+                        succeedOfPersistFile = true;
+                    } catch (error) {
+                        succeedOfPersistFile = true;
+                    }
+                }
+                if (!succeedOfPersistFile) {
+                    await this.updateFileOfSpecificLine(path, `   "${dependency}":"^${newVersion}"`,
+                        (each) => _.startsWith(_.trim(each), `"${dependency}"`));
                 }
             }
         }
@@ -644,6 +653,20 @@ class NodeUtiller extends Utiller {
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
             '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
             true, true)
+    }
+
+    /** 把一份文件split(\n)，然後透過predicate找出特定的line，再replace成contentOfUpdated
+     *
+     * 例如一份package.json
+     * utiller:1.0.1 => utiller:1.0.1
+     *
+     * */
+    async updateFileOfSpecificLine(pathOfFile, contentOfUpdated, predicate = (line) => true) {
+        const context = this.getFileContextInRaw(pathOfFile);
+        const split = context.split('\n');
+        const item = _.find(split, (each) => predicate(each));
+        this.replaceArrayByContentIndex(split, item, contentOfUpdated);
+        this.appendFile(pathOfFile, split.join('\n'), true, true);
     }
 
     async writeJsonThanPrettier(path, json) {
@@ -915,7 +938,11 @@ class NodeUtiller extends Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new NodeUtiller();
-            // console.log(utiller.isFileEditSucceed('/Users/davidtu/cross-achieve/high/idea-inventer/gen/dading/web/src/component/establish/index.js'));
+            // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
+            //     `"utiller":"^1.0.3"`,(line) => _.startsWith( _.trim(line),`"utiller"`)
+            //     )
+            // console.log(utiller.isFileEditS
+            // ucceed('/Users/davidtu/cross-achieve/high/idea-inventer/gen/dading/web/src/component/establish/index.js'));
             // console.log(await utiller.getObjectFromPromptQ({name:'order',require:true,description:'what u what'}));
             // console.log(utiller.getVersionOfJsFile(`./source.js`));
             // for(const index of _.range(1,100)){
@@ -936,7 +963,7 @@ if (configerer.DEBUG_MODE) {
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            // await new NodeUtiller().generatePackage('../utiller',false);
+            await new NodeUtiller().generatePackage('../utiller', true);
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
