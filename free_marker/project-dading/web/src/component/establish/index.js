@@ -27,6 +27,49 @@ class EstablishComponent extends BaseEstablishComponent {
         super(props);
     }
 
+    getFinanceCreateTime(finance) {
+        const ts = super.getFinanceCreateTime(finance);
+        return Util.getSimpleTimeYYMMDDHHmmFormat(ts);
+    }
+
+    getInjectStyleOfEstablishAreaOfMemberDetailDiv(establish) {
+        return Util.getVisibleOrNone(!this.isMobileDevice())
+    }
+
+    getInjectStyleOfEstablishVisitorFeeOfProfitTextField(visitor) {
+        return Util.getVisibleOrNone(false);
+    }
+
+    getInjectStyleOfEstablishVisitorPriceTextField(visitor) {
+        return Util.getVisibleOrNone(false);
+    }
+
+    onEstablishVisitorExtraIconButtonCreateClicked(param) {
+        const self = this;
+        const visitor = param.object;
+        return (param) => {
+            self.getStore().pushVisitorsByIndex(-1, {});
+        }
+    }
+
+    onEstablishVisitorExtraIconButtonDeleteClicked(param) {
+        const self = this;
+        const visitor = param.object;
+        return (param) => {
+            if (_.size(self.getStore().getVisitors()) > 1) visitor.remove()
+            else self.showInfoSnackMessage(`無法刪除僅剩的一名團員`)
+        }
+    }
+
+    onEstablishVisitorExtraIconButtonCopyClicked(param) {
+        const self = this;
+        const visitor = param.object;
+        return (param) => {
+            const data = visitor.columnData();
+            self.getStore().pushVisitorsByIndex(-1, data);
+        }
+    }
+
     onEstablishCancelChipClicked(param) {
         this.dismiss();
     }
@@ -120,7 +163,7 @@ class EstablishComponent extends BaseEstablishComponent {
         else if (age === 2 && gender === 2) IconOfMui = ChildBoy;
         else IconOfMui = Question;
 
-        return {icon: <IconOfMui />}
+        return {icon: <IconOfMui/>}
 
     }
 

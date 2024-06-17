@@ -177,6 +177,9 @@ class CodegenNode {
     size = '';
     /** autocomplete textField 會用到*/
 
+    margin = '';
+    /** TextField有這個欄位 */
+
     /** 利用outer,view child的方式,增加一個label概念 姓名: David*/
 
     valueOfTabDefault = '';
@@ -749,6 +752,10 @@ class CodegenNode {
         return this.size ?? 'medium';
     }
 
+    getMargin() {
+        return this.margin ?? 'normal';
+    }
+
     getRuleOfOuter() {
         return this.ruleOfOuter;
     }
@@ -776,6 +783,9 @@ class CodegenNode {
         return this.size && !_.isEmpty(this.size);
     }
 
+    hasMargin() {
+        return this.margin && !_.isEmpty(this.margin);
+    }
 
     isBelongAutoComplete() {
         return !!this.belong2AutoComplete;
@@ -1155,7 +1165,7 @@ class CodegenNode {
      * 4.selectedItem預設都是{value:'100',label:'100年'} label用來顯示標籤
      * */
     isSimpleSelected() {
-        return (this.isArray() || this.isArrayItem()) && this.select && Util.isOrEquals(this.select.type, 'radio', 'spinner', 'button');
+        return this.select && Util.isOrEquals(this.select.type, 'radio', 'spinner', 'button');
     }
 
     getTypeOfSimpleSelected() {
@@ -7790,10 +7800,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isSimpleSelected()) {
 
-                if (!node.isArray()) {
-                    throw new ERROR(9999, '98787453 simple selected support array only')
-                }
-
+                node.setType('array');
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
                     type: 'string', /** succeed, fail */
@@ -7807,6 +7814,8 @@ class ProjectFileHandler extends PathBase {
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
                         node.setListView('TextField');
+                        if(node.hasVariant())
+                            node.appendListProps({variant:node.getVariant()});
                         node.setView('MenuItem');
                         node.appendListProps({select: true})
                         this.enrichTextFieldBehavior(node, 'list');
@@ -8258,6 +8267,10 @@ class ProjectFileHandler extends PathBase {
 
             if (node.hasSize())
                 node.appendViewProps({size: `${node.getSize()}`})
+
+            if (node.hasMargin())
+                node.appendViewProps({margin: `${node.getMargin() }`})
+
 
             if (node.isWrapByAppBarView() && !node.isScrollingHideDependOnRootNode()) {
                 node.appendWrapProps({position: 'static'})

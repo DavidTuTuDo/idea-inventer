@@ -947,8 +947,12 @@ class Utiller {
         return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD")
     }
 
-    getSimpleTimeFormat(ts) {
+    getSimpleDateYYMMDDFormat(ts) {
         return moment(ts ? ts : this.getCurrentTimeStamp()).format("YY/MM/DD")
+    }
+
+    getSimpleTimeYYMMDDHHmmFormat(ts) {
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YY/MM/DD HH:mm")
     }
 
     getECPayCurrentTimeFormat(ts) {

@@ -438,9 +438,19 @@
 
 body {
   margin: 0;
+
 }
 
 /** view pager settings */
 .SlideIndicatorArrowDiv {
   background-color: lightgray;
+}
+
+
+/** 當TextField為number時不要出現增減的圖示，會佔一個空間 */
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }

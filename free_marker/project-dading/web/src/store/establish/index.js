@@ -58,20 +58,21 @@ class EstablishStore extends BaseEstablishStore {
     @computed
     get getComputedPriceOfTotal() {
         let thePriceOfSelected = 0;
-        switch (this.getSelectedPayMethod()) {
-            case '2':
-                thePriceOfSelected = this.getPriceOfCredit();
-                break;
-            default:
-                thePriceOfSelected = this.getPriceOfCash();
-                break;
-        }
-
-        const price = _.multiply(this.getCountOfPeople(), thePriceOfSelected); /** 甲方開的價格 */
-        const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的額外總折扣 */
-        const result = _.subtract(price , discount);
-        this.setPriceOfTotal(result);
-        return result;
+        return 0;
+        // switch (this.getSelectedPayMethod()) {
+        //     case '2':
+        //         thePriceOfSelected = this.getPriceOfCredit();
+        //         break;
+        //     default:
+        //         thePriceOfSelected = this.getPriceOfCash();
+        //         break;
+        // }
+        //
+        // const price = _.multiply(this.getCountOfPeople(), thePriceOfSelected); /** 甲方開的價格 */
+        // const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的額外總折扣 */
+        // const result = _.subtract(price , discount);
+        // this.setPriceOfTotal(result);
+        // return result;
     }
 
     /** 已收費用(不含手續費)*/

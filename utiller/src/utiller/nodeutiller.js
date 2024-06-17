@@ -404,7 +404,7 @@ class NodeUtiller extends Utiller {
             this.insertToArray(splited, indexOfRunManager,
                 `<configuration name="${packageName}" 
         type="NodeJSConfigurationType" 
-        path-to-node="$USER_HOME$/.nvm/versions/node/v14.4.0/bin/node" 
+        path-to-node="$USER_HOME$/.nvm/versions/node/v18.19.1/bin/node" 
         node-parameters="--require @babel/register" 
         path-to-js-file="${libpath.resolve(dirPath)}/src/index.js" 
         working-dir="${libpath.resolve(dirPath)}" >`,
@@ -644,7 +644,8 @@ class NodeUtiller extends Utiller {
                     }
                 }
                 if (!succeedOfPersistFile) {
-                    await this.updateFileOfSpecificLine(path, `   "${dependency}":"^${newVersion}"`,
+                    await this.updateFileOfSpecificLine(path,
+                        (line) => `   "${dependency}":"^${newVersion}"${_.endsWith(_.trim(line), ',' ? ',' : '')}`,
                         (each) => _.startsWith(_.trim(each), `"${dependency}"`));
                 }
             }
@@ -653,7 +654,10 @@ class NodeUtiller extends Utiller {
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
             '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
             true, true)
+
+
     }
+
 
     /** 把一份文件split(\n)，然後透過predicate找出特定的line，再replace成contentOfUpdated
      *
@@ -661,11 +665,11 @@ class NodeUtiller extends Utiller {
      * utiller:1.0.1 => utiller:1.0.1
      *
      * */
-    async updateFileOfSpecificLine(pathOfFile, contentOfUpdated, predicate = (line) => true) {
+    async updateFileOfSpecificLine(pathOfFile, contentOfUpdated = (line) => 'updated', predicate = (line) => true) {
         const context = this.getFileContextInRaw(pathOfFile);
         const split = context.split('\n');
-        const item = _.find(split, (each) => predicate(each));
-        this.replaceArrayByContentIndex(split, item, contentOfUpdated);
+        const line = _.find(split, (each) => predicate(each));
+        this.replaceArrayByContentIndex(split, line, contentOfUpdated(line));
         this.appendFile(pathOfFile, split.join('\n'), true, true);
     }
 
@@ -939,7 +943,7 @@ if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new NodeUtiller();
             // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
-            //     `"utiller":"^1.0.3"`,(line) => _.startsWith( _.trim(line),`"utiller"`)
+            //     (item) => `"utiller":"^1.0.3"${_.endsWith(_.trim(item),',') ? ',': ''}`,(line) => _.startsWith( _.trim(line),`"firebase"`)
             //     )
             // console.log(utiller.isFileEditS
             // ucceed('/Users/davidtu/cross-achieve/high/idea-inventer/gen/dading/web/src/component/establish/index.js'));
@@ -963,7 +967,7 @@ if (configerer.DEBUG_MODE) {
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            await new NodeUtiller().generatePackage('../utiller', true);
+            // await new NodeUtiller().generatePackage('../utiller', true);
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');

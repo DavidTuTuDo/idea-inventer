@@ -425,6 +425,26 @@ class MobileStyle {
 
   EstablishAreaOfRemoteDiv = {};
 
+  EstablishAreaOfFinancialDetailFinancePriceTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceCommentTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceRequestMenuItem = {};
+
+  EstablishAreaOfFinancialDetailFinanceRequestTextFieldList = {};
+
+  EstablishAreaOfFinancialDetailFinanceStatusMenuItem = {};
+
+  EstablishAreaOfFinancialDetailFinanceStatusTextFieldList = {};
+
+  EstablishAreaOfFinancialDetailFinanceCreateTimeTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceDivList = {};
+
+  EstablishAreaOfFinancialDetailFinanceDiv = {};
+
+  EstablishAreaOfFinancialDetailDiv = {};
+
   EstablishAreaOfIncomeIncomeFeeOfPaidReactFragmentWrap = {};
 
   EstablishAreaOfIncomeIncomeFeeOfPaidChip = {};
@@ -467,7 +487,53 @@ class MobileStyle {
 
   EstablishAreaOfGroupDiv = {};
 
-  EstablishCommentTextField = {};
+  EstablishAreaOfMemberDetailVisitorExtraIconMoreVertRounded = {};
+
+  EstablishAreaOfMemberDetailVisitorExtraReactFragmentWrap = {};
+
+  EstablishAreaOfMemberDetailVisitorExtraIconButton = {};
+
+  EstablishAreaOfMemberDetailVisitorCommentTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorFeeOfProfitTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorPriceOfCostTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorPriceTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorDiscountTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorPriceOfOriginalTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorCertificateMenuItem = {};
+
+  EstablishAreaOfMemberDetailVisitorCertificateTextFieldList = {};
+
+  EstablishAreaOfMemberDetailVisitorNameOfPassportTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorPassportMenuItem = {};
+
+  EstablishAreaOfMemberDetailVisitorPassportTextFieldList = {};
+
+  EstablishAreaOfMemberDetailVisitorNameTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorAgeMenuItem = {};
+
+  EstablishAreaOfMemberDetailVisitorAgeTextFieldList = {};
+
+  EstablishAreaOfMemberDetailVisitorIdOfHotelRoomMenuItem = {};
+
+  EstablishAreaOfMemberDetailVisitorIdOfHotelRoomTextFieldList = {};
+
+  EstablishAreaOfMemberDetailVisitorDivList = {};
+
+  EstablishAreaOfMemberDetailVisitorDiv = {};
+
+  EstablishAreaOfMemberDetailDiv = {};
+
+  EstablishAreaOfPayStatusStatusOfSendMenuItem = {};
+
+  EstablishAreaOfPayStatusStatusOfSendTextFieldList = {};
 
   EstablishAreaOfPayStatusSalesmanMenuItem = {};
 
@@ -479,13 +545,19 @@ class MobileStyle {
 
   EstablishAreaOfPayStatusDiv = {};
 
+  EstablishAreaOfPartyAFeeOfAgentTextField = {};
+
   EstablishAreaOfPartyAPriceOfDiscountTextField = {};
 
   EstablishAreaOfPartyAPriceOfAgentTextField = {};
 
   EstablishAreaOfPartyADiv = {};
 
+  EstablishAreaOfPartyBCountOfCreditPeopleTextField = {};
+
   EstablishAreaOfPartyBPriceOfCreditTextField = {};
+
+  EstablishAreaOfPartyBCountOfCashPeopleTextField = {};
 
   EstablishAreaOfPartyBPriceOfCashTextField = {};
 
@@ -495,9 +567,7 @@ class MobileStyle {
 
   EstablishAreaOfTourAgentTextFieldList = {};
 
-  EstablishAreaOfTourPayMethodMenuItem = {};
-
-  EstablishAreaOfTourPayMethodTextFieldList = {};
+  EstablishAreaOfTourFeeOfDepositTextField = {};
 
   EstablishAreaOfTourDiv = {};
 
@@ -506,6 +576,8 @@ class MobileStyle {
   EstablishAreaOfObjectiveDestinationInputOfDestinationTextField = {};
 
   EstablishAreaOfObjectiveDestinationAutocomplete = {};
+
+  EstablishAreaOfObjectiveSerialOfGroupTextField = {};
 
   EstablishAreaOfObjectiveDiv = {};
 
