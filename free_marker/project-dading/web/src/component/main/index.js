@@ -63,7 +63,8 @@ class MainComponent extends BaseMainComponent {
                 const result = store.fromJson(order);
                 store.setPersons(...result.members.map((member)=> member.columnData()))
                 store.setIncomes(...result.records.map((record)=> record.columnData()))
-
+                store.setVisitors(...result.members.map((member)=> member.columnData()))
+                store.setFinances(...result.records.map((record)=> record.columnData()))
             })
         }
     }

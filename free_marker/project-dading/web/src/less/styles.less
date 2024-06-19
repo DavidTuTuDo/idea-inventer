@@ -1112,7 +1112,7 @@
 .EstablishAreaOfPartyAFeeOfAgentTextField {
   width: 33%;
   @media @mobile {
-    /** empty style */
+    width: 33%;
   }
   @media @tablet {
     /** empty style */
@@ -1218,6 +1218,8 @@
 .EstablishAreaOfMemberDetailVisitorDiv:extend(.CenterInParentRow) {
   gap: 5px;
   width: 100%;
+  padding-left: 30px;
+  justify-content: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -1239,7 +1241,20 @@
     /** empty style */
   }
 }
+.EstablishAreaOfMemberDetailVisitorIndexOfSequenceTextField {
+  width: 3.5%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishAreaOfMemberDetailVisitorIdOfHotelRoomTextFieldList {
+  width: 5%;
   @media @mobile {
     /** empty style */
   }
@@ -1262,6 +1277,7 @@
   }
 }
 .EstablishAreaOfMemberDetailVisitorAgeTextFieldList {
+  width: 6%;
   @media @mobile {
     /** empty style */
   }
@@ -1273,6 +1289,28 @@
   }
 }
 .EstablishAreaOfMemberDetailVisitorAgeMenuItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfMemberDetailVisitorGenderTextFieldList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfMemberDetailVisitorGenderMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1296,6 +1334,7 @@
   }
 }
 .EstablishAreaOfMemberDetailVisitorPassportTextFieldList {
+  width: 6%;
   @media @mobile {
     /** empty style */
   }
@@ -1318,6 +1357,7 @@
   }
 }
 .EstablishAreaOfMemberDetailVisitorNameOfPassportTextField {
+  width: 15%;
   @media @mobile {
     /** empty style */
   }
@@ -1362,8 +1402,8 @@
     width: 9%;
   }
 }
-.EstablishAreaOfMemberDetailVisitorDiscountTextField {
-  width: 9%;
+.EstablishAreaOfMemberDetailVisitorPriceTextField {
+  width: 8%;
   @media @mobile {
     /** empty style */
   }
@@ -1374,8 +1414,8 @@
     /** empty style */
   }
 }
-.EstablishAreaOfMemberDetailVisitorPriceTextField {
-  width: 8%;
+.EstablishAreaOfMemberDetailVisitorDiscountTextField {
+  width: 9%;
   @media @mobile {
     /** empty style */
   }
@@ -1714,12 +1754,9 @@
   }
   @media @desktop {
     /** empty style */
-    width: 100%;
   }
 }
-.EstablishAreaOfFinancialDetailFinanceDiv:extend(.CenterInParentRow) {
-  width: 100%;
-  gap: 5px;
+.EstablishAreaOfFinancialDetailFinanceDiv:extend(.EstablishAreaOfMemberDetailVisitorDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -1730,7 +1767,19 @@
     /** empty style */
   }
 }
-.EstablishAreaOfFinancialDetailFinanceDivList {
+.EstablishAreaOfFinancialDetailFinanceDivList:extend(.CenterInParentColumn) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceIndexOfSequenceTextField {
+  width: 3.5%;
   @media @mobile {
     /** empty style */
   }
@@ -1742,8 +1791,9 @@
   }
 }
 .EstablishAreaOfFinancialDetailFinanceCreateTimeTextField {
+  width: 11%;
   @media @mobile {
-    /** empty style */
+    width: 11%;
   }
   @media @tablet {
     /** empty style */
@@ -1797,6 +1847,7 @@
   }
 }
 .EstablishAreaOfFinancialDetailFinanceCommentTextField {
+  width: 15%;
   @media @mobile {
     /** empty style */
   }
@@ -1807,7 +1858,89 @@
     /** empty style */
   }
 }
-.EstablishAreaOfFinancialDetailFinancePriceTextField {
+.EstablishAreaOfFinancialDetailFinanceSerialOfCreditTextField {
+  width: 15%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceCodeOfCreditAuthTextField {
+  width: 7%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceAccountOfLast5NumTextField {
+  width: 9%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceFeeOfPartyBTextField {
+  width: 9%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceFeeOfPartyATextField {
+  width: 9%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceExtraIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceExtraReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishAreaOfFinancialDetailFinanceExtraIconMoreVertRounded {
   @media @mobile {
     /** empty style */
   }
@@ -3946,6 +4079,61 @@
     /** empty style */
   }
 }
+.NavigatorDrawerMyShortcutListItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListItemSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutTitleTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutIconImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for infoOfCopyRightContent editor component used  */
 
 .InfoOfCopyRightContentEditorPaper:extend(.InfoOfCopyRightContentPaper) {
@@ -4203,6 +4391,18 @@
 }
 /** ======== following for homeless ========= */
 
+.EstablishAreaOfFinancialDetailFinancePriceTextField {
+  width: 10%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishCommentTextField {
   width: 100%;
   @media @mobile {

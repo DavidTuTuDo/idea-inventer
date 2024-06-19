@@ -616,6 +616,11 @@ class Utiller {
         return '';
     }
 
+    getStringOfCreditCardFormatted(string) {
+        let inputValue = string.replace(/\D/g, ''); // Remove all non-digit characters
+        return inputValue.replace(/(\d{4})(?=\d)/g, '$1-'); // Add a dash every 4 digits
+    }
+
     getObjectKey(obj) {
         if (_.isObject(obj)) {
             return Object.keys(obj)[0];

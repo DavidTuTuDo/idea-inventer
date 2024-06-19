@@ -137,6 +137,9 @@ class CodegenNode {
     color;
     /** 用在Button Chip */
 
+    singleLine = false;
+    /** 用在TextField不要產生換行行為 */
+
     /**
      * 定義在structs那一層
      * { sample:'範例',example:'超級範例' }
@@ -718,6 +721,9 @@ class CodegenNode {
      * */
     disableObservable = false;
 
+    border = true;
+    /** TextField 的 filled會有 圓弧 */
+
     /** 設計了defaultValue 然後想要快速地取消掉 */
     disableDefaultValue = false;
 
@@ -742,6 +748,10 @@ class CodegenNode {
 
     hasVariant() {
         return !_.isEmpty(this.variant);
+    }
+
+    disableBorder() {
+        return _.isEqual(this.border,false);
     }
 
     getVariant() {
@@ -880,6 +890,10 @@ class CodegenNode {
 
     isPositionLocateAtStart() {
         return _.isEqual(this.getPositionOfHelperVisual(), 'start');
+    }
+
+    isSingleLine(){
+        return this.singleLine;
     }
 
     getTextOfHelperVisual() {
@@ -6140,6 +6154,9 @@ class AppBuilder extends ComponentBuilder {
          Util.copySingleFile(from, dest, '', true);
          } */
 
+        arrayOfI18nKeyValue.length = 0;
+        /** 讓Rapid Build不會產生重疊的行為 */
+
     }
 
     async buildCookieFiles() {
@@ -7816,6 +7833,11 @@ class ProjectFileHandler extends PathBase {
                         node.setListView('TextField');
                         if(node.hasVariant())
                             node.appendListProps({variant:node.getVariant()});
+                        if(node.disableBorder()){
+                            node.appendListProps({sx:{
+                                    "& fieldset": { border: 'none' },
+                                }})
+                        }
                         node.setView('MenuItem');
                         node.appendListProps({select: true})
                         this.enrichTextFieldBehavior(node, 'list');
@@ -8182,6 +8204,12 @@ class ProjectFileHandler extends PathBase {
                     node.label = node.description;
                 }
 
+                if(node.disableBorder()){
+                    node.appendViewProps({sx:{
+                            "& fieldset": { border: 'none' },
+                        }})
+                }
+
                 this.enrichTextFieldBehavior(node, 'default');
 
                 if (node.isNumber()) {
@@ -8189,7 +8217,7 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({InputLabelProps: {shrink: true}});
                 }
 
-                if (node.isString() && !node.search) {
+                if (node.isString() && !node.isSingleLine() && !node.search) {
                     node.appendViewProps({multiline: '###true'});
                 }
 

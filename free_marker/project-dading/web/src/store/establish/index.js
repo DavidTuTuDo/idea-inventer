@@ -169,7 +169,11 @@ class EstablishStore extends BaseEstablishStore {
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 
+
     result = () => {
+        this.setMembers(...this.getVisitors().map(visitor => visitor.columnData()));
+        this.setRecords(...this.getFinances().map(finance => finance.columnData()));
+
         const submit = this.columnData();
         submit.destination = _.isObject(submit.destination) ? submit.destination.value : '0';
         submit.idOfOrder = UserInfoRef.getUid()
@@ -194,6 +198,12 @@ class EstablishStore extends BaseEstablishStore {
         origin.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
         return origin;
     }
+
+    invalidate() {
+        this.getFinances().map(item => item.invalidate());
+        this.getVisitors().map(item => item.invalidate());
+    }
+
 
     /** -------------------- async api -------------------- **/
 }

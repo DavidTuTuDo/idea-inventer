@@ -27,6 +27,59 @@ class EstablishComponent extends BaseEstablishComponent {
         super(props);
     }
 
+    getInjectStyleOfEstablishAreaOfGroupDiv(establish) {
+        return Util.getVisibleOrNone(this.isMobileDevice())
+    }
+
+    getInjectStyleOfEstablishAreaOfIncomeDiv(establish) {
+        return Util.getVisibleOrNone(this.isMobileDevice())
+    }
+
+    getInjectStyleOfEstablishAreaOfFinancialDetailDiv(establish) {
+        return Util.getVisibleOrNone(!this.isMobileDevice())
+    }
+
+    getInjectStyleOfEstablishAreaOfOutcomeDiv(establish) {
+        return Util.getVisibleOrNone(this.isMobileDevice())
+    }
+
+    isCreditCardBehavior(finance) {
+        return _.isEqual(_.toNumber(finance.getSelectedStatus()),2);
+    }
+
+    isCashMonetBehavior(finance) {
+        return _.isEqual(_.toNumber(finance.getSelectedStatus()),1);
+    }
+
+    getInjectStyleOfEstablishFinanceSerialOfCreditTextField(finance) {
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance),true);
+    }
+
+    getInjectStyleOfEstablishFinanceCodeOfCreditAuthTextField(finance) {
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance),true);
+    }
+
+    getInjectStyleOfEstablishFinanceAccountOfLast5NumTextField(finance) {
+        return Util.getVisibleOrNone(this.isCashMonetBehavior(finance),true);
+    }
+
+    onEstablishFinanceExtraIconButtonDeleteClicked(param) {
+        const self = this;
+        const finance = param.object;
+        return (param) => {
+            if (_.size(self.getStore().getFinances()) > 1) finance.remove()
+            else self.showInfoSnackMessage(`無法刪除僅剩的支單紀錄`)
+        }
+    }
+
+    onEstablishFinanceExtraIconButtonCreateClicked(param) {
+        const self = this;
+        const finance = param.object;
+        return (param) => {
+            self.getStore().pushFinance({});
+        }
+    }
+
     getFinanceCreateTime(finance) {
         const ts = super.getFinanceCreateTime(finance);
         return Util.getSimpleTimeYYMMDDHHmmFormat(ts);
@@ -50,6 +103,11 @@ class EstablishComponent extends BaseEstablishComponent {
         return (param) => {
             self.getStore().pushVisitorsByIndex(-1, {});
         }
+    }
+
+    getFinanceSerialOfCredit(finance) {
+        const original = super.getFinanceSerialOfCredit(finance);
+        return Util.getStringOfCreditCardFormatted(original);
     }
 
     onEstablishVisitorExtraIconButtonDeleteClicked(param) {

@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -56,6 +54,16 @@ class AppStyle {
   InfoOfCopyRightContentEditorPaper = {};
 
   /** => following for navigator  component  */
+
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -425,7 +433,21 @@ class AppStyle {
 
   EstablishAreaOfRemoteDiv = {};
 
-  EstablishAreaOfFinancialDetailFinancePriceTextField = {};
+  EstablishAreaOfFinancialDetailFinanceExtraIconMoreVertRounded = {};
+
+  EstablishAreaOfFinancialDetailFinanceExtraReactFragmentWrap = {};
+
+  EstablishAreaOfFinancialDetailFinanceExtraIconButton = {};
+
+  EstablishAreaOfFinancialDetailFinanceFeeOfPartyATextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceFeeOfPartyBTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceAccountOfLast5NumTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceCodeOfCreditAuthTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceSerialOfCreditTextField = {};
 
   EstablishAreaOfFinancialDetailFinanceCommentTextField = {};
 
@@ -438,6 +460,8 @@ class AppStyle {
   EstablishAreaOfFinancialDetailFinanceStatusTextFieldList = {};
 
   EstablishAreaOfFinancialDetailFinanceCreateTimeTextField = {};
+
+  EstablishAreaOfFinancialDetailFinanceIndexOfSequenceTextField = {};
 
   EstablishAreaOfFinancialDetailFinanceDivList = {};
 
@@ -499,9 +523,9 @@ class AppStyle {
 
   EstablishAreaOfMemberDetailVisitorPriceOfCostTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorPriceTextField = {};
-
   EstablishAreaOfMemberDetailVisitorDiscountTextField = {};
+
+  EstablishAreaOfMemberDetailVisitorPriceTextField = {};
 
   EstablishAreaOfMemberDetailVisitorPriceOfOriginalTextField = {};
 
@@ -517,6 +541,10 @@ class AppStyle {
 
   EstablishAreaOfMemberDetailVisitorNameTextField = {};
 
+  EstablishAreaOfMemberDetailVisitorGenderMenuItem = {};
+
+  EstablishAreaOfMemberDetailVisitorGenderTextFieldList = {};
+
   EstablishAreaOfMemberDetailVisitorAgeMenuItem = {};
 
   EstablishAreaOfMemberDetailVisitorAgeTextFieldList = {};
@@ -524,6 +552,8 @@ class AppStyle {
   EstablishAreaOfMemberDetailVisitorIdOfHotelRoomMenuItem = {};
 
   EstablishAreaOfMemberDetailVisitorIdOfHotelRoomTextFieldList = {};
+
+  EstablishAreaOfMemberDetailVisitorIndexOfSequenceTextField = {};
 
   EstablishAreaOfMemberDetailVisitorDivList = {};
 
