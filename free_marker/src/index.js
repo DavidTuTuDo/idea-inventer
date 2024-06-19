@@ -146,10 +146,6 @@ class CodegenNode {
      **/
     textsOfI18n = {};
 
-    preciseUsage
-    /** TextField的label，是傳統那種在左邊的概念*/
-
-
     /**
      * 檢查是不是extra component，會造成 i18n duplicated
      * */
@@ -755,7 +751,7 @@ class CodegenNode {
     }
 
     disableBorder() {
-        return _.isEqual(this.border,false);
+        return _.isEqual(this.border, false);
     }
 
     getVariant() {
@@ -896,7 +892,7 @@ class CodegenNode {
         return _.isEqual(this.getPositionOfHelperVisual(), 'start');
     }
 
-    isSingleLine(){
+    isSingleLine() {
         return this.singleLine;
     }
 
@@ -3774,6 +3770,7 @@ class PathBase {
         function whatever() {
             mapping(...source.components.map(component => component.struct))
         }
+
         const source = require(libpath.resolve(pathOfSource)).default;
         const arrayOfEachNode = []; //[ {name:string,independence:boolean,raw:node} ]
         const mapOfIndexing = {} //{ ...name:node }
@@ -7676,7 +7673,7 @@ class ProjectFileHandler extends PathBase {
                 )
             }
 
-            if (node.hasLabelView()) {
+            if (node.hasLabelView() && !node.isBelongAutoComplete()) {
                 if (Util.isUndefinedNullEmpty(node.wrapView))
                     node.setWrapView('div');
 
@@ -7835,12 +7832,14 @@ class ProjectFileHandler extends PathBase {
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
                         node.setListView('TextField');
-                        if(node.hasVariant())
-                            node.appendListProps({variant:node.getVariant()});
-                        if(node.disableBorder()){
-                            node.appendListProps({sx:{
-                                    "& fieldset": { border: 'none' },
-                                }})
+                        if (node.hasVariant())
+                            node.appendListProps({variant: node.getVariant()});
+                        if (node.disableBorder()) {
+                            node.appendListProps({
+                                sx: {
+                                    "& fieldset": {border: 'none'},
+                                }
+                            })
                         }
                         node.setView('MenuItem');
                         node.appendListProps({select: true})
@@ -7968,7 +7967,8 @@ class ProjectFileHandler extends PathBase {
 
         const arrayOfProps = [];
 
-        if (node.hasLabel()) {
+        /** TextField 支援 preciseUsage 的就不用 label */
+        if (!node.isBelongAutoComplete() && !node.hasLabelView() && node.hasLabel()) {
             const label = node.getFieldNameOfLabel();
             node.getParentNode().appendChildrenWithJsons({
                 name: label,
@@ -8208,10 +8208,12 @@ class ProjectFileHandler extends PathBase {
                     node.label = node.description;
                 }
 
-                if(node.disableBorder()){
-                    node.appendViewProps({sx:{
-                            "& fieldset": { border: 'none' },
-                        }})
+                if (node.disableBorder()) {
+                    node.appendViewProps({
+                        sx: {
+                            "& fieldset": {border: 'none'},
+                        }
+                    })
                 }
 
                 this.enrichTextFieldBehavior(node, 'default');
@@ -8301,7 +8303,7 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({size: `${node.getSize()}`})
 
             if (node.hasMargin())
-                node.appendViewProps({margin: `${node.getMargin() }`})
+                node.appendViewProps({margin: `${node.getMargin()}`})
 
 
             if (node.isWrapByAppBarView() && !node.isScrollingHideDependOnRootNode()) {
@@ -8464,13 +8466,6 @@ class ProjectFileHandler extends PathBase {
                         incest: node.incest,
                         description: `用來force ${node.getName()} re-render`
                     },
-                    {
-                        name: label,
-                        type: `string`,
-                        incest: node.incest,
-                        l10n: true,
-                        description: node.label,
-                    }
                 )
 
                 node.appendChildrenWithJsons({
@@ -8479,6 +8474,7 @@ class ProjectFileHandler extends PathBase {
                     view: 'TextField',
                     type: 'string',
                     size: node.getSize(),
+                    labelView: node.labelView,
                     search: node.search,
                     description: node.label,
                     belongAutoComplete: true,
@@ -8491,9 +8487,6 @@ class ProjectFileHandler extends PathBase {
                 })
 
                 node.appendViewProps(
-                    {
-                        noOptionsText: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, label)}()`,
-                    },
                     {
                         options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
                     },
@@ -8517,6 +8510,20 @@ class ProjectFileHandler extends PathBase {
                 if (node.hasSize()) {
                     node.appendViewProps({size: node.getSize()});
 
+                }
+
+                if (!node.hasLabelView()) {
+                    node.getParentNode().appendChildrenWithJsons({
+                        name: label,
+                        type: `string`,
+                        incest: node.incest,
+                        l10n: true,
+                        description: node.label,
+                    })
+
+                    node.appendViewProps({
+                        noOptionsText: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, label)}()`
+                    })
                 }
             }
 
