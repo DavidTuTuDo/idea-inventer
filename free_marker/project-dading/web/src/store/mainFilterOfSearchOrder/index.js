@@ -20,7 +20,7 @@ class MainFilterOfSearchOrderStore extends BaseMainFilterOfSearchOrderStore {
 
         super(props);
         const self = this;
-        this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
+        // this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 
   /** -------------------- async api -------------------- **/

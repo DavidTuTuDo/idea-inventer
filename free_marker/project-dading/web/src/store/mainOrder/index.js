@@ -15,9 +15,9 @@ class MainOrderStore extends BaseMainOrderStore {
     }
 
     invalidate(establish) {
-        this.setNameOfDestination(this.getLabelByValue(Config.COUNTRY_OF_TRAVEL, this.destination));
-        this.setNameOfAgent(this.getLabelByValue(establish.getAgent(), this.getSelectedAgent()));
-        this.setDateOfStartTravel(Util.getSimpleDateYYMMDDFormat(this.getStartOfTravel()));
+        // this.setNameOfDestination(this.getLabelByValue(Config.COUNTRY_OF_TRAVEL, this.destination));
+        // this.setNameOfAgent(this.getLabelByValue(establish.getAgent(), this.getSelectedAgent()));
+        // this.setDateOfStartTravel(Util.getSimpleDateYYMMDDFormat(this.getStartOfTravel()));
     }
 
     getLabelByValue(array, value) {

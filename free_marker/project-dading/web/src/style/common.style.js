@@ -561,67 +561,77 @@ class CommonStyle {
 
   EstablishAreaOfMemberDetailDiv = {};
 
-  EstablishAreaOfPayStatusStatusOfSendMenuItem = {};
+  EstablishDesktopAreaOfInfoBuyerTextField = {};
 
-  EstablishAreaOfPayStatusStatusOfSendTextFieldList = {};
+  EstablishDesktopAreaOfInfoIdTextField = {};
 
-  EstablishAreaOfPayStatusSalesmanMenuItem = {};
+  EstablishDesktopAreaOfInfoDiv = {};
 
-  EstablishAreaOfPayStatusSalesmanTextFieldList = {};
+  EstablishDesktopDiv = {};
 
-  EstablishAreaOfPayStatusStatusOfPaidMenuItem = {};
+  EstablishMobileAreaOfPayStatusStatusOfSendMenuItem = {};
 
-  EstablishAreaOfPayStatusStatusOfPaidTextFieldList = {};
+  EstablishMobileAreaOfPayStatusStatusOfSendTextFieldList = {};
 
-  EstablishAreaOfPayStatusDiv = {};
+  EstablishMobileAreaOfPayStatusSalesmanMenuItem = {};
 
-  EstablishAreaOfPartyAFeeOfAgentTextField = {};
+  EstablishMobileAreaOfPayStatusSalesmanTextFieldList = {};
 
-  EstablishAreaOfPartyAPriceOfDiscountTextField = {};
+  EstablishMobileAreaOfPayStatusStatusOfPaidMenuItem = {};
 
-  EstablishAreaOfPartyAPriceOfAgentTextField = {};
+  EstablishMobileAreaOfPayStatusStatusOfPaidTextFieldList = {};
 
-  EstablishAreaOfPartyADiv = {};
+  EstablishMobileAreaOfPayStatusDiv = {};
 
-  EstablishAreaOfPartyBCountOfCreditPeopleTextField = {};
+  EstablishMobileAreaOfPartyAFeeOfAgentTextField = {};
 
-  EstablishAreaOfPartyBPriceOfCreditTextField = {};
+  EstablishMobileAreaOfPartyAPriceOfDiscountTextField = {};
 
-  EstablishAreaOfPartyBCountOfCashPeopleTextField = {};
+  EstablishMobileAreaOfPartyAPriceOfAgentTextField = {};
 
-  EstablishAreaOfPartyBPriceOfCashTextField = {};
+  EstablishMobileAreaOfPartyADiv = {};
 
-  EstablishAreaOfPartyBDiv = {};
+  EstablishMobileAreaOfPartyBCountOfCreditPeopleTextField = {};
 
-  EstablishAreaOfTourAgentMenuItem = {};
+  EstablishMobileAreaOfPartyBPriceOfCreditTextField = {};
 
-  EstablishAreaOfTourAgentTextFieldList = {};
+  EstablishMobileAreaOfPartyBCountOfCashPeopleTextField = {};
 
-  EstablishAreaOfTourFeeOfDepositTextField = {};
+  EstablishMobileAreaOfPartyBPriceOfCashTextField = {};
 
-  EstablishAreaOfTourDiv = {};
+  EstablishMobileAreaOfPartyBDiv = {};
 
-  EstablishAreaOfObjectiveCountOfPeopleTextField = {};
+  EstablishMobileAreaOfTourAgentMenuItem = {};
 
-  EstablishAreaOfObjectiveDestinationInputOfDestinationTextField = {};
+  EstablishMobileAreaOfTourAgentTextFieldList = {};
 
-  EstablishAreaOfObjectiveDestinationAutocomplete = {};
+  EstablishMobileAreaOfTourFeeOfDepositTextField = {};
 
-  EstablishAreaOfObjectiveSerialOfGroupTextField = {};
+  EstablishMobileAreaOfTourDiv = {};
 
-  EstablishAreaOfObjectiveDiv = {};
+  EstablishMobileAreaOfObjectiveCountOfPeopleTextField = {};
 
-  EstablishAreaOfDateTravelLocalizationProviderWrap = {};
+  EstablishMobileAreaOfObjectiveDestinationInputOfDestinationTextField = {};
 
-  EstablishAreaOfDateTravelDateRangePicker = {};
+  EstablishMobileAreaOfObjectiveDestinationAutocomplete = {};
 
-  EstablishAreaOfDateDiv = {};
+  EstablishMobileAreaOfObjectiveSerialOfGroupTextField = {};
 
-  EstablishAreaOfContactPhoneTextField = {};
+  EstablishMobileAreaOfObjectiveDiv = {};
 
-  EstablishAreaOfContactHostTextField = {};
+  EstablishMobileAreaOfDateTravelLocalizationProviderWrap = {};
 
-  EstablishAreaOfContactDiv = {};
+  EstablishMobileAreaOfDateTravelDateRangePicker = {};
+
+  EstablishMobileAreaOfDateDiv = {};
+
+  EstablishMobileAreaOfContactPhoneTextField = {};
+
+  EstablishMobileAreaOfContactHostTextField = {};
+
+  EstablishMobileAreaOfContactDiv = {};
+
+  EstablishMobileDiv = {};
 
   EstablishIdLabelOfIdTypography = {};
 

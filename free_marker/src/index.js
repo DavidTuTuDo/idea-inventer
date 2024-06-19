@@ -146,6 +146,10 @@ class CodegenNode {
      **/
     textsOfI18n = {};
 
+    preciseUsage
+    /** TextField的label，是傳統那種在左邊的概念*/
+
+
     /**
      * 檢查是不是extra component，會造成 i18n duplicated
      * */

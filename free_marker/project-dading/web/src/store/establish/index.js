@@ -25,6 +25,7 @@ class EstablishStore extends BaseEstablishStore {
     /** 團員的額外折扣(小孩不用床) */
     @computed
     get getComputedDiscountOfMember() {
+        return 0;
         const totalOfMemberDiscount = _.sum(this.getMembers().map(member => member.getDiscount()))
         return totalOfMemberDiscount > 0 ? totalOfMemberDiscount : 0;
     }
@@ -32,12 +33,14 @@ class EstablishStore extends BaseEstablishStore {
     /** 信用卡手續費總和 */
     @computed
     get getComputedFeeOfCreditProcedure() {
+        return 0;
         const totalOfCreditProcedure = _.sum(this.getRecords().map(record => record.getFeeOfProcedure()))
         return totalOfCreditProcedure > 0 ? totalOfCreditProcedure : 0;
     }
 
     @computed
     get getComputedBalance() {
+        return 0;
         const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount())) /** 旅行社成本 */
         const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的折扣 */
         const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid())) /** 已實收 */
@@ -48,6 +51,7 @@ class EstablishStore extends BaseEstablishStore {
     /** 成本 =  旅行社報價 - 折扣 x 人數*/
     @computed
     get getExpenseOfProject() {
+        return 0;
         const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount())) /** 旅行社成本 */
         const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的折扣 */
         const result = _.subtract(expense, discount);
@@ -166,7 +170,7 @@ class EstablishStore extends BaseEstablishStore {
         this.setBalanceDisabled(true);
         this.setPriceHasPaidDisabled(true);
         this.setPriceOfTotalDisabled(true);
-        this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
+        // this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 
 
