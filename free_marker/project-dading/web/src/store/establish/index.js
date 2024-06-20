@@ -167,9 +167,9 @@ class EstablishStore extends BaseEstablishStore {
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
-        this.setBalanceDisabled(true);
-        this.setPriceHasPaidDisabled(true);
-        this.setPriceOfTotalDisabled(true);
+        // this.setBalanceDisabled(true);
+        // this.setPriceHasPaidDisabled(true);
+        // this.setPriceOfTotalDisabled(true);
         // this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 

@@ -124,6 +124,7 @@ class CodegenNode {
     computed = false
     /** 在component 的get${functionName} 會產出 getComputed${node.getName()}*/
 
+    typeOfTextField = '';
 
     idOfProject = ''
     /** firebase上專屬的id好，這才能deploy 到雲端專案的uid*/
@@ -552,6 +553,9 @@ class CodegenNode {
     outer;
     /** 搭配wrap服用的屬性, 可以放在wrap那一個圖層的效果 */
 
+    listOuter
+    /** 搭配ListWrap服用的屬性, 可以放在ListWrap那一個圖層的效果 */
+
     simpleProps = [];
     /** 有些props沒有key <View {...params} 就要定義在這裡*/
 
@@ -811,6 +815,14 @@ class CodegenNode {
 
     hasIconOfDeleted() {
         return !_.isEmpty(this.iconOfDeleted);
+    }
+
+    getTypeOfTextField() {
+        return this.typeOfTextField;
+    }
+
+    hasTypeOfTextField() {
+        return !_.isEmpty(this.typeOfTextField);
     }
 
     getIconOfDeleted() {
@@ -1857,6 +1869,10 @@ class CodegenNode {
         this.wrapView = view;
     }
 
+    setListWrapView(view) {
+        this.listWrapView = view;
+    }
+
     withoutWrapView() {
         return Util.isUndefinedNullEmpty(this.getWrapView(false));
     }
@@ -2122,6 +2138,10 @@ class CodegenNode {
 
     isOuter() {
         return !!this.outer && this.outer
+    }
+
+    isListOuter() {
+        return !!this.listOuter && this.listOuter
     }
 
     isImageView(type = 'default') {
@@ -5438,10 +5458,21 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
         function getOuterChildJSXStrings(node) {
-
             const contentStmts = [];
             for (const child of node.getChildren()) {
                 if (child.isOuter()) {
+                    contentStmts.push(...getJsxViewStmt(child))
+                }
+            }
+            return contentStmts;
+        }
+
+        /** 就是把標註為 outer 的 child 放在同一個view的層級 */
+        function getListOuterChildJSXStrings(node) {
+
+            const contentStmts = [];
+            for (const child of node.getChildren()) {
+                if (child.isListOuter()) {
                     contentStmts.push(...getJsxViewStmt(child))
                 }
             }
@@ -5589,7 +5620,7 @@ class ComponentBuilder extends BaseBuilder {
                             style: `###{${getStmtsOfInjectListWrapStyle(node)}...${JSON.stringify(node.getListWrapStyle())},...Style.${clazzName}}`,
                             ...node.getListWrapProps(),
                         },
-                        contents: [...node.getListWrapContents(), ...arrayStmts]
+                        contents: [...node.getListWrapContents(), ...getListOuterChildJSXStrings(node), ...arrayStmts]
                     }
                 )
             }
@@ -5600,6 +5631,7 @@ class ComponentBuilder extends BaseBuilder {
         for (const child of node.getPreciseViewChildren()) {
             if (!child.isView()) continue;
             if (child.isOuter()) continue;
+            if (child.isListOuter()) continue;
 
             function appendParamStmt(node) {
                 if (node.isViewPropsFunctionalized()) {
@@ -5646,6 +5678,16 @@ class ComponentBuilder extends BaseBuilder {
             typeOfClass: 'component',
             contents: [...contentStmts, ...node.getContents(generator)],
         });
+
+        if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
+            origin = this.getJSXStrings({
+                tag: `LocalizationProvider`,
+                generator,
+                props: {dateAdapter: `###AdapterMoment`},
+                typeOfClass: 'component',
+                contents: [...origin],
+            })
+        }
 
         if (node.hasWrap()) {
             const clazzName = node.getClassNameOfLessUsage('wrap');
@@ -7587,9 +7629,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
-                node.setWrapView('LocalizationProvider');
                 node.appendImportStmt({part: '{AdapterMoment}', from: '@mui/x-date-pickers/AdapterMoment'});
-                node.appendWrapProps({dateAdapter: '###AdapterMoment'});
             }
 
 
@@ -7673,15 +7713,18 @@ class ProjectFileHandler extends PathBase {
                 )
             }
 
-            if (node.hasLabelView() && !node.isBelongAutoComplete()) {
+            /** 因為belongAutoComplete()是包在AutoComplete裏面的TextField*/
+            if (node.hasLabelView()) {
                 if (Util.isUndefinedNullEmpty(node.wrapView))
-                    node.setWrapView('div');
+                    node.isSimpleSelected() ? (Util.isUndefinedNullEmpty(node.listWrapView) ? node.setListWrapView('div') : '') :
+                        (Util.isUndefinedNullEmpty(node.wrapView) ? node.setWrapView('div') : '')
 
                 if (node.hasLabelViewIcon()) {
                     node.appendChildrenWithJsons({
                         name: `btnOf${_.upperFirst(node.getName())}`,
                         needParam: true,
-                        outer: true,
+                        outer: !node.isSimpleSelected(),
+                        listOuter: !!node.isSimpleSelected(),
                         incest: {view: false, attribute: true},
                         view: 'IconButton',
                         injectStyle: node.injectStyle,
@@ -7700,7 +7743,8 @@ class ProjectFileHandler extends PathBase {
                         name: node.getFieldNameOfLabel(),
                         type: `string`,
                         view: `Typography`,
-                        outer: true,
+                        outer: !node.isSimpleSelected(),
+                        listOuter: !!node.isSimpleSelected(),
                         l10n: true,
                         click: node.click,
                         injectStyle: node.injectStyle,
@@ -8218,7 +8262,10 @@ class ProjectFileHandler extends PathBase {
 
                 this.enrichTextFieldBehavior(node, 'default');
 
-                if (node.isNumber()) {
+                if (node.hasTypeOfTextField()) {
+                    node.appendViewProps({type: node.getTypeOfTextField()});
+                    node.appendViewProps({InputLabelProps: {shrink: true}});
+                } else if (node.isNumber()) {
                     node.appendViewProps({type: 'number'});
                     node.appendViewProps({InputLabelProps: {shrink: true}});
                 }
@@ -8474,7 +8521,6 @@ class ProjectFileHandler extends PathBase {
                     view: 'TextField',
                     type: 'string',
                     size: node.getSize(),
-                    labelView: node.labelView,
                     search: node.search,
                     description: node.label,
                     belongAutoComplete: true,

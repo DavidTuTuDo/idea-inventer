@@ -337,8 +337,6 @@ class CommonStyle {
 
   ReimburseRecordAreaOfPayDiv = {};
 
-  ReimburseRecordAreaOfInfoTimeOfCheckinLocalizationProviderWrap = {};
-
   ReimburseRecordAreaOfInfoTimeOfCheckinDatePicker = {};
 
   ReimburseRecordAreaOfInfoPayMethodMenuItem = {};
@@ -401,8 +399,6 @@ class CommonStyle {
 
   AdditionMemberAreaOfPrivacySerialOfIdentityTextField = {};
 
-  AdditionMemberAreaOfPrivacyBirthdayLocalizationProviderWrap = {};
-
   AdditionMemberAreaOfPrivacyBirthdayDatePicker = {};
 
   AdditionMemberAreaOfPrivacyDiv = {};
@@ -433,139 +429,233 @@ class CommonStyle {
 
   EstablishAreaOfRemoteDiv = {};
 
-  EstablishAreaOfFinancialDetailFinanceExtraIconMoreVertRounded = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceExtraIconMoreVertRounded = {};
 
-  EstablishAreaOfFinancialDetailFinanceExtraReactFragmentWrap = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceExtraReactFragmentWrap = {};
 
-  EstablishAreaOfFinancialDetailFinanceExtraIconButton = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceExtraIconButton = {};
 
-  EstablishAreaOfFinancialDetailFinanceFeeOfPartyATextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceFeeOfPartyATextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceFeeOfPartyBTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceFeeOfPartyBTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceAccountOfLast5NumTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceAccountOfLast5NumTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceCodeOfCreditAuthTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceCodeOfCreditAuthTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceSerialOfCreditTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceSerialOfCreditTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceCommentTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceCommentTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceRequestMenuItem = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceRequestMenuItem = {};
 
-  EstablishAreaOfFinancialDetailFinanceRequestTextFieldList = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceRequestTextFieldList = {};
 
-  EstablishAreaOfFinancialDetailFinanceStatusMenuItem = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceStatusMenuItem = {};
 
-  EstablishAreaOfFinancialDetailFinanceStatusTextFieldList = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceStatusTextFieldList = {};
 
-  EstablishAreaOfFinancialDetailFinanceCreateTimeTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceCreateTimeTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceIndexOfSequenceTextField = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceIndexOfSequenceTextField = {};
 
-  EstablishAreaOfFinancialDetailFinanceDivList = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceDivList = {};
 
-  EstablishAreaOfFinancialDetailFinanceDiv = {};
+  EstablishDesktopAreaOfFinancialDetailFinanceDiv = {};
 
-  EstablishAreaOfFinancialDetailDiv = {};
+  EstablishDesktopAreaOfFinancialDetailDiv = {};
 
-  EstablishAreaOfIncomeIncomeFeeOfPaidReactFragmentWrap = {};
+  EstablishDesktopAreaOfMemberDetailVisitorExtraIconMoreVertRounded = {};
 
-  EstablishAreaOfIncomeIncomeFeeOfPaidChip = {};
+  EstablishDesktopAreaOfMemberDetailVisitorExtraReactFragmentWrap = {};
 
-  EstablishAreaOfIncomeIncomeDivList = {};
+  EstablishDesktopAreaOfMemberDetailVisitorExtraIconButton = {};
 
-  EstablishAreaOfIncomeIncomeDiv = {};
+  EstablishDesktopAreaOfMemberDetailVisitorCommentTextField = {};
 
-  EstablishAreaOfIncomeListOfIncomeAppendOfIncomeChip = {};
+  EstablishDesktopAreaOfMemberDetailVisitorFeeOfProfitTextField = {};
 
-  EstablishAreaOfIncomeListOfIncomeDivWrap = {};
+  EstablishDesktopAreaOfMemberDetailVisitorPriceOfCostTextField = {};
 
-  EstablishAreaOfIncomeListOfIncomeChip = {};
+  EstablishDesktopAreaOfMemberDetailVisitorDiscountTextField = {};
 
-  EstablishAreaOfIncomeReactFragmentWrap = {};
+  EstablishDesktopAreaOfMemberDetailVisitorPriceTextField = {};
 
-  EstablishAreaOfIncomeDiv = {};
+  EstablishDesktopAreaOfMemberDetailVisitorPriceOfOriginalTextField = {};
 
-  EstablishAreaOfOutcomeBalanceTextField = {};
+  EstablishDesktopAreaOfMemberDetailVisitorCertificateMenuItem = {};
 
-  EstablishAreaOfOutcomePriceHasPaidTextField = {};
+  EstablishDesktopAreaOfMemberDetailVisitorCertificateTextFieldList = {};
 
-  EstablishAreaOfOutcomePriceOfTotalTextField = {};
+  EstablishDesktopAreaOfMemberDetailVisitorNameOfPassportTextField = {};
 
-  EstablishAreaOfOutcomeDiv = {};
+  EstablishDesktopAreaOfMemberDetailVisitorPassportMenuItem = {};
 
-  EstablishAreaOfGroupPersonNameReactFragmentWrap = {};
+  EstablishDesktopAreaOfMemberDetailVisitorPassportTextFieldList = {};
 
-  EstablishAreaOfGroupPersonNameChip = {};
+  EstablishDesktopAreaOfMemberDetailVisitorNameTextField = {};
 
-  EstablishAreaOfGroupPersonDivList = {};
+  EstablishDesktopAreaOfMemberDetailVisitorGenderMenuItem = {};
 
-  EstablishAreaOfGroupPersonDiv = {};
+  EstablishDesktopAreaOfMemberDetailVisitorGenderTextFieldList = {};
 
-  EstablishAreaOfGroupLabelOfListLabelOfAppendChip = {};
+  EstablishDesktopAreaOfMemberDetailVisitorAgeMenuItem = {};
 
-  EstablishAreaOfGroupLabelOfListDivWrap = {};
+  EstablishDesktopAreaOfMemberDetailVisitorAgeTextFieldList = {};
 
-  EstablishAreaOfGroupLabelOfListChip = {};
+  EstablishDesktopAreaOfMemberDetailVisitorIdOfHotelRoomMenuItem = {};
 
-  EstablishAreaOfGroupDiv = {};
+  EstablishDesktopAreaOfMemberDetailVisitorIdOfHotelRoomTextFieldList = {};
 
-  EstablishAreaOfMemberDetailVisitorExtraIconMoreVertRounded = {};
+  EstablishDesktopAreaOfMemberDetailVisitorIndexOfSequenceTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorExtraReactFragmentWrap = {};
+  EstablishDesktopAreaOfMemberDetailVisitorDivList = {};
 
-  EstablishAreaOfMemberDetailVisitorExtraIconButton = {};
+  EstablishDesktopAreaOfMemberDetailVisitorDiv = {};
 
-  EstablishAreaOfMemberDetailVisitorCommentTextField = {};
+  EstablishDesktopAreaOfMemberDetailDiv = {};
 
-  EstablishAreaOfMemberDetailVisitorFeeOfProfitTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfProfitLabelOfFeeOfProfitTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorPriceOfCostTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfProfitDivWrap = {};
 
-  EstablishAreaOfMemberDetailVisitorDiscountTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfProfitTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorPriceTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfAgentLabelOfFeeOfAgentTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorPriceOfOriginalTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfAgentDivWrap = {};
 
-  EstablishAreaOfMemberDetailVisitorCertificateMenuItem = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfAgentTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorCertificateTextFieldList = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfCreditLabelOfPriceOfCreditTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorNameOfPassportTextField = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfCreditDivWrap = {};
 
-  EstablishAreaOfMemberDetailVisitorPassportMenuItem = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfCreditTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorPassportTextFieldList = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfCashLabelOfPriceOfCashTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorNameTextField = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfCashDivWrap = {};
 
-  EstablishAreaOfMemberDetailVisitorGenderMenuItem = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfCashTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorGenderTextFieldList = {};
+  EstablishDesktopInfoAreaOfThirdTotalOfNetLabelOfTotalOfNetTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorAgeMenuItem = {};
+  EstablishDesktopInfoAreaOfThirdTotalOfNetDivWrap = {};
 
-  EstablishAreaOfMemberDetailVisitorAgeTextFieldList = {};
+  EstablishDesktopInfoAreaOfThirdTotalOfNetTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorIdOfHotelRoomMenuItem = {};
+  EstablishDesktopInfoAreaOfThirdDiscountOfAgentLabelOfDiscountOfAgentTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorIdOfHotelRoomTextFieldList = {};
+  EstablishDesktopInfoAreaOfThirdDiscountOfAgentDivWrap = {};
 
-  EstablishAreaOfMemberDetailVisitorIndexOfSequenceTextField = {};
+  EstablishDesktopInfoAreaOfThirdDiscountOfAgentTextField = {};
 
-  EstablishAreaOfMemberDetailVisitorDivList = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfAgentLabelOfPriceOfAgentTypography = {};
 
-  EstablishAreaOfMemberDetailVisitorDiv = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfAgentDivWrap = {};
 
-  EstablishAreaOfMemberDetailDiv = {};
+  EstablishDesktopInfoAreaOfThirdPriceOfAgentTextField = {};
 
-  EstablishDesktopAreaOfInfoBuyerTextField = {};
+  EstablishDesktopInfoAreaOfThirdDiv = {};
 
-  EstablishDesktopAreaOfInfoIdTextField = {};
+  EstablishDesktopInfoAreaOfSecondStatusOfSendLabelOfStatusOfSendTypography = {};
 
-  EstablishDesktopAreaOfInfoDiv = {};
+  EstablishDesktopInfoAreaOfSecondStatusOfSendDivListWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondStatusOfSendMenuItem = {};
+
+  EstablishDesktopInfoAreaOfSecondStatusOfSendTextFieldList = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfNotReceivedLabelOfFeeOfNotReceivedTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfNotReceivedDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfNotReceivedTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfReceivedLabelOfFeeOfReceivedTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfReceivedDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfReceivedTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfTotalLabelOfFeeOfTotalTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfTotalDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondFeeOfTotalTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondCountOfPeopleLabelOfCountOfPeopleTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondCountOfPeopleDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondCountOfPeopleTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfDepositLabelOfPriceOfDepositTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfDepositDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfDepositTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondIdOfAgentLabelOfIdOfAgentTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondIdOfAgentDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondIdOfAgentTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondDiv = {};
+
+  EstablishDesktopInfoAreaOfHeadSalesmanLabelOfSalesmanTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadSalesmanDivListWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadSalesmanMenuItem = {};
+
+  EstablishDesktopInfoAreaOfHeadSalesmanTextFieldList = {};
+
+  EstablishDesktopInfoAreaOfHeadAgentLabelOfAgentTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadAgentDivListWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadAgentMenuItem = {};
+
+  EstablishDesktopInfoAreaOfHeadAgentTextFieldList = {};
+
+  EstablishDesktopInfoAreaOfHeadContactLabelOfContactTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadContactDivWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadContactTextField = {};
+
+  EstablishDesktopInfoAreaOfHeadHostLabelOfHostTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadHostDivWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadHostTextField = {};
+
+  EstablishDesktopInfoAreaOfHeadDestinationInputOfDestinationTextField = {};
+
+  EstablishDesktopInfoAreaOfHeadDestinationLabelOfDestinationTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadDestinationDivWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadDestinationAutocomplete = {};
+
+  EstablishDesktopInfoAreaOfHeadStartOfTravelLabelOfStartOfTravelTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadStartOfTravelDivWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadStartOfTravelDatePicker = {};
+
+  EstablishDesktopInfoAreaOfHeadIdLabelOfIdTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadIdDivWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadIdTextField = {};
+
+  EstablishDesktopInfoAreaOfHeadDiv = {};
+
+  EstablishDesktopInfoDiv = {};
 
   EstablishDesktopDiv = {};
 
@@ -590,6 +680,48 @@ class CommonStyle {
   EstablishMobileAreaOfPartyAPriceOfAgentTextField = {};
 
   EstablishMobileAreaOfPartyADiv = {};
+
+  EstablishMobileAreaOfIncomeIncomeFeeOfPaidReactFragmentWrap = {};
+
+  EstablishMobileAreaOfIncomeIncomeFeeOfPaidChip = {};
+
+  EstablishMobileAreaOfIncomeIncomeDivList = {};
+
+  EstablishMobileAreaOfIncomeIncomeDiv = {};
+
+  EstablishMobileAreaOfIncomeListOfIncomeAppendOfIncomeChip = {};
+
+  EstablishMobileAreaOfIncomeListOfIncomeDivWrap = {};
+
+  EstablishMobileAreaOfIncomeListOfIncomeChip = {};
+
+  EstablishMobileAreaOfIncomeReactFragmentWrap = {};
+
+  EstablishMobileAreaOfIncomeDiv = {};
+
+  EstablishMobileAreaOfOutcomeBalanceTextField = {};
+
+  EstablishMobileAreaOfOutcomePriceHasPaidTextField = {};
+
+  EstablishMobileAreaOfOutcomePriceOfTotalTextField = {};
+
+  EstablishMobileAreaOfOutcomeDiv = {};
+
+  EstablishMobileAreaOfGroupPersonNameReactFragmentWrap = {};
+
+  EstablishMobileAreaOfGroupPersonNameChip = {};
+
+  EstablishMobileAreaOfGroupPersonDivList = {};
+
+  EstablishMobileAreaOfGroupPersonDiv = {};
+
+  EstablishMobileAreaOfGroupLabelOfListLabelOfAppendChip = {};
+
+  EstablishMobileAreaOfGroupLabelOfListDivWrap = {};
+
+  EstablishMobileAreaOfGroupLabelOfListChip = {};
+
+  EstablishMobileAreaOfGroupDiv = {};
 
   EstablishMobileAreaOfPartyBCountOfCreditPeopleTextField = {};
 
@@ -618,8 +750,6 @@ class CommonStyle {
   EstablishMobileAreaOfObjectiveSerialOfGroupTextField = {};
 
   EstablishMobileAreaOfObjectiveDiv = {};
-
-  EstablishMobileAreaOfDateTravelLocalizationProviderWrap = {};
 
   EstablishMobileAreaOfDateTravelDateRangePicker = {};
 
@@ -680,8 +810,6 @@ class CommonStyle {
   MainFilterOfSearchOrderAreaOfTravelDestinationInputOfDestinationTextField = {};
 
   MainFilterOfSearchOrderAreaOfTravelDestinationAutocomplete = {};
-
-  MainFilterOfSearchOrderAreaOfTravelRangeLocalizationProviderWrap = {};
 
   MainFilterOfSearchOrderAreaOfTravelRangeDateRangePicker = {};
 
