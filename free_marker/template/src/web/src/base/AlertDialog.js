@@ -13,6 +13,7 @@ import {observer, inject} from "mobx-react";
 import {utiller as Util} from "utiller";
 import _ from 'lodash';
 import MuiComponent from "./MUIComponent";
+import BaseComponent from './BaseComponent';
 
 class DialogStore {
 
@@ -55,6 +56,8 @@ class AlertDialog extends MuiComponent {
         this.onSubmitClick = props.onSubmitClick;
         this.enableCancel = props.enableCancel ?? true;
         this.fullWidth = props.fullWidth;
+        this.strict = props.strict;
+        this.component = props.component;
     }
 
     /** object 是可以帶到customView裡面的變數 */
@@ -70,15 +73,23 @@ class AlertDialog extends MuiComponent {
 
     }
 
-
+    /** 按下esc也會產生close的行為 */
     close = () => {
+        if(!this.strict)
+            this.getStore().setVisibility(false);
+        else
+            this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊關閉彈跳視窗的提示鍵`) : '';
+
+    }
+
+    dismiss = () => {
         this.getStore().setVisibility(false);
     }
 
     onSubmitClicked = async () => {
         const submitAsyncTask = this.props.submitAsyncTask;
         const paramObject = this.props.paramObject;
-        this.close();
+        this.dismiss();
         await submitAsyncTask();
     }
 
@@ -208,7 +219,7 @@ class AlertDialog extends MuiComponent {
 
         if (!this.enableCancel)
             return null
-        return (<Button onClick={this.close} color="primary">
+        return (<Button onClick={this.dismiss} color="primary">
             取消
         </Button>)
 

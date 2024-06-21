@@ -704,6 +704,9 @@ class CodegenNode {
 
         globalOfRef: false,
         /** 把ref放到global */
+
+        strict:false,
+        /** 讓彈跳視窗不能用ESC或點擊旁處取消 */
     };
     /** 放admin的json file*/
 
@@ -1752,6 +1755,10 @@ class CodegenNode {
             return self.hasFullWidthOfDialog() ? `fullWidth:true` : ``;
         }
 
+        function getStmtOfStrictMode() {
+            return self.hasStrictMode() ? `strict:true` : ``;
+        }
+
         function getStmtOfDisposable() {
             if (!self.hasCustomViewDialog()) return '';
             const nodeOfSpecificComponent = self.getSpecificComponent(self.getAlertDialog().customView);
@@ -1777,6 +1784,7 @@ class CodegenNode {
             props.push(getStmtOfDisposable());
             props.push(getCustomViewStmts());
             props.push(getParamObject());
+            props.push(getStmtOfStrictMode());
             props.push(getStmtDialogInput())
             props.push(getStmtOfDialogContent());
             props.push(getStmtOfDialogTitle());
@@ -1812,6 +1820,10 @@ class CodegenNode {
 
     hasFullWidthOfDialog() {
         return this.getAlertDialog().fullWidth;
+    }
+
+    hasStrictMode() {
+        return _.isEqual(this.getAlertDialog().strict,true);
     }
 
     hasAlertMenu() {

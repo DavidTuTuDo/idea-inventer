@@ -787,7 +787,7 @@ class BaseComponent extends MuiComponent {
 
     dismiss() {
         if (this.isDialogComponent()) {
-            this.props.dialog.close();
+            this.props.dialog.dismiss();
         }
     }
 
@@ -926,6 +926,7 @@ class BaseComponent extends MuiComponent {
                           enableCancel,
                           disposablePage = false,
                           fullWidth = false,
+                          strict = false,
                       }) {
 
         if (disposablePage && Application.getStoreObject()) {
@@ -946,6 +947,7 @@ class BaseComponent extends MuiComponent {
             textInput={textInput}
             component={component}
             fullWidth={fullWidth}
+            strict={strict}
             ref={ref}/>)
     }
 
