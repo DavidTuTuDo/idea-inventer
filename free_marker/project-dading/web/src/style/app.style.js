@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -54,16 +56,6 @@ class AppStyle {
   InfoOfCopyRightContentEditorPaper = {};
 
   /** => following for navigator  component  */
-
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -475,7 +467,7 @@ class AppStyle {
 
   EstablishDesktopAreaOfMemberDetailVisitorFeeOfProfitTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorPriceOfCostTextField = {};
+  EstablishDesktopAreaOfMemberDetailVisitorPriceOfAgentCostTextField = {};
 
   EstablishDesktopAreaOfMemberDetailVisitorDiscountTextField = {};
 
@@ -503,9 +495,7 @@ class AppStyle {
 
   EstablishDesktopAreaOfMemberDetailVisitorAgeTextFieldList = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorIdOfHotelRoomMenuItem = {};
-
-  EstablishDesktopAreaOfMemberDetailVisitorIdOfHotelRoomTextFieldList = {};
+  EstablishDesktopAreaOfMemberDetailVisitorIdOfHotelRoomTextField = {};
 
   EstablishDesktopAreaOfMemberDetailVisitorIndexOfSequenceTextField = {};
 
@@ -597,11 +587,11 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfSecondPriceOfDepositTextField = {};
 
-  EstablishDesktopInfoAreaOfSecondIdOfAgentLabelOfIdOfAgentTypography = {};
+  EstablishDesktopInfoAreaOfSecondIdOfAgentTravelLabelOfIdOfAgentTravelTypography = {};
 
-  EstablishDesktopInfoAreaOfSecondIdOfAgentDivWrap = {};
+  EstablishDesktopInfoAreaOfSecondIdOfAgentTravelDivWrap = {};
 
-  EstablishDesktopInfoAreaOfSecondIdOfAgentTextField = {};
+  EstablishDesktopInfoAreaOfSecondIdOfAgentTravelTextField = {};
 
   EstablishDesktopInfoAreaOfSecondDiv = {};
 
@@ -658,110 +648,6 @@ class AppStyle {
   EstablishDesktopInfoDiv = {};
 
   EstablishDesktopDiv = {};
-
-  EstablishMobileAreaOfPayStatusStatusOfSendMenuItem = {};
-
-  EstablishMobileAreaOfPayStatusStatusOfSendTextFieldList = {};
-
-  EstablishMobileAreaOfPayStatusSalesmanMenuItem = {};
-
-  EstablishMobileAreaOfPayStatusSalesmanTextFieldList = {};
-
-  EstablishMobileAreaOfPayStatusStatusOfPaidMenuItem = {};
-
-  EstablishMobileAreaOfPayStatusStatusOfPaidTextFieldList = {};
-
-  EstablishMobileAreaOfPayStatusDiv = {};
-
-  EstablishMobileAreaOfPartyAFeeOfAgentTextField = {};
-
-  EstablishMobileAreaOfPartyAPriceOfDiscountTextField = {};
-
-  EstablishMobileAreaOfPartyAPriceOfAgentTextField = {};
-
-  EstablishMobileAreaOfPartyADiv = {};
-
-  EstablishMobileAreaOfIncomeIncomeFeeOfPaidReactFragmentWrap = {};
-
-  EstablishMobileAreaOfIncomeIncomeFeeOfPaidChip = {};
-
-  EstablishMobileAreaOfIncomeIncomeDivList = {};
-
-  EstablishMobileAreaOfIncomeIncomeDiv = {};
-
-  EstablishMobileAreaOfIncomeListOfIncomeAppendOfIncomeChip = {};
-
-  EstablishMobileAreaOfIncomeListOfIncomeDivWrap = {};
-
-  EstablishMobileAreaOfIncomeListOfIncomeChip = {};
-
-  EstablishMobileAreaOfIncomeReactFragmentWrap = {};
-
-  EstablishMobileAreaOfIncomeDiv = {};
-
-  EstablishMobileAreaOfOutcomeBalanceTextField = {};
-
-  EstablishMobileAreaOfOutcomePriceHasPaidTextField = {};
-
-  EstablishMobileAreaOfOutcomePriceOfTotalTextField = {};
-
-  EstablishMobileAreaOfOutcomeDiv = {};
-
-  EstablishMobileAreaOfGroupPersonNameReactFragmentWrap = {};
-
-  EstablishMobileAreaOfGroupPersonNameChip = {};
-
-  EstablishMobileAreaOfGroupPersonDivList = {};
-
-  EstablishMobileAreaOfGroupPersonDiv = {};
-
-  EstablishMobileAreaOfGroupLabelOfListLabelOfAppendChip = {};
-
-  EstablishMobileAreaOfGroupLabelOfListDivWrap = {};
-
-  EstablishMobileAreaOfGroupLabelOfListChip = {};
-
-  EstablishMobileAreaOfGroupDiv = {};
-
-  EstablishMobileAreaOfPartyBCountOfCreditPeopleTextField = {};
-
-  EstablishMobileAreaOfPartyBPriceOfCreditTextField = {};
-
-  EstablishMobileAreaOfPartyBCountOfCashPeopleTextField = {};
-
-  EstablishMobileAreaOfPartyBPriceOfCashTextField = {};
-
-  EstablishMobileAreaOfPartyBDiv = {};
-
-  EstablishMobileAreaOfTourAgentMenuItem = {};
-
-  EstablishMobileAreaOfTourAgentTextFieldList = {};
-
-  EstablishMobileAreaOfTourFeeOfDepositTextField = {};
-
-  EstablishMobileAreaOfTourDiv = {};
-
-  EstablishMobileAreaOfObjectiveCountOfPeopleTextField = {};
-
-  EstablishMobileAreaOfObjectiveDestinationInputOfDestinationTextField = {};
-
-  EstablishMobileAreaOfObjectiveDestinationAutocomplete = {};
-
-  EstablishMobileAreaOfObjectiveSerialOfGroupTextField = {};
-
-  EstablishMobileAreaOfObjectiveDiv = {};
-
-  EstablishMobileAreaOfDateTravelDateRangePicker = {};
-
-  EstablishMobileAreaOfDateDiv = {};
-
-  EstablishMobileAreaOfContactPhoneTextField = {};
-
-  EstablishMobileAreaOfContactHostTextField = {};
-
-  EstablishMobileAreaOfContactDiv = {};
-
-  EstablishMobileDiv = {};
 
   EstablishIdLabelOfIdTypography = {};
 
@@ -833,15 +719,15 @@ class AppStyle {
 
   MainFilterOfSearchOrderDiv = {};
 
-  MainOrderAreaOfContactPhoneLabelOfPhoneTypography = {};
+  MainOrderAreaOfContactContactLabelOfContactTypography = {};
 
-  MainOrderAreaOfContactPhoneBtnOfPhoneIconPhoneRounded = {};
+  MainOrderAreaOfContactContactBtnOfContactIconPhoneRounded = {};
 
-  MainOrderAreaOfContactPhoneBtnOfPhoneIconButton = {};
+  MainOrderAreaOfContactContactBtnOfContactIconButton = {};
 
-  MainOrderAreaOfContactPhoneDivWrap = {};
+  MainOrderAreaOfContactContactDivWrap = {};
 
-  MainOrderAreaOfContactPhoneTypography = {};
+  MainOrderAreaOfContactContactTypography = {};
 
   MainOrderAreaOfContactHostLabelOfHostTypography = {};
 

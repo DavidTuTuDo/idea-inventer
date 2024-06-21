@@ -575,7 +575,6 @@ class BaseComponent extends MuiComponent {
         );
     }
 
-
     getApplication() {
         return Application;
     }
@@ -587,7 +586,6 @@ class BaseComponent extends MuiComponent {
     setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = '正在載入中') {
         this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip : ``);
     }
-
 
     renderImageDialog = () => {
         const self = this;
@@ -889,7 +887,6 @@ class BaseComponent extends MuiComponent {
             this.showInfoSnackMessage(`抱歉,此功能僅提供在移動設備上(手機,平板)`);
             return;
         }
-
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
     }
 

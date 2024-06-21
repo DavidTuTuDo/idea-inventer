@@ -41,19 +41,24 @@ class EstablishStore extends BaseEstablishStore {
     @computed
     get getComputedBalance() {
         return 0;
-        const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount())) /** 旅行社成本 */
-        const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的折扣 */
-        const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid())) /** 已實收 */
+        const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount()))
+        /** 旅行社成本 */
+        const discount = _.sum(this.getMembers().map(member => member.getDiscount()))
+        /** 成員的折扣 */
+        const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid()))
+        /** 已實收 */
         const feeOfProcedure = _.sum(this.records.map((record) => record.getFeeOfProcedure())) /** 信用卡手續費 */
-        return _.subtract(feeOfReceive, _.sum([expense,discount,feeOfProcedure]));
+        return _.subtract(feeOfReceive, _.sum([expense, discount, feeOfProcedure]));
     }
 
     /** 成本 =  旅行社報價 - 折扣 x 人數*/
     @computed
     get getExpenseOfProject() {
         return 0;
-        const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount())) /** 旅行社成本 */
-        const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的折扣 */
+        const expense = _.multiply(this.getCountOfPeople(), _.subtract(this.getPriceOfAgent(), this.getPriceOfDiscount()))
+        /** 旅行社成本 */
+        const discount = _.sum(this.getMembers().map(member => member.getDiscount()))
+        /** 成員的折扣 */
         const result = _.subtract(expense, discount);
         return result > 0 ? result : 0;
     }
@@ -82,9 +87,12 @@ class EstablishStore extends BaseEstablishStore {
     /** 已收費用(不含手續費)*/
     @computed
     get getComputedPriceHasPaid() {
-        const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid())) /** 已實收 */
-        const feeOfProcedure = _.sum(this.records.map((record) => record.getFeeOfProcedure())) /** 信用卡手續費 */
-        const result = _.subtract(feeOfReceive,feeOfProcedure);
+        return 0;
+        const feeOfReceive = _.sum(this.records.map((record) => record.getFeeOfPaid()))
+        /** 已實收 */
+        const feeOfProcedure = _.sum(this.records.map((record) => record.getFeeOfProcedure()))
+        /** 信用卡手續費 */
+        const result = _.subtract(feeOfReceive, feeOfProcedure);
         this.setPriceHasPaid(result);
         return result;
     }
@@ -121,6 +129,10 @@ class EstablishStore extends BaseEstablishStore {
     pushSingleRecord(item = {}) {
         this.pushRecord(item)
         this.pushIncome(item);
+    }
+
+    isMobileDevice() {
+        return this.getComponent().isMobileDevice()
     }
 
     @action
@@ -170,15 +182,17 @@ class EstablishStore extends BaseEstablishStore {
         // this.setBalanceDisabled(true);
         // this.setPriceHasPaidDisabled(true);
         // this.setPriceOfTotalDisabled(true);
-        // this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
+        this.getDesktop().getInfo().initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 
 
     result = () => {
-        this.setMembers(...this.getVisitors().map(visitor => visitor.columnData()));
-        this.setRecords(...this.getFinances().map(finance => finance.columnData()));
+        const infos = this.getDesktop().getInfo().columnData();
+        const members = this.getDesktop().getVisitors().map(item => item.columnData());
+        const records = this.getDesktop().getFinances().map(item => item.columnData());
 
-        const submit = this.columnData();
+        console.log(infos);
+        const submit = {...infos, members, records};
         submit.destination = _.isObject(submit.destination) ? submit.destination.value : '0';
         submit.idOfOrder = UserInfoRef.getUid()
         return submit;
@@ -192,20 +206,19 @@ class EstablishStore extends BaseEstablishStore {
 
     async updateOrder() {
         const bean = this.result();
+        console.log(bean);
         await this.apiOfOrder.updateOrderItem(this.getComponent(), bean, bean.id);
         Application.getMainStore().updateOrder(bean);
     }
 
-    decorate(result) {
-        const origin = super.decorate(result);
-        const numberOfDestination = _.toNumber(origin.destination);
-        origin.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
-        return origin;
-    }
+    sync(order) {
+        const numberOfDestination = _.toNumber(order.destination);
+        order.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
 
-    invalidate() {
-        this.getFinances().map(item => item.invalidate());
-        this.getVisitors().map(item => item.invalidate());
+        this.setId(order.id);
+        this.getDesktop().setInfo(order);
+        this.getDesktop().setFinances(...order.records);
+        this.getDesktop().setVisitors(...order.members);
     }
 
 
