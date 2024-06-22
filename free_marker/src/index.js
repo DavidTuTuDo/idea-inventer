@@ -3732,8 +3732,6 @@ class PathBase {
     props;
 
     constructor(props) {
-
-
         this.props = props;
         if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
             throw new ERROR(8018, `platform ==> ''${props.platform}''`)
@@ -3759,6 +3757,10 @@ class PathBase {
 
         this.env = props.env;
         /** 這就是 source.js 的進入點 */
+    }
+
+    reNewNodeOfAncestor() {
+        this.nodeOfAncestor = CodegenNode.enrich(this.workOfPrior(this.pathOfSourceJS));
     }
 
     /** 把source在Codegen.enrich之前就取代掉independence的節點，未來還能發想更多功能 */
@@ -3815,12 +3817,6 @@ class PathBase {
 
     isProduction() {
         return _.isEqual(this.env, 'prod');
-    }
-
-    cleanCache() {
-        this.nodeOfAncestor = undefined;
-        this.structs = undefined;
-        this.props = undefined;
     }
 
     getStructs() {
@@ -6068,6 +6064,7 @@ class AppBuilder extends ComponentBuilder {
                             keyOfMajor,
                             `${_.indexOf(arrayOfDefaultValue, obj)}`), valueOfMajor)
                     }
+
                 }
             }
         }
@@ -6947,9 +6944,18 @@ class ProjectFileHandler extends PathBase {
 
     constructor(props) {
         super(props);
+        this.initial();
+    }
+
+    initial(){
         this.deployRemoteRules = true;
         this.needDeployCloudFunctions = true;
         this.enrichComponentStructs(this.isWebPlatform());
+    }
+
+    refresh(){
+        this.reNewNodeOfAncestor();
+        this.initial();
     }
 
     disableRulesRemoteDeploy() {
@@ -9119,6 +9125,7 @@ class ProjectFileHandler extends PathBase {
                         for (const component of components) {
                             TARGET_COMPONENT_FAST_DEVELOP_MODE = component;
                             await self.execute()
+                            await self.refresh()
                         }
                     break;
                 case 'string':
