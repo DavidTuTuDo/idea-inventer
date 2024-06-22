@@ -27,20 +27,119 @@ class EstablishComponent extends BaseEstablishComponent {
         super(props);
     }
 
-    getInjectStyleOfEstablishAreaOfGroupDiv(establish) {
-        return Util.getVisibleOrNone(this.isMobileDevice())
-    }
+    // getInjectStyleOfEstablishMobileDiv(establish) {
+    //     return Util.getVisibleOrNone(this.isMobileDevice());
+    // }
+    //
+    // onEstablishMobilePersonNameChipDeleted(param) {
+    //     const person = param.object;
+    //     this.getStore().deleteMemberById(person.getId());
+    // }
+    //
+    // onEstablishMobileLabelOfListChipClicked(param) {
+    //     const self = this;
+    //     this.getEstablishPaperAlertDialogRef().open();
+    //     Application.getAdditionStore().pushTasksOfCompleted((store) => {
+    //         store.setIsListMode(true);
+    //         store.setMembers(...self.getStore().getMembers())
+    //     })
+    // }
+    //
+    // onEstablishMobileLabelOfAppendChipClicked(param) {
+    //     this.getEstablishPaperAlertDialogRef().open();
+    // }
+    //
+    // onEstablishMobilePersonNameChipClicked(param) {
+    //     const person = param.object;
+    //     const member = this.getStore().getMemberById(person.getId()).columnData();
+    //     this.getEstablishPaperAlertDialogRef().open();
+    //     Application.getAdditionStore().pushTasksOfCompleted((store) => {
+    //         store.setIsUpdate(true);
+    //         store.setMembers(...[member]);
+    //     })
+    // }
+    //
+    // onEstablishMobileAppendOfIncomeChipClicked(param) {
+    //     this.getAreaOfIncomeDivAlertDialogRef().open();
+    // }
+    //
+    // onEstablishMobileListOfIncomeChipClicked(param) {
+    //     const self = this;
+    //     this.getAreaOfIncomeDivAlertDialogRef().open();
+    //     Application.getReimburseStore().pushTasksOfCompleted((store) => {
+    //         store.setIsListMode(true);
+    //         store.setRecords(...self.getStore().getRecords())
+    //     })
+    // }
+    //
+    // getInjectPropsOfEstablishMobilePersonNameChip(person) {
+    //     const age = person.getSelectedAge();// 1:adult 2:child
+    //     const gender = person.getSelectedGender(); //1:female 2:male
+    //
+    //     let IconOfMui;
+    //     if (age === 1 && gender === 1) IconOfMui = AdultFemale;
+    //     else if (age === 1 && gender === 2) IconOfMui = AdultMale;
+    //     else if (age === 2 && gender === 1) IconOfMui = ChildGirl;
+    //     else if (age === 2 && gender === 2) IconOfMui = ChildBoy;
+    //     else IconOfMui = Question;
+    //
+    //     return {icon: <IconOfMui/>}
+    //
+    // }
+    //
+    // getInjectPropsOfEstablishMobileIncomeFeeOfPaidChip(income) {
+    //     return {icon: income.getSelectedPayMethod() === 2 ? <PaymentRounded/> : <MonetizationOnRounded/>}
+    // }
+    //
+    // getIncomeFeeOfPaid(income) {
+    //     const fee = super.getIncomeFeeOfPaid(income);
+    //     return `${fee} 元`
+    // }
+    //
+    // onEstablishMobileIncomeFeeOfPaidChipClicked(param) {
+    //     const income = param.object;
+    //     const record = this.getStore().getRecordById(income.getId()).columnData();
+    //     this.getAreaOfIncomeDivAlertDialogRef().open();
+    //     Application.getReimburseStore().pushTasksOfCompleted((store) => {
+    //         store.setIsUpdate(true);
+    //         store.setRecords(...[record]);
+    //     })
+    // }
+    //
+    // onEstablishMobileIncomeFeeOfPaidChipDeleted(param) {
+    //     const income = param.object;
+    //     this.getStore().deleteRecordById(income.getId());
+    // }
+    //
+    // getInjectPropsOfEstablishMobilePriceHasPaidTextField(establish) {
+    //     const fee = establish.getComputedFeeOfCreditProcedure;
+    //     return fee > 0 ? {helperText: `不含手續費\$${fee}元`} : {};
+    // }
+    //
+    // getInjectPropsOfEstablishMobilePriceOfTotalTextField(establish) {
+    //     const fee = establish.getComputedDiscountOfMember;
+    //     return fee > 0 ? {helperText: `團員總折扣\$${fee}元`} : {};
+    // }
+    //
+    // getInjectPropsOfEstablishMobileBalanceTextField(establish) {
+    //     const fee = establish.getExpenseOfProject;
+    //     return fee > 0 ? {helperText: `已收-成本\$${fee}元`} : {};
+    // }
 
-    getInjectStyleOfEstablishAreaOfIncomeDiv(establish) {
-        return Util.getVisibleOrNone(this.isMobileDevice())
-    }
 
-    getInjectStyleOfEstablishAreaOfFinancialDetailDiv(establish) {
+    getInjectStyleOfEstablishDesktopDiv(establish) {
+        return Util.getVisibleOrNone(!this.isMobileDevice());
+    }
+    getInjectStyleOfEstablishDesktopAreaOfMemberDetailDiv(establish) {
         return Util.getVisibleOrNone(!this.isMobileDevice())
     }
 
-    getInjectStyleOfEstablishAreaOfOutcomeDiv(establish) {
-        return Util.getVisibleOrNone(this.isMobileDevice())
+    getInjectStyleOfEstablishDesktopVisitorFeeOfProfitTextField(visitor) {
+        return Util.getVisibleOrNone(false);
+    }
+
+    getInjectStyleOfEstablishDesktopVisitorPriceTextField(visitor) {
+        return Util.getVisibleOrNone(false);
     }
 
     isCreditCardBehavior(finance) {
@@ -51,32 +150,32 @@ class EstablishComponent extends BaseEstablishComponent {
         return _.isEqual(_.toNumber(finance.getSelectedStatus()),1);
     }
 
-    getInjectStyleOfEstablishFinanceSerialOfCreditTextField(finance) {
+    getInjectStyleOfEstablishDesktopFinanceSerialOfCreditTextField(finance) {
         return Util.getVisibleOrNone(this.isCreditCardBehavior(finance),true);
     }
 
-    getInjectStyleOfEstablishFinanceCodeOfCreditAuthTextField(finance) {
+    getInjectStyleOfEstablishDesktopFinanceCodeOfCreditAuthTextField(finance) {
         return Util.getVisibleOrNone(this.isCreditCardBehavior(finance),true);
     }
 
-    getInjectStyleOfEstablishFinanceAccountOfLast5NumTextField(finance) {
+    getInjectStyleOfEstablishDesktopFinanceAccountOfLast5NumTextField(finance) {
         return Util.getVisibleOrNone(this.isCashMonetBehavior(finance),true);
     }
 
-    onEstablishFinanceExtraIconButtonDeleteClicked(param) {
+    onEstablishDesktopFinanceExtraIconButtonDeleteClicked(param) {
         const self = this;
         const finance = param.object;
         return (param) => {
-            if (_.size(self.getStore().getFinances()) > 1) finance.remove()
+            if (_.size(self.getStore().getDesktop().getFinances()) > 1) finance.remove()
             else self.showInfoSnackMessage(`無法刪除僅剩的支單紀錄`)
         }
     }
 
-    onEstablishFinanceExtraIconButtonCreateClicked(param) {
+    onEstablishDesktopFinanceExtraIconButtonCreateClicked(param) {
         const self = this;
         const finance = param.object;
         return (param) => {
-            self.getStore().pushFinance({});
+            self.getStore().getDesktop().pushFinance({});
         }
     }
 
@@ -85,23 +184,11 @@ class EstablishComponent extends BaseEstablishComponent {
         return Util.getSimpleTimeYYMMDDHHmmFormat(ts);
     }
 
-    getInjectStyleOfEstablishAreaOfMemberDetailDiv(establish) {
-        return Util.getVisibleOrNone(!this.isMobileDevice())
-    }
-
-    getInjectStyleOfEstablishVisitorFeeOfProfitTextField(visitor) {
-        return Util.getVisibleOrNone(false);
-    }
-
-    getInjectStyleOfEstablishVisitorPriceTextField(visitor) {
-        return Util.getVisibleOrNone(false);
-    }
-
-    onEstablishVisitorExtraIconButtonCreateClicked(param) {
+    onEstablishDesktopVisitorExtraIconButtonCreateClicked(param) {
         const self = this;
         const visitor = param.object;
         return (param) => {
-            self.getStore().pushVisitorsByIndex(-1, {});
+            self.getStore().getDesktop().pushVisitors( {});
         }
     }
 
@@ -110,21 +197,21 @@ class EstablishComponent extends BaseEstablishComponent {
         return Util.getStringOfCreditCardFormatted(original);
     }
 
-    onEstablishVisitorExtraIconButtonDeleteClicked(param) {
+    onEstablishDesktopVisitorExtraIconButtonDeleteClicked(param) {
         const self = this;
         const visitor = param.object;
         return (param) => {
-            if (_.size(self.getStore().getVisitors()) > 1) visitor.remove()
+            if (_.size(self.getStore().getDesktop().getVisitors()) > 1) visitor.remove()
             else self.showInfoSnackMessage(`無法刪除僅剩的一名團員`)
         }
     }
 
-    onEstablishVisitorExtraIconButtonCopyClicked(param) {
+    onEstablishDesktopVisitorExtraIconButtonCopyClicked(param) {
         const self = this;
         const visitor = param.object;
         return (param) => {
             const data = visitor.columnData();
-            self.getStore().pushVisitorsByIndex(-1, data);
+            self.getStore().getDesktop().pushVisitorsByIndex(-1, data);
         }
     }
 
@@ -160,110 +247,6 @@ class EstablishComponent extends BaseEstablishComponent {
         const order = param.object;
         this.copyTextToClipboard(order.getId(), `已複製訂單編號至剪貼簿`)
     }
-
-    onEstablishPersonNameChipDeleted(param) {
-        const person = param.object;
-        this.getStore().deleteMemberById(person.getId());
-    }
-
-    onEstablishLabelOfListChipClicked(param) {
-        const self = this;
-        this.getEstablishPaperAlertDialogRef().open();
-        Application.getAdditionStore().pushTasksOfCompleted((store) => {
-            store.setIsListMode(true);
-            store.setMembers(...self.getStore().getMembers())
-        })
-    }
-
-    onEstablishLabelOfAppendChipClicked(param) {
-        this.getEstablishPaperAlertDialogRef().open();
-    }
-
-    onEstablishPersonNameChipClicked(param) {
-        const person = param.object;
-        const member = this.getStore().getMemberById(person.getId()).columnData();
-        this.getEstablishPaperAlertDialogRef().open();
-        Application.getAdditionStore().pushTasksOfCompleted((store) => {
-            store.setIsUpdate(true);
-            store.setMembers(...[member]);
-        })
-    }
-
-    onEstablishAppendOfIncomeChipClicked(param) {
-        this.getAreaOfIncomeDivAlertDialogRef().open();
-    }
-
-    onEstablishListOfIncomeChipClicked(param) {
-        const self = this;
-        this.getAreaOfIncomeDivAlertDialogRef().open();
-        Application.getReimburseStore().pushTasksOfCompleted((store) => {
-            store.setIsListMode(true);
-            store.setRecords(...self.getStore().getRecords())
-        })
-    }
-
-    getInjectStyleOfEstablishListOfIncomeChip(establish) {
-        return Util.getVisibleOrHidden(_.size(establish.getRecords()) > 1);
-    }
-
-    getInjectStyleOfEstablishLabelOfListChip(establish) {
-        return Util.getVisibleOrHidden(_.size(establish.getPersons()) > 1);
-    }
-
-    getInjectPropsOfEstablishPersonNameChip(person) {
-        const age = person.getSelectedAge();// 1:adult 2:child
-        const gender = person.getSelectedGender(); //1:female 2:male
-
-        let IconOfMui;
-        if (age === 1 && gender === 1) IconOfMui = AdultFemale;
-        else if (age === 1 && gender === 2) IconOfMui = AdultMale;
-        else if (age === 2 && gender === 1) IconOfMui = ChildGirl;
-        else if (age === 2 && gender === 2) IconOfMui = ChildBoy;
-        else IconOfMui = Question;
-
-        return {icon: <IconOfMui/>}
-
-    }
-
-    getInjectPropsOfEstablishIncomeFeeOfPaidChip(income) {
-        return {icon: income.getSelectedPayMethod() === 2 ? <PaymentRounded/> : <MonetizationOnRounded/>}
-    }
-
-    getIncomeFeeOfPaid(income) {
-        const fee = super.getIncomeFeeOfPaid(income);
-        return `${fee} 元`
-    }
-
-    onEstablishIncomeFeeOfPaidChipClicked(param) {
-        const income = param.object;
-        const record = this.getStore().getRecordById(income.getId()).columnData();
-        this.getAreaOfIncomeDivAlertDialogRef().open();
-        Application.getReimburseStore().pushTasksOfCompleted((store) => {
-            store.setIsUpdate(true);
-            store.setRecords(...[record]);
-        })
-    }
-
-    onEstablishIncomeFeeOfPaidChipDeleted(param) {
-        const income = param.object;
-        this.getStore().deleteRecordById(income.getId());
-    }
-
-    getInjectPropsOfEstablishPriceHasPaidTextField(establish) {
-        const fee = establish.getComputedFeeOfCreditProcedure;
-        return fee > 0 ? {helperText: `不含手續費\$${fee}元`} : {};
-    }
-
-    getInjectPropsOfEstablishPriceOfTotalTextField(establish) {
-        const fee = establish.getComputedDiscountOfMember;
-        return fee > 0 ? {helperText: `團員總折扣\$${fee}元`} : {};
-    }
-
-    getInjectPropsOfEstablishBalanceTextField(establish) {
-        const fee = establish.getExpenseOfProject;
-        return fee > 0 ? {helperText: `已收-成本\$${fee}元`} : {};
-    }
-
 
     /** -------------------- async api -------------------- **/
 }
