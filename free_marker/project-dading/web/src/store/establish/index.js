@@ -201,11 +201,11 @@ class EstablishStore extends BaseEstablishStore {
         const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), this.result());
         Application.getMainStore().pushOrdersByIndex(-1, result.value);
         this.setId(result.value.id);
+        this.getDesktop().getInfo().setId(result.value.id)
     }
 
     async updateOrder() {
         const bean = this.result();
-        console.log(bean);
         await this.apiOfOrder.updateOrderItem(this.getComponent(), bean, bean.id);
         Application.getMainStore().updateOrder(bean);
     }
@@ -218,6 +218,7 @@ class EstablishStore extends BaseEstablishStore {
         this.getDesktop().setInfo(order);
         this.getDesktop().setFinances(...order.records);
         this.getDesktop().setVisitors(...order.members);
+
     }
 
 

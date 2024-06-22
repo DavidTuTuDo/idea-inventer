@@ -78,7 +78,7 @@ class AlertDialog extends MuiComponent {
         if(!this.strict)
             this.getStore().setVisibility(false);
         else
-            this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊關閉彈跳視窗的提示鍵`) : '';
+            this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊視窗關閉的提示鍵`) : '';
 
     }
 

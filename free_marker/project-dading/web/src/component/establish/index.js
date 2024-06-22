@@ -127,39 +127,43 @@ class EstablishComponent extends BaseEstablishComponent {
     // }
 
 
+    /** --------------------- following are rules of desktop --------------------- */
+
+
     getInjectStyleOfEstablishDesktopDiv(establish) {
         return Util.getVisibleOrNone(!this.isMobileDevice());
     }
+
     getInjectStyleOfEstablishDesktopAreaOfMemberDetailDiv(establish) {
         return Util.getVisibleOrNone(!this.isMobileDevice())
     }
 
-    getInjectStyleOfEstablishDesktopVisitorFeeOfProfitTextField(visitor) {
-        return Util.getVisibleOrNone(false);
-    }
-
-    getInjectStyleOfEstablishDesktopVisitorPriceTextField(visitor) {
-        return Util.getVisibleOrNone(false);
-    }
+    // getInjectStyleOfEstablishDesktopVisitorFeeOfProfitTextField(visitor) {
+    //     return Util.getVisibleOrNone(false);
+    // }
+    //
+    // getInjectStyleOfEstablishDesktopVisitorPriceTextField(visitor) {
+    //     return Util.getVisibleOrNone(false);
+    // }
 
     isCreditCardBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedStatus()),2);
+        return _.isEqual(_.toNumber(finance.getSelectedStatus()), 2);
     }
 
     isCashMonetBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedStatus()),1);
+        return _.isEqual(_.toNumber(finance.getSelectedStatus()), 1);
     }
 
     getInjectStyleOfEstablishDesktopFinanceSerialOfCreditTextField(finance) {
-        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance),true);
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
     }
 
     getInjectStyleOfEstablishDesktopFinanceCodeOfCreditAuthTextField(finance) {
-        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance),true);
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
     }
 
     getInjectStyleOfEstablishDesktopFinanceAccountOfLast5NumTextField(finance) {
-        return Util.getVisibleOrNone(this.isCashMonetBehavior(finance),true);
+        return Util.getVisibleOrNone(this.isCashMonetBehavior(finance), true);
     }
 
     onEstablishDesktopFinanceExtraIconButtonDeleteClicked(param) {
@@ -188,7 +192,7 @@ class EstablishComponent extends BaseEstablishComponent {
         const self = this;
         const visitor = param.object;
         return (param) => {
-            self.getStore().getDesktop().pushVisitors( {});
+            self.getStore().getDesktop().pushVisitors({});
         }
     }
 
@@ -246,6 +250,18 @@ class EstablishComponent extends BaseEstablishComponent {
     onEstablishBtnOfIdIconButtonClicked(param) {
         const order = param.object;
         this.copyTextToClipboard(order.getId(), `已複製訂單編號至剪貼簿`)
+    }
+
+    onEstablishDesktopInfoIdTextFieldContentCopyRoundedIconClicked(param) {
+        const id = param.object.getId();
+        if (!_.isEmpty(id))
+            this.copyTextToClipboard(id)
+    }
+
+    onEstablishDesktopInfoIdOfAgentTravelTextFieldContentCopyRoundedIconClicked(param) {
+        const id = param.object.getIdOfAgentTravel();
+        if (!_.isEmpty(id))
+            this.copyTextToClipboard(id)
     }
 
     /** -------------------- async api -------------------- **/

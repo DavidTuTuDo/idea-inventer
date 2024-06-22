@@ -421,89 +421,89 @@ class CommonStyle {
 
   EstablishAreaOfRemoteDiv = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceExtraIconMoreVertRounded = {};
+  EstablishDesktopAreaOfRecordFinanceExtraIconMoreVertRounded = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceExtraReactFragmentWrap = {};
+  EstablishDesktopAreaOfRecordFinanceExtraReactFragmentWrap = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceExtraIconButton = {};
+  EstablishDesktopAreaOfRecordFinanceExtraIconButton = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceFeeOfPartyATextField = {};
+  EstablishDesktopAreaOfRecordFinanceFeeOfPartyATextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceFeeOfPartyBTextField = {};
+  EstablishDesktopAreaOfRecordFinanceFeeOfPartyBTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceAccountOfLast5NumTextField = {};
+  EstablishDesktopAreaOfRecordFinanceAccountOfLast5NumTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceCodeOfCreditAuthTextField = {};
+  EstablishDesktopAreaOfRecordFinanceCodeOfCreditAuthTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceSerialOfCreditTextField = {};
+  EstablishDesktopAreaOfRecordFinanceSerialOfCreditTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceCommentTextField = {};
+  EstablishDesktopAreaOfRecordFinanceCommentTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceRequestMenuItem = {};
+  EstablishDesktopAreaOfRecordFinanceRequestMenuItem = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceRequestTextFieldList = {};
+  EstablishDesktopAreaOfRecordFinanceRequestTextFieldList = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceStatusMenuItem = {};
+  EstablishDesktopAreaOfRecordFinanceStatusMenuItem = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceStatusTextFieldList = {};
+  EstablishDesktopAreaOfRecordFinanceStatusTextFieldList = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceCreateTimeTextField = {};
+  EstablishDesktopAreaOfRecordFinanceCreateTimeTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceIndexOfSequenceTextField = {};
+  EstablishDesktopAreaOfRecordFinanceIndexOfSequenceTextField = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceDivList = {};
+  EstablishDesktopAreaOfRecordFinanceDivList = {};
 
-  EstablishDesktopAreaOfFinancialDetailFinanceDiv = {};
+  EstablishDesktopAreaOfRecordFinanceDiv = {};
 
-  EstablishDesktopAreaOfFinancialDetailDiv = {};
+  EstablishDesktopAreaOfRecordDiv = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorExtraIconMoreVertRounded = {};
+  EstablishDesktopAreaOfMemberVisitorExtraIconMoreVertRounded = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorExtraReactFragmentWrap = {};
+  EstablishDesktopAreaOfMemberVisitorExtraReactFragmentWrap = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorExtraIconButton = {};
+  EstablishDesktopAreaOfMemberVisitorExtraIconButton = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorCommentTextField = {};
+  EstablishDesktopAreaOfMemberVisitorCommentTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorFeeOfProfitTextField = {};
+  EstablishDesktopAreaOfMemberVisitorFeeOfProfitTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorPriceOfAgentCostTextField = {};
+  EstablishDesktopAreaOfMemberVisitorPriceOfAgentCostTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorDiscountTextField = {};
+  EstablishDesktopAreaOfMemberVisitorPriceTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorPriceTextField = {};
+  EstablishDesktopAreaOfMemberVisitorDiscountTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorPriceOfOriginalTextField = {};
+  EstablishDesktopAreaOfMemberVisitorPriceOfOriginalTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorCertificateMenuItem = {};
+  EstablishDesktopAreaOfMemberVisitorCertificateMenuItem = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorCertificateTextFieldList = {};
+  EstablishDesktopAreaOfMemberVisitorCertificateTextFieldList = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorNameOfPassportTextField = {};
+  EstablishDesktopAreaOfMemberVisitorNameOfPassportTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorPassportMenuItem = {};
+  EstablishDesktopAreaOfMemberVisitorPassportMenuItem = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorPassportTextFieldList = {};
+  EstablishDesktopAreaOfMemberVisitorPassportTextFieldList = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorNameTextField = {};
+  EstablishDesktopAreaOfMemberVisitorNameTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorGenderMenuItem = {};
+  EstablishDesktopAreaOfMemberVisitorGenderMenuItem = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorGenderTextFieldList = {};
+  EstablishDesktopAreaOfMemberVisitorGenderTextFieldList = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorAgeMenuItem = {};
+  EstablishDesktopAreaOfMemberVisitorAgeMenuItem = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorAgeTextFieldList = {};
+  EstablishDesktopAreaOfMemberVisitorAgeTextFieldList = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorIdOfHotelRoomTextField = {};
+  EstablishDesktopAreaOfMemberVisitorIdOfHotelRoomTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorIndexOfSequenceTextField = {};
+  EstablishDesktopAreaOfMemberVisitorIndexOfSequenceTextField = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorDivList = {};
+  EstablishDesktopAreaOfMemberVisitorDivList = {};
 
-  EstablishDesktopAreaOfMemberDetailVisitorDiv = {};
+  EstablishDesktopAreaOfMemberVisitorDiv = {};
 
-  EstablishDesktopAreaOfMemberDetailDiv = {};
+  EstablishDesktopAreaOfMemberDiv = {};
 
   EstablishDesktopInfoAreaOfThirdFeeOfProfitLabelOfFeeOfProfitTypography = {};
 
