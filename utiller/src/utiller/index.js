@@ -28,8 +28,7 @@ class Utiller {
 
     /**
      * 刪除物件裡面特別的屬性，預設是刪除value為undefined
-     *
-     * */
+     **/
     removeAttributeBy(object, predicate = (value) => _.isUndefined(value)) {
         for (const key in object) {
             if (predicate(object[key])) {
@@ -54,10 +53,10 @@ class Utiller {
         if (_.isBoolean(value))
             return value;
 
-        if(_.isNumber(value) && _.isEqual(value,1))
+        if (_.isNumber(value) && _.isEqual(value, 1))
             return true;
 
-        if(_.isNumber(value) && _.isEqual(value,0))
+        if (_.isNumber(value) && _.isEqual(value, 0))
             return true;
 
         try {
@@ -616,9 +615,10 @@ class Utiller {
         return '';
     }
 
-    getStringOfCreditCardFormatted(string) {
-        let inputValue = string.replace(/\D/g, ''); // Remove all non-digit characters
-        return inputValue.replace(/(\d{4})(?=\d)/g, '$1-'); // Add a dash every 4 digits
+    getStringOfCreditCardFormatted(string = 0) {
+        const inputValue = string.replace(/\D/g, ''); // Remove all non-digit characters
+        const result = inputValue.replace(/(\d{4})(?=\d)/g, '$1-'); // Add a dash every 4 digits
+        return result.slice(0, 19);
     }
 
     getObjectKey(obj) {
@@ -1364,8 +1364,6 @@ class Utiller {
                 return 12;
             case 'N':
                 return 13;
-
-
             default:
                 return 101;
         }

@@ -30,6 +30,18 @@ class EstablishDesktopFinanceStore extends BaseEstablishDesktopFinanceStore {
     this.setIndexOfSequence(_.indexOf(this.getParentNode().getFinances(), this) + 1);
   }
 
+  getNumberOfSelectedStatus() {
+    return _.toNumber(this.getSelectedStatus());
+  }
+
+  @computed
+  get getFeeOfComputedCreditProcedure() {
+    const rate = Util.getNumberOfPercentageToFloat(`${this.getParentNode().getInfo().getRateOfCredit()}%`);
+    const result = this.getFeeOfPartyB() > 0 ? _.subtract(this.getFeeOfPartyB(),_.ceil(_.multiply(this.getFeeOfPartyB(),rate))) :  0;
+    this.setFeeOfPartyA(result);
+    return result;
+  }
+
   /** -------------------- async api -------------------- **/
 }
 

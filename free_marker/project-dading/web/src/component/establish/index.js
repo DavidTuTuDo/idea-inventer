@@ -130,14 +130,6 @@ class EstablishComponent extends BaseEstablishComponent {
     /** --------------------- following are rules of desktop --------------------- */
 
 
-    getInjectStyleOfEstablishDesktopDiv(establish) {
-        return Util.getVisibleOrNone(!this.isMobileDevice());
-    }
-
-    getInjectStyleOfEstablishDesktopAreaOfMemberDetailDiv(establish) {
-        return Util.getVisibleOrNone(!this.isMobileDevice())
-    }
-
     // getInjectStyleOfEstablishDesktopVisitorFeeOfProfitTextField(visitor) {
     //     return Util.getVisibleOrNone(false);
     // }
@@ -145,6 +137,65 @@ class EstablishComponent extends BaseEstablishComponent {
     // getInjectStyleOfEstablishDesktopVisitorPriceTextField(visitor) {
     //     return Util.getVisibleOrNone(false);
     // }
+
+
+    getInjectStyleOfEstablishDesktopTotalOfPricePartyBTextField(desktop) {
+        return {background: '#e1eadd'};
+    }
+
+
+    getInjectStyleOfEstablishDesktopVisitorPriceOfPartyBTextField(visitor) {
+        return {background: '#e1eadd'};
+    }
+
+    getInjectStyleOfEstablishDesktopTotalOfCustomizePriceTextField(desktop) {
+        return {background: '#b9d2e6'}
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceFeeOfPartyBTextField(finance) {
+        const status = _.toNumber(finance.getSelectedStatus());
+        let color = undefined;
+        switch (status) {
+            case 1:
+                color = `#e8cea3`;
+                break;
+            case 2:
+                color = `#ffdddc`;
+                break;
+            case 3:
+            case 4:
+            case 5:
+                color = `#b9d2e6`;
+                break;
+            default:
+                color = undefined;
+
+        }
+        return color ? {background: color} : null;
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
+        const status = _.toNumber(finance.getSelectedStatus());
+        let color = undefined;
+        switch (status) {
+            case 1:
+                color = `#f1e1c7`;
+                break;
+            case 2:
+                color = `#ffe7e6`;
+                break;
+            case 3:
+            case 4:
+            case 5:
+                color = `#d5e4f0`;
+                break;
+            default:
+                color = undefined;
+
+        }
+        return color ? {background: color} : null;
+    }
+
 
     isCreditCardBehavior(finance) {
         return _.isEqual(_.toNumber(finance.getSelectedStatus()), 2);
@@ -154,16 +205,24 @@ class EstablishComponent extends BaseEstablishComponent {
         return _.isEqual(_.toNumber(finance.getSelectedStatus()), 1);
     }
 
+    getInjectStyleOfEstablishDesktopDiv(establish) {
+        return Util.getVisibleOrNone(!this.isMobileDevice());
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceNameOfPayPersonTextField(finance) {
+        return Util.getVisibleOrHidden(this.isCashMonetBehavior(finance) || this.isCreditCardBehavior(finance), true)
+    }
+
     getInjectStyleOfEstablishDesktopFinanceSerialOfCreditTextField(finance) {
-        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
+        return Util.getVisibleOrHidden(this.isCreditCardBehavior(finance), true);
     }
 
     getInjectStyleOfEstablishDesktopFinanceCodeOfCreditAuthTextField(finance) {
-        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
+        return Util.getVisibleOrHidden(this.isCreditCardBehavior(finance), true);
     }
 
     getInjectStyleOfEstablishDesktopFinanceAccountOfLast5NumTextField(finance) {
-        return Util.getVisibleOrNone(this.isCashMonetBehavior(finance), true);
+        return Util.getVisibleOrHidden(this.isCashMonetBehavior(finance), true);
     }
 
     onEstablishDesktopFinanceExtraIconButtonDeleteClicked(param) {
@@ -243,6 +302,10 @@ class EstablishComponent extends BaseEstablishComponent {
         return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
     }
 
+    getInjectStyleOfEstablishDesktopVisitorNameOfPassportTextField(visitor) {
+        return Util.getVisibleOrNone(false);
+    }
+
     getWrapInjectStyleOfEstablishIdTypography(establish) {
         return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
     }
@@ -263,6 +326,21 @@ class EstablishComponent extends BaseEstablishComponent {
         if (!_.isEmpty(id))
             this.copyTextToClipboard(id)
     }
+
+    onEstablishDesktopVisitorExtraIconButtonGoTopClicked(param) {
+        const self = this;
+        const visitor = param.object;
+        return () => {
+            self.getStore().getDesktop().moveItemToTop(visitor);
+        }
+    }
+
+    getFinanceFeeOfPartyA(finance) {
+        if (_.toNumber(finance.getSelectedStatus()) === 2)
+            return finance.getFeeOfComputedCreditProcedure;
+        return super.getFinanceFeeOfPartyA(finance);
+    }
+
 
     /** -------------------- async api -------------------- **/
 }

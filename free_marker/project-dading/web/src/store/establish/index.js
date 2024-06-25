@@ -177,6 +177,9 @@ class EstablishStore extends BaseEstablishStore {
     //         (income) => _.isEqual(id, income.id));
     // }
 
+
+    /** 以下為 desktop 使用的 implementation **/
+
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         // this.setBalanceDisabled(true);
@@ -190,7 +193,6 @@ class EstablishStore extends BaseEstablishStore {
         const infos = this.getDesktop().getInfo().columnData();
         const members = this.getDesktop().getVisitors().map(item => item.columnData());
         const records = this.getDesktop().getFinances().map(item => item.columnData());
-
         const submit = {...infos, members, records};
         submit.destination = _.isObject(submit.destination) ? submit.destination.value : '0';
         submit.idOfOrder = UserInfoRef.getUid()
@@ -213,12 +215,10 @@ class EstablishStore extends BaseEstablishStore {
     sync(order) {
         const numberOfDestination = _.toNumber(order.destination);
         order.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
-
         this.setId(order.id);
         this.getDesktop().setInfo(order);
         this.getDesktop().setFinances(...order.records);
         this.getDesktop().setVisitors(...order.members);
-
     }
 
 

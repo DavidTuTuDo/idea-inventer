@@ -5,8 +5,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -56,6 +54,16 @@ class CommonStyle {
   InfoOfCopyRightContentEditorPaper = {};
 
   /** => following for navigator  component  */
+
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -439,6 +447,8 @@ class CommonStyle {
 
   EstablishDesktopAreaOfRecordFinanceCommentTextField = {};
 
+  EstablishDesktopAreaOfRecordFinanceNameOfPayPersonTextField = {};
+
   EstablishDesktopAreaOfRecordFinanceRequestMenuItem = {};
 
   EstablishDesktopAreaOfRecordFinanceRequestTextFieldList = {};
@@ -457,6 +467,30 @@ class CommonStyle {
 
   EstablishDesktopAreaOfRecordDiv = {};
 
+  EstablishDesktopAreaOfMemberTotalOfNotReceivedLabelOfTotalOfNotReceivedTypography = {};
+
+  EstablishDesktopAreaOfMemberTotalOfNotReceivedDivWrap = {};
+
+  EstablishDesktopAreaOfMemberTotalOfNotReceivedTextField = {};
+
+  EstablishDesktopAreaOfMemberTotalOfReceivedLabelOfTotalOfReceivedTypography = {};
+
+  EstablishDesktopAreaOfMemberTotalOfReceivedDivWrap = {};
+
+  EstablishDesktopAreaOfMemberTotalOfReceivedTextField = {};
+
+  EstablishDesktopAreaOfMemberTotalOfCustomizePriceLabelOfTotalOfCustomizePriceTypography = {};
+
+  EstablishDesktopAreaOfMemberTotalOfCustomizePriceDivWrap = {};
+
+  EstablishDesktopAreaOfMemberTotalOfCustomizePriceTextField = {};
+
+  EstablishDesktopAreaOfMemberTotalOfPricePartyBLabelOfTotalOfPricePartyBTypography = {};
+
+  EstablishDesktopAreaOfMemberTotalOfPricePartyBDivWrap = {};
+
+  EstablishDesktopAreaOfMemberTotalOfPricePartyBTextField = {};
+
   EstablishDesktopAreaOfMemberVisitorExtraIconMoreVertRounded = {};
 
   EstablishDesktopAreaOfMemberVisitorExtraReactFragmentWrap = {};
@@ -467,13 +501,13 @@ class CommonStyle {
 
   EstablishDesktopAreaOfMemberVisitorFeeOfProfitTextField = {};
 
-  EstablishDesktopAreaOfMemberVisitorPriceOfAgentCostTextField = {};
+  EstablishDesktopAreaOfMemberVisitorPriceOfPartyATextField = {};
 
   EstablishDesktopAreaOfMemberVisitorPriceTextField = {};
 
   EstablishDesktopAreaOfMemberVisitorDiscountTextField = {};
 
-  EstablishDesktopAreaOfMemberVisitorPriceOfOriginalTextField = {};
+  EstablishDesktopAreaOfMemberVisitorPriceOfPartyBTextField = {};
 
   EstablishDesktopAreaOfMemberVisitorCertificateMenuItem = {};
 
@@ -547,7 +581,21 @@ class CommonStyle {
 
   EstablishDesktopInfoAreaOfThirdPriceOfAgentTextField = {};
 
+  EstablishDesktopInfoAreaOfThirdRateOfCreditLabelOfRateOfCreditTypography = {};
+
+  EstablishDesktopInfoAreaOfThirdRateOfCreditDivWrap = {};
+
+  EstablishDesktopInfoAreaOfThirdRateOfCreditTextField = {};
+
   EstablishDesktopInfoAreaOfThirdDiv = {};
+
+  EstablishDesktopInfoAreaOfSecondRoomArrangeLabelOfRoomArrangeTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondRoomArrangeDivListWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondRoomArrangeMenuItem = {};
+
+  EstablishDesktopInfoAreaOfSecondRoomArrangeTextFieldList = {};
 
   EstablishDesktopInfoAreaOfSecondStatusOfSendLabelOfStatusOfSendTypography = {};
 
@@ -630,6 +678,12 @@ class CommonStyle {
   EstablishDesktopInfoAreaOfHeadDestinationDivWrap = {};
 
   EstablishDesktopInfoAreaOfHeadDestinationAutocomplete = {};
+
+  EstablishDesktopInfoAreaOfHeadEndOfTravelLabelOfEndOfTravelTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadEndOfTravelDivWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadEndOfTravelDatePicker = {};
 
   EstablishDesktopInfoAreaOfHeadStartOfTravelLabelOfStartOfTravelTypography = {};
 

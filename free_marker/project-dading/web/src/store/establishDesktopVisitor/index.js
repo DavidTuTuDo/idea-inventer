@@ -4,6 +4,8 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import libpath from "path";
 import { Application } from "../../";
+import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS, override} from "mobx";
+
 
 class EstablishDesktopVisitorStore extends BaseEstablishDesktopVisitorStore {
   /** -------------------- fields -------------------- **/
@@ -17,7 +19,20 @@ class EstablishDesktopVisitorStore extends BaseEstablishDesktopVisitorStore {
 
   invalidate() {
     this.setIndexOfSequence(_.indexOf(this.getParentNode().getVisitors(), this) + 1);
+  }
 
+  @computed
+  get getComputedPrice() {
+    const value = this.getPriceOfPartyB() - this.getDiscount();
+    this.setPrice(value);
+    return value;
+  }
+
+  @computed
+  get getComputedFeeOfProfit() {
+    const value = this.getPrice() - this.getPriceOfPartyA();
+    this.setFeeOfProfit(value);
+    return value;
   }
 
   /** -------------------- async api -------------------- **/
