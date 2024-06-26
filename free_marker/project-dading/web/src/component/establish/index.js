@@ -137,6 +137,14 @@ class EstablishComponent extends BaseEstablishComponent {
     // getInjectStyleOfEstablishDesktopVisitorPriceTextField(visitor) {
     //     return Util.getVisibleOrNone(false);
     // }
+    //
+    // getInjectStyleOfEstablishDesktopDiv(establish) {
+    //     return Util.getVisibleOrNone(!this.isMobileDevice());
+    // }
+
+    getInjectStyleOfEstablishDesktopVisitorIdOfHotelRoomTextField(visitor) {
+        return Util.getVisibleOrNone(_.isEqual(_.toNumber(this.getStore().getDesktop().getInfo().getSelectedRoomArrange()), 2), true)
+    }
 
 
     getInjectStyleOfEstablishDesktopTotalOfPricePartyBTextField(desktop) {
@@ -196,7 +204,6 @@ class EstablishComponent extends BaseEstablishComponent {
         return color ? {background: color} : null;
     }
 
-
     isCreditCardBehavior(finance) {
         return _.isEqual(_.toNumber(finance.getSelectedStatus()), 2);
     }
@@ -205,8 +212,15 @@ class EstablishComponent extends BaseEstablishComponent {
         return _.isEqual(_.toNumber(finance.getSelectedStatus()), 1);
     }
 
-    getInjectStyleOfEstablishDesktopDiv(establish) {
-        return Util.getVisibleOrNone(!this.isMobileDevice());
+    getInjectPropsOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
+        const fee = finance.getFeeOfCreditProcedure();
+        return fee > 0 ? {helperText:`手續費${fee}元`} : {};
+    }
+
+    getFinanceFeeOfPartyA(finance) {
+        if (_.toNumber(finance.getSelectedStatus()) === 2)
+            return finance.getFeeOfComputedCreditProcedure;
+        return super.getFinanceFeeOfPartyA(finance);
     }
 
     getInjectStyleOfEstablishDesktopFinanceNameOfPayPersonTextField(finance) {
@@ -334,13 +348,6 @@ class EstablishComponent extends BaseEstablishComponent {
             self.getStore().getDesktop().moveItemToTop(visitor);
         }
     }
-
-    getFinanceFeeOfPartyA(finance) {
-        if (_.toNumber(finance.getSelectedStatus()) === 2)
-            return finance.getFeeOfComputedCreditProcedure;
-        return super.getFinanceFeeOfPartyA(finance);
-    }
-
 
     /** -------------------- async api -------------------- **/
 }

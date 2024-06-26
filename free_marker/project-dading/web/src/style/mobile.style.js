@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -551,17 +553,17 @@ class MobileStyle {
 
   EstablishDesktopInfoAreaOfThirdFeeOfAgentTextField = {};
 
-  EstablishDesktopInfoAreaOfThirdPriceOfCreditLabelOfPriceOfCreditTypography = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfCreditReceivedLabelOfFeeOfCreditReceivedTypography = {};
 
-  EstablishDesktopInfoAreaOfThirdPriceOfCreditDivWrap = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfCreditReceivedDivWrap = {};
 
-  EstablishDesktopInfoAreaOfThirdPriceOfCreditTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfCreditReceivedTextField = {};
 
-  EstablishDesktopInfoAreaOfThirdPriceOfCashLabelOfPriceOfCashTypography = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfCashReceivedLabelOfFeeOfCashReceivedTypography = {};
 
-  EstablishDesktopInfoAreaOfThirdPriceOfCashDivWrap = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfCashReceivedDivWrap = {};
 
-  EstablishDesktopInfoAreaOfThirdPriceOfCashTextField = {};
+  EstablishDesktopInfoAreaOfThirdFeeOfCashReceivedTextField = {};
 
   EstablishDesktopInfoAreaOfThirdTotalOfNetLabelOfTotalOfNetTypography = {};
 

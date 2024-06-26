@@ -705,7 +705,7 @@ class CodegenNode {
         globalOfRef: false,
         /** 把ref放到global */
 
-        strict:false,
+        strict: false,
         /** 讓彈跳視窗不能用ESC或點擊旁處取消 */
     };
     /** 放admin的json file*/
@@ -1823,7 +1823,7 @@ class CodegenNode {
     }
 
     hasStrictMode() {
-        return _.isEqual(this.getAlertDialog().strict,true);
+        return _.isEqual(this.getAlertDialog().strict, true);
     }
 
     hasAlertMenu() {
@@ -2363,8 +2363,7 @@ class CodegenNode {
         return this.getPreciseChildren((node) => node.isView(), (node) => node.isIncestView())
     }
 
-    getPreciseChildren(isNode, isIncest) {
-        const children = [];
+    getPreciseChildren(isNode, isIncest, children = []) {
         for (const child of this.getChildren()) {
             if (!isIncest(child) && isNode(child))
                 children.push(child);
@@ -2382,6 +2381,19 @@ class CodegenNode {
         }
         return children;
     }
+
+    _getPreciseChildren(isNode, isIncest, children = [], layer = 1, node = this, origin = this) {
+        const rule1 = (child) => (layer === 1) && (!isIncest(child) && isNode(child));
+        const rule2 = (child) => (layer > 1) && (isIncest(child) && isNode(child)) && (child.getPreciseParent(isIncest, isNode) === origin)
+        children.push(..._.filter(node.getChildren(), child => rule1(child) || rule2(child)));
+        for (const child of node.getChildren()) this._getPreciseChildren(isNode, isIncest, children, layer++, child, origin);
+
+        if(_.isEqual(origin.getNodeOfComponent().getName(),'establish'))
+            console.log(`node[${origin.getName()}] => ${children.map(child => child.getName())}`)
+
+        return children;
+    }
+
 
     getPreciseAttributeNode() {
         if (!this.isAttribute() || this.isIncestAttribute())
@@ -4160,7 +4172,11 @@ class StoreBuilder extends BaseBuilder {
         await baseGenerator.persist();
     }
 
+    /** 用來記錄哪些store已經buildStore()了，避免duplicated build */
+    mapOfStoreBeenBuild = {};
+
     async buildFieldAttribute(generator, node) {
+        const self = this;
 
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
@@ -4348,6 +4364,16 @@ class StoreBuilder extends BaseBuilder {
         }
 
         const folderName = node.getStoreFolderName();
+
+        if (_.isUndefined(this.mapOfStoreBeenBuild[folderName])) {
+            this.mapOfStoreBeenBuild[folderName] = true;
+        } else {
+            /** 這個store已經編譯過了 */
+            Util.appendInfo(`87841234323 ${folderName} 已經編譯過了`)
+            return;
+        }
+
+
         const className = node.getStoreClassName();
         const baseClassName = `Base${className}Store`;
         const moduleClassName = `${KEYWORD_OF_MODULARIZED}${className}Store`;
@@ -6947,13 +6973,13 @@ class ProjectFileHandler extends PathBase {
         this.initial();
     }
 
-    initial(){
+    initial() {
         this.deployRemoteRules = true;
         this.needDeployCloudFunctions = true;
         this.enrichComponentStructs(this.isWebPlatform());
     }
 
-    refresh(){
+    refresh() {
         this.reNewNodeOfAncestor();
         this.initial();
     }
