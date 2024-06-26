@@ -731,10 +731,12 @@
 /** following for establish  component used  */
 
 .EstablishPaper:extend(.CenterInParentColumn) {
-  gap: 10px;
-  padding: 10px;
-  padding-top: 20px;
+  gap: 15px;
+  padding: 15px;
+  padding-top: 30px;
+  padding-bottom: 30px;
   width: 100%;
+  margin: auto;
   @media @mobile {
     /** empty style */
   }
@@ -742,15 +744,15 @@
     /** empty style */
   }
   @media @desktop {
-    width: 1400px;
-    gap: 15px;
-    padding: 15px;
-    padding-top: 30px;
-    padding-bottom: 30px;
+    /** empty style */
+
   }
 }
-.EstablishDivWrap:extend(.CenterInParentColumn) {
+.EstablishDivWrap {
+  position: relative;
   gap: 10px;
+  width: 1400px;
+  margin:auto;
   @media @mobile {
     /** empty style */
   }

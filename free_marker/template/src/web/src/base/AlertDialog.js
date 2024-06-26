@@ -127,11 +127,8 @@ class AlertDialog extends MuiComponent {
                     style: {
                         backgroundColor: "transparent",
                         boxShadow: "none",
-                        flexDirection: 'row',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-
+                        margin: "auto",
+                        position: "relative"
                     }
                 }
             }
@@ -209,7 +206,9 @@ class AlertDialog extends MuiComponent {
 
             {this.renderCancelButton()}
 
-            <Button onClick={async () => await self.onSubmitClicked()} color="primary" autoFocus>
+            <Button
+                onClick={async () => await self.onSubmitClicked()}
+                color="primary" autoFocus>
                 確認
             </Button>
         </DialogActions>
