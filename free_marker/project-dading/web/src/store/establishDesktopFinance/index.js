@@ -22,7 +22,6 @@ class EstablishDesktopFinanceStore extends BaseEstablishDesktopFinanceStore {
 
     constructor(props) {
         super(props);
-        this.setCreateTimeDisabled(true);
         this.setIndexOfSequenceDisabled(true)
     }
 

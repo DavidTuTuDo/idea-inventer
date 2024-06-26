@@ -736,7 +736,6 @@
   padding-top: 30px;
   padding-bottom: 30px;
   width: 100%;
-  margin: auto;
   @media @mobile {
     /** empty style */
   }
@@ -745,14 +744,13 @@
   }
   @media @desktop {
     /** empty style */
-
   }
 }
 .EstablishDivWrap {
   position: relative;
   gap: 10px;
   width: 1400px;
-  margin:auto;
+  margin: auto;
   @media @mobile {
     /** empty style */
   }
@@ -2172,7 +2170,8 @@
     /** empty style */
   }
 }
-.EstablishDesktopAreaOfRecordFinanceDivList {
+.EstablishDesktopAreaOfRecordFinanceDivList:extend(.CenterInParentColumn) {
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -2195,16 +2194,17 @@
     /** empty style */
   }
 }
-.EstablishDesktopAreaOfRecordFinanceCreateTimeTextField {
-  width: 10%;
+.EstablishDesktopAreaOfRecordFinanceCreateTimeDateTimePicker {
+  width: 11%;
   @media @mobile {
-    /** empty style */
+    width: 8.5%;
   }
   @media @tablet {
-    /** empty style */
+    width: 8.5%;
   }
   @media @desktop {
-    width: 10%;
+    /** empty style */
+    width: 11%;
   }
 }
 .EstablishDesktopAreaOfRecordFinanceStatusTextFieldList {
@@ -3411,6 +3411,7 @@
   margin-top: 5px;
   margin-bottom: 15px;
   width: 100vw;
+  margin: auto;
   align-items: flex-end;
   @media @mobile {
     /** empty style */

@@ -34,9 +34,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-// let CURRENT_PROJECT = './project-dading';
+let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -146,6 +146,9 @@ class CodegenNode {
      * { sample:'範例',example:'超級範例' }
      **/
     textsOfI18n = {};
+
+    /** 用於時間moment的time format 例如 YY/MM/DD */
+    format = '';
 
     /**
      * 檢查是不是extra component，會造成 i18n duplicated
@@ -929,6 +932,14 @@ class CodegenNode {
 
     hasLabel() {
         return this.label && !_.isEmpty(this.label);
+    }
+
+    hasFormat(){
+        return this.format && !_.isEmpty(this.format);
+    }
+
+    getFormat(){
+        return this.format?? `YYYY/MM/DD hh:mm`;
     }
 
     hasHelperText() {
@@ -8223,18 +8234,24 @@ class ProjectFileHandler extends PathBase {
 
         for (const node of nodes) {
 
-            if (node.isTimeDatePickerView() && node.hasLabel()) {
-                const label = node.getFieldNameOfLabel();
-                node.getParentNode().appendChildrenWithJsons(
-                    {
-                        name: label,
-                        type: 'string',
-                        l10n: true,
-                        incest: node.incest,
-                        defaultValue: node.getLabel(),
-                    }
-                )
-                node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
+            if (node.isTimeDatePickerView()) {
+                if(node.hasLabel()){
+                    const label = node.getFieldNameOfLabel();
+                    node.getParentNode().appendChildrenWithJsons(
+                        {
+                            name: label,
+                            type: 'string',
+                            l10n: true,
+                            incest: node.incest,
+                            defaultValue: node.getLabel(),
+                        }
+                    )
+                    node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
+                }
+
+                if(node.hasFormat())
+                    node.appendViewProps({format:`${node.getFormat()}`})
+
             }
 
             if (node.isTimeDateRangePickerView()) {
@@ -8269,6 +8286,9 @@ class ProjectFileHandler extends PathBase {
 
 
                 }
+
+                if(node.hasFormat())
+                    node.appendViewProps({format:`${node.getFormat()}`})
 
                 node.getParentNode().appendChildrenWithJsons(
                     {

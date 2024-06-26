@@ -256,11 +256,6 @@ class EstablishComponent extends BaseEstablishComponent {
         }
     }
 
-    getFinanceCreateTime(finance) {
-        const ts = super.getFinanceCreateTime(finance);
-        return Util.getSimpleTimeYYMMDDHHmmFormat(ts);
-    }
-
     onEstablishDesktopVisitorExtraIconButtonCreateClicked(param) {
         const self = this;
         const visitor = param.object;
