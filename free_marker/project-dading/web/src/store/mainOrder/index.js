@@ -11,8 +11,10 @@ class MainOrderStore extends BaseMainOrderStore {
 
     constructor(props) {
         super(props);
-
+        this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
+
+
 
     invalidate(establish) {
         // this.setNameOfDestination(this.getLabelByValue(Config.COUNTRY_OF_TRAVEL, this.destination));

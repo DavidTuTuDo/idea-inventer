@@ -3022,9 +3022,9 @@ class CodegenNode {
         }
 
         if (this.type === 'timestamp') {
-            if (this.isTimeDateRangePickerView()) return `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
-            else if (this.isTimeDatePickerView()) return `null` /** 如果要有初始時間 moment() */
-            else if (this.isBelong2TimeDatePicker()) return `null`
+            if (this.isTimeDateRangePickerView()) return this.getDefaultValue() ?? `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
+            else if (this.isTimeDatePickerView()) return this.getDefaultValue() ?? `null` /** 如果要有初始時間 moment() */
+            else if (this.isBelong2TimeDatePicker()) return this.getDefaultValue() ?? `null`
             else if (_.isNull(this.getDefaultValue())) return `null` /** timestamp可以給初始時間 */
             else return `this.getObjectOfCurrentTimeStamp()`;
         }
@@ -4583,7 +4583,7 @@ class StoreBuilder extends BaseBuilder {
          * */
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
             `super.initial(obj)`,
-            ...propsStmt);
+            ...propsStmt,`this.onInitialCompleted(obj)`);
         baseGenerator.appendConstructor(
             `makeObservable(this)`,
             `this.initial(props)`);
@@ -8066,7 +8066,6 @@ class ProjectFileHandler extends PathBase {
 
         const arrayOfProps = [];
 
-        /** TextField 支援 preciseUsage 的就不用 label */
         if (!node.isBelongAutoComplete() && !node.hasLabelView() && node.hasLabel()) {
             const label = node.getFieldNameOfLabel();
             node.getParentNode().appendChildrenWithJsons({

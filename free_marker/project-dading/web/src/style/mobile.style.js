@@ -773,59 +773,31 @@ class MobileStyle {
 
   MainFilterOfSearchOrderDiv = {};
 
-  MainOrderAreaOfContactContactLabelOfContactTypography = {};
-
-  MainOrderAreaOfContactContactBtnOfContactIconPhoneRounded = {};
-
-  MainOrderAreaOfContactContactBtnOfContactIconButton = {};
-
-  MainOrderAreaOfContactContactDivWrap = {};
-
-  MainOrderAreaOfContactContactTypography = {};
-
-  MainOrderAreaOfContactHostLabelOfHostTypography = {};
-
-  MainOrderAreaOfContactHostDivWrap = {};
-
-  MainOrderAreaOfContactHostTypography = {};
-
-  MainOrderAreaOfContactDiv = {};
-
-  MainOrderAreaOfDestinationDateOfStartTravelLabelOfDateOfStartTravelTypography = {};
-
-  MainOrderAreaOfDestinationDateOfStartTravelDivWrap = {};
-
-  MainOrderAreaOfDestinationDateOfStartTravelTypography = {};
-
-  MainOrderAreaOfDestinationNameOfAgentLabelOfNameOfAgentTypography = {};
-
-  MainOrderAreaOfDestinationNameOfAgentDivWrap = {};
-
-  MainOrderAreaOfDestinationNameOfAgentTypography = {};
-
-  MainOrderAreaOfDestinationNameOfDestinationLabelOfNameOfDestinationTypography = {};
-
-  MainOrderAreaOfDestinationNameOfDestinationDivWrap = {};
-
-  MainOrderAreaOfDestinationNameOfDestinationTypography = {};
-
-  MainOrderAreaOfDestinationDiv = {};
-
   MainOrderAreaOfHeadExtraIconMoreHoriz = {};
 
   MainOrderAreaOfHeadExtraReactFragmentWrap = {};
 
   MainOrderAreaOfHeadExtraIconButton = {};
 
-  MainOrderAreaOfHeadIdLabelOfIdTypography = {};
+  MainOrderAreaOfHeadCommentTextField = {};
 
-  MainOrderAreaOfHeadIdBtnOfIdIconCopyAll = {};
+  MainOrderAreaOfHeadCountOfPeopleTextField = {};
 
-  MainOrderAreaOfHeadIdBtnOfIdIconButton = {};
+  MainOrderAreaOfHeadPriceOfDepositTextField = {};
 
-  MainOrderAreaOfHeadIdDivWrap = {};
+  MainOrderAreaOfHeadContactTextField = {};
 
-  MainOrderAreaOfHeadIdTypography = {};
+  MainOrderAreaOfHeadHostTextField = {};
+
+  MainOrderAreaOfHeadAgentMenuItem = {};
+
+  MainOrderAreaOfHeadAgentTextFieldList = {};
+
+  MainOrderAreaOfHeadDestinationInputOfDestinationTextField = {};
+
+  MainOrderAreaOfHeadDestinationAutocomplete = {};
+
+  MainOrderAreaOfHeadStartOfTravelDatePicker = {};
 
   MainOrderAreaOfHeadDiv = {};
 

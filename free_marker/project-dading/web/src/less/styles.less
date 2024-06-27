@@ -7,7 +7,9 @@
 /** following for main  component used  */
 
 .MainDiv {
-  margin-top: 20px;
+  position: relative;
+  margin: auto;
+  padding-top: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -20,6 +22,7 @@
 }
 .MainAreaOfFuncDiv:extend(.CenterInParentRow) {
   gap: 10px;
+  margin: auto;
   @media @mobile {
     /** empty style */
   }
@@ -64,9 +67,9 @@
   }
 }
 .MainOrderCard:extend(.CenterInParentColumn) {
-  width: 95vw;
-  padding: 3px;
+  padding: 8px;
   background: #fcfbfb;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -74,12 +77,14 @@
     /** empty style */
   }
   @media @desktop {
-    width: 500px;
+    /** empty style */
   }
 }
 .MainOrderDivList:extend(.CenterInParentColumn) {
-  margin-top: 30px;
+  margin: auto;
+  margin-top: 20px;
   gap: 10px;
+  width: 1200px;
   @media @mobile {
     /** empty style */
   }
@@ -105,8 +110,8 @@
   }
 }
 .MainOrderAreaOfHeadDiv:extend(.CenterInParentRow) {
-  border-bottom: 1px solid #bbb;
   justify-content: space-between;
+  gap: 7px;
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -118,7 +123,20 @@
     /** empty style */
   }
 }
-.MainOrderAreaOfHeadIdTypography {
+.MainOrderAreaOfHeadStartOfTravelDatePicker {
+  width: 11%;
+  @media @mobile {
+    width: 8%;
+  }
+  @media @tablet {
+    width: 8%;
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfHeadDestinationAutocomplete {
+  width: 14%;
   @media @mobile {
     /** empty style */
   }
@@ -129,7 +147,7 @@
     /** empty style */
   }
 }
-.MainOrderAreaOfHeadIdDivWrap:extend(.CenterInParentRow) {
+.MainOrderAreaOfHeadDestinationInputOfDestinationTextField {
   @media @mobile {
     /** empty style */
   }
@@ -140,7 +158,8 @@
     /** empty style */
   }
 }
-.MainOrderAreaOfHeadIdBtnOfIdIconButton {
+.MainOrderAreaOfHeadAgentTextFieldList {
+  width: 13%;
   @media @mobile {
     /** empty style */
   }
@@ -151,7 +170,7 @@
     /** empty style */
   }
 }
-.MainOrderAreaOfHeadIdBtnOfIdIconCopyAll {
+.MainOrderAreaOfHeadAgentMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -162,7 +181,55 @@
     /** empty style */
   }
 }
-.MainOrderAreaOfHeadIdLabelOfIdTypography {
+.MainOrderAreaOfHeadHostTextField {
+  width: 8.5%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfHeadContactTextField {
+  width: 13%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfHeadPriceOfDepositTextField {
+  width: 10%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfHeadCountOfPeopleTextField {
+  width: 6%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfHeadCommentTextField {
   @media @mobile {
     /** empty style */
   }
@@ -196,221 +263,6 @@
   }
 }
 .MainOrderAreaOfHeadExtraIconMoreHoriz {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationDiv:extend(.CenterInParentRow) {
-  min-height: 40px;
-  justify-content: space-between;
-  width: 100%;
-  border-bottom: 1px solid #bbb;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationNameOfDestinationTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationNameOfDestinationDivWrap:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationNameOfDestinationLabelOfNameOfDestinationTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationNameOfAgentTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationNameOfAgentDivWrap:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationNameOfAgentLabelOfNameOfAgentTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationDateOfStartTravelTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationDateOfStartTravelDivWrap:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfDestinationDateOfStartTravelLabelOfDateOfStartTravelTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactDiv:extend(.CenterInParentRow) {
-  justify-content: space-between;
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactHostTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactHostDivWrap:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactHostLabelOfHostTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactContactTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactContactDivWrap:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactContactBtnOfContactIconButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactContactBtnOfContactIconPhoneRounded {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainOrderAreaOfContactContactLabelOfContactTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2173,7 +2025,7 @@
 .EstablishDesktopAreaOfRecordFinanceDivList:extend(.CenterInParentColumn) {
   width: 100%;
   @media @mobile {
-    /** empty style */
+    width: 100%;
   }
   @media @tablet {
     /** empty style */
@@ -2191,7 +2043,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 3.5%;
   }
 }
 .EstablishDesktopAreaOfRecordFinanceCreateTimeDateTimePicker {
@@ -2203,7 +2055,6 @@
     width: 8.5%;
   }
   @media @desktop {
-    /** empty style */
     width: 11%;
   }
 }
@@ -4787,6 +4638,100 @@
 }
 /** ======== following for homeless ========= */
 
+.MainOrderAreaOfHeadIdDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfDestinationDiv:extend(.CenterInParentRow) {
+  min-height: 40px;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid #bbb;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfDestinationNameOfDestinationDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfDestinationNameOfAgentDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfDestinationDateOfStartTravelDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfContactDiv:extend(.CenterInParentRow) {
+  justify-content: space-between;
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfContactHostDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainOrderAreaOfContactContactDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .EstablishMobileDiv:extend(.CenterInParentColumn) {
   gap: 10px;
   width: 100%;

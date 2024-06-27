@@ -142,6 +142,15 @@ class EstablishComponent extends BaseEstablishComponent {
     //     return Util.getVisibleOrNone(!this.isMobileDevice());
     // }
 
+    onEstablishDesktopVisitorNameTextFieldChange(param) {
+        if(_.size(param.object.getName()) > 0)
+            this.getStore().getDesktop().incrementVisitorColumn(param.object);
+    }
+
+    onEstablishDesktopFinanceFeeOfPartyBTextFieldChange(param) {
+            this.getStore().getDesktop().incrementFinanceColumn(param.object);
+    }
+
     getInjectStyleOfEstablishDesktopVisitorIdOfHotelRoomTextField(visitor) {
         return Util.getVisibleOrNone(_.isEqual(_.toNumber(this.getStore().getDesktop().getInfo().getSelectedRoomArrange()), 2), true)
     }
