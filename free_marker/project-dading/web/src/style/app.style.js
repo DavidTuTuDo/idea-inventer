@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -729,6 +727,10 @@ class AppStyle {
 
   MainFilterOfSearchOrderAreaOfFuncDiv = {};
 
+  MainFilterOfSearchOrderAreaOfStuffAgentMenuItem = {};
+
+  MainFilterOfSearchOrderAreaOfStuffAgentTextFieldList = {};
+
   MainFilterOfSearchOrderAreaOfStuffSalesmanMenuItem = {};
 
   MainFilterOfSearchOrderAreaOfStuffSalesmanTextFieldList = {};
@@ -797,6 +799,10 @@ class AppStyle {
 
   MainOrderAreaOfHeadStartOfTravelDatePicker = {};
 
+  MainOrderAreaOfHeadMenuIconEditRounded = {};
+
+  MainOrderAreaOfHeadMenuIconButton = {};
+
   MainOrderAreaOfHeadDiv = {};
 
   MainOrderCardSkeleton = {};
@@ -805,11 +811,19 @@ class AppStyle {
 
   MainOrderCard = {};
 
-  MainAreaOfFuncSearchOfOrderButton = {};
+  MainAreaOfFuncDoSearchOfOrderButton = {};
 
-  MainAreaOfFuncCreateOfOrderReactFragmentWrap = {};
+  MainAreaOfFuncDoCreateOfOrderReactFragmentWrap = {};
 
-  MainAreaOfFuncCreateOfOrderButton = {};
+  MainAreaOfFuncDoCreateOfOrderButton = {};
+
+  MainAreaOfFuncDoAppendOfOrderButton = {};
+
+  MainAreaOfFuncDoDiv = {};
+
+  MainAreaOfFuncOrderByMenuItem = {};
+
+  MainAreaOfFuncOrderByTextFieldList = {};
 
   MainAreaOfFuncDiv = {};
 

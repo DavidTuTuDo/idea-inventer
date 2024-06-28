@@ -3,18 +3,8 @@ import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import establish from "../establish";
 import {observer} from "mobx-react";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
 import {Application} from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
-
 
 @inject("main")
 @observer
@@ -38,8 +28,24 @@ class MainComponent extends BaseMainComponent {
         return {helperText: `創單時間：${Util.getSimpleTimeYYMMDDHHmmFormat(order.getCreateTime())}`}
     }
 
+    onMainOrderExtraIconButtonCopyIdClicked(param) {
+        const self = this;
+        const order = param.object;
+        return () => {
+            self.copyTextToClipboard(order.getId(), `已複製「${order.getHost()}」訂單編號`)
+        }
+    }
+
     onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
         this.getStore().toggleIsFilterOfSearchOrderVisible();
+    }
+
+    onMainAreaOfFuncAppendOfOrderButtonClicked(param) {
+        this.getStore().appendOrder().then();
+    }
+
+    onMainOrderMenuIconButtonClicked(param) {
+        this.activateOrderDetailDialog(param.object);
     }
 
     onMainOrderExtraIconButtonContractClicked(param) {
@@ -49,25 +55,20 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainOrderExtraIconButtonEditClicked(param) {
+        const self = this;
         const order = param.object;
         return () => {
-            const data = order.data();
-            Application.getEstablishStore().clean();
-            this.refOfCreateOfOrder.current.click();
-            Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
-                store.sync(data);
-            })
+            self.activateOrderDetailDialog(order);
         }
     }
 
-    onMainOrderBtnOfIdIconButtonClicked(param) {
-        const order = param.object;
-        this.copyTextToClipboard(order.getId(), `已複製訂單編號至剪貼簿`)
-    }
-
-    onMainOrderBtnOfPhoneIconButtonClicked(param) {
-        const order = param.object;
-        this.invokePhoneBehavior(order.getPhone());
+    activateOrderDetailDialog = (order) => {
+        const data = order.data();
+        Application.getEstablishStore().clean();
+        this.refOfCreateOfOrder.current.click();
+        Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
+            store.sync(data);
+        })
     }
 
     onMainFilterOfSearchOrderCancelButtonClicked(param) {
@@ -97,7 +98,6 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainOrderDestinationAutocompleteChange(param) {
-        console.log('yes,i in the house');
         this.getStore().invalidateOfRemote(param.object)
     }
 
@@ -129,7 +129,9 @@ class MainComponent extends BaseMainComponent {
         this.getStore().invalidateOfRemote(order)
     }
 
-
+    onOrderBySelectedChange(value, param) {
+        this.getStore().handleOrderByCondition(param.value).then();
+    }
 
 
     /** -------------------- async api -------------------- **/

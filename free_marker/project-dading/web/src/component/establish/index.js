@@ -191,27 +191,27 @@ class EstablishComponent extends BaseEstablishComponent {
         return color ? {background: color} : null;
     }
 
-    getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
-        const status = _.toNumber(finance.getSelectedStatus());
-        let color = undefined;
-        switch (status) {
-            case 1:
-                color = `#f1e1c7`;
-                break;
-            case 2:
-                color = `#ffe7e6`;
-                break;
-            case 3:
-            case 4:
-            case 5:
-                color = `#d5e4f0`;
-                break;
-            default:
-                color = undefined;
-
-        }
-        return color ? {background: color} : null;
-    }
+    // getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
+    //     const status = _.toNumber(finance.getSelectedStatus());
+    //     let color = undefined;
+    //     switch (status) {
+    //         case 1:
+    //             color = `#f1e1c7`;
+    //             break;
+    //         case 2:
+    //             color = `#ffe7e6`;
+    //             break;
+    //         case 3:
+    //         case 4:
+    //         case 5:
+    //             color = `#d5e4f0`;
+    //             break;
+    //         default:
+    //             color = undefined;
+    //
+    //     }
+    //     return color ? {background: color} : null;
+    // }
 
     isCreditCardBehavior(finance) {
         return _.isEqual(_.toNumber(finance.getSelectedStatus()), 2);

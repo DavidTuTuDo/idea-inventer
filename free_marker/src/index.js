@@ -5496,9 +5496,9 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendOnChangedStmt() {
-            generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value', `${node.getPreciseAttributeParentName()}`], [], [],
+            generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value', `param`], [], [],
                 `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not implemented')`)
-            return `self.${node.getFunctionNameOfOnSelectedChange()}(value, ${node.getPreciseAttributeParentName()})`
+            return `self.${node.getFunctionNameOfOnSelectedChange()}(value, objectOfParam)`
         }
 
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
@@ -5599,6 +5599,8 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isSimpleSelected()) {
                 props['onChange'] = `###(event, value)=>{
                     const latest = event.target.value;
+                    objectOfParam.value = latest;
+                    objectOfParam.event = event;
                     ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)
                     ${appendOnChangedStmt()}
                 }`;
