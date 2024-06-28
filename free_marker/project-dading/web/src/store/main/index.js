@@ -4,15 +4,7 @@ import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "ut
 import _ from "lodash";
 import libpath from "path";
 import {Application} from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
 import Order from "../mainOrder";
-import AreaOfFunc from "../mainAreaOfFunc";
-import BaseStore from "../../base/BaseStore";
 import Establish from '../establish';
 
 class MainStore extends BaseMainStore {
@@ -22,7 +14,8 @@ class MainStore extends BaseMainStore {
 
     constructor(props) {
         super(props);
-        this.establish =  new Establish();
+        this.establish = new Establish();
+        this.apiOfOrder = new Order();
     }
 
     async deleteOrder(order) {
@@ -32,7 +25,6 @@ class MainStore extends BaseMainStore {
     async updateOrder(orderOfLast) {
         const order = _.find(this.getOrders(), (order) => _.isEqual(order.id, orderOfLast.id));
         order.initial(orderOfLast);
-        order.invalidate(this.establish);
     }
 
     async onInitialFetchCompleted(collection) {
@@ -41,8 +33,24 @@ class MainStore extends BaseMainStore {
         return result
     }
 
-    invalidate() {
-        this.getOrders().map(order => order.invalidate(this.establish))
+    invalidateOfRemote = (order) => {
+        const self = this;
+        if (order instanceof Order) {
+            Util.executeTimeoutTask(
+                async () => {
+                    await self.apiOfOrder.updateOrderItem(self.getComponent(), {
+                        startOfTravel: order.getStartOfTravel(),
+                        host: order.getHost(),
+                        contact: order.getContact(),
+                        comment: order.getComment(),
+                        priceOfDeposit: order.getPriceOfDeposit(),
+                        countOfPeople: order.getCountOfPeople(),
+                        selectedDestination: order.getSelectedDestination(),
+                        selectedAgent: order.getSelectedAgent()
+                    }, order.getId())
+                    self.getComponent().showInfoSnackMessage(`已更新「${order.getName()}」訂單`)
+                }, 1500, "ID_OF_ASYNC_UPDATE_ORDER")
+        }
     }
 
     /** -------------------- async api -------------------- **/

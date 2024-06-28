@@ -1,18 +1,9 @@
 const edit = true;
-
 import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import PhoneRounded from "@mui/icons-material/PhoneRounded";
-import MoreHoriz from "@mui/icons-material/MoreHoriz";
-import CopyAll from "@mui/icons-material/CopyAll";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Skeleton from "@mui/material/Skeleton";
-import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
 import establish from "../establish";
 import {observer} from "mobx-react";
 import Style from "../../style";
@@ -41,6 +32,10 @@ class MainComponent extends BaseMainComponent {
             this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
             )
         }
+    }
+
+    getInjectPropsOfMainOrderCommentTextField(order) {
+        return {helperText: `創單時間：${Util.getSimpleTimeYYMMDDHHmmFormat(order.getCreateTime())}`}
     }
 
     onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
@@ -96,6 +91,45 @@ class MainComponent extends BaseMainComponent {
     onMainFilterOfSearchOrderClearButtonClicked(param) {
         param.object.clean();
     }
+
+    onMainOrderStartOfTravelDatePickerChange(param) {
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onMainOrderDestinationAutocompleteChange(param) {
+        console.log('yes,i in the house');
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onMainOrderCommentTextFieldChange(param) {
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onMainOrderCountOfPeopleTextFieldChange(param) {
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onMainOrderContactTextFieldChange(param) {
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onMainOrderHostTextFieldChange(param) {
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onMainOrderPriceOfDepositTextFieldChange(param) {
+        this.getStore().invalidateOfRemote(param.object)
+    }
+
+    onAgentSelectedChange(value, order) {
+        this.getStore().invalidateOfRemote(order)
+    }
+
+    invalidateOfRemote(order) {
+        this.getStore().invalidateOfRemote(order)
+    }
+
+
 
 
     /** -------------------- async api -------------------- **/

@@ -807,8 +807,8 @@ class CodegenNode {
         return this.margin && !_.isEmpty(this.margin);
     }
 
-    isBelongAutoComplete() {
-        return !!this.belong2AutoComplete;
+    isBelong2AutoComplete() {
+        return this.belong2AutoComplete;
     }
 
     hasIcon() {
@@ -934,12 +934,12 @@ class CodegenNode {
         return this.label && !_.isEmpty(this.label);
     }
 
-    hasFormat(){
+    hasFormat() {
         return this.format && !_.isEmpty(this.format);
     }
 
-    getFormat(){
-        return this.format?? `YYYY/MM/DD hh:mm`;
+    getFormat() {
+        return this.format ?? `YYYY/MM/DD hh:mm`;
     }
 
     hasHelperText() {
@@ -2399,7 +2399,7 @@ class CodegenNode {
         children.push(..._.filter(node.getChildren(), child => rule1(child) || rule2(child)));
         for (const child of node.getChildren()) this._getPreciseChildren(isNode, isIncest, children, layer++, child, origin);
 
-        if(_.isEqual(origin.getNodeOfComponent().getName(),'establish'))
+        if (_.isEqual(origin.getNodeOfComponent().getName(), 'establish'))
             console.log(`node[${origin.getName()}] => ${children.map(child => child.getName())}`)
 
         return children;
@@ -4583,7 +4583,7 @@ class StoreBuilder extends BaseBuilder {
          * */
         baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
             `super.initial(obj)`,
-            ...propsStmt,`this.onInitialCompleted(obj)`);
+            ...propsStmt, `this.onInitialCompleted(obj)`);
         baseGenerator.appendConstructor(
             `makeObservable(this)`,
             `this.initial(props)`);
@@ -5603,7 +5603,7 @@ class ComponentBuilder extends BaseBuilder {
                     ${appendOnChangedStmt()}
                 }`;
 
-                props['value'] = `###${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}()`;
+                props['value'] = `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`;
                 delete itemViewProps[`${node.getName()}`];
                 arrayItemNode.appendViewProps(itemViewProps);
                 arrayItemNode.appendViewProps({value: `###${node.getName()}.value`})
@@ -7920,7 +7920,7 @@ class ProjectFileHandler extends PathBase {
                 node.setType('array');
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
-                    type: 'string', /** succeed, fail */
+                    type: 'number', /** succeed, fail */
                     column: true,
                     defaultValue: node.getSelectedDefaultValue(),
                     incest: node.incest,
@@ -8066,7 +8066,7 @@ class ProjectFileHandler extends PathBase {
 
         const arrayOfProps = [];
 
-        if (!node.isBelongAutoComplete() && !node.hasLabelView() && node.hasLabel()) {
+        if (!node.isBelong2AutoComplete() && !node.hasLabelView() && node.hasLabel()) {
             const label = node.getFieldNameOfLabel();
             node.getParentNode().appendChildrenWithJsons({
                 name: label,
@@ -8189,15 +8189,16 @@ class ProjectFileHandler extends PathBase {
                 } else if (node.isTextFieldView()) {
                     stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
                     paramStmt = `latestValue`;
-                    if (node.isBelongAutoComplete())
+                    if (node.isBelong2AutoComplete())
                         stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
                 } else if (node.isSliderView()) {
                     paramStmt = `self.getLatestValueByEvent(event)`;
                 } else if (node.isAutoCompleteView()) {
-                    stmts.push(`objectOfParam.object = value`)
+                    stmts.push(`objectOfParam.value = value`)
                     stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(value)`)
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfSelected())}(self.getNumberOfSelected(value))`)
                     /**
-                     const nodeOfInput = _.find(node.getPreciseAttributeParent().getPreciseAttributeChildren(), (each) => each.isBelongAutoComplete(), 0);
+                     const nodeOfInput = _.find(node.getPreciseAttributeParent().getPreciseAttributeChildren(), (each) => each.isBelong2AutoComplete(), 0);
                      stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', nodeOfInput.getName(), node.getName())}(value.getValue())`)
                      */
                 } else if (node.isCheckboxView()) {
@@ -8234,7 +8235,7 @@ class ProjectFileHandler extends PathBase {
         for (const node of nodes) {
 
             if (node.isTimeDatePickerView()) {
-                if(node.hasLabel()){
+                if (node.hasLabel()) {
                     const label = node.getFieldNameOfLabel();
                     node.getParentNode().appendChildrenWithJsons(
                         {
@@ -8248,8 +8249,8 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
                 }
 
-                if(node.hasFormat())
-                    node.appendViewProps({format:`${node.getFormat()}`})
+                if (node.hasFormat())
+                    node.appendViewProps({format: `${node.getFormat()}`})
 
             }
 
@@ -8286,8 +8287,8 @@ class ProjectFileHandler extends PathBase {
 
                 }
 
-                if(node.hasFormat())
-                    node.appendViewProps({format:`${node.getFormat()}`})
+                if (node.hasFormat())
+                    node.appendViewProps({format: `${node.getFormat()}`})
 
                 node.getParentNode().appendChildrenWithJsons(
                     {
@@ -8578,6 +8579,14 @@ class ProjectFileHandler extends PathBase {
                     },
                 )
 
+                node.getParentNode().appendChildrenWithJson({
+                    name: node.getFieldNameOfSelected(),
+                    type: `number`,
+                    column: _.cloneDeep(node.column),
+                    incest: node.incest,
+                })
+
+                node.column = false;
                 node.appendChildrenWithJsons({
                     name: Util.camel(`input`, 'of', node.getName()),
                     incest: {view: false, attribute: true},
@@ -8586,7 +8595,7 @@ class ProjectFileHandler extends PathBase {
                     size: node.getSize(),
                     search: node.search,
                     description: node.label,
-                    belongAutoComplete: true,
+                    belong2AutoComplete: true,
                     injectViewProp: {
                         name: 'renderInput',
                         functionalized: true,
@@ -8594,10 +8603,10 @@ class ProjectFileHandler extends PathBase {
                     helperVisual: node.helperVisual,
                     helpText: node.helpText,
                 })
-
+                const stmtOfSuggestGetter = `${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
                 node.appendViewProps(
                     {
-                        options: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
+                        options: `###${stmtOfSuggestGetter}`
                     },
                     {
                         filterOptions: `###(options, state) => options`
@@ -8612,7 +8621,7 @@ class ProjectFileHandler extends PathBase {
                         getOptionLabel: `###(option) => option.label?? ''`
                     },
                     {
-                        value: `###${node.getPreciseAttributeParentName()}.${Util.camel(`get`, node.getFieldName())}()`
+                        value: `###self.getSelectedSuggest(${node.getPreciseAttributeParentName()}.${Util.camel(`get`, node.getFieldNameOfSelected())}(), ${stmtOfSuggestGetter})`
                     }
                 )
 
@@ -8635,7 +8644,6 @@ class ProjectFileHandler extends PathBase {
                     })
                 }
             }
-
 
             appendPropsOfNode(node, node.needOnChangeBehavior,
                 [{onChange: `###(event, value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],

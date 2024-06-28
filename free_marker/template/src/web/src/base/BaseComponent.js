@@ -27,7 +27,6 @@ import {isMobile} from 'react-device-detect'
 import ImageDialogView from './ImageDialogView';
 import UserInfo from '../base/BaseUserInfo';
 import EventBus from "./CommonEventBus";
-import "../less";
 import MuiComponent from './MUIComponent';
 import ArrowBackIosRounded from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRounded from "@mui/icons-material/ArrowForwardIosRounded";
@@ -420,6 +419,14 @@ class BaseComponent extends MuiComponent {
         this.componentStyle = {...this.componentStyle, ...style};
     }
 
+    /** auto completed 有suggest的概念{label,value,uid,popularLevel }*/
+    getNumberOfSelected(suggest) {
+        if(suggest !== null) {
+            return suggest.value ? _.toNumber(suggest.value) : -1;
+        }
+        return 0;
+    }
+
     render() {
         const self = this;
         return (
@@ -628,6 +635,11 @@ class BaseComponent extends MuiComponent {
                 }
             }
         }
+    }
+
+    getSelectedSuggest(value, suggests) {
+        if (_.isArray(suggests) && value)
+         return _.find(suggests,(suggest) => _.isEqual(_.toString(suggest.value),_.toString(value)));
     }
 
     renderSnackView() {

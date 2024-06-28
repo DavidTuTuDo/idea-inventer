@@ -181,11 +181,14 @@ class EstablishStore extends BaseEstablishStore {
     /** 以下為 desktop 使用的 implementation **/
 
     async onInitialFetchCompleted(collection) {
+        const self = this;
         await super.onInitialFetchCompleted(collection);
         // this.setBalanceDisabled(true);
         // this.setPriceHasPaidDisabled(true);
         // this.setPriceOfTotalDisabled(true);
+
         this.getDesktop().getInfo().initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
+        Util.syncDelay(1).then(() => self.getDesktop().getInfo().toggleKeyOfDestination())
     }
 
 
@@ -194,7 +197,6 @@ class EstablishStore extends BaseEstablishStore {
         const members = this.getDesktop().getVisitors().map(item => item.columnData());
         const records = this.getDesktop().getFinances().map(item => item.columnData());
         const submit = {...infos, members, records};
-        submit.destination = _.isObject(submit.destination) ? submit.destination.value : '0';
         submit.idOfOrder = UserInfoRef.getUid()
         return submit;
     }
@@ -217,7 +219,8 @@ class EstablishStore extends BaseEstablishStore {
         order.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
         this.setId(order.id);
         this.getDesktop().setInfo(order);
-        this.getDesktop().setFinances(...order.records);
+        const latest = _.orderBy(order.records.map(record => { return {...record,createTime:this.normalizeTimestamp(record.createTime)}}),'[createTime]','asc');
+        this.getDesktop().setFinances(...latest);
         this.getDesktop().setVisitors(...order.members);
     }
 

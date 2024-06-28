@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -726,10 +728,6 @@ class MobileStyle {
   MainFilterOfSearchOrderAreaOfFuncSubmitButton = {};
 
   MainFilterOfSearchOrderAreaOfFuncDiv = {};
-
-  MainFilterOfSearchOrderAreaOfStuffAgentMenuItem = {};
-
-  MainFilterOfSearchOrderAreaOfStuffAgentTextFieldList = {};
 
   MainFilterOfSearchOrderAreaOfStuffSalesmanMenuItem = {};
 

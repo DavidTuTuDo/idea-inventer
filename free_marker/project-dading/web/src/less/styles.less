@@ -110,7 +110,7 @@
   }
 }
 .MainOrderAreaOfHeadDiv:extend(.CenterInParentRow) {
-  justify-content: space-between;
+  align-items: flex-start;
   gap: 7px;
   width: 100%;
   @media @mobile {
@@ -133,6 +133,8 @@
   }
   @media @desktop {
     /** empty style */
+    width: 11%;
+
   }
 }
 .MainOrderAreaOfHeadDestinationAutocomplete {
@@ -503,28 +505,6 @@
   }
 }
 .MainFilterOfSearchOrderAreaOfStuffSalesmanMenuItem {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainFilterOfSearchOrderAreaOfStuffAgentTextFieldList {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.MainFilterOfSearchOrderAreaOfStuffAgentMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -4650,10 +4630,6 @@
   }
 }
 .MainOrderAreaOfDestinationDiv:extend(.CenterInParentRow) {
-  min-height: 40px;
-  justify-content: space-between;
-  width: 100%;
-  border-bottom: 1px solid #bbb;
   @media @mobile {
     /** empty style */
   }
@@ -4698,8 +4674,6 @@
   }
 }
 .MainOrderAreaOfContactDiv:extend(.CenterInParentRow) {
-  justify-content: space-between;
-  width: 100%;
   @media @mobile {
     /** empty style */
   }
