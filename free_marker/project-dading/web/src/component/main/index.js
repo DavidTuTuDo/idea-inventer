@@ -121,8 +121,8 @@ class MainComponent extends BaseMainComponent {
         this.getStore().invalidateOfRemote(param.object)
     }
 
-    onAgentSelectedChange(value, order) {
-        this.getStore().invalidateOfRemote(order)
+    onAgentSelectedChange(value, param) {
+        this.getStore().invalidateOfRemote(param.object)
     }
 
     invalidateOfRemote(order) {
@@ -130,7 +130,11 @@ class MainComponent extends BaseMainComponent {
     }
 
     onOrderBySelectedChange(value, param) {
-        this.getStore().handleOrderByCondition(param.value).then();
+        this.getStore().handleOrderByCondition().then();
+    }
+
+    onMainAreaOfFuncBaseOnDatePickerChange(param) {
+        this.getStore().handleOrderByCondition(true).then();
     }
 
 

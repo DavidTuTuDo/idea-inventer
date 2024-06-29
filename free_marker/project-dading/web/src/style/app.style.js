@@ -821,9 +821,13 @@ class AppStyle {
 
   MainAreaOfFuncDoDiv = {};
 
-  MainAreaOfFuncOrderByMenuItem = {};
+  MainAreaOfFuncFilterBaseOnDatePicker = {};
 
-  MainAreaOfFuncOrderByTextFieldList = {};
+  MainAreaOfFuncFilterOrderByMenuItem = {};
+
+  MainAreaOfFuncFilterOrderByTextFieldList = {};
+
+  MainAreaOfFuncFilterDiv = {};
 
   MainAreaOfFuncDiv = {};
 

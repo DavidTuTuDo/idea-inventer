@@ -821,9 +821,13 @@ class CommonStyle {
 
   MainAreaOfFuncDoDiv = {};
 
-  MainAreaOfFuncOrderByMenuItem = {};
+  MainAreaOfFuncFilterBaseOnDatePicker = {};
 
-  MainAreaOfFuncOrderByTextFieldList = {};
+  MainAreaOfFuncFilterOrderByMenuItem = {};
+
+  MainAreaOfFuncFilterOrderByTextFieldList = {};
+
+  MainAreaOfFuncFilterDiv = {};
 
   MainAreaOfFuncDiv = {};
 

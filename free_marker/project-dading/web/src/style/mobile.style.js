@@ -821,9 +821,13 @@ class MobileStyle {
 
   MainAreaOfFuncDoDiv = {};
 
-  MainAreaOfFuncOrderByMenuItem = {};
+  MainAreaOfFuncFilterBaseOnDatePicker = {};
 
-  MainAreaOfFuncOrderByTextFieldList = {};
+  MainAreaOfFuncFilterOrderByMenuItem = {};
+
+  MainAreaOfFuncFilterOrderByTextFieldList = {};
+
+  MainAreaOfFuncFilterDiv = {};
 
   MainAreaOfFuncDiv = {};
 

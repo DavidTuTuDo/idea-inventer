@@ -14,6 +14,13 @@ class MainOrderStore extends BaseMainOrderStore {
         this.initialDestinationSuggestBehavior(Config.COUNTRY_OF_TRAVEL);
     }
 
+    onInitialCompleted(obj) {
+        this.setValueOfCreateTime(this.getCreateTime())
+        this.setValueOfStartOfTravel(this.getStartOfTravel())
+    }
+
+
+
     /** -------------------- async api -------------------- **/
 }
 

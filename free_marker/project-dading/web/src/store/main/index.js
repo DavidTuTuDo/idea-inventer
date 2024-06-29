@@ -16,6 +16,11 @@ class MainStore extends BaseMainStore {
         super(props);
         this.establish = new Establish();
         this.apiOfOrder = new Order();
+        this.setOrderConditions(
+            [
+                {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+            ]
+        )
     }
 
     conditionOfOrderBy = -1;
@@ -30,7 +35,7 @@ class MainStore extends BaseMainStore {
     }
 
     async appendOrder() {
-        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), {members:[{}],records:[{}]}, undefined);
+        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), {members: [{}], records: [{}]}, undefined);
         if (result.succeed)
             this.pushOrdersByIndex(-1, result.value);
     }
@@ -61,33 +66,75 @@ class MainStore extends BaseMainStore {
         }
     }
 
-    async handleOrderByCondition(value) {
-        if(this.conditionOfOrderBy === value) return;
+
+    invalidate() {
+        const selected = this.getAreaOfFunc().getSelectedOrderBy();
+
+        if(selected === 5) {
+            /** 旅行社 */
+            this.setOrders(_.orderBy(this.getOrders(),['selectedAgent','valueOfStartTravel'],['asc','asc']))
+        }
+
+        if(selected === 6) {
+            /** 目的地 */
+            this.setOrders(_.orderBy(this.getOrders(),['selectedDestination','valueOfStartTravel'],['asc','asc']))
+        }
+    }
+
+    async handleOrderByCondition(force) {
+        const current = _.cloneDeep(this.getAreaOfFunc().getSelectedOrderBy());
+        const timestamp = _.cloneDeep(this.getAreaOfFunc().getBaseOn())
+        if (force) Util.appendInfo(`base time updated`);
+        else if (this.conditionOfOrderBy === current) return
         this.clean()
-        switch (_.toNumber(value)) {
+        switch (_.toNumber(current)) {
             case 1:
-                this.pushOrderConditions({orderBy: (stmt) => stmt.orderBy('createTime', 'desc')})
-                 break;
-            case 2:
-                this.pushOrderConditions({orderBy: (stmt) => stmt.orderBy('createTime', 'asc')})
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {orderBy: (stmt) => stmt.orderBy('createTime', 'asc')}
+                    ]
+                )
                 break;
+            case 2:
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                    ]
+                );
             case 3:
-                this.pushOrderConditions({orderBy: (stmt) => stmt.orderBy('startOfTravel', 'desc')})
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {orderBy: (stmt) => stmt.orderBy('startOfTravel', 'asc')}
+                    ]
+                )
                 break;
             case 4:
-                this.pushOrderConditions({orderBy: (stmt) => stmt.orderBy('startOfTravel', 'asc')})
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {orderBy: (stmt) => stmt.orderBy('startOfTravel', 'desc')}
+                    ]
+                )
                 break;
             case 5:
-                this.pushOrderConditions({orderBy: (stmt) => stmt.orderBy('selectedAgent', 'asc')})
-                break;
             case 6:
-                this.pushOrderConditions({orderBy: (stmt) => stmt.orderBy('selectedDestination', 'asc')})
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {orderBy: (stmt) => stmt.orderBy('startOfTravel', 'asc')}
+                    ]
+                )
                 break;
         }
         await this.fetch(this.getComponent());
         this.setInitialFetchCompleted(true);
-        this.conditionOfOrderBy = value;
-        this.getAreaOfFunc().setSelectedOrderBy(value);
+        this.conditionOfOrderBy = current;
+        this.getAreaOfFunc().setSelectedOrderBy(current);
+        this.getAreaOfFunc().setBaseOn(timestamp);
+
 
     }
 
