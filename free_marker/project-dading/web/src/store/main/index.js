@@ -40,12 +40,6 @@ class MainStore extends BaseMainStore {
             this.pushOrdersByIndex(-1, result.value);
     }
 
-    async onInitialFetchCompleted(collection) {
-        const result = await super.onInitialFetchCompleted(collection);
-        this.invalidate();
-        return result
-    }
-
     invalidateOfRemote = (order) => {
         const self = this;
         if (order instanceof Order) {
@@ -68,16 +62,18 @@ class MainStore extends BaseMainStore {
 
 
     invalidate() {
+        console.log('12354567878796 ===> 我有進來！===> ',this.getAreaOfFunc().getSelectedOrderBy());
+
         const selected = this.getAreaOfFunc().getSelectedOrderBy();
 
         if(selected === 5) {
             /** 旅行社 */
-            this.setOrders(_.orderBy(this.getOrders(),['selectedAgent','valueOfStartTravel'],['asc','asc']))
+            this.setOrders(..._.orderBy(this.getOrders(),['selectedAgent','valueOfStartTravel'],['asc','asc']))
         }
 
         if(selected === 6) {
             /** 目的地 */
-            this.setOrders(_.orderBy(this.getOrders(),['selectedDestination','valueOfStartTravel'],['asc','asc']))
+            this.setOrders(..._.orderBy(this.getOrders(),['selectedDestination','valueOfStartTravel'],['asc','asc']))
         }
     }
 
@@ -86,7 +82,9 @@ class MainStore extends BaseMainStore {
         const timestamp = _.cloneDeep(this.getAreaOfFunc().getBaseOn())
         if (force) Util.appendInfo(`base time updated`);
         else if (this.conditionOfOrderBy === current) return
-        this.clean()
+        this.clean();
+        this.getAreaOfFunc().setSelectedOrderBy(current);
+        this.getAreaOfFunc().setBaseOn(timestamp);
         switch (_.toNumber(current)) {
             case 1:
                 this.setOrderConditions(
@@ -129,11 +127,10 @@ class MainStore extends BaseMainStore {
                 )
                 break;
         }
-        await this.fetch(this.getComponent());
-        this.setInitialFetchCompleted(true);
+        await this.fetchOrders(this.getComponent());
+        await this.onInitialFetchCompleted(this.data())
         this.conditionOfOrderBy = current;
-        this.getAreaOfFunc().setSelectedOrderBy(current);
-        this.getAreaOfFunc().setBaseOn(timestamp);
+
 
 
     }

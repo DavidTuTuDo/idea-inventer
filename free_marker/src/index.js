@@ -124,6 +124,9 @@ class CodegenNode {
     computed = false
     /** 在component 的get${functionName} 會產出 getComputed${node.getName()}*/
 
+    disableOfHtmlScale = false
+    /** RWD應該不准讓使用者可以縮小，所以HtmlScale會設為1，但有些只想做電腦網頁的視覺，就讓他true(大鼎初期) */
+
     typeOfTextField = '';
 
     idOfProject = ''
@@ -3922,6 +3925,7 @@ class PathBase {
                                    stringOfArgumentInSubmitItem,
                                    superUserUid,
                                    isTimePickerView,
+                                   disableOfHtmlScale,
                                }) => {
         return {
             hasPath,
@@ -3951,7 +3955,8 @@ class PathBase {
             stringOfArgumentInSubmitItem,
             superUserUid,
             isTimePickerView,
-            titleOfProject
+            titleOfProject,
+            disableOfHtmlScale
         }
     }
 
@@ -5598,7 +5603,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (node.isSimpleSelected()) {
                 props['onChange'] = `###(event, value)=>{
-                    const latest = event.target.value;
+                    const latest = _.toNumber(event.target.value);
                     objectOfParam.value = latest;
                     objectOfParam.event = event;
                     ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)
@@ -9123,8 +9128,14 @@ class ProjectFileHandler extends PathBase {
             await new AppBuilder(paramProps).buildEventFolder(totalEvents);
             await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
         }
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.html'), this.genRootPath, 'template.html', true);
+        await this.buildTemplateHtml();
+    }
 
+    async buildTemplateHtml() {
+        await this.appendMustacheFile('template.html.mustache', libpath.join(this.genRootPath,
+            'template.html'), {
+            disableOfHtmlScale: this.nodeOfAncestor.disableOfHtmlScale,
+        });
     }
 
     async buildLessToCss() {
