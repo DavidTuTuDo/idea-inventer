@@ -143,12 +143,12 @@ class EstablishComponent extends BaseEstablishComponent {
     // }
 
     onEstablishDesktopVisitorNameTextFieldChange(param) {
-        if(_.size(param.object.getName()) > 0)
+        if (_.size(param.object.getName()) > 0)
             this.getStore().getDesktop().incrementVisitorColumn(param.object);
     }
 
     onEstablishDesktopFinanceFeeOfPartyBTextFieldChange(param) {
-            this.getStore().getDesktop().incrementFinanceColumn(param.object);
+        this.getStore().getDesktop().incrementFinanceColumn(param.object);
     }
 
     getInjectStyleOfEstablishDesktopVisitorIdOfHotelRoomTextField(visitor) {
@@ -223,7 +223,7 @@ class EstablishComponent extends BaseEstablishComponent {
 
     getInjectPropsOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
         const fee = finance.getFeeOfCreditProcedure();
-        return fee > 0 ? {helperText:`手續費${fee}元`} : {};
+        return fee > 0 ? {helperText: `手續費${fee}元`} : {};
     }
 
     getFinanceFeeOfPartyA(finance) {
@@ -333,13 +333,13 @@ class EstablishComponent extends BaseEstablishComponent {
         this.copyTextToClipboard(order.getId(), `已複製訂單編號至剪貼簿`)
     }
 
-    onEstablishDesktopInfoIdTextFieldContentCopyRoundedIconClicked(param) {
+    onEstablishDesktopInfoIdTextFieldEndContentCopyRoundedClicked(param) {
         const id = param.object.getId();
         if (!_.isEmpty(id))
             this.copyTextToClipboard(id)
     }
 
-    onEstablishDesktopInfoIdOfAgentTravelTextFieldContentCopyRoundedIconClicked(param) {
+    onEstablishDesktopInfoIdOfAgentTravelTextFieldEndContentCopyRoundedClicked(param) {
         const id = param.object.getIdOfAgentTravel();
         if (!_.isEmpty(id))
             this.copyTextToClipboard(id)

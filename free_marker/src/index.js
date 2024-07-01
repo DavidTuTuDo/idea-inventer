@@ -740,7 +740,6 @@ class CodegenNode {
     /** 設計了defaultValue 然後想要快速地取消掉 */
     disableDefaultValue = false;
 
-    /** TextField用的屬性，在框框底下增加小文字*/
     helperText = '';
 
     /** TextField用的屬性，在框框開始結束增加提示文字或icon */
@@ -748,10 +747,16 @@ class CodegenNode {
 
     defaultOfHelperVisual = {
         enable: false,
-        nameOfIcon: '', /** mui的icon名稱 例如: AccountCircle */
-        position: 'end', /** end;start*/
-        text: '', /** 顯示的字樣*/
-        click: false,
+        // start: {
+        //     type: 'icon', /** 使用 mui icon*/
+        //     content: 'MenuRound',
+        //     click: false,
+        // },
+        // end: {
+        //     type: 'text', /** 使用 <Typography>*/
+        //     content: '$',
+        //     click: false
+        // }
     }
 
     belong2TimeDatePicker = false
@@ -850,16 +855,8 @@ class CodegenNode {
         return Util.mergeObject(this.defaultOfHelperVisual, this.helperVisual);
     }
 
-    hasClickHelperVisual() {
-        return this.getHelperVisual().click;
-    }
-
     hasHelperVisual() {
         return this.getHelperVisual().enable;
-    }
-
-    getNameOfHelperVisualIcon() {
-        return this.getHelperVisual().nameOfIcon;
     }
 
     getStructsOfProject() {
@@ -895,22 +892,6 @@ class CodegenNode {
             throw new ERROR(9999, `44864641 指定的ref => ${nameOfRef} not exist in whole project`);
 
         return nodesOfRef.shift();
-    }
-
-    useIconAsHelpVisual() {
-        return !_.isEmpty(this.getHelperVisual().nameOfIcon);
-    }
-
-    useTextAsHelperVisual() {
-        return !_.isEmpty(this.getHelperVisual().text);
-    }
-
-    getPositionOfHelperVisual() {
-        return this.getHelperVisual().position;
-    }
-
-    isPositionLocateAtStart() {
-        return _.isEqual(this.getPositionOfHelperVisual(), 'start');
     }
 
     isSingleLine() {
@@ -1618,7 +1599,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['helperVisual', 'helperIcon', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -2625,14 +2606,10 @@ class CodegenNode {
         this.click = click
     }
 
-    getFunctionNameOfClicked(extra) {
+    getFunctionNameOfClicked(...extra) {
         const items = [];
         if (!Util.isUndefinedNullEmpty(extra)) {
-            items.push(extra);
-        }
-
-        if (this.isTextFieldView() && this.hasHelperVisual()) {
-            items.push(this.getNameOfHelperVisualIcon(), 'icon');
+            items.push(...extra);
         }
 
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), ...items, 'clicked');
@@ -8047,28 +8024,15 @@ class ProjectFileHandler extends PathBase {
     enrichTextFieldBehavior(node, typeOfView = 'default') {
         const self = this;
 
-        function getContentsOfClickBehavior(node) {
+        function getContentsOfClickBehavior(node, functionNameOfCustom) {
             const stmts = []
             if (node.hasAlertDialog()) {
                 stmts.push(`objectOfParam.view = event;`);
                 stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
             } else {
-                stmts.push(`self.${node.getFunctionNameOfClicked()}(objectOfParam);`)
+                stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked()}(objectOfParam);`)
             }
             return stmts.join(`\n`);
-        }
-
-        function getContentOfClick(node, content) {
-            node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
-            const functionNameOfVisualIconClick = node.getFunctionNameOfClicked();
-            node.appendMethods({
-                functionName: node.getFunctionNameOfClicked(),
-                params: ['param'],
-            })
-            return `<IconButton
-                            onClick={(event) => { 
-                                ${getContentsOfClickBehavior(node)}}}
-                            edge="${node.getPositionOfHelperVisual()}" >${content}</IconButton>`
         }
 
         const arrayOfProps = [];
@@ -8109,22 +8073,46 @@ class ProjectFileHandler extends PathBase {
         }
 
         if (node.hasHelperVisual()) {
-            let contentOfVisual = '';
-            node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
 
-            if (node.useIconAsHelpVisual()) {
-                this.appendMuiIconImport(node, node.getNameOfHelperVisualIcon());
-                contentOfVisual = `<${node.getNameOfHelperVisualIcon()} />`;
-            } else if (node.useTextAsHelperVisual()) {
-                contentOfVisual = node.getTextOfHelperVisual();
-            } else {
-                throw new ERROR(9999, '87454646 useHelperVisual() should choose icon/text');
+            function appendContentOfObjectOfProps(view, obj, position) {
+                if (_.isUndefined(view)) return;
+
+                let contentOfVisual;
+                switch (view.type) {
+                    case 'icon':
+                        self.appendMuiIconImport(node, view.content);
+                        contentOfVisual = `<${view.content} />`;
+                        break;
+                    case 'text':
+                        contentOfVisual = `<Typography >${view.content}</Typography>`;
+                        break;
+                    default:
+                        throw new ERROR(9999, `78751564165156 un support type of ${view.type}`);
+                }
+
+                if (view.click) {
+                    node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
+                    const functionNameOfVisualIconClick = node.getFunctionNameOfClicked(position, _.isEqual(view.type, 'icon') ? view.content : 'text');
+                    node.appendMethods({
+                        functionName: functionNameOfVisualIconClick,
+                        params: ['param'],
+                    })
+                    contentOfVisual = `<IconButton
+                            onClick={(event) => { 
+                                ${getContentsOfClickBehavior(node, functionNameOfVisualIconClick)}}}
+                            edge="${position}" >${contentOfVisual}</IconButton>`
+                }
+                stmts.push(`${position}Adornment: <InputAdornment position="${position}">${contentOfVisual}</InputAdornment>`)
             }
 
-            const view = `<InputAdornment position="${node.getPositionOfHelperVisual()}">${node.hasClickHelperVisual() ? getContentOfClick(node, contentOfVisual) : contentOfVisual}</InputAdornment>`;
-            const prop = `{${node.isPositionLocateAtStart() ? 'startAdornment' : 'endAdornment'}:(${view})}`;
 
-            arrayOfProps.push({InputProps: `###${prop}`})
+            const visual = node.getHelperVisual();
+            node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
+            const stmts = [];
+            appendContentOfObjectOfProps(visual.start, stmts, 'start');
+            appendContentOfObjectOfProps(visual.end, stmts, 'end');
+
+            arrayOfProps.push({InputProps: `###{${stmts.join(',')}}`})
         }
 
         const nameOfDisabled = Util.camel(node.getName(), 'disabled');
