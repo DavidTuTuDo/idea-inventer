@@ -4,7 +4,6 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
-import node from "@babel/register/lib/nodeWrapper";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -751,16 +750,18 @@ class CodegenNode {
 
     defaultOfHelperVisual = {
         enable: false,
-        // start: {
-        //     type: 'icon', /** 使用 mui icon*/
-        //     content: 'MenuRound',
-        //     click: false,
-        // },
-        // end: {
-        //     type: 'text', /** 使用 <Typography>*/
-        //     content: '$',
-        //     click: false
-        // }
+        /**
+         *start: {
+         type: 'icon',  使用 mui icon
+         content: 'MenuRound',
+         click: false,
+         },
+         end: {
+         type: 'text',
+         content: '$',
+         click: false
+         }
+         */
     }
 
     belong2TimeDatePicker = false
@@ -1123,6 +1124,10 @@ class CodegenNode {
 
     getFieldNameOfDialogContent() {
         return Util.camel('dialog', 'content', 'of', this.getPreciseAttributeGenealogyName());
+    }
+
+    getFieldNameOfVisualHelper(object, position) {
+        return Util.camel('text', 'of', 'visual', position, this.getPreciseAttributeGenealogyName());
     }
 
     getFunctionNameOfDialogContentGetterWithBracket() {
@@ -3866,6 +3871,10 @@ class PathBase {
         return _.isEqual(this.platform, 'admin')
     }
 
+    isUnInstallProject() {
+        return !Util.isPathExist(libpath.join(this.genRootPath, `node_modules`));
+    }
+
     isAdminORFunctionsPlatform() {
         return this.isAdminPlatform() || this.isFunctionsPlatform();
     }
@@ -5105,6 +5114,8 @@ class ComponentBuilder extends BaseBuilder {
         generator.appendImport(`{Application}`, '../../');
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`React`, 'react');
+        generator.appendImport(`i18n`, '../../i18n');
+
     }
 
     appendStmtIntoComponentDidMount(...stmt) {
@@ -6134,6 +6145,13 @@ class AppBuilder extends ComponentBuilder {
          */
 
         function recursiveOfDoingSomethingMajor(child) {
+
+            function handleHelperVisual(object, position = 'start') {
+                if (object && _.isEqual(object.type, 'text'))
+                    appendMapOfKeyValue(child.getFieldNameOfVisualHelper(object, position), object.content);
+            }
+
+
             if (child.hasDefaultValue()) {
 
                 switch (child.getType()) {
@@ -6161,6 +6179,11 @@ class AppBuilder extends ComponentBuilder {
                 const input = child.getAlertDialog().textInput;
                 appendMapOfKeyValue(child.getFieldNameOfDialogInputValue(), input.value);
                 appendMapOfKeyValue(child.getFieldNameOfDialogInputLabel(), input.label);
+            }
+
+            if (child.hasHelperVisual()) {
+                handleHelperVisual(child.getHelperVisual().start, 'start')
+                handleHelperVisual(child.getHelperVisual().end, 'end')
             }
 
             /**
@@ -8108,7 +8131,7 @@ class ProjectFileHandler extends PathBase {
                         contentOfVisual = `<${view.content} />`;
                         break;
                     case 'text':
-                        contentOfVisual = `<Typography >${view.content}</Typography>`;
+                        contentOfVisual = `<Typography >{i18n.location().${node.getFieldNameOfVisualHelper(view, position)}}</Typography>`;
                         break;
                     default:
                         throw new ERROR(9999, `78751564165156 un support type of ${view.type}`);
@@ -9185,7 +9208,7 @@ class ProjectFileHandler extends PathBase {
 
     async activate() {
         const self = this;
-        const enableOfRapid = this.isProduction() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
+        const enableOfRapid = this.isProduction() || this.isUnInstallProject() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
         const components = this.nodeOfAncestor.rapidBuild.componentName;
 
         if (this.isAdminPlatform())
@@ -9365,12 +9388,8 @@ class ProjectFileHandler extends PathBase {
     }
 
     async runInstallIfNeed() {
-        if (!fs.existsSync(libpath.join(this.genRootPath,
-            `node_modules`
-        )))
-            await Util.executeCommandLine(
-                `cd ${this.genRootPath} && npm install --force`
-            );
+        if (this.isUnInstallProject())
+            await Util.executeCommandLine(`cd ${this.genRootPath} && npm install --force`);
     }
 
 }

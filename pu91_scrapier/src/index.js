@@ -13,7 +13,7 @@ import {utiller as Util, exceptioner as ERROR, pooller as Pooller} from 'utiller
 import {databazer as SQL} from 'databazer';
 import browserer from "./browser";
 
-const THRESHOLD_OF_UPDATE_POPULAR_LEVEL = 500;
+const THRESHOLD_OF_UPDATE_POPULAR_LEVEL = 600;
 const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
 
 (async () => {
@@ -250,7 +250,7 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
                     if (Util.isUndefinedNullEmpty(song.url)) continue;
 
                     if(song.popularLevel > THRESHOLD_OF_UPDATE_POPULAR_LEVEL) {
-                        /** 如果 popularLevel > 500 再更新資料庫， 不然會把hack的popularLevel 給改掉 */
+                        /** 如果 popularLevel > 600 再更新資料庫， 不然會把hack的popularLevel 給改掉 */
                         await database.updateRecords('TONE', {popularLevel: song.popularLevel}, SQL.Builder().equal('url', song.url).stmt());
                         Util.appendInfo(`更新了 ${song.name} POPULAR-LEVEL 提升為 ${song.popularLevel}`);
                     }
@@ -488,7 +488,7 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
             /** 抓取排行版上的資訊們 */
             joinTaskToPool(1, "RANK FETCHER", false, persistRankTable, halfHour);
             /** 監督browser page 有沒有爆掉 */
-            // joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
+            joinTaskToPool(1, "BROWSER WATCHER", true, browserPageWatcher, tenSecs);
             /** 猛抓LATEST TABLE的歌曲*/
             joinTaskToPool(1, "LATEST SONG FETCHER", false, latestSongPersist, twentyMin);
             /** 針對song找對應的tune. 如果沒有未抓的,就超過一周 10sec一次 else sleepx2 ,3 workers */
@@ -496,8 +496,7 @@ const THRESHOLD_OF_SEARCH_POPULAR_LEVEL = 2000;
             /** 針對歌手抓 song once 10sec, else sleepx2, x2. 如果沒有未抓的,就超過一周 */
             joinTaskToPool(1, "SONG FETCHER", false, persistSongs, tenSecs);
             /** 更新POPULAR LEVEL的腳本 */
-            // joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
-
+            joinTaskToPool(5, "TONE UPDATE POPULAR LEVEL", true, updateTonePopularLevel, tenSecs);
             /** 抓出前奏譜的loop，單獨作業，目前大概有6千多筆網頁要跑*/
             // joinTaskToPool(8, "DOWNLOAD PRELUDE OF TONE", true, downloadPreludeOfTone, tenSecs);
 
