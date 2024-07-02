@@ -26,6 +26,24 @@ this.{{{fieldName}}}.length = 0;
 }
 }
 
+get{{{fieldClass}}}ByAttribute = (value, attribute = 'id') => {
+return _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
+}
+
+get{{{fieldClass}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
+return _.find(this.get{{{functionName}}}(), ({{{name}}}) =>
+    Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
+}
+
+get{{{functionName}}}ByAttribute(value, attribute = 'id'){
+return _.filter(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
+}
+
+get{{{functionName}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
+return _.filter(this.get{{{functionName}}}(), ({{{name}}}) =>
+Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
+}
+
 get{{{functionName}}}() {
 return this.{{{fieldName}}};
 }

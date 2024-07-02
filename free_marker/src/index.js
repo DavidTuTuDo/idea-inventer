@@ -5133,7 +5133,6 @@ class ComponentBuilder extends BaseBuilder {
             return;
         }
 
-
         const baseClassName = `Base${_.upperFirst(baseComponentName)}Component`;
         const moduleClassName = `${KEYWORD_OF_MODULARIZED}${_.upperFirst(baseComponentName)}Component`;
 
