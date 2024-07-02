@@ -476,12 +476,12 @@ if (configerer.DEBUG_MODE) {
             // })
             //
             // Util.appendFile(`./latest.json`,JSON.stringify(latest),false,true);
+            // let i = 1
+            // _.range(1,12).forEach((item) => {
+            //     console.log(i);
+            //     i++;
+            // })
 
-            let i = 1
-            _.range(1,12).forEach((item) => {
-                console.log(i);
-                i++;
-            })
 
         }
     )();
