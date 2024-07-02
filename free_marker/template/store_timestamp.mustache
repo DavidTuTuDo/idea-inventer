@@ -3,13 +3,14 @@
 {{{functionName就是Questions}}}
 {{{fieldClass就是Question}}}
 {{{hasPath就是true/flase}}}
-get{{functionName}}() {
-return this.normalizeTimestamp(this.{{fieldName}});
+get{{functionName}}(force = false) {
+return this.normalizeTimestamp(this.{{fieldName}}, force);
 }
 
 @action
 remove{{functionName}}() {
 this.{{fieldName}} = {{{defaultValue}}};
+this.setValueOf{{{fieldClass}}}(-1);
 }
 
 @action
@@ -23,6 +24,7 @@ if(param !== undefined) {
     {{{這裡就是放else暨不等於isTimePickerView的邏輯}}}
     this.{{fieldName}} = param;
 {{/isTimePickerView}}
+    this.setValueOf{{{fieldClass}}}(this.get{{functionName}}(true))
 } else {
 this.{{fieldName}} = {{{defaultValue}}};
 }

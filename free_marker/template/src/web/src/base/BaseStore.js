@@ -13,6 +13,7 @@ import {
 import {utiller as Util, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
 import ClientRemoteApi from './ClientRemoteApi';
+import moment from 'moment';
 
 class BaseStore extends ClientRemoteApi {
 
@@ -260,11 +261,14 @@ class BaseStore extends ClientRemoteApi {
 
     }
 
-    normalizeTimestamp(obj) {
-        if (obj instanceof this.FirebaseTimestampClass())
-            return obj.toMillis();
-        else
-            return obj;
+    normalizeTimestamp(obj, force = false) {
+        if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis();
+        if (force) {
+            if (obj instanceof moment) return obj.valueOf();
+            if (obj instanceof Date) return obj.getTime();
+            return _.toNumber(obj);
+        }
+        return obj;
     }
 
     getUpdateTime() {

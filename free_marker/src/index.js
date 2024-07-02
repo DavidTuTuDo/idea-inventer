@@ -769,8 +769,14 @@ class CodegenNode {
     /** 用於註記這個TextField用來修飾AutoComplete*/
     belong2AutoComplete = false
 
+    belong2TimeStamp = false
+
     hasVariant() {
         return !_.isEmpty(this.variant);
+    }
+
+    isBelong2TimeStamp() {
+        return this.belong2TimeStamp;
     }
 
     disableBorder() {
@@ -2306,6 +2312,10 @@ class CodegenNode {
 
     getFieldNameOfDefaultValue() {
         return Util.camel(`default`, 'of', this.getName());
+    }
+
+    getFieldNameOfValue() {
+        return Util.camel(`value`, 'of', this.getName());
     }
 
     getPreciseAttributeParent() {
@@ -4232,6 +4242,8 @@ class StoreBuilder extends BaseBuilder {
                         fieldClass: child.getClassName(),
                         isTimePickerView: child.isTimeDatePickerView() || child.isTimeDateRangePickerView()
                     }));
+            if (child.isBelong2TimeStamp()) continue;
+
             if (child.isNumber() || child.isString()) {
                 propStmt.push(`if(obj && obj.${fieldName})`);
             } else if (child.isBoolean())
@@ -7678,6 +7690,17 @@ class ProjectFileHandler extends PathBase {
                         readOnly: true,
                     })
                 }
+            }
+
+            if (node.isTimeStamp()) {
+                node.getParentNode().appendChildrenWithJsons({
+                    name: `${node.getFieldNameOfValue()}`,
+                    type: 'number',
+                    belong2TimeStamp: true,
+                    defaultValue: -1,
+                    incest: node.incest,
+                    description: `用來放${node.getName()}的number值，方便比較(_.orderBy)用`
+                })
             }
 
 
