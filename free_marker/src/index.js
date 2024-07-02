@@ -492,7 +492,7 @@ class CodegenNode {
     /** 用來當作Router的導頁網址, 如果用在struct裡面就是當作remote api的url , */
     /** path:`/purchaseSucceed/:transactionId?/:orderId?` ?代表這個值可有可無 */
 
-    column;
+    column = false;
     /** 表示這個欄位是一個對應到遠端的欄位, 其他欄位也許是為了UI而增加的 */
 
     permission = {};
@@ -742,7 +742,11 @@ class CodegenNode {
 
     helperText = '';
 
-    /** TextField用的屬性，在框框開始結束增加提示文字或icon */
+    /** TextField用的屬性，在框框開始結束增加提示文字或icon
+     *  支援start和end的文字或mui icon
+     *
+     *
+     * */
     helperVisual = {}
 
     defaultOfHelperVisual = {
@@ -1449,7 +1453,11 @@ class CodegenNode {
     }
 
     isColumnAttribute() {
-        return this.hasPath() || (this.isAttribute() && !!this.column) || this.isLabelOrValue();
+        return this.hasPath() || (this.isAttribute() && this.isColumn()) || this.isLabelOrValue();
+    }
+
+    isColumn() {
+        return _.isEqual(this.column, true);
     }
 
     isLabelOrValue() {
@@ -2299,14 +2307,14 @@ class CodegenNode {
         return this.getPreciseParent((node) => node.isIncestAttribute(), (node) => node.isAttribute());
     }
 
-    getPreciseParent(isIncest, isNode, force = false) {
+    getPreciseParent(ruleOfIncest, ruleOfNode, force = false) {
         const nodeOfTarget = this.isReferenceImitateNode() && !force ? this.getNodeOfOrigin() : this;
         let parent = nodeOfTarget.getParentNode();
 
-        if (isIncest(this)) {
+        if (ruleOfIncest(this)) {
             parent = parent.getParentNode();
         }
-        while (parent && !isNode(parent)) {
+        while (parent && !ruleOfNode(parent)) {
             parent = parent.getParentNode();
             if (parent === undefined || parent.name === SignOfInValidNode) break;
         }
@@ -2315,7 +2323,7 @@ class CodegenNode {
 
 
     isIncestAttribute() {
-        return this.incest && this.incest.attribute;
+        return this.incest && _.isEqual(this.incest.attribute, true);
     }
 
     hasValidParent() {
@@ -2328,7 +2336,7 @@ class CodegenNode {
     }
 
     isIncestView() {
-        return this.incest && this.incest.view;
+        return this.incest && _.isEqual(this.incest.view, true);
     }
 
     hasViewChildren() {
@@ -2341,24 +2349,40 @@ class CodegenNode {
         return children.length > 0;
     }
 
-    getPreciseAttributeChildren() {
-        return this.getPreciseChildren((node) => node.isAttribute(), (node) => node.isIncestAttribute())
+    getPreciseColumnChildren() {
+        return this.getPreciseChildren(
+            (node) => node.isColumnAttribute(),
+            (node) => node.isIncestAttribute(),
+            (node) => node.isAttribute(),
+            (node) => node.isIncestAttribute(),
+        )
     }
 
-    getPreciseColumnChildren() {
-        return this.getPreciseChildren((node) => node.isColumnAttribute(), (node) => node.isIncestAttribute())
+    getPreciseAttributeChildren() {
+        return this.getPreciseChildren(
+            (node) => node.isAttribute(),
+            (node) => node.isIncestAttribute(),
+            (node) => node.isAttribute(),
+            (node) => node.isIncestAttribute(),
+        )
+    }
 
+    getPreciseViewChildren() {
+        return this.getPreciseChildren(
+            (node) => node.isView(),
+            (node) => node.isIncestView(),
+            (node) => node.isView(),
+            (node) => node.isIncestView())
     }
 
     hasIncrementUsage() {
         return this.isNumber() && !!this.increment.enable;
     }
 
-    getPreciseViewChildren() {
-        return this.getPreciseChildren((node) => node.isView(), (node) => node.isIncestView())
-    }
-
-    getPreciseChildren(isNode, isIncest, children = []) {
+    /** @deprecated
+     *  之前getPreciseChildren的規則，沒有用遞迴，敲可愛的波動拳
+     * */
+    _getPreciseChildren(isNode, isIncest, children = []) {
         for (const child of this.getChildren()) {
             if (!isIncest(child) && isNode(child))
                 children.push(child);
@@ -2377,18 +2401,18 @@ class CodegenNode {
         return children;
     }
 
-    _getPreciseChildren(isNode, isIncest, children = [], layer = 1, node = this, origin = this) {
-        const rule1 = (child) => (layer === 1) && (!isIncest(child) && isNode(child));
-        const rule2 = (child) => (layer > 1) && (isIncest(child) && isNode(child)) && (child.getPreciseParent(isIncest, isNode) === origin)
+    /**
+     *  '當前node'底下的children ：
+     *  第一層符合ruleOfNode就是child
+     *  第二層之後，符合(ruleOfNode && ruleOfIncest) 且 getPreciseParent（ruleOfParent,ruleOfParentIncest）=== 是'當前node' 就是 child
+     * */
+    getPreciseChildren(ruleOfNode, ruleOfIncest, ruleOfParent, ruleOfParentIncest, children = [], layer = 1, node = this, origin = this) {
+        const rule1 = (child) => (layer === 1) && (!ruleOfIncest(child) && ruleOfNode(child));
+        const rule2 = (child) => (layer > 1) && (ruleOfIncest(child) && ruleOfNode(child)) && (child.getPreciseParent(ruleOfParentIncest, ruleOfParent) === origin)
         children.push(..._.filter(node.getChildren(), child => rule1(child) || rule2(child)));
-        for (const child of node.getChildren()) this._getPreciseChildren(isNode, isIncest, children, layer++, child, origin);
-
-        if (_.isEqual(origin.getNodeOfComponent().getName(), 'establish'))
-            console.log(`node[${origin.getName()}] => ${children.map(child => child.getName())}`)
-
+        for (const child of node.getChildren()) this.getPreciseChildren(ruleOfNode, ruleOfIncest, ruleOfParent, ruleOfParentIncest, children, layer + 1, child, origin);
         return children;
     }
-
 
     getPreciseAttributeNode() {
         if (!this.isAttribute() || this.isIncestAttribute())
@@ -9277,7 +9301,7 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
-        await this.removeEmptyFolder();
+        // await this.removeEmptyFolder();
     }
 
     async functionsGenerateRelease() {
