@@ -5127,7 +5127,6 @@ class ComponentBuilder extends BaseBuilder {
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`React`, 'react');
         generator.appendImport(`i18n`, '../../i18n');
-
     }
 
     appendStmtIntoComponentDidMount(...stmt) {
@@ -6170,8 +6169,7 @@ class AppBuilder extends ComponentBuilder {
                         appendMapOfKeyValue(Util.camel(child.getPreciseAttributeGenealogyName()), `${child.getDefaultValue()}`);
                         break;
                     case 'array':
-                        recursiveOfDoingSomethingMinor(
-                            child.isSelected() ? child.select.values : child.getDefaultValue(), child);
+                        recursiveOfDoingSomethingMinor(child.isSelected() ? child.select.values : child.getDefaultValue(), child);
                         break;
                     case 'arrayOfField':
                         recursiveOfDoingSomethingMinor(child.getDefaultValue(), child)

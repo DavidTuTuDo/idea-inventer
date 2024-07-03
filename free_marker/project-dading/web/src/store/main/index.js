@@ -35,9 +35,10 @@ class MainStore extends BaseMainStore {
     }
 
     async appendOrder() {
-        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), {members: [{}], records: [{}]}, undefined);
+        this.getOrders().forEach((order) => order.setIsHotCreate(false));
+        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), {isHotCreate: true, members: [{}], records: [{}]}, undefined);
         if (result.succeed)
-            this.pushOrdersByIndex(-1, result.value);
+            this.pushOrdersByIndex(-1, {...result.value, isHotCreate: true});
     }
 
     invalidateOfRemote = (order) => {
@@ -62,18 +63,18 @@ class MainStore extends BaseMainStore {
 
 
     invalidate() {
-        console.log('12354567878796 ===> 我有進來！===> ',this.getAreaOfFunc().getSelectedOrderBy());
+        console.log('12354567878796 ===> 我有進來！===> ', this.getAreaOfFunc().getSelectedOrderBy());
 
         const selected = this.getAreaOfFunc().getSelectedOrderBy();
 
-        if(selected === 5) {
+        if (selected === 5) {
             /** 旅行社 */
-            this.setOrders(..._.orderBy(this.getOrders(),['selectedAgent','valueOfStartTravel'],['asc','asc']))
+            this.setOrders(..._.orderBy(this.getOrders(), ['selectedAgent', 'valueOfStartTravel'], ['asc', 'asc']))
         }
 
-        if(selected === 6) {
+        if (selected === 6) {
             /** 目的地 */
-            this.setOrders(..._.orderBy(this.getOrders(),['selectedDestination','valueOfStartTravel'],['asc','asc']))
+            this.setOrders(..._.orderBy(this.getOrders(), ['selectedDestination', 'valueOfStartTravel'], ['asc', 'asc']))
         }
     }
 
@@ -130,7 +131,6 @@ class MainStore extends BaseMainStore {
         await this.fetchOrders(this.getComponent());
         await this.onInitialFetchCompleted(this.data())
         this.conditionOfOrderBy = current;
-
 
 
     }

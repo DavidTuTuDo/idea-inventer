@@ -719,34 +719,6 @@ class AppStyle {
 
   MainFilterOfSearchOrderAreaOfFuncDiv = {};
 
-  MainFilterOfSearchOrderAreaOfStuffAgentMenuItem = {};
-
-  MainFilterOfSearchOrderAreaOfStuffAgentTextFieldList = {};
-
-  MainFilterOfSearchOrderAreaOfStuffSalesmanMenuItem = {};
-
-  MainFilterOfSearchOrderAreaOfStuffSalesmanTextFieldList = {};
-
-  MainFilterOfSearchOrderAreaOfStuffDiv = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedPayMethodMenuItem = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedPayMethodTextFieldList = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedStatusOfPaidMenuItem = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedStatusOfPaidTextFieldList = {};
-
-  MainFilterOfSearchOrderAreaOfSelectedDiv = {};
-
-  MainFilterOfSearchOrderAreaOfTravelDestinationInputOfDestinationTextField = {};
-
-  MainFilterOfSearchOrderAreaOfTravelDestinationAutocomplete = {};
-
-  MainFilterOfSearchOrderAreaOfTravelRangeDateRangePicker = {};
-
-  MainFilterOfSearchOrderAreaOfTravelDiv = {};
-
   MainFilterOfSearchOrderAreaOfContactPhoneTextField = {};
 
   MainFilterOfSearchOrderAreaOfContactHostTextField = {};

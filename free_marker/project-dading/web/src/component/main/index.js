@@ -17,6 +17,10 @@ class MainComponent extends BaseMainComponent {
         super(props);
     }
 
+    getInjectStyleOfMainOrderCard(order) {
+        return {background : order.getIsHotCreate() ? '#ffebeb' : 'inherit'};
+    }
+
     onMainOrderExtraIconButtonDeleteClicked(param) {
         return () => {
             this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
