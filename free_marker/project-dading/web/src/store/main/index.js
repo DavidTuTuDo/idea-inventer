@@ -29,6 +29,10 @@ class MainStore extends BaseMainStore {
         await order.deleteOrderItem(this.getComponent());
     }
 
+    fetchOrderById = async (id) => {
+        return await this.apiOfOrder.fetchOrderItem(this.getComponent(), id);
+    }
+
     async updateOrder(orderOfLast) {
         const order = _.find(this.getOrders(), (order) => _.isEqual(order.id, orderOfLast.id));
         order.initial(orderOfLast);

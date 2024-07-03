@@ -17,15 +17,43 @@ class MainComponent extends BaseMainComponent {
         super(props);
     }
 
-    getInjectStyleOfMainOrderCard(order) {
-        return {background : order.getIsHotCreate() ? '#ffebeb' : 'inherit'};
+    /** following are main-filter handle logic */
+
+    getInjectStyleOfMainFilterOfSearchOrderGoAheadButton(filterOfSearchOrder) {
+        return Util.getVisibleOrNone(!_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
     }
 
-    onMainOrderExtraIconButtonDeleteClicked(param) {
-        return () => {
-            this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
-            )
+    getInjectStyleOfMainFilterOfSearchOrderPasteButton(filterOfSearchOrder) {
+        return Util.getVisibleOrNone(_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
+    }
+
+    onMainFilterOfSearchOrderClearButtonClicked(param) {
+        param.object.clean();
+    }
+
+    onMainFilterOfSearchOrderPasteButtonClicked(param) {
+        const self = this;
+        this.readTextClipboard().then((content) => {
+            self.getStore().getFilterOfSearchOrder().setIdOfOrder(content);
+        })
+    }
+
+    onMainFilterOfSearchOrderGoAheadButtonClicked(param) {
+        const self = this;
+        const filter = param.object;
+        const id = filter.getIdOfOrder();
+        if(!_.isEmpty(id)) {
+            this.getStore().fetchOrderById(id).then((order) => {
+                self.getStore().toggleIsFilterOfSearchOrderVisible();
+                self.activateOrderDetailDialog(order)});
         }
+
+    }
+
+    /** following are main-order handle logic */
+
+    onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
+        this.getStore().toggleIsFilterOfSearchOrderVisible();
     }
 
     getInjectPropsOfMainOrderCommentTextField(order) {
@@ -40,38 +68,13 @@ class MainComponent extends BaseMainComponent {
         }
     }
 
-    onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
-        this.getStore().toggleIsFilterOfSearchOrderVisible();
-    }
-
-    onMainAreaOfFuncAppendOfOrderButtonClicked(param) {
-        this.getStore().appendOrder().then();
-    }
-
-    onMainOrderMenuIconButtonClicked(param) {
-        this.activateOrderDetailDialog(param.object);
-    }
-
-    onMainOrderExtraIconButtonContractClicked(param) {
-        return () => {
-            this.showInfoSnackMessage(`開發中，請稍待`)
-        }
-    }
-
-    onMainOrderExtraIconButtonEditClicked(param) {
-        const self = this;
-        const order = param.object;
-        return () => {
-            self.activateOrderDetailDialog(order);
-        }
-    }
 
     activateOrderDetailDialog = (order) => {
-        const data = order.data();
+        if(Util.isUndefinedNullEmpty(order)) return;
         Application.getEstablishStore().clean();
         this.refOfCreateOfOrder.current.click();
         Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
-            store.sync(data);
+            store.sync(order);
         })
     }
 
@@ -83,18 +86,6 @@ class MainComponent extends BaseMainComponent {
     onMainFilterOfSearchOrderSubmitButtonClicked(param) {
         this.showInfoSnackMessage(`施工中，請稍待`);
         console.log(this.getStore().getFilterOfSearchOrder().data());
-    }
-
-    getInjectStyleOfMainFilterOfSearchOrderGoAheadButton(filterOfSearchOrder) {
-        return Util.getVisibleOrNone(!_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
-    }
-
-    getInjectStyleOfMainFilterOfSearchOrderPasteButton(filterOfSearchOrder) {
-        return Util.getVisibleOrNone(_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
-    }
-
-    onMainFilterOfSearchOrderClearButtonClicked(param) {
-        param.object.clean();
     }
 
     onMainOrderStartOfTravelDatePickerChange(param) {
@@ -139,6 +130,39 @@ class MainComponent extends BaseMainComponent {
 
     onMainAreaOfFuncBaseOnDatePickerChange(param) {
         this.getStore().handleOrderByCondition(true).then();
+    }
+
+    onMainAreaOfFuncAppendOfOrderButtonClicked(param) {
+        this.getStore().appendOrder().then();
+    }
+
+    onMainOrderMenuIconButtonClicked(param) {
+        this.activateOrderDetailDialog(param.object.data());
+    }
+
+    onMainOrderExtraIconButtonContractClicked(param) {
+        return () => {
+            this.showInfoSnackMessage(`開發中，請稍待`)
+        }
+    }
+
+    onMainOrderExtraIconButtonEditClicked(param) {
+        const self = this;
+        const order = param.object;
+        return () => {
+            self.activateOrderDetailDialog(order.data());
+        }
+    }
+
+    getInjectStyleOfMainOrderCard(order) {
+        return {background : order.getIsHotCreate() ? '#ffebeb' : 'inherit'};
+    }
+
+    onMainOrderExtraIconButtonDeleteClicked(param) {
+        return () => {
+            this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
+            )
+        }
     }
 
 
