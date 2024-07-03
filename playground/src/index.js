@@ -28,13 +28,13 @@ class BBB extends AAA {
 if (configerer.DEBUG_MODE) {
     (async () => {
 
-        // const a = null;
-        // console.log(a ? 'yyy':'bbb')
-        //     console.log(_.isUndefined(null))
-        // console.log(_.slice('4',0,10))
-        // const bbb = new BBB();
-        // console.log(bbb.properties);
-        // console.log(_.size(`fdipsjfoijsdoifdso`))
+            // const a = null;
+            // console.log(a ? 'yyy':'bbb')
+            //     console.log(_.isUndefined(null))
+            // console.log(_.slice('4',0,10))
+            // const bbb = new BBB();
+            // console.log(bbb.properties);
+            // console.log(_.size(`fdipsjfoijsdoifdso`))
             // const browser = new Browser(true);
             // await browser.init();
             // browser.printf();
@@ -467,15 +467,104 @@ if (configerer.DEBUG_MODE) {
             //     "梵蒂岡",
             //     "瓦利斯和富圖納",
             //     "西撒哈拉",
-            //     "也門"
+            //     "也門",
+            //     "北海道",
+            //     "東京",
+            //     "北陸",
+            //     "東北",
+            //     "九州",
+            //     "四國",
+            //     "沖繩",
+            //     "大阪",
+            //     "花卷",
+            //     "首爾",
+            //     "釜山",
+            //     "濟州",
+            //     "韓國",
+            //     "曼谷",
+            //     "普吉島",
+            //     "清邁",
+            //     "華欣",
+            //     "巴里島",
+            //     "中南半島",
+            //     "北越",
+            //     "中越",
+            //     "峴港",
+            //     "南越",
+            //     "馬新",
+            //     "檳城",
+            //     "蘭卡威",
+            //     "關帛菲",
+            //     "關島",
+            //     "長灘島",
+            //     "馬尼拉",
+            //     "宿霧",
+            //     "巴拉望",
+            //     "歐州",
+            //     "中西歐",
+            //     "東歐",
+            //     "奧捷",
+            //     "匈牙利",
+            //     "北歐",
+            //     "紐澳",
+            //     "紐西蘭",
+            //     "西澳",
+            //     "南澳",
+            //     "雪梨",
+            //     "美加",
+            //     "美東",
+            //     "美加東",
+            //     "中南美州",
+            //     "夏威夷",
+            //     "美西",
+            //     "極光",
+            //     "美南",
+            //     "中東南亞非",
+            //     "中東",
+            //     "杜拜",
+            //     "肯亞",
+            //     "非州",
+            //     "亞洲郵輪",
+            //     "美洲郵輪",
+            //     "歐洲郵輪",
+            //     "中東郵輪",
+            //     "歐洲郵輪",
             // ]
 
-            // console.log(_.size(current));
-            // const latest = current.map((cou,index) => {
-            //     return {label:cou, value: `${index+1}`};
-            // })
-            //
-            // Util.appendFile(`./latest.json`,JSON.stringify(latest),false,true);
+
+            const current = [
+                "可樂旅遊",
+                "雄獅",
+                "五福",
+                "格緻",
+                "喜鴻",
+                "百威",
+                "永信",
+                "尊榮國際",
+                "山富國際",
+                "旅天下聯合國際",
+                "旅遊家",
+                "聯翔國際",
+                "駿樺",
+                "東南",
+                "大新",
+                "台鋼燦星國際",
+                "大榮",
+                "凱旋-巨匠",
+                "巨大",
+                "品冠國際",
+                "現代國際",
+                "行健",
+                "鳳凰國際",
+                "世興-台北分部",
+            ]
+
+            console.log(_.size(current));
+            const latest = current.map((cou, index) => {
+                return {label: cou, value: `${index + 1}`};
+            })
+
+            Util.appendFile(`./latest.json`, JSON.stringify(latest), false, true);
             // let i = 1
             // _.range(1,12).forEach((item) => {
             //     console.log(i);
