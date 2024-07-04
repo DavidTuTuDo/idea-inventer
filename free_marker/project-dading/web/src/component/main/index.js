@@ -76,9 +76,13 @@ class MainComponent extends BaseMainComponent {
         }
     }
 
+    onAgentToSelectedChange(value, param) {
+        if (param.value === 3)
+            this.getStore().getFilter().toggleKeyOfDestTo();
+    }
+
     onMainFilterSubmitButtonClicked(param) {
-        this.showInfoSnackMessage(`施工中，請稍待`);
-        console.log(this.getStore().getFilter().data());
+        this.getStore().handleCustomFilter(_.cloneDeep(param.object.data())).then();
     }
 
     onMainFilterCancelButtonClicked(param) {

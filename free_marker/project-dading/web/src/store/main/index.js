@@ -6,6 +6,7 @@ import libpath from "path";
 import {Application} from "../../";
 import Order from "../mainOrder";
 import Establish from '../establish';
+import moment from "moment";
 
 class MainStore extends BaseMainStore {
     /** -------------------- fields -------------------- **/
@@ -65,18 +66,67 @@ class MainStore extends BaseMainStore {
         }
     }
 
+    async handleCustomFilter(filter) {
+        const timestamp = this.normalizeTimestamp(filter.baseOn);
+        this.clean();
+        this.getFilter().setSelectedType(filter.selectedType);
+        this.getFilter().setSelectedDestTo(filter.selectedDestTo)
+        this.getFilter().setSelectedAgentTo(filter.selectedAgentTo)
+        this.getFilter().setBaseOn(moment(timestamp))
+        switch (filter.selectedType) {
+            case 1:
+                /** 訂購人 */
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('host', '==', _.trim(filter.host))},
+                        {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                    ]
+                )
+                break;
+            case 2:
+                /** 聯絡電話 */
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('contact', '==', _.trim(filter.contact))},
+                        {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                    ]
+                )
+                break;
+            case 3:
+                /** 目的地 */
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('selectedDestination', '==', filter.selectedDestTo)},
+                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                    ]
+                )
+                break;
+            case 4:
+                /** 旅行社 */
+                this.setOrderConditions(
+                    [
+                        {where: (stmt) => stmt.where('selectedAgent', '==', filter.selectedAgentTo)},
+                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                    ]
+                )
+                break;
+        }
+        await this.fetchOrders(this.getComponent());
+        await this.onInitialFetchCompleted(this.data());
 
+    }
+
+
+    /** clean()之後，另外一個filter就會被初始化 */
     invalidate() {
-        console.log('12354567878796 ===> 我有進來！===> ', this.getAreaOfFunc().getSelectedOrderBy());
-
         const selected = this.getAreaOfFunc().getSelectedOrderBy();
-
-        if (selected === 5) {
+        const selectedOfCustom = this.getFilter().getSelectedType();
+        if (selected === 5 || selectedOfCustom === 4) {
             /** 旅行社 */
             this.setOrders(..._.orderBy(this.getOrders(), ['selectedAgent', 'valueOfStartTravel'], ['asc', 'asc']))
         }
 
-        if (selected === 6) {
+        if (selected === 6 || selectedOfCustom === 3) {
             /** 目的地 */
             this.setOrders(..._.orderBy(this.getOrders(), ['selectedDestination', 'valueOfStartTravel'], ['asc', 'asc']))
         }
@@ -92,6 +142,7 @@ class MainStore extends BaseMainStore {
         this.getAreaOfFunc().setBaseOn(timestamp);
         switch (_.toNumber(current)) {
             case 1:
+                /** 建單時間(遞增) */
                 this.setOrderConditions(
                     [
                         {where: (stmt) => stmt.where('createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
@@ -100,13 +151,16 @@ class MainStore extends BaseMainStore {
                 )
                 break;
             case 2:
+                /** 建單時間(遞減) */
                 this.setOrderConditions(
                     [
                         {where: (stmt) => stmt.where('createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
                         {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
                     ]
                 );
+                break;
             case 3:
+                /** 出發時間(遞增) */
                 this.setOrderConditions(
                     [
                         {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
@@ -115,6 +169,7 @@ class MainStore extends BaseMainStore {
                 )
                 break;
             case 4:
+                /** 建單時間(遞減) */
                 this.setOrderConditions(
                     [
                         {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
@@ -122,8 +177,9 @@ class MainStore extends BaseMainStore {
                     ]
                 )
                 break;
-            case 5:
+            case 5:/** 旅行社 */
             case 6:
+                /** 目的地 */
                 this.setOrderConditions(
                     [
                         {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
