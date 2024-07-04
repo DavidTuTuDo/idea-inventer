@@ -69,12 +69,12 @@ class Utiller {
     }
 
 
-    getStringOfNormalize(value, defaultValue = '') {
+    getStringOfNormalize(value, defaultValue = '', trim = false) {
         if (_.isString(value))
-            return value
+            return trim ? _.trim(value) : value;
         try {
             const force = _.toString(value);
-            return this.isOrEquals(force, '', 'undefined') ? defaultValue : force;
+            return this.isOrEquals(force, '', 'undefined') ? defaultValue : trim ? _.trim(force) : force;
         } catch (error) {
             Util.appendError(`448616845453 ${error.message}`)
         }
@@ -1868,6 +1868,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getStringOfNormalize(-1234556,' ',false));
             // console.log(utiller.getSimpleTimeFormat());
             // console.log(utiller.getBooleanOfNormalize(-5,'default'))
             // const array = [3, 4, 5];

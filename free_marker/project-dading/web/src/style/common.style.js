@@ -395,7 +395,7 @@ class CommonStyle {
 
   AdditionMemberAreaOfPrivacyDiv = {};
 
-  AdditionMemberAreaOfContactPhoneTextField = {};
+  AdditionMemberAreaOfContactContactTextField = {};
 
   AdditionMemberAreaOfContactNameTextField = {};
 

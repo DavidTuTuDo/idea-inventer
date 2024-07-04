@@ -395,7 +395,7 @@ class MobileStyle {
 
   AdditionMemberAreaOfPrivacyDiv = {};
 
-  AdditionMemberAreaOfContactPhoneTextField = {};
+  AdditionMemberAreaOfContactContactTextField = {};
 
   AdditionMemberAreaOfContactNameTextField = {};
 

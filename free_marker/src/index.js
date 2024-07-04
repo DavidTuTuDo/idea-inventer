@@ -771,6 +771,13 @@ class CodegenNode {
 
     belong2TimeStamp = false
 
+    /** 屬性放到firestore 會 trim()，幫助搜尋遇到空格不符合的問題 */
+    trim = false;
+
+    asTrim() {
+        return _.isEqual(this.trim, true);
+    }
+
     hasVariant() {
         return !_.isEmpty(this.variant);
     }
@@ -4551,7 +4558,7 @@ class StoreBuilder extends BaseBuilder {
                         } else if (child.isTimeStamp()) {
                             value = `this.toFireBaseTimestampObject(this.${child.name})`
                         } else if (child.isString()) {
-                            value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
+                            value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()}${child.asTrim() ? ',true':''})`
                         } else if (child.isNumber()) {
                             value = `Util.getNumberOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
                         } else if (child.isBoolean()) {
@@ -4822,7 +4829,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         ], `upload storage file`, true, true)
                 }
                 if (child.isString()) {
-                    contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
+                    contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true':''});${getCommentDescription(child)}`);
                 } else if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = Util.getNumberOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
