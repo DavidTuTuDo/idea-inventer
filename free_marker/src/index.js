@@ -1618,7 +1618,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['COLLECTIONS','helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -2255,6 +2255,15 @@ class CodegenNode {
             node.isAttributeView('DateTimePicker', type);
     }
 
+    /**
+     {
+     name: 'trivago',
+     type: 'timestamp',
+     column: true,
+     view: 'DateRangePicker',
+     label: ['開始日期','結束日期']
+     }
+     */
     isTimeDateRangePickerView(type = 'default', node = this) {
         return node.isAttributeView('DateTimePickerTimeRangePicker', type) ||
             node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
@@ -7968,6 +7977,8 @@ class ProjectFileHandler extends PathBase {
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
                         node.setListView('TextField');
+                        if(node.hasSize()) /** 只有outlined 才有size的概念 */
+                            node.appendListProps({size:`${node.getSize()}`});
                         if (node.hasVariant())
                             node.appendListProps({variant: node.getVariant()});
                         if (node.disableBorder()) {
@@ -8280,6 +8291,16 @@ class ProjectFileHandler extends PathBase {
             return stmts.join('\n');
         }
 
+        function handleSizeOfTimeDatePicker(node) {
+            if (node.hasSize()) {
+                switch (node.getSize()) {
+                    case 'small':
+                        node.appendViewProps({slotProps: {textField: {size: 'small'}}})
+                        break;
+                }
+            }
+        }
+
         for (const node of nodes) {
 
             if (node.isTimeDatePickerView()) {
@@ -8297,9 +8318,11 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
                 }
 
+
                 if (node.hasFormat())
                     node.appendViewProps({format: `${node.getFormat()}`})
 
+                handleSizeOfTimeDatePicker(node);
             }
 
             if (node.isTimeDateRangePickerView()) {
@@ -8332,7 +8355,7 @@ class ProjectFileHandler extends PathBase {
                     end:${node.getPreciseAttributeParentName()}.${Util.camel('get', end)}()}`
                     })
 
-
+                    handleSizeOfTimeDatePicker(node);
                 }
 
                 if (node.hasFormat())

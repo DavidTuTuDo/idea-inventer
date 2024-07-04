@@ -143,11 +143,26 @@ class EstablishComponent extends BaseEstablishComponent {
     // }
 
     onEstablishDesktopVisitorNameTextFieldChange(param) {
-        if (_.size(param.object.getName()) > 0)
+            this.getStore().getDesktop().incrementVisitorColumn(param.object);
+    }
+
+    onEstablishDesktopVisitorPriceOfPartyBTextFieldChange(param) {
+            this.getStore().getDesktop().incrementVisitorColumn(param.object);
+    }
+
+    onEstablishDesktopVisitorCommentTextFieldChange(param) {
             this.getStore().getDesktop().incrementVisitorColumn(param.object);
     }
 
     onEstablishDesktopFinanceFeeOfPartyBTextFieldChange(param) {
+        this.getStore().getDesktop().incrementFinanceColumn(param.object);
+    }
+
+    onEstablishDesktopFinanceAccountOfLast5NumTextFieldChange(param) {
+        this.getStore().getDesktop().incrementFinanceColumn(param.object);
+    }
+
+    onEstablishDesktopFinanceNameOfPayPersonTextFieldChange(param) {
         this.getStore().getDesktop().incrementFinanceColumn(param.object);
     }
 
