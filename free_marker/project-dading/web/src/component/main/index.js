@@ -19,41 +19,77 @@ class MainComponent extends BaseMainComponent {
 
     /** following are main-filter handle logic */
 
-    getInjectStyleOfMainFilterOfSearchOrderGoAheadButton(filterOfSearchOrder) {
-        return Util.getVisibleOrNone(!_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
+    getInjectStyleOfMainFilterGoAheadButton(filter) {
+        return Util.getVisibleOrNone(!_.isEmpty(filter.getIdOfOrder()), true)
     }
 
-    getInjectStyleOfMainFilterOfSearchOrderPasteButton(filterOfSearchOrder) {
-        return Util.getVisibleOrNone(_.isEmpty(filterOfSearchOrder.getIdOfOrder()), true)
+    getInjectStyleOfMainFilterPasteButton(filter) {
+        return Util.getVisibleOrNone(_.isEmpty(filter.getIdOfOrder()), true)
     }
 
-    onMainFilterOfSearchOrderClearButtonClicked(param) {
+    getInjectStyleOfMainFilterContactTextField(filter) {
+        return Util.getVisibleOrNone(filter.getSelectedType() === 2);
+    }
+
+    getInjectStyleOfMainFilterHostTextField(filter) {
+        return Util.getVisibleOrNone(filter.getSelectedType() === 1);
+    }
+
+
+    getListInjectStyleOfMainFilterAgentToMenuItem(filter) {
+        return Util.getVisibleOrNone(filter.getSelectedType() === 4);
+    }
+
+    getInjectStyleOfMainFilterAreaOfContactDiv(filter) {
+        return Util.getVisibleOrNone(Util.isOrEquals(filter.getSelectedType(), 1, 2), true);
+    }
+
+    getInjectStyleOfMainFilterAreaOfStuffDiv(filter) {
+        return Util.getVisibleOrNone(Util.isOrEquals(filter.getSelectedType(), 3, 4), true);
+    }
+
+    getInjectStyleOfMainFilterDestToAutocomplete(filter) {
+        return Util.getVisibleOrNone(_.isEqual(filter.getSelectedType(), 3), true);
+    }
+
+
+    onMainFilterClearButtonClicked(param) {
         param.object.clean();
     }
 
-    onMainFilterOfSearchOrderPasteButtonClicked(param) {
+    onMainFilterPasteButtonClicked(param) {
         const self = this;
         this.readTextClipboard().then((content) => {
-            self.getStore().getFilterOfSearchOrder().setIdOfOrder(content);
+            self.getStore().getFilter().setIdOfOrder(content);
         })
     }
 
-    onMainFilterOfSearchOrderGoAheadButtonClicked(param) {
+    onMainFilterGoAheadButtonClicked(param) {
         const self = this;
         const filter = param.object;
         const id = filter.getIdOfOrder();
-        if(!_.isEmpty(id)) {
+        if (!_.isEmpty(id)) {
             this.getStore().fetchOrderById(id).then((order) => {
-                self.getStore().toggleIsFilterOfSearchOrderVisible();
-                self.activateOrderDetailDialog(order)});
+                self.getStore().toggleIsFilterVisible();
+                self.activateOrderDetailDialog(order)
+            });
         }
+    }
 
+    onMainFilterSubmitButtonClicked(param) {
+        this.showInfoSnackMessage(`施工中，請稍待`);
+        console.log(this.getStore().getFilter().data());
+    }
+
+    onMainFilterCancelButtonClicked(param) {
+        this.getStore().getFilter().clean();
+        this.getStore().toggleIsFilterVisible();
     }
 
     /** following are main-order handle logic */
 
     onMainAreaOfFuncSearchOfOrderButtonClicked(param) {
-        this.getStore().toggleIsFilterOfSearchOrderVisible();
+        this.getStore().toggleIsFilterVisible();
     }
 
     getInjectPropsOfMainOrderCommentTextField(order) {
@@ -70,22 +106,12 @@ class MainComponent extends BaseMainComponent {
 
 
     activateOrderDetailDialog = (order) => {
-        if(Util.isUndefinedNullEmpty(order)) return;
+        if (Util.isUndefinedNullEmpty(order)) return;
         Application.getEstablishStore().clean();
         this.refOfCreateOfOrder.current.click();
         Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
             store.sync(order);
         })
-    }
-
-    onMainFilterOfSearchOrderCancelButtonClicked(param) {
-        this.getStore().getFilterOfSearchOrder().clean();
-        this.getStore().toggleIsFilterOfSearchOrderVisible();
-    }
-
-    onMainFilterOfSearchOrderSubmitButtonClicked(param) {
-        this.showInfoSnackMessage(`施工中，請稍待`);
-        console.log(this.getStore().getFilterOfSearchOrder().data());
     }
 
     onMainOrderStartOfTravelDatePickerChange(param) {
@@ -155,7 +181,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     getInjectStyleOfMainOrderCard(order) {
-        return {background : order.getIsHotCreate() ? '#ffebeb' : 'inherit'};
+        return {background: order.getIsHotCreate() ? '#ffebeb' : 'inherit'};
     }
 
     onMainOrderExtraIconButtonDeleteClicked(param) {

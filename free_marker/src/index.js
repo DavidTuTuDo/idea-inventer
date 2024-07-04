@@ -5589,7 +5589,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function getStmtsOfInjectListStyle(node) {
-            return node.needInjectListStyle() ? `...self.${node.getFunctionNameOfInjectStyle('List')}(${node.getFieldName()}),` : '';
+            return node.needInjectListStyle() ? `...self.${node.getFunctionNameOfInjectStyle('List')}(${node.getPreciseAttributeParentName()}),` : '';
         }
 
         /** type是array就必須的包上一成List,可以調整物件方向 */
@@ -5601,13 +5601,6 @@ class ComponentBuilder extends BaseBuilder {
                 className: clazzName,
                 style: `###{${getStmtsOfInjectListStyle(node)}...${JSON.stringify(node.getListStyle())},...Style.${clazzName}}`,
                 ...node.getListProps(),
-            }
-
-            if (node.needInjectListStyle()) {
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfInjectStyle('List'),
-                    param: [node.getFieldName()]
-                })
             }
 
             const itemViewProps = {};
@@ -5670,19 +5663,12 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             function getStmtsOfInjectListWrapStyle(node) {
-                return node.needInjectListStyle() ? `...self.${node.getFunctionNameOfInjectStyle('ListWrap')}(${node.getFieldName()}),` : '';
+                return node.needInjectListWrapStyle() ? `...self.${node.getFunctionNameOfInjectStyle('ListWrap')}(${node.getPreciseAttributeParentName()}),` : '';
             }
 
             if (node.hasListWrap()) {
                 const clazzName = node.getClassNameOfLessUsage('listWrap');
                 this.storeClassName({node, type: 'listWrap'});
-
-                if (node.needInjectListWrapStyle()) {
-                    node.appendMethods({
-                        functionName: node.getFunctionNameOfInjectStyle('ListWrap'),
-                        param: [node.getFieldName()]
-                    })
-                }
 
                 return this.getJSXStrings(
                     {
@@ -8883,6 +8869,20 @@ class ProjectFileHandler extends PathBase {
             } else {
                 node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
             }
+
+            if (node.needInjectListStyle()) {
+                node.appendMethods({
+                    functionName: node.getFunctionNameOfInjectStyle('List'),
+                    params: [node.getPreciseAttributeParentName()]
+                })
+            }
+
+            if (node.needInjectListWrapStyle()) {
+                node.appendMethods({
+                    functionName: node.getFunctionNameOfInjectStyle('ListWrap'),
+                    param: [node.getPreciseAttributeParentName()]
+                })
+            }
         }
     }
 
@@ -9546,7 +9546,6 @@ class BuildApplication {
         Util.appendInfo(
             `admin done`
         );
-        admin.cleanCache();
     }
 
     async buildIndexRule() {

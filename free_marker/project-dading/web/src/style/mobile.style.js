@@ -715,31 +715,51 @@ class MobileStyle {
 
   /** => following for main  component  */
 
-  MainFilterOfSearchOrderAreaOfFuncClearButton = {};
+  MainFilterAreaOfFuncClearButton = {};
 
-  MainFilterOfSearchOrderAreaOfFuncCancelButton = {};
+  MainFilterAreaOfFuncCancelButton = {};
 
-  MainFilterOfSearchOrderAreaOfFuncSubmitButton = {};
+  MainFilterAreaOfFuncSubmitButton = {};
 
-  MainFilterOfSearchOrderAreaOfFuncDiv = {};
+  MainFilterAreaOfFuncDiv = {};
 
-  MainFilterOfSearchOrderAreaOfContactPhoneTextField = {};
+  MainFilterAreaOfStuffBaseOnDatePicker = {};
 
-  MainFilterOfSearchOrderAreaOfContactHostTextField = {};
+  MainFilterAreaOfStuffDestToInputOfDestToTextField = {};
 
-  MainFilterOfSearchOrderAreaOfContactDiv = {};
+  MainFilterAreaOfStuffDestToAutocomplete = {};
 
-  MainFilterOfSearchOrderAreaOfIdentityGoAheadButton = {};
+  MainFilterAreaOfStuffAgentToMenuItem = {};
 
-  MainFilterOfSearchOrderAreaOfIdentityPasteButton = {};
+  MainFilterAreaOfStuffAgentToTextFieldList = {};
 
-  MainFilterOfSearchOrderAreaOfIdentityIdOfOrderTextField = {};
+  MainFilterAreaOfStuffDiv = {};
 
-  MainFilterOfSearchOrderAreaOfIdentityDiv = {};
+  MainFilterAreaOfContactContactTextField = {};
 
-  MainFilterOfSearchOrderSwipeableDrawerWrap = {};
+  MainFilterAreaOfContactHostTextField = {};
 
-  MainFilterOfSearchOrderDiv = {};
+  MainFilterAreaOfContactDiv = {};
+
+  MainFilterTypeLabelOfTypeTypography = {};
+
+  MainFilterTypeDivListWrap = {};
+
+  MainFilterTypeMenuItem = {};
+
+  MainFilterTypeTextFieldList = {};
+
+  MainFilterAreaOfIdentityGoAheadButton = {};
+
+  MainFilterAreaOfIdentityPasteButton = {};
+
+  MainFilterAreaOfIdentityIdOfOrderTextField = {};
+
+  MainFilterAreaOfIdentityDiv = {};
+
+  MainFilterSwipeableDrawerWrap = {};
+
+  MainFilterDiv = {};
 
   MainOrderAreaOfHeadExtraIconMoreHoriz = {};
 
