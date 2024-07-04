@@ -459,29 +459,33 @@ class MobileStyle {
 
   EstablishDesktopAreaOfRecordDiv = {};
 
-  EstablishDesktopAreaOfMemberTotalOfNotReceivedLabelOfTotalOfNotReceivedTypography = {};
+  EstablishDesktopAreaOfMemberCal02TotalOfNotReceivedLabelOfTotalOfNotReceivedTypography = {};
 
-  EstablishDesktopAreaOfMemberTotalOfNotReceivedDivWrap = {};
+  EstablishDesktopAreaOfMemberCal02TotalOfNotReceivedDivWrap = {};
 
-  EstablishDesktopAreaOfMemberTotalOfNotReceivedTextField = {};
+  EstablishDesktopAreaOfMemberCal02TotalOfNotReceivedTextField = {};
 
-  EstablishDesktopAreaOfMemberTotalOfReceivedLabelOfTotalOfReceivedTypography = {};
+  EstablishDesktopAreaOfMemberCal02TotalOfReceivedLabelOfTotalOfReceivedTypography = {};
 
-  EstablishDesktopAreaOfMemberTotalOfReceivedDivWrap = {};
+  EstablishDesktopAreaOfMemberCal02TotalOfReceivedDivWrap = {};
 
-  EstablishDesktopAreaOfMemberTotalOfReceivedTextField = {};
+  EstablishDesktopAreaOfMemberCal02TotalOfReceivedTextField = {};
 
-  EstablishDesktopAreaOfMemberTotalOfCustomizePriceLabelOfTotalOfCustomizePriceTypography = {};
+  EstablishDesktopAreaOfMemberCal02Div = {};
 
-  EstablishDesktopAreaOfMemberTotalOfCustomizePriceDivWrap = {};
+  EstablishDesktopAreaOfMemberCal01TotalOfCustomizePriceLabelOfTotalOfCustomizePriceTypography = {};
 
-  EstablishDesktopAreaOfMemberTotalOfCustomizePriceTextField = {};
+  EstablishDesktopAreaOfMemberCal01TotalOfCustomizePriceDivWrap = {};
 
-  EstablishDesktopAreaOfMemberTotalOfPricePartyBLabelOfTotalOfPricePartyBTypography = {};
+  EstablishDesktopAreaOfMemberCal01TotalOfCustomizePriceTextField = {};
 
-  EstablishDesktopAreaOfMemberTotalOfPricePartyBDivWrap = {};
+  EstablishDesktopAreaOfMemberCal01TotalOfPricePartyBLabelOfTotalOfPricePartyBTypography = {};
 
-  EstablishDesktopAreaOfMemberTotalOfPricePartyBTextField = {};
+  EstablishDesktopAreaOfMemberCal01TotalOfPricePartyBDivWrap = {};
+
+  EstablishDesktopAreaOfMemberCal01TotalOfPricePartyBTextField = {};
+
+  EstablishDesktopAreaOfMemberCal01Div = {};
 
   EstablishDesktopAreaOfMemberVisitorExtraIconMoreVertRounded = {};
 
