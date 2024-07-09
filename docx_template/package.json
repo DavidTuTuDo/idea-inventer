@@ -1,5 +1,5 @@
 {
-  "name": "${packageName}",
+  "name": "docx_template",
   "version": "1.0.1",
   "description": "",
   "main": "index.js",
@@ -11,11 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.11",
-    "utiller": "^1.0.232",
+    "databazer": "^1.0.12",
+    "pizzip": "^3.1.7",
+    "docxtemplater": "^3.48.0",
+    "easy-template-x": "^3.2.1",
     "linepayer": "^1.0.4",
-    "databazer": "^1.0.12",˙
     "lodash": "^4.17.20",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "utiller": "^1.0.232"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",
