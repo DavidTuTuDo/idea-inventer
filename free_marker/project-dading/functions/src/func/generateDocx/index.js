@@ -20,13 +20,48 @@ class GenerateDocx extends BaseGenerateDocx {
         super(props);
     }
 
-    /** payload:{"idOfOrder":"訂單編號"} */
+    /** payload:{"idOfOrder":"訂單編號"}
+     *
+     * nameOfTravel =>idOfTravel
+     * startDateOfTravel =>2月14
+     * countsOfPeople =>1
+     * priceOfCash =>31188
+     * priceOfCredit =>32188
+     * priceOfDeposit =>1000
+     * yearOfROC: =>113
+     * yearOfAD =>2024
+     *
+     * */
+
+    convertToMinguoYear = (gregorianYear) => {
+        const minguoYear = gregorianYear - 1911;
+        if (minguoYear > 0) {
+            return `${minguoYear}`;
+        } else {
+            return `前${Math.abs(minguoYear)}`;
+        }
+    };
+
+
     async handleHttpOnCall(data, session) {
         const idOfOrder = data.idOfOrder;
-        const order = Api.fetchOrderItem(idOfOrder);
-        this.normalizeAsMoment(order.startOfTravel);
-        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_0707.docx`, {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"})
-        const result = await this.deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.docx`));
+        const order = await Api.fetchOrderItem(idOfOrder);
+        const momentOfStartTravel = this.normalizeAsMoment(order.startOfTravel);
+        const yearOfAD = Util.getCustomFormatOfDatePresent(momentOfStartTravel, `YYYY`);
+
+        const paramsOfTemplate = {
+            nameOfTravel: !_.isEmpty(order.idOfAgentTravel) ? order.idOfAgentTravel : '未填入團號',
+            startDateOfTravel: Util.getCustomFormatOfDatePresent(momentOfStartTravel, `MM月DD日`),
+            countOfPeople: `${order.countOfPeople}`,
+            priceOfCash: `${order.priceOfCash}`,
+            priceOfCredit: `${order.priceOfCredit}`,
+            priceOfDeposit: `${order.priceOfDeposit}`,
+            yearOfAD,
+            yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
+        }
+
+        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240710.docx`, paramsOfTemplate)
+        const result = await this.deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎旅行社(合約:${idOfOrder}.docx`));
         if (result.succeed)
             return result.path;
 
@@ -78,7 +113,7 @@ class GenerateDocx extends BaseGenerateDocx {
         }
     }
 
-    async getBufferOfGeneratedDocx(pathOfDocxTemplate = {}, data = {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"}) {
+    async getBufferOfGeneratedDocx(pathOfDocxTemplate = {}, data = {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countOfPeople: "2"}) {
         /** Load the docx file as binary content */
         const content = fs.readFileSync(pathOfDocxTemplate);
         /** Unzip the content of the file */

@@ -175,7 +175,7 @@ class MainComponent extends BaseMainComponent {
         const self = this;
         return () => {
             // this.showInfoSnackMessage(`開發中，請稍待`)
-            functions.httpOnCallGenerateDocx(self, param.object.id).then((pathOfDownload) => self.download(pathOfDownload));
+            functions.httpOnCallGenerateDocx(self, {idOfOrder:param.object.getId()}).then((pathOfDownload) => self.download(pathOfDownload));
         }
     }
 
