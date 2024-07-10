@@ -21,7 +21,7 @@ class CommonFirebaseHelper extends BaseFirebase {
         }
 
         if (_.isEqual(Config.env, 'dev') && _.isEqual(Config.platform, 'web')) {
-            this.functions().useEmulator("localhost", 5002);
+            this.functions().useEmulator("localhost", 5001);
         }
     }
 

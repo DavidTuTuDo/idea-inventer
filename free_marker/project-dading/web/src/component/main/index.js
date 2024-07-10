@@ -5,6 +5,7 @@ import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "ut
 import _ from "lodash";
 import {observer} from "mobx-react";
 import {Application} from "../../";
+import functions from '../../functions';
 
 @inject("main")
 @observer
@@ -171,8 +172,10 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainOrderExtraIconButtonContractClicked(param) {
+        const self = this;
         return () => {
-            this.showInfoSnackMessage(`開發中，請稍待`)
+            // this.showInfoSnackMessage(`開發中，請稍待`)
+            functions.httpOnCallGenerateDocx(self, param.object.id).then((pathOfDownload) => self.download(pathOfDownload));
         }
     }
 

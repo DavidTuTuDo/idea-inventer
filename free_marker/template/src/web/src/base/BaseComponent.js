@@ -1033,6 +1033,15 @@ class BaseComponent extends MuiComponent {
     invokeLineApp = (idOfLine, message) => {
         this.gotoExternalUrlDirectly(`https://line.me/ti/p/~${idOfLine}`);
     };
+
+    download(path) {
+        const link = document.createElement(`a`);
+        link.href = `${path}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
 }
 
 export default BaseComponent;

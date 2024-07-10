@@ -4558,7 +4558,7 @@ class StoreBuilder extends BaseBuilder {
                         } else if (child.isTimeStamp()) {
                             value = `this.toFireBaseTimestampObject(this.${child.name})`
                         } else if (child.isString()) {
-                            value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()}${child.asTrim() ? ',true':''})`
+                            value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()}${child.asTrim() ? ',true' : ''})`
                         } else if (child.isNumber()) {
                             value = `Util.getNumberOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
                         } else if (child.isBoolean()) {
@@ -4829,7 +4829,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         ], `upload storage file`, true, true)
                 }
                 if (child.isString()) {
-                    contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true':''});${getCommentDescription(child)}`);
+                    contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true' : ''});${getCommentDescription(child)}`);
                 } else if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = Util.getNumberOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
                 } else if (child.isTimeStamp()) {
@@ -7984,8 +7984,8 @@ class ProjectFileHandler extends PathBase {
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
                         node.setListView('TextField');
-                        if(node.hasSize()) /** 只有outlined 才有size的概念 */
-                            node.appendListProps({size:`${node.getSize()}`});
+                        if (node.hasSize()) /** 只有outlined 才有size的概念 */
+                        node.appendListProps({size: `${node.getSize()}`});
                         if (node.hasVariant())
                             node.appendListProps({variant: node.getVariant()});
                         if (node.disableBorder()) {
@@ -8965,6 +8965,7 @@ class ProjectFileHandler extends PathBase {
         appGenerator.appendImport('admin', 'firebase-admin')
 
         for (const func of this.getAllCloudFunctions()) {
+
             await this.buildFunctionImplement(func);
             const functionName = func.getName();
             const fieldName = _.upperFirst(functionName);
@@ -9379,7 +9380,7 @@ class ProjectFileHandler extends PathBase {
 
     async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
-            Util.cleanAllFiles(libpath.join(this.genRootPath, 'release'));
+            await Util.deleteSelfByPath(libpath.join(this.genRootPath, 'release'), true);
             await Util.generatePackage(this.genRootPath, false);
             /** 會產生出 release folder */
             await this.copyFunctionsModuleToDestFolder();

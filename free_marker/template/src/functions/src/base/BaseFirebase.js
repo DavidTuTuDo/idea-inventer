@@ -10,6 +10,7 @@ class BaseFirebase {
         admin.initializeApp({
             credential: admin.credential.cert(credential),
             databaseURL: config.server,
+            storageBucket: `${config.admin.project_id}.appspot.com`
         });
         this.admin = admin;
     }

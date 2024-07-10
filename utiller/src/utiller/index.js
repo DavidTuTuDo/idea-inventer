@@ -952,6 +952,22 @@ class Utiller {
         return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD")
     }
 
+    getCustomFormatOfDatePresent(ts, format = 'YY/MM') {
+        return moment(ts ? ts : this.getCurrentTimeStamp()).format(format)
+    }
+
+    /** 西元年 轉成 民國年
+     * full = 是否打印出全名 民國 ＸＸ 年
+     * */
+    getStringOfYearADConvertToMinguoYear = (gregorianYear, full = false) => {
+        const minguoYear = gregorianYear - 1911;
+        if (minguoYear > 0) {
+            return `${full? '民國':''}${minguoYear}${full? '年':''}`;
+        } else {
+            return `${full? '民國':''}前${Math.abs(minguoYear)}${full ? '年' : ''}`;
+        }
+    };
+
     getSimpleDateYYMMDDFormat(ts) {
         return moment(ts ? ts : this.getCurrentTimeStamp()).format("YY/MM/DD")
     }
@@ -1868,6 +1884,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getStringOfYearADConvertToMinguoYear(2023,true));
             // console.log(utiller.getStringOfNormalize(-1234556,' ',false));
             // console.log(utiller.getSimpleTimeFormat());
             // console.log(utiller.getBooleanOfNormalize(-5,'default'))

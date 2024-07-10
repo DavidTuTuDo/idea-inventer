@@ -583,23 +583,21 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfThirdRateOfCreditTextField = {};
 
+  EstablishDesktopInfoAreaOfThirdRoomArrangeLabelOfRoomArrangeTypography = {};
+
+  EstablishDesktopInfoAreaOfThirdRoomArrangeDivListWrap = {};
+
+  EstablishDesktopInfoAreaOfThirdRoomArrangeMenuItem = {};
+
+  EstablishDesktopInfoAreaOfThirdRoomArrangeTextFieldList = {};
+
   EstablishDesktopInfoAreaOfThirdDiv = {};
 
-  EstablishDesktopInfoAreaOfSecondRoomArrangeLabelOfRoomArrangeTypography = {};
+  EstablishDesktopInfoAreaOfSecondCommentLabelOfCommentTypography = {};
 
-  EstablishDesktopInfoAreaOfSecondRoomArrangeDivListWrap = {};
+  EstablishDesktopInfoAreaOfSecondCommentDivWrap = {};
 
-  EstablishDesktopInfoAreaOfSecondRoomArrangeMenuItem = {};
-
-  EstablishDesktopInfoAreaOfSecondRoomArrangeTextFieldList = {};
-
-  EstablishDesktopInfoAreaOfSecondStatusOfSendLabelOfStatusOfSendTypography = {};
-
-  EstablishDesktopInfoAreaOfSecondStatusOfSendDivListWrap = {};
-
-  EstablishDesktopInfoAreaOfSecondStatusOfSendMenuItem = {};
-
-  EstablishDesktopInfoAreaOfSecondStatusOfSendTextFieldList = {};
+  EstablishDesktopInfoAreaOfSecondCommentTextField = {};
 
   EstablishDesktopInfoAreaOfSecondFeeOfNotReceivedLabelOfFeeOfNotReceivedTypography = {};
 
@@ -631,6 +629,18 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfSecondPriceOfDepositTextField = {};
 
+  EstablishDesktopInfoAreaOfSecondPriceOfCashLabelOfPriceOfCashTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfCashDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfCashTextField = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfCreditLabelOfPriceOfCreditTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfCreditDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondPriceOfCreditTextField = {};
+
   EstablishDesktopInfoAreaOfSecondIdOfAgentTravelLabelOfIdOfAgentTravelTypography = {};
 
   EstablishDesktopInfoAreaOfSecondIdOfAgentTravelDivWrap = {};
@@ -638,6 +648,14 @@ class AppStyle {
   EstablishDesktopInfoAreaOfSecondIdOfAgentTravelTextField = {};
 
   EstablishDesktopInfoAreaOfSecondDiv = {};
+
+  EstablishDesktopInfoAreaOfHeadStatusOfSendLabelOfStatusOfSendTypography = {};
+
+  EstablishDesktopInfoAreaOfHeadStatusOfSendDivListWrap = {};
+
+  EstablishDesktopInfoAreaOfHeadStatusOfSendMenuItem = {};
+
+  EstablishDesktopInfoAreaOfHeadStatusOfSendTextFieldList = {};
 
   EstablishDesktopInfoAreaOfHeadSalesmanLabelOfSalesmanTypography = {};
 
