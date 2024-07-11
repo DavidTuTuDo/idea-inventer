@@ -8,6 +8,8 @@ import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import Api from '../../api';
 import firebase from "../../base/CommonFirebaseHelper";
+import {google} from 'googleapis';
+import stream from 'stream';
 
 // import { load } from '@pspdfkit/nodejs'
 
@@ -32,17 +34,6 @@ class GenerateDocx extends BaseGenerateDocx {
      * yearOfAD =>2024
      *
      * */
-
-    convertToMinguoYear = (gregorianYear) => {
-        const minguoYear = gregorianYear - 1911;
-        if (minguoYear > 0) {
-            return `${minguoYear}`;
-        } else {
-            return `前${Math.abs(minguoYear)}`;
-        }
-    };
-
-
     async handleHttpOnCall(data, session) {
         const idOfOrder = data.idOfOrder;
         const order = await Api.fetchOrderItem(idOfOrder);
@@ -59,13 +50,19 @@ class GenerateDocx extends BaseGenerateDocx {
             yearOfAD,
             yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
         }
+        const fileName = `大鼎旅行社(訂單|${idOfOrder})`;
+        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-06.docx`, paramsOfTemplate)
+        const bufferOfPDF = await this.convertDocxToPdfBuffer(bufferOfDocx);
+        const result = await this.deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `${fileName}.pdf`));
 
-        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240710.docx`, paramsOfTemplate)
-        const result = await this.deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎旅行社(合約:${idOfOrder}.docx`));
+        /**
+         * 部署docx的腳本，可是會用微軟的word開啟，格式會亂掉
+         * const result = await this.deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `${fileName}.docx`));
+         **/
         if (result.succeed)
             return result.path;
 
-        throw new ERROR(9999, result.message);
+        throw new ERROR(9999, `485421212 ${result.message}`);
     }
 
     async deployDocxFileToAdminStorage(buffer, fileName = 'folder/filename.extension') {
@@ -78,14 +75,13 @@ class GenerateDocx extends BaseGenerateDocx {
         return await this.deployButterAsFile2AdminStorage(buffer, fileName, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`)
     }
 
-    async deployPDFtoAdminStorage(buffer, fileName = 'folder/filename.extension') {
+    async deployPDFtoAdminStorage(buffer, fileName = `folder/filename.extension`) {
         if (!fileName.endsWith(`.pdf`)) {
             return {
                 succeed: false,
                 message: `檔案產生失敗，原因：副檔名不是.pdf`
             }
         }
-
         return await this.deployButterAsFile2AdminStorage(buffer, fileName, `application/pdf`)
     }
 
@@ -100,6 +96,7 @@ class GenerateDocx extends BaseGenerateDocx {
                 action: "read",
                 expires: "03-09-3000",
             })
+
             return {
                 succeed: true,
                 path: downloadUrl[0],
@@ -136,25 +133,49 @@ class GenerateDocx extends BaseGenerateDocx {
         /** doing something of log usage,buf is a node.js Buffer, you can either write it to a file or res.
          * persist file will => fs.writeFileSync(`./output${_.toString(Util.getCurrentTimeStamp())}.docx`, buf); */
         return buf;
-
     }
 
-    /** word轉pdf有點麻煩
-     async getBufferOfDocx2PDF(bufferOfDocx) {
-     const instance = await load({document: bufferOfDocx})
-     const pdfBuffer = await instance.exportPDF();
-     await instance.close();
-     return Buffer.from(pdfBuffer);
-     }
-     */
+    async authenticate() {
+        const auth = new google.auth.GoogleAuth({
+            keyFile: 'template/googleapi.json', // Path to your service account key file
+            scopes: ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive'],
+        });
+        return await auth.getClient();
+    }
 
-    async executeSample() {
-        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template_of_dading_contract_0707.docx`, {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"})
-        // const bufferOfPDF = await this.getBufferOfDocx2PDF(bufferOfDocx);
-        // const result = await deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.pdf`));
-
-        const result = await this.deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.docx`));
-        console.log(result);
+    async convertDocxToPdfBuffer(docxBuffer) {
+        const auth = await this.authenticate();
+        const drive = google.drive({version: 'v3', auth});
+        // Create a readable stream from the docx buffer
+        const docxStream = new stream.PassThrough();
+        docxStream.end(docxBuffer);
+        // Upload the docx buffer as a new Google Docs file
+        const fileMetadata = {
+            name: 'TempDoc',
+            mimeType: 'application/vnd.google-apps.document',
+        };
+        const media = {
+            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            body: docxStream,
+        };
+        const file = await drive.files.create({
+            resource: fileMetadata,
+            media: media,
+            fields: 'id',
+        });
+        const fileId = file.data.id;
+        // Export the Google Docs file as a PDF
+        const response = await drive.files.export(
+            {
+                fileId: fileId,
+                mimeType: 'application/pdf',
+            },
+            {responseType: 'arraybuffer'}
+        );
+        // Delete the temporary Google Docs file
+        await drive.files.delete({fileId: fileId});
+        // Return the PDF buffer
+        return Buffer.from(response.data);
     }
 
 
