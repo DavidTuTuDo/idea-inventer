@@ -716,7 +716,12 @@ class CodegenNode {
     /** 放admin的json file*/
 
     customizes = [];
-    /** 如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent */
+    /**
+     *  如果src目錄下要有完全手寫的package,就夾在這裡面, 這個folder底下所有的檔案都會被persistent
+     *   {name: 'template', platform: 'functions', root: './', index:true }
+     *   {name: 'userInfo', platform: 'web', root: './src', index:false},
+     *  index的boolean => 是指要不要gen出index.js
+     **/
 
     /**
      * 設計那種children不能被observeble包住的狀況，他就必須待在array裏面(ex Swiper )
@@ -6062,6 +6067,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildCustomizeFiles(packages) {
         for (const _package of packages) {
+            if (!_.isEqual(_package.index, true)) continue;
             const packageName = _package.getName();
             const generator = new ClassGenerator(libpath.join(this.genRootPath, _package.root, _package.getName(), 'index.js'));
             generator.appendClass(_.upperFirst(packageName));
@@ -7352,7 +7358,7 @@ class ProjectFileHandler extends PathBase {
                 const destFolderPath = libpath.join(this.projectPlatformPath, folder.root, folder.getName());
                 Util.persistByPath(destFolderPath);
                 Util.copyFromFolderToDestFolder(genExtraFolderPath, destFolderPath);
-                Util.appendInfo(`extraPackage ,persist to ${destFolderPath} succeed`);
+                Util.appendInfo(`customize folder,persist to ${destFolderPath} succeed`);
             }
         }
     }
