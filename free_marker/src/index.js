@@ -120,6 +120,8 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    hideGeneratedAnnouncement = false;
+
     computed = false
     /** 在component 的get${functionName} 會產出 getComputed${node.getName()}*/
 
@@ -3339,10 +3341,10 @@ class ClassGenerator {
     indexFileTailStmts = [];
     indexDisableExportStmt = false;
 
-    constructor(path) {
+    constructor(path, node) {
         this.filePath = path;
         this.classes = [];
-
+        this.node = node;
         if (!fs.existsSync(this.filePath)) {
             Util.persistByPath(path)
         }
@@ -3674,7 +3676,7 @@ class ClassGenerator {
 
         this.appendInClassTail(stmts);
         if (this.signature)
-            this.appendInClassHead(`/** this code are generated, modify is no sense. \n\tauthor:David Tu, \n\temail:freshingmoon0725@gmail.com \n\tupdateTime:${Util.getCurrentTimeFormat()} \n*/`);
+            this.appendInClassHead(`/**${(this.node && !this.node.hideGeneratedAnnouncement) ? 'this code are generated, modify is no sense.' : ''}\n\tauthor:David Tu, \n\temail:freshingmoon0725@gmail.com \n\tupdateTime:${Util.getCurrentTimeFormat()} \n*/`);
 
         Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
 
@@ -3686,7 +3688,7 @@ class ClassGenerator {
         }
 
         if (this.needCreatedIndexFile) {
-            const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'));
+            const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'), this.node);
             index.imports = _.clone(this.imports);
             // index.appendImport(this.getMainClassName(), `./${this.getMainClassName()}`);
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
@@ -4213,7 +4215,7 @@ class StoreBuilder extends BaseBuilder {
         /** 產生 store再project的index file */
         const BaseStoreFileName = 'BaseStore';
         const stores = this.getGenStores();
-        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genStoreRootPath, `${BaseStoreFileName}.js`)));
+        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genStoreRootPath, `${BaseStoreFileName}.js`)), this.nodeOfAncestor);
         baseGenerator.appendClass(BaseStoreFileName);
         for (const store of stores) {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
@@ -4437,7 +4439,7 @@ class StoreBuilder extends BaseBuilder {
         const baseClassName = `Base${className}Store`;
         const moduleClassName = `${KEYWORD_OF_MODULARIZED}${className}Store`;
         const indexClassName = `${className}Store`;
-        const baseGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${baseClassName}.js`));
+        const baseGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
@@ -4638,7 +4640,7 @@ class StoreBuilder extends BaseBuilder {
         this.importStoreDefault(baseGenerator);
 
         if (node.isModuleComponent()) {
-            const moduleGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${moduleClassName}.js`));
+            const moduleGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {name: baseClassName, from: `./${baseClassName}`});
             moduleGenerator.needIndexFile(`${indexClassName}`);
             moduleGenerator.needSignature(false);
@@ -5171,7 +5173,7 @@ class ComponentBuilder extends BaseBuilder {
         const className = `${_.upperFirst(baseComponentName)}Component`;
         const folderName = baseComponentName;
 
-        const baseGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${baseClassName}.js`));
+        const baseGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
         // baseGenerator.appendImport(`{styled, alpha}`, '@mui/material/styles');
         baseGenerator.appendClass(baseClassName,
@@ -5330,7 +5332,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (componentNode.isModuleComponent()) {
-            const moduleGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${moduleClassName}.js`));
+            const moduleGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {
                 name: baseClassName,
                 from: `./${baseClassName}`
@@ -5971,7 +5973,7 @@ class ComponentBuilder extends BaseBuilder {
             const folderName = _.lowerFirst(node.getViewClassNameOfRenderView())
             const clazzName = node.getViewClassNameOfRenderView();
             const baseClazzName = `Base${clazzName}`;
-            const viewGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'view', folderName, `${baseClazzName}.js`));
+            const viewGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'view', folderName, `${baseClazzName}.js`), this.nodeOfAncestor);
             viewGenerator.appendClass(baseClazzName, {
                 name: 'BaseView',
                 from: `../../base/BaseView`
@@ -6069,7 +6071,7 @@ class AppBuilder extends ComponentBuilder {
         for (const _package of packages) {
             if (!_.isEqual(_package.index, true)) continue;
             const packageName = _package.getName();
-            const generator = new ClassGenerator(libpath.join(this.genRootPath, _package.root, _package.getName(), 'index.js'));
+            const generator = new ClassGenerator(libpath.join(this.genRootPath, _package.root, _package.getName(), 'index.js'), this.nodeOfAncestor);
             generator.appendClass(_.upperFirst(packageName));
             await generator.persist();
         }
@@ -6077,7 +6079,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildEventFolder(events) {
         const normalize = Util.arrayToObjWith(events, (event) => event.getName())
-        const baseEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `event`, `BaseComponentEvent.js`));
+        const baseEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `event`, `BaseComponentEvent.js`), this.nodeOfAncestor);
         baseEventGenerator.appendImport('EventBus', '../base/CommonEventBus');
         baseEventGenerator.appendClass('BaseComponentEvent', {name: 'BaseEvent', from: `../base/BaseEvent`});
         for (const event in normalize) {
@@ -6254,13 +6256,13 @@ class AppBuilder extends ComponentBuilder {
             const classNameOfModularized = `${KEYWORD_OF_MODULARIZED}MyI18n`;
             const classNameOfIndex = `I18n`;
 
-            const base = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfBase}.js`));
+            const base = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfBase}.js`), this.nodeOfAncestor);
             base.appendClass(classNameOfBase, {name: 'BaseI18n', from: `../../base/BaseI18n`});
-            const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`))
+            const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`), this.nodeOfAncestor)
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
             if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
                 modularized.appendBatchLinesIntoFieldSection(['\n\n', ...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
-            const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `index.js`))
+            const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `index.js`), this.nodeOfAncestor)
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
             index.setSingleton(true);
 
@@ -6299,7 +6301,7 @@ class AppBuilder extends ComponentBuilder {
     async buildCookieFiles() {
 
         if (this.nodeOfAncestor.hasCookies()) {
-            const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`));
+            const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`), this.nodeOfAncestor);
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
@@ -6339,7 +6341,7 @@ class AppBuilder extends ComponentBuilder {
 
             }
             baseCookieGenerator.appendFunction('getAllCookies', ['options = {}'], [], [], 'return this.cookie.getAll(options)')
-            const indexCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `index.js`));
+            const indexCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `index.js`), this.nodeOfAncestor);
             indexCookieGenerator.appendClass('Cookie', {name: `BaseCookie`, from: './BaseCookie'});
             indexCookieGenerator.setSingleton(true);
 
@@ -6374,7 +6376,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildCloudFunctionsApi() {
         const baseFunctionGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
-            `functions`, `BaseMyCloudFunctions.js`));
+            `functions`, `BaseMyCloudFunctions.js`), this.nodeOfAncestor);
         baseFunctionGenerator.appendClass(
             `BaseMyCloudFunctions`, {name: `ClientRemoteApi`, from: '../base/ClientRemoteApi'}
         )
@@ -6467,7 +6469,7 @@ class AppBuilder extends ComponentBuilder {
         const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
             `router`,
             `BaseMyRouter.js`
-        ));
+        ), this.nodeOfAncestor);
         baseRouterGenerator.appendClass(
             `BaseMyRouter`, {name: `BaseRouter`, from: '../base/BaseRouter'}
         );
@@ -6502,7 +6504,7 @@ class AppBuilder extends ComponentBuilder {
             }
         }
 
-        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`));
+        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(` ReactDOM`, `react-dom`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
@@ -6688,7 +6690,7 @@ class AppBuilder extends ComponentBuilder {
                 origins = obj;
             }
 
-            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'style', `${type}.style.js`))
+            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'style', `${type}.style.js`), this.nodeOfAncestor)
             generator.appendClass(`${_.upperFirst(type)}Style`);
             for (const info of classNameInfos) {
 
@@ -6845,7 +6847,7 @@ class AppBuilder extends ComponentBuilder {
                 .map((file) => file.fileNameExtension);
         }
 
-        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`));
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`), this.nodeOfAncestor);
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
         }
@@ -6932,7 +6934,7 @@ class AppBuilder extends ComponentBuilder {
             /** 刪掉沒定義過less....  沒定義過的 => ' .ExamDiv { /** style */
             _.remove(lessAttributesFromSrc, (each) => (_.isEqual(each.split(`{`)[1].trim(), sign)))
 
-            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`));
+            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`), this.nodeOfAncestor);
             for (const info of classNameInfos) {
                 const isEditPage = info.component.isPreciselyEditableComponent();
                 generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
@@ -7219,7 +7221,7 @@ class ProjectFileHandler extends PathBase {
     async buildConfig() {
 
         const sourceObj = this.nodeOfAncestor;
-        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`));
+        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`), this.nodeOfAncestor);
         baseConfigGenerator.appendClass(`BaseConfig`);
         const watermarkObj = Util.mergeObject({
             type: 'string',
@@ -7305,7 +7307,7 @@ class ProjectFileHandler extends PathBase {
             if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
                 await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less`));
-                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less/styles.less`));
+                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less/styles.less`), this.nodeOfAncestor);
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
@@ -7649,11 +7651,11 @@ class ProjectFileHandler extends PathBase {
 
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'babel.config.js'), this.genRootPath, 'babel.config.js', true);
 
-        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
+        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
         apiGenerator.needIndexFile('AdminRemoteApi');
 
-        const listenerGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`));
+        const listenerGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`), this.nodeOfAncestor);
         listenerGenerator.appendClass('BaseAdminListenerApi', {
             name: 'CommonRemoteApi',
             from: '../base/CommonRemoteApi'
@@ -8957,7 +8959,7 @@ class ProjectFileHandler extends PathBase {
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.function.index.js'),
             this.genRootPath, 'index.js', true);
 
-        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`));
+        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
         apiGenerator.needIndexFile('AdminRemoteApi', [], true);
 
@@ -8966,7 +8968,7 @@ class ProjectFileHandler extends PathBase {
         }
 
         await apiGenerator.persist();
-        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'));
+        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'), this.nodeOfAncestor);
         appGenerator.appendImport('* as functions', 'firebase-functions')
         appGenerator.appendImport('admin', 'firebase-admin')
 
@@ -8990,14 +8992,14 @@ class ProjectFileHandler extends PathBase {
             params
         } = func.getCloudFunctionInfo()
         const baseClass = `Base${fieldName}`;
-        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`));
+        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`), this.nodeOfAncestor);
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction(functionNameOfHandleBy,
             [...params], [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
 
         if (func.isCommonModule) {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
-            const moduleGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`));
+            const moduleGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {name: baseClass, from: `./${baseClass}`});
             moduleGenerator.needSignature(false);
             moduleGenerator.appendAsyncFunction(functionNameOfHandleBy, [...params], [], []);
