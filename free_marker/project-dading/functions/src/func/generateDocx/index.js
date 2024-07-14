@@ -11,7 +11,6 @@ import firebase from "../../base/CommonFirebaseHelper";
 import {google} from 'googleapis';
 import stream from 'stream';
 
-// import { load } from '@pspdfkit/nodejs'
 
 class GenerateDocx extends BaseGenerateDocx {
 
@@ -51,7 +50,7 @@ class GenerateDocx extends BaseGenerateDocx {
             yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
         }
         const fileName = `大鼎旅行社(訂單|${idOfOrder})`;
-        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-06.docx`, paramsOfTemplate)
+        const bufferOfDocx = await this.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07.docx`, paramsOfTemplate)
         const bufferOfPDF = await this.convertDocxToPdfBuffer(bufferOfDocx);
         const result = await this.deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `${fileName}.pdf`));
 
