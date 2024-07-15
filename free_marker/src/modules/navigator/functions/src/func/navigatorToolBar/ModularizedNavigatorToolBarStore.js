@@ -1,5 +1,4 @@
 const edit = true;
-import ModularizedNavigatorToolBarStore from "./ModularizedNavigatorToolBarStore";
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -7,7 +6,7 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import {Application} from "../../";
+import {Application} from "../.";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
@@ -17,14 +16,15 @@ import {
     makeObservable,
     action,
     observable,
-    override,
     comparer,
     computed,
     autorun,
-    runInAction,
+    runInAction, override,
 } from "mobx";
+import BaseNavigatorToolBarStore from "./BaseNavigatorToolBarStore";
+import CompleteSuggest from '../navigatorToolBarCompleteSuggest';
 
-class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
+class ModularizedNavigatorToolBarStore extends BaseNavigatorToolBarStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
@@ -32,11 +32,11 @@ class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
         super(props);
     }
 
-    getTitle() {
-        return '悅譜';
+    getLabelOfInputOfComplete() {
+        return `無搜尋的項目`;
     }
 
     /** -------------------- async api -------------------- **/
 }
 
-export default NavigatorToolBarStore;
+export default ModularizedNavigatorToolBarStore;

@@ -1,9 +1,4 @@
 const edit = true;
-/** this code are generated, modify is no sense.
- author:David Tu,
- email:freshingmoon0725@gmail.com
- updateTime:2021-04-28-15-15-13
- */
 import {observer, inject} from "mobx-react";
 import BaseNavigatorComponent from "./BaseNavigatorComponent";
 import Router from '../../router';
@@ -64,7 +59,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     NavigatorDrawerShortcutView = observer(({shortcut}) => {
-        const classes = this.props.classes;
         const self = this;
         const DrawerShortcutCollapseView = self.DrawerShortcutCollapseView;
         const ListItemTailIconView = self.ListItemTailIconView;
@@ -117,7 +111,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
 
     DrawerShortcutCollapseView = observer(({shortcut}) => {
-        const classes = this.props.classes;
         const self = this;
         const DrawerShortcutView = self.NavigatorDrawerShortcutView;
         const subs = shortcut.getSubs();

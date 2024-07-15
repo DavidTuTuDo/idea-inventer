@@ -33,9 +33,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-let CURRENT_PROJECT = './project-dading';
+// let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -5195,14 +5195,13 @@ class ComponentBuilder extends BaseBuilder {
         for (const param of componentNode.getParamsInRouter()) {
             const fieldNameOfParam = this.getNormalizeFieldOfParamInPath(param);
             const functionNameOfParamConstraint = Util.camel('isValidOf', fieldNameOfParam);
-            baseGenerator.appendConstructor(`this.${fieldNameOfParam} = this.isComponentView()? this.props.${fieldNameOfParam} : this.props.match.params.${param}`);
+            baseGenerator.appendConstructor(`this.${fieldNameOfParam} = this.isComponentView()? this.propsMobX().${fieldNameOfParam} : this.propsMobX().match.params.${param}`);
             paramsInPath.push({functionNameOfParamConstraint, param: fieldNameOfParam});
             baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${fieldNameOfParam}:$\{this.${fieldNameOfParam}\}\`)`);
             baseGenerator.appendFunction(functionNameOfParamConstraint, [param], [], [],
                 'return false;'
             )
         }
-
         baseGenerator.appendField(`nameOfComponent`, `'${componentNode.getName()}'`, [], [], 'static')
 
         if (_.size(paramsInPath) > 0) {
@@ -5219,7 +5218,7 @@ class ComponentBuilder extends BaseBuilder {
                 `return this.${componentNode.getFieldNameOfDetailUid()}`);
 
             this.appendStmtIntoComponentDidMount(`
-            this.${componentNode.getFieldNameOfDetailUid()} = this.props.match.params.${componentNode.getFieldNameOfDetailUid()};
+            this.${componentNode.getFieldNameOfDetailUid()} = this.propsMobX().match.params.${componentNode.getFieldNameOfDetailUid()};
             if(Util.isOrConditionOfUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
                 this.getStore().setErrorMsg('網址參數異常');`);
         }
@@ -5309,7 +5308,7 @@ class ComponentBuilder extends BaseBuilder {
 
         function getStmtsOfGetStore() {
             const stmts = [];
-            stmts.push(`const store = this.isComponentView() ? this.props.${FIELD_NAME_OF_INJECT_STORE} : this.props.${componentNode.getPreciseStoreName()}`)
+            stmts.push(`const store = this.isComponentView() ? this.propsMobX().${FIELD_NAME_OF_INJECT_STORE} : this.propsMobX().${componentNode.getPreciseStoreName()}`)
             stmts.push(`store.setComponent(this)`)
             stmts.push(`return store;`)
             return stmts;
@@ -5798,7 +5797,7 @@ class ComponentBuilder extends BaseBuilder {
                 tag: 'ScrollingHideWrap',
                 typeOfClass: 'component',
                 props: {...props, ...propsOfExtra},
-                simpleProps: ['...self.props'],
+                simpleProps: ['...self.propsMobX()'],
                 contents: [...origin]
             })
         }
@@ -5984,7 +5983,7 @@ class ComponentBuilder extends BaseBuilder {
                 ...getContentStmt(node, viewGenerator, true)
             );
             viewGenerator.appendFunction(node.getFunctionNameOfObservableObject(), [], [], [],
-                `return this.props.${node.getObservableName()}`)
+                `return this.propsMobX().${node.getObservableName()}`)
             viewGenerator.needIndexFile(clazzName, ['observer'])
             viewGenerator.persist().then();
         }
@@ -5992,7 +5991,7 @@ class ComponentBuilder extends BaseBuilder {
         function getContentStmt(node, _generator) {
             return [
                 'const self = this',
-                'const classes = this.props.classes',
+                'const classes = this.propsMobX().classes',
                 ...node.getSelfVariableStmts(),
                 normalize(...self.getJSXStringsByNode(_generator, node))];
         }
@@ -7352,12 +7351,13 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
-    persistCustomizePackages() {
+    async persistCustomizePackages() {
         const packages = this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform));
         for (const folder of packages) {
             const genExtraFolderPath = libpath.join(this.genRootPath, folder.root, folder.getName());
             if (fs.existsSync(genExtraFolderPath)) {
                 const destFolderPath = libpath.join(this.projectPlatformPath, folder.root, folder.getName());
+                await Util.deleteSelfByPath(destFolderPath, true)
                 Util.persistByPath(destFolderPath);
                 Util.copyFromFolderToDestFolder(genExtraFolderPath, destFolderPath);
                 Util.appendInfo(`customize folder,persist to ${destFolderPath} succeed`);

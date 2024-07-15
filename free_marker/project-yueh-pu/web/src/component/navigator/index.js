@@ -1,3 +1,4 @@
+const edit = true;
 import {observer, inject} from "mobx-react";
 import Router from '../../router';
 import Config from '../../config';
@@ -49,9 +50,7 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
         } else if (!Util.isUndefinedNullEmpty(content)) {
             Router.gotoPortfolioPage(this, 'search', content);
         }
-
     }
-
 }
 
 export default withStyles(useStyles)

@@ -43,11 +43,12 @@ class BaseComponent extends MuiComponent {
     jobsOfScrollToBottom = [];
     jobExecutorLock = false;
     loginDialogRef = React.createRef();
-
+    propsOfMobX
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
 
     constructor(props) {
         super(props);
+        this.propsOfMobX = props;
     }
 
     isDisposableComponent() {
@@ -171,7 +172,7 @@ class BaseComponent extends MuiComponent {
      question={whoknowz.question}/>
      * */
     isComponentView = () => {
-        return _.isEqual(this.props.isComponentView, true);
+        return _.isEqual(this.propsOfMobX.isComponentView, true);
     }
 
     isNotNavigatorNComponentView() {
@@ -641,7 +642,7 @@ class BaseComponent extends MuiComponent {
 
     getSelectedSuggest(value, suggests) {
         if (_.isArray(suggests) && value)
-         return _.find(suggests,(suggest) => _.isEqual(_.toString(suggest.value),_.toString(value)));
+            return _.find(suggests,(suggest) => _.isEqual(_.toString(suggest.value),_.toString(value)));
     }
 
     renderSnackView() {
@@ -791,7 +792,7 @@ class BaseComponent extends MuiComponent {
             return this;
 
         if (this.isDialogComponent() || this.isComponentView()) {
-            return this.props.component;
+            return this.propsOfMobX.component;
         } else {
             return this;
         }
@@ -799,7 +800,7 @@ class BaseComponent extends MuiComponent {
 
     dismiss() {
         if (this.isDialogComponent()) {
-            this.props.dialog.dismiss();
+            this.propsOfMobX.dialog.dismiss();
         }
     }
 
@@ -967,7 +968,7 @@ class BaseComponent extends MuiComponent {
     }
 
     isWrapByDialog() {
-        const dialog = this.props.dialog;
+        const dialog = this.propsOfMobX.dialog;
         return dialog instanceof AlertDialog;
     }
 
@@ -979,6 +980,10 @@ class BaseComponent extends MuiComponent {
                 ref={ref}
             />
         )
+    }
+
+    propsMobX() {
+        return this.propsOfMobX;
     }
 
     invokeEMailBehavior(email, subject = '', body = '', children = '') {
