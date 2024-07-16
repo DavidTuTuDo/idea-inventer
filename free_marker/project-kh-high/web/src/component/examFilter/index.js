@@ -1,3 +1,4 @@
+const edit = true;
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -24,7 +25,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     componentDidMount() {
         super.componentDidMount();
-        const enterPoint = this.props.paramObject;
+        const enterPoint = this.propsMobX().paramObject;
         if (enterPoint !== undefined) {
             const route = enterPoint.route;
             if (route.startsWith(`dialog`)) {
@@ -45,7 +46,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
     }
 
     getTitle() {
-        return this.props.paramObject.title;
+        return this.propsMobX().paramObject.title;
     }
 
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {

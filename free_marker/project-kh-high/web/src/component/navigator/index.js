@@ -4,30 +4,7 @@
  updateTime:2021-04-28-15-15-13
  */
 import {observer, inject} from "mobx-react";
-import Router from '../../router';
-import Config from '../../config';
-import Cookie from '../../cookie';
-import {utiller as Util} from "utiller";
 import {withStyles} from '@mui/styles';
-import UserInfo from '../../base/BaseUserInfo';
-import Style from "../../style";
-import React from "react";
-import {
-    List,
-    ListItemText,
-    IconButton,
-    ListItemIcon,
-    ListItem,
-    Typography,
-    ListSubheader,
-    ListItemAvatar,
-    Avatar
-} from '@mui/material';
-import Collapse from '@mui/material/Collapse';
-import * as MUIcon from '@mui/icons-material';
-import _ from 'lodash';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
 import {isMobile} from 'react-device-detect'
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 
