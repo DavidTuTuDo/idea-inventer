@@ -1,30 +1,20 @@
+const edit = true;
 import ModularizedNavigatorToolBarStore from "./ModularizedNavigatorToolBarStore";
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import { Application } from "../../";
 import Config from "../../config";
+import i18n from "../../i18n";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {
-  makeAutoObservable,
-  makeObservable,
-  action,
-  observable,
-  comparer,
-  computed,
-  autorun,
-  runInAction,
-} from "mobx";
+import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseNavigatorToolBarStore from "./BaseNavigatorToolBarStore";
 
 class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
   /** -------------------- fields -------------------- **/
+
   /** -------------------- functions -------------------- **/
 
   constructor(props) {
@@ -32,9 +22,10 @@ class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
   }
 
   getTitle() {
-    return `悅耳`;
- }
+    return '悅耳';
+  }
 
   /** -------------------- async api -------------------- **/
 }
+
 export default NavigatorToolBarStore;
