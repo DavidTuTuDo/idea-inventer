@@ -9674,7 +9674,7 @@ class ScheduleManager {
                 await builder.deployWebProdWithoutBuild();
                 break;
             case 'buildWebToProduction':
-                await builder.deployWebProd(false, true);
+                await builder.deployWebProd(false, false);
                 break;
             case 'deployFunctionsWithoutBuild':
                 await builder.deployFunctionsWithoutBuild();
