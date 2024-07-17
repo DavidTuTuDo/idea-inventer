@@ -186,7 +186,7 @@ class CommonRemoteApi {
     async fetchItems(path, ...conditions) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start fetch items => path:/${path}/`);
-        const all = await firebase.fetchDocuments(path, ...conditions);
+        const all = await firebase.fetchDocuments(path, conditions);
         Util.appendInfo(`${uid} succeed fetch items => ${path} with ${all.length} items`);
         return all;
     }
@@ -241,7 +241,7 @@ class CommonRemoteApi {
     async deleteItems(path, all, ...conditions) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start delete items ${path}`);
-        await firebase.deleteDocuments(path, all, conditions);
+        await firebase.deleteDocuments(path, all, ...conditions);
         Util.appendInfo(`${uid} succeed delete items ${path}`);
     }
 
@@ -300,13 +300,13 @@ class CommonRemoteApi {
         const self = this;
         this.showLoadingView(view);
         Util.appendInfo(`restfulListenItem path:/${path}/${id}`);
-        const functionOfUnsubscribe = this.listenItem(path, id, (status, data, error) => {
-            if (_.isEqual(status, 'server') && !Util.isUndefinedNullEmpty(data)) {
+        const functionOfUnsubscribe = this.listenItem(path,id,(status,data,error) => {
+            if(_.isEqual(status,'server') && !Util.isUndefinedNullEmpty(data)){
                 self.closeLoadingView(view);
                 handler(data);
             } else {
                 this.closeLoadingView(view);
-                handler({status, message: `${error ? error.message : 'try not to handling'}`});
+                handler({status, message: `${error? error.message:'try not to handling'}`});
             }
         })
         return functionOfUnsubscribe;
@@ -394,10 +394,6 @@ class CommonRemoteApi {
                 }
             }
         }
-    }
-
-    async firestoreDocRef(path, id) {
-        return firebase.reference(path, id);
     }
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */

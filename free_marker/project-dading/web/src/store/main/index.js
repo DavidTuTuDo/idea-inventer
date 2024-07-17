@@ -19,7 +19,7 @@ class MainStore extends BaseMainStore {
         this.apiOfOrder = new Order();
         this.setOrderConditions(
             [
-                {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                {type: 'orderBy', params: ['createTime', 'desc']}
             ]
         )
     }
@@ -62,7 +62,7 @@ class MainStore extends BaseMainStore {
                         selectedAgent: order.getSelectedAgent()
                     }, order.getId())
                     self.getComponent().showInfoSnackMessage(`已更新「${order.getHost()}」訂單`)
-                }, 1500, "ID_OF_ASYNC_UPDATE_ORDER")
+                }, 1800, "ID_OF_ASYNC_UPDATE_ORDER")
         }
     }
 
@@ -78,8 +78,8 @@ class MainStore extends BaseMainStore {
                 /** 訂購人 */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('host', '==', _.trim(filter.host))},
-                        {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                        {type: 'where', params: ['host', '==', _.trim(filter.host)]},
+                        {type: 'orderBy', params: ['createTime', 'desc']}
                     ]
                 )
                 break;
@@ -87,8 +87,8 @@ class MainStore extends BaseMainStore {
                 /** 聯絡電話 */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('contact', '==', _.trim(filter.contact))},
-                        {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                        {type: 'where', params: ['contact', '==', _.trim(filter.contact)]},
+                        {type: 'orderBy', params: ['createTime', 'desc']}
                     ]
                 )
                 break;
@@ -96,8 +96,8 @@ class MainStore extends BaseMainStore {
                 /** 目的地 */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('selectedDestination', '==', filter.selectedDestTo)},
-                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {type: 'where', params: ['selectedDestination', '==', filter.selectedDestTo]},
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
                     ]
                 )
                 break;
@@ -105,8 +105,8 @@ class MainStore extends BaseMainStore {
                 /** 旅行社 */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('selectedAgent', '==', filter.selectedAgentTo)},
-                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
+                        {type: 'where', params: ['selectedAgent', '==', filter.selectedAgentTo]},
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
                     ]
                 )
                 break;
@@ -145,8 +145,8 @@ class MainStore extends BaseMainStore {
                 /** 建單時間(遞增) */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
-                        {orderBy: (stmt) => stmt.orderBy('createTime', 'asc')}
+                        {type: 'where', params: ['createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['createTime', 'asc']}
                     ]
                 )
                 break;
@@ -154,8 +154,8 @@ class MainStore extends BaseMainStore {
                 /** 建單時間(遞減) */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
-                        {orderBy: (stmt) => stmt.orderBy('createTime', 'desc')}
+                        {type: 'where', params: ['createTime', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['createTime', 'desc']}
                     ]
                 );
                 break;
@@ -163,8 +163,8 @@ class MainStore extends BaseMainStore {
                 /** 出發時間(遞增) */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
-                        {orderBy: (stmt) => stmt.orderBy('startOfTravel', 'asc')}
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['startOfTravel', 'asc']}
                     ]
                 )
                 break;
@@ -172,8 +172,8 @@ class MainStore extends BaseMainStore {
                 /** 建單時間(遞減) */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
-                        {orderBy: (stmt) => stmt.orderBy('startOfTravel', 'desc')}
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['startOfTravel', 'desc']}
                     ]
                 )
                 break;
@@ -182,8 +182,8 @@ class MainStore extends BaseMainStore {
                 /** 目的地 */
                 this.setOrderConditions(
                     [
-                        {where: (stmt) => stmt.where('startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp)))},
-                        {orderBy: (stmt) => stmt.orderBy('startOfTravel', 'asc')}
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['startOfTravel', 'asc']}
                     ]
                 )
                 break;

@@ -369,18 +369,16 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getStartAfterConditions(lastItem) {
-        return Util.isUndefinedNullEmpty(lastItem) ? [] : [{
-            startAfter: (stmt) =>
-                stmt.startAfter(lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc)
-        }]
+        return Util.isUndefinedNullEmpty(lastItem) ? [] : [
+            {type: 'startAfter', params: [lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc]}
+        ]
     }
 
     getInArrayConditions = (targets) => {
         if (_.isArray(targets)) {
-            return [{
-                where: (stmt) =>
-                    stmt.where(this.getFieldNameOfDocumentId(), "in", targets.length > 0 ? targets : [Util.getRandomHash(30)]),
-            }]
+            return [
+                {type: 'where', params: [this.getFieldNameOfDocumentId(), "in", targets.length > 0 ? targets : [Util.getRandomHash(30)]]}
+            ]
         } else {
             throw new ERROR(7008, `${typeof targets}, "${targets}" is not allow`)
         }

@@ -1,43 +1,16 @@
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/firestore';
-import 'firebase/storage';
-import 'firebase/functions';
-
+const edit = true;
+import { initializeApp } from "firebase/app";
 import config from "../config";
-import EventBus from "js-event-bus";
-import {exceptioner as ERROR, utiller as Util} from "utiller";
-import CommonPoolHelper from "./CommonPoolHelper";
 
 class BaseFirebase {
 
     constructor() {
-        if (!firebase.apps.length) {
-            this.app = firebase.initializeApp(config.firebase);
-        } else {
-            this.app = firebase.app();
-        }
+        this._app = initializeApp(config.firebase);
     }
 
-    core() {
-        return this.app;
+    app() {
+        return this._app;
     }
-
-    getAuthLibrary(){
-        return firebase.auth;
-    }
-
-    getFirestoreLibrary(){
-        return firebase.firestore;
-    }
-
-    getStorageLibrary(){
-        return firebase.storage;
-    }
-
-
-
 
 }
 

@@ -31,11 +31,11 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
-let CURRENT_PROJECT = './project-yueh-voice';
+// let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-// let CURRENT_PROJECT = './project-dading';
+let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -455,7 +455,7 @@ class CodegenNode {
      *
      * array裏面放的就是firestore裡的 Query operators 例：
      * key 是指 operator type, 用來sorting的
-     * { where:(stmt) => stmt.where('year','==', 108)}
+     * { type:'where', params:['year','==', 108] }
      * */
 
     textOfWatermark;
@@ -4780,9 +4780,9 @@ class RemoteFunctionHandler extends BaseBuilder {
                 stmts.push(...node.getConditions().map((each) => `${each}`));
             if (!isFetchAll && self.isWebPlatform()) {
                 if (node.hasPaginate())
-                    stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_SIZE_PER_PAGE})}`)
+                    stmts.push(`{type:'limit',params:[${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_SIZE_PER_PAGE}]}`)
                 else
-                    stmts.push(`{limit:(stmt) => stmt.limit(${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_MAX_SIZE_OF_REQUEST})}`)
+                    stmts.push(`{type:'limit',params:[${node.getNameOfBaseClassName()}.${FIELD_NAME_OF_MAX_SIZE_OF_REQUEST}]}`)
             }
             return stmts.join(',');
         }
@@ -6505,7 +6505,7 @@ class AppBuilder extends ComponentBuilder {
 
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
-        appGenerator.appendImport(` ReactDOM`, `react-dom`);
+        appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
         appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
         appGenerator.appendImport(`{createBrowserHistory}`, `history`);
@@ -6517,20 +6517,9 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendClass(`BaseApp`);
         appGenerator.appendFunction(`mount`, [], [], [],
-            `ReactDOM.render(this.getRenderView(),
-                    document.getElementById('app'))`);
-
-        /**
-         *
-         * 如果升級到mobx6 react-mobx18.2
-         *
-         appGenerator.appendFunction(`mount`, [], [], [],
-         `const container = document.getElementById('app');`,
-         `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
-         `root.render(this.getRenderView())`,
-         );
-
-         */
+            `const container = document.getElementById('app');`,
+                    `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
+                    `root.render(this.getRenderView())`)
 
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
