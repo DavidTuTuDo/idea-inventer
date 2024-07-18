@@ -8942,7 +8942,7 @@ class ProjectFileHandler extends PathBase {
 
     async forCloudFunctions() {
         Util.persistByPath(this.genRootPath);
-        await this.appendMustacheFile('admin.package.json.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('functions.package.json.mustache', libpath.join(this.genRootPath,
             `package.json`), {
             projectName: this.nodeOfAncestor.name,
             projectVersion: this.nodeOfAncestor.version,
@@ -8966,7 +8966,8 @@ class ProjectFileHandler extends PathBase {
         await apiGenerator.persist();
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'), this.nodeOfAncestor);
         appGenerator.appendImport('* as functions', 'firebase-functions')
-        // appGenerator.appendImport('firebase', './base/FirebaseHelper');
+        appGenerator.appendImport('firebase', './base/FirebaseHelper');
+        // appGenerator.appendImport('admin', 'firebase-admin')
         for (const func of this.getAllCloudFunctions()) {
 
             await this.buildFunctionImplement(func);

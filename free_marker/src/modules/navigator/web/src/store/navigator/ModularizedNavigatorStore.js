@@ -23,7 +23,7 @@ import {
 } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import UserInfo from "../../base/BaseUserInfo";
-import firebaser from "../../base/CommonFirebaseHelper";
+import firebaser from "../../base/FirebaseHelper";
 import CommonPoolHelper from "../../base/CommonPoolHelper";
 
 class ModularizedNavigatorStore extends BaseNavigatorStore {

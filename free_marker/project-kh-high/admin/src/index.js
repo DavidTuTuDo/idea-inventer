@@ -3,7 +3,7 @@ import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
-import firebase from "./base/CommonFirebaseHelper";
+import firebase from "./base/FirebaseHelper";
 import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';

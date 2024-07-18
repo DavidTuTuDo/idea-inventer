@@ -26,7 +26,7 @@ import Collapse from '@mui/material/Collapse';
 import * as MUIcon from '@mui/icons-material';
 import _ from 'lodash';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
-import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
+import CommonFirebaseHelper from "../../base/FirebaseHelper";
 import {isMobile} from 'react-device-detect'
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 

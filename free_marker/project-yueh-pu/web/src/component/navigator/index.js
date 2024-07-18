@@ -7,7 +7,7 @@ import {withStyles} from '@mui/styles';
 import Style from "../../style";
 import React from "react";
 import _ from 'lodash';
-import CommonFirebaseHelper from "../../base/CommonFirebaseHelper";
+import CommonFirebaseHelper from "../../base/FirebaseHelper";
 import {isMobile} from 'react-device-detect'
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 import {

@@ -7,7 +7,7 @@ import fs from 'fs';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
 import Api from '../../api';
-import firebase from "../../base/CommonFirebaseHelper";
+import firebase from "../../base/FirebaseHelper";
 import {google} from 'googleapis';
 import stream from 'stream';
 
