@@ -6,7 +6,7 @@ import libpath from 'path';
 import CommonPoolHelper from "./CommonPoolHelper";
 import CommonRemoteApi from "./CommonRemoteApi";
 import BaseComponent from "./BaseComponent";
-import firebase from "./CommonFirebaseHelper";
+import firebase from "./FirebaseHelper";
 
 class ClientRemoteApi extends CommonRemoteApi {
 

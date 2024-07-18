@@ -7329,7 +7329,7 @@ class ProjectFileHandler extends PathBase {
                     Util.copySingleFileConservative(pathOfDestination, file);
                 } else {
                     /** back-up to platform src*/
-                    const pathOfDestination = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
+                    const pathOfDestination = libpath.in(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
                     Util.copySingleFileConservative(pathOfDestination, file);
                 }
             }
@@ -8935,7 +8935,7 @@ class ProjectFileHandler extends PathBase {
 
     async forCloudFunctions() {
         Util.persistByPath(this.genRootPath);
-        await this.appendMustacheFile('functions.package.json.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('admin.package.json.mustache', libpath.join(this.genRootPath,
             `package.json`), {
             projectName: this.nodeOfAncestor.name,
             projectVersion: this.nodeOfAncestor.version,

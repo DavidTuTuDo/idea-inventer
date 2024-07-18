@@ -1,27 +1,54 @@
+const edit = true;
 import config from "../config";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
-import * as admin from "firebase-admin";
+import {initializeApp,applicationDefault,cert} from 'firebase-admin/app';
+import {getFunctions} from "firebase-admin/functions";
+import {getStorage} from "firebase-admin/storage";
+import {getAuth} from "firebase-admin/auth";
+import {getFirestore} from "firebase-admin/firestore";
+import {getDatabase} from "firebase-admin/database";
 
 class BaseFirebase {
 
     constructor() {
         const credential = config.admin;
-        admin.initializeApp({
-            credential: admin.credential.cert(credential),
+        this._app = initializeApp({
+            credential: cert(credential),
             databaseURL: config.server,
-            storageBucket: `${config.admin.project_id}.appspot.com`
+            storageBucket:`${config.admin.project_id}.appspot.com`,
         });
-        this.admin = admin;
+        this._storage = getStorage(this._app);
+        this._firestore = getFirestore(this._app);
+        this._auth = getAuth(this._app);
+        this._functions = getFunctions(this._app);
+        this._database = getDatabase(this._app);
     }
 
-    core() {
-        return this.admin;
+    app() {
+        return this._app;
     }
 
-    getFirestoreLibrary() {
-        return admin.firestore;
+    firestore() {
+        return this._firestore;
     }
+
+    functions() {
+        return this._functions;
+    }
+
+    database() {
+        return this._database;
+    }
+
+    auth() {
+        return this._auth;
+    }
+
+    storage() {
+        return this._storage;
+    }
+
 
 }
 

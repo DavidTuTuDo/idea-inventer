@@ -233,7 +233,10 @@ class Utiller {
         }
     }
 
-    /** 就是把 target 放到 condition 裡面處理, 然後取代原本的target*/
+    /** 就是把 target 放到 condition 裡面處理, 然後取代原本的target
+     *
+     * condition2(condition1(target)) =>  為了應付 collection(path).where('age','>',11).orderBy('age');
+     * */
     accumulate(target, conditions) {
         let beginning = target;
         for (const condition of conditions) {
@@ -613,6 +616,12 @@ class Utiller {
             return Object.values(obj)[0];
         }
         return '';
+    }
+
+    getObject(key,value) {
+        const object = {};
+        object[key] = value;
+        return object;
     }
 
     getStringOfCreditCardFormatted(string = 0) {
@@ -1884,6 +1893,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getObject('dfsdf',232));
             // console.log(utiller.getStringOfYearADConvertToMinguoYear(2023,true));
             // console.log(utiller.getStringOfNormalize(-1234556,' ',false));
             // console.log(utiller.getSimpleTimeFormat());

@@ -44,7 +44,7 @@ import libpath from 'path';
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
 
-class CommonFirebaseHelper extends BaseFirebase {
+class FirebaseHelper extends BaseFirebase {
 
     /** web端當前的user */
     user;
@@ -83,6 +83,10 @@ class CommonFirebaseHelper extends BaseFirebase {
 
     getCurrentFirestoreTimeStamp() {
         return Timestamp.now();
+    }
+
+    getFirestoreIncrement(delta) {
+        return increment(delta);
     }
 
     getLibOfFirebaseTimestamp() {
@@ -170,7 +174,7 @@ class CommonFirebaseHelper extends BaseFirebase {
     /** firestore 的 modular api 使用原則 */
 
     reference = (path, id) => {
-        return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, id)
+        return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, _.toString(id))
     }
 
     submitDocument = async (path, item = {}, id) => {
@@ -187,25 +191,19 @@ class CommonFirebaseHelper extends BaseFirebase {
     /** 一個document可以擁有array屬性，這個function可以幫助append document array裡的item，不需要整個重寫*/
     appendDocumentArrayItem = async (path, id, attribute = 'name', content = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `598781514 appendDocumentArrayItem()的id不能為空值`);
-        const object = {}
-        object[attribute] = arrayUnion(content);
-        return await this.updateDocument(path, id, object);
+        return await this.updateDocument(path, id, Util.getObject(attribute, arrayUnion(content)));
     }
 
     /** 一個document可以擁有array屬性，這個function可以幫助delete document array裡的item，不需要整個重寫*/
     deleteDocumentArrayItem = async (path, id, attribute = 'name', content = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `518781514 deleteDocumentArrayItem()的id不能為空值`);
-        const object = {}
-        object[attribute] = arrayRemove(content);
-        return await this.updateDocument(path, id, object);
+        return await this.updateDocument(path, id, Util.getObject(attribute, arrayRemove(content)));
     }
 
     /** atomically to increment 關於number的屬性，例如參訪人數之類的 */
     incrementDocumentNumeric = async (path, id, attribute, value = 1) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5187823514 incrementDocumentNumeric()的id不能為空值`);
-        const object = {}
-        object[attribute] = increment(value);
-        return await this.updateDocument(path, id, object);
+        return await this.updateDocument(path, id, Util.getObject(attribute, increment(value)));
     }
 
     /** batch提供set, delete, update的功能
@@ -241,14 +239,14 @@ class CommonFirebaseHelper extends BaseFirebase {
 
     submitDocuments = async (path, items) => {
         return await this.batchDo(items, (batch, item) => {
-            batch.set(this.reference(path, _.toString(item.id)))
+            batch.set(this.reference(path, item.id))
         })
     }
 
     updateDocuments = async (path, items) => {
         return await this.batchDo(items, (batch, item) => {
-            if (Util.isUndefinedNullEmpty(_.toString(item.id))) throw new ERROR(9999, `6525435441313 updateDocuments的item沒有valid id => ${item.id}`)
-            batch.update(this.reference(path, _.toString(item.id)))
+            if (Util.isUndefinedNullEmpty(item.id)) throw new ERROR(9999, `6525435441313 updateDocuments的item沒有valid id => ${item.id}`)
+            batch.update(this.reference(path, item.id))
         })
     }
 
@@ -314,7 +312,12 @@ class CommonFirebaseHelper extends BaseFirebase {
     }
 
 
-    /** predict 裡面寫 content | 觸發throw error的規則
+    /**
+     *
+     *predict(document,transaction) 裡面是atomic的行為，transcation可以get() -> document
+     * 例如購物系統，當countOfProduct > 1時，就可以atomically得去更新為 {countOfProduct:countOfProduct - 1}
+     * 若countOfProduct <= 0 時，就throw Error，聽停止這個transaction
+     * 觸發throw error的規則
      *
      *      (item) => {
      const old = item.count;
@@ -466,11 +469,7 @@ class CommonFirebaseHelper extends BaseFirebase {
         const snapshot = await getAggregateFromServer(this.compound(path, conditions),
             getObjectOfMulti(multi))
         const result = snapshot.data();
-        return Util.array2Obj(multi.map(query => {
-            const object = {};
-            object[query.name] = result[query.name];
-            return object;
-        }))
+        return Util.array2Obj(multi.map(query => Util.getObject(query.name, result[query.name])))
     }
 
 }

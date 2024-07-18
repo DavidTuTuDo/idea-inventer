@@ -3,7 +3,7 @@ import {exceptioner as ERROR, utiller as Util} from 'utiller';
 import _ from 'lodash';
 import moment from 'moment';
 import libpath from 'path';
-import firebase from "./CommonFirebaseHelper";
+import firebase from "./FirebaseHelper";
 
 class CommonRemoteApi {
 
