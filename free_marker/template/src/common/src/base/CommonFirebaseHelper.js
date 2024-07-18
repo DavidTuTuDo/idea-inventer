@@ -4,9 +4,13 @@ import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
 import Config from '../config';
-import {getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signInWithPopup, signOut} from "firebase/auth";
+import {GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signInWithPopup, signOut} from "firebase/auth";
 import {
     getCountFromServer,
+    getAggregateFromServer,
+    sum,
+    average,
+    count,
     updateDoc,
     arrayUnion,
     arrayRemove,
@@ -19,7 +23,6 @@ import {
     onSnapshot,
     getDoc,
     getDocs,
-    getFirestore,
     serverTimestamp,
     Timestamp,
     documentId,
@@ -34,9 +37,9 @@ import {
     and,
 
 } from "firebase/firestore";
-import {connectFunctionsEmulator, getFunctions, httpsCallable} from "firebase/functions";
+import {connectFunctionsEmulator, httpsCallable} from "firebase/functions";
 import {getDatabase} from "firebase/database";
-import {getStorage, ref, uploadBytes, getDownloadURL} from 'firebase/storage'
+import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
 import libpath from 'path';
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
@@ -65,25 +68,6 @@ class CommonFirebaseHelper extends BaseFirebase {
         }
     }
 
-    firestore() {
-        return getFirestore(this.app())
-    }
-
-    functions() {
-        return getFunctions(this.app())
-    }
-
-    database() {
-        return getDatabase(this.app())
-    }
-
-    auth() {
-        return getAuth(this.app())
-    }
-
-    storage() {
-        return getStorage(this.app())
-    }
 
     FirebaseTimestamp() {
         return serverTimestamp();
@@ -269,9 +253,7 @@ class CommonFirebaseHelper extends BaseFirebase {
     }
 
     fetchDocuments = async (path, ...conditions) => {
-        console.log('56565656 ==> ',conditions);
-        const compound = query(this.reference(path), ...conditions.map(condition => this.normalize(condition)))
-        const querySnapshot = await getDocs(compound);
+        const querySnapshot = await getDocs(this.compound(path, conditions));
         const all = [];
         if (!querySnapshot.empty) querySnapshot.forEach((doc) => {
             // const total = querySnapshot.size;
@@ -294,13 +276,13 @@ class CommonFirebaseHelper extends BaseFirebase {
 
     deleteDocuments = async (path, whole, ...conditions) => {
         const all = [];
-        const querySnapshot = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...conditions.map(this.normalize(conditions)));
+        const querySnapshot = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...this.constraints(conditions));
         querySnapshot.forEach((doc) => all.push(doc.ref));
         await this.batchDo(all, (batch, ref) => batch.delete(ref));
     }
 
     /** {type:'where',params:['countOfPeople','>','10']} => where(...params) */
-    normalize(condition) {
+    normalize = (condition) => {
         const type = condition.type;
         switch (type) {
             case 'where':
@@ -318,9 +300,19 @@ class CommonFirebaseHelper extends BaseFirebase {
         }
     }
 
+    constraints = (conditions) => {
+        return conditions.map(condition => this.normalize(condition))
+    }
+
+    compound = (path, conditions) => {
+        const ref = this.reference(path);
+        return _.size(conditions) > 0 ? query(ref, ...this.constraints(conditions)) : query(ref);
+    }
+
     transaction = async (task = async (transaction) => true) => {
         return await runTransaction(this.firestore(), task)
     }
+
 
     /** predict 裡面寫 content | 觸發throw error的規則
      *
@@ -381,26 +373,27 @@ class CommonFirebaseHelper extends BaseFirebase {
      * callback {status:[local|server|error|cache], changes:[...{document}], error:object }
      * */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
-        const compound = query(this.reference(path), ...conditions.map(condition => this.normalize(condition)))
-        const unsubscribe = onSnapshot(compound, (snapshot) => {
+        const unsubscribe = onSnapshot(this.compound(path, conditions), (snapshot) => {
             const changes = [];
             const status = snapshot.metadata.hasPendingWrites ? "local" : "server";
             // snapshot.docs; snapshot.size; snapshot.empty;
             snapshot.docChanges().forEach((change) => {
                 changes.push({
-                    type: change.type,/** [added|modified|removed] */
+                    type: change.type, /** [added|modified|removed] */
                     id: change.doc.id,
                     data: change.doc.data()
                 })
             })
             callback(status, changes, undefined)
         }, (error) => callback('error', undefined, error))
+        return unsubscribe;
     }
 
     fetchCountOfCollection = async (path) => {
         const snapShot = await getCountFromServer(this.reference(path));
         return snapShot.data().count;
     }
+
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
     uploadStorageFile = async (blob, folder = 'public', type = 'file') => {
@@ -416,34 +409,69 @@ class CommonFirebaseHelper extends BaseFirebase {
         return downloadURL;
     }
 
-    /** 針對query後的documents總數*/
-    fetchCountOfSpecificCondition(path, ...conditions) {
+    /** 針對query後的documents總數
+     * fetchSumOfSpecificAttribute('member',{type:'where',params:['age','<=',12]})
+     * */
+    fetchCountOfSpecificCondition = async (path, ...conditions) => {
+        const snapshot = await getCountFromServer(this.compound(path, conditions));
+        return snapshot.data().count;
     }
 
-    /** 針對query後的document特定的numeric做_.sum */
-    fetchSumOfSpecificAttribute(path, attribute = 'name', ...conditions) {
+    /** 針對query後的document特定的numeric做_.sum
+     * fetchSumOfSpecificAttribute('member','feeOfYear',{type:'where',params:['age','>=',20]})
+     * */
+    fetchSumOfSpecificAttribute = async (path, attribute = 'name', ...conditions) => {
+        const snapshot = await getAggregateFromServer(this.compound(path, conditions),
+            {sum: sum(attribute)});
+        return snapshot.data().sum;
+
     }
 
-    /** 針對query後的document特定的numeric做_.averge */
-    fetchAverageOfSpecificAttribute(path, attribute = 'name', ...conditions) {
-
+    /** 針對query後的document特定的numeric做_.average
+     * fetchAverageOfSpecificAttribute('member','height',{type:'where',params:['age','>=',20]})
+     * */
+    fetchAverageOfSpecificAttribute = async (path, attribute = 'name', ...conditions) => {
+        const snapshot = await getAggregateFromServer(this.compound(path, conditions),
+            {average: average(attribute)});
+        return snapshot.data().average;
     }
 
     /** 取得多樣的回傳
-     * const snapshot = await getAggregateFromServer(coll, {
-     *   countOfDocs: count(),
-     *   totalPopulation: sum('population'),
-     *   averageAge: average('age')
-     * });
+     * multi = [...{name:variable,type:[sum|count|average],attribute:field in Document}];
+     * count 不用給 attribute 或直接用 fetchCountOfSpecificCondition
      *
-     * console.log('countOfDocs: ', snapshot.data().countOfDocs);
-     * console.log('totalPopulation: ', snapshot.data().totalPopulation);
-     * console.log('averageAge: ', snapshot.data().averageAge);
+     * sample:fetchMultiResultOfSpecific('member',[{name:countOfMember,type:'count'},{name:sumOfPartyFee,type:'sum',attribute:'fee'},{name:averageOfWeight,type:'average',attribute:'weight'}], {type:'where',params:['age','>','11']} )
+     * result: {countOfMember:11,sumOfPartyFee:2342,averageOfWeight:60}
+     *
      * */
-    fetchMultiResultOfSpecific(path, multi = [{type: 'sum', attribute: 'name'}], ...condition) {
+    fetchMultiResultOfSpecific = async (path, multi = [{name: 'name', type: 'sum', attribute: 'attr'}], ...conditions) => {
+        function getObjectOfMulti(multi) {
+            const object = {};
+            for (const query of multi) {
+                switch (query.type) {
+                    case 'sum':
+                        object[query.name] = sum(query.attribute);
+                        break;
+                    case 'count':
+                        object[query.name] = count();
+                        break;
+                    case 'average':
+                        object[query.name] = average(query.attribute);
+                        break;
+                }
+            }
+            return object;
+        }
 
+        const snapshot = await getAggregateFromServer(this.compound(path, conditions),
+            getObjectOfMulti(multi))
+        const result = snapshot.data();
+        return Util.array2Obj(multi.map(query => {
+            const object = {};
+            object[query.name] = result[query.name];
+            return object;
+        }))
     }
-
 
 }
 

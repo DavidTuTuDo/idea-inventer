@@ -1,3 +1,4 @@
+const edit = true;
 import EventBus from "js-event-bus";
 
 class CommonEventBus {
