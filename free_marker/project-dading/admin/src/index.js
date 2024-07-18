@@ -4,7 +4,7 @@ import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
-import firebase from "./base/CommonFirebaseHelper";
+import firebase from "./base/FirebaseHelper";
 import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';
@@ -12,7 +12,6 @@ import moment from 'moment';
 import fs from 'fs';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
-import { load } from '@pspdfkit/nodejs'
 
 
 (async () => {
@@ -98,12 +97,14 @@ import { load } from '@pspdfkit/nodejs'
     }
 
 
-    const bufferOfDocx = await getBufferOfGeneratedDocx(`./template_of_dading_contract_0707.docx`, {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"})
-    const bufferOfPDF = await getBufferOfDocx2PDF(bufferOfDocx);
-    // const result = await deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.pdf`));
-
-    const result = await deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.docx`));
-    console.log(result);
+    // const bufferOfDocx = await getBufferOfGeneratedDocx(`./template_of_dading_contract_0707.docx`, {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"})
+    // const bufferOfPDF = await getBufferOfDocx2PDF(bufferOfDocx);
+    // // const result = await deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.pdf`));
+    //
+    // const result = await deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.docx`));
+    // console.log(result);
+    const api = new Api();
+    console.log(await api.fetchOrders());
 
 })();
 

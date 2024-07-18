@@ -8966,8 +8966,7 @@ class ProjectFileHandler extends PathBase {
         await apiGenerator.persist();
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'), this.nodeOfAncestor);
         appGenerator.appendImport('* as functions', 'firebase-functions')
-        appGenerator.appendImport('admin', 'firebase-admin')
-
+        // appGenerator.appendImport('firebase', './base/FirebaseHelper');
         for (const func of this.getAllCloudFunctions()) {
 
             await this.buildFunctionImplement(func);
