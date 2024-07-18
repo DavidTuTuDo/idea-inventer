@@ -6518,8 +6518,8 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendClass(`BaseApp`);
         appGenerator.appendFunction(`mount`, [], [], [],
             `const container = document.getElementById('app');`,
-                    `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
-                    `root.render(this.getRenderView())`)
+            `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
+            `root.render(this.getRenderView())`)
 
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
@@ -7324,13 +7324,20 @@ class ProjectFileHandler extends PathBase {
                 }
 
                 if (_.startsWith(_.toLower(file.fileName), 'common')) {
-                    /** back-up to common*/
+                    /** back-up to common */
                     const pathOfDestination = libpath.join(this.freeMarkerSourceCommonPath, 'src', 'base', file.fileNameExtension);
                     Util.copySingleFileConservative(pathOfDestination, file);
                 } else {
-                    /** back-up to platform src*/
-                    const pathOfDestination = libpath.in(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
+                    /** back-up to platform src */
+                    const pathOfDestination = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
                     Util.copySingleFileConservative(pathOfDestination, file);
+
+                    /** 因為admin 和 functions 共用 baseFirebase,FirebaseHelper，所以有以下balence措施 */
+                    if ((this.isFunctionsPlatform() || this.isAdminPlatform()) &&
+                        Util.isOrEquals(file.fileName, 'BaseFirebase', 'FirebaseHelper')) {
+                        const pathOfDestination = libpath.join(Util.getPathOfReplaceLastDir(this.freeMarkerSourcePlatformPath, this.isFunctionsPlatform() ? 'admin' : 'functions'), 'src', 'base', file.fileNameExtension);
+                        Util.copySingleFileConservative(pathOfDestination, file);
+                    }
                 }
             }
             Util.appendInfo(`persist free-marker base files succeed`);

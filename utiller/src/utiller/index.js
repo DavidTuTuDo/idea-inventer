@@ -467,6 +467,14 @@ class Utiller {
         return name;
     }
 
+    /** getPathOfReplaceLastDir('folder1/folder2/folder3', 'folder7') => 'folder1/folder2/folder7' */
+    getPathOfReplaceLastDir(path, name) {
+        const split = path.split('/');
+        split.pop();
+        split.push(name);
+        return split.join('/');
+    }
+
     /** http://wnj.cdji/david.mp3 => mp3 */
     getExtensionFromPath(path) {
         const name = path.split('/').pop()
@@ -483,9 +491,7 @@ class Utiller {
 
     /**
      * 取得folderName
-     *
-     * console.log(utiller.getFolderNameOfFilePath(`das/asdiasjiosd/jif/d.js`)); // jif
-     *
+     * console.log(utiller.getFolderNameOfFilePath(`das/asdiasjiosd/jif/d.js`)); //ans:'jif'
      * */
     getFolderNameOfFilePath(path) {
         if (this.isValidFilePath(path)) {
@@ -610,7 +616,6 @@ class Utiller {
         return false;
     }
 
-
     getObjectValue(obj) {
         if (_.isObject(obj)) {
             return Object.values(obj)[0];
@@ -618,7 +623,7 @@ class Utiller {
         return '';
     }
 
-    getObject(key,value) {
+    getObject(key, value) {
         const object = {};
         object[key] = value;
         return object;
@@ -700,7 +705,6 @@ class Utiller {
      * array = ['a','b','c'];
      * current = array[1] === 'b'
      * latest = 'd'
-     *
      * return ['a','d','c']
      * */
     replaceArrayByContentIndex(array, current, latest) {
@@ -971,9 +975,9 @@ class Utiller {
     getStringOfYearADConvertToMinguoYear = (gregorianYear, full = false) => {
         const minguoYear = gregorianYear - 1911;
         if (minguoYear > 0) {
-            return `${full? '民國':''}${minguoYear}${full? '年':''}`;
+            return `${full ? '民國' : ''}${minguoYear}${full ? '年' : ''}`;
         } else {
-            return `${full? '民國':''}前${Math.abs(minguoYear)}${full ? '年' : ''}`;
+            return `${full ? '民國' : ''}前${Math.abs(minguoYear)}${full ? '年' : ''}`;
         }
     };
 
@@ -1173,7 +1177,6 @@ class Utiller {
     }
 
     /** 放在後面的priority 越大 */
-
     mergeObject(...obj) {
         return _.merge(...obj);
     }
@@ -1704,9 +1707,7 @@ class Utiller {
     }
 
     /**
-     *
      *  把指定的array item 放到頭尾
-     *
      *  const array = ['a','b','c','d'];
      *  console.log(util.getArrayOfMoveSpecificItemToAside(array,array[1]));
      *[ 'a', 'c', 'd', 'b' ]
@@ -1717,11 +1718,10 @@ class Utiller {
     }
 
     /** 把指定的index放到頭尾
-     *
      *  const array = ['a','b','c','d'];
      console.log(util.getArrayOfMoveSpecificIndexToAside(array,3,false));
      [ 'd', 'a', 'b', 'c' ]
-     * */
+     **/
     getArrayOfMoveSpecificIndexToAside(array, index, toTail = true) {
         const indexOfLast = _.size(array) - 1;
         return this.getArrayOfMoveToSpecificIndex(array, index, toTail ? indexOfLast : 0);
@@ -1753,16 +1753,17 @@ class Utiller {
         return _.toUpper(CryptoJS.SHA256(checkValue).toString(CryptoJS.enc.Hex));
     }
 
-    /**
-     * 把一段html文字轉換成類似document的結構 處理後再回傳文字
+    /** 把一段html文字轉換成類似document的結構 處理後再回傳文字
 
-     // const result = utiller.getStringOfHandleHtml('<form id="_form_aiochk" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5" method="post"><input type="hidden" name="MerchantTradeNo" id="MerchantTradeNo" value="sO6E2IilSGYpCChDqrI2" /><input type="hidden" name="MerchantTradeDate" id="MerchantTradeDate" value="2022/07/02 05:16:32" />' +
-     //     '<input type="hidden" name="TotalAmount" id="TotalAmount" value="350" /><input type="hidden" name="TradeDesc" id="TradeDesc" value="綠界第三方支付(明悅科技-線上支付)" /><input type="hidden" name="ItemName" id="ItemName" value="iphone13 pro x 2 = 200 元#iphone11 x 3 = 150 元#總價 350 元##※備註: 無備註內容" /><input type="hidden" name="ReturnURL" id="ReturnURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/confirmedByByECPay" /><input type="hidden" name="ClientBackURL" id="ClientBackURL" value="https://www.google.com/" /><input type="hidden" name="ExpireDate" id="ExpireDate" value="1" /><input type="hidden" name="PaymentInfoURL" id="PaymentInfoURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/paymentInfoByECPay" /><input type="hidden" name="ChoosePayment" id="ChoosePayment" value="ALL" /><input type="hidden" name="PlatformID" id="PlatformID" value="" /><input type="hidden" name="MerchantID" id="MerchantID" value="2000132" /><input type="hidden" name="InvoiceMark" id="InvoiceMark" value="N" /><input type="hidden" name="IgnorePayment" id="IgnorePayment" value="BARCODE#AndroidPay#ApplePay" /><input type="hidden" name="DeviceSource" id="DeviceSource" value="" /><input type="hidden" name="EncryptType" id="EncryptType" value="1" /><input type="hidden" name="PaymentType" id="PaymentType" value="aio" />' +
-     //     '<input type="hidden" name="CheckMacValue" id="CheckMacValue" value="D55E9E48C6AB83C063E0E13AD1B8C2EE8FA6547A7D7FCB33860B532E97D808BC" /><script type="text/javascript">document.getElementById("_form_aiochk").submit();</script></form>'
-     //     , (document) => {
-     //         const element = document.getElementById('CheckMacValue');
-     //         element.setAttribute('value', '123456');
-     //     })
+     const result = utiller.getStringOfHandleHtml(
+     '<form id="_form_aiochk" action="https://payment-stage.ecpay.com.tw/Cashier/AioCheckOut/V5" method="post"><input type="hidden" name="MerchantTradeNo" id="MerchantTradeNo" value="sO6E2IilSGYpCChDqrI2" /><input type="hidden" name="MerchantTradeDate" id="MerchantTradeDate" value="2022/07/02 05:16:32" />' +
+     '<input type="hidden" name="TotalAmount" id="TotalAmount" value="350" /><input type="hidden" name="TradeDesc" id="TradeDesc" value="綠界第三方支付(明悅科技-線上支付)" /><input type="hidden" name="ItemName" id="ItemName" value="iphone13 pro x 2 = 200 元#iphone11 x 3 = 150 元#總價 350 元##※備註: 無備註內容" /><input type="hidden" name="ReturnURL" id="ReturnURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/confirmedByByECPay" /><input type="hidden" name="ClientBackURL" id="ClientBackURL" value="https://www.google.com/" /><input type="hidden" name="ExpireDate" id="ExpireDate" value="1" /><input type="hidden" name="PaymentInfoURL" id="PaymentInfoURL" value="https://us-central1-davidtu-dev.cloudfunctions.net/paymentInfoByECPay" /><input type="hidden" name="ChoosePayment" id="ChoosePayment" value="ALL" /><input type="hidden" name="PlatformID" id="PlatformID" value="" /><input type="hidden" name="MerchantID" id="MerchantID" value="2000132" /><input type="hidden" name="InvoiceMark" id="InvoiceMark" value="N" /><input type="hidden" name="IgnorePayment" id="IgnorePayment" value="BARCODE#AndroidPay#ApplePay" /><input type="hidden" name="DeviceSource" id="DeviceSource" value="" /><input type="hidden" name="EncryptType" id="EncryptType" value="1" /><input type="hidden" name="PaymentType" id="PaymentType" value="aio" />' +
+     '<input type="hidden" name="CheckMacValue" id="CheckMacValue" value="D55E9E48C6AB83C063E0E13AD1B8C2EE8FA6547A7D7FCB33860B532E97D808BC" /><script type="text/javascript">document.getElementById("_form_aiochk").submit();</script></form>'
+     ,(document) => {
+       const element = document.getElementById('CheckMacValue');
+       element.setAttribute('value', '123456');
+     })
+
      */
     getStringOfHandledHtml(string, predicate = (document) => {
         console.log(document)
@@ -1893,6 +1894,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getPathOfReplaceLastDir(`aaa/bbb/ccc`,`eee`));
             // console.log(utiller.getObject('dfsdf',232));
             // console.log(utiller.getStringOfYearADConvertToMinguoYear(2023,true));
             // console.log(utiller.getStringOfNormalize(-1234556,' ',false));
