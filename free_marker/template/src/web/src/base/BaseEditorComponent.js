@@ -1,3 +1,4 @@
+const edit = true
 import _ from 'lodash'
 import React from "react";
 import moment from 'moment';
@@ -5,7 +6,7 @@ import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import {Typography, LinearProgress, CircularProgress, Button, Paper} from "@mui/material";
 import {Application} from '../index.js';
 import BaseComponent from './BaseComponent';
-import Firebaser from './CommonFirebaseHelper';
+import Firebaser from './FirebaseHelper';
 import watermark from 'watermarkjs';
 import Config from '../config';
 import UserInfoRef from '../base/BaseUserInfo';

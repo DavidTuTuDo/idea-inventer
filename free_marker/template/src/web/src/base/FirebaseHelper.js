@@ -145,9 +145,9 @@ class FirebaseHelper extends BaseFirebase {
         const self = this;
         const asyncTask = async () => {
             Util.appendInfo('151561032 signInWithExistedCredential start...');
-            const credential = GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
+            const outhCredential = GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
             try {
-                const result = await signInWithCredential(self.auth(), credential);
+                const result = await signInWithCredential(self.auth(), outhCredential);
                 Util.appendInfo('546451213 signInWithExistedCredential finished...');
 
                 return {
@@ -294,7 +294,7 @@ class FirebaseHelper extends BaseFirebase {
             case 'startAfter':
                 return startAfter(...condition.params);
             default:
-                throw new ERROR(9999, `4451513123 normalize() => CommonFirebaseHelper unsupported type=>{${type}}`)
+                throw new ERROR(9999, `4451513123 normalize() => FirebaseHelper unsupported type=>{${type}}`)
         }
     }
 
@@ -474,4 +474,4 @@ class FirebaseHelper extends BaseFirebase {
 
 }
 
-export default new CommonFirebaseHelper();
+export default new FirebaseHelper();

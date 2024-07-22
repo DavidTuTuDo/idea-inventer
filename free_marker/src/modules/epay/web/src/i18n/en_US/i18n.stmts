@@ -12,6 +12,7 @@ epayTestFindLinePayPageById = "用訂單編號再次倒回LINE-PAY的頁面";
 epayTestLabelOfIdOfPreciseOrderInput = "利用輸入id在喚起ECPAY";
 
 /** epay 需要的字串 */
+pageTitleOfEpay = "";
 epayMessageOfEPay = "這是用來開發第三方支付的頁面";
 epayPreciseOrderTypeOfCurrency = "TWD";
 epayPreciseOrderTitleOfOrder = "明悅科技-線上支付";
@@ -21,14 +22,17 @@ epayPreciseOrderProcedureOfPayment = "unknown";
 epayPreciseOrderStateOfPayment = "pending";
 
 /** epayBehaviorOfConfirmLinePay 需要的字串 */
+pageTitleOfEpayBehaviorOfConfirmLinePay = "";
 epayBehaviorOfConfirmLinePayMessageOfFreeze = "請勿關閉當前頁面, 以免造成交易失敗";
 
 /** epayMethodOfPayment 需要的字串 */
+pageTitleOfEpayMethodOfPayment = "";
 epayMethodOfPaymentTitle = "選擇支付方式";
 epayMethodOfPaymentOptionName = "悅Pay";
 epayMethodOfPaymentOptionId = "contents";
 
 /** epayPurchaseOfHistory 需要的字串 */
+pageTitleOfEpayPurchaseOfHistory = "";
 epayPurchaseOfHistoryTabLabel0 = "全部";
 epayPurchaseOfHistoryTabType0 = "all";
 epayPurchaseOfHistoryTabLabel1 = "待付款";
@@ -40,20 +44,10 @@ epayPurchaseOfHistoryTabType3 = "failure";
 epayPurchaseOfHistoryOrderAreaOfTopStringOfOrderIdentity = "HIWQEHDHJFDIIEE";
 epayPurchaseOfHistoryOrderAreaOfTopLabelOfStringOfOrderIdentity = "編號：";
 epayPurchaseOfHistoryOrderAreaOfTopStateOfOrder = "已完成";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraLabel0 = "編輯備註內容";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraIcon0 = "ChangeCircle";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeTitle0 = "確認是否更改";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeContent0 = "交易完成後，就無法再更改備註內容";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraLabel1 = "刪除訂單";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraIcon1 = "CancelScheduleSend";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeTitle1 = "執行刪除";
-epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeContent1 = "是否確任刪除訂單?";
 epayPurchaseOfHistoryOrderBriefNameOfProduct = "最厲害的商品";
 epayPurchaseOfHistoryOrderBriefSpecificOfProduct = "規格:藍色-XL";
 epayPurchaseOfHistoryOrderBriefQuantity = "x1";
 epayPurchaseOfHistoryOrderBriefPrice = "$100";
-epayPurchaseOfHistoryOrderValueOfTotalPrice = "$100";
-epayPurchaseOfHistoryOrderLabelOfValueOfTotalPrice = "訂單金額：";
 epayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeLabelOfPaymentType = "選擇付費方式：";
 epayPurchaseOfHistoryOrderAreaOfInputMessageLabel = "備註：";
 epayPurchaseOfHistoryOrderAreaOfInputMessageLabelOfValue = "備註事項/聯絡方式";
@@ -62,9 +56,27 @@ epayPurchaseOfHistoryOrderAreaOfPaymentRuleLabelOfRule = "付費方式：";
 epayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadline = "2029/07/05 12:33";
 epayPurchaseOfHistoryOrderAreaOfPaymentDeadlineLabelOfDeadline = "截止時間：";
 epayPurchaseOfHistoryOrderAreaOfPaymentDetailDomain = "國泰世華(013)";
-epayPurchaseOfHistoryOrderAreaOfPaymentDetailLabelOfDomain = "單位分行：";
 epayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCode = "AS231IJDOIA123SJDOIA";
 epayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeLabelOfCode = "單位代碼：";
+epayPurchaseOfHistoryOrderAreaOfPaymentDetailLabelOfDomain = "單位分行：";
 epayPurchaseOfHistoryOrderAreaOfFuncCheckout = "立即付款";
 epayPurchaseOfHistoryOrderAreaOfPaymentFailureReason = "你放到過期了啦!";
 epayPurchaseOfHistoryOrderAreaOfPaymentFailureLabelOfReason = "失效原因：";
+epayPurchaseOfHistoryOrderItemsOfExtraLabel0 = "編輯備註內容";
+epayPurchaseOfHistoryOrderItemsOfExtraIcon0 = "ChangeCircle";
+epayPurchaseOfHistoryOrderItemsOfExtraNoticeTitle0 = "確認是否更改";
+epayPurchaseOfHistoryOrderItemsOfExtraNoticeContent0 = "交易完成後，就無法再更改備註內容";
+epayPurchaseOfHistoryOrderItemsOfExtraLabel1 = "刪除訂單";
+epayPurchaseOfHistoryOrderItemsOfExtraIcon1 = "CancelScheduleSend";
+epayPurchaseOfHistoryOrderItemsOfExtraNoticeTitle1 = "執行刪除";
+epayPurchaseOfHistoryOrderItemsOfExtraNoticeContent1 = "是否確任刪除訂單?";
+epayPurchaseOfHistoryOrderValueOfTotalPrice = "$100";
+epayPurchaseOfHistoryOrderLabelOfValueOfTotalPrice = "訂單金額：";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraLabel0 = "編輯備註內容";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraIcon0 = "ChangeCircle";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeTitle0 = "確認是否更改";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeContent0 = "交易完成後，就無法再更改備註內容";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraLabel1 = "刪除訂單";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraIcon1 = "CancelScheduleSend";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeTitle1 = "執行刪除";
+epayPurchaseOfHistoryOrderAreaOfTopItemsOfExtraNoticeContent1 = "是否確任刪除訂單?";

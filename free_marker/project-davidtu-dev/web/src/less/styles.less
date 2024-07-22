@@ -138,6 +138,72 @@
     /** empty style */
   }
 }
+.MainTestClockTimePicker {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainTestEndDatePicker {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainTestFullDateTimePicker {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainTestTrivagoDateRangePicker {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainTestAgodaDateTimeRangePicker {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainTestTestUsageButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for epayTest  component used  */
 
 .EpayTestDiv:extend(.CenterInParentColumn) {
@@ -245,7 +311,7 @@
 .AccountPaper:extend(.CenterInParentColumn) {
   width: 90vw;
   min-height: 60vh;
-  gap: 3px;
+  gap: 4px;
   padding-top: 15px;
   padding-bottom: 15px;
   @media @mobile {
@@ -1097,7 +1163,10 @@
     /** empty style */
   }
 }
-.EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton {
+.EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton:extend(.CenterInParentRow) {
+  width: 120px;
+  height: 100%;
+  justify-content: flex-end;
   @media @mobile {
     /** empty style */
   }
@@ -1105,7 +1174,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 150px;
   }
 }
 .EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap {
@@ -1454,8 +1523,10 @@
 /** following for infoOfCopyRight  component used  */
 
 .InfoOfCopyRightDiv:extend(.CenterInParentColumn) {
-  margin-top: 30px;
+  margin-top: 5px;
+  margin-bottom: 15px;
   width: 100vw;
+  margin: auto;
   align-items: flex-end;
   @media @mobile {
     /** empty style */
@@ -1464,7 +1535,8 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    margin-top: 20px;
+    margin-bottom: 20px;
     max-width: 800px;
   }
 }
@@ -1472,11 +1544,13 @@
   justify-content: space-between;
   width: 100%;
   @media @mobile {
+    /** empty style */
   }
   @media @tablet {
+    /** empty style */
   }
   @media @desktop {
-
+    /** empty style */
   }
 }
 .InfoOfCopyRightUpperGroupLeftAreaDiv:extend(.CenterInParentRow) {
@@ -1491,6 +1565,7 @@
   }
 }
 .InfoOfCopyRightUpperGroupLeftAreaContactButton {
+  height: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -1512,7 +1587,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupLeftAreaBusinessButton {
+.InfoOfCopyRightUpperGroupLeftAreaBusinessButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
   @media @mobile {
     /** empty style */
   }
@@ -1545,7 +1620,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton {
+.InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
   @media @mobile {
     /** empty style */
   }
@@ -1578,7 +1653,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightUpperGroupRightAreaCprtButton {
+.InfoOfCopyRightUpperGroupRightAreaCprtButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
   @media @mobile {
     /** empty style */
   }
@@ -1590,6 +1665,7 @@
   }
 }
 .InfoOfCopyRightGroupOfSocialMediaDiv {
+  margin-right: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -1604,7 +1680,7 @@
   width: 30px;
   height: 30px;
   @media @mobile {
-
+    /** empty style */
   }
   @media @tablet {
     /** empty style */
@@ -1612,14 +1688,13 @@
   @media @desktop {
     width: 35px;
     height: 35px;
-
   }
 }
 .InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg {
   width: 25px;
   height: 25px;
   @media @mobile {
-
+    /** empty style */
   }
   @media @tablet {
     /** empty style */
@@ -1677,8 +1752,20 @@
 
 .InfoOfCopyRightContactCard:extend(.CenterInParentColumn) {
   align-items: flex-start;
-  padding: 20px;
-  gap:20px;
+  padding: 30px;
+  gap: 20px;
+  @media @mobile {
+    padding: 10px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactDivWrap:extend(.CenterInParentColumn) {
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1689,9 +1776,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaDiv:extend(.CenterInParentColumn){
-  align-items: flex-start;
-  gap:15px;
+.InfoOfCopyRightContactUpperAreaDiv {
   @media @mobile {
     /** empty style */
   }
@@ -1713,7 +1798,26 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv {
+.InfoOfCopyRightContactUpperAreaContactDivWrap:extend(.CenterInParentColumn) {
+  width: fit-content;
+  padding: 6px;
+  padding-left: 9px;
+  background: #d2d2d2;
+  border-radius: 15px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv:extend(.CenterInParentColumn) {
+  margin-top: 20px;
+  gap: 10px;
+  align-items: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -1726,7 +1830,7 @@
 }
 .InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography {
   @media @mobile {
-    /** empty style */
+    font-size: 0.8rem;
   }
   @media @tablet {
     /** empty style */
@@ -1735,7 +1839,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap:extend(.CenterInParentRow){
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap:extend(.CenterInParentRow) {
   justify-content: flex-start;
   @media @mobile {
     /** empty style */
@@ -1769,7 +1873,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -1780,7 +1884,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -1824,7 +1928,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -1914,7 +2018,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactLowerAreaDiv {
+.InfoOfCopyRightContactLowerAreaDiv:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -1936,8 +2040,30 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactLowerAreaDetailsTypography {
+.InfoOfCopyRightContactLowerAreaIntroduceDivWrap:extend(.InfoOfCopyRightContactUpperAreaContactDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactLowerAreaDetailsTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
   margin-top: 20px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContactCancelButton {
   @media @mobile {
     /** empty style */
   }
@@ -1951,6 +2077,32 @@
 /** following for infoOfCopyRightContent  component used  */
 
 .InfoOfCopyRightContentPaper {
+  padding: 5px;
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    padding: 10px;
+    width: 650px;
+  }
+}
+.InfoOfCopyRightContentDivWrap:extend(.CenterInParentColumn) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentCancelButton {
   @media @mobile {
     /** empty style */
   }
@@ -1973,6 +2125,7 @@
   }
 }
 .InfoOfCopyRightContentUpperAreaAdvantageStmtTypography {
+  font-size: 0.7rem;
   @media @mobile {
     /** empty style */
   }
@@ -1980,10 +2133,28 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    font-size: 0.9rem;
   }
 }
-.InfoOfCopyRightContentProjectCard {
+.InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap {
+  background: #d2d2d2;
+  padding: 3px;
+  border-radius: 5px;
+  @media @mobile {
+    margin: 3px;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    margin: 5px;
+    margin-left: 35px;
+    margin-right: 35px;
+  }
+}
+.InfoOfCopyRightContentProjectDiv {
   @media @mobile {
     /** empty style */
   }
@@ -1991,21 +2162,23 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    min-height: 280px;
   }
 }
-.InfoOfCopyRightContentProjectDivList {
+.InfoOfCopyRightContentProjectDivList:extend(.CenterInParentColumn) {
+  gap: 15px;
   @media @mobile {
-    /** empty style */
+    gap: 40px;
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    flex-direction: row;
+    flex-wrap: wrap;
   }
 }
-.InfoOfCopyRightContentProjectCardSkeleton {
+.InfoOfCopyRightContentProjectDivSkeleton {
   @media @mobile {
     /** empty style */
   }
@@ -2017,6 +2190,9 @@
   }
 }
 .InfoOfCopyRightContentProjectImageImg {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -2027,7 +2203,26 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectImageDivWrap {
+.InfoOfCopyRightContentProjectImageCardWrap {
+  height: 180px;
+  width: 280px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    height: 200px;
+    width: 280px;
+  }
+}
+.InfoOfCopyRightContentProjectUpperAreaDiv:extend(.CenterInParentRow) {
+  padding-left: 5px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 15px;
+  margin-top: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -2038,7 +2233,38 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectImageSimulatorDiv {
+.InfoOfCopyRightContentProjectUpperAreaTitleTypography {
+  font-weight: bold;
+  font-size: 1rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 1.2rem;
+  }
+}
+.InfoOfCopyRightContentProjectUpperAreaTraitTypography {
+  font-size: 0.7rem;
+  margin-top: 2px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 0.9rem;
+  }
+}
+.InfoOfCopyRightContentProjectUpperAreaTraitDivWrap {
+  width: fit-content;
+  padding-left: 5px;
+  padding-right: 5px;
+  background: #d2d2d2;
+  border-radius: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -2049,7 +2275,69 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentProjectTitleTypography {
+.InfoOfCopyRightContentProjectDescriptionDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionDivList:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementTypography {
+  font-size: 0.7rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 0.8rem;
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementDivWrap:extend(.CenterInParentRow) {
+  margin-top: 3px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton {
+  width: 18px;
+  height: 18px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded {
+  width: 15px;
+  height: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -2112,7 +2400,7 @@
     /** empty style */
   }
 }
-.NavigatorToolBarMenuIconMenuIcon {
+.NavigatorToolBarMenuIconMenuRounded {
   @media @mobile {
     /** empty style */
   }
@@ -2150,7 +2438,7 @@
     /** empty style */
   }
 }
-.NavigatorToolBarCompleteInputTextField {
+.NavigatorToolBarCompleteInputOfCompleteTextField {
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.3);
   @media @mobile {
@@ -2164,7 +2452,7 @@
     max-width: 500px;
   }
 }
-.NavigatorToolBarCompleteInputFormWrap {
+.NavigatorToolBarCompleteInputOfCompleteFormWrap {
   @media @mobile {
     /** empty style */
   }
@@ -2434,5 +2722,342 @@
   }
   @media @desktop {
     /** empty style */
+  }
+}
+.MainEditorTestClockTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorTestEndTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorTestFullTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorTestTrivagoTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorTestAgodaTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MainEditorTestTestUsageButton:extend(.MainTestTestUsageButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** following for infoOfCopyRightContent editor component used  */
+
+.InfoOfCopyRightContentEditorPaper:extend(.InfoOfCopyRightContentPaper) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorDivWrap:extend(.InfoOfCopyRightContentDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorUpperAreaDiv:extend(.InfoOfCopyRightContentUpperAreaDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDiv:extend(.InfoOfCopyRightContentProjectDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDivWrap:extend(.InfoOfCopyRightContentProjectDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDivList:extend(.InfoOfCopyRightContentProjectDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectRouteTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectImageImg:extend(.InfoOfCopyRightContentProjectImageImg) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectImageCardWrap:extend(.InfoOfCopyRightContentProjectImageCardWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectUpperAreaDiv:extend(.InfoOfCopyRightContentProjectUpperAreaDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap:extend(.InfoOfCopyRightContentProjectUpperAreaTraitDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionDiv:extend(.InfoOfCopyRightContentProjectDescriptionDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionDivWrap:extend(.InfoOfCopyRightContentProjectDescriptionDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionDivList:extend(.InfoOfCopyRightContentProjectDescriptionDivList) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionStatementTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap:extend(.InfoOfCopyRightContentProjectDescriptionStatementDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton:extend(.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded:extend(.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectIdTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.InfoOfCopyRightContentEditorProjectImageTextField:extend(.BaseEditorTextField) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+/** ======== following for homeless ========= */
+
+.NavigatorToolBarCompleteInputTextField {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  @media @mobile {
+    width: 95%;
+  }
+  @media @tablet {
+    width: 95%;
+  }
+  @media @desktop {
+    width: 70%;
+    max-width: 500px;
   }
 }

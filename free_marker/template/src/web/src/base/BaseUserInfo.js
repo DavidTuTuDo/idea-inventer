@@ -1,3 +1,4 @@
+const edit = true
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -5,7 +6,7 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import firebaser from './CommonFirebaseHelper'
+import firebaser from './FirebaseHelper'
 import Cookie from '../cookie';
 import Configer from '../config';
 import {
