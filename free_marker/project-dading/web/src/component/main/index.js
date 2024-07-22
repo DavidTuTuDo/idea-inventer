@@ -109,7 +109,6 @@ class MainComponent extends BaseMainComponent {
         }
     }
 
-
     activateOrderDetailDialog = (order) => {
         if (Util.isUndefinedNullEmpty(order)) return;
         Application.getEstablishStore().clean();
@@ -167,6 +166,14 @@ class MainComponent extends BaseMainComponent {
         this.getStore().appendOrder().then();
     }
 
+    onMainAreaOfFuncBatchOrderButtonClicked(param) {
+        this.getStore().appendsOrder().then();
+    }
+
+    onMainAreaOfFuncBatchUpdateButtonClicked(param) {
+        this.getStore().updateOrdersConditions().then();
+    }
+
     onMainOrderMenuIconButtonClicked(param) {
         this.activateOrderDetailDialog(param.object.data());
     }
@@ -197,6 +204,7 @@ class MainComponent extends BaseMainComponent {
             )
         }
     }
+
 
 
     /** -------------------- async api -------------------- **/

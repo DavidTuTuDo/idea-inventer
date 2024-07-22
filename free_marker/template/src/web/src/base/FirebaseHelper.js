@@ -20,6 +20,7 @@ import {
     collection,
     doc,
     setDoc,
+    addDoc,
     onSnapshot,
     getDoc,
     getDocs,
@@ -178,9 +179,9 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     submitDocument = async (path, item = {}, id) => {
-        const ref = doc(this.reference(path, id));
-        await setDoc(ref, item);
-        return {...item, id: ref.id, exists: true};
+        const ref = this.reference(path, id);
+        const docRef = Util.isUndefinedNullEmpty(id) ? await addDoc(ref, item) : await setDoc(ref, item);
+        return {...item, id: docRef.id, exists: true};
     }
 
     updateDocument = async (path, id, item = {}) => {
@@ -223,7 +224,7 @@ class FirebaseHelper extends BaseFirebase {
         let count = 0;
 
         while (items.length > 0) {
-            predicate(items.shift(), batch);
+            predicate(batch, items.shift());
             /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
             count = count + 1;
             /** 超過MAX先COMMIT次再歸零 */
@@ -238,16 +239,45 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     submitDocuments = async (path, items) => {
-        return await this.batchDo(items, (batch, item) => {
-            batch.set(this.reference(path, item.id))
+        const result = [];
+        await this.batchDo(items, (batch, item) => {
+            const ref = this.reference(path, item.id);
+            const itemRef = Util.isUndefinedNullEmpty(item.id) ? doc(ref) : ref
+            batch.set(itemRef, item);
+            result.push({...item, id: itemRef.id})
         })
+        return result;
     }
 
-    updateDocuments = async (path, items) => {
-        return await this.batchDo(items, (batch, item) => {
-            if (Util.isUndefinedNullEmpty(item.id)) throw new ERROR(9999, `6525435441313 updateDocuments的item沒有valid id => ${item.id}`)
-            batch.update(this.reference(path, item.id))
-        })
+
+    /**
+     * 1. this.updateDocuments(path,{verified:true},{type:'where',params:['age','>','12']})
+     *
+     * 2. this.updateDocuments(path,[...{ id:'sdjaoisdosa',verified:true },{ id:'sdjaoisfsdfdsfs',hieght:120 }]
+     */
+    updateDocuments = async (path, items, ...conditions) => {
+        const result = [];
+        if (_.size(conditions) > 0) {
+            /** 1.如果有condition,就是針對條件篩選後的document執行update */
+            const contentOfUpdate = items[0];
+            const colRef = this.reference(path);
+            const q = query(colRef, ...this.constraints(conditions));
+            const querySnapshot = await getDocs(q);
+            const idsOfConstraint = querySnapshot.docs.map(doc => doc.id);
+            await this.batchDo(idsOfConstraint, (batch, id) => {
+                const ref = this.reference(path, id);
+                batch.update(ref, contentOfUpdate);
+                result.push({...contentOfUpdate, id: ref.id})
+            })
+        } else {
+            /** 2.針對已知的document id做batch update */
+            await this.batchDo(items, (batch, item) => {
+                const ref = this.reference(path, item.id);
+                batch.update(ref, item);
+                result.push({...item, id: ref.id})
+            })
+        }
+        return result;
     }
 
     fetchDocuments = async (path, ...conditions) => {

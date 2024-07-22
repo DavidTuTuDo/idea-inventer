@@ -4158,8 +4158,10 @@ class BaseBuilder extends PathBase {
                 params = ['item', 'id', ...params];
                 break;
             case `submit items`:
-            case `update items`:
                 params = ['items', ...params];
+                break;
+            case `update items`:
+                params = ['items', '...conditions', ...params];
                 break;
             case `update item atomically`:
                 params = ['predicate = async (item, transaction) => item', 'id', ...params]
@@ -5045,7 +5047,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel('update', node.getFieldName()),
                         [
                             `const commitments = items.map(item => this.${functionNameOfNormalize}(item, true))`,
-                            `return await self.updateItems(path, ...commitments)`],
+                            `return await self.updateItems(path, commitments, ...conditions)`],
                         `update items`)
 
                     generateApiFunction(

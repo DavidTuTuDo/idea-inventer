@@ -92,16 +92,19 @@ class CommonRemoteApi {
         const size = items.length
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} batch submit => path:${path}, size:${size} start`);
-        await firebase.submitDocuments(path, items)
+        const result = await firebase.submitDocuments(path, items);
         Util.appendInfo(`${uid} batch submit path:${path}, size:${size} succeed`);
+        return result;
+
     }
 
-    async updateItems(path, ...items) {
-        const size = items.length
+    async updateItems(path, items, ...conditions) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} batch update path:${path}, size:${size}`);
-        await firebase.updateDocuments(path, items);
-        Util.appendInfo(`${uid} batch update path:${path}, size:${size} succeed`);
+        Util.appendInfo(`${uid} batch update path:${path}`);
+        const result = await firebase.updateDocuments(path, items, ...conditions);
+        Util.appendInfo(`${uid} batch update path:${path}, size:${_.size(result)} succeed`);
+        return result;
+
     }
 
     /** 因為 == ,in, array-contains, not-in 這類的比較最多只能有10個, 所以得設計batch */

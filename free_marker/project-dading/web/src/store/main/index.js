@@ -46,6 +46,30 @@ class MainStore extends BaseMainStore {
             this.pushOrdersByIndex(-1, {...result.value, isHotCreate: true});
     }
 
+    async appendsOrder(counts = 5) {
+        const orders = _.range(1, counts).map(each => {
+            return {isHotCreate: true, members: [{}], records: [{}]}
+        })
+        const items = await this.apiOfOrder.submitOrders(this.component, orders);
+        this.pushOrdersByIndex(-1, ...items);
+    }
+
+    async updateOrdersConditions() {
+        const type = 1 // [1,2];
+        switch (type) {
+            case 1:
+                await this.apiOfOrder.updateOrders(this.component,
+                    [{host: 'DavTu'}], {type: 'where', params: ['countOfPeople', '>=', 20]});
+                /** 要寫一個針對id去update 屬性的function, updateCurrentOrders() */
+                break;
+            case 2:
+                await this.apiOfOrder.updateOrders(this.component,
+                    [{id:'cWkE2imBNzpWTc3nm0eK',contact:`48771123`},{id:'XGGE3MFhVI2dRXoH6wYt',contact:'999456'}])
+                break;
+        }
+
+    }
+
     invalidateOfRemote = (order) => {
         const self = this;
         if (order instanceof Order) {
