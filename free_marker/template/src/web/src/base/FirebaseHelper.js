@@ -178,7 +178,7 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     submitDocument = async (path, item = {}, id) => {
-        const ref = this.reference(path, id);
+        const ref = doc(this.reference(path, id));
         await setDoc(ref, item);
         return {...item, id: ref.id, exists: true};
     }
