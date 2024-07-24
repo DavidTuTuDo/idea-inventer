@@ -905,7 +905,7 @@ class InfinitePool {
 
     async sampleOfEachTaskInFreeMarker(){
         const test = [];
-        await new InfinitePool(3).runByEachTask([
+        await new InfinitePool(6).runByEachTask([
             async () => {
                 const answer = await Util.syncDelayRandom(2000, 5000);
                 console.log(answer);

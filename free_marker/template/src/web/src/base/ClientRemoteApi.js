@@ -41,8 +41,28 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('fetch', _async);
     }
 
+    async fetchCountOfSpecificCondition(path, ...conditions) {
+        const _async = async () => super.fetchCountOfSpecificCondition(path, ...conditions);
+        return await CommonPoolHelper.submitTo('fetch', _async);
+    }
 
-    async updateItem(path, id, item) {
+    async fetchSumOfSpecificAttribute(path, attr, ...conditions) {
+        const _async = async () => super.fetchSumOfSpecificAttribute(path, attr, ...conditions);
+        return await CommonPoolHelper.submitTo('fetch', _async);
+    }
+
+    async fetchAverageOfSpecificAttribute(path, attr, ...conditions) {
+        const _async = async () => super.fetchAverageOfSpecificAttribute(path, attr, ...conditions)
+        return await CommonPoolHelper.submitTo('fetch', _async);
+    }
+
+    //multi = [...{name: 'name', type: 'sum', attribute: 'attr'}]
+    async fetchMultiResultOfSpecific(path, multi, ...conditions) {
+        const _async = async () => super.fetchMultiResultOfSpecific(path, multi, ...conditions);
+        return await CommonPoolHelper.submitTo('fetch', _async);
+    }
+
+    async updateItem(path, item, id) {
         const _async = async () => super.updateItem(path, item, id);
         return await CommonPoolHelper.submitTo('submit', _async);
     }
@@ -59,8 +79,8 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all, ...conditions) {
-        const _async = async () => super.deleteItems(path, ...conditions);
+    async deleteItems(path, whole, ...conditions) {
+        const _async = async () => super.deleteItems(path, whole, ...conditions);
         return await CommonPoolHelper.submitTo('submit', _async);
     }
 
@@ -87,6 +107,16 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     async deleteObject(path, objName) {
         const _async = async () => super.deleteObject(path, objName);
+        return await CommonPoolHelper.submitTo('submit', _async)
+    }
+
+    async appendAttrOfArrayItem(path, attribute, content, id) {
+        const _async = async () => super.appendAttrOfArrayItem(path, attribute, content, id);
+        return await CommonPoolHelper.submitTo('submit', _async)
+    }
+
+    async deleteAttrOfArrayItem(path, attribute, content, id) {
+        const _async = async () => super.deleteAttrOfArrayItem(path, attribute, content, id);
         return await CommonPoolHelper.submitTo('submit', _async)
     }
 

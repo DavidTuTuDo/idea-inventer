@@ -184,7 +184,7 @@ class FirebaseHelper extends BaseFirebase {
         return {...item, id: docRef.id, exists: true};
     }
 
-    updateDocument = async (path, id, item = {}) => {
+    updateDocument = async (path, item = {}, id) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987864 updateDocument()的id不能為空值`);
         return await updateDoc(this.reference(path, id), item)
     }
@@ -192,13 +192,13 @@ class FirebaseHelper extends BaseFirebase {
     /** 一個document可以擁有array屬性，這個function可以幫助append document array裡的item，不需要整個重寫*/
     appendDocumentArrayItem = async (path, id, attribute = 'name', content = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `598781514 appendDocumentArrayItem()的id不能為空值`);
-        return await this.updateDocument(path, id, Util.getObject(attribute, arrayUnion(content)));
+        return await this.updateDocument(path, Util.getObject(attribute, arrayUnion(content)), id);
     }
 
     /** 一個document可以擁有array屬性，這個function可以幫助delete document array裡的item，不需要整個重寫*/
     deleteDocumentArrayItem = async (path, id, attribute = 'name', content = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `518781514 deleteDocumentArrayItem()的id不能為空值`);
-        return await this.updateDocument(path, id, Util.getObject(attribute, arrayRemove(content)));
+        return await this.updateDocument(path, Util.getObject(attribute, arrayRemove(content)), id);
     }
 
     /** atomically to increment 關於number的屬性，例如參訪人數之類的 */
@@ -287,6 +287,7 @@ class FirebaseHelper extends BaseFirebase {
             // const total = querySnapshot.size;
             const data = doc.data();
             data._doc = doc;
+            data.ref = doc.ref;
             data.id = _.isEmpty(data.id) ? doc.id : data.id;
             all.push(data);
         })
@@ -303,10 +304,9 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     deleteDocuments = async (path, whole, ...conditions) => {
-        const all = [];
-        const querySnapshot = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...this.constraints(conditions));
-        querySnapshot.forEach((doc) => all.push(doc.ref));
-        await this.batchDo(all, (batch, ref) => batch.delete(ref));
+        const all = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...conditions);
+        if (_.size(all) > 0)
+            await this.batchDo(all.map(data => data.ref), (batch, ref) => batch.delete(ref));
     }
 
     /** {type:'where',params:['countOfPeople','>','10']} => where(...params) */
@@ -359,12 +359,12 @@ class FirebaseHelper extends BaseFirebase {
      }
      *
      * */
-    async updateDocumentAtomically(path, predict = async (document, transaction) => document, id) {
+    async updateDocumentAtomically(path, predict = async (documentOfLatest, transaction, ref) => documentOfLatest, id) {
         const self = this;
         if (Util.isUndefinedNullEmpty(id)) {
             throw new ERROR(9999, '474845146451964 updateDocumentAtomically 的id 不能為空值')
         }
-
+        const uid = Util.getRandomHashV2(10);
         const behavior = async (transaction) => {
             const ref = self.reference(path, id);
             const docSnap = await transaction.get(ref);
@@ -373,9 +373,9 @@ class FirebaseHelper extends BaseFirebase {
             }
             const document = docSnap.data();
             document.exists = true;
-            const content = await predict(document, transaction);
-            transaction.update(ref, content);
-            Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, content);
+            const content = await predict(document, transaction, ref);
+            if (!Util.isUndefinedNullEmpty(content)) transaction.update(ref, content);
+            Util.appendInfo(`${uid} transaction update => path:/${path}/${id}`, `content ==> `, content);
 
         }
         return await this.transaction(behavior);
@@ -455,8 +455,8 @@ class FirebaseHelper extends BaseFirebase {
      * */
     fetchSumOfSpecificAttribute = async (path, attribute = 'name', ...conditions) => {
         const snapshot = await getAggregateFromServer(this.compound(path, conditions),
-            {sum: sum(attribute)});
-        return snapshot.data().sum;
+            {sumOf: sum(attribute)});
+        return snapshot.data().sumOf;
 
     }
 

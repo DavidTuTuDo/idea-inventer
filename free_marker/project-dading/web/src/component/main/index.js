@@ -166,14 +166,6 @@ class MainComponent extends BaseMainComponent {
         this.getStore().appendOrder().then();
     }
 
-    onMainAreaOfFuncBatchOrderButtonClicked(param) {
-        this.getStore().appendsOrder().then();
-    }
-
-    onMainAreaOfFuncBatchUpdateButtonClicked(param) {
-        this.getStore().updateOrdersConditions().then();
-    }
-
     onMainOrderMenuIconButtonClicked(param) {
         this.activateOrderDetailDialog(param.object.data());
     }
@@ -206,8 +198,55 @@ class MainComponent extends BaseMainComponent {
     }
 
 
+    /** -------------------- firebase測試 -------------------- **/
 
-    /** -------------------- async api -------------------- **/
+    onMainAreaOfFuncBatchOrderButtonClicked(param) {
+        this.getStore().appendsOrder().then();
+    }
+
+    onMainAreaOfFuncBatchUpdateButtonClicked(param) {
+        this.getStore().updateOrdersConditions().then();
+    }
+
+    onMainAreaOfFuncTransactionTestButtonClicked(param) {
+        this.getStore().transactionPeople().then();
+    }
+
+    onMainAreaOfFuncDeleteSpecificButtonClicked(param) {
+        this.getStore().deleteSpecific().then();
+    }
+
+    onMainAreaOfFuncDocumentAttrAppendItemButtonClicked(param) {
+        this.getStore().appendOrderMember().then();
+    }
+
+    onMainAreaOfFuncDocumentAttrDeleteItemButtonClicked(param) {
+        this.getStore().deleteOrderMember().then();
+    }
+
+    onMainAreaOfFuncIncrementPeopleButtonClicked(param) {
+        this.getStore().incrementPeople().then();
+    }
+
+    onMainAreaOfFuncLengthOfButtonClicked(param) {
+        this.getStore().lengthOfOrder().then();
+    }
+
+    onMainAreaOfFuncFetchCountOfButtonClicked(param) {
+        this.getStore().testOfFetchCount().then();
+    }
+
+    onMainAreaOfFuncFetchSumOfButtonClicked(param) {
+        this.getStore().testOfFetchSum().then();
+    }
+
+    onMainAreaOfFuncFetchAverageOfButtonClicked(param) {
+        this.getStore().testOfFetchAverage().then();
+    }
+
+    onMainAreaOfFuncFetchMultiOfButtonClicked(param) {
+        this.getStore().testOfFetchFetchMulti().then();
+    }
 }
 
 export default MainComponent;

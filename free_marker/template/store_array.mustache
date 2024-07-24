@@ -4,6 +4,7 @@
 {{{fieldClass就是Question}}}
 {{{hasPath就是true/flase}}}
 {{{paginateSize 就是page size}}}
+{{{isSelected就是true/flase}}}
 
 {{{argumentString 就是 view uid}}}
 {{{paramString view uid = userInfo.getUid}}}
@@ -26,84 +27,91 @@ this.{{{fieldName}}}.length = 0;
 }
 }
 
-get{{{fieldClass}}}ByAttribute = (value, attribute = 'id') => {
-return _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
-}
-
-get{{{fieldClass}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
-return _.find(this.get{{{functionName}}}(), ({{{name}}}) =>
-    Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
-}
-
-get{{{functionName}}}ByAttribute(value, attribute = 'id'){
-return _.filter(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
-}
-
-get{{{functionName}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
-return _.filter(this.get{{{functionName}}}(), ({{{name}}}) =>
-Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
-}
-
 get{{{functionName}}}() {
 return this.{{{fieldName}}};
 }
 
-get{{{fieldClass}}}OfHead = () => {
-return _.head(this.get{{{functionName}}}());
-}
+{{#isSelected}}
+    {{{這裡就是放if暨isSelected的邏輯}}}
+{{/isSelected}}
+{{^isSelected}}
+    {{{這裡就是放else暨不等於isSelected的邏輯}}}
 
-get{{{fieldClass}}}OfLast = () => {
-return _.last(this.get{{{functionName}}}());
-}
+    get{{{fieldClass}}}ByAttribute = (value, attribute = 'id') => {
+    return _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
+    }
 
-getLengthOf{{{fieldClass}}} = () => {
-return _.size(this.get{{{functionName}}}());
-}
+    get{{{fieldClass}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
+    return _.find(this.get{{{functionName}}}(), ({{{name}}}) =>
+    Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
+    }
 
-@action
-clean{{{functionName}}}(){
-this.{{{fieldName}}}.length = 0;
-}
+    get{{{functionName}}}ByAttribute(value, attribute = 'id'){
+    return _.filter(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual(value, {{{name}}}[attribute]));
+    }
 
-@action
-push{{{functionName}}}(...items) {
-const self = this;
-const itemsOfSorted = self.ruleOfPreviouslySort(items);
-this.{{{fieldName}}}.push(...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
-self.invalidate();
-}
+    get{{{functionName}}}ByAttributes = (values = ['id', '20241213'], attributes = ['id', 'updateTime']) => {
+    return _.filter(this.get{{{functionName}}}(), ({{{name}}}) =>
+    Util.isAndEquals(...attributes.map((attr,idx) => _.isEqual({{{name}}}[attr], values[idx]))))
+    }
 
-@action
-push{{{functionName}}}ByIndex(index, ...params) {
-const self = this;
-const itemsOfSorted = self.ruleOfPreviouslySort(params);
-Util.insertToArray(this.{{{fieldName}}},index, ...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
-self.invalidate();
-}
+    get{{{fieldClass}}}OfHead = () => {
+    return _.head(this.get{{{functionName}}}());
+    }
 
-push{{{fieldClass}}} = (item = {}) => {
-this.push{{{functionName}}}(item);
-}
+    get{{{fieldClass}}}OfLast = () => {
+    return _.last(this.get{{{functionName}}}());
+    }
 
-@action
-remove{{{functionName}}}ByIndex(...indexes) {
-for (const index of indexes) {
-if (index < -1 && this.{{{fieldName}}}.length < index) {
-Util.appendError(`7821, index ${index} is not valid length ==>`, this.{{{fieldName}}}.length, `index ==>`, index);
-return;
-}
-}
-_.pullAt(this.{{{fieldName}}}, indexes);
-}
+    getLengthOf{{{fieldClass}}} = () => {
+    return _.size(this.get{{{functionName}}}());
+    }
 
-@action
-remove{{{functionName}}}(...fatefulItems) {
-const indexes = [];
-for (const item of fatefulItems) {
-indexes.push(_.indexOf(this.{{{fieldName}}}, item));
-}
-this.remove{{{functionName}}}ByIndex(...indexes);
-}
+    @action
+    clean{{{functionName}}}(){
+    this.{{{fieldName}}}.length = 0;
+    }
+
+    @action
+    push{{{functionName}}}(...items) {
+    const self = this;
+    const itemsOfSorted = self.ruleOfPreviouslySort(items);
+    this.{{{fieldName}}}.push(...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+    self.invalidate();
+    }
+
+    @action
+    push{{{functionName}}}ByIndex(index, ...params) {
+    const self = this;
+    const itemsOfSorted = self.ruleOfPreviouslySort(params);
+    Util.insertToArray(this.{{{fieldName}}},index, ...itemsOfSorted.map((each) => each instanceof {{{fieldClass}}} ? each : new {{{fieldClass}}}({...each,parentNode:self})));
+    self.invalidate();
+    }
+
+    push{{{fieldClass}}} = (item = {}) => {
+    this.push{{{functionName}}}(item);
+    }
+
+    @action
+    remove{{{functionName}}}ByIndex(...indexes) {
+    for (const index of indexes) {
+    if (index < -1 && this.{{{fieldName}}}.length < index) {
+    Util.appendError(`7821, index ${index} is not valid length ==>`, this.{{{fieldName}}}.length, `index ==>`, index);
+    return;
+    }
+    }
+    _.pullAt(this.{{{fieldName}}}, indexes);
+    }
+
+    @action
+    remove{{{functionName}}}(...fatefulItems) {
+    const indexes = [];
+    for (const item of fatefulItems) {
+    indexes.push(_.indexOf(this.{{{fieldName}}}, item));
+    }
+    this.remove{{{functionName}}}ByIndex(...indexes);
+    }
+{{/isSelected}}
 
 {{#hasPath}}
     {{{這裡就是放if暨hasPath的邏輯}}}

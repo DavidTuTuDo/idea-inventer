@@ -2414,7 +2414,7 @@ class CodegenNode {
     }
 
     hasIncrementUsage() {
-        return this.isNumber() && !!this.increment.enable;
+        return this.isNumber() && _.isEqual(this.increment.enable, true);
     }
 
     /** @deprecated
@@ -3943,6 +3943,7 @@ class PathBase {
 
     getMustacheRenderValues = ({
                                    isCheapArray = false,
+                                   isSelected = false,
                                    hasPath,
                                    name,
                                    fieldName,
@@ -3975,6 +3976,7 @@ class PathBase {
             name,
             isCheapArray,
             fieldName,
+            isSelected,
             functionName: functionName ? functionName : _.upperFirst(fieldName),
             modifiedFunctionName: `Modified${_.upperFirst(fieldName)}`,
             modifiedFieldName: `${Util.camel(`modified`, fieldName)}`,
@@ -4146,13 +4148,15 @@ class BaseBuilder extends PathBase {
                 params = [...params, `action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'];
                 break;
             case `delete items`:
-                params = ['all = false', 'conditions', ...params];
+                params = ['whole = false', ...params, '...conditions'];
                 break;
+            case `increment attr of item`:
             case `fetch item's doc ref`:
             case 'fetch item':
             case `delete item`:
                 params = ['id', ...params];
                 break;
+
             case `submit item`:
             case `update item`:
                 params = ['item', 'id', ...params];
@@ -4161,17 +4165,17 @@ class BaseBuilder extends PathBase {
                 params = ['items', ...params];
                 break;
             case `update items`:
-                params = ['items', '...conditions', ...params];
+                params = ['items', ...params, '...conditions'];
                 break;
             case `update item atomically`:
-                params = ['predicate = async (item, transaction) => item', 'id', ...params]
+                params = ['predicate = async (itemOfLatest, transaction,ref) => itemOfLatest', 'id', ...params]
                 break;
             case `submit object`:
             case `update object`:
                 params = ['object', ...params];
                 break;
             case `update object atomically`:
-                params = [`predicate = async (object,transaction) => object`, ...params]
+                params = [`predicate = async (objectOfLatest,transaction,ref) => objectOfLatest`, ...params]
                 break;
             case `upload storage file`:
                 params = ['blob', ...params];
@@ -4254,6 +4258,7 @@ class StoreBuilder extends BaseBuilder {
                         isCheapArray: child.isCheapArray(),
                         type: child.type,
                         defaultValue,
+                        isSelected: child.isSelected(),
                         paramString: this.getParamsOfDefaultValue(child.getParamsInPath(), child).join(','),
                         argumentString: child.getStringOfArgumentsOfPath(),
                         stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch', false, false, true),
@@ -4746,7 +4751,6 @@ class RemoteFunctionHandler extends BaseBuilder {
                         return this.restfulListenItem(path,id,callback,view);`
                     );
                 }
-
             }
         }
     }
@@ -4794,7 +4798,6 @@ class RemoteFunctionHandler extends BaseBuilder {
             preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
                 `const path = \`${node.getPathOfRouterString()}\``
             )
-
             let stmts = [];
             if (isAsync) {
                 stmts.push(`const task = async () => {`)
@@ -4972,7 +4975,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
-                        [`return this.firestoreDocRef(path, id)`],
+                        [`return this.reference(path, id)`],
                         `fetch item's doc ref`,
                         false,
                     )
@@ -5002,7 +5005,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel(`delete`, node.getFieldName()),
-                        [`return await self.deleteItems(path, all, conditions)`],
+                        [`return await self.deleteItems(path, whole, ...conditions)`],
                         'delete items')
 
                     generateApiFunction(
@@ -5063,11 +5066,22 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `return this.fetchIdsOfDocument(path)`],
                         `fetch ids of array`);
 
+                    for (const child of node.getPreciseColumnChildren()) {
+                        if (child.hasIncrementUsage()) {
+                            generateApiFunction(
+                                node,
+                                Util.camel('update', 'increment', child.getFieldName()),
+                                [
+                                    `return await self.updateItem(path,{${child.getFieldName()}: self.getObjectOfIncrement(${child.getDeltaOfIncrement()})}, id)`
+                                ],
+                                `increment attr of item`);
+                        }
+                    }
                 } else if (node.isObject()) {
                     generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'doc', 'ref'),
-                        [`return this.firestoreDocRef(path,'${node.getName()}')`],
+                        [`return this.reference(path,'${node.getName()}')`],
                         `get object doc ref`,
                         false)
 
@@ -5114,7 +5128,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                                 node,
                                 Util.camel('submit', 'increment', child.getFieldName()),
                                 [
-                                    `return await self.updateObject(path, '${node.getName()}',{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})},)`
+                                    `return await self.updateObject(path, '${node.getName()}',{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})})`
                                 ],
                                 `increment attr of object`);
                         }

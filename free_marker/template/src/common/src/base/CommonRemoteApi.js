@@ -162,14 +162,15 @@ class CommonRemoteApi {
      *      (item) => {
      const old = item.count;
      if (old <= 85)
-     throw new ERROR(9999,'不能小於85');
+     throw new ERROR(9999,'不能小於85'); || return Promise.reject("Sorry! Population is too big");
+
 
      const latest = old - 1;
      return {count: latest}
      }
      *
      * */
-    async updateDocumentAtomically(path, predict = async (item, transaction) => item, id) {
+    async updateDocumentAtomically(path, predict = async (documentOfLatest, transaction) => documentOfLatest, id) {
         return await firebase.updateDocumentAtomically(path, predict, id);
     }
 
@@ -241,10 +242,10 @@ class CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, all, ...conditions) {
+    async deleteItems(path, whole, ...conditions) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start delete items ${path}`);
-        await firebase.deleteDocuments(path, all, conditions);
+        await firebase.deleteDocuments(path, whole, ...conditions);
         Util.appendInfo(`${uid} succeed delete items ${path}`);
     }
 
@@ -256,6 +257,22 @@ class CommonRemoteApi {
         const object = await firebase.submitDocument(path, commitment, objName);
         Util.appendInfo(`${uid} succeed submit object => ${path}/${objName}`);
         return object;
+    }
+
+    /** 一個document可以擁有array屬性，這個function可以幫助append document array裡的item，不需要整個重寫*/
+    async appendAttrOfArrayItem(path, attribute, content, id) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start append item document->array => ${path}/${id}`);
+        await firebase.appendDocumentArrayItem(path, id, attribute, content);
+        Util.appendInfo(`${uid} succeed append item document->array => ${path}/${id}`);
+    }
+
+    /** 一個document可以擁有array屬性，這個function可以幫助delete document array裡的item，不需要整個重寫*/
+    async deleteAttrOfArrayItem(path, attribute, content, id) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start delete item document->array => ${path}/${id}`);
+        await firebase.deleteDocumentArrayItem(path, id, attribute, content);
+        Util.appendInfo(`${uid} succeed delete item document->array => ${path}/${id}`);
     }
 
     async fetchObject(path, objName) {
@@ -406,6 +423,27 @@ class CommonRemoteApi {
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
     async uploadStorageFile(blob, folder = 'public', type = 'file') {
         return await firebase.uploadStorageFile(blob, folder, type);
+    }
+
+    reference(path, id) {
+        return firebase.reference(path, id);
+    }
+
+    async fetchCountOfSpecificCondition(path, ...conditions) {
+        return firebase.fetchCountOfSpecificCondition(path, ...conditions)
+    }
+
+    async fetchSumOfSpecificAttribute(path, attr, ...conditions) {
+        return firebase.fetchSumOfSpecificAttribute(path, attr, ...conditions)
+    }
+
+    async fetchAverageOfSpecificAttribute(path, attr, ...conditions) {
+        return firebase.fetchAverageOfSpecificAttribute(path, attr, ...conditions)
+    }
+
+    //multi = [...{name: 'name', type: 'sum', attribute: 'attr'}]
+    async fetchMultiResultOfSpecific(path, multi, ...conditions) {
+        return firebase.fetchMultiResultOfSpecific(path, multi, ...conditions)
     }
 
     /** realtime database method 想開發成為preference的概念
