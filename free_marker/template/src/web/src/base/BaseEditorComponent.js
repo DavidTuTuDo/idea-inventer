@@ -124,14 +124,14 @@ class BaseEditorComponent extends BaseComponent {
                     const blobOfWatermark = await self.buildWatermarkBlob(file);
                     await self.currentUploadImagesTaskInfo.asyncTaskOfBeforeSubmit(URL.createObjectURL(blobOfWatermark));
                     const urlOfWatermark = await this.getStore().uploadStorageFile(blobOfWatermark, self.currentUploadImagesTaskInfo.folderName);
-                    const urlOfOrigin = await this.getStore().uploadStorageFile(file.blob, self.currentUploadImagesTaskInfo.folderName);
+                    const urlOfOrigin = await this.getStore().uploadStorageFile(file, self.currentUploadImagesTaskInfo.folderName);
                     await self.currentUploadImagesTaskInfo.asyncTaskOfAfterSubmit([{
                         watermark: urlOfWatermark,
                         origin: urlOfOrigin
                     }]);
                 } else {
                     await self.currentUploadImagesTaskInfo.asyncTaskOfBeforeSubmit([file.url]);
-                    const url = await this.getStore().uploadStorageFile(file.blob, self.currentUploadImagesTaskInfo.folderName);
+                    const url = await this.getStore().uploadStorageFile(file, self.currentUploadImagesTaskInfo.folderName);
                     await self.currentUploadImagesTaskInfo.asyncTaskOfAfterSubmit([url]);
                 }
                 watermark.destroy();
@@ -143,7 +143,7 @@ class BaseEditorComponent extends BaseComponent {
                 self.currentUploadImagesTaskInfo.asyncTaskOfBeforeSubmit(urls);
                 const remoteUrls = [];
                 for (const file of files) {
-                    const remoteUrl = await this.getStore().uploadStorageFile(file.blob, self.currentUploadImagesTaskInfo.folderName);
+                    const remoteUrl = await this.getStore().uploadStorageFile(file, self.currentUploadImagesTaskInfo.folderName);
                     remoteUrls.push(remoteUrl);
                 }
                 self.currentUploadImagesTaskInfo.asyncTaskOfAfterSubmit(remoteUrls);

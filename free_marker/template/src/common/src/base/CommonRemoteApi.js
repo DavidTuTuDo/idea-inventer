@@ -421,8 +421,8 @@ class CommonRemoteApi {
     }
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
-    async uploadStorageFile(blob, folder = 'public', type = 'file') {
-        return await firebase.uploadStorageFile(blob, folder, type);
+    async uploadStorageFile(blob, folder = 'public', fileNameExtension) {
+        return await firebase.uploadStorageFile(blob, folder, fileNameExtension);
     }
 
     reference(path, id) {

@@ -15,10 +15,7 @@ class ClientRemoteApi extends CommonRemoteApi {
     }
 
     normalizeTimestamp(obj) {
-        if (obj instanceof this.FirebaseTimestampClass())
-            return obj.toMillis();
-        else
-            return obj;
+        if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis(); else return obj;
     }
 
     async submitItem(path, object, id) {
@@ -120,9 +117,9 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('submit', _async)
     }
 
-    async uploadStorageFile(blob, folder = 'public', type = 'file') {
-        const _async = async () => super.uploadStorageFile(blob, folder, type);
-        return await CommonPoolHelper.submitTo('submit', _async, 'high', `upload ${type}`);
+    async uploadStorageFile(blob, folder = 'public', fileNameExtension) {
+        const _async = async () => super.uploadStorageFile(blob, folder, fileNameExtension);
+        return await CommonPoolHelper.submitTo('submit', _async, 'high', `upload storage file`);
     }
 
     async callCloudFunctions(functionName, data = {}) {
@@ -173,9 +170,7 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     handleApiExecute(path, type, view) {
         if (view !== undefined) {
-            if (view instanceof BaseComponent)
-                view.setLoadingViewVisibility(true);
-            else {
+            if (view instanceof BaseComponent) view.setLoadingViewVisibility(true); else {
                 throw new ERROR(7006)
             }
         }

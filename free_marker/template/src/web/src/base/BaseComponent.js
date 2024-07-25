@@ -44,6 +44,7 @@ class BaseComponent extends MuiComponent {
     jobExecutorLock = false;
     loginDialogRef = React.createRef();
     propsOfMobX
+
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
 
     constructor(props) {
@@ -424,7 +425,7 @@ class BaseComponent extends MuiComponent {
 
     /** auto completed 有suggest的概念{label,value,uid,popularLevel }*/
     getNumberOfSelected(suggest) {
-        if(suggest !== null) {
+        if (suggest !== null) {
             return suggest.value ? _.toNumber(suggest.value) : -1;
         }
         return 0;
@@ -538,7 +539,7 @@ class BaseComponent extends MuiComponent {
         Util.appendError(`onFileSelected() is not implemented()`)
     }
 
-    enableFileSelectView = (accept = 'file', multiple = 'false', type = 'file') => {
+    enableFileSelectView = (accept = '*.*', multiple = false, type = 'file') => {
         this.getStore().setSelectorParam({accept, multiple, type});
         Util.syncDelay('10').then(() => this.fileChooserInputRef.current.click())
     }
@@ -642,7 +643,7 @@ class BaseComponent extends MuiComponent {
 
     getSelectedSuggest(value, suggests) {
         if (_.isArray(suggests) && value)
-            return _.find(suggests,(suggest) => _.isEqual(_.toString(suggest.value),_.toString(value)));
+            return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));
     }
 
     renderSnackView() {
@@ -948,7 +949,7 @@ class BaseComponent extends MuiComponent {
         if (disposablePage && Application.getStoreObject()) {
             const nameOfComponent = customView.nameOfComponent;
             const store = Application.getStoreObject()[`${nameOfComponent}`];
-            if(store)
+            if (store)
                 store.clean();
         }
 

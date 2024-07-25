@@ -174,7 +174,7 @@ class MainComponent extends BaseMainComponent {
         const self = this;
         return () => {
             // this.showInfoSnackMessage(`開發中，請稍待`)
-            functions.httpOnCallGenerateDocx(self, {idOfOrder:param.object.getId()}).then((pathOfDownload) => self.download(pathOfDownload));
+            functions.httpOnCallGenerateDocx(self, {idOfOrder: param.object.getId()}).then((pathOfDownload) => self.download(pathOfDownload));
         }
     }
 
@@ -246,6 +246,20 @@ class MainComponent extends BaseMainComponent {
 
     onMainAreaOfFuncFetchMultiOfButtonClicked(param) {
         this.getStore().testOfFetchFetchMulti().then();
+    }
+
+    onMainAreaOfFuncUploadFileButtonClicked(param) {
+        this.enableFileSelectView();
+    }
+
+    onFilesSelected(files) {
+        this.showInfoSnackMessage(`點擊到file-> ${files[0].name}`);
+        console.log(45454546,files[0]);
+        this.getStore().uploadStorageFile(files[0], 'contract').then(url => {
+            this.showInfoSnackMessage(`下載位置=> ${url}`)
+            Util.appendInfo(2131321321,' ==> ',url);
+        })
+
     }
 }
 

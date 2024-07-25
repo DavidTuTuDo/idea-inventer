@@ -428,15 +428,60 @@ class FirebaseHelper extends BaseFirebase {
     }
 
 
-    /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
-    uploadStorageFile = async (blob, folder = 'public', type = 'file') => {
+    /** 這是針對用desktop/mobile 選擇的檔案上傳機制
+     *  前端以blob為主，而file selected選到的資料格式如下
+     * {
+     *     "name": "截圖 2024-07-15 下午8.38.30.png",
+     *     "index": "0",
+     *     "blob": file,
+     *     "url": "blob:http://localhost:8080/4f6c25b3-8d6f-4d06-a236-6f9a4b13211a"
+     * }
+     *
+     * */
+
+    uploadStorageFile = async (file, folder = 'public', fileNameExtension = undefined) => {
+        function getContentType(fileName) {
+            const extension = fileName.split('.').pop().toLowerCase();
+            const mimeTypes = {
+                'jpg': 'image/jpeg',
+                'jpeg': 'image/jpeg',
+                'png': 'image/png',
+                'gif': 'image/gif',
+                'bmp': 'image/bmp',
+                'webp': 'image/webp',
+                'pdf': 'application/pdf',
+                'txt': 'text/plain',
+                'html': 'text/html',
+                'css': 'text/css',
+                'js': 'application/javascript',
+                'json': 'application/json',
+                'xml': 'application/xml',
+                'mp4': 'video/mp4',
+                'mp3': 'audio/mpeg',
+                'wav': 'audio/wav',
+                'ogg': 'audio/ogg',
+                'zip': 'application/zip',
+                'rar': 'application/vnd.rar',
+                'doc': 'application/msword',
+                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'ppt': 'application/vnd.ms-powerpoint',
+                'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                'xls': 'application/vnd.ms-excel',
+                'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                // 其他你可能需要的类型
+            };
+
+            return mimeTypes[extension] || 'application/octet-stream';
+        }
+
         // Create a storage reference
         const uid = Util.getRandomHashV2(10);
-        const storageRef = ref(this.storage(), `${folder}/${blob.name ?? `file-${Util.getRandomHashV2(10)}`}`);
+        const fileName = fileNameExtension ?? file.name;
+        const storageRef = ref(this.storage(), `${folder}/${fileName ?? `file-${Util.getRandomHashV2(10)}`}`);
         // Upload the file
-        const snapshot = await uploadBytes(storageRef, blob);
-        Util.appendInfo(`${uid} File uploaded successfully:`, snapshot);
-        // Get the download URL
+        const snapshot = await uploadBytes(storageRef, file.blob, {contentType: getContentType(fileName)});
+        Util.appendInfo(`${uid} ${fileName} own following meta: `, getContentType(fileName));
+        Util.appendInfo(`${uid} File uploaded successfully:`);
         const downloadURL = await getDownloadURL(snapshot.ref);
         Util.appendInfo(`${uid} File available at:`, downloadURL);
         return downloadURL;
