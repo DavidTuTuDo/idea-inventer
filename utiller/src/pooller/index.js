@@ -498,7 +498,7 @@ class InfinitePool {
 
         if (initialTaskShouldNotRun || comparison) {
             const restInInterval = await Util.syncDelayRandom(this.taskSleepInterval.min, this.taskSleepInterval.max)
-            this.printLogMessage(`4484121, 走到一坡睡覺區 enableOfTaskSleepByInterval:${this.enableOfTaskSleepByInterval} || ${restInInterval} ms`)
+            this.printLogMessage(`4484121, 走到睡覺區 enableOfTaskSleepByInterval:${this.enableOfTaskSleepByInterval} || ${restInInterval} ms`)
         }
 
         /** 當pool isRunning才可以把任務加進去 */
@@ -515,7 +515,6 @@ class InfinitePool {
             }
         }
         this.printLogMessage(`4489844821, 離開了 syncTaskDispatcher()`)
-
     }
 
     /** 把assignedTask 加入到 QueueOfExecutingTask 的規則*/
@@ -551,7 +550,6 @@ class InfinitePool {
         return `AssignTaskQueueCount: ${this.getCountOfAssignTaskInQueue()}`
     }
 
-
     getLogMessageOfTaskHash = (hash) => {
         return `TASK HASH: ${hash}`
     }
@@ -578,9 +576,18 @@ class InfinitePool {
             return result;
         }
 
+        async function emptyTask() {
+            self.printLogMessage(`因為max count of worker為0，所以指派一個簡單的任務`);
+            await Util.syncDelay(10);
+        }
+
         await this.syncTaskDispatcher();
 
-        if (!this.isExecutingTaskQueueEmpty()) {
+
+        if (this.maximumOfWorker === 0) {
+            /** 當maximumOfWorker為0的時候，runInBackground的setTimeout/Util.syncDelay()會卡住，給了emptyTask()就能閃過這個issue*/
+            await emptyTask();
+        } else if (!this.isExecutingTaskQueueEmpty()) {
             /** 當pool已經被要求停止時, executeQueue裡面還有未做完的任務*/
             this.printLogMessage(`4512211, 開始任務(taskWrapper): ${this.getLogMessageOfExecutingTaskQueueCount()}`)
             const task = await execute();
@@ -640,7 +647,7 @@ class InfinitePool {
     }
 
     runInfiniteInBackground = (functionOfAsyncTask, interval) => {
-        this.runInBackGround(this.runInInfinite, functionOfAsyncTask, interval);
+        this.invokeInstanceOfBackground(this.runInInfinite, functionOfAsyncTask, interval);
     }
 
     runByParamInBackGround = (functionOfAsyncTask, ...params) => {
@@ -648,7 +655,7 @@ class InfinitePool {
     }
 
     runByTimesInBackGround = (functionOfAsyncTask, times) => {
-        this.runInBackGround(this.runByTimes, functionOfAsyncTask, times);
+        this.invokeInstanceOfBackground(this.runByTimes, functionOfAsyncTask, times);
         return this;
     }
 
@@ -752,7 +759,7 @@ class InfinitePool {
     }
 
     async exampleOfRunByParamInBackground() {
-        const pool = new InfinitePool(5);
+        const pool = new InfinitePool(0);
         pool.runByParamInBackGround(
             async (param) => {
                 const ms = await Util.syncDelayRandom()
@@ -760,29 +767,38 @@ class InfinitePool {
             }, 'david', 'susan', 'golden', 'weber', 'kevin')
 
         setTimeout(() => {
-            pool.appendParamInToQueue('apple', 'Rui')
+            pool.appendParamInToQueue('apple', 'Rui', 'Rui', 'Qui', 'Seiu', 'Bikky', 'apple', 'Rui', 'Rui', 'Qui', 'Seiu', 'Bikky')
         }, 12000)
 
-        while (pool.isRunning()) {
-            Util.appendInfo('system is running');
-            await Util.syncDelay(3000);
+        setTimeout(() => {
+            pool.setWorker(5)
+        }, 6000)
+
+        while (true) {
+            Util.appendInfo('system is running after 2 seconds');
+            await Util.syncDelay(2000);
             // pool.showState()
         }
     }
 
     async exampleOfRunByTimesInBackground() {
-        const pool = new InfinitePool(6);
+        const pool = new InfinitePool(0);
         let count = 0;
         pool.runByTimesInBackGround(
             async () => {
                 const ms = await Util.syncDelayRandom()
                 count++
                 console.log(`wait for time: ${ms} ms, count:${count}`);
-            }, 20)
+            }, 50)
 
-        while (pool.isRunning()) {
-            Util.appendInfo('system is running');
-            await Util.syncDelay(3000);
+
+        setTimeout(() => {
+            pool.setWorker(3)
+        }, 10000);
+
+        while (true) {
+            Util.appendInfo('system is running after 2.5 seconds');
+            await Util.syncDelay(2500);
             // pool.showState()
         }
 
@@ -803,7 +819,7 @@ class InfinitePool {
 
     async exampleOfRunByTask() {
         const pool = new InfinitePool(1);
-        const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each*1000));
+        const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each * 1000));
         Util.appendInfo(`....start method of exampleOfRunByTask`);
         const all = await pool.runByEachTask(tasks);
         Util.appendInfo(all);
@@ -903,7 +919,7 @@ class InfinitePool {
         }
     }
 
-    async sampleOfEachTaskInFreeMarker(){
+    async sampleOfEachTaskInFreeMarker() {
         const test = [];
         await new InfinitePool(6).runByEachTask([
             async () => {
@@ -943,7 +959,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool(1).sampleOfEachTaskInFreeMarker()
+        await new InfinitePool().exampleOfRunByTimesInBackground()
     })();
 
 }
