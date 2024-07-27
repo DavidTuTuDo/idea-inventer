@@ -61,7 +61,7 @@ class UserInfo {
     }
 
     onAuthStateChangedReceive = (user) => {
-        Util.appendInfo('4565231213 收到authStateChanged 通知，我改變了 =>',user)
+        Util.appendInfo('4565231213 收到authStateChanged 通知，我改變了 =>', user)
         this.specificBehaviorOfLoginStateChange(user).then()
     }
 
@@ -73,11 +73,13 @@ class UserInfo {
                 const credential = Cookie.getCredential();
                 /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
                 if (await this.apiOfUser.fetchUserIsExist(user.uid)) {
+                    Util.appendInfo(`7381272328 => 會員存在，所以走到這裡了`)
                     await this.apiOfUser.updateUserItem(Application.getLatestComponent(), {
                         ...user,
                         updateTime: -1
                     }, user.uid);
                 } else {
+                    Util.appendInfo(`7381271928 => 會員不存在，所以走到這裡了`)
                     await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
                         ...user,
                         id: user.uid
@@ -95,7 +97,6 @@ class UserInfo {
             Cookie.removeCredential()
             Cookie.removeUser();
             await firebaser.logout();
-            this.invalidateLoginState();
         }
 
         this.invalidateLoginState();
@@ -159,14 +160,12 @@ class UserInfo {
 
         const func = async () => {
             await this.executeAsyncTask(async () => {
-
-                Util.appendInfo('454841, login by google account');
-
+                Util.appendInfo('4548411231, login by google account');
                 await firebaser.signInWithGoogle(async (authResult) => {
                     /** 只有在登入傳回直裡面有credential */
                     if (authResult !== undefined) {
+                        Util.appendInfo(`732843828 => `, authResult);
                         const credential = authResult.credential;
-                        Util.appendInfo('4548412, retrieve credential:', credential);
                         Cookie.setCredential(credential);
                         /** 拿到authResult,會觸發 firebase 的 listener ==> this.auth().onAuthStateChanged((user) */
                     } else {
@@ -219,7 +218,7 @@ class UserInfo {
             Util.appendInfo(`45431696 有cookie，和google hand shake取得latest token`);
             const func = async () => {
                 try {
-                    const result =  await firebaser.signInWithExistedCredential(Cookie.getCredential());
+                    const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
                     Cookie.setCredential(result.credential);
                 } catch (error) {
                     Util.appendError(error);

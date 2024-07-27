@@ -117,10 +117,13 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     signInWithGoogle = async (asyncTask = async (result) => result) => {
-        const result = await signInWithPopup(this.auth(), this.getGoogleAuthProvider()).catch(error => {
-            Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`)
-        });
-        await asyncTask(result);
+        try {
+            const result = await signInWithPopup(this.auth(), this.getGoogleAuthProvider());
+            await asyncTask(result);
+        } catch(error) {
+                Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`)
+                throw new ERROR(9999, `8897899 登入發生錯誤`)
+        }
     }
 
     logout = async () => {
