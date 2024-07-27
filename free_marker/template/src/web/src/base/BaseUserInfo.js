@@ -121,15 +121,20 @@ class UserInfo {
         const func = async () => {
             await this.executeAsyncTask(async () => {
                 Util.appendInfo('4548411231, user click login（google account only）');
-                await firebaser.signInWithGoogle(async (authResult) => {
-                    /** 只有在登入傳回直裡面有credential */
-                    if (authResult !== undefined) {
-                        Util.appendInfo(`7328438281 authResult => `, authResult);
-                    } else {
-                        Util.appendInfo(`4548414, didn't retrieve credential`);
-                        self.setAuthProcessing(false);
-                    }
-                }, view)
+                try {
+                    await firebaser.signInWithGoogle(async (authResult) => {
+                        /** 只有在登入傳回直裡面有credential */
+                        if (authResult !== undefined) {
+                            Util.appendInfo(`7328438281 authResult => `, authResult);
+                        } else {
+                            Util.appendInfo(`4548414, didn't retrieve credential`);
+                            self.setAuthProcessing(false);
+                        }
+                    }, view)
+                } catch (error) {
+                    Util.appendError(`${error.message}`);
+                    self.setAuthProcessing(false);
+                }
             })
         };
         await this.authProcessBehavior(func);
