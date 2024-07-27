@@ -959,7 +959,7 @@ class InfinitePool {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        await new InfinitePool().exampleOfRunByTimesInBackground()
+        // await new InfinitePool().exampleOfRunByTimesInBackground()
     })();
 
 }
