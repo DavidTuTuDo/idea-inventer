@@ -20,7 +20,7 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     async submitItem(path, object, id) {
         const _async = async () => super.submitItem(path, object, id);
-        return await CommonPoolHelper.submitTo('submit', _async, 'low', 'submitItem');
+        return await CommonPoolHelper.submitTo('submit', _async, );
     }
 
     async submitItems(path, ...objects) {

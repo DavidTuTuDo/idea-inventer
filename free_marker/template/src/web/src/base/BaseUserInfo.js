@@ -22,14 +22,12 @@ import {
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
-import AccountCredential from "../store/accountCredential";
 import {Application} from "../";
 import CommonPoolHelper from "./CommonPoolHelper";
 
 class UserInfo {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
-
 
     @observable
     isLoginSucceed = false;
@@ -46,11 +44,8 @@ class UserInfo {
     constructor(props) {
         makeObservable(this);
         this.subscribeAuthStateChanged();
-        this.signInWithCredential().then();
         this.apiOfUser = new AccountUser();
-        this.crendential = new AccountCredential()
     }
-
 
     subscribeAuthStateChanged() {
         EventBus.self().on("authStateChanged", this.onAuthStateChangedReceive);
@@ -67,66 +62,29 @@ class UserInfo {
 
     /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
-
-        try {
-            if (this.isValidUser(user)) {
-                const credential = Cookie.getCredential();
-                /** view 不能放 Application.getLatestComponent(),會讓當前的component發生錯誤 */
-                if (await this.apiOfUser.fetchUserIsExist(user.uid)) {
-                    Util.appendInfo(`7381272328 => 會員存在，所以走到這裡了`)
-                    await this.apiOfUser.updateUserItem(Application.getLatestComponent(), {
-                        ...user,
-                        updateTime: -1
-                    }, user.uid);
-                } else {
-                    Util.appendInfo(`7381271928 => 會員不存在，所以走到這裡了`)
-                    await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
-                        ...user,
-                        id: user.uid
-                    }, user.uid);
-                }
-                await this.crendential.submitCredential(Application.getLatestComponent(), credential, user.uid);
-                /** 應該在login 以及 signInByCredential 就會把 credential 存到 cache */
-                Cookie.setUser(user);
-                Util.appendInfo('登入成功, 所以寫入資料')
-                Util.appendInfo('user info:', user);
-                Util.appendInfo('user credential:', credential);
-            }
-        } catch (error) {
-            Util.appendError(`87878798 發生錯誤 ===> `, error.message);
-            Cookie.removeCredential()
+        if (this.isValidUser(user)) {
+            Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`,user);
+            await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
+                ...user,
+                id: user.uid
+            }, user.uid);
+            Cookie.setUser(user);
+            Util.appendInfo('登入成功, 所以寫入資料')
+            Util.appendInfo('user info:', user);
+        } else {
+            Util.appendInfo(`73812711238 => 在firebase-authentication不存在裡了，無差別清理掉髒東西`);
             Cookie.removeUser();
             await firebaser.logout();
         }
-
         this.invalidateLoginState();
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
 
-    /** -------------------- async api -------------------- **/
-
-    getCurrentUser(allowCache = true) {
-        /**
-         const displayName = user.displayName;
-         const email = user.email;
-         const photoURL = user.photoURL;
-         const emailVerified = user.emailVerified;
-         const uid = user.uid;
-         */
-        Util.appendInfo(`6721721739812 getCurrentUser() 被呼叫！`)
-        let user = firebaser.getCurrentUser();
-        if (Util.exist(user)) return user;
-
-        if (allowCache) {
-            user = Cookie.getUser();
-            if (Util.exist(user)) return user;
-        }
-        return {};
-    }
-
     @action
     invalidateLoginState() {
-        this.isLoginSucceed = !_.isNull(firebaser.getCurrentUser());
+        Util.appendInfo(`112132132 不論有沒有有登入，我都有記得enableParallelMode`)
+        CommonPoolHelper.enableParallelMode();
+        this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.isAdminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
         this.setAuthProcessing(false);
     }
@@ -160,14 +118,11 @@ class UserInfo {
 
         const func = async () => {
             await this.executeAsyncTask(async () => {
-                Util.appendInfo('4548411231, login by google account');
+                Util.appendInfo('4548411231, user click login（google account only）');
                 await firebaser.signInWithGoogle(async (authResult) => {
                     /** 只有在登入傳回直裡面有credential */
                     if (authResult !== undefined) {
-                        Util.appendInfo(`732843828 => `, authResult);
-                        const credential = authResult.credential;
-                        Cookie.setCredential(credential);
-                        /** 拿到authResult,會觸發 firebase 的 listener ==> this.auth().onAuthStateChanged((user) */
+                        Util.appendInfo(`7328438281 authResult => `, authResult);
                     } else {
                         Util.appendInfo(`4548414, didn't retrieve credential`);
                         self.setAuthProcessing(false);
@@ -209,27 +164,6 @@ class UserInfo {
 
     isAuthProcessing() {
         return this.isAuthProcessingState;
-    }
-
-    signInWithCredential = async () => {
-        Util.appendInfo(`45431646 進入認證流程`);
-        const self = this;
-        if (Cookie.hasCredential() && !this.isLoginWithSucceed()) {
-            Util.appendInfo(`45431696 有cookie，和google hand shake取得latest token`);
-            const func = async () => {
-                try {
-                    const result = await firebaser.signInWithExistedCredential(Cookie.getCredential());
-                    Cookie.setCredential(result.credential);
-                } catch (error) {
-                    Util.appendError(error);
-                    Cookie.removeCredential();
-                }
-            }
-            await this.authProcessBehavior(func);
-        } else {
-            Util.appendInfo(`45431616 沒有cookie，需要和google hand shake取得latest token`);
-        }
-        CommonPoolHelper.enableParallelMode();
     }
 
 }

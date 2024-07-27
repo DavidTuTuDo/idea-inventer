@@ -4,7 +4,7 @@ import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
 import Config from '../config';
-import {GoogleAuthProvider, onAuthStateChanged, signInWithCredential, signInWithPopup, signOut} from "firebase/auth";
+import {GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from "firebase/auth";
 import {
     getCountFromServer,
     getAggregateFromServer,
@@ -54,15 +54,13 @@ class FirebaseHelper extends BaseFirebase {
         super();
         if (this.auth() === undefined) return;
         const self = this;
-        if (_.isEqual('web', Config.platform)) {
-            /** 因為和admin共用, firebase-admin沒有onAuthStateChanged 這個 function */
-            onAuthStateChanged(this.auth(), (user) => {
-                self.user = user;
-                const event = require('../event').default;
-                event.emitAuthStateChanged(user);
-                Util.appendInfo(`8745412, 登入後發布event了`, user)
-            })
-        }
+        /** 因為和admin共用, firebase-admin沒有onAuthStateChanged 這個 function */
+        onAuthStateChanged(this.auth(), (user) => {
+            self.user = user;
+            const event = require('../event').default;
+            event.emitAuthStateChanged(user);
+            Util.appendInfo(`8745412 FirebaseHelper登入後發布event了`, user)
+        })
 
         if (_.isEqual(Config.env, 'dev') && _.isEqual(Config.platform, 'web')) {
             connectFunctionsEmulator(this.functions(), "localhost", 5001)
@@ -120,16 +118,18 @@ class FirebaseHelper extends BaseFirebase {
         try {
             const result = await signInWithPopup(this.auth(), this.getGoogleAuthProvider());
             await asyncTask(result);
-        } catch(error) {
-                Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`)
-                throw new ERROR(9999, `8897899 登入發生錯誤`)
+        } catch (error) {
+            Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`)
+            throw new ERROR(9999, `8897899 登入發生錯誤`)
         }
     }
 
     logout = async () => {
         try {
-            await signOut(this.auth());
-            Util.appendInfo('2556416521 User signed out successfully.');
+            if (!Util.isUndefinedNullEmpty(this.user)) {
+                await signOut(this.auth());
+                Util.appendInfo('2556416521 User signed out successfully.');
+            }
         } catch (error) {
             Util.appendInfo('45465454654 error signing out:', error.message);
         }
@@ -143,26 +143,6 @@ class FirebaseHelper extends BaseFirebase {
         await this.firestore().collection('public').doc('timestamp').set({serverTime: this.getServerTimeSymbol()})
         const timestamp = await this.firestore().collection('public').doc('timestamp').get();
         return timestamp.data().serverTime;
-    }
-
-    async signInWithExistedCredential(credential) {
-        const self = this;
-        const asyncTask = async () => {
-            Util.appendInfo('151561032 signInWithExistedCredential start...');
-            const outhCredential = GoogleAuthProvider.credential(Util.getExistOne(credential.idToken, credential.oauthIdToken));
-            try {
-                const result = await signInWithCredential(self.auth(), outhCredential);
-                Util.appendInfo('546451213 signInWithExistedCredential finished...');
-
-                return {
-                    credential: result.credential, user: result.user
-                }
-            } catch (error) {
-                /** 如果已經是登入狀況又呼叫的話, 可能會跑進去 stale in log-in */
-                throw new ERROR(error)
-            }
-        }
-        return await CommonPoolHelper.submitTo('submit', asyncTask, 'high', 'signInWithExistedCredential');
     }
 
     getFieldNameOfDocumentId() {
@@ -184,7 +164,7 @@ class FirebaseHelper extends BaseFirebase {
     submitDocument = async (path, item = {}, id) => {
         const ref = this.reference(path, id);
         const docRef = Util.isUndefinedNullEmpty(id) ? await addDoc(ref, item) : await setDoc(ref, item);
-        return {...item, id: docRef.id, exists: true};
+        return {...item, id: id ?? docRef.id, exists: true};
     }
 
     updateDocument = async (path, item = {}, id) => {

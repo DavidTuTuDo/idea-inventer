@@ -1,3 +1,4 @@
+const edit = true;
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -48,9 +49,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
 
     clearKeywordDetail() {
         this.getToolBar().removeSelectedComplete();
-        this.getToolBar().removeInput();
         this.getToolBar().toggleKeyOfComplete();
-        this.getToolBar().cleanSuggestCompletes();
     }
 
     @action

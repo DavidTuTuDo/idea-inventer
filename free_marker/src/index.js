@@ -551,7 +551,9 @@ class CodegenNode {
     platform;
 
     cookies;
-    /** {name,type:object|string }對應到web使用的cookie, 好處是cookie會加密 */
+    /** {name,type:object|string }對應到web使用的cookie, 我設計的cookie會加密，用瀏覽器看不出個毛
+     type是object 就是拿出來再幫你JSON.parse(...)
+     */
 
     wrap;
     /** 在view外面包一層div,作為彈性的使用 */
