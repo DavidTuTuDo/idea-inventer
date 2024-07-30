@@ -308,12 +308,12 @@ class FirebaseHelper extends BaseFirebase {
             case 'startAfter':
                 return startAfter(...condition.params);
             default:
-                throw new ERROR(9999, `4451513123 normalize() => FirebaseHelper unsupported type=>{${type}}`)
+                return undefined;
         }
     }
 
     constraints = (conditions) => {
-        return conditions.map(condition => this.normalize(condition))
+        return _.filter(conditions.map(condition => this.normalize(condition)), (each) => !_.isUndefined(each));
     }
 
     compound = (path, conditions) => {
@@ -357,7 +357,6 @@ class FirebaseHelper extends BaseFirebase {
             }
             const document = docSnap.data();
             document.exists = true;
-            document.id = id;
             const content = await predict(document, transaction, ref);
             if (!Util.isUndefinedNullEmpty(content)) transaction.update(ref, content);
             Util.appendInfo(`${uid} transaction update => path:/${path}/${id}`, `content ==> `, content);
@@ -373,10 +372,10 @@ class FirebaseHelper extends BaseFirebase {
      * 回傳一個unsubscribe的function，需要要在componentDidUnmount的地方呼叫unsubscribe()
      * callback {status:[local|server|error|cache], changes: document, error:object }
      */
-    listenDocument = (path, id, callback = (source, data, error) => true) => {
+    listenDocument = (path, id, callback = (status, data, error) => true) => {
         const unsubscribe = onSnapshot(this.reference(path, id), (doc) => {
             const status = doc.metadata.hasPendingWrites ? "local" : "server";
-            callback(status, doc.data())
+            callback(status, {...doc.data(), id: doc.id})
         }, (error) => {
             callback("error", undefined, error)
         })

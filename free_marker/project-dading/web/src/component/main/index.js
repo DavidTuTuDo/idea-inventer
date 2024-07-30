@@ -259,7 +259,6 @@ class MainComponent extends BaseMainComponent {
             this.showInfoSnackMessage(`下載位置=> ${url}`)
             Util.appendInfo(2131321321,' ==> ',url);
         })
-
     }
 }
 

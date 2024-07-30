@@ -4725,22 +4725,22 @@ class RemoteFunctionHandler extends BaseBuilder {
 
             if ((node.isObject() && node.hasPath()) || node.isCheapArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
-                    [...defaultParam, `callback = (data,error) => {}`],
-                    [], [node.isCheapArray() ? 'attention! this is cheap array' : ''],
+                    [...defaultParam, `callback = (status, data, error) => {}`],
+                    [], [node.isCheapArray() ? 'attention! this is cheap array' : '',`status => 回傳值會有 local|server|`],
                     `${pathStmt}
                            const objName = '${node.getName()}'
                         return this.listenObject(path,objName,callback);`
                 )
             } else if (node.isPathArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
-                    [...defaultParam, `callback = (changes,error) => {}`, `condition = (stmt) => stmt`], [],
-                    [`type:['added','modified','removed'], 回傳的就是function of unsubscribe`],
+                    [...defaultParam, `callback = (status,changes,error) => {}`, `condition = (stmt) => stmt`], [],
+                    [`status:['added','modified','removed'], 回傳的就是function of unsubscribe`],
                     `${pathStmt}
                         return this.listenItems(path,callback,condition);`
                 );
                 this.generator.appendFunction(Util.camel(`listen`, node.getName(), 'item'),
-                    [...defaultParam, 'id', `callback = (data,error) => {}`]
-                    , [], [],
+                    [...defaultParam, 'id', `callback = (status, data, error) => {}`]
+                    , [], [`status => 回傳值會有 local|server|`],
                     `${pathStmt}
                         return this.listenItem(path,id,callback);`
                 );

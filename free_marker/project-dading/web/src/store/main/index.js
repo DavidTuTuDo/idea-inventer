@@ -26,6 +26,25 @@ class MainStore extends BaseMainStore {
 
     conditionOfOrderBy = -1;
 
+    async onInitialFetchCompleted(collection) {
+        const result = await super.onInitialFetchCompleted(collection);
+        /** test-case Of listenDocument,listenDocuments
+         this.getComponent().subscribe(this.apiOfOrder.listenOrderItem(`jfk6ALWdhyoAi7f9LyJv`, this.handleOrderItemValidate));
+         this.getComponent().subscribe(this.apiOfOrder.listenOrders(this.handleOrdersValidate)); */
+        return result;
+    }
+
+    handleOrderItemValidate = (status, data, error)=> {
+        Util.appendInfo(`4121321 handleOrderItemUpdate STATUS:`, status, ` DATA:`, data);
+        if(_.isEqual('server', status))
+            this.updateSpecificOrders(data);
+
+    }
+
+    handleOrdersValidate = (status, changes, error) => {
+        Util.appendInfo(`4121321 handleOrderUpdate STATUS:`, status, ` changes:`, changes);
+    }
+
     async deleteOrder(order) {
         await order.deleteOrderItem(this.getComponent());
     }

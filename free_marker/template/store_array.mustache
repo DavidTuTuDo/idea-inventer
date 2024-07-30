@@ -88,6 +88,12 @@ return this.{{{fieldName}}};
     self.invalidate();
     }
 
+    @action
+    updateSpecific{{{functionName}}}(latest, attr = 'id') {
+        const {{{name}}} = _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual({{{name}}}[attr], latest[attr]));
+        order.initial(latest);
+    }
+
     push{{{fieldClass}}} = (item = {}) => {
     this.push{{{functionName}}}(item);
     }
