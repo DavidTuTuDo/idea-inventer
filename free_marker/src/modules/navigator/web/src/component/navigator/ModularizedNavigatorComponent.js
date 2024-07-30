@@ -23,8 +23,6 @@ import BaseUserInfo from "../../base/BaseUserInfo";
 
 
 class ModularizedNavigatorComponent extends BaseNavigatorComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);
@@ -190,8 +188,6 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         return Util.getVisibleOrNone(UserInfo.isAuthProcessing() ,true);
     }
 
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedNavigatorComponent

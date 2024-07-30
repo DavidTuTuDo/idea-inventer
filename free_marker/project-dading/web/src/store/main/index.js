@@ -9,9 +9,8 @@ import Establish from '../establish';
 import moment from "moment";
 
 class MainStore extends BaseMainStore {
-    /** -------------------- fields -------------------- **/
 
-    /** -------------------- functions -------------------- **/
+    conditionOfOrderBy = -1;
 
     constructor(props) {
         super(props);
@@ -24,13 +23,11 @@ class MainStore extends BaseMainStore {
         )
     }
 
-    conditionOfOrderBy = -1;
-
     async onInitialFetchCompleted(collection) {
         const result = await super.onInitialFetchCompleted(collection);
         /** test-case Of listenDocument,listenDocuments
-         this.getComponent().subscribe(this.apiOfOrder.listenOrderItem(`jfk6ALWdhyoAi7f9LyJv`, this.handleOrderItemValidate));
-         this.getComponent().subscribe(this.apiOfOrder.listenOrders(this.handleOrdersValidate)); */
+        this.getComponent().subscribe(this.apiOfOrder.listenOrderItem(`jfk6ALWdhyoAi7f9LyJv`, this.handleOrderItemValidate));
+        this.getComponent().subscribe(this.apiOfOrder.listenOrders(this.handleOrdersValidate)); */
         return result;
     }
 

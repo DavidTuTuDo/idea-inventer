@@ -4726,7 +4726,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             if ((node.isObject() && node.hasPath()) || node.isCheapArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
                     [...defaultParam, `callback = (status, data, error) => {}`],
-                    [], [node.isCheapArray() ? 'attention! this is cheap array' : '',`status => 回傳值會有 local|server|`],
+                    [], [node.isCheapArray() ? 'attention! this is cheap array' : '', `status => 回傳值會有 local|server|`],
                     `${pathStmt}
                            const objName = '${node.getName()}'
                         return this.listenObject(path,objName,callback);`
@@ -7298,14 +7298,15 @@ class ProjectFileHandler extends PathBase {
 
         for (const module of this.nodeOfAncestor.getListOfModuleComponent()) {
 
-            persist(module, 'component', (file) => `${module}/web/src/component/${file.dirName}/${file.fileNameExtension}`);
-            persist(module, 'store', (file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
-
-            const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
-            if (Util.isUndefinedNullEmpty(componentOfModule)) {
-                continue;
+            if (this.isWebPlatform()) {
+                persist(module, 'component', (file) => `${module}/web/src/component/${file.dirName}/${file.fileNameExtension}`);
+                persist(module, 'store', (file) => `${module}/web/src/store/${file.dirName}/${file.fileNameExtension}`);
             }
-            persist(module, 'store', (file) => `${module}/functions/src/func/${file.dirName}/${file.fileNameExtension}`);
+            const componentOfModule = _.find(this.getComponents(), (each) => !each.isPreciselyEditableComponent() && _.isEqual(module, each.getName()));
+            if (Util.isUndefinedNullEmpty(componentOfModule)) continue;
+
+            if (this.isFunctionsPlatform())
+                persist(module, 'func', (file) => `${module}/functions/src/func/${file.dirName}/${file.fileNameExtension}`);
 
             /** persist less file */
             const instance = new AppBuilder(this.getAppBuildParam());
@@ -9633,7 +9634,7 @@ class BuildApplication {
         await handler.persistModuleComponentFiles()
         handler.persistBaseFilesToFreeMarkerTemplate();
         await handler.rewriteModulesI18nFiles();
-        handler.persistCustomizePackages()
+        await handler.persistCustomizePackages()
         handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
         handler.persistLessLibs();

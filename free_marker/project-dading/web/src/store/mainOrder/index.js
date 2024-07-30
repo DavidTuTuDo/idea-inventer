@@ -5,9 +5,6 @@ import _ from "lodash";
 import Config from "../../config";
 
 class MainOrderStore extends BaseMainOrderStore {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);
