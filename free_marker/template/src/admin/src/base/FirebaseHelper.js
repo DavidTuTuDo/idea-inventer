@@ -73,8 +73,6 @@ class FirebaseHelper extends BaseFirebase {
         return {...item, id: id ?? result.id, exists: true};
     }
 
-
-    /** ===========================================================================================  */
     updateDocument = async (path, id, item = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987824 updateDocument()的id不能為空值`);
         return await this.reference(path, id).update(item);
@@ -90,21 +88,20 @@ class FirebaseHelper extends BaseFirebase {
     /** batch提供set, delete, update的功能
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    batchDo = async (items, predicate = (batch, object) => {
-    }) => {
+    batchDo = async (items, predicate = (batch, item) => true) => {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
-                Util.appendInfo(`5463465 batchDo execute commit(count:${count}) succeed`)
+                Util.appendInfo(`1242232 admin batch do commit(count:${count}) succeed`)
             }
         }
 
-        Util.appendInfo(`54654256 batchDo is going to handle (count:${_.size(items)})`)
+        Util.appendInfo(`1231232 admin batch do is going to handle (count:${_.size(items)})`)
         let batch = this.firestore().batch();
         let count = 0;
 
         while (items.length > 0) {
-            predicate(items.shift(), batch);
+            predicate(batch, items.shift());
             /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
             count = count + 1;
             /** 超過MAX先COMMIT次再歸零 */
@@ -115,19 +112,24 @@ class FirebaseHelper extends BaseFirebase {
             }
         }
         await commit(batch, count);
-        Util.appendInfo(`5465466 batchDo (count:${_.size(items)}) succeed`)
+        Util.appendInfo(`32312312 admin batch do (count:${_.size(items)}) succeed`)
     }
 
     submitDocuments = async (path, items) => {
-        return await this.batchDo(items, (batch, item) => {
-            batch.set(this.reference(path, item.id))
+        const result = await this.batchDo(items, (batch, item) => {
+            const itemRef = Util.isUndefinedNullEmpty(item.id) ? this.reference(path, item.id).doc() : this.reference(path, item.id)
+            batch.set(itemRef, item);
         })
     }
 
-    updateDocuments = async (path, items) => {
-        return await this.batchDo(items, (batch, item) => {
-            if (Util.isUndefinedNullEmpty(item.id)) throw new ERROR(9999, `6525435441313 updateDocuments的item沒有valid id => ${item.id}`)
-            batch.update(this.reference(path, item.id))
+    updateDocuments = async (path, contentsOfUpdate, ...conditions) => {
+        const hasCondition = _.size(conditions) > 0;
+        const targets = hasCondition ? (await this.fetchDocuments(path, ...conditions)).map(each => each.id) : contentsOfUpdate;
+
+        return await this.batchDo(targets, (batch, item) => {
+            if (hasCondition) batch.update(this.reference(path, item), contentsOfUpdate[0]); /** 此時item 為 document id*/
+            else if (!Util.isUndefinedNullEmpty(item.id)) batch.update(this.reference(path, item.id), item);
+            else throw new ERROR(9999, `6524521323 admin hasCondition == ${hasCondition}, updateDocuments的item沒有valid id => ${contentsOfUpdate.id}`)
         })
     }
 
@@ -190,7 +192,7 @@ class FirebaseHelper extends BaseFirebase {
 
     fetchDocument = async (path, id) => {
         const docSnap = await this.reference(path, id).get();
-        return docSnap.exists() ? {...docSnap.data(), id, _doc: docSnap, exists: true} : {exists: false};
+        return docSnap.exists ? {...docSnap.data(), id, _doc: docSnap, exists: true} : {exists: false};
     }
 
     deleteDocument = async (path, id) => {
@@ -242,7 +244,8 @@ class FirebaseHelper extends BaseFirebase {
             }
             const document = docSnap.data();
             document.exists = true;
-            const content = await predict(document, transaction);
+            document.id = id;
+            const content = await predict(document, transaction, ref);
             transaction.update(ref, content);
             Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, content);
 

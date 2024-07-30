@@ -162,9 +162,10 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     submitDocument = async (path, item = {}, id) => {
+        const hasDocumentID = !Util.isUndefinedNullEmpty(id);
         const ref = this.reference(path, id);
-        const docRef = Util.isUndefinedNullEmpty(id) ? await addDoc(ref, item) : await setDoc(ref, item);
-        return {...item, id: id ?? docRef.id, exists: true};
+        const docRef = !hasDocumentID ? await addDoc(ref, item) : await setDoc(ref, item);
+        return {...item, id: !hasDocumentID ? docRef.id : id, exists: true};
     }
 
     updateDocument = async (path, item = {}, id) => {
@@ -356,6 +357,7 @@ class FirebaseHelper extends BaseFirebase {
             }
             const document = docSnap.data();
             document.exists = true;
+            document.id = id;
             const content = await predict(document, transaction, ref);
             if (!Util.isUndefinedNullEmpty(content)) transaction.update(ref, content);
             Util.appendInfo(`${uid} transaction update => path:/${path}/${id}`, `content ==> `, content);

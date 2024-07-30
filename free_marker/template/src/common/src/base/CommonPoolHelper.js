@@ -22,8 +22,13 @@ class CommonPoolHelper {
         for (const queueName in this.queues) {
             this.queues[queueName].setWorker(15);
         }
+        this.paralledMode = true;
         Util.appendInfo('45642123132 set pool helper parallel mode succeed!');
 
+    }
+
+    isParallelMode() {
+        return this.paralledMode;
     }
 
     destroy() {

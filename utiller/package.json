@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.248",
+  "version": "1.0.249",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,6 +8,9 @@
     "gen": "npx babel ./temp --out-dir ./release/lib",
     "updateUtiller": "npm update utiller --save",
     "updateConfigerer": "npm update configerer --save"
+  },
+  "engines": {
+    "node": "18"
   },
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
@@ -24,6 +27,7 @@
     "node-html-parser": "^5.3.3",
     "pdf-parse": "^1.1.1",
     "prompt": "^1.1.0",
+    "random-words": "^2.0.1",
     "swiper": "^10.1.0",
     "uuid": "^8.3.2"
   },

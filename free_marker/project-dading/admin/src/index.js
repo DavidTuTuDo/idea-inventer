@@ -15,96 +15,92 @@ import Docxtemplater from 'docxtemplater';
 
 
 (async () => {
-
-    // console.log(firebase.storage().bucket());
-
-    async function deployDocxFileToAdminStorage(buffer, fileName = 'folder/filename.extension') {
-        if (!fileName.endsWith('.docx')) {
-            return {
-                succeed: false,
-                message: `檔案產生失敗，原因：副檔名不是.docx`
-            }
-        }
-        return await deployButterAsFile2AdminStorage(buffer, fileName, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`)
-    }
-
-    async function deployPDFtoAdminStorage(buffer, fileName = 'folder/filename.extension') {
-        if (!fileName.endsWith(`.pdf`)) {
-            return {
-                succeed: false,
-                message: `檔案產生失敗，原因：副檔名不是.pdf`
-            }
-        }
-
-        return await deployButterAsFile2AdminStorage(buffer, fileName, `application/pdf`)
-    }
-
-    async function deployButterAsFile2AdminStorage(buffer, fileName, contentType) {
-        const ref = firebase.storage().bucket()
-        const core = ref.file(fileName);
-        try {
-            await core.save(buffer, {contentType});
-            // console.log('File uploaded successfully:', result.metadata);
-
-            const downloadUrl = await core.getSignedUrl({
-                action: "read",
-                expires: "03-09-3000",
-            })
-            return {
-                succeed: true,
-                path: downloadUrl,
-                message: `produce doc file succeed`
-            }
-        } catch (error) {
-            return {
-                succeed: false,
-                message: `檔案產生失敗，原因：${error.message}`
-            }
-        }
-    }
-
-    async function getBufferOfGeneratedDocx(pathOfDocxTemplate = {}, data = {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"}) {
-        /** Load the docx file as binary content */
-        const content = fs.readFileSync(pathOfDocxTemplate);
-        /** Unzip the content of the file */
-        const zip = new PizZip(content);
-        /** This will parse the template, and will throw an error if the template is
-         invalid, for example, if the template is "{user" (no closing tag) */
-        const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-        });
-        /** Render the document (Replace {first_name} by John, {last _name} by Doe, ...) */
-        doc.render(data);
-        /** Get the zip document and generate it as a nodebuffer */
-        const buf = doc.getZip().generate({
-            type: "nodebuffer",
-            /** compression: DEFLATE adds a compression step.
-             For a 50MB output document, expect 500ms additional CPU time */
-            compression: "DEFLATE",
-        });
-        /** doing something of log usage,buf is a node.js Buffer, you can either write it to a file or res.
-         * persist file will => fs.writeFileSync(`./output${_.toString(Util.getCurrentTimeStamp())}.docx`, buf); */
-        return buf;
-
-    }
-
-    async function getBufferOfDocx2PDF(bufferOfDocx) {
-        const instance = await load({document: bufferOfDocx})
-        const pdfBuffer = await instance.exportPDF();
-        await instance.close();
-        return Buffer.from(pdfBuffer);
-    }
-
-
-    // const bufferOfDocx = await getBufferOfGeneratedDocx(`./template_of_dading_contract_0707.docx`, {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countsOfPeople: "2"})
-    // const bufferOfPDF = await getBufferOfDocx2PDF(bufferOfDocx);
-    // // const result = await deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.pdf`));
-    //
-    // const result = await deployDocxFileToAdminStorage(bufferOfDocx, libpath.join('contract', `大鼎${_.toString(Util.getCurrentTimeStamp())}.docx`));
-    // console.log(result);
     const api = new Api();
-    console.log(await api.fetchOrders());
+
+    async function testOfAdminFetchItems() {
+        const items = await api.fetchOrders({where: (stmt) => stmt.where('countOfPeople', '>', 5)});
+        return items;
+    }
+
+    async function testOfAdminSubmitItems() {
+        await api.submitOrders([{host: '劉銓遠'}, {host: '陳冠志'}])
+    }
+
+    async function testOfAdminFetchItem() {
+        return await api.fetchOrderItem(`XAmxA0jOaYvYHGLdc9FA`);
+    }
+
+    async function testOfAdminSubmitItemWithID() {
+        return await api.submitOrderItem({host: '柯虹安'}, `jwefjdijfiosdjoif`);
+    }
+
+    async function testOfAdminSubmitItemWithoutID() {
+        return await api.submitOrderItem({host: '高文哲'});
+    }
+
+    async function testOfAdminUpdateItem() {
+        return await api.updateOrderItem({countOfPeople: 33}, `7qws9ctmCN32cELZ2IMh`);
+    }
+
+    /** 針對conditions to query出來的document進行update(item) */
+    async function testOfAdminUpdateItemsWithCondition() {
+        await api.updateOrders([{contact: '0982-763-479'}], {where: (stmt) => stmt.where('countOfPeople', '==', 1)})
+    }
+
+    /** 針對批次的item進行update => {id:'',....contentOfUpdate} */
+    async function testOfAdminUpdateItems() {
+        await api.updateOrders([{comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`, id: 'OHvWFHEsQQ5MEIU1nQya'}, {
+            id: 'eU4KfbkVVbGS3w1nbYx3',
+            comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`
+        }])
+    }
+
+    async function testOfDeleteItem() {
+        await api.deleteOrderItem(`ucOscCh6oalfSdEbVDOH`)
+    }
+
+    async function testOfDeleteItemsWithCondition() {
+        await api.deleteOrders(false, {where: (stmt) => stmt.where('countOfPeople', '==', 1001)})
+    }
+
+    async function fetchCountOfCollection() {
+        return await api.fetchSizeOfOrders();
+    }
+
+    async function multiThreadUpdateItem() {
+        const tasks = _.range(0, 20).map(each => async () => {
+            const order = await api.fetchOrderItem(`jfk6ALWdhyoAi7f9LyJv`);
+            await api.updateOrderItem({countOfPeople: order.countOfPeople + 1}, `jfk6ALWdhyoAi7f9LyJv`);
+        })
+
+        const worker = new InfinitePool(5);
+        await worker.runByEachTask(tasks);
+    }
+
+    async function multiThreadUpdateItemAtomically() {
+        const tasks = _.range(0, 20).map(each => async () => {
+            await api.updateOrderItemAtomically(async (order, transaction, ref) => {
+                const current = order.countOfPeople;
+                return {countOfPeople: current + 1}
+            },`jfk6ALWdhyoAi7f9LyJv`);
+        })
+        Util.appendInfo(_.size(tasks));
+        const worker = new InfinitePool(2);
+        await worker.runByEachTask(tasks);
+    }
+
+
+    // console.log(await testOfAdminFetchItems());
+    // console.log(await testOfAdminSubmitItems());
+    // console.log(await testOfAdminFetchItem());
+    // console.log(await testOfAdminSubmitItemWithID());
+    // console.log(await testOfAdminSubmitItemWithoutID());
+    // console.log(await testOfAdminUpdateItem());
+    // console.log(await testOfAdminUpdateItemsWithCondition());
+    // console.log(await testOfDeleteItem(`ucOscCh6oalfSdEbVDOH`));
+    // console.log(await testOfDeleteItemsWithCondition());
+    // console.log(await multiThreadUpdateItem());
+    // console.log(await multiThreadUpdateItemAtomically());
 
 })();
 
