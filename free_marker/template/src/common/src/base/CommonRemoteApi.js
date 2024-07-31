@@ -143,7 +143,7 @@ class CommonRemoteApi {
     async updateItem(path, item, id) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start update item => path:/${path}/${id}`);
-        await firebase.updateDocument(path, id, item);
+        await firebase.updateDocument(path, item, id);
         Util.appendInfo(`${uid} succeed update item => path:/${path}/${id}`);
         return {
             succeed: true,

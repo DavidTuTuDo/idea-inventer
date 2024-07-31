@@ -168,7 +168,7 @@ class FirebaseHelper extends BaseFirebase {
         return {...item, id: !hasDocumentID ? docRef.id : id, exists: true};
     }
 
-    updateDocument = async (path, item = {}, id) => {
+    updateDocument = async (path, item = {},id) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987864 updateDocument()的id不能為空值`);
         return await updateDoc(this.reference(path, id), item)
     }

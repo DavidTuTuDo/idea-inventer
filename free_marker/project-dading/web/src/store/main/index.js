@@ -57,7 +57,7 @@ class MainStore extends BaseMainStore {
 
     async appendOrder() {
         this.getOrders().forEach((order) => order.setIsHotCreate(false));
-        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), {isHotCreate: true, members: [{}], records: [{}]}, undefined);
+        const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), {members: [{}], records: [{}]}, undefined);
         if (result.succeed)
             this.pushOrdersByIndex(-1, {...result.value, isHotCreate: true});
     }
