@@ -745,6 +745,9 @@ class CodegenNode {
     border = true;
     /** TextField 的 filled會有 圓弧 */
 
+    disabled = false;
+    /** TextField 的 diable input */
+
     /** 設計了defaultValue 然後想要快速地取消掉 */
     disableDefaultValue = false;
 
@@ -797,6 +800,10 @@ class CodegenNode {
 
     disableBorder() {
         return _.isEqual(this.border, false);
+    }
+
+    disableInput() {
+        return _.isEqual(this.disabled, true);
     }
 
     getVariant() {
@@ -8215,7 +8222,7 @@ class ProjectFileHandler extends PathBase {
                 name: nameOfDisabled,
                 type: 'boolean',
                 editIgnore: true,
-                defaultValue: false,
+                defaultValue: !!(_.isEqual(node.computed, true) || _.isEqual(node.disabled, true)),
                 incest: node.incest,
             }
         )

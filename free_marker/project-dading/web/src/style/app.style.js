@@ -435,6 +435,8 @@ class AppStyle {
 
   EstablishDesktopAreaOfRecordFinanceExtraIconButton = {};
 
+  EstablishDesktopAreaOfRecordFinanceCommentTextField = {};
+
   EstablishDesktopAreaOfRecordFinanceFeeOfPartyATextField = {};
 
   EstablishDesktopAreaOfRecordFinanceFeeOfPartyBTextField = {};
@@ -443,19 +445,27 @@ class AppStyle {
 
   EstablishDesktopAreaOfRecordFinanceCodeOfCreditAuthTextField = {};
 
+  EstablishDesktopAreaOfRecordFinanceDateOfChequeDivWrap = {};
+
+  EstablishDesktopAreaOfRecordFinanceDateOfChequeDatePicker = {};
+
+  EstablishDesktopAreaOfRecordFinanceSerialOfChequeTextField = {};
+
+  EstablishDesktopAreaOfRecordFinanceValidPeriodOfCreditTextField = {};
+
   EstablishDesktopAreaOfRecordFinanceSerialOfCreditTextField = {};
 
-  EstablishDesktopAreaOfRecordFinanceCommentTextField = {};
+  EstablishDesktopAreaOfRecordFinanceTaxIdNumberTextField = {};
+
+  EstablishDesktopAreaOfRecordFinanceHeadingTextField = {};
+
+  EstablishDesktopAreaOfRecordFinanceCountOfPeopleTextField = {};
 
   EstablishDesktopAreaOfRecordFinanceNameOfPayPersonTextField = {};
 
   EstablishDesktopAreaOfRecordFinanceRequestMenuItem = {};
 
   EstablishDesktopAreaOfRecordFinanceRequestTextFieldList = {};
-
-  EstablishDesktopAreaOfRecordFinanceStatusMenuItem = {};
-
-  EstablishDesktopAreaOfRecordFinanceStatusTextFieldList = {};
 
   EstablishDesktopAreaOfRecordFinanceCreateTimeDateTimePicker = {};
 
@@ -555,18 +565,6 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfThirdFeeOfAgentTextField = {};
 
-  EstablishDesktopInfoAreaOfThirdFeeOfCreditReceivedLabelOfFeeOfCreditReceivedTypography = {};
-
-  EstablishDesktopInfoAreaOfThirdFeeOfCreditReceivedDivWrap = {};
-
-  EstablishDesktopInfoAreaOfThirdFeeOfCreditReceivedTextField = {};
-
-  EstablishDesktopInfoAreaOfThirdFeeOfCashReceivedLabelOfFeeOfCashReceivedTypography = {};
-
-  EstablishDesktopInfoAreaOfThirdFeeOfCashReceivedDivWrap = {};
-
-  EstablishDesktopInfoAreaOfThirdFeeOfCashReceivedTextField = {};
-
   EstablishDesktopInfoAreaOfThirdTotalOfNetLabelOfTotalOfNetTypography = {};
 
   EstablishDesktopInfoAreaOfThirdTotalOfNetDivWrap = {};
@@ -585,11 +583,13 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfThirdPriceOfAgentTextField = {};
 
-  EstablishDesktopInfoAreaOfThirdRateOfCreditLabelOfRateOfCreditTypography = {};
+  EstablishDesktopInfoAreaOfThirdStatusOfSendLabelOfStatusOfSendTypography = {};
 
-  EstablishDesktopInfoAreaOfThirdRateOfCreditDivWrap = {};
+  EstablishDesktopInfoAreaOfThirdStatusOfSendDivListWrap = {};
 
-  EstablishDesktopInfoAreaOfThirdRateOfCreditTextField = {};
+  EstablishDesktopInfoAreaOfThirdStatusOfSendMenuItem = {};
+
+  EstablishDesktopInfoAreaOfThirdStatusOfSendTextFieldList = {};
 
   EstablishDesktopInfoAreaOfThirdRoomArrangeLabelOfRoomArrangeTypography = {};
 
@@ -599,13 +599,25 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfThirdRoomArrangeTextFieldList = {};
 
+  EstablishDesktopInfoAreaOfThirdCommentLabelOfCommentTypography = {};
+
+  EstablishDesktopInfoAreaOfThirdCommentDivWrap = {};
+
+  EstablishDesktopInfoAreaOfThirdCommentTextField = {};
+
+  EstablishDesktopInfoAreaOfThirdRateOfCreditLabelOfRateOfCreditTypography = {};
+
+  EstablishDesktopInfoAreaOfThirdRateOfCreditDivWrap = {};
+
+  EstablishDesktopInfoAreaOfThirdRateOfCreditTextField = {};
+
   EstablishDesktopInfoAreaOfThirdDiv = {};
 
-  EstablishDesktopInfoAreaOfSecondCommentLabelOfCommentTypography = {};
+  EstablishDesktopInfoAreaOfSecondFeeOfCreditReceivedLabelOfFeeOfCreditReceivedTypography = {};
 
-  EstablishDesktopInfoAreaOfSecondCommentDivWrap = {};
+  EstablishDesktopInfoAreaOfSecondFeeOfCreditReceivedDivWrap = {};
 
-  EstablishDesktopInfoAreaOfSecondCommentTextField = {};
+  EstablishDesktopInfoAreaOfSecondFeeOfCreditReceivedTextField = {};
 
   EstablishDesktopInfoAreaOfSecondFeeOfNotReceivedLabelOfFeeOfNotReceivedTypography = {};
 
@@ -625,12 +637,6 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfSecondFeeOfTotalTextField = {};
 
-  EstablishDesktopInfoAreaOfSecondCountOfPeopleLabelOfCountOfPeopleTypography = {};
-
-  EstablishDesktopInfoAreaOfSecondCountOfPeopleDivWrap = {};
-
-  EstablishDesktopInfoAreaOfSecondCountOfPeopleTextField = {};
-
   EstablishDesktopInfoAreaOfSecondPriceOfDepositLabelOfPriceOfDepositTypography = {};
 
   EstablishDesktopInfoAreaOfSecondPriceOfDepositDivWrap = {};
@@ -649,6 +655,12 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfSecondPriceOfCreditTextField = {};
 
+  EstablishDesktopInfoAreaOfSecondCountOfPeopleLabelOfCountOfPeopleTypography = {};
+
+  EstablishDesktopInfoAreaOfSecondCountOfPeopleDivWrap = {};
+
+  EstablishDesktopInfoAreaOfSecondCountOfPeopleTextField = {};
+
   EstablishDesktopInfoAreaOfSecondIdOfAgentTravelLabelOfIdOfAgentTravelTypography = {};
 
   EstablishDesktopInfoAreaOfSecondIdOfAgentTravelDivWrap = {};
@@ -657,13 +669,11 @@ class AppStyle {
 
   EstablishDesktopInfoAreaOfSecondDiv = {};
 
-  EstablishDesktopInfoAreaOfHeadStatusOfSendLabelOfStatusOfSendTypography = {};
+  EstablishDesktopInfoAreaOfHeadFeeOfCashReceivedLabelOfFeeOfCashReceivedTypography = {};
 
-  EstablishDesktopInfoAreaOfHeadStatusOfSendDivListWrap = {};
+  EstablishDesktopInfoAreaOfHeadFeeOfCashReceivedDivWrap = {};
 
-  EstablishDesktopInfoAreaOfHeadStatusOfSendMenuItem = {};
-
-  EstablishDesktopInfoAreaOfHeadStatusOfSendTextFieldList = {};
+  EstablishDesktopInfoAreaOfHeadFeeOfCashReceivedTextField = {};
 
   EstablishDesktopInfoAreaOfHeadSalesmanLabelOfSalesmanTypography = {};
 

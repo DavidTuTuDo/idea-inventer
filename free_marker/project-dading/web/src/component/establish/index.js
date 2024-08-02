@@ -129,7 +129,6 @@ class EstablishComponent extends BaseEstablishComponent {
 
     /** --------------------- following are rules of desktop --------------------- */
 
-
     // getInjectStyleOfEstablishDesktopVisitorFeeOfProfitTextField(visitor) {
     //     return Util.getVisibleOrNone(false);
     // }
@@ -143,15 +142,15 @@ class EstablishComponent extends BaseEstablishComponent {
     // }
 
     onEstablishDesktopVisitorNameTextFieldChange(param) {
-            this.getStore().getDesktop().incrementVisitorColumn(param.object);
+        this.getStore().getDesktop().incrementVisitorColumn(param.object);
     }
 
     onEstablishDesktopVisitorPriceOfPartyBTextFieldChange(param) {
-            this.getStore().getDesktop().incrementVisitorColumn(param.object);
+        this.getStore().getDesktop().incrementVisitorColumn(param.object);
     }
 
     onEstablishDesktopVisitorCommentTextFieldChange(param) {
-            this.getStore().getDesktop().incrementVisitorColumn(param.object);
+        this.getStore().getDesktop().incrementVisitorColumn(param.object);
     }
 
     onEstablishDesktopFinanceFeeOfPartyBTextFieldChange(param) {
@@ -170,11 +169,9 @@ class EstablishComponent extends BaseEstablishComponent {
         return Util.getVisibleOrNone(_.isEqual(_.toNumber(this.getStore().getDesktop().getInfo().getSelectedRoomArrange()), 2), true)
     }
 
-
     getInjectStyleOfEstablishDesktopTotalOfPricePartyBTextField(desktop) {
         return {background: '#e1eadd'};
     }
-
 
     getInjectStyleOfEstablishDesktopVisitorPriceOfPartyBTextField(visitor) {
         return {background: '#e1eadd'};
@@ -185,18 +182,22 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getInjectStyleOfEstablishDesktopFinanceFeeOfPartyBTextField(finance) {
-        const status = _.toNumber(finance.getSelectedStatus());
+        const status = _.toNumber(finance.getSelectedRequest());
         let color = undefined;
         switch (status) {
             case 1:
+                /** 現金匯款 */
                 color = `#e8cea3`;
                 break;
             case 2:
+                /** 現金 */
                 color = `#ffdddc`;
                 break;
             case 3:
             case 4:
             case 5:
+            case 6:
+            case 7:
                 color = `#b9d2e6`;
                 break;
             default:
@@ -206,34 +207,22 @@ class EstablishComponent extends BaseEstablishComponent {
         return color ? {background: color} : null;
     }
 
-    // getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
-    //     const status = _.toNumber(finance.getSelectedStatus());
-    //     let color = undefined;
-    //     switch (status) {
-    //         case 1:
-    //             color = `#f1e1c7`;
-    //             break;
-    //         case 2:
-    //             color = `#ffe7e6`;
-    //             break;
-    //         case 3:
-    //         case 4:
-    //         case 5:
-    //             color = `#d5e4f0`;
-    //             break;
-    //         default:
-    //             color = undefined;
-    //
-    //     }
-    //     return color ? {background: color} : null;
-    // }
-
     isCreditCardBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedStatus()), 2);
+        return _.isEqual(_.toNumber(finance.getSelectedRequest()), 2);
     }
 
-    isCashMonetBehavior(finance) {
-        return _.isEqual(_.toNumber(finance.getSelectedStatus()), 1);
+    isCashMoneyBehavior(finance) {
+        return _.isEqual(_.toNumber(finance.getSelectedRequest()), 1);
+    }
+
+    /** 支票行為 */
+    isChequeBehavior(finance) {
+        return Util.isOrEquals(_.toNumber(finance.getSelectedRequest()), 9, 10);
+    }
+
+    /** 代轉行為 */
+    isRemittanceBehavior(finance) {
+        return _.isEqual(_.toNumber(finance.getSelectedRequest()), 11);
     }
 
     getInjectPropsOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
@@ -242,26 +231,56 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getFinanceFeeOfPartyA(finance) {
-        if (_.toNumber(finance.getSelectedStatus()) === 2)
+        if (this.isCreditCardBehavior(finance))
             return finance.getFeeOfComputedCreditProcedure;
         return super.getFinanceFeeOfPartyA(finance);
     }
 
+    getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
+        return Util.getVisibleOrNone(!(this.isCashMoneyBehavior(finance) || this.isChequeBehavior(finance) || this.isRemittanceBehavior(finance)), true);
+
+    }
+
     getInjectStyleOfEstablishDesktopFinanceNameOfPayPersonTextField(finance) {
-        return Util.getVisibleOrHidden(this.isCashMonetBehavior(finance) || this.isCreditCardBehavior(finance), true)
+        return Util.getVisibleOrNone(this.isChequeBehavior(finance) || this.isCashMoneyBehavior(finance) || this.isCreditCardBehavior(finance), true)
     }
 
     getInjectStyleOfEstablishDesktopFinanceSerialOfCreditTextField(finance) {
-        return Util.getVisibleOrHidden(this.isCreditCardBehavior(finance), true);
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
     }
 
     getInjectStyleOfEstablishDesktopFinanceCodeOfCreditAuthTextField(finance) {
-        return Util.getVisibleOrHidden(this.isCreditCardBehavior(finance), true);
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceValidPeriodOfCreditTextField(finance) {
+        return Util.getVisibleOrNone(this.isCreditCardBehavior(finance), true);
     }
 
     getInjectStyleOfEstablishDesktopFinanceAccountOfLast5NumTextField(finance) {
-        return Util.getVisibleOrHidden(this.isCashMonetBehavior(finance), true);
+        return Util.getVisibleOrNone(this.isCashMoneyBehavior(finance), true);
     }
+
+    getWrapInjectStyleOfEstablishDesktopInfoRateOfCreditTextField(info) {
+        return Util.getVisibleOrHidden(false, true);
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceSerialOfChequeTextField(finance) {
+        return Util.getVisibleOrNone(this.isChequeBehavior(finance), true);
+    }
+
+    getWrapInjectStyleOfEstablishDesktopFinanceDateOfChequeDatePicker(finance) {
+        return Util.getVisibleOrNone(this.isChequeBehavior(finance), true);
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceHeadingTextField(finance) {
+        return Util.getVisibleOrNone(this.isRemittanceBehavior(finance), true);
+    }
+
+    getInjectStyleOfEstablishDesktopFinanceTaxIdNumberTextField(finance) {
+        return Util.getVisibleOrNone(this.isRemittanceBehavior(finance), true);
+    }
+
 
     onEstablishDesktopFinanceExtraIconButtonDeleteClicked(param) {
         const self = this;
@@ -367,6 +386,29 @@ class EstablishComponent extends BaseEstablishComponent {
             self.getStore().getDesktop().moveItemToTop(visitor);
         }
     }
+
+
+    // getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
+    //     const status = _.toNumber(finance.getSelectedStatus());
+    //     let color = undefined;
+    //     switch (status) {
+    //         case 1:
+    //             color = `#f1e1c7`;
+    //             break;
+    //         case 2:
+    //             color = `#ffe7e6`;
+    //             break;
+    //         case 3:
+    //         case 4:
+    //         case 5:
+    //             color = `#d5e4f0`;
+    //             break;
+    //         default:
+    //             color = undefined;
+    //
+    //     }
+    //     return color ? {background: color} : null;
+    // }
 
     /** -------------------- async api -------------------- **/
 }

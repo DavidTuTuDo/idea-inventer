@@ -60,14 +60,14 @@ class EstablishDesktopInfoStore extends BaseEstablishDesktopInfoStore {
 
     @computed
     get getComputedFeeOfCreditReceived() {
-        const fee = this.getParentNode().getTotalOfCreditPreciseReceived();
+        const fee = this.getParentNode().getTotalOfCreditReceived();
         this.setFeeOfCreditReceived(fee);
         return fee;
     }
 
     @computed
     get getComputedFeeOfAgent() {
-        const base = _.subtract(this.getParentNode().getTotalOfReceived() ,this.getTotalOfNet());
+        const base = _.subtract(this.getParentNode().getPreciseTotalReceived() ,this.getTotalOfNet());
         const fee = _.ceil(_.multiply(base,0.03))
         this.setFeeOfAgent(fee);
         return fee;
@@ -75,7 +75,7 @@ class EstablishDesktopInfoStore extends BaseEstablishDesktopInfoStore {
 
     @computed
     get getComputedFeeOfProfit() {
-        const income = _.sum([this.getFeeOfCreditReceived(),this.getFeeOfCashReceived()])
+        const income = this.getParentNode().getPreciseTotalReceived()
         const cost = _.sum([this.getTotalOfNet() , this.getFeeOfAgent()])
         const result = _.subtract(income, cost);
         this.setFeeOfProfit(result);

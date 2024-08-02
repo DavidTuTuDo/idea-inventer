@@ -187,7 +187,23 @@ class MainComponent extends BaseMainComponent {
     }
 
     getInjectStyleOfMainOrderCard(order) {
-        return {background: order.getIsHotCreate() ? '#ffebeb' : 'inherit'};
+        let color = 'inherit';
+
+        if (this.hotCreate(order)) color = '#ffebeb';
+        else if (this.completedPaid(order)) color = '#d5e4f0';
+
+        return {background: color};
+
+    }
+
+    /** 剛創建出來的訂單 */
+    hotCreate(order) {
+        return order.getIsHotCreate();
+    }
+
+    /** 已結清的訂單 */
+    completedPaid(order) {
+        return _.isEqual(order.getFeeOfNotReceived(), 0);
     }
 
     onMainOrderExtraIconButtonDeleteClicked(param) {
@@ -196,7 +212,6 @@ class MainComponent extends BaseMainComponent {
             )
         }
     }
-
 
     /** -------------------- firebase測試 -------------------- **/
 
@@ -254,10 +269,10 @@ class MainComponent extends BaseMainComponent {
 
     onFilesSelected(files) {
         this.showInfoSnackMessage(`點擊到file-> ${files[0].name}`);
-        console.log(45454546,files[0]);
+        console.log(45454546, files[0]);
         this.getStore().uploadStorageFile(files[0], 'contract').then(url => {
             this.showInfoSnackMessage(`下載位置=> ${url}`)
-            Util.appendInfo(2131321321,' ==> ',url);
+            Util.appendInfo(2131321321, ' ==> ', url);
         })
     }
 }

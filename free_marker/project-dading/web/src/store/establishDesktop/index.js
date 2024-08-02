@@ -2,17 +2,7 @@ const edit = true;
 import BaseEstablishDesktopStore from "./BaseEstablishDesktopStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import {Application} from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
 import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
-import Fuse from "fuse.js";
-import moment from "moment";
-import BaseStore from "../../base/BaseStore";
 
 class EstablishDesktopStore extends BaseEstablishDesktopStore {
     /** -------------------- fields -------------------- **/
@@ -50,29 +40,34 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
         return result;
     }
 
-    /** 1.匯款 2.刷卡 3.加購 4.簽證 5.雜項 6.費用 7.代轉
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
      *  ==> "其他特殊需求加減費用"
      * */
     @computed
     get getComputedTotalOfCustomizePrice() {
         const result = _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 3, 4, 5)).map(each => each.getFeeOfPartyB()))
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 3, 4, 5, 6, 7, 8)).map(each => each.getFeeOfPartyB()))
         this.setTotalOfCustomizePrice(result);
         return result;
     }
 
-    /** 1.匯款 2.刷卡 3.加購 4.簽證 5.雜項 6.費用 7.代轉
-     *  ==> 只有 1 和 2 才是收入
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
+     *  ==> 只有 1 2 9 10 才是收入
      * */
     @computed
     get getComputedTotalOfReceived() {
         const result = _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 1, 2)).map(each => each.getFeeOfPartyB()))
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 1, 2, 9, 10)).map(each => each.getFeeOfPartyB()))
         this.setTotalOfReceived(result);
         return result
     }
 
-    /** 1.匯款 2.刷卡 3.加購 4.簽證 5.雜項 6.費用 7.代轉 */
+    /** 現金+支票+刷卡(扣手續費)*/
+    getPreciseTotalReceived() {
+        return _.sum([this.getTotalOfCashReceived(),this.getTotalOfCreditPreciseReceived()]);
+    }
+
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉 */
     @computed
     get getComputedTotalOfNotReceived() {
         const result = _.subtract(this.getFeeOfShouldReceived(), this.getTotalOfReceived())
@@ -85,33 +80,37 @@ class EstablishDesktopStore extends BaseEstablishDesktopStore {
         return _.sum([this.getTotalOfCustomizePrice(), ...this.getVisitors().map(visitor => visitor.getPrice())])
     }
 
-    /** 所有雜項的售價(給乙方的) */
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
+     * 所有雜項的售價(給乙方的) */
     getTotalCustomPriceOfFinancePartyB() {
         return _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 3, 4, 5)).map(each => each.getFeeOfPartyB()));
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 3, 4, 5, 6, 7, 8)).map(each => each.getFeeOfPartyB()));
     }
 
-    /** 所有雜項的成本(甲方付出的成本) */
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
+     * 所有雜項的成本(甲方付出的成本) */
     getTotalCustomPriceOfFinancePartyA() {
         return _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 3, 4, 5)).map(each => each.getFeeOfPartyA()));
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 3, 4, 5, 6, 7, 8)).map(each => each.getFeeOfPartyA()));
     }
 
-    /** 所有現金匯款收入 */
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
+     * 所有現金匯款收入 */
     getTotalOfCashReceived() {
         return _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 1)).map(each => each.getFeeOfPartyB()))
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 1, 9, 10)).map(each => each.getFeeOfPartyB()))
     }
 
-    /** 所有信用卡收入(扣掉手續費)*/
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉
+     * 所有信用卡收入(扣掉手續費)*/
     getTotalOfCreditPreciseReceived() {
         return _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 2)).map(each => each.getFeeOfPartyA()))
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 2)).map(each => each.getFeeOfPartyA()))
     }
 
     getTotalOfCreditReceived() {
         return _.sum(_.filter(this.getFinances(), finance =>
-            Util.isOrEquals(finance.getNumberOfSelectedStatus(), 2)).map(each => each.getFeeOfPartyB()))
+            Util.isOrEquals(finance.getNumberOfSelectedRequest(), 2)).map(each => each.getFeeOfPartyB()))
     }
 
     /** 所有旅客的成本總額(不含雜項) */

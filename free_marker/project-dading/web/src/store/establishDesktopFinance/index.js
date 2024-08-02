@@ -11,7 +11,6 @@ import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
 import Request from "../establishDesktopFinanceRequest";
-import Status from "../establishDesktopFinanceStatus";
 import BaseStore from "../../base/BaseStore";
 
 class EstablishDesktopFinanceStore extends BaseEstablishDesktopFinanceStore {
@@ -29,9 +28,9 @@ class EstablishDesktopFinanceStore extends BaseEstablishDesktopFinanceStore {
         this.setIndexOfSequence(_.indexOf(this.getParentNode().getFinances(), this) + 1);
     }
 
-    /** 1.匯款 2.刷卡 3.加購 4.簽證 5.雜項 6.費用 7.代轉 */
-    getNumberOfSelectedStatus() {
-        return _.toNumber(this.getSelectedStatus());
+    /** 1.匯款 2.刷卡 3.加購行李 4.加購選位 5.房間費用 6.簽證費用 7.簽證費用 8.小孩不佔 9.訂金支票 10.尾款支票 11.開立代轉 */
+    getNumberOfSelectedRequest() {
+        return _.toNumber(this.getSelectedRequest());
     }
 
     @computed
@@ -42,7 +41,7 @@ class EstablishDesktopFinanceStore extends BaseEstablishDesktopFinanceStore {
     }
 
     getFeeOfCreditProcedure() {
-        if(this.getNumberOfSelectedStatus() === 2) {
+        if(this.getNumberOfSelectedRequest() === 2) {
             const rate = Util.getNumberOfPercentageToFloat(`${this.getParentNode().getInfo().getRateOfCredit()}%`);
             return _.ceil(_.multiply(this.getFeeOfPartyB(), rate))
         }
