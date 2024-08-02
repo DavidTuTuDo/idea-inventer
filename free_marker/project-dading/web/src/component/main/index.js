@@ -78,8 +78,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onAgentToSelectedChange(value, param) {
-        if (param.value === 3)
-            this.getStore().getFilter().toggleKeyOfDestTo();
+        if (param.value === 3) this.getStore().getFilter().toggleKeyOfDestTo();
     }
 
     onMainFilterSubmitButtonClicked(param) {
@@ -99,6 +98,13 @@ class MainComponent extends BaseMainComponent {
 
     getInjectPropsOfMainOrderCommentTextField(order) {
         return {helperText: `創單時間：${Util.getSimpleTimeYYMMDDHHmmFormat(order.getCreateTime())}`}
+    }
+
+    getInjectPropsOfMainOrderContactTextField(order) {
+        return {
+            helperText: this.completedPaid(order) ?
+                `付清：${order.getFeeOfTotal()} 元` : `未繳：${order.getFeeOfNotReceived()} 元`
+        }
     }
 
     onMainOrderExtraIconButtonCopyIdClicked(param) {
@@ -189,8 +195,7 @@ class MainComponent extends BaseMainComponent {
     getInjectStyleOfMainOrderCard(order) {
         let color = 'inherit';
 
-        if (this.hotCreate(order)) color = '#ffebeb';
-        else if (this.completedPaid(order)) color = '#d5e4f0';
+        if (this.hotCreate(order)) color = '#ffebeb'; else if (this.completedPaid(order)) color = '#d5e4f0';
 
         return {background: color};
 
@@ -203,13 +208,12 @@ class MainComponent extends BaseMainComponent {
 
     /** 已結清的訂單 */
     completedPaid(order) {
-        return _.isEqual(order.getFeeOfNotReceived(), 0);
+        return _.toNumber(order.getFeeOfNotReceived()) <= 0;
     }
 
     onMainOrderExtraIconButtonDeleteClicked(param) {
         return () => {
-            this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`)
-            )
+            this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`))
         }
     }
 

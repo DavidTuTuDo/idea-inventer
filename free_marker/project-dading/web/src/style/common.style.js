@@ -417,6 +417,8 @@ class CommonStyle {
 
   /** => following for establish  component  */
 
+  EstablishAreaOfRemoteDownloadChip = {};
+
   EstablishAreaOfRemoteClearChip = {};
 
   EstablishAreaOfRemoteCancelReactFragmentWrap = {};

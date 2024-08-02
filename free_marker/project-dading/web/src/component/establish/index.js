@@ -5,16 +5,7 @@ import _ from "lodash";
 import {observer} from "mobx-react";
 import {Application} from "../../";
 import BaseEstablishComponent from "./BaseEstablishComponent";
-import MonetizationOnRounded from "@mui/icons-material/MonetizationOnRounded";
-import PaymentRounded from "@mui/icons-material/PaymentRounded";
-import {Face3Rounded as AdultFemale} from "@mui/icons-material";
-import {FaceRounded as AdultMale} from "@mui/icons-material";
-import {TagFacesRounded as ChildBoy} from "@mui/icons-material";
-import {AddReactionRounded as ChildGirl} from "@mui/icons-material";
-import {QuestionMarkRounded as Question} from "@mui/icons-material";
-
-
-import React from 'react';
+import functions from "../../functions";
 
 @inject("establish")
 @observer
@@ -330,12 +321,21 @@ class EstablishComponent extends BaseEstablishComponent {
         }
     }
 
+
     onEstablishCancelChipClicked(param) {
         this.dismiss();
     }
 
     onEstablishClearChipClicked(param) {
         this.getStore().clean()
+    }
+
+    onEstablishDownloadChipClicked(param) {
+        const self = this;
+        this.getStore().updateOrder()
+            .then((result) => functions.httpOnCallGenerateDocx(self, {idOfOrder: this.getStore().getId()}))
+            .then((pathOfDownload) => self.download(pathOfDownload))
+            .then((result) =>self.showWarningSnackMessage(`正在下載旅遊應知合約`))
     }
 
     onEstablishSubmitChipClicked(param) {
@@ -359,6 +359,10 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getWrapInjectStyleOfEstablishIdTypography(establish) {
+        return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
+    }
+
+    getInjectStyleOfEstablishDownloadChip(establish) {
         return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
     }
 

@@ -417,6 +417,8 @@ class AppStyle {
 
   /** => following for establish  component  */
 
+  EstablishAreaOfRemoteDownloadChip = {};
+
   EstablishAreaOfRemoteClearChip = {};
 
   EstablishAreaOfRemoteCancelReactFragmentWrap = {};

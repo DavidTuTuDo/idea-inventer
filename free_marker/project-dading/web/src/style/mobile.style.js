@@ -417,6 +417,8 @@ class MobileStyle {
 
   /** => following for establish  component  */
 
+  EstablishAreaOfRemoteDownloadChip = {};
+
   EstablishAreaOfRemoteClearChip = {};
 
   EstablishAreaOfRemoteCancelReactFragmentWrap = {};

@@ -26,14 +26,14 @@ class MainStore extends BaseMainStore {
     async onInitialFetchCompleted(collection) {
         const result = await super.onInitialFetchCompleted(collection);
         /** test-case Of listenDocument,listenDocuments
-        this.getComponent().subscribe(this.apiOfOrder.listenOrderItem(`jfk6ALWdhyoAi7f9LyJv`, this.handleOrderItemValidate));
-        this.getComponent().subscribe(this.apiOfOrder.listenOrders(this.handleOrdersValidate)); */
+         this.getComponent().subscribe(this.apiOfOrder.listenOrderItem(`jfk6ALWdhyoAi7f9LyJv`, this.handleOrderItemValidate));
+         this.getComponent().subscribe(this.apiOfOrder.listenOrders(this.handleOrdersValidate)); */
         return result;
     }
 
-    handleOrderItemValidate = (status, data, error)=> {
+    handleOrderItemValidate = (status, data, error) => {
         Util.appendInfo(`4121321 handleOrderItemUpdate STATUS:`, status, ` DATA:`, data);
-        if(_.isEqual('server', status))
+        if (_.isEqual('server', status))
             this.updateSpecificOrders(data);
 
     }
@@ -138,12 +138,12 @@ class MainStore extends BaseMainStore {
     invalidate() {
         const selected = this.getAreaOfFunc().getSelectedOrderBy();
         const selectedOfCustom = this.getFilter().getSelectedType();
-        if (selected === 5 || selectedOfCustom === 4) {
+        if (selected === 7 || selectedOfCustom === 4) {
             /** 旅行社 */
             this.setOrders(..._.orderBy(this.getOrders(), ['selectedAgent', 'valueOfStartTravel'], ['asc', 'asc']))
         }
 
-        if (selected === 6 || selectedOfCustom === 3) {
+        if (selected === 8 || selectedOfCustom === 3) {
             /** 目的地 */
             this.setOrders(..._.orderBy(this.getOrders(), ['selectedDestination', 'valueOfStartTravel'], ['asc', 'asc']))
         }
@@ -159,6 +159,26 @@ class MainStore extends BaseMainStore {
         this.getAreaOfFunc().setBaseOn(timestamp);
         switch (_.toNumber(current)) {
             case 1:
+                /** '訂單(未繳清) */
+                this.setOrderConditions(
+                    [
+                        {type: 'where', params: ['feeOfNotReceived', '>', 0]},
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['startOfTravel', 'asc']}
+                    ]
+                )
+                break;
+            case 2:
+                /** 訂單(繳清) */
+                this.setOrderConditions(
+                    [
+                        {type: 'where', params: ['feeOfNotReceived', '<=', 0]},
+                        {type: 'where', params: ['startOfTravel', '>=', new Date(Util.getTodayTimeFormat(timestamp))]},
+                        {type: 'orderBy', params: ['startOfTravel', 'asc']}
+                    ]
+                )
+                break;
+            case 3:
                 /** 建單時間(遞增) */
                 this.setOrderConditions(
                     [
@@ -167,7 +187,7 @@ class MainStore extends BaseMainStore {
                     ]
                 )
                 break;
-            case 2:
+            case 4:
                 /** 建單時間(遞減) */
                 this.setOrderConditions(
                     [
@@ -176,7 +196,7 @@ class MainStore extends BaseMainStore {
                     ]
                 );
                 break;
-            case 3:
+            case 5:
                 /** 出發時間(遞增) */
                 this.setOrderConditions(
                     [
@@ -185,7 +205,7 @@ class MainStore extends BaseMainStore {
                     ]
                 )
                 break;
-            case 4:
+            case 6:
                 /** 建單時間(遞減) */
                 this.setOrderConditions(
                     [
@@ -194,8 +214,8 @@ class MainStore extends BaseMainStore {
                     ]
                 )
                 break;
-            case 5:/** 旅行社 */
-            case 6:
+            case 7:/** 旅行社 */
+            case 8:
                 /** 目的地 */
                 this.setOrderConditions(
                     [
@@ -235,7 +255,17 @@ class MainStore extends BaseMainStore {
         }
     }
 
-    /** 驗證firebase api 用*/
+
+
+
+
+
+
+
+
+
+
+    /** ======================================== 驗證firebase api 用 ======================================== **/
     transactionPeople = async () => {
         const task = new InfinitePool(2);
         const self = this;
@@ -270,7 +300,7 @@ class MainStore extends BaseMainStore {
     }
 
     incrementPeople = async () => {
-        return await this.apiOfOrder.updateIncrementCountOfPeople(this.getComponent(),`OHvWFHEsQQ5MEIU1nQya`);
+        return await this.apiOfOrder.updateIncrementCountOfPeople(this.getComponent(), `OHvWFHEsQQ5MEIU1nQya`);
     }
 
     lengthOfOrder = async () => {
@@ -279,24 +309,24 @@ class MainStore extends BaseMainStore {
     }
 
     testOfFetchCount = async () => {
-        const count =  await this.fetchCountOfSpecificCondition(`orders`, {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
+        const count = await this.fetchCountOfSpecificCondition(`orders`, {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
         this.getComponent().showInfoSnackMessage(`總共有:${count} 個出發時間 > ${Util.getTodayTimeFormat()}`);
     }
 
     testOfFetchSum = async () => {
-        const count =  await this.fetchSumOfSpecificAttribute(`orders`, 'countOfPeople', {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
+        const count = await this.fetchSumOfSpecificAttribute(`orders`, 'countOfPeople', {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
         this.getComponent().showInfoSnackMessage(`合計有:${count} 人數，出發時間 > ${Util.getTodayTimeFormat()}`);
     }
 
     testOfFetchAverage = async () => {
-        const count =  await this.fetchAverageOfSpecificAttribute(`orders`, 'countOfPeople', {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
+        const count = await this.fetchAverageOfSpecificAttribute(`orders`, 'countOfPeople', {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
         this.getComponent().showInfoSnackMessage(`平均有:${count} 個人 出發時間 > ${Util.getTodayTimeFormat()}`);
     }
 
     //multi = [...{name: 'name', type: 'sum', attribute: 'attr'}]
     testOfFetchFetchMulti = async () => {
-        const result = await this.apiOfOrder.fetchMultiResultOfSpecific('orders',[{name:'countOf',type:'count',attribute:'countOfPeople'},
-            {name:'sumOf',type:'sum',attribute:'countOfPeople'}],{type:'where',params:['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
+        const result = await this.apiOfOrder.fetchMultiResultOfSpecific('orders', [{name: 'countOf', type: 'count', attribute: 'countOfPeople'},
+            {name: 'sumOf', type: 'sum', attribute: 'countOfPeople'}], {type: 'where', params: ['startOfTravel', '>', new Date(Util.getTodayTimeFormat())]});
         this.getComponent().showInfoSnackMessage(`回傳值:${JSON.stringify(result)}`);
     }
 
