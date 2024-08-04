@@ -1,4 +1,4 @@
-const edite = true;
+const edit = true;
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from 'utiller';
 
 
@@ -10,6 +10,8 @@ class CommonPoolHelper {
         this.queues[`fetch`] = new InfinitePool(0, `fetch`).runByEachTaskInBackGround();
         this.queues[`submit`] = new InfinitePool(0, `submit`).runByEachTaskInBackGround();
         this.queues[`functions`] = new InfinitePool(0, `functions`).runByEachTaskInBackGround();
+        /** functions處理file IO(WORD->PDF檔) 有可能 timeout */
+        this.queues[`functions`].enableTaskTimeout(true, 60000);
     }
 
     async submitTo(queueName, async_func, priority = `low`, taskName = 'noName') {
