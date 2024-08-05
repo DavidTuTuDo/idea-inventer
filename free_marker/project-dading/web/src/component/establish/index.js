@@ -132,6 +132,11 @@ class EstablishComponent extends BaseEstablishComponent {
     //     return Util.getVisibleOrNone(!this.isMobileDevice());
     // }
 
+    getFinanceCreateTime(finance) {
+        const time =  super.getFinanceCreateTime(finance);
+        return Util.getCustomFormatOfDatePresent(time,`MM/DD mm:ss`);
+    }
+
     onEstablishDesktopVisitorNameTextFieldChange(param) {
         this.getStore().getDesktop().incrementVisitorColumn(param.object);
     }

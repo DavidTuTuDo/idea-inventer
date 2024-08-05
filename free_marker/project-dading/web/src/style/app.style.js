@@ -55,16 +55,6 @@ class AppStyle {
 
   /** => following for navigator  component  */
 
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
-
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -469,7 +459,9 @@ class AppStyle {
 
   EstablishDesktopAreaOfRecordFinanceRequestTextFieldList = {};
 
-  EstablishDesktopAreaOfRecordFinanceCreateTimeDateTimePicker = {};
+  EstablishDesktopAreaOfRecordFinanceOperatedTimeDateTimePicker = {};
+
+  EstablishDesktopAreaOfRecordFinanceCreateTimeTextField = {};
 
   EstablishDesktopAreaOfRecordFinanceIndexOfSequenceTextField = {};
 

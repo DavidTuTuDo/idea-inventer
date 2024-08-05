@@ -786,6 +786,15 @@ class CodegenNode {
     /** 屬性放到firestore 會 trim()，幫助搜尋遇到空格不符合的問題 */
     trim = false;
 
+    forceServerTime = false
+    /** 有些時間欄位怕被開發者模式竄改，所以設計上傳時候用serverTime，例如createTime, updateTime */
+
+    self = this;
+
+    useServerTime() {
+        return this.isTimeStamp() && _.isEqual(this.forceServerTime, true);
+    }
+
     asTrim() {
         return _.isEqual(this.trim, true);
     }
@@ -4853,6 +4862,8 @@ class RemoteFunctionHandler extends BaseBuilder {
                     contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true' : ''});${getCommentDescription(child)}`);
                 } else if (child.isNumber()) {
                     contents.push(`const _${child.getFieldName()} = Util.getNumberOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
+                } else if (child.useServerTime()) {
+                    contents.push(`const  _${child.getFieldName()} = this._firebase().getServerTimeSymbol()`);
                 } else if (child.isTimeStamp()) {
                     contents.push(`const _${child.getFieldName()} = !_.isUndefined(object.${child.getFieldName()}) ? 
                 this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);

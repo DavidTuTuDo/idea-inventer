@@ -55,16 +55,6 @@ class CommonStyle {
 
   /** => following for navigator  component  */
 
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
-
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -469,7 +459,9 @@ class CommonStyle {
 
   EstablishDesktopAreaOfRecordFinanceRequestTextFieldList = {};
 
-  EstablishDesktopAreaOfRecordFinanceCreateTimeDateTimePicker = {};
+  EstablishDesktopAreaOfRecordFinanceOperatedTimeDateTimePicker = {};
+
+  EstablishDesktopAreaOfRecordFinanceCreateTimeTextField = {};
 
   EstablishDesktopAreaOfRecordFinanceIndexOfSequenceTextField = {};
 
