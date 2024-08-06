@@ -7,7 +7,7 @@
 /** following for main  component used  */
 
 .MainDiv:extend(.CenterInParentColumn) {
-  margin-bottom: 20px;
+  margin: auto;
   @media @mobile {
     /** empty style */
   }
@@ -1134,6 +1134,7 @@
   width: 90vw;
   min-height: 60vh;
   gap: 4px;
+  margin: auto;
   padding-top: 15px;
   padding-bottom: 15px;
   @media @mobile {
@@ -1144,6 +1145,18 @@
   }
   @media @desktop {
     max-width: 550px;
+  }
+}
+.AccountDivWrap:extend(.CenterInParentColumn) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
   }
 }
 .AccountUrlOfHeadPhotoAvatar {
@@ -1423,6 +1436,17 @@
   }
 }
 .AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.AccountCancelChip {
   @media @mobile {
     /** empty style */
   }
@@ -1976,7 +2000,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactCancelButton {
+.InfoOfCopyRightContactCancelChip {
   @media @mobile {
     /** empty style */
   }
@@ -2015,7 +2039,7 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContentCancelButton {
+.InfoOfCopyRightContentCancelChip {
   @media @mobile {
     /** empty style */
   }
@@ -2493,6 +2517,61 @@
   }
 }
 .NavigatorDrawerShortcutIconImg {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListItem {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutListItemSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutTitleTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorDrawerMyShortcutIconImg {
   @media @mobile {
     /** empty style */
   }
@@ -3155,5 +3234,21 @@
   }
   @media @desktop {
     /** empty style */
+  }
+}
+/** ======== following for homeless ========= */
+
+.NavigatorToolBarCompleteInputTextField {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.3);
+  @media @mobile {
+    width: 95%;
+  }
+  @media @tablet {
+    width: 95%;
+  }
+  @media @desktop {
+    width: 70%;
+    max-width: 500px;
   }
 }

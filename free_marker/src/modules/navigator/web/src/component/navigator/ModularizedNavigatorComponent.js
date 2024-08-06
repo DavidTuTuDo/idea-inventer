@@ -153,7 +153,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         }
     }
 
-    onNavigatorToolBarInputOfCompleteTextFieldSearchPressed(input, complete) {
+    onNavigatorToolBarInputOfCompleteTextFieldSearchPressed(input, toolBar) {
         /** 先判斷autoComplete 有沒有selectedItem()
          *
          * 沒有的話再用 getInput() 去搜尋
@@ -166,7 +166,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
             this.onSearchPressed(data);
             this.getStore().clearKeywordDetail();
         } else {
-            this.onSearchPressed(complete.getInput())
+            this.onSearchPressed(toolBar.getComplete())
         }
     }
 
@@ -187,6 +187,8 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     getInjectStyleOfNavigatorToolBarTipOfLoadingCircularProgress(toolBar) {
         return Util.getVisibleOrNone(UserInfo.isAuthProcessing() ,true);
     }
+
+
 
 }
 

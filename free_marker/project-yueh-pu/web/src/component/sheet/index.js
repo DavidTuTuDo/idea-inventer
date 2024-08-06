@@ -134,7 +134,6 @@ class SheetComponent extends BaseSheetComponent {
 
     SheetGuitarpusCurrentContextView = observer(({guitarpu}) => {
         const self = this;
-        const classes = this.props.classes;
         const currentContext = self.getGuitarpuCurrentContext(guitarpu);
         const segments = Util.getSegmentsOfEachLine(currentContext);
 

@@ -129,6 +129,16 @@ class CommonStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -207,7 +217,7 @@ class CommonStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelButton = {};
+  InfoOfCopyRightContentCancelChip = {};
 
   InfoOfCopyRightContentDivWrap = {};
 
@@ -215,7 +225,7 @@ class CommonStyle {
 
   /** => following for infoOfCopyRightContact  component  */
 
-  InfoOfCopyRightContactCancelButton = {};
+  InfoOfCopyRightContactCancelChip = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -313,6 +323,8 @@ class CommonStyle {
 
   /** => following for account  component  */
 
+  AccountCancelChip = {};
+
   AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
 
   AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
@@ -362,6 +374,8 @@ class CommonStyle {
   AccountFuncAreaOfNameDiv = {};
 
   AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountDivWrap = {};
 
   AccountPaper = {};
 

@@ -40,7 +40,7 @@ class ModularizedInfoOfCopyRightContactComponent extends BaseInfoOfCopyRightCont
     this.invokeLineApp(this.getStore().getLine(), `明悅您好，請問你軟體開發的問題`);
   }
 
-  onInfoOfCopyRightContactCancelButtonClicked(param) {
+  onInfoOfCopyRightContactCancelChipClicked(param) {
     this.dismiss();
   }
 

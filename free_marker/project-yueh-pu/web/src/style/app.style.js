@@ -129,6 +129,16 @@ class AppStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -207,7 +217,7 @@ class AppStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelButton = {};
+  InfoOfCopyRightContentCancelChip = {};
 
   InfoOfCopyRightContentDivWrap = {};
 
@@ -215,7 +225,7 @@ class AppStyle {
 
   /** => following for infoOfCopyRightContact  component  */
 
-  InfoOfCopyRightContactCancelButton = {};
+  InfoOfCopyRightContactCancelChip = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -313,6 +323,8 @@ class AppStyle {
 
   /** => following for account  component  */
 
+  AccountCancelChip = {};
+
   AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
 
   AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
@@ -362,6 +374,8 @@ class AppStyle {
   AccountFuncAreaOfNameDiv = {};
 
   AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountDivWrap = {};
 
   AccountPaper = {};
 

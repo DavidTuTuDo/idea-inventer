@@ -65,11 +65,10 @@ class UserInfo {
         if (this.isValidUser(user)) {
             Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
             CommonPoolHelper.enableParallelMode();
-            Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`,user);
-            await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {
-                ...user,
-                id: user.uid
-            }, user.uid);
+            Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
+            const current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
+            if (!current.exists) await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {...user, id: user.uid}, user.uid);
+            else await this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid);
             Cookie.setUser(user);
             Util.appendInfo('登入成功, 所以寫入資料')
             Util.appendInfo('user info:', user);

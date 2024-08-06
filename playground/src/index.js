@@ -554,18 +554,19 @@ if (configerer.DEBUG_MODE) {
             //     "世興-台北分部",
             // ]
 
-            console.log(_.size(current));
-            const latest = current.map((cou, index) => {
-                return {label: cou, value: `${index + 1}`};
-            })
-
-            Util.appendFile(`./latest.json`, JSON.stringify(latest), false, true);
-            // let i = 1
-            // _.range(1,12).forEach((item) => {
-            //     console.log(i);
-            //     i++;
+            // console.log(_.size(current));
+            // const latest = current.map((cou, index) => {
+            //     return {label: cou, value: `${index + 1}`};
             // })
+            //
+            // Util.appendFile(`./latest.json`, JSON.stringify(latest), false, true);
+            // // let i = 1
+            // // _.range(1,12).forEach((item) => {
+            // //     console.log(i);
+            // //     i++;
+            // // })
 
+            console.log(Util.camel(`set`,`photoURL`));
 
         }
     )();
