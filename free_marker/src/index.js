@@ -33,9 +33,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
-// let CURRENT_PROJECT = './project-dading';
+let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
@@ -159,7 +159,7 @@ class CodegenNode {
      * */
     isExtraComponent = false;
 
-    implementsOfAlertItemClicked = [];
+    listOfImplementsOfAlertItemClicked = [];
     /** alertMenu的 items,在點擊後的事件實作 */
 
     /** 如果 Typoghraphy 只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
@@ -896,6 +896,13 @@ class CodegenNode {
 
     getHelperVisual() {
         return Util.mergeObject(this.defaultOfHelperVisual, this.helperVisual);
+    }
+
+    hasHelperVisualSupportAlertMenu() {
+        const helper = this.getHelperVisual();
+        const condition1 = helper.start && !Util.isUndefinedNullEmpty(helper.start.alertMenu);
+        const condition2 = helper.end && !Util.isUndefinedNullEmpty(helper.end.alertMenu);
+        return condition1 || condition2;
     }
 
     hasHelperVisual() {
@@ -1873,7 +1880,10 @@ class CodegenNode {
     }
 
     hasAlertMenu() {
-        return _.size(this.alertMenu.items) > 0;
+        const conditionA = _.size(this.alertMenu.items) > 0;
+        // const conditionB = this.isHelperVisualSupportAlertMenu();
+        // return conditionA || conditionB;
+        return conditionA;
     }
 
     getAlertDialog() {
@@ -2040,7 +2050,7 @@ class CodegenNode {
             stmts.push(`const ${this.getFieldNameOfAlertDialog()} = React.createRef()`);
         }
 
-        if (this.hasAlertMenu()) {
+        if (this.hasAlertMenu() || this.hasHelperVisualSupportAlertMenu()) {
             stmts.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
         }
 
@@ -2083,8 +2093,8 @@ class CodegenNode {
             }
         }
 
-        if (this.hasAlertMenu()) {
-            stmts.push(`const implementsOfAlertItemClicked = [${this.implementsOfAlertItemClicked.join(',')}]`)
+        for (const each of this.listOfImplementsOfAlertItemClicked) {
+            stmts.push(`const ${each.name} = [${each.stmts}]`)
         }
 
         /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
@@ -8077,51 +8087,10 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.hasAlertMenu()) {
-
                 if (node.withoutWrapView()) {
                     node.setWrapView('React.Fragment');
                 }
-
-                const stringsOfItem = [];
-                const implementsOfClicked = []
-                for (const item of node.alertMenu.items) {
-
-                    const functionName = node.getFunctionNameOfClicked(item.name);
-                    implementsOfClicked.push(`{"id":${item.id},"onClick":self.${functionName}(objectOfParam)}`);
-                    node.appendMethods(
-                        {
-                            functionName,
-                            params: ['param']
-                        });
-
-
-                    const objectOfItem = {};
-                    objectOfItem.label = item.label;
-                    objectOfItem.icon = item.icon;
-                    objectOfItem.id = item.id;
-                    objectOfItem.loginOnly = item.loginOnly ?? false;
-                    objectOfItem.notice = item.notice;
-
-                    Util.removeAttributeBy(objectOfItem);
-                    /** 清除掉value為undefined,因為JSON.parse會過不了 */
-                    stringsOfItem.push(JSON.stringify(objectOfItem));
-
-                }
-                // console.log(`[${stringsOfItem.join(',')}]`);
-                const fieldNameOfItems = `itemsOf${_.upperFirst(node.getName())}`;
-                node.implementsOfAlertItemClicked = implementsOfClicked;
-                node.getPreciseAttributeParent().appendChildrenWithJsons({
-                    name: fieldNameOfItems,
-                    type: 'arrayOfField',
-                    l10n: true,
-                    incest: node.incest,
-                    defaultValue: JSON.parse(`[${stringsOfItem.join(',')}]`),
-                })
-
-                const content = `{self.renderAlertMenu({ref:${node.getFieldNameOfAlertMenu()},
-                component:self,items:Util.getMergedArrayBy(${node.getPreciseAttributeParentName()}.get${_.upperFirst(fieldNameOfItems)}(), implementsOfAlertItemClicked, 'id')})}`
-
-                node.appendWrapContents(content);
+                node.appendWrapContents(this.getContentOfAlertMenu(node, node.alertMenu));
             }
 
             this.enrichNodeWithCustomViewDefined(node.getChildren());
@@ -8185,11 +8154,12 @@ class ProjectFileHandler extends PathBase {
         }
 
         if (node.hasHelperVisual()) {
-
-            function appendContentOfObjectOfProps(view, obj, position) {
+            function appendContentOfObjectOfProps(view, position, _stmt) {
                 if (_.isUndefined(view)) return;
-
+                const hasAlertMenu = !Util.isUndefinedNullEmpty(view.alertMenu);
+                const hasClick = _.isEqual(view.click, true);
                 let contentOfVisual;
+                let contentOfClicked;
                 switch (view.type) {
                     case 'icon':
                         self.appendMuiIconImport(node, view.content);
@@ -8202,28 +8172,32 @@ class ProjectFileHandler extends PathBase {
                         throw new ERROR(9999, `78751564165156 un support type of ${view.type}`);
                 }
 
-                if (view.click) {
-                    node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
+
+                if (hasAlertMenu) {
+                    contentOfClicked = self.getStmtsOfAlertMenu(node).join('\n');
+                } else if (hasClick) {
                     const functionNameOfVisualIconClick = node.getFunctionNameOfClicked(position, _.isEqual(view.type, 'icon') ? view.content : 'text');
                     node.appendMethods({
                         functionName: functionNameOfVisualIconClick,
                         params: ['param'],
                     })
-                    contentOfVisual = `<IconButton
-                            onClick={(event) => { 
-                                ${getContentsOfClickBehavior(node, functionNameOfVisualIconClick)}}}
-                            edge="${position}" >${contentOfVisual}</IconButton>`
+                    contentOfClicked = getContentsOfClickBehavior(node, functionNameOfVisualIconClick)
                 }
-                stmts.push(`${position}Adornment: <InputAdornment position="${position}">${contentOfVisual}</InputAdornment>`)
+
+                if (hasAlertMenu || hasClick) {
+                    node.appendImportStmt({part: 'IconButton', from: '@mui/material/IconButton'});
+                    contentOfVisual = `<IconButton onClick={(event, value) => {${contentOfClicked}}} 
+                                edge="${position}">${contentOfVisual}</IconButton>`;
+                }
+                _stmt.push(`${position}Adornment: <InputAdornment position="${position}">${contentOfVisual}${hasAlertMenu ? self.getContentOfAlertMenu(node, view.alertMenu, Util.camel(`helperVisual`, position)) : ''}</InputAdornment>`)
             }
 
 
             const visual = node.getHelperVisual();
             node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
             const stmts = [];
-            appendContentOfObjectOfProps(visual.start, stmts, 'start');
-            appendContentOfObjectOfProps(visual.end, stmts, 'end');
-
+            appendContentOfObjectOfProps(visual.start, 'start', stmts);
+            appendContentOfObjectOfProps(visual.end, 'end', stmts);
             arrayOfProps.push({InputProps: `###{${stmts.join(',')}}`})
         }
 
@@ -8248,6 +8222,52 @@ class ProjectFileHandler extends PathBase {
                 node.appendListProps(...arrayOfProps);
                 break;
         }
+    }
+
+    getStmtsOfAlertMenu(node) {
+        const stmts = [];
+        stmts.push(`event.stopPropagation()`)
+        stmts.push(`objectOfParam.view = event`)
+        stmts.push(`${node.getFieldNameOfAlertMenu()}.current.setAnchor(event.currentTarget);`)
+        stmts.push(`${node.getFieldNameOfAlertMenu()}.current.open();`)
+        return stmts;
+    }
+
+    /** sign用來標記helperVisual */
+    getContentOfAlertMenu(node, alertMenu = [], sign = '') {
+        const stringsOfItem = [];
+        const implementsOfClicked = []
+        for (const item of alertMenu.items) {
+            const functionName = node.getFunctionNameOfClicked(Util.camel(item.name, sign));
+            implementsOfClicked.push(`{"id":${item.id},"onClick":self.${functionName}(objectOfParam)}`);
+            node.appendMethods({functionName, params: ['param']});
+            const objectOfItem = {};
+            objectOfItem.label = item.label;
+            objectOfItem.icon = item.icon;
+            objectOfItem.id = item.id;
+            objectOfItem.loginOnly = item.loginOnly ?? false;
+            objectOfItem.notice = item.notice;
+
+            Util.removeAttributeBy(objectOfItem);
+            /** 清除掉value為undefined,因為JSON.parse會過不了 */
+            stringsOfItem.push(JSON.stringify(objectOfItem));
+        }
+
+        const nameOfImpl = `implementsOfAlertItemClicked${_.upperFirst(sign)}`;
+
+        const fieldNameOfItems = `itemsOf${_.upperFirst(node.getName())}${_.upperFirst(sign)}`;
+        node.listOfImplementsOfAlertItemClicked.push({name: `${nameOfImpl}`, stmts: implementsOfClicked.join(`,`)})
+        node.getPreciseAttributeParent().appendChildrenWithJsons({
+            name: fieldNameOfItems,
+            type: 'arrayOfField',
+            l10n: true,
+            incest: node.incest,
+            defaultValue: JSON.parse(`[${stringsOfItem.join(',')}]`),
+        })
+
+        const content = `{self.renderAlertMenu({ref:${node.getFieldNameOfAlertMenu()},
+                component:self,items:Util.getMergedArrayBy(${node.getPreciseAttributeParentName()}.get${_.upperFirst(fieldNameOfItems)}(), ${nameOfImpl}, 'id')})}`
+        return content;
     }
 
     /** 針對view的種類, 增加與store互動的規則 例如TextField就要有onChange */
@@ -8346,6 +8366,49 @@ class ProjectFileHandler extends PathBase {
                         node.appendViewProps({slotProps: {textField: {size: 'small'}}})
                         break;
                 }
+            }
+        }
+
+        function injectStyleBehavior(node) {
+            let clazzNameOFDefault = node.getClassNameOfLessUsage();
+            const params = [node.getObservableName(true)];
+            _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
+            if (node.needInjectStyle()) {
+                const injectFunctionName = node.getFunctionNameOfInjectStyle();
+                node.appendMethods({
+                    functionName: injectFunctionName,
+                    params,
+                })
+                node.appendViewProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+            } else {
+                node.appendViewProps({style: `###{...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
+            }
+
+            /** 這個做法有點危險, 如果裏面是指標, 那之前所有的內容都會被更改 */
+            const clazzNameOfWrap = node.getClassNameOfLessUsage('wrap');
+            if (node.needInjectWrapStyle()) {
+                const injectFunctionName = node.getFunctionNameOfInjectStyle('Wrap');
+                node.appendMethods({
+                    functionName: injectFunctionName,
+                    params,
+                })
+                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+            } else {
+                node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
+            }
+
+            if (node.needInjectListStyle()) {
+                node.appendMethods({
+                    functionName: node.getFunctionNameOfInjectStyle('List'),
+                    params: [node.getPreciseAttributeParentName()]
+                })
+            }
+
+            if (node.needInjectListWrapStyle()) {
+                node.appendMethods({
+                    functionName: node.getFunctionNameOfInjectStyle('ListWrap'),
+                    param: [node.getPreciseAttributeParentName()]
+                })
             }
         }
 
@@ -8791,17 +8854,14 @@ class ProjectFileHandler extends PathBase {
                     functionName: node.getFunctionNameOfPlayEnd(),
                     params: ['param'],
                 })
-
                 node.appendMethods({
                     functionName: node.getFunctionNameOfPlayError(),
                     params: ['param'],
                 })
-
                 node.appendMethods({
                     functionName: node.getFunctionNameOfOnPlay(),
                     params: ['param'],
                 })
-
                 node.appendViewProps(
                     {
                         onError: `###(param) => self.${node.getFunctionNameOfPlayError()}(param)`
@@ -8816,7 +8876,6 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isClickView()) {
-
                 node.appendMethods({
                     functionName: node.getFunctionNameOfClicked(),
                     params: ['param'],
@@ -8830,7 +8889,6 @@ class ProjectFileHandler extends PathBase {
                         loginOnly: node.hasLoginRequiredDialog(),
                     });
                 }
-
                 const onClickStmts = [];
                 const onDeleteStmts = [];
                 if (node.hasLoginRequiredDialog()) {
@@ -8840,7 +8898,6 @@ class ProjectFileHandler extends PathBase {
                         return;
                     }`)
                 }
-
                 if (node.hasConfirmDialog()) {
                     const stmts = [`objectOfParam.view = event;`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
@@ -8852,10 +8909,7 @@ class ProjectFileHandler extends PathBase {
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
                         onClickStmts.push(...stmts, `self.${node.getFunctionNameOfClicked()}(objectOfParam)`);
                 } else if (node.hasAlertMenu()) {
-                    onClickStmts.push(`event.stopPropagation()`)
-                    onClickStmts.push(`objectOfParam.view = event`)
-                    onClickStmts.push(`${node.getFieldNameOfAlertMenu()}.current.setAnchor(event.currentTarget);`)
-                    onClickStmts.push(`${node.getFieldNameOfAlertMenu()}.current.open();`)
+                    onClickStmts.push(...this.getStmtsOfAlertMenu(node))
                 } else {
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 }
@@ -8873,13 +8927,10 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
                 }
             }
-
             if (!node.isPathArray() && node.listEmptyTip.isDefaultValue) {
                 node.disableListEmptyTip()
             }
-
             injectStyleBehavior(node);
-
             if (node.needInjectView()) {
                 const params = [node.getObservableName(true)];
                 _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
@@ -8902,58 +8953,13 @@ class ProjectFileHandler extends PathBase {
                     params,
                 })
             }
-
             if (node.hasVariant())
                 node.appendViewProps({variant: node.getVariant()})
 
             if (node.hasColor()) {
                 node.appendViewProps({color: node.getColor()})
             }
-
             this.enrichNodesOfBehavior(node.getChildren());
-        }
-
-        function injectStyleBehavior(node) {
-            let clazzNameOFDefault = node.getClassNameOfLessUsage();
-            const params = [node.getObservableName(true)];
-            _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
-            if (node.needInjectStyle()) {
-                const injectFunctionName = node.getFunctionNameOfInjectStyle();
-                node.appendMethods({
-                    functionName: injectFunctionName,
-                    params,
-                })
-                node.appendViewProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
-            } else {
-                node.appendViewProps({style: `###{...${JSON.stringify(node.getStyle())}, ...Style.${clazzNameOFDefault}}`})
-            }
-
-            /** 這個做法有點危險, 如果裏面是指標, 那之前所有的內容都會被更改 */
-            const clazzNameOfWrap = node.getClassNameOfLessUsage('wrap');
-            if (node.needInjectWrapStyle()) {
-                const injectFunctionName = node.getFunctionNameOfInjectStyle('Wrap');
-                node.appendMethods({
-                    functionName: injectFunctionName,
-                    params,
-                })
-                node.appendWrapProps({style: `###{...self.${injectFunctionName}(${params.join(',')}),...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
-            } else {
-                node.appendWrapProps({style: `###{...${JSON.stringify(node.getWrapStyle())}, ...Style.${clazzNameOfWrap}}`})
-            }
-
-            if (node.needInjectListStyle()) {
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfInjectStyle('List'),
-                    params: [node.getPreciseAttributeParentName()]
-                })
-            }
-
-            if (node.needInjectListWrapStyle()) {
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfInjectStyle('ListWrap'),
-                    param: [node.getPreciseAttributeParentName()]
-                })
-            }
         }
     }
 
