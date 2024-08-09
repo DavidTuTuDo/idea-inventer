@@ -1,3 +1,4 @@
+const edit = true;
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -71,9 +72,11 @@ class ModularizedAccountComponent extends BaseAccountComponent {
 
     }
 
+    onAccountCancelChipClicked(param) {
+        this.dismiss()
+    }
 
     onLangSelectedChange(value, funcAreaOfEdit) {
-        console.log(value)
         i18n.setLanguage(value);
     }
 

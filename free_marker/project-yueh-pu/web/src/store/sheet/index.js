@@ -1,3 +1,4 @@
+const edit = true;
 import BaseSheetStore from "./BaseSheetStore";
 import {
     utiller as Util,
@@ -116,13 +117,13 @@ class SheetStore extends BaseSheetStore {
 
     async updateFavoriteToggleState(idOfCurrentGuitarPu) {
         if (UserInfoRef.isLoginWithSucceed()) {
-            this.getAdjustCenter().getJoinToFavorite().setToggle(!Util.isUndefinedNullEmpty(await this.getFavoritePuByIdOfGuitarPu(idOfCurrentGuitarPu)));
+            this.getAdjustCenter().setToggleOfJoinToFavorite(!Util.isUndefinedNullEmpty(await this.getFavoritePuByIdOfGuitarPu(idOfCurrentGuitarPu)));
         }
     }
 
     async getFavoritePuByIdOfGuitarPu(idOfGuitarPu) {
         const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(),
-            UserInfoRef.getUid(), {where: (stmt) => stmt.where('idOfGuitarPu', '==', idOfGuitarPu)})
+            UserInfoRef.getUid(), {type: 'where', params: ['idOfGuitarPu', '==', idOfGuitarPu]})
         return _.head(items);
     }
 
@@ -137,7 +138,6 @@ class SheetStore extends BaseSheetStore {
             } else {
                 const item = await this.getFavoritePuByIdOfGuitarPu(this.getCurrentPu().getId());
                 if (item) {
-                    console.log(item);
                     await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), item.id);
                 }
 

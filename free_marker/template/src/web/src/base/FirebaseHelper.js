@@ -168,7 +168,7 @@ class FirebaseHelper extends BaseFirebase {
         return {...item, id: !hasDocumentID ? docRef.id : id, exists: true};
     }
 
-    updateDocument = async (path, item = {},id) => {
+    updateDocument = async (path, item = {}, id) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987864 updateDocument()的id不能為空值`);
         return await updateDoc(this.reference(path, id), item)
     }
@@ -312,8 +312,30 @@ class FirebaseHelper extends BaseFirebase {
         }
     }
 
+    sortedByPriority = (conditions) => {
+        _.each(conditions, (each) => {
+            switch (each.type) {
+                case `where`:
+                    each.index = 1;
+                    break;
+                case `orderBy`:
+                    each.index = 2;
+                    break;
+                case `limit`:
+                    each.index = 4;
+                    break;
+                case `startAt`:
+                case `startAfter`:
+                    each.index = 3;
+                    break;
+            }
+        })
+        const result = _.orderBy(conditions, ['index'], 'asc');
+        return result;
+    }
+
     constraints = (conditions) => {
-        return _.filter(conditions.map(condition => this.normalize(condition)), (each) => !_.isUndefined(each));
+        return _.filter(this.sortedByPriority(conditions).map(condition => this.normalize(condition)), (each) => !_.isUndefined(each));
     }
 
     compound = (path, conditions) => {

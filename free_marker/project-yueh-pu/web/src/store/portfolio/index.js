@@ -1,3 +1,4 @@
+const edit = true;
 import BasePortfolioStore from "./BasePortfolioStore";
 import {
     utiller as Util,
@@ -35,11 +36,10 @@ class PortfolioStore extends BasePortfolioStore {
     async fetch(view) {
         switch (view.paramOfType) {
             case 'preludes':
-                console.log('有進來嗎?');
                 this.setRhythmConditions(
                     [
-                        {where: (stmt) => stmt.where('hasPrelude', '==', true)},
-                        {orderBy: (stmt) => stmt.orderBy('popularLevel', 'desc')}
+                        {type:'where',params:['hasPrelude', '==', true]},
+                        {type:'orderBy',params:['popularLevel', 'desc']}
                     ]
                 );
                 return await super.fetch(this.getComponent());
@@ -65,8 +65,8 @@ class PortfolioStore extends BasePortfolioStore {
             case 'list':
                 this.setRhythmConditions(
                     [
-                        {where: (stmt) => stmt.where('idOfSinger', '==', view.paramOfId)},
-                        {orderBy: (stmt) => stmt.orderBy('popularLevel', 'desc')}
+                        {type:'where',params:['idOfSinger', '==', view.paramOfId]},
+                        {type:'orderBy',params:['popularLevel', 'desc']}
                     ]
                 );
                 return await super.fetch(this.getComponent());

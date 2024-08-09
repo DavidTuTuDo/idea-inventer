@@ -1,3 +1,4 @@
+const edit = true;
 import {observer} from "mobx-react";
 import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
@@ -59,7 +60,7 @@ class MainComponent extends BaseMainComponent {
                 this.gotoSingerRandomRhythm('Y1SB30qmG7qvcYK7hOQg').then()
                 break;
             case 'preludes':
-                Router.gotoPortfolioPage(this, 'preludes',Util.getRandomHash(10))
+                Router.gotoPortfolioPage(this, 'preludes', Util.getRandomHash(10))
                 break;
             case 'randomMayday':
                 this.gotoSingerRandomRhythm('Pn84Semny282MbWnKY2C').then()
@@ -87,10 +88,9 @@ class MainComponent extends BaseMainComponent {
     gotoSingerRandomRhythm = async (id) => {
         const store = new PortfolioRhythmStore();
         const portfolio = await store.fetchPureRhythms(this,
-            {where: (stmt) => stmt.where('idOfSinger', '==', id)}
-        )
+            {type: 'where', params: ['idOfSinger', '==', id]})
         const rhythm = Util.getRandomItemOfArray(portfolio);
-        if(rhythm)
+        if (rhythm)
             Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu);
     }
 
