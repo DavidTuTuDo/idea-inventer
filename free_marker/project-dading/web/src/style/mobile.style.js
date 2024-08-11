@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -133,7 +135,7 @@ class MobileStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelButton = {};
+  InfoOfCopyRightContentCancelChip = {};
 
   InfoOfCopyRightContentDivWrap = {};
 
@@ -141,7 +143,7 @@ class MobileStyle {
 
   /** => following for infoOfCopyRightContact  component  */
 
-  InfoOfCopyRightContactCancelButton = {};
+  InfoOfCopyRightContactCancelChip = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -239,6 +241,8 @@ class MobileStyle {
 
   /** => following for account  component  */
 
+  AccountCancelChip = {};
+
   AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
 
   AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
@@ -288,6 +292,8 @@ class MobileStyle {
   AccountFuncAreaOfNameDiv = {};
 
   AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountDivWrap = {};
 
   AccountPaper = {};
 

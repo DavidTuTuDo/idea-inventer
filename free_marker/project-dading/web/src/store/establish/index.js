@@ -1,15 +1,10 @@
 const edit = true;
 import BaseEstablishStore from "./BaseEstablishStore";
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import {utiller as Util} from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import {Application} from "../../";
 import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS, override} from "mobx";
 import OrderStore from '../mainOrder';
 
 class EstablishStore extends BaseEstablishStore {
@@ -68,20 +63,20 @@ class EstablishStore extends BaseEstablishStore {
     // get getComputedPriceOfTotal() {
     //     let thePriceOfSelected = 0;
     //     return 0;
-        // switch (this.getSelectedPayMethod()) {
-        //     case '2':
-        //         thePriceOfSelected = this.getPriceOfCredit();
-        //         break;
-        //     default:
-        //         thePriceOfSelected = this.getPriceOfCash();
-        //         break;
-        // }
-        //
-        // const price = _.multiply(this.getCountOfPeople(), thePriceOfSelected); /** 甲方開的價格 */
-        // const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的額外總折扣 */
-        // const result = _.subtract(price , discount);
-        // this.setPriceOfTotal(result);
-        // return result;
+    // switch (this.getSelectedPayMethod()) {
+    //     case '2':
+    //         thePriceOfSelected = this.getPriceOfCredit();
+    //         break;
+    //     default:
+    //         thePriceOfSelected = this.getPriceOfCash();
+    //         break;
+    // }
+    //
+    // const price = _.multiply(this.getCountOfPeople(), thePriceOfSelected); /** 甲方開的價格 */
+    // const discount = _.sum(this.getMembers().map(member => member.getDiscount())) /** 成員的額外總折扣 */
+    // const result = _.subtract(price , discount);
+    // this.setPriceOfTotal(result);
+    // return result;
     // }
 
     // /** 已收費用(不含手續費)*/
@@ -219,9 +214,27 @@ class EstablishStore extends BaseEstablishStore {
         order.destination = numberOfDestination > 0 ? _.find(Config.COUNTRY_OF_TRAVEL, ['value', `${numberOfDestination}`]) : undefined;
         this.setId(order.id);
         this.getDesktop().setInfo(order);
-        const latest = _.orderBy(order.records.map(record => { return {...record,createTime:this.normalizeTimestamp(record.createTime)}}),'[createTime]','asc');
+        const latest = _.orderBy(order.records.map(record => {
+            return {...record, createTime: this.normalizeTimestamp(record.createTime)}
+        }), '[createTime]', 'asc');
         this.getDesktop().setFinances(...latest);
         this.getDesktop().setVisitors(...order.members);
+    }
+
+    getPriceWithoutDiscount() {
+        return this.getDesktop().getInfo().getPriceOfAgent();
+    }
+
+    getPriceAWithDiscount() {
+        return _.subtract(this.getDesktop().getInfo().getPriceOfAgent(), this.getDesktop().getInfo().getDiscountOfAgent());
+    }
+
+    getPriceOfCash() {
+        return this.getDesktop().getInfo().getPriceOfCash();
+    }
+
+    getPriceOfCredit() {
+        return this.getDesktop().getInfo().getPriceOfCredit();
     }
 
 

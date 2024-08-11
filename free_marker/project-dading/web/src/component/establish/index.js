@@ -133,8 +133,8 @@ class EstablishComponent extends BaseEstablishComponent {
     // }
 
     getFinanceCreateTime(finance) {
-        const time =  super.getFinanceCreateTime(finance);
-        return Util.getCustomFormatOfDatePresent(time,`MM/DD mm:ss`);
+        const time = super.getFinanceCreateTime(finance);
+        return Util.getCustomFormatOfDatePresent(time, `MM/DD mm:ss`);
     }
 
     onEstablishDesktopVisitorNameTextFieldChange(param) {
@@ -337,10 +337,13 @@ class EstablishComponent extends BaseEstablishComponent {
 
     onEstablishDownloadChipClicked(param) {
         const self = this;
-        this.getStore().updateOrder()
-            .then((result) => functions.httpOnCallGenerateDocx(self, {idOfOrder: this.getStore().getId()}))
-            .then((pathOfDownload) => self.download(pathOfDownload))
-            .then((result) =>self.showWarningSnackMessage(`正在下載旅遊應知合約`))
+        if (Util.isOrEquals(0, this.getStore().getPriceOfCash(), this.getStore().getPriceOfCredit()))
+            self.showWarningSnackMessage(`資料不齊全(信用卡、現金價)，無法產合約`)
+        else
+            this.getStore().updateOrder()
+                .then((result) => functions.httpOnCallGenerateDocx(self, {idOfOrder: this.getStore().getId()}))
+                .then((pathOfDownload) => self.download(pathOfDownload))
+                .then((result) => self.showWarningSnackMessage(`正在下載客戶旅遊合約`))
     }
 
     onEstablishSubmitChipClicked(param) {
@@ -396,6 +399,45 @@ class EstablishComponent extends BaseEstablishComponent {
         }
     }
 
+    onEstablishDesktopVisitorPriceOfPartyBTextFieldInjectCreditHelperVisualEndClicked(param) {
+        const self = this
+        const visitor = param.object;
+        return async () => {
+            const priceOfCredit = self.getStore().getPriceOfCredit();
+            if (priceOfCredit <= 0) this.showWarningSnackMessage(`刷卡價為$0，請確認上方刷卡價`)
+            else visitor.setPriceOfPartyB(priceOfCredit);
+        }
+    }
+
+    onEstablishDesktopVisitorPriceOfPartyBTextFieldInjectCashHelperVisualEndClicked(param) {
+        const self = this
+        const visitor = param.object;
+        return async () => {
+            const priceOfCash = self.getStore().getPriceOfCash();
+            if (priceOfCash <= 0) this.showWarningSnackMessage(`現金價為$0，請確認上方現金價`)
+            else visitor.setPriceOfPartyB(priceOfCash);
+        }
+    }
+
+    onEstablishDesktopVisitorPriceOfPartyATextFieldAutoInjectHelperVisualEndClicked(param) {
+        const self = this
+        const visitor = param.object;
+        return async () => {
+            const priceAWithDiscount = self.getStore().getPriceAWithDiscount();
+            if (priceAWithDiscount <= 0) this.showWarningSnackMessage(`發生錯誤，請檢查上方NET、折扣`)
+            else visitor.setPriceOfPartyA(priceAWithDiscount);
+        }
+    }
+
+    onEstablishDesktopVisitorPriceOfPartyATextFieldAutoOriginHelperVisualEndClicked(param) {
+        const self = this
+        const visitor = param.object;
+        return async () => {
+            const priceWithoutDiscount = self.getStore().getPriceWithoutDiscount();
+            if (priceWithoutDiscount <= 0) this.showWarningSnackMessage(`NET值為$0，請先輸入上方NET`)
+            else visitor.setPriceOfPartyA(priceWithoutDiscount);
+        }
+    }
 
     // getInjectStyleOfEstablishDesktopFinanceFeeOfPartyATextField(finance) {
     //     const status = _.toNumber(finance.getSelectedStatus());
