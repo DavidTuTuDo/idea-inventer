@@ -176,11 +176,19 @@ class MainComponent extends BaseMainComponent {
         this.activateOrderDetailDialog(param.object.data());
     }
 
-    onMainOrderExtraIconButtonContractClicked(param) {
+    onMainOrderExtraIconButtonContractOfPdfClicked(param) {
         const self = this;
         return () => {
-            // this.showInfoSnackMessage(`開發中，請稍待`)
-            functions.httpOnCallGenerateDocx(self, {idOfOrder: param.object.getId()}).then((pathOfDownload) => self.download(pathOfDownload));
+            functions.httpOnCallGeneratePDF(self, {idOfOrder: param.object.getId()})
+                .then((pathOfDownload) => self.gotoUrlWithNewTabDirectly(pathOfDownload));
+        }
+    }
+
+    onMainOrderExtraIconButtonContractOfWordClicked(param) {
+        const self = this;
+        return () => {
+            functions.httpOnCallGenerateDocx(self, {idOfOrder: param.object.getId()})
+                .then((pathOfDownload) => self.gotoUrlWithNewTabDirectly(pathOfDownload));
         }
     }
 

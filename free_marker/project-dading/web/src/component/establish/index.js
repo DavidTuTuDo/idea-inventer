@@ -341,9 +341,20 @@ class EstablishComponent extends BaseEstablishComponent {
             self.showWarningSnackMessage(`資料不齊全(信用卡、現金價)，無法產合約`)
         else
             this.getStore().updateOrder()
+                .then((result) => functions.httpOnCallGeneratePDF(self, {idOfOrder: this.getStore().getId()}))
+                .then((pathOfDownload) => self.gotoUrlWithNewTabDirectly(pathOfDownload))
+                .then((result) => self.showWarningSnackMessage(`正在下載「客戶旅遊合約」`))
+    }
+
+    onEstablishLinkOfWordChipClicked(param) {
+        const self = this;
+        if (Util.isOrEquals(0, this.getStore().getPriceOfCash(), this.getStore().getPriceOfCredit()))
+            self.showWarningSnackMessage(`資料不齊全(信用卡、現金價)，無法產合約`)
+        else
+            this.getStore().updateOrder()
                 .then((result) => functions.httpOnCallGenerateDocx(self, {idOfOrder: this.getStore().getId()}))
-                .then((pathOfDownload) => self.download(pathOfDownload))
-                .then((result) => self.showWarningSnackMessage(`正在下載客戶旅遊合約`))
+                .then((pathOfDownload) => self.gotoUrlWithNewTabDirectly(pathOfDownload))
+                .then((result) => self.showWarningSnackMessage(`正在開啟「客戶旅遊合約」`))
     }
 
     onEstablishSubmitChipClicked(param) {
@@ -371,6 +382,10 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     getInjectStyleOfEstablishDownloadChip(establish) {
+        return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
+    }
+
+    getInjectStyleOfEstablishLinkOfWordChip(establish) {
         return Util.getVisibleOrNone(!_.isEmpty(establish.getId()), true);
     }
 

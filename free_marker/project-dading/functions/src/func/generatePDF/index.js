@@ -1,16 +1,15 @@
 const edit = true;
-import BaseGenerateDocx from "./BaseGenerateDocx";
+import BaseGeneratePDF from "./BaseGeneratePDF";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Api from '../../api';
-import firebase from "../../base/FirebaseHelper";
 import config from "../../config";
+import Api from "../../api";1
+import firebase from "../../base/FirebaseHelper";
 
-
-class GenerateDocx extends BaseGenerateDocx {
-
+class GeneratePDF extends BaseGeneratePDF {
     /** -------------------- fields -------------------- **/
+
     /** -------------------- functions -------------------- **/
 
     constructor(props) {
@@ -46,8 +45,10 @@ class GenerateDocx extends BaseGenerateDocx {
             yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
         }
         const fileName = `大鼎旅行社(訂單|${idOfOrder})`;
-        const bufferOfDocx4Word = await firebase.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07-forDocx.docx`, paramsOfTemplate)
-        const result = await firebase.uploadBufferOFDocx2Drive(bufferOfDocx4Word, `${fileName}.docx`)
+
+        const bufferOfDocx4PDF = await firebase.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07-forPDF.docx`, paramsOfTemplate)
+        const bufferOfPDF = await firebase.convertDocxToPdfBuffer(bufferOfDocx4PDF, fileName);
+        const result = await firebase.deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `${fileName}.pdf`));
 
         /**
          * 部署docx的腳本，可是會用微軟的word開啟，格式會亂掉
@@ -59,6 +60,7 @@ class GenerateDocx extends BaseGenerateDocx {
         throw new ERROR(9999, `485421212 ${result.message}`);
     }
 
+    /** -------------------- async api -------------------- **/
 }
 
-export default new GenerateDocx();
+export default new GeneratePDF();
