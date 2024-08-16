@@ -33,10 +33,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -80,7 +80,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/icons-material`,
-            views: ['PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded'],
+            views: ['SchoolRounded','PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
         },
         {
             from: `@mui/material`,
@@ -2689,7 +2689,7 @@ class CodegenNode {
     }
 
     hasDeletedView() {
-        return !!this.view && !!this.deleted;
+        return !!this.view && (!!this.deleted || this.hasIconOfDeleted());
     }
 
     setClick(click) {
@@ -8436,7 +8436,6 @@ class ProjectFileHandler extends PathBase {
                     node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
                 }
 
-
                 if (node.hasFormat())
                     node.appendViewProps({format: `${node.getFormat()}`})
 
@@ -8444,6 +8443,9 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isTimeDateRangePickerView()) {
+
+                if (node.hasFormat())
+                    node.appendViewProps({format: `${node.getFormat()}`})
 
                 if (node.hasLabel()) {
                     const labels = node.getLabel();

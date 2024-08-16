@@ -4,6 +4,7 @@ import "swiper/css";
 import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { observer } from "mobx-react";
+import Router from '../../router';
 
 @inject("main")
 @observer
@@ -24,9 +25,10 @@ class MainComponent extends BaseMainComponent {
     this.gotoUrlWithNewTab(`https://shopee.tw/seven19820706`)
   }
 
-  onMainClassSignUpChipClicked(param) {
-    this.showInfoSnackMessage(`功能開發中`)
+  onMainEditorOfClassChipClicked(param) {
+    Router.gotoClassSetupPage(this);
   }
+
 
   /** -------------------- async api -------------------- **/
 }
