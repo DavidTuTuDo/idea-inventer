@@ -2228,6 +2228,10 @@ class CodegenNode {
         return this.isAttributeView('TextField', type, node);
     }
 
+    isTypographyView(type = 'default', node = this) {
+        return this.isAttributeView('Typography', type, node);
+    }
+
     isChipView(type = 'default', node = this) {
         return this.isAttributeView('Chip', type, node);
     }
@@ -8501,6 +8505,9 @@ class ProjectFileHandler extends PathBase {
                 node.column = false;
             }
 
+            if(node.isTypographyView()) {
+                node.appendViewProps({whiteSpace: 'pre-line'})
+            }
 
             if (node.isTextFieldView()) {
                 if (!node.hasLabel() && node.hasDescription()) {

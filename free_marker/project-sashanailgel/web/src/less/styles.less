@@ -143,6 +143,7 @@
 /** following for quickSignUp  component used  */
 
 .QuickSignUpDiv {
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -153,7 +154,10 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzCard {
+.QuickSignUpClazzCard:extend(.CenterInParentColumn) {
+  align-items: center;
+  width: 100%;
+  padding: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -164,18 +168,23 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzDivList {
+.QuickSignUpClazzDivList:extend(.CenterInParentColumn) {
+  gap: 10px;
+  margin: auto;
+  width: 500px;
   @media @mobile {
-    /** empty style */
+    width: 330px;
   }
   @media @tablet {
-    /** empty style */
+    width: 330px;
   }
   @media @desktop {
     /** empty style */
   }
 }
 .QuickSignUpClazzCardSkeleton {
+  width: 100vw;
+  height: 250px;
   @media @mobile {
     /** empty style */
   }
@@ -186,7 +195,10 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadDiv {
+.QuickSignUpClazzHeadDiv:extend(.CenterInParentRow) {
+  height: 100px;
+  width: 100%;
+  border-bottom: 1px solid #bbb;
   @media @mobile {
     /** empty style */
   }
@@ -197,7 +209,9 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadSectionOfHostDiv {
+.QuickSignUpClazzHeadInfoDiv:extend(.CenterInParentColumn) {
+  width: 25%;
+  height: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -208,7 +222,9 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadSectionOfHostImageOfHostAvatar {
+.QuickSignUpClazzHeadInfoImageOfHostAvatar {
+  width: 70px;
+  height: 70px;
   @media @mobile {
     /** empty style */
   }
@@ -219,7 +235,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadSectionOfHostNameOfHostTypography {
+.QuickSignUpClazzHeadInfoNameOfHostTypography {
   @media @mobile {
     /** empty style */
   }
@@ -230,7 +246,11 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadWithDiv {
+.QuickSignUpClazzHeadDescDiv {
+  position: relative;
+  padding-top: 10px;
+  width: 75%;
+  height: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -241,7 +261,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadWithExperienceOfHostTypography {
+.QuickSignUpClazzHeadDescExperienceOfHostTypography {
   @media @mobile {
     /** empty style */
   }
@@ -252,7 +272,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfHeadWithGotoPortfolioChip {
+.QuickSignUpClazzHeadDescGotoPortfolioChip {
   @media @mobile {
     /** empty style */
   }
@@ -263,7 +283,10 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDiv {
+.QuickSignUpClazzHeadDescGotoPortfolioDivWrap {
+  position: absolute;
+  right: 5px;
+  bottom: 8px;
   @media @mobile {
     /** empty style */
   }
@@ -274,7 +297,10 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondNameOfClassTypography {
+.QuickSignUpClazzSecondDiv:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  width: 100%;
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -285,7 +311,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondNameOfClassDivWrap {
+.QuickSignUpClazzSecondNameOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -296,7 +322,10 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondNameOfClassLabelOfNameOfClassTypography {
+.QuickSignUpClazzSecondNameOfClassDivWrap:extend(.CenterInParentRow) {
+  justify-content: flex-start;
+  border-bottom: 1px solid #bbb;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -307,7 +336,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFeeOfClassTypography {
+.QuickSignUpClazzSecondNameOfClassLabelOfNameOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -318,7 +347,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFeeOfClassDivWrap {
+.QuickSignUpClazzSecondFeeOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -329,7 +358,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFeeOfClassBtnOfFeeOfClassIconButton {
+.QuickSignUpClazzSecondFeeOfClassDivWrap:extend(.QuickSignUpClazzSecondNameOfClassDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -340,7 +369,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFeeOfClassBtnOfFeeOfClassIconSummarize {
+.QuickSignUpClazzSecondFeeOfClassLabelOfFeeOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -351,7 +380,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFeeOfClassLabelOfFeeOfClassTypography {
+.QuickSignUpClazzSecondDateOfPeriodTypography {
   @media @mobile {
     /** empty style */
   }
@@ -362,7 +391,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDateOfPeriodTypography {
+.QuickSignUpClazzSecondDateOfPeriodDivWrap:extend(.QuickSignUpClazzSecondNameOfClassDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -373,7 +402,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDateOfPeriodDivWrap {
+.QuickSignUpClazzSecondDateOfPeriodLabelOfDateOfPeriodTypography {
   @media @mobile {
     /** empty style */
   }
@@ -384,7 +413,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDateOfPeriodLabelOfDateOfPeriodTypography {
+.QuickSignUpClazzSecondDateOfWeekAttendTypography {
   @media @mobile {
     /** empty style */
   }
@@ -395,7 +424,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDateOfWeekAttendTypography {
+.QuickSignUpClazzSecondDateOfWeekAttendDivWrap:extend(.QuickSignUpClazzSecondNameOfClassDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -406,7 +435,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDateOfWeekAttendDivWrap {
+.QuickSignUpClazzSecondDateOfWeekAttendLabelOfDateOfWeekAttendTypography {
   @media @mobile {
     /** empty style */
   }
@@ -417,7 +446,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondDateOfWeekAttendLabelOfDateOfWeekAttendTypography {
+.QuickSignUpClazzSecondTotalHoursOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -428,7 +457,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondTotalHoursOfClassTypography {
+.QuickSignUpClazzSecondTotalHoursOfClassDivWrap:extend(.QuickSignUpClazzSecondNameOfClassDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -439,7 +468,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondTotalHoursOfClassDivWrap {
+.QuickSignUpClazzSecondTotalHoursOfClassLabelOfTotalHoursOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -450,7 +479,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondTotalHoursOfClassLabelOfTotalHoursOfClassTypography {
+.QuickSignUpClazzSecondStateOfRegisteredTypography {
   @media @mobile {
     /** empty style */
   }
@@ -461,7 +490,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondStateOfRegisteredTypography {
+.QuickSignUpClazzSecondStateOfRegisteredDivWrap:extend(.QuickSignUpClazzSecondNameOfClassDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -472,7 +501,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondStateOfRegisteredDivWrap {
+.QuickSignUpClazzSecondStateOfRegisteredLabelOfStateOfRegisteredTypography {
   @media @mobile {
     /** empty style */
   }
@@ -483,7 +512,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondStateOfRegisteredLabelOfStateOfRegisteredTypography {
+.QuickSignUpClazzSecondIntroduceTypography {
   @media @mobile {
     /** empty style */
   }
@@ -494,7 +523,11 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondIntroduceTypography {
+.QuickSignUpClazzSecondIntroduceDivWrap:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  background: #ffeeee;
+  width: 100%;
+  height: 120px;
   @media @mobile {
     /** empty style */
   }
@@ -505,7 +538,10 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFuncDiv {
+.QuickSignUpClazzSecondFuncDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  hight: 60px;
+  gap: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -516,7 +552,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFuncSubmitChip {
+.QuickSignUpClazzSecondFuncSubmitChip {
   @media @mobile {
     /** empty style */
   }
@@ -527,7 +563,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFuncMoreChip {
+.QuickSignUpClazzSecondFuncMoreChip {
   @media @mobile {
     /** empty style */
   }
@@ -538,7 +574,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFuncShareIconButton {
+.QuickSignUpClazzSecondFuncShareIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -549,7 +585,7 @@
     /** empty style */
   }
 }
-.QuickSignUpClazzAreaOfSecondFuncShareIconShareRounded {
+.QuickSignUpClazzSecondFuncShareIconShareRounded {
   @media @mobile {
     /** empty style */
   }
@@ -1293,7 +1329,6 @@
 .EstablishCustomContractDivWrap {
   height: 250px;
   overflow: scroll;
-
   @media @mobile {
     /** empty style */
   }
@@ -1305,6 +1340,83 @@
   }
 }
 .EstablishCustomAgreeOfContractCheckbox {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomAgreeOfContractDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomAgreeOfContractLabelOfAgreeOfContractTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomFuncDiv {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomFuncAcceptChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomFuncAcceptReactFragmentWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomFuncGoBackChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishCustomFuncGoBackReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -2848,4 +2960,3 @@
     /** empty style */
   }
 }
-/** ======== following for homeless ========= */
