@@ -7745,6 +7745,16 @@ class ProjectFileHandler extends PathBase {
 
     /** 有些專有名詞(SimpleViewPager, SimpleGrid)，會重新setView(latest)，而latest對應該產生的行為會實作在 enrichNodesOfBehavior */
     enrichNodeWithCustomViewDefined(nodes) {
+        function handleSizeOfTimeDatePicker(node) {
+            if (node.hasSize()) {
+                switch (node.getSize()) {
+                    case 'small':
+                        node.appendViewProps({slotProps: {textField: {size: 'small'}}})
+                        break;
+                }
+            }
+        }
+
         for (const node of nodes) {
 
             if (Util.isOrEquals(node.getName(), 'updateTime', 'exist', 'exists')) {
@@ -7766,17 +7776,85 @@ class ProjectFileHandler extends PathBase {
                 }
             }
 
-            if (node.isTimeStamp()) {
-                node.getParentNode().appendChildrenWithJsons({
-                    name: `${node.getFieldNameOfValue()}`,
-                    type: 'number',
-                    belong2TimeStamp: true,
-                    defaultValue: -1,
-                    incest: node.incest,
-                    description: `用來放${node.getName()}的number值，方便比較(_.orderBy)用`
-                })
+            if (node.isTimeDateRangePickerView()) {
+
+                if (node.hasFormat())
+                    node.appendViewProps({format: `${node.getFormat()}`})
+
+                if (node.hasLabel()) {
+                    const labels = node.getLabel();
+                    if (!_.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
+
+                    const start = node.getFieldNameOfLabel('start');
+                    const end = node.getFieldNameOfLabel('end');
+                    node.getParentNode().appendChildrenWithJsons(
+                        {
+                            name: start,
+                            type: 'string',
+                            l10n: true,
+                            incest: node.incest,
+                            defaultValue: _.head(labels)
+                        },
+                        {
+                            name: end,
+                            type: 'string',
+                            l10n: true,
+                            incest: node.incest,
+                            defaultValue: _.last(labels)
+                        }
+                    )
+
+                    node.appendViewProps({
+                        localeText: `###{start:${node.getPreciseAttributeParentName()}.${Util.camel('get', start)}(), 
+                    end:${node.getPreciseAttributeParentName()}.${Util.camel('get', end)}()}`
+                    })
+
+                    handleSizeOfTimeDatePicker(node);
+                }
+
+                if (node.hasFormat())
+                    node.appendViewProps({format: `${node.getFormat()}`})
+
+                node.getParentNode().appendChildrenWithJsons(
+                    {
+                        name: node.getFieldNameOfStart(),
+                        type: 'timestamp',
+                        incest: node.incest,
+                        belong2TimeDatePicker: true,
+                        column: true
+                    },
+                    {
+                        name: node.getFieldNameOfEnd(),
+                        type: 'timestamp',
+                        incest: node.incest,
+                        belong2TimeDatePicker: true,
+                        column: true
+                    }
+                )
+
+                node.column = false;
             }
 
+            if (node.isTimeDatePickerView()) {
+                if (node.hasLabel()) {
+                    const label = node.getFieldNameOfLabel();
+                    node.getParentNode().appendChildrenWithJsons(
+                        {
+                            name: label,
+                            type: 'string',
+                            l10n: true,
+                            incest: node.incest,
+                            defaultValue: node.getLabel(),
+                        }
+                    )
+                    node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
+                }
+
+                if (node.hasFormat())
+                    node.appendViewProps({format: `${node.getFormat()}`})
+
+                handleSizeOfTimeDatePicker(node);
+            }
 
             if (node.isFloatBackgroundView()) {
                 const clone = _.cloneDeep(node.raw);
@@ -8382,16 +8460,6 @@ class ProjectFileHandler extends PathBase {
             return stmts.join('\n');
         }
 
-        function handleSizeOfTimeDatePicker(node) {
-            if (node.hasSize()) {
-                switch (node.getSize()) {
-                    case 'small':
-                        node.appendViewProps({slotProps: {textField: {size: 'small'}}})
-                        break;
-                }
-            }
-        }
-
         function injectStyleBehavior(node) {
             let clazzNameOFDefault = node.getClassNameOfLessUsage();
             const params = [node.getObservableName(true)];
@@ -8437,84 +8505,15 @@ class ProjectFileHandler extends PathBase {
 
         for (const node of nodes) {
 
-            if (node.isTimeDatePickerView()) {
-                if (node.hasLabel()) {
-                    const label = node.getFieldNameOfLabel();
-                    node.getParentNode().appendChildrenWithJsons(
-                        {
-                            name: label,
-                            type: 'string',
-                            l10n: true,
-                            incest: node.incest,
-                            defaultValue: node.getLabel(),
-                        }
-                    )
-                    node.appendViewProps({label: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', label)}()`})
-                }
-
-                if (node.hasFormat())
-                    node.appendViewProps({format: `${node.getFormat()}`})
-
-                handleSizeOfTimeDatePicker(node);
-            }
-
-            if (node.isTimeDateRangePickerView()) {
-
-                if (node.hasFormat())
-                    node.appendViewProps({format: `${node.getFormat()}`})
-
-                if (node.hasLabel()) {
-                    const labels = node.getLabel();
-                    if (!_.isArray(labels) || _.size(labels) < 2) throw new ERROR(9999, '746465574 range pick label should be an array');
-
-                    const start = node.getFieldNameOfLabel('start');
-                    const end = node.getFieldNameOfLabel('end');
-                    node.getParentNode().appendChildrenWithJsons(
-                        {
-                            name: start,
-                            type: 'string',
-                            l10n: true,
-                            incest: node.incest,
-                            defaultValue: _.head(labels)
-                        },
-                        {
-                            name: end,
-                            type: 'string',
-                            l10n: true,
-                            incest: node.incest,
-                            defaultValue: _.last(labels)
-                        }
-                    )
-
-                    node.appendViewProps({
-                        localeText: `###{start:${node.getPreciseAttributeParentName()}.${Util.camel('get', start)}(), 
-                    end:${node.getPreciseAttributeParentName()}.${Util.camel('get', end)}()}`
-                    })
-
-                    handleSizeOfTimeDatePicker(node);
-                }
-
-                if (node.hasFormat())
-                    node.appendViewProps({format: `${node.getFormat()}`})
-
-                node.getParentNode().appendChildrenWithJsons(
-                    {
-                        name: node.getFieldNameOfStart(),
-                        type: 'timestamp',
-                        incest: node.incest,
-                        belong2TimeDatePicker: true,
-                        column: true
-                    },
-                    {
-                        name: node.getFieldNameOfEnd(),
-                        type: 'timestamp',
-                        incest: node.incest,
-                        belong2TimeDatePicker: true,
-                        column: true
-                    }
-                )
-
-                node.column = false;
+            if (node.isTimeStamp()) {
+                node.getParentNode().appendChildrenWithJsons({
+                    name: `${node.getFieldNameOfValue()}`,
+                    type: 'number',
+                    belong2TimeStamp: true,
+                    defaultValue: -1,
+                    incest: node.incest,
+                    description: `用來放${node.getName()}的number值，方便比較(_.orderBy)用`
+                })
             }
 
             if(node.isTypographyView()) {
