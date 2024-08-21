@@ -1816,7 +1816,7 @@ class CodegenNode {
         }
 
         function getStmtOfCustomCancelButton() {
-            return self.hasCustomCancelButton ? `useCustomCancel:true`: ``;
+            return self.hasCustomCancelButton() ? `useCustomCancel:true`: ``;
         }
 
         function getStmtOfDisposable() {
