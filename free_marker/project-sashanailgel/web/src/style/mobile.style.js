@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -379,6 +377,8 @@ class MobileStyle {
 
   ClassSetupClazzInfoTypeOfClassTextFieldList = {};
 
+  ClassSetupClazzInfoCountsOfStudentCapacityTextField = {};
+
   ClassSetupClazzInfoDiv = {};
 
   ClassSetupClazzClassTimeExtraIconMoreVertRounded = {};
@@ -401,23 +401,17 @@ class MobileStyle {
 
   ClassSetupClazzSpecificClassDateRangePicker = {};
 
-  ClassSetupClazzAreaOfSecondCountsOfStudentCapacityTextField = {};
+  ClassSetupClazzNameOfClassTextField = {};
 
-  ClassSetupClazzAreaOfSecondNameOfClassTextField = {};
+  ClassSetupClazzLinkOfPortfolioTextField = {};
 
-  ClassSetupClazzAreaOfSecondDiv = {};
+  ClassSetupClazzExperienceOfHostTextField = {};
 
-  ClassSetupClazzOfLinkOfPortfolioTextField = {};
+  ClassSetupClazzHeadNameOfHostTextField = {};
 
-  ClassSetupClazzOfExperienceOfHostTextField = {};
+  ClassSetupClazzHeadImageOfHostAvatar = {};
 
-  ClassSetupClazzOfDiv = {};
-
-  ClassSetupClazzAreaOfHeadImageOfHostImage = {};
-
-  ClassSetupClazzAreaOfHeadNameOfHostTextField = {};
-
-  ClassSetupClazzAreaOfHeadDiv = {};
+  ClassSetupClazzHeadDiv = {};
 
   ClassSetupClazzDivList = {};
 

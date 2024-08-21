@@ -599,6 +599,7 @@
 /** following for classSetup  component used  */
 
 .ClassSetupDiv {
+  padding-top: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -609,7 +610,12 @@
     /** empty style */
   }
 }
-.ClassSetupAreaOfEditDiv {
+.ClassSetupAreaOfEditDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  height: 35px;
+  position: sticky;
+  margin-bottom: 5px;
+  top: 0;
   @media @mobile {
     /** empty style */
   }
@@ -631,7 +637,11 @@
     /** empty style */
   }
 }
-.ClassSetupClazzPaper {
+.ClassSetupClazzPaper:extend(.CenterInParentColumn) {
+  padding: 5px;
+  gap: 12px;
+  align-items: flex-start;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -642,7 +652,10 @@
     /** empty style */
   }
 }
-.ClassSetupClazzDivList {
+.ClassSetupClazzDivList:extend(.CenterInParentColumn) {
+  gap: 10px;
+  margin: auto;
+  width: 95vw;
   @media @mobile {
     /** empty style */
   }
@@ -653,7 +666,10 @@
     /** empty style */
   }
 }
-.ClassSetupClazzAreaOfHeadDiv {
+.ClassSetupClazzHeadDiv:extend(.CenterInParentRow) {
+  gap: 10px;
+  width: 100%;
+  justify-content: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -664,7 +680,9 @@
     /** empty style */
   }
 }
-.ClassSetupClazzAreaOfHeadNameOfHostTextField {
+.ClassSetupClazzHeadImageOfHostAvatar {
+  width: 60px;
+  height: 60px;
   @media @mobile {
     /** empty style */
   }
@@ -675,7 +693,8 @@
     /** empty style */
   }
 }
-.ClassSetupClazzAreaOfHeadImageOfHostImage {
+.ClassSetupClazzHeadNameOfHostTextField {
+  width: 60%;
   @media @mobile {
     /** empty style */
   }
@@ -686,7 +705,8 @@
     /** empty style */
   }
 }
-.ClassSetupClazzOfDiv {
+.ClassSetupClazzExperienceOfHostTextField {
+  width: 79%;
   @media @mobile {
     /** empty style */
   }
@@ -697,7 +717,8 @@
     /** empty style */
   }
 }
-.ClassSetupClazzOfExperienceOfHostTextField {
+.ClassSetupClazzLinkOfPortfolioTextField {
+  width: 79%;
   @media @mobile {
     /** empty style */
   }
@@ -708,40 +729,8 @@
     /** empty style */
   }
 }
-.ClassSetupClazzOfLinkOfPortfolioTextField {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ClassSetupClazzAreaOfSecondDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ClassSetupClazzAreaOfSecondNameOfClassTextField {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ClassSetupClazzAreaOfSecondCountsOfStudentCapacityTextField {
+.ClassSetupClazzNameOfClassTextField {
+  width: 79%;
   @media @mobile {
     /** empty style */
   }
@@ -753,6 +742,7 @@
   }
 }
 .ClassSetupClazzSpecificClassDateRangePicker {
+  width: 95%;
   @media @mobile {
     /** empty style */
   }
@@ -763,7 +753,9 @@
     /** empty style */
   }
 }
-.ClassSetupClazzClassTimeDiv {
+.ClassSetupClazzClassTimeDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -774,7 +766,11 @@
     /** empty style */
   }
 }
-.ClassSetupClazzClassTimeDivList {
+.ClassSetupClazzClassTimeDivList:extend(.CenterInParentRow) {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  background: #f2f2f2;
+
   @media @mobile {
     /** empty style */
   }
@@ -786,6 +782,7 @@
   }
 }
 .ClassSetupClazzClassTimeDayOfWeekTextFieldList {
+  width: 30%;
   @media @mobile {
     /** empty style */
   }
@@ -808,6 +805,7 @@
   }
 }
 .ClassSetupClazzClassTimeStartOfTimeTimePicker {
+  width: 30%;
   @media @mobile {
     /** empty style */
   }
@@ -819,6 +817,7 @@
   }
 }
 .ClassSetupClazzClassTimeEndOfTimeTimePicker {
+  width: 30%;
   @media @mobile {
     /** empty style */
   }
@@ -862,7 +861,21 @@
     /** empty style */
   }
 }
-.ClassSetupClazzInfoDiv {
+.ClassSetupClazzInfoDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 5px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ClassSetupClazzInfoCountsOfStudentCapacityTextField {
+  width: 22%;
   @media @mobile {
     /** empty style */
   }
@@ -874,6 +887,7 @@
   }
 }
 .ClassSetupClazzInfoTypeOfClassTextFieldList {
+  width: 43%;
   @media @mobile {
     /** empty style */
   }
@@ -896,6 +910,7 @@
   }
 }
 .ClassSetupClazzInfoStateOfClassTextFieldList {
+  width: 32%;
   @media @mobile {
     /** empty style */
   }
@@ -917,7 +932,10 @@
     /** empty style */
   }
 }
-.ClassSetupClazzAreaOfFuncDiv {
+.ClassSetupClazzAreaOfFuncDiv:extend(.CenterInParentRow) {
+  height: 50px;
+  width: 100%;
+  gap: 40px;
   @media @mobile {
     /** empty style */
   }
@@ -2938,4 +2956,3 @@
     /** empty style */
   }
 }
-/** ======== following for homeless ========= */
