@@ -716,6 +716,9 @@ class CodegenNode {
 
         strict: false,
         /** 讓彈跳視窗不能用ESC或點擊旁處取消 */
+
+        useCustomCancel:false
+        /** dialog都有自帶sticky button => 如果要客製化自己的cancel button(dading/establish)就要true它 */
     };
     /** 放admin的json file*/
 
@@ -1812,6 +1815,10 @@ class CodegenNode {
             return self.hasStrictMode() ? `strict:true` : ``;
         }
 
+        function getStmtOfCustomCancelButton() {
+            return self.hasCustomCancelButton ? `useCustomCancel:true`: ``;
+        }
+
         function getStmtOfDisposable() {
             if (!self.hasCustomViewDialog()) return '';
             const nodeOfSpecificComponent = self.getSpecificComponent(self.getAlertDialog().customView);
@@ -1842,6 +1849,7 @@ class CodegenNode {
             props.push(getStmtOfDialogContent());
             props.push(getStmtOfDialogTitle());
             props.push(getStmtOfFullWidth());
+            props.push(getStmtOfCustomCancelButton());
             _.remove(props, (each) => _.isEmpty(each))
             stmt.push(`{
             this.renderAlertDialog(
@@ -1877,6 +1885,10 @@ class CodegenNode {
 
     hasStrictMode() {
         return _.isEqual(this.getAlertDialog().strict, true);
+    }
+
+    hasCustomCancelButton() {
+        return _.isEqual(this.getAlertDialog().useCustomCancel, true);
     }
 
     hasAlertMenu() {

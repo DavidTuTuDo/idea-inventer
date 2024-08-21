@@ -1,3 +1,4 @@
+const edit = true;
 import React from "react";
 import {
     Dialog,
@@ -14,6 +15,8 @@ import {utiller as Util} from "utiller";
 import _ from 'lodash';
 import MuiComponent from "./MUIComponent";
 import BaseComponent from './BaseComponent';
+import Chip from "@mui/material/Chip";
+
 
 class DialogStore {
 
@@ -57,6 +60,7 @@ class AlertDialog extends MuiComponent {
         this.enableCancel = props.enableCancel ?? true;
         this.fullWidth = props.fullWidth;
         this.strict = props.strict;
+        this.useCustomCancel = props.useCustomCancel ?? false;
         this.component = props.component;
     }
 
@@ -75,7 +79,7 @@ class AlertDialog extends MuiComponent {
 
     /** 按下esc也會產生close的行為 */
     close = () => {
-        if(!this.strict)
+        if (!this.strict)
             this.getStore().setVisibility(false);
         else
             this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊視窗關閉的提示鍵`) : '';
@@ -166,7 +170,7 @@ class AlertDialog extends MuiComponent {
             return null;
     }
 
-    renderContent() {
+    renderContent = () => {
         const CustomView = this.props.customView;
         const paramObject = this.props.paramObject;
         const component = this.props.component;
@@ -175,11 +179,19 @@ class AlertDialog extends MuiComponent {
         if (this.hasCustomView())
             return <DialogContent
                 className={'BaseAlertDialogContent'}>
-                <CustomView
-                    component={component}
-                    paramObject={paramObject}
-                    dialog={this}
-                    {...this.getStore().getPropsOfCustomView()} />
+
+                <div
+                    className={'BaseAlertDialogCustomView'}>
+                    <CustomView
+                        component={component}
+                        paramObject={paramObject}
+                        dialog={this}
+                        {...this.getStore().getPropsOfCustomView()} />
+
+
+                    {this.renderCustomCancelChip()}
+
+                </div>
             </DialogContent>
 
 
@@ -190,6 +202,21 @@ class AlertDialog extends MuiComponent {
             </DialogContentText>
             {this.renderTextField()}
         </DialogContent>
+    }
+
+    renderCustomCancelChip = () => {
+        if (this.useCustomCancel) {
+            return null
+        }
+
+        return <div className={'BaseAlertDialogDismissView'}>
+            <Chip
+                className={`BaseAlertDialogDismissChip`}
+                label={`關閉視窗`}
+                variant={`outlined`}
+                onClick={() => this.dismiss()}/>
+        </div>
+
     }
 
     hasCustomView() {

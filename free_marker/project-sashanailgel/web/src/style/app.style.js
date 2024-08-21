@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -115,15 +117,11 @@ class AppStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelChip = {};
-
   InfoOfCopyRightContentDivWrap = {};
 
   InfoOfCopyRightContentPaper = {};
 
   /** => following for infoOfCopyRightContact  component  */
-
-  InfoOfCopyRightContactCancelChip = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
