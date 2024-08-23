@@ -614,8 +614,10 @@
   width: 100%;
   height: 35px;
   position: sticky;
-  margin-bottom: 5px;
+  padding-bottom: 5px;
+  padding-top: 5px;
   top: 0;
+  pointer-events: none;
   @media @mobile {
     /** empty style */
   }
@@ -627,6 +629,7 @@
   }
 }
 .ClassSetupAreaOfEditAppendChip {
+  pointer-events: auto;
   @media @mobile {
     /** empty style */
   }
@@ -770,7 +773,6 @@
   padding-top: 20px;
   padding-bottom: 20px;
   background: #f2f2f2;
-
   @media @mobile {
     /** empty style */
   }
@@ -970,7 +972,11 @@
 }
 /** following for establish  component used  */
 
-.EstablishPaper {
+.EstablishPaper:extend(.CenterInParentColumn) {
+  margin: auto;
+  width: 100%;
+  gap: 10px;
+  padding: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -981,7 +987,8 @@
     /** empty style */
   }
 }
-.EstablishMainDiv {
+.EstablishMainDiv:extend(.CenterInParentRow) {
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1003,7 +1010,8 @@
     /** empty style */
   }
 }
-.EstablishMainNameOfClassDivWrap {
+.EstablishMainNameOfClassDivWrap:extend(.CenterInParentRow) {
+  border-bottom: 1px solid #bbb;
   @media @mobile {
     /** empty style */
   }
@@ -1058,7 +1066,9 @@
     /** empty style */
   }
 }
-.EstablishCustomDiv {
+.EstablishCustomDiv:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1080,7 +1090,7 @@
     /** empty style */
   }
 }
-.EstablishCustomNameDivWrap {
+.EstablishCustomNameDivWrap:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -1113,7 +1123,7 @@
     /** empty style */
   }
 }
-.EstablishCustomTextOfEmailDivWrap {
+.EstablishCustomTextOfEmailDivWrap:extend(.EstablishCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1146,7 +1156,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContactDivWrap {
+.EstablishCustomContactDivWrap:extend(.EstablishCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1179,7 +1189,7 @@
     /** empty style */
   }
 }
-.EstablishCustomBirthdayDivWrap {
+.EstablishCustomBirthdayDivWrap:extend(.EstablishCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1212,7 +1222,7 @@
     /** empty style */
   }
 }
-.EstablishCustomIdOfNationalDivWrap {
+.EstablishCustomIdOfNationalDivWrap:extend(.EstablishCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1234,7 +1244,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungDiv {
+.EstablishCustomYoungDiv:extend(.EstablishCustomDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -1256,7 +1266,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNameOfGuardianDivWrap {
+.EstablishCustomYoungNameOfGuardianDivWrap:extend(.EstablishCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1289,7 +1299,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungContactOfGuardianDivWrap {
+.EstablishCustomYoungContactOfGuardianDivWrap:extend(.EstablishCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1313,10 +1323,10 @@
 }
 .EstablishCustomYoungNoticeTypography {
   @media @mobile {
-    /** empty style */
+    font-size: 0.7rem;
   }
   @media @tablet {
-    /** empty style */
+    font-size: 0.7rem;
   }
   @media @desktop {
     /** empty style */
@@ -1346,7 +1356,12 @@
 }
 .EstablishCustomContractDivWrap {
   height: 250px;
-  overflow: scroll;
+  max-width: 100%;
+  overflow-y: scroll;
+  scrollbar-gutter: stable; /* 保持捲動條可見，即使在沒有溢出時 */
+  background: #f4f9fb;
+  border-radius: 3px;
+  padding: 3px;
   @media @mobile {
     /** empty style */
   }
@@ -1368,7 +1383,8 @@
     /** empty style */
   }
 }
-.EstablishCustomAgreeOfContractDivWrap {
+.EstablishCustomAgreeOfContractDivWrap:extend(.EstablishCustomNameDivWrap) {
+  flex-direction: row-reverse;
   @media @mobile {
     /** empty style */
   }
@@ -1390,7 +1406,10 @@
     /** empty style */
   }
 }
-.EstablishCustomFuncDiv {
+.EstablishCustomFuncDiv:extend(.CenterInParentRow) {
+  gap: 20px;
+  width: 100%;
+  height: 40px;
   @media @mobile {
     /** empty style */
   }
