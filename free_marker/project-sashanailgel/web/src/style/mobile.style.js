@@ -381,6 +381,8 @@ class MobileStyle {
 
   ClassSetupClazzInfoDiv = {};
 
+  ClassSetupClazzIntroduceTextField = {};
+
   ClassSetupClazzClassTimeExtraIconMoreVertRounded = {};
 
   ClassSetupClazzClassTimeExtraReactFragmentWrap = {};
@@ -401,6 +403,8 @@ class MobileStyle {
 
   ClassSetupClazzSpecificClassDateRangePicker = {};
 
+  ClassSetupClazzFeeOfClassTextField = {};
+
   ClassSetupClazzNameOfClassTextField = {};
 
   ClassSetupClazzLinkOfPortfolioTextField = {};
@@ -416,6 +420,8 @@ class MobileStyle {
   ClassSetupClazzDivList = {};
 
   ClassSetupClazzPaper = {};
+
+  ClassSetupAreaOfEditBackChip = {};
 
   ClassSetupAreaOfEditAppendChip = {};
 

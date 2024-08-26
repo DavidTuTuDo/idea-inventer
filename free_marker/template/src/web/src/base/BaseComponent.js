@@ -382,6 +382,10 @@ class BaseComponent extends MuiComponent {
         Router.routeToHomePage(this);
     }
 
+    scrollToTop() {
+        window.scrollTo(0, 0)
+    }
+
     renderErrorView = () => {
         const errorMsg = this.getStore().getErrorMsg();
         return (

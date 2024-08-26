@@ -381,6 +381,8 @@ class AppStyle {
 
   ClassSetupClazzInfoDiv = {};
 
+  ClassSetupClazzIntroduceTextField = {};
+
   ClassSetupClazzClassTimeExtraIconMoreVertRounded = {};
 
   ClassSetupClazzClassTimeExtraReactFragmentWrap = {};
@@ -401,6 +403,8 @@ class AppStyle {
 
   ClassSetupClazzSpecificClassDateRangePicker = {};
 
+  ClassSetupClazzFeeOfClassTextField = {};
+
   ClassSetupClazzNameOfClassTextField = {};
 
   ClassSetupClazzLinkOfPortfolioTextField = {};
@@ -416,6 +420,8 @@ class AppStyle {
   ClassSetupClazzDivList = {};
 
   ClassSetupClazzPaper = {};
+
+  ClassSetupAreaOfEditBackChip = {};
 
   ClassSetupAreaOfEditAppendChip = {};
 

@@ -9339,8 +9339,11 @@ class ProjectFileHandler extends PathBase {
         if (this.isAdminPlatform())
             ENABLE_FAST_DEVELOP_MODE = false;
 
-        if (!enableOfRapid)
+        if (!enableOfRapid){
+            console.log(`進來了？`)
             return await self.execute();
+        }
+
 
         if (this.isWebPlatform() && enableOfRapid) {
             ENABLE_FAST_DEVELOP_MODE = true;

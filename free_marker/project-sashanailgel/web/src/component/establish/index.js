@@ -5,7 +5,7 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import libpath from "path";
 import { observer } from "mobx-react";
-
+import  Router from "../../router";
 @inject("establish")
 @observer
 class EstablishComponent extends BaseEstablishComponent {
@@ -19,6 +19,10 @@ class EstablishComponent extends BaseEstablishComponent {
 
   isValidOfParamOfIdOfClass(idOfClass) {
     return !Util.isUndefinedNullEmpty(idOfClass);
+  }
+
+  onEstablishGoBackChipClicked(param) {
+    Router.gotoMainPage(this.getComponentInstance())
   }
 
   /** -------------------- async api -------------------- **/

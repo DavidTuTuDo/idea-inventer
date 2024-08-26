@@ -91,7 +91,7 @@ return this.{{{fieldName}}};
     @action
     updateSpecific{{{functionName}}}(latest, attr = 'id') {
         const {{{name}}} = _.find(this.get{{{functionName}}}(), ({{{name}}}) => _.isEqual({{{name}}}[attr], latest[attr]));
-        order.initial(latest);
+        {{{name}}}.initial(latest);
     }
 
     push{{{fieldClass}}} = (item = {}) => {

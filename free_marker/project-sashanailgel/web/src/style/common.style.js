@@ -381,6 +381,8 @@ class CommonStyle {
 
   ClassSetupClazzInfoDiv = {};
 
+  ClassSetupClazzIntroduceTextField = {};
+
   ClassSetupClazzClassTimeExtraIconMoreVertRounded = {};
 
   ClassSetupClazzClassTimeExtraReactFragmentWrap = {};
@@ -401,6 +403,8 @@ class CommonStyle {
 
   ClassSetupClazzSpecificClassDateRangePicker = {};
 
+  ClassSetupClazzFeeOfClassTextField = {};
+
   ClassSetupClazzNameOfClassTextField = {};
 
   ClassSetupClazzLinkOfPortfolioTextField = {};
@@ -416,6 +420,8 @@ class CommonStyle {
   ClassSetupClazzDivList = {};
 
   ClassSetupClazzPaper = {};
+
+  ClassSetupAreaOfEditBackChip = {};
 
   ClassSetupAreaOfEditAppendChip = {};
 
