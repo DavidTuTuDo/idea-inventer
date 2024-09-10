@@ -1117,6 +1117,7 @@
   }
 }
 .EstablishCustomNameTextField {
+  width: 280px;
   @media @mobile {
     /** empty style */
   }
@@ -1149,7 +1150,7 @@
     /** empty style */
   }
 }
-.EstablishCustomTextOfEmailTextField {
+.EstablishCustomTextOfEmailTextField:extend(.EstablishCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1182,7 +1183,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContactTextField {
+.EstablishCustomContactTextField:extend(.EstablishCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1215,7 +1216,7 @@
     /** empty style */
   }
 }
-.EstablishCustomBirthdayTextField {
+.EstablishCustomBirthdayDatePicker:extend(.EstablishCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1248,7 +1249,7 @@
     /** empty style */
   }
 }
-.EstablishCustomIdOfNationalTextField {
+.EstablishCustomIdOfNationalTextField:extend(.EstablishCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1292,7 +1293,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNameOfGuardianTextField {
+.EstablishCustomYoungNameOfGuardianTextField:extend(.EstablishCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1325,7 +1326,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungContactOfGuardianTextField {
+.EstablishCustomYoungContactOfGuardianTextField:extend(.EstablishCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -3012,3 +3013,4 @@
     /** empty style */
   }
 }
+/** ======== following for homeless ========= */
