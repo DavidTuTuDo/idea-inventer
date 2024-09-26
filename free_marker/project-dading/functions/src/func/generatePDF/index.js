@@ -41,6 +41,7 @@ class GeneratePDF extends BaseGeneratePDF {
             priceOfCredit: `${order.priceOfCredit}`,
             priceOfDeposit: `${order.priceOfDeposit}`,
             nameOfAgent: config.getNameOfAgentByValue(order.selectedAgent),
+            certifOfAgent: config.getCertificateOfAgentByValue(order.selectedAgent),
             yearOfAD,
             yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
         }
