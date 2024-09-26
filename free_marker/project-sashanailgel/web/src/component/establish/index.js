@@ -25,6 +25,10 @@ class EstablishComponent extends BaseEstablishComponent {
     Router.gotoMainPage(this.getComponentInstance())
   }
 
+  onEstablishAcceptChipClicked(param) {
+    this.showInfoSnackMessage(`同意報名課程`);
+  }
+
   /** -------------------- async api -------------------- **/
 }
 
