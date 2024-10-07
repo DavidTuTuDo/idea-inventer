@@ -135,15 +135,11 @@ class AppStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelChip = {};
-
   InfoOfCopyRightContentDivWrap = {};
 
   InfoOfCopyRightContentPaper = {};
 
   /** => following for infoOfCopyRightContact  component  */
-
-  InfoOfCopyRightContactCancelChip = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -297,6 +293,60 @@ class AppStyle {
 
   AccountPaper = {};
 
+  /** => following for adminAnalysis  component  */
+
+  AdminAnalysisExtendOfExpenseSendReactFragmentWrap = {};
+
+  AdminAnalysisExtendOfExpenseSendChip = {};
+
+  AdminAnalysisExtendOfExpenseCommentTextField = {};
+
+  AdminAnalysisExtendOfExpenseCountOfPeopleTextField = {};
+
+  AdminAnalysisExtendOfExpensePriceTextField = {};
+
+  AdminAnalysisExtendOfExpenseTypeMenuItem = {};
+
+  AdminAnalysisExtendOfExpenseTypeTextFieldList = {};
+
+  AdminAnalysisExtendOfExpenseOperatedTimeTextField = {};
+
+  AdminAnalysisExtendOfExpenseIndexOfSequenceTextField = {};
+
+  AdminAnalysisExtendOfExpenseDiv = {};
+
+  AdminAnalysisDiv = {};
+
+  /** => following for expenseOfAdmin  component  */
+
+  ExpenseOfAdminRecordExtraIconMoreVertRounded = {};
+
+  ExpenseOfAdminRecordExtraReactFragmentWrap = {};
+
+  ExpenseOfAdminRecordExtraIconButton = {};
+
+  ExpenseOfAdminRecordCommentTextField = {};
+
+  ExpenseOfAdminRecordCountOfItemTextField = {};
+
+  ExpenseOfAdminRecordPriceTextField = {};
+
+  ExpenseOfAdminRecordTypeMenuItem = {};
+
+  ExpenseOfAdminRecordTypeTextFieldList = {};
+
+  ExpenseOfAdminRecordCreateTimeTextField = {};
+
+  ExpenseOfAdminRecordIndexOfSequenceTextField = {};
+
+  ExpenseOfAdminRecordDivSkeleton = {};
+
+  ExpenseOfAdminRecordDivList = {};
+
+  ExpenseOfAdminRecordDiv = {};
+
+  ExpenseOfAdminDiv = {};
+
   /** => following for reimburse  component  */
 
   ReimburseAreaOfBatchXBatchCancelChip = {};
@@ -414,6 +464,8 @@ class AppStyle {
   /** => following for establish  component  */
 
   EstablishAreaOfRemoteDownloadChip = {};
+
+  EstablishAreaOfRemoteLinkOfWordChip = {};
 
   EstablishAreaOfRemoteClearChip = {};
 
@@ -797,7 +849,7 @@ class AppStyle {
 
   MainFilterDiv = {};
 
-  MainOrderAreaOfHeadExtraIconMoreHoriz = {};
+  MainOrderAreaOfHeadExtraIconMoreVertRounded = {};
 
   MainOrderAreaOfHeadExtraReactFragmentWrap = {};
 
@@ -834,6 +886,8 @@ class AppStyle {
   MainOrderDivList = {};
 
   MainOrderCard = {};
+
+  MainAreaOfFuncDoAdminStuffButton = {};
 
   MainAreaOfFuncDoSearchOfOrderButton = {};
 

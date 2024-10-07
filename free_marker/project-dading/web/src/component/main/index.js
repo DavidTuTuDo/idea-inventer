@@ -6,6 +6,7 @@ import _ from "lodash";
 import {observer} from "mobx-react";
 import {Application} from "../../";
 import functions from '../../functions';
+import Router from "../../router";
 
 @inject("main")
 @observer
@@ -223,6 +224,10 @@ class MainComponent extends BaseMainComponent {
         return () => {
             this.getStore().deleteOrder(param.object).then(() => this.showInfoSnackMessage(`訂單已刪除`))
         }
+    }
+
+    onMainAreaOfFuncAdminStuffButtonClicked(param) {
+        Router.gotoAdminAnalysisPage(this.getComponentInstance());
     }
 
     /** -------------------- firebase測試 -------------------- **/

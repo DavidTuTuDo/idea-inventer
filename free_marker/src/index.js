@@ -80,7 +80,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/icons-material`,
-            views: ['SchoolRounded','PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
+            views: ['SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
         },
         {
             from: `@mui/material`,
@@ -717,7 +717,7 @@ class CodegenNode {
         strict: false,
         /** 讓彈跳視窗不能用ESC或點擊旁處取消 */
 
-        useCustomCancel:false
+        useCustomCancel: false
         /** dialog都有自帶sticky button => 如果要客製化自己的cancel button(dading/establish)就要true它 */
     };
     /** 放admin的json file*/
@@ -1816,7 +1816,7 @@ class CodegenNode {
         }
 
         function getStmtOfCustomCancelButton() {
-            return self.hasCustomCancelButton() ? `useCustomCancel:true`: ``;
+            return self.hasCustomCancelButton() ? `useCustomCancel:true` : ``;
         }
 
         function getStmtOfDisposable() {
@@ -2311,6 +2311,11 @@ class CodegenNode {
     isTimeDatePickerView(type = 'default', node = this) {
         return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type) ||
             node.isAttributeView('DateTimePicker', type);
+    }
+
+    /** 是時間屬性的挑選器 */
+    isPickerView(type = 'default', node = this) {
+        return this.isTimeDateRangePickerView(type, node) || node.isTimeDatePickerView(type, node);
     }
 
     /**
@@ -4357,7 +4362,7 @@ class StoreBuilder extends BaseBuilder {
             if (!child.isArrayOfField())
                 propsStmt.push(...propStmt);
 
-            if (child.isTimeDatePickerView() || child.isTimeDateRangePickerView()) {
+            if (child.isTimeStamp()) {
                 generator.appendImport('moment', `moment`)
             }
 
@@ -5661,10 +5666,20 @@ class ComponentBuilder extends BaseBuilder {
 
         /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
         if (node.hasValidParent() && node.isAttribute() && !node.isArrayItem()) {
+            function getGetterContentsOfFunction(_node) {
+                const asFormat = !_node.isPickerView() && _node.isTimeStamp() && _node.hasFormat();
+                const asComputed = _.isEqual(_node.computed, true);
+                const stmtOfHead = _node.getPreciseAttributeParentName();
+                const stmtOfGetter =  `${_node.getFunctionNameInStoreGetter()}()`
+                if (asFormat) return `return Util.getCustomFormatOfDatePresent(${stmtOfHead}.${stmtOfGetter},'${node.getFormat()}')`
+                else if (asComputed) return `return ${stmtOfHead}.${_node.getFunctionNameInStoreComputedGetter()}`
+                else return `return ${stmtOfHead}.${stmtOfGetter}`
+            }
+
             const computed = _.isEqual(node.computed, true);
             generator.appendFunction(node.getFunctionNameUsingInComponentGetter(),
                 [`${node.getPreciseAttributeParentName()}`], [], [`${computed ? `必須在 store/${node.getPreciseAttributeParentName()}/index.js實作 @computed get ${node.getFunctionNameInStoreComputedGetter()}()` : ''}`],
-                `return ${node.getPreciseAttributeParentName()}.${computed ? node.getFunctionNameInStoreComputedGetter() : node.getFunctionNameInStoreGetter()}${computed ? '' : '()'}`);
+                getGetterContentsOfFunction(node));
         }
 
         if (node.hasCustomViewDialog()) {
@@ -8516,7 +8531,7 @@ class ProjectFileHandler extends PathBase {
                 })
             }
 
-            if(node.isTypographyView()) {
+            if (node.isTypographyView()) {
                 node.appendViewProps({whiteSpace: 'pre-line'})
             }
 
@@ -9333,14 +9348,13 @@ class ProjectFileHandler extends PathBase {
 
     async activate() {
         const self = this;
-        const enableOfRapid = this.isProduction() || this.isUnInstallProject() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
+        let enableOfRapid = this.isProduction() || this.isUnInstallProject() ? false : !!this.nodeOfAncestor.rapidBuild.enable;
         const components = this.nodeOfAncestor.rapidBuild.componentName;
 
-        if (this.isAdminPlatform())
-            ENABLE_FAST_DEVELOP_MODE = false;
+        if (this.isAdminPlatform() || this.isFunctionsPlatform())
+            enableOfRapid = false;
 
-        if (!enableOfRapid){
-            console.log(`進來了？`)
+        if (!enableOfRapid) {
             return await self.execute();
         }
 
