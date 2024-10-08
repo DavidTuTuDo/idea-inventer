@@ -1,35 +1,46 @@
 const edit = true;
-import { inject } from "mobx-react";
+import {inject} from "mobx-react";
 import BaseEstablishComponent from "./BaseEstablishComponent";
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import { observer } from "mobx-react";
-import  Router from "../../router";
+import {observer} from "mobx-react";
+import Router from "../../router";
+
 @inject("establish")
 @observer
 class EstablishComponent extends BaseEstablishComponent {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  isValidOfParamOfIdOfClass(idOfClass) {
-    return !Util.isUndefinedNullEmpty(idOfClass);
-  }
+    isValidOfParamOfIdOfClass(idOfClass) {
+        return !Util.isUndefinedNullEmpty(idOfClass);
+    }
 
-  onEstablishGoBackChipClicked(param) {
-    Router.gotoMainPage(this.getComponentInstance())
-  }
+    onEstablishStudentGoBackChipClicked(param) {
+        Router.gotoMainPage(this.getComponentInstance())
+    }
 
-  onEstablishAcceptChipClicked(param) {
-    this.showInfoSnackMessage(`同意報名課程`);
-  }
+    getInjectStyleOfEstablishStudentYoungDiv(establish) {
+        const birthday = establish.getBirthday();
+        if (Util.isUndefinedNullEmpty(birthday)) return Util.getVisibleOrNone(false, true);
 
-  /** -------------------- async api -------------------- **/
+        const stringOfBirthday = Util.getCustomFormatOfDatePresent(birthday, 'YYYY-MM-DD');
+        return Util.getVisibleOrNone(!Util.isOverSpecificAge(stringOfBirthday, 18), true);
+    }
+
+    onEstablishStudentAcceptChipClicked(param) {
+        const establish = param.object;
+        /** 檢查每個欄位有沒有正確 */
+        this.showInfoSnackMessage(`同意報名課程`);
+    }
+
+    /** -------------------- async api -------------------- **/
 }
 
 export default EstablishComponent;

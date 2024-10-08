@@ -1009,7 +1009,20 @@
 }
 /** following for establish  component used  */
 
-.EstablishPaper:extend(.CenterInParentColumn) {
+.EstablishDiv {
+  margin: auto;
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishStudentPaper:extend(.CenterInParentColumn) {
   margin: auto;
   width: 100%;
   gap: 10px;
@@ -1024,7 +1037,29 @@
     /** empty style */
   }
 }
-.EstablishMainDiv:extend(.CenterInParentRow) {
+.EstablishStudentDivList {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishStudentPaperSkeleton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.EstablishStudentMainDiv:extend(.CenterInParentRow) {
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -1036,7 +1071,7 @@
     /** empty style */
   }
 }
-.EstablishMainNameOfClassTypography {
+.EstablishStudentMainNameOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1047,7 +1082,7 @@
     /** empty style */
   }
 }
-.EstablishMainNameOfClassDivWrap:extend(.CenterInParentRow) {
+.EstablishStudentMainNameOfClassDivWrap:extend(.CenterInParentRow) {
   border-bottom: 1px solid #bbb;
   @media @mobile {
     /** empty style */
@@ -1059,7 +1094,7 @@
     /** empty style */
   }
 }
-.EstablishMainNameOfClassBtnOfNameOfClassIconButton {
+.EstablishStudentMainNameOfClassBtnOfNameOfClassIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -1070,7 +1105,7 @@
     /** empty style */
   }
 }
-.EstablishMainNameOfClassBtnOfNameOfClassIconSchoolRounded {
+.EstablishStudentMainNameOfClassBtnOfNameOfClassIconSchoolRounded {
   @media @mobile {
     /** empty style */
   }
@@ -1081,7 +1116,7 @@
     /** empty style */
   }
 }
-.EstablishMainNameOfClassLabelOfNameOfClassTypography {
+.EstablishStudentMainNameOfClassLabelOfNameOfClassTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1092,7 +1127,7 @@
     /** empty style */
   }
 }
-.EstablishMainDatOfPeriodWithHoursTypography {
+.EstablishStudentMainDatOfPeriodWithHoursTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1103,7 +1138,7 @@
     /** empty style */
   }
 }
-.EstablishCustomDiv:extend(.CenterInParentColumn) {
+.EstablishStudentCustomDiv:extend(.CenterInParentColumn) {
   align-items: flex-start;
   gap: 10px;
   @media @mobile {
@@ -1116,7 +1151,7 @@
     /** empty style */
   }
 }
-.EstablishCustomNameTextField {
+.EstablishStudentCustomNameTextField {
   width: 280px;
   @media @mobile {
     /** empty style */
@@ -1128,7 +1163,7 @@
     /** empty style */
   }
 }
-.EstablishCustomNameDivWrap:extend(.CenterInParentRow) {
+.EstablishStudentCustomNameDivWrap:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -1139,7 +1174,7 @@
     /** empty style */
   }
 }
-.EstablishCustomNameLabelOfNameTypography {
+.EstablishStudentCustomNameLabelOfNameTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1150,7 +1185,7 @@
     /** empty style */
   }
 }
-.EstablishCustomTextOfEmailTextField:extend(.EstablishCustomNameTextField) {
+.EstablishStudentCustomTextOfEmailTextField:extend(.EstablishStudentCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1161,7 +1196,7 @@
     /** empty style */
   }
 }
-.EstablishCustomTextOfEmailDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomTextOfEmailDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1172,7 +1207,7 @@
     /** empty style */
   }
 }
-.EstablishCustomTextOfEmailLabelOfTextOfEmailTypography {
+.EstablishStudentCustomTextOfEmailLabelOfTextOfEmailTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1183,7 +1218,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContactTextField:extend(.EstablishCustomNameTextField) {
+.EstablishStudentCustomContactTextField:extend(.EstablishStudentCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1194,7 +1229,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContactDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomContactDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1205,7 +1240,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContactLabelOfContactTypography {
+.EstablishStudentCustomContactLabelOfContactTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1216,7 +1251,7 @@
     /** empty style */
   }
 }
-.EstablishCustomBirthdayDatePicker:extend(.EstablishCustomNameTextField) {
+.EstablishStudentCustomBirthdayDatePicker:extend(.EstablishStudentCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1227,7 +1262,7 @@
     /** empty style */
   }
 }
-.EstablishCustomBirthdayDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomBirthdayDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1238,7 +1273,7 @@
     /** empty style */
   }
 }
-.EstablishCustomBirthdayLabelOfBirthdayTypography {
+.EstablishStudentCustomBirthdayLabelOfBirthdayTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1249,7 +1284,7 @@
     /** empty style */
   }
 }
-.EstablishCustomIdOfNationalTextField:extend(.EstablishCustomNameTextField) {
+.EstablishStudentCustomIdOfNationalTextField:extend(.EstablishStudentCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1260,7 +1295,7 @@
     /** empty style */
   }
 }
-.EstablishCustomIdOfNationalDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomIdOfNationalDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1271,7 +1306,7 @@
     /** empty style */
   }
 }
-.EstablishCustomIdOfNationalLabelOfIdOfNationalTypography {
+.EstablishStudentCustomIdOfNationalLabelOfIdOfNationalTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1282,7 +1317,10 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungDiv:extend(.EstablishCustomDiv) {
+.EstablishStudentCustomYoungDiv:extend(.EstablishStudentCustomDiv) {
+  background: #ffdddc;
+  width: 100%;
+  padding: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -1293,7 +1331,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNameOfGuardianTextField:extend(.EstablishCustomNameTextField) {
+.EstablishStudentCustomYoungNameOfGuardianTextField:extend(.EstablishStudentCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1304,7 +1342,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNameOfGuardianDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomYoungNameOfGuardianDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1315,7 +1353,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography {
+.EstablishStudentCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1326,7 +1364,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungContactOfGuardianTextField:extend(.EstablishCustomNameTextField) {
+.EstablishStudentCustomYoungContactOfGuardianTextField:extend(.EstablishStudentCustomNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1337,7 +1375,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungContactOfGuardianDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomYoungContactOfGuardianDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1348,7 +1386,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography {
+.EstablishStudentCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1359,7 +1397,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNoticeTypography {
+.EstablishStudentCustomYoungNoticeTypography {
   @media @mobile {
     font-size: 0.7rem;
   }
@@ -1370,7 +1408,7 @@
     /** empty style */
   }
 }
-.EstablishCustomYoungNoticeDivWrap {
+.EstablishStudentCustomYoungNoticeDivWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1381,7 +1419,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContractTypography {
+.EstablishStudentCustomContractTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1392,7 +1430,7 @@
     /** empty style */
   }
 }
-.EstablishCustomContractDivWrap {
+.EstablishStudentCustomContractDivWrap {
   height: 250px;
   max-width: 100%;
   overflow-y: scroll;
@@ -1410,7 +1448,7 @@
     /** empty style */
   }
 }
-.EstablishCustomAgreeOfContractCheckbox {
+.EstablishStudentCustomAgreeOfContractCheckbox {
   @media @mobile {
     /** empty style */
   }
@@ -1421,7 +1459,7 @@
     /** empty style */
   }
 }
-.EstablishCustomAgreeOfContractDivWrap:extend(.EstablishCustomNameDivWrap) {
+.EstablishStudentCustomAgreeOfContractDivWrap:extend(.EstablishStudentCustomNameDivWrap) {
   flex-direction: row-reverse;
   @media @mobile {
     /** empty style */
@@ -1433,7 +1471,7 @@
     /** empty style */
   }
 }
-.EstablishCustomAgreeOfContractLabelOfAgreeOfContractTypography {
+.EstablishStudentCustomAgreeOfContractLabelOfAgreeOfContractTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1444,7 +1482,7 @@
     /** empty style */
   }
 }
-.EstablishCustomFuncDiv:extend(.CenterInParentRow) {
+.EstablishStudentCustomFuncDiv:extend(.CenterInParentRow) {
   gap: 20px;
   width: 100%;
   height: 40px;
@@ -1458,7 +1496,7 @@
     /** empty style */
   }
 }
-.EstablishCustomFuncAcceptChip {
+.EstablishStudentCustomFuncAcceptChip {
   @media @mobile {
     /** empty style */
   }
@@ -1469,7 +1507,7 @@
     /** empty style */
   }
 }
-.EstablishCustomFuncAcceptReactFragmentWrap {
+.EstablishStudentCustomFuncAcceptReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -1480,7 +1518,7 @@
     /** empty style */
   }
 }
-.EstablishCustomFuncGoBackChip {
+.EstablishStudentCustomFuncGoBackChip {
   @media @mobile {
     /** empty style */
   }
@@ -1491,7 +1529,7 @@
     /** empty style */
   }
 }
-.EstablishCustomFuncGoBackReactFragmentWrap {
+.EstablishStudentCustomFuncGoBackReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -3013,3 +3051,4 @@
     /** empty style */
   }
 }
+/** ======== following for homeless ========= */

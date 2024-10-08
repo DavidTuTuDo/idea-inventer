@@ -1992,11 +1992,23 @@ class Utiller {
     getRandomCount(options = undefined) {
         return count(options);
     }
+
+    /**
+     // 使用範例
+     const birthDate = '2005-01-01';
+     console.log(isOver18(birthDate)); // 會返回 true 或 false
+     */
+    isOverSpecificAge(birthDate,target = 18) {
+        const age = moment().diff(moment(birthDate, 'YYYY-MM-DD'), 'years');
+        return age >= target;
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.isOverSpecificAge('2000-01-05'))
             // console.log(utiller.getRandomCount());
             // console.log(utiller.getObject('dfsdf',232));
             // console.log(utiller.getStringOfYearADConvertToMinguoYear(2023,true));

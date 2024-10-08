@@ -277,91 +277,97 @@ class AppStyle {
 
   /** => following for establish  component  */
 
-  EstablishCustomFuncGoBackReactFragmentWrap = {};
+  EstablishStudentCustomFuncGoBackReactFragmentWrap = {};
 
-  EstablishCustomFuncGoBackChip = {};
+  EstablishStudentCustomFuncGoBackChip = {};
 
-  EstablishCustomFuncAcceptReactFragmentWrap = {};
+  EstablishStudentCustomFuncAcceptReactFragmentWrap = {};
 
-  EstablishCustomFuncAcceptChip = {};
+  EstablishStudentCustomFuncAcceptChip = {};
 
-  EstablishCustomFuncDiv = {};
+  EstablishStudentCustomFuncDiv = {};
 
-  EstablishCustomAgreeOfContractLabelOfAgreeOfContractTypography = {};
+  EstablishStudentCustomAgreeOfContractLabelOfAgreeOfContractTypography = {};
 
-  EstablishCustomAgreeOfContractDivWrap = {};
+  EstablishStudentCustomAgreeOfContractDivWrap = {};
 
-  EstablishCustomAgreeOfContractCheckbox = {};
+  EstablishStudentCustomAgreeOfContractCheckbox = {};
 
-  EstablishCustomContractDivWrap = {};
+  EstablishStudentCustomContractDivWrap = {};
 
-  EstablishCustomContractTypography = {};
+  EstablishStudentCustomContractTypography = {};
 
-  EstablishCustomYoungNoticeDivWrap = {};
+  EstablishStudentCustomYoungNoticeDivWrap = {};
 
-  EstablishCustomYoungNoticeTypography = {};
+  EstablishStudentCustomYoungNoticeTypography = {};
 
-  EstablishCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography = {};
+  EstablishStudentCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography = {};
 
-  EstablishCustomYoungContactOfGuardianDivWrap = {};
+  EstablishStudentCustomYoungContactOfGuardianDivWrap = {};
 
-  EstablishCustomYoungContactOfGuardianTextField = {};
+  EstablishStudentCustomYoungContactOfGuardianTextField = {};
 
-  EstablishCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography = {};
+  EstablishStudentCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography = {};
 
-  EstablishCustomYoungNameOfGuardianDivWrap = {};
+  EstablishStudentCustomYoungNameOfGuardianDivWrap = {};
 
-  EstablishCustomYoungNameOfGuardianTextField = {};
+  EstablishStudentCustomYoungNameOfGuardianTextField = {};
 
-  EstablishCustomYoungDiv = {};
+  EstablishStudentCustomYoungDiv = {};
 
-  EstablishCustomIdOfNationalLabelOfIdOfNationalTypography = {};
+  EstablishStudentCustomIdOfNationalLabelOfIdOfNationalTypography = {};
 
-  EstablishCustomIdOfNationalDivWrap = {};
+  EstablishStudentCustomIdOfNationalDivWrap = {};
 
-  EstablishCustomIdOfNationalTextField = {};
+  EstablishStudentCustomIdOfNationalTextField = {};
 
-  EstablishCustomBirthdayLabelOfBirthdayTypography = {};
+  EstablishStudentCustomBirthdayLabelOfBirthdayTypography = {};
 
-  EstablishCustomBirthdayDivWrap = {};
+  EstablishStudentCustomBirthdayDivWrap = {};
 
-  EstablishCustomBirthdayDatePicker = {};
+  EstablishStudentCustomBirthdayDatePicker = {};
 
-  EstablishCustomContactLabelOfContactTypography = {};
+  EstablishStudentCustomContactLabelOfContactTypography = {};
 
-  EstablishCustomContactDivWrap = {};
+  EstablishStudentCustomContactDivWrap = {};
 
-  EstablishCustomContactTextField = {};
+  EstablishStudentCustomContactTextField = {};
 
-  EstablishCustomTextOfEmailLabelOfTextOfEmailTypography = {};
+  EstablishStudentCustomTextOfEmailLabelOfTextOfEmailTypography = {};
 
-  EstablishCustomTextOfEmailDivWrap = {};
+  EstablishStudentCustomTextOfEmailDivWrap = {};
 
-  EstablishCustomTextOfEmailTextField = {};
+  EstablishStudentCustomTextOfEmailTextField = {};
 
-  EstablishCustomNameLabelOfNameTypography = {};
+  EstablishStudentCustomNameLabelOfNameTypography = {};
 
-  EstablishCustomNameDivWrap = {};
+  EstablishStudentCustomNameDivWrap = {};
 
-  EstablishCustomNameTextField = {};
+  EstablishStudentCustomNameTextField = {};
 
-  EstablishCustomDiv = {};
+  EstablishStudentCustomDiv = {};
 
-  EstablishMainDatOfPeriodWithHoursTypography = {};
+  EstablishStudentMainDatOfPeriodWithHoursTypography = {};
 
-  EstablishMainNameOfClassLabelOfNameOfClassTypography = {};
+  EstablishStudentMainNameOfClassLabelOfNameOfClassTypography = {};
 
-  EstablishMainNameOfClassBtnOfNameOfClassIconSchoolRounded = {};
+  EstablishStudentMainNameOfClassBtnOfNameOfClassIconSchoolRounded = {};
 
-  EstablishMainNameOfClassBtnOfNameOfClassIconButton = {};
+  EstablishStudentMainNameOfClassBtnOfNameOfClassIconButton = {};
 
-  EstablishMainNameOfClassDivWrap = {};
+  EstablishStudentMainNameOfClassDivWrap = {};
 
-  EstablishMainNameOfClassTypography = {};
+  EstablishStudentMainNameOfClassTypography = {};
 
-  EstablishMainDiv = {};
+  EstablishStudentMainDiv = {};
 
-  EstablishPaper = {};
+  EstablishStudentPaperSkeleton = {};
+
+  EstablishStudentDivList = {};
+
+  EstablishStudentPaper = {};
+
+  EstablishDiv = {};
 
   /** => following for classSetup  component  */
 
