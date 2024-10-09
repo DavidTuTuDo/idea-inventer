@@ -16,6 +16,7 @@ class EstablishComponent extends BaseEstablishComponent {
 
     constructor(props) {
         super(props);
+
     }
 
     isValidOfParamOfIdOfClass(idOfClass) {
@@ -35,9 +36,9 @@ class EstablishComponent extends BaseEstablishComponent {
     }
 
     onEstablishStudentAcceptChipClicked(param) {
-        const establish = param.object;
+        const student = param.object;
         /** 檢查每個欄位有沒有正確 */
-        this.showInfoSnackMessage(`同意報名課程`);
+        this.getStore().submitStudentOfClass(student).then();
     }
 
     /** -------------------- async api -------------------- **/

@@ -1892,85 +1892,85 @@ class Utiller {
     }
 
     /**
-      console.log(generate());
-      //output: 'army'
+     console.log(generate());
+     //output: 'army'
 
-      console.log(generate(5));
-      //output: ['army', 'beautiful', 'became', 'if', 'actually']
+     console.log(generate(5));
+     //output: ['army', 'beautiful', 'became', 'if', 'actually']
 
-      console.log(generate({ minLength: 2 }));
-      //output: 'hello'
+     console.log(generate({ minLength: 2 }));
+     //output: 'hello'
 
-      console.log(generate({ maxLength: 6 }));
-      //output: 'blue'
+     console.log(generate({ maxLength: 6 }));
+     //output: 'blue'
 
-      console.log(generate({ minLength: 5, maxLength: 5 }));
-      //output : 'world'
+     console.log(generate({ minLength: 5, maxLength: 5 }));
+     //output : 'world'
 
-      console.log(generate({ minLength: 11, maxLength: 10000 })); //maxLength limited to the longest possible word
-      //output: 'environment'
+     console.log(generate({ minLength: 11, maxLength: 10000 })); //maxLength limited to the longest possible word
+     //output: 'environment'
 
-      console.log(generate({ minLength: 10000, maxLength: 5 })); //minLength limited to the maxLength
-      //output: 'short'
+     console.log(generate({ minLength: 10000, maxLength: 5 })); //minLength limited to the maxLength
+     //output: 'short'
 
-      console.log(generate({ min: 3, max: 10 }));
-      //output: ['became', 'arrow', 'article', 'therefore']
+     console.log(generate({ min: 3, max: 10 }));
+     //output: ['became', 'arrow', 'article', 'therefore']
 
-      console.log(generate({ exactly: 2 }));
-      //output: ['beside', 'between']
+     console.log(generate({ exactly: 2 }));
+     //output: ['beside', 'between']
 
-      console.log(generate({ min: 2, max: 3, seed: "my-seed" }));
-      //output: ['plenty', 'pure']
+     console.log(generate({ min: 2, max: 3, seed: "my-seed" }));
+     //output: ['plenty', 'pure']
 
-      // this call will yield exactly the same results as the last since the same `seed` was used and the other inputs are identical
-      console.log(generate({ min: 2, max: 3, seed: "my-seed" }));
-      //output: ['plenty', 'pure']
+     // this call will yield exactly the same results as the last since the same `seed` was used and the other inputs are identical
+     console.log(generate({ min: 2, max: 3, seed: "my-seed" }));
+     //output: ['plenty', 'pure']
 
-      console.log(generate({ exactly: 5, join: " " }));
-      //output: 'army beautiful became if exactly'
+     console.log(generate({ exactly: 5, join: " " }));
+     //output: 'army beautiful became if exactly'
 
-      console.log(generate({ exactly: 5, join: "" }));
-      //output: 'armybeautifulbecameifexactly'
+     console.log(generate({ exactly: 5, join: "" }));
+     //output: 'armybeautifulbecameifexactly'
 
-      console.log(generate({ exactly: 2, minLength: 4 }));
-      //output: ['atom', 'window']
+     console.log(generate({ exactly: 2, minLength: 4 }));
+     //output: ['atom', 'window']
 
-      console.log(generate({ exactly: 5, maxLength: 4 }));
-      //output: ['army', 'come', 'eye', 'five', 'fur']
+     console.log(generate({ exactly: 5, maxLength: 4 }));
+     //output: ['army', 'come', 'eye', 'five', 'fur']
 
-      console.log(generate({ exactly: 2, minLength: 3, maxLength: 3 }));
-      //output: ['you, 'are']
+     console.log(generate({ exactly: 2, minLength: 3, maxLength: 3 }));
+     //output: ['you, 'are']
 
-      console.log(generate({ exactly: 3, minLength: 5, maxLength: 100000 }));
-      //output: ['understanding', 'should', 'yourself']
+     console.log(generate({ exactly: 3, minLength: 5, maxLength: 100000 }));
+     //output: ['understanding', 'should', 'yourself']
 
-      console.log(generate({ exactly: 5, wordsPerString: 2 }));
-      //output: [ 'salt practical', 'also brief', 'country muscle', 'neighborhood beyond', 'grew pig' ]
+     console.log(generate({ exactly: 5, wordsPerString: 2 }));
+     //output: [ 'salt practical', 'also brief', 'country muscle', 'neighborhood beyond', 'grew pig' ]
 
-      console.log(generate({ exactly: 5, wordsPerString: 2, separator: "-" }));
-      //output: [ 'equator-variety', 'salt-usually', 'importance-becoming', 'stream-several', 'goes-fight' ]
+     console.log(generate({ exactly: 5, wordsPerString: 2, separator: "-" }));
+     //output: [ 'equator-variety', 'salt-usually', 'importance-becoming', 'stream-several', 'goes-fight' ]
 
-      console.log(
-        generate({
-          exactly: 5,
-          wordsPerString: 2,
-          formatter: (word) => word.toUpperCase(),
-        })
-      );
-      //output: [ 'HAVING LOAD', 'LOST PINE', 'GAME SLOPE', 'SECRET GIANT', 'INDEED LOCATION' ]
+     console.log(
+     generate({
+     exactly: 5,
+     wordsPerString: 2,
+     formatter: (word) => word.toUpperCase(),
+     })
+     );
+     //output: [ 'HAVING LOAD', 'LOST PINE', 'GAME SLOPE', 'SECRET GIANT', 'INDEED LOCATION' ]
 
-      console.log(
-        generate({
-          exactly: 5,
-          wordsPerString: 2,
-          formatter: (word, index) => {
-            return index === 0
-              ? word.slice(0, 1).toUpperCase().concat(word.slice(1))
-              : word;
-          },
-        })
-      );
-      //output: [ 'Until smoke', 'Year strength', 'Pay knew', 'Fallen must', 'Chief arrow' ]
+     console.log(
+     generate({
+     exactly: 5,
+     wordsPerString: 2,
+     formatter: (word, index) => {
+     return index === 0
+     ? word.slice(0, 1).toUpperCase().concat(word.slice(1))
+     : word;
+     },
+     })
+     );
+     //output: [ 'Until smoke', 'Year strength', 'Pay knew', 'Fallen must', 'Chief arrow' ]
 
      */
     getRandomName(options = undefined) {
@@ -1998,9 +1998,93 @@ class Utiller {
      const birthDate = '2005-01-01';
      console.log(isOver18(birthDate)); // 會返回 true 或 false
      */
-    isOverSpecificAge(birthDate,target = 18) {
+    isOverSpecificAge(birthDate, target = 18) {
         const age = moment().diff(moment(birthDate, 'YYYY-MM-DD'), 'years');
         return age >= target;
+    }
+
+    isValidEmail(email) {
+        // 正規表達式，用於匹配常見的電子郵件格式
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    isValidTaiwaneseID(idNumber) {
+        // 正規表達式，用於匹配中華民國身分證號碼的格式
+        const idRegex = /^[A-Z][1-2]\d{8}$/;
+
+        // 檢查是否符合基本格式
+        if (!idRegex.test(idNumber)) {
+            return false;
+        }
+
+        // 檢查檢查碼
+        const weight = [1, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+        const firstChar = idNumber.charCodeAt(0) - 65; // 將英文字母轉換為數字
+        let sum = firstChar * 10 + parseInt(idNumber.slice(1));
+        for (let i = 0; i < weight.length; i++) {
+            sum += parseInt(idNumber.charAt(i + 1)) * weight[i];
+        }
+        return sum % 10 === 0;
+    }
+
+    validatePersonalInfoInput(name, email, idNumber, phoneNumber, birthday, ageOfQualify = 12) {
+        // 檢查姓名
+        if (name.length < 2) {
+            return {
+                valid: false,
+                message: '姓名至少要兩個字'
+            };
+        }
+
+        // 檢查電子郵件
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return {
+                valid: false,
+                message: '電子郵件格式不正確'
+            };
+        }
+
+        // 檢查身分證號碼 (這裡使用簡化的檢查，實際上還需要更詳細的驗證)
+        const idRegex = /^[A-Z][1-2]\d{8}$/;
+        if (!idRegex.test(idNumber)) {
+            return {
+                valid: false,
+                message: '身分證號碼格式不正確'
+            };
+        }
+
+        // 檢查手機號碼 (這裡以台灣手機號碼為例，09開頭，共10位數字)
+        const phoneRegex = /^09\d{8}$/;
+        if (!phoneRegex.test(phoneNumber)) {
+            return {
+                valid: false,
+                message: '手機號碼格式不正確'
+            };
+        }
+
+        // 檢查生日和年齡
+        if(this.isUndefinedNullEmpty(birthday))
+            return {
+                valid: false,
+                message: `出生日期格式不正確`
+            };
+
+        const now = moment();
+        const age = now.diff(birthday, 'years');
+        if (age < ageOfQualify) {
+            return {
+                valid: false,
+                message: `年齡不得小於 ${ageOfQualify} 歲`
+            };
+        }
+
+        // 所有項目都通過檢查
+        return {
+            valid: true,
+            message: '格式檢查通過'
+        };
     }
 
 }
