@@ -13,7 +13,6 @@ class EstablishStore extends BaseEstablishStore {
     }
 
     async submitStudentOfClass(student) {
-
         if(!student.getAgreeOfContract()){
             return this.getComponent().showErrorSnackMessage(`您尚未同意課程實施合約`);
         }

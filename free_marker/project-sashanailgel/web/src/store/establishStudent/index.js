@@ -17,13 +17,13 @@ class EstablishStudentStore extends BaseEstablishStudentStore {
         const apiOfClazz = new MyClazz();
         const self = this;
         const idOfClass = Util.getTailStringSplitBy(window.location.href, '/')
-        self.setIdOfClass(idOfClass);
         Util.syncDelay(1).then(() => {
             return apiOfClazz.fetchClazzItem(self.getComponent(), idOfClass)
         }).then((clazzItem) => {
             self.setNameOfClass(`${clazzItem.nameOfClass}：（講師： ${clazzItem.nameOfHost}）`);
             self.setDatOfPeriodWithHours(`${Util.getStringOfFormatTimestampRange(this.normalizeTimestamp(clazzItem.startOfSpecificClass),
                 this.normalizeTimestamp(clazzItem.endOfSpecificClass))} (合計：${self.getStringOfHours(clazzItem)})`)
+            self.setIdOfClass(idOfClass);
         })
     }
 
