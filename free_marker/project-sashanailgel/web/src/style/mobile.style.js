@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -347,6 +345,14 @@ class MobileStyle {
 
   EstablishStudentCustomDiv = {};
 
+  EstablishStudentMainDatOfPeriodWithHoursLabelOfDatOfPeriodWithHoursTypography = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconEditCalendarRounded = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconButton = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursDivWrap = {};
+
   EstablishStudentMainDatOfPeriodWithHoursTypography = {};
 
   EstablishStudentMainNameOfClassLabelOfNameOfClassTypography = {};
@@ -370,6 +376,8 @@ class MobileStyle {
   EstablishDiv = {};
 
   /** => following for classSetup  component  */
+
+  ClassSetupClazzAreaOfFuncDeletedReactFragmentWrap = {};
 
   ClassSetupClazzAreaOfFuncDeletedChip = {};
 

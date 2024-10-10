@@ -2065,7 +2065,7 @@ class Utiller {
         }
 
         // 檢查生日和年齡
-        if(this.isUndefinedNullEmpty(birthday))
+        if (this.isUndefinedNullEmpty(birthday))
             return {
                 valid: false,
                 message: `出生日期格式不正確`
@@ -2087,11 +2087,137 @@ class Utiller {
         };
     }
 
+    /**
+     * // 測試範例
+     *     const startTimestamp = 1683004800000; // 2023-05-01
+     *     const endTimestamp = 1688160000000; // 2023-06-30
+     *
+     *     console.log(formatTimestampRangeWithMoment(startTimestamp, endTimestamp));
+     * // 輸出：23/05/01 - 06/30
+     *
+     *     const startTimestampCrossYear = 1609459200000; // 2021-01-01
+     *     const endTimestampCrossYear = 1640995200000; // 2022-01-01
+     *
+     *     console.log(formatTimestampRangeWithMoment(startTimestampCrossYear, endTimestampCrossYear));
+     * // 輸出：21/01/01 - 22/01/01
+     * */
+
+    getStringOfFormatTimestampRange(startTimestamp, endTimestamp) {
+        // 使用 moment 解析 timestamp
+        const startDate = moment(startTimestamp);
+        const endDate = moment(endTimestamp);
+
+        // 格式化日期為 YY/MM/DD 格式
+        const formatDate = (date) => date.format('YY/MM/DD');
+
+        // 判斷是否跨年份
+        const startYear = startDate.year();
+        const endYear = endDate.year();
+
+        if (startYear === endYear) {
+            // 如果沒有跨年份，顯示 YY/MM/DD - MM/DD
+            return `${formatDate(startDate)} - ${endDate.format('MM/DD')}`;
+        } else {
+            // 如果跨年份，顯示 YY/MM/DD - YY/MM/DD
+            return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+        }
+    }
+
+    /**
+     * // 測試範例
+     *     const startTimestamp = 1683004800000; // 2023-05-01
+     *     const endTimestamp = 1688160000000; // 2023-06-30
+     *     const weeklyMinutes = 180; // 每週上課 180 分鐘 (3 小時)
+     *
+     *     console.log(calculateClassTimeWithMoment(startTimestamp, endTimestamp, weeklyMinutes));
+     * // 輸出：12小時
+     *
+     * console.log(utiller.getStringOfCalculateClassTime(utiller.convertDateToTimestamp('2024-09-15'),utiller.convertDateToTimestamp('2024-10-15'),60))
+     *
+     */
+    getStringOfCalculateClassTime(startTimestamp, endTimestamp, weeklyMinutes) {
+        // 使用 moment 解析 timestamp
+        const startDate = moment(startTimestamp);
+        const endDate = moment(endTimestamp);
+
+        // 計算時間範圍內的天數
+        const totalDays = endDate.diff(startDate, 'days') + 1; // 包含起始日
+        const totalWeeks = Math.ceil(totalDays / 7); // 計算有幾週
+
+        // 計算總上課時間（分鐘）
+        const totalMinutes = totalWeeks * weeklyMinutes;
+
+        // 將分鐘轉換為小時和分鐘
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+
+        // 判斷是否需要顯示分鐘
+        if (minutes === 0) {
+            return `${hours}小時`;
+        } else {
+            return `${hours}小時${minutes}分鐘`;
+        }
+    }
+
+    /** // 測試範例
+     const startTimestamp = 1683004800000; // 2023-05-01 00:00
+     const endTimestamp = 1683040800000;   // 2023-05-01 10:00
+
+     const totalMinutes = getNumberOfPeriodMinute(startTimestamp, endTimestamp);
+     console.log(totalMinutes); // 輸出：600（相當於10個小時，600分鐘）
+     */
+    getNumberOfPeriodMinute(startTimestamp, endTimestamp) {
+        // 使用 moment 解析 timestamp
+        // 使用 moment 解析 timestamp 並只取時間的 hh:mm 部分
+        const startTime = moment(startTimestamp).format('HH:mm');
+        const endTime = moment(endTimestamp).format('HH:mm');
+
+        // 使用 moment 重新將 hh:mm 轉換為完整的日期對象
+        const startDate = moment(startTime, 'HH:mm');
+        const endDate = moment(endTime, 'HH:mm');
+
+        // 計算兩個時間之間的分鐘差距
+        const durationInMinutes = moment.duration(endDate.diff(startDate)).asMinutes();
+        return durationInMinutes;
+    }
+
+    /**
+     * // Example usage
+     * const date = '2024-07-25';
+     * console.log(convertDateToTimestamp(date)); // Outputs the timestamp for 2024-07-25*/
+    convertDateToTimestamp = (date) => {
+        return moment(date).valueOf(); // valueOf() returns the timestamp in milliseconds
+    };
+
+
+    /**
+     * const day = 1; // 週一
+     *     const startTimestamp = 1683004800000; // 2023-05-01 00:00
+     *     const endTimestamp = 1683019200000;   // 2023-05-01 04:00
+     *     const formattedString = formatTimeRange(day, startTimestamp, endTimestamp);
+     *     console.log(formattedString); // 輸出：週一 00:00-04:00
+     */
+    getStringOfWeekTime(day, startTimestamp, endTimestamp) {
+        // 檢查 day 是否在 1 到 7 之間
+        const daysOfWeek = {1: '週一', 2: '週二', 3: '週三', 4: '週四', 5: '週五', 6: '週六', 7: '週日'};
+        if (day < 1 || day > 7) {
+            throw new Error('day 必須在 1 到 7 之間');
+        }
+
+        // 使用 moment 將 timestamp 轉換為只保留 hh:mm 的格式
+        const startTime = moment(startTimestamp).format('HH:mm');
+        const endTime = moment(endTimestamp).format('HH:mm');
+
+        // 組合結果並返回
+        return `${daysOfWeek[day]} ${startTime}-${endTime}`;
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.getStringOfCalculateClassTime(utiller.convertDateToTimestamp('2024-09-15'),utiller.convertDateToTimestamp('2024-10-15'),60))
             // console.log(utiller.isOverSpecificAge('2000-01-05'))
             // console.log(utiller.getRandomCount());
             // console.log(utiller.getObject('dfsdf',232));

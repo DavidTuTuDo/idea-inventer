@@ -5,8 +5,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -347,6 +345,14 @@ class CommonStyle {
 
   EstablishStudentCustomDiv = {};
 
+  EstablishStudentMainDatOfPeriodWithHoursLabelOfDatOfPeriodWithHoursTypography = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconEditCalendarRounded = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconButton = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursDivWrap = {};
+
   EstablishStudentMainDatOfPeriodWithHoursTypography = {};
 
   EstablishStudentMainNameOfClassLabelOfNameOfClassTypography = {};
@@ -370,6 +376,8 @@ class CommonStyle {
   EstablishDiv = {};
 
   /** => following for classSetup  component  */
+
+  ClassSetupClazzAreaOfFuncDeletedReactFragmentWrap = {};
 
   ClassSetupClazzAreaOfFuncDeletedChip = {};
 

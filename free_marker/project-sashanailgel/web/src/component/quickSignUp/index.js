@@ -36,7 +36,9 @@ class QuickSignUpComponent extends BaseQuickSignUpComponent {
   }
 
   onQuickSignUpClazzSubmitChipClicked(param) {
-    Router.gotoEstablishPage(this.getComponentInstance(), 'idOfClass');
+    const clazz = param.object;
+    const idOfClazz = clazz.getId();
+    Router.gotoEstablishPage(this.getComponentInstance(), idOfClazz);
   }
 
   onQuickSignUpClazzGotoPortfolioChipClicked(param) {

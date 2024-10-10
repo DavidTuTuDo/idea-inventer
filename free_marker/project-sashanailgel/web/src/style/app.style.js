@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -347,6 +345,14 @@ class AppStyle {
 
   EstablishStudentCustomDiv = {};
 
+  EstablishStudentMainDatOfPeriodWithHoursLabelOfDatOfPeriodWithHoursTypography = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconEditCalendarRounded = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconButton = {};
+
+  EstablishStudentMainDatOfPeriodWithHoursDivWrap = {};
+
   EstablishStudentMainDatOfPeriodWithHoursTypography = {};
 
   EstablishStudentMainNameOfClassLabelOfNameOfClassTypography = {};
@@ -370,6 +376,8 @@ class AppStyle {
   EstablishDiv = {};
 
   /** => following for classSetup  component  */
+
+  ClassSetupClazzAreaOfFuncDeletedReactFragmentWrap = {};
 
   ClassSetupClazzAreaOfFuncDeletedChip = {};
 
