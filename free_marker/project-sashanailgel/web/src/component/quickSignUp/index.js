@@ -48,7 +48,8 @@ class QuickSignUpComponent extends BaseQuickSignUpComponent {
 
   onQuickSignUpClazzShareIconButtonClicked(param) {
     const clazz = param.object;
-    this.showErrorSnackMessage(`設計課程分享連結[未完成]`);
+    const idOfClazz = clazz.getId();
+    this.copyTextToClipboard(Router.getUrlOfEstablishPage(idOfClazz),`已將報名連結複製到剪貼簿`)
   }
 
   onQuickSignUpClazzMoreChipClicked(param) {

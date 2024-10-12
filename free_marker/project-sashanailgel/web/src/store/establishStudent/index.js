@@ -14,19 +14,21 @@ class EstablishStudentStore extends BaseEstablishStudentStore {
     }
 
     onInitialCompleted(object) {
-        const apiOfClazz = new MyClazz();
         const self = this;
-        const idOfClass = Util.getTailStringSplitBy(window.location.href, '/')
+        let idOfClass = '';
         Util.syncDelay(1).then(() => {
-            return apiOfClazz.fetchClazzItem(self.getComponent(), idOfClass)
+            const apiOfClazz = new MyClazz();
+            idOfClass = Util.getTailStringSplitBy(window.location.href, '/')
+            return Util.isUndefinedNullEmpty(idOfClass) ? Promise.resolve('') : apiOfClazz.fetchClazzItem(self.getComponent(), idOfClass)
         }).then((clazzItem) => {
-            self.setNameOfClass(`${clazzItem.nameOfClass}：（講師： ${clazzItem.nameOfHost}）`);
-            self.setDatOfPeriodWithHours(`${Util.getStringOfFormatTimestampRange(this.normalizeTimestamp(clazzItem.startOfSpecificClass),
-                this.normalizeTimestamp(clazzItem.endOfSpecificClass))} (合計：${self.getStringOfHours(clazzItem)})`)
-            self.setIdOfClass(idOfClass);
+            if(!Util.isUndefinedNullEmpty(clazzItem)) {
+                self.setNameOfClass(`${clazzItem.nameOfClass}：（講師： ${clazzItem.nameOfHost}）`);
+                self.setDatOfPeriodWithHours(`${Util.getStringOfFormatTimestampRange(this.normalizeTimestamp(clazzItem.startOfSpecificClass),
+                    this.normalizeTimestamp(clazzItem.endOfSpecificClass))} (合計：${self.getStringOfHours(clazzItem)})`)
+                self.setIdOfClass(idOfClass);
+            }
         })
     }
-
 
     getStringOfHours(clazz) {
         return Util.getStringOfCalculateClassTime(this.normalizeTimestamp(clazz.startOfSpecificClass), this.normalizeTimestamp(clazz.endOfSpecificClass),

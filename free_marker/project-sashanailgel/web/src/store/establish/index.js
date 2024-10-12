@@ -12,6 +12,13 @@ class EstablishStore extends BaseEstablishStore {
         super(props);
     }
 
+    onInitialCompleted(object) {
+        const self = this;
+        Util.syncDelay(1).then(() => {
+            this.getStudents().map((student) => {student.onInitialCompleted()})
+        })
+    }
+
     async submitStudentOfClass(student) {
         if(!student.getAgreeOfContract()){
             return this.getComponent().showErrorSnackMessage(`您尚未同意課程實施合約`);
