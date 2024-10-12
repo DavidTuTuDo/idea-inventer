@@ -1,0 +1,30 @@
+{
+  "name": "sashanail_scapier",
+  "version": "1.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --coverage",
+    "gen": "npx babel ./temp --out-dir ./lib"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "configerer": "^1.0.11",
+    "utiller": "^1.0.256",
+    "linepayer": "^1.0.4",
+    "databazer": "^1.0.12",
+    "lodash": "^4.17.20",
+    "moment": "^2.29.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.4",
+    "@babel/plugin-proposal-decorators": "^7.24.1",
+    "@babel/plugin-transform-class-properties": "^7.24.1",
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-react": "^7.24.1",
+    "@babel/register": "^7.23.7"
+  }
+}

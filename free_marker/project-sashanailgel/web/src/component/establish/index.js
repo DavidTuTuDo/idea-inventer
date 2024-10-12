@@ -41,6 +41,10 @@ class EstablishComponent extends BaseEstablishComponent {
         this.getStore().submitStudentOfClass(student).then();
     }
 
+    getInjectPropsOfEstablishStudentAcceptChip(student) {
+        return {disabled: student.getIsCapacityFull()};
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

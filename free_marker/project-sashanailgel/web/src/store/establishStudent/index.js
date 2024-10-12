@@ -13,6 +13,8 @@ class EstablishStudentStore extends BaseEstablishStudentStore {
         super(props);
     }
 
+
+
     onInitialCompleted(object) {
         const self = this;
         let idOfClass = '';
@@ -22,10 +24,18 @@ class EstablishStudentStore extends BaseEstablishStudentStore {
             return Util.isUndefinedNullEmpty(idOfClass) ? Promise.resolve('') : apiOfClazz.fetchClazzItem(self.getComponent(), idOfClass)
         }).then((clazzItem) => {
             if(!Util.isUndefinedNullEmpty(clazzItem)) {
+                self.itemOfClazz = clazzItem;
+
                 self.setNameOfClass(`${clazzItem.nameOfClass}：（講師： ${clazzItem.nameOfHost}）`);
                 self.setDatOfPeriodWithHours(`${Util.getStringOfFormatTimestampRange(this.normalizeTimestamp(clazzItem.startOfSpecificClass),
                     this.normalizeTimestamp(clazzItem.endOfSpecificClass))} (合計：${self.getStringOfHours(clazzItem)})`)
                 self.setIdOfClass(idOfClass);
+
+                if(clazzItem.countsOfStudentCapacity <= clazzItem.countsOfRegistered) {
+                    this.setAccept(`名額已滿`);
+                    this.setIsCapacityFull(true);
+                }
+
             }
         })
     }

@@ -27,8 +27,20 @@ class EstablishStore extends BaseEstablishStore {
             , student.getIdOfNational(), student.getContact(), student.getBirthday(),12);
 
         if (checkmate.valid)  {
-            this.getComponent().showInfoSnackMessage(`已完成課程報名`);
             await student.submitStudentItem();
+            const api = new MyClazz();
+            await api.updateIncrementCountsOfRegistered(this.getComponent(),student.getIdOfClass());
+            this.getComponent().showInfoSnackMessage(`已完成課程報名`);
+
+            /** clean */
+            student.setName('');
+            student.setTextOfEmail('');
+            student.setIdOfNational('')
+            student.setContact('');
+            student.setBirthday(null);
+            student.toggleAgreeOfContract();
+
+
             /** send mail to 小幫手|學生 */
             /** 離開頁面 */
         } else this.getComponent().showErrorSnackMessage(checkmate.message);

@@ -24,6 +24,18 @@ class QuickSignUpClazzStore extends BaseQuickSignUpClazzStore {
         )
         this.setDateOfWeekAttend(this.getClassTimes().map(time =>
             Util.getStringOfWeekTime(time.getSelectedDayOfWeek(), time.getStartOfTime(), time.getEndOfTime())).join('\n'));
+
+
+        let counts = this.getCountsOfStudentCapacity() - this.getCountsOfRegistered();
+
+        if (_.isEqual(counts, this.getCountsOfStudentCapacity()))
+            counts = counts - 3;
+
+        if (counts <= 0) counts = 0
+
+        this.setStateOfRegistered(`${this.getCountsOfStudentCapacity()}人 (僅剩${counts}位)`)
+
+        if (this.getCountsOfStudentCapacity() <= this.getCountsOfRegistered()) this.setSubmit(`名額已滿`);
     }
 
     /** -------------------- async api --------------------
