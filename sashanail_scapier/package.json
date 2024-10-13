@@ -15,7 +15,8 @@
     "linepayer": "^1.0.4",
     "databazer": "^1.0.12",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1"
+    "moment": "^2.29.1",
+    "puppeteer": "^22.6.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",
