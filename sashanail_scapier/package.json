@@ -11,12 +11,12 @@
   "license": "ISC",
   "dependencies": {
     "configerer": "^1.0.11",
-    "utiller": "^1.0.256",
-    "linepayer": "^1.0.4",
     "databazer": "^1.0.12",
+    "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "puppeteer": "^22.6.0"
+    "puppeteer": "^23.5.3",
+    "utiller": "^1.0.256"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",
