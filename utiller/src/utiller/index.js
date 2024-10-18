@@ -2215,7 +2215,7 @@ class Utiller {
     /** 這個函式使用了正則表達式 \d+ 來匹配字串中的數字，並將其轉換為 number 型態。如果字串中沒有找到數字，則會回傳 null。
      *     console.log(extractNumber('NTD 320')); // 輸出: 320
      * */
-     extractNumber(str) {
+    extractNumber(str) {
         // 使用正則表達式提取數字部分
         const match = str.match(/\d+/);
 
@@ -2223,6 +2223,36 @@ class Utiller {
         return match ? Number(match[0]) : null;
     }
 
+    /** puppeteer 的 fetch function
+     * 使用這個function的朋友必須安裝puppeteer:v23.6
+     * */
+    async fetchElementAttributes(dom, stringOfTrait, ...attributes) {
+        const element = await dom.$(stringOfTrait);
+        if (!this.isUndefinedNullEmpty(element)) {
+            return await element.evaluate((el, attributes) => {
+                if (attributes.length === 1) return el[attributes.shift()];
+                return {...attributes.map(attr => el[attr])} //或者 el.getAttribute('src') 更精確!
+            }, attributes);
+        } else this.appendError(`1581532 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
+    }
+
+    /** puppeteer 的 write dom function
+     * 使用這個function的朋友必須安裝puppeteer:v23.6
+     * attribute = {name:value}; // {value:'100000'}, {src:'http://123.com'}
+     * */
+    async writeElementAttributes(dom, stringOfTrait, ...attributes) {
+        const element = await dom.$(stringOfTrait);
+        if (!this.isUndefinedNullEmpty(element)) {
+            await element.evaluate((element, attributes) => {
+                attributes.map((attr) => {
+                    const entries = Object.entries(attr);
+                    const key = entries[0][0]; // 获取键 'name'
+                    const value = entries[0][1]; // 获取值 'value'
+                    element[key] = value;
+                })
+            }, attributes);
+        } else this.appendError(`1231232 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
+    }
 
 }
 

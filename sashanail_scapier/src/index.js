@@ -40,8 +40,9 @@ class sashanailgel_scraper {
             const titleText = await barElement.evaluate(el => {
                 return {href: el.href, type: el.innerText}
             });
-            pages.push(titleText);
+            pages.push({index: _.indexOf(rowElement, each), ...titleText});
         }
+        await page.close();
         return pages;
     }
 
@@ -65,32 +66,22 @@ class sashanailgel_scraper {
         }
     }
 
-    async fetchPageProduct(path, type, subType = 'empty') {
+    async fetchPageProduct({href, type, subType = 'empty'}) {
+        const productsOfBrief = {};
         const page = await this.browser.newPage();
-        await page.goto(path, {waitUntil: 'networkidle2', timeout: 0});
-        console.log(`打開了${type}-${subType} PATH:${path}`)
+        await page.goto(href, {waitUntil: 'networkidle2', timeout: 0});
+        console.log(`打開了${type}-${subType} PATH:${href}`)
         await this.scrollToBottomAndCheck(page);
-        await Util.syncDelay(10);
-
+        await Util.syncDelay(Util.getRandomValue(6000, 8000));
+        await page.bringToFront();
         const parentElement = await page.$$('#gl-container > *');  // 获取父元素
-        // console.log('parent => ', parentElement);
+        console.log(`parentElement =>`, _.size(parentElement))
         for (const row of parentElement) {
             const rowElement = await page.$$('.divFormProductListItem');
-            // console.log('row => ', row, _.indexOf(parentElement, row));
+            console.log(`rowElement =>`, _.size(rowElement))
             for (const each of rowElement) {
-                const titleElement = await each.$('.gl-title');
-                const titleText = await titleElement.evaluate(el => el.innerText);
-                const hrefOfDetailElement = await each.$('.gl-img > .gl-item-image > .img-link')
-                const srcValue = await hrefOfDetailElement.evaluate(el => el.href);  // 或者 el.getAttribute('src') 来更精确获取原始值
-                const headPhotoElement = await each.$('.gl-img > .gl-item-image > .img-link > img')
-
-                let headPhoto = '';
-                try {
-                    headPhoto = await headPhotoElement.evaluate(el => el.src);
-                } catch (error) {
-                    console.log(`${path}->${titleText} 的 headPhoto報錯錯`);
-                }
-
+                const titleText = await Util.fetchElementAttributes(each, '.gl-title', 'innerText');
+                const srcValue = await Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'href')
                 const subs = []
                 const subItemOptionElement = await each.$$('.addon-select option');
                 for (const items of subItemOptionElement) {
@@ -99,35 +90,30 @@ class sashanailgel_scraper {
                             return {name: el.innerText, value: el.value}
                     }))
                 }
-                // console.log(subs);
-                this.items[srcValue] = {
+                productsOfBrief[srcValue] = {
+                    index: _.indexOf(subItemOptionElement, row),
                     type, subType,
                     name: titleText,
                     options: _.filter(subs, sub => !_.isUndefined(sub)),
                     href: srcValue,
-                    headPhoto,
                 };
             }
         }
         await page.close();
-    }
-
-    async output() {
-        let products = _.values(this.items);
-        console.log('所有商品數量：', _.size(products), '商品底下所有種類合計：', _.sum(products.map(item => _.size(item.options))));
-        await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, products);
+        return productsOfBrief;
     }
 
     async fetchSubTypeOfProduct(pathObj = {href: '', type: ''}) {
         const page = await this.browser.newPage();
         await page.goto(pathObj.href, {waitUntil: 'networkidle2', timeout: 0});
         const pages = [];
-        await Util.syncDelay(10);
-        const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > *');
-        console.log(pathObj.type, _.size(listOfSubType));
+        await Util.syncDelay(Util.getRandomValue(500));
+        await page.bringToFront(); // 将目标页面带到前台
+        const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > li');
+        console.log('商品主項目：', pathObj.type, ' 有副項目：', _.size(listOfSubType));
         if (_.size(listOfSubType) > 0) {
             for (const subtitle of listOfSubType) {
-                const subtitleElement = await subtitle.$('li > a');
+                const subtitleElement = await subtitle.$('a');
                 const objectOfSubtitle = await subtitleElement.evaluate(el => {
                     return {href: el.href, subType: el.innerText}
                 });
@@ -142,6 +128,7 @@ class sashanailgel_scraper {
     }
 
     async fetchProductListPageInfos() {
+        const self = this;
         const pages = await this.fetchListOfTypeHref();
         const pagesShouldFetch = pages.filter(page => {
             const splits = page.href.split('/');
@@ -150,18 +137,48 @@ class sashanailgel_scraper {
             return id > 0 && _.isEqual(path, 'plist');
         })
 
-        console.log(pagesShouldFetch);
+
         const targets = [];
-        for (const page of pagesShouldFetch) {
-            const pages = await this.fetchSubTypeOfProduct(page)
-            targets.push(...pages)
-        }
+
+        let poolOfSubType = new InfinitePool(1)
+        poolOfSubType.enableTaskTimeout(true, 100000);
+        await poolOfSubType.runByParams(async (param) => {
+            const pages = await self.fetchSubTypeOfProduct(param);
+            targets.push(...pages);
+        }, ...pagesShouldFetch)
+
         console.log(targets);
 
-        for (const target of targets) {
-            await this.fetchPageProduct(target.href, target.type, target.subType)
-        }
-        await this.output();
+        const listOfProducts = []
+        const poolOfFetchProduct = new InfinitePool(3)
+        poolOfSubType.enableTaskTimeout(true, 100000);
+        await poolOfFetchProduct.runByParams(async (param) => {
+            const products = await self.fetchPageProduct(param);
+            console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`)
+            listOfProducts.push(..._.values(products));
+        }, ...targets)
+
+        console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
+        await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
+    }
+
+    mergeArraysByName(a1, a2) {
+        // 使用 _.mergeWith 和 _.keyBy 基于 'name' 键合并数组
+        const merged = _.values(_.mergeWith(
+            _.keyBy(a1, 'name'), // 将 a1 转换为以 name 为键的对象
+            _.keyBy(a2, 'name'), // 将 a2 转换为以 name 为键的对象
+            (objValue, srcValue) => {
+                // 如果两个值都是对象，递归合并
+                if (_.isObject(objValue)) {
+                    return _.merge(objValue, srcValue);
+                }
+                // 如果其中一个为空，返回非空的值
+                return objValue || srcValue;
+            }
+        ));
+
+        // 返回合并后的数组
+        return merged;
     }
 
     async fetchProductPriceDetail(path) {
@@ -170,30 +187,27 @@ class sashanailgel_scraper {
         const options = [];
 
         async function fetchItemObject(nameOfOption) {
-            const refOfPrice = await page.$('#gd-price > span');
-            const stringOfPrice = await refOfPrice.evaluate(el => el.innerText);
-            const refOfOptionPhoto = await page.$('.gd-img > .just-image > figure > img')
-            const srcOfOptionPhoto = await refOfOptionPhoto.evaluate(el => el.src);
+            const stringOfPrice = await Util.fetchElementAttributes(page, '#gd-price > span', 'innerText');
+            const srcOfOptionPhoto = await Util.fetchElementAttributes(page, '.gd-img > .just-image > figure > img', 'src');
             const price = Util.extractNumber(stringOfPrice);
 
             /** 加入購物車 */
-            const countOfSelectedElement = await page.$(`#gd-detail > table > tbody > .product-number > td > input`);
-            if(countOfSelectedElement) {await page.evaluate((inputElement) => {inputElement.value = '100000';}, countOfSelectedElement);
-            } else console.log('782738129 countOfSelectedElement not found');
+            await Util.writeElementAttributes(page, `#gd-detail > table > tbody > .product-number > td > input`, {value: Util.getRandomValue('100000', '200000')})
 
             const selectorOfAppendToCart = await page.$(`#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`);
             await selectorOfAppendToCart.click();
 
-            options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto, count: 0});
+            options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto});
         }
 
         const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
         console.log(`產品的項目有 -> `, _.size(optionsOfProductNPriceDetails))
+        const headPhoto = await Util.fetchElementAttributes(page, `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`, 'src');
+
         for (const element of optionsOfProductNPriceDetails) {
-            const labelElement = await element.$('label');
-            const nameOfOption = await labelElement.evaluate(el => el.title);
+            const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'title')
             await element.click();
-            await Util.syncDelay(100);
+            await Util.syncDelay(10);
             await fetchItemObject(nameOfOption);
         }
 
@@ -202,27 +216,21 @@ class sashanailgel_scraper {
 
         await Promise.all([
             selectorOfAppendToCart.click(),
-            page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 0}) // 等待页面加载完成
+            page.waitForNavigation({waitUntil: 'networkidle2', timeout: 0}) // 等待页面加载完成
         ]);
 
         const optionsInCart = [];
         const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
-        // const listInCart = await page.$$(`#m-content-box > .default-cart > #order-list > table > tbody > tr > *`);
         console.log(_.size(listInCart));
-        for(const product of listInCart) {
-            const nameOfOptionElement = await product.$(`.t1-4`);
-            const nameOfOption = await nameOfOptionElement.evaluate(el => el.innerText);
-            const countOfMaxElement = await product.$(`.t1-6 > input`);
-            const countOfMax = await countOfMaxElement.evaluate(el => el.value);
-            optionsInCart.push({name:_.trim(nameOfOption),count: _.toNumber(countOfMax)})
+        for (const product of listInCart) {
+            const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, `innerText`);
+            const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, `value`);
+            optionsInCart.push({name: _.trim(nameOfOption), count: _.toNumber(countOfMax)})
         }
 
-
-        console.log(options);
-        console.log(optionsInCart);
-
-
+        console.log({headPhoto, options: this.mergeArraysByName(options, optionsInCart)});
     }
+
 }
 
 export {sashanailgel_scraper as sashanailgel_scraper}
@@ -230,14 +238,14 @@ export {sashanailgel_scraper as sashanailgel_scraper}
 if (configerer.DEBUG_MODE) {
     (async () => {
             const browser = await puppeteer.launch({
-                headless: false
+                headless: true
             });
+            for (const page of await browser.pages()) await page.close();
 
             const handler = new sashanailgel_scraper(browser);
-            // await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000641`);
-            // await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000374`);
-            await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000649`);
-
+            // await handler.fetchProductListPageInfos()
+            await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000641`);
+            await browser.close();
 
 
         }
