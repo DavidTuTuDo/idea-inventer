@@ -72,13 +72,13 @@ class sashanailgel_scraper {
         await page.goto(href, {waitUntil: 'networkidle2', timeout: 0});
         console.log(`打開了${type}-${subType} PATH:${href}`)
         await this.scrollToBottomAndCheck(page);
-        await Util.syncDelay(Util.getRandomValue(6000, 8000));
+        await Util.syncDelay(Util.getRandomValue(500, 1000));
         await page.bringToFront();
         const parentElement = await page.$$('#gl-container > *');  // 获取父元素
-        console.log(`parentElement =>`, _.size(parentElement))
+        // console.log(`parentElement =>`, _.size(parentElement))
         for (const row of parentElement) {
             const rowElement = await page.$$('.divFormProductListItem');
-            console.log(`rowElement =>`, _.size(rowElement))
+            // console.log(`rowElement =>`, _.size(rowElement))
             for (const each of rowElement) {
                 const titleText = await Util.fetchElementAttributes(each, '.gl-title', 'innerText');
                 const srcValue = await Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'href')
@@ -149,15 +149,16 @@ class sashanailgel_scraper {
 
         console.log(targets);
 
-        const listOfProducts = []
-        const poolOfFetchProduct = new InfinitePool(3)
+        const objectOfProducts = {}
+        const poolOfFetchProduct = new InfinitePool(1)
         poolOfSubType.enableTaskTimeout(true, 100000);
         await poolOfFetchProduct.runByParams(async (param) => {
             const products = await self.fetchPageProduct(param);
             console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`)
-            listOfProducts.push(..._.values(products));
+            for(const key in products)
+                objectOfProducts[key] = products[key]
         }, ...targets)
-
+        const listOfProducts = _.values(objectOfProducts);
         console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
         await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
     }
@@ -243,8 +244,8 @@ if (configerer.DEBUG_MODE) {
             for (const page of await browser.pages()) await page.close();
 
             const handler = new sashanailgel_scraper(browser);
-            // await handler.fetchProductListPageInfos()
-            await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000641`);
+            await handler.fetchProductListPageInfos()
+            // await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000641`);
             await browser.close();
 
 
