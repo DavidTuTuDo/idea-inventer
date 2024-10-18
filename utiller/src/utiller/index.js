@@ -2212,6 +2212,18 @@ class Utiller {
         return `${daysOfWeek[day]} ${startTime}-${endTime}`;
     }
 
+    /** 這個函式使用了正則表達式 \d+ 來匹配字串中的數字，並將其轉換為 number 型態。如果字串中沒有找到數字，則會回傳 null。
+     *     console.log(extractNumber('NTD 320')); // 輸出: 320
+     * */
+     extractNumber(str) {
+        // 使用正則表達式提取數字部分
+        const match = str.match(/\d+/);
+
+        // 如果找到數字，轉換為數字型態並回傳
+        return match ? Number(match[0]) : null;
+    }
+
+
 }
 
 if (configerer.DEBUG_MODE) {

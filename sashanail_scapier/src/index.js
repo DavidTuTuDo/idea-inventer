@@ -14,6 +14,11 @@ import puppeteer from 'puppeteer';
  * sample  const items = await page.$$eval('#gl-container > *', elements => {
  * sample  const titles = await page.$$eval('#gl-container .gl-title', elements => {
  * '#'=>代表id | '.'=>代表class | <tag不用加前綴  #id > .className > tag
+ * innerText => <tag class='class' >{innerText}<tag>
+ *
+ *
+ *   // 等待元素加载，确保页面中的 #dg-detail > #add-to-list 存在
+ *   await page.waitForSelector('#dg-detail > #add-to-list');
  */
 
 
@@ -42,7 +47,7 @@ class sashanailgel_scraper {
 
     // 滚动页面并检查是否有新的内容加载
     async scrollToBottomAndCheck(page) {
-        const delay = 1000; // 等待新内容加载的延迟时间
+        const delay = 1500; // 等待新内容加载的延迟时间
         let lastHeight = await page.evaluate('document.body.scrollHeight');
 
         while (true) {
@@ -82,7 +87,7 @@ class sashanailgel_scraper {
                 let headPhoto = '';
                 try {
                     headPhoto = await headPhotoElement.evaluate(el => el.src);
-                }catch (error) {
+                } catch (error) {
                     console.log(`${path}->${titleText} 的 headPhoto報錯錯`);
                 }
 
@@ -110,30 +115,113 @@ class sashanailgel_scraper {
     async output() {
         let products = _.values(this.items);
         console.log('所有商品數量：', _.size(products), '商品底下所有種類合計：', _.sum(products.map(item => _.size(item.options))));
-        await Util.persistJsonFilePrettier(`./products.json`, products);
+        await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, products);
     }
 
-    async fetchSubTypeOfProduct(path) {
+    async fetchSubTypeOfProduct(pathObj = {href: '', type: ''}) {
         const page = await this.browser.newPage();
-        await page.goto(path.href, {waitUntil: 'networkidle2', timeout: 0});
+        await page.goto(pathObj.href, {waitUntil: 'networkidle2', timeout: 0});
         const pages = [];
         await Util.syncDelay(10);
         const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > *');
-        console.log(path.type, _.size(listOfSubType));
+        console.log(pathObj.type, _.size(listOfSubType));
         if (_.size(listOfSubType) > 0) {
             for (const subtitle of listOfSubType) {
                 const subtitleElement = await subtitle.$('li > a');
                 const objectOfSubtitle = await subtitleElement.evaluate(el => {
                     return {href: el.href, subType: el.innerText}
                 });
-                pages.push({...objectOfSubtitle, type: path.type})
+                pages.push({...objectOfSubtitle, type: pathObj.type})
             }
             await page.close()
             return pages;
         } else {
             await page.close()
-            return [path];
+            return [pathObj];
         }
+    }
+
+    async fetchProductListPageInfos() {
+        const pages = await this.fetchListOfTypeHref();
+        const pagesShouldFetch = pages.filter(page => {
+            const splits = page.href.split('/');
+            const id = _.toNumber(splits.pop());
+            const path = splits.pop();
+            return id > 0 && _.isEqual(path, 'plist');
+        })
+
+        console.log(pagesShouldFetch);
+        const targets = [];
+        for (const page of pagesShouldFetch) {
+            const pages = await this.fetchSubTypeOfProduct(page)
+            targets.push(...pages)
+        }
+        console.log(targets);
+
+        for (const target of targets) {
+            await this.fetchPageProduct(target.href, target.type, target.subType)
+        }
+        await this.output();
+    }
+
+    async fetchProductPriceDetail(path) {
+        const page = await this.browser.newPage();
+        await page.goto(path, {waitUntil: 'networkidle2', timeout: 0});
+        const options = [];
+
+        async function fetchItemObject(nameOfOption) {
+            const refOfPrice = await page.$('#gd-price > span');
+            const stringOfPrice = await refOfPrice.evaluate(el => el.innerText);
+            const refOfOptionPhoto = await page.$('.gd-img > .just-image > figure > img')
+            const srcOfOptionPhoto = await refOfOptionPhoto.evaluate(el => el.src);
+            const price = Util.extractNumber(stringOfPrice);
+
+            /** 加入購物車 */
+            const countOfSelectedElement = await page.$(`#gd-detail > table > tbody > .product-number > td > input`);
+            if(countOfSelectedElement) {await page.evaluate((inputElement) => {inputElement.value = '100000';}, countOfSelectedElement);
+            } else console.log('782738129 countOfSelectedElement not found');
+
+            const selectorOfAppendToCart = await page.$(`#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`);
+            await selectorOfAppendToCart.click();
+
+            options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto, count: 0});
+        }
+
+        const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
+        console.log(`產品的項目有 -> `, _.size(optionsOfProductNPriceDetails))
+        for (const element of optionsOfProductNPriceDetails) {
+            const labelElement = await element.$('label');
+            const nameOfOption = await labelElement.evaluate(el => el.title);
+            await element.click();
+            await Util.syncDelay(100);
+            await fetchItemObject(nameOfOption);
+        }
+
+        /** 購物車的點擊 */
+        const selectorOfAppendToCart = await page.$(`#mbcUshop-MemberOp > .divCtrlMemberOpView > .member-op`);
+
+        await Promise.all([
+            selectorOfAppendToCart.click(),
+            page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 0}) // 等待页面加载完成
+        ]);
+
+        const optionsInCart = [];
+        const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
+        // const listInCart = await page.$$(`#m-content-box > .default-cart > #order-list > table > tbody > tr > *`);
+        console.log(_.size(listInCart));
+        for(const product of listInCart) {
+            const nameOfOptionElement = await product.$(`.t1-4`);
+            const nameOfOption = await nameOfOptionElement.evaluate(el => el.innerText);
+            const countOfMaxElement = await product.$(`.t1-6 > input`);
+            const countOfMax = await countOfMaxElement.evaluate(el => el.value);
+            optionsInCart.push({name:_.trim(nameOfOption),count: _.toNumber(countOfMax)})
+        }
+
+
+        console.log(options);
+        console.log(optionsInCart);
+
+
     }
 }
 
@@ -142,33 +230,15 @@ export {sashanailgel_scraper as sashanailgel_scraper}
 if (configerer.DEBUG_MODE) {
     (async () => {
             const browser = await puppeteer.launch({
-                headless: true
+                headless: false
             });
 
             const handler = new sashanailgel_scraper(browser);
-            const pages = await handler.fetchListOfTypeHref();
-            const pagesShouldFetch = pages.filter(page => {
-                const splits = page.href.split('/');
-                const id = _.toNumber(splits.pop());
-                const path = splits.pop();
-                return id > 0 && _.isEqual(path, 'plist');
-            })
-
-            console.log(pagesShouldFetch);
+            // await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000641`);
+            // await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000374`);
+            await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000649`);
 
 
-            const targets = [];
-            for (const page of pagesShouldFetch) {
-                const pages = await handler.fetchSubTypeOfProduct(page)
-                targets.push(...pages)
-            }
-            console.log(targets);
-
-            for (const target of targets) {
-                await handler.fetchPageProduct(target.href, target.type, target.subType)
-            }
-
-            await handler.output();
 
         }
     )();
