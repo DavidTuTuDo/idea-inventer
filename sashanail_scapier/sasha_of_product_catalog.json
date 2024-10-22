@@ -1,0 +1,31 @@
+[
+  { "index": 1, "href": "https://www.sachianail.com/plist/1", "type": "SACHIA 同名品牌" },
+  { "index": 2, "href": "https://www.sachianail.com/plist/2", "type": "最新商品" },
+  { "href": "https://www.sachianail.com/plist/22", "subType": "Infin", "type": "美甲甲油膠" },
+  { "href": "https://www.sachianail.com/plist/23", "subType": "Sansu", "type": "美甲甲油膠" },
+  { "href": "https://www.sachianail.com/plist/24", "subType": "古萊麗", "type": "美甲甲油膠" },
+  { "href": "https://www.sachianail.com/plist/25", "subType": "VINIMAY", "type": "美甲甲油膠" },
+  { "href": "https://www.sachianail.com/plist/27", "subType": "其他膠類", "type": "美甲甲油膠" },
+  { "href": "https://www.sachianail.com/plist/5", "subType": "美甲燈、一字燈", "type": "美甲機器" },
+  { "href": "https://www.sachianail.com/plist/6", "subType": "美甲磨甲機、美甲吸塵器", "type": "美甲機器" },
+  { "href": "https://www.sachianail.com/plist/8", "subType": "美甲筆、拉線筆", "type": "美甲工具" },
+  { "href": "https://www.sachianail.com/plist/9", "subType": "各式色卡、穿戴甲片", "type": "美甲工具" },
+  { "href": "https://www.sachianail.com/plist/10", "subType": "卸甲水、洗筆水、凝膠清潔液", "type": "美甲工具" },
+  { "href": "https://www.sachianail.com/plist/11", "subType": "甘皮剪、鋼推、磨棒、貓眼磁鐵", "type": "美甲工具" },
+  {
+    "href": "https://www.sachianail.com/plist/12",
+    "subType": "實用小物、美甲洗筆杯、調色盤、膠帶、手枕",
+    "type": "美甲工具"
+  },
+  { "href": "https://www.sachianail.com/plist/13", "subType": "美甲刷具、粉塵刷", "type": "美甲工具" },
+  { "href": "https://www.sachianail.com/plist/14", "subType": "保養磨頭、卸甲磨頭", "type": "美甲工具" },
+  { "href": "https://www.sachianail.com/plist/21", "subType": "美甲嵌甲棒", "type": "美甲工具" },
+  { "href": "https://www.sachianail.com/plist/16", "subType": "亮粉、飾品、水鑽", "type": "美甲造型" },
+  { "href": "https://www.sachianail.com/plist/17", "subType": "美甲貼紙、飾品", "type": "美甲造型" },
+  {
+    "href": "https://www.sachianail.com/plist/19",
+    "subType": "飾品收納、壓克力收納盒、美甲推車",
+    "type": "美甲用具收納"
+  },
+  { "index": 8, "href": "https://www.sachianail.com/plist/20", "type": "美甲拍照道具" }
+]

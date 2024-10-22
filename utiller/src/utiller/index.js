@@ -2217,23 +2217,30 @@ class Utiller {
      * */
     extractNumber(str) {
         // 使用正則表達式提取數字部分
+        if (this.isUndefinedNullEmpty(str)) return -1
         const match = str.match(/\d+/);
 
         // 如果找到數字，轉換為數字型態並回傳
-        return match ? Number(match[0]) : null;
+        return match ? Number(match[0]) : -1;
     }
 
     /** puppeteer 的 fetch function
      * 使用這個function的朋友必須安裝puppeteer:v23.6
      * */
-    async fetchElementAttributes(dom, stringOfTrait, ...attributes) {
+    async fetchElementAttributes(dom, stringOfTrait, defaultValue = '', ...attributes) {
         const element = await dom.$(stringOfTrait);
         if (!this.isUndefinedNullEmpty(element)) {
-            return await element.evaluate((el, attributes) => {
-                if (attributes.length === 1) return el[attributes.shift()];
-                return {...attributes.map(attr => el[attr])} //或者 el.getAttribute('src') 更精確!
-            }, attributes);
-        } else this.appendError(`1581532 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
+            try {
+                return await element.evaluate((el, attributes) => {
+                    if (attributes.length === 1) return el[attributes.shift()];
+                    return {...attributes.map(attr => el[attr])} //或者 el.getAttribute('src') 更精確!
+                }, attributes);
+            } catch (error) {
+                this.appendError(`1581532 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
+                return defaultValue;
+            }
+        }
+        return defaultValue
     }
 
     /** puppeteer 的 write dom function
@@ -2252,6 +2259,45 @@ class Utiller {
                 })
             }, attributes);
         } else this.appendError(`1231232 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
+    }
+
+    /** // 示例函數來測試運行時間
+     async function exampleFunction() {
+     return new Promise((resolve) => setTimeout(resolve, 3210)); // 模擬3.21秒延遲
+     }
+
+     // 測試 measureExecutionTime 函數
+     measureExecutionTime(exampleFunction).then(result => {
+     console.log(result); // 輸出：0小時 0分 3.210秒 (合計 3.210 秒)
+     });
+
+     */
+    measureExecutionTime = async (fn, ...param) => {
+        // 開始計時
+        const startTime = Date.now();
+
+        // 執行傳入的函數
+        await fn(...param);
+
+        // 結束計時
+        const endTime = Date.now();
+
+        // 計算總運行時間（毫秒）
+        const durationInMilliseconds = endTime - startTime;
+
+        // 使用 moment.duration 格式化為 hh:mm:ss.SSS
+        const duration = moment.duration(durationInMilliseconds, 'milliseconds');
+
+        const hours = Math.floor(duration.asHours());
+        const minutes = duration.minutes();
+        const seconds = duration.seconds();
+        const milliseconds = duration.milliseconds();
+
+        // 計算總秒數（包含小數點）
+        const totalSeconds = (durationInMilliseconds / 1000).toFixed(3);
+
+        // 返回結果
+        this.appendInfo(`${hours}小時 ${minutes}分 ${seconds}.${milliseconds.toString().padStart(3, '0')}秒 (合計 ${totalSeconds} 秒)`)
     }
 
 }

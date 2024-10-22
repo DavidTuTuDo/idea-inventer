@@ -19,8 +19,44 @@ import puppeteer from 'puppeteer';
  *
  *   // 等待元素加载，确保页面中的 #dg-detail > #add-to-list 存在
  *   await page.waitForSelector('#dg-detail > #add-to-list');
+ *
+ *
+ *   import puppeteer from 'puppeteer';
+ * // Or import puppeteer from 'puppeteer-core';
+ *
+ * // Launch the browser and open a new blank page
+ * const browser = await puppeteer.launch();
+ * const page = await browser.newPage();
+ *
+ * // Navigate the page to a URL.
+ * await page.goto('https://developer.chrome.com/');
+ *
+ * // Set screen size.
+ * await page.setViewport({width: 1080, height: 1024});
+ *
+ * // Type into search box.
+ * await page.locator('.devsite-search-field').fill('automate beyond recorder');
+ *
+ * // Wait and click on first result.
+ * await page.locator('.devsite-result-item-link').click();
+ *
+ * // Locate the full title with a unique string.
+ * const textSelector = await page
+ *   .locator('text/Customize and automate')
+ *   .waitHandle();
+ * const fullTitle = await textSelector?.evaluate(el => el.textContent);
+ *
+ * // Print the full title.
+ * console.log('The title of this blog post is "%s".', fullTitle);
+ *
+ * await browser.close();
  */
 
+const THREAD_OF_FETCHER = 1;
+const THREAD_OF_DETAIL_PRODUCT = 5;
+const PRINT_REPORT_OF_PRODUCTS = true;
+const USE_PERSISTENT_FILE = true;
+const VISIBLE_OF_FETCH_PRODUCT = false;
 
 class sashanailgel_scraper {
 
@@ -46,55 +82,41 @@ class sashanailgel_scraper {
         return pages;
     }
 
-    // 滚动页面并检查是否有新的内容加载
-    async scrollToBottomAndCheck(page) {
-        const delay = 1500; // 等待新内容加载的延迟时间
-        let lastHeight = await page.evaluate('document.body.scrollHeight');
-
-        while (true) {
-            await page.evaluate('window.scrollBy(0, document.body.scrollHeight)');
-
-            // 等待新的内容加载
-            await new Promise(resolve => setTimeout(resolve, delay));
-            let newHeight = await page.evaluate('document.body.scrollHeight');
-
-            if (newHeight === lastHeight) {
-                console.log("No more new content, scroller arrived to bottom");
-                break;
-            }
-            lastHeight = newHeight;
-        }
-    }
-
-    async fetchPageProduct({href, type, subType = 'empty'}) {
+    async fetchProductsInPage({href, type, subType = 'empty'}) {
         const productsOfBrief = {};
         const page = await this.browser.newPage();
         await page.goto(href, {waitUntil: 'networkidle2', timeout: 0});
         console.log(`打開了${type}-${subType} PATH:${href}`)
         await this.scrollToBottomAndCheck(page);
+        if (THREAD_OF_FETCHER > 1)
+            await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000)
         await Util.syncDelay(Util.getRandomValue(500, 1000));
         await page.bringToFront();
         const parentElement = await page.$$('#gl-container > *');  // 获取父元素
         // console.log(`parentElement =>`, _.size(parentElement))
         for (const row of parentElement) {
+            const head = _.indexOf(parentElement, row)
             const rowElement = await page.$$('.divFormProductListItem');
             // console.log(`rowElement =>`, _.size(rowElement))
             for (const each of rowElement) {
-                const titleText = await Util.fetchElementAttributes(each, '.gl-title', 'innerText');
-                const srcValue = await Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'href')
+                const tail = _.indexOf(rowElement, each)
+                const titleText = await Util.fetchElementAttributes(each, '.gl-title', 'empty', 'innerText');
+                const srcValue = await Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'empty', 'href')
                 const subs = []
                 const subItemOptionElement = await each.$$('.addon-select option');
                 for (const items of subItemOptionElement) {
-                    subs.push(await items.evaluate(el => {
+                    subs.push(await items.evaluate(((el) => {
                         if (el.value && parseInt(el.value) > 0)
                             return {name: el.innerText, value: el.value}
-                    }))
+                    })))
                 }
                 productsOfBrief[srcValue] = {
-                    index: _.indexOf(subItemOptionElement, row),
+                    index: _.toNumber(`${head}${tail}`),
                     type, subType,
                     name: titleText,
-                    options: _.filter(subs, sub => !_.isUndefined(sub)),
+                    options: _.filter(subs, sub => !_.isUndefined(sub)).map(each => {
+                        return {name: _.trim(each.name), value: _.toNumber(each.value)}
+                    }),
                     href: srcValue,
                 };
             }
@@ -107,8 +129,10 @@ class sashanailgel_scraper {
         const page = await this.browser.newPage();
         await page.goto(pathObj.href, {waitUntil: 'networkidle2', timeout: 0});
         const pages = [];
-        await Util.syncDelay(Util.getRandomValue(500));
+        await Util.syncDelay(Util.getRandomValue(500, 1000));
         await page.bringToFront(); // 将目标页面带到前台
+        if (THREAD_OF_FETCHER > 1)
+            await this.waitSelectorTilAppear(page, `#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container`, 30000)
         const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > li');
         console.log('商品主項目：', pathObj.type, ' 有副項目：', _.size(listOfSubType));
         if (_.size(listOfSubType) > 0) {
@@ -128,6 +152,12 @@ class sashanailgel_scraper {
     }
 
     async fetchProductListPageInfos() {
+        if (USE_PERSISTENT_FILE) {
+            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_list_failure.json`))
+            await this.fetchWholeProductDetailBehavior(list);
+            return;
+        }
+
         const self = this;
         const pages = await this.fetchListOfTypeHref();
         const pagesShouldFetch = pages.filter(page => {
@@ -140,30 +170,165 @@ class sashanailgel_scraper {
 
         const targets = [];
 
-        let poolOfSubType = new InfinitePool(1)
+        /** 抓取商品Catalog */
+        let poolOfSubType = new InfinitePool(THREAD_OF_FETCHER)
         poolOfSubType.enableTaskTimeout(true, 100000);
         await poolOfSubType.runByParams(async (param) => {
             const pages = await self.fetchSubTypeOfProduct(param);
             targets.push(...pages);
         }, ...pagesShouldFetch)
 
-        console.log(targets);
+        await Util.persistJsonFilePrettier(`./sasha_of_product_catalog.json`, targets);
 
+        /** 抓取商品列表 */
         const objectOfProducts = {}
-        const poolOfFetchProduct = new InfinitePool(1)
+        const poolOfFetchProduct = new InfinitePool(THREAD_OF_FETCHER)
         poolOfSubType.enableTaskTimeout(true, 100000);
         await poolOfFetchProduct.runByParams(async (param) => {
-            const products = await self.fetchPageProduct(param);
+            const products = await self.fetchProductsInPage(param);
             console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`)
-            for(const key in products)
+            for (const key in products)
                 objectOfProducts[key] = products[key]
         }, ...targets)
         const listOfProducts = _.values(objectOfProducts);
         console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
         await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
+        await this.fetchWholeProductDetailBehavior(listOfProducts);
     }
 
-    mergeArraysByName(a1, a2) {
+    async fetchWholeProductDetailBehavior(list) {
+        /** 抓取商品細項資訊 */
+        const self = this;
+        const productsOfDetail = [];
+        const listOfFailFetch = [];
+        const poolOfFetchProductDetail = new InfinitePool(THREAD_OF_DETAIL_PRODUCT);
+        poolOfFetchProductDetail.enableTaskTimeout(true, 30000000);
+
+        await poolOfFetchProductDetail.runByParams(async (product) => {
+            try {
+                const productDetail = await self.fetchProductPriceDetail(product);
+                productsOfDetail.push({...product, options: this.mergeArraysByName(product.options, productDetail.options), headPhoto: productDetail.headPhoto})
+            } catch (error) {
+                console.log(`PRODUCT:${product.name} 抓取Detail資料失敗：`, error.message)
+                listOfFailFetch.push(product);
+            }
+
+        }, ...list);
+
+        if (PRINT_REPORT_OF_PRODUCTS) {
+            if (_.size(productsOfDetail) > 0)
+                await Util.persistJsonFilePrettier(`./sasha_of_products_detail_${Util.getCurrentTimeStamp()}.json`, productsOfDetail);
+            if (_.size(listOfFailFetch) > 0)
+                await Util.persistJsonFilePrettier(`./sasha_of_products_list_failure.json`, listOfFailFetch);
+        }
+    }
+
+
+    fetchProductPriceDetail = async (product) => {
+        const self = this;
+        const {browser, page} = await this.getBrowserPage(VISIBLE_OF_FETCH_PRODUCT, true);
+        const path = product.href;
+        const options = [];
+
+        async function fetchItemObject(nameOfOption) {
+            console.log(nameOfOption)
+            const stringOfPrice = await Util.fetchElementAttributes(page, '#gd-price > span', '0', 'innerText');
+            const srcOfOptionPhoto = await Util.fetchElementAttributes(page, '#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img', 'empty', 'src');
+            const price = Util.extractNumber(stringOfPrice);
+            console.log(stringOfPrice, srcOfOptionPhoto, price)
+            if (price > 0) {
+                const input = `#gd-detail > table > tbody > .product-number > td > input`
+                console.log(`[${product.name}-${nameOfOption}]輸入框[${input}]得到focus`)
+                /** 加入購物車 */
+                await Util.writeElementAttributes(page, input, {value: _.toString(Util.getRandomValue(10000, 20000))})
+
+                const button = `#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`;
+                const selectorOfAppendToCart = await page.$(button);
+                await Util.syncDelay(1000);
+                await self.clickSolution(page, selectorOfAppendToCart)
+                options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto});
+            }
+        }
+
+        try {
+            await page.goto(path, {waitUntil: 'networkidle2', timeout: 0});
+            await this.managePages(path, browser);
+            const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`
+
+            await this.waitSelectorTilAppear(page, selectorOfSrc, 40000)
+            await page.bringToFront();
+            const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
+            const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
+            console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
+            const headPhoto = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
+
+            for (const element of optionsOfProductNPriceDetails) {
+                const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title')
+
+                if (sizeOfSubItem > 1 && element) {
+                    await element.click()
+                    /** ˋ*/
+                    await Util.syncDelay(1500);
+                    await fetchItemObject(nameOfOption);
+                    /** 商品項目只有一個的時候，會預設回圈選 */
+                } else if (sizeOfSubItem === 1) await fetchItemObject(nameOfOption);
+            }
+
+            /** 購物車的點擊，因為購物車才能抓到商品剩餘數量，所以要先放到購物車 */
+            const selectorOfAppendToCart = await page.$(`#mbcUshop-MemberOp > .divCtrlMemberOpView > .member-op`);
+
+
+            await this.clickSolution(page, selectorOfAppendToCart);
+            console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
+            await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000)
+            // await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 30000}) // 等待页面加载完成
+            const optionsInCart = [];
+            const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
+            for (const product of listInCart) {
+                const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, 'empty', `innerText`);
+                const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
+                optionsInCart.push({name: _.trim(nameOfOption), count: _.toNumber(countOfMax)})
+            }
+
+            const result = {headPhoto, options: this.mergeArraysByName(options, optionsInCart)}
+            console.log(result);
+            return result;
+        } catch (error) {
+            console.log(`[${product.name}]點擊購物車之後，等待檢驗數量過程中失敗`, error.message)
+            throw new ERROR(9999, `[${product.name}]發生錯誤${error.message}`)
+        } finally {
+            await page.close();
+            await browser.close()
+            console.log(`[${product.name}]關閉頁面的所有PERSISTENT`);
+        }
+    }
+
+    async sampleOfFetchSingleItem() {
+        await this.fetchProductPriceDetail({name: '測試', href: `https://www.sachianail.com/pitem/M00000144`});
+    }
+
+    /** --------------------------------------------------------------------------- 關於puppeteer util的部分 --------------------------------------------------------------------------- */
+        // 滚动页面并检查是否有新的内容加载
+    scrollToBottomAndCheck = async (page) => {
+        const delay = 2000; // 等待新内容加载的延迟时间
+        let lastHeight = await page.evaluate('document.body.scrollHeight');
+
+        while (true) {
+            await page.evaluate('window.scrollBy(0, document.body.scrollHeight)');
+
+            // 等待新的内容加载
+            await new Promise(resolve => setTimeout(resolve, delay));
+            let newHeight = await page.evaluate('document.body.scrollHeight');
+
+            if (newHeight === lastHeight) {
+                console.log("No more new content, scroller arrived to bottom");
+                break;
+            }
+            lastHeight = newHeight;
+        }
+    }
+
+    mergeArraysByName = (a1, a2) => {
         // 使用 _.mergeWith 和 _.keyBy 基于 'name' 键合并数组
         const merged = _.values(_.mergeWith(
             _.keyBy(a1, 'name'), // 将 a1 转换为以 name 为键的对象
@@ -182,54 +347,208 @@ class sashanailgel_scraper {
         return merged;
     }
 
-    async fetchProductPriceDetail(path) {
-        const page = await this.browser.newPage();
-        await page.goto(path, {waitUntil: 'networkidle2', timeout: 0});
-        const options = [];
+    /** 清空當前頁面的cookie(不然購物車會爆掉)*/
+    async clearCookies(page) {
+        await page.deleteCookie(...await page.cookies());
+    }
 
-        async function fetchItemObject(nameOfOption) {
-            const stringOfPrice = await Util.fetchElementAttributes(page, '#gd-price > span', 'innerText');
-            const srcOfOptionPhoto = await Util.fetchElementAttributes(page, '.gd-img > .just-image > figure > img', 'src');
-            const price = Util.extractNumber(stringOfPrice);
+    async checkSelectorExists(page, selector) {
+        // 檢查選擇器是否存在
+        const element = await page.$(selector);
+        return !!element;
+    }
 
-            /** 加入購物車 */
-            await Util.writeElementAttributes(page, `#gd-detail > table > tbody > .product-number > td > input`, {value: Util.getRandomValue('100000', '200000')})
+    /** 當loading bar 消失時，假定為加載完成 */
+    waitForStyleAndClose = async (page, selector, timeout) => {
+        try {
+            // 使用 evaluate 來檢查元素的 display 屬性，並每隔500毫秒檢查一次
+            await page.waitForFunction(
+                (selector) => {
+                    const element = document.querySelector(selector);
+                    return element && window.getComputedStyle(element).display === 'none';
+                },
+                {timeout: 10000}, // 最多等10秒
+                selector
+            );
 
-            const selectorOfAppendToCart = await page.$(`#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`);
-            await selectorOfAppendToCart.click();
-
-            options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto});
+            console.log(`元素 ${selector} 的 display 設為 none 了！`);
+        } catch (error) {
+            console.error(`元素 ${selector} 的 display 沒有在指定時間內設為 none。`, error);
         }
 
-        const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
-        console.log(`產品的項目有 -> `, _.size(optionsOfProductNPriceDetails))
-        const headPhoto = await Util.fetchElementAttributes(page, `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`, 'src');
+    }
 
-        for (const element of optionsOfProductNPriceDetails) {
-            const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'title')
-            await element.click();
-            await Util.syncDelay(10);
-            await fetchItemObject(nameOfOption);
+    /** 等待某個element出現代表可以抓取dom,有時候networkidle 不等於 dom已經render成功 */
+    waitSelectorTilAppear = async (page, selector, timeout = 10000) => {
+        /** 已存在就立即返回 */
+        if (await this.checkSelectorExists(page, selector)) return;
+
+        try {
+            // 等待特定元素出現
+            await page.waitForSelector(selector, {
+                visible: true, // 確保元素是可見的
+                timeout // 可選：最多等10秒
+            });
+
+            console.log(`元素 ${selector} 已出現！`);
+
+        } catch (error) {
+            console.error(`元素 ${selector} 未在指定時間內出現。`, error);
+        }
+    }
+
+
+    async getBrowser(visible) {
+        const browser = await puppeteer.launch({
+            headless: !visible
+        });
+        for (const page of await browser.pages()) await page.close();
+        return browser;
+    }
+
+    /** incognito = true 就是無痕模式 */
+    async getBrowserPage(visible = false, incognito = false, browser) {
+        if (browser)
+            return {page: await brow.newPage(), browser: browser};
+
+        const brow = await this.getBrowser(visible);
+        // 創建一個無痕模式的上下文
+        if (incognito) {
+            const context = await brow.createBrowserContext();
+            return {page: await context.newPage(), browser: brow};
+        } else return {page: await brow.newPage(), browser: brow};
+    }
+
+    async clickSolution(page, element) {
+        await page.evaluate((el) => {
+            el.click();
+        }, element)
+    }
+
+    /**
+     *
+     * browser.on('targetcreated')：當一個新的目標（標籤頁或窗口）被創建時，這個事件會被觸發。target.page() 返回對應的 Page 對象。
+     * URL(page.url()).pathname：我們從頁面的 URL 中提取出 pathname，用來與 onlyPath 進行比較。注意，我們去掉了 /，使得 onlyPath 可以直接比較。
+     * page.close()：如果新的頁面路徑與 onlyPath 不匹配，則立即關閉該頁面。
+     * browser.pages()：這個方法返回當前已打開的所有頁面。你可以用來遍歷現有的頁面，並關閉 onlyPath 以外的頁面。
+     * 這個函數會自動關閉不符合 onlyPath 的頁面，無論是現有的還是新創建的頁面。如果有其他問題或需要調整，隨時告訴我！
+     *
+     */
+    async managePages(onlyPath, browser) {
+        // 監聽當有新頁面創建時的事件
+        browser.on('targetcreated', async target => {
+            const page = await target.page();
+
+            if (page) {
+                const url = new URL(page.url());
+                const path = `https://www.sachianail.com${url.pathname}`;  // 不去掉前導的 "/"
+
+                // 如果新頁面的 path 不等於 onlyPath，則關閉該頁面
+                if (path !== onlyPath) {
+                    console.log(`Closing page with path: ${path},should be ${onlyPath}`);
+                    await page.close();
+                }
+            }
+        });
+
+        // 檢查並關閉所有不等於 onlyPath 的已打開頁面
+        const pages = await browser.pages();
+
+        for (const p of pages) {
+            const url = new URL(p.url());
+            const path = `https://www.sachianail.com${url.pathname}`;  // 不去掉前導的 "/"
+
+            // 關閉 onlyPath 以外的頁面
+            if (path !== onlyPath) {
+                console.log(`Closing page with path: ${path},should be ${onlyPath}`);
+                await p.close();
+            }
         }
 
-        /** 購物車的點擊 */
-        const selectorOfAppendToCart = await page.$(`#mbcUshop-MemberOp > .divCtrlMemberOpView > .member-op`);
+        // 讓瀏覽器保持打開一段時間以便觀察
+        await new Promise(resolve => setTimeout(resolve, 10000));
+    }
 
-        await Promise.all([
-            selectorOfAppendToCart.click(),
-            page.waitForNavigation({waitUntil: 'networkidle2', timeout: 0}) // 等待页面加载完成
-        ]);
+    /** // 測試該函數，設置超時為 10 秒（10000 毫秒），重試間隔為 1 秒（1000 毫秒）
+     checkElementVisibleWithRetry('#123 .class1 > tr', 10000, 1000);*/
+    async checkElementVisibleWithRetry(page, selector, timeout = 30000, retryInterval = 1000) {
+        const startTime = Date.now();
+        try {
+            while (Date.now() - startTime < timeout) {
+                // 1. 檢查元素是否存在
+                const elementExists = await page.$(selector);
 
-        const optionsInCart = [];
-        const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
-        console.log(_.size(listInCart));
-        for (const product of listInCart) {
-            const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, `innerText`);
-            const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, `value`);
-            optionsInCart.push({name: _.trim(nameOfOption), count: _.toNumber(countOfMax)})
+                if (elementExists) {
+                    // 2. 檢查元素的 visibility 和 display 屬性是否符合要求
+                    const isVisible = await page.evaluate((selector) => {
+                        const element = document.querySelector(selector);
+                        if (!element) return false;
+
+                        const style = window.getComputedStyle(element);
+                        return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
+                    }, selector);
+
+                    if (isVisible) {
+                        console.log(`元素 ${selector} 存在且可見`);
+                        return true; // 元素存在且可見，退出函數
+                    } else {
+                        console.log(`元素 ${selector} 存在但不可見，繼續等待...`);
+                    }
+                } else {
+                    console.log(`元素 ${selector} 不存在，繼續等待...`);
+                }
+
+                // 3. 等待 retryInterval 再次檢查
+                await new Promise(resolve => setTimeout(resolve, retryInterval));
+            }
+
+            console.log(`超時：元素 ${selector} 未在 ${timeout / 1000} 秒內變為可見`);
+            return false;
+
+        } catch (error) {
+            console.error(`發生錯誤: ${error.message}`);
+            return false;
         }
+    }
 
-        console.log({headPhoto, options: this.mergeArraysByName(options, optionsInCart)});
+    printSucceedFailureLog() {
+        const listOfTotal = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`))
+        const listOfSucceed = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_detail.json`))
+        const listOfFailure = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_list_failure.json`))
+        console.log('listOfTotal：', _.size(listOfTotal))
+        console.log('succeed：', _.size(listOfSucceed))
+        console.log('failure：', _.size(listOfFailure))
+
+        for (const item of [...listOfFailure, ...listOfSucceed])
+            _.remove(listOfTotal, (each) => item.href === each.href);
+
+        console.log(listOfTotal);
+        // const result = this.deleteItemsFromArray(listOfTotal, 'id', listOfSucceed, listOfFailure);
+        // console.log(result);
+
+
+    }
+
+    /**
+     *
+     * const arr1 = [{ id: 1 }, { id: 2 }, { id: 3 }];
+     * const arr2 = [{ id: 1 }];
+     * const arr3 = [{ id: 2 }];
+     * _.differenceBy(arr1, ...arrays, 'id')：
+     *
+     * _.differenceBy 是 lodash 的一個函數，用來根據提供的鍵值（這裡是 id），從 arr1 中刪除在其他數組（arr2, arr3）中出現的項目。
+     * 最後一個參數 'id' 指定比較的鍵。
+     * arr1, ...arrays：
+     *
+     * arr1 是主數組，...arrays 使用擴展運算符來將多個數組（arr2, arr3）合併到一個參數中，方便傳遞多個數組。
+     * 返回值：
+     *
+     * 最終會返回一個新的數組，其中刪除了 arr2 和 arr3 中有相同 id 的項目。
+     *
+     * */
+    deleteItemsFromArray(array, key = '', ...arrays) {
+        // 使用 lodash 的 differenceBy 方法，根據 'id' 來過濾數據
+        return _.differenceBy(array, ...arrays, key);
     }
 
 }
@@ -238,17 +557,9 @@ export {sashanailgel_scraper as sashanailgel_scraper}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const browser = await puppeteer.launch({
-                headless: true
-            });
-            for (const page of await browser.pages()) await page.close();
-
-            const handler = new sashanailgel_scraper(browser);
-            await handler.fetchProductListPageInfos()
-            // await handler.fetchProductPriceDetail(`https://www.sachianail.com/pitem/M00000641`);
-            await browser.close();
-
-
+            const handler = new sashanailgel_scraper();
+            // await handler.sampleOfFetchSingleItem();
+            await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
         }
     )();
 }
