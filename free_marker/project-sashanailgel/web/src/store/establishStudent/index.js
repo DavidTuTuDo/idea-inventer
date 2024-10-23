@@ -40,9 +40,11 @@ class EstablishStudentStore extends BaseEstablishStudentStore {
         })
     }
 
-    getStringOfHours(clazz) {
-        return Util.getStringOfCalculateClassTime(this.normalizeTimestamp(clazz.startOfSpecificClass), this.normalizeTimestamp(clazz.endOfSpecificClass),
-            _.sum(clazz.classTimes.map(time => Util.getNumberOfPeriodMinute(this.normalizeTimestamp(time.startOfTime), this.normalizeTimestamp(time.endOfTime)))));
+    getStringOfHours = (clazz) => {
+        if(clazz && clazz.classTimes)
+            return Util.getStringOfCalculateClassTime(this.normalizeTimestamp(clazz.startOfSpecificClass), this.normalizeTimestamp(clazz.endOfSpecificClass),
+                _.sum(clazz.classTimes.map(time => Util.getNumberOfPeriodMinute(this.normalizeTimestamp(time.startOfTime), this.normalizeTimestamp(time.endOfTime)))));
+        else return `0 小時`
     }
 
     /** -------------------- async api -------------------- **/

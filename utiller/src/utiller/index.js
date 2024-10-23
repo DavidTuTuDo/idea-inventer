@@ -536,6 +536,43 @@ class Utiller {
         return _.take(shuffled, n);
     }
 
+    /** const items = [{ price: 10 }, { price: 120 }, { price: 230 }];
+     console.log(findLowestPrice(items)); // 輸出: 10
+     */
+    findLowestValue = (items, key = 'price') => {
+        // 提取價格並找出最小值
+        const minPrice = _.minBy(items, key)[key];
+
+        // 確保回傳的最低價為 integer 型態
+        return Math.floor(minPrice);
+    };
+
+    /** const items = [{ price: 10 }, { price: 120 }, { price: 230 }];
+     console.log(findLowestPrice(items)); // 輸出: 120
+     */
+    findHighestValue = (items, key = 'price') => {
+        // 提取價格並找出最小值
+        const maxPrice = _.maxBy(items, key)[key];
+
+        // 確保回傳的最低價為 integer 型態
+        return Math.floor(maxPrice);
+    };
+
+    /**
+     * // 測試數據
+     *     const items = [{ price: 10 }, { price: 120 }, { price: 230 }];
+     *     console.log(getPriceRange(items)); // 輸出: $10 - $230
+     * */
+    getStringOfValueRange = (items, key = 'price', sign = '$') => {
+        // 找出最小值和最大值
+        const minV = _.minBy(items, key)[key];
+        const maxV = _.maxBy(items, key)[key];
+
+        // 判斷並返回字串
+        return maxV === minV ? `$${minV}` : `${sign}${minV} - ${sign}${maxV}`;
+    };
+
+
     /** ignore 就是黑名單的意思 */
     getRandomItemOfArray(array, ...ignores) {
         if (!_.isArray(array)) throw new ERROR(9999, `why are you so stupid, typeof array should be array, not ==> ${array} `)
@@ -2305,6 +2342,9 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // console.log(utiller.findLowestValue([{ price: 10 }, { price: 120 }, { price: 230 }]))
+            // console.log(utiller.findHighestValue([{ price: 10 }, { price: 120 }, { price: 230 }]))
+            // console.log(utiller.getStringOfValueRange([{ price: 10 }, { price: 120 }, { price: 230 }]))
             // console.log(utiller.getStringOfCalculateClassTime(utiller.convertDateToTimestamp('2024-09-15'),utiller.convertDateToTimestamp('2024-10-15'),60))
             // console.log(utiller.isOverSpecificAge('2000-01-05'))
             // console.log(utiller.getRandomCount());

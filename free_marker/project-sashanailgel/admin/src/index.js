@@ -1,17 +1,13 @@
 const edit = true;
 import Api from './api';
-import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
 import firebase from "./base/FirebaseHelper";
-import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';
 import moment from 'moment';
 import fs from 'fs';
-import PizZip from 'pizzip';
-import Docxtemplater from 'docxtemplater';
 
 
 (async () => {
@@ -82,12 +78,25 @@ import Docxtemplater from 'docxtemplater';
             await api.updateOrderItemAtomically(async (order, transaction, ref) => {
                 const current = order.countOfPeople;
                 return {countOfPeople: current + 1}
-            },`jfk6ALWdhyoAi7f9LyJv`);
+            }, `jfk6ALWdhyoAi7f9LyJv`);
         })
         Util.appendInfo(_.size(tasks));
         const worker = new InfinitePool(2);
         await worker.runByEachTask(tasks);
     }
+
+    async function uploadProducts() {
+        await api.deleteBoozes(true);
+        const items = Util.getFileContextInJSON('./latest_sasha_of_products_detail.json');
+        await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 30).map(product => {
+            return {
+                ...product, price: Util.findLowestValue(product.options),
+                rangeOfPrice: Util.getStringOfValueRange(product.options)
+            }
+        }));
+    }
+
+    await uploadProducts();
 
 
     // console.log(await testOfAdminFetchItems());
