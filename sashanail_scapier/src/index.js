@@ -16,11 +16,11 @@ import puppeteer from 'puppeteer';
  * '#'=>代表id | '.'=>代表class | <tag不用加前綴  #id > .className > tag
  * innerText => <tag class='class' >{innerText}<tag>
  *
- *
+ * ========================================================================
  *   // 等待元素加载，确保页面中的 #dg-detail > #add-to-list 存在
  *   await page.waitForSelector('#dg-detail > #add-to-list');
  *
- *
+ * ======================================================================== locator是最新推薦的做法
  *   import puppeteer from 'puppeteer';
  * // Or import puppeteer from 'puppeteer-core';
  *
@@ -50,13 +50,29 @@ import puppeteer from 'puppeteer';
  * console.log('The title of this blog post is "%s".', fullTitle);
  *
  * await browser.close();
+ * ======================================================================== locator的doc
+ * https://pptr.dev/api/puppeteer.locator/
+ * https://pptr.dev/guides/page-interactions#locators
+ *
+ * networkidle 和 dom render的時間點不一樣，要確保dom上可以抓到要記得locator().wait()
+ *
+ * ======================================================================== 完美的解釋
+ * Sometimes you know that the elements are already on the page. In that case, Puppeteer offers multiple ways to find an element or multiple elements matching a selector. These methods exist on Page, Frame and ElementHandle instances.
+ *
+ * page.$() returns a single element matching a selector.
+ * page.$$() returns all elements matching a selector.
+ * page.$eval() returns the result of running a JavaScript function on the first element matching a selector.
+ * page.$$eval() returns the result of running a JavaScript function on each element matching a selector.
+ *
+ *
  */
 
 const THREAD_OF_FETCHER = 1;
-const THREAD_OF_DETAIL_PRODUCT = 5;
-const PRINT_REPORT_OF_PRODUCTS = true;
-const USE_PERSISTENT_FILE = true;
-const VISIBLE_OF_FETCH_PRODUCT = false;
+const THREAD_OF_DETAIL_PRODUCT = 10;
+const PRINT_REPORT_OF_PRODUCTS = false;
+const USE_PERSISTENT_FILE = true;//'sasha_product_list.json'
+const VISIBLE_OF_FETCH_PRODUCT = true;
+const RANDOM_LIST_ENABLE = true;
 
 class sashanailgel_scraper {
 
@@ -153,7 +169,7 @@ class sashanailgel_scraper {
 
     async fetchProductListPageInfos() {
         if (USE_PERSISTENT_FILE) {
-            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_list_failure.json`))
+            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`))
             await this.fetchWholeProductDetailBehavior(list);
             return;
         }
@@ -178,7 +194,8 @@ class sashanailgel_scraper {
             targets.push(...pages);
         }, ...pagesShouldFetch)
 
-        await Util.persistJsonFilePrettier(`./sasha_of_product_catalog.json`, targets);
+        if (PRINT_REPORT_OF_PRODUCTS)
+            await Util.persistJsonFilePrettier(`./sasha_of_product_catalog.json`, targets);
 
         /** 抓取商品列表 */
         const objectOfProducts = {}
@@ -192,7 +209,9 @@ class sashanailgel_scraper {
         }, ...targets)
         const listOfProducts = _.values(objectOfProducts);
         console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
-        await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
+        if (PRINT_REPORT_OF_PRODUCTS)
+            await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
+
         await this.fetchWholeProductDetailBehavior(listOfProducts);
     }
 
@@ -204,6 +223,7 @@ class sashanailgel_scraper {
         const poolOfFetchProductDetail = new InfinitePool(THREAD_OF_DETAIL_PRODUCT);
         poolOfFetchProductDetail.enableTaskTimeout(true, 30000000);
 
+        const listOfProduct = RANDOM_LIST_ENABLE ? Util.getShuffledArrayWithLimitCount(list,50) : list
         await poolOfFetchProductDetail.runByParams(async (product) => {
             try {
                 const productDetail = await self.fetchProductPriceDetail(product);
@@ -213,7 +233,7 @@ class sashanailgel_scraper {
                 listOfFailFetch.push(product);
             }
 
-        }, ...list);
+        }, ...listOfProduct);
 
         if (PRINT_REPORT_OF_PRODUCTS) {
             if (_.size(productsOfDetail) > 0)
@@ -267,7 +287,6 @@ class sashanailgel_scraper {
 
                 if (sizeOfSubItem > 1 && element) {
                     await element.click()
-                    /** ˋ*/
                     await Util.syncDelay(1500);
                     await fetchItemObject(nameOfOption);
                     /** 商品項目只有一個的時候，會預設回圈選 */
@@ -351,6 +370,37 @@ class sashanailgel_scraper {
     async clearCookies(page) {
         await page.deleteCookie(...await page.cookies());
     }
+
+    /** 從element去找出selector route -=> getSelectorRoute = `#div > .class > tag`*/
+    getSelectorRoute = async (page,elementHandle) => {
+        return await page.evaluate(element => {
+            const getSelector = (el) => {
+                if (el.id) {
+                    return `#${el.id}`; // 如果有 ID，使用 ID 选择器
+                }
+
+                let path = [];
+                while (el.parentElement) {
+                    let tagName = el.tagName.toLowerCase(); // 获取标签名
+
+                    // 获取所有兄弟节点，判断是否有相同标签的元素
+                    const siblings = Array.from(el.parentElement.children).filter(e => e.tagName === el.tagName);
+                    if (siblings.length > 1) {
+                        // 如果有多个同类元素，使用 nth-child 来定位
+                        const index = Array.prototype.indexOf.call(el.parentElement.children, el) + 1;
+                        tagName += `:nth-child(${index})`;
+                    }
+
+                    path.unshift(tagName); // 将当前选择器添加到路径的最前面
+                    el = el.parentElement; // 移动到父级元素
+                }
+
+                return path.join(' > '); // 返回完整的 CSS 选择器路径
+            };
+
+            return getSelector(element); // 传入目标元素，获取选择器
+        }, elementHandle);
+    };
 
     async checkSelectorExists(page, selector) {
         // 檢查選擇器是否存在
@@ -557,7 +607,16 @@ export {sashanailgel_scraper as sashanailgel_scraper}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const handler = new sashanailgel_scraper();
+            async function getBrowser(visible) {
+                const browser = await puppeteer.launch({
+                    headless: !visible
+                });
+                for (const page of await browser.pages()) await page.close();
+                return browser;
+            }
+
+
+        const handler = new sashanailgel_scraper(await getBrowser(true));
             // await handler.sampleOfFetchSingleItem();
             await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
         }
