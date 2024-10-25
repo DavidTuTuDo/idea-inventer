@@ -273,6 +273,38 @@ class AppStyle {
 
   AccountPaper = {};
 
+  /** => following for dionysus  component  */
+
+  DionysusBoozeRowTailCartIconShoppingCartTwoTone = {};
+
+  DionysusBoozeRowTailCartIconButton = {};
+
+  DionysusBoozeRowTailDiv = {};
+
+  DionysusBoozeRowMainPriceB4DiscountTypography = {};
+
+  DionysusBoozeRowMainPriceTypography = {};
+
+  DionysusBoozeRowMainDollarsTypography = {};
+
+  DionysusBoozeRowMainDiv = {};
+
+  DionysusBoozeRowDiv = {};
+
+  DionysusBoozeNameDivWrap = {};
+
+  DionysusBoozeNameTypography = {};
+
+  DionysusBoozeHeadPhotoImg = {};
+
+  DionysusBoozeDivSkeleton = {};
+
+  DionysusBoozeDivList = {};
+
+  DionysusBoozeDiv = {};
+
+  DionysusDiv = {};
+
   /** => following for establish  component  */
 
   EstablishStudentCustomFuncGoBackReactFragmentWrap = {};
