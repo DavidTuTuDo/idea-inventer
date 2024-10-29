@@ -7,8 +7,10 @@
 /** following for main  component used  */
 
 .MainDiv:extend(.CenterInParentColumn) {
-  margin-bottom: 60px;
   gap: 12px;
+  margin: auto;
+  width: 100%;
+  margin-bottom: 60px;
   @media @mobile {
     /** empty style */
   }
@@ -1804,6 +1806,9 @@
 /** following for bacchus  component used  */
 
 .BacchusDiv {
+  margin: auto;
+  width: 100%;
+  margin-bottom: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -1825,15 +1830,18 @@
     /** empty style */
   }
 }
-.BacchusBannerSwiperList {
+.BacchusBannerSwiperList:extend(.SliderOfViewPager) {
+  width: 100vw;
+  height: 48vh;
   @media @mobile {
-    /** empty style */
+    margin-top: 0;
   }
   @media @tablet {
-    /** empty style */
+    margin-top: 0;
   }
   @media @desktop {
-    /** empty style */
+    height: 400px;
+    width: 400px;
   }
 }
 .BacchusBannerSwiperSlide {
@@ -1847,7 +1855,8 @@
     /** empty style */
   }
 }
-.BacchusBannerImageImg {
+.BacchusBannerImageImg:extend(.ImageOfViewPager) {
+  height: 50vh;
   @media @mobile {
     /** empty style */
   }
@@ -1855,10 +1864,13 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    height: 400px;
+    width: 400px;
+    border-radius: 10px;
   }
 }
-.BacchusBannerImageDivWrap {
+.BacchusBannerImageDivWrap:extend(.ImageWrapOfViewPager) {
+  height: 50vh;
   @media @mobile {
     /** empty style */
   }
@@ -1866,7 +1878,9 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    height: 400px;
+    width: 400px;
+    border-radius: 10px;
   }
 }
 .BacchusRangeOfPriceTypography {
@@ -1924,7 +1938,8 @@
     /** empty style */
   }
 }
-.BacchusFuncDiv {
+.BacchusFuncDiv:extend(.CenterInParentRow) {
+  gap:10px;
   @media @mobile {
     /** empty style */
   }
