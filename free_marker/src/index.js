@@ -80,7 +80,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/icons-material`,
-            views: ['EditCalendarRounded','SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
+            views: ['EditCalendarRounded', 'SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
         },
         {
             from: `@mui/material`,
@@ -119,6 +119,9 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    /** 可以在component mount之前放進去store裡面，例如list view -> detail view用同一個bean就可以不用再fetch一次 */
+    presetParam = false;
 
     hideGeneratedAnnouncement = false;
 
@@ -848,6 +851,10 @@ class CodegenNode {
             (component) => _.isEqual(component.name, nameOfComponent))
     }
 
+    getPresetAttributes() {
+        const attrs = _.filter(this.getNodeOfStruct().getPreciseAttributeChildren(), (each) => each.isPresetParam());
+        return Util.isUndefinedNullEmpty(attrs) ? [] : attrs;
+    }
 
     isBelong2TimeDatePicker() {
         return this.belong2TimeDatePicker;
@@ -887,6 +894,10 @@ class CodegenNode {
 
     getIconOfDeleted() {
         return this.iconOfDeleted ?? 'DeleteRounded'
+    }
+
+    isPresetParam() {
+        return _.isEqual(true, this.presetParam);
     }
 
     hasCheckedIcon() {
@@ -3684,6 +3695,7 @@ class ClassGenerator {
                 _.isEqual(folderName, 'style'),
                 _.isEqual(folderName, 'less'),
                 _.isEqual(folderName, 'src'),
+                _.isEqual(fileName, 'BaseMyRouter'),
                 _.isEqual(folderName, 'store'),
                 _.isEqual(folderName, 'config') && !_.isEqual(fileNameExtension, 'index.js'),
                 (Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT) && !_.isEqual(fileNameExtension, 'index.js')),
@@ -4687,9 +4699,9 @@ class StoreBuilder extends BaseBuilder {
          ...getDefaultValueSetterStmts(node)
          )
          * */
-        baseGenerator.appendFunction(`initial`, ['obj'], ['action'], [],
+        baseGenerator.appendFunction(`initial`, ['obj','notify = true'], ['action'], [],
             `super.initial(obj)`,
-            ...propsStmt, `this.onInitialCompleted(obj)`);
+            ...propsStmt, `if(notify) this.onInitialCompleted(obj)`);
         baseGenerator.appendConstructor(
             `makeObservable(this)`,
             `this.initial(props)`);
@@ -5670,7 +5682,7 @@ class ComponentBuilder extends BaseBuilder {
                 const asFormat = !_node.isPickerView() && _node.isTimeStamp() && _node.hasFormat();
                 const asComputed = _.isEqual(_node.computed, true);
                 const stmtOfHead = _node.getPreciseAttributeParentName();
-                const stmtOfGetter =  `${_node.getFunctionNameInStoreGetter()}()`
+                const stmtOfGetter = `${_node.getFunctionNameInStoreGetter()}()`
                 if (asFormat) return `return Util.getCustomFormatOfDatePresent(${stmtOfHead}.${stmtOfGetter},'${node.getFormat()}')`
                 else if (asComputed) return `return ${stmtOfHead}.${_node.getFunctionNameInStoreComputedGetter()}`
                 else return `return ${stmtOfHead}.${stmtOfGetter}`
@@ -6472,7 +6484,6 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildRouterFile() {
-
         function getStmtsOfLoginStmts(component) {
             const stmts = []
             if (component.loginOnlyPage) {
@@ -6485,7 +6496,7 @@ class AppBuilder extends ComponentBuilder {
             return stmts;
         }
 
-        function getStmtsOfRenewStore(nodeOfComponent) {
+        function getStmtsOfRenewStore(nodeOfComponent, attrs) {
             const stmts = [];
             const nameOfStore = nodeOfComponent.isEditableComponent ?
                 nodeOfComponent.getStruct().getOriginalName() : nodeOfComponent.getStruct().getName();
@@ -6493,6 +6504,10 @@ class AppBuilder extends ComponentBuilder {
                 stmts.push(`if(!this.isGotoSameRoute(route))`)
                 stmts.push(`Application.getStore().${Util.camel('renew', nameOfStore)}()`);
             }
+
+            for (const attr of attrs)
+                stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
+
             return stmts;
         }
 
@@ -6507,7 +6522,9 @@ class AppBuilder extends ComponentBuilder {
                 nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
             )
 
-            const params = ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined]])];
+            const attrs = nodeOfComponent.getPresetAttributes();
+
+            const params = ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined], ...attrs.map(attr => attr.getFieldName())])];
 
             generator.appendFunction({
                     name: Util.camel('goto', nodeOfComponent.name,
@@ -6520,7 +6537,7 @@ class AppBuilder extends ComponentBuilder {
                 [],
                 ...getStmtsOfLoginStmts(nodeOfComponent),
                 `const route = \`${route}\``,
-                ...getStmtsOfRenewStore(nodeOfComponent),
+                ...getStmtsOfRenewStore(nodeOfComponent, attrs),
                 `this.routeTo(component, route);`,
                 `this.setCurrentRoute(route)`,
                 `return new URL(route, Config.host).href;`,
@@ -9294,11 +9311,11 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
         await new AppBuilder(paramProps).buildAppIndexFiles();
         await new AppBuilder(paramProps).buildI18n();
+        await new AppBuilder(paramProps).buildRouterFile();
         await this.buildDistAssetFolder();
         if (!ENABLE_FAST_DEVELOP_MODE) {
             await new AppBuilder(paramProps).buildWebpackNPackageJson();
             await new AppBuilder(paramProps).buildCloudFunctionsApi();
-            await new AppBuilder(paramProps).buildRouterFile();
             await new AppBuilder(paramProps).buildCookieFiles();
             await new AppBuilder(paramProps).buildEventFolder(totalEvents);
             await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
@@ -9389,6 +9406,7 @@ class ProjectFileHandler extends PathBase {
                     _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
                 _.isEqual(file.dirName, 'less'),
                 _.isEqual(file.dirName, 'style'),
+                (_.isEqual(file.dirName, 'router') && _.isEqual(file.fileNameExtension, 'BaseMyRouter.js')),
                 (_.isEqual(file.dirName, 'config') && !_.isEqual(file.fileName, 'index')),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileNameExtension, 'index.js')),

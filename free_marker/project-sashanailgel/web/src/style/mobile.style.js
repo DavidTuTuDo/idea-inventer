@@ -273,6 +273,40 @@ class MobileStyle {
 
   AccountPaper = {};
 
+  /** => following for bacchus  component  */
+
+  BacchusFuncBoughtChip = {};
+
+  BacchusFuncJoinToCartChip = {};
+
+  BacchusFuncGotoCartTypography = {};
+
+  BacchusFuncBackToHomeTypography = {};
+
+  BacchusFuncDiv = {};
+
+  BacchusContentDiv = {};
+
+  BacchusNameDivWrap = {};
+
+  BacchusNameTypography = {};
+
+  BacchusRangeOfPriceDivWrap = {};
+
+  BacchusRangeOfPriceTypography = {};
+
+  BacchusBannerImageDivWrap = {};
+
+  BacchusBannerImageImg = {};
+
+  BacchusBannerSwiperSlide = {};
+
+  BacchusBannerSwiperList = {};
+
+  BacchusBannerSwiperSlide = {};
+
+  BacchusDiv = {};
+
   /** => following for dionysus  component  */
 
   DionysusBoozeRowTailCartIconShoppingCartTwoTone = {};

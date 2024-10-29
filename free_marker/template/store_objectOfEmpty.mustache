@@ -14,7 +14,7 @@ remove{{functionName}}() {
 
 @action
 set{{functionName}}(param) {
-    if(param !== undefined) {
+    if(_.isObject(param)) {
         this.{{{fieldName}}} = param;
     } else {
         this.{{{fieldName}}} = {{{defaultValue}}};
