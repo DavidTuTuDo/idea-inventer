@@ -1513,6 +1513,8 @@ class CodegenNode {
     /** 可以從任何一個節點找到node of component, 然後判斷是否為editable */
     isPreciselyEditableComponent() {
         const nodeOfComponent = this.getNodeOfComponent();
+        if (_.isUndefined(nodeOfComponent)) console.log(this);
+
         return nodeOfComponent.isEditableComponent;
     }
 
@@ -2312,7 +2314,7 @@ class CodegenNode {
     }
 
     isFloatBackgroundView(type = 'default') {
-        return this.isAttributeView('FloatBackgroundView');
+        return this.isAttributeView('FloatBackgroundView', type);
     }
 
     /**
@@ -2349,6 +2351,10 @@ class CodegenNode {
 
     isCustomImageButton(type = 'default') {
         return _.isEqual(this.getView(), 'CustomImageButton');
+    }
+
+    isArrowOptionView(type = 'default') {
+        return _.isEqual(this.getView(), 'ArrowOption')
     }
 
     isAttributeView(view, type = 'default', node = this) {
@@ -3394,7 +3400,6 @@ class ClassGenerator {
     signature = true;
     needDefaultImports = true;
     needCreatedIndexFile = false;
-
     indexClassName = 'Index';
     indexFileMacros = [];
     indexFileSingleton = false;
@@ -4699,7 +4704,7 @@ class StoreBuilder extends BaseBuilder {
          ...getDefaultValueSetterStmts(node)
          )
          * */
-        baseGenerator.appendFunction(`initial`, ['obj','notify = true'], ['action'], [],
+        baseGenerator.appendFunction(`initial`, ['obj', 'notify = true'], ['action'], [],
             `super.initial(obj)`,
             ...propsStmt, `if(notify) this.onInitialCompleted(obj)`);
         baseGenerator.appendConstructor(
@@ -7907,6 +7912,43 @@ class ProjectFileHandler extends PathBase {
                 node.getParentNode().appendChildrenWithJson(float);
                 node.getParentNode().deleteChildrenByNode(node);
             }
+
+            if (node.isArrowOptionView()) {
+                const name = node.getName();
+                node.setView('div');
+                node.setName(Util.camel('area', 'of', name));
+                node.needParam = true;
+                node.click = true;
+                node.appendChildrenWithJsons(
+                    {
+                        name: Util.camel('option', 'of', name, 'title'),
+                        type: `string`,
+                        defaultValue: node.defaultTitle,
+                        view: 'Typography',
+                        incest: {view: false, attribute: true},
+
+                    },
+                    {
+                        name: Util.camel('option', 'of', name, 'content'),
+                        type: `string`,
+                        defaultValue: node.defaultContent,
+                        view: 'Typography',
+                        incest: {view: false, attribute: true},
+                    },
+                    {
+                        name: 'arrow',
+                        needParam: true,
+                        view: 'IconButton',
+                        icon: 'NavigateNext',
+                        description: `點及後可以進如到詳細頁面`,
+                        props: {
+                            edge: 'start',
+                            color: 'inherit',
+                        }
+                    },
+                )
+            }
+
 
             if (node.isCustomImageButton()) {
                 node.setView('IconButton');

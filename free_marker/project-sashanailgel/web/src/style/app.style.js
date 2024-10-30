@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -279,8 +281,6 @@ class AppStyle {
 
   BacchusFuncJoinToCartChip = {};
 
-  BacchusFuncGotoCartTypography = {};
-
   BacchusFuncBackToHomeTypography = {};
 
   BacchusFuncDivWrap = {};
@@ -288,6 +288,26 @@ class AppStyle {
   BacchusFuncDiv = {};
 
   BacchusContentDiv = {};
+
+  BacchusAreaOfShippingArrowIconNavigateNext = {};
+
+  BacchusAreaOfShippingArrowIconButton = {};
+
+  BacchusAreaOfShippingOptionOfShippingContentTypography = {};
+
+  BacchusAreaOfShippingOptionOfShippingTitleTypography = {};
+
+  BacchusAreaOfShippingDiv = {};
+
+  BacchusAreaOfPayArrowIconNavigateNext = {};
+
+  BacchusAreaOfPayArrowIconButton = {};
+
+  BacchusAreaOfPayOptionOfPayContentTypography = {};
+
+  BacchusAreaOfPayOptionOfPayTitleTypography = {};
+
+  BacchusAreaOfPayDiv = {};
 
   BacchusNameDivWrap = {};
 

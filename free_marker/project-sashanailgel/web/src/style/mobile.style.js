@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -279,8 +281,6 @@ class MobileStyle {
 
   BacchusFuncJoinToCartChip = {};
 
-  BacchusFuncGotoCartTypography = {};
-
   BacchusFuncBackToHomeTypography = {};
 
   BacchusFuncDivWrap = {};
@@ -288,6 +288,26 @@ class MobileStyle {
   BacchusFuncDiv = {};
 
   BacchusContentDiv = {};
+
+  BacchusAreaOfShippingArrowIconNavigateNext = {};
+
+  BacchusAreaOfShippingArrowIconButton = {};
+
+  BacchusAreaOfShippingOptionOfShippingContentTypography = {};
+
+  BacchusAreaOfShippingOptionOfShippingTitleTypography = {};
+
+  BacchusAreaOfShippingDiv = {};
+
+  BacchusAreaOfPayArrowIconNavigateNext = {};
+
+  BacchusAreaOfPayArrowIconButton = {};
+
+  BacchusAreaOfPayOptionOfPayContentTypography = {};
+
+  BacchusAreaOfPayOptionOfPayTitleTypography = {};
+
+  BacchusAreaOfPayDiv = {};
 
   BacchusNameDivWrap = {};
 
