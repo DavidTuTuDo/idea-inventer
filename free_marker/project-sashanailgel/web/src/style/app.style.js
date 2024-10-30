@@ -283,6 +283,8 @@ class AppStyle {
 
   BacchusFuncBackToHomeTypography = {};
 
+  BacchusFuncDivWrap = {};
+
   BacchusFuncDiv = {};
 
   BacchusContentDiv = {};

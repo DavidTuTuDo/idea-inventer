@@ -283,6 +283,8 @@ class MobileStyle {
 
   BacchusFuncBackToHomeTypography = {};
 
+  BacchusFuncDivWrap = {};
+
   BacchusFuncDiv = {};
 
   BacchusContentDiv = {};

@@ -1928,6 +1928,8 @@
   }
 }
 .BacchusContentDiv {
+  height: 1080px;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1939,7 +1941,25 @@
   }
 }
 .BacchusFuncDiv:extend(.CenterInParentRow) {
-  gap:10px;
+  gap: 10px;
+  width: 100%;
+  height: 50px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusFuncDivWrap {
+  width: 100%;
+  position: sticky;
+  bottom: 0px;
+  background: #1976d2;
+  z-index: 3;
   @media @mobile {
     /** empty style */
   }

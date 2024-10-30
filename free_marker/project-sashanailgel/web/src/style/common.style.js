@@ -283,6 +283,8 @@ class CommonStyle {
 
   BacchusFuncBackToHomeTypography = {};
 
+  BacchusFuncDivWrap = {};
+
   BacchusFuncDiv = {};
 
   BacchusContentDiv = {};

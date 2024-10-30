@@ -1,18 +1,7 @@
 const edit = true;
 import BaseBacchusStore from "./BaseBacchusStore";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import { Application } from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
-import Banner from "../bacchusBanner";
-import BaseStore from "../../base/BaseStore";
-import route from "react-router-dom/es/Route";
+import ApiOfBooze from "../dionysusBooze";
 
 class BacchusStore extends BaseBacchusStore {
   /** -------------------- fields -------------------- **/
@@ -21,6 +10,13 @@ class BacchusStore extends BaseBacchusStore {
 
   constructor(props) {
     super(props);
+    this.apiOfBooze = new ApiOfBooze
+  }
+
+  async fetch(view = this.getComponent()) {
+    const result =  await super.fetch(view);
+    const booze = await this.apiOfBooze.fetchBoozeItem(view,view.getUidOfBacchusDetail());
+    return {...result,booze}
   }
 
   async onInitialFetchCompleted(collection) {
@@ -34,8 +30,7 @@ class BacchusStore extends BaseBacchusStore {
           route: '',
         }
       })
-      const result = {banners,...booze};
-      console.log(result);
+      const result = { banners:Util.getArrayOfSize(banners,12),...booze};
       this.initial(result,false);
     }
   }
