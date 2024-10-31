@@ -30,8 +30,10 @@ class BacchusStore extends BaseBacchusStore {
           route: '',
         }
       })
-      const result = { banners:Util.getArrayOfSize(banners,12),...booze};
+      const result = { booze:booze,banners:Util.getArrayOfSize(banners,12),...booze};
       this.initial(result,false);
+      await Util.syncDelay(1);
+      this.getComponent().scrollToTop();
     }
   }
 

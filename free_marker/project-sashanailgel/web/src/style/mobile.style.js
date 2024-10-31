@@ -275,9 +275,43 @@ class MobileStyle {
 
   AccountPaper = {};
 
+  /** => following for maenads  component  */
+
+  MaenadsSubmitDivWrap = {};
+
+  MaenadsSubmitChip = {};
+
+  MaenadsOptionNameChip = {};
+
+  MaenadsOptionDivList = {};
+
+  MaenadsOptionDiv = {};
+
+  MaenadsTitleOfShapeTypography = {};
+
+  MaenadsMainInfoCountLabelOfCountTypography = {};
+
+  MaenadsMainInfoCountDivWrap = {};
+
+  MaenadsMainInfoCountTypography = {};
+
+  MaenadsMainInfoPriceTypography = {};
+
+  MaenadsMainInfoDiv = {};
+
+  MaenadsMainPhotoImg = {};
+
+  MaenadsMainDiv = {};
+
+  MaenadsDivWrap = {};
+
+  MaenadsPaper = {};
+
   /** => following for bacchus  component  */
 
   BacchusFuncBoughtChip = {};
+
+  BacchusFuncJoinToCartReactFragmentWrap = {};
 
   BacchusFuncJoinToCartChip = {};
 
