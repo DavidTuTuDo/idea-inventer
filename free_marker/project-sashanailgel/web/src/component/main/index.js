@@ -29,6 +29,10 @@ class MainComponent extends BaseMainComponent {
     Router.gotoClassSetupPage(this);
   }
 
+  onMainGotoInnerShoppingChipClicked(param) {
+    Router.gotoDionysusPage(this);
+  }
+
 
   /** -------------------- async api -------------------- **/
 }
