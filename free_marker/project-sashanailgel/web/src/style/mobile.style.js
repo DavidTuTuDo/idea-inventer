@@ -279,6 +279,26 @@ class MobileStyle {
 
   MaenadsSubmitChip = {};
 
+  MaenadsDecisionSetIncreaseIconAdd = {};
+
+  MaenadsDecisionSetIncreaseIconButton = {};
+
+  MaenadsDecisionSetCountOfSubmitTextField = {};
+
+  MaenadsDecisionSetDecreaseIconRemove = {};
+
+  MaenadsDecisionSetDecreaseIconButton = {};
+
+  MaenadsDecisionSetDivWrap = {};
+
+  MaenadsDecisionSetDiv = {};
+
+  MaenadsDecisionTitleOfSubmitOrderDivWrap = {};
+
+  MaenadsDecisionTitleOfSubmitOrderTypography = {};
+
+  MaenadsDecisionDiv = {};
+
   MaenadsOptionNameChip = {};
 
   MaenadsOptionDivList = {};
@@ -307,39 +327,53 @@ class MobileStyle {
 
   /** => following for bacchus  component  */
 
+  BacchusFuncBoughtReactFragmentWrap = {};
+
   BacchusFuncBoughtChip = {};
 
   BacchusFuncJoinToCartReactFragmentWrap = {};
 
   BacchusFuncJoinToCartChip = {};
 
-  BacchusFuncBackToHomeTypography = {};
+  BacchusFuncBackToHomeChip = {};
 
   BacchusFuncDivWrap = {};
 
   BacchusFuncDiv = {};
 
-  BacchusContentDiv = {};
+  BacchusDetailContentDiv = {};
 
-  BacchusAreaOfShippingArrowIconNavigateNext = {};
+  BacchusDetailAreaOfBenefitArrowIconNavigateNext = {};
 
-  BacchusAreaOfShippingArrowIconButton = {};
+  BacchusDetailAreaOfBenefitArrowIconButton = {};
 
-  BacchusAreaOfShippingOptionOfShippingContentTypography = {};
+  BacchusDetailAreaOfBenefitOptionOfBenefitContentTypography = {};
 
-  BacchusAreaOfShippingOptionOfShippingTitleTypography = {};
+  BacchusDetailAreaOfBenefitOptionOfBenefitTitleTypography = {};
 
-  BacchusAreaOfShippingDiv = {};
+  BacchusDetailAreaOfBenefitDiv = {};
 
-  BacchusAreaOfPayArrowIconNavigateNext = {};
+  BacchusDetailAreaOfShippingArrowIconNavigateNext = {};
 
-  BacchusAreaOfPayArrowIconButton = {};
+  BacchusDetailAreaOfShippingArrowIconButton = {};
 
-  BacchusAreaOfPayOptionOfPayContentTypography = {};
+  BacchusDetailAreaOfShippingOptionOfShippingContentTypography = {};
 
-  BacchusAreaOfPayOptionOfPayTitleTypography = {};
+  BacchusDetailAreaOfShippingOptionOfShippingTitleTypography = {};
 
-  BacchusAreaOfPayDiv = {};
+  BacchusDetailAreaOfShippingDiv = {};
+
+  BacchusDetailAreaOfPayArrowIconNavigateNext = {};
+
+  BacchusDetailAreaOfPayArrowIconButton = {};
+
+  BacchusDetailAreaOfPayOptionOfPayContentTypography = {};
+
+  BacchusDetailAreaOfPayOptionOfPayTitleTypography = {};
+
+  BacchusDetailAreaOfPayDiv = {};
+
+  BacchusDetailDiv = {};
 
   BacchusNameDivWrap = {};
 

@@ -7925,6 +7925,7 @@ class ProjectFileHandler extends PathBase {
                         type: `string`,
                         defaultValue: node.defaultTitle,
                         view: 'Typography',
+                        singleLine: true,
                         incest: {view: false, attribute: true},
 
                     },
@@ -7933,6 +7934,7 @@ class ProjectFileHandler extends PathBase {
                         type: `string`,
                         defaultValue: node.defaultContent,
                         view: 'Typography',
+                        singleLine: true,
                         incest: {view: false, attribute: true},
                     },
                     {

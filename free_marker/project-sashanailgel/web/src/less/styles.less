@@ -1895,6 +1895,7 @@
   }
 }
 .BacchusRangeOfPriceTypography {
+  font-size: 1.2rem;
   @media @mobile {
     /** empty style */
   }
@@ -1906,6 +1907,7 @@
   }
 }
 .BacchusRangeOfPriceDivWrap {
+  padding-left: 8px;
   @media @mobile {
     /** empty style */
   }
@@ -1928,6 +1930,7 @@
   }
 }
 .BacchusNameDivWrap {
+  padding-left: 8px;
   @media @mobile {
     /** empty style */
   }
@@ -1938,7 +1941,10 @@
     /** empty style */
   }
 }
-.BacchusAreaOfPayDiv:extend(.CenterInParentRow) {
+.BacchusDetailDiv:extend(.CenterInParentColumn) {
+  width: 100%;
+  gap: 15px;
+  margin-top: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -1949,7 +1955,11 @@
     /** empty style */
   }
 }
-.BacchusAreaOfPayOptionOfPayTitleTypography {
+.BacchusDetailAreaOfPayDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  padding-left: 10px;
+  justify-content: space-between;
+  background: #ececec;
   @media @mobile {
     /** empty style */
   }
@@ -1960,7 +1970,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfPayOptionOfPayContentTypography {
+.BacchusDetailAreaOfPayOptionOfPayTitleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1971,7 +1981,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfPayArrowIconButton {
+.BacchusDetailAreaOfPayOptionOfPayContentTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1982,7 +1992,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfPayArrowIconNavigateNext {
+.BacchusDetailAreaOfPayArrowIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -1993,7 +2003,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfShippingDiv:extend(.CenterInParentRow) {
+.BacchusDetailAreaOfPayArrowIconNavigateNext {
   @media @mobile {
     /** empty style */
   }
@@ -2004,7 +2014,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfShippingOptionOfShippingTitleTypography {
+.BacchusDetailAreaOfShippingDiv:extend(.BacchusDetailAreaOfPayDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -2015,7 +2025,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfShippingOptionOfShippingContentTypography {
+.BacchusDetailAreaOfShippingOptionOfShippingTitleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2026,7 +2036,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfShippingArrowIconButton {
+.BacchusDetailAreaOfShippingOptionOfShippingContentTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2037,7 +2047,7 @@
     /** empty style */
   }
 }
-.BacchusAreaOfShippingArrowIconNavigateNext {
+.BacchusDetailAreaOfShippingArrowIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -2048,8 +2058,74 @@
     /** empty style */
   }
 }
-.BacchusContentDiv {
-  height: 1080px;
+.BacchusDetailAreaOfShippingArrowIconNavigateNext {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusDetailAreaOfBenefitDiv:extend(.BacchusDetailAreaOfPayDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusDetailAreaOfBenefitOptionOfBenefitTitleTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusDetailAreaOfBenefitOptionOfBenefitContentTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusDetailAreaOfBenefitArrowIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusDetailAreaOfBenefitArrowIconNavigateNext {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusDetailContentDiv {
+  height: 600px;
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -2079,7 +2155,6 @@
   width: 100%;
   position: sticky;
   bottom: 0px;
-  background: #1976d2;
   z-index: 3;
   @media @mobile {
     /** empty style */
@@ -2091,7 +2166,7 @@
     /** empty style */
   }
 }
-.BacchusFuncBackToHomeTypography {
+.BacchusFuncBackToHomeChip {
   @media @mobile {
     /** empty style */
   }
@@ -2125,6 +2200,17 @@
   }
 }
 .BacchusFuncBoughtChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.BacchusFuncBoughtReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -2271,7 +2357,7 @@
 .MaenadsOptionDivList:extend(.CenterInParentRow) {
   flex-wrap: wrap;
   gap: 5px;
-  max-height: 50vh;
+  max-height: 38vh;
   min-height: 20vh;
   width: 99%;
   overflow-y: scroll;
@@ -2300,7 +2386,12 @@
     /** empty style */
   }
 }
-.MaenadsSubmitChip {
+.MaenadsDecisionDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  justify-content: space-between;
+  min-height: 35px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #bbb;
   @media @mobile {
     /** empty style */
   }
@@ -2311,7 +2402,124 @@
     /** empty style */
   }
 }
-.MaenadsSubmitDivWrap {
+.MaenadsDecisionTitleOfSubmitOrderTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionTitleOfSubmitOrderDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetDiv:extend(.CenterInParentRow) {
+  align-items: center;
+  justify-content: center;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetDivWrap {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetDecreaseIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetDecreaseIconRemove {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetCountOfSubmitTextField {
+  width: 40px;
+  font-size: 0.8rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetIncreaseIconButton {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsDecisionSetIncreaseIconAdd {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsSubmitChip {
+  width: 50vw;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsSubmitDivWrap:extend(.CenterInParentRow) {
+  width: 100%;
+  padding: 5px;
   @media @mobile {
     /** empty style */
   }

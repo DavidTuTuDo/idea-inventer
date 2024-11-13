@@ -23,10 +23,40 @@ class MaenadsStore extends BaseMaenadsStore {
                 this.setPhoto(booze.headPhoto);
                 this.setPrice(booze.rangeOfPrice);
                 this.setCount(`未選擇`);
-                this.setOptions(...booze.options);
+                this.setOptions(..._.filter(booze.options,option => option.count > 0));
             }
         }
     }
+
+    setCurrentOption = (option) => {
+        this.setPhoto(option.getPhoto());
+        this.setPrice(option.getPrice());
+        this.setTitleOfShape(option.getName());
+        this.setCount(option.getCount());
+        this.setCountOfSubmit(1);
+        this.setIndexOfSelected(_.indexOf(this.getOptions(), option));
+    }
+
+    getIndexOfOption = (option) => {
+        return option ? _.indexOf(this.getOptions(), option) : -1;
+    }
+
+    validateCountOfOrder(increase = true) {
+        if(this.getIndexOfSelected() < 0) {
+            this.getComponent().showWarningSnackMessage(`尚未選擇商品`)
+            return;
+        }
+
+        const current = _.toNumber(this.getCountOfSubmit());
+        if(increase) {
+            const result = _.sum([current,1]);
+            this.setCountOfSubmit(current > this.getCount() ? current : result)
+        }else {
+            const result = _.sum([current,-1]);
+            this.setCountOfSubmit(current < 2 ? current : result)
+        }
+    }
+
 
     /** -------------------- async api -------------------- **/
 }
