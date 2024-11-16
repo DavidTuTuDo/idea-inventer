@@ -676,7 +676,7 @@ class CodegenNode {
      * 目前機制有設計為1.ConfirmDialog 和 2.CustomViewDialog
      * 1.當有些按鈕需要double check, 必須搭配wrap:true 使用 alertDialog:{ content:string, title:string }
      * 2.當dialog是customView {  customView:functionName, needActionButtons:false },
-     * customView 會拿到 {dialog,paramObject} 的 this.props,
+     * customView 會拿到 {dialog,paramObject} 的 this.getProps(),
      * 所以可以在customView裡面控制dialog, 然後有個paramObject也會傳遞到CustomView可以用
      * paramObject預設會是點擊事件的parent node.
      *
@@ -3862,6 +3862,18 @@ class PathBase {
     genStoreRootPath; // gen/app/src/store
     props;
 
+
+    getProps = () => {
+        return {
+            nodeOfAncestor: this.nodeOfAncestor,
+            genRootPath: this.genRootPath,
+            platform: this.platform,
+            freeMarkerRootPath: this.freeMarkerRootPath,
+            projectRootPath: this.projectRootPath,
+            ...this.props
+        }
+    }
+
     constructor(props) {
         this.props = props;
         if (!Util.isOrEquals(props.platform, 'web', 'admin', 'functions')) {
@@ -3883,11 +3895,21 @@ class PathBase {
         this.genComponentRootPath = libpath.join(this.genSourcePath, 'component')
         this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
         this.pathOfSourceJS = libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS);
-        this.projectCommonSourcePath = libpath.join(props.projectRootPath, 'common', 'src');
-        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(this.workOfPrior(this.pathOfSourceJS));
+        this.projectCommonSourcePath = libpath.join(this.projectRootPath, 'common', 'src');
 
+        this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(this.workOfPrior(this.pathOfSourceJS));
         this.env = props.env;
+        this.initialize(props);
         /** 這就是 source.js 的進入點 */
+    }
+
+    initialize(props) {
+        if (Util.isUndefinedNullEmpty(props.nodeOfAncestor))
+            Util.appendError(`4848744656 nodeOfAncestor|為空值，現在是 ${this.getClassName()}`)
+    }
+
+    getClassName() {
+        return 'PathBase';
     }
 
     reNewNodeOfAncestor() {
@@ -3896,9 +3918,11 @@ class PathBase {
 
     /** 把source在Codegen.enrich之前就取代掉independence的節點，未來還能發想更多功能 */
     workOfPrior(pathOfSource) {
+        console.error(`6666666666 => 這裡應該只准近來乙次 => ${this.getClassName()}`)
 
         function append() {
             const nodes = _.filter(arrayOfEachNode, (each) => each.independence);
+
             for (const node of nodes) {
                 const nameOfReference = node.raw.ref;
                 if (_.isEmpty(nameOfReference)) {
@@ -4119,6 +4143,10 @@ class BaseBuilder extends PathBase {
         super(props);
     }
 
+    getClassName() {
+        return 'BaseBuilder';
+    }
+
     getNormalizeFieldOfParamInPath(param) {
         return Util.camel('param', 'of', param);
     }
@@ -4276,6 +4304,10 @@ class StoreBuilder extends BaseBuilder {
 
     constructor(props) {
         super(props);
+    }
+
+    getClassName() {
+        return 'StoreBuilder';
     }
 
     getFunctionsDependOnFieldType(type, object = {}) {
@@ -4764,6 +4796,10 @@ class RemoteFunctionHandler extends BaseBuilder {
         this.generator = classGenerator;
     }
 
+    getClassName() {
+        return 'RemoteFunctionHandler';
+    }
+
     appendParamIfPlatformEqualsWeb(isString = false) {
         if (_.isEqual(this.platform, 'web')) {
             if (isString)
@@ -5224,6 +5260,10 @@ class ComponentBuilder extends BaseBuilder {
 
     constructor(props) {
         super(props);
+    }
+
+    getClassName() {
+        return 'ComponentBuilder';
     }
 
     importComponentDefault(generator) {
@@ -7128,6 +7168,10 @@ class ProjectFileHandler extends PathBase {
         this.initial();
     }
 
+    getClassName() {
+        return 'ProjectFileHandler';
+    }
+
     initial() {
         this.deployRemoteRules = true;
         this.needDeployCloudFunctions = true;
@@ -7766,8 +7810,8 @@ class ProjectFileHandler extends PathBase {
         listenerGenerator.needIndexFile('AdminListenerApi');
 
         for (const component of this.nodeOfAncestor.getComponents()) {
-            new RemoteFunctionHandler(this.props, apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
-            new RemoteFunctionHandler(this.props, listenerGenerator).buildListenerFunction(component.getStruct(), true)
+            new RemoteFunctionHandler(this.getProps(), apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
+            new RemoteFunctionHandler(this.getProps(), listenerGenerator).buildListenerFunction(component.getStruct(), true)
         }
 
         await listenerGenerator.persist();
@@ -9068,9 +9112,10 @@ class ProjectFileHandler extends PathBase {
 
     enrichReferenceNode(nodes) {
         for (const node of nodes) {
-            if (node && node.isReferenceNode && node.isReferenceNode()) {
+            if (node && node.isReferenceNode()) {
 
                 const nodeOfReference = node.getNodeOfReference();
+                console.log(`455465 ref: =======>  ${node.ref}`)
                 node.ref = nodeOfReference;
 
                 if (node.imitate) {
@@ -9106,7 +9151,7 @@ class ProjectFileHandler extends PathBase {
         apiGenerator.needIndexFile('AdminRemoteApi', [], true);
 
         for (const component of this.nodeOfAncestor.getComponents()) {
-            new RemoteFunctionHandler(this.props, apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
+            new RemoteFunctionHandler(this.getProps(), apiGenerator).buildFetchSubmitApi(component.getStruct(), true)
         }
 
         await apiGenerator.persist();
@@ -9311,7 +9356,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     getAppBuildParam = () => {
-        return {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
+        return {nodeOfAncestor: this.nodeOfAncestor, ...this.getProps()}
     }
 
     async forNewLess() {
@@ -9322,21 +9367,19 @@ class ProjectFileHandler extends PathBase {
 
         const totalClassNames = [];
         for (let component of this.nodeOfAncestor.components) {
-            const {classNames, events} = await new ComponentBuilder(this.props).buildBaseComponent(component);
+            const {classNames, events} = await new ComponentBuilder(this.getProps()).buildBaseComponent(component);
             _.remove(classNames, (each) => !_.isEqual(component, each.node.getNodeOfComponent()))
             /** 表示這可能是reference node產生出來className, 所以要filter */
             totalClassNames.push({component, classNames});
         }
-        const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
-        await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
+        await new AppBuilder(this.getProps()).buildAllNewBrandLessFiles(totalClassNames);
     }
 
     async forWeb() {
-        const paramProps = {nodeOfAncestor: this.nodeOfAncestor, ...this.props}
         const totalClassNames = [];
         const totalEvents = [];
         for (let component of this.nodeOfAncestor.components) {
-            const result = await new ComponentBuilder(this.props).buildBaseComponent(component);
+            const result = await new ComponentBuilder(this.getProps()).buildBaseComponent(component);
             if (result !== undefined) {
                 const classNames = result.classNames;
                 const events = result.events;
@@ -9347,22 +9390,22 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (!component.isPreciselyEditableComponent() && component.getStruct().isAttribute())
-                await new StoreBuilder(this.props).buildBaseStore(component.getStruct());
+                await new StoreBuilder(this.getProps()).buildBaseStore(component.getStruct());
         }
         /** 因為 用到 method getGenStores(),stores 要等 gen出來才知道, 必須放在這邊 */
-        await new StoreBuilder(paramProps).buildStoreIndexFiles();
-        await new AppBuilder(paramProps).buildAllNewBrandLessFiles(totalClassNames);
-        await new AppBuilder(paramProps).buildStyleFiles(totalClassNames);
-        await new AppBuilder(paramProps).buildAppIndexFiles();
-        await new AppBuilder(paramProps).buildI18n();
-        await new AppBuilder(paramProps).buildRouterFile();
+        await new StoreBuilder(this.getProps()).buildStoreIndexFiles();
+        await new AppBuilder(this.getProps()).buildAllNewBrandLessFiles(totalClassNames);
+        await new AppBuilder(this.getProps()).buildStyleFiles(totalClassNames);
+        await new AppBuilder(this.getProps()).buildAppIndexFiles();
+        await new AppBuilder(this.getProps()).buildI18n();
+        await new AppBuilder(this.getProps()).buildRouterFile();
         await this.buildDistAssetFolder();
         if (!ENABLE_FAST_DEVELOP_MODE) {
-            await new AppBuilder(paramProps).buildWebpackNPackageJson();
-            await new AppBuilder(paramProps).buildCloudFunctionsApi();
-            await new AppBuilder(paramProps).buildCookieFiles();
-            await new AppBuilder(paramProps).buildEventFolder(totalEvents);
-            await new AppBuilder(paramProps).buildHtmlIndexAssetsFile();
+            await new AppBuilder(this.getProps()).buildWebpackNPackageJson();
+            await new AppBuilder(this.getProps()).buildCloudFunctionsApi();
+            await new AppBuilder(this.getProps()).buildCookieFiles();
+            await new AppBuilder(this.getProps()).buildEventFolder(totalEvents);
+            await new AppBuilder(this.getProps()).buildHtmlIndexAssetsFile();
         }
         await this.buildTemplateHtml();
     }
@@ -9382,7 +9425,7 @@ class ProjectFileHandler extends PathBase {
     }
 
     buildCustomizePackages = async () => {
-        await new AppBuilder(this.props).buildCustomizeFiles(
+        await new AppBuilder(this.getProps()).buildCustomizeFiles(
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
 
@@ -9522,7 +9565,7 @@ class ProjectFileHandler extends PathBase {
             );
 
         if (this.isWebPlatform()) {
-            await new AppBuilder(this.props).overrideLessFile();
+            await new AppBuilder(this.getProps()).overrideLessFile();
         }
 
         await this.runInstallIfNeed();
@@ -9643,6 +9686,7 @@ class BuildApplication {
     async buildWeb() {
         const web = new ProjectFileHandler(this.getBuildObject('web'));
         await web.activate();
+        Util.appendInfo(`buildWeb() succeed`);
     }
 
     async deployFunctionsToProd() {
@@ -9650,11 +9694,14 @@ class BuildApplication {
         await functions.cleanGenDirectory();
         await functions.activate();
         await functions.deployFunctionsToProd();
+        Util.appendInfo(`deployFunctionsToProd() succeed`);
     }
 
     async deployFunctionsWithoutBuild() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         await functions.deployFunctionsToProd();
+        Util.appendInfo(`deployFunctionsWithoutBuild() succeed`);
+
     }
 
     /** buildWebpackOnly：只想透過source code編譯出bundle，目前用於做downsize處理，如果沒有做過web build,但 buildWebpackOnly = true 會報錯 */
@@ -9669,17 +9716,14 @@ class BuildApplication {
         }
 
         await web.buildProdWebDistToProjectThanDeploy(deploy);
-        Util.appendInfo(
-            `web deploy succeed`
-        );
+        Util.appendInfo(`deployWebProd() succeed`);
+
     }
 
     async deployWebProdWithoutBuild() {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
         await web.buildProdWebDistToProjectThanDeploy(true, false);
-        Util.appendInfo(
-            `web deploy succeed`
-        );
+        Util.appendInfo(`deployWebProdWithoutBuild() succeed`);
     }
 
 
@@ -9687,9 +9731,7 @@ class BuildApplication {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         functions.setFunctionNeedDeploy(deploy);
         await functions.activate();
-        Util.appendInfo(
-            `functions done`
-        );
+        Util.appendInfo(`buildCloudFunctions() succeed`);
     }
 
     /** 就是改code 不要rebuild細節 直接打包到部署目錄*/
@@ -9697,28 +9739,26 @@ class BuildApplication {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         functions.setFunctionNeedDeploy(deploy);
         await functions.functionsGenerateRelease()
-        Util.appendInfo(
-            `functions refresh done`
-        );
+        Util.appendInfo(`refreshFunctionsFolder() succeed`);
     }
 
     async generateReleaseFunctionsModule() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
         await functions.functionsGenerateRelease();
         await functions.copyFunctionsModuleToDestFolder();
+        Util.appendInfo(`generateReleaseFunctionsModule() succeed`);
     }
 
     async removeEmptyFolder() {
         const web = new ProjectFileHandler(this.getBuildObject('web'));
         await web.removeEmptyFolder();
+        Util.appendInfo(`removeEmptyFolder() succeed`);
     }
 
     async buildLessFilesOnly() {
         const web = new ProjectFileHandler(this.getBuildObject('web'));
         await web.forNewLess();
-        Util.appendInfo(
-            `less done`
-        );
+        Util.appendInfo(`buildLessFilesOnly() succeed`);
     }
 
     async buildAdmin(deployToRemote = true) {
@@ -9727,30 +9767,35 @@ class BuildApplication {
             admin.disableRulesRemoteDeploy();
 
         await admin.activate();
-        Util.appendInfo(
-            `admin done`
-        );
+        Util.appendInfo(`buildAdmin() succeed`);
     }
 
     async buildIndexRule() {
         const handler = new ProjectFileHandler(this.getBuildObject('admin'))
         await handler.generateFireIndexRules();
+        Util.appendInfo(`buildIndexRule() succeed`);
+
     }
 
     async buildLessToCss() {
         const handler = new ProjectFileHandler(this.getBuildObject('web'))
         await handler.buildLessToCss()
+        Util.appendInfo(`buildLessToCss() succeed`);
+
     }
 
     async test() {
         const handler = new ProjectFileHandler(this.getBuildObject('web'));
-        console.log(handler.getGenComponent());
+        Util.appendInfo(`test() succeed`);
+
     }
 
     async buildStorageRule() {
         const handler = new ProjectFileHandler(this.getBuildObject('admin'))
         await handler.generateStorageRules();
+        Util.appendInfo(`buildStorageRule() succeed`);
     }
+
 
     async overrideFiles(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
@@ -9768,13 +9813,14 @@ class BuildApplication {
         handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
         handler.persistLessLibs();
-        Util.appendInfo(`persist ${platform} done`);
-
+        Util.appendInfo(`persistent() succeed`);
     }
 
     async modifiedI18n(platform = 'web') {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
         await handler.rewriteModulesI18nFiles();
+        Util.appendInfo(`modifiedI18n() succeed`);
+
     }
 
 }

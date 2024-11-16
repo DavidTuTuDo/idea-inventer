@@ -273,25 +273,119 @@ class MobileStyle {
 
   AccountPaper = {};
 
+  /** => following for cartie  component  */
+
+  CartieFuncSubmitChip = {};
+
+  CartieFuncSpecifyPriceOfTotalTypography = {};
+
+  CartieFuncSpecifyLabelOfTotalTypography = {};
+
+  CartieFuncSpecifyDiv = {};
+
+  CartieFuncWholeLabelOfWholeTypography = {};
+
+  CartieFuncWholeDivWrap = {};
+
+  CartieFuncWholeCheckbox = {};
+
+  CartieFuncDiv = {};
+
+  CartieSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography = {};
+
+  CartieSummariseDiscountOfMemberDivWrap = {};
+
+  CartieSummariseDiscountOfMemberTypography = {};
+
+  CartieSummarisePriceOfTransportLabelOfPriceOfTransportTypography = {};
+
+  CartieSummarisePriceOfTransportDivWrap = {};
+
+  CartieSummarisePriceOfTransportTypography = {};
+
+  CartieSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography = {};
+
+  CartieSummarisePriceOfDiscountDivWrap = {};
+
+  CartieSummarisePriceOfDiscountTypography = {};
+
+  CartieSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography = {};
+
+  CartieSummarisePriceWithoutDiscountDivWrap = {};
+
+  CartieSummarisePriceWithoutDiscountTypography = {};
+
+  CartieSummariseDiv = {};
+
+  CartieBriefSpecLandConclusionOfQuantityIncreaseIconAdd = {};
+
+  CartieBriefSpecLandConclusionOfQuantityIncreaseIconButton = {};
+
+  CartieBriefSpecLandConclusionOfQuantityCountOfSubmitTextField = {};
+
+  CartieBriefSpecLandConclusionOfQuantityDecreaseIconRemove = {};
+
+  CartieBriefSpecLandConclusionOfQuantityDecreaseIconButton = {};
+
+  CartieBriefSpecLandConclusionOfQuantityDivWrap = {};
+
+  CartieBriefSpecLandConclusionOfQuantityDiv = {};
+
+  CartieBriefSpecLandMainPriceOfOriginTypography = {};
+
+  CartieBriefSpecLandMainPriceTypography = {};
+
+  CartieBriefSpecLandMainDiv = {};
+
+  CartieBriefSpecLandDiv = {};
+
+  CartieBriefSpecInfoOfBenefitTypography = {};
+
+  CartieBriefSpecNameOfOptionChip = {};
+
+  CartieBriefSpecFullCancelIconDeleteForeverRounded = {};
+
+  CartieBriefSpecFullCancelReactFragmentWrap = {};
+
+  CartieBriefSpecFullCancelIconButton = {};
+
+  CartieBriefSpecFullNameTypography = {};
+
+  CartieBriefSpecFullDiv = {};
+
+  CartieBriefSpecDiv = {};
+
+  CartieBriefPhotoImg = {};
+
+  CartieBriefSureDivWrap = {};
+
+  CartieBriefSureCheckbox = {};
+
+  CartieBriefDivList = {};
+
+  CartieBriefDiv = {};
+
+  CartieDiv = {};
+
   /** => following for maenads  component  */
 
   MaenadsSubmitDivWrap = {};
 
   MaenadsSubmitChip = {};
 
-  MaenadsDecisionSetIncreaseIconAdd = {};
+  MaenadsDecisionConclusionOfQuantityIncreaseIconAdd = {};
 
-  MaenadsDecisionSetIncreaseIconButton = {};
+  MaenadsDecisionConclusionOfQuantityIncreaseIconButton = {};
 
-  MaenadsDecisionSetCountOfSubmitTextField = {};
+  MaenadsDecisionConclusionOfQuantityCountOfSubmitTextField = {};
 
-  MaenadsDecisionSetDecreaseIconRemove = {};
+  MaenadsDecisionConclusionOfQuantityDecreaseIconRemove = {};
 
-  MaenadsDecisionSetDecreaseIconButton = {};
+  MaenadsDecisionConclusionOfQuantityDecreaseIconButton = {};
 
-  MaenadsDecisionSetDivWrap = {};
+  MaenadsDecisionConclusionOfQuantityDivWrap = {};
 
-  MaenadsDecisionSetDiv = {};
+  MaenadsDecisionConclusionOfQuantityDiv = {};
 
   MaenadsDecisionTitleOfSubmitOrderDivWrap = {};
 
