@@ -275,6 +275,8 @@ class MobileStyle {
 
   /** => following for cartie  component  */
 
+  CartieFuncSubmitDivWrap = {};
+
   CartieFuncSubmitChip = {};
 
   CartieFuncSpecifyPriceOfTotalTypography = {};
@@ -288,6 +290,8 @@ class MobileStyle {
   CartieFuncWholeDivWrap = {};
 
   CartieFuncWholeCheckbox = {};
+
+  CartieFuncDivWrap = {};
 
   CartieFuncDiv = {};
 
@@ -333,6 +337,10 @@ class MobileStyle {
 
   CartieBriefSpecLandMainPriceOfOriginTypography = {};
 
+  CartieBriefSpecLandMainPriceLabelOfPriceTypography = {};
+
+  CartieBriefSpecLandMainPriceDivWrap = {};
+
   CartieBriefSpecLandMainPriceTypography = {};
 
   CartieBriefSpecLandMainDiv = {};
@@ -364,6 +372,8 @@ class MobileStyle {
   CartieBriefDivList = {};
 
   CartieBriefDiv = {};
+
+  CartieDivWrap = {};
 
   CartieDiv = {};
 

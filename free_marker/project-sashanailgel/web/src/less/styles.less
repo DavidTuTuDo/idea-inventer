@@ -1719,7 +1719,7 @@
 }
 .DionysusBoozeRowMainDiv:extend(.CenterInParentRow) {
   width: 80%;
-  gap: 8px;
+  gap: 5px;
   justify-content: flex-start;
   align-items: flex-end;
   @media @mobile {
@@ -1736,7 +1736,9 @@
   color: darkred;
   margin: 0;
   padding: 0;
-  line-height: 1;
+  line-height: 0.9rem;
+  font-size: 0.9rem;
+
   @media @mobile {
     /** empty style */
   }
@@ -1749,10 +1751,11 @@
 }
 .DionysusBoozeRowMainPriceTypography {
   color: darkred;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
   margin: 0;
   padding: 0;
-  line-height: 1;
+  line-height: 1.3rem;
+
   @media @mobile {
     /** empty style */
   }
@@ -2531,7 +2534,21 @@
 }
 /** following for cartie  component used  */
 
-.CartieDiv {
+.CartieDiv:extend(.CenterInParentColumn) {
+  margin: auto;
+  width: 100%;
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CartieDivWrap {
   margin: auto;
   width: 100%;
   @media @mobile {
@@ -2546,8 +2563,8 @@
 }
 .CartieBriefDiv:extend(.CenterInParentRow) {
   width: 100%;
-  gap:5px;
-  padding-left: 5px;
+  gap: 10px;
+  padding-left: 8px;
   @media @mobile {
     /** empty style */
   }
@@ -2559,8 +2576,9 @@
   }
 }
 .CartieBriefDivList:extend(.CenterInParentColumn) {
-  width: 100%;
+  width: 96%;
   gap: 10px;
+  margin-top: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -2608,9 +2626,8 @@
   }
 }
 .CartieBriefSpecDiv:extend(.CenterInParentColumn) {
-  width: 63%;
+  width: 60%;
   align-items: start;
-  gap: 3px;
   @media @mobile {
     /** empty style */
   }
@@ -2701,6 +2718,8 @@
   }
 }
 .CartieBriefSpecLandDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  justify-content: space-between;
   @media @mobile {
     /** empty style */
   }
@@ -2712,6 +2731,8 @@
   }
 }
 .CartieBriefSpecLandMainDiv:extend(.CenterInParentRow) {
+  align-items: end;
+  gap: 15px;
   @media @mobile {
     /** empty style */
   }
@@ -2723,6 +2744,36 @@
   }
 }
 .CartieBriefSpecLandMainPriceTypography {
+  font-size: 1.5rem;
+  color: darkred;
+  line-height: 1.4rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CartieBriefSpecLandMainPriceDivWrap:extend(.CenterInParentRow) {
+  gap: 3px;
+  align-items: end;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CartieBriefSpecLandMainPriceLabelOfPriceTypography {
+  color: darkred;
+  line-height: 0.8rem;
+  font-size: 0.8rem;
   @media @mobile {
     /** empty style */
   }
@@ -2734,6 +2785,9 @@
   }
 }
 .CartieBriefSpecLandMainPriceOfOriginTypography {
+  text-decoration: line-through;
+  color: lightgrey;
+  line-height: 1rem;
   @media @mobile {
     /** empty style */
   }
@@ -2821,7 +2875,10 @@
     /** empty style */
   }
 }
-.CartieSummariseDiv {
+.CartieSummariseDiv:extend(.CenterInParentRow) {
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: wrap;
   @media @mobile {
     /** empty style */
   }
@@ -2844,6 +2901,8 @@
   }
 }
 .CartieSummarisePriceWithoutDiscountDivWrap:extend(.CenterInParentRow) {
+  width: 40%;
+  justify-content: start;
   @media @mobile {
     /** empty style */
   }
@@ -2877,6 +2936,8 @@
   }
 }
 .CartieSummarisePriceOfDiscountDivWrap:extend(.CenterInParentRow) {
+  width: 40%;
+  justify-content: end;
   @media @mobile {
     /** empty style */
   }
@@ -2910,6 +2971,8 @@
   }
 }
 .CartieSummarisePriceOfTransportDivWrap:extend(.CenterInParentRow) {
+  width: 40%;
+  justify-content: start;
   @media @mobile {
     /** empty style */
   }
@@ -2943,6 +3006,8 @@
   }
 }
 .CartieSummariseDiscountOfMemberDivWrap:extend(.CenterInParentRow) {
+  width: 40%;
+  justify-content: end;
   @media @mobile {
     /** empty style */
   }
@@ -2966,7 +3031,25 @@
 }
 .CartieFuncDiv:extend(.CenterInParentRow) {
   width: 100%;
-  gap: 20px;
+  background: #f7f7f7;
+  justify-content: start;
+  height: 45px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CartieFuncDivWrap {
+  width: 100%;
+  position: sticky;
+  bottom: 0px;
+  height: 45px;
+  z-index: 3;
   @media @mobile {
     /** empty style */
   }
@@ -2990,6 +3073,8 @@
 }
 .CartieFuncWholeDivWrap:extend(.CenterInParentRow) {
   flex-direction: row-reverse;
+  justify-content: start;
+  width: 33%;
   @media @mobile {
     /** empty style */
   }
@@ -3012,6 +3097,7 @@
   }
 }
 .CartieFuncSpecifyDiv:extend(.CenterInParentRow) {
+  width: 33%;
   @media @mobile {
     /** empty style */
   }
@@ -3045,6 +3131,22 @@
   }
 }
 .CartieFuncSubmitChip {
+  width: 95%;
+  height: 80%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CartieFuncSubmitDivWrap:extend(.CenterInParentRow) {
+  width: 33%;
+  height: 100%;
+  justify-content: end;
   @media @mobile {
     /** empty style */
   }
@@ -4566,3 +4668,5 @@
     /** empty style */
   }
 }
+/** ======== following for homeless ========= */
+

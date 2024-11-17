@@ -275,6 +275,8 @@ class CommonStyle {
 
   /** => following for cartie  component  */
 
+  CartieFuncSubmitDivWrap = {};
+
   CartieFuncSubmitChip = {};
 
   CartieFuncSpecifyPriceOfTotalTypography = {};
@@ -288,6 +290,8 @@ class CommonStyle {
   CartieFuncWholeDivWrap = {};
 
   CartieFuncWholeCheckbox = {};
+
+  CartieFuncDivWrap = {};
 
   CartieFuncDiv = {};
 
@@ -333,6 +337,10 @@ class CommonStyle {
 
   CartieBriefSpecLandMainPriceOfOriginTypography = {};
 
+  CartieBriefSpecLandMainPriceLabelOfPriceTypography = {};
+
+  CartieBriefSpecLandMainPriceDivWrap = {};
+
   CartieBriefSpecLandMainPriceTypography = {};
 
   CartieBriefSpecLandMainDiv = {};
@@ -364,6 +372,8 @@ class CommonStyle {
   CartieBriefDivList = {};
 
   CartieBriefDiv = {};
+
+  CartieDivWrap = {};
 
   CartieDiv = {};
 
