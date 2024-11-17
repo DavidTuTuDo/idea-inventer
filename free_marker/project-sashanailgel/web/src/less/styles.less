@@ -1738,7 +1738,6 @@
   padding: 0;
   line-height: 0.9rem;
   font-size: 0.9rem;
-
   @media @mobile {
     /** empty style */
   }
@@ -1755,7 +1754,6 @@
   margin: 0;
   padding: 0;
   line-height: 1.3rem;
-
   @media @mobile {
     /** empty style */
   }
@@ -2875,10 +2873,9 @@
     /** empty style */
   }
 }
-.CartieSummariseDiv:extend(.CenterInParentRow) {
-  justify-content: space-between;
+.CartieSummariseDiv:extend(.CenterInParentColumn) {
   width: 100%;
-  flex-wrap: wrap;
+  align-items: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -2901,7 +2898,6 @@
   }
 }
 .CartieSummarisePriceWithoutDiscountDivWrap:extend(.CenterInParentRow) {
-  width: 40%;
   justify-content: start;
   @media @mobile {
     /** empty style */
@@ -2935,9 +2931,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfDiscountDivWrap:extend(.CenterInParentRow) {
-  width: 40%;
-  justify-content: end;
+.CartieSummarisePriceOfDiscountDivWrap:extend(.CartieSummarisePriceWithoutDiscountDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -2970,9 +2964,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfTransportDivWrap:extend(.CenterInParentRow) {
-  width: 40%;
-  justify-content: start;
+.CartieSummarisePriceOfTransportDivWrap:extend(.CartieSummarisePriceWithoutDiscountDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3005,9 +2997,7 @@
     /** empty style */
   }
 }
-.CartieSummariseDiscountOfMemberDivWrap:extend(.CenterInParentRow) {
-  width: 40%;
-  justify-content: end;
+.CartieSummariseDiscountOfMemberDivWrap:extend(.CartieSummarisePriceWithoutDiscountDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3074,7 +3064,7 @@
 .CartieFuncWholeDivWrap:extend(.CenterInParentRow) {
   flex-direction: row-reverse;
   justify-content: start;
-  width: 33%;
+  width: 20%;
   @media @mobile {
     /** empty style */
   }
@@ -3096,8 +3086,9 @@
     /** empty style */
   }
 }
-.CartieFuncSpecifyDiv:extend(.CenterInParentRow) {
-  width: 33%;
+.CartieFuncPriceOfTotalTypography {
+  color:darkred;
+  font-size: 1.3rem;
   @media @mobile {
     /** empty style */
   }
@@ -3108,7 +3099,9 @@
     /** empty style */
   }
 }
-.CartieFuncSpecifyLabelOfTotalTypography {
+.CartieFuncPriceOfTotalDivWrap:extend(.CenterInParentRow) {
+  width: 45%;
+  gap:10px;
   @media @mobile {
     /** empty style */
   }
@@ -3119,7 +3112,10 @@
     /** empty style */
   }
 }
-.CartieFuncSpecifyPriceOfTotalTypography {
+.CartieFuncPriceOfTotalLabelOfPriceOfTotalTypography {
+  color:darkred;
+  font-size: 0.8rem;
+
   @media @mobile {
     /** empty style */
   }
@@ -4668,5 +4664,4 @@
     /** empty style */
   }
 }
-/** ======== following for homeless ========= */
 

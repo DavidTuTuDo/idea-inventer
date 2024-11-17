@@ -279,11 +279,11 @@ class AppStyle {
 
   CartieFuncSubmitChip = {};
 
-  CartieFuncSpecifyPriceOfTotalTypography = {};
+  CartieFuncPriceOfTotalLabelOfPriceOfTotalTypography = {};
 
-  CartieFuncSpecifyLabelOfTotalTypography = {};
+  CartieFuncPriceOfTotalDivWrap = {};
 
-  CartieFuncSpecifyDiv = {};
+  CartieFuncPriceOfTotalTypography = {};
 
   CartieFuncWholeLabelOfWholeTypography = {};
 

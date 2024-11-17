@@ -2337,6 +2337,36 @@ class Utiller {
         this.appendInfo(`${hours}小時 ${minutes}分 ${seconds}.${milliseconds.toString().padStart(3, '0')}秒 (合計 ${totalSeconds} 秒)`)
     }
 
+    formatPriceWithCurrency = (number, locale) => {
+        if (typeof number !== 'number' || typeof locale !== 'string') {
+            throw new TypeError('Invalid input: number must be a number and locale must be a string.');
+        }
+
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: new Intl.Locale(locale).maximize().currency || 'USD',
+            minimumFractionDigits: 0 // 確保不顯示小數
+        }).format(number);
+    };
+
+    formatPrice = (number, locale) => {
+        if (typeof number !== 'number') {
+            throw new TypeError('Invalid input: number must be a number.');
+        }
+
+        // 如果沒有傳入 locale，僅格式化數字
+        if (!locale) {
+            return number.toLocaleString('en-US'); // 預設使用美式數字格式
+        }
+
+        // 有傳入 locale，使用貨幣格式化
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: new Intl.Locale(locale).maximize().currency || 'USD',
+            minimumFractionDigits: 0 // 確保不顯示小數
+        }).format(number);
+    };
+
 }
 
 if (configerer.DEBUG_MODE) {

@@ -120,6 +120,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    price = false
+    /** 如果是幣值，就會用Util.formatPrice() */
+
     /** 可以在component mount之前放進去store裡面，例如list view -> detail view用同一個bean就可以不用再fetch一次 */
     presetParam = false;
 
@@ -5724,13 +5727,16 @@ class ComponentBuilder extends BaseBuilder {
         /** 產生出在component裡面的store getter , 這段邏輯只能擺在這裡, 不然非collection的屬性, 會產生不出來*/
         if (node.hasValidParent() && node.isAttribute() && !node.isArrayItem()) {
             function getGetterContentsOfFunction(_node) {
+                const asPrice = node.isNumber() && node.price;
                 const asFormat = !_node.isPickerView() && _node.isTimeStamp() && _node.hasFormat();
                 const asComputed = _.isEqual(_node.computed, true);
                 const stmtOfHead = _node.getPreciseAttributeParentName();
-                const stmtOfGetter = `${_node.getFunctionNameInStoreGetter()}()`
-                if (asFormat) return `return Util.getCustomFormatOfDatePresent(${stmtOfHead}.${stmtOfGetter},'${node.getFormat()}')`
+                const stmtOfGetter = `${_node.getFunctionNameInStoreGetter()}()`;
+                const stringOfParam = `${stmtOfHead}.${stmtOfGetter}`;
+                if (asFormat) return `return Util.getCustomFormatOfDatePresent(${stringOfParam},'${node.getFormat()}')`
                 else if (asComputed) return `return ${stmtOfHead}.${_node.getFunctionNameInStoreComputedGetter()}`
-                else return `return ${stmtOfHead}.${stmtOfGetter}`
+                else if (asPrice) return `return Util.formatPrice(${stringOfParam})`;
+                else return `return ${stringOfParam}`
             }
 
             const computed = _.isEqual(node.computed, true);

@@ -279,11 +279,11 @@ class MobileStyle {
 
   CartieFuncSubmitChip = {};
 
-  CartieFuncSpecifyPriceOfTotalTypography = {};
+  CartieFuncPriceOfTotalLabelOfPriceOfTotalTypography = {};
 
-  CartieFuncSpecifyLabelOfTotalTypography = {};
+  CartieFuncPriceOfTotalDivWrap = {};
 
-  CartieFuncSpecifyDiv = {};
+  CartieFuncPriceOfTotalTypography = {};
 
   CartieFuncWholeLabelOfWholeTypography = {};
 
