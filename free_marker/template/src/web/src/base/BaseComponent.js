@@ -35,7 +35,7 @@ import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
 import copy from 'copy-to-clipboard';
 import clipboardy from 'clipboardy';
-
+import functions from '../functions'
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -505,6 +505,30 @@ class BaseComponent extends MuiComponent {
             </div>
         )
     })
+
+    getCurrentLocation = async () => {
+        const self = this;
+        if (!navigator.geolocation) {
+            this.showWarningSnackMessage("您的瀏覽器不支援地理定位");
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const {latitude, longitude} = position.coords;
+                console.log({latitude, longitude})
+                try {
+                    const fetchedAddress = await functions.httpOnCallGetCurrentAddress(self, {latitude, longitude});
+                    Util.appendInfo(fetchedAddress);
+                    return fetchedAddress;
+                } catch (error) {
+                    this.showWarningSnackMessage("無法獲取地址，請手動輸入地址");
+                }
+            },
+            (error) => {
+                this.showWarningSnackMessage("無法獲取地理位置，請檢查您的定位服務是否開啟");
+            }
+        );
+    }
 
     renderSelectorView = () => {
         const self = this;

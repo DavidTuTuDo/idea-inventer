@@ -273,6 +273,146 @@ class MobileStyle {
 
   AccountPaper = {};
 
+  /** => following for plutus  component  */
+
+  PlutusSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography = {};
+
+  PlutusSummariseFifthFeeOfPaymentDivWrap = {};
+
+  PlutusSummariseFifthFeeOfPaymentTypography = {};
+
+  PlutusSummariseFifthHeadLabelOfPaymentDivWrap = {};
+
+  PlutusSummariseFifthHeadLabelOfPaymentTypography = {};
+
+  PlutusSummariseFifthDiv = {};
+
+  PlutusSummariseFourthFeeOfMemberDiscountLabelOfFeeOfMemberDiscountTypography = {};
+
+  PlutusSummariseFourthFeeOfMemberDiscountDivWrap = {};
+
+  PlutusSummariseFourthFeeOfMemberDiscountTypography = {};
+
+  PlutusSummariseFourthHeadLabelOfMemberDiscountDivWrap = {};
+
+  PlutusSummariseFourthHeadLabelOfMemberDiscountTypography = {};
+
+  PlutusSummariseFourthDiv = {};
+
+  PlutusSummariseThirdFeeOfTransportLabelOfFeeOfTransportTypography = {};
+
+  PlutusSummariseThirdFeeOfTransportDivWrap = {};
+
+  PlutusSummariseThirdFeeOfTransportTypography = {};
+
+  PlutusSummariseThirdHeadLabelOfTransportDivWrap = {};
+
+  PlutusSummariseThirdHeadLabelOfTransportTypography = {};
+
+  PlutusSummariseThirdDiv = {};
+
+  PlutusSummariseSecondDiscountLabelOfDiscountTypography = {};
+
+  PlutusSummariseSecondDiscountDivWrap = {};
+
+  PlutusSummariseSecondDiscountTypography = {};
+
+  PlutusSummariseSecondHeadLabelOfDiscountDivWrap = {};
+
+  PlutusSummariseSecondHeadLabelOfDiscountTypography = {};
+
+  PlutusSummariseSecondDiv = {};
+
+  PlutusSummariseFirstPriceLabelOfPriceTypography = {};
+
+  PlutusSummariseFirstPriceDivWrap = {};
+
+  PlutusSummariseFirstPriceTypography = {};
+
+  PlutusSummariseFirstHeadLabelOfPriceDivWrap = {};
+
+  PlutusSummariseFirstHeadLabelOfPriceTypography = {};
+
+  PlutusSummariseFirstDiv = {};
+
+  PlutusSummariseDiv = {};
+
+  PlutusLocationMainTailFindIconWifiFind = {};
+
+  PlutusLocationMainTailFindIconButton = {};
+
+  PlutusLocationMainTailAddressTextField = {};
+
+  PlutusLocationMainTailDiv = {};
+
+  PlutusLocationMainHeadDistrictMenuItem = {};
+
+  PlutusLocationMainHeadDistrictTextFieldList = {};
+
+  PlutusLocationMainHeadCityMenuItem = {};
+
+  PlutusLocationMainHeadCityTextFieldList = {};
+
+  PlutusLocationMainHeadDiv = {};
+
+  PlutusLocationMainDiv = {};
+
+  PlutusLocationHeadLabelOfAddressTypography = {};
+
+  PlutusLocationDiv = {};
+
+  PlutusPhoneLabelOfPhoneTypography = {};
+
+  PlutusPhoneDivWrap = {};
+
+  PlutusPhoneTextField = {};
+
+  PlutusEmailLabelOfEmailTypography = {};
+
+  PlutusEmailDivWrap = {};
+
+  PlutusEmailTextField = {};
+
+  PlutusNameLabelOfNameTypography = {};
+
+  PlutusNameDivWrap = {};
+
+  PlutusNameTextField = {};
+
+  PlutusDivWrap = {};
+
+  PlutusDiv = {};
+
+  /** => following for hermes  component  */
+
+  HermesTransportPriceLabelOfPriceTypography = {};
+
+  HermesTransportPriceDivWrap = {};
+
+  HermesTransportPriceTypography = {};
+
+  HermesTransportMainDescriptionTypography = {};
+
+  HermesTransportMainTopPhotoImg = {};
+
+  HermesTransportMainTopNameTypography = {};
+
+  HermesTransportMainTopDiv = {};
+
+  HermesTransportMainDiv = {};
+
+  HermesTransportChoiceDivWrap = {};
+
+  HermesTransportChoiceCheckbox = {};
+
+  HermesTransportDivList = {};
+
+  HermesTransportDiv = {};
+
+  HermesDivWrap = {};
+
+  HermesDiv = {};
+
   /** => following for cartie  component  */
 
   CartieFuncSubmitDivWrap = {};
