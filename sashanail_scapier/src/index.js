@@ -68,11 +68,15 @@ import puppeteer from 'puppeteer';
  */
 
 const THREAD_OF_FETCHER = 1;
-const THREAD_OF_DETAIL_PRODUCT = 10;
-const PRINT_REPORT_OF_PRODUCTS = false;
+const THREAD_OF_DETAIL_PRODUCT = 7;
+const PRINT_REPORT_OF_PRODUCTS_DETAIL = true; /** 列印出product_detail.json */
 const USE_PERSISTENT_FILE = true;//'sasha_product_list.json'
 const VISIBLE_OF_FETCH_PRODUCT = true;
+
 const RANDOM_LIST_ENABLE = true;
+const SIZE_OF_RANDOM = 60;
+const FETCH_LIST_ONLY = true;
+const DISABLE_OF_OPEN_BROWSER = true;
 
 class sashanailgel_scraper {
 
@@ -80,7 +84,6 @@ class sashanailgel_scraper {
         this.browser = engine;
         this.items = {}
     }
-
 
     async fetchListOfTypeHref() {
         const pages = [];
@@ -194,10 +197,12 @@ class sashanailgel_scraper {
             targets.push(...pages);
         }, ...pagesShouldFetch)
 
-        if (PRINT_REPORT_OF_PRODUCTS)
+        if (PRINT_REPORT_OF_PRODUCTS_DETAIL)
             await Util.persistJsonFilePrettier(`./sasha_of_product_catalog.json`, targets);
 
-        /** 抓取商品列表 */
+        /** 抓取商品列表
+         * 將 sasha_of_product_catalog.json 裡的path全都觸及至底後fetch
+         * */
         const objectOfProducts = {}
         const poolOfFetchProduct = new InfinitePool(THREAD_OF_FETCHER)
         poolOfSubType.enableTaskTimeout(true, 100000);
@@ -209,8 +214,13 @@ class sashanailgel_scraper {
         }, ...targets)
         const listOfProducts = _.values(objectOfProducts);
         console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
-        if (PRINT_REPORT_OF_PRODUCTS)
+        if (PRINT_REPORT_OF_PRODUCTS_DETAIL)
             await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
+
+        if (FETCH_LIST_ONLY) {
+            Util.appendInfo(`以取得商品資訊列表，不繼續拿detail資訊`)
+            return;
+        }
 
         await this.fetchWholeProductDetailBehavior(listOfProducts);
     }
@@ -221,25 +231,30 @@ class sashanailgel_scraper {
         const productsOfDetail = [];
         const listOfFailFetch = [];
         const poolOfFetchProductDetail = new InfinitePool(THREAD_OF_DETAIL_PRODUCT);
-        poolOfFetchProductDetail.enableTaskTimeout(true, 30000000);
+        poolOfFetchProductDetail.enableTaskTimeout(true, 300000);
 
-        const listOfProduct = RANDOM_LIST_ENABLE ? Util.getShuffledArrayWithLimitCount(list,50) : list
+        const listOfProduct = RANDOM_LIST_ENABLE ? Util.getShuffledArrayWithLimitCount(list, SIZE_OF_RANDOM) : list
         await poolOfFetchProductDetail.runByParams(async (product) => {
             try {
                 const productDetail = await self.fetchProductPriceDetail(product);
-                productsOfDetail.push({...product, options: this.mergeArraysByName(product.options, productDetail.options), headPhoto: productDetail.headPhoto})
+                productsOfDetail.push({...product, options: this.mergeArraysByName(product.options, productDetail.options),
+                    headPhoto: productDetail.headPhoto,
+                    serial:productDetail.serial,
+                    introduce:productDetail.introduce
+                })
             } catch (error) {
-                console.log(`PRODUCT:${product.name} 抓取Detail資料失敗：`, error.message)
+                console.log(`PRODUCT:${product.name} 抓取DETAIL資料失敗：`, error.message)
                 listOfFailFetch.push(product);
             }
 
         }, ...listOfProduct);
 
-        if (PRINT_REPORT_OF_PRODUCTS) {
+        if (PRINT_REPORT_OF_PRODUCTS_DETAIL) {
+            const curret = Util.getCurrentTimeStamp();
             if (_.size(productsOfDetail) > 0)
-                await Util.persistJsonFilePrettier(`./sasha_of_products_detail_${Util.getCurrentTimeStamp()}.json`, productsOfDetail);
+                await Util.persistJsonFilePrettier(`./sasha_of_products_detail_${curret}.json`, productsOfDetail);
             if (_.size(listOfFailFetch) > 0)
-                await Util.persistJsonFilePrettier(`./sasha_of_products_list_failure.json`, listOfFailFetch);
+                await Util.persistJsonFilePrettier(`./sasha_of_products_list_failure_${curret}.json`, listOfFailFetch);
         }
     }
 
@@ -270,21 +285,61 @@ class sashanailgel_scraper {
             }
         }
 
+        async function fetchIntroduceOfProductDetail() {
+            const statements = [];
+            const photos = [];
+            const selectorOfIntro = `#gd-good-detail > #ushop_content_iframe`
+            const detail = await page.$(selectorOfIntro);
+            const frameOfDetail = await detail.contentFrame();
+            const stmts = await frameOfDetail.$$(`#_mbc_frame_container_pc > #A1 > *`);
+            console.log(`產品描述的項目有 -> `, _.size(stmts), ` 個`);
+            for (const stmt of stmts) {
+                let tagName = '';
+                try {
+                    tagName = _.trim(await stmt.evaluate((el) => el.tagName));
+                } catch (error) {
+                    Util.appendError(`15121321301 找不到tagName`);
+                }
+
+                const key = _.lowerCase(tagName);
+                switch (key) {
+                    case 'p':
+                        /** 文字 */
+                        const text = await Util.fetchElementAttributes(stmt, `span`, '', `innerText`);
+                        statements.push(text);
+                        break;
+                    case 'div':
+                        /** 圖片 */
+                        const img = await Util.fetchElementAttributes(stmt, `img`, '', `src`);
+                        if (!Util.isUndefinedNullEmpty(img)) photos.push({href: img});
+                        break;
+                    case '':
+                        /** ignore default value*/
+                        break;
+                    default:
+                        console.log(`65421321 未預期的tagName=> ${tagName}`)
+                        break;
+                }
+            }
+            return {statement: statements.join('\n'), photos};
+
+        }
+
         try {
             await page.goto(path, {waitUntil: 'networkidle2', timeout: 0});
             await this.managePages(path, browser);
             const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`
-
             await this.waitSelectorTilAppear(page, selectorOfSrc, 40000)
             await page.bringToFront();
             const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
             const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
             console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
+            const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '','innerText');
             const headPhoto = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
+            const introduce = await fetchIntroduceOfProductDetail()
 
             for (const element of optionsOfProductNPriceDetails) {
                 const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title')
-
                 if (sizeOfSubItem > 1 && element) {
                     await element.click()
                     await Util.syncDelay(1500);
@@ -296,9 +351,8 @@ class sashanailgel_scraper {
             /** 購物車的點擊，因為購物車才能抓到商品剩餘數量，所以要先放到購物車 */
             const selectorOfAppendToCart = await page.$(`#mbcUshop-MemberOp > .divCtrlMemberOpView > .member-op`);
 
-
             await this.clickSolution(page, selectorOfAppendToCart);
-            console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
+            // console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
             await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000)
             // await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 30000}) // 等待页面加载完成
             const optionsInCart = [];
@@ -309,7 +363,7 @@ class sashanailgel_scraper {
                 optionsInCart.push({name: _.trim(nameOfOption), count: _.toNumber(countOfMax)})
             }
 
-            const result = {headPhoto, options: this.mergeArraysByName(options, optionsInCart)}
+            const result = {serial, introduce, headPhoto, options: this.mergeArraysByName(options, optionsInCart)}
             console.log(result);
             return result;
         } catch (error) {
@@ -323,7 +377,7 @@ class sashanailgel_scraper {
     }
 
     async sampleOfFetchSingleItem() {
-        await this.fetchProductPriceDetail({name: '測試', href: `https://www.sachianail.com/pitem/M00000144`});
+        await this.fetchProductPriceDetail({name: '測試', href: `https://www.sachianail.com/pitem/M00000043`});
     }
 
     /** --------------------------------------------------------------------------- 關於puppeteer util的部分 --------------------------------------------------------------------------- */
@@ -372,7 +426,7 @@ class sashanailgel_scraper {
     }
 
     /** 從element去找出selector route -=> getSelectorRoute = `#div > .class > tag`*/
-    getSelectorRoute = async (page,elementHandle) => {
+    getSelectorRoute = async (page, elementHandle) => {
         return await page.evaluate(element => {
             const getSelector = (el) => {
                 if (el.id) {
@@ -467,6 +521,11 @@ class sashanailgel_scraper {
             const context = await brow.createBrowserContext();
             return {page: await context.newPage(), browser: brow};
         } else return {page: await brow.newPage(), browser: brow};
+    }
+
+    async finish() {
+        // this.printSucceedFailureLog();
+        await this.browser.close()
     }
 
     async clickSolution(page, element) {
@@ -616,9 +675,15 @@ if (configerer.DEBUG_MODE) {
             }
 
 
-        const handler = new sashanailgel_scraper(await getBrowser(true));
+            const handler = new sashanailgel_scraper(await getBrowser(DISABLE_OF_OPEN_BROWSER));
+
+            /**
+             * 測試單一品項抓取detail的function
+             * await handler.sampleOfFetchSingleItem();
+             * */
             // await handler.sampleOfFetchSingleItem();
             await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
+            await handler.finish();
         }
     )();
 }

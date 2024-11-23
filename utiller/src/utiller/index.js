@@ -2263,6 +2263,17 @@ class Utiller {
 
     /** puppeteer 的 fetch function
      * 使用這個function的朋友必須安裝puppeteer:v23.6
+     * dom => <p id='_id' class='_class'>innerText /p>
+     * dom的物件型態為 CdpElementHandler
+     * * */
+    async fetchElementAttribute(dom,attr='innerText',defaultValue = '') {
+        return await dom.evaluate((el) => el[attr]);
+    }
+
+    /** puppeteer 的 fetch function
+     * 使用這個function的朋友必須安裝puppeteer:v23.6
+     *
+     * dom的物件型態為 CdpElementHandler
      * */
     async fetchElementAttributes(dom, stringOfTrait, defaultValue = '', ...attributes) {
         const element = await dom.$(stringOfTrait);
@@ -2283,6 +2294,7 @@ class Utiller {
     /** puppeteer 的 write dom function
      * 使用這個function的朋友必須安裝puppeteer:v23.6
      * attribute = {name:value}; // {value:'100000'}, {src:'http://123.com'}
+     * dom的物件型態為 CdpElementHandler
      * */
     async writeElementAttributes(dom, stringOfTrait, ...attributes) {
         const element = await dom.$(stringOfTrait);
