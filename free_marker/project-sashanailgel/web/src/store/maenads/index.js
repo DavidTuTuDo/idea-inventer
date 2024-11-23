@@ -18,9 +18,8 @@ class MaenadsStore extends BaseMaenadsStore {
             const param = component.propsMobX().paramObject;
             if (param) {
                 const booze = param.booze;
-                console.log(booze);
                 this.setBooze(booze);
-                this.setPhoto(booze.headPhoto);
+                this.setPhoto(booze.photoOfHead);
                 this.setPrice(booze.rangeOfPrice);
                 this.setCount(`未選擇`);
                 this.setOptions(..._.filter(booze.options,option => option.count > 0));

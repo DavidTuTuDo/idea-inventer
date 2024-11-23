@@ -3,7 +3,6 @@ import Api from './api';
 import {utiller as Util, pooller as InfinitePool, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
 import Listener from './listener'
-import firebase from "./base/FirebaseHelper";
 import libpath from 'path';
 import config from './config';
 import moment from 'moment';
@@ -85,13 +84,31 @@ import fs from 'fs';
         await worker.runByEachTask(tasks);
     }
 
+    function normalizeStatement(string) {
+        // 將輸入文字按換行符拆分成陣列
+        const lines = string.split('\n');
+
+        // 過濾掉包含表情符號或特定關鍵詞的行
+        const filteredLines = _.filter(lines, (line) => {
+            return !line.trim().match(/💓Sachia 美學|🔎賣場IG:|請搭配/);
+        });
+
+        // 保留換行結構並重組成字符串
+        return filteredLines.join('\n').trim();
+    }
+
     async function uploadProducts() {
         await api.deleteBoozes(true);
-        const items = Util.getFileContextInJSON('./latest_sasha_of_products_detail.json');
-        await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 30).map(product => {
+        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1732339837301.json');
+        await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
             return {
                 ...product, price: Util.findLowestValue(product.options),
-                rangeOfPrice: Util.getStringOfValueRange(product.options)
+                rangeOfPrice: Util.getStringOfValueRange(product.options),
+                statement: normalizeStatement(product.introduce.statement),
+                photos: product.introduce.photos,
+                photoOfDemo: product.headPhoto,
+                stringOfMainType:product.type,
+                stringOfSubType:product.subType,
             }
         }));
     }

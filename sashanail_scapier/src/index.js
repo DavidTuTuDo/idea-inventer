@@ -69,7 +69,8 @@ import puppeteer from 'puppeteer';
 
 const THREAD_OF_FETCHER = 1;
 const THREAD_OF_DETAIL_PRODUCT = 7;
-const PRINT_REPORT_OF_PRODUCTS_DETAIL = true; /** 列印出product_detail.json */
+const PRINT_REPORT_OF_PRODUCTS_DETAIL = true;
+/** 列印出product_detail.json */
 const USE_PERSISTENT_FILE = true;//'sasha_product_list.json'
 const VISIBLE_OF_FETCH_PRODUCT = true;
 
@@ -237,10 +238,11 @@ class sashanailgel_scraper {
         await poolOfFetchProductDetail.runByParams(async (product) => {
             try {
                 const productDetail = await self.fetchProductPriceDetail(product);
-                productsOfDetail.push({...product, options: this.mergeArraysByName(product.options, productDetail.options),
+                productsOfDetail.push({
+                    ...product, options: this.mergeArraysByName(product.options, productDetail.options),
                     headPhoto: productDetail.headPhoto,
-                    serial:productDetail.serial,
-                    introduce:productDetail.introduce
+                    serial: productDetail.serial,
+                    introduce: productDetail.introduce
                 })
             } catch (error) {
                 console.log(`PRODUCT:${product.name} 抓取DETAIL資料失敗：`, error.message)
@@ -334,7 +336,7 @@ class sashanailgel_scraper {
             const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
             const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
             console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
-            const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '','innerText');
+            const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '', 'innerText');
             const headPhoto = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
             const introduce = await fetchIntroduceOfProductDetail()
 
@@ -363,7 +365,10 @@ class sashanailgel_scraper {
                 optionsInCart.push({name: _.trim(nameOfOption), count: _.toNumber(countOfMax)})
             }
 
-            const result = {serial, introduce, headPhoto, options: this.mergeArraysByName(options, optionsInCart)}
+            const result = {
+                serial, statement: introduce.statement,
+                photos: introduce.photos, photoOfDemo: headPhoto, options: this.mergeArraysByName(options, optionsInCart)
+            }
             console.log(result);
             return result;
         } catch (error) {

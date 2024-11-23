@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -585,6 +587,14 @@ class CommonStyle {
 
   BacchusFuncDiv = {};
 
+  BacchusDetailContentPhotoHrefImg = {};
+
+  BacchusDetailContentPhotoDivList = {};
+
+  BacchusDetailContentPhotoDiv = {};
+
+  BacchusDetailContentStatementTypography = {};
+
   BacchusDetailContentDiv = {};
 
   BacchusDetailAreaOfBenefitArrowIconNavigateNext = {};
@@ -661,7 +671,7 @@ class CommonStyle {
 
   DionysusBoozeNameTypography = {};
 
-  DionysusBoozeHeadPhotoImg = {};
+  DionysusBoozePhotoOfDemoImg = {};
 
   DionysusBoozeDivSkeleton = {};
 

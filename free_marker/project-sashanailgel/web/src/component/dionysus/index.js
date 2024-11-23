@@ -18,6 +18,13 @@ class DionysusComponent extends BaseDionysusComponent {
     super(props);
   }
 
+  getBoozePhotoOfHead(booze) {
+    const url = super.getBoozePhotoOfHead(booze);
+    console.log(url)
+    console.log(typeof url)
+    return url;
+  }
+
   onDionysusBoozeCartIconButtonClicked(param) {
     const booze = param.object;
     Router.gotoBacchusDetailPage(this.getComponentInstance(),booze.getId(),booze.columnData());
