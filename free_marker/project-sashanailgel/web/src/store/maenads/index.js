@@ -19,7 +19,7 @@ class MaenadsStore extends BaseMaenadsStore {
             if (param) {
                 const booze = param.booze;
                 this.setBooze(booze);
-                this.setPhoto(booze.photoOfHead);
+                this.setPhoto(booze.photoOfDemo);
                 this.setPrice(booze.rangeOfPrice);
                 this.setCount(`未選擇`);
                 this.setOptions(..._.filter(booze.options,option => option.count > 0));
