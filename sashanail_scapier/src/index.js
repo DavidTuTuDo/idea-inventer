@@ -67,17 +67,15 @@ import puppeteer from 'puppeteer';
  *
  */
 
-const THREAD_OF_FETCHER = 1;
-const THREAD_OF_DETAIL_PRODUCT = 7;
-const PRINT_REPORT_OF_PRODUCTS_DETAIL = true;
+const THREAD_OF_INFO_FETCHER = 1; //取得sasha_product_list.json sasha_of_product_catalog.json，這裡只要 > 1, subType的項目就拿取不穩定
+const THREAD_OF_DETAIL_PRODUCT = 7; // 抓取detail的，因為網頁會擋multi-page，所以每個商品會要新開一個browser
+const PRINT_REPORT_OF_PRODUCTS_DETAIL = true; //列印出 XXX.json
 /** 列印出product_detail.json */
 const USE_PERSISTENT_FILE = true;//'sasha_product_list.json'
-const VISIBLE_OF_FETCH_PRODUCT = true;
-
-const RANDOM_LIST_ENABLE = true;
-const SIZE_OF_RANDOM = 60;
-const FETCH_LIST_ONLY = true;
-const DISABLE_OF_OPEN_BROWSER = true;
+const RANDOM_LIST_ENABLE = true;//不要全拿，隨機拿幾個做測試
+const SIZE_OF_RANDOM = 100;//如果 RANDOM_LIST_ENABLE = true, 要拿幾個product detail
+const FETCH_LIST_ONLY = false;//只會取得取得sasha_product_list.json | sasha_of_product_catalog.json
+const ENABLE_OF_OPEN_BROWSER = false;
 
 class sashanailgel_scraper {
 
@@ -94,21 +92,21 @@ class sashanailgel_scraper {
         for (const each of rowElement) {
             const barElement = await each.$('.mbcUshop-firstLvBarItem > a');  // 获取父元素
             const titleText = await barElement.evaluate(el => {
-                return {href: el.href, type: el.innerText}
+                return {href: el.href, labelOfType: el.innerText}
             });
-            pages.push({index: _.indexOf(rowElement, each), ...titleText});
+            pages.push({valueOfType: _.indexOf(rowElement, each), ...titleText});
         }
         await page.close();
         return pages;
     }
 
-    async fetchProductsInPage({href, type, subType = 'empty'}) {
+    async fetchProductsInPage({href, valueOfType, valueOfSubType, labelOfType, labelOfSubType} = {}) {
         const productsOfBrief = {};
         const page = await this.browser.newPage();
         await page.goto(href, {waitUntil: 'networkidle2', timeout: 0});
-        console.log(`打開了${type}-${subType} PATH:${href}`)
+        console.log(`打開了${labelOfType}-${labelOfSubType} PATH:${href}`)
         await this.scrollToBottomAndCheck(page);
-        if (THREAD_OF_FETCHER > 1)
+        if (THREAD_OF_INFO_FETCHER > 1)
             await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000)
         await Util.syncDelay(Util.getRandomValue(500, 1000));
         await page.bringToFront();
@@ -124,15 +122,16 @@ class sashanailgel_scraper {
                 const srcValue = await Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'empty', 'href')
                 const subs = []
                 const subItemOptionElement = await each.$$('.addon-select option');
-                for (const items of subItemOptionElement) {
-                    subs.push(await items.evaluate(((el) => {
+                for (const item of subItemOptionElement) {
+                    const sub = await item.evaluate(((el) => {
                         if (el.value && parseInt(el.value) > 0)
                             return {name: el.innerText, value: el.value}
-                    })))
+                    }))
+                    subs.push({...sub, index: _.indexOf(subItemOptionElement, item)})
                 }
                 productsOfBrief[srcValue] = {
                     index: _.toNumber(`${head}${tail}`),
-                    type, subType,
+                    valueOfType, valueOfSubType,
                     name: titleText,
                     options: _.filter(subs, sub => !_.isUndefined(sub)).map(each => {
                         return {name: _.trim(each.name), value: _.toNumber(each.value)}
@@ -151,17 +150,18 @@ class sashanailgel_scraper {
         const pages = [];
         await Util.syncDelay(Util.getRandomValue(500, 1000));
         await page.bringToFront(); // 将目标页面带到前台
-        if (THREAD_OF_FETCHER > 1)
+        if (THREAD_OF_INFO_FETCHER > 1)
             await this.waitSelectorTilAppear(page, `#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container`, 30000)
         const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > li');
-        console.log('商品主項目：', pathObj.type, ' 有副項目：', _.size(listOfSubType));
+        console.log('商品主項目：', pathObj.labelOfType, ' 有副項目：', _.size(listOfSubType));
         if (_.size(listOfSubType) > 0) {
             for (const subtitle of listOfSubType) {
                 const subtitleElement = await subtitle.$('a');
                 const objectOfSubtitle = await subtitleElement.evaluate(el => {
-                    return {href: el.href, subType: el.innerText}
+                    return {href: el.href, labelOfSubType: el.innerText}
                 });
-                pages.push({...objectOfSubtitle, type: pathObj.type})
+                delete pathObj.href;
+                pages.push({...objectOfSubtitle, ...pathObj, valueOfSubType: _.indexOf(listOfSubType, subtitle)})
             }
             await page.close()
             return pages;
@@ -187,11 +187,9 @@ class sashanailgel_scraper {
             return id > 0 && _.isEqual(path, 'plist');
         })
 
-
         const targets = [];
-
         /** 抓取商品Catalog */
-        let poolOfSubType = new InfinitePool(THREAD_OF_FETCHER)
+        let poolOfSubType = new InfinitePool(THREAD_OF_INFO_FETCHER)
         poolOfSubType.enableTaskTimeout(true, 100000);
         await poolOfSubType.runByParams(async (param) => {
             const pages = await self.fetchSubTypeOfProduct(param);
@@ -205,7 +203,7 @@ class sashanailgel_scraper {
          * 將 sasha_of_product_catalog.json 裡的path全都觸及至底後fetch
          * */
         const objectOfProducts = {}
-        const poolOfFetchProduct = new InfinitePool(THREAD_OF_FETCHER)
+        const poolOfFetchProduct = new InfinitePool(THREAD_OF_INFO_FETCHER)
         poolOfSubType.enableTaskTimeout(true, 100000);
         await poolOfFetchProduct.runByParams(async (param) => {
             const products = await self.fetchProductsInPage(param);
@@ -219,7 +217,7 @@ class sashanailgel_scraper {
             await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
 
         if (FETCH_LIST_ONLY) {
-            Util.appendInfo(`以取得商品資訊列表，不繼續拿detail資訊`)
+            Util.appendInfo(`已取得商品資訊列表，不繼續拿detail資訊`)
             return;
         }
 
@@ -228,6 +226,7 @@ class sashanailgel_scraper {
 
     async fetchWholeProductDetailBehavior(list) {
         /** 抓取商品細項資訊 */
+
         const self = this;
         const productsOfDetail = [];
         const listOfFailFetch = [];
@@ -238,11 +237,14 @@ class sashanailgel_scraper {
         await poolOfFetchProductDetail.runByParams(async (product) => {
             try {
                 const productDetail = await self.fetchProductPriceDetail(product);
+                /**
+                 * brief page -> detail page
+                 * brief page商品的裡面有 序號(integer) 所有和 detail page的option 做merge
+                 * */
+                const options = this.mergeArraysByName(product.options, productDetail.options)
+                delete productDetail.options
                 productsOfDetail.push({
-                    ...product, options: this.mergeArraysByName(product.options, productDetail.options),
-                    headPhoto: productDetail.headPhoto,
-                    serial: productDetail.serial,
-                    introduce: productDetail.introduce
+                    ...product, options,...productDetail
                 })
             } catch (error) {
                 console.log(`PRODUCT:${product.name} 抓取DETAIL資料失敗：`, error.message)
@@ -263,7 +265,7 @@ class sashanailgel_scraper {
 
     fetchProductPriceDetail = async (product) => {
         const self = this;
-        const {browser, page} = await this.getBrowserPage(VISIBLE_OF_FETCH_PRODUCT, true);
+        const {browser, page} = await this.getBrowserPage(ENABLE_OF_OPEN_BROWSER, true);
         const path = product.href;
         const options = [];
 
@@ -337,7 +339,7 @@ class sashanailgel_scraper {
             const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
             console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
             const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '', 'innerText');
-            const headPhoto = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
+            const photoOfDemo = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
             const introduce = await fetchIntroduceOfProductDetail()
 
             for (const element of optionsOfProductNPriceDetails) {
@@ -367,7 +369,7 @@ class sashanailgel_scraper {
 
             const result = {
                 serial, statement: introduce.statement,
-                photos: introduce.photos, photoOfDemo: headPhoto, options: this.mergeArraysByName(options, optionsInCart)
+                photos: introduce.photos, photoOfDemo: photoOfDemo, options: this.mergeArraysByName(options, optionsInCart)
             }
             console.log(result);
             return result;
@@ -591,7 +593,6 @@ class sashanailgel_scraper {
             while (Date.now() - startTime < timeout) {
                 // 1. 檢查元素是否存在
                 const elementExists = await page.$(selector);
-
                 if (elementExists) {
                     // 2. 檢查元素的 visibility 和 display 屬性是否符合要求
                     const isVisible = await page.evaluate((selector) => {
@@ -678,10 +679,7 @@ if (configerer.DEBUG_MODE) {
                 for (const page of await browser.pages()) await page.close();
                 return browser;
             }
-
-
-            const handler = new sashanailgel_scraper(await getBrowser(DISABLE_OF_OPEN_BROWSER));
-
+            const handler = new sashanailgel_scraper(await getBrowser(ENABLE_OF_OPEN_BROWSER));
             /**
              * 測試單一品項抓取detail的function
              * await handler.sampleOfFetchSingleItem();
