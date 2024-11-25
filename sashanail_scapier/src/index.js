@@ -254,11 +254,11 @@ class sashanailgel_scraper {
         }, ...listOfProduct);
 
         if (PRINT_REPORT_OF_PRODUCTS_DETAIL) {
-            const curret = Util.getCurrentTimeStamp();
+            const current = Util.getCurrentTimeStamp();
             if (_.size(productsOfDetail) > 0)
-                await Util.persistJsonFilePrettier(`./sasha_of_products_detail_${curret}.json`, productsOfDetail);
+                await Util.persistJsonFilePrettier(`./sasha_of_products_detail_${current}.json`, productsOfDetail);
             if (_.size(listOfFailFetch) > 0)
-                await Util.persistJsonFilePrettier(`./sasha_of_products_list_failure_${curret}.json`, listOfFailFetch);
+                await Util.persistJsonFilePrettier(`./sasha_of_products_list_failure_${current}.json`, listOfFailFetch);
         }
     }
 

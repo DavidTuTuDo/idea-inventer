@@ -99,16 +99,18 @@ import fs from 'fs';
 
     async function uploadProducts() {
         await api.deleteBoozes(true);
-        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1732339837301.json');
-        await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
+        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1732518401530.json');
+        console.log(_.size(items));
+        // await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
+        await api.submitBoozes(items.map(product => {
             return {
                 ...product, price: Util.findLowestValue(product.options),
                 rangeOfPrice: Util.getStringOfValueRange(product.options),
-                statement: normalizeStatement(product.introduce.statement),
-                photos: product.introduce.photos,
-                photoOfDemo: product.headPhoto,
-                stringOfMainType:product.type,
-                stringOfSubType:product.subType,
+                statement: normalizeStatement(product.statement),
+                photos: product.photos,
+                photoOfDemo: product.photoOfDemo,
+                valueOfMainType:product.valueOfMainType,
+                valueOfSubType:product.valueOfSubType,
             }
         }));
     }

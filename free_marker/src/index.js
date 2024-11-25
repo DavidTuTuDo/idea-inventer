@@ -8992,6 +8992,9 @@ class ProjectFileHandler extends PathBase {
             appendPropsOfNode(node, node.isTabListView,
                 [
                     {centered: `###true`},
+                    {variant: "scrollable"},
+                    {scrollButtons: true},
+                    {allowScrollButtonsMobile: true},
                     {value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}], [],
                 [
                     {
