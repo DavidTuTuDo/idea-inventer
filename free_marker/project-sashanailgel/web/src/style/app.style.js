@@ -77,6 +77,58 @@ class AppStyle {
 
   MainEditorDiv = {};
 
+  /** => following for navigator  component  */
+
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
+  NavigatorDrawerShortcutIconImg = {};
+
+  NavigatorDrawerShortcutTitleTypography = {};
+
+  NavigatorDrawerShortcutListItemSkeleton = {};
+
+  NavigatorDrawerShortcutListList = {};
+
+  NavigatorDrawerShortcutListItem = {};
+
+  NavigatorDrawerDrawer = {};
+
+  NavigatorToolBarTipOfLoadingCircularProgress = {};
+
+  NavigatorToolBarAccountIconAccountCircle = {};
+
+  NavigatorToolBarAccountReactFragmentWrap = {};
+
+  NavigatorToolBarAccountIconButton = {};
+
+  NavigatorToolBarLoginButton = {};
+
+  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
+
+  NavigatorToolBarCompleteInputOfCompleteTextField = {};
+
+  NavigatorToolBarCompleteAutocomplete = {};
+
+  NavigatorToolBarTitleTypography = {};
+
+  NavigatorToolBarMenuIconMenuRounded = {};
+
+  NavigatorToolBarMenuIconButton = {};
+
+  NavigatorToolBarAppBarWrap = {};
+
+  NavigatorToolBarToolbar = {};
+
+  NavigatorDiv = {};
+
   /** => following for infoOfCopyRightContent  component  */
 
   InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};

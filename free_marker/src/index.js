@@ -80,7 +80,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/icons-material`,
-            views: ['EditCalendarRounded', 'SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'AccountCircle', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
+            views: ['EditCalendarRounded', 'SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
         },
         {
             from: `@mui/material`,
@@ -119,6 +119,9 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    scrollable = false;
+    /** 如果MUI Tab是可滾動的，就設為true */
 
     price = false
     /** 如果是幣值，就會用Util.formatPrice() */
@@ -889,6 +892,10 @@ class CodegenNode {
 
     getTypeOfTextField() {
         return this.typeOfTextField;
+    }
+
+    beingScrollable() {
+        return _.isEqual(this.scrollable, true);
     }
 
     hasTypeOfTextField() {
@@ -8989,12 +8996,12 @@ class ProjectFileHandler extends PathBase {
                 }],
             )
 
+            const propsOfTab = node.isTabListView('list') && node.beingScrollable() ?
+                [{variant: "scrollable"}, {scrollButtons: true}, {allowScrollButtonsMobile: true}] : [{centered: true}]
+
             appendPropsOfNode(node, node.isTabListView,
                 [
-                    {centered: `###true`},
-                    {variant: "scrollable"},
-                    {scrollButtons: true},
-                    {allowScrollButtonsMobile: true},
+                    ...propsOfTab,
                     {value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}], [],
                 [
                     {
@@ -9124,7 +9131,6 @@ class ProjectFileHandler extends PathBase {
             if (node && node.isReferenceNode()) {
 
                 const nodeOfReference = node.getNodeOfReference();
-                console.log(`455465 ref: =======>  ${node.ref}`)
                 node.ref = nodeOfReference;
 
                 if (node.imitate) {
