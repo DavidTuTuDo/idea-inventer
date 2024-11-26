@@ -6508,7 +6508,7 @@ class AppBuilder extends ComponentBuilder {
                         defaultValue: cookie.defaultValue
                     })
                 )
-                baseCookieGenerator.appendFunction(Util.camel(`set`, cookie.name), [`${cookie.name}`, `options`], [], [],
+                baseCookieGenerator.appendFunction(Util.camel(`set`, cookie.name), [`${cookie.name}`, `options`], [], [`options相關設定值參考https://www.npmjs.com/package/universal-cookie`],
                     `if(${cookie.name} === undefined) { this.${Util.camel(`remove`, cookie.name)}(); return }`,
                     cookie.isObject() ? `${cookie.name} = JSON.stringify(${cookie.name})` : ``,
                     `this.cookie.set(`,

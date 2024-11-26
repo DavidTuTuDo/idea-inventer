@@ -4,6 +4,7 @@ import BaseCartieComponent from "./BaseCartieComponent";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
+import Router from '../../router';
 import {observer} from "mobx-react";
 
 @inject("cartie")
@@ -33,6 +34,10 @@ class CartieComponent extends BaseCartieComponent {
     onCartieBriefCancelIconButtonClicked(param) {
         const brief = param.object;
         brief.remove();
+    }
+
+    onCartieSubmitChipClicked(param) {
+        Router.gotoHermesPage(this);
     }
 
     /** -------------------- async api -------------------- **/

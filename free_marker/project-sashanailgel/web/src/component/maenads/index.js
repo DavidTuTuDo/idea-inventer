@@ -54,7 +54,6 @@ class MaenadsComponent extends BaseMaenadsComponent {
     onMaenadsIncreaseIconButtonClicked(param) {
         super.onMaenadsIncreaseIconButtonClicked(param);
         this.getStore().validateCountOfOrder();
-
     }
 
     onMaenadsDecreaseIconButtonClicked(param) {
@@ -66,7 +65,14 @@ class MaenadsComponent extends BaseMaenadsComponent {
         if (this.getStore().getIndexOfSelected() < 0) {
             this.getComponentInstance(true).showWarningSnackMessage(`尚未選擇商品`)
         } else {
+            const maenads = param.object;
+            const idOfBooze = maenads.getBooze().id;
+            const idOfOption = maenads.getOptions()[this.getStore().getIndexOfSelected()].getValue();
+            const count = _.toInteger(this.getStore().getCountOfSubmit())
+            UserInfoRef.joinItemToCart({idOfBooze, idOfOption, count});
+            Util.appendInfo({idOfBooze, idOfOption, count});
             this.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
+            this.dismiss();
         }
     }
 

@@ -88,6 +88,7 @@ class UserInfo {
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.isAdminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
         this.setAuthProcessing(false);
+        this.invalidateCartie();
     }
 
     isLoginWithSucceed() {
@@ -170,6 +171,27 @@ class UserInfo {
 
     isAuthProcessing() {
         return this.isAuthProcessingState;
+    }
+
+    /** 購物車邏輯 */
+    joinItemToCart = ({idOfBooze = '', idOfOption = '', idOfChoice = '', count}) => {
+        const infoOfCartie = Cookie.getInfoOfCartie();
+        const key = [idOfBooze, idOfOption, idOfChoice].filter(each => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
+        const object = infoOfCartie[key];
+        if (object) object.count = object.count + count;
+        else infoOfCartie[key] = {idOfBooze, idOfOption, idOfChoice, count};
+        Cookie.setInfoOfCartie(infoOfCartie)
+        this.invalidateCartie(infoOfCartie)
+    }
+
+    deleteItemFromCart(key) {
+
+    }
+
+    invalidateCartie = (cartie) => {
+        const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
+        const countsOfBadge = _.sum(_.values(infoOfCartie).map(info => info.count));
+        Application.getNavigatorStore().getToolBar().setBadgeOfCartie(countsOfBadge);
     }
 
 }
