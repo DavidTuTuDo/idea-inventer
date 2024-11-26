@@ -707,6 +707,8 @@ class CommonStyle {
 
   BacchusBannerSwiperSlide = {};
 
+  BacchusDivWrap = {};
+
   BacchusDiv = {};
 
   /** => following for dionysus  component  */

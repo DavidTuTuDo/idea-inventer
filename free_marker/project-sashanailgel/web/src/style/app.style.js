@@ -707,6 +707,8 @@ class AppStyle {
 
   BacchusBannerSwiperSlide = {};
 
+  BacchusDivWrap = {};
+
   BacchusDiv = {};
 
   /** => following for dionysus  component  */

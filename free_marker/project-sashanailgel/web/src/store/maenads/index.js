@@ -49,7 +49,7 @@ class MaenadsStore extends BaseMaenadsStore {
         const current = _.toNumber(this.getCountOfSubmit());
         if(increase) {
             const result = _.sum([current,1]);
-            this.setCountOfSubmit(current > this.getCount() ? current : result)
+            this.setCountOfSubmit(current >= this.getCount() ? current : result)
         }else {
             const result = _.sum([current,-1]);
             this.setCountOfSubmit(current < 2 ? current : result)
