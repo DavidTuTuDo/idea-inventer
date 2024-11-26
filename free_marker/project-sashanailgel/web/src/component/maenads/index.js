@@ -41,13 +41,14 @@ class MaenadsComponent extends BaseMaenadsComponent {
     }
 
     getMaenadsCount(maenads) {
-        const count =  super.getMaenadsCount(maenads);
+        const count = super.getMaenadsCount(maenads);
         return count > 0 ? ` 剩 ${count} 個` : `未選擇`;
     }
 
     getMaenadsPrice(maenads) {
         const price = super.getMaenadsPrice(maenads);
-        return ` ＄${price}`;
+        const judgement = _.startsWith(_.trim(price), '$') || _.startsWith(_.trim(price), '＄');
+        return judgement ? price : `＄${price}`;
     }
 
     onMaenadsIncreaseIconButtonClicked(param) {
@@ -62,7 +63,7 @@ class MaenadsComponent extends BaseMaenadsComponent {
     }
 
     onMaenadsSubmitChipClicked(param) {
-        if(this.getStore().getIndexOfSelected() < 0) {
+        if (this.getStore().getIndexOfSelected() < 0) {
             this.getComponentInstance(true).showWarningSnackMessage(`尚未選擇商品`)
         } else {
             this.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
