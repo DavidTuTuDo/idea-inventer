@@ -125,6 +125,8 @@ class AppStyle {
 
   NavigatorToolBarCompleteAutocomplete = {};
 
+  NavigatorToolBarTitleDivWrap = {};
+
   NavigatorToolBarTitleTypography = {};
 
   NavigatorToolBarMenuIconMenuRounded = {};

@@ -62,11 +62,21 @@
   }
 }
 .NavigatorToolBarTitleTypography {
-  width: 80px;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   @media @mobile {
     font-size: 1rem;
-    width: 50px;
+  }
+  @media @tablet {
+    font-size: 1rem;
+  }
+  @media @desktop {
+    font-size: 1.2rem;
+  }
+}
+.NavigatorToolBarTitleDivWrap:extend(.CenterInParentColumn) {
+  padding-right: 10px;
+  @media @mobile {
+    /** empty style */
   }
   @media @tablet {
     /** empty style */

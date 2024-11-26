@@ -22,7 +22,7 @@ class NavigatorToolBarStore extends ModularizedNavigatorToolBarStore {
   }
 
   getTitle() {
-    return '莎夏';
+    return '莎夏美學';
   }
 
   /** -------------------- async api -------------------- **/

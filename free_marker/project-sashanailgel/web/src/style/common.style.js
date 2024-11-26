@@ -125,6 +125,8 @@ class CommonStyle {
 
   NavigatorToolBarCompleteAutocomplete = {};
 
+  NavigatorToolBarTitleDivWrap = {};
+
   NavigatorToolBarTitleTypography = {};
 
   NavigatorToolBarMenuIconMenuRounded = {};

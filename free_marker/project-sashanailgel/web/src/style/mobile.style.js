@@ -125,6 +125,8 @@ class MobileStyle {
 
   NavigatorToolBarCompleteAutocomplete = {};
 
+  NavigatorToolBarTitleDivWrap = {};
+
   NavigatorToolBarTitleTypography = {};
 
   NavigatorToolBarMenuIconMenuRounded = {};
