@@ -2165,6 +2165,11 @@ class CodegenNode {
         return !!this.cookies && _.size(this.cookies) > 0;
     }
 
+    getCookies() {
+        const node = this.getNodeOfComponent();
+        return _.isArray(node.cookies)? node.cookies: [];
+    }
+
     needInjectStyle() {
         return !!this.injectStyle && this.injectStyle;
     }
@@ -3727,8 +3732,9 @@ class ClassGenerator {
                 _.isEqual(folderName, 'style'),
                 _.isEqual(folderName, 'less'),
                 _.isEqual(folderName, 'src'),
-                _.isEqual(fileName, 'BaseMyRouter'),
                 _.isEqual(folderName, 'store'),
+                _.isEqual(fileName, 'BaseCookie'), /** rapid mode 只針對concrete file */
+                _.isEqual(fileName, 'BaseMyRouter'), /** rapid mode 只針對concrete file */
                 _.isEqual(folderName, 'config') && !_.isEqual(fileNameExtension, 'index.js'),
                 (Util.isOrEquals(folderName, ...LANGUAGES_OF_SUPPORT) && !_.isEqual(fileNameExtension, 'index.js')),
             )
@@ -6463,14 +6469,40 @@ class AppBuilder extends ComponentBuilder {
 
     async buildCookieFiles() {
 
-        if (this.nodeOfAncestor.hasCookies()) {
+        // appendXXX() {
+        //
+        // }
+        //
+        // setXXX() {
+        //
+        // }
+        //
+        // deleteXXX() {
+        //
+        // }
+        //
+        // removeXXXByIndex() {
+        //
+        // }
+
+        const self = this;
+        function  getCookiesOfModules(){
+            const cookies = [];
+            for(const component of self.getComponents()) {
+                cookies.push(...component.getCookies())
+            }
+            return cookies;
+        }
+
+        const cookies = getCookiesOfModules();
+        if (_.size(cookies) > 1) {
             const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`), this.nodeOfAncestor);
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
             baseCookieGenerator.appendField(`cookie`, `new Cookies()`);
             baseCookieGenerator.appendField('password', 'Config.password');
-            for (const cookie of this.nodeOfAncestor.cookies) {
+            for (const cookie of cookies) {
                 baseCookieGenerator.appendField(cookie.name, JSON.stringify({
                         key: cookie.name,
                         defaultValue: cookie.defaultValue
@@ -9456,11 +9488,11 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(this.getProps()).buildAppIndexFiles();
         await new AppBuilder(this.getProps()).buildI18n();
         await new AppBuilder(this.getProps()).buildRouterFile();
+        await new AppBuilder(this.getProps()).buildCookieFiles();
         await this.buildDistAssetFolder();
         if (!ENABLE_FAST_DEVELOP_MODE) {
             await new AppBuilder(this.getProps()).buildWebpackNPackageJson();
             await new AppBuilder(this.getProps()).buildCloudFunctionsApi();
-            await new AppBuilder(this.getProps()).buildCookieFiles();
             await new AppBuilder(this.getProps()).buildEventFolder(totalEvents);
             await new AppBuilder(this.getProps()).buildHtmlIndexAssetsFile();
         }
@@ -9550,6 +9582,7 @@ class ProjectFileHandler extends PathBase {
                     _.startsWith(file.fileName, `Base${_.upperFirst(TARGET_COMPONENT_FAST_DEVELOP_MODE)}`)),
                 _.isEqual(file.dirName, 'less'),
                 _.isEqual(file.dirName, 'style'),
+                (_.isEqual(file.dirName, 'cookie') && _.isEqual(file.fileNameExtension, 'BaseCookie.js')),
                 (_.isEqual(file.dirName, 'router') && _.isEqual(file.fileNameExtension, 'BaseMyRouter.js')),
                 (_.isEqual(file.dirName, 'config') && !_.isEqual(file.fileName, 'index')),
                 (_.isEqual(file.dirName, 'store') && _.isEqual(file.fileName, 'BaseStore')),
