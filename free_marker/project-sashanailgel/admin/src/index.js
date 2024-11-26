@@ -107,10 +107,7 @@ import fs from 'fs';
                 ...product, price: Util.findLowestValue(product.options),
                 rangeOfPrice: Util.getStringOfValueRange(product.options),
                 statement: normalizeStatement(product.statement),
-                photos: product.photos,
-                photoOfDemo: product.photoOfDemo,
-                valueOfMainType:product.valueOfMainType,
-                valueOfSubType:product.valueOfSubType,
+                options: _.filter(product.options,(option) => !Util.isUndefinedNullEmpty(option.name))
             }
         }));
     }

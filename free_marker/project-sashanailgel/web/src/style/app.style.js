@@ -103,13 +103,21 @@ class AppStyle {
 
   NavigatorToolBarTipOfLoadingCircularProgress = {};
 
+  NavigatorToolBarLoginIconLogin = {};
+
+  NavigatorToolBarLoginIconButton = {};
+
+  NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
+
+  NavigatorToolBarCartieBadgeOfCartieBadge = {};
+
+  NavigatorToolBarCartieIconButton = {};
+
   NavigatorToolBarAccountIconAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};
 
   NavigatorToolBarAccountIconButton = {};
-
-  NavigatorToolBarLoginButton = {};
 
   NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 

@@ -84,7 +84,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: ['Checkbox', 'Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
+            views: ['Badge', 'Checkbox', 'Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
                 'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
         },
@@ -119,6 +119,12 @@ const VIEW_IMPORTS =
     ]
 
 class CodegenNode {
+
+    propsOfIcon = {};
+    /** iconButton 有設定icon={} 時，可以inject props進去給<icon ...props /> */
+
+    propsOfBadge = {};
+    /** iconButton 有設定badge={true} 時，可以inject props進去給<Badge ...props /> */
 
     scrollable = false;
     /** 如果MUI Tab是可滾動的，就設為true */
@@ -236,6 +242,9 @@ class CodegenNode {
 
     icon
     /** 在iconButton 和 Button都有作用 */
+
+    badge = false;
+    /** iconButton需要Badge count 的設計 */
 
     iconOfDeleted
     /** 用在<Chip /> */
@@ -886,6 +895,10 @@ class CodegenNode {
         return this.icon ?? '';
     }
 
+    needBadge() {
+        return _.isEqual(this.badge, true);
+    }
+
     hasIconOfDeleted() {
         return !_.isEmpty(this.iconOfDeleted);
     }
@@ -1475,8 +1488,8 @@ class CodegenNode {
     }
 
     isContainer() {
-        return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide'
-            , 'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider');
+        return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
+            'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider');
     }
 
     getFunctionNameOfSwiper() {
@@ -1683,7 +1696,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
     }
@@ -2281,6 +2294,10 @@ class CodegenNode {
 
     isTabItemView(type = 'default') {
         return this.isAttributeView('Tab', type);
+    }
+
+    isBadgeView(type = 'default') {
+        return this.isAttributeView('Badge', type);
     }
 
     isTabListView(type = 'default', node = this) {
@@ -8775,10 +8792,33 @@ class ProjectFileHandler extends PathBase {
                             node.appendViewProps(obj);
                             break;
                         case 'IconButton':
-                            node.appendChildrenWithJsons({
-                                name: 'icon',
-                                view: node.getIcon()
-                            })
+                            const needBadge = node.needBadge();
+                            if (needBadge) {
+                                node.needParam = true;
+                                node.appendChildrenWithJsons(
+                                    {
+                                        name: `${Util.camel('badge', 'of', node.getName())}`,
+                                        incest: {view: false, attribute: true},
+                                        needParam: true,
+                                        defaultValue: 0,
+                                        props: node.propsOfBadge,
+                                        view: 'Badge',
+                                        type: 'number',
+                                        children: [{
+                                            name: 'icon',
+                                            needParam: true,
+                                            props: node.propsOfIcon,
+                                            view: node.getIcon()
+                                        }]
+                                    },
+                                )
+                            } else {
+                                node.appendChildrenWithJsons({
+                                    name: 'icon',
+                                    props: node.propsOfIcon,
+                                    view: node.getIcon()
+                                })
+                            }
                             break;
                         default:
                             break
@@ -8828,6 +8868,8 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({src: `###${node.getName()}`})
             } else if (node.isTabItemView()) {
                 node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
+            } else if (node.isBadgeView()) {
+                node.appendViewProps({badgeContent: `###${node.getName()}`})
             } else if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView() || node.isAutoCompleteView()) {
                 /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {

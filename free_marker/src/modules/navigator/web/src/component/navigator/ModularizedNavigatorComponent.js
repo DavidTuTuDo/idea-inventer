@@ -36,7 +36,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         Router.gotoMainPage(this.getComponentInstance());
     }
 
-    onNavigatorToolBarLoginButtonClicked(param) {
+    onNavigatorToolBarLoginIconButtonClicked(param) {
         BaseUserInfo.performLoginBehavior(this.getComponentInstance()).then();
     }
 
@@ -180,7 +180,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(),true);
     }
 
-    getInjectStyleOfNavigatorToolBarLoginButton(toolBar) {
+    getInjectStyleOfNavigatorToolBarLoginIconButton(toolBar) {
         return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing() ,true);
     }
 
@@ -188,6 +188,13 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         return Util.getVisibleOrNone(UserInfo.isAuthProcessing() ,true);
     }
 
+    onNavigatorToolBarCartieIconButtonClicked(param) {
+        Router.gotoCartiePage(this);
+    }
+
+    getInjectStyleOfNavigatorToolBarCartieIconButton(toolBar) {
+        return Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0,true);
+    }
 
 
 }

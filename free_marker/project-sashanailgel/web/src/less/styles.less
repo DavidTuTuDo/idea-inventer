@@ -5206,7 +5206,6 @@
   }
 }
 .NavigatorToolBarMenuIconButton {
-  margin-right: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -5244,7 +5243,7 @@
 }
 .NavigatorToolBarCompleteAutocomplete {
   flex-grow: 1;
-  margin-right: 20px;
+  margin-right: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -5280,19 +5279,7 @@
     /** empty style */
   }
 }
-.NavigatorToolBarLoginButton {
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 .NavigatorToolBarAccountIconButton {
-  background-color: rgba(255, 255, 255, 0.9);
   height: 32px;
   width: 32px;
   @media @mobile {
@@ -5317,8 +5304,61 @@
   }
 }
 .NavigatorToolBarAccountIconAccountCircle {
-  height: 40px;
-  width: 40px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCartieIconButton:extend(.NavigatorToolBarAccountIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCartieBadgeOfCartieBadge {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCartieBadgeOfCartieIconShoppingCart:extend(.NavigatorToolBarAccountIconAccountCircle) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarLoginIconButton:extend(.NavigatorToolBarAccountIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarLoginIconLogin:extend(.NavigatorToolBarAccountIconAccountCircle) {
   @media @mobile {
     /** empty style */
   }
