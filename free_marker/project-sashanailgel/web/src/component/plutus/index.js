@@ -19,6 +19,10 @@ class PlutusComponent extends BasePlutusComponent {
     this.getCurrentLocation().then(result => console.log(result));
   }
 
+  getWrapInjectStyleOfPlutusWholeCheckbox(plutus) {
+    return Util.getVisibleOrHidden(false);
+  }
+
   onCitySelectedChange(value, param) {
     const self =this;
     Util.syncDelay(1).then(() => {

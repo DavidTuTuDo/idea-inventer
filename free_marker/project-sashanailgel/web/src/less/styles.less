@@ -2635,7 +2635,6 @@
 
 .CartieDiv:extend(.CenterInParentColumn) {
   width: 100%;
-  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -2659,7 +2658,22 @@
     max-width: 880px;
   }
 }
-.CartieBriefDiv:extend(.CenterInParentRow) {
+.CartieMainDiv:extend(.CenterInParentColumn) {
+  justify-content: flex-start;
+  min-height: 90vh;
+  gap: 10px;
+  width: 100%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.CartieMainBriefDiv:extend(.CenterInParentRow) {
   width: 100%;
   gap: 10px;
   padding-left: 8px;
@@ -2673,7 +2687,7 @@
     /** empty style */
   }
 }
-.CartieBriefDivList:extend(.CenterInParentColumn) {
+.CartieMainBriefDivList:extend(.CenterInParentColumn) {
   width: 96%;
   gap: 10px;
   margin-top: 10px;
@@ -2687,7 +2701,7 @@
     width: 100%;
   }
 }
-.CartieBriefSureCheckbox {
+.CartieMainBriefSureCheckbox {
   @media @mobile {
     /** empty style */
   }
@@ -2698,7 +2712,7 @@
     /** empty style */
   }
 }
-.CartieBriefSureDivWrap:extend(.CenterInParentRow) {
+.CartieMainBriefSureDivWrap:extend(.CenterInParentRow) {
   width: 5%;
   @media @mobile {
     /** empty style */
@@ -2710,7 +2724,7 @@
     /** empty style */
   }
 }
-.CartieBriefPhotoImg {
+.CartieMainBriefPhotoImg {
   width: 30%;
   border-radius: 5px;
   @media @mobile {
@@ -2723,9 +2737,9 @@
     width: 15%;
   }
 }
-.CartieBriefSpecDiv:extend(.CenterInParentColumn) {
+.CartieMainBriefSpecDiv:extend(.CenterInParentColumn) {
   width: 60%;
-  align-items: start;
+  align-items: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -2736,7 +2750,7 @@
     width: 75%;
   }
 }
-.CartieBriefSpecFullDiv:extend(.CenterInParentRow) {
+.CartieMainBriefSpecFullDiv:extend(.CenterInParentRow) {
   width: 100%;
   justify-content: space-between;
   @media @mobile {
@@ -2749,7 +2763,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecFullNameTypography {
+.CartieMainBriefSpecFullNameTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2760,7 +2774,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecFullCancelIconButton {
+.CartieMainBriefSpecFullCancelIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -2771,7 +2785,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecFullCancelReactFragmentWrap {
+.CartieMainBriefSpecFullCancelReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -2782,7 +2796,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecFullCancelIconDeleteForeverRounded {
+.CartieMainBriefSpecFullCancelIconDeleteForeverRounded {
   @media @mobile {
     /** empty style */
   }
@@ -2793,7 +2807,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecNameOfOptionChip {
+.CartieMainBriefSpecNameOfOptionChip {
   @media @mobile {
     /** empty style */
   }
@@ -2804,7 +2818,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecInfoOfBenefitTypography {
+.CartieMainBriefSpecInfoOfBenefitTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2815,7 +2829,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandDiv:extend(.CenterInParentRow) {
+.CartieMainBriefSpecLandDiv:extend(.CenterInParentRow) {
   width: 100%;
   justify-content: space-between;
   @media @mobile {
@@ -2828,7 +2842,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandMainDiv:extend(.CenterInParentRow) {
+.CartieMainBriefSpecLandMainDiv:extend(.CenterInParentRow) {
   align-items: end;
   gap: 15px;
   @media @mobile {
@@ -2841,7 +2855,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandMainPriceTypography {
+.CartieMainBriefSpecLandMainPriceTypography {
   font-size: 1.5rem;
   color: darkred;
   line-height: 1.4rem;
@@ -2855,7 +2869,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandMainPriceDivWrap:extend(.CenterInParentRow) {
+.CartieMainBriefSpecLandMainPriceDivWrap:extend(.CenterInParentRow) {
   gap: 3px;
   align-items: end;
   @media @mobile {
@@ -2868,7 +2882,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandMainPriceLabelOfPriceTypography {
+.CartieMainBriefSpecLandMainPriceLabelOfPriceTypography {
   color: darkred;
   line-height: 0.8rem;
   font-size: 0.8rem;
@@ -2882,7 +2896,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandMainPriceOfOriginTypography {
+.CartieMainBriefSpecLandMainPriceOfOriginTypography {
   text-decoration: line-through;
   color: lightgrey;
   line-height: 1rem;
@@ -2896,7 +2910,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityDiv:extend(.MaenadsDecisionConclusionOfQuantityDiv) {
+.CartieMainBriefSpecLandConclusionOfQuantityDiv:extend(.MaenadsDecisionConclusionOfQuantityDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -2907,7 +2921,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityDivWrap {
+.CartieMainBriefSpecLandConclusionOfQuantityDivWrap {
   @media @mobile {
     /** empty style */
   }
@@ -2918,7 +2932,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityDecreaseIconButton {
+.CartieMainBriefSpecLandConclusionOfQuantityDecreaseIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -2929,7 +2943,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityDecreaseIconRemove {
+.CartieMainBriefSpecLandConclusionOfQuantityDecreaseIconRemove {
   @media @mobile {
     /** empty style */
   }
@@ -2940,7 +2954,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityCountOfSubmitTextField:extend(.MaenadsDecisionConclusionOfQuantityCountOfSubmitTextField) {
+.CartieMainBriefSpecLandConclusionOfQuantityCountOfSubmitTextField:extend(.MaenadsDecisionConclusionOfQuantityCountOfSubmitTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -2951,7 +2965,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityIncreaseIconButton {
+.CartieMainBriefSpecLandConclusionOfQuantityIncreaseIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -2962,7 +2976,7 @@
     /** empty style */
   }
 }
-.CartieBriefSpecLandConclusionOfQuantityIncreaseIconAdd {
+.CartieMainBriefSpecLandConclusionOfQuantityIncreaseIconAdd {
   @media @mobile {
     /** empty style */
   }
@@ -2973,7 +2987,7 @@
     /** empty style */
   }
 }
-.CartieSummariseDiv:extend(.CenterInParentColumn) {
+.CartieMainSummariseDiv:extend(.CenterInParentColumn) {
   width: 100%;
   align-items: flex-start;
   @media @mobile {
@@ -2986,7 +3000,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceWithoutDiscountTypography {
+.CartieMainSummarisePriceWithoutDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2997,8 +3011,8 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceWithoutDiscountDivWrap:extend(.CenterInParentRow) {
-  justify-content: start;
+.CartieMainSummarisePriceWithoutDiscountDivWrap:extend(.CenterInParentRow) {
+  justify-content: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -3009,7 +3023,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography {
+.CartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3020,7 +3034,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfDiscountTypography {
+.CartieMainSummarisePriceOfDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3031,7 +3045,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfDiscountDivWrap:extend(.CartieSummarisePriceWithoutDiscountDivWrap) {
+.CartieMainSummarisePriceOfDiscountDivWrap:extend(.CartieMainSummarisePriceWithoutDiscountDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3042,7 +3056,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography {
+.CartieMainSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3053,7 +3067,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfTransportTypography {
+.CartieMainSummarisePriceOfTransportTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3064,7 +3078,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfTransportDivWrap:extend(.CartieSummarisePriceWithoutDiscountDivWrap) {
+.CartieMainSummarisePriceOfTransportDivWrap:extend(.CartieMainSummarisePriceWithoutDiscountDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3075,7 +3089,7 @@
     /** empty style */
   }
 }
-.CartieSummarisePriceOfTransportLabelOfPriceOfTransportTypography {
+.CartieMainSummarisePriceOfTransportLabelOfPriceOfTransportTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3086,7 +3100,7 @@
     /** empty style */
   }
 }
-.CartieSummariseDiscountOfMemberTypography {
+.CartieMainSummariseDiscountOfMemberTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3097,7 +3111,7 @@
     /** empty style */
   }
 }
-.CartieSummariseDiscountOfMemberDivWrap:extend(.CartieSummarisePriceWithoutDiscountDivWrap) {
+.CartieMainSummariseDiscountOfMemberDivWrap:extend(.CartieMainSummarisePriceWithoutDiscountDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3108,7 +3122,7 @@
     /** empty style */
   }
 }
-.CartieSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography {
+.CartieMainSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3119,11 +3133,11 @@
     /** empty style */
   }
 }
-.CartieFuncDiv:extend(.CenterInParentRow) {
+.CartieFuncOfCheckoutDiv:extend(.CenterInParentRow) {
   width: 100%;
   background: #f7f7f7;
   opacity: 0.85;
-  justify-content: start;
+  justify-content: flex-start;
   height: 45px;
   @media @mobile {
     /** empty style */
@@ -3135,7 +3149,7 @@
     /** empty style */
   }
 }
-.CartieFuncDivWrap {
+.CartieFuncOfCheckoutDivWrap {
   width: 100%;
   position: sticky;
   bottom: 0px;
@@ -3151,7 +3165,7 @@
     /** empty style */
   }
 }
-.CartieFuncWholeCheckbox {
+.CartieFuncOfCheckoutWholeCheckbox {
   @media @mobile {
     /** empty style */
   }
@@ -3162,10 +3176,10 @@
     margin-left: 15px;
   }
 }
-.CartieFuncWholeDivWrap:extend(.CenterInParentRow) {
+.CartieFuncOfCheckoutWholeDivWrap:extend(.CenterInParentRow) {
   flex-direction: row-reverse;
-  justify-content: start;
-  width: 20%;
+  justify-content: flex-start;
+  width: 18%;
   @media @mobile {
     /** empty style */
   }
@@ -3176,7 +3190,8 @@
     /** empty style */
   }
 }
-.CartieFuncWholeLabelOfWholeTypography {
+.CartieFuncOfCheckoutWholeLabelOfWholeTypography {
+  font-size: 0.8rem;
   @media @mobile {
     /** empty style */
   }
@@ -3185,9 +3200,10 @@
   }
   @media @desktop {
     /** empty style */
+    font-size: 1rem;
   }
 }
-.CartieFuncPriceOfTotalTypography {
+.CartieFuncOfCheckoutPriceOfTotalTypography {
   color: darkred;
   font-size: 1.3rem;
   @media @mobile {
@@ -3200,8 +3216,8 @@
     /** empty style */
   }
 }
-.CartieFuncPriceOfTotalDivWrap:extend(.CenterInParentRow) {
-  width: 45%;
+.CartieFuncOfCheckoutPriceOfTotalDivWrap:extend(.CenterInParentRow) {
+  width: 47%;
   gap: 10px;
   @media @mobile {
     /** empty style */
@@ -3213,7 +3229,7 @@
     /** empty style */
   }
 }
-.CartieFuncPriceOfTotalLabelOfPriceOfTotalTypography {
+.CartieFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography {
   color: darkred;
   font-size: 0.8rem;
   @media @mobile {
@@ -3226,7 +3242,7 @@
     /** empty style */
   }
 }
-.CartieFuncSubmitChip {
+.CartieFuncOfCheckoutSubmitChip {
   width: 95%;
   height: 80%;
   @media @mobile {
@@ -3239,7 +3255,7 @@
     /** empty style */
   }
 }
-.CartieFuncSubmitDivWrap:extend(.CenterInParentRow) {
+.CartieFuncOfCheckoutSubmitDivWrap:extend(.CenterInParentRow) {
   width: 33%;
   height: 100%;
   justify-content: end;
@@ -3277,7 +3293,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    max-width: 880px;
   }
 }
 .HermesTransportDiv:extend(.CenterInParentRow) {
@@ -3296,7 +3312,9 @@
   }
 }
 .HermesTransportDivList:extend(.CenterInParentColumn) {
+  justify-content: flex-start;
   width: 100%;
+  min-height: 90vh;
   @media @mobile {
     /** empty style */
   }
@@ -3427,12 +3445,122 @@
     /** empty style */
   }
 }
+.HermesFuncOfCheckoutDiv:extend(.CartieFuncOfCheckoutDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutDivWrap:extend(.CartieFuncOfCheckoutDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutWholeCheckbox:extend(.CartieFuncOfCheckoutWholeCheckbox) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutWholeDivWrap:extend(.CartieFuncOfCheckoutWholeDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutWholeLabelOfWholeTypography:extend(.CartieFuncOfCheckoutWholeLabelOfWholeTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutPriceOfTotalTypography:extend(.CartieFuncOfCheckoutPriceOfTotalTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutPriceOfTotalDivWrap:extend(.CartieFuncOfCheckoutPriceOfTotalDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography:extend(.CartieFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutSubmitChip:extend(.CartieFuncOfCheckoutSubmitChip) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.HermesFuncOfCheckoutSubmitDivWrap:extend(.CartieFuncOfCheckoutSubmitDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 /** following for plutus  component used  */
 
 .PlutusDiv:extend(.CenterInParentColumn) {
   width: 100%;
   align-items: flex-start;
-  gap: 10px;
+  padding-top: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -3456,7 +3584,22 @@
     max-width: 880px;
   }
 }
-.PlutusNameTextField {
+.PlutusMainDiv:extend(.CenterInParentColumn) {
+  width: 100%;
+  justify-content: flex-start;
+  min-height: 90vh;
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusMainNameTextField {
   width: 83%;
   @media @mobile {
     /** empty style */
@@ -3468,7 +3611,7 @@
     /** empty style */
   }
 }
-.PlutusNameDivWrap:extend(.CenterInParentRow) {
+.PlutusMainNameDivWrap:extend(.CenterInParentRow) {
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -3480,7 +3623,7 @@
     /** empty style */
   }
 }
-.PlutusNameLabelOfNameTypography {
+.PlutusMainNameLabelOfNameTypography {
   width: 14%;
   @media @mobile {
     /** empty style */
@@ -3492,7 +3635,7 @@
     /** empty style */
   }
 }
-.PlutusEmailTextField:extend(.PlutusNameTextField) {
+.PlutusMainEmailTextField:extend(.PlutusMainNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -3503,7 +3646,7 @@
     /** empty style */
   }
 }
-.PlutusEmailDivWrap:extend(.PlutusNameDivWrap) {
+.PlutusMainEmailDivWrap:extend(.PlutusMainNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3514,7 +3657,7 @@
     /** empty style */
   }
 }
-.PlutusEmailLabelOfEmailTypography:extend(.PlutusNameLabelOfNameTypography) {
+.PlutusMainEmailLabelOfEmailTypography:extend(.PlutusMainNameLabelOfNameTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3525,7 +3668,7 @@
     /** empty style */
   }
 }
-.PlutusPhoneTextField:extend(.PlutusNameTextField) {
+.PlutusMainPhoneTextField:extend(.PlutusMainNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -3536,7 +3679,7 @@
     /** empty style */
   }
 }
-.PlutusPhoneDivWrap:extend(.PlutusNameDivWrap) {
+.PlutusMainPhoneDivWrap:extend(.PlutusMainNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3547,7 +3690,7 @@
     /** empty style */
   }
 }
-.PlutusPhoneLabelOfPhoneTypography:extend(.PlutusNameLabelOfNameTypography) {
+.PlutusMainPhoneLabelOfPhoneTypography:extend(.PlutusMainNameLabelOfNameTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3558,7 +3701,7 @@
     /** empty style */
   }
 }
-.PlutusLocationDiv:extend(.PlutusNameDivWrap) {
+.PlutusMainLocationDiv:extend(.PlutusMainNameDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3569,7 +3712,7 @@
     /** empty style */
   }
 }
-.PlutusLocationHeadLabelOfAddressTypography:extend(.PlutusNameLabelOfNameTypography) {
+.PlutusMainLocationHeadLabelOfAddressTypography:extend(.PlutusMainNameLabelOfNameTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3580,7 +3723,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainDiv:extend(.CenterInParentColumn) {
+.PlutusMainLocationMainDiv:extend(.CenterInParentColumn) {
   width: 83%;
   gap: 8px;
   @media @mobile {
@@ -3593,7 +3736,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainHeadDiv:extend(.CenterInParentRow) {
+.PlutusMainLocationMainHeadDiv:extend(.CenterInParentRow) {
   width: 100%;
   justify-content: space-between;
   @media @mobile {
@@ -3606,7 +3749,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainHeadCityTextFieldList {
+.PlutusMainLocationMainHeadCityTextFieldList {
   width: 48%;
   @media @mobile {
     /** empty style */
@@ -3618,7 +3761,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainHeadCityMenuItem {
+.PlutusMainLocationMainHeadCityMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -3629,7 +3772,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainHeadDistrictTextFieldList {
+.PlutusMainLocationMainHeadDistrictTextFieldList {
   width: 48%;
   @media @mobile {
     /** empty style */
@@ -3641,7 +3784,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainHeadDistrictMenuItem {
+.PlutusMainLocationMainHeadDistrictMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -3652,7 +3795,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainTailDiv:extend(.CenterInParentRow) {
+.PlutusMainLocationMainTailDiv:extend(.CenterInParentRow) {
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -3664,7 +3807,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainTailAddressTextField {
+.PlutusMainLocationMainTailAddressTextField {
   width: 90%;
   @media @mobile {
     /** empty style */
@@ -3676,7 +3819,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainTailFindIconButton {
+.PlutusMainLocationMainTailFindIconButton {
   @media @mobile {
     /** empty style */
   }
@@ -3687,7 +3830,7 @@
     /** empty style */
   }
 }
-.PlutusLocationMainTailFindIconWifiFind {
+.PlutusMainLocationMainTailFindIconWifiFind {
   @media @mobile {
     /** empty style */
   }
@@ -3698,7 +3841,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseDiv:extend(.CenterInParentColumn) {
+.PlutusMainSummariseDiv:extend(.CenterInParentColumn) {
   width: 100%;
   @media @mobile {
     /** empty style */
@@ -3710,7 +3853,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFirstDiv:extend(.CenterInParentRow) {
+.PlutusMainSummariseFirstDiv:extend(.CenterInParentRow) {
   width: 100%;
   justify-content: flex-start;
   height: 30px;
@@ -3724,7 +3867,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFirstHeadLabelOfPriceTypography {
+.PlutusMainSummariseFirstHeadLabelOfPriceTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3735,7 +3878,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFirstHeadLabelOfPriceDivWrap:extend(.CenterInParentColumn) {
+.PlutusMainSummariseFirstHeadLabelOfPriceDivWrap:extend(.CenterInParentColumn) {
   width: 40%;
   align-items: flex-start;
   @media @mobile {
@@ -3748,7 +3891,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFirstPriceTypography {
+.PlutusMainSummariseFirstPriceTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3759,7 +3902,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFirstPriceDivWrap:extend(.CenterInParentRow) {
+.PlutusMainSummariseFirstPriceDivWrap:extend(.CenterInParentRow) {
   width: 60%;
   justify-content: flex-end;
   @media @mobile {
@@ -3772,7 +3915,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFirstPriceLabelOfPriceTypography {
+.PlutusMainSummariseFirstPriceLabelOfPriceTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3783,7 +3926,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseSecondDiv:extend(.PlutusSummariseFirstDiv) {
+.PlutusMainSummariseSecondDiv:extend(.PlutusMainSummariseFirstDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -3794,7 +3937,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseSecondHeadLabelOfDiscountTypography {
+.PlutusMainSummariseSecondHeadLabelOfDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3805,7 +3948,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseSecondHeadLabelOfDiscountDivWrap:extend(.PlutusSummariseFirstHeadLabelOfPriceDivWrap) {
+.PlutusMainSummariseSecondHeadLabelOfDiscountDivWrap:extend(.PlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3816,7 +3959,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseSecondDiscountTypography {
+.PlutusMainSummariseSecondDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3827,7 +3970,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseSecondDiscountDivWrap:extend(.PlutusSummariseFirstPriceDivWrap) {
+.PlutusMainSummariseSecondDiscountDivWrap:extend(.PlutusMainSummariseFirstPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3838,7 +3981,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseSecondDiscountLabelOfDiscountTypography {
+.PlutusMainSummariseSecondDiscountLabelOfDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3849,7 +3992,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseThirdDiv:extend(.PlutusSummariseFirstDiv) {
+.PlutusMainSummariseThirdDiv:extend(.PlutusMainSummariseFirstDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -3860,7 +4003,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseThirdHeadLabelOfTransportTypography {
+.PlutusMainSummariseThirdHeadLabelOfTransportTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3871,7 +4014,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseThirdHeadLabelOfTransportDivWrap:extend(.PlutusSummariseFirstHeadLabelOfPriceDivWrap) {
+.PlutusMainSummariseThirdHeadLabelOfTransportDivWrap:extend(.PlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3882,7 +4025,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseThirdFeeOfTransportTypography {
+.PlutusMainSummariseThirdFeeOfTransportTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3893,7 +4036,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseThirdFeeOfTransportDivWrap:extend(.PlutusSummariseFirstPriceDivWrap) {
+.PlutusMainSummariseThirdFeeOfTransportDivWrap:extend(.PlutusMainSummariseFirstPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3904,7 +4047,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseThirdFeeOfTransportLabelOfFeeOfTransportTypography {
+.PlutusMainSummariseThirdFeeOfTransportLabelOfFeeOfTransportTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3915,7 +4058,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFourthDiv:extend(.PlutusSummariseFirstDiv) {
+.PlutusMainSummariseFourthDiv:extend(.PlutusMainSummariseFirstDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -3926,7 +4069,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFourthHeadLabelOfMemberDiscountTypography {
+.PlutusMainSummariseFourthHeadLabelOfMemberDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3937,7 +4080,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFourthHeadLabelOfMemberDiscountDivWrap:extend(.PlutusSummariseFirstHeadLabelOfPriceDivWrap) {
+.PlutusMainSummariseFourthHeadLabelOfMemberDiscountDivWrap:extend(.PlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3948,7 +4091,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFourthFeeOfMemberDiscountTypography {
+.PlutusMainSummariseFourthFeeOfMemberDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3959,7 +4102,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFourthFeeOfMemberDiscountDivWrap:extend(.PlutusSummariseFirstPriceDivWrap) {
+.PlutusMainSummariseFourthFeeOfMemberDiscountDivWrap:extend(.PlutusMainSummariseFirstPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -3970,7 +4113,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFourthFeeOfMemberDiscountLabelOfFeeOfMemberDiscountTypography {
+.PlutusMainSummariseFourthFeeOfMemberDiscountLabelOfFeeOfMemberDiscountTypography {
   @media @mobile {
     /** empty style */
   }
@@ -3981,7 +4124,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFifthDiv:extend(.PlutusSummariseFirstDiv) {
+.PlutusMainSummariseFifthDiv:extend(.PlutusMainSummariseFirstDiv) {
   @media @mobile {
     /** empty style */
   }
@@ -3992,7 +4135,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFifthHeadLabelOfPaymentTypography {
+.PlutusMainSummariseFifthHeadLabelOfPaymentTypography {
   @media @mobile {
     /** empty style */
   }
@@ -4003,7 +4146,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFifthHeadLabelOfPaymentDivWrap:extend(.PlutusSummariseFirstHeadLabelOfPriceDivWrap) {
+.PlutusMainSummariseFifthHeadLabelOfPaymentDivWrap:extend(.PlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -4014,7 +4157,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFifthFeeOfPaymentTypography {
+.PlutusMainSummariseFifthFeeOfPaymentTypography {
   @media @mobile {
     /** empty style */
   }
@@ -4025,7 +4168,7 @@
     /** empty style */
   }
 }
-.PlutusSummariseFifthFeeOfPaymentDivWrap:extend(.PlutusSummariseFirstPriceDivWrap) {
+.PlutusMainSummariseFifthFeeOfPaymentDivWrap:extend(.PlutusMainSummariseFirstPriceDivWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -4036,7 +4179,117 @@
     /** empty style */
   }
 }
-.PlutusSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography {
+.PlutusMainSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutDiv:extend(.CartieFuncOfCheckoutDiv) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutDivWrap:extend(.CartieFuncOfCheckoutDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutWholeCheckbox:extend(.CartieFuncOfCheckoutWholeCheckbox) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutWholeDivWrap:extend(.CartieFuncOfCheckoutWholeDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutWholeLabelOfWholeTypography:extend(.CartieFuncOfCheckoutWholeLabelOfWholeTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutPriceOfTotalTypography:extend(.CartieFuncOfCheckoutPriceOfTotalTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutPriceOfTotalDivWrap:extend(.CartieFuncOfCheckoutPriceOfTotalDivWrap) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography:extend(.CartieFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutSubmitChip:extend(.CartieFuncOfCheckoutSubmitChip) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.PlutusFuncOfCheckoutSubmitDivWrap:extend(.CartieFuncOfCheckoutSubmitDivWrap) {
   @media @mobile {
     /** empty style */
   }

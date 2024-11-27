@@ -337,115 +337,157 @@ class AppStyle {
 
   /** => following for plutus  component  */
 
-  PlutusSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography = {};
+  PlutusFuncOfCheckoutSubmitDivWrap = {};
 
-  PlutusSummariseFifthFeeOfPaymentDivWrap = {};
+  PlutusFuncOfCheckoutSubmitChip = {};
 
-  PlutusSummariseFifthFeeOfPaymentTypography = {};
+  PlutusFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography = {};
 
-  PlutusSummariseFifthHeadLabelOfPaymentDivWrap = {};
+  PlutusFuncOfCheckoutPriceOfTotalDivWrap = {};
 
-  PlutusSummariseFifthHeadLabelOfPaymentTypography = {};
+  PlutusFuncOfCheckoutPriceOfTotalTypography = {};
 
-  PlutusSummariseFifthDiv = {};
+  PlutusFuncOfCheckoutWholeLabelOfWholeTypography = {};
 
-  PlutusSummariseFourthFeeOfMemberDiscountLabelOfFeeOfMemberDiscountTypography = {};
+  PlutusFuncOfCheckoutWholeDivWrap = {};
 
-  PlutusSummariseFourthFeeOfMemberDiscountDivWrap = {};
+  PlutusFuncOfCheckoutWholeCheckbox = {};
 
-  PlutusSummariseFourthFeeOfMemberDiscountTypography = {};
+  PlutusFuncOfCheckoutDivWrap = {};
 
-  PlutusSummariseFourthHeadLabelOfMemberDiscountDivWrap = {};
+  PlutusFuncOfCheckoutDiv = {};
 
-  PlutusSummariseFourthHeadLabelOfMemberDiscountTypography = {};
+  PlutusMainSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography = {};
 
-  PlutusSummariseFourthDiv = {};
+  PlutusMainSummariseFifthFeeOfPaymentDivWrap = {};
 
-  PlutusSummariseThirdFeeOfTransportLabelOfFeeOfTransportTypography = {};
+  PlutusMainSummariseFifthFeeOfPaymentTypography = {};
 
-  PlutusSummariseThirdFeeOfTransportDivWrap = {};
+  PlutusMainSummariseFifthHeadLabelOfPaymentDivWrap = {};
 
-  PlutusSummariseThirdFeeOfTransportTypography = {};
+  PlutusMainSummariseFifthHeadLabelOfPaymentTypography = {};
 
-  PlutusSummariseThirdHeadLabelOfTransportDivWrap = {};
+  PlutusMainSummariseFifthDiv = {};
 
-  PlutusSummariseThirdHeadLabelOfTransportTypography = {};
+  PlutusMainSummariseFourthFeeOfMemberDiscountLabelOfFeeOfMemberDiscountTypography = {};
 
-  PlutusSummariseThirdDiv = {};
+  PlutusMainSummariseFourthFeeOfMemberDiscountDivWrap = {};
 
-  PlutusSummariseSecondDiscountLabelOfDiscountTypography = {};
+  PlutusMainSummariseFourthFeeOfMemberDiscountTypography = {};
 
-  PlutusSummariseSecondDiscountDivWrap = {};
+  PlutusMainSummariseFourthHeadLabelOfMemberDiscountDivWrap = {};
 
-  PlutusSummariseSecondDiscountTypography = {};
+  PlutusMainSummariseFourthHeadLabelOfMemberDiscountTypography = {};
 
-  PlutusSummariseSecondHeadLabelOfDiscountDivWrap = {};
+  PlutusMainSummariseFourthDiv = {};
 
-  PlutusSummariseSecondHeadLabelOfDiscountTypography = {};
+  PlutusMainSummariseThirdFeeOfTransportLabelOfFeeOfTransportTypography = {};
 
-  PlutusSummariseSecondDiv = {};
+  PlutusMainSummariseThirdFeeOfTransportDivWrap = {};
 
-  PlutusSummariseFirstPriceLabelOfPriceTypography = {};
+  PlutusMainSummariseThirdFeeOfTransportTypography = {};
 
-  PlutusSummariseFirstPriceDivWrap = {};
+  PlutusMainSummariseThirdHeadLabelOfTransportDivWrap = {};
 
-  PlutusSummariseFirstPriceTypography = {};
+  PlutusMainSummariseThirdHeadLabelOfTransportTypography = {};
 
-  PlutusSummariseFirstHeadLabelOfPriceDivWrap = {};
+  PlutusMainSummariseThirdDiv = {};
 
-  PlutusSummariseFirstHeadLabelOfPriceTypography = {};
+  PlutusMainSummariseSecondDiscountLabelOfDiscountTypography = {};
 
-  PlutusSummariseFirstDiv = {};
+  PlutusMainSummariseSecondDiscountDivWrap = {};
 
-  PlutusSummariseDiv = {};
+  PlutusMainSummariseSecondDiscountTypography = {};
 
-  PlutusLocationMainTailFindIconWifiFind = {};
+  PlutusMainSummariseSecondHeadLabelOfDiscountDivWrap = {};
 
-  PlutusLocationMainTailFindIconButton = {};
+  PlutusMainSummariseSecondHeadLabelOfDiscountTypography = {};
 
-  PlutusLocationMainTailAddressTextField = {};
+  PlutusMainSummariseSecondDiv = {};
 
-  PlutusLocationMainTailDiv = {};
+  PlutusMainSummariseFirstPriceLabelOfPriceTypography = {};
 
-  PlutusLocationMainHeadDistrictMenuItem = {};
+  PlutusMainSummariseFirstPriceDivWrap = {};
 
-  PlutusLocationMainHeadDistrictTextFieldList = {};
+  PlutusMainSummariseFirstPriceTypography = {};
 
-  PlutusLocationMainHeadCityMenuItem = {};
+  PlutusMainSummariseFirstHeadLabelOfPriceDivWrap = {};
 
-  PlutusLocationMainHeadCityTextFieldList = {};
+  PlutusMainSummariseFirstHeadLabelOfPriceTypography = {};
 
-  PlutusLocationMainHeadDiv = {};
+  PlutusMainSummariseFirstDiv = {};
 
-  PlutusLocationMainDiv = {};
+  PlutusMainSummariseDiv = {};
 
-  PlutusLocationHeadLabelOfAddressTypography = {};
+  PlutusMainLocationMainTailFindIconWifiFind = {};
 
-  PlutusLocationDiv = {};
+  PlutusMainLocationMainTailFindIconButton = {};
 
-  PlutusPhoneLabelOfPhoneTypography = {};
+  PlutusMainLocationMainTailAddressTextField = {};
 
-  PlutusPhoneDivWrap = {};
+  PlutusMainLocationMainTailDiv = {};
 
-  PlutusPhoneTextField = {};
+  PlutusMainLocationMainHeadDistrictMenuItem = {};
 
-  PlutusEmailLabelOfEmailTypography = {};
+  PlutusMainLocationMainHeadDistrictTextFieldList = {};
 
-  PlutusEmailDivWrap = {};
+  PlutusMainLocationMainHeadCityMenuItem = {};
 
-  PlutusEmailTextField = {};
+  PlutusMainLocationMainHeadCityTextFieldList = {};
 
-  PlutusNameLabelOfNameTypography = {};
+  PlutusMainLocationMainHeadDiv = {};
 
-  PlutusNameDivWrap = {};
+  PlutusMainLocationMainDiv = {};
 
-  PlutusNameTextField = {};
+  PlutusMainLocationHeadLabelOfAddressTypography = {};
+
+  PlutusMainLocationDiv = {};
+
+  PlutusMainPhoneLabelOfPhoneTypography = {};
+
+  PlutusMainPhoneDivWrap = {};
+
+  PlutusMainPhoneTextField = {};
+
+  PlutusMainEmailLabelOfEmailTypography = {};
+
+  PlutusMainEmailDivWrap = {};
+
+  PlutusMainEmailTextField = {};
+
+  PlutusMainNameLabelOfNameTypography = {};
+
+  PlutusMainNameDivWrap = {};
+
+  PlutusMainNameTextField = {};
+
+  PlutusMainDiv = {};
 
   PlutusDivWrap = {};
 
   PlutusDiv = {};
 
   /** => following for hermes  component  */
+
+  HermesFuncOfCheckoutSubmitDivWrap = {};
+
+  HermesFuncOfCheckoutSubmitChip = {};
+
+  HermesFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography = {};
+
+  HermesFuncOfCheckoutPriceOfTotalDivWrap = {};
+
+  HermesFuncOfCheckoutPriceOfTotalTypography = {};
+
+  HermesFuncOfCheckoutWholeLabelOfWholeTypography = {};
+
+  HermesFuncOfCheckoutWholeDivWrap = {};
+
+  HermesFuncOfCheckoutWholeCheckbox = {};
+
+  HermesFuncOfCheckoutDivWrap = {};
+
+  HermesFuncOfCheckoutDiv = {};
 
   HermesTransportPriceLabelOfPriceTypography = {};
 
@@ -477,103 +519,105 @@ class AppStyle {
 
   /** => following for cartie  component  */
 
-  CartieFuncSubmitDivWrap = {};
+  CartieFuncOfCheckoutSubmitDivWrap = {};
 
-  CartieFuncSubmitChip = {};
+  CartieFuncOfCheckoutSubmitChip = {};
 
-  CartieFuncPriceOfTotalLabelOfPriceOfTotalTypography = {};
+  CartieFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography = {};
 
-  CartieFuncPriceOfTotalDivWrap = {};
+  CartieFuncOfCheckoutPriceOfTotalDivWrap = {};
 
-  CartieFuncPriceOfTotalTypography = {};
+  CartieFuncOfCheckoutPriceOfTotalTypography = {};
 
-  CartieFuncWholeLabelOfWholeTypography = {};
+  CartieFuncOfCheckoutWholeLabelOfWholeTypography = {};
 
-  CartieFuncWholeDivWrap = {};
+  CartieFuncOfCheckoutWholeDivWrap = {};
 
-  CartieFuncWholeCheckbox = {};
+  CartieFuncOfCheckoutWholeCheckbox = {};
 
-  CartieFuncDivWrap = {};
+  CartieFuncOfCheckoutDivWrap = {};
 
-  CartieFuncDiv = {};
+  CartieFuncOfCheckoutDiv = {};
 
-  CartieSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography = {};
+  CartieMainSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography = {};
 
-  CartieSummariseDiscountOfMemberDivWrap = {};
+  CartieMainSummariseDiscountOfMemberDivWrap = {};
 
-  CartieSummariseDiscountOfMemberTypography = {};
+  CartieMainSummariseDiscountOfMemberTypography = {};
 
-  CartieSummarisePriceOfTransportLabelOfPriceOfTransportTypography = {};
+  CartieMainSummarisePriceOfTransportLabelOfPriceOfTransportTypography = {};
 
-  CartieSummarisePriceOfTransportDivWrap = {};
+  CartieMainSummarisePriceOfTransportDivWrap = {};
 
-  CartieSummarisePriceOfTransportTypography = {};
+  CartieMainSummarisePriceOfTransportTypography = {};
 
-  CartieSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography = {};
+  CartieMainSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography = {};
 
-  CartieSummarisePriceOfDiscountDivWrap = {};
+  CartieMainSummarisePriceOfDiscountDivWrap = {};
 
-  CartieSummarisePriceOfDiscountTypography = {};
+  CartieMainSummarisePriceOfDiscountTypography = {};
 
-  CartieSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography = {};
+  CartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography = {};
 
-  CartieSummarisePriceWithoutDiscountDivWrap = {};
+  CartieMainSummarisePriceWithoutDiscountDivWrap = {};
 
-  CartieSummarisePriceWithoutDiscountTypography = {};
+  CartieMainSummarisePriceWithoutDiscountTypography = {};
 
-  CartieSummariseDiv = {};
+  CartieMainSummariseDiv = {};
 
-  CartieBriefSpecLandConclusionOfQuantityIncreaseIconAdd = {};
+  CartieMainBriefSpecLandConclusionOfQuantityIncreaseIconAdd = {};
 
-  CartieBriefSpecLandConclusionOfQuantityIncreaseIconButton = {};
+  CartieMainBriefSpecLandConclusionOfQuantityIncreaseIconButton = {};
 
-  CartieBriefSpecLandConclusionOfQuantityCountOfSubmitTextField = {};
+  CartieMainBriefSpecLandConclusionOfQuantityCountOfSubmitTextField = {};
 
-  CartieBriefSpecLandConclusionOfQuantityDecreaseIconRemove = {};
+  CartieMainBriefSpecLandConclusionOfQuantityDecreaseIconRemove = {};
 
-  CartieBriefSpecLandConclusionOfQuantityDecreaseIconButton = {};
+  CartieMainBriefSpecLandConclusionOfQuantityDecreaseIconButton = {};
 
-  CartieBriefSpecLandConclusionOfQuantityDivWrap = {};
+  CartieMainBriefSpecLandConclusionOfQuantityDivWrap = {};
 
-  CartieBriefSpecLandConclusionOfQuantityDiv = {};
+  CartieMainBriefSpecLandConclusionOfQuantityDiv = {};
 
-  CartieBriefSpecLandMainPriceOfOriginTypography = {};
+  CartieMainBriefSpecLandMainPriceOfOriginTypography = {};
 
-  CartieBriefSpecLandMainPriceLabelOfPriceTypography = {};
+  CartieMainBriefSpecLandMainPriceLabelOfPriceTypography = {};
 
-  CartieBriefSpecLandMainPriceDivWrap = {};
+  CartieMainBriefSpecLandMainPriceDivWrap = {};
 
-  CartieBriefSpecLandMainPriceTypography = {};
+  CartieMainBriefSpecLandMainPriceTypography = {};
 
-  CartieBriefSpecLandMainDiv = {};
+  CartieMainBriefSpecLandMainDiv = {};
 
-  CartieBriefSpecLandDiv = {};
+  CartieMainBriefSpecLandDiv = {};
 
-  CartieBriefSpecInfoOfBenefitTypography = {};
+  CartieMainBriefSpecInfoOfBenefitTypography = {};
 
-  CartieBriefSpecNameOfOptionChip = {};
+  CartieMainBriefSpecNameOfOptionChip = {};
 
-  CartieBriefSpecFullCancelIconDeleteForeverRounded = {};
+  CartieMainBriefSpecFullCancelIconDeleteForeverRounded = {};
 
-  CartieBriefSpecFullCancelReactFragmentWrap = {};
+  CartieMainBriefSpecFullCancelReactFragmentWrap = {};
 
-  CartieBriefSpecFullCancelIconButton = {};
+  CartieMainBriefSpecFullCancelIconButton = {};
 
-  CartieBriefSpecFullNameTypography = {};
+  CartieMainBriefSpecFullNameTypography = {};
 
-  CartieBriefSpecFullDiv = {};
+  CartieMainBriefSpecFullDiv = {};
 
-  CartieBriefSpecDiv = {};
+  CartieMainBriefSpecDiv = {};
 
-  CartieBriefPhotoImg = {};
+  CartieMainBriefPhotoImg = {};
 
-  CartieBriefSureDivWrap = {};
+  CartieMainBriefSureDivWrap = {};
 
-  CartieBriefSureCheckbox = {};
+  CartieMainBriefSureCheckbox = {};
 
-  CartieBriefDivList = {};
+  CartieMainBriefDivList = {};
 
-  CartieBriefDiv = {};
+  CartieMainBriefDiv = {};
+
+  CartieMainDiv = {};
 
   CartieDivWrap = {};
 
