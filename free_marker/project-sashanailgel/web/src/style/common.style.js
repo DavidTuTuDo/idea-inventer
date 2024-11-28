@@ -579,7 +579,7 @@ class CommonStyle {
 
   CartieMainBriefSpecLandConclusionOfQuantityDiv = {};
 
-  CartieMainBriefSpecLandMainPriceOfOriginTypography = {};
+  CartieMainBriefSpecLandMainPriceB4DiscountTypography = {};
 
   CartieMainBriefSpecLandMainPriceLabelOfPriceTypography = {};
 
@@ -600,6 +600,8 @@ class CommonStyle {
   CartieMainBriefSpecFullCancelReactFragmentWrap = {};
 
   CartieMainBriefSpecFullCancelIconButton = {};
+
+  CartieMainBriefSpecFullNameDivWrap = {};
 
   CartieMainBriefSpecFullNameTypography = {};
 
@@ -663,7 +665,9 @@ class CommonStyle {
 
   MaenadsMainInfoCountTypography = {};
 
-  MaenadsMainInfoPriceTypography = {};
+  MaenadsMainInfoRowPriceTypography = {};
+
+  MaenadsMainInfoRowDiv = {};
 
   MaenadsMainInfoDiv = {};
 

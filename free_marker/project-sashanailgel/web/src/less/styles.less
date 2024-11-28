@@ -2379,7 +2379,9 @@
     /** empty style */
   }
 }
-.MaenadsMainInfoDiv {
+.MaenadsMainInfoDiv:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  height: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -2390,7 +2392,19 @@
     /** empty style */
   }
 }
-.MaenadsMainInfoPriceTypography {
+.MaenadsMainInfoRowDiv:extend(.CenterInParentRow) {
+  justify-content: flex-start;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.MaenadsMainInfoRowPriceTypography {
   @media @mobile {
     /** empty style */
   }
@@ -2713,7 +2727,7 @@
   }
 }
 .CartieMainBriefSureDivWrap:extend(.CenterInParentRow) {
-  width: 5%;
+  width: 7%;
   @media @mobile {
     /** empty style */
   }
@@ -2725,7 +2739,7 @@
   }
 }
 .CartieMainBriefPhotoImg {
-  width: 30%;
+  width: 28%;
   border-radius: 5px;
   @media @mobile {
     /** empty style */
@@ -2764,6 +2778,21 @@
   }
 }
 .CartieMainBriefSpecFullNameTypography {
+  font-size: 0.8rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    font-size: 1.1rem;
+  }
+}
+.CartieMainBriefSpecFullNameDivWrap:extend(.CenterInParentColumn) {
+  align-items: flex-start;
+  width: 85%;
+  height: 50px;
   @media @mobile {
     /** empty style */
   }
@@ -2775,6 +2804,7 @@
   }
 }
 .CartieMainBriefSpecFullCancelIconButton {
+  width: 15%;
   @media @mobile {
     /** empty style */
   }
@@ -2896,7 +2926,7 @@
     /** empty style */
   }
 }
-.CartieMainBriefSpecLandMainPriceOfOriginTypography {
+.CartieMainBriefSpecLandMainPriceB4DiscountTypography {
   text-decoration: line-through;
   color: lightgrey;
   line-height: 1rem;
@@ -2990,6 +3020,7 @@
 .CartieMainSummariseDiv:extend(.CenterInParentColumn) {
   width: 100%;
   align-items: flex-start;
+  gap: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -3001,6 +3032,8 @@
   }
 }
 .CartieMainSummarisePriceWithoutDiscountTypography {
+  font-size: 1.2rem;
+  line-height: 1.1rem;
   @media @mobile {
     /** empty style */
   }
@@ -3013,6 +3046,7 @@
 }
 .CartieMainSummarisePriceWithoutDiscountDivWrap:extend(.CenterInParentRow) {
   justify-content: flex-start;
+  align-items: flex-end;
   @media @mobile {
     /** empty style */
   }
@@ -3024,6 +3058,9 @@
   }
 }
 .CartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography {
+  color: darkred;
+  font-size: 0.9rem;
+  line-height: 0.9rem;
   @media @mobile {
     /** empty style */
   }
@@ -3034,7 +3071,7 @@
     /** empty style */
   }
 }
-.CartieMainSummarisePriceOfDiscountTypography {
+.CartieMainSummarisePriceOfDiscountTypography:extend(.CartieMainSummarisePriceWithoutDiscountTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3056,7 +3093,7 @@
     /** empty style */
   }
 }
-.CartieMainSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography {
+.CartieMainSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography:extend(.CartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3067,7 +3104,7 @@
     /** empty style */
   }
 }
-.CartieMainSummarisePriceOfTransportTypography {
+.CartieMainSummarisePriceOfTransportTypography:extend(.CartieMainSummarisePriceWithoutDiscountTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3089,7 +3126,7 @@
     /** empty style */
   }
 }
-.CartieMainSummarisePriceOfTransportLabelOfPriceOfTransportTypography {
+.CartieMainSummarisePriceOfTransportLabelOfPriceOfTransportTypography:extend(.CartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3100,7 +3137,7 @@
     /** empty style */
   }
 }
-.CartieMainSummariseDiscountOfMemberTypography {
+.CartieMainSummariseDiscountOfMemberTypography:extend(.CartieMainSummarisePriceWithoutDiscountTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3122,7 +3159,7 @@
     /** empty style */
   }
 }
-.CartieMainSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography {
+.CartieMainSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography:extend(.CartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -3199,7 +3236,6 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
     font-size: 1rem;
   }
 }

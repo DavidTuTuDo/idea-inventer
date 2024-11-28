@@ -26,13 +26,6 @@ class DionysusBoozeStore extends BaseDionysusBoozeStore {
         super(props);
     }
 
-    getPriceB4Discount() {
-        const result = super.getPriceB4Discount();
-        const present = result <= 0 ?
-            Math.round(_.sum([this.getPrice(), _.multiply(0.3, this.getPrice())])):result;
-        return `$ ${present}`;
-    }
-
     /** -------------------- async api -------------------- **/
 }
 

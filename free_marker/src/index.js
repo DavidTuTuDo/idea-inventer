@@ -83,6 +83,13 @@ const VIEW_IMPORTS =
             views: ['EditCalendarRounded', 'SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
         },
         {
+            from: `auto-text-size`,
+            object: true,
+            views: ['AutoTextSize'],
+            simplePath: true
+
+        },
+        {
             from: `@mui/material`,
             views: ['Badge', 'Checkbox', 'Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
                 'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
@@ -2285,6 +2292,9 @@ class CodegenNode {
         return this.isAttributeView('Typography', type, node);
     }
 
+    isAutoTextSize(type = 'default', node = this) {
+        return this.isAttributeView('Typography', type, node);
+    }
     isChipView(type = 'default', node = this) {
         return this.isAttributeView('Chip', type, node);
     }
@@ -5764,6 +5774,7 @@ class ComponentBuilder extends BaseBuilder {
                 const stmtOfGetter = `${_node.getFunctionNameInStoreGetter()}()`;
                 const stringOfParam = `${stmtOfHead}.${stmtOfGetter}`;
                 if (asFormat) return `return Util.getCustomFormatOfDatePresent(${stringOfParam},'${node.getFormat()}')`
+                else if (asComputed && asPrice) return `return Util.formatPrice(${stmtOfHead}.${_node.getFunctionNameInStoreComputedGetter()})`
                 else if (asComputed) return `return ${stmtOfHead}.${_node.getFunctionNameInStoreComputedGetter()}`
                 else if (asPrice) return `return Util.formatPrice(${stringOfParam})`;
                 else return `return ${stringOfParam}`
@@ -6469,22 +6480,6 @@ class AppBuilder extends ComponentBuilder {
 
     async buildCookieFiles() {
 
-        // appendXXX() {
-        //
-        // }
-        //
-        // setXXX() {
-        //
-        // }
-        //
-        // deleteXXX() {
-        //
-        // }
-        //
-        // removeXXXByIndex() {
-        //
-        // }
-
         const self = this;
         function  getCookiesOfModules(){
             const cookies = [];
@@ -6500,7 +6495,7 @@ class AppBuilder extends ComponentBuilder {
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
-            baseCookieGenerator.appendField(`cookie`, `new Cookies()`);
+            baseCookieGenerator.appendField(`cookie`, ` new Cookies(null, { path: '/' })`);
             baseCookieGenerator.appendField('password', 'Config.password');
             for (const cookie of cookies) {
                 baseCookieGenerator.appendField(cookie.name, JSON.stringify({
@@ -9661,7 +9656,7 @@ class ProjectFileHandler extends PathBase {
         await this.runInstallIfNeed();
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
-        // await this.removeEmptyFolder();
+        await this.removeEmptyFolder();
     }
 
     async functionsGenerateRelease() {

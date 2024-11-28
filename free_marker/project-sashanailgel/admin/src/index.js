@@ -103,11 +103,20 @@ import fs from 'fs';
         console.log(_.size(items));
         // await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
         await api.submitBoozes(items.map(product => {
+           const price = Util.findLowestValue(product.options);
             return {
-                ...product, price: Util.findLowestValue(product.options),
+                ...product, price,
                 rangeOfPrice: Util.getStringOfValueRange(product.options),
                 statement: normalizeStatement(product.statement),
+                priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])),
                 options: _.filter(product.options,(option) => !Util.isUndefinedNullEmpty(option.name))
+                    .map((option) => {
+                       const price = option.price;
+                        return {
+                            ...option,
+                            priceB4Discount:Math.round(_.sum([price, _.multiply(0.3, price)]))
+                        }
+                    })
             }
         }));
     }

@@ -179,13 +179,16 @@ class UserInfo {
         const key = [idOfBooze, idOfOption, idOfChoice].filter(each => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
         if (object) object.count = object.count + count;
-        else infoOfCartie[key] = {idOfBooze, idOfOption, idOfChoice, count};
+        else infoOfCartie[key] = {idOfBooze, idOfOption, idOfChoice, count, idOfCookieUsage: key};
         Cookie.setInfoOfCartie(infoOfCartie)
         this.invalidateCartie(infoOfCartie)
     }
 
     deleteItemFromCart(key) {
-
+        const infoOfCartie = Cookie.getInfoOfCartie();
+        delete infoOfCartie[key];
+        Cookie.setInfoOfCartie(infoOfCartie)
+        this.invalidateCartie(infoOfCartie);
     }
 
     invalidateCartie = (cartie) => {

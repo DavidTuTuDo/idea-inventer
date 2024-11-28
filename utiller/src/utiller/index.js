@@ -1612,6 +1612,10 @@ class Utiller {
         return object;
     }
 
+    getObjectOfArraySpecifyAttr(array, attr) {
+        return this.toObjectWithAttributeKey(array, attr);
+    }
+
     /**
      * 用來檢查string是否包含字元
      * string = '|C    G/B|'
@@ -1809,6 +1813,17 @@ class Utiller {
         const document = parse(string);
         predicate(document);
         return document.toString();
+    }
+
+    /** 會有物件在比較優先權，例如option = {id:1,photo:'url'} choice = {id, photo:'url'}
+     *
+     *  const selected = getSpecifyObjectBy([option.photo,choice.photo],(string) => !_.isEmpty(string))
+     * */
+    getSpecifyObjectBy(array, predicate) {
+        for (const item of array) {
+            if (predicate(item))
+                return item;
+        }
     }
 
     /**
@@ -2266,7 +2281,7 @@ class Utiller {
      * dom => <p id='_id' class='_class'>innerText /p>
      * dom的物件型態為 CdpElementHandler
      * * */
-    async fetchElementAttribute(dom,attr='innerText',defaultValue = '') {
+    async fetchElementAttribute(dom, attr = 'innerText', defaultValue = '') {
         return await dom.evaluate((el) => el[attr]);
     }
 
@@ -2379,11 +2394,44 @@ class Utiller {
         }).format(number);
     };
 
+    /**
+     * 去重數組內容
+     * @param {Array} array - 要去重的數組
+     * @returns {Array} - 去重後的數組
+     *
+     * // 使用範例
+     * const strings = ['eee', 'aaa', 'bbb', 'ccc', 'bbb', 'ddd', 'eee'];
+     * const objects = [
+     *   { aa: 1, bb: 2 },
+     *   { cc: 1, dd: 2 },
+     *   { aa: 1, bb: 2 },
+     *   { ee: 4, ff: 5 },
+     *   { cc: 1, dd: 2 },
+     * ];
+     *
+     * console.log(uniqueArray(strings)); // ['eee', 'aaa', 'bbb', 'ccc', 'ddd']
+     * console.log(uniqueArray(objects)); // [{'aa': 1, 'bb': 2}, {'cc': 1, 'dd': 2}, {'ee': 4, 'ff': 5}]
+     */
+    getSliceArrayOfUnique(array) {
+        if (array.length === 0) return array;
+
+        // 判斷是否為物件數組
+        if (_.isObject(array[0])) {
+            return _.uniqWith(array, _.isEqual);
+        }
+
+        // 默認處理為簡單數組
+        return _.uniq(array);
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // const option = {id:1,photo:''}
+            // const choice = {id:2, photo:'url'}
+            // console.log(utiller.getSpecifyObjectBy([option.photo,choice.photo], _.isEmpty))
             // console.log(utiller.findLowestValue([{ price: 10 }, { price: 120 }, { price: 230 }]))
             // console.log(utiller.findHighestValue([{ price: 10 }, { price: 120 }, { price: 230 }]))
             // console.log(utiller.getStringOfValueRange([{ price: 10 }, { price: 120 }, { price: 230 }]))

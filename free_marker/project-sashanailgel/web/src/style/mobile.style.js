@@ -579,7 +579,7 @@ class MobileStyle {
 
   CartieMainBriefSpecLandConclusionOfQuantityDiv = {};
 
-  CartieMainBriefSpecLandMainPriceOfOriginTypography = {};
+  CartieMainBriefSpecLandMainPriceB4DiscountTypography = {};
 
   CartieMainBriefSpecLandMainPriceLabelOfPriceTypography = {};
 
@@ -600,6 +600,8 @@ class MobileStyle {
   CartieMainBriefSpecFullCancelReactFragmentWrap = {};
 
   CartieMainBriefSpecFullCancelIconButton = {};
+
+  CartieMainBriefSpecFullNameDivWrap = {};
 
   CartieMainBriefSpecFullNameTypography = {};
 
@@ -663,7 +665,9 @@ class MobileStyle {
 
   MaenadsMainInfoCountTypography = {};
 
-  MaenadsMainInfoPriceTypography = {};
+  MaenadsMainInfoRowPriceTypography = {};
+
+  MaenadsMainInfoRowDiv = {};
 
   MaenadsMainInfoDiv = {};
 

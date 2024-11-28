@@ -22,7 +22,7 @@ class MaenadsStore extends BaseMaenadsStore {
                 this.setPhoto(booze.photoOfDemo);
                 this.setPrice(booze.rangeOfPrice);
                 this.setCount(`未選擇`);
-                this.setOptions(..._.filter(booze.options,option => option.count > 0));
+                this.setOptions(..._.filter(booze.options, option => option.count > 0));
             }
         }
     }
@@ -31,6 +31,7 @@ class MaenadsStore extends BaseMaenadsStore {
         this.setPhoto(option.getPhoto());
         this.setPrice(option.getPrice());
         this.setTitleOfShape(option.getName());
+        this.setCountOfMaximum(option.getCount());
         this.setCount(option.getCount());
         this.setCountOfSubmit(1);
         this.setIndexOfSelected(_.indexOf(this.getOptions(), option));
@@ -41,18 +42,18 @@ class MaenadsStore extends BaseMaenadsStore {
     }
 
     validateCountOfOrder(increase = true) {
-        if(this.getIndexOfSelected() < 0) {
+        if (this.getIndexOfSelected() < 0) {
             this.getComponent().showWarningSnackMessage(`尚未選擇商品`)
             return;
         }
 
         const current = _.toNumber(this.getCountOfSubmit());
-        if(increase) {
-            const result = _.sum([current,1]);
-            this.setCountOfSubmit(current >= this.getCount() ? current : result)
-        }else {
-            const result = _.sum([current,-1]);
-            this.setCountOfSubmit(current < 2 ? current : result)
+        if (increase) {
+            const result = _.sum([current, 1]);
+            this.setCountOfSubmit(result <= this.getCountOfMaximum() ? result : this.getCountOfMaximum())
+        } else {
+            const result = _.sum([current, -1]);
+            this.setCountOfSubmit(result < 2 ? current : result)
         }
     }
 

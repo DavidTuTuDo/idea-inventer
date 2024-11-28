@@ -20,8 +20,6 @@ class DionysusComponent extends BaseDionysusComponent {
 
   getBoozePhotoOfHead(booze) {
     const url = super.getBoozePhotoOfHead(booze);
-    console.log(url)
-    console.log(typeof url)
     return url;
   }
 

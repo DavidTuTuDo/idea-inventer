@@ -119,6 +119,7 @@ class CommonRemoteApi {
             const values = await this.fetchItems(path, {
                 type: 'where', params: [fieldName, action, Util.getSliceArrayWithMutate(valuesOfComparison, 10)]
             })
+            result.push(...values);
         }
         Util.appendInfo(`${uid} finish fetch items in limitation`);
         return result;
