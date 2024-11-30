@@ -99,7 +99,7 @@ import fs from 'fs';
 
     async function uploadProducts() {
         await api.deleteBoozes(true);
-        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1732518401530.json');
+        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1732830904031.json');
         console.log(_.size(items));
         // await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
         await api.submitBoozes(items.map(product => {

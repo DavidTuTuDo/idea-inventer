@@ -2,39 +2,53 @@
   { "valueOfType": 1, "href": "https://www.sachianail.com/plist/1", "labelOfType": "SACHIA 同名品牌" },
   { "valueOfType": 2, "href": "https://www.sachianail.com/plist/2", "labelOfType": "最新商品" },
   {
+    "href": "https://www.sachianail.com/plist/33",
+    "labelOfSubType": "美甲保養cuccio",
+    "valueOfType": 3,
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 0
+  },
+  {
     "href": "https://www.sachianail.com/plist/22",
     "labelOfSubType": "Infin",
     "valueOfType": 3,
-    "labelOfType": "美甲甲油膠",
-    "valueOfSubType": 0
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 1
   },
   {
     "href": "https://www.sachianail.com/plist/23",
     "labelOfSubType": "Sansu",
     "valueOfType": 3,
-    "labelOfType": "美甲甲油膠",
-    "valueOfSubType": 1
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 2
   },
   {
     "href": "https://www.sachianail.com/plist/24",
     "labelOfSubType": "古萊麗",
     "valueOfType": 3,
-    "labelOfType": "美甲甲油膠",
-    "valueOfSubType": 2
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 3
   },
   {
     "href": "https://www.sachianail.com/plist/25",
     "labelOfSubType": "VINIMAY",
     "valueOfType": 3,
-    "labelOfType": "美甲甲油膠",
-    "valueOfSubType": 3
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 4
   },
   {
     "href": "https://www.sachianail.com/plist/27",
     "labelOfSubType": "其他膠類",
     "valueOfType": 3,
-    "labelOfType": "美甲甲油膠",
-    "valueOfSubType": 4
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 5
+  },
+  {
+    "href": "https://www.sachianail.com/plist/35",
+    "labelOfSubType": "末町",
+    "valueOfType": 3,
+    "labelOfType": "美甲甲油膠、美甲保養",
+    "valueOfSubType": 6
   },
   {
     "href": "https://www.sachianail.com/plist/5",

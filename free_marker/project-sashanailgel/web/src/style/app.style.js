@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -78,16 +80,6 @@ class AppStyle {
   MainEditorDiv = {};
 
   /** => following for navigator  component  */
-
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -1048,6 +1040,8 @@ class AppStyle {
   QuickSignUpDiv = {};
 
   /** => following for main  component  */
+
+  MainCookieClearChip = {};
 
   MainEditorOfClassChip = {};
 

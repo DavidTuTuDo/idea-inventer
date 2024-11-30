@@ -191,6 +191,11 @@ class UserInfo {
         this.invalidateCartie(infoOfCartie);
     }
 
+    deleteWholeItemFromCart() {
+        Cookie.removeInfoOfCartie()
+        this.invalidateCartie();
+    }
+
     invalidateCartie = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
         const countsOfBadge = _.sum(_.values(infoOfCartie).map(info => info.count));

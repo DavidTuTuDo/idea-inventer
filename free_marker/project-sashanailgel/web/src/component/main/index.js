@@ -5,6 +5,7 @@ import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { observer } from "mobx-react";
 import Router from '../../router';
+import UserInfoRef from '../../base/BaseUserInfo';
 
 @inject("main")
 @observer
@@ -31,6 +32,10 @@ class MainComponent extends BaseMainComponent {
 
   onMainGotoInnerShoppingChipClicked(param) {
     Router.gotoDionysusPage(this);
+  }
+
+  onMainCookieClearChipClicked(param) {
+    UserInfoRef.deleteWholeItemFromCart()
   }
 
 

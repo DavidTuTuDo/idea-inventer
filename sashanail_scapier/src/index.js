@@ -71,8 +71,8 @@ const THREAD_OF_INFO_FETCHER = 1; //取得sasha_product_list.json sasha_of_produ
 const THREAD_OF_DETAIL_PRODUCT = 7; // 抓取detail的，因為網頁會擋multi-page，所以每個商品會要新開一個browser
 const PRINT_REPORT_OF_PRODUCTS_DETAIL = true; //列印出 XXX.json
 /** 列印出product_detail.json */
-const USE_PERSISTENT_FILE = true;//'sasha_product_list.json'
-const RANDOM_LIST_ENABLE = true;//不要全拿，隨機拿幾個做測試
+const USE_PERSISTENT_FILE = false;//'sasha_product_list.json'
+const RANDOM_LIST_ENABLE = false;//不要全拿，隨機拿幾個做測試
 const SIZE_OF_RANDOM = 100;//如果 RANDOM_LIST_ENABLE = true, 要拿幾個product detail
 const FETCH_LIST_ONLY = false;//只會取得取得sasha_product_list.json | sasha_of_product_catalog.json
 const ENABLE_OF_OPEN_BROWSER = false;

@@ -2174,7 +2174,7 @@ class CodegenNode {
 
     getCookies() {
         const node = this.getNodeOfComponent();
-        return _.isArray(node.cookies)? node.cookies: [];
+        return _.isArray(node.cookies) ? node.cookies : [];
     }
 
     needInjectStyle() {
@@ -2295,6 +2295,7 @@ class CodegenNode {
     isAutoTextSize(type = 'default', node = this) {
         return this.isAttributeView('Typography', type, node);
     }
+
     isChipView(type = 'default', node = this) {
         return this.isAttributeView('Chip', type, node);
     }
@@ -6481,9 +6482,10 @@ class AppBuilder extends ComponentBuilder {
     async buildCookieFiles() {
 
         const self = this;
-        function  getCookiesOfModules(){
+
+        function getCookiesOfModules() {
             const cookies = [];
-            for(const component of self.getComponents()) {
+            for (const component of self.getComponents()) {
                 cookies.push(...component.getCookies())
             }
             return cookies;
@@ -9071,10 +9073,10 @@ class ProjectFileHandler extends PathBase {
             appendPropsOfNode(node, node.isTabListView,
                 [
                     ...propsOfTab,
-                    {value: `###${node.getParentNode().getName()}.getValueOfSelectedTab()`}], [],
+                    {value: `###${node.getParentNode().getName()}.getValueOf${_.upperFirst(node.getName())}ClickedTab()`}], [],
                 [
                     {
-                        name: `valueOfSelectedTab`,
+                        name: `valueOf${_.upperFirst(node.getName())}ClickedTab`,
                         type: `number`,
                         defaultValue: node.getValueOfTabDefault(),
                     }
@@ -9134,7 +9136,8 @@ class ProjectFileHandler extends PathBase {
                     const stmts = [`objectOfParam.view = event;`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
                 } else if (node.isTabItemView()) {
-                    onClickStmts.push(`self.getStore().setValueOfSelectedTab(${node.getName()}.getValue())`)
+                    onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
+                    onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 } else if (node.hasCustomViewDialog()) {
                     const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
