@@ -231,7 +231,7 @@ class sashanailgel_scraper {
         const productsOfDetail = [];
         const listOfFailFetch = [];
         const poolOfFetchProductDetail = new InfinitePool(THREAD_OF_DETAIL_PRODUCT);
-        poolOfFetchProductDetail.enableTaskTimeout(true, 300000);
+        poolOfFetchProductDetail.enableTaskTimeout(true, 3456789);
 
         const listOfProduct = RANDOM_LIST_ENABLE ? Util.getShuffledArrayWithLimitCount(list, SIZE_OF_RANDOM) : list
         await poolOfFetchProductDetail.runByParams(async (product) => {
