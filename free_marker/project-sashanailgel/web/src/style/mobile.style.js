@@ -79,6 +79,16 @@ class MobileStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -346,6 +356,16 @@ class MobileStyle {
   PlutusFuncOfCheckoutDivWrap = {};
 
   PlutusFuncOfCheckoutDiv = {};
+
+  PlutusMainSummariseSixthProcedureOfPaymentDivWrap = {};
+
+  PlutusMainSummariseSixthProcedureOfPaymentTypography = {};
+
+  PlutusMainSummariseSixthHeadLabelOfPaymentProcedureDivWrap = {};
+
+  PlutusMainSummariseSixthHeadLabelOfPaymentProcedureTypography = {};
+
+  PlutusMainSummariseSixthDiv = {};
 
   PlutusMainSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography = {};
 

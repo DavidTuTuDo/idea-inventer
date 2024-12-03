@@ -93,7 +93,13 @@ class CartieStore extends BaseCartieStore {
 
     @computed
     get getComputedPriceOfTotal() {
-        return _.sum([this.getPriceWithoutDiscount(), this.getPriceOfDiscount(), this.getDiscountOfMember()]);
+        const sum = _.sum([this.getPriceWithoutDiscount(), this.getPriceOfDiscount(), this.getDiscountOfMember()]);
+        this.setPriceOfTotal(sum);
+        return sum;
+    }
+
+    updateTotalPriceOfCookie() {
+        Cookie.setTotalPriceOfCartie(_.toString(this.getPriceOfTotal()));
     }
 
 

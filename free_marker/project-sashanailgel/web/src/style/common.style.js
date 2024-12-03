@@ -79,6 +79,16 @@ class CommonStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -346,6 +356,16 @@ class CommonStyle {
   PlutusFuncOfCheckoutDivWrap = {};
 
   PlutusFuncOfCheckoutDiv = {};
+
+  PlutusMainSummariseSixthProcedureOfPaymentDivWrap = {};
+
+  PlutusMainSummariseSixthProcedureOfPaymentTypography = {};
+
+  PlutusMainSummariseSixthHeadLabelOfPaymentProcedureDivWrap = {};
+
+  PlutusMainSummariseSixthHeadLabelOfPaymentProcedureTypography = {};
+
+  PlutusMainSummariseSixthDiv = {};
 
   PlutusMainSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography = {};
 

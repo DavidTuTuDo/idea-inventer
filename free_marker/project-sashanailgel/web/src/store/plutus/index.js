@@ -7,6 +7,7 @@ import {Application} from "../../";
 import Config from "../../config";
 import i18n from "../../i18n";
 import {computed} from "mobx";
+import Cookie from '../../cookie'
 
 class PlutusStore extends BasePlutusStore {
     /** -------------------- fields -------------------- **/
@@ -20,6 +21,10 @@ class PlutusStore extends BasePlutusStore {
     async onInitialFetchCompleted(collection) {
         super.onInitialFetchCompleted(collection);
         this.validateDistrictByCity();
+        const info = Cookie.getInfoOfSelectedTransport();
+        this.setFeeOfTransport(_.toNumber(info.feeOfTransport));
+        this.setProcedureOfPayment(info.stringOfTransport);
+        this.setPrice(_.toNumber(Cookie.getTotalPriceOfCartie()));
     }
 
     validateDistrictByCity() {
@@ -31,7 +36,12 @@ class PlutusStore extends BasePlutusStore {
 
     @computed
     get getComputedPriceOfTotal() {
-        return 0;
+        return _.sum([this.getPrice(), this.getFeeOfTransport()]);
+    }
+
+    @computed
+    get getComputedFeeOfPayment() {
+        return _.sum([this.getPrice(), this.getFeeOfTransport()]);
     }
 
     /** -------------------- async api -------------------- **/

@@ -37,7 +37,17 @@ class CartieComponent extends BaseCartieComponent {
     }
 
     onCartieSubmitChipClicked(param) {
+        this.getStore().updateTotalPriceOfCookie();
         Router.gotoHermesPage(this);
+    }
+
+    getWrapInjectStyleOfCartiePriceOfDiscountTypography(cartie) {
+        return Util.getVisibleOrNone(false, true);
+    }
+
+    getBriefPriceB4Discount(brief) {
+        const origin = super.getBriefPriceB4Discount(brief);
+        return `＄${origin}`
     }
 
     /** -------------------- async api -------------------- **/
