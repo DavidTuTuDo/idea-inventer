@@ -5,7 +5,77 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
+  /** => following for infoOfCopyRightContent editor component  */
+
+  InfoOfCopyRightContentEditorProjectImageTextField = {};
+
+  InfoOfCopyRightContentEditorProjectIdTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
+
+  InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
+
+  InfoOfCopyRightContentEditorProjectImageCardWrap = {};
+
+  InfoOfCopyRightContentEditorProjectImageImg = {};
+
+  InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
+
+  InfoOfCopyRightContentEditorProjectRouteTextField = {};
+
+  InfoOfCopyRightContentEditorProjectDivList = {};
+
+  InfoOfCopyRightContentEditorProjectDivWrap = {};
+
+  InfoOfCopyRightContentEditorProjectDiv = {};
+
+  InfoOfCopyRightContentEditorUpperAreaDiv = {};
+
+  InfoOfCopyRightContentEditorDivWrap = {};
+
+  InfoOfCopyRightContentEditorPaper = {};
+
+  /** => following for main editor component  */
+
+  MainEditorPromotedBannerImageTextField = {};
+
+  MainEditorPromotedBannerImageDivWrap = {};
+
+  MainEditorPromotedBannerImageImg = {};
+
+  MainEditorPromotedBannerRouteTextField = {};
+
+  MainEditorPromotedBannerIdTextField = {};
+
+  MainEditorPromotedBannerDivWrap = {};
+
+  MainEditorPromotedBannerDiv = {};
+
+  MainEditorPromotedBannerDivList = {};
+
+  MainEditorPromotedBannerDivWrap = {};
+
+  MainEditorPromotedBannerDiv = {};
+
+  MainEditorDiv = {};
 
   /** => following for navigator  component  */
 

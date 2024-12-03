@@ -6,6 +6,7 @@ import libpath from "path";
 import {Application} from "../../";
 import Config from "../../config";
 import i18n from "../../i18n";
+import {computed} from "mobx";
 
 class PlutusStore extends BasePlutusStore {
     /** -------------------- fields -------------------- **/
@@ -26,6 +27,11 @@ class PlutusStore extends BasePlutusStore {
         this.setDistrict(...districts);
         if (_.size(districts) > 0)
             this.setSelectedDistrict(districts[0].value);
+    }
+
+    @computed
+    get getComputedPriceOfTotal() {
+        return 0;
     }
 
     /** -------------------- async api -------------------- **/
