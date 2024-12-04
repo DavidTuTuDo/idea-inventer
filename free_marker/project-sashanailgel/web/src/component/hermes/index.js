@@ -26,9 +26,7 @@ class HermesComponent extends BaseHermesComponent {
         if (this.getStore().hasSurelyChoice()){
             this.getStore().updateTransportInfo();
             Router.gotoPlutusPage(this);
-        }
-
-        else
+        } else
             this.showWarningSnackMessage(`尚未選擇付款方式`)
     }
 

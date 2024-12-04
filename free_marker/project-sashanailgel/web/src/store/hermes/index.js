@@ -36,6 +36,7 @@ class HermesStore extends BaseHermesStore {
             if (_.isEqual(transport.getAvailable(), false)) transportsOfShouldHidden.push(transport)
         }
         this.removeTransports(...transportsOfShouldHidden);
+        this.getComponent().scrollToTop()
     }
 
     updateCheckboxStatus(transport) {

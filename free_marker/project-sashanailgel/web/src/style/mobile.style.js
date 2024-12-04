@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -78,16 +80,6 @@ class MobileStyle {
   MainEditorDiv = {};
 
   /** => following for navigator  component  */
-
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -575,6 +567,18 @@ class MobileStyle {
 
   CartieMainSummariseDiv = {};
 
+  CartieMainBriefSpecTipCountLabelOfCountTypography = {};
+
+  CartieMainBriefSpecTipCountDivWrap = {};
+
+  CartieMainBriefSpecTipCountTypography = {};
+
+  CartieMainBriefSpecTipPriceB4DiscountDivWrap = {};
+
+  CartieMainBriefSpecTipPriceB4DiscountTypography = {};
+
+  CartieMainBriefSpecTipDiv = {};
+
   CartieMainBriefSpecLandConclusionOfQuantityIncreaseIconAdd = {};
 
   CartieMainBriefSpecLandConclusionOfQuantityIncreaseIconButton = {};
@@ -588,8 +592,6 @@ class MobileStyle {
   CartieMainBriefSpecLandConclusionOfQuantityDivWrap = {};
 
   CartieMainBriefSpecLandConclusionOfQuantityDiv = {};
-
-  CartieMainBriefSpecLandMainPriceB4DiscountTypography = {};
 
   CartieMainBriefSpecLandMainPriceLabelOfPriceTypography = {};
 
@@ -606,8 +608,6 @@ class MobileStyle {
   CartieMainBriefSpecNameOfOptionChip = {};
 
   CartieMainBriefSpecFullCancelIconDeleteForeverRounded = {};
-
-  CartieMainBriefSpecFullCancelReactFragmentWrap = {};
 
   CartieMainBriefSpecFullCancelIconButton = {};
 

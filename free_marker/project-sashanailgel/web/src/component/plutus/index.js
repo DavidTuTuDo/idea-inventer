@@ -51,6 +51,8 @@ class PlutusComponent extends BasePlutusComponent {
             return;
         }
         this.showInfoSnackMessage(`進入付款流程`);
+        Util.appendInfo(UserInfoRef.getCheckedCartieItem());
+        UserInfoRef.deleteCheckedCartieItem();
     }
 
     /** -------------------- async api -------------------- **/

@@ -184,6 +184,20 @@ class UserInfo {
         this.invalidateCartie(infoOfCartie)
     }
 
+    updateItemToCart({key, count, checked}) {
+        console.log(`有近嗎？ 111 ==> ${key}`)
+        const infoOfCartie = Cookie.getInfoOfCartie();
+        console.log(infoOfCartie)
+        const item = infoOfCartie[key];
+        if (item) {
+            console.log(`有近嗎？ 222`)
+            item.count = _.toNumber(count);
+            item.checked = checked;
+        }
+        Cookie.setInfoOfCartie(infoOfCartie)
+        this.invalidateCartie(infoOfCartie)
+    }
+
     deleteItemFromCart(key) {
         const infoOfCartie = Cookie.getInfoOfCartie();
         delete infoOfCartie[key];
@@ -191,9 +205,36 @@ class UserInfo {
         this.invalidateCartie(infoOfCartie);
     }
 
+    deleteCheckedCartieItem() {
+        const infoOfCartie = Cookie.getInfoOfCartie();
+        const latest = _.filter(infoOfCartie, (each) => !each.checked);
+        Util.toObjectWithAttributeKey(latest,'idOfCookieUsage')
+        Cookie.setInfoOfCartie(latest)
+        this.invalidateCartie(latest);
+    }
+
+    getCheckedCartieItem() {
+        const infoOfCartie = Cookie.getInfoOfCartie();
+        return _.values(_.filter(infoOfCartie, (each) => each.checked));
+    }
+
+    getArrayOfCartieItem() {
+        const infoOfCartie = Cookie.getInfoOfCartie();
+        return _.values(infoOfCartie);
+    }
+
     deleteWholeItemFromCart() {
         Cookie.removeInfoOfCartie()
         this.invalidateCartie();
+    }
+
+    setTotalPriceOfCartie(price) {
+        Cookie.setTotalPriceOfCartie(_.toString(price));
+    }
+
+    cleanCookieAfterSubmitToTransaction() {
+        Cookie.removeTotalPriceOfCartie();
+        Cookie.removeTypeOfTransport();
     }
 
     invalidateCartie = (cartie) => {

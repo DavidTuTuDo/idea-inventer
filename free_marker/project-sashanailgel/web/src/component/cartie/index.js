@@ -7,6 +7,7 @@ import libpath from "path";
 import Router from '../../router';
 import {observer} from "mobx-react";
 
+
 @inject("cartie")
 @observer
 class CartieComponent extends BaseCartieComponent {
@@ -23,7 +24,6 @@ class CartieComponent extends BaseCartieComponent {
     onCartieBriefIncreaseIconButtonClicked(param) {
         const brief = param.object
         this.getStore().validateCountOfOrder(brief);
-
     }
 
     onCartieBriefDecreaseIconButtonClicked(param) {
@@ -33,12 +33,20 @@ class CartieComponent extends BaseCartieComponent {
 
     onCartieBriefCancelIconButtonClicked(param) {
         const brief = param.object;
-        brief.remove();
+        this.getStore().validateCountOfOrder(brief, false, true);
+    }
+
+    onCartieWholeCheckboxChange(param) {
+        this.getStore().updateBriefByWholeStatus();
     }
 
     onCartieSubmitChipClicked(param) {
-        this.getStore().updateTotalPriceOfCookie();
+        this.getStore().updateInfosOfCartieCookie();
         Router.gotoHermesPage(this);
+    }
+
+    onCartieBriefSureCheckboxChange(param) {
+        this.getStore().updateWholeStatusByBrief();
     }
 
     getWrapInjectStyleOfCartiePriceOfDiscountTypography(cartie) {

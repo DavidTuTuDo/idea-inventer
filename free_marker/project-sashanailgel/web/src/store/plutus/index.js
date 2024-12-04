@@ -2,10 +2,8 @@ const edit = true;
 import BasePlutusStore from "./BasePlutusStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import {Application} from "../../";
 import Config from "../../config";
-import i18n from "../../i18n";
 import {computed} from "mobx";
 import Cookie from '../../cookie'
 
@@ -25,6 +23,7 @@ class PlutusStore extends BasePlutusStore {
         this.setFeeOfTransport(_.toNumber(info.feeOfTransport));
         this.setProcedureOfPayment(info.stringOfTransport);
         this.setPrice(_.toNumber(Cookie.getTotalPriceOfCartie()));
+        this.getComponent().scrollToTop();
     }
 
     validateDistrictByCity() {
