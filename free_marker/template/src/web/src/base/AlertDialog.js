@@ -111,6 +111,9 @@ class AlertDialog extends MuiComponent {
                 fullWidth={!!self.fullWidth}
                 fullScreen={self.hasCustomView() ? true : false}
                 maxWidth={false}
+                onClick={(event) => {
+                    event.stopPropagation();
+                }}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
 
@@ -214,7 +217,10 @@ class AlertDialog extends MuiComponent {
                 className={`BaseAlertDialogDismissChip`}
                 label={`關閉視窗`}
                 variant={`outlined`}
-                onClick={() => this.dismiss()}/>
+                onClick={(event) => {
+                    event.stopPropagation();
+                    this.dismiss();}
+                }/>
         </div>
 
     }

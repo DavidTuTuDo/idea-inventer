@@ -23,11 +23,6 @@ class DionysusComponent extends BaseDionysusComponent {
         return url;
     }
 
-    onDionysusBoozeCartIconButtonClicked(param) {
-        const booze = param.object;
-        Router.gotoBacchusDetailPage(this.getComponentInstance(), booze.getId(), booze.columnData());
-    }
-
     onDionysusBoozeDivClicked(param) {
         const booze = param.object;
         Router.gotoBacchusDetailPage(this.getComponentInstance(), booze.getId(), booze.columnData());

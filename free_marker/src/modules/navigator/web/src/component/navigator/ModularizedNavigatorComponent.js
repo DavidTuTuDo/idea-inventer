@@ -33,7 +33,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     onNavigatorToolBarTitleTypographyClicked(param) {
-        Router.gotoMainPage(this.getComponentInstance());
+        Router.gotoHomePage(this);
     }
 
     onNavigatorToolBarLoginIconButtonClicked(param) {

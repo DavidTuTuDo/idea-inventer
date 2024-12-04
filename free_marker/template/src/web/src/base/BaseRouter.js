@@ -2,6 +2,7 @@ import {utiller as Util, exceptioner as ERROR,} from "utiller";
 import libpath from "path";
 import Config from "../config";
 import _ from "lodash";
+import {Application} from "../index";
 
 class BaseRouter {
 
@@ -91,6 +92,13 @@ class BaseRouter {
         this.currentParam.length = 0
         this.currentParam.push(...param);
     }
+
+    gotoHomePage = (component) => {
+        const route = `/`;
+        this.routeTo(component, route);
+        this.setCurrentRoute(route);
+        return new URL(route, Config.host).href;
+    };
 
 }
 

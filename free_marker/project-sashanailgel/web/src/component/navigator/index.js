@@ -37,7 +37,7 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
   }
 
   onNavigatorToolBarMenuIconButtonClicked(param) {
-    Router.gotoMainPage(this);
+    Router.gotoHomePage(this);
   }
 
   /** -------------------- async api -------------------- **/

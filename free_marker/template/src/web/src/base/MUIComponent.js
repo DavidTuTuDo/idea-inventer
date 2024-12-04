@@ -33,6 +33,10 @@ class MuiComponent extends React.Component {
         }
     )
 
+    gotoPreviewPage(){
+        window.history.back();
+    }
+
     getElementByClassName(className) {
         const element = document.getElementsByClassName(className)[0];
         return element;

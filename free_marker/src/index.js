@@ -8389,6 +8389,7 @@ class ProjectFileHandler extends PathBase {
             const stmts = []
             if (node.hasAlertDialog()) {
                 stmts.push(`objectOfParam.view = event;`);
+                stmts.push(`event.stopPropagation();`)
                 stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
             } else {
                 stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked()}(objectOfParam);`)
@@ -9133,14 +9134,14 @@ class ProjectFileHandler extends PathBase {
                     }`)
                 }
                 if (node.hasConfirmDialog()) {
-                    const stmts = [`objectOfParam.view = event;`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+                    const stmts = [`objectOfParam.view = event;`, `event.stopPropagation();`,`${node.getFieldNameOfAlertDialog()}.current.open();`]
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
                 } else if (node.isTabItemView()) {
                     onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
                     onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 } else if (node.hasCustomViewDialog()) {
-                    const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
+                    const stmts = [`event.stopPropagation();`,`${node.getFieldNameOfAlertDialog()}.current.open();`]
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
                         onClickStmts.push(...stmts, `self.${node.getFunctionNameOfClicked()}(objectOfParam)`);
                 } else if (node.hasAlertMenu()) {

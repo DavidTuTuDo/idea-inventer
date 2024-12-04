@@ -5,8 +5,6 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -80,6 +78,16 @@ class CommonStyle {
   MainEditorDiv = {};
 
   /** => following for navigator  component  */
+
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -776,6 +784,8 @@ class CommonStyle {
   DionysusSelectTab = {};
 
   DionysusBoozeRowTailCartIconShoppingCartTwoTone = {};
+
+  DionysusBoozeRowTailCartReactFragmentWrap = {};
 
   DionysusBoozeRowTailCartIconButton = {};
 
