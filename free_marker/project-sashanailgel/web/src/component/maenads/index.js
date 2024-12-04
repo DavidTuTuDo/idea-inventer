@@ -70,7 +70,6 @@ class MaenadsComponent extends BaseMaenadsComponent {
             const idOfOption = maenads.getOptions()[this.getStore().getIndexOfSelected()].getValue();
             const count = _.toInteger(this.getStore().getCountOfSubmit())
             UserInfoRef.joinItemToCart({idOfBooze, idOfOption, count});
-            Util.appendInfo({idOfBooze, idOfOption, count});
             this.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
             this.dismiss();
         }

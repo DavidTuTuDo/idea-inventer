@@ -175,9 +175,12 @@ class UserInfo {
 
     /** 購物車邏輯 */
     joinItemToCart = ({idOfBooze = '', idOfOption = '', idOfChoice = '', count}) => {
+        Util.appendInfo({idOfBooze, idOfOption, count});
         const infoOfCartie = Cookie.getInfoOfCartie();
-        const key = [idOfBooze, idOfOption, idOfChoice].filter(each => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
+        const key = [idOfBooze, _.toString(idOfOption), _.toString(idOfChoice)].filter(each => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
+        Util.appendInfo({idOfBooze, idOfOption, count,key});
+
         if (object) object.count = object.count + count;
         else infoOfCartie[key] = {idOfBooze, idOfOption, idOfChoice, count, idOfCookieUsage: key};
         Cookie.setInfoOfCartie(infoOfCartie)
@@ -185,12 +188,9 @@ class UserInfo {
     }
 
     updateItemToCart({key, count, checked}) {
-        console.log(`有近嗎？ 111 ==> ${key}`)
         const infoOfCartie = Cookie.getInfoOfCartie();
-        console.log(infoOfCartie)
         const item = infoOfCartie[key];
         if (item) {
-            console.log(`有近嗎？ 222`)
             item.count = _.toNumber(count);
             item.checked = checked;
         }
@@ -208,8 +208,8 @@ class UserInfo {
     deleteCheckedCartieItem() {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const latest = _.filter(infoOfCartie, (each) => !each.checked);
-        Util.toObjectWithAttributeKey(latest,'idOfCookieUsage')
-        Cookie.setInfoOfCartie(latest)
+        const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest,'idOfCookieUsage')
+        Cookie.setInfoOfCartie(latestOfInfoOfCartie);
         this.invalidateCartie(latest);
     }
 
