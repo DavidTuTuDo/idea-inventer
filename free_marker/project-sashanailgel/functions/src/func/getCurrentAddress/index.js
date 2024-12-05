@@ -14,7 +14,6 @@ class GetCurrentAddress extends BaseGetCurrentAddress {
 
   /** payload:{"latitude":0,"longitude":0} */
   async handleHttpOnCall(data, session) {
-      console.log(`來了說一聲！！！`)
       const {latitude,longitude} = data;
       console.log({latitude,longitude})
       try {

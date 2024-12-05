@@ -3,11 +3,15 @@ import BaseGetDistanceOfSpecificAddress from "./BaseGetDistanceOfSpecificAddress
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
-const API_KEY = 'LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
+
+const API_KEY = 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
 
 class GetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
     /** -------------------- fields -------------------- **/
 
+    constructor(props) {
+        super(props);
+    }
     /** -------------------- functions -------------------- **/
 
 
@@ -19,47 +23,56 @@ class GetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
      */
     async calculateWalkingDistance(address, targetCoords) {
         try {
-            // 1. 轉換中文地址為座標
             const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
             const geocodeResponse = await fetch(geocodeUrl);
 
-            if (!geocodeResponse.data.results.length) {
+            if (!geocodeResponse.ok) {
+                throw new Error(`Geocoding API 請求失敗，HTTP 狀態碼: ${geocodeResponse.status}`);
+            }
+
+            const geocodeData = await geocodeResponse.json();
+
+            if (!geocodeData.results.length) {
                 throw new Error('無法解析地址');
             }
 
-            const {lat, lng} = geocodeResponse.data.results[0].geometry.location;
+            const { lat, lng } = geocodeData.results[0].geometry.location;
 
-            // 2. 計算步行距離
             const distanceMatrixUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${lat},${lng}&destinations=${targetCoords.lat},${targetCoords.lng}&mode=walking&key=${API_KEY}`;
             const distanceMatrixResponse = await fetch(distanceMatrixUrl);
 
-            const distanceInfo = distanceMatrixResponse.data.rows[0].elements[0];
-
-            if (distanceInfo.status !== 'OK') {
-                throw new Error('無法計算距離');
+            if (!distanceMatrixResponse.ok) {
+                throw new Error(`Distance Matrix API 請求失敗，HTTP 狀態碼: ${distanceMatrixResponse.status}`);
             }
 
-            // 3. 解析距離資訊
-            const walkingDistance = distanceInfo.distance.text; // 格式例如 "12 公里 460 公尺"
+            const distanceMatrixData = await distanceMatrixResponse.json();
+            console.log('Distance Matrix API Response:', JSON.stringify(distanceMatrixData, null, 2));
 
-            return walkingDistance;
+            const distanceInfo = distanceMatrixData.rows?.[0]?.elements?.[0];
+
+            if (!distanceInfo || distanceInfo.status !== 'OK') {
+                throw new Error('無法計算距離，請檢查輸入資料或 API 回應');
+            }
+
+            // 解析距離並將單位改為中文
+            const distanceText = distanceInfo.distance.text; // 格式例如 "6.3 km" 或 "400 m"
+            const formattedDistance = distanceText
+                .replace('km', '公里')
+                .replace('m', '公尺'); // 替換英文單位為中文單位
+
+            return formattedDistance;
         } catch (error) {
             console.error('計算距離失敗:', error.message);
             throw error;
         }
     }
 
-    constructor(props) {
-        super(props);
-    }
-
     async handleHttpOnCall(data, session) {
         const address = data.address;
-        console.log(address);
-        const distance = await this.calculateWalkingDistance(address,{ lat: 22.663524, lng: 120.363903 })
-        console.log(distance);
+        const distance = await this.calculateWalkingDistance(address, {lat: 22.663524, lng: 120.363903})
         return distance;
     }
+
     /** -------------------- async api -------------------- **/
 }
 

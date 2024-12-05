@@ -6,6 +6,7 @@ import BasePlutusComponent from './BasePlutusComponent';
 import UserInfoRef from '../../base/BaseUserInfo';
 import Cookie from '../../cookie';
 import _ from "lodash";
+import Functions from '../../functions';
 
 @inject("plutus")
 @observer
@@ -19,7 +20,13 @@ class PlutusComponent extends BasePlutusComponent {
     }
 
     onPlutusFindIconButtonClicked(param) {
-        this.getCurrentLocation().then(result => console.log(result));
+        const self = this
+        if(!_.isEmpty(this.getStore().getAddress())) {
+            const address = this.getStore().getPreciselyAddress();
+            Functions.httpOnCallGetDistanceOfSpecificAddress(this,{address}).then((result) => {
+                this.getStore().setDistanceOfSasha(`距離倉庫 ${result}`);
+            })
+        }else this.showWarningSnackMessage(`未輸入地址`)
     }
 
     getWrapInjectStyleOfPlutusWholeCheckbox(plutus) {
@@ -27,7 +34,7 @@ class PlutusComponent extends BasePlutusComponent {
     }
 
     getWrapInjectStyleOfPlutusEmailTextField(plutus) {
-        return Util.getVisibleOrNone(UserInfoRef.isLoginWithSucceed())
+        return Util.getVisibleOrNone(!UserInfoRef.isLoginWithSucceed())
     }
 
     onCitySelectedChange(value, param) {

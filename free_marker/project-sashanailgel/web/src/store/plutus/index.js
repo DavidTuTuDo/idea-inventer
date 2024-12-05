@@ -44,6 +44,15 @@ class PlutusStore extends BasePlutusStore {
         return _.sum([this.getPrice(), this.getFeeOfTransport()]);
     }
 
+    getPreciselyAddress = () => {
+        return [this.getSelectedLabelByValue(this.getCity(), this.getSelectedCity()), this.getSelectedLabelByValue(this.getDistrict(), this.getSelectedDistrict()), this.getAddress()].join('');
+    }
+
+    getSelectedLabelByValue(array, value) {
+        const item = _.find(array, (each) => _.isEqual(_.toNumber(each.getValue()), _.toNumber(value)));
+        return item ? item.label : '';
+    }
+
     /** -------------------- async api -------------------- **/
 }
 
