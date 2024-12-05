@@ -232,6 +232,11 @@ class UserInfo {
         Cookie.setTotalPriceOfCartie(_.toString(price));
     }
 
+    getTotalPriceOfCartie() {
+        const price = _.toNumber(Cookie.getTotalPriceOfCartie());
+        return _.isNumber(price) && price > 0 ? price : 0;
+    }
+
     cleanCookieAfterSubmitToTransaction() {
         Cookie.removeTotalPriceOfCartie();
         Cookie.removeTypeOfTransport();

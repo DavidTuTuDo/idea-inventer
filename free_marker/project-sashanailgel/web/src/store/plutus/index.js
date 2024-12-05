@@ -6,6 +6,7 @@ import {Application} from "../../";
 import Config from "../../config";
 import {computed} from "mobx";
 import Cookie from '../../cookie'
+import UserInfoRef from "../../base/BaseUserInfo";
 
 class PlutusStore extends BasePlutusStore {
     /** -------------------- fields -------------------- **/
@@ -22,7 +23,7 @@ class PlutusStore extends BasePlutusStore {
         const info = Cookie.getInfoOfSelectedTransport();
         this.setFeeOfTransport(_.toNumber(info.feeOfTransport));
         this.setProcedureOfPayment(info.stringOfTransport);
-        this.setPrice(_.toNumber(Cookie.getTotalPriceOfCartie()));
+        this.setPrice(UserInfoRef.getTotalPriceOfCartie());
         this.getComponent().scrollToTop();
     }
 

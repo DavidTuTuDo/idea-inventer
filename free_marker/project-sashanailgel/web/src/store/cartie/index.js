@@ -97,8 +97,10 @@ class CartieStore extends BaseCartieStore {
 
     @computed
     get getComputedDiscountOfMember() {
-        const result = 0;
-        this.setDiscountOfMember(result);
+        const discount = _.multiply(this.getPriceWithoutDiscount(),0.03);
+        const computed = _.subtract(0, discount);
+        const result = computed < 0 ? _.round(computed) : 0;
+        this.setDiscountOfMember(result)
         return result;
     }
 
