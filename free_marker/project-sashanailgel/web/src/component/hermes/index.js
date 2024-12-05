@@ -30,6 +30,11 @@ class HermesComponent extends BaseHermesComponent {
             this.showWarningSnackMessage(`尚未選擇付款方式`)
     }
 
+    getInjectStyleOfHermesTransportDiv(transport) {
+        const visible = transport.getAvailable();
+        return Util.getVisibleOrHidden(visible);
+    }
+
     onHermesTransportChoiceCheckboxChange(param) {
         const transport = param.object;
         this.getStore().updateCheckboxStatus(transport);

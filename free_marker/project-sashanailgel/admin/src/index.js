@@ -121,8 +121,25 @@ import fs from 'fs';
         }));
     }
 
-    await uploadProducts();
+    async function deployKeywords() {
+        /** 部署Keywords*/
+        const boozes = await api.fetchBoozes();
+        const keywords = [];
+        keywords.push(...boozes.map((booze) => {
+            return {
+                label: booze.name,
+                popularLevel: Util.getRandomValue(10,10000),
+                type: 11,
+                uid: booze.id,
+                extra: `11是代表商品,12代表課程`,
+            }
+        }));
 
+        await api.submitKeywords(keywords,'contents');
+    }
+
+    // await uploadProducts();
+    await deployKeywords();
 
     // console.log(await testOfAdminFetchItems());
     // console.log(await testOfAdminSubmitItems());
