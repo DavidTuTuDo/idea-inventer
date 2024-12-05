@@ -1,3 +1,4 @@
+const edit = true;
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -12,7 +13,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import Functions from "../../functions";
-import ChooseTypeRef from "../../store/epayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseType"
+import ChooseTypeRef from "../../store/epayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseType"
 import BaseEpayMethodOfPaymentComponent from "./BaseEpayMethodOfPaymentComponent";
 
 class ModularizedEpayMethodOfPaymentComponent extends BaseEpayMethodOfPaymentComponent {

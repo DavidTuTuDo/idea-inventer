@@ -1,3 +1,4 @@
+const edit = true;
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -21,10 +22,9 @@ import {
     runInAction,
 } from "mobx";
 import EpayPreciseOrderStore from "../epayPreciseOrder";
-import BaseEpayPurchaseOfHistoryStore from './BaseEpayPurchaseOfHistoryStore';
-import {object} from "prop-types";
+import BaseEpayFootprintStore from './BaseEpayFootprintStore';
 
-class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistoryStore {
+class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
@@ -261,4 +261,4 @@ class ModularizedEpayPurchaseOfHistoryStore extends BaseEpayPurchaseOfHistorySto
     /** -------------------- async api -------------------- **/
 }
 
-export default ModularizedEpayPurchaseOfHistoryStore;
+export default ModularizedEpayFootprintStore;

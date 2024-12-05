@@ -1,3 +1,4 @@
+const edit = true;
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -11,10 +12,10 @@ import {Application} from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
-import BaseEpayPurchaseOfHistoryComponent from "./BaseEpayPurchaseOfHistoryComponent";
+import BaseEpayFootprintComponent from "./BaseEpayFootprintComponent";
 import Functions from "../../functions";
 
-class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistoryComponent {
+class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
@@ -171,4 +172,4 @@ class ModularizedEpayPurchaseOfHistoryComponent extends BaseEpayPurchaseOfHistor
 
 }
 
-export default ModularizedEpayPurchaseOfHistoryComponent;
+export default ModularizedEpayFootprintComponent;

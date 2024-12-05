@@ -21,20 +21,23 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     async handleHttpOnCall(data, session) {
-        const items = Util.getArrayOfSummarizeBy(data.items, 'id', 'quantity');
-        if (1 > _.size(items)) {
-            this.appendErrorLog(9999, '484118756  帶上來的參數裡,並沒有商品內容')
-        }
 
+        // /** 合併重複的商品 */
+        // const items = Util.getArrayOfSummarizeBy(data.items, 'id', 'quantity');
+        // if (1 > _.size(items)) {
+        //     this.appendErrorLog(9999, '484118756  帶上來的參數裡,並沒有商品內容')
+        // }
+
+        const items = data.items;
         this.remarkOfPreciseOrder = data.remarkOfPreciseOrder ?? '無備註內容';
         this.imageUrlOfHeadPhoto = data.imageUrlOfHeadPhoto;
 
-        const products = await Api.fetchPreciseProductsOfLimitation('in', 'id', ...items.map(item => item.id))
-        if (_.size(_.difference(items.map(item => item.id), products.map(product => product.id))) > 0) {
+        const boozes = await Api.fetchPreciseProductsOfLimitation('in', 'id', ...items.map(item => item.idOfBooze))
+        if (_.size(_.difference(items.map(item => item.idOfBooze), boozes.map(booze => booze.id))) > 0) {
             this.appendErrorLog(9999, '484117145 您提出的訂單內容與現有商品規格不合，本次交易不成立')
         }
 
-        this.itemsOfPrecisely = Util.getMergedArrayBy(items, products, 'id');
+        this.itemsOfPrecisely = Util.getMergedArrayBy(items, boozes, 'id');
         /** [{name,quantity,id,quantityOfCurrent(庫存量)}]*/
 
         /** 計算剩餘數量足夠否 */
@@ -82,6 +85,9 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             priceOfTotal: this.getTotalPrice(this.itemsOfPrecisely),
             imageUrlOfHeadPhoto: this.getImageUrlOfHeadPhoto(),
             items: this.getItemsOfOrder(this.itemsOfPrecisely),
+            email: '',
+            address: '',
+            distance: '',
         })
 
         if (result.succeed) {
