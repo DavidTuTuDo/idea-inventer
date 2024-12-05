@@ -99,7 +99,7 @@ import fs from 'fs';
 
     async function uploadProducts() {
         await api.deleteBoozes(true);
-        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1732830904031.json');
+        const items = Util.getFileContextInJSON('./sasha_of_products_detail_1733128411961.json');
         console.log(_.size(items));
         // await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
         await api.submitBoozes(items.map(product => {
@@ -121,25 +121,8 @@ import fs from 'fs';
         }));
     }
 
-    async function deployKeywords() {
-        /** 部署Keywords*/
-        const boozes = await api.fetchBoozes();
-        const keywords = [];
-        keywords.push(...boozes.map((booze) => {
-            return {
-                label: booze.name,
-                popularLevel: Util.getRandomValue(10,10000),
-                type: 11,
-                uid: booze.id,
-                extra: `11是代表商品,12代表課程`,
-            }
-        }));
+    await uploadProducts();
 
-        await api.submitKeywords(keywords,'contents');
-    }
-
-    // await uploadProducts();
-    await deployKeywords();
 
     // console.log(await testOfAdminFetchItems());
     // console.log(await testOfAdminSubmitItems());

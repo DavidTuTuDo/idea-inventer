@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -81,6 +79,16 @@ class MobileStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -95,6 +103,12 @@ class MobileStyle {
 
   NavigatorToolBarTipOfLoadingCircularProgress = {};
 
+  NavigatorToolBarAccountIconAccountCircle = {};
+
+  NavigatorToolBarAccountReactFragmentWrap = {};
+
+  NavigatorToolBarAccountIconButton = {};
+
   NavigatorToolBarLoginIconLogin = {};
 
   NavigatorToolBarLoginIconButton = {};
@@ -104,12 +118,6 @@ class MobileStyle {
   NavigatorToolBarCartieBadgeOfCartieBadge = {};
 
   NavigatorToolBarCartieIconButton = {};
-
-  NavigatorToolBarAccountIconAccountCircle = {};
-
-  NavigatorToolBarAccountReactFragmentWrap = {};
-
-  NavigatorToolBarAccountIconButton = {};
 
   NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
@@ -270,8 +278,6 @@ class MobileStyle {
   InfoOfCopyRightDiv = {};
 
   /** => following for account  component  */
-
-  AccountCancelChip = {};
 
   AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
 

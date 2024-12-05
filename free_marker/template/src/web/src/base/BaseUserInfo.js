@@ -205,11 +205,13 @@ class UserInfo {
         this.invalidateCartie(infoOfCartie);
     }
 
-    deleteCheckedCartieItem() {
+    deleteCheckedCartieItemBehavior() {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const latest = _.filter(infoOfCartie, (each) => !each.checked);
         const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest,'idOfCookieUsage')
         Cookie.setInfoOfCartie(latestOfInfoOfCartie);
+        Cookie.removeTotalPriceOfCartie();
+        Cookie.removeInfoOfSelectedTransport()
         this.invalidateCartie(latest);
     }
 
@@ -235,6 +237,10 @@ class UserInfo {
     getTotalPriceOfCartie() {
         const price = _.toNumber(Cookie.getTotalPriceOfCartie());
         return _.isNumber(price) && price > 0 ? price : 0;
+    }
+
+    getTypeOfTransport() {
+        return _.toNumber(Cookie.getInfoOfSelectedTransport().typeOfTransport);
     }
 
     cleanCookieAfterSubmitToTransaction() {
