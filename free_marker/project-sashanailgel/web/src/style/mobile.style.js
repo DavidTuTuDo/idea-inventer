@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -80,6 +78,16 @@ class MobileStyle {
   MainEditorDiv = {};
 
   /** => following for navigator  component  */
+
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -269,166 +277,6 @@ class MobileStyle {
 
   InfoOfCopyRightDiv = {};
 
-  /** => following for epayFootprint  component  */
-
-  EpayFootprintOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentFailureReasonDivWrap = {};
-
-  EpayFootprintOrderAreaOfPaymentFailureReasonTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentFailureDiv = {};
-
-  EpayFootprintOrderAreaOfFuncCheckoutButton = {};
-
-  EpayFootprintOrderAreaOfFuncDiv = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeDiv = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailDomainLabelOfDomainTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailDomainDivWrap = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailDomainTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailDivWrap = {};
-
-  EpayFootprintOrderAreaOfPaymentDetailDiv = {};
-
-  EpayFootprintOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentDeadlineDeadlineDivWrap = {};
-
-  EpayFootprintOrderAreaOfPaymentDeadlineDeadlineTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
-
-  EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
-
-  EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
-
-  EpayFootprintOrderAreaOfPaymentRuleDiv = {};
-
-  EpayFootprintOrderAreaOfInputMessageValueTextField = {};
-
-  EpayFootprintOrderAreaOfInputMessageLabelTypography = {};
-
-  EpayFootprintOrderAreaOfInputMessageDiv = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconChevronRight = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeLabelOfPaymentTypeTypography = {};
-
-  EpayFootprintOrderAreaOfChoosePaymentTypeDiv = {};
-
-  EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography = {};
-
-  EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceDivWrap = {};
-
-  EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
-
-  EpayFootprintOrderAreaOfTotalPriceDiv = {};
-
-  EpayFootprintOrderBriefSectionOfDescriptionPriceTypography = {};
-
-  EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography = {};
-
-  EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography = {};
-
-  EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap = {};
-
-  EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography = {};
-
-  EpayFootprintOrderBriefSectionOfDescriptionDiv = {};
-
-  EpayFootprintOrderBriefImageOfProductPhotoImg = {};
-
-  EpayFootprintOrderBriefDivList = {};
-
-  EpayFootprintOrderBriefDiv = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfTailExtraIconButton = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfTailDiv = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
-
-  EpayFootprintOrderAreaOfTopSectionOfHeadDiv = {};
-
-  EpayFootprintOrderAreaOfTopDiv = {};
-
-  EpayFootprintOrderDivList = {};
-
-  EpayFootprintOrderCard = {};
-
-  EpayFootprintTabTabsList = {};
-
-  EpayFootprintTabTab = {};
-
-  EpayFootprintDiv = {};
-
-  /** => following for epayMethodOfPayment  component  */
-
-  EpayMethodOfPaymentOptionDescriptionTypography = {};
-
-  EpayMethodOfPaymentOptionImageImg = {};
-
-  EpayMethodOfPaymentOptionNameTypography = {};
-
-  EpayMethodOfPaymentOptionCardSkeleton = {};
-
-  EpayMethodOfPaymentOptionDivList = {};
-
-  EpayMethodOfPaymentOptionCard = {};
-
-  EpayMethodOfPaymentTitleTypography = {};
-
-  EpayMethodOfPaymentPaper = {};
-
-  /** => following for epayBehaviorOfConfirmLinePay  component  */
-
-  EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
-
-  EpayBehaviorOfConfirmLinePayDiv = {};
-
-  /** => following for epay  component  */
-
-  EpayDiv = {};
-
   /** => following for account  component  */
 
   AccountCancelChip = {};
@@ -508,6 +356,16 @@ class MobileStyle {
   PlutusFuncOfCheckoutDivWrap = {};
 
   PlutusFuncOfCheckoutDiv = {};
+
+  PlutusMainSummariseSeventhDistanceOfSashaDivWrap = {};
+
+  PlutusMainSummariseSeventhDistanceOfSashaTypography = {};
+
+  PlutusMainSummariseSeventhHeadLabelOfDistanceDivWrap = {};
+
+  PlutusMainSummariseSeventhHeadLabelOfDistanceTypography = {};
+
+  PlutusMainSummariseSeventhDiv = {};
 
   PlutusMainSummariseSixthProcedureOfPaymentDivWrap = {};
 

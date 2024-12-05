@@ -88,6 +88,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             email: '',
             address: '',
             distance: '',
+            name: '',
+            phoneNumber: '',
         })
 
         if (result.succeed) {
