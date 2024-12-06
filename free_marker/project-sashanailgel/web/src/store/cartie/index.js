@@ -16,6 +16,7 @@ class CartieStore extends BaseCartieStore {
     constructor(props) {
         super(props);
         this.api = new BoozeApi();
+        UserInfoRef.setGotoCartieDirect(false);
     }
 
     validateCountOfOrder(brief, increase = true,deleted = false) {

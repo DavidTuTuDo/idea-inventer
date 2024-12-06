@@ -179,7 +179,7 @@ class UserInfo {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfOption), _.toString(idOfChoice)].filter(each => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
-        Util.appendInfo({idOfBooze, idOfOption, count,key});
+        Util.appendInfo({idOfBooze, idOfOption, count, key});
 
         if (object) object.count = object.count + count;
         else infoOfCartie[key] = {idOfBooze, idOfOption, idOfChoice, count, idOfCookieUsage: key};
@@ -208,7 +208,7 @@ class UserInfo {
     deleteCheckedCartieItemBehavior() {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const latest = _.filter(infoOfCartie, (each) => !each.checked);
-        const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest,'idOfCookieUsage')
+        const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest, 'idOfCookieUsage')
         Cookie.setInfoOfCartie(latestOfInfoOfCartie);
         Cookie.removeTotalPriceOfCartie();
         Cookie.removeInfoOfSelectedTransport()
@@ -252,6 +252,15 @@ class UserInfo {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
         const countsOfBadge = _.sum(_.values(infoOfCartie).map(info => info.count));
         Application.getNavigatorStore().getToolBar().setBadgeOfCartie(countsOfBadge);
+    }
+
+    setGotoCartieDirect(enable = false) {
+        Cookie.setGotoCartieDirectly(enable ? 'true' : '');
+    }
+
+    isGotoCartieDirect() {
+        const result = Cookie.getGotoCartieDirectly();
+        return !Util.isUndefinedNullEmpty(result);
     }
 
 }

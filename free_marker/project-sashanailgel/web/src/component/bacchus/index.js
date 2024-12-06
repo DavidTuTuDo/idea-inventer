@@ -4,12 +4,8 @@ import "swiper/css";
 import { inject } from "mobx-react";
 import BaseBacchusComponent from "./BaseBacchusComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import maenads from "../maenads";
-import Chip from "@mui/material/Chip";
 import { observer } from "mobx-react";
-import Router from "../../router";
+import UserInfoRef from '../../base/BaseUserInfo';
 
 @inject("bacchus")
 @observer
@@ -25,6 +21,14 @@ class BacchusComponent extends BaseBacchusComponent {
   onBacchusBackToHomeChipClicked(param) {
     // Router.gotoDionysusPage(this);
     this.gotoPreviewPage();
+  }
+
+  onBacchusBoughtChipClicked(param) {
+    UserInfoRef.setGotoCartieDirect(true);
+  }
+
+  onBacchusJoinToCartChipClicked(param) {
+    UserInfoRef.setGotoCartieDirect(false);
   }
 
   /** -------------------- async api -------------------- **/
