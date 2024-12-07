@@ -34,10 +34,19 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
     }
 
     onSearchPressed(content) {
-        if (_.isObject(content)) {
+        if (_.isObject(content) && content.uid) {
             Router.gotoBacchusDetailPage(this, content.uid);
         }
     }
+
+    getInjectStyleOfNavigatorToolBarLoginIconButton(toolBar) {
+        return Util.getVisibleOrNone(false);
+    }
+
+    getInjectStyleOfNavigatorToolBarAccountIconButton() {
+        return Util.getVisibleOrNone(false);
+    }
+
 
     /** -------------------- async api -------------------- **/
 }
