@@ -33,10 +33,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -2514,6 +2514,11 @@ class CodegenNode {
         )
     }
 
+    /** child.isCollection() 是為了collection裡的屬性可能包含path*/
+    getPreciseAttributePathChildren() {
+        return _.filter(this.getPreciseAttributeChildren(), (child) => child.hasPath() || child.isCollection());
+    }
+
     getPreciseViewChildren() {
         return this.getPreciseChildren(
             (node) => node.isView(),
@@ -4467,16 +4472,20 @@ class StoreBuilder extends BaseBuilder {
         const self = this;
 
         function getChildFetchStmtV2() {
-            const stmts = _.map(node.getPreciseAttributeChildren(), (child) => {
+            const stmts = _.map(node.getPreciseAttributePathChildren(), (child) => {
+                const functionNameOfDecorate = Util.camel('enrich', child.getFieldName());
+                baseGenerator.appendFunction(functionNameOfDecorate, [`content`], [], [`when '${child.getFieldName()}' fetch from remote, the entry of hack`], [`return content`])
                 return `async () => { 
-                result.${child.getFieldName()} = ${getInitFetchStmtV2(child)};
+                const remote = self.${functionNameOfDecorate}(${getInitFetchStmtV2(child)});
+                result.${child.getFieldName()} = remote;
+                self.initial(result,false);
                 }`
             })
             return `${stmts.join(',')}`
         }
 
         function getCountOfThread(node) {
-            const count = _.size(node.getPreciseAttributeChildren());
+            const count = _.round(_.divide(_.size(node.getPreciseAttributePathChildren()), 2));
             return count > 1 ? count : 1;
         }
 
@@ -4819,6 +4828,7 @@ class StoreBuilder extends BaseBuilder {
         let normalize = contents;
         if (isObject) {
             normalize = [
+                `const self = this`,
                 `const result = `, ...normalize,
                 `this.fromJson(result)`,
             ]
@@ -9134,14 +9144,14 @@ class ProjectFileHandler extends PathBase {
                     }`)
                 }
                 if (node.hasConfirmDialog()) {
-                    const stmts = [`objectOfParam.view = event;`, `event.stopPropagation();`,`${node.getFieldNameOfAlertDialog()}.current.open();`]
+                    const stmts = [`objectOfParam.view = event;`, `event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
                 } else if (node.isTabItemView()) {
                     onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
                     onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
                     onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
                 } else if (node.hasCustomViewDialog()) {
-                    const stmts = [`event.stopPropagation();`,`${node.getFieldNameOfAlertDialog()}.current.open();`]
+                    const stmts = [`event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
                     node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
                         onClickStmts.push(...stmts, `self.${node.getFunctionNameOfClicked()}(objectOfParam)`);
                 } else if (node.hasAlertMenu()) {

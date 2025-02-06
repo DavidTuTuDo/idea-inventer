@@ -1,145 +1,152 @@
 [
   { "valueOfType": 1, "href": "https://www.sachianail.com/plist/1", "labelOfType": "SACHIA 同名品牌" },
-  { "valueOfType": 2, "href": "https://www.sachianail.com/plist/2", "labelOfType": "最新商品" },
+  { "valueOfType": 2, "href": "https://www.sachianail.com/plist/36", "labelOfType": "穿戴甲專區" },
+  {
+    "href": "https://www.sachianail.com/plist/2",
+    "labelOfSubType": "最新商品",
+    "valueOfType": 3,
+    "labelOfType": "最新商品",
+    "valueOfSubType": 0
+  },
   {
     "href": "https://www.sachianail.com/plist/33",
     "labelOfSubType": "美甲保養cuccio",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 0
   },
   {
     "href": "https://www.sachianail.com/plist/22",
     "labelOfSubType": "Infin",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 1
   },
   {
     "href": "https://www.sachianail.com/plist/23",
     "labelOfSubType": "Sansu",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 2
   },
   {
     "href": "https://www.sachianail.com/plist/24",
     "labelOfSubType": "古萊麗",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 3
   },
   {
     "href": "https://www.sachianail.com/plist/25",
     "labelOfSubType": "VINIMAY",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 4
   },
   {
     "href": "https://www.sachianail.com/plist/27",
     "labelOfSubType": "其他膠類",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 5
   },
   {
     "href": "https://www.sachianail.com/plist/35",
     "labelOfSubType": "末町",
-    "valueOfType": 3,
+    "valueOfType": 4,
     "labelOfType": "美甲甲油膠、美甲保養",
     "valueOfSubType": 6
   },
   {
     "href": "https://www.sachianail.com/plist/5",
     "labelOfSubType": "美甲燈、一字燈",
-    "valueOfType": 4,
+    "valueOfType": 5,
     "labelOfType": "美甲機器",
     "valueOfSubType": 0
   },
   {
     "href": "https://www.sachianail.com/plist/6",
     "labelOfSubType": "美甲磨甲機、美甲吸塵器",
-    "valueOfType": 4,
+    "valueOfType": 5,
     "labelOfType": "美甲機器",
     "valueOfSubType": 1
   },
   {
     "href": "https://www.sachianail.com/plist/8",
     "labelOfSubType": "美甲筆、拉線筆",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 0
   },
   {
     "href": "https://www.sachianail.com/plist/9",
     "labelOfSubType": "各式色卡、穿戴甲片",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 1
   },
   {
     "href": "https://www.sachianail.com/plist/10",
     "labelOfSubType": "卸甲水、洗筆水、凝膠清潔液",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 2
   },
   {
     "href": "https://www.sachianail.com/plist/11",
     "labelOfSubType": "甘皮剪、鋼推、磨棒、貓眼磁鐵",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 3
   },
   {
     "href": "https://www.sachianail.com/plist/12",
     "labelOfSubType": "實用小物、美甲洗筆杯、調色盤、膠帶、手枕",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 4
   },
   {
     "href": "https://www.sachianail.com/plist/13",
     "labelOfSubType": "美甲刷具、粉塵刷",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 5
   },
   {
     "href": "https://www.sachianail.com/plist/14",
     "labelOfSubType": "保養磨頭、卸甲磨頭",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 6
   },
   {
     "href": "https://www.sachianail.com/plist/21",
     "labelOfSubType": "美甲嵌甲棒",
-    "valueOfType": 5,
+    "valueOfType": 6,
     "labelOfType": "美甲工具",
     "valueOfSubType": 7
   },
   {
     "href": "https://www.sachianail.com/plist/16",
     "labelOfSubType": "亮粉、飾品、水鑽",
-    "valueOfType": 6,
+    "valueOfType": 7,
     "labelOfType": "美甲造型",
     "valueOfSubType": 0
   },
   {
     "href": "https://www.sachianail.com/plist/17",
     "labelOfSubType": "美甲貼紙、飾品",
-    "valueOfType": 6,
+    "valueOfType": 7,
     "labelOfType": "美甲造型",
     "valueOfSubType": 1
   },
   {
     "href": "https://www.sachianail.com/plist/19",
     "labelOfSubType": "飾品收納、壓克力收納盒、美甲推車",
-    "valueOfType": 7,
+    "valueOfType": 8,
     "labelOfType": "美甲用具收納",
     "valueOfSubType": 0
   },
-  { "valueOfType": 8, "href": "https://www.sachianail.com/plist/20", "labelOfType": "美甲拍照道具" }
+  { "valueOfType": 9, "href": "https://www.sachianail.com/plist/20", "labelOfType": "美甲拍照道具" }
 ]
