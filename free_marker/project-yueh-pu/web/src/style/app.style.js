@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -143,19 +145,29 @@ class AppStyle {
 
   NavigatorToolBarTipOfLoadingCircularProgress = {};
 
-  NavigatorToolBarAccountHeadAccountCircle = {};
+  NavigatorToolBarAccountIconAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};
 
   NavigatorToolBarAccountIconButton = {};
 
-  NavigatorToolBarLoginButton = {};
+  NavigatorToolBarLoginIconLogin = {};
+
+  NavigatorToolBarLoginIconButton = {};
+
+  NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
+
+  NavigatorToolBarCartieBadgeOfCartieBadge = {};
+
+  NavigatorToolBarCartieIconButton = {};
 
   NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
   NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
   NavigatorToolBarCompleteAutocomplete = {};
+
+  NavigatorToolBarTitleDivWrap = {};
 
   NavigatorToolBarTitleTypography = {};
 
@@ -207,15 +219,11 @@ class AppStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelChip = {};
-
   InfoOfCopyRightContentDivWrap = {};
 
   InfoOfCopyRightContentPaper = {};
 
   /** => following for infoOfCopyRightContact  component  */
-
-  InfoOfCopyRightContactCancelChip = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -312,8 +320,6 @@ class AppStyle {
   InfoOfCopyRightDiv = {};
 
   /** => following for account  component  */
-
-  AccountCancelChip = {};
 
   AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
 

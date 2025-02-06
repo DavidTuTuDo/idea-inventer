@@ -49,7 +49,7 @@
   }
   @media @desktop {
     height: 40vh;
-    max-height: 400px;
+    max-height: 600px;
     margin-top: 5px;
     max-width: 880px;
   }
@@ -267,17 +267,35 @@
   margin-top: 20px;
 }
 
-.BaseAlertDialog {
+.BaseAlertDialog:extend(.CenterInParentColumn) { /** 讓dialog不會產生滑動 最底層 */
   margin:auto;
+  max-width: 100vw;/** 讓dialog不會產生滑動 */
 }
 
 .BaseAlertDialogContent {
   max-height: 90vh;
   margin:auto;
-
 }
 
-.BaseAlertDialogCustomView {
+.BaseAlertDialogCustomView:extend(.CenterInParentColumn) {
+  position: relative;
+  width: 100%;
+  height: auto;
+  margin:auto;
+}
+
+
+.BaseAlertDialogDismissView:extend(.CenterInParentColumn) {
+  position: sticky;
+  margin-top: 20px;
+  width: 100%;
+  height: 100%;
+  bottom: 0;
+}
+
+.BaseAlertDialogDismissChip {
+  background-color: rgba(0,0,0,.3);
+  color: white;
 }
 
 .BaseImageDialogImg {
@@ -335,8 +353,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin:auto;
+  margin-top: 5px;
   padding: 30px;
 }
 
