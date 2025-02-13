@@ -378,8 +378,8 @@ class BaseComponent extends MuiComponent {
         }
     }
 
-    onRetryClicked(viewParam) {
-        Router.routeToHomePage(this);
+    onGoHomeClicked = (viewParam) => {
+        Router.routeToHomePage(this.getComponentInstance());
     }
 
     scrollToTop() {
@@ -405,7 +405,7 @@ class BaseComponent extends MuiComponent {
                 <Button
                     variant={'outlined'}
                     color={'primary'}
-                    onClick={(viewParam) => this.onRetryClicked(viewParam)}
+                    onClick={(viewParam) => this.onGoHomeClicked(viewParam)}
                     className={'BaseComponentErrorViewRetryButton'}>返回首頁</Button>
             </Paper>
         )

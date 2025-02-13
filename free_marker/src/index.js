@@ -4823,7 +4823,6 @@ class StoreBuilder extends BaseBuilder {
         generator.appendImport(`{Application}`, '../../');
     }
 
-
     getDecorateFetchStrings(isObject = false, ...contents) {
         let normalize = contents;
         if (isObject) {
@@ -5373,7 +5372,9 @@ class ComponentBuilder extends BaseBuilder {
         for (const param of componentNode.getParamsInRouter()) {
             const fieldNameOfParam = this.getNormalizeFieldOfParamInPath(param);
             const functionNameOfParamConstraint = Util.camel('isValidOf', fieldNameOfParam);
-            baseGenerator.appendConstructor(`this.${fieldNameOfParam} = this.isComponentView()? this.propsMobX().${fieldNameOfParam} : this.propsMobX().match.params.${param}`);
+            baseGenerator.appendConstructor(`
+            if (this.propsMobX().match && this.propsMobX().match.params)
+            this.${fieldNameOfParam} = this.isComponentView()? this.propsMobX().${fieldNameOfParam} : this.propsMobX().match.params.${param}`);
             paramsInPath.push({functionNameOfParamConstraint, param: fieldNameOfParam});
             baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${fieldNameOfParam}:$\{this.${fieldNameOfParam}\}\`)`);
             baseGenerator.appendFunction(functionNameOfParamConstraint, [param], [], [],
@@ -5396,8 +5397,9 @@ class ComponentBuilder extends BaseBuilder {
                 `return this.${componentNode.getFieldNameOfDetailUid()}`);
 
             this.appendStmtIntoComponentDidMount(`
+            if (this.propsMobX().match && this.propsMobX().match.params)
             this.${componentNode.getFieldNameOfDetailUid()} = this.propsMobX().match.params.${componentNode.getFieldNameOfDetailUid()};
-            if(Util.isOrConditionOfUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
+            if(Util.isUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
                 this.getStore().setErrorMsg('網址參數異常');`);
         }
 

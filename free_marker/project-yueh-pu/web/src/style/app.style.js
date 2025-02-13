@@ -375,6 +375,28 @@ class AppStyle {
 
   AccountPaper = {};
 
+  /** => following for previewer  component  */
+
+  PreviewerDiv = {};
+
+  /** => following for chordiventor  component  */
+
+  ChordiventorFuncCancelReactFragmentWrap = {};
+
+  ChordiventorFuncCancelChip = {};
+
+  ChordiventorFuncPersistChip = {};
+
+  ChordiventorFuncPreviewChip = {};
+
+  ChordiventorFuncDiv = {};
+
+  ChordiventorTxtTextField = {};
+
+  ChordiventorDivWrap = {};
+
+  ChordiventorDiv = {};
+
   /** => following for noteEditor  component  */
 
   NoteEditorFunctionAreaCancelButton = {};

@@ -8,22 +8,11 @@ import {
 } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Switch from "@mui/material/Switch";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Button from "@mui/material/Button";
-import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import Typography from "@mui/material/Typography";
 import {observer} from "mobx-react";
-import Paper from "@mui/material/Paper";
-import SheetStore from "../../store/sheet";
 import Style from "../../style";
 import React from "react";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
 
 @inject("sheet")
 @observer

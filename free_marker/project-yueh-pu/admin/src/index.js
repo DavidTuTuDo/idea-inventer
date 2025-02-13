@@ -338,14 +338,20 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
                 {
                     title: '相關網站',
                     icon: 'muIcon:Whatshot',
-                    indexOfSequence: 3,
+                    indexOfSequence: 4,
                     subs: [
                         {
                             title: '91譜',
                             icon: 'muIcon:School',
                             route: 'path:https://www.91pu.com.tw/',
                             indexOfSequence: 1,
-                        }
+                        },
+                        {
+                            title: '新增悅譜',
+                            icon: 'muIcon:LibraryMusic',
+                            route: `route:QueueMusic`,
+                            indexOfSequence: 2,
+                        },
                     ]
                 }]
         )

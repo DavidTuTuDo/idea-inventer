@@ -954,6 +954,14 @@ class Utiller {
         return first || second;
     }
 
+    isAndConditionOfUndefinedNullEmpty(...objs) {
+        for (const obj of objs) {
+            if (!this.isUndefinedNullEmpty(obj))
+                return false;
+        }
+        return true;
+    }
+
     isOrConditionOfUndefinedNullEmpty(...objs) {
         for (const obj of objs) {
             if (this.isUndefinedNullEmpty(obj))

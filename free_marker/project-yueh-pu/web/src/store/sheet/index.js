@@ -102,6 +102,8 @@ class SheetStore extends BaseSheetStore {
     /** -------------------- async api -------------------- **/
 
     async fetch(view) {
+        if(Util.isUndefinedNullEmpty(this.getUidOfSheetDetail())) return {};
+
         const result = await super.fetch(view);
         if (_.size(result.guitarpus) > 0) {
             const pu = result.guitarpus[0];
@@ -168,6 +170,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     getStringOfSuggestDescription(tone) {
+        if(Util.isUndefinedNullEmpty(tone)) return;
         const result = this.getSuggestTonalityCapoLevel(tone);
         return `${result.from}調\n(彈${result.to}夾${result.level}格)`
     }
@@ -199,6 +202,9 @@ class SheetStore extends BaseSheetStore {
 
     @action
     invalidateTranspositionChord(level = 1, context = this.getCurrentPuContext()) {
+        /** context如果拿回空，不處理以下 */
+        if(Util.isUndefinedNullEmpty(context)) return;
+
         const segmentsOfContext = context.split('\n');
         const segmentsOfContextChord = _.filter(segmentsOfContext, (each) => this.isGuitarChordParagraph(each));
         for (const segment of segmentsOfContextChord) {
