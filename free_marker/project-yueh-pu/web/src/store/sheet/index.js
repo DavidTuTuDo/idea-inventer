@@ -154,19 +154,24 @@ class SheetStore extends BaseSheetStore {
         await Util.syncDelay(1);
 
         if (pu instanceof GuitarPu) {
-            pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed())
             pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
             pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
-            this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
-            this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
-            this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
-            this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
-            this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+            this.invalidate(true);
         } else {
             this.setMessageOfListIsEmpty(`網路連線可能不穩。\n\n\n\n使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
             this.setErrorMsg(`網路連線可能不穩。\n\n\n\n使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`)
             this.setTipOfLoading(``);
         }
+    }
+
+    invalidate = (announce = false) => {
+        const pu = this.getCurrentPu();
+        pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed())
+        this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
+        this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
+        this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
+        this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
+        if(announce) this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
     }
 
     getStringOfSuggestDescription(tone) {

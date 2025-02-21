@@ -136,6 +136,8 @@ class CodegenNode {
     scrollable = false;
     /** 如果MUI Tab是可滾動的，就設為true */
 
+    stringAsValue = false;
+
     price = false
     /** 如果是幣值，就會用Util.formatPrice() */
 
@@ -1288,6 +1290,14 @@ class CodegenNode {
      * */
     isSimpleSelected() {
         return this.select && Util.isOrEquals(this.select.type, 'radio', 'spinner', 'button');
+    }
+
+    /**
+     * 1.用string當作value，否則select建議用number作為value
+     * 2. selected{name} 也會被指定為string
+     * */
+    useStringAsValue() {
+        return _.isEqual(true, this.stringAsValue);
     }
 
     getTypeOfSimpleSelected() {
@@ -5834,7 +5844,7 @@ class ComponentBuilder extends BaseBuilder {
 
             if (node.isSimpleSelected()) {
                 props['onChange'] = `###(event, value)=>{
-                    const latest = _.toNumber(event.target.value);
+                    const latest = ${node.useStringAsValue() ? `event.target.value;`:`_.toNumber(event.target.value);`}
                     objectOfParam.value = latest;
                     objectOfParam.event = event;
                     ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)
@@ -8316,7 +8326,7 @@ class ProjectFileHandler extends PathBase {
                 node.setType('array');
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
-                    type: 'number', /** succeed, fail */
+                    type: node.useStringAsValue() ? 'string' : 'number', /** succeed, fail */
                     column: true,
                     defaultValue: node.getSelectedDefaultValue(),
                     incest: node.incest,

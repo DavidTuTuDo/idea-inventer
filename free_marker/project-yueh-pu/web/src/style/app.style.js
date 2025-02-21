@@ -131,6 +131,16 @@ class AppStyle {
 
   /** => following for navigator  component  */
 
+  NavigatorDrawerMyShortcutIconImg = {};
+
+  NavigatorDrawerMyShortcutTitleTypography = {};
+
+  NavigatorDrawerMyShortcutListItemSkeleton = {};
+
+  NavigatorDrawerMyShortcutListList = {};
+
+  NavigatorDrawerMyShortcutListItem = {};
+
   NavigatorDrawerShortcutIconImg = {};
 
   NavigatorDrawerShortcutTitleTypography = {};
@@ -376,6 +386,72 @@ class AppStyle {
   AccountPaper = {};
 
   /** => following for previewer  component  */
+
+  PreviewerFuncLyricLabelOfLyricTypography = {};
+
+  PreviewerFuncLyricDivWrap = {};
+
+  PreviewerFuncLyricTextField = {};
+
+  PreviewerFuncComposerLabelOfComposerTypography = {};
+
+  PreviewerFuncComposerDivWrap = {};
+
+  PreviewerFuncComposerTextField = {};
+
+  PreviewerFuncSpeedLabelOfSpeedTypography = {};
+
+  PreviewerFuncSpeedDivWrap = {};
+
+  PreviewerFuncSpeedTextField = {};
+
+  PreviewerFuncTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
+
+  PreviewerFuncTonalityOfMaleDivListWrap = {};
+
+  PreviewerFuncTonalityOfMaleMenuItem = {};
+
+  PreviewerFuncTonalityOfMaleTextFieldList = {};
+
+  PreviewerFuncTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
+
+  PreviewerFuncTonalityOfFemaleDivListWrap = {};
+
+  PreviewerFuncTonalityOfFemaleMenuItem = {};
+
+  PreviewerFuncTonalityOfFemaleTextFieldList = {};
+
+  PreviewerFuncTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
+
+  PreviewerFuncTonalityOfOriginalDivListWrap = {};
+
+  PreviewerFuncTonalityOfOriginalMenuItem = {};
+
+  PreviewerFuncTonalityOfOriginalTextFieldList = {};
+
+  PreviewerFuncTonalityOfContextLabelOfTonalityOfContextTypography = {};
+
+  PreviewerFuncTonalityOfContextDivListWrap = {};
+
+  PreviewerFuncTonalityOfContextMenuItem = {};
+
+  PreviewerFuncTonalityOfContextTextFieldList = {};
+
+  PreviewerFuncSingerInputOfSingerTextField = {};
+
+  PreviewerFuncSingerLabelOfSingerTypography = {};
+
+  PreviewerFuncSingerDivWrap = {};
+
+  PreviewerFuncSingerAutocomplete = {};
+
+  PreviewerFuncNameLabelOfNameTypography = {};
+
+  PreviewerFuncNameDivWrap = {};
+
+  PreviewerFuncNameTextField = {};
+
+  PreviewerFuncDiv = {};
 
   PreviewerDiv = {};
 
