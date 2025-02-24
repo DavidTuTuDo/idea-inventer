@@ -16,9 +16,53 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     super(props);
   }
 
-  onChordiventorPreviewChipClicked(param) {
-    if(this.getStore().allowGotoPreviewPage()) Router.gotoPreviewerPage(this);
-    else this.showWarningSnackMessage(`撰寫的內容不符合悅譜規定，請IG洽詢「明悅」`)
+  onChordiventorTxtTextFieldChange(param) {
+    this.getStore().invalidate();
+  }
+
+  onChordiventorCancelChipClicked(param) {
+    this.getStore().persistent();
+    Router.gotoHomePage(this);
+  }
+
+  onChordiventorNameTextFieldChange(param) {
+    this.getStore().invalidate();
+  }
+
+  onChordiventorSingerAutocompleteChange(param) {
+    this.getStore().invalidate();
+  }
+
+  onChordiventorInputOfSingerTextFieldChange(param) {
+    this.getStore().invalidate();
+  }
+
+
+  onChordiventorSpeedTextFieldChange(param) {
+    this.getStore().invalidate();
+  }
+
+  /** 女性建議調性 */
+  onTonalityOfFemaleSelectedChange(value, param) {
+    this.getStore().invalidate();
+  }
+
+  /** 男生建議調性 */
+  onTonalityOfMaleSelectedChange(value, param) {
+    this.getStore().invalidate();
+
+  }
+
+  /** 原曲調性 */
+  onTonalityOfOriginalSelectedChange(value, param) {
+    this.getStore().invalidate();
+
+  }
+
+  /** 譜曲調性 */
+  onTonalityOfContextSelectedChange(value, param) {
+    this.getStore().invalidate();
+
   }
 
   /** -------------------- async api -------------------- **/

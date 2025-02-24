@@ -12,7 +12,9 @@ import Typography from "@mui/material/Typography";
 import {observer} from "mobx-react";
 import Style from "../../style";
 import React from "react";
+import Cookie from '../../cookie';
 import UserInfoRef from "../../base/BaseUserInfo";
+import Router from "../../router";
 
 @inject("sheet")
 @observer
@@ -22,6 +24,34 @@ class SheetComponent extends BaseSheetComponent {
 
     constructor(props) {
         super(props);
+    }
+
+    onSheetAdjustCenterEditorButtonClicked(param) {
+        const cache = this.getStore().getCurrentPu().columnData();
+        const id = cache.id;
+        const context = cache.originalContext;
+        const tonalityOfOriginal = cache.tonalityOfOriginal;
+        const tonalityOfContext = cache.tonalityOfContext;
+        const tonalityOfMale = cache.tonalityOfMale;
+        const tonalityOfFemale = cache.tonalityOfFemale;
+        const singer = cache.singer;
+        delete cache.currentContext;
+        delete cache.originalContext;
+        delete cache.tonalityOfOriginal;
+        delete cache.tonalityOfContext;
+        delete cache.tonalityOfMale;
+        delete cache.tonalityOfFemale;
+        delete cache.singer;
+        delete cache.id;
+        cache.idOfGuitarPu = id;
+        cache.selectedTonalityOfOriginal = tonalityOfOriginal;
+        cache.selectedTonalityOfContext = tonalityOfContext;
+        cache.selectedTonalityOfMale = tonalityOfMale;
+        cache.selectedTonalityOfFemale = tonalityOfFemale;
+        cache.inputOfSinger = singer;
+        Cookie.setCacheOfToneInfo(cache);
+        Cookie.setCustomOfTone(context);
+        Router.gotoChordiventorPage(this);
     }
 
     getInjectStyleOfSheetGuitarpuLabelOfSpeedOfRhythmTypography(guitarpu) {
@@ -140,7 +170,6 @@ class SheetComponent extends BaseSheetComponent {
                 {self.handleTextString(segment)}
             </Typography>));
     })
-
 
     /** -------------------- async api -------------------- **/
 }

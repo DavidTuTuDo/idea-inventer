@@ -156,6 +156,12 @@ class SheetStore extends BaseSheetStore {
         if (pu instanceof GuitarPu) {
             pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
             pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
+
+
+            pu.setTonalityOfFemale(this.normalizeTonality(pu.getTonalityOfFemale()))
+            pu.setTonalityOfMale(this.normalizeTonality(pu.getTonalityOfMale()));
+            pu.setTonalityOfOriginal(this.normalizeTonality(pu.getTonalityOfOriginal()));
+            pu.setTonalityOfContext((this.normalizeTonality(pu.getTonalityOfContext())))
             this.invalidate(true);
         } else {
             this.setMessageOfListIsEmpty(`網路連線可能不穩。\n\n\n\n使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
@@ -167,9 +173,9 @@ class SheetStore extends BaseSheetStore {
     invalidate = (announce = false) => {
         const pu = this.getCurrentPu();
         pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed())
-        this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(this.getTonalityOfFemale())}`)
-        this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(this.getTonalityOfMale())}`)
-        this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(this.getTonalityOfOriginal())}`)
+        this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(pu.getTonalityOfFemale())}`)
+        this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(pu.getTonalityOfMale())}`)
+        this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(pu.getTonalityOfOriginal())}`)
         this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
         if(announce) this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
     }
@@ -180,24 +186,10 @@ class SheetStore extends BaseSheetStore {
         return `${result.from}調\n(彈${result.to}夾${result.level}格)`
     }
 
-    getTonalityOfFemale() {
-        return this.normalizeTonality(this.getCurrentPu().getTonalityOfFemale())
-    }
-
-    getTonalityOfMale() {
-        return this.normalizeTonality(this.getCurrentPu().getTonalityOfMale())
-    }
-
-    getTonalityOfOriginal() {
-        return this.normalizeTonality(this.getCurrentPu().getTonalityOfOriginal())
-    }
-
-    getTonalityOfContext() {
-        return this.normalizeTonality(this.getCurrentPu().getTonalityOfContext())
-    }
 
     normalizeTonality(string) {
-        return string.split(SEPARATOR_OF_TONALITY).shift();
+        const result =  string.split(SEPARATOR_OF_TONALITY).shift();
+        return Util.isUndefinedNullEmpty(result) ? 'C' : result;
     }
 
 
@@ -206,7 +198,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     @action
-    invalidateTranspositionChord(level = 1, context = this.getCurrentPuContext()) {
+    invalidateTranspositionChord = (level = 1, context = this.getCurrentPuContext())=> {
         /** context如果拿回空，不處理以下 */
         if(Util.isUndefinedNullEmpty(context)) return;
 
@@ -272,23 +264,24 @@ class SheetStore extends BaseSheetStore {
         this.updatePuContext(segments.join('\n'));
     }
 
-    transpositionByGender(gender) {
+    transpositionByGender = (gender) => {
+        const pu = this.getCurrentPu();
         let tone = '';
         switch (gender) {
             case 'male':
-                tone = this.getTonalityOfMale();
+                tone = pu.getTonalityOfMale();
                 break;
             case 'female':
-                tone = this.getTonalityOfFemale()
+                tone = pu.getTonalityOfFemale()
                 break
             case 'original':
-                tone = this.getTonalityOfOriginal();
+                tone = pu.getTonalityOfOriginal();
                 break;
         }
 
-        const suggest = this.getSuggestTonalityCapoLevel(this.normalizeTonality(tone));
+        const suggest = this.getSuggestTonalityCapoLevel(tone);
         const tonalityOfDestination = suggest.to;
-        const tonalityOfContext = this.normalizeTonality(this.getTonalityOfContext());
+        const tonalityOfContext = pu.getTonalityOfContext();
         const level = this.getLevelOfBetweenChords(tonalityOfContext, tonalityOfDestination);
         this.invalidateTranspositionChord(level, this.getOriginalPuContext());
     }

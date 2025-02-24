@@ -385,87 +385,91 @@ class MobileStyle {
 
   AccountPaper = {};
 
-  /** => following for previewer  component  */
-
-  PreviewerFuncLyricLabelOfLyricTypography = {};
-
-  PreviewerFuncLyricDivWrap = {};
-
-  PreviewerFuncLyricTextField = {};
-
-  PreviewerFuncComposerLabelOfComposerTypography = {};
-
-  PreviewerFuncComposerDivWrap = {};
-
-  PreviewerFuncComposerTextField = {};
-
-  PreviewerFuncSpeedLabelOfSpeedTypography = {};
-
-  PreviewerFuncSpeedDivWrap = {};
-
-  PreviewerFuncSpeedTextField = {};
-
-  PreviewerFuncTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
-
-  PreviewerFuncTonalityOfMaleDivListWrap = {};
-
-  PreviewerFuncTonalityOfMaleMenuItem = {};
-
-  PreviewerFuncTonalityOfMaleTextFieldList = {};
-
-  PreviewerFuncTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
-
-  PreviewerFuncTonalityOfFemaleDivListWrap = {};
-
-  PreviewerFuncTonalityOfFemaleMenuItem = {};
-
-  PreviewerFuncTonalityOfFemaleTextFieldList = {};
-
-  PreviewerFuncTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
-
-  PreviewerFuncTonalityOfOriginalDivListWrap = {};
-
-  PreviewerFuncTonalityOfOriginalMenuItem = {};
-
-  PreviewerFuncTonalityOfOriginalTextFieldList = {};
-
-  PreviewerFuncTonalityOfContextLabelOfTonalityOfContextTypography = {};
-
-  PreviewerFuncTonalityOfContextDivListWrap = {};
-
-  PreviewerFuncTonalityOfContextMenuItem = {};
-
-  PreviewerFuncTonalityOfContextTextFieldList = {};
-
-  PreviewerFuncSingerInputOfSingerTextField = {};
-
-  PreviewerFuncSingerLabelOfSingerTypography = {};
-
-  PreviewerFuncSingerDivWrap = {};
-
-  PreviewerFuncSingerAutocomplete = {};
-
-  PreviewerFuncNameLabelOfNameTypography = {};
-
-  PreviewerFuncNameDivWrap = {};
-
-  PreviewerFuncNameTextField = {};
-
-  PreviewerFuncDiv = {};
-
-  PreviewerDiv = {};
-
   /** => following for chordiventor  component  */
 
   ChordiventorFuncCancelReactFragmentWrap = {};
 
   ChordiventorFuncCancelChip = {};
 
+  ChordiventorFuncClearChip = {};
+
+  ChordiventorFuncPersistReactFragmentWrap = {};
+
   ChordiventorFuncPersistChip = {};
 
-  ChordiventorFuncPreviewChip = {};
-
   ChordiventorFuncDiv = {};
+
+  ChordiventorInfoLyricLabelOfLyricTypography = {};
+
+  ChordiventorInfoLyricDivWrap = {};
+
+  ChordiventorInfoLyricTextField = {};
+
+  ChordiventorInfoComposerLabelOfComposerTypography = {};
+
+  ChordiventorInfoComposerDivWrap = {};
+
+  ChordiventorInfoComposerTextField = {};
+
+  ChordiventorInfoSpeedLabelOfSpeedTypography = {};
+
+  ChordiventorInfoSpeedDivWrap = {};
+
+  ChordiventorInfoSpeedTextField = {};
+
+  ChordiventorInfoTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
+
+  ChordiventorInfoTonalityOfMaleDivListWrap = {};
+
+  ChordiventorInfoTonalityOfMaleMenuItem = {};
+
+  ChordiventorInfoTonalityOfMaleTextFieldList = {};
+
+  ChordiventorInfoTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
+
+  ChordiventorInfoTonalityOfFemaleDivListWrap = {};
+
+  ChordiventorInfoTonalityOfFemaleMenuItem = {};
+
+  ChordiventorInfoTonalityOfFemaleTextFieldList = {};
+
+  ChordiventorInfoTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
+
+  ChordiventorInfoTonalityOfOriginalDivListWrap = {};
+
+  ChordiventorInfoTonalityOfOriginalMenuItem = {};
+
+  ChordiventorInfoTonalityOfOriginalTextFieldList = {};
+
+  ChordiventorInfoTonalityOfContextLabelOfTonalityOfContextTypography = {};
+
+  ChordiventorInfoTonalityOfContextDivListWrap = {};
+
+  ChordiventorInfoTonalityOfContextMenuItem = {};
+
+  ChordiventorInfoTonalityOfContextTextFieldList = {};
+
+  ChordiventorInfoSingerInputOfSingerTextField = {};
+
+  ChordiventorInfoSingerLabelOfSingerTypography = {};
+
+  ChordiventorInfoSingerDivWrap = {};
+
+  ChordiventorInfoSingerAutocomplete = {};
+
+  ChordiventorInfoNameLabelOfNameTypography = {};
+
+  ChordiventorInfoNameDivWrap = {};
+
+  ChordiventorInfoNameTextField = {};
+
+  ChordiventorInfoIdOfGuitarPuLabelOfIdOfGuitarPuTypography = {};
+
+  ChordiventorInfoIdOfGuitarPuDivWrap = {};
+
+  ChordiventorInfoIdOfGuitarPuTextField = {};
+
+  ChordiventorInfoDiv = {};
 
   ChordiventorTxtTextField = {};
 
@@ -567,6 +571,8 @@ class MobileStyle {
 
   SheetAdjustCenterFontWrapperDiv = {};
 
+  SheetAdjustCenterTonalityWrapperEditorButton = {};
+
   SheetAdjustCenterTonalityWrapperFlattenButton = {};
 
   SheetAdjustCenterTonalityWrapperSharpenButton = {};
@@ -599,11 +605,19 @@ class MobileStyle {
 
   SheetGuitarpuImageOfPreludeImg = {};
 
-  SheetGuitarpuSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+  SheetGuitarpuInfoCapoLabelOfCapoTypography = {};
 
-  SheetGuitarpuSpeedOfRhythmDivWrap = {};
+  SheetGuitarpuInfoCapoDivWrap = {};
 
-  SheetGuitarpuSpeedOfRhythmTypography = {};
+  SheetGuitarpuInfoCapoTypography = {};
+
+  SheetGuitarpuInfoSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuInfoSpeedOfRhythmDivWrap = {};
+
+  SheetGuitarpuInfoSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuInfoDiv = {};
 
   SheetGuitarpuDivSkeleton = {};
 

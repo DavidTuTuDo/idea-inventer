@@ -13,7 +13,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     super(props);
   }
 
-  allowGotoPreviewPage() {
+  persistent() {
     const content = this.getTxt();
     if(_.isEmpty(content)) return false;
     else return this.persistValidTone(content)
@@ -24,9 +24,43 @@ class ChordiventorStore extends BaseChordiventorStore {
     return true;
   }
 
+  getCurrentEditedPu = () => {
+    return this.getSheet().getCurrentPu();
+  }
+
+  invalidate = () => {
+    const toneOfContext = this.getSelectedTonalityOfContext();
+    const toneOfMale = this.getSelectedTonalityOfMale();
+    const toneOfFemale = this.getSelectedTonalityOfFemale();
+    const toneOfOriginal = this.getSelectedTonalityOfOriginal();
+    const speed = this.getSpeed();
+    const name = this.getName();
+    const content = this.getTxt();
+    const singer = this.getInputOfSinger()
+    const pu = this.getCurrentEditedPu();
+    pu.setCurrentContext(content);
+    pu.setOriginalContext(content)
+    pu.setTonalityOfContext(toneOfContext)
+    pu.setTonalityOfMale(toneOfMale)
+    pu.setTonalityOfFemale(toneOfFemale)
+    pu.setTonalityOfOriginal(toneOfOriginal);
+    pu.setSpeed(speed);
+    pu.setName(name);
+    pu.setSinger(singer);
+    this.getSheet().invalidate();
+  }
+
   async onInitialFetchCompleted(collection) {
-      const latest = Cookie.getCustomOfTone();
-      this.setTxt(latest);
+    const result = await super.onInitialFetchCompleted(collection);
+    this.getSheet().setState(`stable`);
+    const context = Cookie.getCustomOfTone();
+    this.setTxt(context);
+    this.getSheet().pushGuitarpu({});
+    const cache = Cookie.getCacheOfToneInfo();
+    this.fromJson(cache);
+    this.invalidate();
+
+    return result;
   }
 
   /** -------------------- async api -------------------- **/
