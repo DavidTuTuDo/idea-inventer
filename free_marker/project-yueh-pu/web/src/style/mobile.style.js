@@ -467,6 +467,12 @@ class MobileStyle {
 
   ChordiventorInfoIdOfGuitarPuTextField = {};
 
+  ChordiventorInfoIdOfSingerLabelOfIdOfSingerTypography = {};
+
+  ChordiventorInfoIdOfSingerDivWrap = {};
+
+  ChordiventorInfoIdOfSingerTextField = {};
+
   ChordiventorInfoDiv = {};
 
   ChordiventorBriefFrameDiv = {};

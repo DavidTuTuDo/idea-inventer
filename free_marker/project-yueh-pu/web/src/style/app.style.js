@@ -467,6 +467,12 @@ class AppStyle {
 
   ChordiventorInfoIdOfGuitarPuTextField = {};
 
+  ChordiventorInfoIdOfSingerLabelOfIdOfSingerTypography = {};
+
+  ChordiventorInfoIdOfSingerDivWrap = {};
+
+  ChordiventorInfoIdOfSingerTextField = {};
+
   ChordiventorInfoDiv = {};
 
   ChordiventorBriefFrameDiv = {};

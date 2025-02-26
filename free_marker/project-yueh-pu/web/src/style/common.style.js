@@ -467,6 +467,12 @@ class CommonStyle {
 
   ChordiventorInfoIdOfGuitarPuTextField = {};
 
+  ChordiventorInfoIdOfSingerLabelOfIdOfSingerTypography = {};
+
+  ChordiventorInfoIdOfSingerDivWrap = {};
+
+  ChordiventorInfoIdOfSingerTextField = {};
+
   ChordiventorInfoDiv = {};
 
   ChordiventorBriefFrameDiv = {};

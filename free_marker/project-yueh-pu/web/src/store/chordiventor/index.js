@@ -64,12 +64,10 @@ class ChordiventorStore extends BaseChordiventorStore {
     this.getSheet().setState(`stable`);
     const context = Cookie.getCustomOfToneTxt();
     this.setTxt(context);
-    this.setSingerSuggests(...Config.getSingers())
     this.getSheet().pushGuitarpu({});
     const cache = Cookie.getCacheOfToneInfo();
     this.fromJson(cache);
     this.invalidate();
-
     return result;
   }
 

@@ -127,6 +127,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 讓AutoCompete初始化就使用Fuse()*/
+    autoFuse = false;
+
     propsOfIcon = {};
     /** iconButton 有設定icon={} 時，可以inject props進去給<icon ...props /> */
 
@@ -992,6 +995,10 @@ class CodegenNode {
 
     isSingleLine() {
         return this.singleLine;
+    }
+
+    useAutoFuse() {
+        return _.isEqual(true, this.autoFuse);
     }
 
     getTextOfHelperVisual() {
@@ -3270,6 +3277,11 @@ class CodegenNode {
         return Util.camel('fuse', 'Of', this.getName());
     }
 
+    getFunctionNameOfAutoCompletedSuggestInitial() {
+        const name = this.getName();
+        return Util.camel('initial', name, /suggest/i.test(name) ? '' : 'suggest', 'behavior');
+    }
+
     getFunctionNameOfSetter() {
         return `set${_.upperFirst(this.getFieldName())}`
     }
@@ -4253,7 +4265,6 @@ class BaseBuilder extends PathBase {
         return params.map(param => {
             if (_.isEqual(param.trim(), 'id')) {
                 if (node.isCheapArray()) return `${param} = 'contents'`;
-                else return `${param} = this.getId()`;
             }
             return param;
         })
@@ -4350,7 +4361,7 @@ class BaseBuilder extends PathBase {
             const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValueOfWeb(params, node, mustache);
             return ['view = this.getComponent()', ...paramsOfLatest];
         }
-        return self.getParamsOfDefaultValue(params,node);
+        return self.getParamsOfDefaultValue(params, node);
     }
 
     getArgumentsInFunction(node, type) {
@@ -4442,10 +4453,13 @@ class StoreBuilder extends BaseBuilder {
                 propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
             if (child.isArray()) {
-                if (!child.hasPaginate()) {
+                if (child.useAutoFuse())
+                    propStmt.push(`this.${child.getFunctionNameOfAutoCompletedSuggestInitial()}(obj.${fieldName})`);/** node是故意的*/
+                else if (!child.hasPaginate()) {
                     /** 因為invalidate做在pushXXX裏面 所以才會出現initial 要pushXXX,在悅譜-我的最愛 有這個奇怪的設計 hack */
                     propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
                 }
+
                 if (child.isReferenceNode() && !child.independence)
                     generator.appendImport(child.getClassName(), `../${child.ref.getStoreFolderName()}`)
                 else {
@@ -4681,7 +4695,7 @@ class StoreBuilder extends BaseBuilder {
 
             if (child.isAutoCompleteView()) {
                 baseGenerator.appendImport(`Fuse`, 'fuse.js');
-                baseGenerator.appendFunction(Util.camel('initial', child.getName(), 'suggest', 'behavior'), ['array'], [], [],
+                baseGenerator.appendFunction(child.getFunctionNameOfAutoCompletedSuggestInitial(), ['array'], [], [],
                     `this.${child.getFieldNameOfFuse()} = new Fuse(array, { shouldSort: true, includeScore: true, keys: ["label", "value"] });`,
                     `this.${Util.camel('set', child.getFieldNameOfSuggest())}s(...array)`
                 )
@@ -8967,6 +8981,7 @@ class ProjectFileHandler extends PathBase {
                         plural,
                         incest: node.incest,
                         path: node.path,
+                        autoFuse: node.useAutoFuse(),
                         cheap: true,
                         children: [
                             {
