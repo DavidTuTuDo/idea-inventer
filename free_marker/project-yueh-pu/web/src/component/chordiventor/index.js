@@ -16,13 +16,21 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     super(props);
   }
 
+  onChordiventorClearChipClicked(param) {
+    this.getStore().cleanUp();
+  }
+
+  onChordiventorPersistChipClicked(param) {
+    /** 按下發佈按鈕 */
+  }
+
   onChordiventorTxtTextFieldChange(param) {
     this.getStore().invalidate();
   }
 
   onChordiventorCancelChipClicked(param) {
     this.getStore().persistent();
-    Router.gotoHomePage(this);
+    // Router.gotoHomePage(this);
   }
 
   onChordiventorNameTextFieldChange(param) {
@@ -36,7 +44,6 @@ class ChordiventorComponent extends BaseChordiventorComponent {
   onChordiventorInputOfSingerTextFieldChange(param) {
     this.getStore().invalidate();
   }
-
 
   onChordiventorSpeedTextFieldChange(param) {
     this.getStore().invalidate();

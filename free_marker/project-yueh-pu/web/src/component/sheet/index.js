@@ -50,16 +50,20 @@ class SheetComponent extends BaseSheetComponent {
         cache.selectedTonalityOfFemale = tonalityOfFemale;
         cache.inputOfSinger = singer;
         Cookie.setCacheOfToneInfo(cache);
-        Cookie.setCustomOfTone(context);
+        Cookie.setCustomOfToneTxt(context);
         Router.gotoChordiventorPage(this);
     }
 
-    getInjectStyleOfSheetGuitarpuLabelOfSpeedOfRhythmTypography(guitarpu) {
+    getWrapInjectStyleOfSheetGuitarpuSpeedOfRhythmTypography(guitarpu) {
         return Util.getVisibleOrNone(this.getStore().getCurrentPu().getSpeed() > 1, true);
     }
 
-    getInjectStyleOfSheetGuitarpuSpeedOfRhythmTypography(guitarpu) {
-        return Util.getVisibleOrNone(this.getStore().getCurrentPu().getSpeed() > 1, true);
+    getWrapInjectStyleOfSheetGuitarpuCapoTypography(guitarpu) {
+        return Util.getVisibleOrNone(this.getStore().getCurrentPu().getCapoLevel() >= 0, true);
+    }
+
+    getInjectStyleOfSheetAdjustCenterEditorButton(center) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin(), true);
     }
 
     getInjectStyleOfSheetGuitarpuImageOfPreludeImg(guitarpu) {
@@ -151,6 +155,8 @@ class SheetComponent extends BaseSheetComponent {
         return Util.getVisibleOrNone(UserInfoRef.isLoginWithSucceed());
     }
 
+
+
     SheetGuitarpusCurrentContextView = observer(({guitarpu}) => {
         const self = this;
         const currentContext = self.getGuitarpuCurrentContext(guitarpu);
@@ -171,7 +177,6 @@ class SheetComponent extends BaseSheetComponent {
             </Typography>));
     })
 
-    /** -------------------- async api -------------------- **/
 }
 
 export default SheetComponent;

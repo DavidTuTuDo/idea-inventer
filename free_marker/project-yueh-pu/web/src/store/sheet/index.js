@@ -173,6 +173,7 @@ class SheetStore extends BaseSheetStore {
     invalidate = (announce = false) => {
         const pu = this.getCurrentPu();
         pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed())
+        pu.setCapo(this.getCurrentPu().getCapoLevel())
         this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(pu.getTonalityOfFemale())}`)
         this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(pu.getTonalityOfMale())}`)
         this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(pu.getTonalityOfOriginal())}`)

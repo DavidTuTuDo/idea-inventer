@@ -1,3 +1,5 @@
+const edit = true;
+
 import BaseConfig from "./BaseConfig";
 import {
   utiller as Util,
@@ -13,6 +15,17 @@ class Config extends BaseConfig {
 
   constructor(props) {
     super(props);
+  }
+
+  singers = [];
+
+  setSingers = (singers)=> {
+    this.singers.length = 0
+    this.singers.push(...singers);
+  }
+
+  getSingers = () => {
+    return this.singers
   }
   /** -------------------- async api -------------------- **/
 }

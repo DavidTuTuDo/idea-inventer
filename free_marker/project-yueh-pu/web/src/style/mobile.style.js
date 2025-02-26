@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -471,7 +469,11 @@ class MobileStyle {
 
   ChordiventorInfoDiv = {};
 
-  ChordiventorTxtTextField = {};
+  ChordiventorBriefFrameDiv = {};
+
+  ChordiventorBriefTxtTextField = {};
+
+  ChordiventorBriefDiv = {};
 
   ChordiventorDivWrap = {};
 
@@ -616,6 +618,8 @@ class MobileStyle {
   SheetGuitarpuInfoSpeedOfRhythmDivWrap = {};
 
   SheetGuitarpuInfoSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuInfoDivWrap = {};
 
   SheetGuitarpuInfoDiv = {};
 

@@ -281,7 +281,7 @@ class CommonRemoteApi {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start fetch object => path:/${path}/${objName}`);
         const object = await firebase.fetchDocument(path, objName);
-        Util.appendInfo(`${uid} start fetch object => path:/${path}/${objName}`);
+        Util.appendInfo(`${uid} succeed fetch object => path:/${path}/${objName}`);
         return object;
     }
 

@@ -351,7 +351,6 @@
   }
 }
 .SheetGuitarpuPaperWrap:extend(.CenterInParentColumn) {
-  width: 96vw;
   padding-left: 5px;
   padding-right: 3px;
   padding-top: 3px;
@@ -359,12 +358,13 @@
   margin-bottom: 20px;
   margin-top: 10px;
   @media @mobile {
-    /** empty style */
+    width: 96vw;
   }
   @media @tablet {
-    /** empty style */
+    width: 96vw;
   }
   @media @desktop {
+    min-width: 720px;
     max-width: 1080px;
   }
 }
@@ -392,7 +392,24 @@
     /** empty style */
   }
 }
-.SheetGuitarpuInfoDiv {
+.SheetGuitarpuInfoDiv:extend(.CenterInParentColumn) {
+  width: 120px;
+  position: absolute;
+  z-index: 3;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetGuitarpuInfoDivWrap:extend(.CenterInParentRow) {
+  position: relative;
+  float: right;
+  top: 20px;
   @media @mobile {
     /** empty style */
   }
@@ -404,6 +421,8 @@
   }
 }
 .SheetGuitarpuInfoSpeedOfRhythmTypography {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
   }
@@ -414,7 +433,7 @@
     /** empty style */
   }
 }
-.SheetGuitarpuInfoSpeedOfRhythmDivWrap {
+.SheetGuitarpuInfoSpeedOfRhythmDivWrap:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -426,6 +445,8 @@
   }
 }
 .SheetGuitarpuInfoSpeedOfRhythmLabelOfSpeedOfRhythmTypography {
+  font-size: 0.9rem;
+  color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
   }
@@ -436,7 +457,7 @@
     /** empty style */
   }
 }
-.SheetGuitarpuInfoCapoTypography {
+.SheetGuitarpuInfoCapoTypography:extend(.SheetGuitarpuInfoSpeedOfRhythmTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -447,7 +468,7 @@
     /** empty style */
   }
 }
-.SheetGuitarpuInfoCapoDivWrap {
+.SheetGuitarpuInfoCapoDivWrap:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -458,7 +479,7 @@
     /** empty style */
   }
 }
-.SheetGuitarpuInfoCapoLabelOfCapoTypography {
+.SheetGuitarpuInfoCapoLabelOfCapoTypography:extend(.SheetGuitarpuInfoSpeedOfRhythmLabelOfSpeedOfRhythmTypography) {
   @media @mobile {
     /** empty style */
   }
@@ -1185,8 +1206,8 @@
 }
 .ChordiventorDivWrap:extend(.CenterInParentColumn) {
   margin: auto;
-  width: 100%;
   padding-top: 10px;
+  width: 97vw;
   @media @mobile {
     /** empty style */
   }
@@ -1194,11 +1215,36 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    max-width: 1080px;
   }
 }
-.ChordiventorTxtTextField {
-  width: 95%;
+.ChordiventorBriefDiv:extend(.CenterInParentColumn) {
+  padding: 5px;
+  gap: 5px;
+  @media @mobile {
+    flex-direction: column;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+.ChordiventorBriefTxtTextField {
+  @media @mobile {
+    width: 100%;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    margin-top: 8px;
+    width: 660px;
+  }
+}
+.ChordiventorBriefFrameDiv {
   @media @mobile {
     /** empty style */
   }
@@ -1206,7 +1252,7 @@
     /** empty style */
   }
   @media @desktop {
-    width: 1080px;
+    /** empty style */
   }
 }
 .ChordiventorInfoDiv:extend(.CenterInParentRow) {
@@ -3788,56 +3834,6 @@
   }
 }
 .InfoOfCopyRightContentEditorProjectImageTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-/** ======== following for homeless ========= */
-
-.SheetGuitarpuSpeedOfRhythmTypography {
-  position: absolute;
-  top: 0;
-  width: 20px;
-  height: 60px;
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.3);
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.SheetGuitarpuSpeedOfRhythmDivWrap:extend(.CenterInParentRow) {
-  position: relative;
-  float: right;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.SheetGuitarpuSpeedOfRhythmLabelOfSpeedOfRhythmTypography {
-  position: absolute;
-  top: 0;
-  right: 10px;
-  width: 50px;
-  height: 60px;
-  font-size: 0.9rem;
-  color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
   }

@@ -1194,11 +1194,6 @@ class CodegenNode {
         return this.listEmptyTip && this.listEmptyTip.enable;
     }
 
-    hasReferenceParent() {
-        const parent = this.getParentBy((node) => node.isReferenceNode())
-        return parent !== undefined;
-    }
-
     /**
      * 1.可以從任何一個節點找到node of component, 然後判斷是否為editable
      * 2.設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
@@ -4234,13 +4229,11 @@ class BaseBuilder extends PathBase {
         return `${functionName}()`;
     }
 
-    getParamsOfDefaultValue(params, node, mustache = false) {
+    getParamsOfDefaultValueOfWeb(params, node) {
         return params.map(param => {
             if (_.isEqual(param.trim(), 'id')) {
-                if (node.isCheapArray() && mustache)
-                    return `${param} = 'contents'`;
-                else
-                    return `${param} = this.getId()`;
+                if (node.isCheapArray()) return `${param} = 'contents'`;
+                else return `${param} = this.getId()`;
             } else if (Util.isOrEquals(param.trim(), 'item', 'object')) {
                 return `${param} = this`;
             } else if (_.isEqual(param.trim(), 'restful')) {
@@ -4251,6 +4244,16 @@ class BaseBuilder extends PathBase {
                 return `${param} = ''`;
             } else if (_.isEqual(param.trim(), 'conditions')) {
                 return `${param} = []`;
+            }
+            return param;
+        })
+    }
+
+    getParamsOfDefaultValue(params, node) {
+        return params.map(param => {
+            if (_.isEqual(param.trim(), 'id')) {
+                if (node.isCheapArray()) return `${param} = 'contents'`;
+                else return `${param} = this.getId()`;
             }
             return param;
         })
@@ -4344,10 +4347,10 @@ class BaseBuilder extends PathBase {
         }
 
         if (self.isWebPlatform()) {
-            const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValue(params, node, mustache);
+            const paramsOfLatest = isArgument ? params : self.getParamsOfDefaultValueOfWeb(params, node, mustache);
             return ['view = this.getComponent()', ...paramsOfLatest];
         }
-        return params;
+        return self.getParamsOfDefaultValue(params,node);
     }
 
     getArgumentsInFunction(node, type) {
@@ -4416,7 +4419,7 @@ class StoreBuilder extends BaseBuilder {
                         type: child.type,
                         defaultValue,
                         isSelected: child.isSelected(),
-                        paramString: this.getParamsOfDefaultValue(child.getParamsInPath(), child).join(','),
+                        paramString: this.getParamsOfDefaultValueOfWeb(child.getParamsInPath(), child).join(','),
                         argumentString: child.getStringOfArgumentsOfPath(),
                         stringOfParamInFetch: this.getParamsInFunctionByPlatform(child, 'fetch', false, false, true),
                         stringOfArgumentInFetch: this.getArgumentsInFunction(child, 'fetch'),
@@ -5841,10 +5844,9 @@ class ComponentBuilder extends BaseBuilder {
                 props: itemViewProps,
             })
 
-
             if (node.isSimpleSelected()) {
                 props['onChange'] = `###(event, value)=>{
-                    const latest = ${node.useStringAsValue() ? `event.target.value;`:`_.toNumber(event.target.value);`}
+                    const latest = ${node.useStringAsValue() ? `event.target.value;` : `_.toNumber(event.target.value);`}
                     objectOfParam.value = latest;
                     objectOfParam.event = event;
                     ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)
@@ -7826,13 +7828,9 @@ class ProjectFileHandler extends PathBase {
         const path = node.getPath();
         const wildcard = `{${node.getName()}}`;
         const normalize = path.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
-        if (node.isObject()) {
-            return libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
-        } else if (node.isArray()) {
-            return libpath.join('/', normalize, wildcard);
-        } else {
-            throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
-        }
+        if (node.isObject()) return libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
+        else if (node.isArray()) return libpath.join('/', normalize, wildcard);
+        else throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
     }
 
     async generateFireStoreRules(deploy = true) {
@@ -7863,7 +7861,7 @@ class ProjectFileHandler extends PathBase {
             }
             stmts.push(`match ${self.getFirebaseRuleOfMatchRoute(node)} {`, ..._stmts, '}');
         }
-        await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()), task)
+        await this.recursiveDoingOfNodeEachStruct((node) => !_.isEmpty(node.getPath()) && !node.isObjectOfEmpty(), task)
         Util.insertToArray(base, Util.getIndexOfContext(base, SIGN_OF_COLLECTION_START), ...stmts);
         await this.buildDeployDocument('firestore.rules', base.join('\n'), 'firestore:rules', deploy)
     }
@@ -8968,6 +8966,8 @@ class ProjectFileHandler extends PathBase {
                         type: `array`,
                         plural,
                         incest: node.incest,
+                        path: node.path,
+                        cheap: true,
                         children: [
                             {
                                 type: 'string',
@@ -9233,6 +9233,7 @@ class ProjectFileHandler extends PathBase {
                     /**  clone 的物件 */
                     nodeOfImitate.ref = nodeOfReference;
                     nodeOfImitate.nodeOfOrigin = node;
+                    nodeOfImitate.incest = node.incest;
                     /**  source.js 上的點 */
                     Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
                 }

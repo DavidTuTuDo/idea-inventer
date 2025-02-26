@@ -1,3 +1,5 @@
+const edit = true;
+
 import Api from './api';
 import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool, exceptioner as ERROR} from "utiller";
@@ -14,7 +16,7 @@ import {configerer} from "configerer";
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 580;
+const THRESHOLD_OF_KEYWORD_MATCH = 650;
 
 (async () => {
 
@@ -25,7 +27,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
     await database.init();
     const bucket = firebase.storage().bucket();
 
-    /** 找出週 rank*/
+    /** 找出週 rank */
 
     async function fetchTopSongsOfRank(n) {
         return Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
@@ -349,7 +351,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
                         {
                             title: '新增悅譜',
                             icon: 'muIcon:LibraryMusic',
-                            route: `route:QueueMusic`,
+                            route: `route:chordiventor`,
                             indexOfSequence: 2,
                         },
                     ]
@@ -691,6 +693,21 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
         );
     }
 
+    async function updateSingerOfSuggest() {
+        const singers = await api.fetchSingers();
+        const suggests = singers.map((singer) => {
+            return {
+                label:singer.name,
+                uid:singer.id,
+                id:singer.id,
+                value:singer.id,
+                popularLevel:singer.popularLevel
+            }
+        })
+        await api.submitSingerSuggests(suggests);
+
+    }
+
     /** 每次都要跑 */
     // await syncPreludeInfoToRemoteFirestore();
     // await updatePopularLevelOfEachTone();
@@ -715,6 +732,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 580;
 
     // await updatePreludeToRemoteWholeProcess();
     await deployLatestSheet();
+    await updateSingerOfSuggest();
     // await updateUserAllowRead();
 
 })();

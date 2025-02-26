@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
-
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -471,7 +469,11 @@ class AppStyle {
 
   ChordiventorInfoDiv = {};
 
-  ChordiventorTxtTextField = {};
+  ChordiventorBriefFrameDiv = {};
+
+  ChordiventorBriefTxtTextField = {};
+
+  ChordiventorBriefDiv = {};
 
   ChordiventorDivWrap = {};
 
@@ -616,6 +618,8 @@ class AppStyle {
   SheetGuitarpuInfoSpeedOfRhythmDivWrap = {};
 
   SheetGuitarpuInfoSpeedOfRhythmTypography = {};
+
+  SheetGuitarpuInfoDivWrap = {};
 
   SheetGuitarpuInfoDiv = {};
 
