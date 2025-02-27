@@ -16,7 +16,7 @@ import {configerer} from "configerer";
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 650;
+const THRESHOLD_OF_KEYWORD_MATCH = 660;
 
 (async () => {
 
@@ -270,6 +270,47 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
         /** encode */
     }
 
+    /** *
+     *
+     * // 測試案例
+     * //  console.log(parseMusicCredits("詞：吳劍泓 曲：林俊傑"));
+     * // { lyricist: '吳劍泓', composer: '林俊傑' }
+     *
+     * //  console.log(parseMusicCredits("曲：林俊傑 詞：吳劍泓"));
+     * // { lyricist: '吳劍泓', composer: '林俊傑' }
+     *
+     * //  console.log(parseMusicCredits("詞：吳劍泓"));
+     * // { lyricist: '吳劍泓' }
+     *
+     * //  console.log(parseMusicCredits("曲：林俊傑"));
+     * // { composer: '林俊傑' }
+     *
+     * //  console.log(parseMusicCredits(""));
+     * // {}
+     */
+
+    function parseMusicCredits(inputStr) {
+        if (!inputStr.trim()) {
+            return {}; // 如果是空字串或只有空白，直接回傳空物件
+        }
+
+        const result = {};
+
+        // 用正則分別擷取「詞」和「曲」，不論順序
+        const lyricistMatch = inputStr.match(/詞：([^曲]+)/);
+        const composerMatch = inputStr.match(/曲：([^詞]+)/);
+
+        if (lyricistMatch) {
+            result.lyricist = lyricistMatch[1].trim();
+        }
+
+        if (composerMatch) {
+            result.composer = composerMatch[1].trim();
+        }
+
+        return result;
+    }
+
     function getSubmitGuitarPuItemWithNormalized(tone, singers) {
 
         const objOfTones = getMapOfTonalitySpeed(tone.tkInfo);
@@ -302,7 +343,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
             uid: tone.id, /** database 裡面的column id */
             uuidOfSong: tone.url,
             uuidOfSinger: tone.singerUrl,
-            composer: tone.composer,
+            composer: parseMusicCredits(tone.composer).composer,
+            lyricist: parseMusicCredits(tone.composer).lyricist,
             popularLevel: tone.popularLevel,
             idOfSinger: getSingerDocumentId(),
         }
@@ -609,8 +651,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
             return project;
         })
 
-        Util.appendFile('./stringOfProject.json',JSON.stringify(commit),true,true);
-        await Util.prettier('./stringOfProject.json',120);
+        Util.appendFile('./stringOfProject.json', JSON.stringify(commit), true, true);
+        await Util.prettier('./stringOfProject.json', 120);
     }
 
     async function updateCPRT() {
@@ -640,7 +682,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
                     "indexOfSequence": 0,
                     "trait": "線上答題 | 高中學測",
                     "title": "悅考",
-                    "descriptions": [{ "statement": "一目暸然的答題方式(單選、多選)" }, { "statement": "錯誤回顧、線上協助" }]
+                    "descriptions": [{"statement": "一目暸然的答題方式(單選、多選)"}, {"statement": "錯誤回顧、線上協助"}]
                 },
                 {
                     "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7833.jpg?alt=media&token=4998b3fa-5571-415a-b0d1-0dd4d5d81486",
@@ -648,7 +690,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
                     "indexOfSequence": 2,
                     "trait": "線上播放器 ｜客製化",
                     "title": "悅耳",
-                    "descriptions": [{ "statement": "建立自己的線上專輯" }, { "statement": "聲音的故事（PODCASTS、街聲）" }]
+                    "descriptions": [{"statement": "建立自己的線上專輯"}, {"statement": "聲音的故事（PODCASTS、街聲）"}]
                 },
                 {
                     "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7838.jpg?alt=media&token=8c1aa03d-5aff-4e93-9745-7bd3bd92e5ed",
@@ -657,9 +699,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
                     "trait": "施工中 | 知識變現 | 技能販售",
                     "title": "悅薪",
                     "descriptions": [
-                        { "statement": "施工中" },
-                        { "statement": "時薪制販售技能（科目教學、美編、美髮、美睫）" },
-                        { "statement": "線上付款（降低人工筆記、保障權益）" }
+                        {"statement": "施工中"},
+                        {"statement": "時薪制販售技能（科目教學、美編、美髮、美睫）"},
+                        {"statement": "線上付款（降低人工筆記、保障權益）"}
                     ]
                 },
                 {
@@ -669,8 +711,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
                     "trait": "音樂｜和弦譜",
                     "title": "悅譜",
                     "descriptions": [
-                        { "statement": "和弦即時轉調（原調、男女建議調性）" },
-                        { "statement": "字體調整（手機、平板、電腦）" }
+                        {"statement": "和弦即時轉調（原調、男女建議調性）"},
+                        {"statement": "字體調整（手機、平板、電腦）"}
                     ]
                 },
                 {
@@ -679,7 +721,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
                     "indexOfSequence": 5,
                     "trait": "施工中 | 線上預約 | 申請",
                     "title": "悅曆",
-                    "descriptions": [{ "statement": "施工中" }, { "statement": "場地預約、資格審核、違規計點紀錄" }]
+                    "descriptions": [{"statement": "施工中"}, {"statement": "場地預約、資格審核、違規計點紀錄"}]
                 },
                 {
                     "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7840.jpg?alt=media&token=0634dc18-6bff-450b-950a-2493898dcc66",
@@ -687,25 +729,32 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
                     "indexOfSequence": 7,
                     "trait": "施工中 | 線上小説 ｜黑底白字",
                     "title": "悅讀",
-                    "descriptions": [{ "statement": "線上閱讀，使用案底色鮮少眼睛壓力" }, { "statement": "閱讀紀錄，全文檢索" }]
+                    "descriptions": [{"statement": "線上閱讀，使用案底色鮮少眼睛壓力"}, {"statement": "閱讀紀錄，全文檢索"}]
                 }
             ]
         );
+    }
+
+    async function updateToneComposerAKALyricist() {
+        const tones = await api.fetchGuitarpus();
+        await api.updateGuitarpus(tones.map(tone => {
+            return {id: tone.id, ...parseMusicCredits(tone.composer)}
+        }))
+        Util.appendInfo(`finished`)
     }
 
     async function updateSingerOfSuggest() {
         const singers = await api.fetchSingers();
         const suggests = singers.map((singer) => {
             return {
-                label:singer.name,
-                uid:singer.id,
-                id:singer.id,
-                value:singer.id,
-                popularLevel:singer.popularLevel
+                label: singer.name,
+                uid: singer.id,
+                id: singer.id,
+                value: singer.id,
+                popularLevel: singer.popularLevel
             }
         })
         await api.submitSingerSuggests(suggests);
-
     }
 
     /** 每次都要跑 */
@@ -734,6 +783,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 650;
     await deployLatestSheet();
     await updateSingerOfSuggest();
     // await updateUserAllowRead();
+
 
 })();
 

@@ -6548,14 +6548,14 @@ class AppBuilder extends ComponentBuilder {
                     cookie.isObject() ? `${cookie.name} = JSON.stringify(${cookie.name})` : ``,
                     `this.cookie.set(`,
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password),`,
-                    `Util.getEncryptString(${cookie.name}, this.password), {path: "/", ...options})`
+                    `Util.getEncryptStringV2(${cookie.name}, this.password), {path: "/", ...options})`
                 )
 
                 baseCookieGenerator.appendFunction(Util.camel(`get`, cookie.name), ['options = {}'], [], [],
                     `const value = this.cookie.get(`,
                     `this.getEternalEncryptStringOfCookieName(this.${cookie.name}.key, this.password), options)`,
                     `if(_.isEmpty(value)) return ${cookie.isObject() ? '{}' : ''}`,
-                    `const decrypt = Util.getDecryptString(value, this.password)`,
+                    `const decrypt = Util.getDecryptStringV2(value, this.password)`,
                     cookie.isObject() ? `return JSON.parse(decrypt)` : `return decrypt`
                 )
 

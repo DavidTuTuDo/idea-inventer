@@ -398,6 +398,17 @@ class Utiller {
         return CryptoJS.AES.encrypt(texts, keyOfCrypto, {iv: ivOfCrypto}).toString();
     }
 
+    /** alwaysTheSame 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
+    getEncryptStringV2(texts, key = configerer.ENCRYPT_KEY, alwaysTheSame = false) {
+        const maxLengthOfKey = 22;
+        if (key.length > maxLengthOfKey)
+            throw new ERROR(8010, _.size(key))
+        /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
+        const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
+        const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
+        return CryptoJS.AES.encrypt(JSON.stringify({content:texts}), keyOfCrypto, {iv: ivOfCrypto}).toString();
+    }
+
     getDecryptString(ciphertext, key = configerer.ENCRYPT_KEY) {
         const maxLengthOfKey = 22;
         if (key.length > maxLengthOfKey)
@@ -412,6 +423,26 @@ class Utiller {
             /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
         }
         return CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
+    }
+
+    getDecryptStringV2(ciphertext, key = configerer.ENCRYPT_KEY) {
+        const maxLengthOfKey = 22;
+        if (key.length > maxLengthOfKey)
+            throw new ERROR(8010, _.size(key))
+
+        const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
+        try {
+            const stringOfObj = CryptoJS.AES.decrypt(ciphertext, key, {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8)
+            if (!_.isEmpty(stringOfObj.trim())) {
+                const obj = JSON.parse(stringOfObj);
+                return obj.content;
+            }
+        } catch (e) {
+            /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
+        }
+        const stringOfObj =  CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
+        const obj = JSON.parse(stringOfObj);
+        return obj.content;
     }
 
     getFirebaseFormattedString(texts) {
@@ -2437,6 +2468,10 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new Utiller();
+            // const stringOfEncrypt = utiller.getEncryptStringV2('i am david');
+            // console.log(`完成encrypt ==> `, stringOfEncrypt);
+            // const answer = utiller.getDecryptStringV2(stringOfEncrypt);
+            // console.log(`完成decrypt ==> `, answer);
             // const option = {id:1,photo:''}
             // const choice = {id:2, photo:'url'}
             // console.log(utiller.getSpecifyObjectBy([option.photo,choice.photo], _.isEmpty))

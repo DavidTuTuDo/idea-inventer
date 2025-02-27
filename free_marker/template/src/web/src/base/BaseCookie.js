@@ -9,7 +9,7 @@ class BaseCookie {
      * => namezJohn-Doe-x-agey25testkey
      * */
     getEternalEncryptStringOfCookieName(string, password) {
-        const encryptString = Util.getEncryptString(string, password, true);
+        const encryptString = Util.getEncryptStringV2(string, password, true);
         return encryptString.replace(/=/g, 'z')  // '=' 取代為 'z'
             .replace(/\//g, 'y')  // '/' 取代為 'y'
             .replace(/;/g, 'x')   // ';' 取代為 'x'
