@@ -7,7 +7,15 @@ service cloud.firestore {
         }
 
         function isAllowRead(){
-            return  request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.allowRead == true;
+            return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.allowRead == true;
+        }
+
+        function withoutCopyright(){
+            return resource.data.copyright == false;
+        }
+
+        function isAuthor() {
+            return  request.auth != null && resource.data.idOfAuthor == request.auth.uid;
         }
 
         function isAdmin(){

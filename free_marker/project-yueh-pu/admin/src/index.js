@@ -333,6 +333,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
             currentContext: latestTone,
             originalContext: latestTone,
             tonalityOfContext: info.tonalityOfContext,
+            latestContext: Util.getEncryptStringV2(Util.getDecryptString(latestTone)),
             capoLevel: info.capo ? _.toNumber(info.capo) : -1,
             tonalityOfFemale: info['女調'],
             tonalityOfMale: info['男調'],
@@ -347,6 +348,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
             lyricist: parseMusicCredits(tone.composer).lyricist,
             popularLevel: tone.popularLevel,
             idOfSinger: getSingerDocumentId(),
+            copyright: true,
         }
 
         function getSingerDocumentId() {
@@ -735,10 +737,10 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         );
     }
 
-    async function updateToneComposerAKALyricist() {
+    async function updateToneOfPublishStaff() {
         const tones = await api.fetchGuitarpus();
         await api.updateGuitarpus(tones.map(tone => {
-            return {id: tone.id, ...parseMusicCredits(tone.composer)}
+            return {id: tone.id, publish: true}
         }))
         Util.appendInfo(`finished`)
     }
@@ -757,13 +759,16 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         await api.submitSingerSuggests(suggests);
     }
 
+
     /** 每次都要跑 */
+    // await updateToneOfPublishStaff();
     // await syncPreludeInfoToRemoteFirestore();
+    // await updateToneOfEachCopyRightAsTrue();
     // await updatePopularLevelOfEachTone();
     // await persistPuByIdOfRemoteGuitar('48zU4kfV3E3LSmvMr5zH');
     // await deployKeywords();
     // await updatePreludeToRemoteWholeProcess();
-
+    // await updateToneOfEncryptStringV2();
     // await deployPuIntoDataBase();
     // await updateSpecificToneOfGuitarPu('8z49z4zPQZclEhyNr4zy', refactorTone(Util.getEncryptString(Util.getFileContextInRaw('./deploy/pu.text'))))
     // await persistPuByIdOfRemoteGuitar('0FmWormxfJJCcNcZ2VD2');
@@ -781,7 +786,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
 
     // await updatePreludeToRemoteWholeProcess();
     await deployLatestSheet();
-    await updateSingerOfSuggest();
+    // await updateSingerOfSuggest();
     // await updateUserAllowRead();
 
 

@@ -5037,7 +5037,10 @@ class RemoteFunctionHandler extends BaseBuilder {
                 } else if (child.isArray() && self.isWebPlatform()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
-                } else {
+                } else if(child.isBoolean()) {
+                    contents.push(`const _${child.getFieldName()} = _.isBoolean(object.${child.getFieldName()}) ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
+                }
+                else {
                     appendGeneralStmts(contents, child);
                 }
                 children.push(child.getFieldName());

@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -128,16 +130,6 @@ class CommonStyle {
   MainEditorDiv = {};
 
   /** => following for navigator  component  */
-
-  NavigatorDrawerMyShortcutIconImg = {};
-
-  NavigatorDrawerMyShortcutTitleTypography = {};
-
-  NavigatorDrawerMyShortcutListItemSkeleton = {};
-
-  NavigatorDrawerMyShortcutListList = {};
-
-  NavigatorDrawerMyShortcutListItem = {};
 
   NavigatorDrawerShortcutIconImg = {};
 
@@ -389,6 +381,8 @@ class CommonStyle {
 
   ChordiventorFuncCancelChip = {};
 
+  ChordiventorFuncClearIdChip = {};
+
   ChordiventorFuncClearChip = {};
 
   ChordiventorFuncPersistReactFragmentWrap = {};
@@ -397,11 +391,11 @@ class CommonStyle {
 
   ChordiventorFuncDiv = {};
 
-  ChordiventorInfoLyricLabelOfLyricTypography = {};
+  ChordiventorInfoLyricistLabelOfLyricistTypography = {};
 
-  ChordiventorInfoLyricDivWrap = {};
+  ChordiventorInfoLyricistDivWrap = {};
 
-  ChordiventorInfoLyricTextField = {};
+  ChordiventorInfoLyricistTextField = {};
 
   ChordiventorInfoComposerLabelOfComposerTypography = {};
 
@@ -474,6 +468,12 @@ class CommonStyle {
   ChordiventorInfoIdOfSingerTextField = {};
 
   ChordiventorInfoDiv = {};
+
+  ChordiventorBriefFrameAreaOfPreviewLabelOfTipDivWrap = {};
+
+  ChordiventorBriefFrameAreaOfPreviewLabelOfTipTypography = {};
+
+  ChordiventorBriefFrameAreaOfPreviewDiv = {};
 
   ChordiventorBriefFrameDiv = {};
 

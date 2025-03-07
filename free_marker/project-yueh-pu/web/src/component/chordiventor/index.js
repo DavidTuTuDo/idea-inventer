@@ -22,6 +22,11 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
   onChordiventorPersistChipClicked(param) {
     /** 按下發佈按鈕 */
+    this.getStore().submitCustomPu().then();
+  }
+
+  onChordiventorClearIdChipClicked(param) {
+    this.getStore().removeIdOfGuitarPu();
   }
 
   onChordiventorTxtTextFieldChange(param) {
@@ -39,6 +44,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
   onChordiventorSingerAutocompleteChange(param) {
     this.getStore().invalidate();
+
   }
 
   onChordiventorInputOfSingerTextFieldChange(param) {
@@ -69,7 +75,6 @@ class ChordiventorComponent extends BaseChordiventorComponent {
   /** 譜曲調性 */
   onTonalityOfContextSelectedChange(value, param) {
     this.getStore().invalidate();
-
   }
 
   /** -------------------- async api -------------------- **/

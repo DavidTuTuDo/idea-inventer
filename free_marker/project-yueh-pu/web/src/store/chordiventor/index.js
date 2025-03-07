@@ -6,12 +6,14 @@ import _ from "lodash";
 import libpath from "path";
 import Cookie from "../../cookie";
 import Config from '../../config';
+import ApiOfGuitarPu from '../sheetGuitarpu';
 
 class ChordiventorStore extends BaseChordiventorStore {
 
   constructor(props) {
     super(props);
     this.getSheet().setState(`stable`);
+    this.apiOfPu = new ApiOfGuitarPu();
   }
 
   persistent() {
@@ -47,6 +49,8 @@ class ChordiventorStore extends BaseChordiventorStore {
     const content = this.getTxt().replaceAll(/[\｜|]/g, "།");
     const singer = this.getInputOfSinger()
     const pu = this.getCurrentEditedPu();
+    const selected = this.getSinger();
+
     pu.setCurrentContext(content);
     pu.setOriginalContext(content)
     pu.setTonalityOfContext(toneOfContext)
@@ -55,7 +59,12 @@ class ChordiventorStore extends BaseChordiventorStore {
     pu.setTonalityOfOriginal(toneOfOriginal);
     pu.setSpeed(speed);
     pu.setName(name);
-    pu.setSinger(singer);
+    if(!Util.isUndefinedNullEmpty(selected)){
+      pu.setSinger(selected.label)
+      pu.setIdOfSinger(selected.uid)
+      this.setIdOfSinger(selected.uid)
+    } else pu.setSinger(singer);
+
     this.getSheet().invalidate();
   }
 
@@ -70,6 +79,19 @@ class ChordiventorStore extends BaseChordiventorStore {
     this.invalidate();
     return result;
   }
+
+  async submitCustomPu() {
+      const spec = this.getColumnData();
+      if(_.size(this.getIdOfGuitarPu()) > 3) {
+        this.getComponent().showWarningSnackMessage(`執行編輯update行為 cp不更動`)
+      } else {
+        this.getComponent().showWarningSnackMessage(`執行編輯submit行為 cp=false`)
+      }
+
+
+  }
+
+
 
   /** -------------------- async api -------------------- **/
 }

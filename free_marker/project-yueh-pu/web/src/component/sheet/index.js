@@ -26,6 +26,10 @@ class SheetComponent extends BaseSheetComponent {
         super(props);
     }
 
+    getWrapInjectStyleOfSheetGuitarpuFloatAreaMarkOfYuehImg(floatArea) {
+        return Util.getVisibleOrNone(!this.isComponentView(), true);
+    }
+
     onSheetAdjustCenterEditorButtonClicked(param) {
         const cache = this.getStore().getCurrentPu().columnData();
         const id = cache.id;
@@ -54,6 +58,13 @@ class SheetComponent extends BaseSheetComponent {
         Router.gotoChordiventorPage(this);
     }
 
+    rulesOfAllowEditFunction() {
+        const rule1 = UserInfoRef.isAdmin();
+        const rule2 = !this.isComponentView();
+        const rule3 = _.isEqual(this.getStore().getCurrentPu().getIdOfAuthor(), UserInfoRef.getUid());
+        return rule2 && (rule3 || rule1);
+    }
+
     getWrapInjectStyleOfSheetGuitarpuSpeedOfRhythmTypography(guitarpu) {
         return Util.getVisibleOrNone(this.getStore().getCurrentPu().getSpeed() > 1, true);
     }
@@ -63,7 +74,7 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     getInjectStyleOfSheetAdjustCenterEditorButton(center) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin(), true);
+        return Util.getVisibleOrNone(this.rulesOfAllowEditFunction(), true);
     }
 
     getInjectStyleOfSheetGuitarpuImageOfPreludeImg(guitarpu) {
@@ -154,8 +165,6 @@ class SheetComponent extends BaseSheetComponent {
     getInjectStyleOfSheetAdjustCenterJoinToFavoriteFormControlLabel(center) {
         return Util.getVisibleOrNone(UserInfoRef.isLoginWithSucceed());
     }
-
-
 
     SheetGuitarpusCurrentContextView = observer(({guitarpu}) => {
         const self = this;
