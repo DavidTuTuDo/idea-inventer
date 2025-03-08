@@ -217,9 +217,11 @@ class SheetStore extends BaseSheetStore {
         this.getCurrentPu().setCurrentContext(normalize);
     }
 
-    normalizePu(context, decrypt = false) {
-        if (decrypt)
-            context = Util.getDecryptString(context);
+    normalizePu = (context, decrypt = false) => {
+
+
+        if (decrypt && !this.getComponent(true).isComponentView())
+            context = Util.getDecryptStringV2(context);
         let segments = context.split('\n');
         segments = _.dropWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));
         segments = _.dropRightWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));

@@ -12,10 +12,10 @@ class EstablishStore extends BaseEstablishStore {
         super(props);
     }
 
-    onInitialCompleted(object) {
+    async onInitialCompleted(object) {
         const self = this;
         Util.syncDelay(1).then(() => {
-            this.getStudents().map((student) => {student.onInitialCompleted()})
+            this.getStudents().map(async (student) => { await student.onInitialCompleted()})
         })
     }
 

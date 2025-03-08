@@ -18,7 +18,7 @@ class MainFilterStore extends BaseMainFilterStore {
     super(props);
   }
 
-  onInitialCompleted(object) {
+  async onInitialCompleted(object) {
     const self = this;
     Util.syncDelay(1).then(() => {
       self.initialDestToSuggestBehavior(Config.COUNTRY_OF_TRAVEL);

@@ -46,6 +46,7 @@ class SheetComponent extends BaseSheetComponent {
         delete cache.tonalityOfMale;
         delete cache.tonalityOfFemale;
         delete cache.singer;
+        delete cache.latestContext;
         delete cache.id;
         cache.idOfGuitarPu = id;
         cache.selectedTonalityOfOriginal = tonalityOfOriginal;

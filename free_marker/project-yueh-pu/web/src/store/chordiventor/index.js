@@ -12,7 +12,6 @@ class ChordiventorStore extends BaseChordiventorStore {
 
   constructor(props) {
     super(props);
-    this.getSheet().setState(`stable`);
     this.apiOfPu = new ApiOfGuitarPu();
   }
 
@@ -68,12 +67,15 @@ class ChordiventorStore extends BaseChordiventorStore {
     this.getSheet().invalidate();
   }
 
+  async onInitialFetchBeginning() {
+    this.getSheet().setState(`stable`);
+    this.getSheet().pushGuitarpu({});
+  }
+
   async onInitialFetchCompleted(collection) {
     const result = await super.onInitialFetchCompleted(collection);
-    this.getSheet().setState(`stable`);
     const context = Cookie.getCustomOfToneTxt();
     this.setTxt(context);
-    this.getSheet().pushGuitarpu({});
     const cache = Cookie.getCacheOfToneInfo();
     this.fromJson(cache);
     this.invalidate();

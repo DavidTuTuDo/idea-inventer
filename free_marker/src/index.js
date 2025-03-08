@@ -1616,7 +1616,7 @@ class CodegenNode {
     }
 
     getFunctionNameOfModify() {
-        return Util.camel(`modify`, this.getFieldName(),'of','paginate')
+        return Util.camel(`modify`, this.getFieldName(), 'of', 'paginate')
     }
 
     /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
@@ -4825,7 +4825,7 @@ class StoreBuilder extends BaseBuilder {
          * */
         baseGenerator.appendFunction(`initial`, ['obj', 'notify = true'], ['action'], [],
             `super.initial(obj)`,
-            ...propsStmt, `if(notify) this.onInitialCompleted(obj)`);
+            ...propsStmt, `if(notify) this.onInitialCompleted(obj).then()`);
         baseGenerator.appendConstructor(
             `makeObservable(this)`,
             `this.initial(props)`);
@@ -5015,12 +5015,15 @@ class RemoteFunctionHandler extends BaseBuilder {
         if (node.isCollection()) {
             const contents = [];
             const children = [];
+            const isReferenceNode = false;
 
             if (generator === undefined)
                 throw new ERROR(8016)
 
             for (const child of node.getPreciseAttributeChildren()) {
                 if (!child.isColumnAttribute()) continue;
+                if (node.isReferenceNode()) continue;
+
 
                 if (child.hasStorageFolder()) {
                     generateApiFunction(
@@ -5044,10 +5047,9 @@ class RemoteFunctionHandler extends BaseBuilder {
                 } else if (child.isArray() && self.isWebPlatform()) {
                     contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
                 object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
-                } else if(child.isBoolean()) {
+                } else if (child.isBoolean()) {
                     contents.push(`const _${child.getFieldName()} = _.isBoolean(object.${child.getFieldName()}) ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
-                }
-                else {
+                } else {
                     appendGeneralStmts(contents, child);
                 }
                 children.push(child.getFieldName());
@@ -5339,8 +5341,9 @@ class RemoteFunctionHandler extends BaseBuilder {
             }
         }
 
-        if (recursively) {
-            for (const child of node.getChildren()) {
+        /** 不能讓reference node 再去產生 store Apiu相關的 attribute */
+        if (!node.isReferenceNode() && recursively) {
+            for (const child of node.getPreciseAttributeChildren()) {
                 this.buildFetchSubmitApi(child, recursively);
             }
         }
@@ -5428,7 +5431,7 @@ class ComponentBuilder extends BaseBuilder {
 
         if (_.size(paramsInPath) > 0) {
             /** 這個邏輯必須在fetch之前 */
-            this.appendStmtIntoComponentDidMount(`if(!Util.and(${paramsInPath.map((each) => `this.${each.functionNameOfParamConstraint}(this.${each.param})`).join(',')}))
+            this.appendStmtIntoComponentDidMount(`if(!this.isComponentView() && !Util.and(${paramsInPath.map((each) => `this.${each.functionNameOfParamConstraint}(this.${each.param})`).join(',')}))
                 this.getStore().setErrorMsg('網址參數異常')`)
         }
 
@@ -5442,7 +5445,7 @@ class ComponentBuilder extends BaseBuilder {
             this.appendStmtIntoComponentDidMount(`
             if (this.propsMobX().match && this.propsMobX().match.params)
             this.${componentNode.getFieldNameOfDetailUid()} = this.propsMobX().match.params.${componentNode.getFieldNameOfDetailUid()};
-            if(Util.isUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
+            if(!this.isComponentView() && Util.isUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
                 this.getStore().setErrorMsg('網址參數異常');`);
         }
 
@@ -5451,6 +5454,8 @@ class ComponentBuilder extends BaseBuilder {
                 `return true`
             )
         }
+
+
 
         for (const event of componentNode.getEvents()) {
             baseGenerator.appendImport('EventBus', '../../base/CommonEventBus')
@@ -5484,37 +5489,31 @@ class ComponentBuilder extends BaseBuilder {
         if (componentNode.hasPageTitle()) {
             this.appendStmtIntoComponentDidMount(`this.invalidatePageTitle()`);
         }
-
+        this.appendStmtIntoComponentDidMount(`this.initialize().then()`)
         baseGenerator.appendFunction(
             {name: `invalidatePageTitle`, arrow: true}, [], [], [],
             `document.title = this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)}`
         )
 
-        /** this.containedFetchAttribute(componentNode.getStruct())  讓每個component都執行fetch*/
-        if (!componentNode.isDisableInitFetch()) {
-            this.appendStmtIntoComponentDidMount(
-                `const self = this;`,
-                `let result = {}`,
-                `if(self.getStore().isFetchAbleToGo() && this.isEnableInitFetch()) {`,
-                `self.getStore().fetch(this).then((collection) => {
-                    result = collection;                 
-                })
-                .catch((error) => {
-                    self.getStore().setHasPageItems(false);
-                    self.onInitialErrorHappened(error);
-                }).finally(() => {
-                Util.appendInfo('${componentNode.getName()} page initial fetch completed')
-                self.getStore().onInitialFetchCompleted(result)})`,
-                `} else { self.getStore().onInitialFetchCompleted() }`
-            )
-            baseGenerator.appendField('enableInitFetch', true)
-            baseGenerator.appendFunction({name: `setEnableInitFetch`, arrow: true}, ['enable'], [], [],
-                `this.enableInitFetch = enable`);
-
-            baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
-                `return this.enableInitFetch`);
-        }
-
+        baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
+            `return this.enableInitFetch`);
+        baseGenerator.appendField('enableInitFetch', !componentNode.isDisableInitFetch())
+        baseGenerator.appendFunction({name: `setEnableInitFetch`, arrow: true}, ['enable'], [], [], `this.enableInitFetch = enable`);
+        baseGenerator.appendFunction({name: `initialize`, arrow: true, async: true}, [], [], [],
+            `const self = this;
+                 let result = {};
+                 await self.getStore().onInitialFetchBeginning();
+                 if (self.getStore().isFetchAbleToGo() && this.isEnableInitFetch()) {
+                    try {
+                        result = await self.getStore().fetch(this);
+                    } catch (error) {
+                        self.getStore().setHasPageItems(false);
+                        self.onInitialErrorHappened(error);
+                    } finally {
+                        Util.appendInfo("${componentNode.getName()} page initial fetch completed");
+                        await self.getStore().onInitialFetchCompleted(result);
+                    }
+                 } else await self.getStore().onInitialFetchCompleted();`);
         /** 2022.04.25本來以為離開頁面就要清空所有, 但這樣ios swipe-back 體驗會變得很糟糕
          this.appendStmtIntoComponentDetach(`this.getStore().clean()`);
          for (const child of componentNode.getStruct().getChildren()) {

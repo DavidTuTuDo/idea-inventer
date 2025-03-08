@@ -61,7 +61,6 @@ class BaseComponent extends MuiComponent {
     cleanDisposableDialogComponent() {
         if ((this.isDialogComponent() || this.isComponentView()) && this.isDisposableComponent()) {
             this.getStore().clean();
-
         }
     }
 

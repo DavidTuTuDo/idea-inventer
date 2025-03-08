@@ -101,6 +101,7 @@ class BaseStore extends ClientRemoteApi {
 
     /** 如果dialog | componentView 要拿到自己的component, 而不是外層的component, selfOnly要設定為true
      * 有多個dialog蝶再一起的時候，最上層要的要dismiss()就肯定要getComponent(true);
+     * 或是component 裡面用到 ref產出的 => component inside component <yueh-pu|chordinventer>
      * */
     getComponent = (selfOnly = false) => {
         if (selfOnly)
@@ -250,15 +251,17 @@ class BaseStore extends ClientRemoteApi {
 
         if (props && props.updateTime)
             this.setUpdateTime(props.updateTime);
+
+        this.onInitialCompleted(props).then()
+    }
+
+    /** 當initial()執行完之後，後續要做的項目 */
+    async onInitialCompleted(props) {
     }
 
     @action
     setUpdateTime(time) {
         this.updateTime = time;
-    }
-
-    onInitialCompleted(object) {
-
     }
 
     normalizeTimestamp(obj, force = false) {
@@ -291,6 +294,16 @@ class BaseStore extends ClientRemoteApi {
 
     getSelectorParam() {
         return this.selectorParams;
+    }
+
+    /**
+     *  當viewDidMount時 可使用三個時態的切入介面
+     *  onInitialFetchBeginning()
+     *  fetch()
+     *  onInitialFetchCompleted()
+     * */
+    async onInitialFetchBeginning() {
+        /** 執行在fetch開始之前的動作 */
     }
 
     async onInitialFetchCompleted(collection) {

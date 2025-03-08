@@ -22,7 +22,7 @@ class PlutusStore extends BasePlutusStore {
     }
 
     async onInitialFetchCompleted(collection) {
-        super.onInitialFetchCompleted(collection);
+        await super.onInitialFetchCompleted(collection);
         this.validateDistrictByCity();
         const info = Cookie.getInfoOfSelectedTransport();
         this.setFeeOfTransport(_.toNumber(info.feeOfTransport));

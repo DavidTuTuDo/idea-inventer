@@ -14,8 +14,8 @@ class ClassSetupClazzStore extends BaseClassSetupClazzStore {
     super(props);
   }
 
-  onInitialCompleted(object) {
-    super.onInitialCompleted(object);
+  async onInitialCompleted(object) {
+    await super.onInitialCompleted(object);
     this.setSpecificClass([this.getStartOfSpecificClass(),this.getEndOfSpecificClass()])
   }
 

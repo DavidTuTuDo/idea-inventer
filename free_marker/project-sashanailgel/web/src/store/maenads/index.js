@@ -12,7 +12,7 @@ class MaenadsStore extends BaseMaenadsStore {
         super(props);
     }
 
-    onInitialCompleted(object) {
+    async onInitialCompleted(object) {
         const self = this;
 
         function setContent(booze) {

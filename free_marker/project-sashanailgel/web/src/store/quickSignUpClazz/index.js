@@ -13,7 +13,7 @@ class QuickSignUpClazzStore extends BaseQuickSignUpClazzStore {
         // this.initial()
     }
 
-    onInitialCompleted(object) {
+    async onInitialCompleted(object) {
         this.setDateOfPeriod(Util.getStringOfFormatTimestampRange(this.getStartOfSpecificClass(), this.getEndOfSpecificClass()))
         this.setTotalHoursOfClass(Util.getStringOfCalculateClassTime(this.getStartOfSpecificClass(), this.getEndOfSpecificClass(),
                 _.sum(this.getClassTimes().map(time => Util.getNumberOfPeriodMinute(

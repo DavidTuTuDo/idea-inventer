@@ -15,7 +15,7 @@ class EstablishStudentStore extends BaseEstablishStudentStore {
 
 
 
-    onInitialCompleted(object) {
+    async onInitialCompleted(object) {
         const self = this;
         let idOfClass = '';
         Util.syncDelay(1).then(() => {
