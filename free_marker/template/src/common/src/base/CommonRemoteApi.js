@@ -196,6 +196,13 @@ class CommonRemoteApi {
         return all;
     }
 
+    async modifyItemsOfPaginate(path, job, conditions, size) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start modify enormous items => path:/${path}`);
+        const counts = await firebase.modifyDocumentsOfPagination(uid, path, job, conditions, size);
+        Util.appendInfo(`${uid} succeed modify enormous items => path:/${path} with ${counts} items`);
+    }
+
     orderConditionByRules(conditions = []) {
         /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
         const raw = [];

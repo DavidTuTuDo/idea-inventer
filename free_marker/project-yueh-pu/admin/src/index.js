@@ -759,6 +759,10 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         await api.submitSingerSuggests(suggests);
     }
 
+    await api.modifyGuitarpusOfPaginate((items) => {
+        console.log('進來了');
+        console.log(`長度:`,_.size(items))
+        console.log(items[0].name)},[],50);
 
     /** 每次都要跑 */
     // await updateToneOfPublishStaff();

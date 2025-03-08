@@ -20,6 +20,8 @@ import {google} from "googleapis";
 import stream, {Readable} from "stream";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
+const MAX_COUNT_OF_FIRESTORE_FETCH = 500;
+
 
 class FirebaseHelper extends BaseFirebase {
 
@@ -151,6 +153,46 @@ class FirebaseHelper extends BaseFirebase {
             all.push(data);
         })
         return all;
+    }
+
+    /** 當要對一個龐大的collection做read then update(job)，一定要用pagination 處理 */
+    async modifyDocumentsOfPagination(uid, path, job, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
+        const ref = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
+        let lastDoc = null;
+        let batchCount = 0;
+        let totalProcessed = 0;
+
+        while (true) {
+            let query = ref.limit(pageSize); // 這裡用 document ID 作排序
+            if (lastDoc) {
+                query = query.startAfter(lastDoc);
+            }
+
+            const snapshot = await query.get();
+            if (snapshot.empty) {
+                Util.appendInfo(`${uid} modify path:/${path} has completed`)
+                break;
+            }
+
+            const documents = snapshot.docs.map(doc => ({
+                   ...doc.data(),id: doc.id
+            }));
+
+            // 執行每批次的任務，例如更新 updateTime
+            if (_.isFunction(job))
+                await job(documents);
+
+            lastDoc = snapshot.docs[snapshot.docs.length - 1]; // 記錄這批最後一筆，下一次從這裡繼續
+            batchCount++;
+            totalProcessed += documents.length;
+
+            Util.appendInfo(`${uid} path:/${path} modify the ${batchCount} batch, accumulated ${totalProcessed} documents`)
+            if (snapshot.size < pageSize) {
+                // 小於 pageSize 代表已經到底
+                break;
+            }
+        }
+        return totalProcessed;
     }
 
     /**

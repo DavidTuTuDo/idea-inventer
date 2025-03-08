@@ -1615,6 +1615,10 @@ class CodegenNode {
         return Util.camel(`fetch`, this.getFieldName())
     }
 
+    getFunctionNameOfModify() {
+        return Util.camel(`modify`, this.getFieldName(),'of','paginate')
+    }
+
     /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
     getFunctionNameOfPureFetch() {
         return Util.camel(`fetch`, 'Pure', this.getFieldName());
@@ -4293,6 +4297,9 @@ class BaseBuilder extends PathBase {
                     /** object */
                 }
                 break;
+            case 'modify items':
+                params = [...params, 'job', 'conditions', 'size']
+                break;
             case `fetch next items`:
                 params = [...params, 'lastItem', '...conditions']
                 break;
@@ -5179,6 +5186,12 @@ class RemoteFunctionHandler extends BaseBuilder {
                         node.getFunctionNameOfFetch(),
                         [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`],
                         `fetch items`);
+
+                    generateApiFunction(
+                        node,
+                        node.getFunctionNameOfModify(),
+                        [`return await self.modifyItemsOfPaginate(path, job, conditions, size)`],
+                        `modify items`);
 
                     generateApiFunction(
                         node,
