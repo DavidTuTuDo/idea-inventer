@@ -58,6 +58,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     pu.setTonalityOfOriginal(toneOfOriginal);
     pu.setSpeed(speed);
     pu.setName(name);
+    pu.setLatestContext(content);
     if(!Util.isUndefinedNullEmpty(selected)){
       pu.setSinger(selected.label)
       pu.setIdOfSinger(selected.uid)

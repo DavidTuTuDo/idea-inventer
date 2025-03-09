@@ -102,7 +102,7 @@ class SheetStore extends BaseSheetStore {
     /** -------------------- async api -------------------- **/
 
     async fetch(view) {
-        if(Util.isUndefinedNullEmpty(this.getUidOfSheetDetail())) return {};
+        if (Util.isUndefinedNullEmpty(this.getUidOfSheetDetail())) return {};
 
         const result = await super.fetch(view);
         if (_.size(result.guitarpus) > 0) {
@@ -147,15 +147,14 @@ class SheetStore extends BaseSheetStore {
         }
     }
 
-    @action
     async onInitialFetchCompleted() {
         await super.onInitialFetchCompleted();
         const pu = this.getCurrentPu();
         await Util.syncDelay(1);
 
         if (pu instanceof GuitarPu) {
-            pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getOriginalContext(), true));
-            pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getCurrentContext(), true));
+            pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
+            pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
 
 
             pu.setTonalityOfFemale(this.normalizeTonality(pu.getTonalityOfFemale()))
@@ -178,18 +177,18 @@ class SheetStore extends BaseSheetStore {
         this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(pu.getTonalityOfMale())}`)
         this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(pu.getTonalityOfOriginal())}`)
         this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
-        if(announce) this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
+        if (announce) this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
     }
 
     getStringOfSuggestDescription(tone) {
-        if(Util.isUndefinedNullEmpty(tone)) return;
+        if (Util.isUndefinedNullEmpty(tone)) return;
         const result = this.getSuggestTonalityCapoLevel(tone);
         return `${result.from}調\n(彈${result.to}夾${result.level}格)`
     }
 
 
     normalizeTonality(string) {
-        const result =  string.split(SEPARATOR_OF_TONALITY).shift();
+        const result = string.split(SEPARATOR_OF_TONALITY).shift();
         return Util.isUndefinedNullEmpty(result) ? 'C' : result;
     }
 
@@ -199,9 +198,9 @@ class SheetStore extends BaseSheetStore {
     }
 
     @action
-    invalidateTranspositionChord = (level = 1, context = this.getCurrentPuContext())=> {
+    invalidateTranspositionChord = (level = 1, context = this.getCurrentPuContext()) => {
         /** context如果拿回空，不處理以下 */
-        if(Util.isUndefinedNullEmpty(context)) return;
+        if (Util.isUndefinedNullEmpty(context)) return;
 
         const segmentsOfContext = context.split('\n');
         const segmentsOfContextChord = _.filter(segmentsOfContext, (each) => this.isGuitarChordParagraph(each));
