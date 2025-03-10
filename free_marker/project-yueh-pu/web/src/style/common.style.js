@@ -505,6 +505,10 @@ class CommonStyle {
 
   NoteEditorPaper = {};
 
+  /** => following for inventedOfPu  component  */
+
+  InventedOfPuDiv = {};
+
   /** => following for personalRhythm  component  */
 
   PersonalRhythmFavoritePuExtraIconMoreHoriz = {};

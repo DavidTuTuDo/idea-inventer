@@ -975,7 +975,7 @@ class CodegenNode {
 
         function findNodeOfSpecificRef(...nodes) {
             for (const node of nodes) {
-                if (_.isEqual(node.name, nameOfRef))
+                if (_.isEqual(node.name, nameOfRef) && Util.isUndefinedNullEmpty(node.ref))
                     nodesOfRef.push(node);
                 if (_.isArray(node.children))
                     findNodeOfSpecificRef(...node.children)

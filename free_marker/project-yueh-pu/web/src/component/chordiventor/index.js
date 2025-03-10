@@ -34,8 +34,8 @@ class ChordiventorComponent extends BaseChordiventorComponent {
   }
 
   onChordiventorCancelChipClicked(param) {
-    this.getStore().persistent();
-    // Router.gotoHomePage(this);
+      this.getStore().persistent();
+      Router.gotoHomePage(this);
   }
 
   onChordiventorNameTextFieldChange(param) {

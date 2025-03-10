@@ -505,6 +505,10 @@ class MobileStyle {
 
   NoteEditorPaper = {};
 
+  /** => following for inventedOfPu  component  */
+
+  InventedOfPuDiv = {};
+
   /** => following for personalRhythm  component  */
 
   PersonalRhythmFavoritePuExtraIconMoreHoriz = {};

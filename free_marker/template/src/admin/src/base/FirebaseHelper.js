@@ -156,7 +156,7 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     /** 當要對一個龐大的collection做read then update(job)，一定要用pagination 處理 */
-    async modifyDocumentsOfPagination(uid, path, job, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
+    async modifyDocumentsOfPaginate(uid, path, job, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
         const ref = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         let lastDoc = null;
         let batchCount = 0;

@@ -199,7 +199,7 @@ class CommonRemoteApi {
     async modifyItemsOfPaginate(path, job, conditions, size) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start modify enormous items => path:/${path}`);
-        const counts = await firebase.modifyDocumentsOfPagination(uid, path, job, conditions, size);
+        const counts = await firebase.modifyDocumentsOfPaginate(uid, path, job, conditions, size);
         Util.appendInfo(`${uid} succeed modify enormous items => path:/${path} with ${counts} items`);
     }
 
