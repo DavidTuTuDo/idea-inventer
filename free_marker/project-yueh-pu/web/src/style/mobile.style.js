@@ -385,11 +385,11 @@ class MobileStyle {
 
   /** => following for chordiventor  component  */
 
+  ChordiventorFuncClearIdChip = {};
+
   ChordiventorFuncCancelReactFragmentWrap = {};
 
   ChordiventorFuncCancelChip = {};
-
-  ChordiventorFuncClearIdChip = {};
 
   ChordiventorFuncClearChip = {};
 

@@ -12,6 +12,8 @@ import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
 import GuitarPuApi from '../sheetGuitarpu';
+import Pu from "../personalRhythmFavoritePu";
+
 
 class InventedOfPuStore extends BaseInventedOfPuStore {
     /** -------------------- fields -------------------- **/
@@ -25,10 +27,12 @@ class InventedOfPuStore extends BaseInventedOfPuStore {
 
     async onInitialFetchBeginning() {
         this.getPersonalRhythm().getComponent(true).setEnableInitFetch(false);
+        this.getPersonalRhythm().enableManual();
     }
 
     async onInitialFetchCompleted(collection) {
         const result = await super.onInitialFetchCompleted(collection);
+
         const items = await this.apiOfGuitarPu.fetchGuitarpus(this.getComponent(), {type: 'where', params: ['idOfAuthor', '==', UserInfoRef.getUid()]});
         this.getPersonalRhythm().setFavoritePus(...items.map(pu => {
             return {...pu, idOfGuitarPu: pu.id}

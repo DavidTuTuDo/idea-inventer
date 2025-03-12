@@ -385,11 +385,11 @@ class CommonStyle {
 
   /** => following for chordiventor  component  */
 
+  ChordiventorFuncClearIdChip = {};
+
   ChordiventorFuncCancelReactFragmentWrap = {};
 
   ChordiventorFuncCancelChip = {};
-
-  ChordiventorFuncClearIdChip = {};
 
   ChordiventorFuncClearChip = {};
 

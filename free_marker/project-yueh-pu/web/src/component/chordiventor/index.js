@@ -6,6 +6,7 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import libpath from "path";
 import { observer } from "mobx-react";
+import UserInfo from '../../base/BaseUserInfo';
 import Router from "../../router";
 
 @inject("chordiventor")
@@ -14,6 +15,14 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
   constructor(props) {
     super(props);
+  }
+
+  getInjectStyleOfChordiventorClearIdChip(chordiventor) {
+    return Util.getVisibleOrNone(UserInfo.isAdmin(),true);
+  }
+
+  getWrapInjectStyleOfChordiventorIdOfGuitarPuTextField(chordiventor) {
+    return Util.getVisibleOrNone(UserInfo.isAdmin(),true);
   }
 
   onChordiventorClearChipClicked(param) {

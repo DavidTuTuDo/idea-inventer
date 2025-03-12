@@ -385,11 +385,11 @@ class AppStyle {
 
   /** => following for chordiventor  component  */
 
+  ChordiventorFuncClearIdChip = {};
+
   ChordiventorFuncCancelReactFragmentWrap = {};
 
   ChordiventorFuncCancelChip = {};
-
-  ChordiventorFuncClearIdChip = {};
 
   ChordiventorFuncClearChip = {};
 

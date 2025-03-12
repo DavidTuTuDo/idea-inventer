@@ -7,6 +7,7 @@ import libpath from "path";
 import Cookie from "../../cookie";
 import Config from '../../config';
 import ApiOfGuitarPu from '../sheetGuitarpu';
+import ApiOfRhythm from '../portfolioRhythm';
 import UserInfo from '../../base/BaseUserInfo'
 
 class ChordiventorStore extends BaseChordiventorStore {
@@ -14,6 +15,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     constructor(props) {
         super(props);
         this.apiOfPu = new ApiOfGuitarPu();
+        this.apiOfRy = new ApiOfRhythm();
     }
 
     persistent = () => {
@@ -90,23 +92,42 @@ class ChordiventorStore extends BaseChordiventorStore {
         return result;
     }
 
-     constraint(){}
+    constraint = () => {
+        if(_.size(this.getTxt()) < 10 || this.getTxt() > 10000) return this.displayTipThenRefuse(`內文字數量異常，請檢查後再嘗試`);
+        else if (_.size(this.getName()) < 1) return this.displayTipThenRefuse(`歌曲名稱不能為空`);
+        else if (_.size(this.getCurrentEditedPu().getSinger()) < 1) return this.displayTipThenRefuse(`歌手名稱不能為空`);
+        return true;
+    }
 
-     submitCustomPu = async () => {
+    displayTipThenRefuse = (message) => {
+        this.getComponent().showWarningSnackMessage(message);
+        return false;
+    }
+
+    submitCustomPu = async () => {
+        if(!this.constraint()) return;
+
         const spec = this.normalize(this.columnData());
         const content = this.getTxtOfNormalize();
-        const normalize = {latestContext: Util.getEncryptStringV2(content), ...spec};
+        const normalize = {latestContext: Util.getEncryptStringV2(content), popularLevel: 10000, ...spec};
         let update = false;
         if (_.size(this.getIdOfGuitarPu()) > 3) {
-            // this.getComponent().showWarningSnackMessage(`執行編輯update行為 cp不更動`);
             update = true;
-            await this.apiOfPu.updateGuitarpuItem(this.getComponent(),normalize,this.getIdOfGuitarPu());
+            await this.apiOfPu.updateGuitarpuItem(this.getComponent(), normalize, this.getIdOfGuitarPu());
+            await this.apiOfRy.updateRhythmItem(this.getComponent(), {
+                ...normalize,
+                composer: `詞：${spec.lyricist} 曲：${spec.composer}`}, this.getIdOfGuitarPu());
         } else {
-            // this.getComponent().showWarningSnackMessage(`執行編輯submit行為 cp=false`);
-            const result = await this.apiOfPu.submitGuitarpuItem(this.getComponent(),{...normalize, idOfAuthor: UserInfo.getUid(), copyright: false});
-            if(result.succeed) this.setIdOfGuitarPu(result.value.id)
+            const resultOfPu = await this.apiOfPu.submitGuitarpuItem(this.getComponent(), {...normalize, idOfAuthor: UserInfo.getUid(), copyright: false});
+            const resultOfRhythm = await this.apiOfRy.submitRhythmItem(this.getComponent(), {
+                ...normalize,
+                idOfAuthor: UserInfo.getUid(),
+                composer: `詞：${spec.lyricist} 曲：${spec.composer}`,
+                copyright: false
+            });
+            if (resultOfPu.succeed) this.setIdOfGuitarPu(resultOfPu.value.id)
         }
-         this.getComponent().showSuccessSnackMessage(`已${update ? '更新':'新增'}譜曲「${this.getName()}」`)
+        this.getComponent().showSuccessSnackMessage(`已${update ? '更新' : '新增'}譜曲「${this.getName()}」`)
     }
 
     normalize = (obj) => {

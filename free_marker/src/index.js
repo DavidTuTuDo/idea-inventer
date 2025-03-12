@@ -8448,8 +8448,8 @@ class ProjectFileHandler extends PathBase {
 
         const arrayOfProps = [];
 
-        if (!node.isBelong2AutoComplete() && !node.hasLabelView() && node.hasLabel()) {
-            const label = node.getFieldNameOfLabel();
+        if (!node.isBelong2AutoComplete() && node.hasLabel()) {
+            const label = node.getFieldNameOfLabel('sticky');
             node.getParentNode().appendChildrenWithJsons({
                 name: label,
                 l10n: true,
