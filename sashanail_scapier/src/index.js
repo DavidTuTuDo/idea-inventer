@@ -110,6 +110,7 @@ class sashanailgel_scraper {
             await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000)
         await Util.syncDelay(Util.getRandomValue(500, 1000));
         await page.bringToFront();
+        console.log(`已確認到底部，開始抓取每個項目`);
         const parentElement = await page.$$('#gl-container > *');  // 获取父元素
         // console.log(`parentElement =>`, _.size(parentElement))
         for (const row of parentElement) {
@@ -190,7 +191,7 @@ class sashanailgel_scraper {
         const targets = [];
         /** 抓取商品Catalog */
         let poolOfSubType = new InfinitePool(THREAD_OF_INFO_FETCHER)
-        poolOfSubType.enableTaskTimeout(true, 100000);
+        poolOfSubType.enableTaskTimeout(true, 120000);
         await poolOfSubType.runByParams(async (param) => {
             const pages = await self.fetchSubTypeOfProduct(param);
             targets.push(...pages);
@@ -204,7 +205,7 @@ class sashanailgel_scraper {
          * */
         const objectOfProducts = {}
         const poolOfFetchProduct = new InfinitePool(THREAD_OF_INFO_FETCHER)
-        poolOfSubType.enableTaskTimeout(true, 100000);
+        poolOfFetchProduct.enableTaskTimeout(true, 200000);
         await poolOfFetchProduct.runByParams(async (param) => {
             const products = await self.fetchProductsInPage(param);
             console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`)

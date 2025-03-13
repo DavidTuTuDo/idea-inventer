@@ -38,7 +38,7 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
     onInitialFetchBeginning = async () => {
         const self = this;
         this.getPersonalRhythm().setOnClickOfDeleteMenuItem(async (pu) => {
-            await self.apiOfHistoryPu.deletePuOfRecordItem(self.getComponent(),pu.getId())
+            await self.apiOfHistoryPu.deletePuOfRecordItem(self.getComponent(), pu.getId())
             pu.remove();
         })
     }

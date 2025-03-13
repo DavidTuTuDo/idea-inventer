@@ -152,19 +152,18 @@ class SheetStore extends BaseSheetStore {
         const pu = this.getCurrentPu();
         await Util.syncDelay(1);
 
-        if (pu instanceof GuitarPu) {
+        if (pu instanceof GuitarPu && pu.getPopularLevel() > 1) {
+            /** popularLevel 代表 取得遠端資料*/
             pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
             pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
-
-
             pu.setTonalityOfFemale(this.normalizeTonality(pu.getTonalityOfFemale()))
             pu.setTonalityOfMale(this.normalizeTonality(pu.getTonalityOfMale()));
             pu.setTonalityOfOriginal(this.normalizeTonality(pu.getTonalityOfOriginal()));
             pu.setTonalityOfContext((this.normalizeTonality(pu.getTonalityOfContext())))
             this.invalidate(true);
         } else {
-            this.setMessageOfListIsEmpty(`網路連線可能不穩。\n\n\n\n使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
-            this.setErrorMsg(`網路連線可能不穩。\n\n\n\n使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`)
+            this.setMessageOfListIsEmpty(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
+            this.setErrorMsg(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`)
             this.setTipOfLoading(``);
         }
     }
@@ -217,8 +216,6 @@ class SheetStore extends BaseSheetStore {
     }
 
     normalizePu = (context, decrypt = false) => {
-
-
         if (decrypt && !this.getComponent(true).isComponentView())
             context = Util.getDecryptStringV2(context);
         let segments = context.split('\n');
