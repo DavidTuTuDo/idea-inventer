@@ -1,3 +1,4 @@
+const edit = true;
 import BasePersonalRhythmStore from "./BasePersonalRhythmStore";
 import {
     utiller as Util,
@@ -32,8 +33,22 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
     /** 讓fetch功能改成手動的模式，因為共用history 和 favorite */
     controlOfManual = false
 
+    onClickOfDeleteOfMenuItem;
+
     enableManual() {
         this.controlOfManual = true
+    }
+
+    setOnClickOfDeleteMenuItem(func) {
+        this.onClickOfDeleteOfMenuItem = func;
+    }
+
+    getOnClickOfDeleteOfMenuItem = (item) => {
+        return this.onClickOfDeleteOfMenuItem(item);
+    }
+
+    hasOnClickOfDeleteOfMenuItem() {
+        return _.isFunction(this.onClickOfDeleteOfMenuItem);
     }
 
     constructor(props) {
@@ -56,7 +71,6 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
         })
         return latest;
     }
-
 
     @action
     invalidate() {

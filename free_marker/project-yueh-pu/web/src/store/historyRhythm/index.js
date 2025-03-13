@@ -1,6 +1,8 @@
+const edit = true;
 import BaseHistoryRhythmStore from "./BaseHistoryRhythmStore";
 import {utiller as Util,} from "utiller";
 import _ from "lodash";
+import HistoryPu from '../historyRhythmPuOfRecord';
 
 class HistoryRhythmStore extends BaseHistoryRhythmStore {
     /** -------------------- fields -------------------- **/
@@ -9,6 +11,7 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
     constructor(props) {
         super(props);
         this.personalRhythm.enableManual();
+        this.apiOfHistoryPu = new HistoryPu();
     }
 
     fetchNext = async (view) => {
@@ -32,6 +35,14 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
         });
     }
 
+    onInitialFetchBeginning = async () => {
+        const self = this;
+        this.getPersonalRhythm().setOnClickOfDeleteMenuItem(async (pu) => {
+            await self.apiOfHistoryPu.deletePuOfRecordItem(self.getComponent(),pu.getId())
+            pu.remove();
+        })
+    }
+
     fetch = async (view) => {
         this.setState('loading');
         const origins = await this.fetchPuOfRecords(view);
@@ -39,7 +50,6 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
         this.getPersonalRhythm().setFavoritePus(...items);
         this.setPuOfRecords(...origins);
         /** 為了讓fetchPuOfRecordNextPageItems可以抓到lastItem */
-
         if (_.size(origins) === 0) this.setHasPageItems(false);
     }
 
