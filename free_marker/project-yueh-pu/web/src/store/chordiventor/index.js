@@ -47,7 +47,11 @@ class ChordiventorStore extends BaseChordiventorStore {
         return this.getTxt().replaceAll(/[\｜|]/g, "།")
     }
 
-    invalidate = () => {
+    invalidate = (options = {cleanIdOfSinger : false}) => {
+        if(_.isEqual(options.cleanIdOfSinger,true))  {
+            this.removeSinger();
+            this.setIdOfSinger('');
+        }
         const toneOfContext = this.getSelectedTonalityOfContext();
         const toneOfMale = this.getSelectedTonalityOfMale();
         const toneOfFemale = this.getSelectedTonalityOfFemale();
@@ -58,6 +62,8 @@ class ChordiventorStore extends BaseChordiventorStore {
         const singer = this.getInputOfSinger()
         const pu = this.getCurrentEditedPu();
         const selected = this.getSinger();
+
+
 
         pu.setCurrentContext(content);
         pu.setOriginalContext(content)
@@ -73,8 +79,21 @@ class ChordiventorStore extends BaseChordiventorStore {
             pu.setIdOfSinger(selected.uid)
             this.setIdOfSinger(selected.uid)
         } else pu.setSinger(singer);
-
+        this.invalidateOfCautions();
         this.getSheet().invalidate();
+    }
+
+    invalidateOfCautions() {
+        const cautions = [];
+        const pu = this.getCurrentEditedPu();
+        const singer = pu.getSinger();
+        if (_.size(this.getName()) < 1) cautions.push('曲名不能為空')
+        if (_.size(singer) < 1) cautions.push('歌手不能為空')
+        else if (_.size(singer) > 0 && _.isEmpty(this.getIdOfSinger())) cautions.push('不存在歌手相關資訊')
+
+        if(_.size(cautions) > 0) this.setCaution(`提示：${cautions.join('、')}`);
+        else this.setCaution('');
+
     }
 
     async onInitialFetchBeginning() {
@@ -93,7 +112,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     }
 
     constraint = () => {
-        if(_.size(this.getTxt()) < 10 || this.getTxt() > 10000) return this.displayTipThenRefuse(`內文字數量異常，請檢查後再嘗試`);
+        if (_.size(this.getTxt()) < 10 || this.getTxt() > 10000) return this.displayTipThenRefuse(`內文字數量異常，請檢查後再嘗試`);
         else if (_.size(this.getName()) < 1) return this.displayTipThenRefuse(`歌曲名稱不能為空`);
         else if (_.size(this.getCurrentEditedPu().getSinger()) < 1) return this.displayTipThenRefuse(`歌手名稱不能為空`);
         return true;
@@ -105,7 +124,7 @@ class ChordiventorStore extends BaseChordiventorStore {
     }
 
     submitCustomPu = async () => {
-        if(!this.constraint()) return;
+        if (!this.constraint()) return;
 
         const spec = this.normalize(this.columnData());
         const content = this.getTxtOfNormalize();
@@ -116,7 +135,8 @@ class ChordiventorStore extends BaseChordiventorStore {
             await this.apiOfPu.updateGuitarpuItem(this.getComponent(), normalize, this.getIdOfGuitarPu());
             await this.apiOfRy.updateRhythmItem(this.getComponent(), {
                 ...normalize,
-                composer: `詞：${spec.lyricist} 曲：${spec.composer}`}, this.getIdOfGuitarPu());
+                composer: `詞：${spec.lyricist} 曲：${spec.composer}`
+            }, this.getIdOfGuitarPu());
         } else {
             const resultOfPu = await this.apiOfPu.submitGuitarpuItem(this.getComponent(), {...normalize, idOfAuthor: UserInfo.getUid(), copyright: false});
             const resultOfRhythm = await this.apiOfRy.submitRhythmItem(this.getComponent(), {

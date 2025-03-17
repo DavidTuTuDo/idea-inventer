@@ -5456,7 +5456,6 @@ class ComponentBuilder extends BaseBuilder {
         }
 
 
-
         for (const event of componentNode.getEvents()) {
             baseGenerator.appendImport('EventBus', '../../base/CommonEventBus')
             const eventName = event.getName();
@@ -5514,6 +5513,7 @@ class ComponentBuilder extends BaseBuilder {
                         await self.getStore().onInitialFetchCompleted(result);
                     }
                  } else await self.getStore().onInitialFetchCompleted();`);
+
         /** 2022.04.25本來以為離開頁面就要清空所有, 但這樣ios swipe-back 體驗會變得很糟糕
          this.appendStmtIntoComponentDetach(`this.getStore().clean()`);
          for (const child of componentNode.getStruct().getChildren()) {
@@ -9071,6 +9071,9 @@ class ProjectFileHandler extends PathBase {
                 })
                 const stmtOfSuggestGetter = `${node.getPreciseAttributeParentName()}.${Util.camel(`get`, fieldName)}()`
                 node.appendViewProps(
+                    {
+                        freeSolo: true
+                    },
                     {
                         options: `###${stmtOfSuggestGetter}`
                     },

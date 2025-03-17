@@ -399,6 +399,8 @@ class MobileStyle {
 
   ChordiventorFuncDiv = {};
 
+  ChordiventorInfoCautionTypography = {};
+
   ChordiventorInfoLyricistLabelOfLyricistTypography = {};
 
   ChordiventorInfoLyricistDivWrap = {};

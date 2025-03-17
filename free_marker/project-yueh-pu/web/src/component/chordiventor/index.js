@@ -57,7 +57,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
   }
 
   onChordiventorInputOfSingerTextFieldChange(param) {
-    this.getStore().invalidate();
+    this.getStore().invalidate({cleanIdOfSinger:true});
   }
 
   onChordiventorSpeedTextFieldChange(param) {

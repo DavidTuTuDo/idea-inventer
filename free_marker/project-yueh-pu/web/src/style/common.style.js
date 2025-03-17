@@ -399,6 +399,8 @@ class CommonStyle {
 
   ChordiventorFuncDiv = {};
 
+  ChordiventorInfoCautionTypography = {};
+
   ChordiventorInfoLyricistLabelOfLyricistTypography = {};
 
   ChordiventorInfoLyricistDivWrap = {};

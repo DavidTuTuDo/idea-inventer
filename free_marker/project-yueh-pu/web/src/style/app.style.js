@@ -399,6 +399,8 @@ class AppStyle {
 
   ChordiventorFuncDiv = {};
 
+  ChordiventorInfoCautionTypography = {};
+
   ChordiventorInfoLyricistLabelOfLyricistTypography = {};
 
   ChordiventorInfoLyricistDivWrap = {};

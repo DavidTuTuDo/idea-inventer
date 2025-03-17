@@ -152,6 +152,9 @@ class SheetStore extends BaseSheetStore {
         const pu = this.getCurrentPu();
         await Util.syncDelay(1);
 
+        /** 用在預覽畫面上 */
+        if(this.getComponent(true).isComponentView()) return;
+
         if (pu instanceof GuitarPu && pu.getPopularLevel() > 1) {
             /** popularLevel 代表 取得遠端資料*/
             pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
