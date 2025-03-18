@@ -23,8 +23,6 @@ import PortfolioRhythmStore from "../../store/portfolioRhythm";
 @inject("main")
 @observer
 class MainComponent extends BaseMainComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);

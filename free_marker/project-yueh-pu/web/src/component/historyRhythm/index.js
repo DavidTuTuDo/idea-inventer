@@ -1,3 +1,4 @@
+const edit = true;
 import { observer } from "mobx-react";
 import { inject } from "mobx-react";
 import BaseHistoryRhythmComponent from "./BaseHistoryRhythmComponent";
@@ -28,9 +29,6 @@ class HistoryRhythmComponent extends BaseHistoryRhythmComponent {
     super(props);
     this.registerScrollToBottomJob(this.getStore().fetchNext)
   }
-
-
-
 
   /** -------------------- async api -------------------- **/
 }

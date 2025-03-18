@@ -1311,10 +1311,9 @@
     /** empty style */
   }
 }
-.ChordiventorInfoDiv:extend(.CenterInParentRow) {
-  justify-content: start;
+.ChordiventorInfoDiv:extend(.CenterInParentColumn) {
   gap: 10px;
-  flex-wrap: wrap;
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1322,7 +1321,7 @@
     /** empty style */
   }
   @media @desktop {
-    /** empty style */
+    width: 600px;
   }
 }
 .ChordiventorInfoIdOfSingerTextField {
@@ -1336,7 +1335,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoIdOfSingerDivWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoIdOfSingerDivWrap:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -1369,7 +1368,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoIdOfGuitarPuDivWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoIdOfGuitarPuDivWrap:extend(.CenterInParentRow) {
   @media @mobile {
     /** empty style */
   }
@@ -1392,6 +1391,7 @@
   }
 }
 .ChordiventorInfoNameTextField {
+  flex: 1;
   @media @mobile {
     /** empty style */
   }
@@ -1403,6 +1403,7 @@
   }
 }
 .ChordiventorInfoNameDivWrap:extend(.CenterInParentRow) {
+  width: 100%;
   @media @mobile {
     /** empty style */
   }
@@ -1424,7 +1425,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoSingerAutocomplete {
+.ChordiventorInfoSingerAutocomplete:extend(.ChordiventorInfoNameTextField) {
   @media @mobile {
     /** empty style */
   }
@@ -1468,7 +1469,9 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfContextTextFieldList {
+.ChordiventorInfoRowDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -1479,7 +1482,8 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfContextMenuItem {
+.ChordiventorInfoRowTonalityOfContextTextFieldList {
+  flex: 1;
   @media @mobile {
     /** empty style */
   }
@@ -1490,7 +1494,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfContextDivListWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoRowTonalityOfContextMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1501,7 +1505,9 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfContextLabelOfTonalityOfContextTypography {
+.ChordiventorInfoRowTonalityOfContextDivListWrap:extend(.CenterInParentRow) {
+  flex: 1;
+  justify-content: flex-start;
   @media @mobile {
     /** empty style */
   }
@@ -1512,7 +1518,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfOriginalTextFieldList {
+.ChordiventorInfoRowTonalityOfContextLabelOfTonalityOfContextTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1523,7 +1529,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfOriginalMenuItem {
+.ChordiventorInfoRowTonalityOfOriginalTextFieldList:extend(.ChordiventorInfoRowTonalityOfContextTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -1534,7 +1540,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfOriginalDivListWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoRowTonalityOfOriginalMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1545,7 +1551,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfOriginalLabelOfTonalityOfOriginalTypography {
+.ChordiventorInfoRowTonalityOfOriginalDivListWrap:extend(.ChordiventorInfoRowTonalityOfContextDivListWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1556,7 +1562,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfFemaleTextFieldList {
+.ChordiventorInfoRowTonalityOfOriginalLabelOfTonalityOfOriginalTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1567,7 +1573,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfFemaleMenuItem {
+.ChordiventorInfoRowTonalityOfFemaleTextFieldList:extend(.ChordiventorInfoRowTonalityOfContextTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -1578,7 +1584,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfFemaleDivListWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoRowTonalityOfFemaleMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1589,7 +1595,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfFemaleLabelOfTonalityOfFemaleTypography {
+.ChordiventorInfoRowTonalityOfFemaleDivListWrap:extend(.ChordiventorInfoRowTonalityOfContextDivListWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1600,7 +1606,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfMaleTextFieldList {
+.ChordiventorInfoRowTonalityOfFemaleLabelOfTonalityOfFemaleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1611,7 +1617,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfMaleMenuItem {
+.ChordiventorInfoRowTonalityOfMaleTextFieldList:extend(.ChordiventorInfoRowTonalityOfContextTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -1622,7 +1628,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfMaleDivListWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoRowTonalityOfMaleMenuItem {
   @media @mobile {
     /** empty style */
   }
@@ -1633,7 +1639,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoTonalityOfMaleLabelOfTonalityOfMaleTypography {
+.ChordiventorInfoRowTonalityOfMaleDivListWrap:extend(.ChordiventorInfoRowTonalityOfContextDivListWrap) {
   @media @mobile {
     /** empty style */
   }
@@ -1644,7 +1650,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoSpeedTextField {
+.ChordiventorInfoRowTonalityOfMaleLabelOfTonalityOfMaleTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1655,7 +1661,9 @@
     /** empty style */
   }
 }
-.ChordiventorInfoSpeedDivWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoHorizonDiv:extend(.CenterInParentRow) {
+  width: 100%;
+  gap: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -1666,7 +1674,8 @@
     /** empty style */
   }
 }
-.ChordiventorInfoSpeedLabelOfSpeedTypography {
+.ChordiventorInfoHorizonSpeedTextField {
+  flex: 1;
   @media @mobile {
     /** empty style */
   }
@@ -1677,7 +1686,8 @@
     /** empty style */
   }
 }
-.ChordiventorInfoComposerTextField {
+.ChordiventorInfoHorizonSpeedDivWrap:extend(.CenterInParentRow) {
+  width: 24%;
   @media @mobile {
     /** empty style */
   }
@@ -1688,7 +1698,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoComposerDivWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoHorizonSpeedLabelOfSpeedTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1699,7 +1709,8 @@
     /** empty style */
   }
 }
-.ChordiventorInfoComposerLabelOfComposerTypography {
+.ChordiventorInfoHorizonComposerTextField {
+  flex: 1;
   @media @mobile {
     /** empty style */
   }
@@ -1710,7 +1721,8 @@
     /** empty style */
   }
 }
-.ChordiventorInfoLyricistTextField {
+.ChordiventorInfoHorizonComposerDivWrap:extend(.CenterInParentRow) {
+  width: 38%;
   @media @mobile {
     /** empty style */
   }
@@ -1721,7 +1733,7 @@
     /** empty style */
   }
 }
-.ChordiventorInfoLyricistDivWrap:extend(.ChordiventorInfoNameDivWrap) {
+.ChordiventorInfoHorizonComposerLabelOfComposerTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1732,7 +1744,31 @@
     /** empty style */
   }
 }
-.ChordiventorInfoLyricistLabelOfLyricistTypography {
+.ChordiventorInfoHorizonLyricistTextField {
+  flex: 1;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ChordiventorInfoHorizonLyricistDivWrap:extend(.CenterInParentRow) {
+  width: 38%;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ChordiventorInfoHorizonLyricistLabelOfLyricistTypography {
   @media @mobile {
     /** empty style */
   }
@@ -1744,6 +1780,8 @@
   }
 }
 .ChordiventorInfoCautionTypography {
+  color: darkred;
+  font-size: 0.9rem;
   @media @mobile {
     /** empty style */
   }
@@ -1788,7 +1826,7 @@
     /** empty style */
   }
 }
-.ChordiventorFuncClearChip {
+.ChordiventorFuncLoadChip {
   @media @mobile {
     /** empty style */
   }
@@ -1810,7 +1848,18 @@
     /** empty style */
   }
 }
-.ChordiventorFuncCancelReactFragmentWrap {
+.ChordiventorFuncClearChip {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.ChordiventorFuncClearReactFragmentWrap {
   @media @mobile {
     /** empty style */
   }
@@ -3955,3 +4004,4 @@
     /** empty style */
   }
 }
+/** ======== following for homeless ========= */

@@ -18,17 +18,21 @@ class ChordiventorStore extends BaseChordiventorStore {
         this.apiOfRy = new ApiOfRhythm();
     }
 
-    persistent = () => {
+     persistent = async () => {
         const content = this.getTxt();
         const cache = this.columnData();
-        delete cache.tonalityOfContext;
-        delete cache.tonalityOfOriginal;
-        delete cache.tonalityOfFemale;
-        delete cache.tonalityOfMale;
-        delete cache.singerSuggests;
-        delete cache.singer;
         Cookie.setCustomOfToneTxt(content);
         Cookie.setCacheOfToneInfo(cache);
+        await this.submitChordiventor(this.getComponent(),this.columnData());
+    }
+
+    loadLatestData = async () => {
+        const singers = _.clone(this.getSingerSuggests())
+        const content = await this.fetchChordiventor(this.getComponent());
+        this.fromJson(content);
+        this.initialSingerSuggestBehavior(singers)
+        await Util.syncDelay(10);
+        this.invalidate();
     }
 
     getCurrentEditedPu = () => {
@@ -36,7 +40,9 @@ class ChordiventorStore extends BaseChordiventorStore {
     }
 
     cleanUp = () => {
+        const singers = this.getSingerSuggests();
         this.clean();
+        this.initialSingerSuggestBehavior(singers)
         Cookie.removeCustomOfToneTxt();
         Cookie.removeCacheOfToneInfo();
         this.getSheet().setState(`stable`);
@@ -48,6 +54,8 @@ class ChordiventorStore extends BaseChordiventorStore {
     }
 
     invalidate = (options = {cleanIdOfSinger : false}) => {
+        this.invalidateSheetPage();
+        this.getSheet().setState(`stable`);
         if(_.isEqual(options.cleanIdOfSinger,true))  {
             this.removeSinger();
             this.setIdOfSinger('');
@@ -62,8 +70,6 @@ class ChordiventorStore extends BaseChordiventorStore {
         const singer = this.getInputOfSinger()
         const pu = this.getCurrentEditedPu();
         const selected = this.getSinger();
-
-
 
         pu.setCurrentContext(content);
         pu.setOriginalContext(content)
@@ -91,14 +97,20 @@ class ChordiventorStore extends BaseChordiventorStore {
         if (_.size(singer) < 1) cautions.push('歌手不能為空')
         else if (_.size(singer) > 0 && _.isEmpty(this.getIdOfSinger())) cautions.push('不存在歌手相關資訊')
 
-        if(_.size(cautions) > 0) this.setCaution(`提示：${cautions.join('、')}`);
+        if(_.size(cautions) > 0) this.setCaution(`✶✶提示：${cautions.join('、')}`);
         else this.setCaution('');
 
     }
 
+    invalidateSheetPage = () => {
+        if(_.size(this.getSheet().getGuitarpus()) < 1) {
+            this.getSheet().setState(`stable`);
+            this.getSheet().setGuitarpus({});
+        }
+    }
+
     async onInitialFetchBeginning() {
-        this.getSheet().setState(`stable`);
-        this.getSheet().pushGuitarpu({});
+        this.invalidateSheetPage();
     }
 
     async onInitialFetchCompleted(collection) {

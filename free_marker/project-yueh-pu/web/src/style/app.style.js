@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
   /** -------------------- fields -------------------- **/
 
+  /** following for homeless */
+
   /** => following for infoOfCopyRightContent editor component  */
 
   InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -387,11 +389,13 @@ class AppStyle {
 
   ChordiventorFuncClearIdChip = {};
 
-  ChordiventorFuncCancelReactFragmentWrap = {};
+  ChordiventorFuncClearReactFragmentWrap = {};
+
+  ChordiventorFuncClearChip = {};
 
   ChordiventorFuncCancelChip = {};
 
-  ChordiventorFuncClearChip = {};
+  ChordiventorFuncLoadChip = {};
 
   ChordiventorFuncPersistReactFragmentWrap = {};
 
@@ -401,55 +405,59 @@ class AppStyle {
 
   ChordiventorInfoCautionTypography = {};
 
-  ChordiventorInfoLyricistLabelOfLyricistTypography = {};
+  ChordiventorInfoHorizonLyricistLabelOfLyricistTypography = {};
 
-  ChordiventorInfoLyricistDivWrap = {};
+  ChordiventorInfoHorizonLyricistDivWrap = {};
 
-  ChordiventorInfoLyricistTextField = {};
+  ChordiventorInfoHorizonLyricistTextField = {};
 
-  ChordiventorInfoComposerLabelOfComposerTypography = {};
+  ChordiventorInfoHorizonComposerLabelOfComposerTypography = {};
 
-  ChordiventorInfoComposerDivWrap = {};
+  ChordiventorInfoHorizonComposerDivWrap = {};
 
-  ChordiventorInfoComposerTextField = {};
+  ChordiventorInfoHorizonComposerTextField = {};
 
-  ChordiventorInfoSpeedLabelOfSpeedTypography = {};
+  ChordiventorInfoHorizonSpeedLabelOfSpeedTypography = {};
 
-  ChordiventorInfoSpeedDivWrap = {};
+  ChordiventorInfoHorizonSpeedDivWrap = {};
 
-  ChordiventorInfoSpeedTextField = {};
+  ChordiventorInfoHorizonSpeedTextField = {};
 
-  ChordiventorInfoTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
+  ChordiventorInfoHorizonDiv = {};
 
-  ChordiventorInfoTonalityOfMaleDivListWrap = {};
+  ChordiventorInfoRowTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
 
-  ChordiventorInfoTonalityOfMaleMenuItem = {};
+  ChordiventorInfoRowTonalityOfMaleDivListWrap = {};
 
-  ChordiventorInfoTonalityOfMaleTextFieldList = {};
+  ChordiventorInfoRowTonalityOfMaleMenuItem = {};
 
-  ChordiventorInfoTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
+  ChordiventorInfoRowTonalityOfMaleTextFieldList = {};
 
-  ChordiventorInfoTonalityOfFemaleDivListWrap = {};
+  ChordiventorInfoRowTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
 
-  ChordiventorInfoTonalityOfFemaleMenuItem = {};
+  ChordiventorInfoRowTonalityOfFemaleDivListWrap = {};
 
-  ChordiventorInfoTonalityOfFemaleTextFieldList = {};
+  ChordiventorInfoRowTonalityOfFemaleMenuItem = {};
 
-  ChordiventorInfoTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
+  ChordiventorInfoRowTonalityOfFemaleTextFieldList = {};
 
-  ChordiventorInfoTonalityOfOriginalDivListWrap = {};
+  ChordiventorInfoRowTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
 
-  ChordiventorInfoTonalityOfOriginalMenuItem = {};
+  ChordiventorInfoRowTonalityOfOriginalDivListWrap = {};
 
-  ChordiventorInfoTonalityOfOriginalTextFieldList = {};
+  ChordiventorInfoRowTonalityOfOriginalMenuItem = {};
 
-  ChordiventorInfoTonalityOfContextLabelOfTonalityOfContextTypography = {};
+  ChordiventorInfoRowTonalityOfOriginalTextFieldList = {};
 
-  ChordiventorInfoTonalityOfContextDivListWrap = {};
+  ChordiventorInfoRowTonalityOfContextLabelOfTonalityOfContextTypography = {};
 
-  ChordiventorInfoTonalityOfContextMenuItem = {};
+  ChordiventorInfoRowTonalityOfContextDivListWrap = {};
 
-  ChordiventorInfoTonalityOfContextTextFieldList = {};
+  ChordiventorInfoRowTonalityOfContextMenuItem = {};
+
+  ChordiventorInfoRowTonalityOfContextTextFieldList = {};
+
+  ChordiventorInfoRowDiv = {};
 
   ChordiventorInfoSingerInputOfSingerTextField = {};
 

@@ -1,11 +1,8 @@
 const edit = true;
-
-import { inject } from "mobx-react";
+import {inject} from "mobx-react";
 import BaseChordiventorComponent from "./BaseChordiventorComponent";
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import { observer } from "mobx-react";
+import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import {observer} from "mobx-react";
 import UserInfo from '../../base/BaseUserInfo';
 import Router from "../../router";
 
@@ -13,80 +10,87 @@ import Router from "../../router";
 @observer
 class ChordiventorComponent extends BaseChordiventorComponent {
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  getInjectStyleOfChordiventorClearIdChip(chordiventor) {
-    return Util.getVisibleOrNone(UserInfo.isAdmin(),true);
-  }
+    getInjectStyleOfChordiventorClearIdChip(chordiventor) {
+        return Util.getVisibleOrNone(UserInfo.isAdmin(), true);
+    }
 
-  getWrapInjectStyleOfChordiventorIdOfGuitarPuTextField(chordiventor) {
-    return Util.getVisibleOrNone(UserInfo.isAdmin(),true);
-  }
+    getWrapInjectStyleOfChordiventorIdOfGuitarPuTextField(chordiventor) {
+        return Util.getVisibleOrNone(UserInfo.isAdmin(), true);
+    }
 
-  onChordiventorClearChipClicked(param) {
-    this.getStore().cleanUp();
-  }
+    getWrapInjectStyleOfChordiventorIdOfSingerTextField(chordiventor) {
+        return Util.getVisibleOrNone(UserInfo.isAdmin(), true);
+    }
 
-  onChordiventorPersistChipClicked(param) {
-    /** 按下發佈按鈕 */
-    this.getStore().submitCustomPu().then();
-  }
+    onChordiventorClearChipClicked(param) {
+        this.getStore().cleanUp();
+    }
 
-  onChordiventorClearIdChipClicked(param) {
-    this.getStore().removeIdOfGuitarPu();
-  }
+    onChordiventorLoadChipClicked(param) {
+        this.getStore().loadLatestData().then();
+    }
 
-  onChordiventorTxtTextFieldChange(param) {
-    this.getStore().invalidate();
-  }
+    onChordiventorPersistChipClicked(param) {
+        /** 按下發佈按鈕 */
+        this.getStore().submitCustomPu().then();
+    }
 
-  onChordiventorCancelChipClicked(param) {
-      this.getStore().persistent();
-      Router.gotoHomePage(this);
-  }
+    onChordiventorClearIdChipClicked(param) {
+        this.getStore().removeIdOfGuitarPu();
+    }
 
-  onChordiventorNameTextFieldChange(param) {
-    this.getStore().invalidate();
-  }
+    onChordiventorTxtTextFieldChange(param) {
+        this.getStore().invalidate();
+    }
 
-  onChordiventorSingerAutocompleteChange(param) {
-    this.getStore().invalidate();
+    onChordiventorCancelChipClicked(param) {
+        const self = this;
+        self.getStore().persistent().then(() => {
+            Router.gotoHomePage(self);
+        });
+    }
 
-  }
+    onChordiventorNameTextFieldChange(param) {
+        this.getStore().invalidate();
+    }
 
-  onChordiventorInputOfSingerTextFieldChange(param) {
-    this.getStore().invalidate({cleanIdOfSinger:true});
-  }
+    onChordiventorSingerAutocompleteChange(param) {
+        this.getStore().invalidate();
+    }
 
-  onChordiventorSpeedTextFieldChange(param) {
-    this.getStore().invalidate();
-  }
+    onChordiventorInputOfSingerTextFieldChange(param) {
+        this.getStore().invalidate({cleanIdOfSinger: true});
+    }
 
-  /** 女性建議調性 */
-  onTonalityOfFemaleSelectedChange(value, param) {
-    this.getStore().invalidate();
-  }
+    onChordiventorSpeedTextFieldChange(param) {
+        this.getStore().invalidate();
+    }
 
-  /** 男生建議調性 */
-  onTonalityOfMaleSelectedChange(value, param) {
-    this.getStore().invalidate();
+    /** 女性建議調性 */
+    onTonalityOfFemaleSelectedChange(value, param) {
+        this.getStore().invalidate();
+    }
 
-  }
+    /** 男生建議調性 */
+    onTonalityOfMaleSelectedChange(value, param) {
+        this.getStore().invalidate();
+    }
 
-  /** 原曲調性 */
-  onTonalityOfOriginalSelectedChange(value, param) {
-    this.getStore().invalidate();
+    /** 原曲調性 */
+    onTonalityOfOriginalSelectedChange(value, param) {
+        this.getStore().invalidate();
+    }
 
-  }
+    /** 譜曲調性 */
+    onTonalityOfContextSelectedChange(value, param) {
+        this.getStore().invalidate();
+    }
 
-  /** 譜曲調性 */
-  onTonalityOfContextSelectedChange(value, param) {
-    this.getStore().invalidate();
-  }
-
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default ChordiventorComponent;

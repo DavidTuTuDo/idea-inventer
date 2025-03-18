@@ -127,6 +127,9 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 如果父類是object，其子類包含object | array，就會在遠端製造出一個屬性，例如AutoComplete 會建造出 suggestXXX，這些都應該必須要有個選擇性措施去決定遠端的database，避免遠端存入過大的資料 */
+    disableOfColumn = false;
+
     /** 讓AutoCompete初始化就使用Fuse()*/
     autoFuse = false;
 
@@ -461,7 +464,7 @@ class CodegenNode {
     /** 點擊後自動會開啟image dialog */
 
     disableInitFetch = false;
-    /** 取消 初始畫面就發出fetch request, 放在struct level */
+    /** 取消 初始畫面就發出fetch request */
 
     superUserUid = "uid";
     /** storage因為沒有辦法進去firestore去拿isAdmin, 必須hardcode uid*/
@@ -935,6 +938,10 @@ class CodegenNode {
         return _.isEqual(true, this.presetParam);
     }
 
+    isDisableOfColumn() {
+        return _.isEqual(true, this.disableOfColumn);
+    }
+
     hasCheckedIcon() {
         return !_.isEmpty(this.checkedIcon);
     }
@@ -1150,6 +1157,10 @@ class CodegenNode {
 
     getIdOfProject() {
         return this.idOfProject ?? '';
+    }
+
+    setColumn(col = false) {
+        this.column = col;
     }
 
     setDefaultValue(value) {
@@ -1542,7 +1553,7 @@ class CodegenNode {
     }
 
     isDisableInitFetch() {
-        return !!this.disableInitFetch;
+        return _.isEqual(true, this.disableInitFetch);
     }
 
     getUniqueIdStmt() {
@@ -4509,13 +4520,13 @@ class StoreBuilder extends BaseBuilder {
             const stmts = _.map(node.getPreciseAttributePathChildren(), (child) => {
                 const functionNameOfDecorate = Util.camel('enrich', child.getFieldName());
                 baseGenerator.appendFunction(functionNameOfDecorate, [`content`], [], [`when '${child.getFieldName()}' fetch from remote, the entry of hack`], [`return content`])
-                return `async () => { 
+                return child.isDisableInitFetch() ? '' : `async () => { 
                 const remote = self.${functionNameOfDecorate}(${getInitFetchStmtV2(child)});
                 result.${child.getFieldName()} = remote;
                 self.initial(result,false);
                 }`
             })
-            return `${stmts.join(',')}`
+            return `${_.filter(stmts, (stmt) => !_.isEmpty(stmt)).join(',')}`
         }
 
         function getCountOfThread(node) {
@@ -4526,7 +4537,7 @@ class StoreBuilder extends BaseBuilder {
         function enrichStmtsOfObject(node, stmts) {
             const contents = [
                 `{`,
-                (node.hasPath()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{}`,
+                (node.hasPath() && !node.isDisableInitFetch()) ? `...(await this.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')})),` : `...{}`,
                 `}`,
             ];
             contents.push(`await new InfinitePool(${getCountOfThread(node)}).runByEachTask([
@@ -4740,7 +4751,7 @@ class StoreBuilder extends BaseBuilder {
         }
 
         const types = [
-            {name: `columnData`, fetcher: (node) => node.getPreciseColumnChildren()},
+            {name: `columnData`, fetcher: (node) => _.filter(node.getPreciseColumnChildren(), (child) => !child.isDisableOfColumn())},
             {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}
         ];
 
@@ -5015,7 +5026,6 @@ class RemoteFunctionHandler extends BaseBuilder {
         if (node.isCollection()) {
             const contents = [];
             const children = [];
-            const isReferenceNode = false;
 
             if (generator === undefined)
                 throw new ERROR(8016)
@@ -5023,6 +5033,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             for (const child of node.getPreciseAttributeChildren()) {
                 if (!child.isColumnAttribute()) continue;
                 if (node.isReferenceNode()) continue;
+                if (child.isDisableOfColumn()) continue;
 
 
                 if (child.hasStorageFolder()) {
@@ -5496,7 +5507,7 @@ class ComponentBuilder extends BaseBuilder {
 
         baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
             `return this.enableInitFetch`);
-        baseGenerator.appendField('enableInitFetch', !componentNode.isDisableInitFetch())
+        baseGenerator.appendField('enableInitFetch', true)
         baseGenerator.appendFunction({name: `setEnableInitFetch`, arrow: true}, ['enable'], [], [], `this.enableInitFetch = enable`);
         baseGenerator.appendFunction({name: `initialize`, arrow: true, async: true}, [], [], [],
             `const self = this;
@@ -8360,7 +8371,7 @@ class ProjectFileHandler extends PathBase {
                 })
 
                 node.setDefaultValue(node.getDefaultValueOfSimpleSelected())
-
+                node.setColumn(false);
                 switch (node.getTypeOfSimpleSelected()) {
                     case 'spinner':
                         node.setListView('TextField');
@@ -8996,8 +9007,10 @@ class ProjectFileHandler extends PathBase {
                         plural,
                         incest: node.incest,
                         path: node.path,
+                        disableOfColumn: node.isDisableOfColumn(),
                         autoFuse: node.useAutoFuse(),
                         cheap: true,
+                        column: false,
                         children: [
                             {
                                 type: 'string',
@@ -9048,7 +9061,7 @@ class ProjectFileHandler extends PathBase {
                 node.getParentNode().appendChildrenWithJson({
                     name: node.getFieldNameOfSelected(),
                     type: `number`,
-                    column: _.cloneDeep(node.column),
+                    column: true,
                     incest: node.incest,
                 })
 
@@ -9058,6 +9071,7 @@ class ProjectFileHandler extends PathBase {
                     incest: {view: false, attribute: true},
                     view: 'TextField',
                     type: 'string',
+                    column: true,
                     size: node.getSize(),
                     search: node.search,
                     description: node.label,
@@ -9267,6 +9281,7 @@ class ProjectFileHandler extends PathBase {
                     nodeOfImitate.ref = nodeOfReference;
                     nodeOfImitate.nodeOfOrigin = node;
                     nodeOfImitate.incest = node.incest;
+                    nodeOfImitate.disableInitFetch = node.isDisableInitFetch()
                     /**  source.js 上的點 */
                     Util.replaceArrayByContentIndex(node.getParent().getChildren(), node, nodeOfImitate);
                 }
