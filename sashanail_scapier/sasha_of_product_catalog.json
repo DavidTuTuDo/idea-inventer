@@ -1,6 +1,5 @@
 [
-  { "valueOfType": 1,
-    "href": "https://www.sachianail.com/plist/1", "labelOfType": "SACHIA 同名品牌" },
+  { "valueOfType": 1, "href": "https://www.sachianail.com/plist/1", "labelOfType": "SACHIA 同名品牌" },
   {
     "href": "https://www.sachianail.com/plist/2",
     "labelOfSubType": "最新商品",
@@ -8,8 +7,7 @@
     "labelOfType": "最新商品",
     "valueOfSubType": 0
   },
-  { "valueOfType": 3,
-    "href": "https://www.sachianail.com/plist/38", "labelOfType": "出清專區" },
+  { "valueOfType": 3, "href": "https://www.sachianail.com/plist/38", "labelOfType": "出清專區" },
   {
     "href": "https://www.sachianail.com/plist/36",
     "labelOfSubType": "穿戴甲專區",

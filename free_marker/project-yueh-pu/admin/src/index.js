@@ -382,6 +382,18 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
                     indexOfSequence: 2,
                 },
                 {
+                    title: '新增悅譜',
+                    icon: 'muIcon:LibraryMusic',
+                    route: `route:chordiventor`,
+                    indexOfSequence: 2,
+                },
+                {
+                    title: '我譜的譜',
+                    icon: 'muIcon:AddReactionRounded',
+                    route: `route:inventedOfPu`,
+                    indexOfSequence: 3,
+                },
+                {
                     title: '相關網站',
                     icon: 'muIcon:Whatshot',
                     indexOfSequence: 4,
@@ -391,18 +403,6 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
                             icon: 'muIcon:School',
                             route: 'path:https://www.91pu.com.tw/',
                             indexOfSequence: 1,
-                        },
-                        {
-                            title: '新增悅譜',
-                            icon: 'muIcon:LibraryMusic',
-                            route: `route:chordiventor`,
-                            indexOfSequence: 2,
-                        },
-                        {
-                            title: '我譜的譜',
-                            icon: 'muIcon:AddReactionRounded',
-                            route: `route:inventedOfPu`,
-                            indexOfSequence: 3,
                         },
                     ]
                 }]

@@ -328,6 +328,8 @@
 /** following for sheet  component used  */
 
 .SheetDiv:extend(.CenterInParentColumn) {
+  width: 100%;
+  margin: auto;
   @media @mobile {
     /** empty style */
   }
@@ -357,6 +359,7 @@
   padding-bottom: 20px;
   margin-bottom: 20px;
   margin-top: 10px;
+  min-height: 200px;
   @media @mobile {
     width: 96vw;
   }
@@ -393,9 +396,10 @@
   }
 }
 .SheetGuitarpuInfoDiv:extend(.CenterInParentColumn) {
-  width: 120px;
-  position: absolute;
-  z-index: 3;
+  width: 100%;
+  height: 100%;
+  justify-content: flex-start;
+  align-items: flex-end;
   @media @mobile {
     /** empty style */
   }
@@ -407,9 +411,12 @@
   }
 }
 .SheetGuitarpuInfoDivWrap:extend(.CenterInParentRow) {
-  position: relative;
-  float: right;
-  top: 20px;
+  position: absolute;
+  z-index: -1; /* 讓它低於其他元素 */
+  right: 3px;
+  top:5px;
+  width: 150px;
+  height: 100px;
   @media @mobile {
     /** empty style */
   }
@@ -421,7 +428,31 @@
   }
 }
 .SheetGuitarpuInfoSpeedOfRhythmTypography {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.3);
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetGuitarpuInfoSpeedOfRhythmDivWrap:extend(.CenterInParentRow) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.SheetGuitarpuInfoSpeedOfRhythmLabelOfSpeedOfRhythmTypography {
+  font-size: 0.8rem;
   color: rgba(0, 0, 0, 0.3);
   @media @mobile {
     /** empty style */
@@ -1246,15 +1277,16 @@
   }
 }
 .ChordiventorBriefTxtTextField {
+  width: 100%;
   @media @mobile {
-    width: 100%;
+
   }
   @media @tablet {
     /** empty style */
   }
   @media @desktop {
     margin-top: 8px;
-    width: 660px;
+    width: 720px;
   }
 }
 .ChordiventorBriefFrameDiv {

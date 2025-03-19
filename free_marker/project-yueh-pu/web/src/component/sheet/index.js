@@ -27,7 +27,11 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     getWrapInjectStyleOfSheetGuitarpuFloatAreaMarkOfYuehImg(floatArea) {
-        return Util.getVisibleOrNone(!this.isComponentView(), true);
+        return Util.getVisibleOrNone(!this.isComponentView() && this.hasCopyright(), true);
+    }
+
+    hasCopyright = () => {
+        return this.getStore().getCurrentPu().getCopyright();
     }
 
     onSheetAdjustCenterEditorButtonClicked(param) {

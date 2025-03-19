@@ -36,7 +36,10 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     onChordiventorPersistChipClicked(param) {
         /** 按下發佈按鈕 */
-        this.getStore().submitCustomPu().then();
+        const self = this;
+        this.getStore().submitCustomPu().then(() => {
+            Router.gotoInventedOfPuPage(self);
+        });
     }
 
     onChordiventorClearIdChipClicked(param) {
