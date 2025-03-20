@@ -330,8 +330,6 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         const latestTone = refactorTone(tone.tone);
         return {
             id: Util.isUndefinedNullEmpty(tone.idOfRemote) ? undefined : tone.idOfRemote,
-            currentContext: latestTone,
-            originalContext: latestTone,
             tonalityOfContext: info.tonalityOfContext,
             latestContext: Util.getEncryptStringV2(Util.getDecryptString(latestTone)),
             capoLevel: info.capo ? _.toNumber(info.capo) : -1,
@@ -382,16 +380,23 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
                     indexOfSequence: 2,
                 },
                 {
-                    title: '新增悅譜',
-                    icon: 'muIcon:LibraryMusic',
-                    route: `route:chordiventor`,
-                    indexOfSequence: 2,
-                },
-                {
-                    title: '我譜的譜',
-                    icon: 'muIcon:AddReactionRounded',
-                    route: `route:inventedOfPu`,
+                    title: '編輯功能',
+                    icon: 'muIcon:EditRounded',
                     indexOfSequence: 3,
+                    subs: [
+                        {
+                            title: '新增悅譜',
+                            icon: 'muIcon:LibraryMusic',
+                            route: `route:chordiventor`,
+                            indexOfSequence: 1,
+                        },
+                        {
+                            title: '我譜的譜',
+                            icon: 'muIcon:AddReactionRounded',
+                            route: `route:inventedOfPu`,
+                            indexOfSequence: 2,
+                        },
+                    ]
                 },
                 {
                     title: '相關網站',
