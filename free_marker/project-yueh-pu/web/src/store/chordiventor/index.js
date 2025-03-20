@@ -121,8 +121,7 @@ class ChordiventorStore extends BaseChordiventorStore {
             const conditionA = UserInfo.isAdmin();
             const conditionB = _.isEqual(pu.copyright, false) && _.isEqual(pu.idOfAuthor, UserInfo.getUid());
 
-            // if(conditionA || conditionB) {
-            if (true) {
+            if(conditionA || conditionB) {
                 const txt = Util.getDecryptStringV2(pu.latestContext);
                 pu.selectedTonalityOfFemale = pu.tonalityOfFemale;
                 pu.selectedTonalityOfMale = pu.tonalityOfMale;
