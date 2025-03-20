@@ -9007,6 +9007,7 @@ class ProjectFileHandler extends PathBase {
                         plural,
                         incest: node.incest,
                         path: node.path,
+                        permission: node.permission,
                         disableOfColumn: node.isDisableOfColumn(),
                         autoFuse: node.useAutoFuse(),
                         cheap: true,
