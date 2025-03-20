@@ -2,17 +2,9 @@ const edit = true;
 
 import BaseInventedOfPuStore from "./BaseInventedOfPuStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import {Application} from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
 import GuitarPuApi from '../sheetGuitarpu';
-import Pu from "../personalRhythmFavoritePu";
+import ApiOfRhythm from "../portfolioRhythm";
 
 
 class InventedOfPuStore extends BaseInventedOfPuStore {
@@ -23,6 +15,8 @@ class InventedOfPuStore extends BaseInventedOfPuStore {
     constructor(props) {
         super(props);
         this.apiOfGuitarPu = new GuitarPuApi();
+        this.apiOfRy = new ApiOfRhythm();
+
     }
 
     onInitialFetchBeginning = async () => {
@@ -32,6 +26,7 @@ class InventedOfPuStore extends BaseInventedOfPuStore {
         this.getPersonalRhythm().setState(`loading`);
         this.getPersonalRhythm().setOnClickOfDeleteMenuItem(async (pu) => {
             await self.apiOfGuitarPu.deleteGuitarpuItem(self.getComponent(),pu.getIdOfGuitarPu());
+            await self.apiOfRy.deleteRhythmItem(self.getComponent(),pu.getIdOfGuitarPu());
             pu.remove();
         })
     }

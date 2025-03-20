@@ -5,6 +5,8 @@ import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "ut
 import {observer} from "mobx-react";
 import UserInfo from '../../base/BaseUserInfo';
 import Router from "../../router";
+import {isMobile, isTablet} from 'react-device-detect'
+
 
 @inject("chordiventor")
 @observer
@@ -12,6 +14,12 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     constructor(props) {
         super(props);
+    }
+
+    getInjectPropsOfChordiventorTxtTextField(chordiventor) {
+        if (isMobile) return {inputProps:{style: {fontSize: '0.8rem'}}}
+        else return {inputProps:{style: {fontSize: '0.9rem'}}}
+    // else if (isTablet) return {inputProps:{style: {fontSize: '0.9rem'}}}
     }
 
     getInjectStyleOfChordiventorClearIdChip(chordiventor) {
@@ -37,8 +45,8 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     onChordiventorPersistChipClicked(param) {
         /** 按下發佈按鈕 */
         const self = this;
-        this.getStore().submitCustomPu().then(() => {
-            Router.gotoInventedOfPuPage(self);
+        this.getStore().submitCustomPu().then((result) => {
+            if(result) Router.gotoInventedOfPuPage(self);
         });
     }
 
@@ -52,8 +60,8 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     onChordiventorCancelChipClicked(param) {
         const self = this;
-        self.getStore().persistent().then(() => {
-            Router.gotoHomePage(self);
+        self.getStore().persistent().then((result) => {
+            if(result) Router.gotoHomePage(self);
         });
     }
 
@@ -91,6 +99,10 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     /** 譜曲調性 */
     onTonalityOfContextSelectedChange(value, param) {
         this.getStore().invalidate();
+    }
+
+    isValidOfParamOfIdOfGuitarPu(idOfGuitarPu) {
+        return _.size(idOfGuitarPu) >= 4;
     }
 
     /** -------------------- async api -------------------- **/

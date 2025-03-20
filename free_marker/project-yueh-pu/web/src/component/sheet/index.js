@@ -30,37 +30,20 @@ class SheetComponent extends BaseSheetComponent {
         return Util.getVisibleOrNone(!this.isComponentView() && this.hasCopyright(), true);
     }
 
+    onSheetAdjustCenterLinkButtonClicked(param) {
+        this.copyCurrentLinkToClipboard();
+    }
+
+    getInjectStyleOfSheetAdjustCenterLinkButton(center) {
+        return Util.getVisibleOrNone(this.rulesOfAllowEditFunction(), true);
+    }
+
     hasCopyright = () => {
         return this.getStore().getCurrentPu().getCopyright();
     }
 
     onSheetAdjustCenterEditorButtonClicked(param) {
-        const cache = this.getStore().getCurrentPu().columnData();
-        const id = cache.id;
-        const context = cache.originalContext;
-        const tonalityOfOriginal = cache.tonalityOfOriginal;
-        const tonalityOfContext = cache.tonalityOfContext;
-        const tonalityOfMale = cache.tonalityOfMale;
-        const tonalityOfFemale = cache.tonalityOfFemale;
-        const singer = cache.singer;
-        delete cache.currentContext;
-        delete cache.originalContext;
-        delete cache.tonalityOfOriginal;
-        delete cache.tonalityOfContext;
-        delete cache.tonalityOfMale;
-        delete cache.tonalityOfFemale;
-        delete cache.singer;
-        delete cache.latestContext;
-        delete cache.id;
-        cache.idOfGuitarPu = id;
-        cache.selectedTonalityOfOriginal = tonalityOfOriginal;
-        cache.selectedTonalityOfContext = tonalityOfContext;
-        cache.selectedTonalityOfMale = tonalityOfMale;
-        cache.selectedTonalityOfFemale = tonalityOfFemale;
-        cache.inputOfSinger = singer;
-        Cookie.setCacheOfToneInfo(cache);
-        Cookie.setCustomOfToneTxt(context);
-        Router.gotoChordiventorPage(this);
+        Router.gotoChordiventorPage(this, this.getStore().getCurrentPu().getId());
     }
 
     rulesOfAllowEditFunction() {

@@ -1,13 +1,8 @@
+const edit=true;
+
 import BaseMyRouter from "./BaseMyRouter";
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
-import _ from "lodash";
-import libpath from "path";
 import Config from "../config";
-import BaseRouter from "../base/BaseRouter";
+import UserInfoRef from "../base/BaseUserInfo";
 
 class Router extends BaseMyRouter {
   /** -------------------- fields -------------------- **/
@@ -16,6 +11,17 @@ class Router extends BaseMyRouter {
   constructor(props) {
     super(props);
   }
+
+  gotoChordiventorPage = (component, idOfGuitarPu = "edit") => {
+    if (!UserInfoRef.isLoginWithSucceed() && component !== undefined) {
+      component.enableLoginConfirmDialog();
+      return;
+    }
+    const route = `/chordiventor/${idOfGuitarPu}`;
+    this.routeTo(component, route);
+    this.setCurrentRoute(route);
+    return new URL(route, Config.host).href;
+  };
   /** -------------------- async api -------------------- **/
 }
 export default new Router();

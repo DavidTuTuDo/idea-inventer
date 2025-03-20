@@ -4,7 +4,6 @@ import BaseChordiventorStore from "./BaseChordiventorStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Cookie from "../../cookie";
 import Config from '../../config';
 import ApiOfGuitarPu from '../sheetGuitarpu';
 import ApiOfRhythm from '../portfolioRhythm';
@@ -18,12 +17,11 @@ class ChordiventorStore extends BaseChordiventorStore {
         this.apiOfRy = new ApiOfRhythm();
     }
 
-     persistent = async () => {
+    persistent = async () => {
         const content = this.getTxt();
         const cache = this.columnData();
-        Cookie.setCustomOfToneTxt(content);
-        Cookie.setCacheOfToneInfo(cache);
-        await this.submitChordiventor(this.getComponent(),this.columnData());
+        await this.submitChordiventor(this.getComponent(), this.columnData());
+        return true;
     }
 
     loadLatestData = async () => {
@@ -43,8 +41,6 @@ class ChordiventorStore extends BaseChordiventorStore {
         const singers = this.getSingerSuggests();
         this.clean();
         this.initialSingerSuggestBehavior(singers)
-        Cookie.removeCustomOfToneTxt();
-        Cookie.removeCacheOfToneInfo();
         this.getSheet().setState(`stable`);
         this.getSheet().pushGuitarpu({});
     }
@@ -53,10 +49,10 @@ class ChordiventorStore extends BaseChordiventorStore {
         return this.getTxt().replaceAll(/[\｜|]/g, "།")
     }
 
-    invalidate = (options = {cleanIdOfSinger : false}) => {
+    invalidate = (options = {cleanIdOfSinger: false}) => {
         this.invalidateSheetPage();
         this.getSheet().setState(`stable`);
-        if(_.isEqual(options.cleanIdOfSinger,true))  {
+        if (_.isEqual(options.cleanIdOfSinger, true)) {
             this.removeSinger();
             this.setIdOfSinger('');
         }
@@ -97,13 +93,13 @@ class ChordiventorStore extends BaseChordiventorStore {
         if (_.size(singer) < 1) cautions.push('歌手不能為空')
         else if (_.size(singer) > 0 && _.isEmpty(this.getIdOfSinger())) cautions.push('不存在歌手相關資訊')
 
-        if(_.size(cautions) > 0) this.setCaution(`✶✶提示：${cautions.join('、')}`);
+        if (_.size(cautions) > 0) this.setCaution(`✶✶提示：${cautions.join('、')}`);
         else this.setCaution('');
 
     }
 
     invalidateSheetPage = () => {
-        if(_.size(this.getSheet().getGuitarpus()) < 1) {
+        if (_.size(this.getSheet().getGuitarpus()) < 1) {
             this.getSheet().setState(`stable`);
             this.getSheet().setGuitarpus({});
         }
@@ -115,12 +111,37 @@ class ChordiventorStore extends BaseChordiventorStore {
 
     async onInitialFetchCompleted(collection) {
         const result = await super.onInitialFetchCompleted(collection);
-        const context = Cookie.getCustomOfToneTxt();
-        this.setTxt(context);
-        const cache = Cookie.getCacheOfToneInfo();
-        this.fromJson(cache);
-        this.invalidate();
+        const idOfGuitarPu = this.getParamOfIdOfGuitarPuInPath();
+        if (_.size(idOfGuitarPu) > 4) {
+            /** 從SHEET->編輯->來到這裡*/
+
+
+            const pu = await this.apiOfPu.fetchGuitarpuItem(this.getComponent(), idOfGuitarPu);
+
+            const conditionA = UserInfo.isAdmin();
+            const conditionB = _.isEqual(pu.copyright, false) && _.isEqual(pu.idOfAuthor, UserInfo.getUid());
+
+            // if(conditionA || conditionB) {
+            if (true) {
+                const txt = Util.getDecryptStringV2(pu.latestContext);
+                pu.selectedTonalityOfFemale = pu.tonalityOfFemale;
+                pu.selectedTonalityOfMale = pu.tonalityOfMale;
+                pu.selectedTonalityOfContext = pu.tonalityOfContext;
+                pu.selectedTonalityOfOriginal = pu.tonalityOfOriginal;
+                pu.inputOfSinger = pu.singer;
+                delete pu.tonalityOfFemale
+                delete pu.tonalityOfMale
+                delete pu.tonalityOfContext
+                delete pu.tonalityOfOriginal
+                this.fromJson({...pu, txt, idOfGuitarPu: pu.id});
+                this.invalidate();
+            } else this.getComponent().showWarningSnackMessage(`您沒有權限訪問此譜的編輯模式`)
+
+
+        }
         return result;
+
+
     }
 
     constraint = () => {
@@ -150,16 +171,25 @@ class ChordiventorStore extends BaseChordiventorStore {
                 composer: `詞：${spec.lyricist} 曲：${spec.composer}`
             }, this.getIdOfGuitarPu());
         } else {
-            const resultOfPu = await this.apiOfPu.submitGuitarpuItem(this.getComponent(), {...normalize, idOfAuthor: UserInfo.getUid(), copyright: false});
+            const resultOfPu = await this.apiOfPu.submitGuitarpuItem(this.getComponent(),
+                {
+                    ...normalize,
+                    idOfAuthor: UserInfo.getUid(),
+                    copyright: false
+                });
+            const idOfGuitarPu = resultOfPu.value.id;
             const resultOfRhythm = await this.apiOfRy.submitRhythmItem(this.getComponent(), {
                 ...normalize,
                 idOfAuthor: UserInfo.getUid(),
+                idOfGuitarPu,
                 composer: `詞：${spec.lyricist} 曲：${spec.composer}`,
                 copyright: false
-            });
-            if (resultOfPu.succeed) this.setIdOfGuitarPu(resultOfPu.value.id)
+            }, idOfGuitarPu);
+            if (resultOfPu.succeed) this.setIdOfGuitarPu(idOfGuitarPu)
+            return true;
         }
         this.getComponent().showSuccessSnackMessage(`已${update ? '更新' : '新增'}譜曲「${this.getName()}」`)
+        return true;
     }
 
     normalize = (obj) => {
