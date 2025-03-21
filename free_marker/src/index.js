@@ -4309,7 +4309,7 @@ class BaseBuilder extends PathBase {
                 }
                 break;
             case 'modify items':
-                params = [...params, 'job', 'conditions', 'size']
+                params = [...params, 'job = async (items) => {}', 'conditions', 'size']
                 break;
             case `fetch next items`:
                 params = [...params, 'lastItem', '...conditions']

@@ -324,9 +324,6 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
 
         const objOfCapoTone = getCapoAndContextTonality(tone.capoLevel);
         const info = {name: tone.name, ...objOfCapoTone, ...objOfTones};
-        // console.log(info);
-        // console.log('capo  ', _.toNumber(info.capo));
-        // console.log('speed  ', _.toNumber(info['速度']));
         const latestTone = refactorTone(tone.tone);
         return {
             id: Util.isUndefinedNullEmpty(tone.idOfRemote) ? undefined : tone.idOfRemote,
@@ -770,6 +767,17 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         await api.submitSingerSuggests(suggests);
     }
 
+    async function submitLatestGuitarPus() {
+        await api.modifyGuitarpusOfPaginate(async(items) => {
+            const itemsOfLatest = items.map((item) => {
+                delete item.currentContext;
+                delete item.originalContext;
+                return item;
+            })
+            await api.submitGuitarpus(itemsOfLatest)
+        })
+    }
+
     /** 每次都要跑 */
     // await updateToneOfPublishStaff();
     // await syncPreludeInfoToRemoteFirestore();
@@ -793,7 +801,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
     // await updateSpecificGuitarPu();
     // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
     // await deployKeywords();
-
+    // await submitLatestGuitarPus();
     // await updatePreludeToRemoteWholeProcess();
     await deployLatestSheet();
     // await updateSingerOfSuggest();

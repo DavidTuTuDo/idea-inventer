@@ -1,3 +1,4 @@
+const edit = true;
 import {
   utiller as Util,
   exceptioner as ERROR,
@@ -32,9 +33,6 @@ class ModularizedNavigatorDrawerStore extends BaseNavigatorDrawerStore {
 
   async fetch(view) {
     const result = await super.fetch(view);
-    if(UserInfoRef.isLoginWithSucceed()){
-      result.shortcuts.push(...result.myShortcuts)
-    }
     return result;
   }
 
