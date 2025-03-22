@@ -693,6 +693,9 @@ class CodegenNode {
 
     click = false;
 
+    /** wrapView需要Click事件時*/
+    wrapClick = false;
+
     deleted = false;
 
     defaultValue;
@@ -1820,13 +1823,13 @@ class CodegenNode {
         this.wrapContents.push(...contents);
     }
 
-    appendAlertDialogStmts(stmt, generator) {
+    appendAlertDialogStmts(stmt, generator,type = 'default') {
         const self = this;
 
         function getTaskStmts() {
             if (self.hasConfirmDialog())
                 return `task:async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
-                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
+                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked(type)}(objectOfParam)`;
         }
 
         function getActionButtonStmts() {
@@ -2246,7 +2249,7 @@ class CodegenNode {
         const stmt = [];
         const wrapContents = this.wrapContents ? this.wrapContents : [];
         stmt.push(...wrapContents);
-        this.appendAlertDialogStmts(stmt, generator)
+        this.appendAlertDialogStmts(stmt, generator,'wrap')
         return stmt;
     }
 
@@ -2647,7 +2650,7 @@ class CodegenNode {
         }
     }
 
-    appendWrapProps(...props) {
+    appendWrapProps = (...props)=> {
         for (const prop of props) {
             this.wrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
@@ -2684,7 +2687,7 @@ class CodegenNode {
         return {};
     }
 
-    appendViewProps(...props) {
+    appendViewProps = (...props) => {
         for (const prop of props) {
             this.props[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
@@ -2801,6 +2804,11 @@ class CodegenNode {
         return !!this.view && !!this.click;
     }
 
+    hasWrapClick() {
+        return !!this.wrapView && !!this.wrapClick;
+
+    }
+
     hasDeletedView() {
         return !!this.view && (!!this.deleted || this.hasIconOfDeleted());
     }
@@ -2811,7 +2819,7 @@ class CodegenNode {
 
     getFunctionNameOfClicked(...extra) {
         const items = [];
-        if (!Util.isUndefinedNullEmpty(extra)) {
+        if (!Util.isUndefinedNullEmpty(extra) && !_.isEqual(extra,'default')) {
             items.push(...extra);
         }
 
@@ -4751,7 +4759,10 @@ class StoreBuilder extends BaseBuilder {
         }
 
         const types = [
-            {name: `columnData`, fetcher: (node) => _.filter(node.getPreciseColumnChildren(), (child) => !child.isDisableOfColumn())},
+            {
+                name: `columnData`,
+                fetcher: (node) => _.filter(node.getPreciseColumnChildren(), (child) => !child.isDisableOfColumn())
+            },
             {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}
         ];
 
@@ -5508,7 +5519,10 @@ class ComponentBuilder extends BaseBuilder {
         baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],
             `return this.enableInitFetch`);
         baseGenerator.appendField('enableInitFetch', true)
-        baseGenerator.appendFunction({name: `setEnableInitFetch`, arrow: true}, ['enable'], [], [], `this.enableInitFetch = enable`);
+        baseGenerator.appendFunction({
+            name: `setEnableInitFetch`,
+            arrow: true
+        }, ['enable'], [], [], `this.enableInitFetch = enable`);
         baseGenerator.appendFunction({name: `initialize`, arrow: true, async: true}, [], [], [],
             `const self = this;
                  let result = {};
@@ -8452,7 +8466,7 @@ class ProjectFileHandler extends PathBase {
                 stmts.push(`event.stopPropagation();`)
                 stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
             } else {
-                stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked()}(objectOfParam);`)
+                stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`)
             }
             return stmts.join(`\n`);
         }
@@ -8611,6 +8625,60 @@ class ProjectFileHandler extends PathBase {
         return content;
     }
 
+    getStmtOfEventInValidate(node, functionName) {
+        const stmts = [];
+        stmts.push(`objectOfParam.view = event;`);
+
+        if (node.isAttribute() && !node.disableOnChangeSetter) {
+            let paramStmt = '';
+            if (node.isSwitchView()) {
+                paramStmt = `self.getCheckStateByEvent(event)`;
+            } else if (node.isTextFieldView()) {
+                stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
+                paramStmt = `latestValue`;
+                if (node.isBelong2AutoComplete())
+                    stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
+            } else if (node.isSliderView()) {
+                paramStmt = `self.getLatestValueByEvent(event)`;
+            } else if (node.isAutoCompleteView()) {
+                stmts.push(`objectOfParam.value = value`)
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(value)`)
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfSelected())}(self.getNumberOfSelected(value))`)
+                /**
+                 const nodeOfInput = _.find(node.getPreciseAttributeParent().getPreciseAttributeChildren(), (each) => each.isBelong2AutoComplete(), 0);
+                 stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', nodeOfInput.getName(), node.getName())}(value.getValue())`)
+                 */
+            } else if (node.isCheckboxView()) {
+                stmts.push(`objectOfParam.value = value`)
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(value)`)
+            } else if (node.isSimpleSelected() && node.isButton()) {
+                stmts.push(`objectOfParam.object = ${node.getName()}`)
+            } else if (node.isTimeDatePickerView()) {
+                /**
+                 * const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
+                 */
+                stmts.length = 0;
+                stmts.push(`const moment = event`);
+                stmts.push(`objectOfParam.value = moment`)
+                paramStmt = `moment`;
+            } else if (node.isTimeDateRangePickerView()) {
+                stmts.length = 0;
+                stmts.push(`const moments = event`);
+                stmts.push(`objectOfParam.value = moments`);
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(moments)`)
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(moments))`);
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(moments))`);
+            } else {
+                /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
+            }
+
+            if (!Util.isUndefinedNullEmpty(paramStmt))
+                stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
+        }
+        stmts.push(`self.${functionName}(objectOfParam)`);
+        return stmts.join('\n');
+    }
+
     /** 針對view的種類, 增加與store互動的規則 例如TextField就要有onChange */
     enrichNodesOfBehavior(nodes) {
 
@@ -8644,60 +8712,6 @@ class ProjectFileHandler extends PathBase {
                         node.getParentNode().appendChildrenWithJsons(_node)
                 }
             }
-        }
-
-        function getStmtOfEventInValidate(node, functionName) {
-            const stmts = [];
-            stmts.push(`objectOfParam.view = event;`);
-
-            if (node.isAttribute() && !node.disableOnChangeSetter) {
-                let paramStmt = '';
-                if (node.isSwitchView()) {
-                    paramStmt = `self.getCheckStateByEvent(event)`;
-                } else if (node.isTextFieldView()) {
-                    stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
-                    paramStmt = `latestValue`;
-                    if (node.isBelong2AutoComplete())
-                        stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
-                } else if (node.isSliderView()) {
-                    paramStmt = `self.getLatestValueByEvent(event)`;
-                } else if (node.isAutoCompleteView()) {
-                    stmts.push(`objectOfParam.value = value`)
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getName())}(value)`)
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfSelected())}(self.getNumberOfSelected(value))`)
-                    /**
-                     const nodeOfInput = _.find(node.getPreciseAttributeParent().getPreciseAttributeChildren(), (each) => each.isBelong2AutoComplete(), 0);
-                     stmts.push(`${node.getPreciseAttributeName()}.${Util.camel('set', nodeOfInput.getName(), node.getName())}(value.getValue())`)
-                     */
-                } else if (node.isCheckboxView()) {
-                    stmts.push(`objectOfParam.value = value`)
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(value)`)
-                } else if (node.isSimpleSelected() && node.isButton()) {
-                    stmts.push(`objectOfParam.object = ${node.getName()}`)
-                } else if (node.isTimeDatePickerView()) {
-                    /**
-                     * const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
-                     */
-                    stmts.length = 0;
-                    stmts.push(`const moment = event`);
-                    stmts.push(`objectOfParam.value = moment`)
-                    paramStmt = `moment`;
-                } else if (node.isTimeDateRangePickerView()) {
-                    stmts.length = 0;
-                    stmts.push(`const moments = event`);
-                    stmts.push(`objectOfParam.value = moments`);
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(moments)`)
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(moments))`);
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(moments))`);
-                } else {
-                    /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
-                }
-
-                if (!Util.isUndefinedNullEmpty(paramStmt))
-                    stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
-            }
-            stmts.push(`self.${functionName}(objectOfParam)`);
-            return stmts.join('\n');
         }
 
         function injectStyleBehavior(node) {
@@ -9130,7 +9144,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             appendPropsOfNode(node, node.needOnChangeBehavior,
-                [{onChange: `###(event, value) => {${getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
+                [{onChange: `###(event, value) => {${this.getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
                 [{
                     functionName: node.getFunctionNameOfOnChanged(),
                     params: ['param'],
@@ -9180,59 +9194,9 @@ class ProjectFileHandler extends PathBase {
                 )
             }
 
-            if (node.isClickView()) {
-                node.appendMethods({
-                    functionName: node.getFunctionNameOfClicked(),
-                    params: ['param'],
-                    loginOnly: node.hasLoginRequiredDialog(),
-                })
+            if (node.isClickView()) this.onClickBehavior(node);
+            if (node.hasWrapClick()) this.onClickBehavior(node,'wrap');
 
-                if (node.hasDeletedView()) {
-                    node.appendMethods({
-                        functionName: node.getFunctionNameOfDeleted(),
-                        params: ['param'],
-                        loginOnly: node.hasLoginRequiredDialog(),
-                    });
-                }
-                const onClickStmts = [];
-                const onDeleteStmts = [];
-                if (node.hasLoginRequiredDialog()) {
-                    onClickStmts.push(
-                        `if(!UserInfoRef.isLoginWithSucceed()) {
-                        self.enableLoginConfirmDialog();
-                        return;
-                    }`)
-                }
-                if (node.hasConfirmDialog()) {
-                    const stmts = [`objectOfParam.view = event;`, `event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
-                    node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
-                } else if (node.isTabItemView()) {
-                    onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
-                    onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
-                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
-                } else if (node.hasCustomViewDialog()) {
-                    const stmts = [`event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
-                    node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
-                        onClickStmts.push(...stmts, `self.${node.getFunctionNameOfClicked()}(objectOfParam)`);
-                } else if (node.hasAlertMenu()) {
-                    onClickStmts.push(...this.getStmtsOfAlertMenu(node))
-                } else {
-                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
-                }
-
-                if (node.hasDeletedView() && node.isAlertDialog4Deleted()) {
-                    onClickStmts.push(`${getStmtOfEventInValidate(node, node.getFunctionNameOfClicked())}`)
-                    node.appendViewProps({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
-                    node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
-                } else if (node.hasDeletedView() && node.isAlertDialog4Click()) {
-                    /** alertDialog 不是為了deleted*/
-                    onDeleteStmts.push(...[`objectOfParam.view = event;`, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`])
-                    node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`});
-                    node.appendViewProps({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
-                } else {
-                    node.appendViewProps({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
-                }
-            }
             if (!node.isPathArray() && node.listEmptyTip.isDefaultValue) {
                 node.disableListEmptyTip()
             }
@@ -9266,6 +9230,76 @@ class ProjectFileHandler extends PathBase {
                 node.appendViewProps({color: node.getColor()})
             }
             this.enrichNodesOfBehavior(node.getChildren());
+        }
+    }
+
+    onClickBehavior(node, type = 'default') {
+        const functionNameOfClicked = node.getFunctionNameOfClicked(type);
+        node.appendMethods({
+            functionName: functionNameOfClicked,
+            params: ['param'],
+            loginOnly: node.hasLoginRequiredDialog(),
+        })
+        let funcOfAppendProp;
+        switch (type) {
+            case 'default':
+                funcOfAppendProp = node.appendViewProps;
+                break;
+            case 'wrap':
+                funcOfAppendProp = node.appendWrapProps;
+                break;
+            case 'list':
+                funcOfAppendProp = node.appendListProps;
+                break;
+            default:
+                throw new ERROR(9999, `830918901231298 unknown type => ${type}, from node => ${node.getName()}`);
+        }
+
+
+        if (node.hasDeletedView()) {
+            node.appendMethods({
+                functionName: node.getFunctionNameOfDeleted(),
+                params: ['param'],
+                loginOnly: node.hasLoginRequiredDialog(),
+            });
+        }
+        const onClickStmts = [];
+        const onDeleteStmts = [];
+        if (node.hasLoginRequiredDialog()) {
+            onClickStmts.push(
+                `if(!UserInfoRef.isLoginWithSucceed()) {
+                        self.enableLoginConfirmDialog();
+                        return;
+                    }`)
+        }
+        if (node.hasConfirmDialog()) {
+            const stmts = [`objectOfParam.view = event;`, `event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+            node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
+        } else if (node.isTabItemView()) {
+            onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
+            onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
+            onClickStmts.push(`${this.getStmtOfEventInValidate(node, functionNameOfClicked)}`)
+        } else if (node.hasCustomViewDialog()) {
+            const stmts = [`event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+            node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
+                onClickStmts.push(...stmts, `self.${functionNameOfClicked}(objectOfParam)`);
+        } else if (node.hasAlertMenu()) {
+            onClickStmts.push(...this.getStmtsOfAlertMenu(node))
+        } else {
+            onClickStmts.push(`${this.getStmtOfEventInValidate(node, functionNameOfClicked)}`)
+        }
+
+        if (node.hasDeletedView() && node.isAlertDialog4Deleted()) {
+            onClickStmts.push(`${this.getStmtOfEventInValidate(node, functionNameOfClicked)}`)
+            funcOfAppendProp({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
+            funcOfAppendProp({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
+        } else if (node.hasDeletedView() && node.isAlertDialog4Click()) {
+            /** alertDialog 不是為了deleted*/
+            onDeleteStmts.push(...[`objectOfParam.view = event;`, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`])
+            funcOfAppendProp({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`});
+            funcOfAppendProp({onDelete: `###(event, value) => {${onDeleteStmts.join('\n')}}`})
+        } else {
+            funcOfAppendProp({onClick: `###(event, value) => {${onClickStmts.join('\n')}}`})
         }
     }
 

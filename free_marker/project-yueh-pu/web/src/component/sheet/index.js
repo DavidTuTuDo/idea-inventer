@@ -83,7 +83,7 @@ class SheetComponent extends BaseSheetComponent {
         return Util.getVisibleOrNone(this.getStore().getCurrentPu().getHasPrelude(), true);
     }
 
-    onSheetGuitarpuDivClicked(param) {
+    onSheetGuitarpuDivWrapClicked(param) {
         this.getStore().toggleIsAdjustVisible();
     }
 

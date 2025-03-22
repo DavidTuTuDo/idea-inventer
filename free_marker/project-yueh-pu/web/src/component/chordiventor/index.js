@@ -17,9 +17,8 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     }
 
     getInjectPropsOfChordiventorTxtTextField(chordiventor) {
-        if (isMobile) return {inputProps:{style: {fontSize: '0.8rem'}}}
-        else return {inputProps:{style: {fontSize: '0.9rem'}}}
-    // else if (isTablet) return {inputProps:{style: {fontSize: '0.9rem'}}}
+        if (isMobile || isTablet) return {inputProps:{style: {fontSize: '0.65rem'}}}
+        else return {inputProps:{style: {fontSize: '0.85rem'}}}
     }
 
     getInjectStyleOfChordiventorClearIdChip(chordiventor) {
