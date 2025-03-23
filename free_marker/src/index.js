@@ -1823,13 +1823,13 @@ class CodegenNode {
         this.wrapContents.push(...contents);
     }
 
-    appendAlertDialogStmts(stmt, generator,type = 'default') {
+    appendAlertDialogStmts(stmt, generator) {
         const self = this;
 
         function getTaskStmts() {
             if (self.hasConfirmDialog())
                 return `task:async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
-                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked(type)}(objectOfParam)`;
+                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
         }
 
         function getActionButtonStmts() {
@@ -2249,7 +2249,7 @@ class CodegenNode {
         const stmt = [];
         const wrapContents = this.wrapContents ? this.wrapContents : [];
         stmt.push(...wrapContents);
-        this.appendAlertDialogStmts(stmt, generator,'wrap')
+        this.appendAlertDialogStmts(stmt, generator)
         return stmt;
     }
 
@@ -2805,7 +2805,7 @@ class CodegenNode {
     }
 
     hasWrapClick() {
-        return !!this.wrapView && !!this.wrapClick;
+        return !!this.wrapView && _.isEqual(true, this.wrapClick);
 
     }
 
@@ -2819,10 +2819,8 @@ class CodegenNode {
 
     getFunctionNameOfClicked(...extra) {
         const items = [];
-        if (!Util.isUndefinedNullEmpty(extra) && !_.isEqual(extra,'default')) {
-            items.push(...extra);
-        }
-
+        extra = _.filter(extra, (each) => !_.isEqual(_.toLower(each), 'default'))
+        if (!Util.isUndefinedNullEmpty(extra)) items.push(...extra);
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), ...items, 'clicked');
     }
 
