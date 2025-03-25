@@ -1,12 +1,11 @@
 [
   {
-    "index": 120,
+    "index": 130,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏黑白格九宮格套組",
     "options": [
       { "name": "", "value": null },
-      { "name": "春日來信拍拍膠九宮格套組", "value": 18310 },
       { "name": "莎夏黑白格九宮格套組", "value": 18412 },
       { "name": "莫內油盤油畫膠九宮格套組", "value": 18383 },
       { "name": "焦糖可可拍拍膠九宮格套組", "value": 18307 },
@@ -17,7 +16,7 @@
     "href": "https://www.sachianail.com/pitem/M00000748"
   },
   {
-    "index": 91,
+    "index": 101,
     "valueOfType": 1,
     "name": "SACHIA無線筆型磨甲機",
     "options": [
@@ -28,7 +27,17 @@
     "href": "https://www.sachianail.com/pitem/M00000746"
   },
   {
-    "index": 125,
+    "index": 0,
+    "valueOfType": 3,
+    "name": "192色+塗好大色板",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "192色(無送色板)", "value": 18386 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000743"
+  },
+  {
+    "index": 136,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-優格奶油系列-192色系列",
@@ -55,6 +64,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -103,6 +113,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -139,6 +150,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -215,13 +227,12 @@
     "href": "https://www.sachianail.com/pitem/M00000740"
   },
   {
-    "index": 1217,
+    "index": 1318,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "貓眼膠系列-月光貓眼膠系列",
     "options": [
       { "name": "", "value": null },
-      { "name": "月光貓眼36色一套+塗好色卡", "value": 15494 },
       { "name": "月光貓眼膠01", "value": 15458 },
       { "name": "月光貓眼膠02", "value": 15459 },
       { "name": "月光貓眼膠03", "value": 15460 },
@@ -297,7 +308,6 @@
       { "name": "琉璃貓眼膠08", "value": 8822 },
       { "name": "琉璃貓眼膠09", "value": 8823 },
       { "name": "琉璃貓眼膠10", "value": 8824 },
-      { "name": "琉璃貓眼膠10色一套+色卡", "value": 17277 },
       { "name": "瓷白貓眼膠01", "value": 8826 },
       { "name": "瓷白貓眼膠02", "value": 8827 },
       { "name": "瓷白貓眼膠03", "value": 8828 },
@@ -325,7 +335,6 @@
       { "name": "瓷白貓眼膠25", "value": 8850 },
       { "name": "瓷白貓眼膠26", "value": 8851 },
       { "name": "瓷白貓眼膠27", "value": 8852 },
-      { "name": "瓷白貓眼膠27色一套+色卡", "value": 17278 },
       { "name": "琥珀貓眼膠01", "value": 8853 },
       { "name": "琥珀貓眼膠02", "value": 8854 },
       { "name": "琥珀貓眼膠03", "value": 8855 },
@@ -338,13 +347,12 @@
     "href": "https://www.sachianail.com/pitem/M00000728"
   },
   {
-    "index": 1218,
+    "index": 1319,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "貓眼膠系列-瓷白貓眼膠系列",
     "options": [
       { "name": "", "value": null },
-      { "name": "月光貓眼36色一套+塗好色卡", "value": 15494 },
       { "name": "月光貓眼膠01", "value": 15458 },
       { "name": "月光貓眼膠02", "value": 15459 },
       { "name": "月光貓眼膠03", "value": 15460 },
@@ -420,7 +428,6 @@
       { "name": "琉璃貓眼膠08", "value": 8822 },
       { "name": "琉璃貓眼膠09", "value": 8823 },
       { "name": "琉璃貓眼膠10", "value": 8824 },
-      { "name": "琉璃貓眼膠10色一套+色卡", "value": 17277 },
       { "name": "瓷白貓眼膠01", "value": 8826 },
       { "name": "瓷白貓眼膠02", "value": 8827 },
       { "name": "瓷白貓眼膠03", "value": 8828 },
@@ -448,7 +455,6 @@
       { "name": "瓷白貓眼膠25", "value": 8850 },
       { "name": "瓷白貓眼膠26", "value": 8851 },
       { "name": "瓷白貓眼膠27", "value": 8852 },
-      { "name": "瓷白貓眼膠27色一套+色卡", "value": 17278 },
       { "name": "琥珀貓眼膠01", "value": 8853 },
       { "name": "琥珀貓眼膠02", "value": 8854 },
       { "name": "琥珀貓眼膠03", "value": 8855 },
@@ -461,13 +467,12 @@
     "href": "https://www.sachianail.com/pitem/M00000727"
   },
   {
-    "index": 1219,
+    "index": 1320,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "貓眼膠系列-松脂琥珀貓眼膠系列",
     "options": [
       { "name": "", "value": null },
-      { "name": "月光貓眼36色一套+塗好色卡", "value": 15494 },
       { "name": "月光貓眼膠01", "value": 15458 },
       { "name": "月光貓眼膠02", "value": 15459 },
       { "name": "月光貓眼膠03", "value": 15460 },
@@ -543,7 +548,6 @@
       { "name": "琉璃貓眼膠08", "value": 8822 },
       { "name": "琉璃貓眼膠09", "value": 8823 },
       { "name": "琉璃貓眼膠10", "value": 8824 },
-      { "name": "琉璃貓眼膠10色一套+色卡", "value": 17277 },
       { "name": "瓷白貓眼膠01", "value": 8826 },
       { "name": "瓷白貓眼膠02", "value": 8827 },
       { "name": "瓷白貓眼膠03", "value": 8828 },
@@ -571,7 +575,6 @@
       { "name": "瓷白貓眼膠25", "value": 8850 },
       { "name": "瓷白貓眼膠26", "value": 8851 },
       { "name": "瓷白貓眼膠27", "value": 8852 },
-      { "name": "瓷白貓眼膠27色一套+色卡", "value": 17278 },
       { "name": "琥珀貓眼膠01", "value": 8853 },
       { "name": "琥珀貓眼膠02", "value": 8854 },
       { "name": "琥珀貓眼膠03", "value": 8855 },
@@ -584,13 +587,12 @@
     "href": "https://www.sachianail.com/pitem/M00000726"
   },
   {
-    "index": 1220,
+    "index": 1321,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "貓眼膠系列-松石貓眼膠系列",
     "options": [
       { "name": "", "value": null },
-      { "name": "月光貓眼36色一套+塗好色卡", "value": 15494 },
       { "name": "月光貓眼膠01", "value": 15458 },
       { "name": "月光貓眼膠02", "value": 15459 },
       { "name": "月光貓眼膠03", "value": 15460 },
@@ -666,7 +668,6 @@
       { "name": "琉璃貓眼膠08", "value": 8822 },
       { "name": "琉璃貓眼膠09", "value": 8823 },
       { "name": "琉璃貓眼膠10", "value": 8824 },
-      { "name": "琉璃貓眼膠10色一套+色卡", "value": 17277 },
       { "name": "瓷白貓眼膠01", "value": 8826 },
       { "name": "瓷白貓眼膠02", "value": 8827 },
       { "name": "瓷白貓眼膠03", "value": 8828 },
@@ -694,7 +695,6 @@
       { "name": "瓷白貓眼膠25", "value": 8850 },
       { "name": "瓷白貓眼膠26", "value": 8851 },
       { "name": "瓷白貓眼膠27", "value": 8852 },
-      { "name": "瓷白貓眼膠27色一套+色卡", "value": 17278 },
       { "name": "琥珀貓眼膠01", "value": 8853 },
       { "name": "琥珀貓眼膠02", "value": 8854 },
       { "name": "琥珀貓眼膠03", "value": 8855 },
@@ -707,7 +707,7 @@
     "href": "https://www.sachianail.com/pitem/M00000725"
   },
   {
-    "index": 1221,
+    "index": 1322,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-冬季耶誕系列-192色系列",
@@ -734,6 +734,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -782,6 +783,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -818,6 +820,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -894,7 +897,7 @@
     "href": "https://www.sachianail.com/pitem/M00000723"
   },
   {
-    "index": 1222,
+    "index": 1323,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-秋楓系列-192色系列",
@@ -921,6 +924,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -969,6 +973,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -1005,6 +1010,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -1081,7 +1087,7 @@
     "href": "https://www.sachianail.com/pitem/M00000722"
   },
   {
-    "index": 1223,
+    "index": 1324,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-霧霾灰系列-192色系列",
@@ -1108,6 +1114,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -1156,6 +1163,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -1192,6 +1200,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -1268,7 +1277,7 @@
     "href": "https://www.sachianail.com/pitem/M00000721"
   },
   {
-    "index": 1224,
+    "index": 1325,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-多巴胺糖果系列-192色系列",
@@ -1295,6 +1304,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -1343,6 +1353,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -1379,6 +1390,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -1455,7 +1467,7 @@
     "href": "https://www.sachianail.com/pitem/M00000720"
   },
   {
-    "index": 1225,
+    "index": 1326,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-莊園酒紅系列-192色系列",
@@ -1482,6 +1494,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -1530,6 +1543,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -1566,6 +1580,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -1642,7 +1657,7 @@
     "href": "https://www.sachianail.com/pitem/M00000719"
   },
   {
-    "index": 1226,
+    "index": 1327,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-燕麥奶茶色-192色系列",
@@ -1669,6 +1684,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -1717,6 +1733,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -1753,6 +1770,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -1829,7 +1847,7 @@
     "href": "https://www.sachianail.com/pitem/M00000718"
   },
   {
-    "index": 1227,
+    "index": 1328,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-鉑金碎鑽系列-192色系列",
@@ -1856,6 +1874,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -1904,6 +1923,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -1940,6 +1960,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -2016,7 +2037,7 @@
     "href": "https://www.sachianail.com/pitem/M00000717"
   },
   {
-    "index": 1232,
+    "index": 1333,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏檢定套組 技能TNA檢定套組",
@@ -2038,7 +2059,7 @@
     "href": "https://www.sachianail.com/pitem/M00000693"
   },
   {
-    "index": 1270,
+    "index": 1378,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "爆閃亮片甲油膠 大亮片甲油膠 亮片膠 爆閃膠 超亮細閃 鉑金膠 幻彩亮片膠台灣代理商",
@@ -2078,7 +2099,7 @@
     "href": "https://www.sachianail.com/pitem/M00000643"
   },
   {
-    "index": 1273,
+    "index": 1381,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "SACHIA千金閃粉膠",
@@ -2144,7 +2165,7 @@
     "href": "https://www.sachianail.com/pitem/M00000639"
   },
   {
-    "index": 918,
+    "index": 1019,
     "valueOfType": 1,
     "name": "美甲新手套裝組一套搞定",
     "options": [
@@ -2154,7 +2175,7 @@
     "href": "https://www.sachianail.com/pitem/M00000614"
   },
   {
-    "index": 1279,
+    "index": 1387,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "SACHIA碎鑽膠系列",
@@ -2200,7 +2221,7 @@
     "href": "https://www.sachianail.com/pitem/M00000570"
   },
   {
-    "index": 1286,
+    "index": 1394,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏罐裝膠系列-整套-192色",
@@ -2227,6 +2248,7 @@
       { "name": "莎夏罐裝膠19", "value": 12879 },
       { "name": "莎夏罐裝膠20", "value": 12880 },
       { "name": "莎夏罐裝膠21", "value": 12881 },
+      { "name": "莎夏罐裝膠22", "value": 12882 },
       { "name": "莎夏罐裝膠23", "value": 12883 },
       { "name": "莎夏罐裝膠24", "value": 12884 },
       { "name": "莎夏罐裝膠25", "value": 12885 },
@@ -2275,6 +2297,7 @@
       { "name": "莎夏罐裝膠69", "value": 12929 },
       { "name": "莎夏罐裝膠70", "value": 12930 },
       { "name": "莎夏罐裝膠71", "value": 12931 },
+      { "name": "莎夏罐裝膠72", "value": 12932 },
       { "name": "莎夏罐裝膠73", "value": 12933 },
       { "name": "莎夏罐裝膠74", "value": 12934 },
       { "name": "莎夏罐裝膠75", "value": 12935 },
@@ -2311,6 +2334,7 @@
       { "name": "莎夏罐裝膠110", "value": 12970 },
       { "name": "莎夏罐裝膠111", "value": 12971 },
       { "name": "莎夏罐裝膠112", "value": 12972 },
+      { "name": "莎夏罐裝膠114", "value": 12974 },
       { "name": "莎夏罐裝膠116", "value": 12976 },
       { "name": "莎夏罐裝膠117", "value": 12977 },
       { "name": "莎夏罐裝膠118", "value": 12978 },
@@ -2387,7 +2411,7 @@
     "href": "https://www.sachianail.com/pitem/M00000559"
   },
   {
-    "index": 46,
+    "index": 48,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "SACHIA彩色甲油膠",
@@ -2413,7 +2437,6 @@
       { "name": "SACHIA彩色甲油膠37", "value": 9922 },
       { "name": "SACHIA彩色甲油膠38", "value": 9923 },
       { "name": "SACHIA彩色甲油膠39", "value": 9924 },
-      { "name": "SACHIA彩色甲油膠40", "value": 9925 },
       { "name": "SACHIA彩色甲油膠43", "value": 9928 },
       { "name": "SACHIA彩色甲油膠44", "value": 9929 },
       { "name": "SACHIA彩色甲油膠48", "value": 9933 },
@@ -2454,7 +2477,7 @@
     "href": "https://www.sachianail.com/pitem/M00000156"
   },
   {
-    "index": 922,
+    "index": 1023,
     "valueOfType": 1,
     "name": "日式彩繪膠拉絲膠 拉線膠",
     "options": [
@@ -2482,6 +2505,7 @@
       { "name": "T型色卡透明色50入", "value": 10266 },
       { "name": "三節甲片150色透明款", "value": 10267 },
       { "name": "方形色卡透明色50入", "value": 10268 },
+      { "name": "戒指色卡1個入", "value": 17791 },
       { "name": "戒指色卡50入一包", "value": 17792 },
       { "name": "杏仁水滴#3", "value": 18335 },
       { "name": "杏仁水滴#5", "value": 18337 },
@@ -2500,7 +2524,7 @@
     "href": "https://www.sachianail.com/pitem/M00000113"
   },
   {
-    "index": 924,
+    "index": 1025,
     "valueOfType": 1,
     "name": "夢想家甲油膠60色+色板 正紅 正白 單色",
     "options": [
@@ -2525,7 +2549,6 @@
       { "name": "夢想家18號", "value": 9576 },
       { "name": "夢想家19號", "value": 9577 },
       { "name": "夢想家20號", "value": 9578 },
-      { "name": "夢想家21號", "value": 9579 },
       { "name": "夢想家22號", "value": 9580 },
       { "name": "夢想家23號", "value": 9581 },
       { "name": "夢想家24號", "value": 9582 },
@@ -2571,7 +2594,7 @@
     "href": "https://www.sachianail.com/pitem/M00000068"
   },
   {
-    "index": 925,
+    "index": 1026,
     "valueOfType": 1,
     "name": "夢想家冰透色甲油膠48色一組+色板 單色 果凍色 色膠 凝膠套組",
     "options": [
@@ -2629,15 +2652,13 @@
     "href": "https://www.sachianail.com/pitem/M00000067"
   },
   {
-    "index": 926,
+    "index": 1027,
     "valueOfType": 1,
     "name": "莎夏指緣油 滾珠 30入一套+展示盒 最新香味公司貨 香氛指緣油 滾珠指緣油 沙龍瓶 保濕指緣",
     "options": [
       { "name": "", "value": null },
       { "name": "01茉莉滾珠指緣油", "value": 9487 },
-      { "name": "02白玫瑰滾珠指緣油", "value": 9488 },
       { "name": "03薰衣草滾珠指緣油", "value": 9489 },
-      { "name": "04毒鑰滾珠指緣油", "value": 9490 },
       { "name": "05許願滾珠指緣油", "value": 9491 },
       { "name": "06戀愛滾珠指緣油", "value": 9492 },
       { "name": "07海浪滾珠指緣油", "value": 9493 },
@@ -2654,7 +2675,7 @@
     "href": "https://www.sachianail.com/pitem/M00000066"
   },
   {
-    "index": 927,
+    "index": 1028,
     "valueOfType": 1,
     "name": "莎夏日式洗筆啫喱 筆刷復活液 洗筆啫喱 凝膠彩繪專用洗筆液 凝膠 養筆液",
     "options": [
@@ -2664,7 +2685,7 @@
     "href": "https://www.sachianail.com/pitem/M00000065"
   },
   {
-    "index": 928,
+    "index": 1029,
     "valueOfType": 1,
     "name": "莎夏功能膠-超牢固底膠 小金瓶不沾粉 暈染液 霧面 鋼化上層封層 調和膠 加固 平衡乾燥 建構 可剝",
     "options": [
@@ -2685,7 +2706,7 @@
     "href": "https://www.sachianail.com/pitem/M00000064"
   },
   {
-    "index": 929,
+    "index": 1030,
     "valueOfType": 1,
     "name": "莎夏免清彩繪膠 日式美甲彩繪膠 畫花磚 波西米亞風 彩繪甲油膠 彩繪罐裝膠",
     "options": [
@@ -2719,7 +2740,7 @@
     "href": "https://www.sachianail.com/pitem/M00000061"
   },
   {
-    "index": 48,
+    "index": 410,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "日式慕斯暈染液 鎏金 煙彩 青又莫蘭迪 水染日系彩繪暈染液",
@@ -2734,9 +2755,7 @@
       { "name": "日式慕斯美甲暈染液B01黑鳶", "value": 9356 },
       { "name": "日式慕斯美甲暈染液B02杜若", "value": 9357 },
       { "name": "日式慕斯美甲暈染液B03藍墨", "value": 9358 },
-      { "name": "日式慕斯美甲暈染液B06黃砂", "value": 9361 },
       { "name": "日式慕斯美甲暈染液C01金朽", "value": 9364 },
-      { "name": "日式慕斯美甲暈染液C02雲晶", "value": 9365 },
       { "name": "日式慕斯美甲暈染液C04銀紗", "value": 9367 },
       { "name": "日式慕斯美甲暈染液C05雀銅", "value": 9368 },
       { "name": "日式慕斯美甲暈染液C06紫苑", "value": 9369 },
@@ -2752,10 +2771,8 @@
       { "name": "馬卡龍暈染液隨機贈送不挑", "value": 9381 },
       { "name": "莫蘭迪暈染液03", "value": 9384 },
       { "name": "莫蘭迪暈染液06", "value": 9387 },
-      { "name": "莫蘭迪暈染液09", "value": 9390 },
       { "name": "莫蘭迪暈染液11", "value": 9392 },
       { "name": "莫蘭迪暈染液12", "value": 9393 },
-      { "name": "煙彩暈染液01", "value": 9395 },
       { "name": "煙彩暈染液02", "value": 9396 },
       { "name": "煙彩暈染液03", "value": 9397 },
       { "name": "煙彩暈染液05", "value": 9399 },
@@ -2768,7 +2785,7 @@
     "href": "https://www.sachianail.com/pitem/M00000059"
   },
   {
-    "index": 932,
+    "index": 1033,
     "valueOfType": 1,
     "name": "SACHIA莎夏噴霧指緣軟化劑 VINIMAY 死皮軟化 俄式前置處理液 磨甲機前置輔助液",
     "options": [
@@ -2778,7 +2795,7 @@
     "href": "https://www.sachianail.com/pitem/M00000058"
   },
   {
-    "index": 49,
+    "index": 411,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "莎夏甲片黏著劑 VINIMAY甲片黏著劑 甲片膠",
@@ -2790,7 +2807,7 @@
     "href": "https://www.sachianail.com/pitem/M00000056"
   },
   {
-    "index": 934,
+    "index": 1035,
     "valueOfType": 1,
     "name": "造型膠系列-SACHIA莎夏立體造型膠 水波紋 古萊麗 GULAURI",
     "options": [
@@ -2803,7 +2820,7 @@
     "href": "https://www.sachianail.com/pitem/M00000054"
   },
   {
-    "index": 13,
+    "index": 12,
     "valueOfType": 5,
     "valueOfSubType": 3,
     "name": "纖維修復膠系列-莎夏纖維修復膠 古萊麗纖維修護膠",
@@ -2815,7 +2832,7 @@
     "href": "https://www.sachianail.com/pitem/M00000050"
   },
   {
-    "index": 936,
+    "index": 1037,
     "valueOfType": 1,
     "name": "建構膠系列-莎夏鑽石建構 古萊麗金鋼膠",
     "options": [
@@ -2825,6 +2842,8 @@
       { "name": "SACHIA鑽石建構膠20g-C-偏稀", "value": 15306 },
       { "name": "SACHIA鑽石建構膠50g-M-偏稠", "value": 15309 },
       { "name": "SACHIA鑽石建構膠50g-C-偏稀", "value": 15305 },
+      { "name": "3入一組古萊麗鎏金金鋼膠50g", "value": 9296 },
+      { "name": "3入冬用-古萊麗金鋼膠50g-稀", "value": 17943 },
       { "name": "三入一組SACHIA鑽石建構膠50g-M", "value": 15310 },
       { "name": "三入一組SACHIA鑽石建構膠50g-C", "value": 15313 },
       { "name": "冬用-古萊麗金鋼膠50g-稀", "value": 17942 },
@@ -2834,7 +2853,7 @@
     "href": "https://www.sachianail.com/pitem/M00000049"
   },
   {
-    "index": 937,
+    "index": 1038,
     "valueOfType": 1,
     "name": "專櫃SPA品質 香氛保濕護手霜 美甲師御用品牌 30ml",
     "options": [
@@ -2847,13 +2866,12 @@
     "href": "https://www.sachianail.com/pitem/M00000021"
   },
   {
-    "index": 1296,
+    "index": 13104,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "貓眼膠系列-桃花塢貓眼膠系列",
     "options": [
       { "name": "", "value": null },
-      { "name": "月光貓眼36色一套+塗好色卡", "value": 15494 },
       { "name": "月光貓眼膠01", "value": 15458 },
       { "name": "月光貓眼膠02", "value": 15459 },
       { "name": "月光貓眼膠03", "value": 15460 },
@@ -2929,7 +2947,6 @@
       { "name": "琉璃貓眼膠08", "value": 8822 },
       { "name": "琉璃貓眼膠09", "value": 8823 },
       { "name": "琉璃貓眼膠10", "value": 8824 },
-      { "name": "琉璃貓眼膠10色一套+色卡", "value": 17277 },
       { "name": "瓷白貓眼膠01", "value": 8826 },
       { "name": "瓷白貓眼膠02", "value": 8827 },
       { "name": "瓷白貓眼膠03", "value": 8828 },
@@ -2957,7 +2974,6 @@
       { "name": "瓷白貓眼膠25", "value": 8850 },
       { "name": "瓷白貓眼膠26", "value": 8851 },
       { "name": "瓷白貓眼膠27", "value": 8852 },
-      { "name": "瓷白貓眼膠27色一套+色卡", "value": 17278 },
       { "name": "琥珀貓眼膠01", "value": 8853 },
       { "name": "琥珀貓眼膠02", "value": 8854 },
       { "name": "琥珀貓眼膠03", "value": 8855 },
@@ -2970,13 +2986,14 @@
     "href": "https://www.sachianail.com/pitem/M00000020"
   },
   {
-    "index": 315,
+    "index": 416,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "台灣現貨有保固 SACHIA BABY美甲吸塵器 強吸力美甲集塵機 美甲粉塵機 插電式集塵機",
     "options": [
       { "name": "", "value": null },
       { "name": "SACHIA baby美甲粉塵機", "value": 16042 },
+      { "name": "G凱洛賽兒GC baby2.0-奶茶", "value": 16329 },
       { "name": "加購白色25片集塵棉一包-GC baby", "value": 15138 },
       { "name": "加購濾網一片-GC baby", "value": 8648 },
       { "name": "通用款G.凱-濾網加購一片", "value": 8649 }
@@ -2995,13 +3012,12 @@
     "href": "https://www.sachianail.com/pitem/M00000747"
   },
   {
-    "index": 122,
+    "index": 132,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏油畫膠系列 丁香芭蕾 花色玫瑰 莫內油盤",
     "options": [
       { "name": "", "value": null },
-      { "name": "春日來信拍拍膠九宮格套組", "value": 18310 },
       { "name": "莎夏黑白格九宮格套組", "value": 18412 },
       { "name": "莫內油盤油畫膠九宮格套組", "value": 18383 },
       { "name": "焦糖可可拍拍膠九宮格套組", "value": 18307 },
@@ -3012,7 +3028,7 @@
     "href": "https://www.sachianail.com/pitem/M00000744"
   },
   {
-    "index": 123,
+    "index": 134,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "珍珠黑白珍珠包包飾品",
@@ -3024,7 +3040,7 @@
     "href": "https://www.sachianail.com/pitem/M00000742"
   },
   {
-    "index": 124,
+    "index": 135,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "網紅款貓爪美甲飾品",
@@ -3688,7 +3704,7 @@
     "href": "https://www.sachianail.com/pitem/M00000735"
   },
   {
-    "index": 120,
+    "index": 121,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "美甲印花鋼板美甲工具",
@@ -3696,14 +3712,9 @@
       { "name": "", "value": null },
       { "name": "XY-NAIL01樹葉", "value": 18415 },
       { "name": "XY-NAIL02花卉", "value": 18416 },
-      { "name": "XY-NAIL03蝴蝶", "value": 18417 },
-      { "name": "XY-NAIL04蕾絲", "value": 18421 },
-      { "name": "XY-NAIL05國風", "value": 18419 },
-      { "name": "XY-NAIL10愛心", "value": 18420 },
       { "name": "格紋法式011", "value": 18354 },
       { "name": "國風窗花012", "value": 18355 },
-      { "name": "國風圖騰013", "value": 18356 },
-      { "name": "靈蛇招財018", "value": 18358 }
+      { "name": "國風圖騰013", "value": 18356 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000734"
   },
@@ -4353,13 +4364,12 @@
     "href": "https://www.sachianail.com/pitem/M00000729"
   },
   {
-    "index": 1228,
+    "index": 1329,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "莎夏拍拍膠系列 調色大師 春日來信 櫻色映畫 煙雨烏龍 焦糖可可",
     "options": [
       { "name": "", "value": null },
-      { "name": "春日來信拍拍膠九宮格套組", "value": 18310 },
       { "name": "莎夏黑白格九宮格套組", "value": 18412 },
       { "name": "莫內油盤油畫膠九宮格套組", "value": 18383 },
       { "name": "焦糖可可拍拍膠九宮格套組", "value": 18307 },
@@ -4423,6 +4433,17 @@
     "href": "https://www.sachianail.com/pitem/M00000710"
   },
   {
+    "index": 40,
+    "valueOfType": 6,
+    "valueOfSubType": 1,
+    "name": "靜音雙渦輪大吸力粉塵機 無印風美甲吸塵器",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "雙渦輪大吸力-過濾棉30片一包", "value": 18453 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000708"
+  },
+  {
     "index": 0,
     "valueOfType": 7,
     "valueOfSubType": 7,
@@ -4434,7 +4455,7 @@
     "href": "https://www.sachianail.com/pitem/M00000707"
   },
   {
-    "index": 121,
+    "index": 122,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "溶劑分裝小漏斗 迷你漏斗 分裝瓶小工具",
@@ -4452,10 +4473,23 @@
     "options": [
       { "name": "", "value": null },
       { "name": "1-透明養護延長膠15ML-大容量", "value": 18392 },
+      { "name": "2-白色養護延長膠15ML-大容量", "value": 18580 },
       { "name": "2-白色養護延長膠", "value": 17899 },
+      { "name": "4-粉色養護延長膠15ML-大容量", "value": 18581 },
       { "name": "4-粉色養護延長膠", "value": 17900 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000704"
+  },
+  {
+    "index": 21,
+    "valueOfType": 5,
+    "valueOfSubType": 6,
+    "name": "末町三合一夢中情裸6色甲油套組",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "末町三合一夢中情裸6色甲油套組", "value": 17882 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000702"
   },
   {
     "index": 510,
@@ -4480,7 +4514,6 @@
       { "name": "#13-120片延長甲模", "value": 17826 },
       { "name": "#14-120片延長甲模", "value": 17827 },
       { "name": "#23-120片延長甲模", "value": 17830 },
-      { "name": "#24-120片延長甲模", "value": 17828 },
       { "name": "#25-120片延長甲模", "value": 17829 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000699"
@@ -4521,6 +4554,53 @@
     "href": "https://www.sachianail.com/pitem/M00000694"
   },
   {
+    "index": 1345,
+    "valueOfType": 2,
+    "valueOfSubType": 0,
+    "name": "CUCCIO 乳霜 高效保濕乳霜",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "8oz白檸檬蘆薈乳霜", "value": 17163 },
+      { "name": "8oz芒果佛手柑乳霜", "value": 17169 },
+      { "name": "8oz紅桔堅果乳霜", "value": 17168 },
+      { "name": "8oz香草蜜糖乳霜", "value": 17166 },
+      { "name": "8oz椰子野薑花乳霜", "value": 17164 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000692"
+  },
+  {
+    "index": 1346,
+    "valueOfType": 2,
+    "valueOfSubType": 0,
+    "name": "CUCCIO 8oz/32oz 輕乳液",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "8oz芒果佛手柑乳液", "value": 17194 },
+      { "name": "8oz椰子野薑花乳液", "value": 17191 },
+      { "name": "32oz芒果佛手柑乳液", "value": 17200 },
+      { "name": "32oz椰子野薑花乳液", "value": 17197 },
+      { "name": "32oz蜂蜜牛奶乳液", "value": 17195 },
+      { "name": "32oz薰衣草乳液", "value": 17199 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000690"
+  },
+  {
+    "index": 1347,
+    "valueOfType": 2,
+    "valueOfSubType": 0,
+    "name": "CUCCIO 去角質凝露",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "8oz白檸檬蘆薈去角質", "value": 17213 },
+      { "name": "8oz香草蜜糖去角質", "value": 17214 },
+      { "name": "8oz蜂蜜牛奶去角質", "value": 17211 },
+      { "name": "32oz白檸檬蘆薈去角質", "value": 17217 },
+      { "name": "32oz香草蜜糖去角質", "value": 17218 },
+      { "name": "32oz蜂蜜牛奶去角質", "value": 17215 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000688"
+  },
+  {
     "index": 141,
     "valueOfType": 8,
     "valueOfSubType": 0,
@@ -4541,17 +4621,6 @@
       { "name": "SP-2401迷你海星尖底鑽30顆", "value": 17636 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000683"
-  },
-  {
-    "index": 10,
-    "valueOfType": 5,
-    "valueOfSubType": 3,
-    "name": "建構底膠三合一 古萊麗底膠 底膠",
-    "options": [
-      { "name": "", "value": null },
-      { "name": "古萊麗建構底膠20g", "value": 17624 }
-    ],
-    "href": "https://www.sachianail.com/pitem/M00000682"
   },
   {
     "index": 70,
@@ -4578,7 +4647,7 @@
     "href": "https://www.sachianail.com/pitem/M00000680"
   },
   {
-    "index": 122,
+    "index": 123,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "一次性工具包裝清潔袋 考照專用 封口袋",
@@ -4594,6 +4663,17 @@
       { "name": "盒裝中款(200片)90*165mm", "value": 17586 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000679"
+  },
+  {
+    "index": 30,
+    "valueOfType": 6,
+    "valueOfSubType": 0,
+    "name": "infin.lin 時光蓄電型凝膠燈 增高 液晶顯示 美甲燈 底座",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "Infin.Lin時光蓄電型凝膠燈", "value": 17595 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000677"
   },
   {
     "index": 120,
@@ -4618,7 +4698,6 @@
       { "name": "MO434法式定位輔助線貼紙", "value": 18399 },
       { "name": "MO435法式定位輔助線貼紙", "value": 18397 },
       { "name": "MO436法式定位輔助線貼紙", "value": 18398 },
-      { "name": "H-357法式貼紙", "value": 17535 },
       { "name": "H-358法式貼紙", "value": 17536 },
       { "name": "H-359法式貼紙", "value": 17537 },
       { "name": "H-360法式貼紙", "value": 17538 },
@@ -4704,6 +4783,17 @@
     "href": "https://www.sachianail.com/pitem/M00000670"
   },
   {
+    "index": 42,
+    "valueOfType": 5,
+    "valueOfSubType": 5,
+    "name": "青又 織女星甲油膠 超仙細閃顯白 高密閃粉色膠",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "青又織女星甲油膠", "value": 17131 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000667"
+  },
+  {
     "index": 123,
     "valueOfType": 8,
     "valueOfSubType": 1,
@@ -4737,6 +4827,21 @@
       { "name": "食玩飾品混裝30顆", "value": 17052 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000661"
+  },
+  {
+    "index": 43,
+    "valueOfType": 5,
+    "valueOfSubType": 5,
+    "name": "Cuccio指緣油 指緣保養油 買2.5oz送15ml滴管式 指緣油",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "白檸檬蘆薈15ML-無送小", "value": 17025 },
+      { "name": "芒果佛手柑15ML-無送小", "value": 17027 },
+      { "name": "紅石榴15ML-無送小", "value": 17026 },
+      { "name": "香草蜜糖15ML-無送小", "value": 17024 },
+      { "name": "蜂蜜牛奶15ML-無送小", "value": 17023 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000660"
   },
   {
     "index": 146,
@@ -4775,7 +4880,7 @@
     "href": "https://www.sachianail.com/pitem/M00000659"
   },
   {
-    "index": 123,
+    "index": 124,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "末町週邊 末町 PW洗筆杯 軟木塞杯蓋 雙弧設計洗筆杯 溶劑杯 洗筆杯 美甲用品 美甲材料",
@@ -4799,7 +4904,7 @@
     "href": "https://www.sachianail.com/pitem/M00000656"
   },
   {
-    "index": 124,
+    "index": 125,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "末町週邊 按壓瓶空瓶 凝清容器 空瓶 凝清 酒精 清潔 溶劑瓶 美甲材料 卸甲水瓶",
@@ -4852,7 +4957,7 @@
     "href": "https://www.sachianail.com/pitem/M00000652"
   },
   {
-    "index": 30,
+    "index": 31,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "足部美甲燈 蓄電型美甲燈 NAKANO 美甲店專用美甲燈 支架型 美甲沙發用 腳部美甲燈 美足燈",
@@ -4874,7 +4979,7 @@
     "href": "https://www.sachianail.com/pitem/M00000649"
   },
   {
-    "index": 27,
+    "index": 28,
     "valueOfType": 5,
     "valueOfSubType": 6,
     "name": "末町新包裝功能膠 20g",
@@ -4902,7 +5007,7 @@
     "href": "https://www.sachianail.com/pitem/M00000648"
   },
   {
-    "index": 28,
+    "index": 29,
     "valueOfType": 5,
     "valueOfSubType": 6,
     "name": "末町功能膠 大白瓶甲油膠 甲油瓶功能膠 大白瓶功能膠 基礎功能膠 底膠 上層",
@@ -4937,7 +5042,7 @@
     "href": "https://www.sachianail.com/pitem/M00000646"
   },
   {
-    "index": 42,
+    "index": 44,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "美甲水彩顏料 固態水彩24/12色 固體暈染美甲店專用 色彩繪固態水彩 美甲水彩",
@@ -4990,7 +5095,7 @@
     "href": "https://www.sachianail.com/pitem/M00000641"
   },
   {
-    "index": 1274,
+    "index": 1382,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "台灣現貨 台灣製 HEMALUXE眼霜 粉醉波丹眼周精華 雙眸的美麗，從細節到極致",
@@ -5001,7 +5106,7 @@
     "href": "https://www.sachianail.com/pitem/M00000037"
   },
   {
-    "index": 125,
+    "index": 126,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "魅惑之觸修護霜50g",
@@ -5032,7 +5137,6 @@
       { "name": "TN1619", "value": 13306 },
       { "name": "TN1623", "value": 13309 },
       { "name": "TN1624", "value": 13310 },
-      { "name": "TN1628", "value": 13312 },
       { "name": "TN3434", "value": 13316 },
       { "name": "TN6452", "value": 13318 },
       { "name": "TN6472", "value": 13321 },
@@ -5083,15 +5187,14 @@
     "href": "https://www.sachianail.com/pitem/M00000571"
   },
   {
-    "index": 30,
+    "index": 41,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "日式粉塵機 靜音大吸力",
     "options": [
       { "name": "", "value": null },
       { "name": "AMDMG靜音大吸力粉塵機", "value": 15456 },
-      { "name": "加購濾網一片-AMDMG專用濾網", "value": 15669 },
-      { "name": "加購濾網二片-AMDMG專用濾網", "value": 15670 }
+      { "name": "加購濾網一片-AMDMG專用濾網", "value": 15669 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000568"
   },
@@ -5277,15 +5380,8 @@
       { "name": "浮雕貼紙MO-13", "value": 13596 },
       { "name": "浮雕貼紙MO-14", "value": 13597 },
       { "name": "浮雕貼紙MO-15", "value": 13598 },
-      { "name": "浮雕貼紙MO-18", "value": 13601 },
       { "name": "浮雕貼紙MO-19", "value": 13602 },
-      { "name": "浮雕貼紙MO-20", "value": 13603 },
-      { "name": "浮雕貼紙MO-21", "value": 13604 },
-      { "name": "浮雕貼紙MO-22", "value": 13605 },
       { "name": "浮雕貼紙MO-23", "value": 13606 },
-      { "name": "浮雕貼紙MO-24", "value": 13607 },
-      { "name": "浮雕貼紙MO-29", "value": 13609 },
-      { "name": "浮雕貼紙MO-30", "value": 13610 },
       { "name": "浮雕貼紙MO-46", "value": 13611 },
       { "name": "浮雕貼紙MO-47", "value": 13612 },
       { "name": "浮雕貼紙MO-48", "value": 13613 },
@@ -5460,7 +5556,9 @@
       { "name": "S04蝴蝶結堆鑽2顆一組", "value": 15415 },
       { "name": "S05蝴蝶結堆鑽2顆一組", "value": 15416 },
       { "name": "S11粉紅蝴蝶結【肥方堆鑽】5顆一組", "value": 17608 },
+      { "name": "S12白色蝴蝶結【肥方堆鑽】5顆一組", "value": 17609 },
       { "name": "S13粉紅蝴蝶結【水滴堆鑽】5顆一組", "value": 17610 },
+      { "name": "S14白色蝴蝶結【水滴堆鑽】5顆一組", "value": 17611 },
       { "name": "S15粉紅蝴蝶結【直角堆鑽】5顆一組", "value": 17612 },
       { "name": "S16白色蝴蝶結【直角堆鑽】5顆一組", "value": 17613 },
       { "name": "SP-2437蝶結堆鑽2顆一組", "value": 17675 },
@@ -5475,7 +5573,7 @@
     "href": "https://www.sachianail.com/pitem/M00000561"
   },
   {
-    "index": 43,
+    "index": 45,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "SANSU参穗爆閃星光36色",
@@ -5483,7 +5581,6 @@
       { "name": "", "value": null },
       { "name": "SANSU参穗爆閃星光36色+色卡", "value": 15302 },
       { "name": "爆閃星光膠02", "value": 15327 },
-      { "name": "爆閃星光膠04", "value": 15329 },
       { "name": "爆閃星光膠06", "value": 15331 },
       { "name": "爆閃星光膠10", "value": 15335 },
       { "name": "爆閃星光膠11", "value": 15336 },
@@ -5536,7 +5633,6 @@
       { "name": "#22淺黃尖底馬眼鋯石2*4MM-50顆", "value": 14692 },
       { "name": "#23黑色尖底馬眼鋯石2*4MM-50顆", "value": 14693 },
       { "name": "#24水晶月光尖底馬眼2*4MM-50顆", "value": 14694 },
-      { "name": "#25深紅色尖底馬眼2*4MM-50顆", "value": 14695 },
       { "name": "#26古典玫瑰尖底馬眼2*4MM-50顆", "value": 14696 },
       { "name": "#30白色平底鋯石1.5*3T形-50顆", "value": 15747 },
       { "name": "#35白色-平底鋯石3*3三角形-50顆", "value": 15743 },
@@ -5588,7 +5684,7 @@
     "href": "https://www.sachianail.com/pitem/M00000544"
   },
   {
-    "index": 128,
+    "index": 129,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "蕾絲接袖假袖口",
@@ -5603,7 +5699,7 @@
     "href": "https://www.sachianail.com/pitem/M00000516"
   },
   {
-    "index": 31,
+    "index": 32,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "S1日式無線UV/LED蓄電美甲燈",
@@ -5614,7 +5710,7 @@
     "href": "https://www.sachianail.com/pitem/M00000507"
   },
   {
-    "index": 31,
+    "index": 42,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "雙風扇美甲吸塵器帶LED燈",
@@ -5627,7 +5723,7 @@
     "href": "https://www.sachianail.com/pitem/M00000506"
   },
   {
-    "index": 1291,
+    "index": 1399,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "HOMESPA經典木質調系列",
@@ -5641,7 +5737,7 @@
     "href": "https://www.sachianail.com/pitem/M00000473"
   },
   {
-    "index": 35,
+    "index": 36,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "SNRQI-第三代手枕燈/穿戴甲專用燈",
@@ -5650,14 +5746,13 @@
       { "name": "SNRQI-穿戴甲專用燈", "value": 12361 },
       { "name": "SNRQI-第三代手枕燈", "value": 12362 },
       { "name": "SUN19Z手枕+置物美甲燈", "value": 12363 },
-      { "name": "L6傾斜手枕燈+送手枕", "value": 17300 },
       { "name": "T8手枕燈通用插頭", "value": 12364 },
       { "name": "T9手枕美甲燈", "value": 12365 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000366"
   },
   {
-    "index": 1293,
+    "index": 13101,
     "valueOfType": 2,
     "valueOfSubType": 0,
     "name": "日式山茶花/玫瑰花蝴蝶飾品組合",
@@ -5683,8 +5778,10 @@
       { "name": "08 藍韻【網紅花盤套盒】", "value": 15660 },
       { "name": "8藍椰啵啵寶盒", "value": 11451 },
       { "name": "75號-12格山茶花飾品組合", "value": 11452 },
+      { "name": "76號-12格山茶花飾品組合", "value": 11453 },
       { "name": "78號-12格粉晶蝴蝶水鑽", "value": 11454 },
       { "name": "79號-12格粉鑽蝴蝶珍珠", "value": 11455 },
+      { "name": "80號-12格白蝶極光珍珠", "value": 11456 },
       { "name": "81號-12格異域公主套系", "value": 11457 },
       { "name": "82號-12格公主套系", "value": 11458 },
       { "name": "83號-12格高品珍珠", "value": 11459 },
@@ -5713,13 +5810,15 @@
     "href": "https://www.sachianail.com/pitem/M00000277"
   },
   {
-    "index": 1222,
+    "index": 1223,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "日式美甲原木手枕",
     "options": [
       { "name": "", "value": null },
+      { "name": "加厚款卡其高款手枕", "value": 10637 },
       { "name": "加厚款卡其矮款手枕", "value": 10638 },
+      { "name": "加厚款淺灰高款手枕", "value": 10639 },
       { "name": "加厚款淺灰矮款手枕", "value": 10640 },
       { "name": "加厚款黑色高款手枕", "value": 10641 },
       { "name": "加厚款黑色矮款手枕", "value": 10642 },
@@ -5807,6 +5906,7 @@
       { "name": "", "value": null },
       { "name": "1#FCN日本超耐磨棒 100/100", "value": 9218 },
       { "name": "2#FCN日本超耐磨棒 180/180", "value": 9219 },
+      { "name": "3#FCN真指甲用可彎式薄木磨棒(黑色)", "value": 9220 },
       { "name": "4#FCN日本超耐磨甲棉 100/100", "value": 9221 },
       { "name": "5#FCN日本超耐磨甲棉 180/180", "value": 9222 }
     ],
@@ -6057,7 +6157,6 @@
       { "name": "229號優格系甲油膠", "value": 8587 },
       { "name": "238號雲朵系列甲油膠", "value": 8588 },
       { "name": "239號雲朵系列甲油膠", "value": 8589 },
-      { "name": "240號雲朵系列甲油膠", "value": 8590 },
       { "name": "241號雲朵系列甲油膠", "value": 8591 },
       { "name": "242號雲朵系列甲油膠", "value": 8592 },
       { "name": "243號雲朵系列甲油膠", "value": 8593 },
@@ -6098,7 +6197,6 @@
       { "name": "Infin.Lin209裸透碎鑽膠", "value": 8618 },
       { "name": "Infin.Lin216透色甲油膠", "value": 8619 },
       { "name": "Infin.Lin218透色甲油膠", "value": 8621 },
-      { "name": "Infin.Lin219透色甲油膠", "value": 8622 },
       { "name": "Infin.Lin221透色甲油膠", "value": 8624 },
       { "name": "Infin.Lin222透色甲油膠", "value": 8625 },
       { "name": "Infin.Lin223透色甲油膠", "value": 8626 },
@@ -6216,7 +6314,6 @@
       { "name": "IS15糖霜微雕膠", "value": 8324 },
       { "name": "IS16糖霜微雕膠", "value": 8325 },
       { "name": "IS17糖霜微雕膠", "value": 8326 },
-      { "name": "IS18糖霜微雕膠", "value": 8327 },
       { "name": "IS19糖霜微雕膠", "value": 8328 },
       { "name": "IS20糖霜微雕膠", "value": 8329 },
       { "name": "IS21糖霜微雕膠", "value": 8330 }
@@ -6276,17 +6373,13 @@
       { "name": "", "value": null },
       { "name": "SANSU60色一套+色版", "value": 8142 },
       { "name": "SANSU60色一套+色版+壓克力7層", "value": 8143 },
-      { "name": "奶白布丁5號", "value": 18073 },
       { "name": "奶白布丁6號", "value": 18074 },
-      { "name": "奶白布丁10號", "value": 18078 },
       { "name": "奶白布丁11號", "value": 18079 },
-      { "name": "奶白布丁13號", "value": 18081 },
       { "name": "奶白布丁14號", "value": 18082 },
       { "name": "安可拉紅1號", "value": 18054 },
       { "name": "安可拉紅2號", "value": 18055 },
       { "name": "安可拉紅7號", "value": 18060 },
       { "name": "安可拉紅10號", "value": 18063 },
-      { "name": "安可拉紅11號", "value": 18064 },
       { "name": "安可拉紅12號", "value": 18065 },
       { "name": "安可拉紅13號", "value": 18066 },
       { "name": "安可拉紅14號", "value": 18067 },
@@ -6352,9 +6445,7 @@
       { "name": "叁穗奶白布丁15色+塗好色卡", "value": 18084 },
       { "name": "叁穗安可拉紅15色+塗好色卡", "value": 17890 },
       { "name": "叁穗底膠", "value": 8270 },
-      { "name": "叁穗焦糖可可15色+塗好色卡", "value": 17988 },
       { "name": "叁穗鋼化上層", "value": 8271 },
-      { "name": "焦糖可可2號", "value": 18040 },
       { "name": "焦糖可可6號", "value": 18044 },
       { "name": "焦糖可可7號", "value": 18045 },
       { "name": "焦糖可可9號", "value": 18047 },
@@ -6367,7 +6458,7 @@
     "href": "https://www.sachianail.com/pitem/M00000006"
   },
   {
-    "index": 11,
+    "index": 10,
     "valueOfType": 5,
     "valueOfSubType": 3,
     "name": "古萊麗免洗四合一",
@@ -6379,7 +6470,7 @@
     "href": "https://www.sachianail.com/pitem/M00000471"
   },
   {
-    "index": 12,
+    "index": 11,
     "valueOfType": 5,
     "valueOfSubType": 3,
     "name": "延甲片古萊麗/格蘿莉 /芭比幻影指膜 延長片 延甲 凝膠透明指模250張 美甲延甲片",
@@ -6393,12 +6484,13 @@
     "href": "https://www.sachianail.com/pitem/M00000052"
   },
   {
-    "index": 14,
+    "index": 13,
     "valueOfType": 5,
     "valueOfSubType": 3,
     "name": "古萊麗 GULAURI 可卸無痛延長膠 建構膠/上層 模特建構 黏鑽上層",
     "options": [
       { "name": "", "value": null },
+      { "name": "3入一組可卸延長建構膠50ML", "value": 9268 },
       { "name": "大罐-古萊麗硬式黏鑽上層50ML", "value": 9273 },
       { "name": "小罐3入一組-古萊麗硬式黏鑽上層5ML", "value": 9274 },
       { "name": "小罐-古萊麗硬式黏鑽上層5ML", "value": 9275 },
@@ -6409,7 +6501,7 @@
     "href": "https://www.sachianail.com/pitem/M00000044"
   },
   {
-    "index": 15,
+    "index": 14,
     "valueOfType": 5,
     "valueOfSubType": 3,
     "name": "古萊麗小妖精6色一組+色卡 亮片膠 箔金膠 柏金膠",
@@ -6490,7 +6582,7 @@
     "href": "https://www.sachianail.com/pitem/M00000053"
   },
   {
-    "index": 44,
+    "index": 46,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "3D軟糖膠",
@@ -6501,7 +6593,7 @@
     "href": "https://www.sachianail.com/pitem/M00000472"
   },
   {
-    "index": 45,
+    "index": 47,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "高品質魔鏡粉 鏡面粉 固態粉",
@@ -6539,7 +6631,7 @@
     "href": "https://www.sachianail.com/pitem/M00000237"
   },
   {
-    "index": 47,
+    "index": 49,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "日系琥珀色膠",
@@ -6559,7 +6651,7 @@
     "href": "https://www.sachianail.com/pitem/M00000154"
   },
   {
-    "index": 410,
+    "index": 412,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "邁威雅硬甲油 MANGO硬甲劑 強健硬甲油 讓指甲休息 草本硬甲油 不需要照燈 美國製造/台灣製造",
@@ -6571,7 +6663,7 @@
     "href": "https://www.sachianail.com/pitem/M00000048"
   },
   {
-    "index": 411,
+    "index": 413,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "邁葳雅指緣軟化劑 平衡液 指緣軟化液 甲面乾燥劑 免泡水",
@@ -6582,7 +6674,7 @@
     "href": "https://www.sachianail.com/pitem/M00000047"
   },
   {
-    "index": 412,
+    "index": 414,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "HEMALUXE指甲修護液30ML 修護甲面液 呵護修護甲面 改善指甲 非藥品",
@@ -6593,7 +6685,7 @@
     "href": "https://www.sachianail.com/pitem/M00000040"
   },
   {
-    "index": 413,
+    "index": 415,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "BLING指緣軟化劑 中文標籤 指緣軟化液 檢定用 可考試 指緣軟化劑 軟皮膏 軟皮劑",
@@ -6604,7 +6696,7 @@
     "href": "https://www.sachianail.com/pitem/M00000035"
   },
   {
-    "index": 414,
+    "index": 416,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "美國MANGO出水芙蓉長效指緣油 1/8oz 1/8oz 美甲送客禮物",
@@ -6615,7 +6707,7 @@
     "href": "https://www.sachianail.com/pitem/M00000034"
   },
   {
-    "index": 415,
+    "index": 417,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "珍珠貝母螺紋膠 珍珠膠 罐裝膠",
@@ -6639,7 +6731,7 @@
     "href": "https://www.sachianail.com/pitem/M00000024"
   },
   {
-    "index": 416,
+    "index": 418,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "莎夏金屬彩繪膠 金銀色鏡面指甲油膠 金屬銀拉線膠 日式高亮金屬彩繪膠銀色甲油膠",
@@ -6655,7 +6747,7 @@
     "href": "https://www.sachianail.com/pitem/M00000023"
   },
   {
-    "index": 417,
+    "index": 419,
     "valueOfType": 5,
     "valueOfSubType": 5,
     "name": "美甲石膏膠 免洗 彩繪雕花 美甲用品 雕花膠 凝膠 造型石膏膠",
@@ -6672,7 +6764,7 @@
     "href": "https://www.sachianail.com/pitem/M00000022"
   },
   {
-    "index": 32,
+    "index": 33,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "超閃水鑽半月美甲桌燈",
@@ -6684,7 +6776,7 @@
     "href": "https://www.sachianail.com/pitem/M00000505"
   },
   {
-    "index": 33,
+    "index": 34,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "放大鏡美容/美甲/美睫 冷光燈",
@@ -6695,7 +6787,7 @@
     "href": "https://www.sachianail.com/pitem/M00000385"
   },
   {
-    "index": 34,
+    "index": 35,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "S7瓷白美甲燈 298W 72燈珠",
@@ -6707,7 +6799,7 @@
     "href": "https://www.sachianail.com/pitem/M00000368"
   },
   {
-    "index": 36,
+    "index": 37,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "紅光美甲燈 SUNX15",
@@ -6718,7 +6810,7 @@
     "href": "https://www.sachianail.com/pitem/M00000364"
   },
   {
-    "index": 37,
+    "index": 38,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "頂級美甲燈80W/180W/插頭/配件",
@@ -6737,7 +6829,7 @@
     "href": "https://www.sachianail.com/pitem/M00000363"
   },
   {
-    "index": 38,
+    "index": 39,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "日系磨砂奶茶色美甲燈",
@@ -6749,7 +6841,7 @@
     "href": "https://www.sachianail.com/pitem/M00000362"
   },
   {
-    "index": 39,
+    "index": 310,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "日式無線充電式LED美甲燈 蓄電款/插電款",
@@ -6763,7 +6855,7 @@
     "href": "https://www.sachianail.com/pitem/M00000361"
   },
   {
-    "index": 310,
+    "index": 311,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "SUN3/SUN4S 48W美甲燈/配件",
@@ -6775,7 +6867,7 @@
     "href": "https://www.sachianail.com/pitem/M00000350"
   },
   {
-    "index": 311,
+    "index": 312,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "SUN C4 PLUS凝膠燈",
@@ -6786,7 +6878,7 @@
     "href": "https://www.sachianail.com/pitem/M00000341"
   },
   {
-    "index": 312,
+    "index": 313,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "蓄電/插電 蓮花貼甲片燈",
@@ -6798,7 +6890,7 @@
     "href": "https://www.sachianail.com/pitem/M00000178"
   },
   {
-    "index": 313,
+    "index": 314,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "美甲手指燈",
@@ -6807,13 +6899,12 @@
       { "name": "白色蛋殼手指燈+USB線一條", "value": 10555 },
       { "name": "玫瑰金藍光手指燈", "value": 10559 },
       { "name": "粉色蛋殼手指燈+USB線一條", "value": 10560 },
-      { "name": "馬卡龍手指燈-紫", "value": 10563 },
       { "name": "馬卡龍手指燈-綠", "value": 10565 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000176"
   },
   {
-    "index": 314,
+    "index": 315,
     "valueOfType": 6,
     "valueOfSubType": 0,
     "name": "日式金屬一字燈/燈架",
@@ -6831,7 +6922,7 @@
     "href": "https://www.sachianail.com/pitem/M00000177"
   },
   {
-    "index": 32,
+    "index": 43,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "美甲過濾棉 一包100片",
@@ -6843,7 +6934,7 @@
     "href": "https://www.sachianail.com/pitem/M00000390"
   },
   {
-    "index": 33,
+    "index": 44,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "蓄電式粉塵機",
@@ -6856,7 +6947,7 @@
     "href": "https://www.sachianail.com/pitem/M00000360"
   },
   {
-    "index": 34,
+    "index": 45,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "2風扇吸塵器送吸塵袋2個",
@@ -6867,7 +6958,7 @@
     "href": "https://www.sachianail.com/pitem/M00000357"
   },
   {
-    "index": 35,
+    "index": 46,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "JSDA杰事達吸塵器/配件",
@@ -6885,20 +6976,19 @@
     "href": "https://www.sachianail.com/pitem/M00000356"
   },
   {
-    "index": 36,
+    "index": 47,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "MS501白色可調速吸塵器",
     "options": [
       { "name": "", "value": null },
-      { "name": "MS501白色可調速吸塵器", "value": 12293 },
       { "name": "MS501白色可調速吸塵器+濾網2片", "value": 15556 },
       { "name": "加購濾網一片-MS501", "value": 12294 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000355"
   },
   {
-    "index": 37,
+    "index": 48,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "日式美甲吸塵器",
@@ -6915,7 +7005,7 @@
     "href": "https://www.sachianail.com/pitem/M00000354"
   },
   {
-    "index": 38,
+    "index": 49,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "觸碰式液晶顯示美甲吸塵器",
@@ -6928,18 +7018,7 @@
     "href": "https://www.sachianail.com/pitem/M00000353"
   },
   {
-    "index": 39,
-    "valueOfType": 6,
-    "valueOfSubType": 1,
-    "name": "LUGX續電美甲吸塵器",
-    "options": [
-      { "name": "", "value": null },
-      { "name": "LUGX專用濾網一片", "value": 12272 }
-    ],
-    "href": "https://www.sachianail.com/pitem/M00000351"
-  },
-  {
-    "index": 310,
+    "index": 410,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "充電筆式磨甲機/插頭",
@@ -6952,12 +7031,15 @@
       { "name": "馬卡龍磨甲機-紫羅蘭", "value": 17907 },
       { "name": "馬卡龍磨甲機-螢光綠", "value": 17908 },
       { "name": "馬卡龍磨甲機-櫻花粉", "value": 17906 },
+      { "name": "單獨-客訂白色主機一台", "value": 12260 },
+      { "name": "單獨-客訂粉色主機一台", "value": 12261 },
+      { "name": "單獨-客訂黑色主機一台", "value": 12262 },
       { "name": "黑色升級版本磨甲機一組", "value": 15870 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000348"
   },
   {
-    "index": 311,
+    "index": 411,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "LUGX磨甲機系列",
@@ -6968,7 +7050,7 @@
     "href": "https://www.sachianail.com/pitem/M00000347"
   },
   {
-    "index": 312,
+    "index": 412,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "新品專業磨甲機",
@@ -6979,7 +7061,7 @@
     "href": "https://www.sachianail.com/pitem/M00000346"
   },
   {
-    "index": 313,
+    "index": 413,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "磨甲機系列",
@@ -6987,10 +7069,15 @@
       { "name": "", "value": null },
       { "name": "二代磨甲機白色+送陶瓷磨頭x1", "value": 12116 },
       { "name": "二代磨甲機灰色+送陶瓷磨頭x1", "value": 12117 },
+      { "name": "二代磨甲機配件-連接線一條", "value": 12118 },
       { "name": "二代磨甲機黑色+送陶瓷磨頭x1", "value": 12119 },
       { "name": "二代磨甲機漸變粉+送陶瓷磨頭x1", "value": 12120 },
       { "name": "單獨販售-二代白色磨筆", "value": 12124 },
       { "name": "單獨販售-二代灰色磨筆", "value": 12125 },
+      { "name": "單獨販售-二代黑色磨筆", "value": 12126 },
+      { "name": "單獨販售-二代漸變粉磨筆", "value": 12127 },
+      { "name": "單獨販售主機-二代白", "value": 12128 },
+      { "name": "單獨販售主機-二代灰", "value": 12129 },
       { "name": "單獨販售主機-二代黑", "value": 12130 },
       { "name": "單獨販售主機-二代漸變粉", "value": 12131 },
       { "name": "磨甲機TYPE-C充電線", "value": 12134 }
@@ -6998,7 +7085,7 @@
     "href": "https://www.sachianail.com/pitem/M00000340"
   },
   {
-    "index": 314,
+    "index": 414,
     "valueOfType": 6,
     "valueOfSubType": 1,
     "name": "新款電動磨腳機附磨片",
@@ -7018,6 +7105,44 @@
       { "name": "蓄電款磨腳器-USB專用插頭", "value": 12112 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000339"
+  },
+  {
+    "index": 415,
+    "valueOfType": 6,
+    "valueOfSubType": 1,
+    "name": "G.凱洛賽兒 GC Air 攜帶型磨甲機 保固一年 攜帶型磨甲機 專業磨甲機 官方經銷商",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "GC Air 攜帶型磨甲機-玫瑰金", "value": 8651 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000018"
+  },
+  {
+    "index": 417,
+    "valueOfType": 6,
+    "valueOfSubType": 1,
+    "name": "DC方塊機磨甲機 正品G.凱洛賽兒 保固12個月 攜帶型磨甲機 專業磨甲機 官方經銷商",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "DC Mini 攜帶型磨甲機-黑糖奶", "value": 16327 },
+      { "name": "DC方塊-單獨手柄", "value": 8376 },
+      { "name": "DC方塊磨甲機二代奶茶色+10入防塵套", "value": 8377 },
+      { "name": "DC方塊磨甲機二代奶茶色+粉色收納盒", "value": 11748 },
+      { "name": "DC方塊磨甲機二代奶茶色+彩色防塵套", "value": 8378 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000015"
+  },
+  {
+    "index": 418,
+    "valueOfType": 6,
+    "valueOfSubType": 1,
+    "name": "正品G凱洛賽兒 305攜帶型磨甲機 保固6個月 攜帶型磨甲機 專業磨甲機 官方經銷商",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "白色-G凱洛賽兒305攜帶型磨甲機", "value": 8087 },
+      { "name": "粉色-G凱洛賽兒305攜帶型磨甲機", "value": 8089 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000002"
   },
   {
     "index": 66,
@@ -7244,17 +7369,6 @@
     "index": 617,
     "valueOfType": 7,
     "valueOfSubType": 0,
-    "name": "日式金箔水晶冰山筆架 美甲筆架 冰透雪山筆架 美甲拍照道具 紙鎮",
-    "options": [
-      { "name": "", "value": null },
-      { "name": "金箔琥珀冰山筆架", "value": 10029 }
-    ],
-    "href": "https://www.sachianail.com/pitem/M00000079"
-  },
-  {
-    "index": 618,
-    "valueOfType": 7,
-    "valueOfSubType": 0,
     "name": "美甲黏鑽筆 雙頭點鑽蠟筆 雙頭點鑽筆 美甲筆點蠟筆 貼鑽筆 移鑽筆 軟蠟黏鑽筆",
     "options": [
       { "name": "", "value": null },
@@ -7268,7 +7382,7 @@
     "href": "https://www.sachianail.com/pitem/M00000077"
   },
   {
-    "index": 619,
+    "index": 618,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "水晶黏鑽筆 原木黏鑽筆 點鑽筆 拉線筆 點珠筆 畫線筆 黏鑽用",
@@ -7280,7 +7394,7 @@
     "href": "https://www.sachianail.com/pitem/M00000076"
   },
   {
-    "index": 620,
+    "index": 619,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "鉛筆點鑽筆 點鑽筆 黏鑽筆",
@@ -7291,7 +7405,7 @@
     "href": "https://www.sachianail.com/pitem/M00000075"
   },
   {
-    "index": 621,
+    "index": 620,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "日本美甲筆 水晶美甲筆 彩虹筆刷組 美甲筆 拉線 畫花筆 雕花筆 美甲凝膠筆 馬卡龍",
@@ -7310,21 +7424,20 @@
     "href": "https://www.sachianail.com/pitem/M00000074"
   },
   {
-    "index": 622,
+    "index": 621,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "美甲石英筆 去除死皮 甘皮推 死皮推",
     "options": [
       { "name": "", "value": null },
       { "name": "30號米白桿-雙頭石英筆", "value": 17602 },
-      { "name": "31號黑色桿-雙頭石英筆", "value": 17603 },
       { "name": "白色石英筆", "value": 9996 },
       { "name": "黑色石英筆", "value": 9997 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000073"
   },
   {
-    "index": 623,
+    "index": 622,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "美甲矽膠筆雕刻壓花筆 雙頭可用 原木矽膠筆雕刻壓花筆 鏡面粉專用筆 矽膠筆 壓花筆",
@@ -7337,7 +7450,7 @@
     "href": "https://www.sachianail.com/pitem/M00000072"
   },
   {
-    "index": 624,
+    "index": 623,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "水晶漸變筆 美甲筆 彩繪筆 暈染筆",
@@ -7348,7 +7461,7 @@
     "href": "https://www.sachianail.com/pitem/M00000071"
   },
   {
-    "index": 625,
+    "index": 624,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "美甲壓花筆 橡膠壓花筆 美甲工具 轉印壓花筆",
@@ -7359,7 +7472,7 @@
     "href": "https://www.sachianail.com/pitem/M00000070"
   },
   {
-    "index": 626,
+    "index": 625,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "日系美甲筆蓋 凝膠筆蓋 不透光金屬筆蓋 美甲收納 凝膠筆 平筆 圓筆 美甲筆蓋",
@@ -7378,7 +7491,7 @@
     "href": "https://www.sachianail.com/pitem/M00000069"
   },
   {
-    "index": 627,
+    "index": 626,
     "valueOfType": 7,
     "valueOfSubType": 0,
     "name": "FCN美甲筆 彩繪筆 凝膠筆 圓筆 拉線筆 美甲工具 高階美甲筆 台灣製",
@@ -7409,7 +7522,7 @@
     "href": "https://www.sachianail.com/pitem/M00000203"
   },
   {
-    "index": 1220,
+    "index": 1221,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "延甲指模500片",
@@ -7420,7 +7533,7 @@
     "href": "https://www.sachianail.com/pitem/M00000198"
   },
   {
-    "index": 1221,
+    "index": 1222,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "藍色美甲延長紙托50/100片",
@@ -7529,6 +7642,24 @@
       { "name": "莎夏甲片-短梯XS", "value": 10241 },
       { "name": "莎夏甲片-短梯S", "value": 10242 },
       { "name": "莎夏甲片-短梯M", "value": 10243 },
+      { "name": "莎夏穿戴甲-中橢圓#S", "value": 18438 },
+      { "name": "莎夏穿戴甲-中橢圓#M", "value": 18439 },
+      { "name": "莎夏穿戴甲-中橢圓#L", "value": 18440 },
+      { "name": "莎夏穿戴甲-長尖#XS", "value": 18450 },
+      { "name": "莎夏穿戴甲-長尖#S", "value": 18451 },
+      { "name": "莎夏穿戴甲-長尖#M", "value": 18452 },
+      { "name": "莎夏穿戴甲-短方圓#S", "value": 18447 },
+      { "name": "莎夏穿戴甲-短方圓#M", "value": 18448 },
+      { "name": "莎夏穿戴甲-短方圓#L", "value": 18449 },
+      { "name": "莎夏穿戴甲-超短梯#S", "value": 18435 },
+      { "name": "莎夏穿戴甲-超短梯#M", "value": 18436 },
+      { "name": "莎夏穿戴甲-超短梯#L", "value": 18437 },
+      { "name": "莎夏穿戴甲-新短方#S", "value": 18441 },
+      { "name": "莎夏穿戴甲-新短方#M", "value": 18442 },
+      { "name": "莎夏穿戴甲-新短方#L", "value": 18443 },
+      { "name": "莎夏穿戴甲-新短芭蕾#S", "value": 18444 },
+      { "name": "莎夏穿戴甲-新短芭蕾#M", "value": 18445 },
+      { "name": "莎夏穿戴甲-新短芭蕾#L", "value": 18446 },
       { "name": "輔助線長尖形320片", "value": 18388 },
       { "name": "輔助線長梯型320片", "value": 18389 },
       { "name": "磨砂款240片一盒中方圓款", "value": 10247 },
@@ -7576,7 +7707,7 @@
     "href": "https://www.sachianail.com/pitem/M00000095"
   },
   {
-    "index": 1214,
+    "index": 1215,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "卸甲棉片裝洗甲棉 卸甲棉 除膠棉",
@@ -7690,7 +7821,6 @@
       { "name": "D23甘皮剪", "value": 10466 },
       { "name": "D27甘皮剪", "value": 10467 },
       { "name": "D28甘皮剪", "value": 10468 },
-      { "name": "NGHIA 小剪刀 ES.05", "value": 15934 },
       { "name": "NGHIA 死皮剪 D501", "value": 10469 },
       { "name": "NGHIA 死皮剪 D555", "value": 10470 },
       { "name": "NGHIA死皮剪C112", "value": 10471 },
@@ -7773,7 +7903,9 @@
       { "name": "小平口指甲剪-紫", "value": 18376 },
       { "name": "防飛濺款-香檳色大號指甲剪", "value": 10116 },
       { "name": "防飛濺款-槍黑色大號指甲剪", "value": 10117 },
+      { "name": "咖啡色防飛濺指甲剪", "value": 18460 },
       { "name": "紅色-大開口剪", "value": 10118 },
+      { "name": "原木柄防飛濺指甲剪", "value": 18461 },
       { "name": "斜口指甲剪-紅", "value": 17888 },
       { "name": "斜口指甲剪-紫", "value": 17887 },
       { "name": "韓國777金色指甲剪", "value": 10119 },
@@ -7818,7 +7950,20 @@
     "href": "https://www.sachianail.com/pitem/M00000082"
   },
   {
-    "index": 126,
+    "index": 120,
+    "valueOfType": 7,
+    "valueOfSubType": 4,
+    "name": "美甲印章吸油紙",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "美甲印章吸油紙-粉", "value": 18469 },
+      { "name": "美甲印章吸油紙-黑", "value": 18470 },
+      { "name": "替換吸油紙", "value": 18468 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000750"
+  },
+  {
+    "index": 127,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "顧客資料卡",
@@ -7829,18 +7974,21 @@
     "href": "https://www.sachianail.com/pitem/M00000555"
   },
   {
-    "index": 127,
+    "index": 128,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "日式原木網紅美甲桌椅組",
     "options": [
       { "name": "", "value": null },
-      { "name": "NG-100公分長原木美甲桌", "value": 17666 }
+      { "name": "NG-100公分長原木美甲桌", "value": 17666 },
+      { "name": "原木美甲Z字椅", "value": 14758 },
+      { "name": "高品質原木美甲推車", "value": 15907 },
+      { "name": "高品質原木旋轉椅", "value": 14759 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000547"
   },
   {
-    "index": 129,
+    "index": 1210,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "蓮花水晶洗筆杯",
@@ -7852,7 +8000,7 @@
     "href": "https://www.sachianail.com/pitem/M00000392"
   },
   {
-    "index": 1210,
+    "index": 1211,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "美甲瓶",
@@ -7868,7 +8016,7 @@
     "href": "https://www.sachianail.com/pitem/M00000391"
   },
   {
-    "index": 1211,
+    "index": 1212,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "加熱長版手套 版電熱按摩足套",
@@ -7880,7 +8028,7 @@
     "href": "https://www.sachianail.com/pitem/M00000375"
   },
   {
-    "index": 1212,
+    "index": 1213,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "一次性防水美甲桌布",
@@ -7892,7 +8040,7 @@
     "href": "https://www.sachianail.com/pitem/M00000374"
   },
   {
-    "index": 1213,
+    "index": 1214,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "美甲魔力棉片",
@@ -7903,7 +8051,7 @@
     "href": "https://www.sachianail.com/pitem/M00000372"
   },
   {
-    "index": 1215,
+    "index": 1216,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "充電線1/2/3米/發光/尼龍款",
@@ -7925,7 +8073,7 @@
     "href": "https://www.sachianail.com/pitem/M00000336"
   },
   {
-    "index": 1216,
+    "index": 1217,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "原木花紋玻璃洗筆杯",
@@ -7936,7 +8084,7 @@
     "href": "https://www.sachianail.com/pitem/M00000207"
   },
   {
-    "index": 1217,
+    "index": 1218,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "玻璃壓瓶",
@@ -7950,7 +8098,7 @@
     "href": "https://www.sachianail.com/pitem/M00000205"
   },
   {
-    "index": 1218,
+    "index": 1219,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "不鏽鋼延甲定型夾",
@@ -7967,7 +8115,7 @@
     "href": "https://www.sachianail.com/pitem/M00000204"
   },
   {
-    "index": 1219,
+    "index": 1220,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "美甲六角海綿",
@@ -7979,7 +8127,7 @@
     "href": "https://www.sachianail.com/pitem/M00000199"
   },
   {
-    "index": 1223,
+    "index": 1224,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "奶油風美甲手枕+墊子一組",
@@ -7993,7 +8141,7 @@
     "href": "https://www.sachianail.com/pitem/M00000189"
   },
   {
-    "index": 1224,
+    "index": 1225,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "拍膠漸變暈染筆",
@@ -8004,18 +8152,19 @@
     "href": "https://www.sachianail.com/pitem/M00000175"
   },
   {
-    "index": 1225,
+    "index": 1226,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "磁吸款18格調色盤",
     "options": [
       { "name": "", "value": null },
+      { "name": "NG小刮傷-磁吸款18格調色盤", "value": 10532 },
       { "name": "磁吸款18格調色盤", "value": 10533 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000174"
   },
   {
-    "index": 1226,
+    "index": 1227,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "日式鏡面玻璃調色盤",
@@ -8031,7 +8180,7 @@
     "href": "https://www.sachianail.com/pitem/M00000173"
   },
   {
-    "index": 1227,
+    "index": 1228,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "仿瑪瑙調色盤",
@@ -8051,7 +8200,7 @@
     "href": "https://www.sachianail.com/pitem/M00000172"
   },
   {
-    "index": 1228,
+    "index": 1229,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "一次性胸貼",
@@ -8063,7 +8212,7 @@
     "href": "https://www.sachianail.com/pitem/M00000166"
   },
   {
-    "index": 1229,
+    "index": 1230,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "工作圍裙",
@@ -8077,7 +8226,7 @@
     "href": "https://www.sachianail.com/pitem/M00000151"
   },
   {
-    "index": 1230,
+    "index": 1231,
     "valueOfType": 7,
     "valueOfSubType": 4,
     "name": "美甲手套",
@@ -8141,17 +8290,6 @@
     "href": "https://www.sachianail.com/pitem/M00000130"
   },
   {
-    "index": 728,
-    "valueOfType": 7,
-    "valueOfSubType": 8,
-    "name": "美甲50格/25格展示盒",
-    "options": [
-      { "name": "", "value": null },
-      { "name": "25格收納盒", "value": 9689 }
-    ],
-    "href": "https://www.sachianail.com/pitem/M00000129"
-  },
-  {
     "index": 1237,
     "valueOfType": 7,
     "valueOfSubType": 4,
@@ -8200,7 +8338,6 @@
     "name": "美甲膠帶 美甲美紋紙 不粘膠 鏡面粉專用膠帶 紙膠帶 透氣膠帶 美睫膠帶 睫毛膠帶",
     "options": [
       { "name": "", "value": null },
-      { "name": "黑膠帶-寬2MM*20M", "value": 15920 },
       { "name": "寬5mm*20M", "value": 9675 },
       { "name": "寬10MM*20M", "value": 9676 }
     ],
@@ -8230,7 +8367,6 @@
     "options": [
       { "name": "", "value": null },
       { "name": "三代易剝離果凍貼24貼", "value": 17746 },
-      { "name": "穿戴甲工具包四件套", "value": 17747 },
       { "name": "黃膠款一片24貼", "value": 9649 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000121"
@@ -8249,6 +8385,7 @@
       { "name": "30粒裝藍色黏土", "value": 17892 },
       { "name": "水晶底座加購3顆", "value": 9627 },
       { "name": "白色款練習甲托組合", "value": 9629 },
+      { "name": "玫瑰金練習款甲托組合", "value": 9630 },
       { "name": "金色款練習甲托組合", "value": 9631 },
       { "name": "美甲練習底座粉", "value": 12852 },
       { "name": "原木波浪底座+10金甲托（8大2小）", "value": 17832 },
@@ -8263,6 +8400,9 @@
       { "name": "黑色款練習甲托組合", "value": 18085 },
       { "name": "綠色萬用黏土一盒", "value": 9640 },
       { "name": "銀色練習款甲托組合", "value": 9641 },
+      { "name": "壓克力甲托-正方形", "value": 18462 },
+      { "name": "壓克力甲托-異形", "value": 18465 },
+      { "name": "壓克力甲托-圓形", "value": 18464 },
       { "name": "壓克力長條底座", "value": 9642 },
       { "name": "藍色萬用黏土一盒", "value": 9643 }
     ],
@@ -8356,6 +8496,7 @@
       { "name": "13#巴洛克貝殼珍珠", "value": 10155 },
       { "name": "14#彩色原宿珍珠", "value": 10156 },
       { "name": "15#彩色六邊形", "value": 10157 },
+      { "name": "17#黑白石紋", "value": 10158 },
       { "name": "19#方形方塊", "value": 10160 },
       { "name": "20#水滴鑽", "value": 10161 },
       { "name": "22#輕奢金", "value": 10163 },
@@ -8562,9 +8703,12 @@
     "name": "美甲粉塵刷",
     "options": [
       { "name": "", "value": null },
+      { "name": "戒指小白刷", "value": 17043 },
+      { "name": "戒指小粉刷", "value": 17044 },
       { "name": "粉色小牛角刷", "value": 9775 },
       { "name": "粉色圓頭刷", "value": 9776 },
-      { "name": "透明-指甲刷粉塵刷", "value": 9777 }
+      { "name": "透明-指甲刷粉塵刷", "value": 9777 },
+      { "name": "黑色-前置處理粉塵刷", "value": 9778 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000141"
   },
@@ -8622,7 +8766,25 @@
     "href": "https://www.sachianail.com/pitem/M00000005"
   },
   {
-    "index": 20,
+    "index": 30,
+    "valueOfType": 7,
+    "valueOfSubType": 6,
+    "name": "高級鎢鋼 三合一卸甲磨頭",
+    "options": [
+      { "name": "", "value": null },
+      { "name": "M中磨紋鎢鋼頭", "value": 10847 },
+      { "name": "205傘型-中磨紋鎢鋼頭", "value": 18403 },
+      { "name": "235#M三合一交叉齒-中齒", "value": 18431 },
+      { "name": "235#F三合一交叉齒-細齒", "value": 18430 },
+      { "name": "C粗磨紋鎢鋼頭", "value": 10849 },
+      { "name": "F細磨紋鎢鋼頭", "value": 10850 },
+      { "name": "XC特粗磨紋鎢鋼頭", "value": 10851 },
+      { "name": "XF特細磨紋鎢鋼頭", "value": 10852 }
+    ],
+    "href": "https://www.sachianail.com/pitem/M00000749"
+  },
+  {
+    "index": 31,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "迷你砂圈3.1mm/3mm小砂圈轉軸",
@@ -8642,7 +8804,7 @@
     "href": "https://www.sachianail.com/pitem/M00000222"
   },
   {
-    "index": 21,
+    "index": 32,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "Sa Chia特製鎢鋼卸甲磨頭",
@@ -8655,12 +8817,13 @@
       { "name": "Sa Chia特製鎢鋼卸甲磨頭-F", "value": 10893 },
       { "name": "Sa Chia特製鎢鋼卸甲磨頭-XC", "value": 10894 },
       { "name": "Sa Chia特製鎢鋼卸甲磨頭-XF", "value": 10895 },
-      { "name": "五合一錐形鎢鋼卸甲磨頭", "value": 18434 }
+      { "name": "五合一錐形鎢鋼卸甲磨頭", "value": 18434 },
+      { "name": "闆娘推薦款卸鑽磨頭", "value": 18524 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000221"
   },
   {
-    "index": 22,
+    "index": 33,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "金剛砂磨頭.俄羅斯磨頭.保養磨頭",
@@ -8698,7 +8861,7 @@
     "href": "https://www.sachianail.com/pitem/M00000220"
   },
   {
-    "index": 23,
+    "index": 34,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "卸鑽磨頭 保養磨頭 卸除鑽飾 卸鑽 保養磨頭 去硬皮磨頭 鎢鋼磨頭 保養磨頭 俄式磨頭 美甲磨頭",
@@ -8716,7 +8879,7 @@
     "href": "https://www.sachianail.com/pitem/M00000219"
   },
   {
-    "index": 24,
+    "index": 35,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "高級鎢鋼磨頭",
@@ -8734,7 +8897,7 @@
     "href": "https://www.sachianail.com/pitem/M00000218"
   },
   {
-    "index": 25,
+    "index": 36,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "陶瓷磨頭",
@@ -8761,7 +8924,7 @@
     "href": "https://www.sachianail.com/pitem/M00000217"
   },
   {
-    "index": 26,
+    "index": 37,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "磨頭六件組",
@@ -8772,7 +8935,7 @@
     "href": "https://www.sachianail.com/pitem/M00000216"
   },
   {
-    "index": 27,
+    "index": 38,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "俄羅斯磨頭 美甲金剛石打磨頭",
@@ -8800,7 +8963,7 @@
     "href": "https://www.sachianail.com/pitem/M00000215"
   },
   {
-    "index": 28,
+    "index": 39,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "美甲打磨砂圈軸承",
@@ -8812,7 +8975,7 @@
     "href": "https://www.sachianail.com/pitem/M00000213"
   },
   {
-    "index": 29,
+    "index": 310,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "套裝組磨頭",
@@ -8830,13 +8993,14 @@
       { "name": "ZH-01磨頭10支套裝", "value": 10754 },
       { "name": "ZH-02磨頭10支套裝", "value": 10755 },
       { "name": "ZH-03磨頭10支套裝", "value": 10756 },
+      { "name": "ZH-04磨頭10支套裝", "value": 10757 },
       { "name": "ZH-05磨頭10支套裝", "value": 10758 },
       { "name": "ZH-06磨頭10支套裝", "value": 10759 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000209"
   },
   {
-    "index": 210,
+    "index": 311,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "美甲機 打磨砂圈",
@@ -8849,7 +9013,7 @@
     "href": "https://www.sachianail.com/pitem/M00000201"
   },
   {
-    "index": 211,
+    "index": 312,
     "valueOfType": 7,
     "valueOfSubType": 6,
     "name": "G.凱洛賽兒卸甲磨頭/甲溝清潔挖棒/磨頭清潔鋼刷/矽膠拋光磨頭/保養磨頭/俄羅斯保養磨頭/",
@@ -8864,7 +9028,6 @@
       { "name": "G.凱洛賽兒-專業嵌甲棒", "value": 8107 },
       { "name": "G.凱洛賽兒-黃金直筒型M", "value": 8108 },
       { "name": "G.凱洛賽兒-黃金直筒型C", "value": 8109 },
-      { "name": "G.凱洛賽兒-黃金直筒型F", "value": 8110 },
       { "name": "G.凱洛賽兒-黃金直筒型XC", "value": 8111 },
       { "name": "G.凱洛賽兒-黃金直筒型XF", "value": 8112 },
       { "name": "G.凱洛賽兒-黃金直筒型小XF", "value": 8114 },
@@ -9087,7 +9250,6 @@
     "options": [
       { "name": "", "value": null },
       { "name": "銀色方形收納盤", "value": 10591 },
-      { "name": "銀色雲朵收納盤", "value": 10592 },
       { "name": "銀色圓形收納盤", "value": 10593 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000183"
@@ -9196,7 +9358,7 @@
     "href": "https://www.sachianail.com/pitem/M00000135"
   },
   {
-    "index": 729,
+    "index": 728,
     "valueOfType": 7,
     "valueOfSubType": 8,
     "name": "透明壓克力三格收納 日系美甲桌面收納盒 壓克力收納盒 美甲工具收納盒 化妝刷收納 粉刷收納",
@@ -9207,7 +9369,7 @@
     "href": "https://www.sachianail.com/pitem/M00000099"
   },
   {
-    "index": 730,
+    "index": 729,
     "valueOfType": 7,
     "valueOfSubType": 8,
     "name": "日式美甲飾品收納罐 高品質高顏值 日本同款飾品收納罐 飾品收納盒分裝瓶",
@@ -9218,7 +9380,7 @@
     "href": "https://www.sachianail.com/pitem/M00000093"
   },
   {
-    "index": 731,
+    "index": 730,
     "valueOfType": 7,
     "valueOfSubType": 8,
     "name": "日式美甲筆收納筒 高透26孔壓克力 美甲筆刷分類收納盒 美甲桌面收納 美甲筆筒 美甲筆架",
@@ -9329,8 +9491,7 @@
     "name": "歐式復古托盤 置物盤",
     "options": [
       { "name": "", "value": null },
-      { "name": "方形白色托盤", "value": 12388 },
-      { "name": "方形金色托盤", "value": 12389 }
+      { "name": "方形白色托盤", "value": 12388 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000376"
   },
@@ -9343,7 +9504,6 @@
       { "name": "", "value": null },
       { "name": "M款復古相框", "value": 10685 },
       { "name": "L款復古相框", "value": 10686 },
-      { "name": "A款復古相框", "value": 10687 },
       { "name": "D款復古相框", "value": 10690 },
       { "name": "F款復古相框", "value": 10692 },
       { "name": "H款復古相框", "value": 10694 }
@@ -9426,8 +9586,7 @@
       { "name": "大號-天然洞洞石-米", "value": 10608 },
       { "name": "大號-天然洞洞石-黑", "value": 10609 },
       { "name": "小號-天然洞洞石-米", "value": 10610 },
-      { "name": "小號-天然洞洞石-黑", "value": 10611 },
-      { "name": "羊脂岩10*10cm", "value": 10612 }
+      { "name": "小號-天然洞洞石-黑", "value": 10611 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000187"
   },
@@ -9916,7 +10075,8 @@
       { "name": "B458蝴蝶結【8#】金色一顆入", "value": 14972 },
       { "name": "B458蝴蝶結【8#】銀色一顆入", "value": 14973 },
       { "name": "H1641 銀色蝴蝶結10顆1組", "value": 17661 },
-      { "name": "H1642 金色蝴蝶結10顆1組", "value": 17662 }
+      { "name": "H1642 金色蝴蝶結10顆1組", "value": 17662 },
+      { "name": "H1693銀底蝴蝶結10顆1組", "value": 17663 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000621"
   },
@@ -10061,7 +10221,8 @@
     "name": "小香風花朵鑽飾",
     "options": [
       { "name": "", "value": null },
-      { "name": "B346-1小香黑色花", "value": 13656 }
+      { "name": "B346-1小香黑色花", "value": 13656 },
+      { "name": "B346-3小香黑色花+珍珠", "value": 13658 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000601"
   },
@@ -10465,8 +10626,6 @@
       { "name": "大紅-SS19", "value": 14808 },
       { "name": "大紅-SS29", "value": 14809 },
       { "name": "大紅-SS39", "value": 14810 },
-      { "name": "白色-SS8", "value": 14812 },
-      { "name": "白色-SS10", "value": 14813 },
       { "name": "白色-SS12", "value": 14814 },
       { "name": "白色-SS19", "value": 14815 },
       { "name": "白色-SS22", "value": 14816 },
@@ -10521,8 +10680,7 @@
       { "name": "", "value": null },
       { "name": "01 紅色大花【10顆】", "value": 14773 },
       { "name": "02 黑色大花【10顆】", "value": 14774 },
-      { "name": "03 白色大花【10裝】", "value": 14775 },
-      { "name": "06 白色小花【10裝】", "value": 14778 }
+      { "name": "03 白色大花【10裝】", "value": 14775 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000550"
   },
@@ -10581,10 +10739,12 @@
       { "name": "H1207暗黑飾品5顆一組", "value": 14723 },
       { "name": "H1208暗黑飾品5顆一組", "value": 14724 },
       { "name": "H1209暗黑飾品5顆一組", "value": 14725 },
+      { "name": "H1210暗黑飾品5顆一組", "value": 14726 },
       { "name": "H1211暗黑飾品5顆一組", "value": 14727 },
       { "name": "H1212暗黑飾品5顆一組", "value": 14728 },
       { "name": "H1213暗黑飾品5顆一組", "value": 14729 },
       { "name": "H1214暗黑飾品5顆一組", "value": 14730 },
+      { "name": "H1215暗黑飾品5顆一組", "value": 14731 },
       { "name": "H1216暗黑飾品5顆一組", "value": 14732 },
       { "name": "H1217暗黑飾品5顆一組", "value": 14733 },
       { "name": "H1218暗黑飾品5顆一組", "value": 14734 },
@@ -10926,7 +11086,6 @@
       { "name": "K9-324多切面水晶鑽-香檳5顆一組", "value": 17070 },
       { "name": "K9-326多切面水晶鑽-銀彩5顆一組", "value": 17072 },
       { "name": "K9-327多切面水晶鑽-干邑白5顆一組", "value": 17073 },
-      { "name": "K9-328多切面水晶鑽-透白5顆一組", "value": 17074 },
       { "name": "K9-329多切面水晶鑽-天堂光5顆一組", "value": 17075 },
       { "name": "K9-330愛心水晶鑽-香檳5顆一組", "value": 17076 },
       { "name": "K9-331愛心水晶鑽-月光5顆一組", "value": 17077 },
@@ -11325,7 +11484,6 @@
       { "name": "K8-1833寶盒", "value": 13488 },
       { "name": "K8-1834寶盒", "value": 13489 },
       { "name": "K8-1835寶盒", "value": 13490 },
-      { "name": "K8-1836寶盒", "value": 13491 },
       { "name": "K8-1839-彩色鋯石5顆裝", "value": 13492 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000492"
@@ -12000,7 +12158,6 @@
       { "name": "02銀色鋼珠+小花混裝", "value": 11863 },
       { "name": "03玫瑰金鋼珠+小花混裝", "value": 11864 },
       { "name": "淺綠大號立體五瓣", "value": 17971 },
-      { "name": "淺綠小號立體五瓣", "value": 17964 },
       { "name": "黃色大號立體五瓣", "value": 17970 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000319"
@@ -12189,7 +12346,6 @@
     "options": [
       { "name": "", "value": null },
       { "name": "SP-522貓眼偏光愛心約190顆小號", "value": 15787 },
-      { "name": "SP-523-貓眼偏光愛心約90顆大號", "value": 15788 },
       { "name": "01-彩色大小混愛心飾品", "value": 11770 },
       { "name": "02-淺香檳銀大小混愛心飾品", "value": 11771 }
     ],
@@ -12349,11 +12505,15 @@
     "options": [
       { "name": "", "value": null },
       { "name": "美甲混裝合金飾品01", "value": 18291 },
+      { "name": "美甲混裝合金飾品03", "value": 18293 },
+      { "name": "美甲混裝合金飾品04", "value": 18294 },
       { "name": "美甲混裝合金飾品05", "value": 18295 },
-      { "name": "美甲混裝合金飾品06", "value": 18296 },
       { "name": "美甲混裝合金飾品07", "value": 18297 },
       { "name": "美甲混裝合金飾品08", "value": 18298 },
+      { "name": "美甲混裝合金飾品09", "value": 18299 },
       { "name": "美甲混裝合金飾品10", "value": 18300 },
+      { "name": "美甲混裝合金飾品11", "value": 18301 },
+      { "name": "美甲混裝合金飾品13", "value": 18303 },
       { "name": "美甲混裝合金飾品14", "value": 18304 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000297"
@@ -12397,7 +12557,6 @@
     "name": "美甲金色鏈條組合 12款一組",
     "options": [
       { "name": "", "value": null },
-      { "name": "1號12格金屬鏈條", "value": 11699 },
       { "name": "2號12格金屬鏈條", "value": 11700 },
       { "name": "3號12格金屬鏈條", "value": 11701 },
       { "name": "4號12格金屬鏈條", "value": 11702 },
@@ -12420,6 +12579,7 @@
       { "name": "1#28格半圓珍珠", "value": 11687 },
       { "name": "2#28格圓形珍珠", "value": 11688 },
       { "name": "3#28格混裝珍珠", "value": 11689 },
+      { "name": "5#28格卯釘", "value": 11691 },
       { "name": "7#28格混裝飾品", "value": 11693 },
       { "name": "8#28格混裝飾品", "value": 11694 },
       { "name": "9#28格銀色金屬飾品", "value": 11695 },
@@ -12491,7 +12651,6 @@
       { "name": "6格歐泊粉OB", "value": 11382 },
       { "name": "07-歐泊粉-築鏡", "value": 11383 },
       { "name": "08-歐泊粉-極楓", "value": 11384 },
-      { "name": "09-歐泊粉-凝脂", "value": 11385 },
       { "name": "10-歐泊粉-紫苑", "value": 11386 },
       { "name": "11-歐泊粉-巒裊", "value": 11387 },
       { "name": "12-歐泊粉-鯨雲", "value": 11388 },
@@ -12716,7 +12875,7 @@
     "index": 14174,
     "valueOfType": 8,
     "valueOfSubType": 0,
-    "name": "美甲彩虹粉 雷射粉 人魚極光粉",
+    "name": "美甲月光粉 雷射粉 人魚極光粉",
     "options": [
       { "name": "", "value": null },
       { "name": "01 白月光【月光粉】", "value": 11259 },
@@ -12762,7 +12921,6 @@
       { "name": "5號海鹽晶鑽粉", "value": 11243 },
       { "name": "6號海鹽晶鑽粉", "value": 11244 },
       { "name": "7號海鹽晶鑽粉", "value": 11245 },
-      { "name": "10號海鹽晶鑽粉", "value": 11248 },
       { "name": "12號海鹽晶鑽粉", "value": 11250 },
       { "name": "砂糖粉1#夢迴", "value": 11251 },
       { "name": "砂糖粉2#星空", "value": 11252 },
@@ -12869,6 +13027,7 @@
     "name": "圓盤珍珠飾品",
     "options": [
       { "name": "", "value": null },
+      { "name": "1號幻彩珍珠圓盤", "value": 11196 },
       { "name": "2號米白珍珠圓盤", "value": 11197 },
       { "name": "3號金邊珍珠圓盤", "value": 11198 }
     ],
@@ -13245,7 +13404,10 @@
       { "name": "B2混裝小彩鑽【100顆】", "value": 15767 },
       { "name": "B219-愛心12格超閃水鑽", "value": 11006 },
       { "name": "B220-愛心12格超閃水鑽", "value": 11007 },
+      { "name": "月光色12格異形水鑽", "value": 11008 },
       { "name": "香檳色12格異形水鑽", "value": 11009 },
+      { "name": "粉色12格異形水鑽", "value": 11010 },
+      { "name": "透明12格異形水鑽", "value": 11011 },
       { "name": "紫色魅影12格異形水鑽", "value": 11012 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000232"
@@ -13717,7 +13879,8 @@
     "name": "經典格紋系列美甲貼紙 棋盤格貼紙",
     "options": [
       { "name": "", "value": null },
-      { "name": "1532棋盤格美甲貼紙", "value": 13330 }
+      { "name": "1532棋盤格美甲貼紙", "value": 13330 },
+      { "name": "1534棋盤格美甲貼紙", "value": 13331 }
     ],
     "href": "https://www.sachianail.com/pitem/M00000578"
   },
@@ -13827,6 +13990,7 @@
       { "name": "", "value": null },
       { "name": "LS-J44時鐘燙金貼紙", "value": 13202 },
       { "name": "LS-J46芭蕾燙金貼紙", "value": 13203 },
+      { "name": "CJ-28白金貼紙", "value": 13204 },
       { "name": "CJ-29白金貼紙", "value": 13205 },
       { "name": "CJ-30白金貼紙", "value": 13206 },
       { "name": "CJ-31白金貼紙", "value": 13207 },

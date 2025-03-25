@@ -1830,6 +1830,7 @@ class CodegenNode {
             if (self.hasConfirmDialog())
                 return `task:async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
                     self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
+            /** AlertDialog是WrapView，所以getFunctionNameOfClicked會對現有的Click Instance造成影響，所以不帶入type */
         }
 
         function getActionButtonStmts() {
@@ -2354,7 +2355,7 @@ class CodegenNode {
         return this.isArray() && this.isAttributeView('SimpleSwiper');
     }
 
-    hasAutoPlayＭechanism() {
+    hasAutoPlayMechanism() {
         return this.autoplay && this.autoplay.delay > 0
     }
 
@@ -2650,7 +2651,7 @@ class CodegenNode {
         }
     }
 
-    appendWrapProps = (...props)=> {
+    appendWrapProps = (...props) => {
         for (const prop of props) {
             this.wrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
@@ -8281,7 +8282,7 @@ class ProjectFileHandler extends PathBase {
                     onSlideChange: `###() => {self.${functionNameOfSlide}()}`
                 })
 
-                if (node.hasAutoPlayＭechanism()) {
+                if (node.hasAutoPlayMechanism()) {
                     node.appendListProps({autoplay: node.autoplay})
                 }
 
@@ -9193,7 +9194,7 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isClickView()) this.onClickBehavior(node);
-            if (node.hasWrapClick()) this.onClickBehavior(node,'wrap');
+            if (node.hasWrapClick()) this.onClickBehavior(node, 'wrap');
 
             if (!node.isPathArray() && node.listEmptyTip.isDefaultValue) {
                 node.disableListEmptyTip()
@@ -9458,39 +9459,23 @@ class ProjectFileHandler extends PathBase {
                     node.setOriginalView(node.getView());
                     node.setView('TextField');
                     node.appendViewProps({variant: `outlined`});
-                    if (node.isReadOnly()) {
-                        node.appendViewProps({
-                            InputProps: {
-                                readOnly: true,
-                            }
-                        })
-                    }
+                    if (node.isReadOnly()) node.appendViewProps({InputProps: {readOnly: true,}})
                 }
             }
-
             node.setClick(false);
-
-            if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) {
-                /** 就是把不是遠端欄位的UI給刪掉 */
-                delete node.view;
-            }
+            if (node.isView() && node.isAttribute() && !node.isCollection() && !node.isColumnAttribute()) delete node.view;
+            /** 就是把不是遠端欄位的UI給刪掉 */
 
             if (node.isColumnArray() || node.isPathArray()) {
                 node.disableSelectedArray();
-
-                if (Util.isOrEquals(node.getListView(), 'Swiper', 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
-                    node.setListView('div');
-                }
-
-                if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) {
-                    node.setView('div');
-                }
-
+                if (Util.isOrEquals(node.getListView(), 'Swiper', 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) node.setListView('div');
+                if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) node.setView('div');
                 node.setWrapView('div');
                 node.appendWrapContents([`{this.renderItemEditorView(
                    ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
+                console.log(`最新資訊==> `,node.getNodeOfStruct().name)
                 node.appendWrapStyle({...style, borderColor: 'red'});
                 node.appendListStyle({...style, borderColor: 'blue'});
                 node.appendListContents([`{this.renderCollectionEditorView(
@@ -9505,11 +9490,7 @@ class ProjectFileHandler extends PathBase {
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
             }
 
-            for (const child of node.getChildren()) {
-                if (!child.editIgnore) {
-                    toEditorPageStruct(child);
-                }
-            }
+            for (const child of node.getChildren()) if (!child.editIgnore) toEditorPageStruct(child);
         }
 
         const source = this.nodeOfAncestor;
@@ -9518,10 +9499,9 @@ class ProjectFileHandler extends PathBase {
                 /** require的default在一個process只會被new一次，為了設計build queue['project-kh-high','project-yueh-pu']，使用了clone */
                 const content = _.clone(require(file.absolute).default);
 
-                if (Util.has(source.getComponents().map((each) => each.getName()), content.name)) {
-                    /** 必免重復的component 被匯入 */
-                    continue;
-                }
+                if (Util.has(source.getComponents().map((each) => each.getName()), content.name)) continue;
+                /** 必免重復的component 被匯入 */
+
 
                 const componentsOfExtra = _.isArray(content.componentsOfExtra) ?
                     content.componentsOfExtra.map((component) => {
@@ -9539,10 +9519,9 @@ class ProjectFileHandler extends PathBase {
         const getNodes = () => source.getComponents().map(component => component.getStruct())
 
         this.enrichNodeWithCustomViewDefined(getNodes());
-        if (needEditComponent && _.isEqual(this.env, 'dev')) {
-            /** 編輯模式只有在dev */
-            source.getComponents().push(...getEditorComponents());
-        }
+        if (needEditComponent && _.isEqual(this.env, 'dev')) source.getComponents().push(...getEditorComponents());
+        /** 編輯模式只有在dev */
+
         this.enrichNodesOfBehavior(getNodes());
         this.enrichReferenceNode(getNodes())
     }
