@@ -2651,7 +2651,7 @@ class CodegenNode {
         }
     }
 
-    appendWrapProps = (...props) => {
+    appendWrapProps(...props) {
         for (const prop of props) {
             this.wrapProps[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
@@ -9242,13 +9242,13 @@ class ProjectFileHandler extends PathBase {
         let funcOfAppendProp;
         switch (type) {
             case 'default':
-                funcOfAppendProp = node.appendViewProps;
+                funcOfAppendProp = node.appendViewProps.bind(node);
                 break;
             case 'wrap':
-                funcOfAppendProp = node.appendWrapProps;
+                funcOfAppendProp = node.appendWrapProps.bind(node);
                 break;
             case 'list':
-                funcOfAppendProp = node.appendListProps;
+                funcOfAppendProp = node.appendListProps.bind(node);
                 break;
             default:
                 throw new ERROR(9999, `830918901231298 unknown type => ${type}, from node => ${node.getName()}`);
