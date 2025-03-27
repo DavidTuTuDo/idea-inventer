@@ -32,8 +32,8 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
-// let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-kh-high';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
@@ -141,8 +141,6 @@ class CodegenNode {
 
     scrollable = false;
     /** 如果MUI Tab是可滾動的，就設為true */
-
-    stringAsValue = false;
 
     price = false
     /** 如果是幣值，就會用Util.formatPrice() */
@@ -1313,7 +1311,7 @@ class CodegenNode {
      * 2. selected{name} 也會被指定為string
      * */
     useStringAsValue() {
-        return _.isEqual(true, this.stringAsValue);
+        return _.isString(this.getSelectedDefaultValue())
     }
 
     getTypeOfSimpleSelected() {
@@ -1337,13 +1335,6 @@ class CodegenNode {
             return this.select.defaultValue;
         }
         return '';
-    }
-
-    getSelectedValueOfType() {
-        if (this.select && this.select.typeOfValue) {
-            return this.select.typeOfValue;
-        }
-        return `string`;
     }
 
     isRestfulBean() {
@@ -2140,7 +2131,7 @@ class CodegenNode {
             stmts.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
         }
 
-        if (_.size(this.getFunctionMethods()) > 0) {
+        if (_.size(this.getFunctionMethods()) > 0 || this.isSimpleSelected()) {
             const content = !Util.isUndefinedNullEmpty(this.getObservableName()) ? `object: ${this.getObservableName()}` : '';
             stmts.push(`const objectOfParam = { ${content}} /** {object,view} */`);
         }
@@ -2688,7 +2679,7 @@ class CodegenNode {
         return {};
     }
 
-    appendViewProps = (...props) => {
+    appendViewProps(...props) {
         for (const prop of props) {
             this.props[Util.getObjectKey(prop)] = Util.getObjectValue(prop);
         }
@@ -8373,13 +8364,13 @@ class ProjectFileHandler extends PathBase {
             }
 
             if (node.isSimpleSelected()) {
-
                 node.setType('array');
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
                     type: node.useStringAsValue() ? 'string' : 'number', /** succeed, fail */
                     column: true,
                     defaultValue: node.getSelectedDefaultValue(),
+                    description:`用來註明'${node.getName()} 的 selected欄位'`,
                     incest: node.incest,
                 })
 
@@ -8684,13 +8675,6 @@ class ProjectFileHandler extends PathBase {
         function appendPropsOfNode(node, functionOfView, props = [], methods = [], nodesOfParent = []) {
 
             for (const type of TYPES_OF_PROPS_VIEW) {
-                if (node.isPreciselyEditableComponent()
-                    && _.isEqual(node.getNodeOfComponent().getName(), 'exam')
-                    && _.isEqual(node.getName(), 'year')
-                    && _.isEqual(node.getPreciseAttributeParentName(), 'question')
-                ) {
-                }
-
                 if (functionOfView(type, node)) {
                     switch (type) {
                         case 'list':
@@ -9475,7 +9459,6 @@ class ProjectFileHandler extends PathBase {
                    ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
                 ,'${node.getPreciseAttributeParentName()}-${node.getName()}')}`]);
                 const style = {borderStyle: 'solid', borderWidth: '1px', margin: '10px', borderRadius: '10px'}
-                console.log(`最新資訊==> `,node.getNodeOfStruct().name)
                 node.appendWrapStyle({...style, borderColor: 'red'});
                 node.appendListStyle({...style, borderColor: 'blue'});
                 node.appendListContents([`{this.renderCollectionEditorView(

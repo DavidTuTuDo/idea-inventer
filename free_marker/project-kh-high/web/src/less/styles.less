@@ -343,19 +343,6 @@
     /** empty style */
   }
 }
-.ExamFilterCloseButton {
-  background-color: rgba(0, 0, 0, 0.5);
-  font-size: 1rem;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 /** following for purchaseSucceed  component used  */
 
 .PurchaseSucceedDiv {
@@ -435,6 +422,8 @@
   }
   @media @desktop {
     /** empty style */
+    max-height: 400px;
+
   }
 }
 .MainViewPagerSwiperSlide {
@@ -1819,6 +1808,7 @@
   width: 90vw;
   min-height: 60vh;
   gap: 4px;
+  margin: auto;
   padding-top: 15px;
   padding-bottom: 15px;
   @media @mobile {
@@ -1829,6 +1819,18 @@
   }
   @media @desktop {
     max-width: 550px;
+  }
+}
+.AccountDivWrap:extend(.CenterInParentColumn) {
+  gap: 10px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
   }
 }
 .AccountUrlOfHeadPhotoAvatar {
@@ -2121,8 +2123,6 @@
 /** following for infoOfCopyRight  component used  */
 
 .InfoOfCopyRightDiv:extend(.CenterInParentColumn) {
-  margin-top: 5px;
-  margin-bottom: 15px;
   width: 100vw;
   margin: auto;
   align-items: flex-end;
@@ -2661,17 +2661,6 @@
     /** empty style */
   }
 }
-.InfoOfCopyRightContactCancelButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
 /** following for infoOfCopyRightContent  component used  */
 
 .InfoOfCopyRightContentPaper {
@@ -2690,17 +2679,6 @@
 }
 .InfoOfCopyRightContentDivWrap:extend(.CenterInParentColumn) {
   gap: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.InfoOfCopyRightContentCancelButton {
   @media @mobile {
     /** empty style */
   }
@@ -2972,7 +2950,7 @@
   }
 }
 .NavigatorToolBarAppBarWrap {
-  background-color: #111111;
+  background-color: black !important;
   height: 60px;
   display: flex;
   justify-content: center;
@@ -2987,7 +2965,6 @@
   }
 }
 .NavigatorToolBarMenuIconButton {
-  margin-right: 10px;
   @media @mobile {
     /** empty style */
   }
@@ -3010,11 +2987,21 @@
   }
 }
 .NavigatorToolBarTitleTypography {
-  width: 80px;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   @media @mobile {
     font-size: 1rem;
-    width: 50px;
+  }
+  @media @tablet {
+    font-size: 1rem;
+  }
+  @media @desktop {
+    font-size: 1.2rem;
+  }
+}
+.NavigatorToolBarTitleDivWrap:extend(.CenterInParentColumn) {
+  padding-right: 10px;
+  @media @mobile {
+    /** empty style */
   }
   @media @tablet {
     /** empty style */
@@ -3025,7 +3012,7 @@
 }
 .NavigatorToolBarCompleteAutocomplete {
   flex-grow: 1;
-  margin-right: 20px;
+  margin-right: 5px;
   @media @mobile {
     /** empty style */
   }
@@ -3061,9 +3048,53 @@
     /** empty style */
   }
 }
-.NavigatorToolBarLoginButton {
+.NavigatorToolBarCartieIconButton:extend(.NavigatorToolBarAccountIconButton) {
   @media @mobile {
-    font-size: 0.8rem;
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCartieBadgeOfCartieBadge {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarCartieBadgeOfCartieIconShoppingCart:extend(.NavigatorToolBarAccountIconAccountCircle) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarLoginIconButton:extend(.NavigatorToolBarAccountIconButton) {
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarLoginIconLogin:extend(.NavigatorToolBarAccountIconAccountCircle) {
+  @media @mobile {
+    /** empty style */
   }
   @media @tablet {
     /** empty style */
@@ -3073,7 +3104,6 @@
   }
 }
 .NavigatorToolBarAccountIconButton {
-  background-color: rgba(255, 255, 255, 0.9);
   height: 32px;
   width: 32px;
   @media @mobile {
@@ -3097,9 +3127,7 @@
     /** empty style */
   }
 }
-.NavigatorToolBarAccountHeadAccountCircle {
-  height: 40px;
-  width: 40px;
+.NavigatorToolBarAccountIconAccountCircle {
   @media @mobile {
     /** empty style */
   }
@@ -3459,7 +3487,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterReplyTypeDiv:extend(.ExamHistoryFilterReplyTypeDiv) {
+.ExamEditorHistoryFilterReplyTypeRadioGroupList:extend(.ExamHistoryFilterReplyTypeRadioGroupList) {
   @media @mobile {
     /** empty style */
   }
@@ -3470,18 +3498,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterReplyTypeDivWrap:extend(.ExamHistoryFilterReplyTypeDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorHistoryFilterReplyTypeDivList:extend(.ExamHistoryFilterReplyTypeDivList) {
+.ExamEditorHistoryFilterReplyTypeFormControlLabel:extend(.ExamHistoryFilterReplyTypeFormControlLabel) {
   @media @mobile {
     /** empty style */
   }
@@ -3525,7 +3542,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterWhichSubjectDiv:extend(.ExamHistoryFilterWhichSubjectDiv) {
+.ExamEditorHistoryFilterWhichSubjectTextFieldList:extend(.ExamHistoryFilterWhichSubjectTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -3536,18 +3553,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterWhichSubjectDivWrap:extend(.ExamHistoryFilterWhichSubjectDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorHistoryFilterWhichSubjectDivList:extend(.ExamHistoryFilterWhichSubjectDivList) {
+.ExamEditorHistoryFilterWhichSubjectMenuItem:extend(.ExamHistoryFilterWhichSubjectMenuItem) {
   @media @mobile {
     /** empty style */
   }
@@ -3580,7 +3586,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterOrderByWhatDiv:extend(.ExamHistoryFilterOrderByWhatDiv) {
+.ExamEditorHistoryFilterOrderByWhatTextFieldList:extend(.ExamHistoryFilterOrderByWhatTextFieldList) {
   @media @mobile {
     /** empty style */
   }
@@ -3591,18 +3597,7 @@
     /** empty style */
   }
 }
-.ExamEditorHistoryFilterOrderByWhatDivWrap:extend(.ExamHistoryFilterOrderByWhatDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.ExamEditorHistoryFilterOrderByWhatDivList:extend(.ExamHistoryFilterOrderByWhatDivList) {
+.ExamEditorHistoryFilterOrderByWhatMenuItem:extend(.ExamHistoryFilterOrderByWhatMenuItem) {
   @media @mobile {
     /** empty style */
   }
@@ -4465,6 +4460,43 @@
 }
 /** ======== following for homeless ========= */
 
+.ExamFilterCloseButton {
+  background-color: rgba(0, 0, 0, 0.5);
+  font-size: 1rem;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarLoginButton {
+  @media @mobile {
+    font-size: 0.8rem;
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
+.NavigatorToolBarAccountHeadAccountCircle {
+  height: 40px;
+  width: 40px;
+  @media @mobile {
+    /** empty style */
+  }
+  @media @tablet {
+    /** empty style */
+  }
+  @media @desktop {
+    /** empty style */
+  }
+}
 .NavigatorToolBarCompleteInputTextField {
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.3);

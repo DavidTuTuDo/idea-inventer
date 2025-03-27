@@ -1,8 +1,5 @@
-/** this code are generated, modify is no sense.
- author:David Tu,
- email:freshingmoon0725@gmail.com
- updateTime:2021-04-14-20-30-45
- */
+const edit = true;
+
 import BaseExamStore from "./BaseExamStore";
 import QuestionStore from "../examQuestion";
 
@@ -92,18 +89,15 @@ class ExamStore extends BaseExamStore {
         const replyType = filter.getSelectedReplyType();
         const orderByWhat = filter.getSelectedOrderByWhat();
         const conditions = [];
-        if (!_.isEqual('all', subject))
-            conditions.push({where: (stmt) => stmt.where('subject', '==', subject)})
+        if (!_.isEqual('all', subject)) conditions.push({type: 'where', params: ['subject', '==', subject]});
+        if (!_.isEqual('all', replyType)) conditions.push({type: 'where', params: ['isWrongReply', '==', _.isEqual(replyType, 'wrong')]});
 
-        if (!_.isEqual('all', replyType)) {
-            conditions.push({where: (stmt) => stmt.where('isWrongReply', '==', _.isEqual(replyType, 'wrong'))})
-        }
         switch (orderByWhat) {
             case 'duration':
-                conditions.push({orderBy: (stmt) => stmt.orderBy('duration', 'desc')})
+                conditions.push({type: 'orderBy', params: ['duration', 'desc']})
                 break;
             case 'latest':
-                conditions.push({orderBy: (stmt) => stmt.orderBy('updateTime', 'desc')})
+                conditions.push({type: 'orderBy', params: ['updateTime', 'desc']})
                 break;
         }
         this.setTestingRecordConditions(conditions);
@@ -136,20 +130,15 @@ class ExamStore extends BaseExamStore {
 
         function getRandomCondition() {
             const conditions = [];
-            if (!_.isEqual('綜合題目', subject)) {
-                conditions.push({where: (stmt) => stmt.where('subject', '==', _.trim(subject))});
-            }
-
-            conditions.push({where: (stmt) => stmt.where('year', '>=', _.toNumber(range.shift()))});
-            conditions.push({where: (stmt) => stmt.where('year', '<=', _.toNumber(range.shift()))});
+            if (!_.isEqual('綜合題目', subject)) conditions.push({type: 'where', params: ['subject', '==', _.trim(subject)]});
+            conditions.push({type: 'where', params: ['year', '>=', _.toNumber(range.shift())]});
+            conditions.push({type: 'where', params: ['year', '<=', _.toNumber(range.shift())]});
             handleConditionsBySubjectName(conditions);
             return conditions;
         }
 
         function handleConditionsBySubjectName(condition) {
-            if (isMath) {
-                condition.push({where: (stmt) => stmt.where('typeOfMath', 'in', typeOfMath)})
-            }
+            if (isMath) condition.push({type: 'where', params: ['typeOfMath', 'in', typeOfMath]})
         }
 
         switch (type) {
@@ -160,10 +149,10 @@ class ExamStore extends BaseExamStore {
                 const times = mTimesAndYear.pop();
 
                 const conditionsOfHistory = [
-                    {where: (stmt) => stmt.where('subject', '==', _.trim(subject))},
-                    {where: (stmt) => stmt.where('year', '==', _.toNumber(year))},
-                    {where: (stmt) => stmt.where('timesOfYear', '==', _.toNumber(times))},
-                    {orderBy: (stmt) => stmt.orderBy("qid")}
+                    {type: 'where', params: ['subject', '==', _.trim(subject)]},
+                    {type: 'where', params: ['year', '==', _.toNumber(year)]},
+                    {type: 'where', params: ['timesOfYear', '==', _.toNumber(times)]},
+                    {type: 'orderBy', params: ['qid']}
                 ]
 
                 handleConditionsBySubjectName(conditionsOfHistory)
@@ -185,7 +174,6 @@ class ExamStore extends BaseExamStore {
             case 'freeze':
                 /** 當作範例題目 */
                 return {};
-                break;
             case 'demo':
                 this.getComponent().clearScrollToBottomJobs();
                 this.setQuestionConditions(this.getInArrayConditions([qid]))
@@ -195,10 +183,9 @@ class ExamStore extends BaseExamStore {
                 Util.appendError(`8354 ==> type can't not be ${type}`);
                 this.getComponent().showWarningSnackMessage(`很抱歉,連結已失效`)
                 return undefined;
-                /**
-                 * show error dialog then return
-                 **/
-                break;
+            /**
+             * show error dialog then return
+             **/
         }
 
         const result = await super.fetch(this.getComponent());
@@ -227,7 +214,11 @@ class ExamStore extends BaseExamStore {
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection)
-        await this.incrementCountsOfExamToday()
+
+        /** 沒有用的破功能，先mark掉
+         *  會產生attr/[object object]的error
+         ** await this.incrementCountsOfExamToday() */
+
         this.renewTimeStamp();
     }
 

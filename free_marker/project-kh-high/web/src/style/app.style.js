@@ -165,21 +165,17 @@ class AppStyle {
 
   ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
 
-  ExamEditorHistoryFilterOrderByWhatDivList = {};
+  ExamEditorHistoryFilterOrderByWhatMenuItem = {};
 
-  ExamEditorHistoryFilterOrderByWhatDivWrap = {};
-
-  ExamEditorHistoryFilterOrderByWhatDiv = {};
+  ExamEditorHistoryFilterOrderByWhatTextFieldList = {};
 
   ExamEditorHistoryFilterWhichSubjectValueTextField = {};
 
   ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
 
-  ExamEditorHistoryFilterWhichSubjectDivList = {};
+  ExamEditorHistoryFilterWhichSubjectMenuItem = {};
 
-  ExamEditorHistoryFilterWhichSubjectDivWrap = {};
-
-  ExamEditorHistoryFilterWhichSubjectDiv = {};
+  ExamEditorHistoryFilterWhichSubjectTextFieldList = {};
 
   ExamEditorHistoryFilterSpaceDiv = {};
 
@@ -187,11 +183,9 @@ class AppStyle {
 
   ExamEditorHistoryFilterReplyTypeLabelTextField = {};
 
-  ExamEditorHistoryFilterReplyTypeDivList = {};
+  ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
 
-  ExamEditorHistoryFilterReplyTypeDivWrap = {};
-
-  ExamEditorHistoryFilterReplyTypeDiv = {};
+  ExamEditorHistoryFilterReplyTypeRadioGroupList = {};
 
   ExamEditorHistoryFilterDivWrap = {};
 
@@ -259,19 +253,29 @@ class AppStyle {
 
   NavigatorToolBarTipOfLoadingCircularProgress = {};
 
-  NavigatorToolBarAccountHeadAccountCircle = {};
+  NavigatorToolBarAccountIconAccountCircle = {};
 
   NavigatorToolBarAccountReactFragmentWrap = {};
 
   NavigatorToolBarAccountIconButton = {};
 
-  NavigatorToolBarLoginButton = {};
+  NavigatorToolBarLoginIconLogin = {};
+
+  NavigatorToolBarLoginIconButton = {};
+
+  NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
+
+  NavigatorToolBarCartieBadgeOfCartieBadge = {};
+
+  NavigatorToolBarCartieIconButton = {};
 
   NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
   NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
   NavigatorToolBarCompleteAutocomplete = {};
+
+  NavigatorToolBarTitleDivWrap = {};
 
   NavigatorToolBarTitleTypography = {};
 
@@ -323,15 +327,11 @@ class AppStyle {
 
   InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentCancelButton = {};
-
   InfoOfCopyRightContentDivWrap = {};
 
   InfoOfCopyRightContentPaper = {};
 
   /** => following for infoOfCopyRightContact  component  */
-
-  InfoOfCopyRightContactCancelButton = {};
 
   InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
@@ -478,6 +478,8 @@ class AppStyle {
   AccountFuncAreaOfNameDiv = {};
 
   AccountUrlOfHeadPhotoAvatar = {};
+
+  AccountDivWrap = {};
 
   AccountPaper = {};
 
@@ -726,8 +728,6 @@ class AppStyle {
   PurchaseSucceedDiv = {};
 
   /** => following for examFilter  component  */
-
-  ExamFilterCloseButton = {};
 
   ExamFilterHistoryTestBtnWithHistoryButton = {};
 

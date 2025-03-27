@@ -1,3 +1,4 @@
+const edit = true;
 import BaseEditorOfSubjectStore from "./BaseEditorOfSubjectStore";
 import {
     utiller as Util,
