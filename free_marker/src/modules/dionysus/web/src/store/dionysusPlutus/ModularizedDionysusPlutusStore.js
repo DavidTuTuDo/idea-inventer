@@ -1,19 +1,17 @@
 const edit = true;
-import BasePlutusStore from "./BasePlutusStore";
+
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import {Application} from "../../";
 import Config from "../../config";
-import {computed} from "mobx";
-import Cookie from '../../cookie'
+import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
+import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
+import BaseDionysusPlutusStore from "./BaseDionysusPlutusStore";
 import Booze from '../dionysusBooze';
-import Savior from "../plutusSavior";
+import Savior from "../dionysusPlutusSavior";
 import Functions from '../../functions';
-class PlutusStore extends BasePlutusStore {
-    /** -------------------- fields -------------------- **/
 
-    /** -------------------- functions -------------------- **/
+class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     constructor(props) {
         super(props);
@@ -66,7 +64,8 @@ class PlutusStore extends BasePlutusStore {
         for (const cartie of carties) {
             const booze = objectOfBoozes[cartie.idOfBooze];
             const optionOfSelected = _.find(booze.options, (option => _.isEqual(option.value, cartie.idOfOption)));
-            const choiceOfSelected = _.find(booze.choices, (choice => _.isEqual(choice.value, cartie.idOfChoice)));/** 還沒設計 */
+            const choiceOfSelected = _.find(booze.choices, (choice => _.isEqual(choice.value, cartie.idOfChoice)));
+            /** 還沒設計 */
             const index = _.indexOf(carties, cartie) + 1;
             stmts.push(`${index}.\n商品：${booze.name}\n編號：${booze.serial}\n選項：${optionOfSelected.name}(${optionOfSelected.price}元) \n數量：${cartie.count} 個`)
         }
@@ -74,8 +73,8 @@ class PlutusStore extends BasePlutusStore {
     }
 
     async submitSavior(view) {
-        const result = await this.remote.submitSaviorItem(view,{
-            name:this.getName(),
+        const result = await this.remote.submitSaviorItem(view, {
+            name: this.getName(),
             email: this.getEmail(),
             phone: this.getPhone(),
             address: this.getPreciselyAddress(),
@@ -85,10 +84,9 @@ class PlutusStore extends BasePlutusStore {
             valueOfPayment: UserInfoRef.getTypeOfTransport(),
         })
         const idOfSavior = result.value.id;
-        await Functions.httpOnCallSendEmailOfReceipt(view,{idOfSavior});
+        await Functions.httpOnCallSendEmailOfReceipt(view, {idOfSavior});
     }
 
-    /** -------------------- async api -------------------- **/
 }
 
-export default PlutusStore;
+export default ModularizedDionysusPlutusStore;

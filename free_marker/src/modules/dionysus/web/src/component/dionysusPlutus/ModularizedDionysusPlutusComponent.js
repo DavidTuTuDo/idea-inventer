@@ -1,26 +1,18 @@
 const edit = true;
-import {inject} from "mobx-react";
-import {observer} from "mobx-react";
+
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import BasePlutusComponent from './BasePlutusComponent';
-import UserInfoRef from '../../base/BaseUserInfo';
-import Cookie from '../../cookie';
 import _ from "lodash";
-import Functions from '../../functions';
-import Router from '../../router';
+import UserInfoRef from "../../base/BaseUserInfo";
+import Router from "../../router";
+import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
 
-@inject("plutus")
-@observer
-class PlutusComponent extends BasePlutusComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
+class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     constructor(props) {
         super(props);
     }
 
-    onPlutusFindIconButtonClicked(param) {
+    onDionysusPlutusFindIconButtonClicked(param) {
         const self = this
         if (!_.isEmpty(this.getStore().getAddress())) {
             const address = this.getStore().getPreciselyAddress();
@@ -30,11 +22,11 @@ class PlutusComponent extends BasePlutusComponent {
         } else this.showWarningSnackMessage(`未輸入地址`)
     }
 
-    getWrapInjectStyleOfPlutusWholeCheckbox(plutus) {
+    getWrapInjectStyleOfDionysusPlutusWholeCheckbox(plutus) {
         return Util.getVisibleOrHidden(false);
     }
 
-    // getWrapInjectStyleOfPlutusEmailTextField(plutus) {
+    // getWrapInjectStyleOfDionysusPlutusEmailTextField(plutus) {
     //     return Util.getVisibleOrNone(!UserInfoRef.isLoginWithSucceed())
     // }
 
@@ -45,15 +37,15 @@ class PlutusComponent extends BasePlutusComponent {
         })
     }
 
-    getInjectStyleOfPlutusSecondDiv(plutus) {
+    getInjectStyleOfDionysusPlutusSecondDiv(plutus) {
         return Util.getVisibleOrNone(false, true);
     }
 
-    getInjectStyleOfPlutusFourthDiv(plutus) {
+    getInjectStyleOfDionysusPlutusFourthDiv(plutus) {
         return Util.getVisibleOrNone(false, true);
     }
 
-    onPlutusSubmitChipClicked(param) {
+    onDionysusPlutusSubmitChipClicked(param) {
         const self = this;
         const typeOfTransport = UserInfoRef.getTypeOfTransport();
         const price = UserInfoRef.getTotalPriceOfCartie();
@@ -82,8 +74,6 @@ class PlutusComponent extends BasePlutusComponent {
 
 
     }
-
-    /** -------------------- async api -------------------- **/
 }
 
-export default PlutusComponent;
+export default ModularizedDionysusPlutusComponent;

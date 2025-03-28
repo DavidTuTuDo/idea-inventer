@@ -1,17 +1,14 @@
 const edit = true;
-import BaseCartieStore from "./BaseCartieStore";
+
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import Cookie from "../../cookie";
+import UserInfoRef from "../../base/BaseUserInfo";
+import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS} from "mobx";
+import BaseDionysusCartieStore from "./BaseDionysusCartieStore";
 import BoozeApi from "../dionysusBooze"
-import {computed} from "mobx";
-import UserInfoRef from '../../base/BaseUserInfo';
 
-class CartieStore extends BaseCartieStore {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
+class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     constructor(props) {
         super(props);
@@ -19,8 +16,8 @@ class CartieStore extends BaseCartieStore {
         UserInfoRef.setGotoCartieDirect(false);
     }
 
-    validateCountOfOrder(brief, increase = true,deleted = false) {
-        if(deleted){
+    validateCountOfOrder(brief, increase = true, deleted = false) {
+        if (deleted) {
             /** 刪除購物車其中一個選項 */
             brief.remove();
             UserInfoRef.deleteItemFromCart(brief.idOfCookieUsage)
@@ -40,7 +37,7 @@ class CartieStore extends BaseCartieStore {
             countOfLatest = current < 2 ? current : result;
         }
         brief.setCountOfSubmit(countOfLatest)
-        UserInfoRef.updateItemToCart({key:brief.idOfCookieUsage, count:countOfLatest,checked:brief.getSure()})
+        UserInfoRef.updateItemToCart({key: brief.idOfCookieUsage, count: countOfLatest, checked: brief.getSure()})
     }
 
     async fetch(view = this.getComponent()) {
@@ -98,7 +95,7 @@ class CartieStore extends BaseCartieStore {
 
     @computed
     get getComputedDiscountOfMember() {
-        const discount = _.multiply(this.getPriceWithoutDiscount(),0.03);
+        const discount = _.multiply(this.getPriceWithoutDiscount(), 0.03);
         const computed = _.subtract(0, discount);
         const result = computed < 0 ? _.round(computed) : 0;
         this.setDiscountOfMember(result)
@@ -114,8 +111,8 @@ class CartieStore extends BaseCartieStore {
 
     /** 1.更新cookie裡面的cartie，checked(送出訂單時，最後選擇的)*/
     updateInfosOfCartieCookie = () => {
-        for(const brief of this.getBriefs())
-            UserInfoRef.updateItemToCart({key:brief.getIdOfCookieUsage(),count:brief.getCountOfSubmit(),checked:brief.getSure()})
+        for (const brief of this.getBriefs())
+            UserInfoRef.updateItemToCart({key: brief.getIdOfCookieUsage(), count: brief.getCountOfSubmit(), checked: brief.getSure()})
         UserInfoRef.setTotalPriceOfCartie(this.getPriceOfTotal())
         Util.appendInfo(UserInfoRef.getArrayOfCartieItem());
     }
@@ -123,16 +120,13 @@ class CartieStore extends BaseCartieStore {
     /** 如果全選打勾，全部打勾 -> 如果全選消除，全部消除*/
     updateBriefByWholeStatus() {
         const checked = this.getWhole();
-        _.each(this.getBriefs(),(brief) => brief.setSure(checked));
+        _.each(this.getBriefs(), (brief) => brief.setSure(checked));
     }
 
-    updateWholeStatusByBrief(){
-        const unChecked = _.find(this.getBriefs(),(brief) => !brief.getSure());
+    updateWholeStatusByBrief() {
+        const unChecked = _.find(this.getBriefs(), (brief) => !brief.getSure());
         this.setWhole(!unChecked);
     }
-
-
-    /** -------------------- async api -------------------- **/
 }
 
-export default CartieStore;
+export default ModularizedDionysusCartieStore;

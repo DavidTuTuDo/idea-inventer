@@ -1,29 +1,23 @@
 const edit = true;
-import {inject} from "mobx-react";
-import BaseMaenadsComponent from "./BaseMaenadsComponent";
+
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import {observer} from "mobx-react";
 import UserInfoRef from "../../base/BaseUserInfo";
-import Router from '../../router';
+import Router from "../../router";
+import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
 
-@inject("maenads")
-@observer
-class MaenadsComponent extends BaseMaenadsComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
+class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
 
     constructor(props) {
         super(props);
     }
 
-    onMaenadsOptionDivClicked(param) {
+    onDionysusMaenadsOptionDivClicked(param) {
         const option = param.object;
         this.getStore().setCurrentOption(option);
     }
 
-    getInjectPropsOfMaenadsOptionNameChip(option) {
+    getInjectPropsOfDionysusMaenadsOptionNameChip(option) {
         const index = this.getStore().getIndexOfOption(option);
         return {color: _.isEqual(index, this.getStore().getIndexOfSelected(option)) ? 'error' : 'default'};
     }
@@ -39,17 +33,15 @@ class MaenadsComponent extends BaseMaenadsComponent {
         return judgement ? price : `＄${price}`;
     }
 
-    onMaenadsIncreaseIconButtonClicked(param) {
-        super.onMaenadsIncreaseIconButtonClicked(param);
+    onDionysusMaenadsIncreaseIconButtonClicked(param) {
         this.getStore().validateCountOfOrder();
     }
 
-    onMaenadsDecreaseIconButtonClicked(param) {
-        super.onMaenadsDecreaseIconButtonClicked(param);
+    onDionysusMaenadsDecreaseIconButtonClicked(param) {
         this.getStore().validateCountOfOrder(false);
     }
 
-    onMaenadsSubmitChipClicked(param) {
+    onDionysusMaenadsSubmitChipClicked(param) {
         const self = this;
         if (this.getStore().getIndexOfSelected() < 0) {
             this.getComponentInstance(true).showWarningSnackMessage(`尚未選擇商品`)
@@ -59,7 +51,7 @@ class MaenadsComponent extends BaseMaenadsComponent {
             const idOfOption = maenads.getOptions()[this.getStore().getIndexOfSelected()].getValue();
             const count = _.toInteger(this.getStore().getCountOfSubmit())
             UserInfoRef.joinItemToCart({idOfBooze, idOfOption, count});
-            if(UserInfoRef.isGotoCartieDirect())
+            if (UserInfoRef.isGotoCartieDirect())
                 Router.gotoCartiePage(this.getComponentInstance())
             this.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
             Util.syncDelay(1500).then(() => {
@@ -67,9 +59,6 @@ class MaenadsComponent extends BaseMaenadsComponent {
             })
         }
     }
-
-
-    /** -------------------- async api -------------------- **/
 }
 
-export default MaenadsComponent;
+export default ModularizedDionysusMaenadsComponent;

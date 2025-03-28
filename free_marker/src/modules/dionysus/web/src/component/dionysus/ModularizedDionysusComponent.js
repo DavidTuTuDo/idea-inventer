@@ -1,18 +1,17 @@
 const edit = true;
-import {inject} from "mobx-react";
-import BaseDionysusComponent from "./BaseDionysusComponent";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import {observer} from "mobx-react";
+import libpath from "path";
+import i18n from "../../i18n";
+import React from "react";
+import UserInfoRef from "../../base/BaseUserInfo";
+import {Application} from "../../";
+import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
+import BaseDionysusComponent from "./BaseDionysusComponent";
 
-@inject("dionysus")
-@observer
-class DionysusComponent extends BaseDionysusComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
+class ModularizedDionysusComponent extends BaseDionysusComponent {
 
     constructor(props) {
         super(props);
@@ -40,9 +39,6 @@ class DionysusComponent extends BaseDionysusComponent {
             Util.syncDelay(1).then(() => this.getStore().fetchBoozeBySelectedTab().then())
         }
     }
-
-
-    /** -------------------- async api -------------------- **/
 }
 
-export default DionysusComponent;
+export default ModularizedDionysusComponent;

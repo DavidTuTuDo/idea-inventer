@@ -32,11 +32,11 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
-let CURRENT_PROJECT = './project-kh-high';
+// let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -4039,7 +4039,34 @@ class PathBase {
             mapping(...source.components.map(component => component.struct))
         }
 
+        function getAllowListOfModuleComponent(source) {
+            const list = Util.getNamesOfFolderChild(PATH_OF_COMPONENT_MODULE).map((each) => _.trim(each));
+            return _.filter(list, (each) => !Util.has(source.modulesOfIgnore, each, true));
+        }
+
         const source = require(libpath.resolve(pathOfSource)).default;
+
+        /** 把common module[account, dionysus, epay...]加入 */
+        for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE,
+            (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
+            if (Util.has(getAllowListOfModuleComponent(source), file.dirName, true)) {
+                /** require的default在一個process只會被new一次，為了設計build queue['project-kh-high','project-yueh-pu']，使用了clone */
+                const module = _.clone(require(file.absolute).default);
+                if (Util.has(source.components.map((each) => each.name), module.name)) continue;
+                /** 必免重復的component 被匯入 */
+                const componentsOfExtra = _.isArray(module.componentsOfExtra) ?
+                    module.componentsOfExtra.map((component) => {
+                        return {...component, isExtraComponent: true};
+                    }) : [];
+                delete module.componentsOfExtra;
+                for (const rawOfComponent of [module, ...componentsOfExtra]) {
+                    /** rawOfComponent 代表沒有被enrich過 */
+                    rawOfComponent.isCommonModule = true;
+                    source.components.push(rawOfComponent);
+                }
+            }
+        }
+
         const arrayOfEachNode = []; //[ {name:string,independence:boolean,raw:node} ]
         const mapOfIndexing = {} //{ ...name:node }
         whatever();
@@ -8370,7 +8397,7 @@ class ProjectFileHandler extends PathBase {
                     type: node.useStringAsValue() ? 'string' : 'number', /** succeed, fail */
                     column: true,
                     defaultValue: node.getSelectedDefaultValue(),
-                    description:`用來註明'${node.getName()} 的 selected欄位'`,
+                    description: `用來註明'${node.getName()} 的 selected欄位'`,
                     incest: node.incest,
                 })
 
@@ -9475,36 +9502,11 @@ class ProjectFileHandler extends PathBase {
 
             for (const child of node.getChildren()) if (!child.editIgnore) toEditorPageStruct(child);
         }
-
         const source = this.nodeOfAncestor;
-        for (const file of Util.findFilePathBy(PATH_OF_COMPONENT_MODULE, (each) => _.isEqual(each.fileNameExtension, FILENAME_OF_SOURCE_JS))) {
-            if (Util.has(source.getListOfModuleComponent(), file.dirName, true)) {
-                /** require的default在一個process只會被new一次，為了設計build queue['project-kh-high','project-yueh-pu']，使用了clone */
-                const content = _.clone(require(file.absolute).default);
-
-                if (Util.has(source.getComponents().map((each) => each.getName()), content.name)) continue;
-                /** 必免重復的component 被匯入 */
-
-
-                const componentsOfExtra = _.isArray(content.componentsOfExtra) ?
-                    content.componentsOfExtra.map((component) => {
-                        return {...component, isExtraComponent: true};
-                    }) : [];
-                delete content.componentsOfExtra;
-                for (const rawOfComponent of [content, ...componentsOfExtra]) {
-                    /** rawOfComponent 代表沒有被enrich過 */
-                    rawOfComponent.isCommonModule = true;
-                    CodegenNode.appendChildInArray(source.getComponents(), rawOfComponent)
-                }
-            }
-        }
-
         const getNodes = () => source.getComponents().map(component => component.getStruct())
-
         this.enrichNodeWithCustomViewDefined(getNodes());
         if (needEditComponent && _.isEqual(this.env, 'dev')) source.getComponents().push(...getEditorComponents());
         /** 編輯模式只有在dev */
-
         this.enrichNodesOfBehavior(getNodes());
         this.enrichReferenceNode(getNodes())
     }
