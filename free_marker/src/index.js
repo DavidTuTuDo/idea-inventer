@@ -127,6 +127,12 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** 用來取代原本component的props，屬於source級別的設定，例如 要把epay設計為首頁: epay: {path:''}*/
+    setsOfComponentProp = {}
+    // {
+    //      componentName1:{ path: "./", }, componentName2:{title:'新的首頁名'}
+    // }
+
     /** 如果父類是object，其子類包含object | array，就會在遠端製造出一個屬性，例如AutoComplete 會建造出 suggestXXX，這些都應該必須要有個選擇性措施去決定遠端的database，避免遠端存入過大的資料 */
     disableOfColumn = false;
 
@@ -1726,7 +1732,8 @@ class CodegenNode {
     static doNotEnrichAttribute() {
         return ['propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n', 'textsOfI18n = {};\n' +
+            'setsOfComponentProp']
     }
 
     setListContents(contents) {
@@ -4072,6 +4079,12 @@ class PathBase {
         whatever();
         append();
 
+        /** 把component props改變 */
+        source.components = source.components.map((component) => {
+            const obj = source.setsOfComponentProp[component.name];
+            return obj ? {...component, ...obj} : component;
+        });
+
         return source;
     }
 
@@ -4214,7 +4227,7 @@ class PathBase {
     }
 
     getGenComponent() {
-        const components = this.getComponents().map((each) => Util.camel(each.getName(), each.isPreciselyEditableComponent() ? 'editor' : ''));
+        const components = this.getComponents().map((each) => Util.camel(each.getNodeOfStruct().getName()));
         return _.without(components, SIGN_OF_EMPTY_STORE);
     }
 
@@ -5884,8 +5897,8 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (node.hasCustomViewDialog()) {
-            const nameOfCustomView = node.alertDialog.customView;
-            generator.appendImport(nameOfCustomView, `../${nameOfCustomView}`);
+            const component = node.getSpecificComponent(node.alertDialog.customView);
+            generator.appendImport(component.getName(), `../${component.getNodeOfStruct().getName()}`);
         }
 
         function getStmtsOfInjectListStyle(node) {
@@ -9502,6 +9515,7 @@ class ProjectFileHandler extends PathBase {
 
             for (const child of node.getChildren()) if (!child.editIgnore) toEditorPageStruct(child);
         }
+
         const source = this.nodeOfAncestor;
         const getNodes = () => source.getComponents().map(component => component.getStruct())
         this.enrichNodeWithCustomViewDefined(getNodes());
@@ -9666,7 +9680,8 @@ class ProjectFileHandler extends PathBase {
                 name: each.getName(),
                 editor: each.isPreciselyEditableComponent(),
                 module: each.isModuleComponent(),
-                extra: each.isExtraComponent
+                extra: each.isExtraComponent,
+                path:each.getPath()
             }
         }))
 
