@@ -1,5 +1,6 @@
 const edit = true;
-import "swiper/css/pagination";
+import
+  "swiper/css/pagination";
 import "swiper/css";
 import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
@@ -27,7 +28,7 @@ class MainComponent extends BaseMainComponent {
   }
 
   onMainEditorOfClassChipClicked(param) {
-    Router.gotoClassSetupPage(this);
+    Router.gotoMetisSetUpPage(this);
   }
 
   onMainGotoInnerShoppingChipClicked(param) {

@@ -1,13 +1,10 @@
 const edit = true;
-import BaseQuickSignUpClazzStore from "./BaseQuickSignUpClazzStore";
+
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
+import BaseMetisClazzStore from "./BaseMetisClazzStore";
 
-class QuickSignUpClazzStore extends BaseQuickSignUpClazzStore {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
+class ModularizedMetisClazzStore extends BaseMetisClazzStore {
     constructor(props) {
         super(props);
         // this.initial()
@@ -25,7 +22,6 @@ class QuickSignUpClazzStore extends BaseQuickSignUpClazzStore {
         this.setDateOfWeekAttend(this.getClassTimes().map(time =>
             Util.getStringOfWeekTime(time.getSelectedDayOfWeek(), time.getStartOfTime(), time.getEndOfTime())).join('\n'));
 
-
         let counts = this.getCountsOfStudentCapacity() - this.getCountsOfRegistered();
 
         if (_.isEqual(counts, this.getCountsOfStudentCapacity()))
@@ -37,9 +33,6 @@ class QuickSignUpClazzStore extends BaseQuickSignUpClazzStore {
 
         if (this.getCountsOfStudentCapacity() <= this.getCountsOfRegistered()) this.setSubmit(`名額已滿`);
     }
-
-    /** -------------------- async api --------------------
-     * **/
 }
 
-export default QuickSignUpClazzStore;
+export default ModularizedMetisClazzStore;

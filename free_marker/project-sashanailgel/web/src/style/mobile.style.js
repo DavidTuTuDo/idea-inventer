@@ -129,6 +129,256 @@ class MobileStyle {
 
   NavigatorDiv = {};
 
+  /** => following for metisSignUp  component  */
+
+  MetisSignUpStudentCustomFuncGoBackReactFragmentWrap = {};
+
+  MetisSignUpStudentCustomFuncGoBackChip = {};
+
+  MetisSignUpStudentCustomFuncAcceptReactFragmentWrap = {};
+
+  MetisSignUpStudentCustomFuncAcceptChip = {};
+
+  MetisSignUpStudentCustomFuncDiv = {};
+
+  MetisSignUpStudentCustomAgreeOfContractLabelOfAgreeOfContractTypography = {};
+
+  MetisSignUpStudentCustomAgreeOfContractDivWrap = {};
+
+  MetisSignUpStudentCustomAgreeOfContractCheckbox = {};
+
+  MetisSignUpStudentCustomContractDivWrap = {};
+
+  MetisSignUpStudentCustomContractTypography = {};
+
+  MetisSignUpStudentCustomYoungNoticeDivWrap = {};
+
+  MetisSignUpStudentCustomYoungNoticeTypography = {};
+
+  MetisSignUpStudentCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography = {};
+
+  MetisSignUpStudentCustomYoungContactOfGuardianDivWrap = {};
+
+  MetisSignUpStudentCustomYoungContactOfGuardianTextField = {};
+
+  MetisSignUpStudentCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography = {};
+
+  MetisSignUpStudentCustomYoungNameOfGuardianDivWrap = {};
+
+  MetisSignUpStudentCustomYoungNameOfGuardianTextField = {};
+
+  MetisSignUpStudentCustomYoungDiv = {};
+
+  MetisSignUpStudentCustomIdOfNationalLabelOfIdOfNationalTypography = {};
+
+  MetisSignUpStudentCustomIdOfNationalDivWrap = {};
+
+  MetisSignUpStudentCustomIdOfNationalTextField = {};
+
+  MetisSignUpStudentCustomBirthdayLabelOfBirthdayTypography = {};
+
+  MetisSignUpStudentCustomBirthdayDivWrap = {};
+
+  MetisSignUpStudentCustomBirthdayDatePicker = {};
+
+  MetisSignUpStudentCustomContactLabelOfContactTypography = {};
+
+  MetisSignUpStudentCustomContactDivWrap = {};
+
+  MetisSignUpStudentCustomContactTextField = {};
+
+  MetisSignUpStudentCustomTextOfEmailLabelOfTextOfEmailTypography = {};
+
+  MetisSignUpStudentCustomTextOfEmailDivWrap = {};
+
+  MetisSignUpStudentCustomTextOfEmailTextField = {};
+
+  MetisSignUpStudentCustomNameLabelOfNameTypography = {};
+
+  MetisSignUpStudentCustomNameDivWrap = {};
+
+  MetisSignUpStudentCustomNameTextField = {};
+
+  MetisSignUpStudentCustomDiv = {};
+
+  MetisSignUpStudentMainDatOfPeriodWithHoursLabelOfDatOfPeriodWithHoursTypography = {};
+
+  MetisSignUpStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconEditCalendarRounded = {};
+
+  MetisSignUpStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconButton = {};
+
+  MetisSignUpStudentMainDatOfPeriodWithHoursDivWrap = {};
+
+  MetisSignUpStudentMainDatOfPeriodWithHoursTypography = {};
+
+  MetisSignUpStudentMainNameOfClassLabelOfNameOfClassTypography = {};
+
+  MetisSignUpStudentMainNameOfClassBtnOfNameOfClassIconSchoolRounded = {};
+
+  MetisSignUpStudentMainNameOfClassBtnOfNameOfClassIconButton = {};
+
+  MetisSignUpStudentMainNameOfClassDivWrap = {};
+
+  MetisSignUpStudentMainNameOfClassTypography = {};
+
+  MetisSignUpStudentMainDiv = {};
+
+  MetisSignUpStudentPaperSkeleton = {};
+
+  MetisSignUpStudentDivList = {};
+
+  MetisSignUpStudentPaper = {};
+
+  MetisSignUpDiv = {};
+
+  /** => following for metisSetUp  component  */
+
+  MetisSetUpClazzAreaOfFuncDeletedReactFragmentWrap = {};
+
+  MetisSetUpClazzAreaOfFuncDeletedChip = {};
+
+  MetisSetUpClazzAreaOfFuncUpdateChip = {};
+
+  MetisSetUpClazzAreaOfFuncDiv = {};
+
+  MetisSetUpClazzInfoStateOfClassMenuItem = {};
+
+  MetisSetUpClazzInfoStateOfClassTextFieldList = {};
+
+  MetisSetUpClazzInfoTypeOfClassMenuItem = {};
+
+  MetisSetUpClazzInfoTypeOfClassTextFieldList = {};
+
+  MetisSetUpClazzInfoCountsOfStudentCapacityTextField = {};
+
+  MetisSetUpClazzInfoDiv = {};
+
+  MetisSetUpClazzIntroduceTextField = {};
+
+  MetisSetUpClazzClassTimeExtraIconMoreVertRounded = {};
+
+  MetisSetUpClazzClassTimeExtraReactFragmentWrap = {};
+
+  MetisSetUpClazzClassTimeExtraIconButton = {};
+
+  MetisSetUpClazzClassTimeEndOfTimeTimePicker = {};
+
+  MetisSetUpClazzClassTimeStartOfTimeTimePicker = {};
+
+  MetisSetUpClazzClassTimeDayOfWeekMenuItem = {};
+
+  MetisSetUpClazzClassTimeDayOfWeekTextFieldList = {};
+
+  MetisSetUpClazzClassTimeDivList = {};
+
+  MetisSetUpClazzClassTimeDiv = {};
+
+  MetisSetUpClazzSpecificClassDateRangePicker = {};
+
+  MetisSetUpClazzFeeOfClassTextField = {};
+
+  MetisSetUpClazzNameOfClassTextField = {};
+
+  MetisSetUpClazzLinkOfPortfolioTextField = {};
+
+  MetisSetUpClazzExperienceOfHostTextField = {};
+
+  MetisSetUpClazzHeadNameOfHostTextField = {};
+
+  MetisSetUpClazzHeadImageOfHostAvatar = {};
+
+  MetisSetUpClazzHeadDiv = {};
+
+  MetisSetUpClazzDivList = {};
+
+  MetisSetUpClazzPaper = {};
+
+  MetisSetUpAreaOfEditBackChip = {};
+
+  MetisSetUpAreaOfEditAppendChip = {};
+
+  MetisSetUpAreaOfEditDiv = {};
+
+  MetisSetUpDiv = {};
+
+  /** => following for metis  component  */
+
+  MetisClazzSecondFuncShareIconShareRounded = {};
+
+  MetisClazzSecondFuncShareIconButton = {};
+
+  MetisClazzSecondFuncMoreChip = {};
+
+  MetisClazzSecondFuncSubmitChip = {};
+
+  MetisClazzSecondFuncDiv = {};
+
+  MetisClazzSecondIntroduceDivWrap = {};
+
+  MetisClazzSecondIntroduceTypography = {};
+
+  MetisClazzSecondStateOfRegisteredLabelOfStateOfRegisteredTypography = {};
+
+  MetisClazzSecondStateOfRegisteredDivWrap = {};
+
+  MetisClazzSecondStateOfRegisteredTypography = {};
+
+  MetisClazzSecondTotalHoursOfClassLabelOfTotalHoursOfClassTypography = {};
+
+  MetisClazzSecondTotalHoursOfClassDivWrap = {};
+
+  MetisClazzSecondTotalHoursOfClassTypography = {};
+
+  MetisClazzSecondDateOfWeekAttendLabelOfDateOfWeekAttendTypography = {};
+
+  MetisClazzSecondDateOfWeekAttendDivWrap = {};
+
+  MetisClazzSecondDateOfWeekAttendTypography = {};
+
+  MetisClazzSecondDateOfPeriodLabelOfDateOfPeriodTypography = {};
+
+  MetisClazzSecondDateOfPeriodDivWrap = {};
+
+  MetisClazzSecondDateOfPeriodTypography = {};
+
+  MetisClazzSecondFeeOfClassLabelOfFeeOfClassTypography = {};
+
+  MetisClazzSecondFeeOfClassDivWrap = {};
+
+  MetisClazzSecondFeeOfClassTypography = {};
+
+  MetisClazzSecondNameOfClassLabelOfNameOfClassTypography = {};
+
+  MetisClazzSecondNameOfClassDivWrap = {};
+
+  MetisClazzSecondNameOfClassTypography = {};
+
+  MetisClazzSecondDiv = {};
+
+  MetisClazzHeadDescGotoPortfolioDivWrap = {};
+
+  MetisClazzHeadDescGotoPortfolioChip = {};
+
+  MetisClazzHeadDescExperienceOfHostTypography = {};
+
+  MetisClazzHeadDescDiv = {};
+
+  MetisClazzHeadInfoNameOfHostTypography = {};
+
+  MetisClazzHeadInfoImageOfHostAvatar = {};
+
+  MetisClazzHeadInfoDiv = {};
+
+  MetisClazzHeadDiv = {};
+
+  MetisClazzCardSkeleton = {};
+
+  MetisClazzDivList = {};
+
+  MetisClazzCard = {};
+
+  MetisDiv = {};
+
   /** => following for infoOfCopyRightContent  component  */
 
   InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
@@ -820,256 +1070,6 @@ class MobileStyle {
   AccountDivWrap = {};
 
   AccountPaper = {};
-
-  /** => following for establish  component  */
-
-  EstablishStudentCustomFuncGoBackReactFragmentWrap = {};
-
-  EstablishStudentCustomFuncGoBackChip = {};
-
-  EstablishStudentCustomFuncAcceptReactFragmentWrap = {};
-
-  EstablishStudentCustomFuncAcceptChip = {};
-
-  EstablishStudentCustomFuncDiv = {};
-
-  EstablishStudentCustomAgreeOfContractLabelOfAgreeOfContractTypography = {};
-
-  EstablishStudentCustomAgreeOfContractDivWrap = {};
-
-  EstablishStudentCustomAgreeOfContractCheckbox = {};
-
-  EstablishStudentCustomContractDivWrap = {};
-
-  EstablishStudentCustomContractTypography = {};
-
-  EstablishStudentCustomYoungNoticeDivWrap = {};
-
-  EstablishStudentCustomYoungNoticeTypography = {};
-
-  EstablishStudentCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography = {};
-
-  EstablishStudentCustomYoungContactOfGuardianDivWrap = {};
-
-  EstablishStudentCustomYoungContactOfGuardianTextField = {};
-
-  EstablishStudentCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography = {};
-
-  EstablishStudentCustomYoungNameOfGuardianDivWrap = {};
-
-  EstablishStudentCustomYoungNameOfGuardianTextField = {};
-
-  EstablishStudentCustomYoungDiv = {};
-
-  EstablishStudentCustomIdOfNationalLabelOfIdOfNationalTypography = {};
-
-  EstablishStudentCustomIdOfNationalDivWrap = {};
-
-  EstablishStudentCustomIdOfNationalTextField = {};
-
-  EstablishStudentCustomBirthdayLabelOfBirthdayTypography = {};
-
-  EstablishStudentCustomBirthdayDivWrap = {};
-
-  EstablishStudentCustomBirthdayDatePicker = {};
-
-  EstablishStudentCustomContactLabelOfContactTypography = {};
-
-  EstablishStudentCustomContactDivWrap = {};
-
-  EstablishStudentCustomContactTextField = {};
-
-  EstablishStudentCustomTextOfEmailLabelOfTextOfEmailTypography = {};
-
-  EstablishStudentCustomTextOfEmailDivWrap = {};
-
-  EstablishStudentCustomTextOfEmailTextField = {};
-
-  EstablishStudentCustomNameLabelOfNameTypography = {};
-
-  EstablishStudentCustomNameDivWrap = {};
-
-  EstablishStudentCustomNameTextField = {};
-
-  EstablishStudentCustomDiv = {};
-
-  EstablishStudentMainDatOfPeriodWithHoursLabelOfDatOfPeriodWithHoursTypography = {};
-
-  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconEditCalendarRounded = {};
-
-  EstablishStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconButton = {};
-
-  EstablishStudentMainDatOfPeriodWithHoursDivWrap = {};
-
-  EstablishStudentMainDatOfPeriodWithHoursTypography = {};
-
-  EstablishStudentMainNameOfClassLabelOfNameOfClassTypography = {};
-
-  EstablishStudentMainNameOfClassBtnOfNameOfClassIconSchoolRounded = {};
-
-  EstablishStudentMainNameOfClassBtnOfNameOfClassIconButton = {};
-
-  EstablishStudentMainNameOfClassDivWrap = {};
-
-  EstablishStudentMainNameOfClassTypography = {};
-
-  EstablishStudentMainDiv = {};
-
-  EstablishStudentPaperSkeleton = {};
-
-  EstablishStudentDivList = {};
-
-  EstablishStudentPaper = {};
-
-  EstablishDiv = {};
-
-  /** => following for classSetup  component  */
-
-  ClassSetupClazzAreaOfFuncDeletedReactFragmentWrap = {};
-
-  ClassSetupClazzAreaOfFuncDeletedChip = {};
-
-  ClassSetupClazzAreaOfFuncUpdateChip = {};
-
-  ClassSetupClazzAreaOfFuncDiv = {};
-
-  ClassSetupClazzInfoStateOfClassMenuItem = {};
-
-  ClassSetupClazzInfoStateOfClassTextFieldList = {};
-
-  ClassSetupClazzInfoTypeOfClassMenuItem = {};
-
-  ClassSetupClazzInfoTypeOfClassTextFieldList = {};
-
-  ClassSetupClazzInfoCountsOfStudentCapacityTextField = {};
-
-  ClassSetupClazzInfoDiv = {};
-
-  ClassSetupClazzIntroduceTextField = {};
-
-  ClassSetupClazzClassTimeExtraIconMoreVertRounded = {};
-
-  ClassSetupClazzClassTimeExtraReactFragmentWrap = {};
-
-  ClassSetupClazzClassTimeExtraIconButton = {};
-
-  ClassSetupClazzClassTimeEndOfTimeTimePicker = {};
-
-  ClassSetupClazzClassTimeStartOfTimeTimePicker = {};
-
-  ClassSetupClazzClassTimeDayOfWeekMenuItem = {};
-
-  ClassSetupClazzClassTimeDayOfWeekTextFieldList = {};
-
-  ClassSetupClazzClassTimeDivList = {};
-
-  ClassSetupClazzClassTimeDiv = {};
-
-  ClassSetupClazzSpecificClassDateRangePicker = {};
-
-  ClassSetupClazzFeeOfClassTextField = {};
-
-  ClassSetupClazzNameOfClassTextField = {};
-
-  ClassSetupClazzLinkOfPortfolioTextField = {};
-
-  ClassSetupClazzExperienceOfHostTextField = {};
-
-  ClassSetupClazzHeadNameOfHostTextField = {};
-
-  ClassSetupClazzHeadImageOfHostAvatar = {};
-
-  ClassSetupClazzHeadDiv = {};
-
-  ClassSetupClazzDivList = {};
-
-  ClassSetupClazzPaper = {};
-
-  ClassSetupAreaOfEditBackChip = {};
-
-  ClassSetupAreaOfEditAppendChip = {};
-
-  ClassSetupAreaOfEditDiv = {};
-
-  ClassSetupDiv = {};
-
-  /** => following for quickSignUp  component  */
-
-  QuickSignUpClazzSecondFuncShareIconShareRounded = {};
-
-  QuickSignUpClazzSecondFuncShareIconButton = {};
-
-  QuickSignUpClazzSecondFuncMoreChip = {};
-
-  QuickSignUpClazzSecondFuncSubmitChip = {};
-
-  QuickSignUpClazzSecondFuncDiv = {};
-
-  QuickSignUpClazzSecondIntroduceDivWrap = {};
-
-  QuickSignUpClazzSecondIntroduceTypography = {};
-
-  QuickSignUpClazzSecondStateOfRegisteredLabelOfStateOfRegisteredTypography = {};
-
-  QuickSignUpClazzSecondStateOfRegisteredDivWrap = {};
-
-  QuickSignUpClazzSecondStateOfRegisteredTypography = {};
-
-  QuickSignUpClazzSecondTotalHoursOfClassLabelOfTotalHoursOfClassTypography = {};
-
-  QuickSignUpClazzSecondTotalHoursOfClassDivWrap = {};
-
-  QuickSignUpClazzSecondTotalHoursOfClassTypography = {};
-
-  QuickSignUpClazzSecondDateOfWeekAttendLabelOfDateOfWeekAttendTypography = {};
-
-  QuickSignUpClazzSecondDateOfWeekAttendDivWrap = {};
-
-  QuickSignUpClazzSecondDateOfWeekAttendTypography = {};
-
-  QuickSignUpClazzSecondDateOfPeriodLabelOfDateOfPeriodTypography = {};
-
-  QuickSignUpClazzSecondDateOfPeriodDivWrap = {};
-
-  QuickSignUpClazzSecondDateOfPeriodTypography = {};
-
-  QuickSignUpClazzSecondFeeOfClassLabelOfFeeOfClassTypography = {};
-
-  QuickSignUpClazzSecondFeeOfClassDivWrap = {};
-
-  QuickSignUpClazzSecondFeeOfClassTypography = {};
-
-  QuickSignUpClazzSecondNameOfClassLabelOfNameOfClassTypography = {};
-
-  QuickSignUpClazzSecondNameOfClassDivWrap = {};
-
-  QuickSignUpClazzSecondNameOfClassTypography = {};
-
-  QuickSignUpClazzSecondDiv = {};
-
-  QuickSignUpClazzHeadDescGotoPortfolioDivWrap = {};
-
-  QuickSignUpClazzHeadDescGotoPortfolioChip = {};
-
-  QuickSignUpClazzHeadDescExperienceOfHostTypography = {};
-
-  QuickSignUpClazzHeadDescDiv = {};
-
-  QuickSignUpClazzHeadInfoNameOfHostTypography = {};
-
-  QuickSignUpClazzHeadInfoImageOfHostAvatar = {};
-
-  QuickSignUpClazzHeadInfoDiv = {};
-
-  QuickSignUpClazzHeadDiv = {};
-
-  QuickSignUpClazzCardSkeleton = {};
-
-  QuickSignUpClazzDivList = {};
-
-  QuickSignUpClazzCard = {};
-
-  QuickSignUpDiv = {};
 
   /** => following for main  component  */
 

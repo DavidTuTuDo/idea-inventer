@@ -33,10 +33,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -6513,6 +6513,7 @@ class AppBuilder extends ComponentBuilder {
         const arrayOfI18nKeyValue = [];
 
         for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
+            console.log(component.getName())
             appendMapOfKeyValue(component.getName(), `${component.getName()}${component.isPreciselyEditableComponent() ? '-editor' : ''} 需要的字串`, 'comment')
 
             appendMapOfKeyValue(component.getStruct().getFieldNameOfPageTitle(), component.title);
