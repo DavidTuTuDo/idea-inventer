@@ -33,10 +33,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -4081,7 +4081,7 @@ class PathBase {
 
         /** 把component props改變 */
         source.components = source.components.map((component) => {
-            const obj = source.setsOfComponentProp[component.name];
+            const obj = _.isObject(source.setsOfComponentProp) && source.setsOfComponentProp[component.name];
             return obj ? {...component, ...obj} : component;
         });
 

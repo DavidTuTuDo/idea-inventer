@@ -1,4 +1,5 @@
 const edit = true
+
 import {
     utiller as Util,
     exceptioner as ERROR,
@@ -32,8 +33,13 @@ class UserInfo {
     @observable
     isLoginSucceed = false;
 
+    /** 最高級別的admin(增加悅譜的閱讀permission) */
     @observable
-    isAdminUser = false;
+    adminUser = false;
+
+    /** 一般級別的admin(修改譜) */
+    @observable
+    adminHelper = false;
 
     @observable
     isPurchaseUser = false;
@@ -62,11 +68,12 @@ class UserInfo {
 
     /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
+        let current = '';
         if (this.isValidUser(user)) {
             Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
             CommonPoolHelper.enableParallelMode();
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
-            const current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
+            current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
             if (!current.exists) await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {...user, id: user.uid}, user.uid);
             else await this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid);
             Cookie.setUser(user);
@@ -77,16 +84,17 @@ class UserInfo {
             Cookie.removeUser();
             await firebaser.logout();
         }
-        this.invalidateLoginState();
+        this.invalidateLoginState(current);
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
 
     @action
-    invalidateLoginState() {
+    invalidateLoginState(user) {
         Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`)
         CommonPoolHelper.enableParallelMode();
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
-        this.isAdminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
+        this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
+        this.adminHelper = this.isLoginWithSucceed() && user.isAdmin;
         this.setAuthProcessing(false);
         this.invalidateCartie();
     }
@@ -96,7 +104,11 @@ class UserInfo {
     }
 
     isAdmin() {
-        return this.isAdminUser;
+        return this.adminUser;
+    }
+
+    isAdminHelper() {
+        return this.adminUser || this.adminHelper;
     }
 
     getUid(allowCache = true) {

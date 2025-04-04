@@ -17,7 +17,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     }
 
     getInjectPropsOfChordiventorTxtTextField(chordiventor) {
-        if (isMobile || isTablet) return {inputProps:{style: {fontSize: '0.65rem'}}}
+        if (isMobile || isTablet) return {inputProps:{style: {fontSize: '0.55rem'}}}
         else return {inputProps:{style: {fontSize: '0.85rem'}}}
     }
 
@@ -45,7 +45,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
         /** 按下發佈按鈕 */
         const self = this;
         this.getStore().submitCustomPu().then((result) => {
-            if(result) Router.gotoInventedOfPuPage(self);
+            if(result) Router.gotoHomePage(self);
         });
     }
 

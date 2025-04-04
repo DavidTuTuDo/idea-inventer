@@ -1,18 +1,11 @@
 const edit = true;
-import {inject} from "mobx-react";
+import {inject, observer} from "mobx-react";
 import BaseSheetComponent from "./BaseSheetComponent";
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import {utiller as Util} from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import Typography from "@mui/material/Typography";
-import {observer} from "mobx-react";
 import Style from "../../style";
 import React from "react";
-import Cookie from '../../cookie';
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 
@@ -46,11 +39,11 @@ class SheetComponent extends BaseSheetComponent {
         Router.gotoChordiventorPage(this, this.getStore().getCurrentPu().getId());
     }
 
-    rulesOfAllowEditFunction() {
-        const rule1 = UserInfoRef.isAdmin();
+    rulesOfAllowEditFunction = () => {
+        const rule1 = UserInfoRef.isAdminHelper();
         const rule2 = !this.isComponentView();
         const rule3 = _.isEqual(this.getStore().getCurrentPu().getIdOfAuthor(), UserInfoRef.getUid());
-        return rule2 && (rule3 || rule1);
+        return rule2 && (rule3 || rule1)
     }
 
     getWrapInjectStyleOfSheetGuitarpuSpeedOfRhythmTypography(guitarpu) {

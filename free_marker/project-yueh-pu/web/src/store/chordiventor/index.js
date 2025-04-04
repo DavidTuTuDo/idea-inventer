@@ -118,7 +118,7 @@ class ChordiventorStore extends BaseChordiventorStore {
 
             const pu = await this.apiOfPu.fetchGuitarpuItem(this.getComponent(), idOfGuitarPu);
 
-            const conditionA = UserInfo.isAdmin();
+            const conditionA = UserInfo.isAdminHelper();
             const conditionB = _.isEqual(pu.copyright, false) && _.isEqual(pu.idOfAuthor, UserInfo.getUid());
 
             if(conditionA || conditionB) {
@@ -165,10 +165,14 @@ class ChordiventorStore extends BaseChordiventorStore {
         if (_.size(this.getIdOfGuitarPu()) > 3) {
             update = true;
             await this.apiOfPu.updateGuitarpuItem(this.getComponent(), normalize, this.getIdOfGuitarPu());
-            await this.apiOfRy.updateRhythmItem(this.getComponent(), {
-                ...normalize,
-                composer: `詞：${spec.lyricist} 曲：${spec.composer}`
-            }, this.getIdOfGuitarPu());
+            try {
+                await this.apiOfRy.updateRhythmItem(this.getComponent(), {
+                    ...normalize,
+                    composer: `詞：${spec.lyricist} 曲：${spec.composer}`
+                }, this.getIdOfGuitarPu());
+            }catch (error) {
+                if(UserInfo.isAdmin()) this.displayTipThenRefuse(`UPDATE RHYTHM 錯誤，${error.message}`);
+            }
         } else {
             const resultOfPu = await this.apiOfPu.submitGuitarpuItem(this.getComponent(),
                 {
