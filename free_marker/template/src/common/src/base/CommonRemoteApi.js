@@ -11,7 +11,6 @@ class CommonRemoteApi {
         return firebase;
     }
 
-
     normalizeTimestamp(obj) {
         if (obj instanceof this.FirebaseTimestampClass())
             return obj.toMillis();

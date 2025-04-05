@@ -91,6 +91,11 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo('fetch', _async)
     }
 
+    async modifyItemsOfPaginate(path, job = async (items) => {}, conditions, size) {
+        const _async = async () => super.modifyItemsOfPaginate(path, job, conditions, size);
+        return await CommonPoolHelper.submitTo('fetch', _async)
+    }
+
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async fetchItems(path, ...conditions) {
         const asyncTask = async () => super.fetchItems(path, ...conditions);

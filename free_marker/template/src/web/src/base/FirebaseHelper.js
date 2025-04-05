@@ -44,6 +44,8 @@ import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
 import libpath from 'path';
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
+const MAX_COUNT_OF_FIRESTORE_FETCH = 150;
+
 
 class FirebaseHelper extends BaseFirebase {
 
@@ -276,6 +278,35 @@ class FirebaseHelper extends BaseFirebase {
             all.push(data);
         })
         return all;
+    }
+
+    async modifyDocumentsOfPaginate(uid, path, job, conditions, size = MAX_COUNT_OF_FIRESTORE_FETCH) {
+        const collectionRef = this.compound(path, conditions);
+        let lastDoc = null;
+        let batchCount = 0;
+        let totalProcessed = 0;
+
+        while (true) {
+            let q = query(collectionRef, limit(size)); // 以 document ID 排序，確保分頁正常運作
+            if (lastDoc) q = query(collectionRef, startAfter(lastDoc), limit(size));
+
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) {
+                Util.appendInfo("9874564 ✅ 所有 documents 處理完畢");
+                break;
+            }
+            const documents = snapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
+            await job(documents);
+            // 執行每批次的任務，例如更新 updateTime
+
+            lastDoc = snapshot.docs[snapshot.docs.length - 1]; // 記錄這批最後一筆，下一次從這裡繼續
+            batchCount++;
+            totalProcessed += documents.length;
+            Util.appendInfo(`9874564 🔹 已處理第 ${batchCount} 批，累積 ${totalProcessed} 筆資料`);
+
+            if (snapshot.size < size) break;
+            // 小於 pageSize 代表已經到底
+        }
     }
 
     fetchDocument = async (path, id) => {
