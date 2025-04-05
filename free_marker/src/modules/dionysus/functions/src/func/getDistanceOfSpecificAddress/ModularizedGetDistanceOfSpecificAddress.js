@@ -1,19 +1,20 @@
 const edit = true;
-import BaseGetDistanceOfSpecificAddress from "./BaseGetDistanceOfSpecificAddress";
+
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import libpath from "path";
+import BaseGetDistanceOfSpecificAddress from "./BaseGetDistanceOfSpecificAddress";
 
-const API_KEY = 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
 
-class GetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
-    /** -------------------- fields -------------------- **/
+class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
 
     constructor(props) {
         super(props);
     }
-    /** -------------------- functions -------------------- **/
 
+    /** 每個專案都不同哦 */
+    getKeyOfAPI() {
+      return 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
+    }
 
     /**
      * 計算兩地步行距離
@@ -23,7 +24,7 @@ class GetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
      */
     async calculateWalkingDistance(address, targetCoords) {
         try {
-            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.getKeyOfAPI()}`;
             const geocodeResponse = await fetch(geocodeUrl);
 
             if (!geocodeResponse.ok) {
@@ -36,7 +37,7 @@ class GetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
                 throw new Error('無法解析地址');
             }
 
-            const { lat, lng } = geocodeData.results[0].geometry.location;
+            const {lat, lng} = geocodeData.results[0].geometry.location;
 
             const distanceMatrixUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${lat},${lng}&destinations=${targetCoords.lat},${targetCoords.lng}&mode=walking&key=${API_KEY}`;
             const distanceMatrixResponse = await fetch(distanceMatrixUrl);
@@ -72,8 +73,6 @@ class GetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
         const distance = await this.calculateWalkingDistance(address, {lat: 22.663524, lng: 120.363903})
         return distance;
     }
-
-    /** -------------------- async api -------------------- **/
 }
 
-export default new GetDistanceOfSpecificAddress();
+export default ModularizedGetDistanceOfSpecificAddress;

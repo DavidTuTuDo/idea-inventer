@@ -3943,7 +3943,7 @@ class PathBase {
     nodeOfAncestor; //source.js
     structs;
     env = 'dev'; //dev, prod
-    platform; // web, admin,function, platform
+    platform; // web, admin,functions, platform
     genComponentRootPath; // gen/app/src/component
     genStoreRootPath; // gen/app/src/store
     props;
@@ -4138,10 +4138,10 @@ class PathBase {
             const bunchOfCloudFunction = component.getCloudFunctions();
             if (_.isArray(bunchOfCloudFunction)) {
                 functions.push(...bunchOfCloudFunction.map((each) => {
-                    each.isModule = true;
+                    each.isCommonModule = true;
                     return each;
                 }))
-            }
+            } else new ERROR(9999, `546564512 ${component.name} 的 cloudFunctions格式不對！`)
         }
         return functions;
     }
@@ -7580,14 +7580,18 @@ class ProjectFileHandler extends PathBase {
         const self = this;
 
         function persist(module = 'epay', folder = 'store', predict = (file) => Util.appendInfo(file.fileName)) {
+
+            function isFunctionBelong2Module(dirName) {
+                const path = libpath.join('./modules', module, FILENAME_OF_SOURCE_JS);
+                const source = require(`./${path}`).default;
+                return _.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
+            }
+
             for (const file of Util.findFilePathBy(libpath.join(self.genSourcePath, folder),
-                (each) => _.startsWith(_.toLower(each.dirName), _.toLower(module)) &&
+                (each) => (self.isFunctionsPlatform() ? isFunctionBelong2Module(each.dirName) : _.startsWith(_.toLower(each.dirName), _.toLower(module))) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
                 const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, predict(file));
-
-                if (Util.isFileEditSucceed(file.absolute)) {
-                    Util.copySingleFileConservative(pathOfDestination, file);
-                }
+                if (Util.isFileEditSucceed(file.absolute)) Util.copySingleFileConservative(pathOfDestination, file);
             }
         }
 
@@ -9378,7 +9382,6 @@ class ProjectFileHandler extends PathBase {
         appGenerator.appendImport('firebase', './base/FirebaseHelper');
         // appGenerator.appendImport('admin', 'firebase-admin')
         for (const func of this.getAllCloudFunctions()) {
-
             await this.buildFunctionImplement(func);
             const functionName = func.getName();
             const fieldName = _.upperFirst(functionName);
@@ -9679,10 +9682,11 @@ class ProjectFileHandler extends PathBase {
         Util.appendInfo(this.nodeOfAncestor.components.map((each) => {
             return {
                 name: each.getName(),
+                struct: each.getNodeOfStruct().getName(),
                 editor: each.isPreciselyEditableComponent(),
                 module: each.isModuleComponent(),
                 extra: each.isExtraComponent,
-                path:each.getPath()
+                path: each.getPath()
             }
         }))
 
