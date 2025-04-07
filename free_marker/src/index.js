@@ -4,6 +4,7 @@ import fs from 'fs';
 import libpath from 'path';
 import mustache from 'mustache';
 import {configerer} from "configerer";
+import Lean from './lean';
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -7374,6 +7375,12 @@ class ProjectFileHandler extends PathBase {
         }
     }
 
+    async leanCodeOfSource() {
+        Util.appendInfo('4844151512 leanCodeOfSource ==> destination :', this.genSourcePath);
+        const lean = new Lean(this.genSourcePath, ['console.log'], 'react');
+        await lean.run();
+    }
+
     async rewriteModulesI18nFiles() {
 
         /** stmt = main-editor 需要的字串
@@ -9994,7 +10001,12 @@ class BuildApplication {
         const handler = new ProjectFileHandler(this.getBuildObject(platform));
         await handler.rewriteModulesI18nFiles();
         Util.appendInfo(`modifiedI18n() succeed`);
+    }
 
+    async leanCodeOfProjectSrc(platform = 'web') {
+        const handler = new ProjectFileHandler(this.getBuildObject(platform));
+        await handler.leanCodeOfSource();
+        Util.appendInfo(`leanCode() succeed`);
     }
 
 }
@@ -10119,6 +10131,7 @@ class ScheduleManager {
                 await builder.modifiedI18n();
                 break;
             default:
+                await builder.leanCodeOfProjectSrc();
                 Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);
                 break
         }
