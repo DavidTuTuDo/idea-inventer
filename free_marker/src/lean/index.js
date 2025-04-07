@@ -1,21 +1,23 @@
 import fs from 'fs/promises';
 import collector from '../lean/collector';
 import path from 'path';
-import { glob } from 'glob';
+import {glob} from 'glob';
 import _ from 'lodash';
+import {utiller as Util} from 'utiller';
 
 export default class Lean {
     constructor(srcPath) {
         this.srcPath = path.resolve(srcPath);
         this.objectOfFunctions = {}; // 存儲函式名稱及其資訊
         this.files = []; // 檔案路徑集合
+        this.listOfAnalysis = [];
 
     }
 
 
     // 初始化，取得所有檔案的路徑
     async init() {
-        this.files = await glob(`${this.srcPath}/**/*.js`, { absolute: true });
+        this.files = await glob(`${this.srcPath}/**/*.js`, {absolute: true});
         console.log('🗂️ 開始處理檔案...');
     }
 
@@ -25,7 +27,7 @@ export default class Lean {
             const _path = path.resolve(this.srcPath, file)
             console.log(`📄 正在收集檔案：${_path}`);
             const obj = await new collector(_path).collectFunctions();
-            this.objectOfFunctions = { ...this.objectOfFunctions, ...obj}
+            this.objectOfFunctions = {...this.objectOfFunctions, ...obj}
         }
     }
 
@@ -35,12 +37,16 @@ export default class Lean {
             const _path = path.resolve(this.srcPath, file)
 
             const regexPatterns = [
-                /\/component\/[^/]+\/[^/]+\.js$/,          // 匹配 .../component/*/*.js
-                /\/store\/[^/]+\/index\.js$/,              // 匹配 .../store/*/index.js
-                /\/store\/[^/]+\/Modularized.*\.js$/       // 匹配 .../store/*/Modularized*.js
+                /\/component\/[^/]+\/[^/]+\.js$/,            // .../component/*/*.js
+                /\/store\/[^/]+\/index\.js$/,                // .../store/*/index.js
+                /\/store\/[^/]+\/Modularized.*\.js$/,        // .../store/*/Modularized*.js
+                /\/src\/index\.js$/,                         // .../src/index.js
+                /\/src\/BaseApp\.js$/,                       // .../src/BaseApp.js
+                /\/store\/index\.js$/                        // .../store/index.js
             ];
 
-            if(!regexPatterns.some(regex => regex.test(_path))) {
+
+            if (!regexPatterns.some(regex => regex.test(_path))) {
                 console.log(`📄 不匹配：${_path}`);
                 continue
             }
@@ -48,28 +54,65 @@ export default class Lean {
             const content = await fs.readFile(_path, 'utf-8');
             const keywordsOfUsage = _.keys(this.objectOfFunctions).filter(keyword => content.includes(`.${keyword}(`));
             keywordsOfUsage.forEach(key => delete this.objectOfFunctions[key]);
+
+            delete this.objectOfFunctions['constructor'];
+            delete this.objectOfFunctions['getRenderView'];
         }
     }
 
-    saveObjectAsJSON = async (object, filePath) => {
-        try {
-            // 將物件轉換為格式化的 JSON 字串
-            const jsonString = JSON.stringify(object, null, 2);
-            // 確保資料夾存在
-            await fs.mkdir('./temp', { recursive: true });
-            // 儲存為檔案
-            await fs.writeFile(filePath, jsonString);
-            console.log(`✅ JSON 檔案已儲存為 ${filePath}`);
-        } catch (err) {
-            console.error('❌ 寫檔錯誤:', err);
+    saveAnalyzedReportAsJSON = async (object, filePath) => {
+        const entriesWithNames = _.map(object, (value, key) => ({
+            ...value,
+            name: key
+        }));
+
+        // 2. 根據 path 分組
+        const groupedByPath = _.groupBy(entriesWithNames, 'path');
+
+        // 3. 建立整理後的結構
+        this.listOfAnalysis = _.map(groupedByPath, (items, path) => {
+            const lineRange = _.flatMap(items, 'lineRange');
+            const names = _.map(items, 'name');
+
+            // 產生 lines（展開每一組 range，例如 [301,303] -> [301,302,303]）
+            const linesExpanded = _(items)
+                .flatMap(({lineRange}) => _.range(lineRange[0], lineRange[1] + 1))
+                .uniq()
+                .sortBy()
+                .value();
+
+            return {path, lineRange, names, lines: linesExpanded};
+        });
+        await Util.persistJsonFilePrettier(filePath,this.listOfAnalysis)
+    }
+
+    cleanFilesByAnalyze = async (analyze) => {
+        for (const { path, lines } of analyze) {
+            try {
+                const content = await fs.readFile(path, 'utf8');
+                const allLines = content.split('\n');
+
+                const cleaned = _(allLines)
+                    .map((line, index) => ({ line, index: index + 1 })) // 行號從 1 開始
+                    .filter(({ index }) => !lines.includes(index))
+                    .map('line')
+                    .value();
+
+                await fs.writeFile(path, cleaned.join('\n'), 'utf8');
+                console.log(`✅ 已清理: ${path}`);
+            } catch (error) {
+                console.error(`❌ 無法處理檔案: ${path}`, error);
+            }
         }
-    };
+    }
 
     // 執行所有流程
     async run() {
         await this.init();
         await this.buildFunctionGraph();
         await this.scanUsage();
-        await this.saveObjectAsJSON(this.objectOfFunctions,'./temp/unused.json');
+        await Util.persistJsonFilePrettier('./temp/unused_functions.json',this.objectOfFunctions );
+        await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
+        // await this.cleanFilesByAnalyze(this.listOfAnalysis);
     }
 }
