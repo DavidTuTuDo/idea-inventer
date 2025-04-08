@@ -11,6 +11,7 @@ export default class Lean {
         this.objectOfFunctions = {}; // 存儲函式名稱及其資訊
         this.files = []; // 檔案路徑集合
         this.listOfAnalysis = [];
+        this.objectOfUsageAnalysis = {}
 
     }
 
@@ -29,6 +30,7 @@ export default class Lean {
             const obj = await new collector(_path).collectFunctions();
             this.objectOfFunctions = {...this.objectOfFunctions, ...obj}
         }
+        await Util.persistJsonFilePrettier('./temp/all_function.json',this.objectOfFunctions)
     }
 
     // 檢查每個檔案中是否有呼叫函式
@@ -53,6 +55,7 @@ export default class Lean {
             console.log(`📄 正在分析檔案：${_path}`);
             const content = await fs.readFile(_path, 'utf-8');
             const keywordsOfUsage = _.keys(this.objectOfFunctions).filter(keyword => content.includes(`.${keyword}(`));
+            keywordsOfUsage.forEach(key => Util.appendMapOfKeyArray(this.objectOfUsageAnalysis, key, _path));
             keywordsOfUsage.forEach(key => delete this.objectOfFunctions[key]);
 
             delete this.objectOfFunctions['constructor'];
@@ -83,18 +86,18 @@ export default class Lean {
 
             return {path, lineRange, names, lines: linesExpanded};
         });
-        await Util.persistJsonFilePrettier(filePath,this.listOfAnalysis)
+        await Util.persistJsonFilePrettier(filePath, this.listOfAnalysis)
     }
 
     cleanFilesByAnalyze = async (analyze) => {
-        for (const { path, lines } of analyze) {
+        for (const {path, lines} of analyze) {
             try {
                 const content = await fs.readFile(path, 'utf8');
                 const allLines = content.split('\n');
 
                 const cleaned = _(allLines)
-                    .map((line, index) => ({ line, index: index + 1 })) // 行號從 1 開始
-                    .filter(({ index }) => !lines.includes(index))
+                    .map((line, index) => ({line, index: index + 1})) // 行號從 1 開始
+                    .filter(({index}) => !lines.includes(index))
                     .map('line')
                     .value();
 
@@ -106,13 +109,32 @@ export default class Lean {
         }
     }
 
+    /**
+     * 去除物件中每個陣列屬性內的重複值
+     * @param {Object} obj - 欲處理的物件
+     * @returns {Object} - 處理後的物件
+     */
+    removeDuplicatesFromObjectArrays = (obj) => {
+        return Object.fromEntries(
+            Object.entries(obj).map(([key, value]) => [
+                key,
+                Array.isArray(value) ? _.uniq(value) : value,
+            ]));
+    }
+
+    saveUsedAnalyzedReportAsJSON = async (object, path) => {
+        await Util.persistJsonFilePrettier(path, object);
+
+    }
+
     // 執行所有流程
     async run() {
         await this.init();
         await this.buildFunctionGraph();
         await this.scanUsage();
-        await Util.persistJsonFilePrettier('./temp/unused_functions.json',this.objectOfFunctions );
+        await Util.persistJsonFilePrettier('./temp/unused_functions.json', this.objectOfFunctions);
         await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
+        await this.saveUsedAnalyzedReportAsJSON(this.objectOfUsageAnalysis, './temp/map_of_usage.json');
         // await this.cleanFilesByAnalyze(this.listOfAnalysis);
     }
 }
