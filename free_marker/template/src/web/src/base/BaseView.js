@@ -1,7 +1,5 @@
-import _ from 'lodash'
+import _ from 'lodash';
 import React from "react";
-import moment from 'moment';
-import {utiller as Util, exceptioner as ERROR,} from "utiller";
 
 class BaseView extends React.Component {
 

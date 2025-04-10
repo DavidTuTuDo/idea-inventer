@@ -37,6 +37,7 @@ import copy from 'copy-to-clipboard';
 import clipboardy from 'clipboardy';
 import functions from '../functions'
 
+
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
     style = {};

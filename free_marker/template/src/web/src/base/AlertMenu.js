@@ -1,12 +1,7 @@
 import React from "react";
-import {
-    Menu,
-    MenuItem,
-    ListItemIcon,
-} from '@mui/material';
-import {action, makeObservable, observable} from "mobx";
-import {observer, inject} from "mobx-react";
-import {utiller as Util} from "utiller";
+import { Menu, MenuItem, ListItemIcon } from '@mui/material';
+import { action, makeObservable, observable } from "mobx";
+import { observer } from "mobx-react";
 import UserInfoRef from "./BaseUserInfo";
 import _ from 'lodash';
 import * as MUIcon from '@mui/icons-material';

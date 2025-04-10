@@ -17,8 +17,6 @@ import i18n from '../../i18n';
 import AccountUser from '../../store/accountUser'
 
 class ModularizedAccountComponent extends BaseAccountComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
 
     constructor(props) {
         super(props);

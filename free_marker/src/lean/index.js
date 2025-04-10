@@ -1,5 +1,6 @@
 import fs from 'fs/promises';
-import collector from '../lean/collector';
+import collector from './collector';
+import dissimport from './dissimport'
 import path from 'path';
 import {glob} from 'glob';
 import _ from 'lodash';
@@ -255,18 +256,28 @@ export default class Lean {
 
     saveUsedAnalyzedReportAsJSON = async (object, path) => {
         await Util.persistJsonFilePrettier(path, object);
+    }
+
+    async fileImportRemover() {
+        for (const file of this.files) {
+            const _path = path.resolve(this.srcPath, file)
+            console.log(`📄 正在清除沒用到的import檔案：${_path}`);
+            const cleaner = new dissimport(_path);
+            await cleaner.clean();
+        }
 
     }
 
     // 執行所有流程
     async run() {
         await this.init();
-        await this.buildFunctionGraph();
-        await this.scanUsage();
-        await Util.persistJsonFilePrettier('./temp/unused_functions.json', this.objectOfFunctions);
-        await Util.persistJsonFilePrettier('./temp/list_of_fetch.json', this.listOfHack);
-        await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
-        await this.saveUsedAnalyzedReportAsJSON(this.objectOfUsageAnalysis, './temp/map_of_usage.json');
-        await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
+        // await this.buildFunctionGraph();
+        // await this.scanUsage();
+        // await Util.persistJsonFilePrettier('./temp/unused_functions.json', this.objectOfFunctions);
+        // await Util.persistJsonFilePrettier('./temp/list_of_fetch.json', this.listOfHack);
+        // await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
+        // await this.saveUsedAnalyzedReportAsJSON(this.objectOfUsageAnalysis, './temp/map_of_usage.json');
+        // await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
+        await this.fileImportRemover()
     }
 }

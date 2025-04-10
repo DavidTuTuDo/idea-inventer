@@ -1,4 +1,5 @@
 const edit = true;
+
 import {observer, inject} from "mobx-react";
 import BaseNavigatorComponent from "./BaseNavigatorComponent";
 import Router from '../../router';
@@ -12,8 +13,6 @@ import {
     ListItemIcon,
     ListItem,
     Typography,
-    ListSubheader,
-    ListItemAvatar,
     Avatar
 } from '@mui/material';
 import Collapse from '@mui/material/Collapse';
@@ -32,7 +31,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         super.componentDidMount();
     }
 
-    onNavigatorToolBarTitleTypographyClicked(param) {
+    onNavigatorTitleTypographyClicked(param) {
         Router.gotoHomePage(this);
     }
 
@@ -48,7 +47,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         this.getStore().setDrawerOpenStatus(open);
     }
 
-    onNavigatorToolBarMenuIconButtonClicked(param) {
+    onNavigatorMenuIconButtonClicked(param) {
         this.setDrawerOpenState(true)
     }
 
