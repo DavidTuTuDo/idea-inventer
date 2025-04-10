@@ -7878,18 +7878,17 @@ class ProjectFileHandler extends PathBase {
     }
 
     async buildProdWebDistToProjectThanDeploy(deploy = true, npmBuild = true) {
-        if (npmBuild)
-            await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
-
+        await this.leanCodeOfSource();
+        if (npmBuild) await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
         const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
         const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
         await this.buildDistAssetFolder();
-        if (deploy) {
-            Util.persistByPath(pathOfDestination);
-            Util.cleanAllFiles(pathOfDestination);
-            Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
-            await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
-        }
+        Util.persistByPath(pathOfDestination);
+        Util.cleanAllFiles(pathOfDestination);
+        Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
+
+        if (deploy) await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
+
     }
 
     async generateFireIndexRules(deploy = true) {
@@ -10130,8 +10129,10 @@ class ScheduleManager {
             case 'developLatestFunction':
                 await builder.modifiedI18n();
                 break;
-            default:
+            case 'leanUnusedFunction':
                 await builder.leanCodeOfProjectSrc();
+                break;
+            default:
                 Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);
                 break
         }
