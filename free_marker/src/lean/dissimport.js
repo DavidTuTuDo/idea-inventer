@@ -10,6 +10,7 @@ export default class ImportCleaner {
         this.annotationLine = null;
         this.firstNonImportCodeLine = null;
         this.listOfWhite = ['React']; // 白名單，這些變數的 import 不會被刪除
+        this.removedImports = [];     // 儲存被刪除的 import 原始內容
     }
 
     async clean() {
@@ -19,6 +20,10 @@ export default class ImportCleaner {
         const usedVars = this.detectUsedVariables();
         this.rewriteImports(usedVars);
         await this.writeCleanedFile();
+
+        return {
+            [this.filePath]: this.removedImports
+        };
     }
 
     async loadFile() {
@@ -52,26 +57,26 @@ export default class ImportCleaner {
             if (index >= this.firstNonImportCodeLine) return;
             if (/^\s*import\b/.test(line)) {
                 if (currentImport) {
-                    this.imports.push({ start: startLine, end: index - 1, code: currentImport });
+                    this.imports.push({start: startLine, end: index - 1, code: currentImport});
                 }
                 currentImport = line;
                 startLine = index;
                 if (/;\s*$/.test(line)) {
-                    this.imports.push({ start: startLine, end: index, code: currentImport });
+                    this.imports.push({start: startLine, end: index, code: currentImport});
                     currentImport = '';
                     startLine = null;
                 }
             } else if (currentImport) {
                 currentImport += '\n' + line;
                 if (/;\s*$/.test(line)) {
-                    this.imports.push({ start: startLine, end: index, code: currentImport });
+                    this.imports.push({start: startLine, end: index, code: currentImport});
                     currentImport = '';
                     startLine = null;
                 }
             }
         });
         if (currentImport) {
-            this.imports.push({ start: startLine, end: this.firstNonImportCodeLine - 1, code: currentImport });
+            this.imports.push({start: startLine, end: this.firstNonImportCodeLine - 1, code: currentImport});
         }
     }
 
@@ -106,7 +111,6 @@ export default class ImportCleaner {
                     usedVars.add(v);
                 }
             });
-
         });
 
         return usedVars;
@@ -146,17 +150,24 @@ export default class ImportCleaner {
             });
 
             if (kept.length === 0) {
+                // 全部未使用 -> 刪除整段 import
+                this.removedImports.push(rawLines.trim());
                 for (let i = imp.start; i <= imp.end; i++) {
                     lines[i] = null;
                 }
                 return;
             }
 
+            // 重寫 import 保留使用到的
             let newImport = '';
             if (isDestructured) {
                 newImport = `import { ${kept.join(', ')} } from ${source};`;
             } else {
                 newImport = `import ${kept[0]} from ${source};`;
+            }
+
+            if (newImport !== rawLines.trim()) {
+                this.removedImports.push(rawLines.trim());
             }
 
             lines[imp.start] = newImport;

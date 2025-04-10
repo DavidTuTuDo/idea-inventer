@@ -14,6 +14,7 @@ export default class Lean {
         this.listOfAnalysis = [];
         this.objectOfUsageAnalysis = {};
         this.listOfHack = [];
+        this.listOfCleanImport = {};
     }
 
     // 初始化，取得所有檔案的路徑
@@ -43,7 +44,8 @@ export default class Lean {
             console.log(`📄 正在收集function檔案：${_path}`);
             const obj = await new collector(_path).collectFunctions();
 
-            ['fetch', 'initial'].forEach(key => obj[key] && this.listOfHack.push({...obj[key], functionName: key}));
+            /** js file如果出現這些function name(fetch,initial)，要再進去紀錄每一個使用到的子項functions(cleanNextID, fetchXXXs() )*/
+            ['fetch', 'initial','clean'].forEach(key => obj[key] && this.listOfHack.push({...obj[key], functionName: key}));
             this.objectOfFunctions = {...this.objectOfFunctions, ...obj}
         }
         await Util.persistJsonFilePrettier('./temp/all_function.json', this.objectOfFunctions)
@@ -156,8 +158,9 @@ export default class Lean {
             }
             console.log(`📄 正在分析檔案：${_path}`);
             const content = await fs.readFile(_path, 'utf-8');
-
-            const keywordsOfUsage = _.filter(_.keys(this.objectOfFunctions), keyword => new RegExp(`\\.${keyword}\\(`, 'g').test(content));
+            /** 範例一 const keywordsOfUsage = _.filter(_.keys(this.objectOfFunctions), keyword => new RegExp(\\.${keyword}\\(, 'g').test(content)); => xxx.functionName( */
+            const keywordsOfUsage = _.filter(_.keys(this.objectOfFunctions), keyword => new RegExp(`\\.${keyword}\\b`, 'g').test(content));
+            /** 與範例一差異在於 ==> xxx.functionName */
             // console.log(`keyword ==>` ,keywordsOfUsage);
             await analyzeFunctionUsage.call(this, keywordsOfUsage);
             keywordsOfUsage.forEach(key => Util.appendMapOfKeyArray(this.objectOfUsageAnalysis, key, _path));
@@ -257,27 +260,28 @@ export default class Lean {
     saveUsedAnalyzedReportAsJSON = async (object, path) => {
         await Util.persistJsonFilePrettier(path, object);
     }
-
-    async fileImportRemover() {
+zz
+    fileImportRemover = async () => {
         for (const file of this.files) {
             const _path = path.resolve(this.srcPath, file)
             console.log(`📄 正在清除沒用到的import檔案：${_path}`);
             const cleaner = new dissimport(_path);
-            await cleaner.clean();
+            const object = await cleaner.clean();
+            this.listOfCleanImport = {...this.listOfCleanImport, ...object};
         }
-
+        await Util.persistJsonFilePrettier('./temp/list_of_clean_import.json', this.listOfCleanImport);
     }
 
     // 執行所有流程
     async run() {
         await this.init();
-        // await this.buildFunctionGraph();
-        // await this.scanUsage();
-        // await Util.persistJsonFilePrettier('./temp/unused_functions.json', this.objectOfFunctions);
-        // await Util.persistJsonFilePrettier('./temp/list_of_fetch.json', this.listOfHack);
-        // await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
-        // await this.saveUsedAnalyzedReportAsJSON(this.objectOfUsageAnalysis, './temp/map_of_usage.json');
-        // await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
+        await this.buildFunctionGraph();
+        await this.scanUsage();
+        await Util.persistJsonFilePrettier('./temp/unused_functions.json', this.objectOfFunctions);
+        await Util.persistJsonFilePrettier('./temp/list_of_fetch.json', this.listOfHack);
+        await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
+        await this.saveUsedAnalyzedReportAsJSON(this.objectOfUsageAnalysis, './temp/map_of_usage.json');
+        await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
         await this.fileImportRemover()
     }
 }

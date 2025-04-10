@@ -35,7 +35,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         Router.gotoHomePage(this);
     }
 
-    onNavigatorToolBarLoginIconButtonClicked(param) {
+    onNavigatorLoginIconButtonClicked(param) {
         BaseUserInfo.performLoginBehavior(this.getComponentInstance()).then();
     }
 

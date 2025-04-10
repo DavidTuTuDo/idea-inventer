@@ -932,7 +932,7 @@ class BaseComponent extends MuiComponent {
     async invokeLoginBehavior() {
         await Util.syncDelay(10);
         if (!UserInfo.isLoginWithSucceed())
-            Application.getNavigatorRef().onNavigatorToolBarLoginIconButtonClicked()
+            Application.getNavigatorRef().onNavigatorLoginIconButtonClicked()
     }
 
     openLineChatAccountWithMessage(id = '', message = '') {
