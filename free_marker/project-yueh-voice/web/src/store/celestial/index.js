@@ -1,3 +1,4 @@
+const edit = true;
 import BaseCelestialStore from "./BaseCelestialStore";
 import {
     utiller as Util,

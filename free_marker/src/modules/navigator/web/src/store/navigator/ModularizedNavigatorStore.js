@@ -44,25 +44,25 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     }
 
     getSuggestKeywordDetail() {
-        return this.getToolBar().getSelectedComplete();
+        return this.getSelectedComplete();
     }
 
     clearKeywordDetail() {
-        this.getToolBar().removeSelectedComplete();
-        this.getToolBar().toggleKeyOfComplete();
+        this.removeSelectedComplete();
+        this.toggleKeyOfComplete();
     }
 
     @action
     updateEditButtonStatus() {
         const self = this;
         let editButton = UserInfo.isAdmin() ? '編輯' : '無';
-        self.getToolBar().setToEditMode(editButton);
+        self.setToEditMode(editButton);
     }
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         if (_.isArray(this.getKeywords())) {
-            this.getToolBar().initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), 'label'))
+            this.initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), 'label'))
         }
     }
 
@@ -72,6 +72,24 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         super(props);
         makeObservable(this);
         this.setState('stable');
+    }
+
+    getLabelOfComplete() {
+        return `無搜尋的項目`;
+    }
+
+
+    isSubOpen() {
+        return this.getOpen() === 1;
+    }
+
+    @action
+    setSubOpen(open) {
+        this.setOpen(open ? 1 : 0);
+    }
+
+    hasSubItems() {
+        return this.getSubs().length > 0;
     }
 
 }

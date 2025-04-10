@@ -1,4 +1,3 @@
-const edit = true;
 import ModularizedNavigatorStore from "./ModularizedNavigatorStore";
 
 class NavigatorStore extends ModularizedNavigatorStore {
@@ -11,7 +10,7 @@ class NavigatorStore extends ModularizedNavigatorStore {
   }
 
   getTitle() {
-    return `悅耳`;
+    return `大鼎`;
   }
 
   /** -------------------- async api -------------------- **/

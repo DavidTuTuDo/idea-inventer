@@ -943,7 +943,7 @@ class BaseComponent extends MuiComponent {
     }
 
     getKeywords() {
-        return Application.getNavigatorStore().getKeywords();
+        return Application.getKeywords();
     }
 
     onInitialErrorHappened(error) {

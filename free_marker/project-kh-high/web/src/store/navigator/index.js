@@ -11,7 +11,7 @@ class NavigatorStore extends ModularizedNavigatorStore {
   }
 
   getTitle() {
-    return `悅耳`;
+    return `悅考`;
   }
 
   /** -------------------- async api -------------------- **/

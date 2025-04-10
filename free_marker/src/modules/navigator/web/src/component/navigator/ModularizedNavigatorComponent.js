@@ -153,7 +153,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         }
     }
 
-    onNavigatorToolBarInputOfCompleteTextFieldSearchPressed(input, toolBar) {
+    onNavigatorInputOfCompleteTextFieldSearchPressed(input, toolBar) {
         /** 先判斷autoComplete 有沒有selectedItem()
          *
          * 沒有的話再用 getInput() 去搜尋
@@ -176,23 +176,23 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     }
 
-    getInjectStyleOfNavigatorToolBarAccountIconButton() {
+    getInjectStyleOfNavigatorAccountIconButton() {
         return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(),true);
     }
 
-    getInjectStyleOfNavigatorToolBarLoginIconButton(toolBar) {
+    getInjectStyleOfNavigatorLoginIconButton(toolBar) {
         return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing() ,true);
     }
 
-    getInjectStyleOfNavigatorToolBarTipOfLoadingCircularProgress(toolBar) {
+    getInjectStyleOfNavigatorTipOfLoadingCircularProgress(toolBar) {
         return Util.getVisibleOrNone(UserInfo.isAuthProcessing() ,true);
     }
 
-    onNavigatorToolBarCartieIconButtonClicked(param) {
+    onNavigatorCartieIconButtonClicked(param) {
         Router.gotoCartiePage(this);
     }
 
-    getInjectStyleOfNavigatorToolBarCartieIconButton(toolBar) {
+    getInjectStyleOfNavigatorCartieIconButton(toolBar) {
         return Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0,true);
     }
 

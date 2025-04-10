@@ -2,23 +2,15 @@ const edit = true
 
 import {
     utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import firebaser from './FirebaseHelper'
 import Cookie from '../cookie';
 import Configer from '../config';
 import {
-    makeAutoObservable,
     makeObservable,
     action,
     observable,
-    comparer,
-    computed,
-    autorun,
-    runInAction,
 } from "mobx";
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
@@ -263,7 +255,7 @@ class UserInfo {
     invalidateCartie = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
         const countsOfBadge = _.sum(_.values(infoOfCartie).map(info => info.count));
-        Application.getNavigatorStore().getToolBar().setBadgeOfCartie(countsOfBadge);
+        Application.getNavigatorStore().setBadgeOfCartie(countsOfBadge);
     }
 
     setGotoCartieDirect(enable = false) {

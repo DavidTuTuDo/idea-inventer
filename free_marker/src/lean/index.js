@@ -13,9 +13,7 @@ export default class Lean {
         this.listOfAnalysis = [];
         this.objectOfUsageAnalysis = {};
         this.listOfHack = [];
-
     }
-
 
     // 初始化，取得所有檔案的路徑
     async init() {
