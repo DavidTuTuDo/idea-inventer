@@ -1,5 +1,6 @@
 import libpath from "path";
 import fs from "fs";
+import fsp from "fs/promises";
 import _ from "lodash";
 import ChildProcess from "child_process";
 import {configerer} from "configerer";
@@ -489,6 +490,11 @@ class NodeUtiller extends Utiller {
         this.appendInfo(`collectionToFile succeed, file name ==> ${fileName}`);
     }
 
+    /** 重複讀取file IO時，要用這個方式，不然IO太吃資源了 */
+    async readFileContentByPath(path, cache) {
+        return cache[path] ?? (cache[path] = await fsp.readFile(path, 'utf-8'));
+    }
+
     singleFileTemplatify(path = './') {
         const all = this.findFilePathByExtension(path, ['js'], 'node_modules');
         for (const file of all) {
@@ -631,7 +637,9 @@ class NodeUtiller extends Utiller {
             '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/web.package.json.mustache',
             '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/functions.package.json.mustache',
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/sample.package.json',
+            '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/package.json'
         ];
+
         for (const path of paths) {
             if (this.isPathExist(path)) {
                 let succeedOfPersistFile = false;
@@ -938,6 +946,31 @@ class NodeUtiller extends Utiller {
         }
         return false;
     }
+
+    /**
+     * 從絕對路徑中取出 "src/" 之後的部分（包含前置 /）
+     * @param {string} fullPath - 完整的絕對檔案路徑
+     * @param {string} folder - 針對/folder/之後作為split起點
+     * @returns {string} - 以 / 開頭、從 src/ 之後開始的相對路徑
+     */
+    getPathAfterSpecificFolder = (fullPath, folder = 'src') => {
+        const parts = _.split(fullPath, libpath.sep);
+        const indexOfSrc = _.findLastIndex(parts, part => part === folder);
+        if (indexOfSrc === -1) return ''; // 找不到 src，回傳空字串
+
+        const relativeParts = _.slice(parts, indexOfSrc + 1);
+        return _.join(relativeParts, '/');
+    }
+
+    /**
+     * 從絕對路徑中取出 "src/" 之後的部分（包含前置 /）
+     * @param {string} fullPath - 完整的絕對檔案路徑
+     * @returns {string} - 以 / 開頭、從 src/ 之後開始的相對路徑
+     */
+    getPathAfterSrc = (fullPath) => {
+        return this.getPathAfterSpecificFolder(fullPath);
+    }
+
 
 }
 

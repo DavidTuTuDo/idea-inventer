@@ -1,4 +1,3 @@
-import fs from 'fs/promises';
 import collector from './collector';
 import dissimport from './dissimport'
 import path from 'path';
@@ -10,11 +9,11 @@ export default class Lean {
     constructor(srcPath) {
         this.srcPath = path.resolve(srcPath);
         this.objectOfFunctions = {}; // 存儲函式名稱及其資訊
+        this.listOfFunctions = []; // 存儲函式名稱及其資訊
         this.files = []; // 檔案路徑集合
         this.listOfAnalysis = [];
-        this.objectOfUsageAnalysis = {};
-        this.listOfHack = [];
         this.listOfCleanImport = {};
+        this.contentsOfFiles = {};
     }
 
     // 初始化，取得所有檔案的路徑
@@ -42,14 +41,38 @@ export default class Lean {
             }
 
             console.log(`📄 正在收集function檔案：${_path}`);
-            const obj = await new collector(_path).collectFunctions();
-
-            /** js file如果出現這些function name(fetch,initial)，要再進去紀錄每一個使用到的子項functions(cleanNextID, fetchXXXs() )*/
-            ['fetch', 'initial','clean'].forEach(key => obj[key] && this.listOfHack.push({...obj[key], functionName: key}));
+            const obj = await new collector(_path, await Util.readFileContentByPath(_path, this.contentsOfFiles)).collectFunctions();
             this.objectOfFunctions = {...this.objectOfFunctions, ...obj}
         }
-        await Util.persistJsonFilePrettier('./temp/all_function.json', this.objectOfFunctions)
+        this.listOfFunctions = this.objectToArrayWithKeyField(this.objectOfFunctions);
+        _.filter(this.listOfFunctions, (each) => ['fetch', 'initial', 'clean'].includes(each.name)).forEach((func) => func.recursive = true)
+        await Util.persistJsonFilePrettier('./temp/list_of_function.json', this.listOfFunctions)
     }
+
+    /**
+     * 將物件轉成陣列，並將每個 key 存進 value 的指定欄位名
+     * @param {Object} obj - 原始物件
+     * @param {string} keyName - 要存放原始 key 的欄位名稱，預設為 'sign'
+     * @returns {Array} - 轉換後的陣列
+     *
+     * const obj = {
+     *   a: { c: 3 },
+     *   b: { c: 4 }
+     * };
+     *
+     * const result1 = objectToArrayWithKeyField(obj);
+     * // 👉 [ { c: 3, sign: 'a' }, { c: 4, sign: 'b' } ]
+     *
+     * const result2 = objectToArrayWithKeyField(obj, 'id');
+     * // 👉 [ { c: 3, id: 'a' }, { c: 4, id: 'b' } ]
+     */
+    objectToArrayWithKeyField = (obj, keyName = 'sign') => {
+        const list = _.map(obj, (value, key) => ({
+            ...value,
+            [keyName]: key
+        }));
+        return _.compact(list);
+    };
 
 
     /**
@@ -57,22 +80,30 @@ export default class Lean {
      * @param {string} input
      * @returns {string[]} 函式名稱陣列
      *
-     * sample:
-     * const str = `client.functionNameA(
-     * admin.functionNameB(`;
-     * const result = extractFunctionNames(str);
-     * console.log(result); // ['functionNameA', 'functionNameB']
+     * const code = `
+     *   doSomething();
+     *   obj.sayHi;
+     *   anotherFunc (123);
+     *   obj.log("hi");
+     *   this.handleClick
+     *   doSomething()
+     * `;
+     *
+     * console.log(extractFunctionNames(code));
+     * // 👉 ['doSomething', 'sayHi', 'anotherFunc', 'log', 'handleClick']
      */
     extractFunctionNames = (input) => {
-        const regex = /\b(\w+)\s*\(/g;
         const matches = [];
+
+        // 捕捉 someFunction( 和 .someFunction
+        const regex = /(?:\b|\.)(\w+)\s*\(?/g;
 
         let match;
         while ((match = regex.exec(input)) !== null) {
-            matches.push(match[1]); // 只取 function name
+            matches.push(match[1]); // 擷取 function 名稱
         }
 
-        return _.uniq(matches); // 去重複（如果你需要）
+        return _.uniq(matches); // 去重複
     }
 
 
@@ -84,7 +115,7 @@ export default class Lean {
     extractLinesFromFile = async (target) => {
         const {path: filePath, lineRange} = target;
         const [startLine, endLine] = lineRange;
-        const content = await fs.readFile(filePath, 'utf-8');
+        const content = await Util.readFileContentByPath(filePath, this.contentsOfFiles);
         const lines = content.split('\n');
 
         // 使用 lodash 取出範圍內行（注意行號為 1-based）
@@ -97,53 +128,40 @@ export default class Lean {
         const self = this;
 
         async function modifyObjectState(func, from) {
-            if (!func || _.isUndefined(func.lineRange)) return;
-
+            if (_.isEqual(true, func.scan)) return;
             const content = await self.extractLinesFromFile(func);
-            // console.log(" content ==> ",content);
+            func.scan = true;
             const referencedNames = self.extractFunctionNames(content);
-            // console.log("referencedNames ==> ",referencedNames);
-
-            _(referencedNames)
-                .filter((refName) => _.has(self.objectOfFunctions, refName))
-                .forEach((refName) => {
-                    Util.appendMapOfKeyArray(self.objectOfUsageAnalysis, refName, func.path);
-                    delete self.objectOfFunctions[refName];
-                });
-
-            func.done = true;
-            // 遞迴處理引用的 function
+            func.children = referencedNames.join(' ,');
             if (!_.isEmpty(referencedNames)) {
-                await analyzeFunctionUsage(referencedNames, from);
+                const functionsOfReference = _.filter(self.listOfFunctions, (func) => referencedNames.includes(func.name));
+                functionsOfReference.forEach(func => func.used = true);
+                /**遞迴處理主func（例如：fetch(){ one();a.two();const c = d.three; }）所引用的子func（例如one two, three）*/
+                // await analyzeFunctionUsage(functionsOfReference, func.sign);
+                functionsOfReference.forEach(async (_func) => await modifyObjectState(_func, func.sign));
             }
         }
 
-        async function analyzeFunctionUsage(keywordsOfUsage, from) {
-
-            if (from) console.log(`analyzeFunctionUsage 從${from}裡找到了 ${JSON.stringify(keywordsOfUsage)}`)
-
-            for (const keyword of keywordsOfUsage) {
-                const func = _.get(self.objectOfFunctions, keyword);
-                if (!func || _.isUndefined(func.lineRange)) continue;
-                await modifyObjectState(func, from);
+        async function analyzeFunctionUsage(functionsOfUsage) {
+            const latest = _.filter(functionsOfUsage, (func) => !func.used || !func.scan)
+            const keywords = latest.map(each => each.name);
+            for (const keyword of keywords) {
+                const list = _.filter(self.listOfFunctions, (each) => _.isEqual(each.name, keyword));
+                list.forEach(async (func) => await modifyObjectState(func));
             }
         }
 
-        /**
-         * 手動刪除一些會造成網頁錯誤的必存method()
-         * // ['hasNoticeDialog', 'getContentType', 'getObjectOfMulti', '_firebase','Alert'] 用於base/*
-         */
-
-        ['constructor', 'getRenderView', 'data', 'columnData', 'clean',  'handleCommitment'].forEach(key => delete this.objectOfFunctions[key]);
-        _.keys(this.objectOfFunctions).filter(k => /^normalize/.test(k)).forEach(k => delete this.objectOfFunctions[k]);
-        _.keys(this.objectOfFunctions).filter(k => /Conditions$/.test(k)).forEach(k => delete this.objectOfFunctions[k]);
+        const namesOfMustUsed = ['constructor', 'getRenderView', 'data', 'columnData', 'clean', 'handleCommitment'];
+        _.filter(this.listOfFunctions,
+            (func) => /^normalize/.test(func.name) | /Conditions$/.test(func.name) | namesOfMustUsed.includes(func.name))
+            .forEach((func) => func.used = true);
 
         for (const file of this.files) {
             const _path = path.resolve(this.srcPath, file)
 
             const regexPatternsCheckUsage = [
-                /\/(base|i18n)\/[^/]+\.js$/,                      // .../base/*.js or .../i18n/*.js
-                /\/(component|router)\/[^/]+\/[^/]+\.js$/,          // .../component/*/*.js or .../router/*/*.js
+                /\/(base|i18n|router)\/[^/]+\.js$/,                      // .../base/*.js or .../i18n/*.js
+                /\/(component)\/[^/]+\/[^/]+\.js$/,          // .../component/*/*.js or .../router/*/*.js
                 /\/(store|config)\/[^/]+\/index\.js$/,              // .../store/*/index.js or .../config/*/index.js
                 /\/store\/[^/]+\/Modularized.*\.js$/,              // .../store/*/Modularized*.js
                 /\/src\/index\.js$/,                               // .../src/index.js
@@ -151,32 +169,27 @@ export default class Lean {
                 /\/store\/index\.js$/,                             // .../store/index.js
             ];
 
-
             if (!regexPatternsCheckUsage.some(regex => regex.test(_path))) {
                 console.log(`📄 不納入分析匹配：${_path}`);
-                continue
+                continue;
             }
             console.log(`📄 正在分析檔案：${_path}`);
-            const content = await fs.readFile(_path, 'utf-8');
+            const content = await Util.readFileContentByPath(_path, this.contentsOfFiles);
+            // console.log('121321545 content =>',content);
             /** 範例一 const keywordsOfUsage = _.filter(_.keys(this.objectOfFunctions), keyword => new RegExp(\\.${keyword}\\(, 'g').test(content)); => xxx.functionName( */
-            const keywordsOfUsage = _.filter(_.keys(this.objectOfFunctions), keyword => new RegExp(`\\.${keyword}\\b`, 'g').test(content));
-            /** 與範例一差異在於 ==> xxx.functionName */
-            // console.log(`keyword ==>` ,keywordsOfUsage);
-            await analyzeFunctionUsage.call(this, keywordsOfUsage);
-            keywordsOfUsage.forEach(key => Util.appendMapOfKeyArray(this.objectOfUsageAnalysis, key, _path));
-            keywordsOfUsage.forEach(key => delete this.objectOfFunctions[key]);
+            const functionsOfUsage = _.filter(this.listOfFunctions, func => new RegExp(`\\.${func.name}\\b`, 'g').test(content));
+            /** 與範例一差異在於  ==> xxx.functionName */
+            // console.log('121321545 functionsOfUsage =>',functionsOfUsage);
+
+            await analyzeFunctionUsage.call(this, functionsOfUsage);
+            functionsOfUsage.forEach(func => func.used = true);
         }
-        this.listOfHack.forEach(func => modifyObjectState(func));
+        await analyzeFunctionUsage.call(this, _.filter(this.listOfFunctions, (each) => each.recursive && !each.scan))
     }
 
-    saveAnalyzedReportAsJSON = async (object, filePath) => {
-        const entriesWithNames = _.map(object, (value, key) => ({
-            ...value,
-            name: key
-        }));
-
+    saveAnalyzedReportAsJSON = async (list, destination) => {
         // 2. 根據 path 分組
-        const groupedByPath = _.groupBy(entriesWithNames, 'path');
+        const groupedByPath = _.groupBy(list, 'path');
 
         // 3. 建立整理後的結構
         this.listOfAnalysis = _.map(groupedByPath, (items, path) => {
@@ -192,7 +205,7 @@ export default class Lean {
 
             return {path, lineRange, names, lines: linesExpanded};
         });
-        await Util.persistJsonFilePrettier(filePath, this.listOfAnalysis)
+        await Util.persistJsonFilePrettier(destination, this.listOfAnalysis)
     }
 
     cleanMultipleJsFilesAsync = async (targets) => {
@@ -205,7 +218,7 @@ export default class Lean {
                 }
 
                 // 1. 讀取檔案內容
-                const content = await fs.readFile(filePath, 'utf-8');
+                const content = await Util.readFileContentByPath(filePath, this.contentsOfFiles);
                 let linesArr = content.split('\n');
 
                 // 2. 移除指定行數（轉成 0-based index）
@@ -257,10 +270,7 @@ export default class Lean {
             ]));
     }
 
-    saveUsedAnalyzedReportAsJSON = async (object, path) => {
-        await Util.persistJsonFilePrettier(path, object);
-    }
-zz
+
     fileImportRemover = async () => {
         for (const file of this.files) {
             const _path = path.resolve(this.srcPath, file)
@@ -277,11 +287,11 @@ zz
         await this.init();
         await this.buildFunctionGraph();
         await this.scanUsage();
-        await Util.persistJsonFilePrettier('./temp/unused_functions.json', this.objectOfFunctions);
-        await Util.persistJsonFilePrettier('./temp/list_of_fetch.json', this.listOfHack);
-        await this.saveAnalyzedReportAsJSON(this.objectOfFunctions, './temp/list_of_analysis.json');
-        await this.saveUsedAnalyzedReportAsJSON(this.objectOfUsageAnalysis, './temp/map_of_usage.json');
-        // await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
+        await Util.persistJsonFilePrettier('./temp/list_functions_after_scan.json', this.listOfFunctions);
+        await this.saveAnalyzedReportAsJSON(_.filter(this.listOfFunctions, (func => _.isEqual(false, func.used))), './temp/list_of_analysis.json');
+
+        /** 以下會更動到目的檔案*/
+        await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
         await this.fileImportRemover()
     }
 }

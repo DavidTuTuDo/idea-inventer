@@ -38,6 +38,29 @@ class Utiller {
         }
     }
 
+    /**
+     * 從物件中依條件過濾出符合條件的 key-value pair
+     * @param {Object} object - 原始物件
+     * @param {Function} predict - 過濾條件函式，預設為 each.used === true
+     * @returns {Object} - 符合條件的新物件
+     *
+     * const objects = {
+     *   a: { used: true },
+     *   b: { used: false },
+     *   c: { used: true }
+     * };
+     *
+     * const usedObjects = getObjectBy(objects);
+     *
+     * console.log(usedObjects);
+     * // 👉 { a: { used: true }, c: { used: true } }
+     */
+    getObjectBy = (object, predict = (each) => each.used === true) => {
+        return Object.fromEntries(
+            _.filter(_.entries(object), ([, value]) => predict(value))
+        );
+    };
+
     getNumberOfNormalize(value, defaultValue = 0) {
         if (_.isNumber(value))
             return value;
@@ -406,7 +429,7 @@ class Utiller {
         /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
         const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
-        return CryptoJS.AES.encrypt(JSON.stringify({content:texts}), keyOfCrypto, {iv: ivOfCrypto}).toString();
+        return CryptoJS.AES.encrypt(JSON.stringify({content: texts}), keyOfCrypto, {iv: ivOfCrypto}).toString();
     }
 
     getDecryptString(ciphertext, key = configerer.ENCRYPT_KEY) {
@@ -440,7 +463,7 @@ class Utiller {
         } catch (e) {
             /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
         }
-        const stringOfObj =  CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
+        const stringOfObj = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
         const obj = JSON.parse(stringOfObj);
         return obj.content;
     }
@@ -2462,6 +2485,8 @@ class Utiller {
         // 默認處理為簡單數組
         return _.uniq(array);
     }
+
+
 
 }
 
