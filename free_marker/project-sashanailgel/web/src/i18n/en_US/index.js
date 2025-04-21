@@ -20,7 +20,7 @@ class I18n extends ModularizedMyI18n {
 
     infoOfCopyRightUpperGroupLeftAreaContact = "聯絡莎夏";
 
-    infoOfCopyRightUpperGroupRightAreaCprt = "© 2024 莎夏";
+    infoOfCopyRightUpperGroupRightAreaCprt = "© 2025 莎夏";
 
     pageTitleOfInfoOfCopyRightContact = "莎夏聯絡方式";
 
