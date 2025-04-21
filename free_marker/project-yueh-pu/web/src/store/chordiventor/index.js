@@ -3,8 +3,6 @@ const edit = true;
 import BaseChordiventorStore from "./BaseChordiventorStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import Config from '../../config';
 import ApiOfGuitarPu from '../sheetGuitarpu';
 import ApiOfRhythm from '../portfolioRhythm';
 import UserInfo from '../../base/BaseUserInfo'

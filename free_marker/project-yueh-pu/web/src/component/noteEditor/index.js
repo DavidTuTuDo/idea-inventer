@@ -1,25 +1,6 @@
 import {inject} from "mobx-react";
 import BaseNoteEditorComponent from "./BaseNoteEditorComponent";
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import Button from "@mui/material/Button";
 import {observer} from "mobx-react";
-import TextField from "@mui/material/TextField";
-import Paper from "@mui/material/Paper";
-import NoteEditorStore from "../../store/noteEditor";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
 
 @inject("noteEditor")
 @observer

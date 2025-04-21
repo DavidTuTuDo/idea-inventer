@@ -4,23 +4,9 @@ import {inject} from "mobx-react";
 import BasePersonalRhythmComponent from "./BasePersonalRhythmComponent";
 import {
     utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
 } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import Typography from "@mui/material/Typography";
-import Skeleton from "@mui/material/Skeleton";
 import {observer} from "mobx-react";
-import Card from "@mui/material/Card";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
-import Config from "../../config";
 import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
 
 @inject("personalRhythm")
 @observer

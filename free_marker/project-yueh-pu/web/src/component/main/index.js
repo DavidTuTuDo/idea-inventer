@@ -4,20 +4,9 @@ import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import {
     utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import MainStore from "../../store/main";
-import Style from "../../style";
-import MenuIcon from "@mui/icons-material/menu";
-import React from "react";
-import {Application} from "../../";
-import Config from "../../config";
 import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
 import PortfolioRhythmStore from "../../store/portfolioRhythm";
 
 @inject("main")

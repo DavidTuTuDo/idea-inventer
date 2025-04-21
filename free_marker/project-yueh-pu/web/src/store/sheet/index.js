@@ -2,28 +2,14 @@ const edit = true;
 import BaseSheetStore from "./BaseSheetStore";
 import {
     utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
 } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import {Application} from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import FavoritePu from "../personalRhythmFavoritePu";
 import HistoryPu from '../historyRhythmPuOfRecord';
 import GuitarPu from '../sheetGuitarpu';
 import {
-    makeAutoObservable,
-    makeObservable,
     action,
-    observable,
-    comparer,
-    computed,
-    autorun,
-    runInAction,
 } from "mobx";
 
 const RULE_OF_CHANGE_CHORD_MAJOR_SIGN = [
