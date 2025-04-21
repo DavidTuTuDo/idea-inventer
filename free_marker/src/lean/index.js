@@ -3,6 +3,7 @@ import dissimport from './dissimport'
 import path from 'path';
 import {glob} from 'glob';
 import _ from 'lodash';
+import fs from 'fs/promises';
 import {utiller as Util} from 'utiller';
 
 export default class Lean {

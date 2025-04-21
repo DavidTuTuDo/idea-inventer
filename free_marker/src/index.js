@@ -6821,17 +6821,11 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendClass(`BaseApp`);
 
-        // /** react 18.3 */
-        // appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
-        // appGenerator.appendFunction(`mount`, [], [], [],
-        //     `const container = document.getElementById('app');`,
-        //     `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
-        //     `root.render(this.getRenderView())`)
-
-        /** react 17.1 */
-        appGenerator.appendImport(`ReactDOM`, `react-dom`);
+        appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
         appGenerator.appendFunction(`mount`, [], [], [],
-            `ReactDOM.render(this.getRenderView(), document.getElementById('app'));`)
+            `const container = document.getElementById('app');`,
+            `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
+            `root.render(this.getRenderView())`)
 
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
@@ -7886,9 +7880,7 @@ class ProjectFileHandler extends PathBase {
         Util.persistByPath(pathOfDestination);
         Util.cleanAllFiles(pathOfDestination);
         Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
-
         if (deploy) await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
-
     }
 
     async generateFireIndexRules(deploy = true) {
@@ -9902,7 +9894,7 @@ class BuildApplication {
 
     async deployWebProdWithoutBuild() {
         const web = new ProjectFileHandler(this.getBuildObject('web', 'prod'));
-        await web.buildProdWebDistToProjectThanDeploy(true, false);
+        await web.buildProdWebDistToProjectThanDeploy(true, true);
         Util.appendInfo(`deployWebProdWithoutBuild() succeed`);
     }
 

@@ -45,7 +45,6 @@ class MainComponent extends BaseMainComponent {
     onMainInterestingOfFunctionPaperClicked(param) {
         const self = this;
         const func = param.object;
-        console.log(func.route);
         switch (func.route) {
             case 'randomRhythm':
                 const rhythm = Util.getRandomItemOfArray(this.getKeywords().filter((each) => _.isEqual(each.type, 11) && each.popularLevel > 10000));

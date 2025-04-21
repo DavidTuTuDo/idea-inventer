@@ -494,13 +494,10 @@ class Utiller {
 
     getShuffledArrayWithLimitCountHighPerformance(arr, n) {
         let result = new Array(n),
-            len = arr.length,
-            taken = new Array(len);
+          len = arr.length,
+          taken = new Array(len);
         if (n > len)
-            n = len;
-
-        if (n > len)
-            throw new RangeError("getShuffledArrayWithLimitCount: more elements taken than available");
+            n = len; // Handle n > arr.length case gracefully
 
         while (n--) {
             let x = Math.floor(Math.random() * len);
@@ -586,8 +583,7 @@ class Utiller {
     }
 
     getShuffledArrayWithLimitCount(arr, n) {
-        let shuffled = _.shuffle(arr);
-        return _.take(shuffled, n);
+        return this.getShuffledArrayWithLimitCountHighPerformance(arr, n); // 使用已優化的版本
     }
 
     /** const items = [{ price: 10 }, { price: 120 }, { price: 230 }];
@@ -655,6 +651,13 @@ class Utiller {
     }
 
     /**
+     * 優化版本：針對基於唯一 Key 的合併
+     * @param {Array} major - 主要陣列
+     * @param {Array} sub - 次要陣列
+     * @param {string} key - 用於匹配的唯一鍵名 (e.g., 'id')
+     * @returns {Array} - 合併後的新陣列
+     *
+     *
      * util.getMergedArrayBy(
      [{id: 123, name: 'david'}, {id: 321, name: 'Joe'}],
      [{id: 321, age: 13}, {id: 123, age: 30}],
@@ -667,18 +670,22 @@ class Utiller {
      ]
      *
      */
-    getMergedArrayBy(major = [], sub = [], predicate) {
-        /** predicate可以只帶入屬性質 */
-        if (_.isString(predicate)) {
-            const attribute = predicate;
-            predicate = (item1, item2) => _.isEqual(item1[attribute], item2[attribute]);
-        } else {
-            predicate = _.isFunction(predicate) ? predicate : () => true;
+    getMergedArrayByKey(major = [], sub = [], key) {
+        if (!key || major.length === 0 || sub.length === 0) {
+            // 如果沒有 key 或任一陣列為空，無法優化或無需合併，回傳 major 的淺拷貝
+            return [...major];
         }
-        return major.map(item1 => ({
-            ..._.find(sub, (item2) => predicate(item1, item2)),
-            ...item1
-        }));
+
+        // 1. 將 sub 陣列轉換為以 key 為鍵的 Map，時間複雜度 O(N)
+        const subMap = new Map(sub.map(item => [item[key], item]));
+
+        // 2. 遍歷 major 陣列，從 Map 中查找匹配項，時間複雜度 O(M)
+        return major.map(majorItem => {
+            const subItem = subMap.get(majorItem[key]);
+            // 合併找到的 subItem 和 majorItem，majorItem 的屬性優先
+            return { ...(subItem || {}), ...majorItem };
+        });
+        // 整體時間複雜度約為 O(M + N)
     }
 
     getShuffledItemFromArray(arr) {
@@ -811,20 +818,44 @@ class Utiller {
     }
 
     deepFlat(collection, sign = '_') {
-        let _self = '';
-        if (_.isArray(collection)) {
-            for (const o of collection) {
-                _self += (_.isEmpty(_self) ? '' : sign) + this.deepFlat(o);
+        let result = '';
+        const stack = [[collection, '']]; // 儲存 [項目, 目前的前綴]
+
+        while (stack.length > 0) {
+            const [current, prefix] = stack.pop();
+
+            if (_.isArray(current)) {
+                // 將陣列元素反向推入堆疊以保持順序
+                for (let i = current.length - 1; i >= 0; i--) {
+                    stack.push([current[i], prefix]); // 陣列元素不加前綴
+                }
+            } else if (_.isObject(current)) {
+                // 將物件鍵值對反向推入堆疊
+                const keys = Object.keys(current);
+                for (let i = keys.length - 1; i >= 0; i--) {
+                    const key = keys[i];
+                    // 值推入堆疊，前綴包含當前鍵
+                    stack.push([current[key], prefix + key + sign]);
+                }
+            } else {
+                // 基本型別，添加到結果字串
+                const valueString = _.trim(String(current)); // 確保轉為字串並去除頭尾空白
+                if (valueString.length > 0) { // 避免添加空字串或只有空白的字串
+                    result += (result.length > 0 ? sign : '') + prefix + valueString;
+                } else if (prefix.length > 0 && result.length > 0) {
+                    // 如果值為空但有前綴，且結果已非空，則添加分隔符
+                    result += sign;
+                } else if (prefix.length > 0 && result.length === 0) {
+                    // 如果值為空但有前綴，且結果為空，則只添加前綴（去掉末尾的 sign）
+                    result += prefix.endsWith(sign) ? prefix.slice(0, -sign.length) : prefix;
+                }
             }
-            return _self;
-        } else if (_.isObject(collection)) {
-            for (const key in collection) {
-                _self += (_.isEmpty(_self) ? '' : sign) + key + sign + this.deepFlat(collection[key])
-            }
-            return _self;
-        } else {
-            return _.trim(collection);
         }
+        // 最後可能需要處理結尾多餘的 sign
+        if (result.endsWith(sign)) {
+            result = result.slice(0, -sign.length);
+        }
+        return result;
     }
 
     joinEscapeChar(str) {
@@ -966,14 +997,18 @@ class Utiller {
      * utiller.insertToArray(array, 999, 'QQ', 'WW'); /**  [3,4,5,'QQ','WW']
      * */
 
-    insertToArray = (array, index, ...item) => {
-        index = index + 1;
-        /** 植樹問題拔 我想 */
-        const initial = _.slice(array, 0, index);
-        const end = _.slice(array, index, array.length);
-        const combine = [...initial, ...item, ...end];
-        array.length = 0;
-        array.push(...combine);
+    insertToArray = (array, index, ...items) => {
+        if (!Array.isArray(array)) {
+            throw new Error("First argument must be an array.");
+        }
+        // splice 的 index 是插入位置，原函式 index 是插入點的前一個位置
+        // index = -1 應插入到開頭 (index 0)
+        // index >= array.length 應插入到結尾
+        const insertAt = Math.max(0, Math.min(index + 1, array.length));
+        array.splice(insertAt, 0, ...items);
+        // 注意：此函式直接修改了傳入的 array，行為與原函式不同（原函式隱式返回 undefined 但修改了 array）
+        // 如果需要保持原函式返回 undefined 的行為，可以不加 return
+        // 如果希望返回修改後的 array，可以 return array;
     }
 
     /** 比較內文, 不是只比較 memory address */
@@ -1766,37 +1801,26 @@ class Utiller {
      |-------如果有paginate, 有可能讓功能錯亂-------|
      */
     getArrayOfMoveToSpecificIndex(array, from, to) {
-        /* #move - Moves an array item from one position in an array to another.
-           Note: This is a pure function so a new array will be returned, instead
-           of altering the array argument.
-          Arguments:
-          1. array     (String) : Array in which to move an item.         (required)
-          2. moveIndex (Object) : The index of the item to move.          (required)
-          3. toIndex   (Object) : The index to move item at moveIndex to. (required)
-        */
-        const item = array[from];
-        const length = array.length;
-        const diff = from - to;
-
-        if (diff > 0) {
-            // move left
-            return [
-                ...array.slice(0, to),
-                item,
-                ...array.slice(to, from),
-                ...array.slice(from + 1, length)
-            ];
-        } else if (diff < 0) {
-            // move right
-            const targetIndex = to + 1;
-            return [
-                ...array.slice(0, from),
-                ...array.slice(from + 1, targetIndex),
-                item,
-                ...array.slice(targetIndex, length)
-            ];
+        if (!Array.isArray(array)) {
+            throw new Error("First argument must be an array.");
         }
-        return array;
+        const length = array.length;
+        // 驗證索引範圍
+        if (from < 0 || from >= length || to < 0 || to >= length) {
+            console.warn("Invalid 'from' or 'to' index for getArrayOfMoveToSpecificIndexOptimized.");
+            // 可以選擇拋出錯誤或返回原陣列的副本
+            // throw new RangeError("Index out of bounds");
+            return [...array]; // 返回副本
+        }
+
+        if (from === to) {
+            return [...array]; // 位置相同，無需移動，返回副本
+        }
+
+        const copy = [...array]; // 創建副本
+        const [item] = copy.splice(from, 1); // 從副本中移除元素
+        copy.splice(to, 0, item); // 將元素插入到副本的新位置
+        return copy; // 返回修改後的副本
     }
 
     /** 把array裏面的項目移動到指定的index
@@ -2457,8 +2481,9 @@ class Utiller {
     };
 
     /**
-     * 去重數組內容
-     * @param {Array} array - 要去重的數組
+     * 優化版本：根據元素類型選擇最高效的去重方式
+     * @param {Array} array - 要去重的陣列
+     * @param {string} [key] - (可選) 如果是物件陣列，指定用於判斷唯一的屬性鍵名
      * @returns {Array} - 去重後的數組
      *
      * // 使用範例
@@ -2475,19 +2500,30 @@ class Utiller {
      * console.log(uniqueArray(objects)); // [{'aa': 1, 'bb': 2}, {'cc': 1, 'dd': 2}, {'ee': 4, 'ff': 5}]
      */
     getSliceArrayOfUnique(array) {
-        if (array.length === 0) return array;
-
-        // 判斷是否為物件數組
-        if (_.isObject(array[0])) {
-            return _.uniqWith(array, _.isEqual);
+        if (!Array.isArray(array) || array.length === 0) {
+            return [];
         }
 
-        // 默認處理為簡單數組
-        return _.uniq(array);
+        const firstElement = array[0];
+
+        // 1. 處理物件陣列，且提供了 key
+        if (_.isObject(firstElement) && key) {
+            // 使用 Map 根據 key 去重，效率 O(N)
+            const uniqueMap = new Map(array.map(item => [item[key], item]));
+            return Array.from(uniqueMap.values());
+        }
+        // 2. 處理物件陣列，但未提供 key (或 key 無效)
+        else if (_.isObject(firstElement)) {
+            // 回退到 lodash 的深度比較，效率較低 O(N^2)
+            console.warn("getSliceArrayOfUniqueOptimized: No key provided for object array, using potentially slow deep comparison.");
+            return _.uniqWith(array, _.isEqual);
+        }
+        // 3. 處理基本型別陣列 (string, number, boolean, null, undefined, symbol)
+        else {
+            // 使用 Set 去重，效率 O(N)
+            return Array.from(new Set(array));
+        }
     }
-
-
-
 }
 
 if (configerer.DEBUG_MODE) {
