@@ -5,6 +5,7 @@ import _ from "lodash";
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
+import Functions from '../../functions';
 
 class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 

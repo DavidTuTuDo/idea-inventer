@@ -12,8 +12,8 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
     }
 
     /** 每個專案都不同哦 */
-    getKeyOfAPI() {
-      return 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
+    getKeyOfGoogleAPI() {
+        return 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
     }
 
     /**
@@ -24,7 +24,7 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
      */
     async calculateWalkingDistance(address, targetCoords) {
         try {
-            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.getKeyOfAPI()}`;
+            const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${this.getKeyOfGoogleAPI()}`;
             const geocodeResponse = await fetch(geocodeUrl);
 
             if (!geocodeResponse.ok) {
@@ -39,7 +39,7 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
 
             const {lat, lng} = geocodeData.results[0].geometry.location;
 
-            const distanceMatrixUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${lat},${lng}&destinations=${targetCoords.lat},${targetCoords.lng}&mode=walking&key=${API_KEY}`;
+            const distanceMatrixUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${lat},${lng}&destinations=${targetCoords.lat},${targetCoords.lng}&mode=walking&key=${this.getKeyOfGoogleAPI()}`;
             const distanceMatrixResponse = await fetch(distanceMatrixUrl);
 
             if (!distanceMatrixResponse.ok) {
@@ -58,8 +58,8 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
             // 解析距離並將單位改為中文
             const distanceText = distanceInfo.distance.text; // 格式例如 "6.3 km" 或 "400 m"
             const formattedDistance = distanceText
-                .replace('km', '公里')
-                .replace('m', '公尺'); // 替換英文單位為中文單位
+              .replace('km', '公里')
+              .replace('m', '公尺'); // 替換英文單位為中文單位
 
             return formattedDistance;
         } catch (error) {

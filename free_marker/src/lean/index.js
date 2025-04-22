@@ -32,7 +32,8 @@ export default class Lean {
             /** base/* 不列入收集function名單 */
             const regexPatternsOfAncestorFunction = [
                 /\/(base|i18n)\/[^/]+\.js$/,                      // .../base/*.js or .../i18n/*.js
-                /\/(store|config|component)\/[^/]+\/index\.js$/  // .../store/*/index.js or .../config/*/index.js or .../component/*/index.js
+                /\/(func|store|config|component)\/[^/]+\/index\.js$/,  // .../store/*/index.js or .../config/*/index.js or .../component/*/index.js
+                /\/(store|config|func|component)\/[^/]+\/Modularized.*\.js$/              // .../store/*/Modularized*.js
             ];
 
 
@@ -163,8 +164,8 @@ export default class Lean {
             const regexPatternsCheckUsage = [
                 /\/(base|i18n|router)\/[^/]+\.js$/,                      // .../base/*.js or .../i18n/*.js
                 /\/(component)\/[^/]+\/[^/]+\.js$/,          // .../component/*/*.js or .../router/*/*.js
-                /\/(store|config)\/[^/]+\/index\.js$/,              // .../store/*/index.js or .../config/*/index.js
-                /\/store\/[^/]+\/Modularized.*\.js$/,              // .../store/*/Modularized*.js
+                /\/(store|config|func)\/[^/]+\/index\.js$/,              // .../store/*/index.js or .../config/*/index.js
+                /\/(store|config|func)\/[^/]+\/Modularized.*\.js$/,              // .../store/*/Modularized*.js
                 /\/src\/index\.js$/,                               // .../src/index.js
                 /\/src\/BaseApp\.js$/,                             // .../src/BaseApp.js
                 /\/store\/index\.js$/,                             // .../store/index.js

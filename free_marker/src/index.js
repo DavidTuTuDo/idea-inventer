@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -5613,11 +5613,11 @@ class ComponentBuilder extends BaseBuilder {
                 from: `./${baseClassName}`
             })
             moduleGenerator.needSignature(false);
-            moduleGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
+            moduleGenerator.needIndexFile(className, [`inject('${componentNode.getStruct().getName()}')`, `observer`])
             this.importComponentDefault(moduleGenerator);
             await moduleGenerator.persist();
         } else {
-            baseGenerator.needIndexFile(className, [`inject('${componentNode.name}')`, `observer`])
+            baseGenerator.needIndexFile(className, [`inject('${componentNode.getStruct().getName()}')`, `observer`])
         }
         await baseGenerator.persist();
         return {classNames: this.classNames, events: componentNode.getEvents()};
@@ -6717,7 +6717,7 @@ class AppBuilder extends ComponentBuilder {
             }
 
             for (const attr of attrs)
-                stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
+                stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
 
             return stmts;
         }
@@ -9871,9 +9871,9 @@ class BuildApplication {
 
     async deployFunctionsWithoutBuild() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
+        await functions.leanCodeOfProjectSrc('functions');
         await functions.deployFunctionsToProd();
         Util.appendInfo(`deployFunctionsWithoutBuild() succeed`);
-
     }
 
     /** buildWebpackOnly：只想透過source code編譯出bundle，目前用於做downsize處理，如果沒有做過web build,但 buildWebpackOnly = true 會報錯 */
@@ -10122,7 +10122,7 @@ class ScheduleManager {
                 await builder.modifiedI18n();
                 break;
             case 'leanUnusedFunction':
-                await builder.leanCodeOfProjectSrc();
+                await builder.leanCodeOfProjectSrc('web');
                 break;
             default:
                 Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);

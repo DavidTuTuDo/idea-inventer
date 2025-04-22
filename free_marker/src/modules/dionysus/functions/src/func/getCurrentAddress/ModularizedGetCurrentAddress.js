@@ -1,8 +1,6 @@
 const edit = true;
 
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
-import libpath from "path";
+import { exceptioner as ERROR} from "utiller";
 import BaseGetCurrentAddress from "./BaseGetCurrentAddress";
 
 class ModularizedGetCurrentAddress extends BaseGetCurrentAddress {
@@ -10,12 +8,17 @@ class ModularizedGetCurrentAddress extends BaseGetCurrentAddress {
         super(props);
     }
 
+    /** 每個專案都不同哦 */
+    getKeyOfGoogleMapAPI() {
+        return 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
+    }
+
     /** payload:{"latitude":0,"longitude":0} */
     async handleHttpOnCall(data, session) {
         const {latitude, longitude} = data;
         console.log({latitude, longitude})
         try {
-            const address = await this.getAddressFromCoordinates('AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs', latitude, longitude);
+            const address = await this.getAddressFromCoordinates(this.getKeyOfGoogleMapAPI(), latitude, longitude);
             console.log(address);
             return address
         } catch (error) {
