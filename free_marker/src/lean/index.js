@@ -31,7 +31,7 @@ export default class Lean {
 
             /** base/* 不列入收集function名單 */
             const regexPatternsOfAncestorFunction = [
-                /\/(base|i18n)\/[^/]+\.js$/,                      // .../base/*.js or .../i18n/*.js
+                /\/(base|i18n|router)\/[^/]+\.js$/,                      // .../base/*.js or .../i18n/*.js  | router因為 case 'route': error 4097;
                 /\/(func|store|config|component)\/[^/]+\/index\.js$/,  // .../store/*/index.js or .../config/*/index.js or .../component/*/index.js
                 /\/(store|config|func|component)\/[^/]+\/Modularized.*\.js$/              // .../store/*/Modularized*.js
             ];

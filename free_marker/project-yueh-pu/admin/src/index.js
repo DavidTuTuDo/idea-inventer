@@ -16,7 +16,7 @@ import {configerer} from "configerer";
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 660;
+const THRESHOLD_OF_KEYWORD_MATCH = 670;
 
 (async () => {
 
@@ -31,7 +31,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
 
     async function fetchTopSongsOfRank(n) {
         return Util.getArrayOfSize(_.orderBy(await database.fetchRecords('RANK',
-            new Builder().gt('WEEK', 0).orderBy({WEEK: 'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
+          new Builder().gt('WEEK', 0).orderBy({WEEK: 'ASC'}).stmt()), (each) => each.WEEK, 'ASC'), n);
     }
 
     async function allowAllUserReadPermission() {
@@ -66,8 +66,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
     /** 找出週 rank 對應的tone*/
     async function deployMainPageHotSingers(n) {
         const singers = Util.getArrayOfSize((await api.fetchSingers(
-            {orderBy: (stmt) => stmt.orderBy("popularLevel", 'desc')},
-            {limit: (stmt) => stmt.limit(n)}
+          {orderBy: (stmt) => stmt.orderBy("popularLevel", 'desc')},
+          {limit: (stmt) => stmt.limit(n)}
         )), n)
         if (_.size(singers) > 0) {
             await api.submitHotSingers(singers.map((each, index) => {
@@ -112,7 +112,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
                 /** 更新idOfRemote到本端db */
                 if (resultOfSinger.succeed) {
                     await database.updateRecords('SINGER', {idOfRemote: resultOfSinger.value.id},
-                        new Builder().equal('url', resultOfSinger.value.uuidOfSinger).stmt())
+                      new Builder().equal('url', resultOfSinger.value.uuidOfSinger).stmt())
                 }
 
             }
@@ -194,10 +194,10 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
                     /** 更新idOfRemote到本端db */
 
                     await database.updateRecords('TONE', {
-                            idOfRemote: resultOfGuitar.value.id,
-                            idOfRhythm: resultOfRhythm.value.id
-                        },
-                        new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
+                          idOfRemote: resultOfGuitar.value.id,
+                          idOfRhythm: resultOfRhythm.value.id
+                      },
+                      new Builder().equal('url', resultOfGuitar.value.uuidOfSong).stmt())
                     Util.appendInfo(`79874615 ${tone.singer}-${tone.name} 成功 submit`)
                 }
             }
@@ -242,20 +242,20 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         const origin = Util.getDecryptString(string);
 
         let latest = Util.replaceAllWithSets(origin,
-            {from: '▲', to: '🌕'},
-            {from: '★', to: '🌓'},
-            {from: '△', to: '🌑'},
-            {from: '✩', to: '🌙'},
-            {from: '☆', to: '🌙'},
-            {from: '\\|', to: '།'},
-            {from: '\\[前奏\\]', to: '(開始)'},
-            {from: '\\[尾奏\\]', to: '(結束)'},
-            {from: '\\[間奏\\]', to: '(橋段)'},
-            {from: '\\[間奏1\\]', to: '(橋段I)'},
-            {from: '\\[間奏2\\]', to: '(橋段II)'},
-            {from: '\\[間奏3\\]', to: '(橋段III)'},
-            {from: '\\[間奏4\\]', to: '(橋段IV)'},
-            {from: '\\(End\\)', to: '(終止)'},
+          {from: '▲', to: '🌕'},
+          {from: '★', to: '🌓'},
+          {from: '△', to: '🌑'},
+          {from: '✩', to: '🌙'},
+          {from: '☆', to: '🌙'},
+          {from: '\\|', to: '།'},
+          {from: '\\[前奏\\]', to: '(開始)'},
+          {from: '\\[尾奏\\]', to: '(結束)'},
+          {from: '\\[間奏\\]', to: '(橋段)'},
+          {from: '\\[間奏1\\]', to: '(橋段I)'},
+          {from: '\\[間奏2\\]', to: '(橋段II)'},
+          {from: '\\[間奏3\\]', to: '(橋段III)'},
+          {from: '\\[間奏4\\]', to: '(橋段IV)'},
+          {from: '\\(End\\)', to: '(終止)'},
         )
 
         /**   本來以為加個空白就能搞定對齊問題, 沒那麼簡單
@@ -316,8 +316,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         const objOfTones = getMapOfTonalitySpeed(tone.tkInfo);
         // '原調': 'E', '速度': '59', '男調': 'A', '女調': 'E'
         if (Util.isUndefinedNullEmpty(objOfTones['原調']) ||
-            Util.isUndefinedNullEmpty(objOfTones['男調']) ||
-            Util.isUndefinedNullEmpty(objOfTones['女調'])
+          Util.isUndefinedNullEmpty(objOfTones['男調']) ||
+          Util.isUndefinedNullEmpty(objOfTones['女調'])
         ) {
             console.log(tone.name, ' ===> ', objOfTones);
         }
@@ -358,56 +358,56 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
     async function submitShortcut() {
         await api.deleteShortcuts();
         await api.submitShortcuts(
-            [{
-                title: '回到首頁',
-                icon: 'muIcon:Bedtime',
-                route: `route:main`,
-                indexOfSequence: 0,
-            }
-                , {
-                title: '我的最愛',
-                icon: 'muIcon:FavoriteBorder',
-                route: `route:personalRhythm`,
-                indexOfSequence: 1,
-            },
-                {
-                    title: '歷史搜尋',
-                    icon: 'muIcon:History',
-                    route: `route:historyRhythm`,
-                    indexOfSequence: 2,
-                },
-                {
-                    title: '編輯功能',
-                    icon: 'muIcon:EditRounded',
-                    indexOfSequence: 3,
-                    subs: [
-                        {
-                            title: '新增悅譜',
-                            icon: 'muIcon:LibraryMusic',
-                            route: `route:chordiventor`,
-                            indexOfSequence: 1,
-                        },
-                        {
-                            title: '我譜的譜',
-                            icon: 'muIcon:AddReactionRounded',
-                            route: `route:inventedOfPu`,
-                            indexOfSequence: 2,
-                        },
-                    ]
-                },
-                {
-                    title: '相關網站',
-                    icon: 'muIcon:Whatshot',
-                    indexOfSequence: 4,
-                    subs: [
-                        {
-                            title: '91譜',
-                            icon: 'muIcon:School',
-                            route: 'path:https://www.91pu.com.tw/',
-                            indexOfSequence: 1,
-                        },
-                    ]
-                }]
+          [{
+              title: '回到首頁',
+              icon: 'muIcon:Bedtime',
+              route: `route:main`,
+              indexOfSequence: 0,
+          }
+              , {
+              title: '我的最愛',
+              icon: 'muIcon:FavoriteBorder',
+              route: `route:personalRhythm`,
+              indexOfSequence: 1,
+          },
+              {
+                  title: '歷史搜尋',
+                  icon: 'muIcon:History',
+                  route: `route:historyRhythm`,
+                  indexOfSequence: 2,
+              },
+              {
+                  title: '編輯功能',
+                  icon: 'muIcon:EditRounded',
+                  indexOfSequence: 3,
+                  subs: [
+                      {
+                          title: '新增悅譜',
+                          icon: 'muIcon:LibraryMusic',
+                          route: `route:chordiventor`,
+                          indexOfSequence: 1,
+                      },
+                      {
+                          title: '我譜的譜',
+                          icon: 'muIcon:AddReactionRounded',
+                          route: `route:inventedOfPu`,
+                          indexOfSequence: 2,
+                      },
+                  ]
+              },
+              {
+                  title: '相關網站',
+                  icon: 'muIcon:Whatshot',
+                  indexOfSequence: 4,
+                  subs: [
+                      {
+                          title: '91譜',
+                          icon: 'muIcon:School',
+                          route: 'path:https://www.91pu.com.tw/',
+                          indexOfSequence: 1,
+                      },
+                  ]
+              }]
         )
     }
 
@@ -456,7 +456,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         const singers = await api.fetchSingers();
         for (const singer of singers) {
             await database.updateRecords('SINGER', {idOfRemote: singer.id},
-                new Builder().equal('url', singer.uuidOfSinger).stmt())
+              new Builder().equal('url', singer.uuidOfSinger).stmt())
         }
     }
 
@@ -466,13 +466,13 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         const guitars = await api.fetchGuitarpus()
         for (const guitar of guitars) {
             await database.updateRecords('TONE', {idOfRemote: guitar.id},
-                new Builder().equal('url', guitar.uuidOfSong).stmt())
+              new Builder().equal('url', guitar.uuidOfSong).stmt())
         }
 
         const rhythms = await api.fetchRhythms()
         for (const rhythm of rhythms) {
             await database.updateRecords('TONE', {idOfRhythm: rhythm.id},
-                new Builder().equal('url', rhythm.uuidOfSong).stmt())
+              new Builder().equal('url', rhythm.uuidOfSong).stmt())
         }
     }
 
@@ -490,10 +490,10 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         const record = _.head(records);
         const guitar = getSubmitGuitarPuItemWithNormalized(record)
         await api.updateGuitarpuItem(guitar.id,
-            {
-                currentContext: guitar.currentContext,
-                originalContext: guitar.originalContext
-            }
+          {
+              currentContext: guitar.currentContext,
+              originalContext: guitar.originalContext
+          }
         )
     }
 
@@ -686,62 +686,62 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
     async function updateCPRTProjects() {
         await api.deleteProjects(true);
         await api.submitProjects([
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7832.jpg?alt=media&token=5bf27574-f678-462d-8b3a-ea4077c4910e",
-                    "route": "https://kh-high.web.app/",
-                    "indexOfSequence": 0,
-                    "trait": "線上答題 | 高中學測",
-                    "title": "悅考",
-                    "descriptions": [{"statement": "一目暸然的答題方式(單選、多選)"}, {"statement": "錯誤回顧、線上協助"}]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7833.jpg?alt=media&token=4998b3fa-5571-415a-b0d1-0dd4d5d81486",
-                    "route": "https://yueh-voice.web.app/",
-                    "indexOfSequence": 2,
-                    "trait": "線上播放器 ｜客製化",
-                    "title": "悅耳",
-                    "descriptions": [{"statement": "建立自己的線上專輯"}, {"statement": "聲音的故事（PODCASTS、街聲）"}]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7838.jpg?alt=media&token=8c1aa03d-5aff-4e93-9745-7bd3bd92e5ed",
-                    "route": "empty",
-                    "indexOfSequence": 4,
-                    "trait": "施工中 | 知識變現 | 技能販售",
-                    "title": "悅薪",
-                    "descriptions": [
-                        {"statement": "施工中"},
-                        {"statement": "時薪制販售技能（科目教學、美編、美髮、美睫）"},
-                        {"statement": "線上付款（降低人工筆記、保障權益）"}
-                    ]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FS__3342348.jpg?alt=media&token=dfdc178e-aa97-4e3c-95d8-7029cbeef62f",
-                    "route": "https://yueh-pu.web.app/",
-                    "indexOfSequence": 1,
-                    "trait": "音樂｜和弦譜",
-                    "title": "悅譜",
-                    "descriptions": [
-                        {"statement": "和弦即時轉調（原調、男女建議調性）"},
-                        {"statement": "字體調整（手機、平板、電腦）"}
-                    ]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7834.jpg?alt=media&token=9a973889-89a8-4c41-ae34-509b4182646f",
-                    "route": "empty",
-                    "indexOfSequence": 5,
-                    "trait": "施工中 | 線上預約 | 申請",
-                    "title": "悅曆",
-                    "descriptions": [{"statement": "施工中"}, {"statement": "場地預約、資格審核、違規計點紀錄"}]
-                },
-                {
-                    "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7840.jpg?alt=media&token=0634dc18-6bff-450b-950a-2493898dcc66",
-                    "route": "empty",
-                    "indexOfSequence": 7,
-                    "trait": "施工中 | 線上小説 ｜黑底白字",
-                    "title": "悅讀",
-                    "descriptions": [{"statement": "線上閱讀，使用案底色鮮少眼睛壓力"}, {"statement": "閱讀紀錄，全文檢索"}]
-                }
-            ]
+              {
+                  "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7832.jpg?alt=media&token=5bf27574-f678-462d-8b3a-ea4077c4910e",
+                  "route": "https://kh-high.web.app/",
+                  "indexOfSequence": 0,
+                  "trait": "線上答題 | 高中學測",
+                  "title": "悅考",
+                  "descriptions": [{"statement": "一目暸然的答題方式(單選、多選)"}, {"statement": "錯誤回顧、線上協助"}]
+              },
+              {
+                  "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7833.jpg?alt=media&token=4998b3fa-5571-415a-b0d1-0dd4d5d81486",
+                  "route": "https://yueh-voice.web.app/",
+                  "indexOfSequence": 2,
+                  "trait": "線上播放器 ｜客製化",
+                  "title": "悅耳",
+                  "descriptions": [{"statement": "建立自己的線上專輯"}, {"statement": "聲音的故事（PODCASTS、街聲）"}]
+              },
+              {
+                  "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7838.jpg?alt=media&token=8c1aa03d-5aff-4e93-9745-7bd3bd92e5ed",
+                  "route": "empty",
+                  "indexOfSequence": 4,
+                  "trait": "施工中 | 知識變現 | 技能販售",
+                  "title": "悅薪",
+                  "descriptions": [
+                      {"statement": "施工中"},
+                      {"statement": "時薪制販售技能（科目教學、美編、美髮、美睫）"},
+                      {"statement": "線上付款（降低人工筆記、保障權益）"}
+                  ]
+              },
+              {
+                  "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FS__3342348.jpg?alt=media&token=dfdc178e-aa97-4e3c-95d8-7029cbeef62f",
+                  "route": "https://yueh-pu.web.app/",
+                  "indexOfSequence": 1,
+                  "trait": "音樂｜和弦譜",
+                  "title": "悅譜",
+                  "descriptions": [
+                      {"statement": "和弦即時轉調（原調、男女建議調性）"},
+                      {"statement": "字體調整（手機、平板、電腦）"}
+                  ]
+              },
+              {
+                  "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7834.jpg?alt=media&token=9a973889-89a8-4c41-ae34-509b4182646f",
+                  "route": "empty",
+                  "indexOfSequence": 5,
+                  "trait": "施工中 | 線上預約 | 申請",
+                  "title": "悅曆",
+                  "descriptions": [{"statement": "施工中"}, {"statement": "場地預約、資格審核、違規計點紀錄"}]
+              },
+              {
+                  "image": "https://firebasestorage.googleapis.com/v0/b/davidtu-dev.appspot.com/o/project%2F%3Auid%2Fimages%2FIMG_7840.jpg?alt=media&token=0634dc18-6bff-450b-950a-2493898dcc66",
+                  "route": "empty",
+                  "indexOfSequence": 7,
+                  "trait": "施工中 | 線上小説 ｜黑底白字",
+                  "title": "悅讀",
+                  "descriptions": [{"statement": "線上閱讀，使用案底色鮮少眼睛壓力"}, {"statement": "閱讀紀錄，全文檢索"}]
+              }
+          ]
         );
     }
 
@@ -778,6 +778,16 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
         })
     }
 
+    async function fetchNoneCopyRightPu() {
+        const pus = await api.fetchGuitarpus({where: (stmt) => stmt.where('copyright', '==', false)})
+        console.log(pus);
+    }
+
+    async function fetchChordiventer(){
+        await api.fetchDocumentIdsOfUser()
+        await api.fetchChordiventor()
+    }
+
     /** 每次都要跑 */
     // await updateToneOfPublishStaff();
     // await syncPreludeInfoToRemoteFirestore();
@@ -806,7 +816,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 660;
     await deployLatestSheet();
     // await updateSingerOfSuggest();
     // await updateUserAllowRead();
-
+    // await fetchNoneCopyRightPu();
 
 })();
 

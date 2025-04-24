@@ -1,10 +1,10 @@
-import {exceptioner as ERROR, utiller as Util} from 'utiller';
-import _ from 'lodash';
-import fs from 'fs';
-import libpath from 'path';
-import mustache from 'mustache';
-import {configerer} from "configerer";
-import Lean from './lean';
+import { exceptioner as ERROR, utiller as Util } from "utiller";
+import _ from "lodash";
+import fs from "fs";
+import libpath from "path";
+import mustache from "mustache";
+import { configerer } from "configerer";
+import Lean from "./lean";
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -82,13 +82,6 @@ const VIEW_IMPORTS =
         {
             from: `@mui/icons-material`,
             views: ['EditCalendarRounded', 'SchoolRounded', 'PhoneRounded', 'SearchRounded', 'MenuRounded', 'MailOutlined', 'PhoneOutlined', 'ChevronRight', 'MoreHoriz', 'CopyAll', 'StarRounded', 'Summarize'],
-        },
-        {
-            from: `auto-text-size`,
-            object: true,
-            views: ['AutoTextSize'],
-            simplePath: true
-
         },
         {
             from: `@mui/material`,
@@ -2317,10 +2310,6 @@ class CodegenNode {
     }
 
     isTypographyView(type = 'default', node = this) {
-        return this.isAttributeView('Typography', type, node);
-    }
-
-    isAutoTextSize(type = 'default', node = this) {
         return this.isAttributeView('Typography', type, node);
     }
 
@@ -4558,8 +4547,7 @@ class StoreBuilder extends BaseBuilder {
                 const functionNameOfDecorate = Util.camel('enrich', child.getFieldName());
                 baseGenerator.appendFunction(functionNameOfDecorate, [`content`], [], [`when '${child.getFieldName()}' fetch from remote, the entry of hack`], [`return content`])
                 return child.isDisableInitFetch() ? '' : `async () => { 
-                const remote = self.${functionNameOfDecorate}(${getInitFetchStmtV2(child)});
-                result.${child.getFieldName()} = remote;
+                result.${child.getFieldName()} = self.${functionNameOfDecorate}(${getInitFetchStmtV2(child)});
                 self.initial(result,false);
                 }`
             })
@@ -5701,6 +5689,7 @@ class ComponentBuilder extends BaseBuilder {
         const contents = param.contents ? param.contents : [];
         const children = param.children ? param.children : [];
         const stmt = [];
+        // const tag = _.isEqual("Typography", param.tag) ? "div" : param.tag;
         const tag = param.tag;
         if (_.isEqual(tag, 'React.Fragment')) {
             delete props['className'];
@@ -5960,7 +5949,9 @@ class ComponentBuilder extends BaseBuilder {
                 const props = {
                     variant: node.getVariantOfSkeleton(),
                     className: clazzName,
-                    animation: 'wave'
+                    animation: 'wave',
+                    height: 80,
+                    width:'100%'
                 };
 
                 const stmtOfSkeleton = this.getJSXStrings({
@@ -6280,7 +6271,6 @@ class ComponentBuilder extends BaseBuilder {
         function getContentStmt(node, _generator) {
             return [
                 'const self = this',
-                'const classes = this.propsMobX().classes',
                 ...node.getSelfVariableStmts(),
                 normalize(...self.getJSXStringsByNode(_generator, node))];
         }
@@ -6809,6 +6799,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
+        appGenerator.appendImport(`{StyledEngineProvider}`, '@mui/material/styles');
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
         appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
@@ -6894,7 +6885,13 @@ class AppBuilder extends ComponentBuilder {
                 this.nodeOfAncestor.hasCopyRightView() ? '{this.getCopyRightView(this.history)}' : '']
         })
 
-        const whole = providerStmt;
+        const whole = this.getJSXStrings({
+            tag: 'StyledEngineProvider',
+            props: {injectFirst: true},
+            generator: appGenerator,
+            contents: [...providerStmt]
+        });
+
         this.removeJSXSign(whole);
         if (this.nodeOfAncestor.hasNavigationView())
             appGenerator.appendFunction('getNavigationView', ['history'], [], [], `return (${this.getNavigationStmt(this.nodeOfAncestor.navigation).join('')})`)
@@ -7959,7 +7956,7 @@ class ProjectFileHandler extends PathBase {
             projectDescription: this.nodeOfAncestor.description
         });
 
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'babel.config.js'), this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'node.babel.config.js'), this.genRootPath, 'babel.config.js', true);
 
         const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
@@ -8211,7 +8208,7 @@ class ProjectFileHandler extends PathBase {
                 node.setClick(true);
                 node.appendWrapProps(
                     {item: true},
-                    {xs: `###${node.getName()}.getXs()`}
+                    {size: `###${node.getName()}.getXs()`} // mui7之後改成xs -> size
                 )
                 node.setWrapView('Grid');
                 node.appendChildrenWithJsons(
@@ -8551,7 +8548,7 @@ class ProjectFileHandler extends PathBase {
                         contentOfVisual = `<${view.content} />`;
                         break;
                     case 'text':
-                        contentOfVisual = `<Typography >{i18n.location().${node.getFieldNameOfVisualHelper(view, position)}}</Typography>`;
+                        contentOfVisual = `<div >{i18n.location().${node.getFieldNameOfVisualHelper(view, position)}}</div>`;
                         break;
                     default:
                         throw new ERROR(9999, `78751564165156 un support type of ${view.type}`);
@@ -8795,6 +8792,7 @@ class ProjectFileHandler extends PathBase {
 
             if (node.isTypographyView()) {
                 node.appendViewProps({whiteSpace: 'pre-line'})
+                node.appendViewProps({variant: 'inherit'})
             }
 
             if (node.isTextFieldView()) {
@@ -9357,7 +9355,7 @@ class ProjectFileHandler extends PathBase {
             projectDescription: this.nodeOfAncestor.description
         });
 
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.babel.config.js'),
+        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'node.babel.config.js'),
             this.genRootPath, 'babel.config.js', true);
 
         Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.function.index.js'),

@@ -1,11 +1,12 @@
 const edit = true;
+
 import {inject} from "mobx-react";
 import BaseChordiventorComponent from "./BaseChordiventorComponent";
 import {utiller as Util } from "utiller";
 import {observer} from "mobx-react";
 import UserInfo from '../../base/BaseUserInfo';
 import Router from "../../router";
-import {isMobile, isTablet} from 'react-device-detect'
+import {isMobile,isTablet} from 'react-device-detect'
 
 
 
@@ -19,7 +20,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     getInjectPropsOfChordiventorTxtTextField(chordiventor) {
         if (isMobile || isTablet) return {inputProps:{style: {fontSize: '0.55rem'}}}
-        else return {inputProps:{style: {fontSize: '0.85rem'}}}
+        else return {inputProps:{style: {fontSize: '0.82rem'}}}
     }
 
     getInjectStyleOfChordiventorClearIdChip(chordiventor) {
@@ -103,6 +104,24 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     isValidOfParamOfIdOfGuitarPu(idOfGuitarPu) {
         return _.size(idOfGuitarPu) >= 4;
+    }
+
+    onChordiventorRotateChipClicked(param) {
+        this.getStore().toggleVertical();
+    }
+
+    getInjectStyleOfChordiventorBriefDiv(chordiventor) {
+        return {
+            flexDirection: this.getStore().getVertical() ? 'column' : 'row',
+            alignItems: this.getStore().getVertical() ? 'center':'flex-start'};
+    }
+
+    getChordiventorRotate(chordiventor) {
+        return chordiventor.getVertical()? '平行' : '垂直';
+    }
+
+    getInjectStyleOfChordiventorRotateChip(chordiventor) {
+        return Util.getVisibleOrNone(!isMobile && !isTablet,true);
     }
 
     /** -------------------- async api -------------------- **/

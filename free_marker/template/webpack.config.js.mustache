@@ -2,7 +2,9 @@ const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+
 const isProd = process.env.typeOfEnv === "prod";
 const enableOfBundleSize = false;
 const enableSourceMap = false;
@@ -14,8 +16,8 @@ const config = {
   output: {
     path: path.resolve(__dirname, "./dist"),
     filename: "[name].[contenthash:8].js",
-    clean: true,
     assetModuleFilename: "[name][ext]",
+    clean: true,
     publicPath: "/", // 確保 Firebase 能正確載入資源
   },
   watchOptions: {
@@ -31,10 +33,7 @@ const config = {
         use: {
           loader: "babel-loader",
           options: {
-            presets: [
-              ["@babel/preset-env", { targets: "defaults" }],
-              "@babel/preset-react",
-            ],
+            presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-react"],
             plugins: [
               ["@babel/plugin-proposal-decorators", { legacy: true }],
               "@babel/plugin-transform-class-properties",
@@ -47,20 +46,24 @@ const config = {
         test: /\.css$/,
         oneOf: [
           {
-            // CSS Modules (e.g., styles.module.css)
             test: /\.module\.css$/,
-            use: [ "style-loader",
+            use: [
+              isProd ? MiniCssExtractPlugin.loader : "style-loader",
               {
                 loader: "css-loader",
                 options: {
-                  modules: true,
+                  modules: {
+                    localIdentName: isProd ? "[hash:base64:6]" : "[path][name]__[local]",
+                  },
                 },
               },
             ],
           },
           {
-            // 全域 CSS
-            use: [ "style-loader", "css-loader" ],
+            use: [
+              isProd ? MiniCssExtractPlugin.loader : "style-loader",
+              "css-loader",
+            ],
           },
         ],
       },
@@ -115,14 +118,22 @@ const config = {
 };
 
 if (isProd) {
+  config.mode = "production";
   config.optimization = {
     minimize: true,
     minimizer: [new TerserPlugin()],
-    sideEffects: true, // 必加
+    sideEffects: true,
     usedExports: true,
   };
 
+  config.plugins.push(
+    new MiniCssExtractPlugin({
+      filename: "[name].[contenthash:8].css",
+      chunkFilename: "[id].[contenthash:8].css",
+    })
+  );
 } else {
+  config.mode = "development";
   config.devtool = enableSourceMap ? "inline-source-map" : false;
   config.devServer = {
     static: {

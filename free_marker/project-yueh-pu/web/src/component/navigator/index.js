@@ -1,23 +1,13 @@
 const edit = true;
 import {observer, inject} from "mobx-react";
 import Router from '../../router';
-import {withStyles} from '@mui/styles';
 import _ from 'lodash';
-import {isMobile} from 'react-device-detect'
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 import {
     utiller as Util,
     exceptioner as ERROR,
 } from "utiller";
 import UserInfoRef from "../../base/BaseUserInfo";
-
-const useStyles = theme => ({
-    paper: {
-        marginTop: "50px",
-        width: isMobile ? '55%' : '40%',
-        backgroundColor: '#000000',
-    },
-});
 
 @inject("navigator")
 @observer
@@ -58,10 +48,4 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
     }
 }
 
-
-
-export default withStyles(useStyles)
-(
-    NavigatorComponent
-)
-;
+export default NavigatorComponent;
