@@ -21,7 +21,6 @@ const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api ---------
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
 const SIGN_OF_JSX_CONTENT = `<!-- jsx content -->`;
 const SignOfInValidNode = 'SignOfInValidNode';
-const useViewModuleAndComponentModuleMechanism = false;
 const KEYWORD_OF_MODULARIZED = 'Modularized';
 const PATH_OF_FREE_MARKER_TEMPLATE = '/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template';
 const PATH_OF_COMPONENT_MODULE = `./src/modules`;
@@ -828,58 +827,36 @@ class CodegenNode {
 
     self = this;
 
-    useServerTime() {
-        return this.isTimeStamp() && _.isEqual(this.forceServerTime, true);
-    }
+    useServerTime() { return this.isTimeStamp() && _.isEqual(this.forceServerTime, true); }
 
-    asTrim() {
-        return _.isEqual(this.trim, true);
-    }
+    asTrim() { return _.isEqual(this.trim, true); }
 
-    hasVariant() {
-        return !_.isEmpty(this.variant);
-    }
+    hasVariant() { return !_.isEmpty(this.variant); }
 
-    isBelong2TimeStamp() {
-        return this.belong2TimeStamp;
-    }
+    isBelong2TimeStamp() { return this.belong2TimeStamp; }
 
-    disableBorder() {
-        return _.isEqual(this.border, false);
-    }
+    disableBorder() { return _.isEqual(this.border, false); }
 
-    disableInput() {
-        return _.isEqual(this.disabled, true);
-    }
+    disableInput() { return _.isEqual(this.disabled, true); }
 
     getVariant() {
         return this.variant ?? 'outlined'
     }
 
-    getSize() {
-        return this.size ?? 'medium';
-    }
+    getSize() { return this.size ?? 'medium'; }
 
-    getMargin() {
-        return this.margin ?? 'normal';
-    }
+    getMargin() { return this.margin ?? 'normal'; }
 
-    getRuleOfOuter() {
-        return this.ruleOfOuter;
-    }
+    getRuleOfOuter() { return this.ruleOfOuter; }
 
-    isAlertDialogNeedGlobalRef() {
-        return this.getAlertDialog().globalOfRef;
-    }
+    isAlertDialogNeedGlobalRef() { return this.getAlertDialog().globalOfRef; }
 
-    isDisposablePage() {
-        return this.getNodeOfComponent().disposablePage;
-    }
+    isDisposablePage() { return this.getNodeOfComponent().disposablePage; }
 
     getSpecificComponent(nameOfComponent) {
         const node = this.getNodeOfSource();
         return _.find(node['components'],
-            (component) => _.isEqual(component.name, nameOfComponent))
+          (component) => _.isEqual(component.name, nameOfComponent))
     }
 
     getPresetAttributes() {
@@ -887,73 +864,41 @@ class CodegenNode {
         return Util.isUndefinedNullEmpty(attrs) ? [] : attrs;
     }
 
-    isBelong2TimeDatePicker() {
-        return this.belong2TimeDatePicker;
-    }
+    isBelong2TimeDatePicker() { return this.belong2TimeDatePicker; }
 
-    hasSize() {
-        return this.size && !_.isEmpty(this.size);
-    }
+    hasSize() { return this.size && !_.isEmpty(this.size); }
 
-    hasMargin() {
-        return this.margin && !_.isEmpty(this.margin);
-    }
+    hasMargin() { return this.margin && !_.isEmpty(this.margin); }
 
-    isBelong2AutoComplete() {
-        return this.belong2AutoComplete;
-    }
+    isBelong2AutoComplete() { return this.belong2AutoComplete; }
 
-    hasIcon() {
-        return !_.isEmpty(this.icon);
-    }
+    hasIcon() { return !_.isEmpty(this.icon); }
 
-    getIcon() {
-        return this.icon ?? '';
-    }
+    getIcon() { return this.icon ?? ''; }
 
-    needBadge() {
-        return _.isEqual(this.badge, true);
-    }
+    needBadge() { return _.isEqual(this.badge, true); }
 
-    hasIconOfDeleted() {
-        return !_.isEmpty(this.iconOfDeleted);
-    }
+    hasIconOfDeleted() { return !_.isEmpty(this.iconOfDeleted); }
 
-    getTypeOfTextField() {
-        return this.typeOfTextField;
-    }
+    getTypeOfTextField() { return this.typeOfTextField; }
 
-    beingScrollable() {
-        return _.isEqual(this.scrollable, true);
-    }
+    beingScrollable() { return _.isEqual(this.scrollable, true); }
 
-    hasTypeOfTextField() {
-        return !_.isEmpty(this.typeOfTextField);
-    }
+    hasTypeOfTextField() { return !_.isEmpty(this.typeOfTextField); }
 
     getIconOfDeleted() {
         return this.iconOfDeleted ?? 'DeleteRounded'
     }
 
-    isPresetParam() {
-        return _.isEqual(true, this.presetParam);
-    }
+    isPresetParam() { return _.isEqual(true, this.presetParam); }
 
-    isDisableOfColumn() {
-        return _.isEqual(true, this.disableOfColumn);
-    }
+    isDisableOfColumn() { return _.isEqual(true, this.disableOfColumn); }
 
-    hasCheckedIcon() {
-        return !_.isEmpty(this.checkedIcon);
-    }
+    hasCheckedIcon() { return !_.isEmpty(this.checkedIcon); }
 
-    getCheckedIcon() {
-        return this.checkedIcon ?? '';
-    }
+    getCheckedIcon() { return this.checkedIcon ?? ''; }
 
-    getHelperVisual() {
-        return Util.mergeObject(this.defaultOfHelperVisual, this.helperVisual);
-    }
+    getHelperVisual() { return Util.mergeObject(this.defaultOfHelperVisual, this.helperVisual); }
 
     hasHelperVisualSupportAlertMenu() {
         const helper = this.getHelperVisual();
@@ -962,21 +907,13 @@ class CodegenNode {
         return condition1 || condition2;
     }
 
-    hasHelperVisual() {
-        return this.getHelperVisual().enable;
-    }
+    hasHelperVisual() { return this.getHelperVisual().enable; }
 
-    getStructsOfProject() {
-        return this.getComponentOfProject().map((component) => component.getStruct());
-    }
+    getStructsOfProject() { return this.getComponentOfProject().map((component) => component.getStruct()); }
 
-    getComponentOfProject() {
-        return this.getNodeOfSource().getComponents();
-    }
+    getComponentOfProject() { return this.getNodeOfSource().getComponents(); }
 
-    getNameOfReference() {
-        return this.ref;
-    }
+    getNameOfReference() { return this.ref; }
 
     /** 找到當前project的reference node, 這不包括common modules*/
     getNodeOfReference(nameOfRef = this.getNameOfReference()) {
@@ -1001,17 +938,11 @@ class CodegenNode {
         return nodesOfRef.shift();
     }
 
-    isSingleLine() {
-        return this.singleLine;
-    }
+    isSingleLine() { return this.singleLine; }
 
-    useAutoFuse() {
-        return _.isEqual(true, this.autoFuse);
-    }
+    useAutoFuse() { return _.isEqual(true, this.autoFuse); }
 
-    getTextOfHelperVisual() {
-        return this.getHelperVisual().text;
-    }
+    getTextOfHelperVisual() { return this.getHelperVisual().text; }
 
     constructor(node) {
         this.raw = node;
@@ -1021,77 +952,41 @@ class CodegenNode {
         }
     }
 
-    isSelected() {
-        return _.isObject(this.select) && _.isArray(this.select.values);
-    }
+    isSelected() { return _.isObject(this.select) && _.isArray(this.select.values); }
 
-    hasLabel() {
-        return this.label && !_.isEmpty(this.label);
-    }
+    hasLabel() { return this.label && !_.isEmpty(this.label); }
 
-    hasFormat() {
-        return this.format && !_.isEmpty(this.format);
-    }
+    hasFormat() { return this.format && !_.isEmpty(this.format); }
 
-    getFormat() {
-        return this.format ?? `YYYY/MM/DD hh:mm`;
-    }
+    getFormat() { return this.format ?? `YYYY/MM/DD hh:mm`; }
 
-    hasHelperText() {
-        return this.helperText && !_.isEmpty(this.helperText);
-    }
+    hasHelperText() { return this.helperText && !_.isEmpty(this.helperText); }
 
-    getHelperText() {
-        return this.helperText ?? '';
-    }
+    getHelperText() { return this.helperText ?? ''; }
 
-    getLabel() {
-        return this.label ?? '';
-    }
+    getLabel() { return this.label ?? ''; }
 
-    hasLabelView() {
-        return this.labelView && this.labelView.enable;
-    }
+    hasLabelView() { return this.labelView && this.labelView.enable; }
 
-    hasLabelViewIcon() {
-        return this.labelView && this.labelView.labelIcon && this.labelView.labelIcon.enable;
-    }
+    hasLabelViewIcon() { return this.labelView && this.labelView.labelIcon && this.labelView.labelIcon.enable; }
 
-    hasDefaultValueOfLabelView() {
-        return this.hasLabelView() && !_.isEmpty(this.labelView.defaultValue);
-    }
+    hasDefaultValueOfLabelView() { return this.hasLabelView() && !_.isEmpty(this.labelView.defaultValue); }
 
-    getFunctionMethods() {
-        return this.methods;
-    }
+    getFunctionMethods() { return this.methods; }
 
-    getStructs() {
-        return this.getNodeOfComponent().getComponents().map(component => component.getStruct());
-    }
+    getStructs() { return this.getNodeOfComponent().getComponents().map(component => component.getStruct()); }
 
-    hasTitle() {
-        return !_.isEmpty(this.title);
-    }
+    hasTitle() { return !_.isEmpty(this.title); }
 
-    hasColor() {
-        return !_.isEmpty(this.color);
-    }
+    hasColor() { return !_.isEmpty(this.color); }
 
-    getColor() {
-        return this.color ?? 'primary';
-    }
+    getColor() { return this.color ?? 'primary'; }
 
-    hasDescription() {
-        return !Util.isUndefinedNullEmpty(this.description);
-    }
+    hasDescription() { return !Util.isUndefinedNullEmpty(this.description); }
 
-    getValueOfTabDefault() {
-        return this.valueOfTabDefault;
-    }
+    getValueOfTabDefault() { return this.valueOfTabDefault; }
 
-    getCustomTextOfI18n() {
-        return this.getNodeOfStruct().textsOfI18n ?? {};
-    }
+    getCustomTextOfI18n() { return this.getNodeOfStruct().textsOfI18n ?? {}; }
 
     getHostOfCloudFunction() {
         const node = this.getNodeOfSource();
@@ -1099,18 +994,12 @@ class CodegenNode {
         /** dev:  http://localhost:5001/${node.getName()}/${node.localeOfServer}; */
     }
 
-    needTestButton() {
-        return !!this.testButton;
-    }
+    needTestButton() { return !!this.testButton; }
 
-    isViewDefinedInProps() {
-        return this.injectViewProp && !Util.isUndefinedNullEmpty(this.injectViewProp.name);
-    }
+    isViewDefinedInProps() { return this.injectViewProp && !Util.isUndefinedNullEmpty(this.injectViewProp.name); }
 
     /** (params) => (params) => <CustomView {...params} />*/
-    isViewPropsFunctionalized() {
-        return this.isViewDefinedInProps() && _.isEqual(this.injectViewProp.functionalized, true);
-    }
+    isViewPropsFunctionality() { return this.isViewDefinedInProps() && _.isEqual(this.injectViewProp.functionalized, true); }
 
 
     setType(type) {
@@ -1125,25 +1014,15 @@ class CodegenNode {
         return Util.camel('toggle', 'of', this.getFieldName(), sign);
     }
 
-    getFieldNameOfHelperText() {
-        return Util.camel('helperText', 'of', this.getFieldName());
-    }
+    getFieldNameOfHelperText() { return Util.camel('helperText', 'of', this.getFieldName()); }
 
-    needI18nBehavior() {
-        return this.l10n;
-    }
+    needI18nBehavior() { return this.l10n; }
 
-    getFieldNameOfSelected() {
-        return Util.camel('selected', this.getName());
-    }
+    getFieldNameOfSelected() { return Util.camel('selected', this.getName()); }
 
-    getFunctionNameOfSelectSetter() {
-        return Util.camel('set', this.getFieldNameOfSelected());
-    }
+    getFunctionNameOfSelectSetter() { return Util.camel('set', this.getFieldNameOfSelected()); }
 
-    needAddImageButton() {
-        return this.isArray() && this.selectImageButton;
-    }
+    needAddImageButton() { return this.isArray() && this.selectImageButton; }
 
     /** */
     getProjectName() {
@@ -1156,9 +1035,7 @@ class CodegenNode {
         return root.getIdOfProject();
     }
 
-    getIdOfProject() {
-        return this.idOfProject ?? '';
-    }
+    getIdOfProject() { return this.idOfProject ?? ''; }
 
     setColumn(col = false) {
         this.column = col;
@@ -1168,9 +1045,7 @@ class CodegenNode {
         this.defaultValue = value;
     }
 
-    getFunctionNameOfSelectGetter() {
-        return Util.camel('get', this.getFieldNameOfSelected());
-    }
+    getFunctionNameOfSelectGetter() { return Util.camel('get', this.getFieldNameOfSelected()); }
 
     getFieldNameOfPageTitle() {
 
@@ -1181,37 +1056,21 @@ class CodegenNode {
         return Util.camel('page', 'title', 'of', normalize(this.getPreciseAttributeGenealogyName()));
     }
 
-    getFieldNameOfStart() {
-        return Util.camel('start', 'of', this.getFieldName());
-    }
+    getFieldNameOfStart() { return Util.camel('start', 'of', this.getFieldName()); }
 
-    getFieldNameOfEnd() {
-        return Util.camel('end', 'of', this.getFieldName());
-    }
+    getFieldNameOfEnd() { return Util.camel('end', 'of', this.getFieldName()); }
 
-    isPathArray() {
-        return this.isArray() && this.hasPath();
-    }
+    isPathArray() { return this.isArray() && this.hasPath(); }
 
-    isColumnArray() {
-        return this.isArray() && this.column;
-    }
+    isColumnArray() { return this.isArray() && this.column; }
 
-    isReferenceNode() {
-        return !!this.ref && !_.isEmpty(this.ref);
-    }
+    isReferenceNode() { return !!this.ref && !_.isEmpty(this.ref); }
 
-    hasCopyRightView() {
-        return this.useCopyRightView.enable;
-    }
+    hasCopyRightView() { return this.useCopyRightView.enable; }
 
-    isReferenceImitateNode() {
-        return this.isReferenceNode() && _.isEqual(this.getNodeOfOrigin().imitate, true);
-    }
+    isReferenceImitateNode() { return this.isReferenceNode() && _.isEqual(this.getNodeOfOrigin().imitate, true); }
 
-    needEmptyTip() {
-        return this.listEmptyTip && this.listEmptyTip.enable;
-    }
+    needEmptyTip() { return this.listEmptyTip && this.listEmptyTip.enable; }
 
     /**
      * 1.可以從任何一個節點找到node of component, 然後判斷是否為editable
@@ -1227,51 +1086,33 @@ class CodegenNode {
         return _.filter(list, (each) => !Util.has(this.modulesOfIgnore, each, true));
     }
 
-    getFieldNameOfDialogContent() {
-        return Util.camel('dialog', 'content', 'of', this.getPreciseAttributeGenealogyName());
-    }
+    getFieldNameOfDialogContent() { return Util.camel('dialog', 'content', 'of', this.getPreciseAttributeGenealogyName()); }
 
     getFieldNameOfVisualHelper(object, position) {
         return Util.camel('text', 'of', 'visual', position, this.getPreciseAttributeGenealogyName());
     }
 
-    getFunctionNameOfDialogContentGetterWithBracket() {
-        return `${Util.camel('get', this.getFieldNameOfDialogContent())}()`;
-    }
+    getFunctionNameOfDialogContentGetterWithBracket() { return `${Util.camel('get', this.getFieldNameOfDialogContent())}()`; }
 
-    getFunctionNameOfDialogTitleGetterWithBracket() {
-        return `${Util.camel('get', this.getFieldNameOfDialogTitle())}()`;
-    }
+    getFunctionNameOfDialogTitleGetterWithBracket() { return `${Util.camel('get', this.getFieldNameOfDialogTitle())}()`; }
 
-    getFunctionNameOfDialogInputValueGetterWithBracket() {
-        return `${Util.camel('get', this.getFieldNameOfDialogInputValue())}()`;
-    }
+    getFunctionNameOfDialogInputValueGetterWithBracket() { return `${Util.camel('get', this.getFieldNameOfDialogInputValue())}()`; }
 
-    getFunctionNameOfDialogInputValueSetter() {
-        return `${Util.camel('set', this.getFieldNameOfDialogInputValue())}`;
-    }
+    getFunctionNameOfDialogInputValueSetter() { return `${Util.camel('set', this.getFieldNameOfDialogInputValue())}`; }
 
-    getFunctionNameOfDialogInputLabelGetterWithBracket() {
-        return `${Util.camel('get', this.getFieldNameOfDialogInputLabel())}()`;
-    }
+    getFunctionNameOfDialogInputLabelGetterWithBracket() { return `${Util.camel('get', this.getFieldNameOfDialogInputLabel())}()`; }
 
-    getFieldNameOfDialogTitle() {
-        return Util.camel('dialog', 'title', 'of', this.getPreciseAttributeGenealogyName());
-    }
+    getFieldNameOfDialogTitle() { return Util.camel('dialog', 'title', 'of', this.getPreciseAttributeGenealogyName()); }
 
-    getFieldNameOfDialogInputValue() {
-        return Util.camel('dialog', 'input', 'value', 'of', this.getPreciseAttributeGenealogyName());
-    }
+    getFieldNameOfDialogInputValue() { return Util.camel('dialog', 'input', 'value', 'of', this.getPreciseAttributeGenealogyName()); }
 
-    getFieldNameOfDialogInputLabel() {
-        return Util.camel('dialog', 'input', 'label', 'of', this.getPreciseAttributeGenealogyName());
-    }
+    getFieldNameOfDialogInputLabel() { return Util.camel('dialog', 'input', 'label', 'of', this.getPreciseAttributeGenealogyName()); }
 
     /** exclude => 要略過的資料夾名稱 */
     getLessFilesOfModuleComponent(...exclude) {
         const modulesOfAllow = this.getListOfModuleComponent();
         const filesOfLess = modulesOfAllow.map((name) => Util.findFilePathBy(libpath.join(PATH_OF_COMPONENT_MODULE, name),
-            (file) => _.isEqual(file.extension, 'less')))
+          (file) => _.isEqual(file.extension, 'less')))
         return _.flatten(filesOfLess);
     }
 
@@ -1281,20 +1122,18 @@ class CodegenNode {
      * 可能還不懂call by reference的實作, 只好把物件(node)傳遞進來     * */
     needOnChangeBehavior(type = 'default', node = this) {
         return Util.or(
-            node.isSliderView(type),
-            node.isSwitchView(type),
-            node.isTextFieldView(type),
-            node.isAutoCompleteView(type),
-            node.isTabListView(type),
-            node.isTimeDatePickerView(type),
-            node.isTimeDateRangePickerView(type),
-            node.isCheckboxView(type),
+          node.isSliderView(type),
+          node.isSwitchView(type),
+          node.isTextFieldView(type),
+          node.isAutoCompleteView(type),
+          node.isTabListView(type),
+          node.isTimeDatePickerView(type),
+          node.isTimeDateRangePickerView(type),
+          node.isCheckboxView(type),
         );
     }
 
-    getDirectoryName() {
-        return this.directory;
-    }
+    getDirectoryName() { return this.directory; }
 
     /** 就是有提供單選
      * 1.在store產生 selected{node.getName()}
@@ -1302,9 +1141,7 @@ class CodegenNode {
      * 3.array裡的子類view, 不會用observer修飾, 不然會拿不到values
      * 4.selectedItem預設都是{value:'100',label:'100年'} label用來顯示標籤
      * */
-    isSimpleSelected() {
-        return this.select && Util.isOrEquals(this.select.type, 'radio', 'spinner', 'button');
-    }
+    isSimpleSelected() { return this.select && Util.isOrEquals(this.select.type, 'radio', 'spinner', 'button'); }
 
     /**
      * 1.用string當作value，否則select建議用number作為value
@@ -1314,17 +1151,11 @@ class CodegenNode {
         return _.isString(this.getSelectedDefaultValue())
     }
 
-    getTypeOfSimpleSelected() {
-        return this.select.type;
-    }
+    getTypeOfSimpleSelected() { return this.select.type; }
 
-    getDefaultValueOfSimpleSelected() {
-        return this.select.values;
-    }
+    getDefaultValueOfSimpleSelected() { return this.select.values; }
 
-    isIndex() {
-        return _.isEqual(this.index.enable, true);
-    }
+    isIndex() { return _.isEqual(this.index.enable, true); }
 
     getIndexRule() {
         return this.index.rule
@@ -1337,35 +1168,25 @@ class CodegenNode {
         return '';
     }
 
-    isRestfulBean() {
-        return this.restful;
-    }
+    isRestfulBean() { return this.restful; }
 
-    getStyle() {
-        return this.style;
-    }
+    getStyle() { return this.style; }
 
     appendStyle(style) {
         this.style = {...this.style, ...style}
     }
 
     /** arrayItem 是一個抽象的概念, 因為type='array', 必須建造出'QuestionsView(forEach邏輯)', 'QuestionView(viewModule)' */
-    isArrayItem() {
-        return _.isEqual(this.type, 'arrayItem');
-    }
+    isArrayItem() { return _.isEqual(this.type, 'arrayItem'); }
 
     getNodeOfSource() {
         const node = this.getParentBy((node) => node.isRootNode());
         return node;
     }
 
-    getStorageSuperUserUid() {
-        return this.superUserUid;
-    }
+    getStorageSuperUserUid() { return this.superUserUid; }
 
-    getConditions() {
-        return this.conditions;
-    }
+    getConditions() { return this.conditions; }
 
     getNodeOfComponent() {
         const node = this.getParentBy((node) => node.isComponentNode());
@@ -1384,38 +1205,24 @@ class CodegenNode {
         return this.getNodeOfComponent().getParamsInPath(...others);
     }
 
-    getNodeOfOrigin() {
-        return this.nodeOfOrigin ?? {};
-    }
+    getNodeOfOrigin() { return this.nodeOfOrigin ?? {}; }
 
-    needImplementAction() {
-        return this.isReferenceStructNode() && this.getNodeOfOrigin().implementActions;
-    }
+    needImplementAction() { return this.isReferenceStructNode() && this.getNodeOfOrigin().implementActions; }
 
     isStructNode() {
         const parent = this.getParentNode();
         return parent.isComponentNode();
     }
 
-    isRootNode() {
-        return !!this.components;
-    }
+    isRootNode() { return !!this.components; }
 
-    getStorageFolderName() {
-        return this.storageFolder ?? 'public';
-    }
+    getStorageFolderName() { return this.storageFolder ?? 'public'; }
 
-    getFunctionNameOfGetCondition() {
-        return Util.camel('get', this.getName(), 'conditions');
-    }
+    getFunctionNameOfGetCondition() { return Util.camel('get', this.getName(), 'conditions'); }
 
-    getFunctionNameOfPushCondition() {
-        return Util.camel('push', this.getName(), 'conditions');
-    }
+    getFunctionNameOfPushCondition() { return Util.camel('push', this.getName(), 'conditions'); }
 
-    hasStorageFolder() {
-        return !Util.isUndefinedNullEmpty(this.storageFolder);
-    }
+    hasStorageFolder() { return !Util.isUndefinedNullEmpty(this.storageFolder); }
 
     isCollectionPath() {
         if (this.hasPath()) {
@@ -1429,9 +1236,7 @@ class CodegenNode {
         this.style = style;
     }
 
-    getWrapStyle() {
-        return this.wrapStyle;
-    }
+    getWrapStyle() { return this.wrapStyle; }
 
     getPaginateSize() {
         if (this.paginate)
@@ -1439,17 +1244,11 @@ class CodegenNode {
         return -1;
     }
 
-    getMaxSizePerRequest() {
-        return this.maxSizeOfFetchItem;
-    }
+    getMaxSizePerRequest() { return this.maxSizeOfFetchItem; }
 
-    getPaginateThreshold() {
-        return this.paginate.threshold;
-    }
+    getPaginateThreshold() { return this.paginate.threshold; }
 
-    hasPaginate() {
-        return !!this.paginate && _.isObject(this.paginate);
-    }
+    hasPaginate() { return !!this.paginate && _.isObject(this.paginate); }
 
     appendWrapStyle(style) {
         this.wrapStyle = {...this.wrapStyle, ...style}
@@ -1459,9 +1258,7 @@ class CodegenNode {
         this.wrapStyle = style;
     }
 
-    getListStyle() {
-        return this.listStyle;
-    }
+    getListStyle() { return this.listStyle; }
 
     setListStyle(style) {
         this.listStyle = style;
@@ -1471,9 +1268,7 @@ class CodegenNode {
         this.listStyle = {...this.listStyle, ...style}
     }
 
-    getListWrapStyle() {
-        return this.listWrapStyle;
-    }
+    getListWrapStyle() { return this.listWrapStyle; }
 
     setListWrapStyle(style) {
         this.listWrapStyle = style;
@@ -1483,55 +1278,33 @@ class CodegenNode {
         this.listWrapStyle = {...this.listWrapStyle, ...style}
     }
 
-    getFunctionNameOfItemEditorWithParam() {
-        return `self.${this.getFunctionNameOfItemEditor()}(${this.getName()})`;
-    }
+    getFunctionNameOfItemEditorWithParam() { return `self.${this.getFunctionNameOfItemEditor()}(${this.getName()})`; }
 
-    getFunctionNameOfCollectionEditorWithParam() {
-        return `self.${this.getFunctionNameOfCollectionEditor()}(
+    getFunctionNameOfCollectionEditorWithParam() { return `self.${this.getFunctionNameOfCollectionEditor()}(
         ${this.isObject() ? this.getName() : this.getPreciseAttributeParent().getName()}
-        )`;
-    }
+        )`; }
 
-    hasValidViewParent() {
-        return this.getPreciseViewParent().isValidNode();
-    }
+    hasValidViewParent() { return this.getPreciseViewParent().isValidNode(); }
 
-    hasValidAttributeParent() {
-        return this.getPreciseAttributeParent().isValidNode();
-    }
+    hasValidAttributeParent() { return this.getPreciseAttributeParent().isValidNode(); }
 
     /** 像是編輯一個item, 這種屬許item等級的作業, item自己做的事情 */
-    getFunctionNameOfItemEditor() {
-        return Util.camel('on', this.getName(), 'Item', 'Editor', 'Clicked', 'AsyncTask');
-    }
+    getFunctionNameOfItemEditor() { return Util.camel('on', this.getName(), 'Item', 'Editor', 'Clicked', 'AsyncTask'); }
 
     /** 像是新增一個item, 這種屬許array等級的作業, 一個Array只會有一個新增 */
-    getFunctionNameOfCollectionEditor() {
-        return Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask');
-    }
+    getFunctionNameOfCollectionEditor() { return Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask'); }
 
-    isContainer() {
-        return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
-            'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider');
-    }
+    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
+      'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider'); }
 
-    getFunctionNameOfSwiper() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe');
-    }
+    getFunctionNameOfSwiper() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe'); }
 
 
-    getFunctionNameOfSwipeSlide() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Slide');
-    }
+    getFunctionNameOfSwipeSlide() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Slide'); }
 
-    getFunctionNameOfObservableObject() {
-        return Util.camel('get', 'observable', this.getObservableName());
-    }
+    getFunctionNameOfObservableObject() { return Util.camel('get', 'observable', this.getObservableName()); }
 
-    allowOfParam() {
-        return (this.isAttribute() && this.hasValidAttributeParent()) || this.needParentParam() || this.isIncestAttribute();
-    }
+    allowOfParam() { return (this.isAttribute() && this.hasValidAttributeParent()) || this.needParentParam() || this.isIncestAttribute(); }
 
     isScrollingHideDependOnRootNode() {
         const rootNode = this.getNodeOfSource()
@@ -1546,9 +1319,7 @@ class CodegenNode {
         this.isEditableComponent = edit;
     }
 
-    isDisableInitFetch() {
-        return _.isEqual(true, this.disableInitFetch);
-    }
+    isDisableInitFetch() { return _.isEqual(true, this.disableInitFetch); }
 
     getUniqueIdStmt() {
         if (this.hasPath() && !this.isCheapArray())
@@ -1563,13 +1334,9 @@ class CodegenNode {
         return nodeOfComponent.isEditableComponent;
     }
 
-    isColumnAttribute() {
-        return this.hasPath() || (this.isAttribute() && this.isColumn()) || this.isLabelOrValue();
-    }
+    isColumnAttribute() { return this.hasPath() || (this.isAttribute() && this.isColumn()) || this.isLabelOrValue(); }
 
-    isColumn() {
-        return _.isEqual(this.column, true);
-    }
+    isColumn() { return _.isEqual(this.column, true); }
 
     isLabelOrValue() {
         return this.isAttribute() && Util.isOrEquals(_.toLower(this.getName()), 'value', 'label')
@@ -1579,13 +1346,9 @@ class CodegenNode {
         return _.isEqual(this.type, 'timestamp')
     }
 
-    isViewModified() {
-        return !!this.viewModified;
-    }
+    isViewModified() { return !!this.viewModified; }
 
-    isNameModified() {
-        return !!this.nameModified;
-    }
+    isNameModified() { return !!this.nameModified; }
 
     getSelectedCustomLabelView() {
         const view = this.select.labelView;
@@ -1596,13 +1359,9 @@ class CodegenNode {
         return _.isEqual(this.getView(), 'Button')
     }
 
-    needIndependClick() {
-        return this.independentClick;
-    }
+    needIndependClick() { return this.independentClick; }
 
-    getFieldNameOfRef() {
-        return Util.camel('ref', 'of', this.getFieldName());
-    }
+    getFieldNameOfRef() { return Util.camel('ref', 'of', this.getFieldName()); }
 
     isIconButton() {
         return _.isEqual(this.getView(), 'IconButton')
@@ -1623,9 +1382,7 @@ class CodegenNode {
     }
 
     /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
-    getFunctionNameOfPureFetch() {
-        return Util.camel(`fetch`, 'Pure', this.getFieldName());
-    }
+    getFunctionNameOfPureFetch() { return Util.camel(`fetch`, 'Pure', this.getFieldName()); }
 
     getFunctionNameOfNextFetch() {
         return Util.camel(`fetch`, `next`, this.getFieldName())
@@ -1635,13 +1392,9 @@ class CodegenNode {
         return Util.camel(`fetch`, this.getName(), 'item')
     }
 
-    getFunctionNameOfUpdateItem() {
-        return Util.camel('update', this.getName(), 'item');
-    }
+    getFunctionNameOfUpdateItem() { return Util.camel('update', this.getName(), 'item'); }
 
-    getFunctionNameOfUpdateItemAtomically() {
-        return Util.camel('update', this.getName(), 'item', 'atomically');
-    }
+    getFunctionNameOfUpdateItemAtomically() { return Util.camel('update', this.getName(), 'item', 'atomically'); }
 
     getFunctionNameOfDeleteItem() {
         return Util.camel('delete', this.getName(), 'item')
@@ -1651,33 +1404,19 @@ class CodegenNode {
         return Util.camel('delete', this.getFieldName())
     }
 
-    getFunctionNameOfSubmitItem() {
-        return Util.camel('submit', this.getName(), 'item');
-    }
+    getFunctionNameOfSubmitItem() { return Util.camel('submit', this.getName(), 'item'); }
 
-    getFunctionNameOfSubmit() {
-        return Util.camel('submit', this.getFieldName());
-    }
+    getFunctionNameOfSubmit() { return Util.camel('submit', this.getFieldName()); }
 
-    getFunctionNameOfFetchDocumentIds() {
-        return Util.camel('fetchDocumentIds', 'of', this.getName());
-    }
+    getFunctionNameOfFetchDocumentIds() { return Util.camel('fetchDocumentIds', 'of', this.getName()); }
 
-    getFunctionNameOfGetter() {
-        return Util.camel('get', this.getName());
-    }
+    getFunctionNameOfGetter() { return Util.camel('get', this.getName()); }
 
-    getFunctionNameOfGetters() {
-        return Util.camel('get', this.getFieldName());
-    }
+    getFunctionNameOfGetters() { return Util.camel('get', this.getFieldName()); }
 
-    getFunctionNameOfClean() {
-        return Util.camel('clean', this.getFieldName());
-    }
+    getFunctionNameOfClean() { return Util.camel('clean', this.getFieldName()); }
 
-    getFunctionNameOfBatchUpdate() {
-        return Util.camel('update', this.getFieldName());
-    }
+    getFunctionNameOfBatchUpdate() { return Util.camel('update', this.getFieldName()); }
 
     setViewModified(modified) {
         this.viewModified = modified;
@@ -1695,13 +1434,9 @@ class CodegenNode {
         this.originalView = view;
     }
 
-    getOriginalView() {
-        return this.isPreciselyEditableComponent() ? this.originalView : this.view;
-    }
+    getOriginalView() { return this.isPreciselyEditableComponent() ? this.originalView : this.view; }
 
-    getOriginalName() {
-        return this.isPreciselyEditableComponent() ? this.originalName : this.name;
-    }
+    getOriginalName() { return this.isPreciselyEditableComponent() ? this.originalName : this.name; }
 
     getDescription() {
         const self = this;
@@ -1732,9 +1467,7 @@ class CodegenNode {
         this.listContents = contents;
     }
 
-    needLoadingSkeleton() {
-        return this.isPathArray() && this.skeleton && this.skeleton.enable;
-    }
+    needLoadingSkeleton() { return this.isPathArray() && this.skeleton && this.skeleton.enable; }
 
     getVariantOfSkeleton() {
         if (this.skeleton && this.skeleton.variant) {
@@ -1760,9 +1493,7 @@ class CodegenNode {
         this.listContents.push(...contents);
     }
 
-    getSimpleProps() {
-        return this.simpleProps;
-    }
+    getSimpleProps() { return this.simpleProps; }
 
     appendSimpleProps(...props) {
         this.simpleProps.push(...props);
@@ -1781,17 +1512,11 @@ class CodegenNode {
         this.stmtsOfImport.push(...stmt);
     }
 
-    getStmtsOfImport() {
-        return this.stmtsOfImport;
-    }
+    getStmtsOfImport() { return this.stmtsOfImport; }
 
-    hasPermission() {
-        return !!this.permission && !_.isEmpty(this.permission);
-    }
+    hasPermission() { return !!this.permission && !_.isEmpty(this.permission); }
 
-    getListContents() {
-        return this.listContents ? this.listContents : [];
-    }
+    getListContents() { return this.listContents ? this.listContents : []; }
 
     setListWrapContents(contents) {
         this.listWrapContents = contents;
@@ -1801,9 +1526,7 @@ class CodegenNode {
         this.listWrapContents.push(...contents);
     }
 
-    getListWrapContents() {
-        return this.listWrapContents ? this.listWrapContents : [];
-    }
+    getListWrapContents() { return this.listWrapContents ? this.listWrapContents : []; }
 
     setWrapContents(contents) {
         this.wrapContents = contents;
@@ -1819,7 +1542,7 @@ class CodegenNode {
         function getTaskStmts() {
             if (self.hasConfirmDialog())
                 return `task:async() => self.${self.hasDeletedView() && self.isAlertDialog4Deleted() ?
-                    self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
+                  self.getFunctionNameOfDeleted() : self.getFunctionNameOfClicked()}(objectOfParam)`;
             /** AlertDialog是WrapView，所以getFunctionNameOfClicked會對現有的Click Instance造成影響，所以不帶入type */
         }
 
@@ -1894,7 +1617,7 @@ class CodegenNode {
             if (this.isAlertDialogNeedGlobalRef()) {
                 generator.appendField(nameOfRef, 'React.createRef()');
                 generator.appendFunction(Util.camel('get', nameOfRef), [], [], [],
-                    `return this.${nameOfRef}.current`)
+                  `return this.${nameOfRef}.current`)
             }
 
             const stmtOfRef = this.isAlertDialogNeedGlobalRef() ? `self.${nameOfRef}` : nameOfRef
@@ -1923,37 +1646,21 @@ class CodegenNode {
         }
     }
 
-    needEditPage() {
-        return this.editor && !!this.editor;
-    }
+    needEditPage() { return this.editor && !!this.editor; }
 
-    isFetchOnlyLogin() {
-        return this.initFetchOnlyLogin ? this.initFetchOnlyLogin : false;
-    }
+    isFetchOnlyLogin() { return this.initFetchOnlyLogin ? this.initFetchOnlyLogin : false; }
 
-    getCustomizePackages() {
-        return _.isEmpty(this.customizes) ? [] : this.customizes;
-    }
+    getCustomizePackages() { return _.isEmpty(this.customizes) ? [] : this.customizes; }
 
-    getEventParams() {
-        return this.params ? this.params : [];
-    }
+    getEventParams() { return this.params ? this.params : []; }
 
-    hasInputFieldDialog() {
-        return this.getAlertDialog().textInput.enable;
-    }
+    hasInputFieldDialog() { return this.getAlertDialog().textInput.enable; }
 
-    hasFullWidthOfDialog() {
-        return this.getAlertDialog().fullWidth;
-    }
+    hasFullWidthOfDialog() { return this.getAlertDialog().fullWidth; }
 
-    hasStrictMode() {
-        return _.isEqual(this.getAlertDialog().strict, true);
-    }
+    hasStrictMode() { return _.isEqual(this.getAlertDialog().strict, true); }
 
-    hasCustomCancelButton() {
-        return _.isEqual(this.getAlertDialog().useCustomCancel, true);
-    }
+    hasCustomCancelButton() { return _.isEqual(this.getAlertDialog().useCustomCancel, true); }
 
     hasAlertMenu() {
         const conditionA = _.size(this.alertMenu.items) > 0;
@@ -1962,27 +1669,17 @@ class CodegenNode {
         return conditionA;
     }
 
-    getAlertDialog() {
-        return Util.mergeObject(this.defaultAlertDialog, this.alertDialog);
-    }
+    getAlertDialog() { return Util.mergeObject(this.defaultAlertDialog, this.alertDialog); }
 
-    hasLoginRequiredDialog() {
-        return !!this.loginRequiredAlert;
-    }
+    hasLoginRequiredDialog() { return !!this.loginRequiredAlert; }
 
     /** 就是點擊要再確認的那種dialog */
-    hasConfirmDialog() {
-        return !_.isEmpty(this.getAlertDialog().title);
-    }
+    hasConfirmDialog() { return !_.isEmpty(this.getAlertDialog().title); }
 
     /** 就是客製化view那種dialog */
-    hasCustomViewDialog() {
-        return !_.isEmpty(this.getAlertDialog().customView);
-    }
+    hasCustomViewDialog() { return !_.isEmpty(this.getAlertDialog().customView); }
 
-    hasAlertDialog() {
-        return this.hasConfirmDialog() || this.hasCustomViewDialog();
-    }
+    hasAlertDialog() { return this.hasConfirmDialog() || this.hasCustomViewDialog(); }
 
     setContents(contents = []) {
         this.contents = [];
@@ -2017,9 +1714,7 @@ class CodegenNode {
         this.listWrapView = view;
     }
 
-    withoutWrapView() {
-        return Util.isUndefinedNullEmpty(this.getWrapView(false));
-    }
+    withoutWrapView() { return Util.isUndefinedNullEmpty(this.getWrapView(false)); }
 
     getListView() {
         if (this.listView) {
@@ -2043,13 +1738,9 @@ class CodegenNode {
         this.listView = view;
     }
 
-    getType() {
-        return this.type;
-    }
+    getType() { return this.type; }
 
-    hasDefaultValue() {
-        return !Util.isUndefinedNullEmpty(this.defaultValue);
-    }
+    hasDefaultValue() { return !Util.isUndefinedNullEmpty(this.defaultValue); }
 
     setView(view) {
         this.view = view;
@@ -2059,9 +1750,7 @@ class CodegenNode {
         return raw ? this.view : _.replace(this.view, '.', ''); /** 處理React.Fragment*/
     }
 
-    getEvents() {
-        return this.events ? this.events : [];
-    }
+    getEvents() { return this.events ? this.events : []; }
 
     setEvents(events) {
         this.events = events;
@@ -2084,12 +1773,10 @@ class CodegenNode {
         return result
     }
 
-    getDefaultStoragePermission() {
-        return {
-            write: 'isAdmin()',
-            read: 'alwaysTrue()',
-        };
-    }
+    getDefaultStoragePermission() { return {
+        write: 'isAdmin()',
+        read: 'alwaysTrue()',
+    }; }
 
     isState() {
         return true;
@@ -2106,17 +1793,11 @@ class CodegenNode {
         return Util.camel('invalidate', this.getName(), 'suggestion')
     }
 
-    getFieldNameOfAlertDialog() {
-        return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref');
-    }
+    getFieldNameOfAlertDialog() { return Util.camel(this.getName(), this.getView(), 'alertDialog', 'ref'); }
 
-    getFieldNameOfAlertMenu() {
-        return Util.camel(this.getName(), this.getView(), 'alertMenu', 'ref');
-    }
+    getFieldNameOfAlertMenu() { return Util.camel(this.getName(), this.getView(), 'alertMenu', 'ref'); }
 
-    isWrapByAppBarView() {
-        return _.isEqual(this.getWrapView(), 'AppBar');
-    }
+    isWrapByAppBarView() { return _.isEqual(this.getWrapView(), 'AppBar'); }
 
     /**isView 就是指gen出view class, 不然就是component */
     getSelfVariableStmts() {
@@ -2144,7 +1825,7 @@ class CodegenNode {
             stmts.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, this.getFieldNameOfSuggest())}s())+Util.getRandomHash()`)
         }
 
-        if (this.isArray() && !this.isSimpleSelected() && !useViewModuleAndComponentModuleMechanism) {
+        if (this.isArray() && !this.isSimpleSelected()) {
             const className = this.getArrayItemNode().getViewClassNameOfRenderView();
             stmts.push(`const ${className} = self.${className}`);
         } else {
@@ -2156,7 +1837,7 @@ class CodegenNode {
                 }
 
                 const view = child.getViewClassNameOfRenderView();
-                if (!!!exist[view] && !useViewModuleAndComponentModuleMechanism)
+                if (!!!exist[view])
                     stmts.push(`const ${view} = self.${view}`)
                 exist[view] = true;
             }
@@ -2176,11 +1857,6 @@ class CodegenNode {
         /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
         if (this.allowOfParam()) {
             /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
-            if (useViewModuleAndComponentModuleMechanism) {
-                stmts.push(`const ${this.isArrayItem() ? this.getFieldName() : this.getPreciseAttributeParentName()}
-                     = self.${self.getFunctionNameOfObservableObject()}()`)
-            }
-
             if (this.isAttribute() && !this.isArrayItem()) {
                 stmts.push(`const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`)
             }
@@ -2189,42 +1865,26 @@ class CodegenNode {
         return stmts;
     }
 
-    hasCookies() {
-        return !!this.cookies && _.size(this.cookies) > 0;
-    }
+    hasCookies() { return !!this.cookies && _.size(this.cookies) > 0; }
 
     getCookies() {
         const node = this.getNodeOfComponent();
         return _.isArray(node.cookies) ? node.cookies : [];
     }
 
-    needInjectStyle() {
-        return !!this.injectStyle && this.injectStyle;
-    }
+    needInjectStyle() { return !!this.injectStyle && this.injectStyle; }
 
-    needInjectWrapStyle() {
-        return !!this.injectWrapStyle && this.injectWrapStyle;
-    }
+    needInjectWrapStyle() { return !!this.injectWrapStyle && this.injectWrapStyle; }
 
-    needInjectListStyle() {
-        return !!this.injectListStyle && this.injectListStyle;
-    }
+    needInjectListStyle() { return !!this.injectListStyle && this.injectListStyle; }
 
-    needInjectListWrapStyle() {
-        return !!this.injectListWrapStyle && this.injectListWrapStyle;
-    }
+    needInjectListWrapStyle() { return !!this.injectListWrapStyle && this.injectListWrapStyle; }
 
-    needInjectView() {
-        return !!this.injectView && this.injectView;
-    }
+    needInjectView() { return !!this.injectView && this.injectView; }
 
-    needInjectProps() {
-        return !!this.injectProps && this.injectProps;
-    }
+    needInjectProps() { return !!this.injectProps && this.injectProps; }
 
-    hasPath() {
-        return !!this.path && !_.isEmpty(this.path);
-    }
+    hasPath() { return !!this.path && !_.isEmpty(this.path); }
 
     getContents(generator) {
         const stmts = [];
@@ -2244,17 +1904,11 @@ class CodegenNode {
         return stmt;
     }
 
-    isNumber() {
-        return _.isEqual(this.type, 'number');
-    }
+    isNumber() { return _.isEqual(this.type, 'number'); }
 
-    isBoolean() {
-        return _.isEqual(this.type, 'boolean');
-    }
+    isBoolean() { return _.isEqual(this.type, 'boolean'); }
 
-    isString() {
-        return _.isEqual(this.type, 'string');
-    }
+    isString() { return _.isEqual(this.type, 'string'); }
 
     appendChildren(...child) {
         this.children.push(...child);
@@ -2268,22 +1922,16 @@ class CodegenNode {
         return name;
     }
 
-    hasWrap() {
-        return !!this.wrapView && !_.isEmpty(this.wrapView);
-    }
+    hasWrap() { return !!this.wrapView && !_.isEmpty(this.wrapView); }
 
-    hasListWrap() {
-        return !!this.listWrapView && !_.isEmpty(this.listWrapView);
-    }
+    hasListWrap() { return !!this.listWrapView && !_.isEmpty(this.listWrapView); }
 
     hasNavigationView() {
         return !!this.navigation && !!this.navigation.view
 
     }
 
-    getDeltaOfIncrement() {
-        return this.increment.delta;
-    }
+    getDeltaOfIncrement() { return this.increment.delta; }
 
     isOuter() {
         return !!this.outer && this.outer
@@ -2317,13 +1965,9 @@ class CodegenNode {
         return this.isAttributeView('Chip', type, node);
     }
 
-    isAlertDialog4Deleted() {
-        return this.getAlertDialog().deleted;
-    }
+    isAlertDialog4Deleted() { return this.getAlertDialog().deleted; }
 
-    isAlertDialog4Click() {
-        return !this.getAlertDialog().deleted;
-    }
+    isAlertDialog4Click() { return !this.getAlertDialog().deleted; }
 
     isTabItemView(type = 'default') {
         return this.isAttributeView('Tab', type);
@@ -2383,7 +2027,7 @@ class CodegenNode {
      * */
     isTimeDatePickerView(type = 'default', node = this) {
         return node.isAttributeView('TimePicker', type) || node.isAttributeView('DatePicker', type) ||
-            node.isAttributeView('DateTimePicker', type);
+          node.isAttributeView('DateTimePicker', type);
     }
 
     /** 是時間屬性的挑選器 */
@@ -2402,7 +2046,7 @@ class CodegenNode {
      */
     isTimeDateRangePickerView(type = 'default', node = this) {
         return node.isAttributeView('DateTimePickerTimeRangePicker', type) ||
-            node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
+          node.isAttributeView('DateTimeRangePicker', type) || node.isAttributeView('DateRangePicker', type);
     }
 
     isCheckboxView(type = 'default', node = this) {
@@ -2438,9 +2082,7 @@ class CodegenNode {
     }
 
     /** 就是指number, string 這類的物件啦 */
-    isStringOrNumberAttribute() {
-        return this.isView() && this.isAttribute() && !this.isCollection();
-    }
+    isStringOrNumberAttribute() { return this.isView() && this.isAttribute() && !this.isCollection(); }
 
 
     /** 應該畫面時做的component 對應到的 物件, 都是根據父類再繼續點下去 例如 parent.child
@@ -2455,21 +2097,13 @@ class CodegenNode {
         return this.getPreciseParent((node) => node.isIncestView(), (node) => node.isView(), force);
     }
 
-    getFieldNameOfSuggest() {
-        return Util.camel(this.getName(), `suggest`);
-    }
+    getFieldNameOfSuggest() { return Util.camel(this.getName(), `suggest`); }
 
-    getFieldNameOfDefaultValue() {
-        return Util.camel(`default`, 'of', this.getName());
-    }
+    getFieldNameOfDefaultValue() { return Util.camel(`default`, 'of', this.getName()); }
 
-    getFieldNameOfValue() {
-        return Util.camel(`value`, 'of', this.getName());
-    }
+    getFieldNameOfValue() { return Util.camel(`value`, 'of', this.getName()); }
 
-    getPreciseAttributeParent() {
-        return this.getPreciseParent((node) => node.isIncestAttribute(), (node) => node.isAttribute());
-    }
+    getPreciseAttributeParent() { return this.getPreciseParent((node) => node.isIncestAttribute(), (node) => node.isAttribute()); }
 
     getPreciseParent(ruleOfIncest, ruleOfNode, force = false) {
         const nodeOfTarget = this.isReferenceImitateNode() && !force ? this.getNodeOfOrigin() : this;
@@ -2486,22 +2120,16 @@ class CodegenNode {
     }
 
 
-    isIncestAttribute() {
-        return this.incest && _.isEqual(this.incest.attribute, true);
-    }
+    isIncestAttribute() { return this.incest && _.isEqual(this.incest.attribute, true); }
 
     hasValidParent() {
         const parent = this.getPreciseAttributeParent();
         return parent.isValidNode();
     }
 
-    isValidNode() {
-        return !_.isEqual(this.getName(), SignOfInValidNode);
-    }
+    isValidNode() { return !_.isEqual(this.getName(), SignOfInValidNode); }
 
-    isIncestView() {
-        return this.incest && _.isEqual(this.incest.view, true);
-    }
+    isIncestView() { return this.incest && _.isEqual(this.incest.view, true); }
 
     hasViewChildren() {
         const children = this.getPreciseViewChildren();
@@ -2515,38 +2143,34 @@ class CodegenNode {
 
     getPreciseColumnChildren() {
         return this.getPreciseChildren(
-            (node) => node.isColumnAttribute(),
-            (node) => node.isIncestAttribute(),
-            (node) => node.isAttribute(),
-            (node) => node.isIncestAttribute(),
+          (node) => node.isColumnAttribute(),
+          (node) => node.isIncestAttribute(),
+          (node) => node.isAttribute(),
+          (node) => node.isIncestAttribute(),
         )
     }
 
     getPreciseAttributeChildren() {
         return this.getPreciseChildren(
-            (node) => node.isAttribute(),
-            (node) => node.isIncestAttribute(),
-            (node) => node.isAttribute(),
-            (node) => node.isIncestAttribute(),
+          (node) => node.isAttribute(),
+          (node) => node.isIncestAttribute(),
+          (node) => node.isAttribute(),
+          (node) => node.isIncestAttribute(),
         )
     }
 
     /** child.isCollection() 是為了collection裡的屬性可能包含path*/
-    getPreciseAttributePathChildren() {
-        return _.filter(this.getPreciseAttributeChildren(), (child) => child.hasPath() || child.isCollection());
-    }
+    getPreciseAttributePathChildren() { return _.filter(this.getPreciseAttributeChildren(), (child) => child.hasPath() || child.isCollection()); }
 
     getPreciseViewChildren() {
         return this.getPreciseChildren(
-            (node) => node.isView(),
-            (node) => node.isIncestView(),
-            (node) => node.isView(),
-            (node) => node.isIncestView())
+          (node) => node.isView(),
+          (node) => node.isIncestView(),
+          (node) => node.isView(),
+          (node) => node.isIncestView())
     }
 
-    hasIncrementUsage() {
-        return this.isNumber() && _.isEqual(this.increment.enable, true);
-    }
+    hasIncrementUsage() { return this.isNumber() && _.isEqual(this.increment.enable, true); }
 
     /** @deprecated
      *  之前getPreciseChildren的規則，沒有用遞迴，敲可愛的波動拳
@@ -2576,10 +2200,20 @@ class CodegenNode {
      *  第二層之後，符合(ruleOfNode && ruleOfIncest) 且 getPreciseParent（ruleOfParent,ruleOfParentIncest）=== 是'當前node' 就是 child
      * */
     getPreciseChildren(ruleOfNode, ruleOfIncest, ruleOfParent, ruleOfParentIncest, children = [], layer = 1, node = this, origin = this) {
-        const rule1 = (child) => (layer === 1) && (!ruleOfIncest(child) && ruleOfNode(child));
-        const rule2 = (child) => (layer > 1) && (ruleOfIncest(child) && ruleOfNode(child)) && (child.getPreciseParent(ruleOfParentIncest, ruleOfParent) === origin)
-        children.push(..._.filter(node.getChildren(), child => rule1(child) || rule2(child)));
-        for (const child of node.getChildren()) this.getPreciseChildren(ruleOfNode, ruleOfIncest, ruleOfParent, ruleOfParentIncest, children, layer + 1, child, origin);
+        const isFirstLayer = layer === 1;
+        const childNodes = node.getChildren();
+
+        for (const child of childNodes) {
+            if (
+              (isFirstLayer && ruleOfNode(child) && !ruleOfIncest(child)) ||
+              (!isFirstLayer && ruleOfNode(child) && ruleOfIncest(child) && child.getPreciseParent(ruleOfParentIncest, ruleOfParent) === origin)
+            ) {
+                children.push(child);
+            }
+            // 遞迴下一層
+            this.getPreciseChildren(ruleOfNode, ruleOfIncest, ruleOfParent, ruleOfParentIncest, children, layer + 1, child, origin);
+        }
+
         return children;
     }
 
@@ -2590,13 +2224,9 @@ class CodegenNode {
             return this;
     }
 
-    getPreciseAttributeName() {
-        return this.getPreciseAttributeNode().getName();
-    }
+    getPreciseAttributeName() { return this.getPreciseAttributeNode().getName(); }
 
-    getPreciseAttributeParentName() {
-        return this.getPreciseAttributeParent().getName();
-    }
+    getPreciseAttributeParentName() { return this.getPreciseAttributeParent().getName(); }
 
     getChildNodeOfImage() {
         for (const child of this.getPreciseAttributeChildren()) {
@@ -2606,14 +2236,10 @@ class CodegenNode {
     }
 
     /** 表示這會在component裡面產生邏輯 */
-    isView() {
-        return !!this.view;
-    }
+    isView() { return !!this.view; }
 
     /** 表示這會在store裡面產生邏輯 */
-    isAttribute() {
-        return !!this.type;
-    }
+    isAttribute() { return !!this.type; }
 
     getWrapProps() {
         if (!!this.wrapProps)
@@ -2684,21 +2310,13 @@ class CodegenNode {
         this.listEmptyTip = {enable: false}
     }
 
-    hasCookiePassword() {
-        return !!this.password && _.size(this.password) > 0;
-    }
+    hasCookiePassword() { return !!this.password && _.size(this.password) > 0; }
 
-    getStoreFolderName() {
-        return Util.camel(_.reverse(this.getPreciseAttributeGenealogyNodes()).map((node) => node.getName()));
-    }
+    getStoreFolderName() { return Util.camel(_.reverse(this.getPreciseAttributeGenealogyNodes()).map((node) => node.getName())); }
 
-    getStoreClassName() {
-        return _.upperFirst(this.getStoreFolderName());
-    }
+    getStoreClassName() { return _.upperFirst(this.getStoreFolderName()); }
 
-    getNameOfBaseClassName() {
-        return `Base${this.getStoreClassName()}Store`;
-    }
+    getNameOfBaseClassName() { return `Base${this.getStoreClassName()}Store`; }
 
     hasPageTitle() {
         const node = this.getNodeOfComponent();
@@ -2710,13 +2328,9 @@ class CodegenNode {
     }
 
     /** web page 顯示在橫槓上的字樣 */
-    getTitle() {
-        return this.title ? this.title : '';
-    }
+    getTitle() { return this.title ? this.title : ''; }
 
-    pure() {
-        return this.node;
-    }
+    pure() { return this.node; }
 
     hasChildren() {
         if (this.children !== undefined && !_.isArray(this.children)) {
@@ -2726,21 +2340,15 @@ class CodegenNode {
         return (_.isArray(this.children) && this.children.length > 0);
     }
 
-    getChildren() {
-        return _.isArray(this.children) ? this.children : [];
-    }
+    getChildren() { return _.isArray(this.children) ? this.children : []; }
 
     setChildren(children) {
         this.children = children;
     }
 
-    hasParent() {
-        return this.parent !== undefined;
-    }
+    hasParent() { return this.parent !== undefined; }
 
-    getFunctionNameRemoveItems() {
-        return `remove${_.upperFirst(this.getFieldName())}`;
-    }
+    getFunctionNameRemoveItems() { return `remove${_.upperFirst(this.getFieldName())}`; }
 
     /** original 就是找到hack之前的組合 */
     organizeClassNameWithParent(type = 'default', original = false) {
@@ -2787,18 +2395,11 @@ class CodegenNode {
         };
     }
 
-    isClickView() {
-        return !!this.view && !!this.click;
-    }
+    isClickView() { return !!this.view && !!this.click; }
 
-    hasWrapClick() {
-        return !!this.wrapView && _.isEqual(true, this.wrapClick);
+    hasWrapClick() { return !!this.wrapView && _.isEqual(true, this.wrapClick); }
 
-    }
-
-    hasDeletedView() {
-        return !!this.view && (!!this.deleted || this.hasIconOfDeleted());
-    }
+    hasDeletedView() { return !!this.view && (!!this.deleted || this.hasIconOfDeleted()); }
 
     setClick(click) {
         this.click = click
@@ -2811,29 +2412,17 @@ class CodegenNode {
         return Util.camel(`on`, this.getPreciseNameOfAttributeView(), ...items, 'clicked');
     }
 
-    getFunctionNameOfDeleted() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'deleted');
-    }
+    getFunctionNameOfDeleted() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'deleted'); }
 
-    getFunctionNameOfPlayEnd() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'ended');
-    }
+    getFunctionNameOfPlayEnd() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'ended'); }
 
-    getFunctionNameOfOnPlay() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Play');
-    }
+    getFunctionNameOfOnPlay() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Play'); }
 
-    getFunctionNameOfPlayError() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'error');
-    }
+    getFunctionNameOfPlayError() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'error'); }
 
-    getFunctionNameOfSearchPressed() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'search', 'pressed');
-    }
+    getFunctionNameOfSearchPressed() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'search', 'pressed'); }
 
-    getPath() {
-        return this.path;
-    }
+    getPath() { return this.path; }
 
     setPath(path) {
         this.path = path;
@@ -2932,13 +2521,9 @@ class CodegenNode {
         return Util.camel(`get${type}InjectStyleOf`, this.getPreciseNameOfAttributeView());
     }
 
-    getFunctionNameOfInjectView() {
-        return Util.camel('get', 'inject', 'view', 'of', this.getPreciseNameOfAttributeView());
-    }
+    getFunctionNameOfInjectView() { return Util.camel('get', 'inject', 'view', 'of', this.getPreciseNameOfAttributeView()); }
 
-    getFunctionNameOfInjectProps() {
-        return Util.camel('get', 'inject', 'props', 'of', this.getPreciseNameOfAttributeView());
-    }
+    getFunctionNameOfInjectProps() { return Util.camel('get', 'inject', 'props', 'of', this.getPreciseNameOfAttributeView()); }
 
     /** 找出祖譜 */
     getGenealogyNodes(validate, getParent, excludeSelf = false) {
@@ -2969,9 +2554,7 @@ class CodegenNode {
     }
 
     /** 指這個節點代表一個component view */
-    isReferenceStructNode() {
-        return this.isReferenceNode() && this.isStructNode();
-    }
+    isReferenceStructNode() { return this.isReferenceNode() && this.isStructNode(); }
 
     /** 如果要用在程式內的view做一些邏輯上的injectStyle,injectView,injectProps 或是onClicked ,中間的unique function name統一都用這個 */
     getPreciseNameOfAttributeView() {
@@ -3011,9 +2594,7 @@ class CodegenNode {
     }
 
     /** 請注意getParentNode的註記 */
-    getParent() {
-        return this.parent;
-    }
+    getParent() { return this.parent; }
 
 
     /** type = array 而且有path 的話, 會製造出太多document, fetch all的話就會花太多費用, 像是keywords, 或是首頁的banner
@@ -3021,18 +2602,12 @@ class CodegenNode {
      *
      *  cheep array 關鍵在於 remote fetch io上面的hack, 畫面上沒有任何差異
      * */
-    isCheapArray() {
-        return this.isArray() && _.isEqual(this.cheap, true);
-    }
+    isCheapArray() { return this.isArray() && _.isEqual(this.cheap, true); }
 
-    isArray() {
-        return _.isEqual(this.type, 'array');
-    }
+    isArray() { return _.isEqual(this.type, 'array'); }
 
     /** 就是單純的array,不需要store包過的應用，目前使用在"點點點"出來的彈跳選單 */
-    isArrayOfField() {
-        return _.isEqual(this.type, 'arrayOfField');
-    }
+    isArrayOfField() { return _.isEqual(this.type, 'arrayOfField'); }
 
     isCollection() {
         return this.isArray() || this.isObject() || this.isArrayItem()
@@ -3042,39 +2617,25 @@ class CodegenNode {
         return this.path && _.isEqual(this.path, '/')
     }
 
-    getClassName() {
-        return _.upperFirst(this.name);
-    }
+    getClassName() { return _.upperFirst(this.name); }
 
-    hasURL() {
-        return !_.isEmpty(this.url);
-    }
+    hasURL() { return !_.isEmpty(this.url); }
 
-    getURL() {
-        return this.url;
-    }
+    getURL() { return this.url; }
 
-    isObject() {
-        return _.isEqual(this.type, 'object');
-    }
+    isObject() { return _.isEqual(this.type, 'object'); }
 
     /** 用來放setter getter*/
-    isObjectOfEmpty() {
-        return _.isEqual(this.type, 'objectOfEmpty');
-    }
+    isObjectOfEmpty() { return _.isEqual(this.type, 'objectOfEmpty'); }
 
     needParentParam() {
         return !!this.needParam && this.needParam
     }
 
-    useDefaultValue() {
-        return !this.disableDefaultValue;
-    }
+    useDefaultValue() { return !this.disableDefaultValue; }
 
-    getDefaultValue() {
-        return this.useDefaultValue() ? this.defaultValue : undefined;
-    }
-
+    getDefaultValue() { return this.useDefaultValue() ? this.defaultValue : undefined; }
+    
     getDefaultValueByType(isAdmin) {
 
         const self = this;
@@ -3103,10 +2664,10 @@ class CodegenNode {
 
                     if (_.isString(value) && !_.isEqual(key, 'value')) {
                         const valueOfI18n = Util.camel(
-                            self.getPreciseAttributeGenealogyName(),
-                            sign,
-                            key,
-                            `${_.indexOf(arrayOfDefaultValue, obj)}`);
+                          self.getPreciseAttributeGenealogyName(),
+                          sign,
+                          key,
+                          `${_.indexOf(arrayOfDefaultValue, obj)}`);
                         obj[key] = `###i18n.location().${valueOfI18n}`;
                     }
                 }
@@ -3140,8 +2701,8 @@ class CodegenNode {
 
                             if (_.isString(valueOfMinor)) {
                                 const latest = Util.camel(
-                                    self.getPreciseAttributeGenealogyName(),
-                                    keyOfMajor, keyOfMinor, `${_.indexOf(array, object)}`);
+                                  self.getPreciseAttributeGenealogyName(),
+                                  keyOfMajor, keyOfMinor, `${_.indexOf(array, object)}`);
                                 __stmts.push(`${keyOfMinor}: i18n.location().${latest}`)
                             }
                         }
@@ -3222,22 +2783,14 @@ class CodegenNode {
         }
     }
 
-    getFunctionNameInStoreGetter() {
-        return `get${_.upperFirst(this.getFieldName())}`;
-    }
+    getFunctionNameInStoreGetter() { return `get${_.upperFirst(this.getFieldName())}`; }
 
-    getFunctionNameInStoreComputedGetter() {
-        return Util.camel('get', 'computed', this.getFieldName());
-    }
+    getFunctionNameInStoreComputedGetter() { return Util.camel('get', 'computed', this.getFieldName()); }
 
     /** 這個目的就是在View再運用store的值可以上一層加上封裝, 不用為了UI 去更改到store的邏輯, 這樣就會很乾淨*/
-    getFunctionNameUsingInComponentGetter() {
-        return Util.camel('get', this.getPreciseAttributeParent().getName(), this.getFieldName());
-    }
+    getFunctionNameUsingInComponentGetter() { return Util.camel('get', this.getPreciseAttributeParent().getName(), this.getFieldName()); }
 
-    isComponentNode() {
-        return !!this.struct;
-    }
+    isComponentNode() { return !!this.struct; }
 
     /** arrayItem 和 array 目前傻傻分不清楚, 先by case 處理*/
     getObservableName(force = false) {
@@ -3268,22 +2821,14 @@ class CodegenNode {
         return _.upperFirst(Util.camel(...names, this.isShadowView() ? ['Shadow'] : [], 'view'));
     }
 
-    isShadowView() {
-        return this.shadow;
-    }
+    isShadowView() { return this.shadow; }
 
 
-    getFunctionNameOfOnSelectedChange() {
-        return Util.camel('on', this.getName(), `selected`, `change`);
-    }
+    getFunctionNameOfOnSelectedChange() { return Util.camel('on', this.getName(), `selected`, `change`); }
 
-    getFunctionNameOfOnChanged() {
-        return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'change');
-    }
+    getFunctionNameOfOnChanged() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'change'); }
 
-    getFieldNameOfFuse() {
-        return Util.camel('fuse', 'Of', this.getName());
-    }
+    getFieldNameOfFuse() { return Util.camel('fuse', 'Of', this.getName()); }
 
     getFunctionNameOfAutoCompletedSuggestInitial() {
         const name = this.getName();
@@ -3294,22 +2839,16 @@ class CodegenNode {
         return `set${_.upperFirst(this.getFieldName())}`
     }
 
-    getFunctionNameOfPushIntoArray() {
-        return Util.camel('push', this.getFieldName());
-    }
+    getFunctionNameOfPushIntoArray() { return Util.camel('push', this.getFieldName()); }
 
-    getFunctionNameOfModifiedSetter() {
-        return Util.camel('set', `modified`, this.getName());
-    }
+    getFunctionNameOfModifiedSetter() { return Util.camel('set', `modified`, this.getName()); }
 
     getStatementOfComponentKey() {
         return this.getPreciseAttributeChildren().map((child) =>
-            `\$\{${child.getPreciseAttributeParent().getName()}.${child.getFunctionNameInStoreGetter()}()\}`).join('')
+          `\$\{${child.getPreciseAttributeParent().getName()}.${child.getFunctionNameInStoreGetter()}()\}`).join('')
     }
 
-    getName() {
-        return this.name;
-    }
+    getName() { return this.name; }
 
     /** 只有componentNode 可以用這個method*/
     getPreciseStoreName() {
@@ -3320,13 +2859,9 @@ class CodegenNode {
         this.name = name;
     }
 
-    getFunctionNameOfDetailUidGetter() {
-        return Util.camel('get', this.getFieldNameOfDetailUid());
-    }
+    getFunctionNameOfDetailUidGetter() { return Util.camel('get', this.getFieldNameOfDetailUid()); }
 
-    getFieldNameOfDetailUid() {
-        return Util.camel('uid', 'of', this.getNodeOfComponent().getName(), 'detail');
-    }
+    getFieldNameOfDetailUid() { return Util.camel('uid', 'of', this.getNodeOfComponent().getName(), 'detail'); }
 
     getPlatform() {
         /** */
@@ -3340,9 +2875,7 @@ class CodegenNode {
             return [];
     }
 
-    getCloudFunctions() {
-        return this.cloudFunctions ?? [];
-    }
+    getCloudFunctions() { return this.cloudFunctions ?? []; }
 
     getCloudFunctionInfo() {
         const functionName = this.getName();
@@ -3435,9 +2968,7 @@ class CodegenNode {
         return involution;
     }
 
-    getStruct() {
-        return this.struct;
-    }
+    getStruct() { return this.struct; }
 
     appendChildrenWithJsons(...objs) {
         for (const obj of objs) {
@@ -5664,14 +5195,6 @@ class ComponentBuilder extends BaseBuilder {
             const node = param.customViewNode;
             if (!!!generator) return;
 
-            if (node) {
-                if (useViewModuleAndComponentModuleMechanism) {
-                    generator.appendImport(node.getViewClassNameOfRenderView(), node.isComponentNode() ?
-                        `../../view/${_.lowerFirst(node.getViewClassNameOfRenderView())}` :
-                        `../${_.lowerFirst(node.getViewClassNameOfRenderView())}`)
-                }
-            }
-
             if (_.isEqual(param.typeOfClass, 'component')) {
                 for (const _import of VIEW_IMPORTS) {
                     if (Util.has(_import.views, param.tag)) {
@@ -5760,7 +5283,7 @@ class ComponentBuilder extends BaseBuilder {
                 props[param] = `###${param}`
             }
 
-            if (node.isViewPropsFunctionalized()) {
+            if (node.isViewPropsFunctionality()) {
                 props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
 
@@ -5996,7 +5519,7 @@ class ComponentBuilder extends BaseBuilder {
             if (child.isListOuter()) continue;
 
             function appendParamStmt(node) {
-                if (node.isViewPropsFunctionalized()) {
+                if (node.isViewPropsFunctionality()) {
                     return `(${STRING_OF_INJECT_PARAM}) => `
                 }
                 return ''
@@ -6233,7 +5756,7 @@ class ComponentBuilder extends BaseBuilder {
             function getStringOfParamOfRenderView(node) {
                 const params = [node.getObservableName()];
                 _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
-                if (node.isViewPropsFunctionalized()) {
+                if (node.isViewPropsFunctionality()) {
                     params.push(STRING_OF_INJECT_PARAM);
                 }
                 return params.join(',');
@@ -6277,11 +5800,7 @@ class ComponentBuilder extends BaseBuilder {
 
         function appendViewFunctionClass(node) {
             if (node.isArrayItem() && node.isSimpleSelected()) return;
-
-            if (!useViewModuleAndComponentModuleMechanism)
-                appendFunctionWithFields(node);
-            if (useViewModuleAndComponentModuleMechanism)
-                generateViewClass(node)
+            appendFunctionWithFields(node);
         }
 
         if (isEditPage) {
@@ -6291,7 +5810,7 @@ class ComponentBuilder extends BaseBuilder {
         if (!this.hasRootRenderViewFunction) {
             generator.appendFunction('renderView', [], [], [],
                 `const ${node.getName()} = this.getStore()`,
-                ...getContentStmt(node, generator, useViewModuleAndComponentModuleMechanism));
+                ...getContentStmt(node, generator));
             this.hasRootRenderViewFunction = true;
         }
 
@@ -9016,7 +8535,7 @@ class ProjectFileHandler extends PathBase {
                     node.setWrapView('React.Fragment');
             }
 
-            if (node.isViewPropsFunctionalized()) {
+            if (node.isViewPropsFunctionality()) {
                 node.simpleProps.push(`...${STRING_OF_INJECT_PARAM}`);
             }
 
