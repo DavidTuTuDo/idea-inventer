@@ -5,6 +5,8 @@ import libpath from "path";
 import mustache from "mustache";
 import { configerer } from "configerer";
 import Lean from "./lean";
+import beauty from './beauty';
+
 
 /** author:明悅
  *  create time:Wed Mar 17 2021 13:17:01 GMT+0800 (Taipei Standard Time)
@@ -12,7 +14,6 @@ import Lean from "./lean";
 
 let ENABLE_FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
-let ENABLE_OF_PRETTIER = false;
 /** 是array 也是 string */
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
@@ -33,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -3351,13 +3352,6 @@ class ClassGenerator {
 
         Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
 
-        try {
-            if (ENABLE_OF_PRETTIER)
-                await Util.prettier(this.filePath);
-        } catch (error) {
-            throw new ERROR(8011, error);
-        }
-
         if (this.needCreatedIndexFile) {
             const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'), this.node);
             index.imports = _.clone(this.imports);
@@ -3647,8 +3641,6 @@ class PathBase {
             this.getStringFromMustache(templateFileName, param),
             true,
             true);
-        if(ENABLE_OF_PRETTIER)
-            await Util.prettier(filePath);
     }
 
     getAllCloudFunctions() {
@@ -9263,6 +9255,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await this.functionsGenerateRelease();
         await this.buildLessToCss();
         await this.removeEmptyFolder();
+        await new beauty(this.genSourcePath).formatAll();
     }
 
     async functionsGenerateRelease() {
@@ -9688,7 +9681,7 @@ if (configerer.DEBUG_MODE) {
                 return Util.appendInfo(`489498444 get error of input => ${result}`);
 
 
-            await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, !ENABLE_OF_PRETTIER);
+            await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, true);
             const indexes = result.indexes.split('').map((each) => _.toNumber(each));
             return Util.getSliceArrayOfSpecificIndexes(folders, ...indexes);
         }
