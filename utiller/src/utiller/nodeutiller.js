@@ -10,7 +10,6 @@ import pdf from 'pdf-parse';
 import del, {type} from 'del';
 import fse from 'fs-extra';
 import prompt from 'prompt';
-import {parse} from 'node-html-parser';
 
 class NodeUtiller extends Utiller {
 
@@ -18,14 +17,15 @@ class NodeUtiller extends Utiller {
     /** 是否把log message 存到 info.txt*/
     isPersistIntoLogFile = true;
 
-
     findSpecificFolderByPath(path, folderName) {
         const absolute = libpath.resolve(path);
-        const splited = absolute.split('/');
-        while (!fs.existsSync(`${splited.join('/')}/${folderName}`) && splited.length > 0) {
-            splited.pop();
+        const parts = absolute.split(libpath.sep);
+        while (parts.length) {
+            const joined = libpath.join(...parts, folderName);
+            if (fs.existsSync(joined)) return joined;
+            parts.pop();
         }
-        return `${splited.join('/')}/.idea`;
+        return null;
     }
 
     /** {numpages, numrender, info, text, version} */
@@ -54,25 +54,21 @@ class NodeUtiller extends Utiller {
      dirName: database
      absolute: '/Users/davidtu/cross-achieve/mimi19up/mimi19up-scrapy/database/index.js'}
      ] */
-    findFilePathBy = (path, predicate = (each) => true, ...excludes) => {
+    findFilePathBy(path, predicate = () => true, ...excludes) {
         if (!fs.existsSync(path)) return [];
-        const list = fs.readdirSync(path)
-        const files = [];
-        for (let item of list) {
-            if (_.includes(excludes, item)) continue
-            const currentpath = libpath.join(path, item);
-            if (fs.lstatSync(currentpath).isDirectory()) {
-                files.push(...this.findFilePathBy(currentpath, predicate, ...excludes));
-            } else if (fs.lstatSync(currentpath).isFile()) {
-                const pathInfo = this.getPathInfo(currentpath);
-                if (predicate(pathInfo)) {
-                    files.push(pathInfo);
-                }
-            } else {
-                throw new ERROR(8003, item, currentpath)
+        const result = [];
+        const entries = fs.readdirSync(path, { withFileTypes: true });
+        for (const entry of entries) {
+            if (excludes.includes(entry.name)) continue;
+            const fullPath = libpath.join(path, entry.name);
+            if (entry.isDirectory()) {
+                result.push(...this.findFilePathBy(fullPath, predicate, ...excludes));
+            } else if (entry.isFile()) {
+                const info = this.getPathInfo(fullPath);
+                if (predicate(info)) result.push(info);
             }
         }
-        return files
+        return result;
     }
 
     /** 是一個存在的檔案 */
@@ -83,17 +79,15 @@ class NodeUtiller extends Utiller {
     /** path = a/b/c/file.js , newName = 'two'
      * output => a/b/c/two.js
      * */
-    renameFile(path, newName = 'fileName') {
-        if (!this.isPathExist(path) || !this.isFile(path)) {
-            this.appendError(`984521 path not exist or not a file path:${path}`);
+    renameFile(path, newName = "fileName") {
+        if (!this.isFile(path) || !newName) {
+            this.appendError(`renameFile 錯誤, path: ${path}, newName: ${newName}`);
             return;
         }
-        if (_.isEmpty(newName)) {
-            this.appendError('984522,new name is empty');
-            return;
-        }
-        const next = libpath.join(this.getFileDirPath(path), `${newName}.${this.getExtensionFromPath(path)}`)
-        fs.renameSync(path, next);
+        const dir = libpath.dirname(path);
+        const ext = libpath.extname(path);
+        const newPath = libpath.join(dir, `${newName}${ext}`);
+        fs.renameSync(path, newPath);
     }
 
     //todo 應該要改成class
@@ -182,23 +176,17 @@ class NodeUtiller extends Utiller {
 
     /** '/a/b/c.js' 把它變成真的 */
     persistByPath(path) {
-        const dirs = _.split(path, '\/');
-        for (let index = 0; index < dirs.length; index++) {
-            let currentPath = (_.join(_.take(dirs, index + 1), '/'))
-            /** 避免 /Users/davidtu/cross-achieve/ 這種狀況, 字串首是slash */
-            if (currentPath === '') continue;
-            let currentDir = _.nth(dirs, index);
-            let hasExtension = this.has(currentDir, '.') && !_.isEmpty(currentDir.split('.').pop());
-            try {
-                if (!fs.existsSync(currentPath)) {
-                    if (hasExtension) {
-                        fs.openSync(currentPath, 'wx');
-                    } else {
-                        fs.mkdirSync(currentPath);
-                    }
+        const parts = path.split('/');
+        let current = '';
+        for (const part of parts) {
+            if (!part) continue;
+            current += `/${part}`;
+            if (!fs.existsSync(current)) {
+                if (part.includes('.') && part.split('.').length > 1) {
+                    fs.writeFileSync(current, '');
+                } else {
+                    fs.mkdirSync(current);
                 }
-            } catch (error) {
-                throw new ERROR(8008, `currentPath => ${currentPath}`, error);
             }
         }
         return libpath.resolve(path);
@@ -209,7 +197,7 @@ class NodeUtiller extends Utiller {
      * override: boolean, 要不要override檔案:default true;
      * preserveTimestamps : boolean, 要不要保留原始檔案的時間, 不然就是cp的時間,default true;
      * */
-    copyFromFolderToDestFolder(from, dest, override = true, preserveTimestamps = false, filter = () => true) {
+    async copyFromFolderToDestFolder(from, dest, override = true, preserveTimestamps = false, filter = () => true) {
         if (!fs.existsSync(from) || !fs.existsSync(from))
             throw new ERROR(8009, `${from} or ${dest} is not exist!`);
 
@@ -285,9 +273,8 @@ class NodeUtiller extends Utiller {
 
     /** 拿到目錄下的資料夾列表 */
     getNamesOfFolderChild(path) {
-        return _.filter(this.getChildPathByPath(path), each => each.isDirectory).map((path) => path.dirName);
+        return this.getChildPathByPath(path).filter(p => p.isDirectory).map(p => p.dirName);
     }
-
 
     /** 從給的path 找到 one level 的 file/dir Path */
     getChildPathByPath(_path) {
@@ -305,12 +292,18 @@ class NodeUtiller extends Utiller {
      *  force 就是強制覆蓋他啦
      * */
     copySingleFile(from, dest, fileName, force = false) {
-
-        const destination = (_.isString(fileName) && !_.isEmpty(fileName)) ? libpath.join(dest, fileName) : dest;
-        if (fs.existsSync(destination) && !force)
+        const destination = (fileName && fileName.trim()) ? libpath.join(dest, fileName) : dest;
+        if (fs.existsSync(destination) && !force) {
             throw new ERROR(8006, destination);
-
+        }
         fs.copyFileSync(from, destination);
+    }
+
+    ensureFolderExists(folderPath) {
+        const resolved = libpath.resolve(folderPath);
+        if (fs.existsSync(resolved)) return;
+
+        fs.mkdirSync(resolved, { recursive: true });
     }
 
     getNodeEnvVariable(key, defaultValue = undefined) {
@@ -329,22 +322,25 @@ class NodeUtiller extends Utiller {
     }
 
     isImageFile(file) {
-        return this.isOrEquals(file.extension, `svg`, `png`, `jpg`, `jpeg`);
+        return ["svg", "png", "jpg", "jpeg"].includes(file.extension);
     }
 
     /** 把內容都抹掉each 是 fileName, ex:index.js*/
-    async cleanChildFiles(path, predicate = (each) => true, ...exclude) {
-        if (fs.existsSync(path)) {
-            const files = this.findFilePathBy(path, predicate, ...exclude);
-            for (const file of files) {
-                if (this.isImageFile(file)) continue;
-                this.cleanFileContent(file.absolute);
-                this.appendInfo(`成功 cleanChildFiles() -> '${file.path}'`)
-            }
-            await this.syncDelay(1);
-            return files;
-        }
-        return false;
+    async cleanChildFiles(path, predicate = () => true, ...exclude) {
+        if (!fs.existsSync(path)) return false;
+
+        const files = this.findFilePathBy(path, predicate, ...exclude);
+        const nonImages = files.filter(file => !this.isImageFile(file));
+
+        await Promise.allSettled(
+          nonImages.map(file => {
+              this.cleanFileContent(file.absolute);
+              this.appendInfo(`成功 cleanChildFiles() -> '${file.path}'`);
+              return Promise.resolve();
+          })
+        );
+
+        return files;
     }
 
     /** 將檔案清除乾淨, 但不刪掉檔案, 這樣hot reload的監聽才不會遺失*/
@@ -436,48 +432,43 @@ class NodeUtiller extends Utiller {
         return this.appendLog(configerer.PATH_ERROR_LOG, messages, true);
     }
 
-    disableLogMessagePersistent() {
-        this.isPersistIntoLogFile = false;
+    appendLog(path, messages, isError = false) {
+        const msg = `${this.getCurrentTimeFormat()} ${isError ? 'ERROR' : 'LOG'} : ${messages.map(this.stringifyLog).join(' ,')}`;
+        if (!this.isProductionEnvironment()) {
+            isError ? console.error(...messages) : console.log(...messages);
+        }
+        if (this.isPersistIntoLogFile) {
+            this.appendFile(path, msg);
+        }
     }
 
-    appendLog(path, messages, error = false) {
-        if (!this.isProductionEnvironment()) {
-            error ? console.error(...messages) : console.log(...messages);
-        }
+    stringifyLog(data) {
+        return typeof data === 'object' ? JSON.stringify(data) : String(data);
+    }
 
-        if (this.isPersistIntoLogFile) {
-            const messageOfSpecificLog = `${this.getCurrentTimeFormat()} ${error ? `ERROR` : `LOG`} : ${this.getLogString(messages)}`;
-            this.appendFile(path, messageOfSpecificLog);
+    /** 如果file不存在,就會產生file,force_delete 可以強制刪除cache file*/
+    appendFile(path, data, newline = true, forceDelete = false) {
+        try {
+            if (forceDelete && fs.existsSync(path)) fs.unlinkSync(path);
+            if (!fs.existsSync(path)) this.persistByPath(path);
+            const content = `${newline ? '\n' : ''}${data}`;
+            fs.appendFileSync(path, content);
+        } catch (err) {
+            throw new ERROR(8001, err);
         }
+    }
+
+    disableLogMessagePersistent() {
+        this.isPersistIntoLogFile = false;
     }
 
     getLogString(datas) {
         return datas.map((data) => (this.isJson(data) || _.isObject(data) || _.isArray(data)) ? this.deepFlat(data) : data).join(' ,')
     }
 
-    /** 如果file不存在,就會產生file,force_delete 可以強制刪除cache file*/
-    appendFile(path, data, newlineOnceFileNotEmpty = true, forceDelete = false) {
-        let options = err => {
-            throw new ERROR(8001, err);
-        };
-
-        if (!this.isValidFilePath(path)) {
-            throw new ERROR(9999, `不是個合法的file路徑 ==> '' ${path} ''`);
-        }
-
-        if (forceDelete) {
-            this.cleanFileContent(path);
-            newlineOnceFileNotEmpty = false;
-            this.persistByPath(path);
-        } else if (this.isEmptyFile(path)) {
-            newlineOnceFileNotEmpty = false;
-        }
-
-        fs.appendFileSync(path, `${newlineOnceFileNotEmpty ? '\n' : ''}${data}`, options);
-    }
-
     /** 常常要把JSON的內容印出來，所以這個很方便 */
     async persistJsonFilePrettier(path, object, ignoreP = false) {
+        path = libpath.resolve(path);
         this.appendFile(path, JSON.stringify(object), true, true);
         if (!ignoreP) await this.prettier(path, 120);
     }
@@ -509,23 +500,38 @@ class NodeUtiller extends Utiller {
         }
     }
 
+    isFileEmpty(path) {
+        const content = this.getFileContextInRaw(path);
+        return !content || !content.trim();
+    }
+
     /** 保守的複製檔案, 如果檔案比較舊, 或是檔案是空的, 就放棄copy行為 */
-    copySingleFileConservative(pathOfDestinationFolder, latestFile) {
-        if (this.isEmptyFile(latestFile.absolute)) {
-            this.appendInfo(`${latestFile.absolute} is empty file, ignore copy behavior`);
+    copySingleFileConservative(destPath, latestFile) {
+        const { absolute, lastModifiedTime } = latestFile;
+
+        // 先確認檔案是否為空
+        if (!this.isPathExist(absolute) || this.isFileEmpty(absolute)) {
+            this.appendInfo(`${absolute} is empty file, ignore copy behavior`);
             return;
         }
 
-        if (!fs.existsSync(pathOfDestinationFolder)) {
-            this.appendInfo(`${pathOfDestinationFolder} is not exist, easy to override`);
-        } else if (fs.existsSync(pathOfDestinationFolder) &&
-            this.getFileLastModifiedTime(pathOfDestinationFolder) > latestFile.lastModifiedTime) {
-            this.appendInfo(`${pathOfDestinationFolder} is the latest, ignore this run`);
+        const destExists = fs.existsSync(destPath);
+
+        // 如果目的檔案存在且比來源更新，則跳過
+        if (destExists && this.getFileLastModifiedTime(destPath) > lastModifiedTime) {
+            this.appendInfo(`${destPath} is the latest, ignore this run`);
             return;
         }
 
-        this.persistByPath(this.getFolderPathOfSpecificPath(pathOfDestinationFolder));
-        this.copySingleFile(latestFile.absolute, pathOfDestinationFolder, undefined, true);
+        if (!destExists) {
+            this.appendInfo(`${destPath} does not exist, safe to copy.`);
+        }
+
+        // 確保目的路徑存在（遞迴建立）
+        this.ensureFolderExists(libpath.dirname(destPath));
+
+        // 強制複製
+        this.copySingleFile(absolute, destPath, undefined, true);
     }
 
     syncDeleteFile(path) {
@@ -588,7 +594,7 @@ class NodeUtiller extends Utiller {
                     /** template就是樣板的概念 */
                     const templatePath = libpath.join(path, 'template');
                     if (this.isPathExist(templatePath)) {
-                        this.copyFromFolderToDestFolder(
+                        await this.copyFromFolderToDestFolder(
                             templatePath,
                             this.persistByPath(libpath.join(release, 'template')));
                     }
@@ -660,11 +666,10 @@ class NodeUtiller extends Utiller {
                 }
             }
         }
-        this.copyFromFolderToDestFolder(
+        await this.copyFromFolderToDestFolder(
             '/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/',
             '/Users/davidtu/cross-achieve/high/idea-inventer/newp/template/',
             true, true)
-
 
     }
 
@@ -677,11 +682,13 @@ class NodeUtiller extends Utiller {
      * */
     async updateFileOfSpecificLine(pathOfFile, contentOfUpdated = (line) => 'updated', predicate = (line) => true) {
         const context = this.getFileContextInRaw(pathOfFile);
-        const split = context.split('\n');
-        const line = _.find(split, (each) => predicate(each));
-        this.replaceArrayByContentIndex(split, line, contentOfUpdated(line));
-        this.appendFile(pathOfFile, split.join('\n'), true, true);
+        const lines = context.split('\n');
+        const index = lines.findIndex(predicate);
+        if (index === -1) return; // 無匹配行則略過
+        lines[index] = contentOfUpdated(lines[index]);
+        this.appendFile(pathOfFile, lines.join('\n'), true, true);
     }
+
 
     async writeJsonThanPrettier(path, json) {
         this.writeFileInJSON(path, json);
@@ -689,21 +696,25 @@ class NodeUtiller extends Utiller {
     }
 
     /** 用來豐富package.json的功能 */
-    async enrichEachPackageJson(path) {
-        const jsons = this.findFilePathByExtension(path, ['json'], 'gen', 'node_modules', 'release');
-        const packages = _.filter(jsons, (each) =>
-            _.isEqual(each.fileName, 'package') ||
-            _.isEqual(each.fileName, 'admin.package') ||
-            _.isEqual(each.fileName, 'web.package') ||
-            _.isEqual(each.fileName, 'functions.package')
-        )
-        for (const path of packages) {
-            const json = this.getJsonObjByFilePath(path.absolute);
-            const script = json.scripts ? json.scripts : {};
-            script['updateConfigerer'] = "npm update configerer --save";
-            await this.writeJsonThanPrettier(path.absolute, json);
+    async enrichEachPackageJson(rootPath) {
+        const validNames = new Set(['package', 'admin.package', 'web.package', 'functions.package']);
+
+        const jsonFiles = this.findFilePathByExtension(rootPath, ['json'], 'gen', 'node_modules', 'release');
+
+        const packageFiles = jsonFiles.filter(file => validNames.has(file.fileName));
+
+        if (packageFiles.length === 0) return;
+
+        for (const { absolute } of packageFiles) {
+            const json = this.getJsonObjByFilePath(absolute);
+
+            json.scripts ||= {};
+            json.scripts.updateConfigerer = 'npm update configerer --save';
+
+            await this.writeJsonThanPrettier(absolute, json);
         }
     }
+
 
     insertShellCommand(shellPath = configerer.BASE_SHELL_SCRIPT, alias, command) {
         if (this.isStringContainInLines(this.getFileContextInRaw(shellPath), alias)) {
@@ -746,8 +757,7 @@ class NodeUtiller extends Utiller {
          * console.log(`File Data Last Modified: ${stats.mtime}`);
          * console.log(`File Status Last Modified: ${stats.ctime}`);
          */
-        const stats = fs.statSync(path);
-        return stats.mtimeMs;
+        return fs.statSync(path).mtimeMs;
     }
 
     getJsonObjByFilePath(path) {
@@ -771,22 +781,31 @@ class NodeUtiller extends Utiller {
      *
      * console.log(await utiller.reWriteJsonAttribute(`./test.package.json`,{name:'ugly'},{version:'2.6.101'}));
      * */
-    async reWriteJsonAttribute(path, ...attrs) {
-        if (_.isEqual('json', this.getPathInfo(path).extension)) {
-            const json = this.getJsonObjByFilePath(path);
-            for (const attr of attrs) {
-                if (!_.isObject(attr)) {
-                    throw new ERROR(9999, `84451515 attr is not object, which is 'type=${typeof attr} => ${attr}'`)
-                }
-                json[this.getObjectKey(attr)] = this.getObjectValue(attr);
-            }
+    async reWriteJsonAttribute(filePath, ...attrs) {
+        const { extension } = this.getPathInfo(filePath);
 
-            await this.writeJsonThanPrettier(path, json)
-            return {version: json.version, moduleName: json.name};
-        } else {
-            throw new ERROR(9999, `reWriteJsonAttribute() => path is not package.json, which is ${path}`)
+        if (extension !== 'json') {
+            throw new ERROR(9999, `reWriteJsonAttribute() => path is not package.json, which is ${filePath}`);
         }
+
+        // 驗證所有 attr 必須是 object
+        const invalidAttr = attrs.find(attr => typeof attr !== 'object' || attr === null);
+        if (invalidAttr) {
+            throw new ERROR(
+              9999,
+              `84451515 attr is not object, which is 'type=${typeof invalidAttr} => ${invalidAttr}'`
+            );
+        }
+
+        const json = this.getJsonObjByFilePath(filePath);
+
+        for (const attr of attrs) {
+            json[this.getObjectKey(attr)] = this.getObjectValue(attr);
+        }
+        await this.writeJsonThanPrettier(filePath, json);
+        return { version: json.version, moduleName: json.name };
     }
+
 
     getVersionOfPackageJson(path) {
         return this.getAttributeValueOfJson(path, 'version', '1.0.0')
@@ -869,44 +888,58 @@ class NodeUtiller extends Utiller {
     }
 
     /** 產出一個/temp,然後把/src 複製過去, 再把裡面每一個file的 if(DEBUG)給去除掉,再加上prettier */
-    async generateTempFolderWithCleanSrc(path) {
-        this.appendInfo('generateTempFolderWithCleanSrc', path);
-        const sourceFile = libpath.join(path, 'src');
-        const tempFolderPath = libpath.join(path, 'temp');
-        if (fs.existsSync(sourceFile)) {
-            this.appendInfo('generateTempFolderWithCleanSrc', 'source', sourceFile);
-            this.persistByPath(tempFolderPath)
-            this.copyFromFolderToDestFolder(sourceFile, tempFolderPath);
-            for (const file of this.findFilePathBy(tempFolderPath)) {
-                const tempFilePath = file.absolute;
-                const stmts = this.getFileContextInRaw(tempFilePath).split(`\n`).map((line) => _.trim(line));
-                /** 找出if (configerer) 當作start */
-                const indexOfStart = _.findIndex(stmts, (stmt) => _.startsWith(stmt, `if (configerer.DEBUG_MODE)`));
-                /** 找出 } 當作 end */
-                const indexOfEnd = _.findLastIndex(stmts, (stmt) => _.isEqual(stmt, `}`));
-                if (indexOfEnd > 0 && indexOfStart > 0 && indexOfEnd > indexOfStart) {
-                    /** 刪除掉 if(configerer.DEBUG) {...........} */
-                    this.dropItemsByIndex(stmts, indexOfStart, indexOfEnd);
-                    this.appendFile(tempFilePath, _.join(stmts, `\n`), true, true);
-                    await this.executeCommandLine(`cd ${libpath.resolve(`${this.getFileDirPath(tempFilePath)}`)} &&
-                         npx prettier --write ${tempFilePath}`)
-                }
+    /** 找出if (configerer) 當作start */
+    /** 找出 } 當作 end */
+    /** 刪除掉 if(configerer.DEBUG) {...........} */
+
+    async generateTempFolderWithCleanSrc(basePath) {
+        this.appendInfo('generateTempFolderWithCleanSrc', basePath);
+
+        const sourceFile = libpath.join(basePath, 'src');
+        const tempFolderPath = libpath.join(basePath, 'temp');
+
+        if (!fs.existsSync(sourceFile)) return tempFolderPath;
+
+        this.appendInfo('generateTempFolderWithCleanSrc', 'source', sourceFile);
+        this.persistByPath(tempFolderPath);
+
+        await this.copyFromFolderToDestFolder(sourceFile, tempFolderPath);
+
+        const filePaths = this.findFilePathBy(tempFolderPath);
+
+        for (const { absolute: tempFilePath } of filePaths) {
+            const rawLines = this.getFileContextInRaw(tempFilePath).split('\n');
+            const trimmedLines = rawLines.map(line => line.trim());
+
+            const start = trimmedLines.findIndex(line => line.startsWith('if (configerer.DEBUG_MODE)'));
+            const end = trimmedLines.lastIndexOf('}');
+
+            if (start >= 0 && end > start) {
+                // 移除 DEBUG 區塊
+                rawLines.splice(start, end - start + 1);
+                const updatedContent = rawLines.join('\n');
+
+                this.appendFile(tempFilePath, updatedContent, true, true);
+
+                // 美化代碼
+                await this.executeCommandLine(
+                  `cd ${libpath.dirname(tempFilePath)} && npx prettier --write "${tempFilePath}"`
+                );
             }
         }
         return tempFolderPath;
     }
 
+
     /**
      * from, destination
      *
-     * 讓file content清除後,在寫入資料, 避免destined file address改變*/
-    rewriteFile2File(from, destination) {
+     * 讓file content清除後,在寫入資料, 避免to(destination) file address改變*/
+    rewriteFile2File(from, to) {
         const content = this.getFileContextInRaw(from);
-        if (_.isEmpty(content))
-            throw new ERROR(9999, `${from} 內容為空值, ***rewrite功能會避免空值覆蓋, 這是一個設計`)
-
-        this.appendFile(destination, content, true, true);
-        this.appendInfo(`rewrite from:${from} => dest:${destination} succeed`);
+        if (!content.trim()) throw new ERROR(9999, `${from} 為空，避免覆蓋`);
+        this.appendFile(to, content, true, true);
+        this.appendInfo(`rewrite from:${from} => to:${to} 成功`);
     }
 
     /** 取得file第一行statement */
@@ -919,48 +952,52 @@ class NodeUtiller extends Utiller {
     }
 
     /** 因為code gen有很多要js file要執行 persistent, 沒有修改過{const edit = true}的index persist就不要理它 */
-    isFileEditSucceed(path) {
-        if (!this.isPathExist(path)) {
-            return false;
-        }
-        const file = this.getPathInfo(path);
-        const context = this.getFileContextInRaw(path)
+    isFileEditSucceed(filePath) {
+        if (!this.isPathExist(filePath)) return false;
 
-        if (_.isEmpty(_.trim(context))) {
+        const file = this.getPathInfo(filePath);
+        const context = this.getFileContextInRaw(filePath).trim();
+
+        if (context === '') {
             this.appendInfo(`74985465 path ${file.path} is empty file, file would not persist`);
             return false;
         }
 
         try {
-            const stringOfHeadLine = _.head(context.split('\n'));
-            const first = _.tail(stringOfHeadLine.split(' ')).join(' ');
-            const second = this.getNormalizedStringNotEndWith(first, ';');
-            const splits = second.split('=').map(each => _.trim(each));
-            const result = `"${splits.shift()}" : ${splits.pop()}`;
-            const json = JSON.parse(`{${result}}`);
-            if (_.isEqual(this.getObjectValue(json), true))
+            const firstLine = context.split('\n')[0];
+
+            // 偵測形如：const edit = true;
+            const match = firstLine.match(/const\s+edit\s*=\s*(true|false)\s*;?/);
+            if (!match) return false;
+
+            const editValue = match[1] === 'true';
+
+            if (editValue === true) {
                 return true;
+            }
         } catch (error) {
-            this.appendError(`66445411 ${error.message}`)
+            this.appendError(`66445411 ${error.message}`);
             return false;
         }
+
         return false;
     }
 
     /**
      * 從絕對路徑中取出 "src/" 之後的部分（包含前置 /）
      * @param {string} fullPath - 完整的絕對檔案路徑
-     * @param {string} folder - 針對/folder/之後作為split起點
+     * @param {string} folder - 針對/folder/之後作為split起點（預設為 src）
      * @returns {string} - 以 / 開頭、從 src/ 之後開始的相對路徑
      */
     getPathAfterSpecificFolder = (fullPath, folder = 'src') => {
-        const parts = _.split(fullPath, libpath.sep);
-        const indexOfSrc = _.findLastIndex(parts, part => part === folder);
-        if (indexOfSrc === -1) return ''; // 找不到 src，回傳空字串
-
-        const relativeParts = _.slice(parts, indexOfSrc + 1);
-        return _.join(relativeParts, '/');
-    }
+        const parts = fullPath.split(libpath.sep);
+        for (let i = parts.length - 1; i >= 0; i--) {
+            if (parts[i] === folder) {
+                return '/' + parts.slice(i + 1).join('/');
+            }
+        }
+        return '';
+    };
 
     /**
      * 從絕對路徑中取出 "src/" 之後的部分（包含前置 /）
@@ -977,6 +1014,7 @@ class NodeUtiller extends Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new NodeUtiller();
+            // await utiller.persistJsonFilePrettier('./temp/one.json',{a:'v',b:'x'});
             // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
             //     (item) => `"utiller":"^1.0.3"${_.endsWith(_.trim(item),',') ? ',': ''}`,(line) => _.startsWith( _.trim(line),`"firebase"`)
             //     )

@@ -670,7 +670,7 @@ class Utiller {
      ]
      *
      */
-    getMergedArrayByKey(major = [], sub = [], key) {
+    getMergedArrayBy(major = [], sub = [], key) {
         if (!key || major.length === 0 || sub.length === 0) {
             // 如果沒有 key 或任一陣列為空，無法優化或無需合併，回傳 major 的淺拷貝
             return [...major];

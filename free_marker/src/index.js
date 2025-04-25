@@ -12,7 +12,7 @@ import Lean from "./lean";
 
 let ENABLE_FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
-let ENABLE_OF_PRETTIER = true;
+let ENABLE_OF_PRETTIER = false;
 /** 是array 也是 string */
 
 const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
@@ -2635,7 +2635,7 @@ class CodegenNode {
     useDefaultValue() { return !this.disableDefaultValue; }
 
     getDefaultValue() { return this.useDefaultValue() ? this.defaultValue : undefined; }
-    
+
     getDefaultValueByType(isAdmin) {
 
         const self = this;
@@ -3647,7 +3647,8 @@ class PathBase {
             this.getStringFromMustache(templateFileName, param),
             true,
             true);
-        await Util.prettier(filePath);
+        if(ENABLE_OF_PRETTIER)
+            await Util.prettier(filePath);
     }
 
     getAllCloudFunctions() {
@@ -6791,7 +6792,7 @@ class AppBuilder extends ComponentBuilder {
             await generator.persist();
 
             if (!fs.existsSync(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'))) {
-                this.appendMustacheFile('less.index.mustache',
+                await this.appendMustacheFile('less.index.mustache',
                     Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
                 );
                 Util.appendInfo(`persist ./less/index.js succeed`);
@@ -6832,7 +6833,7 @@ class AppBuilder extends ComponentBuilder {
         );
 
         const to = libpath.join(this.genSourcePath, 'less');
-        Util.copyFromFolderToDestFolder(less, to);
+        await Util.copyFromFolderToDestFolder(less, to);
     }
 
 }
@@ -6870,16 +6871,16 @@ class ProjectFileHandler extends PathBase {
         for (const imageSourceFolder of imageSourceFolders) {
 
             if (fs.existsSync(imageSourceFolder)) {
-                Util.copyFromFolderToDestFolder(imageSourceFolder,
+                await Util.copyFromFolderToDestFolder(imageSourceFolder,
                     Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
             }
         }
     }
 
-    persistImageFolder() {
+    async persistImageFolder() {
         const images = libpath.join(this.genRootPath, 'dist', 'images');
         if (fs.existsSync(images)) {
-            Util.copyFromFolderToDestFolder(images,
+            await Util.copyFromFolderToDestFolder(images,
                 Util.persistByPath(libpath.join(this.projectPlatformPath, 'images'))
             );
         }
@@ -7255,52 +7256,54 @@ class ProjectFileHandler extends PathBase {
      *     keyword: image, svg, image.svg
      * */
     overrideEachFilesFromFolder(...excludes) {
-        /** 順序會影響檔案的priority */
+        const normalizedExcludes = excludes.map((ex) => {
+            if (_.isString(ex)) {
+                return { type: 'fileNameExtension', keyword: ex };
+            }
+            return ex;
+        });
 
-        const pathsOfModuleComponent = this.nodeOfAncestor.getListOfModuleComponent().map((each) => libpath.join(PATH_OF_COMPONENT_MODULE, each, this.platform));
-        /** ex: ./src/modules/navigator */
+        const pathsOfModuleComponent = this.nodeOfAncestor
+          .getListOfModuleComponent()
+          .map(each => libpath.join(PATH_OF_COMPONENT_MODULE, each, this.platform));
 
-        const fromSourcePath = [this.projectPlatformPath, this.freeMarkerSourcePlatformPath, this.freeMarkerSourceCommonPath, ...pathsOfModuleComponent];
-        /** exam/web/ */
-        for (const sourcePath of fromSourcePath) {
-            for (const sourceFile of Util.findFilePathBy(sourcePath)) {
-                let ignoreThisRun = false;
-                for (let exclude of excludes) {
+        const fromSourcePaths = [
+            this.projectPlatformPath,
+            this.freeMarkerSourcePlatformPath,
+            this.freeMarkerSourceCommonPath,
+            ...pathsOfModuleComponent
+        ];
 
-                    if (_.isString(exclude)) {
-                        exclude = {type: 'fileNameExtension', keyword: exclude}
-                    }
+        for (const sourcePath of fromSourcePaths) {
+            const fileList = Util.findFilePathBy(sourcePath);
 
-                    if (_.isEqual(sourceFile[exclude.type], exclude.keyword)) {
-                        ignoreThisRun = true;
-                        break;
-                    }
+            for (const sourceFile of fileList) {
+                const { fileNameExtension } = sourceFile;
 
-                    if (_.isEqual(sourceFile.fileNameExtension, FILENAME_OF_SOURCE_JS)) {
-                        ignoreThisRun = true;
-                        break;
-                    }
+                // 提前過濾掉 JS 原始碼檔案
+                if (fileNameExtension === FILENAME_OF_SOURCE_JS) continue;
 
-                }
-                if (ignoreThisRun) continue;
+                // 檢查是否符合排除條件
+                const isExcluded = normalizedExcludes.some(({ type, keyword }) =>
+                  sourceFile[type] === keyword
+                );
+                if (isExcluded) continue;
 
                 const from = sourceFile.path;
-                const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, sourcePath));
+                const relativePath = Util.getRelativePath(from, sourcePath);
+                const dest = libpath.join(this.genRootPath, relativePath);
+                const destFolder = libpath.dirname(dest);
 
-                const destFolder = Util.getFileDirPath(dest);
-
+                // 確保目的資料夾存在
                 if (!fs.existsSync(destFolder)) {
-                    Util.appendError(`overrideIndexFiles warning ,dest folder not exist
-                    destFolder=> ''${destFolder}'' || sourceFileName=>''${from}''`);
-                    Util.persistByPath(Util.getFileDirPath(dest));
+                    Util.appendError(`overrideIndexFiles warning, dest folder not exist
+destFolder => '${destFolder}' || sourceFile => '${from}'`);
+                    fs.mkdirSync(destFolder, { recursive: true });
                 }
 
+                // 執行複製
                 Util.copySingleFile(from, dest, '', true);
-                /** 這真的太浪費時間了
-                 * Util.rewriteFile2File(from, dest);
-                 * */
                 Util.appendInfo(`成功複製檔案至 ${dest}`);
-
             }
         }
     }
@@ -7395,7 +7398,7 @@ class ProjectFileHandler extends PathBase {
         await this.buildDistAssetFolder();
         Util.persistByPath(pathOfDestination);
         Util.cleanAllFiles(pathOfDestination);
-        Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
+        await Util.copyFromFolderToDestFolder(pathOfDistFrom, pathOfDestination, true, false);
         if (deploy) await this.executeCommandToFirebaseRemote(`firebase deploy --only hosting`)
     }
 
@@ -9114,7 +9117,6 @@ class ProjectFileHandler extends PathBase {
         await new AppBuilder(this.getProps()).buildCustomizeFiles(
             this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform)));
     }
-
     setFunctionNeedDeploy(need = true) {
         this.needDeployCloudFunctions = need;
     }
@@ -9276,7 +9278,7 @@ class ProjectFileHandler extends PathBase {
         const deployPathOfFunction = Util.persistByPath(libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions'));
         Util.cleanAllFiles(deployPathOfFunction);
         Util.renameFile(libpath.join(this.genRootPath, 'release', 'lib', 'app.js'), 'index');
-        Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), deployPathOfFunction);
+        await Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), deployPathOfFunction);
     }
 
     getIgnoredFilesByPlatform() {
@@ -9499,7 +9501,7 @@ class BuildApplication {
         handler.persistBaseFilesToFreeMarkerTemplate();
         await handler.rewriteModulesI18nFiles();
         await handler.persistCustomizePackages()
-        handler.persistImageFolder();
+        await handler.persistImageFolder();
         handler.persistIndexAndLessFiles();
         handler.persistLessLibs();
         Util.appendInfo(`persistent() succeed`);
@@ -9686,7 +9688,7 @@ if (configerer.DEBUG_MODE) {
                 return Util.appendInfo(`489498444 get error of input => ${result}`);
 
 
-            await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, false);
+            await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, !ENABLE_OF_PRETTIER);
             const indexes = result.indexes.split('').map((each) => _.toNumber(each));
             return Util.getSliceArrayOfSpecificIndexes(folders, ...indexes);
         }
