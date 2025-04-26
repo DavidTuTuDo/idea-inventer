@@ -36,9 +36,10 @@ export default class PrettierRunner {
   }
 
   /**
-   * 執行 prettier --write
+   * 分批執行 prettier --write
+   * @param {number} batchSize 每批要處理幾個檔案
    */
-  async formatAll() {
+  async formatAll(batchSize = 500) {
     const allFiles = this.getAllFiles(this.targetPath);
 
     if (_.isEmpty(allFiles)) {
@@ -46,15 +47,24 @@ export default class PrettierRunner {
       return;
     }
 
-    const fileList = allFiles.map(f => `"${f}"`).join(' ');
-    console.log(`✨ Prettier 將格式化 ${allFiles.length} 筆檔案...`);
+    console.log(`✨ Prettier 將格式化 ${allFiles.length} 筆檔案，分批大小為 ${batchSize}...`);
 
-    try {
-      const { stdout, stderr } = await execAsync(`npx prettier --write ${fileList}`);
-      if (stdout) console.log(stdout);
-      if (stderr) console.error(stderr);
-    } catch (error) {
-      console.error('❌ Prettier 發生錯誤：', error.message);
+    const fileBatches = _.chunk(allFiles, batchSize);
+
+    for (let i = 0; i < fileBatches.length; i++) {
+      const batch = fileBatches[i];
+      const fileList = batch.map(f => `"${f}"`).join(' ');
+      console.log(`📦 處理第 ${i + 1} 批，共 ${fileBatches.length} 批，檔案數：${batch.length}`);
+
+      try {
+        const { stdout, stderr } = await execAsync(`npx prettier --write ${fileList}`);
+        if (stdout) console.log(stdout);
+        if (stderr) console.error(stderr);
+      } catch (error) {
+        console.error('❌ Prettier 發生錯誤：', error.message);
+      }
     }
+
+    console.log('✅ 所有檔案已完成格式化。');
   }
 }
