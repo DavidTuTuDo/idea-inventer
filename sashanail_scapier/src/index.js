@@ -108,7 +108,7 @@ class sashanailgel_scraper {
         await this.scrollToBottomAndCheck(page);
         if (THREAD_OF_INFO_FETCHER > 1)
             await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000)
-        await Util.syncDelay(Util.getRandomValue(500, 1000));
+        await Util.syncDelay(Util.getRandomValue(300, 600));
         await page.bringToFront();
         console.log(`已確認到底部，開始抓取每個項目`);
         const parentElement = await page.$$('#gl-container > *');  // 获取父元素
@@ -149,7 +149,7 @@ class sashanailgel_scraper {
         const page = await this.browser.newPage();
         await page.goto(pathObj.href, {waitUntil: 'networkidle2', timeout: 0});
         const pages = [];
-        await Util.syncDelay(Util.getRandomValue(500, 1000));
+        await Util.syncDelay(Util.getRandomValue(300, 600));
         await page.bringToFront(); // 将目标页面带到前台
         if (THREAD_OF_INFO_FETCHER > 1)
             await this.waitSelectorTilAppear(page, `#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container`, 30000)
@@ -271,7 +271,7 @@ class sashanailgel_scraper {
         const options = [];
 
         async function fetchItemObject(nameOfOption) {
-            console.log(nameOfOption)
+            console.log('fetchItemObject ==> ',nameOfOption);
             const stringOfPrice = await Util.fetchElementAttributes(page, '#gd-price > span', '0', 'innerText');
             const srcOfOptionPhoto = await Util.fetchElementAttributes(page, '#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img', 'empty', 'src');
             const price = Util.extractNumber(stringOfPrice);
@@ -280,12 +280,14 @@ class sashanailgel_scraper {
                 const input = `#gd-detail > table > tbody > .product-number > td > input`
                 console.log(`[${product.name}-${nameOfOption}]輸入框[${input}]得到focus`)
                 /** 加入購物車 */
-                await Util.writeElementAttributes(page, input, {value: _.toString(Util.getRandomValue(10000, 20000))})
-
+                const countsOfRandom = Util.getRandomValue(10000, 20000);
+                await Util.writeElementAttributes(page, input, {value: _.toString(countsOfRandom)})
+                console.log(`加了 ${nameOfOption} ：${countsOfRandom} 個 `);
                 const button = `#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`;
                 const selectorOfAppendToCart = await page.$(button);
-                await Util.syncDelay(1000);
+                await Util.syncDelay(300);
                 await self.clickSolution(page, selectorOfAppendToCart)
+                await Util.syncDelay(300);
                 options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto});
             }
         }
@@ -347,7 +349,7 @@ class sashanailgel_scraper {
                 const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title')
                 if (sizeOfSubItem > 1 && element) {
                     await element.click()
-                    await Util.syncDelay(1500);
+                    await Util.syncDelay(1200);
                     await fetchItemObject(nameOfOption);
                     /** 商品項目只有一個的時候，會預設回圈選 */
                 } else if (sizeOfSubItem === 1) await fetchItemObject(nameOfOption);
@@ -385,7 +387,7 @@ class sashanailgel_scraper {
     }
 
     async sampleOfFetchSingleItem() {
-        await this.fetchProductPriceDetail({name: '測試', href: `https://www.sachianail.com/pitem/M00000043`});
+        await this.fetchProductPriceDetail({name: '測試', href: `https://www.sachianail.com/pitem/M00000677`});
     }
 
     /** --------------------------------------------------------------------------- 關於puppeteer util的部分 --------------------------------------------------------------------------- */
