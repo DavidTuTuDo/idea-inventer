@@ -287,7 +287,7 @@ class sashanailgel_scraper {
                 const selectorOfAppendToCart = await page.$(button);
                 await Util.syncDelay(300);
                 await self.clickSolution(page, selectorOfAppendToCart)
-                await Util.syncDelay(300);
+                await Util.syncDelay(300); //加入購物車要讓子彈飛一下～
                 options.push({name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto});
             }
         }
