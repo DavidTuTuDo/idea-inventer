@@ -104,7 +104,7 @@ class sashanailgel_scraper {
         const productsOfBrief = {};
         const page = await this.browser.newPage();
         await page.goto(href, {waitUntil: 'networkidle2', timeout: 0});
-        console.log(`打開了${labelOfType}-${labelOfSubType} PATH:${href}`)
+        console.log(`打開了 TYPE: ${labelOfType}-SUB-TYPE ${labelOfSubType} PATH:${href}`)
         await this.scrollToBottomAndCheck(page);
         if (THREAD_OF_INFO_FETCHER > 1)
             await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000)
@@ -130,15 +130,18 @@ class sashanailgel_scraper {
                     }))
                     subs.push({...sub, index: _.indexOf(subItemOptionElement, item)})
                 }
+
                 productsOfBrief[srcValue] = {
                     index: _.toNumber(`${head}${tail}`),
                     valueOfType, valueOfSubType,
+                    sorts :[{valueOfType, valueOfSubType}], //一個商品可能出現在多個分頁(value) 和 分頁子類(sub)
                     name: titleText,
                     options: _.filter(subs, sub => !_.isUndefined(sub)).map(each => {
                         return {name: _.trim(each.name), value: _.toNumber(each.value)}
                     }),
                     href: srcValue,
-                };
+                }
+                console.log(`5655123 list 推了 ${titleText} TYPE:${labelOfType}-SUB-TYPE ${labelOfSubType}`);
             }
         }
         await page.close();
@@ -208,10 +211,13 @@ class sashanailgel_scraper {
         poolOfFetchProduct.enableTaskTimeout(true, 200000);
         await poolOfFetchProduct.runByParams(async (param) => {
             const products = await self.fetchProductsInPage(param);
-            console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`)
-            for (const key in products)
-                objectOfProducts[key] = products[key]
-        }, ...targets)
+            console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`);
+            _.forOwn(products, (product, key) => {
+                const exist = objectOfProducts[key];
+                if (exist) exist.sorts.push(...product.sorts);
+                else objectOfProducts[key] = product;
+            });
+        }, ...targets);
         const listOfProducts = _.values(objectOfProducts);
         console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
         if (PRINT_REPORT_OF_PRODUCTS_DETAIL)
