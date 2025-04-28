@@ -175,21 +175,28 @@ class NodeUtiller extends Utiller {
     }
 
     /** '/a/b/c.js' 把它變成真的 */
-    persistByPath(path) {
-        const parts = path.split('/');
-        let current = '';
-        for (const part of parts) {
-            if (!part) continue;
-            current += `/${part}`;
+    persistByPath(targetPath) {
+        const isAbsolute = libpath.isAbsolute(targetPath);
+        const parts = targetPath.split('/').filter(Boolean);
+        const lastPart = parts[parts.length - 1];
+        const isFile = libpath.extname(lastPart) !== '';  // ← 正規判斷副檔名
+
+        let current = isAbsolute ? path.sep : '';
+
+        for (let i = 0; i < parts.length; i++) {
+            current = libpath.join(current, parts[i]);
+
             if (!fs.existsSync(current)) {
-                if (part.includes('.') && part.split('.').length > 1) {
+                if (i === parts.length - 1 && isFile) {
+                    // 最後一個而且是檔案 → 建檔案
                     fs.writeFileSync(current, '');
                 } else {
-                    fs.mkdirSync(current);
+                    // 其他 → 建資料夾
+                    fs.mkdirSync(current, { recursive: false });
                 }
             }
         }
-        return libpath.resolve(path);
+        return libpath.resolve(targetPath);
     }
 
     /**
@@ -447,12 +454,13 @@ class NodeUtiller extends Utiller {
     }
 
     /** 如果file不存在,就會產生file,force_delete 可以強制刪除cache file*/
-    appendFile(path, data, newline = true, forceDelete = false) {
+    appendFile(filePath, data, newline = true, forceDelete = false) {
         try {
-            if (forceDelete && fs.existsSync(path)) fs.unlinkSync(path);
-            if (!fs.existsSync(path)) this.persistByPath(path);
+            const resolvedPath = libpath.resolve(filePath); // <<--- 正規化路徑
+            if (forceDelete && fs.existsSync(resolvedPath)) fs.unlinkSync(resolvedPath);
+            if (!fs.existsSync(resolvedPath)) this.persistByPath(resolvedPath);
             const content = `${newline ? '\n' : ''}${data}`;
-            fs.appendFileSync(path, content);
+            fs.appendFileSync(resolvedPath, content);
         } catch (err) {
             throw new ERROR(8001, err);
         }
@@ -1008,12 +1016,32 @@ class NodeUtiller extends Utiller {
         return this.getPathAfterSpecificFolder(fullPath);
     }
 
+    /**
+     * console.log(joinRespectingDot('./temp', 'scs', 'qqq', 'as.js'));
+     * // ./temp/scs/qqq/as.js
+     *
+     * console.log(joinRespectingDot('temp', 'scs', 'qqq', 'as.js'));
+     * // temp/scs/qqq/as.js
+     *
+     * console.log(joinRespectingDot('/usr', 'local', 'bin'));
+     * // /usr/local/bin
+     *
+     * 讓./組合的path 不要因為join被拿掉 產生在本機根目錄 /src 的權限問題
+     */
+    joinRespectingDot(...args) {
+        const shouldHaveDotSlash = args[0]?.startsWith('./');
+        const cleanArgs = args[0]?.startsWith('./') ? [args[0].slice(2), ...args.slice(1)] : args;
+        const joined = libpath.join(...cleanArgs);
+        return shouldHaveDotSlash && !libpath.isAbsolute(joined) ? `./${joined}` : joined;
+    }
+
 
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const utiller = new NodeUtiller();
+            // utiller.persistByPath('./a/b/c.js')
             // await utiller.persistJsonFilePrettier('./temp/one.json',{a:'v',b:'x'});
             // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
             //     (item) => `"utiller":"^1.0.3"${_.endsWith(_.trim(item),',') ? ',': ''}`,(line) => _.startsWith( _.trim(line),`"firebase"`)

@@ -27,8 +27,9 @@ class BBB extends AAA {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const source = require('./module/source');
-            console.log(source);
+          console.log(libpath.join('./temp','scs','qqq','as.js'));
+        // const source = require('./module/source');
+            // console.log(source);
             // const a = null;
             // console.log(a ? 'yyy':'bbb')
             //     console.log(_.isUndefined(null))

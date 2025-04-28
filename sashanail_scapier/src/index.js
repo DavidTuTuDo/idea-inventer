@@ -64,7 +64,6 @@ import puppeteer from 'puppeteer';
  * page.$eval() returns the result of running a JavaScript function on the first element matching a selector.
  * page.$$eval() returns the result of running a JavaScript function on each element matching a selector.
  *
- *
  */
 
 const THREAD_OF_INFO_FETCHER = 1; //取得sasha_product_list.json sasha_of_product_catalog.json，這裡只要 > 1, subType的項目就拿取不穩定
@@ -134,7 +133,7 @@ class sashanailgel_scraper {
                 productsOfBrief[srcValue] = {
                     index: _.toNumber(`${head}${tail}`),
                     valueOfType, valueOfSubType,
-                    sorts :[{valueOfType, valueOfSubType}], //一個商品可能出現在多個分頁(value) 和 分頁子類(sub)
+                    category :[{valueOfType, valueOfSubType}], //一個商品可能出現在多個分頁(value) 和 分頁子類(sub)
                     name: titleText,
                     options: _.filter(subs, sub => !_.isUndefined(sub)).map(each => {
                         return {name: _.trim(each.name), value: _.toNumber(each.value)}
@@ -201,7 +200,7 @@ class sashanailgel_scraper {
         }, ...pagesShouldFetch)
 
         if (PRINT_REPORT_OF_PRODUCTS_DETAIL)
-            await Util.persistJsonFilePrettier(`./sasha_of_product_catalog.json`, targets);
+            await Util.persistJsonFilePrettier(`./temp/sasha_of_product_catalog.json`, targets);
 
         /** 抓取商品列表
          * 將 sasha_of_product_catalog.json 裡的path全都觸及至底後fetch
@@ -221,7 +220,7 @@ class sashanailgel_scraper {
         const listOfProducts = _.values(objectOfProducts);
         console.log('所有商品數量：', _.size(listOfProducts), '商品底下所有種類合計：', _.sum(listOfProducts.map(item => _.size(item.options))));
         if (PRINT_REPORT_OF_PRODUCTS_DETAIL)
-            await Util.persistJsonFilePrettier(`./sasha_of_product_list.json`, listOfProducts);
+            await Util.persistJsonFilePrettier(`./temp/sasha_of_product_list.json`, listOfProducts);
 
         if (FETCH_LIST_ONLY) {
             Util.appendInfo(`已取得商品資訊列表，不繼續拿detail資訊`)
@@ -263,9 +262,9 @@ class sashanailgel_scraper {
         if (PRINT_REPORT_OF_PRODUCTS_DETAIL) {
             const current = Util.getCurrentTimeStamp();
             if (_.size(productsOfDetail) > 0)
-                await Util.persistJsonFilePrettier(`./sasha_of_products_detail_${current}.json`, productsOfDetail);
+                await Util.persistJsonFilePrettier(`./temp/sasha_of_products_detail_${current}.json`, productsOfDetail);
             if (_.size(listOfFailFetch) > 0)
-                await Util.persistJsonFilePrettier(`./sasha_of_products_list_failure_${current}.json`, listOfFailFetch);
+                await Util.persistJsonFilePrettier(`./temp/sasha_of_products_list_failure_${current}.json`, listOfFailFetch);
         }
     }
 
@@ -649,30 +648,13 @@ class sashanailgel_scraper {
         console.log(listOfTotal);
         // const result = this.deleteItemsFromArray(listOfTotal, 'id', listOfSucceed, listOfFailure);
         // console.log(result);
-
-
     }
 
-    /**
-     *
-     * const arr1 = [{ id: 1 }, { id: 2 }, { id: 3 }];
-     * const arr2 = [{ id: 1 }];
-     * const arr3 = [{ id: 2 }];
-     * _.differenceBy(arr1, ...arrays, 'id')：
-     *
-     * _.differenceBy 是 lodash 的一個函數，用來根據提供的鍵值（這裡是 id），從 arr1 中刪除在其他數組（arr2, arr3）中出現的項目。
-     * 最後一個參數 'id' 指定比較的鍵。
-     * arr1, ...arrays：
-     *
-     * arr1 是主數組，...arrays 使用擴展運算符來將多個數組（arr2, arr3）合併到一個參數中，方便傳遞多個數組。
-     * 返回值：
-     *
-     * 最終會返回一個新的數組，其中刪除了 arr2 和 arr3 中有相同 id 的項目。
-     *
-     * */
-    deleteItemsFromArray(array, key = '', ...arrays) {
-        // 使用 lodash 的 differenceBy 方法，根據 'id' 來過濾數據
-        return _.differenceBy(array, ...arrays, key);
+    async buildNewList() {
+        const listA = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`)).map((each) => {return {href: each.href,category:each.category}});
+        const listB = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_detail.json`));
+        const latest = Util.mergeArrayBy("href", listA, listB);
+        await Util.persistJsonFilePrettier(`./temp/sasha_of_product_list_latest.json`, latest);
     }
 
 }
@@ -681,6 +663,7 @@ export {sashanailgel_scraper as sashanailgel_scraper}
 
 if (configerer.DEBUG_MODE) {
     (async () => {
+
             async function getBrowser(visible) {
                 const browser = await puppeteer.launch({
                     headless: !visible
@@ -692,8 +675,8 @@ if (configerer.DEBUG_MODE) {
             /**
              * 測試單一品項抓取detail的function
              * await handler.sampleOfFetchSingleItem();
+             * return;
              * */
-            // await handler.sampleOfFetchSingleItem();
             await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
             await handler.finish();
         }

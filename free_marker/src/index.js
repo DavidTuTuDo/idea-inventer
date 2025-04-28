@@ -1112,7 +1112,7 @@ class CodegenNode {
     /** exclude => 要略過的資料夾名稱 */
     getLessFilesOfModuleComponent(...exclude) {
         const modulesOfAllow = this.getListOfModuleComponent();
-        const filesOfLess = modulesOfAllow.map((name) => Util.findFilePathBy(libpath.join(PATH_OF_COMPONENT_MODULE, name),
+        const filesOfLess = modulesOfAllow.map((name) => Util.findFilePathBy(Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, name),
           (file) => _.isEqual(file.extension, 'less')))
         return _.flatten(filesOfLess);
     }
@@ -3016,6 +3016,7 @@ class ClassGenerator {
         this.classes = [];
         this.node = node;
         if (!fs.existsSync(this.filePath)) {
+            console.log('what happen ==> ',this.filePath);
             Util.persistByPath(path)
         }
         this.context = Util.getFileContextInRaw(this.filePath).split('\n');
@@ -3353,7 +3354,7 @@ class ClassGenerator {
         Util.appendFile(this.filePath, _.join(this.context, ''), true, true);
 
         if (this.needCreatedIndexFile) {
-            const index = new ClassGenerator(libpath.join(Util.getFileDirPath(this.filePath), 'index.js'), this.node);
+            const index = new ClassGenerator(Util.joinRespectingDot(Util.getFileDirPath(this.filePath), 'index.js'), this.node);
             index.imports = _.clone(this.imports);
             // index.appendImport(this.getMainClassName(), `./${this.getMainClassName()}`);
             index.appendClass(this.indexClassName, {name: this.getMainClassName()}, ...this.indexFileMacros);
@@ -3481,20 +3482,20 @@ class PathBase {
         const platform = props.platform;
         this.platform = platform;
         this.freeMarkerRootPath = props.freeMarkerRootPath;
-        this.freeMarkerSourcePath = libpath.join(this.freeMarkerRootPath, 'src');
-        this.freeMarkerSourcePlatformPath = libpath.join(this.freeMarkerSourcePath, platform);
-        this.freeMarkerSourceCommonPath = libpath.join(this.freeMarkerSourcePath, `common`);
+        this.freeMarkerSourcePath = Util.joinRespectingDot(this.freeMarkerRootPath, 'src');
+        this.freeMarkerSourcePlatformPath = Util.joinRespectingDot(this.freeMarkerSourcePath, platform);
+        this.freeMarkerSourceCommonPath = Util.joinRespectingDot(this.freeMarkerSourcePath, `common`);
 
         this.projectRootPath = props.projectRootPath;
-        this.projectPlatformPath = libpath.join(this.projectRootPath, platform); // exam/web/src
+        this.projectPlatformPath = Util.joinRespectingDot(this.projectRootPath, platform); // exam/web/src
 
-        this.projectPlatformSourcePath = libpath.join(this.projectRootPath, platform, 'src');
-        this.genRootPath = libpath.join(props.genRootPath, platform);
-        this.genSourcePath = libpath.join(this.genRootPath, 'src');
-        this.genComponentRootPath = libpath.join(this.genSourcePath, 'component')
-        this.genStoreRootPath = libpath.join(this.genSourcePath, 'store')
-        this.pathOfSourceJS = libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS);
-        this.projectCommonSourcePath = libpath.join(this.projectRootPath, 'common', 'src');
+        this.projectPlatformSourcePath = Util.joinRespectingDot(this.projectRootPath, platform, 'src');
+        this.genRootPath = Util.joinRespectingDot(props.genRootPath, platform);
+        this.genSourcePath = Util.joinRespectingDot(this.genRootPath, 'src');
+        this.genComponentRootPath = Util.joinRespectingDot(this.genSourcePath, 'component')
+        this.genStoreRootPath = Util.joinRespectingDot(this.genSourcePath, 'store')
+        this.pathOfSourceJS = Util.joinRespectingDot(this.projectRootPath, FILENAME_OF_SOURCE_JS);
+        this.projectCommonSourcePath = Util.joinRespectingDot(this.projectRootPath, 'common', 'src');
 
         this.nodeOfAncestor = props.nodeOfAncestor ? props.nodeOfAncestor : CodegenNode.enrich(this.workOfPrior(this.pathOfSourceJS));
         this.env = props.env;
@@ -3627,7 +3628,7 @@ class PathBase {
     }
 
     isUnInstallProject() {
-        return !Util.isPathExist(libpath.join(this.genRootPath, `node_modules`));
+        return !Util.isPathExist(Util.joinRespectingDot(this.genRootPath, `node_modules`));
     }
 
     isAdminORFunctionsPlatform() {
@@ -3659,7 +3660,7 @@ class PathBase {
     }
 
     getStringFromMustache(templateFileName, variable = {}) {
-        return mustache.render(Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, templateFileName)), this.getMustacheRenderValues(variable));
+        return mustache.render(Util.getFileContextInRaw(Util.joinRespectingDot(this.freeMarkerRootPath, templateFileName)), this.getMustacheRenderValues(variable));
     }
 
     getMustacheRenderValues = ({
@@ -3728,7 +3729,7 @@ class PathBase {
 
     /** 找到目錄下的folder,是這用來gen stores的 index file,有點偷懶, 應該要從source去組合出來 */
     getGenUnion(...folder) {
-        let path = libpath.join(this.genRootPath, 'src', ...folder)
+        let path = Util.joinRespectingDot(this.genRootPath, 'src', ...folder)
 
         return _.filter(Util.getChildPathByPath(path),
             each => each.isDirectory).map(each => each.dirName);
@@ -3960,7 +3961,7 @@ class StoreBuilder extends BaseBuilder {
         /** 產生 store再project的index file */
         const BaseStoreFileName = 'BaseStore';
         const stores = this.getGenStores();
-        const baseGenerator = new ClassGenerator(Util.persistByPath(libpath.join(this.genStoreRootPath, `${BaseStoreFileName}.js`)), this.nodeOfAncestor);
+        const baseGenerator = new ClassGenerator(Util.persistByPath(Util.joinRespectingDot(this.genStoreRootPath, `${BaseStoreFileName}.js`)), this.nodeOfAncestor);
         baseGenerator.appendClass(BaseStoreFileName);
         for (const store of stores) {
             baseGenerator.appendImport(_.upperFirst(store), `./${store}`);
@@ -4191,7 +4192,7 @@ class StoreBuilder extends BaseBuilder {
         const baseClassName = `Base${className}Store`;
         const moduleClassName = `${KEYWORD_OF_MODULARIZED}${className}Store`;
         const indexClassName = `${className}Store`;
-        const baseGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
+        const baseGenerator = new ClassGenerator(Util.joinRespectingDot(this.genStoreRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
         baseGenerator.appendClass(baseClassName, {name: `BaseStore`, from: '../../base/BaseStore'});
         /** 加上 ref 是因為怕會和 UserInfoStore 打架 */
         baseGenerator.appendFunction(`getClassName`, [], [], [], `return '${baseClassName}'`);
@@ -4395,7 +4396,7 @@ class StoreBuilder extends BaseBuilder {
         this.importStoreDefault(baseGenerator);
 
         if (node.isModuleComponent()) {
-            const moduleGenerator = new ClassGenerator(libpath.join(this.genStoreRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
+            const moduleGenerator = new ClassGenerator(Util.joinRespectingDot(this.genStoreRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {name: baseClassName, from: `./${baseClassName}`});
             moduleGenerator.needIndexFile(`${indexClassName}`);
             moduleGenerator.needSignature(false);
@@ -4959,7 +4960,7 @@ class ComponentBuilder extends BaseBuilder {
         const className = `${_.upperFirst(baseComponentName)}Component`;
         const folderName = baseComponentName;
 
-        const baseGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
+        const baseGenerator = new ClassGenerator(Util.joinRespectingDot(this.genComponentRootPath, folderName, `${baseClassName}.js`), this.nodeOfAncestor);
         /**  baseGenerator.insertBatchLines(this.getComponentClassBody(baseClassName)); */
         // baseGenerator.appendImport(`{styled, alpha}`, '@mui/material/styles');
         baseGenerator.appendClass(baseClassName,
@@ -5119,7 +5120,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (componentNode.isModuleComponent()) {
-            const moduleGenerator = new ClassGenerator(libpath.join(this.genComponentRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
+            const moduleGenerator = new ClassGenerator(Util.joinRespectingDot(this.genComponentRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {
                 name: baseClassName,
                 from: `./${baseClassName}`
@@ -5768,7 +5769,7 @@ class ComponentBuilder extends BaseBuilder {
             const folderName = _.lowerFirst(node.getViewClassNameOfRenderView())
             const clazzName = node.getViewClassNameOfRenderView();
             const baseClazzName = `Base${clazzName}`;
-            const viewGenerator = new ClassGenerator(libpath.join(self.genSourcePath, 'view', folderName, `${baseClazzName}.js`), this.nodeOfAncestor);
+            const viewGenerator = new ClassGenerator(Util.joinRespectingDot(self.genSourcePath, 'view', folderName, `${baseClazzName}.js`), this.nodeOfAncestor);
             viewGenerator.appendClass(baseClazzName, {
                 name: 'BaseView',
                 from: `../../base/BaseView`
@@ -5861,7 +5862,7 @@ class AppBuilder extends ComponentBuilder {
         for (const _package of packages) {
             if (!_.isEqual(_package.index, true)) continue;
             const packageName = _package.getName();
-            const generator = new ClassGenerator(libpath.join(this.genRootPath, _package.root, _package.getName(), 'index.js'), this.nodeOfAncestor);
+            const generator = new ClassGenerator(Util.joinRespectingDot(this.genRootPath, _package.root, _package.getName(), 'index.js'), this.nodeOfAncestor);
             generator.appendClass(_.upperFirst(packageName));
             await generator.persist();
         }
@@ -5869,7 +5870,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildEventFolder(events) {
         const normalize = Util.arrayToObjWith(events, (event) => event.getName())
-        const baseEventGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `event`, `BaseComponentEvent.js`), this.nodeOfAncestor);
+        const baseEventGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `event`, `BaseComponentEvent.js`), this.nodeOfAncestor);
         baseEventGenerator.appendImport('EventBus', '../base/CommonEventBus');
         baseEventGenerator.appendClass('BaseComponentEvent', {name: 'BaseEvent', from: `../base/BaseEvent`});
         for (const event in normalize) {
@@ -6010,7 +6011,7 @@ class AppBuilder extends ComponentBuilder {
 
         /**
          * 清除i18n們
-         * await Util.deleteSelfByPath(libpath.join(this.genSourcePath, 'i18n'), true); */
+         * await Util.deleteSelfByPath(Util.joinRespectingDot(this.genSourcePath, 'i18n'), true); */
         const arrayOfI18nKeyValue = [];
 
         for (const component of _.orderBy(this.nodeOfAncestor.components, ['isCommonModule'])) {
@@ -6033,7 +6034,7 @@ class AppBuilder extends ComponentBuilder {
         const mapOfI18nStmtsOfCommonModule = {};
         for (const _module of _.filter(this.nodeOfAncestor.components, (com) => com.isModuleComponent() && !com.isExtraComponent)) {
             for (const lang of LANGUAGES_OF_SUPPORT) {
-                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${_module.getName()}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
+                const destination = Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${_module.getName()}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
                 if (Util.isPathExist(destination))
                     Util.appendMapOfKeyArray(mapOfI18nStmtsOfCommonModule, lang, Util.getFileContextInRaw(destination));
             }
@@ -6046,13 +6047,13 @@ class AppBuilder extends ComponentBuilder {
             const classNameOfModularized = `${KEYWORD_OF_MODULARIZED}MyI18n`;
             const classNameOfIndex = `I18n`;
 
-            const base = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfBase}.js`), this.nodeOfAncestor);
+            const base = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `i18n`, lang, `${classNameOfBase}.js`), this.nodeOfAncestor);
             base.appendClass(classNameOfBase, {name: 'BaseI18n', from: `../../base/BaseI18n`});
-            const modularized = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`), this.nodeOfAncestor)
+            const modularized = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `i18n`, lang, `${classNameOfModularized}.js`), this.nodeOfAncestor)
             modularized.appendClass(classNameOfModularized, {name: classNameOfBase, from: `./${classNameOfBase}`});
             if (!_.isEmpty(mapOfI18nStmtsOfCommonModule[lang]))
                 modularized.appendBatchLinesIntoFieldSection(['\n\n', ...mapOfI18nStmtsOfCommonModule[lang].join('\n\n')]);
-            const index = new ClassGenerator(libpath.join(this.genSourcePath, `i18n`, lang, `index.js`), this.nodeOfAncestor)
+            const index = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `i18n`, lang, `index.js`), this.nodeOfAncestor)
             index.appendClass(classNameOfIndex, {name: classNameOfModularized, from: `./${classNameOfModularized}`});
             index.setSingleton(true);
 
@@ -6071,15 +6072,15 @@ class AppBuilder extends ComponentBuilder {
             await index.persist();
         }
 
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.i18n.index.js'),
-            libpath.join(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'template.i18n.index.js'),
+            Util.joinRespectingDot(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
 
         /** 把專案裡的i18n/index複製到當前gen/i18n/index, 不然rapid build會有bug
          for (const sourceFile of Util.findFilePathBy(this.projectPlatformPath,
          (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && _.isEqual('index', each.fileName))) {
          let ignoreThisRun = false;
          const from = sourceFile.path;
-         const dest = libpath.join(this.genRootPath, Util.getRelativePath(sourceFile.path, this.projectPlatformPath));
+         const dest = Util.joinRespectingDot(this.genRootPath, Util.getRelativePath(sourceFile.path, this.projectPlatformPath));
          Util.copySingleFile(from, dest, '', true);
          } */
 
@@ -6102,7 +6103,7 @@ class AppBuilder extends ComponentBuilder {
 
         const cookies = getCookiesOfModules();
         if (_.size(cookies) > 1) {
-            const baseCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `BaseCookie.js`), this.nodeOfAncestor);
+            const baseCookieGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `cookie`, `BaseCookie.js`), this.nodeOfAncestor);
             baseCookieGenerator.appendClass('BaseCookie', {name: 'Cookie', from: `../base/BaseCookie`});
             baseCookieGenerator.appendImport(`Cookies`, `universal-cookie`);
             baseCookieGenerator.appendImport(`Config`, `../config`);
@@ -6142,7 +6143,7 @@ class AppBuilder extends ComponentBuilder {
 
             }
             baseCookieGenerator.appendFunction('getAllCookies', ['options = {}'], [], [], 'return this.cookie.getAll(options)')
-            const indexCookieGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `cookie`, `index.js`), this.nodeOfAncestor);
+            const indexCookieGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `cookie`, `index.js`), this.nodeOfAncestor);
             indexCookieGenerator.appendClass('Cookie', {name: `BaseCookie`, from: './BaseCookie'});
             indexCookieGenerator.setSingleton(true);
 
@@ -6152,31 +6153,31 @@ class AppBuilder extends ComponentBuilder {
     }
 
     async buildWebpackNPackageJson() {
-        await this.appendMustacheFile('web.package.json.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('web.package.json.mustache', Util.joinRespectingDot(this.genRootPath,
             `package.json`
         ), {
             projectName: this.nodeOfAncestor.name,
             projectVersion: this.nodeOfAncestor.version,
             projectDescription: this.nodeOfAncestor.description
         });
-        await this.appendMustacheFile('webpack.config.js.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('webpack.config.js.mustache', Util.joinRespectingDot(this.genRootPath,
             `webpack.config.js`), {titleOfProject: this.nodeOfAncestor.getTitle()});
-        await this.appendMustacheFile('babel.config.js', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('babel.config.js', Util.joinRespectingDot(this.genRootPath,
             `babel.config.js`
         ));
     }
 
     async buildHtmlIndexAssetsFile() {
-        const path = Util.persistByPath(libpath.join(this.genRootPath, 'dist'));
+        const path = Util.persistByPath(Util.joinRespectingDot(this.genRootPath, 'dist'));
         await this.appendMustacheFile(
             'index.html.mustache',
-            libpath.join(path, 'index.html'),
+            Util.joinRespectingDot(path, 'index.html'),
             {title: this.nodeOfAncestor.title}
         );
     }
 
     async buildCloudFunctionsApi() {
-        const baseFunctionGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
+        const baseFunctionGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath,
             `functions`, `BaseMyCloudFunctions.js`), this.nodeOfAncestor);
         baseFunctionGenerator.appendClass(
             `BaseMyCloudFunctions`, {name: `ClientRemoteApi`, from: '../base/ClientRemoteApi'}
@@ -6230,7 +6231,7 @@ class AppBuilder extends ComponentBuilder {
                 return array.map((each) => `${each} = ''`)
             }
 
-            const route = libpath.join(nodeOfComponent.getPathOfRouterString(),
+            const route = Util.joinRespectingDot(nodeOfComponent.getPathOfRouterString(),
                 isDetail ? `\$\{${nodeOfComponent.getFieldNameOfDetailUid()}\}` : '',
                 nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
             )
@@ -6272,7 +6273,7 @@ class AppBuilder extends ComponentBuilder {
 
         }
 
-        const baseRouterGenerator = new ClassGenerator(libpath.join(this.genSourcePath,
+        const baseRouterGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath,
             `router`,
             `BaseMyRouter.js`
         ), this.nodeOfAncestor);
@@ -6310,7 +6311,7 @@ class AppBuilder extends ComponentBuilder {
             }
         }
 
-        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
+        const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{StyledEngineProvider}`, '@mui/material/styles');
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
         appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
@@ -6362,7 +6363,7 @@ class AppBuilder extends ComponentBuilder {
             );
             this.removeJSXSign(renderStmts);
 
-            const path = libpath.join(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
+            const path = Util.joinRespectingDot(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
 
             childrenStmt.push(...this.getJSXStrings({
                 tag: `Route`,
@@ -6487,13 +6488,13 @@ class AppBuilder extends ComponentBuilder {
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
             let origins = {};
-            const sourceFilePath = libpath.join(this.projectPlatformSourcePath, `style`, `${type}.style.js`)
+            const sourceFilePath = Util.joinRespectingDot(this.projectPlatformSourcePath, `style`, `${type}.style.js`)
             if (fs.existsSync(sourceFilePath)) {
                 const obj = require(libpath.resolve(sourceFilePath)).default;
                 origins = obj;
             }
 
-            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'style', `${type}.style.js`), this.nodeOfAncestor)
+            const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'style', `${type}.style.js`), this.nodeOfAncestor)
             generator.appendClass(`${_.upperFirst(type)}Style`);
             for (const info of classNameInfos) {
 
@@ -6526,8 +6527,8 @@ class AppBuilder extends ComponentBuilder {
         }
 
         /** template.style.index.js */
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.style.index.js'),
-            libpath.join(this.genSourcePath, 'style', 'index.js'), undefined, true);
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'template.style.index.js'),
+            Util.joinRespectingDot(this.genSourcePath, 'style', 'index.js'), undefined, true);
     }
 
     /**
@@ -6574,7 +6575,7 @@ class AppBuilder extends ComponentBuilder {
         }
 
         const lessAttributeObj = {};
-        const srcLessPath = _.isEqual('less', Util.getExtensionFromPath(path)) ? path : libpath.join(path, `less`, `styles.less`)
+        const srcLessPath = _.isEqual('less', Util.getExtensionFromPath(path)) ? path : Util.joinRespectingDot(path, `less`, `styles.less`)
         if (Util.isEmptyFile(srcLessPath)) {
             Util.appendInfo(`4842454 ${srcLessPath} is not exist!!!`);
             return undefined;
@@ -6645,12 +6646,12 @@ class AppBuilder extends ComponentBuilder {
         const self = this;
 
         function getLessLibs() {
-            return Util.findFilePathBy(libpath.join(self.freeMarkerRootPath, 'less', 'libs'),
+            return Util.findFilePathBy(Util.joinRespectingDot(self.freeMarkerRootPath, 'less', 'libs'),
                 (file) => _.isEqual(file.extension, 'less'))
                 .map((file) => file.fileNameExtension);
         }
 
-        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `styles.less`), this.nodeOfAncestor);
+        const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'less', `styles.less`), this.nodeOfAncestor);
         for (const nameExtension of getLessLibs()) {
             generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
         }
@@ -6699,8 +6700,8 @@ class AppBuilder extends ComponentBuilder {
         generator.disableDefaultImports();
         await generator.persist();
 
-        await Util.deleteFileOrFolder(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'));
-        await this.appendMustacheFile('less.index.mustache', Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js')));
+        await Util.deleteFileOrFolder(Util.joinRespectingDot(this.projectPlatformSourcePath, 'less', 'index.js'));
+        await this.appendMustacheFile('less.index.mustache', Util.persistByPath(Util.joinRespectingDot(this.genSourcePath, 'less', 'index.js')));
         Util.appendInfo(`persist ./less/index.js succeed`);
     }
 
@@ -6712,7 +6713,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildLessFile(classNameInfos) {
         /** 先取得 libs file list*/
-        const libs = Util.findFilePathBy(libpath.join(this.freeMarkerRootPath, 'less', 'libs'),
+        const libs = Util.findFilePathBy(Util.joinRespectingDot(this.freeMarkerRootPath, 'less', 'libs'),
             (file) => _.isEqual(file.extension, 'less'))
             .map((file) => file.fileNameExtension);
 
@@ -6721,7 +6722,7 @@ class AppBuilder extends ComponentBuilder {
         const sign = `/** style */`;
         const types = [`app`, `common`, `mobile`];
         for (const type of types) {
-            const srcLessPath = libpath.join(this.projectPlatformSourcePath, `less`, `${type}.less`)
+            const srcLessPath = Util.joinRespectingDot(this.projectPlatformSourcePath, `less`, `${type}.less`)
             const lessAttributesFromSrc = [];
             if (fs.existsSync(srcLessPath)) {
                 const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
@@ -6737,7 +6738,7 @@ class AppBuilder extends ComponentBuilder {
             /** 刪掉沒定義過less....  沒定義過的 => ' .ExamDiv { /** style */
             _.remove(lessAttributesFromSrc, (each) => (_.isEqual(each.split(`{`)[1].trim(), sign)))
 
-            const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'less', `${type}.less`), this.nodeOfAncestor);
+            const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'less', `${type}.less`), this.nodeOfAncestor);
             for (const info of classNameInfos) {
                 const isEditPage = info.component.isPreciselyEditableComponent();
                 generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
@@ -6783,9 +6784,9 @@ class AppBuilder extends ComponentBuilder {
             generator.disableDefaultImports();
             await generator.persist();
 
-            if (!fs.existsSync(libpath.join(this.projectPlatformSourcePath, 'less', 'index.js'))) {
+            if (!fs.existsSync(Util.joinRespectingDot(this.projectPlatformSourcePath, 'less', 'index.js'))) {
                 await this.appendMustacheFile('less.index.mustache',
-                    Util.persistByPath(libpath.join(this.genSourcePath, 'less', 'index.js'))
+                    Util.persistByPath(Util.joinRespectingDot(this.genSourcePath, 'less', 'index.js'))
                 );
                 Util.appendInfo(`persist ./less/index.js succeed`);
             }
@@ -6818,13 +6819,13 @@ class AppBuilder extends ComponentBuilder {
 
     /** free_marker/template/.  */
     async overrideLessFile() {
-        const less = libpath.join(this.freeMarkerRootPath, `less`);
+        const less = Util.joinRespectingDot(this.freeMarkerRootPath, `less`);
         const files = Util.findFilePathBy(less);
         _.forEach(_.filter(files, (file) => _.isEqual(file.extension, 'less')),
             (file) => this.refactorLessDeviceInfo(file)
         );
 
-        const to = libpath.join(this.genSourcePath, 'less');
+        const to = Util.joinRespectingDot(this.genSourcePath, 'less');
         await Util.copyFromFolderToDestFolder(less, to);
     }
 
@@ -6858,22 +6859,22 @@ class ProjectFileHandler extends PathBase {
 
     async buildDistAssetFolder() {
 
-        const imagesOfModules = this.nodeOfAncestor.getListOfModuleComponent().map(module => libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/images`));
-        const imageSourceFolders = [...imagesOfModules, libpath.join(this.projectPlatformPath, 'images')];
+        const imagesOfModules = this.nodeOfAncestor.getListOfModuleComponent().map(module => Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${module}/web/images`));
+        const imageSourceFolders = [...imagesOfModules, Util.joinRespectingDot(this.projectPlatformPath, 'images')];
         for (const imageSourceFolder of imageSourceFolders) {
 
             if (fs.existsSync(imageSourceFolder)) {
                 await Util.copyFromFolderToDestFolder(imageSourceFolder,
-                    Util.persistByPath(libpath.join(this.genRootPath, 'dist', 'images')));
+                    Util.persistByPath(Util.joinRespectingDot(this.genRootPath, 'dist', 'images')));
             }
         }
     }
 
     async persistImageFolder() {
-        const images = libpath.join(this.genRootPath, 'dist', 'images');
+        const images = Util.joinRespectingDot(this.genRootPath, 'dist', 'images');
         if (fs.existsSync(images)) {
             await Util.copyFromFolderToDestFolder(images,
-                Util.persistByPath(libpath.join(this.projectPlatformPath, 'images'))
+                Util.persistByPath(Util.joinRespectingDot(this.projectPlatformPath, 'images'))
             );
         }
     }
@@ -7004,8 +7005,8 @@ class ProjectFileHandler extends PathBase {
         /** 拿到 module components ['account', 'navigator']*/
 
         for (const lang of LANGUAGES_OF_SUPPORT) {
-            const modularized = libpath.join(this.genSourcePath, 'i18n', lang, 'ModularizedMyI18n.js');
-            const base = libpath.join(this.genSourcePath, 'i18n', lang, 'BaseMyI18n.js');
+            const modularized = Util.joinRespectingDot(this.genSourcePath, 'i18n', lang, 'ModularizedMyI18n.js');
+            const base = Util.joinRespectingDot(this.genSourcePath, 'i18n', lang, 'BaseMyI18n.js');
 
             const sumsOfModules = getObjectOfComponentI18n(modularized);
             const sumsOfBase = getObjectOfComponentI18n(base);
@@ -7014,7 +7015,7 @@ class ProjectFileHandler extends PathBase {
                 const filtersOfBase = _.filter(sumsOfBase, (obj) => _.startsWith(obj.name, nameOfComponent));
                 const filtersOfModule = _.filter(sumsOfModules, (obj) => _.startsWith(obj.name, nameOfComponent));
 
-                const destination = libpath.join(PATH_OF_COMPONENT_MODULE, `${nameOfComponent}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
+                const destination = Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${nameOfComponent}/web/src/i18n/${lang}/${FILE_EXTENSION_OF_I18N}`)
                 await Util.deleteSelfByPath(destination, true);
                 await Util.persistByPath(destination);
                 for (const filterOfBase of filtersOfBase) {
@@ -7034,7 +7035,7 @@ class ProjectFileHandler extends PathBase {
     async buildConfig() {
 
         const sourceObj = this.nodeOfAncestor;
-        const baseConfigGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `config`, `BaseConfig.js`), this.nodeOfAncestor);
+        const baseConfigGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `config`, `BaseConfig.js`), this.nodeOfAncestor);
         baseConfigGenerator.appendClass(`BaseConfig`);
         const watermarkObj = Util.mergeObject({
             type: 'string',
@@ -7089,15 +7090,15 @@ class ProjectFileHandler extends PathBase {
         function persist(module = 'epay', folder = 'store', predict = (file) => Util.appendInfo(file.fileName)) {
 
             function isFunctionBelong2Module(dirName) {
-                const path = libpath.join('./modules', module, FILENAME_OF_SOURCE_JS);
+                const path = Util.joinRespectingDot('./modules', module, FILENAME_OF_SOURCE_JS);
                 const source = require(`./${path}`).default;
                 return _.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
             }
 
-            for (const file of Util.findFilePathBy(libpath.join(self.genSourcePath, folder),
+            for (const file of Util.findFilePathBy(Util.joinRespectingDot(self.genSourcePath, folder),
                 (each) => (self.isFunctionsPlatform() ? isFunctionBelong2Module(each.dirName) : _.startsWith(_.toLower(each.dirName), _.toLower(module))) &&
                     _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
-                const pathOfDestination = libpath.join(PATH_OF_COMPONENT_MODULE, predict(file));
+                const pathOfDestination = Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, predict(file));
                 if (Util.isFileEditSucceed(file.absolute)) Util.copySingleFileConservative(pathOfDestination, file);
             }
         }
@@ -7124,8 +7125,8 @@ class ProjectFileHandler extends PathBase {
             const attrs = instance.getObjectOfExistedLessAttribute(this.genSourcePath);
             if (attrs) {
                 const lessees = _.filter(attrs, (value, key, collection) => _.startsWith(key, _.upperFirst(module)))
-                await Util.deleteSelfByPath(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less`));
-                const generator = new ClassGenerator(libpath.join(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less/styles.less`), this.nodeOfAncestor);
+                await Util.deleteSelfByPath(Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less`));
+                const generator = new ClassGenerator(Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, `${module}/web/src/less/styles.less`), this.nodeOfAncestor);
                 for (const model of LESS_MODULES) {
                     generator.appendInClassHead(`@${model.name}: ~'${model.rule}';`);
                 }
@@ -7147,7 +7148,7 @@ class ProjectFileHandler extends PathBase {
                 return
             }
 
-            for (const file of Util.findFilePathBy(libpath.join(this.genSourcePath, 'base'))) {
+            for (const file of Util.findFilePathBy(Util.joinRespectingDot(this.genSourcePath, 'base'))) {
                 if (Util.isEmptyFile(file.absolute)) {
                     Util.appendInfo(`${file.absolute} is empty file, do not copy`)
                     continue;
@@ -7155,17 +7156,17 @@ class ProjectFileHandler extends PathBase {
 
                 if (_.startsWith(_.toLower(file.fileName), 'common')) {
                     /** back-up to common */
-                    const pathOfDestination = libpath.join(this.freeMarkerSourceCommonPath, 'src', 'base', file.fileNameExtension);
+                    const pathOfDestination = Util.joinRespectingDot(this.freeMarkerSourceCommonPath, 'src', 'base', file.fileNameExtension);
                     Util.copySingleFileConservative(pathOfDestination, file);
                 } else {
                     /** back-up to platform src */
-                    const pathOfDestination = libpath.join(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
+                    const pathOfDestination = Util.joinRespectingDot(this.freeMarkerSourcePlatformPath, 'src', 'base', file.fileNameExtension);
                     Util.copySingleFileConservative(pathOfDestination, file);
 
                     /** 因為admin 和 functions 共用 baseFirebase,FirebaseHelper，所以有以下balence措施 */
                     if ((this.isFunctionsPlatform() || this.isAdminPlatform()) &&
                         Util.isOrEquals(file.fileName, 'BaseFirebase', 'FirebaseHelper')) {
-                        const pathOfDestination = libpath.join(Util.getPathOfReplaceLastDir(this.freeMarkerSourcePlatformPath, this.isFunctionsPlatform() ? 'admin' : 'functions'), 'src', 'base', file.fileNameExtension);
+                        const pathOfDestination = Util.joinRespectingDot(Util.getPathOfReplaceLastDir(this.freeMarkerSourcePlatformPath, this.isFunctionsPlatform() ? 'admin' : 'functions'), 'src', 'base', file.fileNameExtension);
                         Util.copySingleFileConservative(pathOfDestination, file);
                     }
                 }
@@ -7180,12 +7181,12 @@ class ProjectFileHandler extends PathBase {
     async persistCustomizePackages() {
         const packages = this.nodeOfAncestor.getCustomizePackages().filter((each) => _.isEqual(each.platform, this.platform));
         for (const folder of packages) {
-            const genExtraFolderPath = libpath.join(this.genRootPath, folder.root, folder.getName());
+            const genExtraFolderPath = Util.joinRespectingDot(this.genRootPath, folder.root, folder.getName());
             if (fs.existsSync(genExtraFolderPath)) {
-                const destFolderPath = libpath.join(this.projectPlatformPath, folder.root, folder.getName());
+                const destFolderPath = Util.joinRespectingDot(this.projectPlatformPath, folder.root, folder.getName());
                 await Util.deleteSelfByPath(destFolderPath, true)
                 Util.persistByPath(destFolderPath);
-                Util.copyFromFolderToDestFolder(genExtraFolderPath, destFolderPath);
+                await Util.copyFromFolderToDestFolder(genExtraFolderPath, destFolderPath);
                 Util.appendInfo(`customize folder,persist to ${destFolderPath} succeed`);
             }
         }
@@ -7193,8 +7194,8 @@ class ProjectFileHandler extends PathBase {
 
     /** 將less/libs/ 底下全部都back-up到 template */
     persistLessLibs() {
-        const files = Util.findFilePathBy(libpath.join(this.genSourcePath, 'less', 'libs'), (file) => _.isEqual('less', file.extension));
-        const to = libpath.join(this.freeMarkerRootPath, 'less', 'libs');
+        const files = Util.findFilePathBy(Util.joinRespectingDot(this.genSourcePath, 'less', 'libs'), (file) => _.isEqual('less', file.extension));
+        const to = Util.joinRespectingDot(this.freeMarkerRootPath, 'less', 'libs');
         for (const less of files) {
             Util.copySingleFile(less.path, to, less.fileNameExtension, true);
         }
@@ -7230,7 +7231,7 @@ class ProjectFileHandler extends PathBase {
 
             if (Util.has(exclude, file.fileNameExtension)) continue;
             const from = file.absolute;
-            const dest = libpath.join(this.projectPlatformSourcePath, from.split(`src`).pop());
+            const dest = Util.joinRespectingDot(this.projectPlatformSourcePath, from.split(`src`).pop());
 
 
             Util.persistByPath(dest);
@@ -7257,7 +7258,7 @@ class ProjectFileHandler extends PathBase {
 
         const pathsOfModuleComponent = this.nodeOfAncestor
           .getListOfModuleComponent()
-          .map(each => libpath.join(PATH_OF_COMPONENT_MODULE, each, this.platform));
+          .map(each => Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, each, this.platform));
 
         const fromSourcePaths = [
             this.projectPlatformPath,
@@ -7283,7 +7284,7 @@ class ProjectFileHandler extends PathBase {
 
                 const from = sourceFile.path;
                 const relativePath = Util.getRelativePath(from, sourcePath);
-                const dest = libpath.join(this.genRootPath, relativePath);
+                const dest = Util.joinRespectingDot(this.genRootPath, relativePath);
                 const destFolder = libpath.dirname(dest);
 
                 // 確保目的資料夾存在
@@ -7333,7 +7334,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     async generateStorageRules(deploy = true) {
         const fileName = 'storage.rules';
-        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
+        const path = Util.persistByPath(Util.joinRespectingDot(this.genRootPath, fileName))
 
         const base = this.getStringFromMustache('template.storage.mustache',
             {superUserUid: this.nodeOfAncestor.getStorageSuperUserUid()}).split('\n');
@@ -7354,7 +7355,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         for (const name in permissions) {
             const _stmt = [];
             const normalize = name.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
-            _stmt.push(`match ${libpath.join('/', normalize)}/{fileId} {`);
+            _stmt.push(`match ${Util.joinRespectingDot('/', normalize)}/{fileId} {`);
             const permission = permissions[name];
             for (const type in permission) {
                 _stmt.push(`allow ${type}: if ${permission[type]}`)
@@ -7367,7 +7368,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     }
 
     async buildDeployDocument(fileName, conclusion, commandLine = 'firestore:indexes', deploy, prettier = false) {
-        const path = Util.persistByPath(libpath.join(this.genRootPath, fileName))
+        const path = Util.persistByPath(Util.joinRespectingDot(this.genRootPath, fileName))
         Util.appendFile(path, conclusion, true, true);
         if (prettier)
             await Util.prettier(path);
@@ -7385,8 +7386,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     async buildProdWebDistToProjectThanDeploy(deploy = true, npmBuild = true) {
         await this.leanCodeOfSource();
         if (npmBuild) await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
-        const pathOfDestination = libpath.join(this.nodeOfAncestor.getDirectoryName(), 'public');
-        const pathOfDistFrom = libpath.join(this.genRootPath, 'dist');
+        const pathOfDestination = Util.joinRespectingDot(this.nodeOfAncestor.getDirectoryName(), 'public');
+        const pathOfDistFrom = Util.joinRespectingDot(this.genRootPath, 'dist');
         await this.buildDistAssetFolder();
         Util.persistByPath(pathOfDestination);
         Util.cleanAllFiles(pathOfDestination);
@@ -7423,14 +7424,14 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         const path = node.getPath();
         const wildcard = `{${node.getName()}}`;
         const normalize = path.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
-        if (node.isObject()) return libpath.join('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
-        else if (node.isArray()) return libpath.join('/', normalize, wildcard);
+        if (node.isObject()) return Util.joinRespectingDot('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
+        else if (node.isArray()) return Util.joinRespectingDot('/', normalize, wildcard);
         else throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
     }
 
     async generateFireStoreRules(deploy = true) {
         const self = this;
-        const base = Util.getFileContextInRaw(libpath.join(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
+        const base = Util.getFileContextInRaw(Util.joinRespectingDot(this.freeMarkerRootPath, 'template.firestore.rules')).split('\n');
         const stmts = [];
 
         /** type => update|create|delete|read */
@@ -7439,7 +7440,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             if (disable) return '';
 
             if (Util.isOrEquals(type, 'update')) {
-                const path = libpath.join('/databases/$(database)/documents', Util.getStringOfPop(self.getFirebaseRuleOfMatchRoute(node), `\/`),
+                const path = Util.joinRespectingDot('/databases/$(database)/documents', Util.getStringOfPop(self.getFirebaseRuleOfMatchRoute(node), `\/`),
                     `$(request.resource.id)`)
                 const getAfter = `getAfter(${path})`;
                 const stmt = `&& ${getAfter}.data.updateTime == request.time`;
@@ -7463,20 +7464,20 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     async forAdmin() {
         Util.persistByPath(this.genRootPath);
-        await this.appendMustacheFile('admin.package.json.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('admin.package.json.mustache', Util.joinRespectingDot(this.genRootPath,
             `package.json`), {
             projectName: this.nodeOfAncestor.name,
             projectVersion: this.nodeOfAncestor.version,
             projectDescription: this.nodeOfAncestor.description
         });
 
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'node.babel.config.js'), this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'node.babel.config.js'), this.genRootPath, 'babel.config.js', true);
 
-        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
+        const apiGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
         apiGenerator.needIndexFile('AdminRemoteApi');
 
-        const listenerGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`), this.nodeOfAncestor);
+        const listenerGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `listener`, `BaseAdminListenerApi.js`), this.nodeOfAncestor);
         listenerGenerator.appendClass('BaseAdminListenerApi', {
             name: 'CommonRemoteApi',
             from: '../base/CommonRemoteApi'
@@ -8862,20 +8863,20 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     async forCloudFunctions() {
         Util.persistByPath(this.genRootPath);
-        await this.appendMustacheFile('functions.package.json.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('functions.package.json.mustache', Util.joinRespectingDot(this.genRootPath,
             `package.json`), {
             projectName: this.nodeOfAncestor.name,
             projectVersion: this.nodeOfAncestor.version,
             projectDescription: this.nodeOfAncestor.description
         });
 
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'node.babel.config.js'),
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'node.babel.config.js'),
             this.genRootPath, 'babel.config.js', true);
 
-        Util.copySingleFile(libpath.join(this.freeMarkerRootPath, 'template.function.index.js'),
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'template.function.index.js'),
             this.genRootPath, 'index.js', true);
 
-        const apiGenerator = new ClassGenerator(libpath.join(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
+        const apiGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
         apiGenerator.needIndexFile('AdminRemoteApi', [], true);
 
@@ -8884,7 +8885,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         }
 
         await apiGenerator.persist();
-        const appGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'app.js'), this.nodeOfAncestor);
+        const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'app.js'), this.nodeOfAncestor);
         appGenerator.appendImport('* as functions', 'firebase-functions')
         appGenerator.appendImport('firebase', './base/FirebaseHelper');
         // appGenerator.appendImport('admin', 'firebase-admin')
@@ -8907,14 +8908,14 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             params
         } = func.getCloudFunctionInfo()
         const baseClass = `Base${fieldName}`;
-        const generator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`), this.nodeOfAncestor);
+        const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'func', func.getName(), `${baseClass}.js`), this.nodeOfAncestor);
         generator.appendClass(baseClass, {name: `BaseFunction`, from: '../../base/BaseFunction'})
         generator.appendAsyncFunction(functionNameOfHandleBy,
             [...params], [], [`payload:${JSON.stringify(func.payload ?? 'needless payload')}`]);
 
         if (func.isCommonModule) {
             const moduleClassName = `${KEYWORD_OF_MODULARIZED}${fieldName}`;
-            const moduleGenerator = new ClassGenerator(libpath.join(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`), this.nodeOfAncestor);
+            const moduleGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'func', func.getName(), `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {name: baseClass, from: `./${baseClass}`});
             moduleGenerator.needSignature(false);
             moduleGenerator.appendAsyncFunction(functionNameOfHandleBy, [...params], [], []);
@@ -9092,7 +9093,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     }
 
     async buildTemplateHtml() {
-        await this.appendMustacheFile('template.html.mustache', libpath.join(this.genRootPath,
+        await this.appendMustacheFile('template.html.mustache', Util.joinRespectingDot(this.genRootPath,
             'template.html'), {
             disableOfHtmlScale: this.nodeOfAncestor.disableOfHtmlScale,
         });
@@ -9101,7 +9102,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     async buildLessToCss() {
         const files = Util.findFilePathBy(this.genSourcePath, (file) => _.isEqual(file.extension, 'less'));
         for (const each of files) {
-            await Util.executeCommandLine(`lessc ${each.absolute} ${libpath.join(each.dirPath, `${each.fileName}.css`)}`);
+            await Util.executeCommandLine(`lessc ${each.absolute} ${Util.joinRespectingDot(each.dirPath, `${each.fileName}.css`)}`);
         }
     }
 
@@ -9260,7 +9261,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
-            await Util.deleteSelfByPath(libpath.join(this.genRootPath, 'release'), true);
+            await Util.deleteSelfByPath(Util.joinRespectingDot(this.genRootPath, 'release'), true);
             await Util.generatePackage(this.genRootPath, false);
             /** 會產生出 release folder */
             await this.copyFunctionsModuleToDestFolder();
@@ -9268,10 +9269,10 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     }
 
     async copyFunctionsModuleToDestFolder() {
-        const deployPathOfFunction = Util.persistByPath(libpath.join(this.nodeOfAncestor.getDirectoryName(), 'functions'));
+        const deployPathOfFunction = Util.persistByPath(Util.joinRespectingDot(this.nodeOfAncestor.getDirectoryName(), 'functions'));
         Util.cleanAllFiles(deployPathOfFunction);
-        Util.renameFile(libpath.join(this.genRootPath, 'release', 'lib', 'app.js'), 'index');
-        await Util.copyFromFolderToDestFolder(libpath.join(this.genRootPath, 'release'), deployPathOfFunction);
+        Util.renameFile(Util.joinRespectingDot(this.genRootPath, 'release', 'lib', 'app.js'), 'index');
+        await Util.copyFromFolderToDestFolder(Util.joinRespectingDot(this.genRootPath, 'release'), deployPathOfFunction);
     }
 
     getIgnoredFilesByPlatform() {
@@ -9342,7 +9343,7 @@ class BuildApplication {
         this.projectRootPath = libpath.resolve(object.projectRootPath);
         this.freeMarkerRootPath = libpath.resolve(PATH_OF_FREE_MARKER_TEMPLATE);
 
-        const context = require(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS)).default;
+        const context = require(Util.joinRespectingDot(this.projectRootPath, FILENAME_OF_SOURCE_JS)).default;
         if (_.isEmpty(context.genRootPath)) {
             throw new ERROR(9999, `${this.projectRootPath}/'${FILENAME_OF_SOURCE_JS}' 裡面沒有attribute ==> genRootPath`)
         }
@@ -9352,7 +9353,7 @@ class BuildApplication {
 
 
     init() {
-        if (!fs.existsSync(libpath.join(this.projectRootPath, FILENAME_OF_SOURCE_JS))) {
+        if (!fs.existsSync(Util.joinRespectingDot(this.projectRootPath, FILENAME_OF_SOURCE_JS))) {
             throw new ERROR(8019, `you should put ${FILENAME_OF_SOURCE_JS} in ${libpath.resolve(this.projectRootPath)}`)
         }
     }

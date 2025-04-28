@@ -592,7 +592,6 @@ class Utiller {
     findLowestValue = (items, key = 'price') => {
         // 提取價格並找出最小值
         const minPrice = _.minBy(items, key)[key];
-
         // 確保回傳的最低價為 integer 型態
         return Math.floor(minPrice);
     };
@@ -617,7 +616,6 @@ class Utiller {
         // 找出最小值和最大值
         const minV = _.minBy(items, key)[key];
         const maxV = _.maxBy(items, key)[key];
-
         // 判斷並返回字串
         return maxV === minV ? `$${minV}` : `${sign}${minV} - ${sign}${maxV}`;
     };
@@ -1328,6 +1326,29 @@ class Utiller {
             }
             callback();
         })();
+    }
+
+    /**
+     * Merge multiple arrays of objects based on a specific identifier key.
+     * If objects have the same identifier, they will be merged,
+     * with properties from later arrays overwriting earlier ones.
+     *
+     * const list1 = [{ id: '123', name: 'david' }];
+     * const list2 = [{ id: '123', age: 13 }];
+     * const list3 = [{ id: '456', name: 'alice' }];
+     * console.log(mergeArrayBy('id', list1, list2, list3)); //[ { href: '123', name: 'david', age: 13 },{ href: '456', name: 'alice' } ]
+     *
+     * @param {string} identifier - The object property used to identify and merge items. Default is 'id'.
+     * @param {...Array<Object>} array - Multiple arrays containing objects to merge.
+     * @returns {Array<Object>} A new array with merged objects based on the identifier.
+     */
+    mergeArrayBy(identifier = 'id', ...array) {
+        return Object.values(
+          array.flat().reduce((acc, item) => {
+              if (item[identifier]) acc[item[identifier]] = { ...(acc[item[identifier]] || {}), ...item };
+              return acc;
+          }, {})
+        );
     }
 
     /**
@@ -2524,11 +2545,28 @@ class Utiller {
             return Array.from(new Set(array));
         }
     }
+
+    /**
+     * Extract unique values of a specific key from an array of objects.
+     * array = [ { valueOfType: 1 }, { valueOfType: 7, valueOfSubType: 6 }, { valueOfType: 1 } ];
+       console.log(getUniqueValuesBy(array, 'valueOfType')); //[1, 7]
+     *
+     * @param {Array<Object>} array - The array of objects to process.
+     * @param {string} key - The key to extract values from. Default is 'valueOfType'.
+     * @returns {Array<any>} A deduplicated array of the extracted values.
+     */
+    getUniqueValuesBy(array, key = 'valueOfType') {
+      return _.uniq(array.map(item => item[key]));
+        }
+    /* 測試資料 */
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new Utiller();
+            // const  utiller = new Utiller();
+            // const array = [ { valueOfType: 1 }, { valueOfType: 7, valueOfSubType: 6 }, { valueOfType: 1 } ];
+            // console.log(utiller.getUniqueValuesBy(array, 'valueOfType')); //[1, 7]
             // const stringOfEncrypt = utiller.getEncryptStringV2('i am david');
             // console.log(`完成encrypt ==> `, stringOfEncrypt);
             // const answer = utiller.getDecryptStringV2(stringOfEncrypt);
