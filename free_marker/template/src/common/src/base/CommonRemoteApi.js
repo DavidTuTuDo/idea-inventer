@@ -1,21 +1,18 @@
 const edit = true;
-import {exceptioner as ERROR, utiller as Util} from 'utiller';
-import _ from 'lodash';
-import moment from 'moment';
-import libpath from 'path';
+import { exceptioner as ERROR, utiller as Util } from "utiller";
+import _ from "lodash";
+import moment from "moment";
+import libpath from "path";
 import firebase from "./FirebaseHelper";
 
 class CommonRemoteApi {
-
     _firebase() {
         return firebase;
     }
 
     normalizeTimestamp(obj) {
-        if (obj instanceof this.FirebaseTimestampClass())
-            return obj.toMillis();
-        else
-            return obj;
+        if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis();
+        else return obj;
     }
 
     /** null是讓mui picker沒有預設值(顯示出label)，所以特別保留 */
@@ -48,8 +45,7 @@ class CommonRemoteApi {
     }
 
     toFireBaseTimestampObject(obj) {
-        if (_.isNull(obj) || _.isUndefined(obj))
-            return null;
+        if (_.isNull(obj) || _.isUndefined(obj)) return null;
 
         if (obj instanceof firebase.getLibOfFirebaseTimestamp()) {
             return obj;
@@ -67,7 +63,7 @@ class CommonRemoteApi {
         return firebase.getCurrentFirestoreTimeStamp();
     }
 
-    async callCloudFunctions(functionName = '', data, region = 'us-central1') {
+    async callCloudFunctions(functionName = "", data, region = "us-central1") {
         Util.appendInfo(`454546 functions httpOnCall => '${functionName}'`, data);
         return await firebase.httpOnCall(functionName, data);
     }
@@ -81,20 +77,18 @@ class CommonRemoteApi {
     /** predicate 裏面放batch要做的動作 set,update,delete, 所以每個
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    async batchBracket(objects, predicate = (batch, object) => {
-    }) {
+    async batchBracket(objects, predicate = (batch, object) => {}) {
         await firebase.batchDo(objects, predicate);
-        return {message: `batchBracket succeed size:${_.size(objects)} succeed`}
+        return { message: `batchBracket succeed size:${_.size(objects)} succeed` };
     }
 
     async submitItems(path, ...items) {
-        const size = items.length
+        const size = items.length;
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} batch submit => path:${path}, size:${size} start`);
         const result = await firebase.submitDocuments(path, items);
         Util.appendInfo(`${uid} batch submit path:${path}, size:${size} succeed`);
         return result;
-
     }
 
     async updateItems(path, items, ...conditions) {
@@ -103,7 +97,6 @@ class CommonRemoteApi {
         const result = await firebase.updateDocuments(path, items, ...conditions);
         Util.appendInfo(`${uid} batch update path:${path}, size:${_.size(result)} succeed`);
         return result;
-
     }
 
     /** 因為 == ,in, array-contains, not-in 這類的比較最多只能有10個, 所以得設計batch */
@@ -111,18 +104,19 @@ class CommonRemoteApi {
         const result = [];
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start fetch items in limitation with action = ${action} | fieldName = ${fieldName} | path:${path}, size:${valuesOfComparison.length}`);
-        if (_.isEqual('id', fieldName)) {
-            fieldName = this.getFieldNameOfDocumentId()
+        if (_.isEqual("id", fieldName)) {
+            fieldName = this.getFieldNameOfDocumentId();
         }
         while (_.size(valuesOfComparison) > 0) {
             const values = await this.fetchItems(path, {
-                type: 'where', params: [fieldName, action, Util.getSliceArrayWithMutate(valuesOfComparison, 10)]
-            })
+                type: "where",
+                params: [fieldName, action, Util.getSliceArrayWithMutate(valuesOfComparison, 10)]
+            });
             result.push(...values);
         }
         Util.appendInfo(`${uid} finish fetch items in limitation`);
         return result;
-    }
+    };
 
     async fetchSizeOfCollection(path) {
         return await firebase.fetchCountOfCollection(path);
@@ -130,14 +124,14 @@ class CommonRemoteApi {
 
     async submitItem(path, item, id) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} start submit item => path:${path}/${id ?? 'not set'}`);
+        Util.appendInfo(`${uid} start submit item => path:${path}/${id ?? "not set"}`);
         const obj = await firebase.submitDocument(path, item, id);
         Util.appendInfo(`${uid} succeed submit item => path:${path}/${obj.id}`);
         return {
             succeed: true,
             message: `set path:${path}/${obj.id} succeed`,
-            value: obj,
-        }
+            value: obj
+        };
     }
 
     async updateItem(path, item, id) {
@@ -148,8 +142,8 @@ class CommonRemoteApi {
         return {
             succeed: true,
             message: `update path:${path}/${id} succeed`,
-            value: item,
-        }
+            value: item
+        };
     }
 
     /** firestore transaction 的呼叫入口*/
@@ -213,17 +207,17 @@ class CommonRemoteApi {
                 /** 這種概念 {where:(stmt) => stmt.where('id','==','david')}*/
                 stmtOfFunction = Util.getObjectValue(condition);
                 switch (Util.getObjectKey(condition)) {
-                    case 'limit':
+                    case "limit":
                         priority = 1;
                         break;
-                    case 'startAt':
-                    case 'startAfter':
+                    case "startAt":
+                    case "startAfter":
                         priority = 2;
                         break;
-                    case 'orderBy':
-                        priority = 3
+                    case "orderBy":
+                        priority = 3;
                         break;
-                    case 'where':
+                    case "where":
                         priority = 4;
                         break;
                     default:
@@ -231,13 +225,13 @@ class CommonRemoteApi {
                 }
             } else if (_.isFunction(condition)) {
                 /** 這種概念 (stmt) => stmt.where('id','==','david') */
-                stmtOfFunction = condition
+                stmtOfFunction = condition;
             } else {
-                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`)
+                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`);
             }
-            raw.push({stmt: stmtOfFunction, priority})
+            raw.push({ stmt: stmtOfFunction, priority });
         }
-        return _.isEmpty(raw) ? [] : _.orderBy(raw, ['priority'], ['desc']).map((each) => each.stmt);
+        return _.isEmpty(raw) ? [] : _.orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
     }
 
     async fetchItem(path, id) {
@@ -256,7 +250,7 @@ class CommonRemoteApi {
         Util.appendInfo(`${uid} succeed delete items ${path}`);
     }
 
-    async submitObject(path, content, objName = 'field') {
+    async submitObject(path, content, objName = "field") {
         const uid = Util.getRandomHashV2(10);
         const commitment = content;
         path = this.getNormalizePathOfObjectApi(path);
@@ -292,14 +286,12 @@ class CommonRemoteApi {
     }
 
     getNormalizePathOfObjectApi(path) {
-        if (this.isCollectionPath(path))
-            return path;
-        else
-            return libpath.join(path, 'attrs');
+        if (this.isCollectionPath(path)) return path;
+        else return libpath.join(path, "attrs");
     }
 
     isCollectionPath(path) {
-        const segments = _.split(Util.getNormalizedStringNotStartWith(path, '/'), '/');
+        const segments = _.split(Util.getNormalizedStringNotStartWith(path, "/"), "/");
         return Util.isOdd(segments.length);
     }
 
@@ -315,7 +307,7 @@ class CommonRemoteApi {
         return await this.updateDocumentAtomically(path, predict, objName);
     }
 
-    async deleteObject(path, objName = 'contents') {
+    async deleteObject(path, objName = "contents") {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start delete object => path:/${path}/${objName}`);
@@ -328,14 +320,14 @@ class CommonRemoteApi {
         this.showLoadingView(view);
         Util.appendInfo(`restfulListenItem path:/${path}/${id}`);
         const functionOfUnsubscribe = this.listenItem(path, id, (status, data, error) => {
-            if (_.isEqual(status, 'server') && !Util.isUndefinedNullEmpty(data)) {
+            if (_.isEqual(status, "server") && !Util.isUndefinedNullEmpty(data)) {
                 self.closeLoadingView(view);
                 handler(data);
             } else {
                 this.closeLoadingView(view);
-                handler({status, message: `${error ? error.message : 'try not to handling'}`});
+                handler({ status, message: `${error ? error.message : "try not to handling"}` });
             }
-        })
+        });
         return functionOfUnsubscribe;
     }
 
@@ -346,8 +338,7 @@ class CommonRemoteApi {
      *
      * callback {status:[local|server|error|cache], changes:[...{document}], error:object }
      * */
-    listenItems(path, callback = (status, changes, error) => {
-    }, ...conditions) {
+    listenItems(path, callback = (status, changes, error) => {}, ...conditions) {
         Util.appendInfo(`15412313 listenItems path:/${path}`);
         return firebase.listenDocuments(path, callback, ...conditions);
     }
@@ -359,42 +350,38 @@ class CommonRemoteApi {
      * 回傳一個unsubscribe的function，需要要在componentDidUnmount的地方呼叫unsubscribe()
      * callback {status:[local|server|error|cache], changes: document, error:object }
      */
-    listenItem(path, id, callback = (status, data, error) => {
-    }) {
+    listenItem(path, id, callback = (status, data, error) => {}) {
         Util.appendInfo(`6347871 listenItem path:/${path}/${id}`);
         return firebase.listenDocument(path, id, callback);
     }
 
-    listenObject(path, objName, callback = (data, error) => {
-    }) {
+    listenObject(path, objName, callback = (data, error) => {}) {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`listenObject path:/${path}/${objName}`);
         return firebase.listenDocument(path, objName, callback);
     }
 
     showLoadingView(view) {
-        if (view !== undefined && view.setLoadingViewVisibility)
-            view.setLoadingViewVisibility(true);
+        if (view !== undefined && view.setLoadingViewVisibility) view.setLoadingViewVisibility(true);
     }
 
     closeLoadingView(view) {
         if (view !== undefined && view.setLoadingViewVisibility) {
             view.setLoadingViewVisibility(false);
         }
-
     }
 
     async fetchUserIsExist(uid) {
-        const result = await this.fetchItem('users', uid);
-        return result.exists
+        const result = await this.fetchItem("users", uid);
+        return result.exists;
     }
 
     async submitUserAsUid(uid) {
-        await this.updateItem('users', uid, {admin: true});
+        await this.updateItem("users", uid, { admin: true });
     }
 
     async submitUserExist(uid) {
-        await this.updateItem('users', uid, {exist: true})
+        await this.updateItem("users", uid, { exist: true });
     }
 
     async submitUserBeingAdmin(uid) {
@@ -402,19 +389,18 @@ class CommonRemoteApi {
     }
 
     async isAdminUser(uid = undefined) {
-        const user = await this.fetchItem('users', uid);
-        return user.exists && user.admin
+        const user = await this.fetchItem("users", uid);
+        return user.exists && user.admin;
     }
 
     handleCommitment(update, commitment, object) {
-        for (const key in commitment)
-            if (_.isUndefined(commitment[key]) || _.isNull(commitment[key])) delete commitment[key]
+        for (const key in commitment) if (_.isUndefined(commitment[key]) || _.isNull(commitment[key])) delete commitment[key];
 
         if (update) {
             for (const key in commitment) {
                 if (key in object) {
                     /** 保留屬性 */
-                } else if (_.isEqual(key, 'updateTime')) {
+                } else if (_.isEqual(key, "updateTime")) {
                     /** 保留屬性 */
                 } else {
                     delete commitment[key];
@@ -428,7 +414,7 @@ class CommonRemoteApi {
     }
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
-    async uploadStorageFile(blob, folder = 'public', fileNameExtension) {
+    async uploadStorageFile(blob, folder = "public", fileNameExtension) {
         return await firebase.uploadStorageFile(blob, folder, fileNameExtension);
     }
 
@@ -437,20 +423,20 @@ class CommonRemoteApi {
     }
 
     async fetchCountOfSpecificCondition(path, ...conditions) {
-        return firebase.fetchCountOfSpecificCondition(path, ...conditions)
+        return firebase.fetchCountOfSpecificCondition(path, ...conditions);
     }
 
     async fetchSumOfSpecificAttribute(path, attr, ...conditions) {
-        return firebase.fetchSumOfSpecificAttribute(path, attr, ...conditions)
+        return firebase.fetchSumOfSpecificAttribute(path, attr, ...conditions);
     }
 
     async fetchAverageOfSpecificAttribute(path, attr, ...conditions) {
-        return firebase.fetchAverageOfSpecificAttribute(path, attr, ...conditions)
+        return firebase.fetchAverageOfSpecificAttribute(path, attr, ...conditions);
     }
 
     //multi = [...{name: 'name', type: 'sum', attribute: 'attr'}]
     async fetchMultiResultOfSpecific(path, multi, ...conditions) {
-        return firebase.fetchMultiResultOfSpecific(path, multi, ...conditions)
+        return firebase.fetchMultiResultOfSpecific(path, multi, ...conditions);
     }
 
     /** realtime database method 想開發成為preference的概念

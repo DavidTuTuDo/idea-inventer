@@ -1,14 +1,10 @@
 const edit = true;
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import React from "react";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
+import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
@@ -21,11 +17,11 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     constructor(props) {
         super(props);
-        this.registerScrollToBottomJob(this.getStore().fetch)
+        this.registerScrollToBottomJob(this.getStore().fetch);
     }
 
     isValidOfParamOfTypeOfTab(string) {
-        return Util.containsBy(['all', 'completed', 'pending', 'failure'], string);
+        return Util.containsBy(["all", "completed", "pending", "failure"], string);
     }
 
     onEpayPurchaseOfHistoryTabTabClicked(param) {
@@ -33,7 +29,6 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) {
             Router.gotoEpayPurchaseOfHistoryPage(this, tab.getType());
         }
-
     }
 
     componentDidMount() {
@@ -43,11 +38,11 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButton(areaOfTop) {
         const order = areaOfTop.getParentNode();
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(), 'waiting', 'pending'));
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(), "waiting", "pending"));
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv(order) {
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getProcessOfPayment(), 'atm', 'cvs'), true);
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getProcessOfPayment(), "atm", "cvs"), true);
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfFuncDiv(order) {
@@ -55,29 +50,28 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
          * 1. linepay 未付款
          * 2. 未選擇付款方式
          * */
-        return Util.getVisibleOrNone(this.isWaitingPendingState(order)
-            && Util.or(this.isUnknownOrder(order), this.isWaitingToLinePay(order)));
+        return Util.getVisibleOrNone(this.isWaitingPendingState(order) && Util.or(this.isUnknownOrder(order), this.isWaitingToLinePay(order)));
     }
 
     /** 沒有選擇付費方式的order(下完訂單就把頁面關掉)*/
     isUnknownOrder(order) {
-        return _.isEqual(order.getTypeOfPayment(), 'unknown');
+        return _.isEqual(order.getTypeOfPayment(), "unknown");
     }
 
     /** 還沒付費的linepay order(走到Line-Pay,把付費頁面關掉) */
     isWaitingToLinePay(order) {
-        return _.isEqual(order.getTypeOfPayment(), 'linepay') && _.isEqual(order.getStateOfPayment(), 'waiting')
+        return _.isEqual(order.getTypeOfPayment(), "linepay") && _.isEqual(order.getStateOfPayment(), "waiting");
     }
 
     isWaitingPendingState(order) {
-        return _.isEqual(order.getStateOfPayment(), 'pending') || _.isEqual(order.getStateOfPayment(), 'waiting')
+        return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), "waiting");
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonDeleteOrderClicked(param) {
         return async () => {
             const order = param.object.getParentNode();
             await this.remoteCancelUnpaidPreciseOrderBehavior(order.raw.id);
-        }
+        };
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopExtraIconButtonUpdateRemarkClicked(param) {
@@ -85,7 +79,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
             const order = param.object.getParentNode();
             const latestRemarkOfOrder = order.getAreaOfInputMessage().getValue();
             await this.remoteUpdateOrderRemarkBehavior(order.raw.id, latestRemarkOfOrder);
-        }
+        };
     }
 
     async remoteUpdateOrderRemarkBehavior(idOfPreciseOrder, remarkOfPreciseOrder) {
@@ -97,21 +91,21 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     async remoteCancelUnpaidPreciseOrderBehavior(idOfPreciseOrder) {
-        const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), {idOfPreciseOrder});
-        Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(), 'failure');
+        const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder });
+        Router.gotoEpayPurchaseOfHistoryPage(this.getComponentInstance(), "failure");
     }
 
     getAreaOfPaymentDeadlineDeadline(areaOfPaymentDeadline) {
         const order = areaOfPaymentDeadline.getParentNode();
 
         switch (order.getStateOfPayment()) {
-            case 'pending':
+            case "pending":
                 return areaOfPaymentDeadline.getDeadline();
-            case 'waiting':
+            case "waiting":
                 return areaOfPaymentDeadline.getDeadline();
-            case 'completed':
+            case "completed":
                 return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
-            case 'failure':
+            case "failure":
                 return Util.getCurrentTimeFormatV2(order.getTimeOfCreate());
         }
         return areaOfPaymentDeadline.getDeadline();
@@ -120,25 +114,25 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     getAreaOfPaymentDeadlineLabelOfDeadline(areaOfPaymentDeadline) {
         const order = areaOfPaymentDeadline.getParentNode();
         switch (order.getStateOfPayment()) {
-            case 'pending':
-            case 'waiting':
-                return "截止時間："
-            case 'completed':
-                return "完成時間："
-            case 'failure':
-                return "訂單時間："
+            case "pending":
+            case "waiting":
+                return "截止時間：";
+            case "completed":
+                return "完成時間：";
+            case "failure":
+                return "訂單時間：";
         }
         return areaOfPaymentDeadline.getLabelOfDeadline();
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv(order) {
-        const condition1 = Util.isOrEquals(order.getStateOfPayment(), 'pending', 'waiting');
-        const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), 'atm', 'cvs')
+        const condition1 = Util.isOrEquals(order.getStateOfPayment(), "pending", "waiting");
+        const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), "atm", "cvs");
         return Util.getVisibleOrNone(condition1 && condition2, true);
     }
 
     getInjectStyleOfEpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual('failure', order.getStateOfPayment()), true);
+        return Util.getVisibleOrNone(_.isEqual("failure", order.getStateOfPayment()), true);
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButtonClicked(param) {
@@ -152,24 +146,23 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     onEpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconButtonClicked(param) {
         const ref = param.object;
         const order = ref.getParentNode().getParentNode();
-        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.infoOfPayment))
+        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.infoOfPayment));
     }
 
     onEpayPurchaseOfHistoryOrderAreaOfTopCopyIdIconButtonClicked(param) {
         const ref = param.object;
         const order = ref.getParentNode();
-        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.id))
+        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.id));
     }
 
     getInjectPropsOfEpayPurchaseOfHistoryOrderAreaOfInputMessageValueTextField(areaOfInputMessage) {
         const order = areaOfInputMessage.getParentNode();
         return {
             InputProps: {
-                readOnly: Util.isOrEquals(order.getStateOfPayment(), 'completed', 'failure'),
+                readOnly: Util.isOrEquals(order.getStateOfPayment(), "completed", "failure")
             }
-        }
+        };
     }
-
 }
 
 export default ModularizedEpayFootprintComponent;

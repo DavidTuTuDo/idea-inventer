@@ -10,13 +10,13 @@ import libpath from "path";
 import ModularizedMyI18n from "./ModularizedMyI18n";
 
 class I18n extends ModularizedMyI18n {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
     infoOfCopyRightUpperGroupLeftAreaContact = "聯絡莎夏";
 

@@ -1,25 +1,23 @@
 const edit = true;
 
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
 import BaseDionysusCartieComponent from "./BaseDionysusCartieComponent";
 
 class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
-
-  constructor(props) {
+    constructor(props) {
         super(props);
         const self = this;
     }
 
-
     onDionysusCartieBriefIncreaseIconButtonClicked(param) {
-        const brief = param.object
+        const brief = param.object;
         this.getStore().validateCountOfOrder(brief);
     }
 
     onDionysusCartieBriefDecreaseIconButtonClicked(param) {
-        const brief = param.object
+        const brief = param.object;
         this.getStore().validateCountOfOrder(brief, false);
     }
 
@@ -47,7 +45,7 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
 
     getBriefPriceB4Discount(brief) {
         const origin = super.getBriefPriceB4Discount(brief);
-        return `＄${origin}`
+        return `＄${origin}`;
     }
 }
 

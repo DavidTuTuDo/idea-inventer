@@ -1,21 +1,15 @@
-const edit = true
+const edit = true;
 
-import {
-    utiller as Util,
-} from "utiller";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
-import firebaser from './FirebaseHelper'
-import Cookie from '../cookie';
-import Configer from '../config';
-import {
-    makeObservable,
-    action,
-    observable,
-} from "mobx";
+import firebaser from "./FirebaseHelper";
+import Cookie from "../cookie";
+import Configer from "../config";
+import { makeObservable, action, observable } from "mobx";
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
-import {Application} from "../";
+import { Application } from "../";
 import CommonPoolHelper from "./CommonPoolHelper";
 
 class UserInfo {
@@ -54,23 +48,23 @@ class UserInfo {
     }
 
     onAuthStateChangedReceive = (user) => {
-        Util.appendInfo('4565231213 收到authStateChanged 通知，我改變了 =>', user)
-        this.specificBehaviorOfLoginStateChange(user).then()
-    }
+        Util.appendInfo("4565231213 收到authStateChanged 通知，我改變了 =>", user);
+        this.specificBehaviorOfLoginStateChange(user).then();
+    };
 
     /** 拿cookie的token去換到登入資訊然後呼叫emitAuthStateChanged之後的行為 */
     async specificBehaviorOfLoginStateChange(user) {
-        let current = '';
+        let current = "";
         if (this.isValidUser(user)) {
             Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
             CommonPoolHelper.enableParallelMode();
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
             current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
-            if (!current.exists) await this.apiOfUser.submitUserItem(Application.getLatestComponent(), {...user, id: user.uid}, user.uid);
+            if (!current.exists) await this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid);
             else await this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid);
             Cookie.setUser(user);
-            Util.appendInfo('登入成功, 所以寫入資料')
-            Util.appendInfo('user info:', user);
+            Util.appendInfo("登入成功, 所以寫入資料");
+            Util.appendInfo("user info:", user);
         } else {
             Util.appendInfo(`73812711238 => 在firebase-authentication不存在裡了，無差別清理掉髒東西`);
             Cookie.removeUser();
@@ -82,7 +76,7 @@ class UserInfo {
 
     @action
     invalidateLoginState(user) {
-        Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`)
+        Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`);
         CommonPoolHelper.enableParallelMode();
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
@@ -108,11 +102,10 @@ class UserInfo {
         if (!_.isEmpty(uid)) return uid;
         if (allowCache) {
             const user = Cookie.getUser();
-            if (Util.exist(user))
-                uid = user.uid;
+            if (Util.exist(user)) uid = user.uid;
             if (!_.isEmpty(uid)) return uid;
         }
-        return 'empty';
+        return "empty";
     }
 
     performLoginBehavior = async (view) => {
@@ -124,7 +117,7 @@ class UserInfo {
 
         const func = async () => {
             await this.executeAsyncTask(async () => {
-                Util.appendInfo('4548411231, user click login（google account only）');
+                Util.appendInfo("4548411231, user click login（google account only）");
                 try {
                     await firebaser.signInWithGoogle(async (authResult) => {
                         /** 只有在登入傳回直裡面有credential */
@@ -134,21 +127,19 @@ class UserInfo {
                             Util.appendInfo(`4548414, didn't retrieve credential`);
                             self.setAuthProcessing(false);
                         }
-                    }, view)
+                    }, view);
                 } catch (error) {
                     Util.appendError(`${error.message}`);
                     self.setAuthProcessing(false);
                 }
-            })
+            });
         };
         await this.authProcessBehavior(func);
-    }
+    };
 
     async executeAsyncTask(task, view) {
-        if (view instanceof BaseComponent)
-            await view.executeAsyncTaskWithLoading(task)
-        else
-            await task();
+        if (view instanceof BaseComponent) await view.executeAsyncTaskWithLoading(task);
+        else await task();
     }
 
     async authProcessBehavior(functionOfAsyncTask) {
@@ -159,11 +150,11 @@ class UserInfo {
     async logout(view) {
         const func = async () => {
             await this.executeAsyncTask(async () => {
-                Util.appendInfo('45d4741, logout executed');
+                Util.appendInfo("45d4741, logout executed");
                 await firebaser.logout();
-                Application.getAccountStore().clean()
+                Application.getAccountStore().clean();
             }, view);
-        }
+        };
         await this.authProcessBehavior(func);
     }
 
@@ -178,44 +169,44 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({idOfBooze = '', idOfOption = '', idOfChoice = '', count}) => {
-        Util.appendInfo({idOfBooze, idOfOption, count});
+    joinItemToCart = ({ idOfBooze = "", idOfOption = "", idOfChoice = "", count }) => {
+        Util.appendInfo({ idOfBooze, idOfOption, count });
         const infoOfCartie = Cookie.getInfoOfCartie();
-        const key = [idOfBooze, _.toString(idOfOption), _.toString(idOfChoice)].filter(each => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
+        const key = [idOfBooze, _.toString(idOfOption), _.toString(idOfChoice)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
-        Util.appendInfo({idOfBooze, idOfOption, count, key});
+        Util.appendInfo({ idOfBooze, idOfOption, count, key });
 
         if (object) object.count = object.count + count;
-        else infoOfCartie[key] = {idOfBooze, idOfOption, idOfChoice, count, idOfCookieUsage: key};
-        Cookie.setInfoOfCartie(infoOfCartie)
-        this.invalidateCartie(infoOfCartie)
-    }
+        else infoOfCartie[key] = { idOfBooze, idOfOption, idOfChoice, count, idOfCookieUsage: key };
+        Cookie.setInfoOfCartie(infoOfCartie);
+        this.invalidateCartie(infoOfCartie);
+    };
 
-    updateItemToCart({key, count, checked}) {
+    updateItemToCart({ key, count, checked }) {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const item = infoOfCartie[key];
         if (item) {
             item.count = _.toNumber(count);
             item.checked = checked;
         }
-        Cookie.setInfoOfCartie(infoOfCartie)
-        this.invalidateCartie(infoOfCartie)
+        Cookie.setInfoOfCartie(infoOfCartie);
+        this.invalidateCartie(infoOfCartie);
     }
 
     deleteItemFromCart(key) {
         const infoOfCartie = Cookie.getInfoOfCartie();
         delete infoOfCartie[key];
-        Cookie.setInfoOfCartie(infoOfCartie)
+        Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     }
 
     deleteCheckedCartieItemBehavior() {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const latest = _.filter(infoOfCartie, (each) => !each.checked);
-        const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest, 'idOfCookieUsage')
+        const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest, "idOfCookieUsage");
         Cookie.setInfoOfCartie(latestOfInfoOfCartie);
         Cookie.removeTotalPriceOfCartie();
-        Cookie.removeInfoOfSelectedTransport()
+        Cookie.removeInfoOfSelectedTransport();
         this.invalidateCartie(latest);
     }
 
@@ -230,7 +221,7 @@ class UserInfo {
     }
 
     deleteWholeItemFromCart() {
-        Cookie.removeInfoOfCartie()
+        Cookie.removeInfoOfCartie();
         this.invalidateCartie();
     }
 
@@ -254,19 +245,18 @@ class UserInfo {
 
     invalidateCartie = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
-        const countsOfBadge = _.sum(_.values(infoOfCartie).map(info => info.count));
+        const countsOfBadge = _.sum(_.values(infoOfCartie).map((info) => info.count));
         Application.getNavigatorStore().setBadgeOfCartie(countsOfBadge);
-    }
+    };
 
     setGotoCartieDirect(enable = false) {
-        Cookie.setGotoCartieDirectly(enable ? 'true' : '');
+        Cookie.setGotoCartieDirectly(enable ? "true" : "");
     }
 
     isGotoCartieDirect() {
         const result = Cookie.getGotoCartieDirectly();
         return !Util.isUndefinedNullEmpty(result);
     }
-
 }
 
 export default new UserInfo();

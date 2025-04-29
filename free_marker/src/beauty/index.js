@@ -47,17 +47,31 @@ export default class PrettierRunner {
       return;
     }
 
-    console.log(`✨ Prettier 將格式化 ${allFiles.length} 筆檔案，分批大小為 ${batchSize}...`);
+    const targetFiles = _.filter(allFiles, (file) => !file.endsWith('.less'));
 
-    const fileBatches = _.chunk(allFiles, batchSize);
+    if (_.isEmpty(targetFiles)) {
+      console.log(`📂 沒有找到可格式化的檔案（排除 .less）於 ${this.targetPath}`);
+      return;
+    }
 
-    for (let i = 0; i < fileBatches.length; i++) {
-      const batch = fileBatches[i];
-      const fileList = batch.map(f => `"${f}"`).join(' ');
+    console.log(`✨ Prettier 將格式化 ${targetFiles.length} 筆檔案（已排除 .less），分批大小為 ${batchSize}...`);
+
+    const fileBatches = _.chunk(targetFiles, batchSize);
+
+    for (const [i, batch] of fileBatches.entries()) {
+      const fileList = batch.map((f) => `"${f}"`).join(' ');
       console.log(`📦 處理第 ${i + 1} 批，共 ${fileBatches.length} 批，檔案數：${batch.length}`);
 
+      const prettierOptions = [
+        '--write',
+        '--bracket-same-line',
+        '--print-width 180',
+        '--trailing-comma none',
+        '--tab-width 4'
+      ];
+
       try {
-        const { stdout, stderr } = await execAsync(`npx prettier --write ${fileList}`);
+        const { stdout, stderr } = await execAsync(`npx prettier ${prettierOptions.join(' ')} ${fileList}`);
         if (stdout) console.log(stdout);
         if (stderr) console.error(stderr);
       } catch (error) {

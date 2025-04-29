@@ -4,7 +4,6 @@ import BaseInfoOfCopyRightComponent from "./BaseInfoOfCopyRightComponent";
 import Router from "../../router";
 
 class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
-
     constructor(props) {
         super(props);
     }
@@ -24,9 +23,7 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
 
     onInfoOfCopyRightGroupOfSocialMediaLineIconButtonClicked(param) {
         this.invokeLineApp(this.getStore().getLine());
-
     }
-
 }
 
 export default ModularizedInfoOfCopyRightComponent;

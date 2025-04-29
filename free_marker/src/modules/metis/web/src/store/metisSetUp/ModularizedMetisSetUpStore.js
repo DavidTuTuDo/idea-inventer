@@ -1,12 +1,11 @@
 const edit = true;
 
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import BaseMetisSetUpStore from "./BaseMetisSetUpStore";
-import Clazz from '../metisClazz';
+import Clazz from "../metisClazz";
 
 class ModularizedMetisSetUpStore extends BaseMetisSetUpStore {
-
     constructor(props) {
         super(props);
         this.api = new Clazz();
@@ -14,16 +13,15 @@ class ModularizedMetisSetUpStore extends BaseMetisSetUpStore {
 
     async fetch(view = this.getComponent()) {
         const result = {
-            ...{},
+            ...{}
         };
         await new InfinitePool(2).runByEachTask([
             async () => {
                 result.clazzes = await this.api.fetchClazzes(this.getComponent()); /** prepare with default value */
-                ;
             },
             async () => {
                 result.append = this.append /** prepare with default value */;
-            },
+            }
         ]);
         this.fromJson(result);
         return result;
@@ -46,7 +44,6 @@ class ModularizedMetisSetUpStore extends BaseMetisSetUpStore {
         const clazz = await this.api.submitClazzItem();
         this.pushClazzesByIndex(-1, clazz.value);
     }
-
 }
 
 export default ModularizedMetisSetUpStore;

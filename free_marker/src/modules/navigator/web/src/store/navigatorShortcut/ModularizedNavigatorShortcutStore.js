@@ -13,28 +13,28 @@ import { makeAutoObservable, makeObservable, action, observable, comparer, compu
 import BaseNavigatorShortcutStore from "./BaseNavigatorShortcutStore";
 
 class ModularizedNavigatorShortcutStore extends BaseNavigatorShortcutStore {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  isSubOpen() {
-    return this.getOpen() === 1;
-  }
+    isSubOpen() {
+        return this.getOpen() === 1;
+    }
 
-  @action
-  setSubOpen(open) {
-    this.setOpen(open ? 1 : 0);
-  }
+    @action
+    setSubOpen(open) {
+        this.setOpen(open ? 1 : 0);
+    }
 
-  hasSubItems() {
-    return this.getSubs().length > 0;
-  }
+    hasSubItems() {
+        return this.getSubs().length > 0;
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedNavigatorShortcutStore;

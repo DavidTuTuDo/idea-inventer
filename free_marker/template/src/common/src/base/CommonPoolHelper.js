@@ -1,9 +1,7 @@
 const edit = true;
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from 'utiller';
-
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 
 class CommonPoolHelper {
-
     constructor() {
         this.queues = {};
         this.paralledMode = false;
@@ -14,7 +12,7 @@ class CommonPoolHelper {
         this.queues[`functions`].enableTaskTimeout(true, 60000);
     }
 
-    async submitTo(queueName, async_func, priority = `low`, taskName = 'noName') {
+    async submitTo(queueName, async_func, priority = `low`, taskName = "noName") {
         const result = await this.queues[queueName].addTaskAndWait4Result(async_func, priority, taskName);
         return result;
     }
@@ -25,8 +23,7 @@ class CommonPoolHelper {
             this.queues[queueName].setWorker(15);
         }
         this.paralledMode = true;
-        Util.appendInfo('45642123132 set pool helper parallel mode succeed!');
-
+        Util.appendInfo("45642123132 set pool helper parallel mode succeed!");
     }
 
     isParallelMode() {
@@ -39,7 +36,6 @@ class CommonPoolHelper {
             delete this.queues[queueName];
         }
     }
-
 }
 
 export default new CommonPoolHelper();

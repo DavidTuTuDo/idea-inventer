@@ -1,20 +1,13 @@
 const edit = true;
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import i18n from "../../i18n";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
-import Config from "../../config";
+
+import { utiller as Util } from "utiller";
 import Router from "../../router";
-import Cookie from "../../cookie";
 import BaseDionysusComponent from "./BaseDionysusComponent";
 
 class ModularizedDionysusComponent extends BaseDionysusComponent {
-
     constructor(props) {
         super(props);
+        /** cool man */
     }
 
     getBoozePhotoOfHead(booze) {
@@ -36,7 +29,10 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
         const select = param.object;
         if (param.changed) {
             self.scrollToTop();
-            Util.syncDelay(1).then(() => this.getStore().fetchBoozeBySelectedTab().then())
+            this.getStore().setHasPageItems(true);
+            Util.syncDelay(1)
+                .then(() => this.getStore().fetchBoozeBySelectedTab())
+                .then(() => self.invalidateNextPageBehavior());
         }
     }
 }

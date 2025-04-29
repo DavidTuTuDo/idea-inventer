@@ -1,16 +1,14 @@
-import _ from 'lodash';
+import _ from "lodash";
 import React from "react";
 
 class BaseView extends React.Component {
-
     handleTextString(object) {
-        if(typeof object === 'string') {
-            return object
+        if (typeof object === "string") {
+            return object;
         } else {
-            return _.toString(object)
+            return _.toString(object);
         }
     }
-
 }
 
-export default BaseView
+export default BaseView;

@@ -6,28 +6,26 @@ import Booze from "../dionysusBooze";
 import BaseDionysusStore from "./BaseDionysusStore";
 
 class ModularizedDionysusStore extends BaseDionysusStore {
+    constructor(props) {
+        super(props);
+        this.api = new Booze();
+    }
 
-  constructor(props) {
-    super(props);
-    this.api = new Booze();
-  }
+    fetchBoozeBySelectedTab = async () => {
+        this.cleanBoozes();
+        this.cleanBoozeConditions();
+        this.setHasPageItems(true);
+        this.cleanBoozeNextIds();
+        this.lastItemOfBooze = undefined;
 
-  fetchBoozeBySelectedTab = async () => {
-    this.cleanBoozes();
-    this.cleanBoozeConditions();
-    this.setHasPageItems(true);
-    this.cleanBoozeNextIds();
-    this.lastItemOfBooze = undefined;
+        const valueOfCurrentTab = this.getValueOfSelectClickedTab();
+        if (valueOfCurrentTab > 0) this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectClickedTab()] });
+        await Util.syncDelay(20);
+        await this.fetch(this.getComponent());
 
-    const valueOfCurrentTab = this.getValueOfSelectClickedTab();
-    if(valueOfCurrentTab > 0)
-      this.pushBoozeConditions({type: 'where', params: ['valueOfType', '==', this.getValueOfSelectClickedTab()]});
-    await Util.syncDelay(20);
-    await this.fetch(this.getComponent());
-
-    // const boozes = await this.fetchBoozes(this.getComponent());
-    // this.pushBoozes(...boozes);
-  }
+        // const boozes = await this.fetchBoozes(this.getComponent());
+        // this.pushBoozes(...boozes);
+    };
 }
 
 export default ModularizedDionysusStore;

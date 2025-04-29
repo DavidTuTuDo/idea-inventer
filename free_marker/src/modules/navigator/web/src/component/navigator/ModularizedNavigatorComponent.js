@@ -1,28 +1,18 @@
 const edit = true;
 
-import {observer, inject} from "mobx-react";
+import { observer, inject } from "mobx-react";
 import BaseNavigatorComponent from "./BaseNavigatorComponent";
-import Router from '../../router';
-import {utiller as Util} from "utiller";
-import UserInfo from '../../base/BaseUserInfo';
+import Router from "../../router";
+import { utiller as Util } from "utiller";
+import UserInfo from "../../base/BaseUserInfo";
 import React from "react";
-import {
-    List,
-    ListItemText,
-    IconButton,
-    ListItemIcon,
-    ListItem,
-    Typography,
-    Avatar
-} from '@mui/material';
-import Collapse from '@mui/material/Collapse';
-import _ from 'lodash';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import { List, ListItemText, IconButton, ListItemIcon, ListItem, Typography, Avatar } from "@mui/material";
+import Collapse from "@mui/material/Collapse";
+import _ from "lodash";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
 import BaseUserInfo from "../../base/BaseUserInfo";
 
-
 class ModularizedNavigatorComponent extends BaseNavigatorComponent {
-
     constructor(props) {
         super(props);
     }
@@ -48,116 +38,108 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     onNavigatorMenuIconButtonClicked(param) {
-        this.setDrawerOpenState(true)
+        this.setDrawerOpenState(true);
     }
 
     getDrawerOpenStatus() {
         return this.getStore().getDrawerOpenStatus();
     }
 
-    NavigatorDrawerShortcutView = observer(({shortcut}) => {
+    NavigatorDrawerShortcutView = observer(({ shortcut }) => {
         const self = this;
         const DrawerShortcutCollapseView = self.DrawerShortcutCollapseView;
         const ListItemTailIconView = self.ListItemTailIconView;
         const ListItemIconView = self.ListItemIconView;
         return (
             <React.Fragment>
-                <ListItem
-                    className={'BaseShortcutItemView'}
-                    button={true}
-                    onClick={() => self.handleShortcutClicked(shortcut)}>
-                    <ListItemIconView img={shortcut.icon}/>
-                    <ListItemText
-                        disableTypography
-                        primary={<Typography
-                            className={'BaseShortcutItemTextView'}>{shortcut.getTitle()}</Typography>}/>
-                    <ListItemTailIconView shortcut={shortcut}/>
+                <ListItem className={"BaseShortcutItemView"} button={true} onClick={() => self.handleShortcutClicked(shortcut)}>
+                    <ListItemIconView img={shortcut.icon} />
+                    <ListItemText disableTypography primary={<Typography className={"BaseShortcutItemTextView"}>{shortcut.getTitle()}</Typography>} />
+                    <ListItemTailIconView shortcut={shortcut} />
                 </ListItem>
 
-                <DrawerShortcutCollapseView shortcut={shortcut}/>
+                <DrawerShortcutCollapseView shortcut={shortcut} />
             </React.Fragment>
         );
     });
 
-    ListItemIconView = observer(({img = ''}) => {
+    ListItemIconView = observer(({ img = "" }) => {
         const self = this;
-        const words = img.split(':');
+        const words = img.split(":");
         const type = _.head(words).trim();
         const MUIconView = self.MUIconView;
         let content = null;
         switch (type) {
-            case'path':
+            case "path":
                 const iconPath = _.last(words);
-                content = <Avatar
-                    className={'BaseShortcutItemAvatarView'}
-                    src={iconPath}/>
+                content = <Avatar className={"BaseShortcutItemAvatarView"} src={iconPath} />;
                 break;
-            case 'muIcon':
+            case "muIcon":
                 const muIcon = _.last(words);
-                content = <Avatar className={'BaseShortcutItemAvatarView'}> <MUIconView name={muIcon}/> </Avatar>
+                content = (
+                    <Avatar className={"BaseShortcutItemAvatarView"}>
+                        {" "}
+                        <MUIconView name={muIcon} />{" "}
+                    </Avatar>
+                );
                 break;
             default:
-                content = <Avatar className={'BaseShortcutItemAvatarView'}> <MUIconView/> </Avatar>
+                content = (
+                    <Avatar className={"BaseShortcutItemAvatarView"}>
+                        {" "}
+                        <MUIconView />{" "}
+                    </Avatar>
+                );
                 break;
         }
-        return (<ListItemIcon
-            className={'BaseShortcutItemIconView'}>
-            {content} </ListItemIcon>)
-    })
+        return <ListItemIcon className={"BaseShortcutItemIconView"}>{content} </ListItemIcon>;
+    });
 
-
-
-    DrawerShortcutCollapseView = observer(({shortcut}) => {
+    DrawerShortcutCollapseView = observer(({ shortcut }) => {
         const self = this;
         const DrawerShortcutView = self.NavigatorDrawerShortcutView;
         const subs = shortcut.getSubs();
         if (!shortcut.hasSubItems()) return null;
         return (
-            <Collapse
-                className={'BaseShortcutCollapseView'}
-                in={shortcut.isSubOpen()} timeout="auto" unmountOnExit>
-                <List
-                    className={'BaseShortcutNestedListView'}
-                    component="div" disablePadding>
-                    {subs.map(shortcut => <DrawerShortcutView
-                        key={shortcut.getIdOfUniqueView()}
-                        shortcut={shortcut}/>)}
+            <Collapse className={"BaseShortcutCollapseView"} in={shortcut.isSubOpen()} timeout="auto" unmountOnExit>
+                <List className={"BaseShortcutNestedListView"} component="div" disablePadding>
+                    {subs.map((shortcut) => (
+                        <DrawerShortcutView key={shortcut.getIdOfUniqueView()} shortcut={shortcut} />
+                    ))}
                 </List>
             </Collapse>
-
         );
     });
 
-    ListItemTailIconView = observer(({shortcut}) => {
+    ListItemTailIconView = observer(({ shortcut }) => {
         const self = this;
         const MUIconView = self.MUIconView;
         if (!shortcut.hasSubItems()) return null;
         return (
             <ListItemSecondaryAction>
-                <IconButton
-                    className={'BaseShortcutItemIconView'}
-                    edge="end" aria-label="delete">
-                    {shortcut.isSubOpen() ? <MUIconView name={`ExpandLess`}/> : <MUIconView name={'ExpandMore'}/>}
+                <IconButton className={"BaseShortcutItemIconView"} edge="end" aria-label="delete">
+                    {shortcut.isSubOpen() ? <MUIconView name={`ExpandLess`} /> : <MUIconView name={"ExpandMore"} />}
                 </IconButton>
-            </ListItemSecondaryAction>)
-    })
+            </ListItemSecondaryAction>
+        );
+    });
 
     handleShortcutClicked = (shortcut) => {
         if (shortcut.hasSubItems()) {
-            shortcut.setSubOpen(!shortcut.isSubOpen())
+            shortcut.setSubOpen(!shortcut.isSubOpen());
         } else {
             /** route to page or doing something */
             this.setDrawerOpenState(false);
             this.handleCustomRouter(shortcut.getRoute());
         }
-    }
+    };
 
     onNavigatorInputOfCompleteTextFieldSearchPressed(input, toolBar) {
         /** 先判斷autoComplete 有沒有selectedItem()
          *
          * 沒有的話再用 getInput() 去搜尋
          * */
-        this.disappearKeyboard()
+        this.disappearKeyboard();
         const selected = this.getStore().getSuggestKeywordDetail();
 
         if (!Util.isUndefinedNullEmpty(selected) && selected.data) {
@@ -165,26 +147,25 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
             this.onSearchPressed(data);
             this.getStore().clearKeywordDetail();
         } else {
-            this.onSearchPressed(toolBar.getComplete())
+            this.onSearchPressed(toolBar.getComplete());
         }
     }
 
     /** content 可能是string | {suggestedObject}*/
     onSearchPressed(content) {
         Util.appendInfo("onSearchPressed not implemented");
-
     }
 
     getInjectStyleOfNavigatorAccountIconButton() {
-        return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(),true);
+        return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(), true);
     }
 
     getInjectStyleOfNavigatorLoginIconButton(toolBar) {
-        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing() ,true);
+        return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing(), true);
     }
 
     getInjectStyleOfNavigatorTipOfLoadingCircularProgress(toolBar) {
-        return Util.getVisibleOrNone(UserInfo.isAuthProcessing() ,true);
+        return Util.getVisibleOrNone(UserInfo.isAuthProcessing(), true);
     }
 
     onNavigatorCartieIconButtonClicked(param) {
@@ -192,10 +173,8 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorCartieIconButton(toolBar) {
-        return Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0,true);
+        return Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0, true);
     }
-
-
 }
 
-export default ModularizedNavigatorComponent
+export default ModularizedNavigatorComponent;

@@ -1,144 +1,143 @@
 const edit = true;
-import {utiller as Util, exceptioner as ERROR} from 'utiller';
-import _ from 'lodash';
-import Moment from 'moment';
-import libpath from 'path';
+import { utiller as Util, exceptioner as ERROR } from "utiller";
+import _ from "lodash";
+import Moment from "moment";
+import libpath from "path";
 import CommonPoolHelper from "./CommonPoolHelper";
 import CommonRemoteApi from "./CommonRemoteApi";
 import BaseComponent from "./BaseComponent";
 import firebase from "./FirebaseHelper";
 
 class ClientRemoteApi extends CommonRemoteApi {
-
     constructor(props) {
         super(props);
     }
 
     normalizeTimestamp(obj) {
-        if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis(); else return obj;
+        if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis();
+        else return obj;
     }
 
     async submitItem(path, object, id) {
         const _async = async () => super.submitItem(path, object, id);
-        return await CommonPoolHelper.submitTo('submit', _async, );
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async submitItems(path, ...objects) {
         const _async = async () => super.submitItems(path, ...objects);
-        return await CommonPoolHelper.submitTo('submit', _async);
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async fetchIdsOfDocument(path) {
         const _async = async () => super.fetchIdsOfDocument(path);
-        return await CommonPoolHelper.submitTo('fetch', _async);
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     async fetchSizeOfCollection(path) {
         const _async = async () => super.fetchSizeOfCollection(path);
-        return await CommonPoolHelper.submitTo('fetch', _async);
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     async fetchCountOfSpecificCondition(path, ...conditions) {
         const _async = async () => super.fetchCountOfSpecificCondition(path, ...conditions);
-        return await CommonPoolHelper.submitTo('fetch', _async);
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     async fetchSumOfSpecificAttribute(path, attr, ...conditions) {
         const _async = async () => super.fetchSumOfSpecificAttribute(path, attr, ...conditions);
-        return await CommonPoolHelper.submitTo('fetch', _async);
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     async fetchAverageOfSpecificAttribute(path, attr, ...conditions) {
-        const _async = async () => super.fetchAverageOfSpecificAttribute(path, attr, ...conditions)
-        return await CommonPoolHelper.submitTo('fetch', _async);
+        const _async = async () => super.fetchAverageOfSpecificAttribute(path, attr, ...conditions);
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     //multi = [...{name: 'name', type: 'sum', attribute: 'attr'}]
     async fetchMultiResultOfSpecific(path, multi, ...conditions) {
         const _async = async () => super.fetchMultiResultOfSpecific(path, multi, ...conditions);
-        return await CommonPoolHelper.submitTo('fetch', _async);
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     async updateItem(path, item, id) {
         const _async = async () => super.updateItem(path, item, id);
-        return await CommonPoolHelper.submitTo('submit', _async);
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async updateItems(path, items, ...conditions) {
         const _async = async () => super.updateItems(path, items, ...conditions);
-        return await CommonPoolHelper.submitTo('submit', _async);
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
-
 
     async deleteItem(path, item) {
         const _async = async () => super.deleteItem(path, item);
-        return await CommonPoolHelper.submitTo('submit', _async);
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async deleteItems(path, whole, ...conditions) {
         const _async = async () => super.deleteItems(path, whole, ...conditions);
-        return await CommonPoolHelper.submitTo('submit', _async);
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async submitObject(path, object, objName) {
         const _async = async () => super.submitObject(path, object, objName);
-        return await CommonPoolHelper.submitTo('submit', _async);
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async fetchObject(path, objName) {
         const _async = async () => super.fetchObject(path, objName);
-        return await CommonPoolHelper.submitTo('fetch', _async)
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     async modifyItemsOfPaginate(path, job = async (items) => {}, conditions, size) {
         const _async = async () => super.modifyItemsOfPaginate(path, job, conditions, size);
-        return await CommonPoolHelper.submitTo('fetch', _async)
+        return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async fetchItems(path, ...conditions) {
         const asyncTask = async () => super.fetchItems(path, ...conditions);
-        return await CommonPoolHelper.submitTo('fetch', asyncTask);
+        return await CommonPoolHelper.submitTo("fetch", asyncTask);
     }
 
     async updateObject(path, objName, updatedObject) {
         const asyncTask = async () => super.updateObject(path, objName, updatedObject);
-        return await CommonPoolHelper.submitTo('submit', asyncTask)
+        return await CommonPoolHelper.submitTo("submit", asyncTask);
     }
 
     async deleteObject(path, objName) {
         const _async = async () => super.deleteObject(path, objName);
-        return await CommonPoolHelper.submitTo('submit', _async)
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async appendAttrOfArrayItem(path, attribute, content, id) {
         const _async = async () => super.appendAttrOfArrayItem(path, attribute, content, id);
-        return await CommonPoolHelper.submitTo('submit', _async)
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     async deleteAttrOfArrayItem(path, attribute, content, id) {
         const _async = async () => super.deleteAttrOfArrayItem(path, attribute, content, id);
-        return await CommonPoolHelper.submitTo('submit', _async)
+        return await CommonPoolHelper.submitTo("submit", _async);
     }
 
-    async uploadStorageFile(blob, folder = 'public', fileNameExtension) {
+    async uploadStorageFile(blob, folder = "public", fileNameExtension) {
         const _async = async () => super.uploadStorageFile(blob, folder, fileNameExtension);
-        return await CommonPoolHelper.submitTo('submit', _async, 'high', `upload storage file`);
+        return await CommonPoolHelper.submitTo("submit", _async, "high", `upload storage file`);
     }
 
     async callCloudFunctions(functionName, data = {}) {
         const _async = async () => super.callCloudFunctions(functionName, data);
-        return await CommonPoolHelper.submitTo('functions', _async)
+        return await CommonPoolHelper.submitTo("functions", _async);
     }
 
     async runUIAsyncCloudFunctionsTask(functionName, data, view) {
         const self = this;
         const task = async () => {
             return this.callCloudFunctions(functionName, data);
-        }
+        };
         const path = `call functions => '${functionName}' `;
-        const type = `firebase/functions`
+        const type = `firebase/functions`;
         try {
             Util.appendInfo(`ready to process firebase-functions '${functionName}' `);
             self.handleApiExecute(path, type, view);
@@ -152,7 +151,7 @@ class ClientRemoteApi extends CommonRemoteApi {
                 return result.data;
             }
         } catch (error) {
-            self.handleApiException(path, type, error, view)
+            self.handleApiException(path, type, error, view);
             throw new Error(error.message);
         } finally {
             self.handleApiFinally(path, type, view);
@@ -175,16 +174,17 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     handleApiExecute(path, type, view) {
         if (view !== undefined) {
-            if (view instanceof BaseComponent) view.setLoadingViewVisibility(true); else {
-                throw new ERROR(7006)
+            if (view instanceof BaseComponent) view.setLoadingViewVisibility(true);
+            else {
+                throw new ERROR(7006);
             }
         }
     }
 
     handleApiException(path, type, error, view) {
         if (view !== undefined && view instanceof BaseComponent) {
-            const errorMsg = `${type} ${[path]}, ${error.message}`
-            view.setSnackViewVisibility(true, errorMsg, {type: `error`, duration: 5000});
+            const errorMsg = `${type} ${[path]}, ${error.message}`;
+            view.setSnackViewVisibility(true, errorMsg, { type: `error`, duration: 5000 });
         }
     }
 
@@ -193,7 +193,6 @@ class ClientRemoteApi extends CommonRemoteApi {
             view.setLoadingViewVisibility(false);
         }
     }
-
 }
 
 export default ClientRemoteApi;

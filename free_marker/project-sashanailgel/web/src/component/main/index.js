@@ -1,46 +1,44 @@
 const edit = true;
-import
-  "swiper/css/pagination";
+import "swiper/css/pagination";
 import "swiper/css";
 import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { observer } from "mobx-react";
-import Router from '../../router';
-import UserInfoRef from '../../base/BaseUserInfo';
+import Router from "../../router";
+import UserInfoRef from "../../base/BaseUserInfo";
 
 @inject("main")
 @observer
 class MainComponent extends BaseMainComponent {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  onMainPromotedBannerImageImgClicked(param) {
-    this.gotoUrlWithNewTab(param.object.route);
-  }
+    onMainPromotedBannerImageImgClicked(param) {
+        this.gotoUrlWithNewTab(param.object.route);
+    }
 
-  onMainGotoShoppingChipClicked(param) {
-    this.gotoUrlWithNewTab(`https://shopee.tw/seven19820706`)
-  }
+    onMainGotoShoppingChipClicked(param) {
+        this.gotoUrlWithNewTab(`https://shopee.tw/seven19820706`);
+    }
 
-  onMainEditorOfClassChipClicked(param) {
-    Router.gotoMetisSetUpPage(this);
-  }
+    onMainEditorOfClassChipClicked(param) {
+        Router.gotoMetisSetUpPage(this);
+    }
 
-  onMainGotoInnerShoppingChipClicked(param) {
-    Router.gotoDionysusPage(this);
-  }
+    onMainGotoInnerShoppingChipClicked(param) {
+        Router.gotoDionysusPage(this);
+    }
 
-  onMainCookieClearChipClicked(param) {
-    UserInfoRef.deleteWholeItemFromCart()
-  }
+    onMainCookieClearChipClicked(param) {
+        UserInfoRef.deleteWholeItemFromCart();
+    }
 
-
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default MainComponent;

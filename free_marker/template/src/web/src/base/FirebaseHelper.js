@@ -1,10 +1,10 @@
 const edit = true;
-import {exceptioner as ERROR, utiller as Util} from "utiller";
+import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
-import Config from '../config';
-import {GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut} from "firebase/auth";
+import Config from "../config";
+import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import {
     getCountFromServer,
     getAggregateFromServer,
@@ -35,20 +35,17 @@ import {
     limit,
     startAt,
     or,
-    and,
-
+    and
 } from "firebase/firestore";
-import {connectFunctionsEmulator, httpsCallable} from "firebase/functions";
-import {getDatabase} from "firebase/database";
-import {ref, uploadBytes, getDownloadURL} from 'firebase/storage'
-import libpath from 'path';
+import { connectFunctionsEmulator, httpsCallable } from "firebase/functions";
+import { getDatabase } from "firebase/database";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import libpath from "path";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
 const MAX_COUNT_OF_FIRESTORE_FETCH = 150;
 
-
 class FirebaseHelper extends BaseFirebase {
-
     /** web端當前的user */
     user;
 
@@ -59,16 +56,15 @@ class FirebaseHelper extends BaseFirebase {
         /** 因為和admin共用, firebase-admin沒有onAuthStateChanged 這個 function */
         onAuthStateChanged(this.auth(), (user) => {
             self.user = user;
-            const event = require('../event').default;
+            const event = require("../event").default;
             event.emitAuthStateChanged(user);
-            Util.appendInfo(`8745412 FirebaseHelper登入後發布event了`, user)
-        })
+            Util.appendInfo(`8745412 FirebaseHelper登入後發布event了`, user);
+        });
 
-        if (_.isEqual(Config.env, 'dev') && _.isEqual(Config.platform, 'web')) {
-            connectFunctionsEmulator(this.functions(), "localhost", 5001)
+        if (_.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web")) {
+            connectFunctionsEmulator(this.functions(), "localhost", 5001);
         }
     }
-
 
     FirebaseTimestamp() {
         return serverTimestamp();
@@ -99,8 +95,8 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     getUid = () => {
-        return Util.exist(this.user) ? this.user.uid : '';
-    }
+        return Util.exist(this.user) ? this.user.uid : "";
+    };
 
     /** firestore對於attribute為timestamp看得懂的格式 */
     getServerTimeSymbol() {
@@ -109,7 +105,7 @@ class FirebaseHelper extends BaseFirebase {
 
     currentUser = () => {
         return this.user;
-    }
+    };
 
     getGoogleAuthProvider() {
         const provider = new GoogleAuthProvider();
@@ -121,29 +117,29 @@ class FirebaseHelper extends BaseFirebase {
             const result = await signInWithPopup(this.auth(), this.getGoogleAuthProvider());
             await asyncTask(result);
         } catch (error) {
-            Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`)
-            throw new ERROR(9999, `8897899 登入發生錯誤`)
+            Util.appendInfo(`4545241354 pop-up頁面被無預期關閉 => ${error.message}`);
+            throw new ERROR(9999, `8897899 登入發生錯誤`);
         }
-    }
+    };
 
     logout = async () => {
         try {
             if (!Util.isUndefinedNullEmpty(this.user)) {
                 await signOut(this.auth());
-                Util.appendInfo('2556416521 User signed out successfully.');
+                Util.appendInfo("2556416521 User signed out successfully.");
             }
         } catch (error) {
-            Util.appendInfo('45465454654 error signing out:', error.message);
+            Util.appendInfo("45465454654 error signing out:", error.message);
         }
-    }
+    };
 
     getTimeStampObj(millis) {
         return Timestamp.fromMillis(millis);
     }
 
     async getCurrentServerTimeStamp() {
-        await this.firestore().collection('public').doc('timestamp').set({serverTime: this.getServerTimeSymbol()})
-        const timestamp = await this.firestore().collection('public').doc('timestamp').get();
+        await this.firestore().collection("public").doc("timestamp").set({ serverTime: this.getServerTimeSymbol() });
+        const timestamp = await this.firestore().collection("public").doc("timestamp").get();
         return timestamp.data().serverTime;
     }
 
@@ -156,56 +152,54 @@ class FirebaseHelper extends BaseFirebase {
         return await functions(data);
     }
 
-
     /** firestore 的 modular api 使用原則 */
 
     reference = (path, id) => {
-        return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, _.toString(id))
-    }
+        return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, _.toString(id));
+    };
 
     submitDocument = async (path, item = {}, id) => {
         const hasDocumentID = !Util.isUndefinedNullEmpty(id);
         const ref = this.reference(path, id);
         const docRef = !hasDocumentID ? await addDoc(ref, item) : await setDoc(ref, item);
-        return {...item, id: !hasDocumentID ? docRef.id : id, exists: true};
-    }
+        return { ...item, id: !hasDocumentID ? docRef.id : id, exists: true };
+    };
 
     updateDocument = async (path, item = {}, id) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987864 updateDocument()的id不能為空值`);
-        return await updateDoc(this.reference(path, id), item)
-    }
+        return await updateDoc(this.reference(path, id), item);
+    };
 
     /** 一個document可以擁有array屬性，這個function可以幫助append document array裡的item，不需要整個重寫*/
-    appendDocumentArrayItem = async (path, id, attribute = 'name', content = {}) => {
+    appendDocumentArrayItem = async (path, id, attribute = "name", content = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `598781514 appendDocumentArrayItem()的id不能為空值`);
         return await this.updateDocument(path, Util.getObject(attribute, arrayUnion(content)), id);
-    }
+    };
 
     /** 一個document可以擁有array屬性，這個function可以幫助delete document array裡的item，不需要整個重寫*/
-    deleteDocumentArrayItem = async (path, id, attribute = 'name', content = {}) => {
+    deleteDocumentArrayItem = async (path, id, attribute = "name", content = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `518781514 deleteDocumentArrayItem()的id不能為空值`);
         return await this.updateDocument(path, Util.getObject(attribute, arrayRemove(content)), id);
-    }
+    };
 
     /** atomically to increment 關於number的屬性，例如參訪人數之類的 */
     incrementDocumentNumeric = async (path, id, attribute, value = 1) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5187823514 incrementDocumentNumeric()的id不能為空值`);
         return await this.updateDocument(path, id, Util.getObject(attribute, increment(value)));
-    }
+    };
 
     /** batch提供set, delete, update的功能
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    batchDo = async (items, predicate = (batch, object) => {
-    }) => {
+    batchDo = async (items, predicate = (batch, object) => {}) => {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
-                Util.appendInfo(`5465465 batchDo execute commit(count:${count}) succeed`)
+                Util.appendInfo(`5465465 batchDo execute commit(count:${count}) succeed`);
             }
         }
 
-        Util.appendInfo(`54654456 batchDo is going to handle (count:${_.size(items)})`)
+        Util.appendInfo(`54654456 batchDo is going to handle (count:${_.size(items)})`);
         let batch = writeBatch(this.firestore());
         let count = 0;
 
@@ -221,20 +215,19 @@ class FirebaseHelper extends BaseFirebase {
             }
         }
         await commit(batch, count);
-        Util.appendInfo(`5465466 batchDo (count:${_.size(items)}) succeed`)
-    }
+        Util.appendInfo(`5465466 batchDo (count:${_.size(items)}) succeed`);
+    };
 
     submitDocuments = async (path, items) => {
         const result = [];
         await this.batchDo(items, (batch, item) => {
             const ref = this.reference(path, item.id);
-            const itemRef = Util.isUndefinedNullEmpty(item.id) ? doc(ref) : ref
+            const itemRef = Util.isUndefinedNullEmpty(item.id) ? doc(ref) : ref;
             batch.set(itemRef, item);
-            result.push({...item, id: itemRef.id})
-        })
+            result.push({ ...item, id: itemRef.id });
+        });
         return result;
-    }
-
+    };
 
     /**
      * 1. this.updateDocuments(path,{verified:true},{type:'where',params:['age','>','12']})
@@ -249,36 +242,37 @@ class FirebaseHelper extends BaseFirebase {
             const colRef = this.reference(path);
             const q = query(colRef, ...this.constraints(conditions));
             const querySnapshot = await getDocs(q);
-            const idsOfConstraint = querySnapshot.docs.map(doc => doc.id);
+            const idsOfConstraint = querySnapshot.docs.map((doc) => doc.id);
             await this.batchDo(idsOfConstraint, (batch, id) => {
                 const ref = this.reference(path, id);
                 batch.update(ref, contentOfUpdate);
-                result.push({...contentOfUpdate, id: ref.id})
-            })
+                result.push({ ...contentOfUpdate, id: ref.id });
+            });
         } else {
             /** 2.針對已知的document id做batch update */
             await this.batchDo(items, (batch, item) => {
                 const ref = this.reference(path, item.id);
                 batch.update(ref, item);
-                result.push({...item, id: ref.id})
-            })
+                result.push({ ...item, id: ref.id });
+            });
         }
         return result;
-    }
+    };
 
     fetchDocuments = async (path, ...conditions) => {
         const querySnapshot = await getDocs(this.compound(path, conditions));
         const all = [];
-        if (!querySnapshot.empty) querySnapshot.forEach((doc) => {
-            // const total = querySnapshot.size;
-            const data = doc.data();
-            data._doc = doc;
-            data.ref = doc.ref;
-            data.id = _.isEmpty(data.id) ? doc.id : data.id;
-            all.push(data);
-        })
+        if (!querySnapshot.empty)
+            querySnapshot.forEach((doc) => {
+                // const total = querySnapshot.size;
+                const data = doc.data();
+                data._doc = doc;
+                data.ref = doc.ref;
+                data.id = _.isEmpty(data.id) ? doc.id : data.id;
+                all.push(data);
+            });
         return all;
-    }
+    };
 
     async modifyDocumentsOfPaginate(uid, path, job, conditions, size = MAX_COUNT_OF_FIRESTORE_FETCH) {
         const collectionRef = this.compound(path, conditions);
@@ -295,7 +289,7 @@ class FirebaseHelper extends BaseFirebase {
                 Util.appendInfo("9874564 ✅ 所有 documents 處理完畢");
                 break;
             }
-            const documents = snapshot.docs.map(doc => ({...doc.data(), id: doc.id}));
+            const documents = snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
             await job(documents);
             // 執行每批次的任務，例如更新 updateTime
 
@@ -311,37 +305,40 @@ class FirebaseHelper extends BaseFirebase {
 
     fetchDocument = async (path, id) => {
         const docSnap = await getDoc(this.reference(path, id));
-        return docSnap.exists() ? {...docSnap.data(), id, _doc: docSnap, exists: true} : {exists: false};
-    }
+        return docSnap.exists() ? { ...docSnap.data(), id, _doc: docSnap, exists: true } : { exists: false };
+    };
 
     deleteDocument = async (path, id) => {
         await deleteDoc(this.reference(path, id));
-    }
+    };
 
     deleteDocuments = async (path, whole, ...conditions) => {
         const all = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...conditions);
         if (_.size(all) > 0)
-            await this.batchDo(all.map(data => data.ref), (batch, ref) => batch.delete(ref));
-    }
+            await this.batchDo(
+                all.map((data) => data.ref),
+                (batch, ref) => batch.delete(ref)
+            );
+    };
 
     /** {type:'where',params:['countOfPeople','>','10']} => where(...params) */
     normalize = (condition) => {
         const type = condition.type;
         switch (type) {
-            case 'where':
+            case "where":
                 return where(...condition.params);
-            case 'orderBy':
+            case "orderBy":
                 return orderBy(...condition.params);
-            case 'limit':
+            case "limit":
                 return limit(...condition.params);
-            case 'startAt':
+            case "startAt":
                 return startAt(...condition.params);
-            case 'startAfter':
+            case "startAfter":
                 return startAfter(...condition.params);
             default:
                 return undefined;
         }
-    }
+    };
 
     sortedByPriority = (conditions) => {
         _.each(conditions, (each) => {
@@ -360,24 +357,26 @@ class FirebaseHelper extends BaseFirebase {
                     each.index = 3;
                     break;
             }
-        })
-        const result = _.orderBy(conditions, ['index'], 'asc');
+        });
+        const result = _.orderBy(conditions, ["index"], "asc");
         return result;
-    }
+    };
 
     constraints = (conditions) => {
-        return _.filter(this.sortedByPriority(conditions).map(condition => this.normalize(condition)), (each) => !_.isUndefined(each));
-    }
+        return _.filter(
+            this.sortedByPriority(conditions).map((condition) => this.normalize(condition)),
+            (each) => !_.isUndefined(each)
+        );
+    };
 
     compound = (path, conditions) => {
         const ref = this.reference(path);
         return _.size(conditions) > 0 ? query(ref, ...this.constraints(conditions)) : query(ref);
-    }
+    };
 
     transaction = async (task = async (transaction) => true) => {
-        return await runTransaction(this.firestore(), task)
-    }
-
+        return await runTransaction(this.firestore(), task);
+    };
 
     /**
      *
@@ -399,22 +398,21 @@ class FirebaseHelper extends BaseFirebase {
     async updateDocumentAtomically(path, predict = async (documentOfLatest, transaction, ref) => documentOfLatest, id) {
         const self = this;
         if (Util.isUndefinedNullEmpty(id)) {
-            throw new ERROR(9999, '474845146451964 updateDocumentAtomically 的id 不能為空值')
+            throw new ERROR(9999, "474845146451964 updateDocumentAtomically 的id 不能為空值");
         }
         const uid = Util.getRandomHashV2(10);
         const behavior = async (transaction) => {
             const ref = self.reference(path, id);
             const docSnap = await transaction.get(ref);
             if (!docSnap.exists) {
-                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist`)
+                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist`);
             }
             const document = docSnap.data();
             document.exists = true;
             const content = await predict(document, transaction, ref);
             if (!Util.isUndefinedNullEmpty(content)) transaction.update(ref, content);
             Util.appendInfo(`${uid} transaction update => path:/${path}/${id}`, `content ==> `, content);
-
-        }
+        };
         return await this.transaction(behavior);
     }
 
@@ -426,14 +424,18 @@ class FirebaseHelper extends BaseFirebase {
      * callback {status:[local|server|error|cache], changes: document, error:object }
      */
     listenDocument = (path, id, callback = (status, data, error) => true) => {
-        const unsubscribe = onSnapshot(this.reference(path, id), (doc) => {
-            const status = doc.metadata.hasPendingWrites ? "local" : "server";
-            callback(status, {...doc.data(), id: doc.id})
-        }, (error) => {
-            callback("error", undefined, error)
-        })
+        const unsubscribe = onSnapshot(
+            this.reference(path, id),
+            (doc) => {
+                const status = doc.metadata.hasPendingWrites ? "local" : "server";
+                callback(status, { ...doc.data(), id: doc.id });
+            },
+            (error) => {
+                callback("error", undefined, error);
+            }
+        );
         return unsubscribe;
-    }
+    };
 
     /**
      * status =>string[local|server|error|cache]是指本地端寫入一個document時,就會收到一個local端的callback, 等到資料完整在remote端部署，就會再收到server端的callback
@@ -443,27 +445,30 @@ class FirebaseHelper extends BaseFirebase {
      * callback {status:[local|server|error|cache], changes:[...{document}], error:object }
      * */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
-        const unsubscribe = onSnapshot(this.compound(path, conditions), (snapshot) => {
-            const changes = [];
-            const status = snapshot.metadata.hasPendingWrites ? "local" : "server";
-            // snapshot.docs; snapshot.size; snapshot.empty;
-            snapshot.docChanges().forEach((change) => {
-                changes.push({
-                    type: change.type, /** [added|modified|removed] */
-                    id: change.doc.id,
-                    data: change.doc.data()
-                })
-            })
-            callback(status, changes, undefined)
-        }, (error) => callback('error', undefined, error))
+        const unsubscribe = onSnapshot(
+            this.compound(path, conditions),
+            (snapshot) => {
+                const changes = [];
+                const status = snapshot.metadata.hasPendingWrites ? "local" : "server";
+                // snapshot.docs; snapshot.size; snapshot.empty;
+                snapshot.docChanges().forEach((change) => {
+                    changes.push({
+                        type: change.type /** [added|modified|removed] */,
+                        id: change.doc.id,
+                        data: change.doc.data()
+                    });
+                });
+                callback(status, changes, undefined);
+            },
+            (error) => callback("error", undefined, error)
+        );
         return unsubscribe;
-    }
+    };
 
     fetchCountOfCollection = async (path) => {
         const snapShot = await getCountFromServer(this.reference(path));
         return snapShot.data().count;
-    }
-
+    };
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制
      *  前端以blob為主，而file selected選到的資料格式如下
@@ -476,39 +481,39 @@ class FirebaseHelper extends BaseFirebase {
      *
      * */
 
-    uploadStorageFile = async (file, folder = 'public', fileNameExtension = undefined) => {
+    uploadStorageFile = async (file, folder = "public", fileNameExtension = undefined) => {
         function getContentType(fileName) {
-            const extension = fileName.split('.').pop().toLowerCase();
+            const extension = fileName.split(".").pop().toLowerCase();
             const mimeTypes = {
-                'jpg': 'image/jpeg',
-                'jpeg': 'image/jpeg',
-                'png': 'image/png',
-                'gif': 'image/gif',
-                'bmp': 'image/bmp',
-                'webp': 'image/webp',
-                'pdf': 'application/pdf',
-                'txt': 'text/plain',
-                'html': 'text/html',
-                'css': 'text/css',
-                'js': 'application/javascript',
-                'json': 'application/json',
-                'xml': 'application/xml',
-                'mp4': 'video/mp4',
-                'mp3': 'audio/mpeg',
-                'wav': 'audio/wav',
-                'ogg': 'audio/ogg',
-                'zip': 'application/zip',
-                'rar': 'application/vnd.rar',
-                'doc': 'application/msword',
-                'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'ppt': 'application/vnd.ms-powerpoint',
-                'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                'xls': 'application/vnd.ms-excel',
-                'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                png: "image/png",
+                gif: "image/gif",
+                bmp: "image/bmp",
+                webp: "image/webp",
+                pdf: "application/pdf",
+                txt: "text/plain",
+                html: "text/html",
+                css: "text/css",
+                js: "application/javascript",
+                json: "application/json",
+                xml: "application/xml",
+                mp4: "video/mp4",
+                mp3: "audio/mpeg",
+                wav: "audio/wav",
+                ogg: "audio/ogg",
+                zip: "application/zip",
+                rar: "application/vnd.rar",
+                doc: "application/msword",
+                docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                ppt: "application/vnd.ms-powerpoint",
+                pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                xls: "application/vnd.ms-excel",
+                xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 // 其他你可能需要的类型
             };
 
-            return mimeTypes[extension] || 'application/octet-stream';
+            return mimeTypes[extension] || "application/octet-stream";
         }
 
         // Create a storage reference
@@ -516,13 +521,13 @@ class FirebaseHelper extends BaseFirebase {
         const fileName = fileNameExtension ?? file.name;
         const storageRef = ref(this.storage(), `${folder}/${fileName ?? `file-${Util.getRandomHashV2(10)}`}`);
         // Upload the file
-        const snapshot = await uploadBytes(storageRef, file.blob, {contentType: getContentType(fileName)});
+        const snapshot = await uploadBytes(storageRef, file.blob, { contentType: getContentType(fileName) });
         Util.appendInfo(`${uid} ${fileName} own following meta: `, getContentType(fileName));
         Util.appendInfo(`${uid} File uploaded successfully:`);
         const downloadURL = await getDownloadURL(snapshot.ref);
         Util.appendInfo(`${uid} File available at:`, downloadURL);
         return downloadURL;
-    }
+    };
 
     /** 針對query後的documents總數
      * fetchSumOfSpecificAttribute('member',{type:'where',params:['age','<=',12]})
@@ -530,26 +535,23 @@ class FirebaseHelper extends BaseFirebase {
     fetchCountOfSpecificCondition = async (path, ...conditions) => {
         const snapshot = await getCountFromServer(this.compound(path, conditions));
         return snapshot.data().count;
-    }
+    };
 
     /** 針對query後的document特定的numeric做_.sum
      * fetchSumOfSpecificAttribute('member','feeOfYear',{type:'where',params:['age','>=',20]})
      * */
-    fetchSumOfSpecificAttribute = async (path, attribute = 'name', ...conditions) => {
-        const snapshot = await getAggregateFromServer(this.compound(path, conditions),
-            {sumOf: sum(attribute)});
+    fetchSumOfSpecificAttribute = async (path, attribute = "name", ...conditions) => {
+        const snapshot = await getAggregateFromServer(this.compound(path, conditions), { sumOf: sum(attribute) });
         return snapshot.data().sumOf;
-
-    }
+    };
 
     /** 針對query後的document特定的numeric做_.average
      * fetchAverageOfSpecificAttribute('member','height',{type:'where',params:['age','>=',20]})
      * */
-    fetchAverageOfSpecificAttribute = async (path, attribute = 'name', ...conditions) => {
-        const snapshot = await getAggregateFromServer(this.compound(path, conditions),
-            {average: average(attribute)});
+    fetchAverageOfSpecificAttribute = async (path, attribute = "name", ...conditions) => {
+        const snapshot = await getAggregateFromServer(this.compound(path, conditions), { average: average(attribute) });
         return snapshot.data().average;
-    }
+    };
 
     /** 取得多樣的回傳
      * multi = [...{name:variable,type:[sum|count|average],attribute:field in Document}];
@@ -559,18 +561,18 @@ class FirebaseHelper extends BaseFirebase {
      * result: {countOfMember:11,sumOfPartyFee:2342,averageOfWeight:60}
      *
      * */
-    fetchMultiResultOfSpecific = async (path, multi = [{name: 'name', type: 'sum', attribute: 'attr'}], ...conditions) => {
+    fetchMultiResultOfSpecific = async (path, multi = [{ name: "name", type: "sum", attribute: "attr" }], ...conditions) => {
         function getObjectOfMulti(multi) {
             const object = {};
             for (const query of multi) {
                 switch (query.type) {
-                    case 'sum':
+                    case "sum":
                         object[query.name] = sum(query.attribute);
                         break;
-                    case 'count':
+                    case "count":
                         object[query.name] = count();
                         break;
-                    case 'average':
+                    case "average":
                         object[query.name] = average(query.attribute);
                         break;
                 }
@@ -578,12 +580,10 @@ class FirebaseHelper extends BaseFirebase {
             return object;
         }
 
-        const snapshot = await getAggregateFromServer(this.compound(path, conditions),
-            getObjectOfMulti(multi))
+        const snapshot = await getAggregateFromServer(this.compound(path, conditions), getObjectOfMulti(multi));
         const result = snapshot.data();
-        return Util.array2Obj(multi.map(query => Util.getObject(query.name, result[query.name])))
-    }
-
+        return Util.array2Obj(multi.map((query) => Util.getObject(query.name, result[query.name])));
+    };
 }
 
 export default new FirebaseHelper();

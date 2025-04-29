@@ -7,58 +7,57 @@ import { makeAutoObservable, makeObservable, action, observable, comparer, compu
 import BaseDionysusHermesStore from "./BaseDionysusHermesStore";
 
 class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
-
-  constructor(props) {
-    super(props);
-  }
-
-  @computed
-  get getComputedPriceOfTotal() {
-    return _.sum([this.getPriceB4Transport(), this.getPriceOfSelectedTransport()]);
-  }
-
-  getPriceOfSelectedTransport() {
-    const transport = _.find(this.getTransports(), (transport) => _.isEqual(true, transport.getChoice()));
-    return transport ? transport.getPrice() : 0;
-  }
-
-  async onInitialFetchCompleted(collection) {
-    await super.onInitialFetchCompleted(collection);
-    const priceOfWithoutTransport = _.toNumber(Cookie.getTotalPriceOfCartie());
-    this.setPriceB4Transport(priceOfWithoutTransport);
-
-    /** 如果購物車已超過該項目的免運金額(freeOfThreshold)*/
-    const transportsOfShouldHidden = [];
-    for (const transport of this.getTransports()) {
-      if (priceOfWithoutTransport >= transport.getFreeOfThreshold()) transport.setPrice(0);
-      if (_.isEqual(transport.getAvailable(), false)) transportsOfShouldHidden.push(transport)
+    constructor(props) {
+        super(props);
     }
-    this.removeTransports(...transportsOfShouldHidden);
-    this.getComponent().scrollToTop()
-  }
 
-  updateCheckboxStatus(transport) {
-    this.getTransports().map(transport => transport.setChoice(false));
-    transport.setChoice(true);
-  }
+    @computed
+    get getComputedPriceOfTotal() {
+        return _.sum([this.getPriceB4Transport(), this.getPriceOfSelectedTransport()]);
+    }
 
-  hasSurelyChoice() {
-    const choice = _.find(this.getTransports(), (transport) => transport.getChoice());
-    return !Util.isUndefinedNullEmpty(choice);
-  }
+    getPriceOfSelectedTransport() {
+        const transport = _.find(this.getTransports(), (transport) => _.isEqual(true, transport.getChoice()));
+        return transport ? transport.getPrice() : 0;
+    }
 
-  getSelectedTransport = () => {
-    return _.find(this.getTransports(), transport => transport.getChoice());
-  }
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted(collection);
+        const priceOfWithoutTransport = _.toNumber(Cookie.getTotalPriceOfCartie());
+        this.setPriceB4Transport(priceOfWithoutTransport);
 
-  updateTransportInfo() {
-    const transport = this.getSelectedTransport();
-    Cookie.setInfoOfSelectedTransport({
-      typeOfTransport: transport.getTypeOfTransport(),
-      feeOfTransport: transport.getPrice(),
-      stringOfTransport: transport.getName()
-    })
-  }
+        /** 如果購物車已超過該項目的免運金額(freeOfThreshold)*/
+        const transportsOfShouldHidden = [];
+        for (const transport of this.getTransports()) {
+            if (priceOfWithoutTransport >= transport.getFreeOfThreshold()) transport.setPrice(0);
+            if (_.isEqual(transport.getAvailable(), false)) transportsOfShouldHidden.push(transport);
+        }
+        this.removeTransports(...transportsOfShouldHidden);
+        this.getComponent().scrollToTop();
+    }
+
+    updateCheckboxStatus(transport) {
+        this.getTransports().map((transport) => transport.setChoice(false));
+        transport.setChoice(true);
+    }
+
+    hasSurelyChoice() {
+        const choice = _.find(this.getTransports(), (transport) => transport.getChoice());
+        return !Util.isUndefinedNullEmpty(choice);
+    }
+
+    getSelectedTransport = () => {
+        return _.find(this.getTransports(), (transport) => transport.getChoice());
+    };
+
+    updateTransportInfo() {
+        const transport = this.getSelectedTransport();
+        Cookie.setInfoOfSelectedTransport({
+            typeOfTransport: transport.getTypeOfTransport(),
+            feeOfTransport: transport.getPrice(),
+            stringOfTransport: transport.getName()
+        });
+    }
 }
 
 export default ModularizedDionysusHermesStore;

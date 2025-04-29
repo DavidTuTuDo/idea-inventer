@@ -1,5 +1,3 @@
-class BaseEvent {
-
-}
+class BaseEvent {}
 
 export default BaseEvent;

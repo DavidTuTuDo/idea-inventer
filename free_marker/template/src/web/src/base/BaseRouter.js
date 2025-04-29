@@ -4,15 +4,14 @@ import Config from "../config";
 import _ from "lodash";
 
 class BaseRouter {
-
     currentParam = [];
 
     currentComponent = undefined;
 
-    currentRoute = '';
+    currentRoute = "";
     setCurrentComponent = (component) => {
         this.currentComponent = component;
-    }
+    };
 
     setCurrentRoute(route) {
         this.currentRoute = route;
@@ -31,7 +30,7 @@ class BaseRouter {
             const history = component.props.history;
             history.push(path);
         } else {
-            Util.appendError(`45665512 component為undefined,可能是為了拿url [${path}]`)
+            Util.appendError(`45665512 component為undefined,可能是為了拿url [${path}]`);
         }
     }
 
@@ -40,57 +39,55 @@ class BaseRouter {
             const history = this.currentComponent.props.history;
             return history.location.pathname;
         }
-        return ''
-    }
+        return "";
+    };
 
     getPathOfEditorRoute = () => {
-        const segment = this.getCurrentPath().split('/');
-        const newbie = segment.map(
-            (each, index) => {
-                return index === 1 ? `${each}editor` : each
-            })
-        return newbie.join('/');
-    }
+        const segment = this.getCurrentPath().split("/");
+        const newbie = segment.map((each, index) => {
+            return index === 1 ? `${each}editor` : each;
+        });
+        return newbie.join("/");
+    };
 
     routeToHomePage(component) {
-        this.routeTo(component, '/');
-        return libpath.join(Config.host, '/');
+        this.routeTo(component, "/");
+        return libpath.join(Config.host, "/");
     }
 
     getPathOfDeEditorRoute = () => {
-        const segment = this.getCurrentPath().split('/');
-        const newbie = segment.map(
-            (each, index) => {
-                return index === 1 ? this.getStringOfDeEditor(each) : each
-            })
-        return newbie.join('/');
-    }
+        const segment = this.getCurrentPath().split("/");
+        const newbie = segment.map((each, index) => {
+            return index === 1 ? this.getStringOfDeEditor(each) : each;
+        });
+        return newbie.join("/");
+    };
 
     getStringOfDeEditor(string) {
-        const segment = string.split('editor');
+        const segment = string.split("editor");
         return segment.shift();
     }
 
     isEditPath = () => {
-        const segment = this.getCurrentPath().split('/');
+        const segment = this.getCurrentPath().split("/");
         segment.shift();
         /** 第一個是空值 */
 
-        const isEdit = Util.has(segment.shift(), 'editor');
-        console.log('isEdit===> ', isEdit);
+        const isEdit = Util.has(segment.shift(), "editor");
+        console.log("isEdit===> ", isEdit);
         return isEdit;
-    }
+    };
 
     gotoEditPage = (component) => {
-        const {history} = component.props;
+        const { history } = component.props;
         const route = this.isEditPath() ? this.getPathOfDeEditorRoute() : this.getPathOfEditorRoute();
         history.push(route);
     };
 
     setCurrentParam = (...param) => {
-        this.currentParam.length = 0
+        this.currentParam.length = 0;
         this.currentParam.push(...param);
-    }
+    };
 
     gotoHomePage = (component) => {
         const route = `/`;
@@ -98,7 +95,6 @@ class BaseRouter {
         this.setCurrentRoute(route);
         return new URL(route, Config.host).href;
     };
-
 }
 
 export default BaseRouter;

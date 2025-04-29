@@ -5,7 +5,6 @@
  */
 
 class BaseI18n {
-
     constructor(props) {
         /** props doing something */
     }

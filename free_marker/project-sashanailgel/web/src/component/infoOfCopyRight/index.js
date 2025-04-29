@@ -16,19 +16,19 @@ import BaseInfoOfCopyRightComponent from "./BaseInfoOfCopyRightComponent";
 @inject("infoOfCopyRight")
 @observer
 class InfoOfCopyRightComponent extends ModularizedInfoOfCopyRightComponent {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  getInjectStyleOfInfoOfCopyRightUpperGroupLeftAreaBusinessButton(leftArea) {
-    return Util.getVisibleOrNone(false);
-  }
+    getInjectStyleOfInfoOfCopyRightUpperGroupLeftAreaBusinessButton(leftArea) {
+        return Util.getVisibleOrNone(false);
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default InfoOfCopyRightComponent;

@@ -1,51 +1,37 @@
 const edit = true;
-import _ from 'lodash'
+import _ from "lodash";
 import React from "react";
-import moment from 'moment';
-import {utiller as Util, exceptioner as ERROR,} from "utiller";
+import moment from "moment";
+import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Store from "./BaseStore";
-import {
-    Typography,
-    LinearProgress,
-    CircularProgress,
-    Button,
-    Paper,
-    useScrollTrigger,
-    Slide,
-    Backdrop,
-    Card,
-    Snackbar,
-    IconButton,
-    List,
-} from "@mui/material";
-import MuiAlert from '@mui/material/Alert';
-import {Application} from '../';
-import Config from '../config';
-import {observer} from "mobx-react";
+import { Typography, LinearProgress, CircularProgress, Button, Paper, useScrollTrigger, Slide, Backdrop, Card, Snackbar, IconButton, List } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
+import { Application } from "../";
+import Config from "../config";
+import { observer } from "mobx-react";
 import Countdown from "react-countdown";
 import Router from "../router";
-import {isMobile} from 'react-device-detect'
-import ImageDialogView from './ImageDialogView';
-import UserInfo from '../base/BaseUserInfo';
+import { isMobile } from "react-device-detect";
+import ImageDialogView from "./ImageDialogView";
+import UserInfo from "../base/BaseUserInfo";
 import EventBus from "./CommonEventBus";
-import MuiComponent from './MUIComponent';
+import MuiComponent from "./MUIComponent";
 import ArrowBackIosRounded from "@mui/icons-material/ArrowBackIosRounded";
 import ArrowForwardIosRounded from "@mui/icons-material/ArrowForwardIosRounded";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
-import copy from 'copy-to-clipboard';
-import clipboardy from 'clipboardy';
-import functions from '../functions'
-
+import copy from "copy-to-clipboard";
+import clipboardy from "clipboardy";
+import functions from "../functions";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
     style = {};
-    componentStyle = {}
+    componentStyle = {};
     jobsOfScrollToBottom = [];
     jobExecutorLock = false;
     loginDialogRef = React.createRef();
-    propsOfMobX
+    propsOfMobX;
 
     /** true就表示 Asynctask正在執行中，不能再被觸發, false表示可以 */
 
@@ -74,17 +60,19 @@ class BaseComponent extends MuiComponent {
     }
 
     arrowOfBackward() {
-        return (<div
-            className={"SlideIndicatorArrowDiv"}>
-            <ArrowBackIosRounded/>
-        </div>)
+        return (
+            <div className={"SlideIndicatorArrowDiv"}>
+                <ArrowBackIosRounded />
+            </div>
+        );
     }
 
     arrowOfForward() {
-        return (<div
-            className={"SlideIndicatorArrowDiv"}>
-            <ArrowForwardIosRounded/>
-        </div>)
+        return (
+            <div className={"SlideIndicatorArrowDiv"}>
+                <ArrowForwardIosRounded />
+            </div>
+        );
     }
 
     isMobileDevice() {
@@ -101,7 +89,7 @@ class BaseComponent extends MuiComponent {
 
     setScrollToBottomJobs(...asyncTask) {
         this.jobsOfScrollToBottom.length = 0;
-        this.jobsOfScrollToBottom.push(...asyncTask)
+        this.jobsOfScrollToBottom.push(...asyncTask);
     }
 
     clearScrollToBottomJobs() {
@@ -119,7 +107,7 @@ class BaseComponent extends MuiComponent {
             unSub();
         }
         if (this.isNotNavigatorNComponentView()) {
-            window.removeEventListener('scroll', this.onScrollToBottomListener, true)
+            window.removeEventListener("scroll", this.onScrollToBottomListener, true);
         }
     }
 
@@ -136,7 +124,7 @@ class BaseComponent extends MuiComponent {
         const urlsOfLinePay = JSON.parse(stringOfRaw);
 
         if (Util.isUndefinedNullEmpty(urlsOfLinePay)) {
-            throw new ERROR(999, `446846132 urlsOfLinePay格式不正確`)
+            throw new ERROR(999, `446846132 urlsOfLinePay格式不正確`);
         }
 
         if (isMobile) {
@@ -154,8 +142,8 @@ class BaseComponent extends MuiComponent {
         this.cleanDisposableDialogComponent();
         this.viewInitial();
         if (this.isNotNavigatorNComponentView()) {
-            window.removeEventListener('scroll', this.onScrollToBottomListener, true)
-            window.addEventListener('scroll', this.onScrollToBottomListener, true);
+            window.removeEventListener("scroll", this.onScrollToBottomListener, true);
+            window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
     }
 
@@ -175,43 +163,42 @@ class BaseComponent extends MuiComponent {
      * */
     isComponentView = () => {
         return _.isEqual(this.propsOfMobX.isComponentView, true);
-    }
+    };
 
     isNotNavigatorNComponentView() {
-        return (!this.isNavigator() && !this.isComponentView());
+        return !this.isNavigator() && !this.isComponentView();
     }
 
     viewInitial() {
         this.fileChooserInputRef = React.createRef();
-        if ((!this.isNavigator()) && Config.isScrollingHide) {
+        if (!this.isNavigator() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
-            if (!this.isComponentView())
-                this.getStore().setAppBarHeight(isMobile ? 60 : 60);
+            if (!this.isComponentView()) this.getStore().setAppBarHeight(isMobile ? 60 : 60);
         }
         this.imageDialogRef = React.createRef();
     }
 
     reloadPage = () => {
         window.location.reload();
-    }
+    };
 
     centerInParent(direction) {
         return {
             flexDirection: direction,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-        }
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center"
+        };
     }
 
     registerScrollToBottomJob = (...functionOfAsyncTasks) => {
         for (const func of functionOfAsyncTasks) {
-            if (typeof func !== 'function') {
+            if (typeof func !== "function") {
                 throw new ERROR(4002, `registerScrollToBottomJob `);
             }
         }
         this.jobsOfScrollToBottom.push(...functionOfAsyncTasks);
-    }
+    };
 
     getThresholdOfScrollToBottom() {
         return 5;
@@ -227,9 +214,9 @@ class BaseComponent extends MuiComponent {
         let isScrollDown = window.scrollY > 0;
         /** 應該要記錄scrollY, 然後判斷偏移量 */
         let modifier = 1;
-        let isScrollToEnd = currentScroll + modifier > documentHeight
+        let isScrollToEnd = currentScroll + modifier > documentHeight;
         return isScrollDown && isScrollToEnd;
-    }
+    };
 
     onScrollToBottomListener = (event) => {
         const self = this;
@@ -264,7 +251,7 @@ class BaseComponent extends MuiComponent {
                 Util.appendInfo(`當前任務還沒執行完畢, 忽略此次呼叫。`);
             }
         }
-    }
+    };
 
     hasScrollToBottomTask() {
         return this.jobsOfScrollToBottom.length > 0;
@@ -280,32 +267,26 @@ class BaseComponent extends MuiComponent {
         Util.appendInfo(`觸底任務執行中`);
         try {
             self.jobExecutorLock = true;
-            for (const job of this.jobsOfScrollToBottom)
-                await job(self);
+            for (const job of this.jobsOfScrollToBottom) await job(self);
             /**self 就是 component本身,因為client第一個參數都是view, 方便呼叫loading */
         } catch (error) {
-            Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error)
+            Util.appendError(`8841 jobExecutor() 掉進 catch裡面`, error);
             self.getStore().setHasPageItems(false);
         } finally {
-            self.jobExecutorLock = false
+            self.jobExecutorLock = false;
             await this.invalidateNextPageBehavior();
         }
-    }
+    };
 
     /** 要是沒有產生出捲軸效果(), 但是有next page設計的話, canVerticalScrollable() 一定要實作hasNextPage的邏輯 */
     invalidateNextPageBehavior = async () => {
         await Util.syncDelay(50);
-        if (
-            !this.getStore().isErrorState() &&
-            this.getStore().hasNextPage() &&
-            this.hasScrollToBottomTask() &&
-            !this.canVerticalScrollable()
-        ) {
-            Util.appendInfo(`補花功能啟動`)
+        if (!this.getStore().isErrorState() && this.getStore().hasNextPage() && this.hasScrollToBottomTask() && !this.canVerticalScrollable()) {
+            Util.appendInfo(`補花功能啟動`);
             await Util.syncDelay(50);
-            await this.jobExecutor()
+            await this.jobExecutor();
         }
-    }
+    };
 
     getEmptyStore() {
         return new Store();
@@ -313,30 +294,29 @@ class BaseComponent extends MuiComponent {
 
     /** 每個Component 自己要實作 */
     renderView() {
-        return <div/>
+        return <div />;
     }
 
     renderLoadingView() {
-        if (this.getStore().state === 'loading') {
+        if (this.getStore().state === "loading") {
             return (
-                <div className={'BaseLoadingViewDiv'}>
-                    <LinearProgress
-                        className={`BaseLoadingLinearProgress`}/>
+                <div className={"BaseLoadingViewDiv"}>
+                    <LinearProgress className={`BaseLoadingLinearProgress`} />
                 </div>
-            )
+            );
         }
     }
 
     setLoadingViewVisibility(show = true) {
-        this.getStore().setState(show ? 'loading' : 'stable');
+        this.getStore().setState(show ? "loading" : "stable");
     }
 
     async executeAsyncTaskWithLoading(task) {
         try {
-            this.setLoadingViewVisibility()
+            this.setLoadingViewVisibility();
             await task();
         } finally {
-            this.setLoadingViewVisibility(false)
+            this.setLoadingViewVisibility(false);
         }
     }
 
@@ -346,26 +326,26 @@ class BaseComponent extends MuiComponent {
 
     getCurrentWebSiteLink = () => {
         return window.location.href;
-    }
+    };
 
     gotoUrlWithNewTab = (url) => {
         const task = async () => this.gotoUrlWithNewTabDirectly(url);
         this.enableExternalLinkDialog(url, task);
-    }
+    };
 
-    gotoExternalUrl = (url = '') => {
+    gotoExternalUrl = (url = "") => {
         const task = async () => this.gotoExternalUrlDirectly(url);
         this.enableExternalLinkDialog(url, task);
-    }
+    };
 
     enableExternalLinkDialog = (url, task) => {
         this.getStore().setGlobalDialogContent({
             title: "是否開啟新頁面",
             content: `即將前往外部網站\n\n${url}`,
-            task: task,
+            task: task
         });
         this.getLoginDialogRef().open();
-    }
+    };
 
     renderViewByStatus() {
         switch (this.getStore().state) {
@@ -380,39 +360,29 @@ class BaseComponent extends MuiComponent {
 
     onGoHomeClicked = (viewParam) => {
         Router.routeToHomePage(this.getComponentInstance());
-    }
+    };
 
     scrollToTop() {
-        window.scrollTo(0, 0)
+        window.scrollTo(0, 0);
     }
 
     renderErrorView = () => {
         const errorMsg = this.getStore().getErrorMsg();
         return (
-            <Paper
-                className={'BaseComponentErrorViewPaper'}>
+            <Paper className={"BaseComponentErrorViewPaper"}>
+                <Typography className={"BaseComponentErrorViewTitleTypography"}>發生技術問題</Typography>
 
-                <Typography
-                    className={'BaseComponentErrorViewTitleTypography'}>
-                    發生技術問題
-                </Typography>
+                <Typography className={"BaseComponentErrorViewContentTypography"}>{errorMsg}</Typography>
 
-                <Typography
-                    className={'BaseComponentErrorViewContentTypography'}
-                >{errorMsg}
-                </Typography>
-
-                <Button
-                    variant={'outlined'}
-                    color={'primary'}
-                    onClick={(viewParam) => this.onGoHomeClicked(viewParam)}
-                    className={'BaseComponentErrorViewRetryButton'}>返回首頁</Button>
+                <Button variant={"outlined"} color={"primary"} onClick={(viewParam) => this.onGoHomeClicked(viewParam)} className={"BaseComponentErrorViewRetryButton"}>
+                    返回首頁
+                </Button>
             </Paper>
-        )
-    }
+        );
+    };
 
     gotoPage(path) {
-        const {history} = this.props;
+        const { history } = this.props;
         history.push(path);
     }
 
@@ -421,11 +391,11 @@ class BaseComponent extends MuiComponent {
     }
 
     appendStyle(style) {
-        this.style = {...this.style, ...style};
+        this.style = { ...this.style, ...style };
     }
 
     appendComponentStyle(style) {
-        this.componentStyle = {...this.componentStyle, ...style};
+        this.componentStyle = { ...this.componentStyle, ...style };
     }
 
     /** auto completed 有suggest的概念{label,value,uid,popularLevel }*/
@@ -439,13 +409,10 @@ class BaseComponent extends MuiComponent {
     render() {
         const self = this;
         return (
-            <div className={'RootViewDiv'}
-                 style={{...this.style, marginTop: self.getStore().getAppBarHeight()}}>
-
+            <div className={"RootViewDiv"} style={{ ...this.style, marginTop: self.getStore().getAppBarHeight() }}>
                 {self.renderGlobalLoadingView()}
 
-                <div className={'ComponentViewDiv'}
-                     style={{...this.componentStyle}}>
+                <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
                 </div>
 
@@ -458,53 +425,50 @@ class BaseComponent extends MuiComponent {
                 {self.renderSnackView()}
 
                 {self.renderGlobalDialogView()}
-
-            </div>)
+            </div>
+        );
     }
 
     shouldDisplayLoadingArea(items = []) {
-        return !this.getStore().isInitialFetchCompleted() && _.size(items) < 1
+        return !this.getStore().isInitialFetchCompleted() && _.size(items) < 1;
     }
 
     renderListEmptyView = (items = [], hasPath) => {
         const ListEmptyView = this.ListEmptyView;
-        return (<ListEmptyView
-            size={_.size(items)}
-            isGlobalLoading={this.getStore().isGlobalLoading()}
-            component={this}
-            hasPath={hasPath}/>)
-    }
+        return <ListEmptyView size={_.size(items)} isGlobalLoading={this.getStore().isGlobalLoading()} component={this} hasPath={hasPath} />;
+    };
 
-    ListEmptyView = observer(({hasPath, component, isGlobalLoading, size}) => {
+    ListEmptyView = observer(({ hasPath, component, isGlobalLoading, size }) => {
         if (isGlobalLoading || size > 0) {
-            return null
+            return null;
         }
 
         function renderRetryButton() {
             if (hasPath) {
-                return <Button
-                    onClick={
-                        async () => {
+                return (
+                    <Button
+                        onClick={async () => {
                             if (component instanceof BaseComponent) {
                                 const store = component.getStore();
                                 await store.fetch(component);
                             }
-                        }
-                    }
-                    variant={'outlined'}
-                    className={`BaseListEmptyRetryButton`}>重試</Button>
+                        }}
+                        variant={"outlined"}
+                        className={`BaseListEmptyRetryButton`}>
+                        重試
+                    </Button>
+                );
             }
             return null;
         }
 
         return (
             <div className={`BaseListEmptyDiv`}>
-                <Typography
-                    className={`BaseListEmptyTypography`}>{this.getStore().getMessageOfListIsEmpty()}</Typography>
+                <Typography className={`BaseListEmptyTypography`}>{this.getStore().getMessageOfListIsEmpty()}</Typography>
                 {renderRetryButton()}
             </div>
-        )
-    })
+        );
+    });
 
     getCurrentLocation = async () => {
         const self = this;
@@ -514,10 +478,10 @@ class BaseComponent extends MuiComponent {
         }
         navigator.geolocation.getCurrentPosition(
             async (position) => {
-                const {latitude, longitude} = position.coords;
-                console.log({latitude, longitude})
+                const { latitude, longitude } = position.coords;
+                console.log({ latitude, longitude });
                 try {
-                    const fetchedAddress = await functions.httpOnCallGetCurrentAddress(self, {latitude, longitude});
+                    const fetchedAddress = await functions.httpOnCallGetCurrentAddress(self, { latitude, longitude });
                     Util.appendInfo(fetchedAddress);
                     return fetchedAddress;
                 } catch (error) {
@@ -528,24 +492,27 @@ class BaseComponent extends MuiComponent {
                 this.showWarningSnackMessage("無法獲取地理位置，請檢查您的定位服務是否開啟");
             }
         );
-    }
+    };
 
     renderSelectorView = () => {
         const self = this;
         const params = this.getStore().getSelectorParam();
-        return <input
-            multiple={params.multiple}
-            type={params.type}
-            accept={params.accept}
-            ref={self.fileChooserInputRef}
-            style={{display: 'none'}}
-            onChange={this.onFilesSelectedEventReceived.bind(self)}/>
-    }
+        return (
+            <input
+                multiple={params.multiple}
+                type={params.type}
+                accept={params.accept}
+                ref={self.fileChooserInputRef}
+                style={{ display: "none" }}
+                onChange={this.onFilesSelectedEventReceived.bind(self)}
+            />
+        );
+    };
 
     onFilesSelectedEventReceived = (event) => {
         const self = this;
         event.stopPropagation();
-        event.preventDefault()
+        event.preventDefault();
         const files = event.target.files;
         const array = [];
         for (const index in files) {
@@ -557,30 +524,29 @@ class BaseComponent extends MuiComponent {
                     index: index,
                     blob: file,
                     url: URL.createObjectURL(file)
-                })
+                });
         }
-        if (_.size(array) > 0)
-            this.onFilesSelected(array);
-    }
+        if (_.size(array) > 0) this.onFilesSelected(array);
+    };
 
     /** 給子類別繼承用的 */
     onFilesSelected(files) {
-        Util.appendError(`onFileSelected() is not implemented()`)
+        Util.appendError(`onFileSelected() is not implemented()`);
     }
 
-    enableFileSelectView = (accept = '*.*', multiple = false, type = 'file') => {
-        this.getStore().setSelectorParam({accept, multiple, type});
-        Util.syncDelay('10').then(() => this.fileChooserInputRef.current.click())
-    }
+    enableFileSelectView = (accept = "*.*", multiple = false, type = "file") => {
+        this.getStore().setSelectorParam({ accept, multiple, type });
+        Util.syncDelay("10").then(() => this.fileChooserInputRef.current.click());
+    };
 
     enableImageSelectView(multiple = false) {
         const accepts = `image/*`;
-        this.enableFileSelectView(accepts, multiple)
+        this.enableFileSelectView(accepts, multiple);
     }
 
     enableVoiceSelectView(multiple = false) {
         const accepts = `audio/*`;
-        this.enableFileSelectView(accepts, multiple)
+        this.enableFileSelectView(accepts, multiple);
     }
 
     renderGlobalLoadingView() {
@@ -589,24 +555,22 @@ class BaseComponent extends MuiComponent {
         }
 
         return (
-            <Backdrop
-                open={this.getStore().getGlobalLoadingState()}
-                className={'BaseComponentGlobalLoadingRootBackdrop'}>
-                <div className={'BaseComponentGlobalLoadingDiv'}>
-                    <CircularProgress/>
+            <Backdrop open={this.getStore().getGlobalLoadingState()} className={"BaseComponentGlobalLoadingRootBackdrop"}>
+                <div className={"BaseComponentGlobalLoadingDiv"}>
+                    <CircularProgress />
 
-                    <Typography
-                        className={'BaseComponentGlobalLoadingTypography'}>{this.getStore().getGlobalLoadingTip()}</Typography>
+                    <Typography className={"BaseComponentGlobalLoadingTypography"}>{this.getStore().getGlobalLoadingTip()}</Typography>
                 </div>
-            </Backdrop>);
+            </Backdrop>
+        );
     }
 
     HideOnScroll(props) {
-        const {children, window} = props;
+        const { children, window } = props;
         // Note that you normally won't need to set the window ref as useScrollTrigger
         // will default to window.
         // This is only being set here because the demo is in an iframe.
-        const trigger = useScrollTrigger({target: window ? window() : undefined});
+        const trigger = useScrollTrigger({ target: window ? window() : undefined });
 
         return (
             <Slide appear={false} direction="down" in={!trigger}>
@@ -623,7 +587,7 @@ class BaseComponent extends MuiComponent {
         return false;
     }
 
-    setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = '正在載入中') {
+    setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = "正在載入中") {
         this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip : ``);
     }
 
@@ -631,19 +595,17 @@ class BaseComponent extends MuiComponent {
         const self = this;
         const params = this.getStore().getImageDialogParam();
         return this.renderAlertDialog({
-                ref: this.imageDialogRef,
-                paramObject: params,
-                customView: ImageDialogView,
-                needActionButtons: false,
-                component: self
-            }
-        )
-    }
+            ref: this.imageDialogRef,
+            paramObject: params,
+            customView: ImageDialogView,
+            needActionButtons: false,
+            component: self
+        });
+    };
 
     openImageDialog(imgUrl) {
-        this.imageDialogRef.current.open({href: imgUrl});
+        this.imageDialogRef.current.open({ href: imgUrl });
     }
-
 
     /** 如果頁面有聽callback, 統一用這個method */
     subscribe(subscribeFunction) {
@@ -653,26 +615,25 @@ class BaseComponent extends MuiComponent {
     /** ↓↓↓===== SnackView 用到的field,遲早要搬運成獨立的 class =====↓↓↓ */
     durationOfSnackVisible = 3000;
     snackExtraTaskFunction = undefined;
-    snackMessageType = 'info';
-    snackMessage = 'default message';
+    snackMessageType = "info";
+    snackMessage = "default message";
 
     defaultSnackExtra() {
         return {
-            type: `info`, /** error,warning,success, info */
+            type: `info` /** error,warning,success, info */,
             duration: 5000,
             func: {
-                name: 'default',
+                name: "default",
                 task: async () => {
                     await Util.syncDelay();
-                    Util.appendInfo('default snack task message!')
+                    Util.appendInfo("default snack task message!");
                 }
             }
-        }
+        };
     }
 
     getSelectedSuggest(value, suggests) {
-        if (_.isArray(suggests) && value)
-            return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));
+        if (_.isArray(suggests) && value) return _.find(suggests, (suggest) => _.isEqual(_.toString(suggest.value), _.toString(value)));
     }
 
     renderSnackView() {
@@ -683,7 +644,7 @@ class BaseComponent extends MuiComponent {
         }
 
         function hasSnackExtraFunction() {
-            return self.snackExtraTaskFunction && self.snackExtraTaskFunction.name !== 'default'
+            return self.snackExtraTaskFunction && self.snackExtraTaskFunction.name !== "default";
         }
 
         function onSnackViewCloseClicked() {
@@ -693,16 +654,18 @@ class BaseComponent extends MuiComponent {
 
         function renderSnackExtraFunctionView() {
             if (hasSnackExtraFunction()) {
-                return (<Button
-                    className={'BaseSnackFuncButton'}
-                    color="secondary"
-                    size="large"
-                    onClick={() => {
-                        self.snackExtraTaskFunction.task().then();
-                        onSnackViewCloseClicked();
-                    }}>
-                    {self.snackExtraTaskFunction.name}
-                </Button>)
+                return (
+                    <Button
+                        className={"BaseSnackFuncButton"}
+                        color="secondary"
+                        size="large"
+                        onClick={() => {
+                            self.snackExtraTaskFunction.task().then();
+                            onSnackViewCloseClicked();
+                        }}>
+                        {self.snackExtraTaskFunction.name}
+                    </Button>
+                );
             }
             return null;
         }
@@ -710,16 +673,14 @@ class BaseComponent extends MuiComponent {
         return (
             <Snackbar
                 anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
+                    vertical: "bottom",
+                    horizontal: "left"
                 }}
                 open={this.getStore().getSnackVisibility()}
                 autoHideDuration={self.durationOfSnackVisible}
                 onClose={onSnackViewCloseClicked}>
                 <div>
-                    <Alert
-                        className={'BaseSnackAlert'}
-                        onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
+                    <Alert className={"BaseSnackAlert"} onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
                         {self.snackMessage}
                     </Alert>
                     {renderSnackExtraFunctionView()}
@@ -729,19 +690,19 @@ class BaseComponent extends MuiComponent {
     }
 
     showWarningSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, {type: `warning`})
+        this.setSnackViewVisibility(true, message, { type: `warning` });
     }
 
     showInfoSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, {type: `info`})
+        this.setSnackViewVisibility(true, message, { type: `info` });
     }
 
     showErrorSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, {type: `error`})
+        this.setSnackViewVisibility(true, message, { type: `error` });
     }
 
     showSuccessSnackMessage(message) {
-        this.setSnackViewVisibility(true, message, {type: `success`})
+        this.setSnackViewVisibility(true, message, { type: `success` });
     }
 
     /**
@@ -755,9 +716,9 @@ class BaseComponent extends MuiComponent {
             Util.syncDelay(1).then(() => {
                 /** 為了等待響應mobx的行為 ,syncDelay會把行為放在下一個stack */
                 sync().then();
-            })
+            });
         } else {
-            sync().then()
+            sync().then();
         }
 
         async function sync() {
@@ -774,63 +735,54 @@ class BaseComponent extends MuiComponent {
 
     /** ↑↑↑===== SnackView 用到的field,遲早要搬運成獨立的 class =====↑↑↑ */
 
-    CountdownView = observer(({date, title}) => {
-        const TimeDisplayView = ({days, hours, minutes, seconds, completed}) => {
-            const UnitView = (({count, unit}) => {
+    CountdownView = observer(({ date, title }) => {
+        const TimeDisplayView = ({ days, hours, minutes, seconds, completed }) => {
+            const UnitView = ({ count, unit }) => {
                 return (
-                    <Card
-                        className={"BaseCountdownCountCard"}>
-                        <Typography className={"BaseCountdownCountTypography"}>
-                            {count}</Typography>
-                        <Typography className={"BaseCountdownUnitTypography"}>
-                            {unit}</Typography>
+                    <Card className={"BaseCountdownCountCard"}>
+                        <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
+                        <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
                     </Card>
-                )
-            });
+                );
+            };
 
             if (completed) {
                 /** Render a completed state */
                 return null;
             } else {
-                const times = [{unit: '天', count: days},
-                    {unit: '小時', count: hours},
-                    {unit: '分鐘', count: minutes},
-                    {unit: '秒', count: seconds}]
+                const times = [
+                    { unit: "天", count: days },
+                    { unit: "小時", count: hours },
+                    { unit: "分鐘", count: minutes },
+                    { unit: "秒", count: seconds }
+                ];
                 return (
-                    <div
-                        className={"BaseCountdownCountDiv"}>
-                        <Typography
-                            className={"BaseCountdownTitleTypography"}>
-                            {title}</Typography>
-                        <div/>
-                        <div
-                            className={"ListBaseCountdownCountDiv"}>
-                            {times.map((each) =>
-                                <UnitView
-                                    key={each.unit}
-                                    count={each.count}
-                                    unit={each.unit}/>)}
+                    <div className={"BaseCountdownCountDiv"}>
+                        <Typography className={"BaseCountdownTitleTypography"}>{title}</Typography>
+                        <div />
+                        <div className={"ListBaseCountdownCountDiv"}>
+                            {times.map((each) => (
+                                <UnitView key={each.unit} count={each.count} unit={each.unit} />
+                            ))}
                         </div>
-                    </div>)
+                    </div>
+                );
             }
         };
 
-        return <Countdown
-            renderer={TimeDisplayView}
-            date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)}/>
-    })
+        return <Countdown renderer={TimeDisplayView} date={Util.getCurrentTimeStamp() + Util.getDurationOfMillionSec(date)} />;
+    });
 
     /** 通常呼叫這個method, 是要呼叫loading狀態, 例如dialog要拿到自己的component instance, 要forceSelf = true */
     getComponentInstance = (forceSelf = false) => {
-        if (forceSelf)
-            return this;
+        if (forceSelf) return this;
 
         if (this.isDialogComponent() || this.isComponentView()) {
             return this.propsOfMobX.component;
         } else {
             return this;
         }
-    }
+    };
 
     dismiss() {
         if (this.isDialogComponent()) {
@@ -839,42 +791,42 @@ class BaseComponent extends MuiComponent {
     }
 
     /** path:'https://' or route:'pageName:...params'*/
-    handleCustomRouter = (routeString = '') => {
-        const words = routeString.split(':')
+    handleCustomRouter = (routeString = "") => {
+        const words = routeString.split(":");
         const type = words.shift();
         switch (type) {
-            case 'path':
-                const path = words.join(':');
+            case "path":
+                const path = words.join(":");
                 this.gotoExternalUrl(path);
                 break;
-            case 'route':
+            case "route":
                 const page = words.shift();
                 const functionName = `goto${_.upperFirst(page)}Page`;
                 const functionOfGotoPage = Router[functionName];
                 if (_.isFunction(functionOfGotoPage)) {
                     functionOfGotoPage(this.getComponentInstance(), ...words);
                 } else {
-                    this.setSnackViewVisibility(true, `4097 can't handle ${page}`, {type: 'error'})
+                    this.setSnackViewVisibility(true, `4097 can't handle ${page}`, { type: "error" });
                 }
                 break;
             default:
                 if (_.isEmpty(routeString)) {
                     /** doing nothing */
                 } else {
-                    this.setSnackViewVisibility(true, `can't handle ${routeString}`, {type: 'error'})
+                    this.setSnackViewVisibility(true, `can't handle ${routeString}`, { type: "error" });
                 }
                 break;
         }
-    }
+    };
 
     async handleRestFulResult(restfulResult, succeedBehavior) {
         if (restfulResult === undefined) return;
-        if (restfulResult.status === 'succeed') {
+        if (restfulResult.status === "succeed") {
             await succeedBehavior(restfulResult.data);
-        } else if (restfulResult.status === 'fail') {
-            this.setSnackViewVisibility(true, restfulResult.message, {type: 'warning'})
+        } else if (restfulResult.status === "fail") {
+            this.setSnackViewVisibility(true, restfulResult.message, { type: "warning" });
         } else {
-            throw new ERROR(7007, `status ===> ${restfulResult.status}`)
+            throw new ERROR(7007, `status ===> ${restfulResult.status}`);
         }
     }
 
@@ -889,7 +841,7 @@ class BaseComponent extends MuiComponent {
     }
 
     async readTextClipboard() {
-        return await clipboardy.read()
+        return await clipboardy.read();
     }
 
     renderGlobalDialogView = () => {
@@ -901,13 +853,13 @@ class BaseComponent extends MuiComponent {
             content: dialog.content,
             component: this,
             needActionButtons: true,
-            task: dialog.task,
-        })
-    }
+            task: dialog.task
+        });
+    };
 
     getLoginDialogRef = () => {
         return this.loginDialogRef.current;
-    }
+    };
 
     enableLoginConfirmDialog = () => {
         const self = this;
@@ -915,32 +867,31 @@ class BaseComponent extends MuiComponent {
             title: "此功能必須登入",
             content: "此功能必須登入,點擊確認後將喚起登入頁面",
             task: async () => await self.invokeLoginBehavior()
-        })
+        });
         Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
-    }
+    };
 
-    enableAlertDialog = (title = '標題', content = '內容', task = async () => true) => {
+    enableAlertDialog = (title = "標題", content = "內容", task = async () => true) => {
         const self = this;
         this.getStore().setGlobalDialogContent({
             title,
             content,
             task
-        })
+        });
         Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
-    }
+    };
 
     async invokeLoginBehavior() {
         await Util.syncDelay(10);
-        if (!UserInfo.isLoginWithSucceed())
-            Application.getNavigatorRef().onNavigatorLoginIconButtonClicked()
+        if (!UserInfo.isLoginWithSucceed()) Application.getNavigatorRef().onNavigatorLoginIconButtonClicked();
     }
 
-    openLineChatAccountWithMessage(id = '', message = '') {
+    openLineChatAccountWithMessage(id = "", message = "") {
         if (!isMobile) {
             this.showInfoSnackMessage(`抱歉,此功能僅提供在移動設備上(手機,平板)`);
             return;
         }
-        this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`)
+        this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`);
     }
 
     getKeywords() {
@@ -954,51 +905,50 @@ class BaseComponent extends MuiComponent {
     constraintOfParam(param, ...allows) {
         let isValid = true;
 
-        if (Util.isUndefinedNullEmpty(param))
-            isValid = false;
+        if (Util.isUndefinedNullEmpty(param)) isValid = false;
 
-        if (Util.isOrEquals(param, ...allows))
-            isValid = true;
+        if (Util.isOrEquals(param, ...allows)) isValid = true;
 
         return isValid;
     }
 
     renderAlertDialog({
-                          ref,
-                          title,
-                          content,
-                          task,
-                          customView,
-                          paramObject,
-                          needActionButtons,
-                          textInput,
-                          component,
-                          enableCancel,
-                          disposablePage = false,
-                          fullWidth = false,
-                          strict = false,
-                      }) {
-
+        ref,
+        title,
+        content,
+        task,
+        customView,
+        paramObject,
+        needActionButtons,
+        textInput,
+        component,
+        enableCancel,
+        disposablePage = false,
+        fullWidth = false,
+        strict = false
+    }) {
         if (disposablePage && Application.getStoreObject()) {
             const nameOfComponent = customView.nameOfComponent;
             const store = Application.getStoreObject()[`${nameOfComponent}`];
-            if (store)
-                store.clean();
+            if (store) store.clean();
         }
 
-        return (<AlertDialog
-            title={title}
-            content={content}
-            submitAsyncTask={task}
-            needActionButtons={needActionButtons}
-            enableCancel={enableCancel}
-            customView={customView}
-            paramObject={paramObject}
-            textInput={textInput}
-            component={component}
-            fullWidth={fullWidth}
-            strict={strict}
-            ref={ref}/>)
+        return (
+            <AlertDialog
+                title={title}
+                content={content}
+                submitAsyncTask={task}
+                needActionButtons={needActionButtons}
+                enableCancel={enableCancel}
+                customView={customView}
+                paramObject={paramObject}
+                textInput={textInput}
+                component={component}
+                fullWidth={fullWidth}
+                strict={strict}
+                ref={ref}
+            />
+        );
     }
 
     isWrapByDialog() {
@@ -1006,21 +956,15 @@ class BaseComponent extends MuiComponent {
         return dialog instanceof AlertDialog;
     }
 
-    renderAlertMenu({ref, items, component}) {
-        return (
-            <AlertMenu
-                component={component}
-                items={items}
-                ref={ref}
-            />
-        )
+    renderAlertMenu({ ref, items, component }) {
+        return <AlertMenu component={component} items={items} ref={ref} />;
     }
 
     propsMobX() {
         return this.propsOfMobX;
     }
 
-    invokeEMailBehavior(email, subject = '', body = '', children = '') {
+    invokeEMailBehavior(email, subject = "", body = "", children = "") {
         if (!Util.isUndefinedNullEmpty(email)) {
             this.copyTextToClipboard(email);
             let params = subject || body ? "?" : "";
@@ -1049,25 +993,25 @@ class BaseComponent extends MuiComponent {
     invokeInstagramApp = (website) => {
         const forceToWebsite = true;
 
-        const username = Util.getTailStringSplitBy(website, '/');
+        const username = Util.getTailStringSplitBy(website, "/");
         if (isMobile && !forceToWebsite) {
-            window.open(`instagram://user?username=${username}`, '_blank');
+            window.open(`instagram://user?username=${username}`, "_blank");
         } else {
-            this.copyTextToClipboard(website, `已複製網址至剪貼簿`)
-            this.gotoUrlWithNewTab(website)
+            this.copyTextToClipboard(website, `已複製網址至剪貼簿`);
+            this.gotoUrlWithNewTab(website);
         }
-    }
+    };
 
     invokeFacebookApp = (website) => {
         const forceToWebsite = true;
-        const idOfPage = Util.getTailStringSplitBy(website, '/');
+        const idOfPage = Util.getTailStringSplitBy(website, "/");
         if (isMobile && !forceToWebsite) {
-            window.open(`fb://page/${idOfPage}`, '_blank');
+            window.open(`fb://page/${idOfPage}`, "_blank");
         } else {
-            this.copyTextToClipboard(website, `已複製網址至剪貼簿`)
-            this.gotoUrlWithNewTab(website)
+            this.copyTextToClipboard(website, `已複製網址至剪貼簿`);
+            this.gotoUrlWithNewTab(website);
         }
-    }
+    };
 
     invokeLineApp = (idOfLine, message) => {
         this.gotoExternalUrlDirectly(`https://line.me/ti/p/~${idOfLine}`);
@@ -1080,8 +1024,6 @@ class BaseComponent extends MuiComponent {
         link.click();
         document.body.removeChild(link);
     }
-
 }
 
 export default BaseComponent;
-

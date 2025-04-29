@@ -181,7 +181,7 @@ class NodeUtiller extends Utiller {
         const lastPart = parts[parts.length - 1];
         const isFile = libpath.extname(lastPart) !== '';  // ← 正規判斷副檔名
 
-        let current = isAbsolute ? path.sep : '';
+        let current = isAbsolute ? libpath.sep : '';
 
         for (let i = 0; i < parts.length; i++) {
             current = libpath.join(current, parts[i]);

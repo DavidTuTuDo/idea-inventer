@@ -1,30 +1,20 @@
 const edit = true;
 import React from "react";
-import {
-    Dialog,
-    DialogActions,
-    Button,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    TextField
-} from '@mui/material';
-import {action, makeObservable, observable} from "mobx";
-import {observer, inject} from "mobx-react";
-import {utiller as Util} from "utiller";
-import _ from 'lodash';
+import { Dialog, DialogActions, Button, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
+import { action, makeObservable, observable } from "mobx";
+import { observer, inject } from "mobx-react";
+import { utiller as Util } from "utiller";
+import _ from "lodash";
 import MuiComponent from "./MUIComponent";
-import BaseComponent from './BaseComponent';
+import BaseComponent from "./BaseComponent";
 import Chip from "@mui/material/Chip";
 
-
 class DialogStore {
-
     @observable
     visibility = false;
 
     @observable
-    propsOfCustomView = {}
+    propsOfCustomView = {};
 
     constructor() {
         makeObservable(this);
@@ -47,12 +37,10 @@ class DialogStore {
     setPropsOfCustomView(object) {
         this.propsOfCustomView = object;
     }
-
 }
 
 @observer
 class AlertDialog extends MuiComponent {
-
     constructor(props) {
         super(props);
         this.dialog = new DialogStore();
@@ -67,35 +55,31 @@ class AlertDialog extends MuiComponent {
     /** object 是可以帶到customView裡面的變數 */
     open = (paramObject = {}) => {
         if (!_.isObject(paramObject)) {
-            Util.appendError(`9831, paramObject should be object, not ${paramObject}`)
-            return
+            Util.appendError(`9831, paramObject should be object, not ${paramObject}`);
+            return;
         }
         if (paramObject !== undefined) {
             this.getStore().setPropsOfCustomView(paramObject);
         }
         this.getStore().setVisibility(true);
-
-    }
+    };
 
     /** 按下esc也會產生close的行為 */
     close = () => {
-        if (!this.strict)
-            this.getStore().setVisibility(false);
-        else
-            this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊視窗關閉的提示鍵`) : '';
-
-    }
+        if (!this.strict) this.getStore().setVisibility(false);
+        else this.component instanceof BaseComponent ? this.component.showErrorSnackMessage(`避免資料遺失，請點擊視窗關閉的提示鍵`) : "";
+    };
 
     dismiss = () => {
         this.getStore().setVisibility(false);
-    }
+    };
 
     onSubmitClicked = async () => {
         const submitAsyncTask = this.props.submitAsyncTask;
         const paramObject = this.props.paramObject;
         this.dismiss();
         await submitAsyncTask();
-    }
+    };
 
     getStore() {
         return this.dialog;
@@ -107,7 +91,7 @@ class AlertDialog extends MuiComponent {
             <Dialog
                 className={"BaseAlertDialog"}
                 {...this.injectPaperProps()}
-                scroll={'paper'}
+                scroll={"paper"}
                 fullWidth={!!self.fullWidth}
                 fullScreen={self.hasCustomView() ? true : false}
                 maxWidth={false}
@@ -116,15 +100,13 @@ class AlertDialog extends MuiComponent {
                 }}
                 open={self.getStore().getVisibility()}
                 onClose={self.close}>
-
                 {this.renderTitle()}
 
                 {this.renderContent()}
 
                 {this.renderActionButton()}
-
             </Dialog>
-        )
+        );
     }
 
     injectPaperProps() {
@@ -138,7 +120,7 @@ class AlertDialog extends MuiComponent {
                         position: "relative"
                     }
                 }
-            }
+            };
         }
     }
 
@@ -146,31 +128,31 @@ class AlertDialog extends MuiComponent {
         const self = this;
         const title = this.props.title;
         if (!_.isEmpty(title)) {
-            return <DialogTitle>{title}</DialogTitle>
+            return <DialogTitle>{title}</DialogTitle>;
         }
         return null;
     }
-
 
     renderTextField() {
         const textInput = this.props.textInput;
 
         if (textInput && textInput.enable) {
-            return <TextField
-                autoFocus
-                required
-                margin="dense"
-                value={textInput.value}
-                label={textInput.label}
-                type={textInput.type}
-                fullWidth
-                variant="standard"
-                onChange={(event) => {
-                    textInput.onTextFieldChange(event);
-                }}
-            />
-        } else
-            return null;
+            return (
+                <TextField
+                    autoFocus
+                    required
+                    margin="dense"
+                    value={textInput.value}
+                    label={textInput.label}
+                    type={textInput.type}
+                    fullWidth
+                    variant="standard"
+                    onChange={(event) => {
+                        textInput.onTextFieldChange(event);
+                    }}
+                />
+            );
+        } else return null;
     }
 
     renderContent = () => {
@@ -180,50 +162,43 @@ class AlertDialog extends MuiComponent {
         const content = this.props.content;
 
         if (this.hasCustomView())
-            return <DialogContent
-                className={'BaseAlertDialogContent'}>
+            return (
+                <DialogContent className={"BaseAlertDialogContent"}>
+                    <div className={"BaseAlertDialogCustomView"}>
+                        <CustomView component={component} paramObject={paramObject} dialog={this} {...this.getStore().getPropsOfCustomView()} />
 
-                <div
-                    className={'BaseAlertDialogCustomView'}>
-                    <CustomView
-                        component={component}
-                        paramObject={paramObject}
-                        dialog={this}
-                        {...this.getStore().getPropsOfCustomView()} />
+                        {this.renderCustomCancelChip()}
+                    </div>
+                </DialogContent>
+            );
 
-
-                    {this.renderCustomCancelChip()}
-
-                </div>
+        return (
+            <DialogContent>
+                <DialogContentText whiteSpace={"pre-line"}>{content}</DialogContentText>
+                {this.renderTextField()}
             </DialogContent>
-
-
-        return <DialogContent>
-            <DialogContentText
-                whiteSpace={'pre-line'}>
-                {content}
-            </DialogContentText>
-            {this.renderTextField()}
-        </DialogContent>
-    }
+        );
+    };
 
     renderCustomCancelChip = () => {
         if (this.useCustomCancel) {
-            return null
+            return null;
         }
 
-        return <div className={'BaseAlertDialogDismissView'}>
-            <Chip
-                className={`BaseAlertDialogDismissChip`}
-                label={`關閉視窗`}
-                variant={`outlined`}
-                onClick={(event) => {
-                    event.stopPropagation();
-                    this.dismiss();}
-                }/>
-        </div>
-
-    }
+        return (
+            <div className={"BaseAlertDialogDismissView"}>
+                <Chip
+                    className={`BaseAlertDialogDismissChip`}
+                    label={`關閉視窗`}
+                    variant={`outlined`}
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        this.dismiss();
+                    }}
+                />
+            </div>
+        );
+    };
 
     hasCustomView() {
         return this.props.customView;
@@ -235,28 +210,25 @@ class AlertDialog extends MuiComponent {
 
         if (!needActionButtons) return null;
 
-        return <DialogActions>
+        return (
+            <DialogActions>
+                {this.renderCancelButton()}
 
-            {this.renderCancelButton()}
-
-            <Button
-                onClick={async () => await self.onSubmitClicked()}
-                color="primary" autoFocus>
-                確認
-            </Button>
-        </DialogActions>
+                <Button onClick={async () => await self.onSubmitClicked()} color="primary" autoFocus>
+                    確認
+                </Button>
+            </DialogActions>
+        );
     }
 
     renderCancelButton = () => {
-
-        if (!this.enableCancel)
-            return null
-        return (<Button onClick={this.dismiss} color="primary">
-            取消
-        </Button>)
-
-    }
-
+        if (!this.enableCancel) return null;
+        return (
+            <Button onClick={this.dismiss} color="primary">
+                取消
+            </Button>
+        );
+    };
 }
 
 export default AlertDialog;

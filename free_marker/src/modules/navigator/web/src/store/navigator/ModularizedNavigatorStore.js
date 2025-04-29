@@ -1,11 +1,7 @@
 const edit = true;
 
 import _ from "lodash";
-import {
-    makeObservable,
-    action,
-    observable,
-} from "mobx";
+import { makeObservable, action, observable } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import UserInfo from "../../base/BaseUserInfo";
 
@@ -37,14 +33,14 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     @action
     updateEditButtonStatus() {
         const self = this;
-        let editButton = UserInfo.isAdmin() ? '編輯' : '無';
+        let editButton = UserInfo.isAdmin() ? "編輯" : "無";
         self.setToEditMode(editButton);
     }
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         if (_.isArray(this.getKeywords())) {
-            this.initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), 'label'))
+            this.initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), "label"));
         }
     }
 
@@ -53,13 +49,12 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
     constructor(props) {
         super(props);
         makeObservable(this);
-        this.setState('stable');
+        this.setState("stable");
     }
 
     getLabelOfComplete() {
         return `無搜尋的項目`;
     }
-
 }
 
 export default ModularizedNavigatorStore;

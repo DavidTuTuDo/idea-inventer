@@ -1,14 +1,13 @@
 import React from "react";
-import { Menu, MenuItem, ListItemIcon } from '@mui/material';
+import { Menu, MenuItem, ListItemIcon } from "@mui/material";
 import { action, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import UserInfoRef from "./BaseUserInfo";
-import _ from 'lodash';
-import * as MUIcon from '@mui/icons-material';
+import _ from "lodash";
+import * as MUIcon from "@mui/icons-material";
 import MuiComponent from "./MUIComponent";
 
 class MenuStore {
-
     @observable
     visibility = false;
 
@@ -28,12 +27,10 @@ class MenuStore {
     constructor() {
         makeObservable(this);
     }
-
 }
 
 @observer
 class AlertMenu extends MuiComponent {
-
     constructor(props) {
         super(props);
         this.store = new MenuStore();
@@ -48,15 +45,15 @@ class AlertMenu extends MuiComponent {
 
     open = () => {
         this.store.setVisibility(true);
-    }
+    };
 
     close = () => {
         this.store.setVisibility(false);
-    }
+    };
 
-    handleClick = async ({onClick, loginOnly = false, notice = {title: '', content: ''}}, event) => {
+    handleClick = async ({ onClick, loginOnly = false, notice = { title: "", content: "" } }, event) => {
         function hasNoticeDialog() {
-            return _.size(notice.title) > 0
+            return _.size(notice.title) > 0;
         }
 
         event.stopPropagation();
@@ -69,42 +66,32 @@ class AlertMenu extends MuiComponent {
 
         if (hasNoticeDialog()) {
             this.component.enableAlertDialog(notice.title, notice.content, onClick);
-        } else if (_.isFunction(onClick))
-            await onClick(event);
+        } else if (_.isFunction(onClick)) await onClick(event);
 
         this.close();
-    }
+    };
 
     handleOnClose = (event) => {
         event.stopPropagation();
         this.store.setAnchor(null);
         this.close();
-    }
+    };
 
     render() {
         const self = this;
         const MUIcon = self.MUIconView;
         return (
-            <Menu
-                className={'BaseAlertMenu'}
-                open={self.store.visibility}
-                onClose={self.handleOnClose}
-                anchorEl={self.store.anchorEl}>
-                {self.items.map((item) =>
-                    <MenuItem
-                        className={'BaseAlertMenuItem'}
-                        key={`index${_.indexOf(self.items, item)}`}
-                        onClick={async (event) => await self.handleClick(item, event)}>
+            <Menu className={"BaseAlertMenu"} open={self.store.visibility} onClose={self.handleOnClose} anchorEl={self.store.anchorEl}>
+                {self.items.map((item) => (
+                    <MenuItem className={"BaseAlertMenuItem"} key={`index${_.indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
                         <ListItemIcon>
-                            <MUIcon
-                                name={item.icon}/>
+                            <MUIcon name={item.icon} />
                         </ListItemIcon>
                         {item.label}
-                    </MenuItem>)
-                }
+                    </MenuItem>
+                ))}
             </Menu>
-        )
-
+        );
     }
 }
 

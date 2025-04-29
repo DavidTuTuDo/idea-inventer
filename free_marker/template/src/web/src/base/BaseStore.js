@@ -1,11 +1,10 @@
 import { action, observable, isObservableObject, toJS } from "mobx";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import _ from 'lodash';
-import ClientRemoteApi from './ClientRemoteApi';
-import moment from 'moment';
+import _ from "lodash";
+import ClientRemoteApi from "./ClientRemoteApi";
+import moment from "moment";
 
 class BaseStore extends ClientRemoteApi {
-
     idOfUniqueView = Util.getUuidOfV4();
 
     component;
@@ -13,15 +12,14 @@ class BaseStore extends ClientRemoteApi {
     /** 用來放initial completed 之後的任務! 例如disposable page 每次都會fetch，然後又要把bean inject value的行為機制，就要放在這裡*/
     taskOfCompleted = [];
 
-    refreshLocally() {
-    }
+    refreshLocally() {}
 
     pushTaskOfCompleted(task = async () => true) {
-        this.taskOfCompleted.push(task)
+        this.taskOfCompleted.push(task);
     }
 
     pushTasksOfCompleted(...task) {
-        this.taskOfCompleted.push(...task)
+        this.taskOfCompleted.push(...task);
     }
 
     /** 因為range pick view的設計有增添兩個column start-end，在inject到store之前把 view需要用到的value還原成[moement,moment]*/
@@ -32,27 +30,29 @@ class BaseStore extends ClientRemoteApi {
     @observable
     globalDialogContent = {
         task: async () => {
-            await Util.syncDelay(10)
-        }, title: '標題', content: '內容'
-    }
+            await Util.syncDelay(10);
+        },
+        title: "標題",
+        content: "內容"
+    };
 
     @observable
     initialFetchCompleted = false;
 
     @observable
-    state = 'stable';
+    state = "stable";
 
     @observable
-    errorMsg = '未知的錯誤';
+    errorMsg = "未知的錯誤";
 
     @observable
-    messageOfListIsEmpty = '目前遠端沒有資料';
+    messageOfListIsEmpty = "目前遠端沒有資料";
 
     @observable
     globalLoadingState = false;
 
     @observable
-    globalLoadingTip = '正在載入中．．．';
+    globalLoadingTip = "正在載入中．．．";
 
     parentNode;
 
@@ -63,7 +63,7 @@ class BaseStore extends ClientRemoteApi {
     selectorParams = this.getDefaultSelectorParam();
 
     @observable
-    imageDialogParams = this.getDefaultImageDialogParam()
+    imageDialogParams = this.getDefaultImageDialogParam();
 
     @observable
     appBarHeight = 0;
@@ -93,16 +93,14 @@ class BaseStore extends ClientRemoteApi {
      * 或是component 裡面用到 ref產出的 => component inside component <yueh-pu|chordinventer>
      * */
     getComponent = (selfOnly = false) => {
-        if (selfOnly)
-            return this.component;
+        if (selfOnly) return this.component;
 
-        if (this.component)
-            return this.component.getComponentInstance();
-    }
+        if (this.component) return this.component.getComponentInstance();
+    };
 
     isWrapByAlertDialog = () => {
         return !_.isUndefinedNullEmpty(this.props.dialog);
-    }
+    };
 
     @action
     setMessageOfListIsEmpty(text) {
@@ -120,19 +118,21 @@ class BaseStore extends ClientRemoteApi {
     @action
     setGlobalDialogContent(
         dialogContent = {
-            title: '標題', content: '內容', task: async () => await Util.syncDelay(10)
+            title: "標題",
+            content: "內容",
+            task: async () => await Util.syncDelay(10)
         }
     ) {
         this.globalDialogContent = dialogContent;
     }
 
     isFetchAbleToGo() {
-        const isLoadingOrError = Util.isOrEquals(this.getState(), 'error', 'loading');
-        return !this.isInitialFetchCompleted() && !isLoadingOrError
+        const isLoadingOrError = Util.isOrEquals(this.getState(), "error", "loading");
+        return !this.isInitialFetchCompleted() && !isLoadingOrError;
     }
 
     isErrorState() {
-        return _.isEqual(this.state, 'error');
+        return _.isEqual(this.state, "error");
     }
 
     getGlobalDialogContent() {
@@ -192,7 +192,7 @@ class BaseStore extends ClientRemoteApi {
 
     @action
     setState(state) {
-        if (Util.isOrEquals(state, 'loading', 'stable', 'error')) {
+        if (Util.isOrEquals(state, "loading", "stable", "error")) {
             this.state = state;
         } else {
             Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);
@@ -204,7 +204,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     isGlobalLoading() {
-        return _.isEqual(this.state, 'loading');
+        return _.isEqual(this.state, "loading");
     }
 
     getGlobalLoadingState() {
@@ -222,7 +222,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getClassName() {
-        return 'unknown store';
+        return "unknown store";
     }
 
     fromJson(obj) {
@@ -232,21 +232,17 @@ class BaseStore extends ClientRemoteApi {
     }
 
     initial(props) {
-        if (props && props.parentNode)
-            this.setParentNode(props.parentNode);
+        if (props && props.parentNode) this.setParentNode(props.parentNode);
 
-        if (props && props._doc)
-            this.setDocRef(props._doc);
+        if (props && props._doc) this.setDocRef(props._doc);
 
-        if (props && props.updateTime)
-            this.setUpdateTime(props.updateTime);
+        if (props && props.updateTime) this.setUpdateTime(props.updateTime);
 
-        this.onInitialCompleted(props).then()
+        this.onInitialCompleted(props).then();
     }
 
     /** 當initial()執行完之後，後續要做的項目 */
-    async onInitialCompleted(props) {
-    }
+    async onInitialCompleted(props) {}
 
     @action
     setUpdateTime(time) {
@@ -296,8 +292,7 @@ class BaseStore extends ClientRemoteApi {
     }
 
     async onInitialFetchCompleted(collection) {
-        if (this.isInitialFetchCompleted())
-            return await Util.syncDelay(1);
+        if (this.isInitialFetchCompleted()) return await Util.syncDelay(1);
 
         this.setInitialFetchCompleted(true);
         if (this.getComponent() !== undefined) {
@@ -320,43 +315,43 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getImageDialogParam() {
-        return this.imageDialogParams
+        return this.imageDialogParams;
     }
 
     getDefaultSelectorParam() {
         return {
-            type: 'file',
-            accept: 'file',
-            multiple: false,
-        }
+            type: "file",
+            accept: "file",
+            multiple: false
+        };
     }
 
     getDefaultImageDialogParam() {
         return {
             pager: false,
-            href: 'url',
-        }
+            href: "url"
+        };
     }
 
     @action
     setSelectorParam(params) {
-        const mixer = Util.mergeObject(this.getDefaultSelectorParam(), params)
+        const mixer = Util.mergeObject(this.getDefaultSelectorParam(), params);
         this.selectorParams = mixer;
     }
 
     @action
     setImageDialogParam(params) {
-        const mixer = Util.mergeObject(this.getDefaultImageDialogParam(), params)
-        this.imageDialogParams = mixer
+        const mixer = Util.mergeObject(this.getDefaultImageDialogParam(), params);
+        this.imageDialogParams = mixer;
     }
 
     clean() {
         this.initialFetchCompleted = false;
         this.hasNextPageItems = true;
-        this.setState('stable');
+        this.setState("stable");
     }
 
-    conditions = []
+    conditions = [];
 
     getFetchConditions() {
         return this.conditions;
@@ -371,28 +366,23 @@ class BaseStore extends ClientRemoteApi {
     }
 
     getStartAfterConditions(lastItem) {
-        return Util.isUndefinedNullEmpty(lastItem) ? [] : [
-            {type: 'startAfter', params: [lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc]}
-        ]
+        return Util.isUndefinedNullEmpty(lastItem) ? [] : [{ type: "startAfter", params: [lastItem instanceof BaseStore ? lastItem.getDocRef() : lastItem._doc] }];
     }
 
     getInArrayConditions = (targets) => {
         if (_.isArray(targets)) {
-            return [
-                {type: 'where', params: [this.getFieldNameOfDocumentId(), "in", targets.length > 0 ? targets : [Util.getRandomHash(30)]]}
-            ]
+            return [{ type: "where", params: [this.getFieldNameOfDocumentId(), "in", targets.length > 0 ? targets : [Util.getRandomHash(30)]] }];
         } else {
-            throw new ERROR(7008, `${typeof targets}, "${targets}" is not allow`)
+            throw new ERROR(7008, `${typeof targets}, "${targets}" is not allow`);
         }
-
-    }
+    };
 
     hasNextPage = () => {
         return this.hasNextPageItems;
-    }
+    };
 
     setHasPageItems(has) {
-        return this.hasNextPageItems = has;
+        return (this.hasNextPageItems = has);
     }
 
     /** 當fetch回來的item 要再經過一次sort的機制*/
@@ -401,21 +391,17 @@ class BaseStore extends ClientRemoteApi {
     }
 
     /** 目前是設計為資料獲取後, 可以有一個hook做一些邏輯 */
-    invalidate() {
-    }
+    invalidate() {}
 
     getColumnData(object) {
-        if (object instanceof BaseStore)
-            return object.columnData()
-        else
-            return object;
+        if (object instanceof BaseStore) return object.columnData();
+        else return object;
     }
 
     /** 每個子類Class要各自實作 */
     columnData() {
-        return {}
+        return {};
     }
-
 }
 
-export default BaseStore
+export default BaseStore;

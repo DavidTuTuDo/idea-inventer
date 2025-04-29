@@ -1,14 +1,13 @@
 const edit = true;
-import {initializeApp} from "firebase/app";
-import {getFunctions} from "firebase/functions";
-import {getStorage} from "firebase/storage";
-import {getAuth} from "firebase/auth";
-import {getFirestore} from "firebase/firestore";
-import {getDatabase} from "firebase/database";
+import { initializeApp } from "firebase/app";
+import { getFunctions } from "firebase/functions";
+import { getStorage } from "firebase/storage";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getDatabase } from "firebase/database";
 import config from "../config";
 
 class BaseFirebase {
-
     constructor() {
         this._app = initializeApp(config.firebase);
         this._storage = getStorage(this._app);
@@ -41,7 +40,6 @@ class BaseFirebase {
     storage() {
         return this._storage;
     }
-
 }
 
-export default BaseFirebase
+export default BaseFirebase;

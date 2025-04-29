@@ -1,12 +1,11 @@
 const edit = true;
 
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
 import BaseMetisSignUpComponent from "./BaseMetisSignUpComponent";
 
 class ModularizedMetisSignUpComponent extends BaseMetisSignUpComponent {
-
     constructor(props) {
         super(props);
     }
@@ -16,14 +15,14 @@ class ModularizedMetisSignUpComponent extends BaseMetisSignUpComponent {
     }
 
     onMetisSignUpStudentGoBackChipClicked(param) {
-        Router.gotoMainPage(this.getComponentInstance())
+        Router.gotoMainPage(this.getComponentInstance());
     }
 
     getInjectStyleOfMetisSignUpStudentYoungDiv(establish) {
         const birthday = establish.getBirthday();
         if (Util.isUndefinedNullEmpty(birthday)) return Util.getVisibleOrNone(false, true);
 
-        const stringOfBirthday = Util.getCustomFormatOfDatePresent(birthday, 'YYYY-MM-DD');
+        const stringOfBirthday = Util.getCustomFormatOfDatePresent(birthday, "YYYY-MM-DD");
         return Util.getVisibleOrNone(!Util.isOverSpecificAge(stringOfBirthday, 18), true);
     }
 
@@ -34,9 +33,8 @@ class ModularizedMetisSignUpComponent extends BaseMetisSignUpComponent {
     }
 
     getInjectPropsOfMetisSignUpStudentAcceptChip(student) {
-        return {disabled: student.getIsCapacityFull()};
+        return { disabled: student.getIsCapacityFull() };
     }
-
 }
 
 export default ModularizedMetisSignUpComponent;
