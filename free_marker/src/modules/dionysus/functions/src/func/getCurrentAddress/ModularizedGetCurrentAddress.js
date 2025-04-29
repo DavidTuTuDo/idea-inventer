@@ -1,6 +1,6 @@
 const edit = true;
 
-import { exceptioner as ERROR} from "utiller";
+import { exceptioner as ERROR } from "utiller";
 import BaseGetCurrentAddress from "./BaseGetCurrentAddress";
 
 class ModularizedGetCurrentAddress extends BaseGetCurrentAddress {
@@ -10,17 +10,17 @@ class ModularizedGetCurrentAddress extends BaseGetCurrentAddress {
 
     /** 每個專案都不同哦 */
     getKeyOfGoogleMapAPI() {
-        return 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
+        return "AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs";
     }
 
     /** payload:{"latitude":0,"longitude":0} */
     async handleHttpOnCall(data, session) {
-        const {latitude, longitude} = data;
-        console.log({latitude, longitude})
+        const { latitude, longitude } = data;
+        console.log({ latitude, longitude });
         try {
             const address = await this.getAddressFromCoordinates(this.getKeyOfGoogleMapAPI(), latitude, longitude);
             console.log(address);
-            return address
+            return address;
         } catch (error) {
             console.log(error.message);
             throw new ERROR(9999, `48451232 ${error.message}`);
@@ -29,7 +29,7 @@ class ModularizedGetCurrentAddress extends BaseGetCurrentAddress {
 
     getAddressFromCoordinates = async (API_KEY, latitude, longitude) => {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${API_KEY}&language=zh-TW`;
-        console.log('url===> ', url);
+        console.log("url===> ", url);
         try {
             const response = await fetch(url);
             const data = await response.json();

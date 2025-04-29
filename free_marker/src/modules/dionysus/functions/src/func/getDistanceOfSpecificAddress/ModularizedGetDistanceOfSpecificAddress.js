@@ -1,19 +1,17 @@
 const edit = true;
 
-import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import BaseGetDistanceOfSpecificAddress from "./BaseGetDistanceOfSpecificAddress";
 
-
 class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificAddress {
-
     constructor(props) {
         super(props);
     }
 
     /** 每個專案都不同哦 */
     getKeyOfGoogleAPI() {
-        return 'AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs';
+        return "AIzaSyAweW-LpWb6qqjSiQ8aLCKVW7GxM0r3frs";
     }
 
     /**
@@ -34,10 +32,10 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
             const geocodeData = await geocodeResponse.json();
 
             if (!geocodeData.results.length) {
-                throw new Error('無法解析地址');
+                throw new Error("無法解析地址");
             }
 
-            const {lat, lng} = geocodeData.results[0].geometry.location;
+            const { lat, lng } = geocodeData.results[0].geometry.location;
 
             const distanceMatrixUrl = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${lat},${lng}&destinations=${targetCoords.lat},${targetCoords.lng}&mode=walking&key=${this.getKeyOfGoogleAPI()}`;
             const distanceMatrixResponse = await fetch(distanceMatrixUrl);
@@ -47,30 +45,28 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
             }
 
             const distanceMatrixData = await distanceMatrixResponse.json();
-            console.log('Distance Matrix API Response:', JSON.stringify(distanceMatrixData, null, 2));
+            console.log("Distance Matrix API Response:", JSON.stringify(distanceMatrixData, null, 2));
 
             const distanceInfo = distanceMatrixData.rows?.[0]?.elements?.[0];
 
-            if (!distanceInfo || distanceInfo.status !== 'OK') {
-                throw new Error('無法計算距離，請檢查輸入資料或 API 回應');
+            if (!distanceInfo || distanceInfo.status !== "OK") {
+                throw new Error("無法計算距離，請檢查輸入資料或 API 回應");
             }
 
             // 解析距離並將單位改為中文
             const distanceText = distanceInfo.distance.text; // 格式例如 "6.3 km" 或 "400 m"
-            const formattedDistance = distanceText
-              .replace('km', '公里')
-              .replace('m', '公尺'); // 替換英文單位為中文單位
+            const formattedDistance = distanceText.replace("km", "公里").replace("m", "公尺"); // 替換英文單位為中文單位
 
             return formattedDistance;
         } catch (error) {
-            console.error('計算距離失敗:', error.message);
+            console.error("計算距離失敗:", error.message);
             throw error;
         }
     }
 
     async handleHttpOnCall(data, session) {
         const address = data.address;
-        const distance = await this.calculateWalkingDistance(address, {lat: 22.663524, lng: 120.363903})
+        const distance = await this.calculateWalkingDistance(address, { lat: 22.663524, lng: 120.363903 });
         return distance;
     }
 }

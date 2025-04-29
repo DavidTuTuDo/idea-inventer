@@ -1,19 +1,19 @@
 import ModularizedNavigatorStore from "./ModularizedNavigatorStore";
 
 class NavigatorStore extends ModularizedNavigatorStore {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  getTitle() {
-    return `莎夏美學`;
-  }
+    getTitle() {
+        return `莎夏美學`;
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default NavigatorStore;

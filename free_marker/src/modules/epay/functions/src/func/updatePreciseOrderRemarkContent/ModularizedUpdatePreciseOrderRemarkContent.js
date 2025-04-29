@@ -1,8 +1,4 @@
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseUpdatePreciseOrderRemarkContent from "./BaseUpdatePreciseOrderRemarkContent";
@@ -17,7 +13,7 @@ class ModularizedUpdatePreciseOrderRemarkContent extends BaseUpdatePreciseOrderR
     }
 
     async handleHttpOnCall(data, session) {
-        Util.validatePayloadObjectValid(data, ['idOfPreciseOrder', 'remarkOfPreciseOrder'], 4874546145454);
+        Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "remarkOfPreciseOrder"], 4874546145454);
         /** get precise order by id */
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(data.idOfPreciseOrder);
 
@@ -31,8 +27,8 @@ class ModularizedUpdatePreciseOrderRemarkContent extends BaseUpdatePreciseOrderR
             throw new ERROR(9999, `4562313168546 身份為${identify.typeOfUser}，無法呼叫此功能`);
         }
         /** update order remark info*/
-        await Api.updatePreciseOrderItem({remark: data.remarkOfPreciseOrder}, detailOfPreciseOrder.id);
-        return {message: '成功更新備註內容'}
+        await Api.updatePreciseOrderItem({ remark: data.remarkOfPreciseOrder }, detailOfPreciseOrder.id);
+        return { message: "成功更新備註內容" };
     }
 
     /** -------------------- async api -------------------- **/

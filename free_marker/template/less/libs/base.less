@@ -1,436 +1,420 @@
 @mobile: ~'only screen and (min-width: 320px) and (max-width: 600px)';
 @tablet: ~'only screen and (min-width: 320px) and (max-width: 600px)';
 @desktop: ~'only screen and (min-width: 601px)';
-@import '../../../node_modules/react-h5-audio-player/lib/styles.less';
-
+@import "../../../node_modules/react-h5-audio-player/lib/styles.less";
 
 .CenterInParentRow {
-  flex-direction: row;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    flex-direction: row;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .CenterInParentColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .CenterInHorizontalColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-
 .TailInParentRow {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
 }
 
 .ImageOfViewPager {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
 }
 
 .SliderOfViewPager {
-  width: 100vw;
-  height: 32vh;
-  @media @mobile {
-    margin-top: 0;
-  }
-  @media @tablet {
-    /** empty style */
-    margin-top: 0;
-  }
-  @media @desktop {
-    height: 40vh;
-    max-height: 600px;
-    margin-top: 5px;
-    max-width: 880px;
-  }
+    width: 100vw;
+    height: 32vh;
+    @media @mobile {
+        margin-top: 0;
+    }
+    @media @tablet {
+        /** empty style */
+        margin-top: 0;
+    }
+    @media @desktop {
+        height: 40vh;
+        max-height: 600px;
+        margin-top: 5px;
+        max-width: 880px;
+    }
 }
 
 .ImageWrapOfViewPager {
-  width: 100vw;
-  height: 32vh;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    height: 40vh;
-    max-width: 880px;
-    max-height: 400px;
-  }
+    width: 100vw;
+    height: 32vh;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        height: 40vh;
+        max-width: 880px;
+        max-height: 400px;
+    }
 }
 
 .PaperOfSimpleGrid:extend(.CenterInParentColumn) {
-  background-color: rgba(188, 188, 188, 0.3);
-  @media @mobile {
-    /** empty style */
-    height: 55px;
-  }
-  @media @tablet {
-    /** empty style */
-    height: 55px;
-  }
-  @media @desktop {
-    /** empty style */
-    height: 60px;
-  }
+    background-color: rgba(188, 188, 188, 0.3);
+    @media @mobile {
+        /** empty style */
+        height: 55px;
+    }
+    @media @tablet {
+        /** empty style */
+        height: 55px;
+    }
+    @media @desktop {
+        /** empty style */
+        height: 60px;
+    }
 }
 
 .TitleOfSimpleGridItem {
-  @media @mobile {
-    /** empty style */
-    font-size: 1.1rem;
-  }
-  @media @tablet {
-    /** empty style */
-    font-size: 1.1rem;
-
-  }
-  @media @desktop {
-    /** empty style */
-    font-size: 1.2rem;
-
-  }
+    @media @mobile {
+        /** empty style */
+        font-size: 1.1rem;
+    }
+    @media @tablet {
+        /** empty style */
+        font-size: 1.1rem;
+    }
+    @media @desktop {
+        /** empty style */
+        font-size: 1.2rem;
+    }
 }
 
 .SubTitleOfSimpleGridItem {
-  @media @mobile {
-    /** empty style */
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-    font-size: 0.8rem;
-
-  }
-  @media @desktop {
-    /** empty style */
-    font-size: 1.0rem;
-  }
+    @media @mobile {
+        /** empty style */
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        /** empty style */
+        font-size: 0.8rem;
+    }
+    @media @desktop {
+        /** empty style */
+        font-size: 1rem;
+    }
 }
 
 .BaseAlertMenu {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 
 .BaseAlertMenuItem {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 
 .BaseAlertMenuItemIcon {
-  height: 5px;
-  @media @mobile {
-    /** empty style */
-
-  }
-  @media @tablet {
-    /** empty style */
-
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    height: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 
 .ContainerOfHorizontalScroll {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5rem;
-  margin: auto;
-  position: relative;
-  overflow-x: auto;
-  gap: 10px;
-  @media @mobile {
-    /** empty style */
-    width: 95vw;
-  }
-  @media @tablet {
-    /** empty style */
-    width: 95vw;
-  }
-  @media @desktop {
-    max-width: 180px;
-  }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    margin: auto;
+    position: relative;
+    overflow-x: auto;
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+        width: 95vw;
+    }
+    @media @tablet {
+        /** empty style */
+        width: 95vw;
+    }
+    @media @desktop {
+        max-width: 180px;
+    }
 }
 
 .ChildOfHorizontalScroll {
-  width: 12%;
-  min-width: 150px;
-  text-align: center;
-  height: 100px;
-  padding-top: 1%;
-  padding-left: 1%;
-  padding-right: 1%;
+    width: 12%;
+    min-width: 150px;
+    text-align: center;
+    height: 100px;
+    padding-top: 1%;
+    padding-left: 1%;
+    padding-right: 1%;
 }
 
 .CenterInParentRelative {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /** countdown */
 
-
 .BaseCountdownTitleTypography {
-  font-size: 2.8rem;
-  @media @mobile {
-    font-size: 1.6rem;
-  }
+    font-size: 2.8rem;
+    @media @mobile {
+        font-size: 1.6rem;
+    }
 }
 
 .BaseCountdownCountTypography {
-  font-size: 2rem;
+    font-size: 2rem;
 
-  @media @mobile {
-    font-size: 1.2rem;
-  }
+    @media @mobile {
+        font-size: 1.2rem;
+    }
 }
 
 .BaseCountdownUnitTypography {
-  font-size: 1.5rem;
+    font-size: 1.5rem;
 
-  @media @mobile {
-    font-size: 1.0rem;
-  }
+    @media @mobile {
+        font-size: 1rem;
+    }
 }
 
 .BaseCountdownCountCard:extend(.CenterInParentColumn) {
-  margin: 8px;
-  padding: 8px;
-  min-width: 80px;
-  @media @mobile {
-    min-width: 40px;
-  }
-
+    margin: 8px;
+    padding: 8px;
+    min-width: 80px;
+    @media @mobile {
+        min-width: 40px;
+    }
 }
 
 .BaseCountdownCountDiv:extend(.CenterInParentColumn) {
 }
 
 .ListBaseCountdownCountDiv:extend(.CenterInParentRow) {
-
 }
 
 .StickyOnTheHead {
-
 }
 
 .CenterInParentColumn:extend(.CenterInParentRow all) {
-  flex-direction: column;
+    flex-direction: column;
 }
 
 .BaseListEmptyDiv:extend(.CenterInParentColumn all) {
-  width: 50vw;
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 10px;
+    width: 50vw;
+    margin-top: 20px;
+    padding: 20px;
+    border-radius: 10px;
 }
 
 .BaseListEmptyTypography {
 }
 
 .BaseListEmptyRetryButton {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
-.BaseAlertDialog:extend(.CenterInParentColumn) { /** 讓dialog不會產生滑動 最底層 */
-  margin: auto;
-  max-width: 100vw; /** 讓dialog不會產生滑動 */
+.BaseAlertDialog:extend(.CenterInParentColumn) {
+    /** 讓dialog不會產生滑動 最底層 */
+    margin: auto;
+    max-width: 100vw; /** 讓dialog不會產生滑動 */
 }
 
 .BaseAlertDialogContent {
-  max-height: 90vh;
-  margin: auto;
+    max-height: 90vh;
+    margin: auto;
 }
 
 .BaseAlertDialogCustomView:extend(.CenterInParentColumn) {
-  position: relative;
-  width: 100%;
-  height: auto;
-  margin: auto;
+    position: relative;
+    width: 100%;
+    height: auto;
+    margin: auto;
 }
 
-
 .BaseAlertDialogDismissView:extend(.CenterInParentColumn) {
-  position: sticky;
-  margin-top: 20px;
-  width: 100%;
-  height: 100%;
-  bottom: 0;
+    position: sticky;
+    margin-top: 20px;
+    width: 100%;
+    height: 100%;
+    bottom: 0;
 }
 
 .BaseAlertDialogDismissChip {
-  background-color: rgba(0, 0, 0, .3);
-  color: white;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
 }
 
 .BaseImageDialogImg {
-  width: 80vw;
-  max-width: 650px;
+    width: 80vw;
+    max-width: 650px;
 }
 
 .BaseImageDialogDiv {
-
 }
 
 /** drawer */
 
-
 .BaseShortcutItemView {
-  border-bottom: 1px solid rgba(187, 187, 187, 0.3);
-  @media @mobile {
-    height: 40px
-  }
-  @media @tablet {
-    height: 40px
-  }
+    border-bottom: 1px solid rgba(187, 187, 187, 0.3);
+    @media @mobile {
+        height: 40px;
+    }
+    @media @tablet {
+        height: 40px;
+    }
 }
 
 .BaseShortcutMUIconView {
-  font-size: 26px;
-  @media @mobile {
-    font-size: 20px;
-  }
+    font-size: 26px;
+    @media @mobile {
+        font-size: 20px;
+    }
 }
 
 .BaseShortcutItemAvatarView {
-  background-color: black;
-  height: 35px;
-  width: 35px;
-  @media @mobile {
-    height: 30px;
-    width: 30px;
-  }
-  @media @tablet {
-    height: 30px;
-    width: 30px;
-  }
+    background-color: black;
+    height: 35px;
+    width: 35px;
+    @media @mobile {
+        height: 30px;
+        width: 30px;
+    }
+    @media @tablet {
+        height: 30px;
+        width: 30px;
+    }
 }
 
 .BaseShortcutItemTextView {
-  font-size: 1.3rem;
-  font-weight:bold;
-  @media @mobile {
-    font-size: 1.0rem;
-  }
-
+    font-size: 1.3rem;
+    font-weight: bold;
+    @media @mobile {
+        font-size: 1rem;
+    }
 }
 
 .BaseShortcutItemIconView {
-  color: black;
+    color: black;
 }
 
 .BaseShortcutCollapseView {
 }
 
 .BaseShortcutNestedListView {
-  padding-left: 1px;
-  @media @mobile {
     padding-left: 1px;
-  }
+    @media @mobile {
+        padding-left: 1px;
+    }
 }
 
 .BaseComponentErrorViewPaper {
-  display: flex;
-  width: 70%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin: auto;
-  margin-top: 5px;
-  padding: 30px;
+    display: flex;
+    width: 70%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 5px;
+    padding: 30px;
 }
 
 .BaseComponentGlobalLoadingRootDiv {
-  position: absolute;
-  width: 100vw;
-  height: 95vh;
+    position: absolute;
+    width: 100vw;
+    height: 95vh;
 }
 
 .BaseEditorTextField {
-  margin: 5px;
+    margin: 5px;
 }
 
 .BaseEditFunctionDiv {
-  flex-direction: row;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .BaseEditButtonProps {
-  font-size: 1.4rem;
-  margin: 5px;
-  text-transform: none;
+    font-size: 1.4rem;
+    margin: 5px;
+    text-transform: none;
 }
 
 .BaseEditFunctionButton:extend(.BaseEditButtonProps all) {
 }
 
 .BaseComponentGlobalLoadingRootBackdrop {
-  z-index: 10;
+    z-index: 10;
 }
 
 .BaseComponentGlobalLoadingDiv {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .BaseComponentGlobalLoadingTypography {
-  margin-top: 20px;
-  color: #ffffff;
-  font-size: 1.2rem;
+    margin-top: 20px;
+    color: #ffffff;
+    font-size: 1.2rem;
 }
 
 .BaseComponentErrorViewTitleTypography {
-  font-size: 3rem;
+    font-size: 3rem;
 }
 
 .BaseComponentErrorViewContentTypography {
-  font-size: 1.2rem;
-  color: #7f7f7f;
+    font-size: 1.2rem;
+    color: #7f7f7f;
 }
 
 .BaseComponentErrorViewRetryButton {
-  margin-top: 30px;
+    margin-top: 30px;
 }
 
 .BaseSnackAlert {
@@ -440,54 +424,52 @@
 }
 
 .ComponentViewDiv {
-  position: relative;
-  width: 100%;
-  margin: auto;
+    position: relative;
+    width: 100%;
+    margin: auto;
 }
 
 .RootViewDiv {
-  width: 100%;
-  position: relative;
-  @media @mobile {
-    /** empty style */
-    //overflow-x: hidden;
-  }
-  @media @tablet {
-    /** empty style */
-    //overflow-x: hidden;
-  }
-  @media @desktop {
-  }
+    width: 100%;
+    position: relative;
+    @media @mobile {
+        /** empty style */
+        //overflow-x: hidden;
+    }
+    @media @tablet {
+        /** empty style */
+        //overflow-x: hidden;
+    }
+    @media @desktop {
+    }
 }
 
 .BaseLoadingViewDiv {
-  position: fixed;
-  width: 100%;
-  z-index: 5;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
+    position: fixed;
+    width: 100%;
+    z-index: 5;
+    bottom: 0;
+    left: 0;
+    pointer-events: none;
 }
 
 .BaseLoadingLinearProgress {
-  height: 10px;
+    height: 10px;
 }
 
 body {
-  margin: 0;
-
+    margin: 0;
 }
 
 /** view pager settings */
 .SlideIndicatorArrowDiv {
-  background-color: lightgray;
+    background-color: lightgray;
 }
-
 
 /** 當TextField為number時不要出現增減的圖示，會佔一個空間 */
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }

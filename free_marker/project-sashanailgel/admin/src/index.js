@@ -47,8 +47,8 @@ import fs from "fs";
             { comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`, id: "OHvWFHEsQQ5MEIU1nQya" },
             {
                 id: "eU4KfbkVVbGS3w1nbYx3",
-                comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`,
-            },
+                comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`
+            }
         ]);
     }
 
@@ -100,28 +100,28 @@ import fs from "fs";
 
     async function uploadProducts() {
         await api.deleteBoozes(true);
-        const items = _.filter(Util.getFileContextInJSON("./sasha_of_product_list_latest.json"),(each) => _.size(each.options) > 1);
+        const items = _.filter(Util.getFileContextInJSON("./sasha_of_product_list_latest.json"), (each) => _.size(each.options) > 1);
         console.log(_.size(items));
         // await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
         await api.submitBoozes(
-          items.map((product) => {
-              const price = Util.findLowestValue(product.options);
-              return {
-                  ...product,
-                  price,
-                  category: Util.getUniqueValuesBy(product.category, "valueOfType"),
-                  rangeOfPrice: Util.getStringOfValueRange(product.options),
-                  statement: normalizeStatement(product.statement),
-                  priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])),
-                  options: _.filter(product.options, (option) => !Util.isUndefinedNullEmpty(option.name)).map((option) => {
-                      const price = option.price;
-                      return {
-                          ...option,
-                          priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])),
-                      };
-                  }),
-              };
-          }),
+            items.map((product) => {
+                const price = Util.findLowestValue(product.options);
+                return {
+                    ...product,
+                    price,
+                    category: Util.getUniqueValuesBy(product.category, "valueOfType"),
+                    rangeOfPrice: Util.getStringOfValueRange(product.options),
+                    statement: normalizeStatement(product.statement),
+                    priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])),
+                    options: _.filter(product.options, (option) => !Util.isUndefinedNullEmpty(option.name)).map((option) => {
+                        const price = option.price;
+                        return {
+                            ...option,
+                            priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)]))
+                        };
+                    })
+                };
+            })
         );
     }
 

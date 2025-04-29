@@ -1,11 +1,10 @@
-import {exceptioner as ERROR, utiller as Util,} from "utiller";
+import { exceptioner as ERROR, utiller as Util } from "utiller";
 import BaseCheckoutByECPay from "./BaseCheckoutByECPay";
-import ECPay from 'ecpay_aio_nodejs';
-import Api from '../../api';
-import Config from '../../config';
+import ECPay from "ecpay_aio_nodejs";
+import Api from "../../api";
+import Config from "../../config";
 import _ from "lodash";
 import libpath from "path";
-
 
 class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     /** -------------------- fields -------------------- **/
@@ -14,7 +13,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     constructor(props) {
         super(props);
         this.handlerOfECPay = new ECPay(Config.ecpay);
-        Util.setLocaleOfMoment('zh-tw');
+        Util.setLocaleOfMoment("zh-tw");
     }
 
     async handleHttpOnCall(data, session) {
@@ -26,13 +25,13 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         }
 
         let detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(detailOfPreciseOrder, true, '598498742')
+        this.validatePreciseOrder(detailOfPreciseOrder, true, "598498742");
 
         /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */
         if (Util.isOrEquals(detailOfPreciseOrder.procedureOfPayment, Config.TYPE_OF_THIRD_PARTY_ECPAY, Config.TYPE_OF_THIRD_PARTY_LINEPAY)) {
             await Api.deletePreciseOrderItem(detailOfPreciseOrder.id);
             delete detailOfPreciseOrder.id;
-            const result = await Api.submitPreciseOrderItem({...detailOfPreciseOrder});
+            const result = await Api.submitPreciseOrderItem({ ...detailOfPreciseOrder });
             detailOfPreciseOrder = result.value;
         }
         /** -------------------------------------------------------------------------------- **/
@@ -42,34 +41,25 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
 
         result = Util.getStringOfHandledHtml(result, (document) => {
-            const element = document.getElementById('CheckMacValue');
-            element.setAttribute('value', Util.getECPayCheckMacValue(
-                dataOfECPayOrder,
-                Config.ecpay.MercProfile.HashKey,
-                Config.ecpay.MercProfile.HashIV,
-            ));
+            const element = document.getElementById("CheckMacValue");
+            element.setAttribute("value", Util.getECPayCheckMacValue(dataOfECPayOrder, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV));
         });
 
         await Api.updatePreciseOrderItemAtomically((order, transaction) => {
-                order.exists = true;
-                this.validatePreciseOrder(order, true, '598498742');
-                return {
-                    procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_ECPAY,
-                    contentOfRender: result,
-                    timesOfTransaction: order.timesOfTransaction + 1,
-                }
-            }, detailOfPreciseOrder.id
-        )
-        return {textOfRender: result};
+            order.exists = true;
+            this.validatePreciseOrder(order, true, "598498742");
+            return {
+                procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_ECPAY,
+                contentOfRender: result,
+                timesOfTransaction: order.timesOfTransaction + 1
+            };
+        }, detailOfPreciseOrder.id);
+        return { textOfRender: result };
     }
 
     normalizeDescOfItemName(string) {
-        return Util.replaceAllWithSets(string,
-            {from: `\n\n\n`, to: '#'},
-            {from: `\n\n`, to: '#'},
-            {from: `\n`, to: '#'})
+        return Util.replaceAllWithSets(string, { from: `\n\n\n`, to: "#" }, { from: `\n\n`, to: "#" }, { from: `\n`, to: "#" });
     }
-
 
     /** 消費者點選此按鈕後，會將頁面導回到此設定的網址
      注意事項：
@@ -88,7 +78,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
      * 傳送付款結果並將使用者的畫面轉導到商家指定的頁面
      * 當消費者付款完成後，綠界會將付款結果參數以幕前(Client POST)回傳到該網址。詳細說明請參考付款結果通知 這樣就不會呼叫RETURN URL*/
     getURLOfOrderResultURL() {
-        return `必須是post的api`
+        return `必須是post的api`;
     }
 
     getPayloadOfECPayAIORequest(order) {
@@ -100,12 +90,12 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             ItemName: this.normalizeDescOfItemName(order.textOfContract),
             ReturnURL: Config.urlOfConfirmedByECPay,
             ClientBackURL: this.getURLOfClientBackURL(),
-            ExpireDate: 1, /** ATM付款參數:單位是天(day) */
-            PaymentInfoURL: Config.urlOfPaymentInfoByECPay,/** 用來讓率介乎叫CVS|ATM關於付款資訊的內容 */
+            ExpireDate: 1 /** ATM付款參數:單位是天(day) */,
+            PaymentInfoURL: Config.urlOfPaymentInfoByECPay /** 用來讓率介乎叫CVS|ATM關於付款資訊的內容 */,
             EncryptType: 1,
-            PaymentType: 'aio',
-            ChoosePayment: 'ALL',
-            StoreExpireDate: 1440,/** CVS付款參數:單位是分鐘(minute)，1440代表一天的秒數 */
+            PaymentType: "aio",
+            ChoosePayment: "ALL",
+            StoreExpireDate: 1440 /** CVS付款參數:單位是分鐘(minute)，1440代表一天的秒數 */
             // OrderResultURL: this.getURLOfOrderResultURL(),
             // NeedExtraPaidInfo: '1',
             // ChooseSubPayment: 'Credit',
