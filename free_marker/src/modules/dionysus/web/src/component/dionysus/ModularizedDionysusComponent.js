@@ -7,7 +7,7 @@ import BaseDionysusComponent from "./BaseDionysusComponent";
 class ModularizedDionysusComponent extends BaseDionysusComponent {
     constructor(props) {
         super(props);
-        /** cool man */
+        /** cool man, r u here*/
     }
 
     getBoozePhotoOfHead(booze) {

@@ -974,12 +974,16 @@ class NodeUtiller extends Utiller {
         try {
             const firstLine = context.split('\n')[0];
 
-            // 偵測形如：const edit = true;
-            const match = firstLine.match(/const\s+edit\s*=\s*(true|false)\s*;?/);
-            if (!match) return false;
-
-            const editValue = match[1] === 'true';
-
+            /**
+             * const\s+：匹配 const 與其後至少一個空白。
+             * ([a-zA-Z_]\w*)：匹配合法變數名稱（第一個字為英文字母或底線，其後可為英文字母、數字、底線）。
+             * \s*=\s*：匹配等號兩邊的空白。
+             * (true|false)：匹配布林值。
+             * \s*;?：匹配可有可無的分號及其前空白。
+             */
+            const match = firstLine.match(/const\s+([a-zA-Z_]\w*)\s*=\s*(true|false)\s*;?/);
+            if (!match || _.size(match) < 3) return false;/** ['const bear = true','bear','true',index: 0,input: 'const bear = true', groups:undefined] */
+            const editValue = match[2] === 'true';
             if (editValue === true) {
                 return true;
             }
@@ -1040,7 +1044,9 @@ class NodeUtiller extends Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const utiller = new NodeUtiller();
+          // const match = 'const bear = true'.match(/const\s+([a-zA-Z_]\w*)\s*=\s*(true|false)\s*;?/);
+          // console.log('is match ==> ', match);
+          // const utiller = new NodeUtiller();
             // utiller.persistByPath('./a/b/c.js')
             // await utiller.persistJsonFilePrettier('./temp/one.json',{a:'v',b:'x'});
             // await utiller.updateFileOfSpecificLine('/Users/davidtu/cross-achieve/high/idea-inventer/free_marker/template/admin.package.json.mustache',
