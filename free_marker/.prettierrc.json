@@ -1,1 +1,15 @@
-{}
+{
+  "tabWidth": 4,
+  "printWidth": 180,
+  "bracketSameLine": true,
+  "semi": true,
+  "trailingComma": "none",
+  "overrides": [
+    {
+      "files": "*.less",
+      "options": {
+        "parser": "css"
+      }
+    }
+  ]
+}

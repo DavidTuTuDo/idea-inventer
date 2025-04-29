@@ -12,7 +12,7 @@ export default class PrettierRunner {
    */
   constructor(targetPath = './src') {
     this.targetPath = targetPath;
-    this.supportedExtensions = /\.(js|ts|jsx|tsx|json|css|scss|md|html)$/;
+    this.supportedExtensions = /\.(js|ts|jsx|tsx|json|css|scss|md|html|less)$/;
   }
 
   /**
@@ -47,28 +47,24 @@ export default class PrettierRunner {
       return;
     }
 
-    const targetFiles = _.filter(allFiles, (file) => !file.endsWith('.less'));
+    const targetFiles = allFiles;
 
     if (_.isEmpty(targetFiles)) {
-      console.log(`📂 沒有找到可格式化的檔案（排除 .less）於 ${this.targetPath}`);
+      console.log(`📂 沒有找到可格式化的檔案 於 ${this.targetPath}`);
       return;
     }
 
-    console.log(`✨ Prettier 將格式化 ${targetFiles.length} 筆檔案（已排除 .less），分批大小為 ${batchSize}...`);
+    console.log(`✨ Prettier 將格式化 ${targetFiles.length} 筆檔案，分批大小為 ${batchSize}...`);
 
     const fileBatches = _.chunk(targetFiles, batchSize);
-
+    const root = path.resolve('./');
+    const prettierOptions = [
+      '--config', `${root}/.prettierrc.json`,
+      '--write'
+    ];
     for (const [i, batch] of fileBatches.entries()) {
       const fileList = batch.map((f) => `"${f}"`).join(' ');
       console.log(`📦 處理第 ${i + 1} 批，共 ${fileBatches.length} 批，檔案數：${batch.length}`);
-
-      const prettierOptions = [
-        '--write',
-        '--bracket-same-line',
-        '--print-width 180',
-        '--trailing-comma none',
-        '--tab-width 4'
-      ];
 
       try {
         const { stdout, stderr } = await execAsync(`npx prettier ${prettierOptions.join(' ')} ${fileList}`);
