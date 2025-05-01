@@ -1,24 +1,9 @@
-import {inject} from "mobx-react";
+import { inject } from "mobx-react";
 import BaseEpayTestComponent from "./BaseEpayTestComponent";
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import {observer} from "mobx-react";
-import Button from "@mui/material/Button";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
-import Functions from '../../functions';
-
+import { observer } from "mobx-react";
 
 @inject("epayTest")
 @observer

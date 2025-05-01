@@ -1,13 +1,8 @@
 const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import { Application } from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction } from "mobx";
 import EpayPreciseOrderStore from "../epayPreciseOrder";
 import BaseEpayFootprintStore from "./BaseEpayFootprintStore";
 
@@ -22,17 +17,14 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     conditionsOfDefault(state) {
         /** all的話就全拿 */
-        const conditionOfDefault = { where: (stmt) => stmt.where("idOfUser", "==", UserInfoRef.getUid()) };
-
+        const conditionOfDefault = { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };
         if (_.isEqual(state, "all")) {
             this.clearFetchConditions();
             return [conditionOfDefault];
             /** 如果return undefined會拿不到資料 */
         }
-
         const states = _.isEqual(state, "pending") ? ["pending", "waiting"] : [state];
-
-        return [{ where: (stmt) => stmt.where("stateOfPayment", "in", states) }, conditionOfDefault];
+        return [{ type: "where", params: ["stateOfPayment", "in", states] }, conditionOfDefault];
     }
 
     fetch = async (view) => {
@@ -200,39 +192,25 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             timeOfExpired: order.timeOfExpired,
             timeOfPayment: order.timeOfPayment,
             timeOfCancel: order.timeOfCancel,
-            areaOfTop: {
-                stringOfOrderIdentity: order.id,
-                stateOfOrder: getStringOfPaymentState()
-            },
+            stringOfOrderIdentity: order.id,
+            stateOfOrder: getStringOfPaymentState(),
             briefs: order.items.map((item) => normalizeBriefFromOrderItem(item)),
             valueOfTotalPrice: `$${order.priceOfTotal}`,
-            areaOfPaymentRule: {
-                rule: getStringOfRule()
-            },
-            areaOfPaymentDeadline: {
-                deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired))
-            },
-            areaOfInputMessage: {
-                value: order.remark
-            },
-            areaOfPaymentDetail: {
-                domain: getStringOfDomain(),
-                specificOfProduct: getStringOfSpecific(),
-                sectionOfCode: {
-                    code: getStringOfCode()
-                }
-            },
-            areaOfPaymentFailure: {
-                reason: `${order.messageOfPayment}`
-            }
+            rule: getStringOfRule(),
+            deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired)),
+            value: order.remark,
+            domain: getStringOfDomain(),
+            specificOfProduct: getStringOfSpecific(),
+            code: getStringOfCode(),
+            reason: `${order.messageOfPayment}`
         };
     }
 
     async setCurrentTabByType(type) {
         const tab = _.find(this.getTabs(), (tab) => _.isEqual(tab.getType(), type));
-        this.setValueOfSelectedTab(-1000);
+        this.setValueOfTabClickedTab(-1000);
         await Util.syncDelay(100);
-        this.setValueOfSelectedTab(tab.getValue());
+        this.setValueOfTabClickedTab(tab.getValue());
     }
 
     /** -------------------- async api -------------------- **/

@@ -1,15 +1,6 @@
 const edit = true;
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { Application } from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
+
 import Functions from "../../functions";
-import ChooseTypeRef from "../../store/epayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseType";
 import BaseEpayMethodOfPaymentComponent from "./BaseEpayMethodOfPaymentComponent";
 
 class ModularizedEpayMethodOfPaymentComponent extends BaseEpayMethodOfPaymentComponent {
@@ -21,10 +12,8 @@ class ModularizedEpayMethodOfPaymentComponent extends BaseEpayMethodOfPaymentCom
     }
 
     onEpayMethodOfPaymentOptionCardClicked(param) {
-        const prop = this.props.paramObject;
+        const order = this.props.paramObject;
         const typeOfPayment = param.object;
-
-        const order = prop instanceof ChooseTypeRef ? prop.getParentNode().getParentNode() : undefined;
 
         switch (typeOfPayment.idOfUnique) {
             case "linepay":

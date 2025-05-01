@@ -3,557 +3,1315 @@ import _ from "lodash";
 import libpath from "path";
 
 class MobileStyle {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
+    /** following for homeless */
 
-  /** => following for infoOfCopyRightContent editor component  */
+    /** => following for infoOfCopyRightContent editor component  */
 
-  InfoOfCopyRightContentEditorProjectImageTextField = {};
+    InfoOfCopyRightContentEditorProjectImageTextField = {};
 
-  InfoOfCopyRightContentEditorProjectIdTextField = {};
+    InfoOfCopyRightContentEditorProjectIdTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
 
-  InfoOfCopyRightContentEditorProjectImageCardWrap = {};
+    InfoOfCopyRightContentEditorProjectImageCardWrap = {};
 
-  InfoOfCopyRightContentEditorProjectImageImg = {};
+    InfoOfCopyRightContentEditorProjectImageImg = {};
 
-  InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
+    InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
 
-  InfoOfCopyRightContentEditorProjectRouteTextField = {};
+    InfoOfCopyRightContentEditorProjectRouteTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDivList = {};
+    InfoOfCopyRightContentEditorProjectDivList = {};
 
-  InfoOfCopyRightContentEditorProjectDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDiv = {};
+    InfoOfCopyRightContentEditorProjectDiv = {};
 
-  InfoOfCopyRightContentEditorUpperAreaDiv = {};
+    InfoOfCopyRightContentEditorUpperAreaDiv = {};
 
-  InfoOfCopyRightContentEditorDivWrap = {};
+    InfoOfCopyRightContentEditorDivWrap = {};
 
-  InfoOfCopyRightContentEditorPaper = {};
+    InfoOfCopyRightContentEditorPaper = {};
 
-  /** => following for main editor component  */
+    /** => following for main editor component  */
 
-  MainEditorTestTestUsageButton = {};
+    MainEditorTestTestUsageButton = {};
 
-  MainEditorTestAgodaTextField = {};
+    MainEditorTestEndOfAgodaTextField = {};
 
-  MainEditorTestTrivagoTextField = {};
+    MainEditorTestStartOfAgodaTextField = {};
 
-  MainEditorTestFullTextField = {};
+    MainEditorTestEndOfTrivagoTextField = {};
 
-  MainEditorTestEndTextField = {};
+    MainEditorTestStartOfTrivagoTextField = {};
 
-  MainEditorTestClockTextField = {};
+    MainEditorTestFullTextField = {};
 
-  MainEditorTestSubTitleTextField = {};
+    MainEditorTestEndTextField = {};
 
-  MainEditorTestTitleTextField = {};
+    MainEditorTestClockTextField = {};
 
-  MainEditorTestDivWrap = {};
+    MainEditorTestSubTitleTextField = {};
 
-  MainEditorTestDiv = {};
+    MainEditorTestTitleTextField = {};
 
-  MainEditorBannerImageTextField = {};
+    MainEditorTestDivWrap = {};
 
-  MainEditorBannerImageDivWrap = {};
+    MainEditorTestDiv = {};
 
-  MainEditorBannerImageImg = {};
+    MainEditorBannerImageTextField = {};
 
-  MainEditorBannerRouteTextField = {};
+    MainEditorBannerImageDivWrap = {};
 
-  MainEditorBannerSwiperSlide = {};
+    MainEditorBannerImageImg = {};
 
-  MainEditorBannerSwiperList = {};
+    MainEditorBannerRouteTextField = {};
 
-  MainEditorBannerSwiperSlide = {};
+    MainEditorBannerSwiperSlide = {};
 
-  MainEditorDiv = {};
+    MainEditorBannerSwiperList = {};
 
-  /** => following for navigator  component  */
+    MainEditorBannerSwiperSlide = {};
 
-  NavigatorDrawerShortcutIconImg = {};
+    MainEditorDiv = {};
 
-  NavigatorDrawerShortcutTitleTypography = {};
+    /** => following for navigator  component  */
 
-  NavigatorDrawerShortcutListItemSkeleton = {};
+    NavigatorDrawerShortcutIconImg = {};
 
-  NavigatorDrawerShortcutListList = {};
+    NavigatorDrawerShortcutTitleTypography = {};
 
-  NavigatorDrawerShortcutListItem = {};
+    NavigatorDrawerShortcutListItemSkeleton = {};
 
-  NavigatorDrawerDrawer = {};
+    NavigatorDrawerShortcutListList = {};
 
-  NavigatorToolBarTipOfLoadingCircularProgress = {};
+    NavigatorDrawerShortcutListItem = {};
 
-  NavigatorToolBarAccountHeadAccountCircle = {};
+    NavigatorDrawerDrawer = {};
 
-  NavigatorToolBarAccountReactFragmentWrap = {};
+    NavigatorToolBarTipOfLoadingCircularProgress = {};
 
-  NavigatorToolBarAccountIconButton = {};
+    NavigatorToolBarAccountIconAccountCircle = {};
 
-  NavigatorToolBarLoginButton = {};
+    NavigatorToolBarAccountReactFragmentWrap = {};
 
-  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
+    NavigatorToolBarAccountIconButton = {};
 
-  NavigatorToolBarCompleteInputOfCompleteTextField = {};
+    NavigatorToolBarLoginIconLogin = {};
 
-  NavigatorToolBarCompleteAutocomplete = {};
+    NavigatorToolBarLoginIconButton = {};
 
-  NavigatorToolBarTitleTypography = {};
+    NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
 
-  NavigatorToolBarMenuIconMenuRounded = {};
+    NavigatorToolBarCartieBadgeOfCartieBadge = {};
 
-  NavigatorToolBarMenuIconButton = {};
+    NavigatorToolBarCartieIconButton = {};
 
-  NavigatorToolBarAppBarWrap = {};
+    NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
-  NavigatorToolBarToolbar = {};
+    NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
-  NavigatorDiv = {};
+    NavigatorToolBarCompleteAutocomplete = {};
 
-  /** => following for infoOfCopyRightContent  component  */
+    NavigatorToolBarTitleDivWrap = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+    NavigatorToolBarTitleTypography = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
+    NavigatorToolBarMenuIconMenuRounded = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
+    NavigatorToolBarMenuIconButton = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
+    NavigatorToolBarAppBarWrap = {};
 
-  InfoOfCopyRightContentProjectDescriptionDivList = {};
+    NavigatorToolBarToolbar = {};
 
-  InfoOfCopyRightContentProjectDescriptionDiv = {};
+    NavigatorDiv = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
+    /** => following for metisSignUp  component  */
 
-  InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
+    MetisSignUpStudentCustomFuncGoBackReactFragmentWrap = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
+    MetisSignUpStudentCustomFuncGoBackChip = {};
 
-  InfoOfCopyRightContentProjectUpperAreaDiv = {};
+    MetisSignUpStudentCustomFuncAcceptReactFragmentWrap = {};
 
-  InfoOfCopyRightContentProjectImageCardWrap = {};
+    MetisSignUpStudentCustomFuncAcceptChip = {};
 
-  InfoOfCopyRightContentProjectImageImg = {};
+    MetisSignUpStudentCustomFuncDiv = {};
 
-  InfoOfCopyRightContentProjectDivSkeleton = {};
+    MetisSignUpStudentCustomAgreeOfContractLabelOfAgreeOfContractTypography = {};
 
-  InfoOfCopyRightContentProjectDivList = {};
+    MetisSignUpStudentCustomAgreeOfContractDivWrap = {};
 
-  InfoOfCopyRightContentProjectDiv = {};
+    MetisSignUpStudentCustomAgreeOfContractCheckbox = {};
 
-  InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
+    MetisSignUpStudentCustomContractDivWrap = {};
 
-  InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
+    MetisSignUpStudentCustomContractTypography = {};
 
-  InfoOfCopyRightContentUpperAreaDiv = {};
+    MetisSignUpStudentCustomYoungNoticeDivWrap = {};
 
-  InfoOfCopyRightContentCancelButton = {};
+    MetisSignUpStudentCustomYoungNoticeTypography = {};
 
-  InfoOfCopyRightContentDivWrap = {};
+    MetisSignUpStudentCustomYoungContactOfGuardianLabelOfContactOfGuardianTypography = {};
 
-  InfoOfCopyRightContentPaper = {};
+    MetisSignUpStudentCustomYoungContactOfGuardianDivWrap = {};
 
-  /** => following for infoOfCopyRightContact  component  */
+    MetisSignUpStudentCustomYoungContactOfGuardianTextField = {};
 
-  InfoOfCopyRightContactCancelButton = {};
+    MetisSignUpStudentCustomYoungNameOfGuardianLabelOfNameOfGuardianTypography = {};
 
-  InfoOfCopyRightContactLowerAreaDetailsTypography = {};
+    MetisSignUpStudentCustomYoungNameOfGuardianDivWrap = {};
 
-  InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
+    MetisSignUpStudentCustomYoungNameOfGuardianTextField = {};
 
-  InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
+    MetisSignUpStudentCustomYoungDiv = {};
 
-  InfoOfCopyRightContactLowerAreaDiv = {};
+    MetisSignUpStudentCustomIdOfNationalLabelOfIdOfNationalTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
+    MetisSignUpStudentCustomIdOfNationalDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
+    MetisSignUpStudentCustomIdOfNationalTextField = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
+    MetisSignUpStudentCustomBirthdayLabelOfBirthdayTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
+    MetisSignUpStudentCustomBirthdayDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
+    MetisSignUpStudentCustomBirthdayDatePicker = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
+    MetisSignUpStudentCustomContactLabelOfContactTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
+    MetisSignUpStudentCustomContactDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
+    MetisSignUpStudentCustomContactTextField = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
+    MetisSignUpStudentCustomTextOfEmailLabelOfTextOfEmailTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
+    MetisSignUpStudentCustomTextOfEmailDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
+    MetisSignUpStudentCustomTextOfEmailTextField = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
+    MetisSignUpStudentCustomNameLabelOfNameTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
+    MetisSignUpStudentCustomNameDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
+    MetisSignUpStudentCustomNameTextField = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
+    MetisSignUpStudentCustomDiv = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
+    MetisSignUpStudentMainDatOfPeriodWithHoursLabelOfDatOfPeriodWithHoursTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
+    MetisSignUpStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconEditCalendarRounded = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
+    MetisSignUpStudentMainDatOfPeriodWithHoursBtnOfDatOfPeriodWithHoursIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaContactDivWrap = {};
+    MetisSignUpStudentMainDatOfPeriodWithHoursDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaContactTypography = {};
+    MetisSignUpStudentMainDatOfPeriodWithHoursTypography = {};
 
-  InfoOfCopyRightContactUpperAreaDiv = {};
+    MetisSignUpStudentMainNameOfClassLabelOfNameOfClassTypography = {};
 
-  InfoOfCopyRightContactDivWrap = {};
+    MetisSignUpStudentMainNameOfClassBtnOfNameOfClassIconSchoolRounded = {};
 
-  InfoOfCopyRightContactCard = {};
+    MetisSignUpStudentMainNameOfClassBtnOfNameOfClassIconButton = {};
 
-  /** => following for infoOfCopyRight  component  */
+    MetisSignUpStudentMainNameOfClassDivWrap = {};
 
-  InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
+    MetisSignUpStudentMainNameOfClassTypography = {};
 
-  InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
+    MetisSignUpStudentMainDiv = {};
 
-  InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
+    MetisSignUpStudentPaperSkeleton = {};
 
-  InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
+    MetisSignUpStudentDivList = {};
 
-  InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
+    MetisSignUpStudentPaper = {};
 
-  InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
+    MetisSignUpDiv = {};
 
-  InfoOfCopyRightGroupOfSocialMediaDiv = {};
+    /** => following for metisSetUp  component  */
 
-  InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
+    MetisSetUpClazzAreaOfFuncDeletedReactFragmentWrap = {};
 
-  InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
+    MetisSetUpClazzAreaOfFuncDeletedChip = {};
 
-  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
+    MetisSetUpClazzAreaOfFuncUpdateChip = {};
 
-  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+    MetisSetUpClazzAreaOfFuncDiv = {};
 
-  InfoOfCopyRightUpperGroupRightAreaDiv = {};
+    MetisSetUpClazzInfoStateOfClassMenuItem = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
+    MetisSetUpClazzInfoStateOfClassTextFieldList = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
+    MetisSetUpClazzInfoTypeOfClassMenuItem = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
+    MetisSetUpClazzInfoTypeOfClassTextFieldList = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
+    MetisSetUpClazzInfoCountsOfStudentCapacityTextField = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaDiv = {};
+    MetisSetUpClazzInfoDiv = {};
 
-  InfoOfCopyRightUpperGroupDiv = {};
+    MetisSetUpClazzIntroduceTextField = {};
 
-  InfoOfCopyRightDiv = {};
+    MetisSetUpClazzClassTimeExtraIconMoreVertRounded = {};
 
-  /** => following for epayPurchaseOfHistory  component  */
+    MetisSetUpClazzClassTimeExtraReactFragmentWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
+    MetisSetUpClazzClassTimeExtraIconButton = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonDivWrap = {};
+    MetisSetUpClazzClassTimeEndOfTimeTimePicker = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureReasonTypography = {};
+    MetisSetUpClazzClassTimeStartOfTimeTimePicker = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentFailureDiv = {};
+    MetisSetUpClazzClassTimeDayOfWeekMenuItem = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfFuncCheckoutButton = {};
+    MetisSetUpClazzClassTimeDayOfWeekTextFieldList = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfFuncDiv = {};
+    MetisSetUpClazzClassTimeDivList = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll = {};
+    MetisSetUpClazzClassTimeDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton = {};
+    MetisSetUpClazzSpecificClassDateRangePicker = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography = {};
+    MetisSetUpClazzFeeOfClassTextField = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap = {};
+    MetisSetUpClazzNameOfClassTextField = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeCodeTypography = {};
+    MetisSetUpClazzLinkOfPortfolioTextField = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailSectionOfCodeDiv = {};
+    MetisSetUpClazzExperienceOfHostTextField = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainLabelOfDomainTypography = {};
+    MetisSetUpClazzHeadNameOfHostTextField = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainDivWrap = {};
+    MetisSetUpClazzHeadImageOfHostAvatar = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDomainTypography = {};
+    MetisSetUpClazzHeadDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDivWrap = {};
+    MetisSetUpClazzDivList = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDetailDiv = {};
+    MetisSetUpClazzPaper = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography = {};
+    MetisSetUpAreaOfEditBackChip = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineDivWrap = {};
+    MetisSetUpAreaOfEditAppendChip = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDeadlineTypography = {};
+    MetisSetUpAreaOfEditDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentDeadlineDiv = {};
+    MetisSetUpDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
+    /** => following for metis  component  */
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleDivWrap = {};
+    MetisClazzSecondFuncShareIconShareRounded = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleRuleTypography = {};
+    MetisClazzSecondFuncShareIconButton = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfPaymentRuleDiv = {};
+    MetisClazzSecondFuncMoreChip = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfInputMessageValueTextField = {};
+    MetisClazzSecondFuncSubmitChip = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfInputMessageLabelTypography = {};
+    MetisClazzSecondFuncDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfInputMessageDiv = {};
+    MetisClazzSecondIntroduceDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconChevronRight = {};
+    MetisClazzSecondIntroduceTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap = {};
+    MetisClazzSecondStateOfRegisteredLabelOfStateOfRegisteredTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton = {};
+    MetisClazzSecondStateOfRegisteredDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography = {};
+    MetisClazzSecondStateOfRegisteredTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv = {};
+    MetisClazzSecondTotalHoursOfClassLabelOfTotalHoursOfClassTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeLabelOfPaymentTypeTypography = {};
+    MetisClazzSecondTotalHoursOfClassDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfChoosePaymentTypeDiv = {};
+    MetisClazzSecondTotalHoursOfClassTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography = {};
+    MetisClazzSecondDateOfWeekAttendLabelOfDateOfWeekAttendTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceDivWrap = {};
+    MetisClazzSecondDateOfWeekAttendDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
+    MetisClazzSecondDateOfWeekAttendTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTotalPriceDiv = {};
+    MetisClazzSecondDateOfPeriodLabelOfDateOfPeriodTypography = {};
 
-  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionPriceTypography = {};
+    MetisClazzSecondDateOfPeriodDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionQuantityTypography = {};
+    MetisClazzSecondDateOfPeriodTypography = {};
 
-  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionSpecificOfProductTypography = {};
+    MetisClazzSecondFeeOfClassLabelOfFeeOfClassTypography = {};
 
-  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionNameOfProductDivWrap = {};
+    MetisClazzSecondFeeOfClassDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionNameOfProductTypography = {};
+    MetisClazzSecondFeeOfClassTypography = {};
 
-  EpayPurchaseOfHistoryOrderBriefSectionOfDescriptionDiv = {};
+    MetisClazzSecondNameOfClassLabelOfNameOfClassTypography = {};
 
-  EpayPurchaseOfHistoryOrderBriefImageOfProductPhotoImg = {};
+    MetisClazzSecondNameOfClassDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderBriefDivList = {};
+    MetisClazzSecondNameOfClassTypography = {};
 
-  EpayPurchaseOfHistoryOrderBriefDiv = {};
+    MetisClazzSecondDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
+    MetisClazzHeadDescGotoPortfolioDivWrap = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
+    MetisClazzHeadDescGotoPortfolioChip = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailExtraIconButton = {};
+    MetisClazzHeadDescExperienceOfHostTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
+    MetisClazzHeadDescDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfTailDiv = {};
+    MetisClazzHeadInfoNameOfHostTypography = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
+    MetisClazzHeadInfoImageOfHostAvatar = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
+    MetisClazzHeadInfoDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography = {};
+    MetisClazzHeadDiv = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap = {};
+    MetisClazzCardSkeleton = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
+    MetisClazzDivList = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopSectionOfHeadDiv = {};
+    MetisClazzCard = {};
 
-  EpayPurchaseOfHistoryOrderAreaOfTopDiv = {};
+    MetisDiv = {};
 
-  EpayPurchaseOfHistoryOrderDivList = {};
+    /** => following for infoOfCopyRightContent  component  */
 
-  EpayPurchaseOfHistoryOrderCard = {};
+    InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
 
-  EpayPurchaseOfHistoryTabTabsList = {};
+    InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
 
-  EpayPurchaseOfHistoryTabTab = {};
+    InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
 
-  EpayPurchaseOfHistoryDiv = {};
+    InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
 
-  /** => following for epayMethodOfPayment  component  */
+    InfoOfCopyRightContentProjectDescriptionDivList = {};
 
-  EpayMethodOfPaymentOptionDescriptionTypography = {};
+    InfoOfCopyRightContentProjectDescriptionDiv = {};
 
-  EpayMethodOfPaymentOptionImageImg = {};
+    InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
 
-  EpayMethodOfPaymentOptionNameTypography = {};
+    InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
 
-  EpayMethodOfPaymentOptionCardSkeleton = {};
+    InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
 
-  EpayMethodOfPaymentOptionDivList = {};
+    InfoOfCopyRightContentProjectUpperAreaDiv = {};
 
-  EpayMethodOfPaymentOptionCard = {};
+    InfoOfCopyRightContentProjectImageCardWrap = {};
 
-  EpayMethodOfPaymentTitleTypography = {};
+    InfoOfCopyRightContentProjectImageImg = {};
 
-  EpayMethodOfPaymentPaper = {};
+    InfoOfCopyRightContentProjectDivSkeleton = {};
 
-  /** => following for epayBehaviorOfConfirmLinePay  component  */
+    InfoOfCopyRightContentProjectDivList = {};
 
-  EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
+    InfoOfCopyRightContentProjectDiv = {};
 
-  EpayBehaviorOfConfirmLinePayDiv = {};
+    InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
 
-  /** => following for epay  component  */
+    InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
 
-  EpayMessageOfEPayTypography = {};
+    InfoOfCopyRightContentUpperAreaDiv = {};
 
-  EpayDiv = {};
+    InfoOfCopyRightContentDivWrap = {};
 
-  /** => following for account  component  */
+    InfoOfCopyRightContentPaper = {};
 
-  AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+    /** => following for infoOfCopyRightContact  component  */
 
-  AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+    InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
-  AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+    InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
 
-  AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+    InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
 
-  AccountFuncAreaOfEditToEditModeButton = {};
+    InfoOfCopyRightContactLowerAreaDiv = {};
 
-  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
 
-  AccountFuncAreaOfEditLogoutButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
 
-  AccountFuncAreaOfEditCopyUserIdButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
 
-  AccountFuncAreaOfEditLangMenuItem = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
 
-  AccountFuncAreaOfEditLangTextFieldList = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
 
-  AccountFuncAreaOfEditDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
 
-  AccountFuncAreaOfIdDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
 
-  AccountFuncAreaOfEmailDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
 
-  AccountSpaceDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
 
-  AccountFuncAreaOfNameDiv = {};
+    InfoOfCopyRightContactUpperAreaContactDivWrap = {};
 
-  AccountUrlOfHeadPhotoAvatar = {};
+    InfoOfCopyRightContactUpperAreaContactTypography = {};
 
-  AccountPaper = {};
+    InfoOfCopyRightContactUpperAreaDiv = {};
 
-  /** => following for epayTest  component  */
+    InfoOfCopyRightContactDivWrap = {};
 
-  EpayTestFindLinePayPageByIdButton = {};
+    InfoOfCopyRightContactCard = {};
 
-  EpayTestFindEcPayPageByIdButton = {};
+    /** => following for infoOfCopyRight  component  */
 
-  EpayTestIdOfPreciseOrderInputTextField = {};
+    InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
 
-  EpayTestIdOfCurrentPreciseOrderTypography = {};
+    InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
 
-  EpayTestCheckoutByEcPayButton = {};
+    InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
 
-  EpayTestCheckoutByLinePayButton = {};
+    InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
 
-  EpayTestCancelPreciseOrderButton = {};
+    InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
 
-  EpayTestCreatePreciseOrderButton = {};
+    InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
 
-  EpayTestDiv = {};
+    InfoOfCopyRightGroupOfSocialMediaDiv = {};
 
-  /** => following for main  component  */
+    InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
 
-  MainTestTestUsageButton = {};
+    InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
 
-  MainTestAgodaDateTimeRangePicker = {};
+    InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
 
-  MainTestTrivagoDateRangePicker = {};
+    InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
 
-  MainTestFullDateTimePicker = {};
+    InfoOfCopyRightUpperGroupRightAreaDiv = {};
 
-  MainTestEndDatePicker = {};
+    InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
 
-  MainTestClockTimePicker = {};
+    InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
 
-  MainTestGotoHistoryButton = {};
+    InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
 
-  MainTestEpayTestButton = {};
+    InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
 
-  MainTestSubTitleTypography = {};
+    InfoOfCopyRightUpperGroupLeftAreaDiv = {};
 
-  MainTestTitleTypography = {};
+    InfoOfCopyRightUpperGroupDiv = {};
 
-  MainTestDiv = {};
+    InfoOfCopyRightDiv = {};
 
-  MainBannerImageDivWrap = {};
+    /** => following for epayFootprint  component  */
 
-  MainBannerImageImg = {};
+    EpayFootprintOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
 
-  MainBannerSwiperSlide = {};
+    EpayFootprintOrderAreaOfPaymentFailureReasonDivWrap = {};
 
-  MainBannerSwiperList = {};
+    EpayFootprintOrderAreaOfPaymentFailureReasonTypography = {};
 
-  MainBannerSwiperSlide = {};
+    EpayFootprintOrderAreaOfPaymentFailureDiv = {};
 
-  MainDiv = {};
+    EpayFootprintOrderAreaOfFuncCheckoutButton = {};
 
-  /** -------------------- functions -------------------- **/
+    EpayFootprintOrderAreaOfFuncDiv = {};
 
-  constructor(props) {}
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll = {};
 
-  /** -------------------- async api -------------------- **/
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDomainLabelOfDomainTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDomainDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDomainTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleDiv = {};
+
+    EpayFootprintOrderAreaOfInputMessageValueTextField = {};
+
+    EpayFootprintOrderAreaOfInputMessageLabelTypography = {};
+
+    EpayFootprintOrderAreaOfInputMessageDiv = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconChevronRight = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeLabelOfPaymentTypeTypography = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeDiv = {};
+
+    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography = {};
+
+    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceDivWrap = {};
+
+    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
+
+    EpayFootprintOrderAreaOfTotalPriceDiv = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionPriceTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionDiv = {};
+
+    EpayFootprintOrderBriefImageOfProductPhotoImg = {};
+
+    EpayFootprintOrderBriefDivList = {};
+
+    EpayFootprintOrderBriefDiv = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailDiv = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadDiv = {};
+
+    EpayFootprintOrderAreaOfTopDiv = {};
+
+    EpayFootprintOrderDivList = {};
+
+    EpayFootprintOrderCard = {};
+
+    EpayFootprintTabTabsList = {};
+
+    EpayFootprintTabTab = {};
+
+    EpayFootprintDiv = {};
+
+    /** => following for epayMethodOfPayment  component  */
+
+    EpayMethodOfPaymentOptionDescriptionTypography = {};
+
+    EpayMethodOfPaymentOptionImageImg = {};
+
+    EpayMethodOfPaymentOptionNameTypography = {};
+
+    EpayMethodOfPaymentOptionCardSkeleton = {};
+
+    EpayMethodOfPaymentOptionDivList = {};
+
+    EpayMethodOfPaymentOptionCard = {};
+
+    EpayMethodOfPaymentTitleTypography = {};
+
+    EpayMethodOfPaymentPaper = {};
+
+    /** => following for epayBehaviorOfConfirmLinePay  component  */
+
+    EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
+
+    EpayBehaviorOfConfirmLinePayDiv = {};
+
+    /** => following for epay  component  */
+
+    EpayDiv = {};
+
+    /** => following for plutus  component  */
+
+    DionysusPlutusFuncOfCheckoutSubmitDivWrap = {};
+
+    DionysusPlutusFuncOfCheckoutSubmitChip = {};
+
+    DionysusPlutusFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography = {};
+
+    DionysusPlutusFuncOfCheckoutPriceOfTotalDivWrap = {};
+
+    DionysusPlutusFuncOfCheckoutPriceOfTotalTypography = {};
+
+    DionysusPlutusFuncOfCheckoutWholeLabelOfWholeTypography = {};
+
+    DionysusPlutusFuncOfCheckoutWholeDivWrap = {};
+
+    DionysusPlutusFuncOfCheckoutWholeCheckbox = {};
+
+    DionysusPlutusFuncOfCheckoutDivWrap = {};
+
+    DionysusPlutusFuncOfCheckoutDiv = {};
+
+    DionysusPlutusMainSummariseSeventhDistanceOfSashaDivWrap = {};
+
+    DionysusPlutusMainSummariseSeventhDistanceOfSashaTypography = {};
+
+    DionysusPlutusMainSummariseSeventhHeadLabelOfDistanceDivWrap = {};
+
+    DionysusPlutusMainSummariseSeventhHeadLabelOfDistanceTypography = {};
+
+    DionysusPlutusMainSummariseSeventhDiv = {};
+
+    DionysusPlutusMainSummariseSixthProcedureOfPaymentDivWrap = {};
+
+    DionysusPlutusMainSummariseSixthProcedureOfPaymentTypography = {};
+
+    DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureDivWrap = {};
+
+    DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureTypography = {};
+
+    DionysusPlutusMainSummariseSixthDiv = {};
+
+    DionysusPlutusMainSummariseFifthFeeOfPaymentLabelOfFeeOfPaymentTypography = {};
+
+    DionysusPlutusMainSummariseFifthFeeOfPaymentDivWrap = {};
+
+    DionysusPlutusMainSummariseFifthFeeOfPaymentTypography = {};
+
+    DionysusPlutusMainSummariseFifthHeadLabelOfPaymentDivWrap = {};
+
+    DionysusPlutusMainSummariseFifthHeadLabelOfPaymentTypography = {};
+
+    DionysusPlutusMainSummariseFifthDiv = {};
+
+    DionysusPlutusMainSummariseFourthFeeOfMemberDiscountLabelOfFeeOfMemberDiscountTypography = {};
+
+    DionysusPlutusMainSummariseFourthFeeOfMemberDiscountDivWrap = {};
+
+    DionysusPlutusMainSummariseFourthFeeOfMemberDiscountTypography = {};
+
+    DionysusPlutusMainSummariseFourthHeadLabelOfMemberDiscountDivWrap = {};
+
+    DionysusPlutusMainSummariseFourthHeadLabelOfMemberDiscountTypography = {};
+
+    DionysusPlutusMainSummariseFourthDiv = {};
+
+    DionysusPlutusMainSummariseThirdFeeOfTransportLabelOfFeeOfTransportTypography = {};
+
+    DionysusPlutusMainSummariseThirdFeeOfTransportDivWrap = {};
+
+    DionysusPlutusMainSummariseThirdFeeOfTransportTypography = {};
+
+    DionysusPlutusMainSummariseThirdHeadLabelOfTransportDivWrap = {};
+
+    DionysusPlutusMainSummariseThirdHeadLabelOfTransportTypography = {};
+
+    DionysusPlutusMainSummariseThirdDiv = {};
+
+    DionysusPlutusMainSummariseSecondDiscountLabelOfDiscountTypography = {};
+
+    DionysusPlutusMainSummariseSecondDiscountDivWrap = {};
+
+    DionysusPlutusMainSummariseSecondDiscountTypography = {};
+
+    DionysusPlutusMainSummariseSecondHeadLabelOfDiscountDivWrap = {};
+
+    DionysusPlutusMainSummariseSecondHeadLabelOfDiscountTypography = {};
+
+    DionysusPlutusMainSummariseSecondDiv = {};
+
+    DionysusPlutusMainSummariseFirstPriceLabelOfPriceTypography = {};
+
+    DionysusPlutusMainSummariseFirstPriceDivWrap = {};
+
+    DionysusPlutusMainSummariseFirstPriceTypography = {};
+
+    DionysusPlutusMainSummariseFirstHeadLabelOfPriceDivWrap = {};
+
+    DionysusPlutusMainSummariseFirstHeadLabelOfPriceTypography = {};
+
+    DionysusPlutusMainSummariseFirstDiv = {};
+
+    DionysusPlutusMainSummariseDiv = {};
+
+    DionysusPlutusMainRemarkLabelOfRemarkTypography = {};
+
+    DionysusPlutusMainRemarkDivWrap = {};
+
+    DionysusPlutusMainRemarkTextField = {};
+
+    DionysusPlutusMainLocationMainTailFindIconWifiFind = {};
+
+    DionysusPlutusMainLocationMainTailFindIconButton = {};
+
+    DionysusPlutusMainLocationMainTailAddressTextField = {};
+
+    DionysusPlutusMainLocationMainTailDiv = {};
+
+    DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
+
+    DionysusPlutusMainLocationMainHeadDistrictTextFieldList = {};
+
+    DionysusPlutusMainLocationMainHeadCityMenuItem = {};
+
+    DionysusPlutusMainLocationMainHeadCityTextFieldList = {};
+
+    DionysusPlutusMainLocationMainHeadDiv = {};
+
+    DionysusPlutusMainLocationMainDiv = {};
+
+    DionysusPlutusMainLocationHeadLabelOfAddressTypography = {};
+
+    DionysusPlutusMainLocationDiv = {};
+
+    DionysusPlutusMainPhoneLabelOfPhoneTypography = {};
+
+    DionysusPlutusMainPhoneDivWrap = {};
+
+    DionysusPlutusMainPhoneTextField = {};
+
+    DionysusPlutusMainEmailLabelOfEmailTypography = {};
+
+    DionysusPlutusMainEmailDivWrap = {};
+
+    DionysusPlutusMainEmailTextField = {};
+
+    DionysusPlutusMainNameLabelOfNameTypography = {};
+
+    DionysusPlutusMainNameDivWrap = {};
+
+    DionysusPlutusMainNameTextField = {};
+
+    DionysusPlutusMainDiv = {};
+
+    DionysusPlutusDivWrap = {};
+
+    DionysusPlutusDiv = {};
+
+    /** => following for hermes  component  */
+
+    DionysusHermesFuncOfCheckoutSubmitDivWrap = {};
+
+    DionysusHermesFuncOfCheckoutSubmitChip = {};
+
+    DionysusHermesFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography = {};
+
+    DionysusHermesFuncOfCheckoutPriceOfTotalDivWrap = {};
+
+    DionysusHermesFuncOfCheckoutPriceOfTotalTypography = {};
+
+    DionysusHermesFuncOfCheckoutWholeLabelOfWholeTypography = {};
+
+    DionysusHermesFuncOfCheckoutWholeDivWrap = {};
+
+    DionysusHermesFuncOfCheckoutWholeCheckbox = {};
+
+    DionysusHermesFuncOfCheckoutDivWrap = {};
+
+    DionysusHermesFuncOfCheckoutDiv = {};
+
+    DionysusHermesTransportPriceLabelOfPriceTypography = {};
+
+    DionysusHermesTransportPriceDivWrap = {};
+
+    DionysusHermesTransportPriceTypography = {};
+
+    DionysusHermesTransportMainDescriptionTypography = {};
+
+    DionysusHermesTransportMainTopPhotoImg = {};
+
+    DionysusHermesTransportMainTopNameTypography = {};
+
+    DionysusHermesTransportMainTopDiv = {};
+
+    DionysusHermesTransportMainDiv = {};
+
+    DionysusHermesTransportChoiceDivWrap = {};
+
+    DionysusHermesTransportChoiceCheckbox = {};
+
+    DionysusHermesTransportDivList = {};
+
+    DionysusHermesTransportDiv = {};
+
+    DionysusHermesDivWrap = {};
+
+    DionysusHermesDiv = {};
+
+    /** => following for cartie  component  */
+
+    DionysusCartieFuncOfCheckoutSubmitDivWrap = {};
+
+    DionysusCartieFuncOfCheckoutSubmitChip = {};
+
+    DionysusCartieFuncOfCheckoutPriceOfTotalLabelOfPriceOfTotalTypography = {};
+
+    DionysusCartieFuncOfCheckoutPriceOfTotalDivWrap = {};
+
+    DionysusCartieFuncOfCheckoutPriceOfTotalTypography = {};
+
+    DionysusCartieFuncOfCheckoutWholeLabelOfWholeTypography = {};
+
+    DionysusCartieFuncOfCheckoutWholeDivWrap = {};
+
+    DionysusCartieFuncOfCheckoutWholeCheckbox = {};
+
+    DionysusCartieFuncOfCheckoutDivWrap = {};
+
+    DionysusCartieFuncOfCheckoutDiv = {};
+
+    DionysusCartieMainSummariseDiscountOfMemberLabelOfDiscountOfMemberTypography = {};
+
+    DionysusCartieMainSummariseDiscountOfMemberDivWrap = {};
+
+    DionysusCartieMainSummariseDiscountOfMemberTypography = {};
+
+    DionysusCartieMainSummarisePriceOfTransportLabelOfPriceOfTransportTypography = {};
+
+    DionysusCartieMainSummarisePriceOfTransportDivWrap = {};
+
+    DionysusCartieMainSummarisePriceOfTransportTypography = {};
+
+    DionysusCartieMainSummarisePriceOfDiscountLabelOfPriceOfDiscountTypography = {};
+
+    DionysusCartieMainSummarisePriceOfDiscountDivWrap = {};
+
+    DionysusCartieMainSummarisePriceOfDiscountTypography = {};
+
+    DionysusCartieMainSummarisePriceWithoutDiscountLabelOfPriceWithoutDiscountTypography = {};
+
+    DionysusCartieMainSummarisePriceWithoutDiscountDivWrap = {};
+
+    DionysusCartieMainSummarisePriceWithoutDiscountTypography = {};
+
+    DionysusCartieMainSummariseDiv = {};
+
+    DionysusCartieMainBriefSpecTipCountLabelOfCountTypography = {};
+
+    DionysusCartieMainBriefSpecTipCountDivWrap = {};
+
+    DionysusCartieMainBriefSpecTipCountTypography = {};
+
+    DionysusCartieMainBriefSpecTipPriceB4DiscountDivWrap = {};
+
+    DionysusCartieMainBriefSpecTipPriceB4DiscountTypography = {};
+
+    DionysusCartieMainBriefSpecTipDiv = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityIncreaseIconAdd = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityIncreaseIconButton = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityCountOfSubmitTextField = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityDecreaseIconRemove = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityDecreaseIconButton = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityDivWrap = {};
+
+    DionysusCartieMainBriefSpecLandConclusionOfQuantityDiv = {};
+
+    DionysusCartieMainBriefSpecLandMainPriceLabelOfPriceTypography = {};
+
+    DionysusCartieMainBriefSpecLandMainPriceDivWrap = {};
+
+    DionysusCartieMainBriefSpecLandMainPriceTypography = {};
+
+    DionysusCartieMainBriefSpecLandMainDiv = {};
+
+    DionysusCartieMainBriefSpecLandDiv = {};
+
+    DionysusCartieMainBriefSpecInfoOfBenefitTypography = {};
+
+    DionysusCartieMainBriefSpecNameOfOptionChip = {};
+
+    DionysusCartieMainBriefSpecFullCancelIconDeleteForeverRounded = {};
+
+    DionysusCartieMainBriefSpecFullCancelIconButton = {};
+
+    DionysusCartieMainBriefSpecFullNameDivWrap = {};
+
+    DionysusCartieMainBriefSpecFullNameTypography = {};
+
+    DionysusCartieMainBriefSpecFullDiv = {};
+
+    DionysusCartieMainBriefSpecDiv = {};
+
+    DionysusCartieMainBriefPhotoImg = {};
+
+    DionysusCartieMainBriefSureDivWrap = {};
+
+    DionysusCartieMainBriefSureCheckbox = {};
+
+    DionysusCartieMainBriefDivList = {};
+
+    DionysusCartieMainBriefDiv = {};
+
+    DionysusCartieMainDiv = {};
+
+    DionysusCartieDivWrap = {};
+
+    DionysusCartieDiv = {};
+
+    /** => following for maenads  component  */
+
+    DionysusMaenadsSubmitDivWrap = {};
+
+    DionysusMaenadsSubmitChip = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityIncreaseIconAdd = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityIncreaseIconButton = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityCountOfSubmitTextField = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityDecreaseIconRemove = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityDecreaseIconButton = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityDivWrap = {};
+
+    DionysusMaenadsDecisionConclusionOfQuantityDiv = {};
+
+    DionysusMaenadsDecisionTitleOfSubmitOrderDivWrap = {};
+
+    DionysusMaenadsDecisionTitleOfSubmitOrderTypography = {};
+
+    DionysusMaenadsDecisionDiv = {};
+
+    DionysusMaenadsOptionNameChip = {};
+
+    DionysusMaenadsOptionDivList = {};
+
+    DionysusMaenadsOptionDiv = {};
+
+    DionysusMaenadsTitleOfShapeTypography = {};
+
+    DionysusMaenadsMainInfoCountLabelOfCountTypography = {};
+
+    DionysusMaenadsMainInfoCountDivWrap = {};
+
+    DionysusMaenadsMainInfoCountTypography = {};
+
+    DionysusMaenadsMainInfoRowPriceTypography = {};
+
+    DionysusMaenadsMainInfoRowDiv = {};
+
+    DionysusMaenadsMainInfoDiv = {};
+
+    DionysusMaenadsMainPhotoImg = {};
+
+    DionysusMaenadsMainDiv = {};
+
+    DionysusMaenadsDivWrap = {};
+
+    DionysusMaenadsPaper = {};
+
+    /** => following for bacchus  component  */
+
+    DionysusBacchusFuncBoughtReactFragmentWrap = {};
+
+    DionysusBacchusFuncBoughtChip = {};
+
+    DionysusBacchusFuncJoinToCartReactFragmentWrap = {};
+
+    DionysusBacchusFuncJoinToCartChip = {};
+
+    DionysusBacchusFuncBackToHomeChip = {};
+
+    DionysusBacchusFuncDivWrap = {};
+
+    DionysusBacchusFuncDiv = {};
+
+    DionysusBacchusDetailContentPhotoHrefImg = {};
+
+    DionysusBacchusDetailContentPhotoDivList = {};
+
+    DionysusBacchusDetailContentPhotoDiv = {};
+
+    DionysusBacchusDetailContentStatementTypography = {};
+
+    DionysusBacchusDetailContentDiv = {};
+
+    DionysusBacchusDetailAreaOfBenefitArrowIconNavigateNext = {};
+
+    DionysusBacchusDetailAreaOfBenefitArrowIconButton = {};
+
+    DionysusBacchusDetailAreaOfBenefitOptionOfBenefitContentTypography = {};
+
+    DionysusBacchusDetailAreaOfBenefitOptionOfBenefitTitleTypography = {};
+
+    DionysusBacchusDetailAreaOfBenefitDiv = {};
+
+    DionysusBacchusDetailAreaOfShippingArrowIconNavigateNext = {};
+
+    DionysusBacchusDetailAreaOfShippingArrowIconButton = {};
+
+    DionysusBacchusDetailAreaOfShippingOptionOfShippingContentTypography = {};
+
+    DionysusBacchusDetailAreaOfShippingOptionOfShippingTitleTypography = {};
+
+    DionysusBacchusDetailAreaOfShippingDiv = {};
+
+    DionysusBacchusDetailAreaOfPayArrowIconNavigateNext = {};
+
+    DionysusBacchusDetailAreaOfPayArrowIconButton = {};
+
+    DionysusBacchusDetailAreaOfPayOptionOfPayContentTypography = {};
+
+    DionysusBacchusDetailAreaOfPayOptionOfPayTitleTypography = {};
+
+    DionysusBacchusDetailAreaOfPayDiv = {};
+
+    DionysusBacchusDetailDiv = {};
+
+    DionysusBacchusNameDivWrap = {};
+
+    DionysusBacchusNameTypography = {};
+
+    DionysusBacchusRangeOfPriceDivWrap = {};
+
+    DionysusBacchusRangeOfPriceTypography = {};
+
+    DionysusBacchusBannerImageDivWrap = {};
+
+    DionysusBacchusBannerImageImg = {};
+
+    DionysusBacchusBannerSwiperSlide = {};
+
+    DionysusBacchusBannerSwiperList = {};
+
+    DionysusBacchusBannerSwiperSlide = {};
+
+    DionysusBacchusDivWrap = {};
+
+    DionysusBacchusDiv = {};
+
+    /** => following for dionysus  component  */
+
+    DionysusSelectTabsList = {};
+
+    DionysusSelectTab = {};
+
+    DionysusBoozeRowTailCartIconShoppingCartTwoTone = {};
+
+    DionysusBoozeRowTailCartReactFragmentWrap = {};
+
+    DionysusBoozeRowTailCartIconButton = {};
+
+    DionysusBoozeRowTailDiv = {};
+
+    DionysusBoozeRowMainPriceB4DiscountTypography = {};
+
+    DionysusBoozeRowMainPriceTypography = {};
+
+    DionysusBoozeRowMainDollarsTypography = {};
+
+    DionysusBoozeRowMainDiv = {};
+
+    DionysusBoozeRowDiv = {};
+
+    DionysusBoozeNameDivWrap = {};
+
+    DionysusBoozeNameTypography = {};
+
+    DionysusBoozePhotoOfDemoImg = {};
+
+    DionysusBoozeDivSkeleton = {};
+
+    DionysusBoozeDivList = {};
+
+    DionysusBoozeDiv = {};
+
+    DionysusDivWrap = {};
+
+    DionysusDiv = {};
+
+    /** => following for account  component  */
+
+    AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+
+    AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+
+    AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+
+    AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+
+    AccountFuncAreaOfEditToEditModeButton = {};
+
+    AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+
+    AccountFuncAreaOfEditLogoutButton = {};
+
+    AccountFuncAreaOfEditCopyUserIdButton = {};
+
+    AccountFuncAreaOfEditLangMenuItem = {};
+
+    AccountFuncAreaOfEditLangTextFieldList = {};
+
+    AccountFuncAreaOfEditDiv = {};
+
+    AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+
+    AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+
+    AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+
+    AccountFuncAreaOfIdDiv = {};
+
+    AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+
+    AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+
+    AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+
+    AccountFuncAreaOfEmailDiv = {};
+
+    AccountSpaceDiv = {};
+
+    AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+
+    AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+
+    AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+
+    AccountFuncAreaOfNameDiv = {};
+
+    AccountUrlOfHeadPhotoAvatar = {};
+
+    AccountDivWrap = {};
+
+    AccountPaper = {};
+
+    /** => following for epayTest  component  */
+
+    EpayTestFindLinePayPageByIdButton = {};
+
+    EpayTestFindEcPayPageByIdButton = {};
+
+    EpayTestIdOfPreciseOrderInputTextField = {};
+
+    EpayTestIdOfCurrentPreciseOrderTypography = {};
+
+    EpayTestCheckoutByEcPayButton = {};
+
+    EpayTestCheckoutByLinePayButton = {};
+
+    EpayTestCancelPreciseOrderButton = {};
+
+    EpayTestCreatePreciseOrderButton = {};
+
+    EpayTestDiv = {};
+
+    /** => following for main  component  */
+
+    MainTestTestUsageButton = {};
+
+    MainTestAgodaDateTimeRangePicker = {};
+
+    MainTestTrivagoDateRangePicker = {};
+
+    MainTestFullDateTimePicker = {};
+
+    MainTestEndDatePicker = {};
+
+    MainTestClockTimePicker = {};
+
+    MainTestGotoHistoryButton = {};
+
+    MainTestEpayTestButton = {};
+
+    MainTestSubTitleTypography = {};
+
+    MainTestTitleTypography = {};
+
+    MainTestDiv = {};
+
+    MainBannerImageDivWrap = {};
+
+    MainBannerImageImg = {};
+
+    MainBannerSwiperSlide = {};
+
+    MainBannerSwiperList = {};
+
+    MainBannerSwiperSlide = {};
+
+    MainDiv = {};
+
+    /** -------------------- functions -------------------- **/
+
+    constructor(props) {}
+
+    /** -------------------- async api -------------------- **/
 }
 
 export default new MobileStyle();
