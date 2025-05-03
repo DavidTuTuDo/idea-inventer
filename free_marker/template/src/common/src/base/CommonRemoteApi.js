@@ -70,7 +70,7 @@ class CommonRemoteApi {
 
     /** 取得collection所有的document ids */
     async fetchIdsOfDocument(path) {
-        const all = firebase.fetchDocuments(path);
+        const all = await firebase.fetchDocuments(path);
         return all.map((each) => each.id);
     }
 

@@ -42,6 +42,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     };
 
     normalizeOrder(order) {
+
         function normalizeBriefFromOrderItem(item) {
             return {
                 imageOfProductPhoto: item.imageUrlOfProduct,

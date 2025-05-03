@@ -20,7 +20,6 @@ class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         const booze = collection.booze;
-        console.log(booze);
         if (!Util.isUndefinedNullEmpty(booze)) {
             const banners = booze.options.map((option) => {
                 return {

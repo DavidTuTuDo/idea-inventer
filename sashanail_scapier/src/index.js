@@ -213,7 +213,7 @@ class sashanailgel_scraper {
             console.log(`網址：${param.href} 取得 ${_.size(products)} 個商品`);
             _.forOwn(products, (product, key) => {
                 const exist = objectOfProducts[key];
-                if (exist) exist.sorts.push(...product.sorts);
+                if (exist) exist.category.push(...product.category);
                 else objectOfProducts[key] = product;
             });
         }, ...targets);
