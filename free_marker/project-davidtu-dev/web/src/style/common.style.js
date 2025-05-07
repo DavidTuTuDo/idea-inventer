@@ -5,8 +5,6 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -1047,11 +1045,15 @@ class CommonStyle {
 
     DionysusMaenadsDecisionDiv = {};
 
-    DionysusMaenadsOptionNameChip = {};
+    DionysusMaenadsVariantOptionNameChip = {};
 
-    DionysusMaenadsOptionDivList = {};
+    DionysusMaenadsVariantOptionDivList = {};
 
-    DionysusMaenadsOptionDiv = {};
+    DionysusMaenadsVariantOptionDiv = {};
+
+    DionysusMaenadsVariantDivList = {};
+
+    DionysusMaenadsVariantDiv = {};
 
     DionysusMaenadsTitleOfShapeTypography = {};
 

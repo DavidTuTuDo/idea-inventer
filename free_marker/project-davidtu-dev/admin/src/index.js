@@ -252,75 +252,167 @@ import moment from "moment";
     async function uploadProducts() {
         /** 拿到所有product id，因為 /product/{id}/variants 要逐個刪除 */
         const ids = await api.fetchDocumentIdsOfBooze();
-        for (const id of ids)
-            await api.deleteVariants(true, id);
+        for (const id of ids) await api.deleteVariants(true, id);
         await api.deleteBoozes(true);
 
         const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1746177966129.json"), (each) => _.size(each.options) > 1);
-        const products = Util.getShuffledArrayWithLimitCount(items, 10);
+        const products = Util.getShuffledArrayWithLimitCount(
+            items.filter((item) => _.size(item.options) < 15),
+            10
+        );
         // const products = products;
         await api.submitBoozes(
-          _(products)
-            .map(({ serial, options, category, statement, ...rest }) => {
-                const lowestPrice = Util.findLowestValue(options);
-                return {
-                    ...rest,
-                    price: lowestPrice,
-                    id: serial,
-                    specificAttributes: getSpecificAttributes(options),
-                    category: Util.getUniqueValuesBy(category, "valueOfType"),
-                    rangeOfPrice: Util.getStringOfValueRange(options),
-                    statement: normalizeStatement(statement),
-                    priceB4Discount: Math.round(lowestPrice * 1.3),
-                    // 處理 options
-                    options: _(options)
-                      .filter(({ count }) => count > 0)
-                      .map(({ name, price: optPrice, photo, count, ...other }) => ({
-                          name,
-                          photo,
-                          count,
-                          ...other,
-                          price: optPrice,
-                          priceB4Discount: Math.round(optPrice * 1.3),
-                      }))
-                      .value(),
-                };
-            })
-            .value()
+            _(products)
+                .map(({ serial, options, category, statement, ...rest }) => {
+                    const lowestPrice = Util.findLowestValue(options);
+                    return {
+                        ...rest,
+                        price: lowestPrice,
+                        id: serial,
+                        specificAttributes: getSpecificAttributes(options),
+                        category: Util.getUniqueValuesBy(category, "valueOfType"),
+                        rangeOfPrice: Util.getStringOfValueRange(options),
+                        statement: normalizeStatement(statement),
+                        priceB4Discount: Math.round(lowestPrice * 1.3),
+                        // 處理 options
+                        options: _(options)
+                            .filter(({ count }) => count > 0)
+                            .map(({ name, price: optPrice, photo, count, ...other }) => ({
+                                name,
+                                photo,
+                                count,
+                                ...other,
+                                price: optPrice,
+                                priceB4Discount: Math.round(optPrice * 1.3)
+                            }))
+                            .value()
+                    };
+                })
+                .value()
         );
-        console.log(`＊＊＊已完成products collection 上傳，合計 ${_.size(products)} 筆`)
-        for (const product of products)
-            await api.submitVariants(getVariants(product.options), product.serial);
+        console.log(`＊＊＊已完成products collection 上傳，合計 ${_.size(products)} 筆`);
+        for (const product of products) await api.submitVariants(getVariants(product.options), product.serial);
         console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${_.size(products)} 筆`);
     }
 
     function getVariants(options) {
         return _(options)
-          .filter(({ count }) => count > 0)
-          .map(({ count, photo, price }, idx) => ({
-              id:          `default_${idx}`,
-              quantity:    count,
-              photo,
-              price,
-              // 原本 sum([price, price*0.3]) → 直接 price*1.3，然後四捨五入
-              priceB4Discount: Math.round(price * 1.3)
-          }))
-          .value();
+            .filter(({ count }) => count > 0)
+            .map(({ count, photo, price, value }, idx) => ({
+                id: `default_${value}`,
+                quantity: count,
+                photo,
+                price,
+                trait: { default: value },
+                // 原本 sum([price, price*0.3]) → 直接 price*1.3，然後四捨五入
+                priceB4Discount: Math.round(price * 1.3)
+            }))
+            .value();
     }
 
     function getSpecificAttributes(subs) {
         const options = _(subs)
-          .filter(({ count }) => count > 0)
-          .map(({ name }, index) => ({ value: index, label: name }))
-          .value();
+            .filter(({ count }) => count > 0)
+            .map(({ name, value }, index) => ({ value, label: name }))
+            .value();
 
-        return {
-            key: "default",
-            label: "預設",
-            options
-        };
+        return [
+            {
+                key: "default",
+                label: "預設",
+                options
+            }
+        ];
     }
-    await uploadProducts();
+
+    /**  刻意製造雙層結構的傷品  */
+
+    async function uploadFakedProducts() {
+        /** 拿到所有product id，因為 /product/{id}/variants 要逐個刪除 */
+        const ids = await api.fetchDocumentIdsOfBooze();
+        for (const id of ids) await api.deleteVariants(true, id);
+        await api.deleteBoozes(true);
+
+        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1746177966129.json"), (each) => _.size(each.options) > 1);
+        const products = Util.getShuffledArrayWithLimitCount(
+            items.filter((item) => _.size(item.options) < 15),
+            10
+        );
+        // const products = products;
+        await api.submitBoozes(
+            _(products)
+                .map(({ serial, options, category, statement, ...rest }) => {
+                    const lowestPrice = Util.findLowestValue(options);
+                    return {
+                        ...rest,
+                        price: lowestPrice,
+                        id: serial,
+                        specificAttributes: getFakeSpecificAttributes(options),
+                        category: Util.getUniqueValuesBy(category, "valueOfType"),
+                        rangeOfPrice: Util.getStringOfValueRange(options),
+                        statement: normalizeStatement(statement),
+                        priceB4Discount: Math.round(lowestPrice * 1.3),
+                        // 處理 options
+                        options: _(options)
+                            .filter(({ count }) => count > 0)
+                            .map(({ name, price: optPrice, photo, count, ...other }) => ({
+                                name,
+                                photo,
+                                count,
+                                ...other,
+                                price: optPrice,
+                                priceB4Discount: Math.round(optPrice * 1.3)
+                            }))
+                            .value()
+                    };
+                })
+                .value()
+        );
+        console.log(`＊＊＊已完成products collection 上傳，合計 ${_.size(products)} 筆`);
+        for (const product of products) await api.submitVariants(getFakeVariants(product.options), product.serial);
+        console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${_.size(products)} 筆`);
+    }
+
+    function getFakeSpecificAttributes(subs) {
+        const options = _(subs)
+            .filter(({ count }) => count > 0)
+            .map(({ name, value }) => ({ value, label: name }))
+            .value();
+
+        return [
+            {
+                key: "default",
+                label: "預設",
+                options
+            },
+            {
+                key: "size",
+                label: "尺寸",
+                options: [
+                    { value: 0, label: "S號" },
+                    { value: 1, label: "M號" },
+                    { value: 2, label: "L號" }
+                ]
+            }
+        ];
+    }
+
+    function getFakeVariants(options) {
+        const variants = Util.generateCombinations(...getFakeSpecificAttributes(options));
+        for (const variant of variants) {
+            const option = _.find(options, (each) => each.value === variant.trait.default);
+            variant.quantity = option.count;
+            variant.photo = option.photo;
+            variant.quantity = option.count;
+            variant.priceB4Discount = Math.round(option.price * 1.3);
+            variant.price = option.price;
+        }
+        return variants;
+    }
+
+    // await uploadProducts();
+    await uploadFakedProducts();
+
     // await expiredOrderBehavior();
     // await updateCPRT();
     // await updateCPRTContent();

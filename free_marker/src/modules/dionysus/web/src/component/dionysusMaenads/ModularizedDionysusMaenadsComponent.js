@@ -16,9 +16,12 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         this.getStore().setCurrentOption(option);
     }
 
-    getInjectPropsOfDionysusMaenadsOptionNameChip(option) {
-        const index = this.getStore().getIndexOfOption(option);
-        return { color: _.isEqual(index, this.getStore().getIndexOfSelected(option)) ? "error" : "default" };
+    getInjectPropsOfDionysusMaenadsVariantOptionNameChip(option) {
+        return { color: _.isEqual(option.getSelect(), true) ? "error" : "default" };
+    }
+
+    onDionysusMaenadsVariantOptionNameChipClicked(param) {
+        this.getStore().setSelectedOption(param.object);
     }
 
     getMaenadsCount(maenads) {
@@ -42,7 +45,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
 
     onDionysusMaenadsSubmitChipClicked(param) {
         const self = this;
-        if (this.getStore().getIndexOfSelected() < 0) {
+        if (!this.getStore().isCurrentOptionExist()) {
             this.getComponentInstance(true).showWarningSnackMessage(`尚未選擇商品`);
         } else {
             const maenads = param.object;

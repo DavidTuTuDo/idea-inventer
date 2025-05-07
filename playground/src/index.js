@@ -27,8 +27,13 @@ class BBB extends AAA {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-          console.log(libpath.join('./temp','scs','qqq','as.js'));
-        // const source = require('./module/source');
+        const a = {value:-1};
+        const judge = a && a.value;
+        if(judge) console.log(judge,' => ', 'true');
+        else console.log(judge,' => ', 'false');
+          // console.log(libpath.join('./temp','scs','qqq','as.js'));
+        // const source = require('./modul
+          // e/source');
             // console.log(source);
             // const a = null;
             // console.log(a ? 'yyy':'bbb')
@@ -568,7 +573,7 @@ if (configerer.DEBUG_MODE) {
             // //     i++;
             // // })
 
-            console.log(Util.camel(`set`,`photoURL`));
+            // console.log(Util.camel(`set`,`photoURL`));
 
         }
     )();

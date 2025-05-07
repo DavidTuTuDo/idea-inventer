@@ -2726,6 +2726,7 @@ class CodegenNode {
         }
 
         const defaultValue = this.getDefaultValue();
+
         if (!Util.isUndefinedNullEmpty(defaultValue)) {
             const stringOfDefault = _.startsWith(defaultValue, '###') ? Util.getStringOfDropHeadSign(defaultValue, `#`) : JSON.stringify(this.getDefaultValue());
             if (isAdmin)
@@ -2747,17 +2748,13 @@ class CodegenNode {
                 const i18nOfDefaultValue = Util.camel(this.getPreciseAttributeGenealogyName());
                 return `i18n.location().${i18nOfDefaultValue}`;
             }
-
             return stringOfDefault;
         }
 
-        if (this.type === 'string') {
-            return `''`;
-        }
+        if(this.isString() && this.isImageView()) return `null` //image <img src='{path}' 不能有''的瞬間，會render cost
+        else if (this.type === 'string') return `''`;
 
-        if (this.type === 'boolean') {
-            return false;
-        }
+        if (this.type === 'boolean') return false;
 
         if (this.type === 'timestamp') {
             if (this.isTimeDateRangePickerView()) return this.getDefaultValue() ?? `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
@@ -3016,7 +3013,6 @@ class ClassGenerator {
         this.classes = [];
         this.node = node;
         if (!fs.existsSync(this.filePath)) {
-            console.log('what happen ==> ',this.filePath);
             Util.persistByPath(path)
         }
         this.context = Util.getFileContextInRaw(this.filePath).split('\n');
@@ -4014,12 +4010,10 @@ class StoreBuilder extends BaseBuilder {
                     }));
             if (child.isBelong2TimeStamp()) continue;
 
-            if (child.isNumber() || child.isString()) {
-                propStmt.push(`if(obj && obj.${fieldName})`);
-            } else if (child.isBoolean())
-                propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
-            else
-                propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
+            if (child.isString()) propStmt.push(`if(obj && _.isString(obj.${fieldName}))`);
+            else if(child.isNumber()) propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
+            else if (child.isBoolean()) propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
+            else propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
             if (child.isArray()) {
                 if (child.useAutoFuse())

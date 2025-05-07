@@ -846,7 +846,8 @@
         /** empty style */
     }
 }
-.DionysusMaenadsOptionDiv {
+.DionysusMaenadsVariantDiv:extend(.CenterInParentColumn) {
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -857,16 +858,20 @@
         /** empty style */
     }
 }
-.DionysusMaenadsOptionDivList:extend(.CenterInParentRow) {
-    flex-wrap: wrap;
-    gap: 5px;
-    max-height: 38vh;
-    min-height: 20vh;
-    width: 99%;
-    overflow-y: scroll;
-    scrollbar-gutter: stable; /* 保持捲動條可見，即使在沒有溢出時 */
-    background: #f4f9fb;
-    border-radius: 3px;
+.DionysusMaenadsVariantDivList:extend(.CenterInParentColumn) {
+    width: 100%;
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusMaenadsVariantOptionDiv:extend(.CenterInParentRow) {
     padding: 3px;
     @media @mobile {
         /** empty style */
@@ -878,7 +883,16 @@
         /** empty style */
     }
 }
-.DionysusMaenadsOptionNameChip {
+.DionysusMaenadsVariantOptionDivList:extend(.CenterInParentRow) {
+    flex-wrap: wrap;
+    background: #f5fafd;
+    gap: 3px;
+    width: 100%;
+    padding: 3px;
+    max-height: 300px;
+    min-height: 50px;
+    overflow-y: scroll;
+    scrollbar-gutter: stable; /* 保持捲動條可見，即使在沒有溢出時 */
     @media @mobile {
         /** empty style */
     }
@@ -886,7 +900,19 @@
         /** empty style */
     }
     @media @desktop {
-        font-size: 0.92rem;
+        /** empty style */
+    }
+}
+.DionysusMaenadsVariantOptionNameChip {
+    font-size: 0.92rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.95rem;
     }
 }
 .DionysusMaenadsDecisionDiv:extend(.CenterInParentRow) {

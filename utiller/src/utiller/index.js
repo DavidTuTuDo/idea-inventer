@@ -2558,13 +2558,80 @@ class Utiller {
     getUniqueValuesBy(array, key = 'valueOfType') {
       return _.uniq(array.map(item => item[key]));
         }
-    /* 測試資料 */
+
+     /**
+      * ({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
+      *  {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S' }, { value: 1, label: 'M' }, { value: 2, label: 'L' }]})
+      *
+      * [
+      *   { trait: {color: 0, size: 0}, id: 'color_0_size_0', content: '顏色：紅 尺寸：S' },
+      *   { trait: {color: 0, size: 1}, id: 'color_0_size_1', content: '顏色：紅 尺寸：M' },
+      *   { trait: {color: 0, size: 2}, id: 'color_0_size_2', content: '顏色：紅 尺寸：L' },
+      *   { trait: {color: 1, size: 0}, id: 'color_1_size_0', content: '顏色：白 尺寸：S' },
+      *   { trait: {color: 1, size: 1}, id: 'color_1_size_1', content: '顏色：白 尺寸：M' },
+      *   { trait: {color: 1, size: 2}, id: 'color_1_size_2', content: '顏色：白 尺寸：L' },
+      *   { trait: {color: 2, size: 0}, id: 'color_2_size_0', content: '顏色：黑 尺寸：S' },
+      *   { trait: {color: 2, size: 1}, id: 'color_2_size_1', content: '顏色：黑 尺寸：M' },
+      *   { trait: {color: 2, size: 2}, id: 'color_2_size_2', content: '顏色：黑 尺寸：L' }
+      * ]
+      *
+    /**
+     * 生成所有組合並依照 value 遞增排序，並回傳指定格式
+     * @param {Array} attributes - 屬性陣列
+     * @returns {Array} - 格式化組合
+     */
+     generateCombinations(...attributes) {
+        const keys = attributes.map(attr => attr.key); // 屬性順序
+        const labelMap = _.keyBy(attributes, 'key');   // 用於 content 查 label
+
+        // 把每個屬性的 options 提取成格式化陣列
+        const optionArrays = attributes.map(attr =>
+          attr.options.map(option => ({
+              key: attr.key,
+              value: option.value,
+              label: option.label
+          }))
+        );
+
+        // 計算笛卡兒積
+        const cartesianProduct = _.reduce(optionArrays, (acc, curr) =>
+            _.flatMap(acc, a => curr.map(b => [...a, b]))
+          , [[]]);
+
+        // 格式化每一筆組合
+        const results = cartesianProduct.map(combination => {
+            const trait = {};
+            const idParts = [];
+            const contentParts = [];
+
+            for (const { key, value, label } of combination) {
+                trait[key] = value;
+                idParts.push(`${key}_${value}`);
+                contentParts.push(`${labelMap[key].label}：${label}`);
+            }
+
+            return {
+                trait,
+                id: idParts.join('_'),
+                content: contentParts.join(' ')
+            };
+        });
+
+        // 排序：依照屬性順序的 value 遞增（右邊 key 變化最快）
+        return _.sortBy(results, item =>
+          keys.map(key => item.trait[key])
+        );
+    }
+
 
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const  utiller = new Utiller();
+            const  utiller = new Utiller();
+            const result = utiller.generateCombinations({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑' } ] },
+              {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S' }, { value: 1, label: 'M' }, { value: 2, label: 'L' }]})
+            console.log(result)
             // const array = [ { valueOfType: 1 }, { valueOfType: 7, valueOfSubType: 6 }, { valueOfType: 1 } ];
             // console.log(utiller.getUniqueValuesBy(array, 'valueOfType')); //[1, 7]
             // const stringOfEncrypt = utiller.getEncryptStringV2('i am david');
