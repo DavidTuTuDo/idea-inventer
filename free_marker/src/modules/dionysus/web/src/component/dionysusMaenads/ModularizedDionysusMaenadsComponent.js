@@ -5,6 +5,8 @@ import _ from "lodash";
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
+import FlyToCartie from "../../base/FlyToCartie";
+import React from "react";
 
 class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     constructor(props) {
@@ -51,11 +53,25 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
             const count = _.toInteger(this.getStore().getCountOfSubmit());
             UserInfoRef.joinItemToCart({ idOfBooze, idOfVariant, count, nameOfBooze: maenads.getBooze().name });
             if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(this.getComponentInstance());
-            this.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
+            self.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
+            maenads.toggleCartieAnimate();
             Util.syncDelay(1500).then(() => {
                 self.dismiss();
             });
         }
+    }
+
+    /** React.render() */
+    getInjectWrapViewOfDionysusMaenadsSubmitChip(dionysusMaenads) {
+        return (
+            <FlyToCartie
+                direction={"rightTop"}
+                duration={1.2}
+                fly={dionysusMaenads.getCartieAnimate()}
+                imageSrc={dionysusMaenads.getPhoto()}
+                onComplete={() => dionysusMaenads.setCartieAnimate(false)}
+            />
+        );
     }
 }
 

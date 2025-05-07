@@ -421,6 +421,10 @@ class CodegenNode {
     injectView = false;
     /** 產生出 injectView function 可以override */
 
+    injectWrapView = false
+    /** 產生出 injectWrapView function 可以override */
+
+
     listEmptyTip = {enable: true, customView: undefined, stringOfTip: '', isDefaultValue: true};
     /** 當陣列需要有無資料提示時
      *
@@ -1500,7 +1504,7 @@ class CodegenNode {
         this.simpleProps.push(...props);
     }
 
-    appendContent(...contents) {
+    appendContents(...contents) {
         this.contents.push(...contents);
     }
 
@@ -1882,6 +1886,9 @@ class CodegenNode {
     needInjectListWrapStyle() { return !!this.injectListWrapStyle && this.injectListWrapStyle; }
 
     needInjectView() { return !!this.injectView && this.injectView; }
+
+    needInjectWrapView() { return !!this.injectWrapView && this.injectWrapView; }
+
 
     needInjectProps() { return !!this.injectProps && this.injectProps; }
 
@@ -2523,6 +2530,8 @@ class CodegenNode {
     }
 
     getFunctionNameOfInjectView() { return Util.camel('get', 'inject', 'view', 'of', this.getPreciseNameOfAttributeView()); }
+
+    getFunctionNameOfInjectWrapView() { return Util.camel('get', 'inject','wrap', 'view', 'of', this.getPreciseNameOfAttributeView()); }
 
     getFunctionNameOfInjectProps() { return Util.camel('get', 'inject', 'props', 'of', this.getPreciseNameOfAttributeView()); }
 
@@ -5440,7 +5449,7 @@ class ComponentBuilder extends BaseBuilder {
                 delete itemViewProps[`${node.getName()}`];
                 arrayItemNode.appendViewProps(itemViewProps);
                 arrayItemNode.appendViewProps({value: `###${node.getName()}.value`})
-                arrayItemNode.appendContent(`{${node.getName()}.label}`)
+                arrayItemNode.appendContents(`{${node.getName()}.label}`)
                 arrayItemViewStmts = this.getJSXStringsByNode(generator, arrayItemNode)
             }
 
@@ -8510,7 +8519,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */
-                node.appendContent(`{self.handleTextString(${node.getFieldName()})}`)
+                node.appendContents(`{self.handleTextString(${node.getFieldName()})}`)
             }
 
             if (node.needWatermark) {
@@ -8741,7 +8750,18 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     functionName: nameOfInjectView,
                     params
                 })
-                node.appendContent(`{this.${nameOfInjectView}(${params.join(',')})}`)
+                node.appendContents(`{this.${nameOfInjectView}(${params.join(',')})}`)
+            }
+
+            if (node.needInjectWrapView()) {
+                const params = [node.getObservableName(true)];
+                _.remove(params, (each) => Util.isUndefinedNullEmpty(each))
+                const nameOfInjectWrapView = node.getFunctionNameOfInjectWrapView();
+                node.appendMethods({
+                    functionName: nameOfInjectWrapView,
+                    params
+                })
+                node.appendWrapContents(`{this.${nameOfInjectWrapView}(${params.join(',')})}`)
             }
 
             if (node.needInjectProps()) {
