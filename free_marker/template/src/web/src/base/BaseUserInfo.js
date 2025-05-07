@@ -169,15 +169,15 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfBooze = "", idOfOption = "", idOfChoice = "", count }) => {
-        Util.appendInfo({ idOfBooze, idOfOption, count });
+    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", count, nameOfBooze = "" }) => {
+        Util.appendInfo({ idOfBooze, count });
         const infoOfCartie = Cookie.getInfoOfCartie();
-        const key = [idOfBooze, _.toString(idOfOption), _.toString(idOfChoice)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
+        const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
-        Util.appendInfo({ idOfBooze, idOfOption, count, key });
+        Util.appendInfo({ idOfBooze, idOfVariant, count, key, nameOfBooze });
 
         if (object) object.count = object.count + count;
-        else infoOfCartie[key] = { idOfBooze, idOfOption, idOfChoice, count, idOfCookieUsage: key };
+        else infoOfCartie[key] = { idOfBooze, idOfVariant, count, idOfCookieUsage: key, nameOfBooze };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     };

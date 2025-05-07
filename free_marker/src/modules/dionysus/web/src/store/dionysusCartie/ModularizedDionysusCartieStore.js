@@ -7,11 +7,12 @@ import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDionysusCartieStore from "./BaseDionysusCartieStore";
 import BoozeApi from "../dionysusBooze";
+import VariantApi from "../dionysusBoozeVariant";
 
 class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     constructor(props) {
         super(props);
-        this.api = new BoozeApi();
+        this.api = new VariantApi();
         UserInfoRef.setGotoCartieDirect(false);
         /** cool man */
     }
@@ -41,25 +42,18 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     }
 
     async fetch(view = this.getComponent()) {
-        function pushCurrentBrief(booze, cartieOfCookie, option, choice = {}) {
+        function pushCurrentBrief(variant, cartieOfCookie, option, choice = {}) {
             const idOfCookieUsage = cartieOfCookie.idOfCookieUsage;
-            const hrefOfPhoto = Util.getSpecifyObjectBy([choice.photo, option.photo], (string) => !_.isEmpty(string));
-            const price = Util.getSpecifyObjectBy([choice.price, option.price], (number) => _.isNumber(number));
-            const priceB4Discount = Util.getSpecifyObjectBy([choice.priceB4Discount, option.priceB4Discount], (number) => _.isNumber(number));
-            const currentCountOfMaximum = Util.getSpecifyObjectBy([choice.count, option.count], (number) => _.isNumber(number));
+            const currentCountOfMaximum = variant.quantity;
             const countOfSubmit = cartieOfCookie.count <= currentCountOfMaximum ? cartieOfCookie.count : currentCountOfMaximum;
 
             self.pushBrief({
-                booze,
-                name: booze.name,
+                name: cartieOfCookie.nameOfBooze,
                 idOfCookieUsage,
-                nameOfOption: option.name,
-                valueOfOption: option.value,
-                nameOfChoice: choice.name,
-                valueOfChoice: choice.value,
-                photo: hrefOfPhoto,
-                price,
-                priceB4Discount,
+                nameOfVariant: variant.content,
+                photo: variant.photo,
+                price: variant.price,
+                priceB4Discount: variant.priceB4Discount,
                 countOfSubmit,
                 count: currentCountOfMaximum
             });
@@ -69,19 +63,15 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         this.cleanBriefs();
         const info = Cookie.getInfoOfCartie();
         if (_.isObject(info)) {
+            const variants = [];
             const carties = _.values(info);
-            const ids = carties.map((each) => each.idOfBooze);
-            const boozes = await this.api.fetchBoozesOfLimitation(this.getComponent(), "in", "id", ...Util.getSliceArrayOfUnique(ids));
-            const objectOfBoozes = Util.toObjectWithAttributeKey(boozes, "id");
-            for (const cartieOfCookie of carties) {
-                const booze = objectOfBoozes[cartieOfCookie.idOfBooze];
-                const optionOfSelected = _.find(booze.options, (option) => _.isEqual(option.value, cartieOfCookie.idOfOption));
-                const choiceOfSelected = _.find(booze.choices, (choice) => _.isEqual(choice.value, cartieOfCookie.idOfChoice));
+            for (const { idOfVariant, idOfBooze } of carties) variants.push(await this.api.fetchVariantItem(this.getComponent(), idOfVariant, idOfBooze)); //todo:必須改成batch fetch
 
-                if (choiceOfSelected) pushCurrentBrief(booze, cartieOfCookie, optionOfSelected, choiceOfSelected);
-                else if (optionOfSelected) pushCurrentBrief(booze, cartieOfCookie, optionOfSelected, choiceOfSelected);
-                else Util.appendError(`48513213 發生了放在購物車，但是商品沒有找到option，可能是booze id被洗牌了，或是cookie資料髒了`);
-            }
+            for (const cartieOfCookie of carties)
+                pushCurrentBrief(
+                    _.find(variants, (v) => _.isEqual(v.id, cartieOfCookie.idOfVariant)),
+                    cartieOfCookie
+                );
         }
     }
 

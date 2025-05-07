@@ -6,9 +6,7 @@ import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
 
 class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
-    objectOfVariant;
-
-    currentOptionExist = false;
+    objectOfVariant = {};
 
     constructor(props) {
         super(props);
@@ -21,7 +19,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         function setContent(booze) {
             self.setBooze(booze);
             self.setPhoto(booze.photoOfDemo);
-            self.setPrice(booze.rangeOfPrice);
+            self.setRangeOfPrice(booze.rangeOfPrice);
             self.setCount(`未選擇`);
             self.setVariants(..._.map(booze.specificAttributes, (attr) => ({ key: attr.key, options: _.map(attr.options, ({ label, value }) => ({ name: label, value })) })));
         }
@@ -39,10 +37,6 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         }
     }
 
-    isCurrentOptionExist = () => {
-        return this.currentOptionExist;
-    };
-
     setSelectedOption = (option) => {
         const variant = option.getParentNode();
         variant.getOptions().map((each) => each.setSelect(false));
@@ -53,21 +47,22 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     invalidateVariant() {
         const keyOfVariant = _.flatMap(this.getVariants(), (v) => [v.getKey(), _.find(v.getOptions(), (o) => o.getSelect())?.getValue() ?? -1]).join("_");
         const selectedOption = this.objectOfVariant[keyOfVariant];
-        if (selectedOption) this.setCurrentOption(selectedOption);
-        else this.currentOptionExist = false;
+        if (selectedOption) this.setCurrentVariant(selectedOption);
+        else this.setCurrentOptionExist(false);
     }
 
-    setCurrentOption = (option) => {
-        this.setPhoto(option.photo);
-        this.setPrice(option.price);
-        this.setTitleOfShape(option.name);
-        this.setCount(option.quantity);
+    setCurrentVariant = (variant) => {
+        this.setPhoto(variant.photo);
+        this.setPrice(variant.price);
+        this.setTitleOfShape(variant.name);
+        this.setCount(variant.quantity);
         this.setCountOfSubmit(1);
-        this.currentOptionExist = true;
+        this.setCurrentOptionExist(true);
+        this.setSelectedVariant(variant);
     };
 
     validateCountOfOrder(increase = true) {
-        if (!this.isCurrentOptionExist()) return this.getComponent().showWarningSnackMessage(`尚未選擇商品`);
+        if (!this.getCurrentOptionExist()) return this.getComponent().showWarningSnackMessage(`尚未選擇商品`);
 
         const current = _.toNumber(this.getCountOfSubmit());
         const delta = increase ? 1 : -1;

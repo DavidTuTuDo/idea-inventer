@@ -336,7 +336,7 @@ import moment from "moment";
         const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1746177966129.json"), (each) => _.size(each.options) > 1);
         const products = Util.getShuffledArrayWithLimitCount(
             items.filter((item) => _.size(item.options) < 15),
-            10
+            2
         );
         // const products = products;
         await api.submitBoozes(
@@ -382,7 +382,7 @@ import moment from "moment";
         return [
             {
                 key: "default",
-                label: "預設",
+                label: "選項",
                 options
             },
             {
@@ -406,6 +406,7 @@ import moment from "moment";
             variant.quantity = option.count;
             variant.priceB4Discount = Math.round(option.price * 1.3);
             variant.price = option.price;
+            console.log(variants);
         }
         return variants;
     }

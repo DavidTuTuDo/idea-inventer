@@ -11,9 +11,12 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         super(props);
     }
 
-    onDionysusMaenadsOptionDivClicked(param) {
-        const option = param.object;
-        this.getStore().setCurrentOption(option);
+    getInjectStyleOfDionysusMaenadsRangeOfPriceTypography(dionysusMaenads) {
+        return Util.getVisibleOrNone(!this.getStore().getCurrentOptionExist(), true);
+    }
+
+    getWrapInjectStyleOfDionysusMaenadsPriceTypography(dionysusMaenads) {
+        return Util.getVisibleOrNone(this.getStore().getCurrentOptionExist(), true);
     }
 
     getInjectPropsOfDionysusMaenadsVariantOptionNameChip(option) {
@@ -29,12 +32,6 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         return count > 0 ? ` 剩 ${count} 個` : `未選擇`;
     }
 
-    getMaenadsPrice(maenads) {
-        const price = super.getMaenadsPrice(maenads);
-        const judgement = _.startsWith(_.trim(price), "$") || _.startsWith(_.trim(price), "＄");
-        return judgement ? price : `＄${price}`;
-    }
-
     onDionysusMaenadsIncreaseIconButtonClicked(param) {
         this.getStore().validateCountOfOrder();
     }
@@ -45,14 +42,14 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
 
     onDionysusMaenadsSubmitChipClicked(param) {
         const self = this;
-        if (!this.getStore().isCurrentOptionExist()) {
+        if (!this.getStore().getCurrentOptionExist()) {
             this.getComponentInstance(true).showWarningSnackMessage(`尚未選擇商品`);
         } else {
             const maenads = param.object;
             const idOfBooze = maenads.getBooze().id;
-            const idOfOption = maenads.getOptions()[this.getStore().getIndexOfSelected()].getValue();
+            const idOfVariant = maenads.getSelectedVariant().id;
             const count = _.toInteger(this.getStore().getCountOfSubmit());
-            UserInfoRef.joinItemToCart({ idOfBooze, idOfOption, count });
+            UserInfoRef.joinItemToCart({ idOfBooze, idOfVariant, count, nameOfBooze: maenads.getBooze().name });
             if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(this.getComponentInstance());
             this.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
             Util.syncDelay(1500).then(() => {
