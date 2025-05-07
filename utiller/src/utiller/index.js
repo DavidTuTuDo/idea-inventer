@@ -2625,10 +2625,10 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            const  utiller = new Utiller();
-            const result = utiller.generateCombinations({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
-              {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})
-            console.log(result)
+            // const  utiller = new Utiller();
+            // const result = utiller.generateCombinations({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
+            //   {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})
+            // console.log(result)
             // const array = [ { valueOfType: 1 }, { valueOfType: 7, valueOfSubType: 6 }, { valueOfType: 1 } ];
             // console.log(utiller.getUniqueValuesBy(array, 'valueOfType')); //[1, 7]
             // const stringOfEncrypt = utiller.getEncryptStringV2('i am david');
