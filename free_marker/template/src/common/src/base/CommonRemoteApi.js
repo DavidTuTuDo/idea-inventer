@@ -242,6 +242,15 @@ class CommonRemoteApi {
         return item;
     }
 
+    /** 用promise.all()拿不同id的documents，firestore目前不支援給batchFetch(已知id) */
+    async fetchBatchItems(path, ...references) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start batch fetch item(${_.size(references)}) => ${path}`);
+        const item = await firebase.fetchBatchDocuments(references);
+        Util.appendInfo(`${uid} succeed batch fetch item(${_.size(references)}) => ${path}`);
+        return item;
+    }
+
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async deleteItems(path, whole, ...conditions) {
         const uid = Util.getRandomHashV2(10);

@@ -188,7 +188,7 @@ class FirebaseHelper extends BaseFirebase {
         return await this.updateDocument(path, id, Util.getObject(attribute, increment(value)));
     };
 
-    /** batch提供set, delete, update的功能
+    /** batch提供set, delete, update的功能, items就是帶進來的參數
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
     batchDo = async (items, predicate = (batch, object) => {}) => {
@@ -308,6 +308,34 @@ class FirebaseHelper extends BaseFirebase {
         return docSnap.exists() ? { ...docSnap.data(), id, _doc: docSnap, exists: true } : { exists: false };
     };
 
+    /**
+     * 批次讀取 Firestore documents，支援分批與額外欄位封裝。
+     * @param {DocumentReference[]} references - 要讀取的 document references 陣列
+     * @param {number} batchCount - 每批最大請求數，預設為 Firestore 最大值（例如 10）
+     * @returns {Promise<Array<Object>>} - 每筆資料包含 `id`, `exists`, `_doc`, 以及其他資料欄位
+     */
+    fetchBatchDocuments = async (references, batchCount = MAX_COUNT_OF_FIRESTORE_FETCH) => {
+        if (!references.length) return [];
+        const allResults = [];
+        for (let i = 0; i < references.length; i += batchCount) {
+            const batch = references.slice(i, i + batchCount);
+            const snapshots = await Promise.all(batch.map((ref) => getDoc(ref)));
+
+            const batchResults = snapshots.map((snapshot) => {
+                const data = snapshot.data() || {};
+                return {
+                    ...data,
+                    id: data.id || snapshot.id,
+                    exists: snapshot.exists(),
+                    _doc: snapshot
+                };
+            });
+
+            allResults.push(...batchResults);
+        }
+        return allResults;
+    };
+
     deleteDocument = async (path, id) => {
         await deleteDoc(this.reference(path, id));
     };
@@ -358,8 +386,7 @@ class FirebaseHelper extends BaseFirebase {
                     break;
             }
         });
-        const result = _.orderBy(conditions, ["index"], "asc");
-        return result;
+        return _.orderBy(conditions, ["index"], "asc");
     };
 
     constraints = (conditions) => {

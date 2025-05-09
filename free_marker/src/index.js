@@ -1210,6 +1210,18 @@ class CodegenNode {
         return this.getNodeOfComponent().getParamsInPath(...others);
     }
 
+    getParamsOfBatchFetch() {
+        return this.getParamsOfString(this.getPath(), 'id');
+    }
+
+    getBatchFetchOfRefStmt() {
+        return `\`${this.getPathOfRouterString()}\`, id`;
+    }
+
+    getSignOfFetchPath() {
+        return `\'${this.getPathOfRouterString()}/\${id}\'`;
+    }
+
     getNodeOfOrigin() { return this.nodeOfOrigin ?? {}; }
 
     needImplementAction() { return this.isReferenceStructNode() && this.getNodeOfOrigin().implementActions; }
@@ -1380,6 +1392,10 @@ class CodegenNode {
     /** 如果node有paginate 屬性時, onBottomTab會呼叫到這一個method*/
     getFunctionNameOfFetch() {
         return Util.camel(`fetch`, this.getFieldName())
+    }
+
+    getFunctionNameOfFetchBatch() {
+        return Util.camel(`fetch`, this.getName(),`batch`,`items`)
     }
 
     getFunctionNameOfModify() {
@@ -2435,6 +2451,7 @@ class CodegenNode {
     setPath(path) {
         this.path = path;
     }
+
 
     getPathOfRouterString() {
         if (!this.hasPath()) return '';
@@ -3864,6 +3881,9 @@ class BaseBuilder extends PathBase {
                     /** object */
                 }
                 break;
+            case 'fetch batch items':
+                params = [`...items`];
+                break;
             case 'modify items':
                 params = [...params, 'job = async (items) => {}', 'conditions', 'size']
                 break;
@@ -4551,9 +4571,11 @@ class RemoteFunctionHandler extends BaseBuilder {
 
         function generateApiFunction(node, name, logicStmts = [], type, isAsync = true, uploadFile = false) {
             const preStmts = [`const self = this`];
+            /** asString => 就是把 `${variable}` => '${variable}' 免得造成unknown issue */
+            const asString = _.isEqual(type, "fetch batch items");
             preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
-                `const path = \`${node.getPathOfRouterString()}\``
-            )
+              `const path = ${asString ? `\'${node.getPathOfRouterString()}/\${id}\'` : `\`${node.getPathOfRouterString()}\``}`
+            );
             let stmts = [];
             if (isAsync) {
                 stmts.push(`const task = async () => {`)
@@ -4755,6 +4777,16 @@ class RemoteFunctionHandler extends BaseBuilder {
                         node.getFunctionNameOfFetch(),
                         [`return await self.fetchItems(path, ...conditions,${getConditionStmts()})`],
                         `fetch items`);
+
+                    generateApiFunction(
+                      node,
+                      node.getFunctionNameOfFetchBatch(),
+                      [
+                        ` /** item = {${node.getParamsOfBatchFetch().join(',')}} */`,
+                          `const references = items.map(({${node.getParamsOfBatchFetch().join(',')}}) => this.reference(${node.getBatchFetchOfRefStmt()}))`,
+                          `return await self.fetchBatchItems(path, ...references)`],
+                      `fetch batch items`);
+
 
                     generateApiFunction(
                         node,

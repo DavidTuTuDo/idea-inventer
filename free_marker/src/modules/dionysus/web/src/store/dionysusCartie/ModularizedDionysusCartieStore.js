@@ -6,7 +6,6 @@ import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDionysusCartieStore from "./BaseDionysusCartieStore";
-import BoozeApi from "../dionysusBooze";
 import VariantApi from "../dionysusBoozeVariant";
 
 class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
@@ -42,7 +41,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     }
 
     async fetch(view = this.getComponent()) {
-        function pushCurrentBrief(variant, cartieOfCookie, option, choice = {}) {
+        function pushCurrentBrief(variant, cartieOfCookie) {
             const idOfCookieUsage = cartieOfCookie.idOfCookieUsage;
             const currentCountOfMaximum = variant.quantity;
             const countOfSubmit = cartieOfCookie.count <= currentCountOfMaximum ? cartieOfCookie.count : currentCountOfMaximum;
@@ -63,10 +62,13 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         this.cleanBriefs();
         const info = Cookie.getInfoOfCartie();
         if (_.isObject(info)) {
-            const variants = [];
             const carties = _.values(info);
-            for (const { idOfVariant, idOfBooze } of carties) variants.push(await this.api.fetchVariantItem(this.getComponent(), idOfVariant, idOfBooze)); //todo:必須改成batch fetch
-
+            const variants = await this.api.fetchVariantBatchItems(
+                this.getComponent(),
+                ...carties.map((cartie) => {
+                    return { pid: cartie.idOfBooze, id: cartie.idOfVariant };
+                })
+            );
             for (const cartieOfCookie of carties)
                 pushCurrentBrief(
                     _.find(variants, (v) => _.isEqual(v.id, cartieOfCookie.idOfVariant)),
