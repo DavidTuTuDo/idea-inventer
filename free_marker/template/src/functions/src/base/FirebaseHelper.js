@@ -1,31 +1,24 @@
 import fs from "fs";
 
 const edit = true;
-import {exceptioner as ERROR, utiller as Util} from "utiller";
+import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
 import CommonPoolHelper from "./CommonPoolHelper";
-import Config from '../config';
-import {
-    Timestamp,
-    FieldValue,
-    FieldPath,
-} from "firebase-admin/firestore";
-import {connectFunctionsEmulator, httpsCallable} from "firebase-admin/functions";
-import {ref, uploadBytes, getDownloadURL} from 'firebase-admin/storage'
-import libpath from 'path';
+import Config from "../config";
+import { Timestamp, FieldValue, FieldPath } from "firebase-admin/firestore";
+import { connectFunctionsEmulator, httpsCallable } from "firebase-admin/functions";
+import { ref, uploadBytes, getDownloadURL } from "firebase-admin/storage";
+import libpath from "path";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
-import {google} from "googleapis";
-import stream, {Readable} from "stream";
+import { google } from "googleapis";
+import stream, { Readable } from "stream";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
 const MAX_COUNT_OF_FIRESTORE_FETCH = 500;
 
-
 class FirebaseHelper extends BaseFirebase {
-
-
     constructor() {
         super();
     }
@@ -56,8 +49,8 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     async getCurrentServerTimeStamp() {
-        await this.firestore().collection('public').doc('timestamp').set({serverTime: this.getServerTimeSymbol()})
-        const timestamp = await this.firestore().collection('public').doc('timestamp').get();
+        await this.firestore().collection("public").doc("timestamp").set({ serverTime: this.getServerTimeSymbol() });
+        const timestamp = await this.firestore().collection("public").doc("timestamp").get();
         return timestamp.data().serverTime;
     }
 
@@ -72,26 +65,25 @@ class FirebaseHelper extends BaseFirebase {
     /** firestore 的 modular api 使用原則 */
 
     reference = (path, id) => {
-        return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(_.toString(id))
-    }
+        return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(_.toString(id));
+    };
 
     submitDocument = async (path, item = {}, id) => {
         const ref = this.reference(path, id);
-        const result = Util.isUndefinedNullEmpty(id) ? await ref.add(item) : await ref.set(item)
-        return {...item, id: id ?? result.id, exists: true};
-    }
+        const result = Util.isUndefinedNullEmpty(id) ? await ref.add(item) : await ref.set(item);
+        return { ...item, id: id ?? result.id, exists: true };
+    };
 
     updateDocument = async (path, id, item = {}) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987824 updateDocument()的id不能為空值`);
         return await this.reference(path, id).update(item);
-    }
-
+    };
 
     /** atomically to increment 關於number的屬性，例如參訪人數之類的 */
     incrementDocumentNumeric = async (path, id, attribute, value = 1) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5187823514 incrementDocumentNumeric()的id不能為空值`);
-        return this.updateDocument(path, id, Util.getObject(attribute, FieldValue.increment(value)))
-    }
+        return this.updateDocument(path, id, Util.getObject(attribute, FieldValue.increment(value)));
+    };
 
     /** batch提供set, delete, update的功能
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
@@ -100,11 +92,11 @@ class FirebaseHelper extends BaseFirebase {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
-                Util.appendInfo(`1242232 admin batch do commit(count:${count}) succeed`)
+                Util.appendInfo(`1242232 admin batch do commit(count:${count}) succeed`);
             }
         }
 
-        Util.appendInfo(`1231232 admin batch do is going to handle (count:${_.size(items)})`)
+        Util.appendInfo(`1231232 admin batch do is going to handle (count:${_.size(items)})`);
         let batch = this.firestore().batch();
         let count = 0;
 
@@ -120,40 +112,71 @@ class FirebaseHelper extends BaseFirebase {
             }
         }
         await commit(batch, count);
-        Util.appendInfo(`32312312 admin batch do (count:${_.size(items)}) succeed`)
-    }
+        Util.appendInfo(`32312312 admin batch do (count:${_.size(items)}) succeed`);
+    };
 
     submitDocuments = async (path, items) => {
         const result = await this.batchDo(items, (batch, item) => {
-            const itemRef = Util.isUndefinedNullEmpty(item.id) ? this.reference(path, item.id).doc() : this.reference(path, item.id)
+            const itemRef = Util.isUndefinedNullEmpty(item.id) ? this.reference(path, item.id).doc() : this.reference(path, item.id);
             batch.set(itemRef, item);
-        })
-    }
+        });
+    };
 
     updateDocuments = async (path, contentsOfUpdate, ...conditions) => {
         const hasCondition = _.size(conditions) > 0;
-        const targets = hasCondition ? (await this.fetchDocuments(path, ...conditions)).map(each => each.id) : contentsOfUpdate;
+        const targets = hasCondition ? (await this.fetchDocuments(path, ...conditions)).map((each) => each.id) : contentsOfUpdate;
 
         return await this.batchDo(targets, (batch, item) => {
             if (hasCondition) batch.update(this.reference(path, item), contentsOfUpdate[0]); /** 此時item 為 document id*/
             else if (!Util.isUndefinedNullEmpty(item.id)) batch.update(this.reference(path, item.id), item);
-            else throw new ERROR(9999, `6524521323 admin hasCondition == ${hasCondition}, updateDocuments的item沒有valid id => ${contentsOfUpdate.id}`)
-        })
-    }
+            else throw new ERROR(9999, `6524521323 admin hasCondition == ${hasCondition}, updateDocuments的item沒有valid id => ${contentsOfUpdate.id}`);
+        });
+    };
 
     fetchDocuments = async (path, ...conditions) => {
         const query = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         const querySnapshot = await query.get();
         const all = [];
-        if (!querySnapshot.empty) querySnapshot.forEach((doc) => {
-            // const total = querySnapshot.size;
-            const data = doc.data();
-            data._doc = doc;
-            data.id = _.isEmpty(data.id) ? doc.id : data.id;
-            all.push(data);
-        })
+        if (!querySnapshot.empty)
+            querySnapshot.forEach((doc) => {
+                // const total = querySnapshot.size;
+                const data = doc.data();
+                data._doc = doc;
+                data.id = _.isEmpty(data.id) ? doc.id : data.id;
+                all.push(data);
+            });
         return all;
-    }
+    };
+
+    /**
+     * 批次讀取 Firestore documents（使用 firebase-admin），支援分批與額外欄位封裝。
+     * @param {FirebaseFirestore.DocumentReference[]} references - 要讀取的 document references 陣列
+     * @param {number} batchCount - 每批最大請求數，預設為 Firestore 限制（例如 10）
+     * @returns {Promise<Array<Object>>} - 每筆資料包含 `id`, `exists`, `_doc`, 以及其他資料欄位
+     */
+    fetchBatchDocuments = async (references, batchCount = 10) => {
+        if (!references.length) return [];
+
+        const allResults = [];
+        for (let i = 0; i < references.length; i += batchCount) {
+            const batch = references.slice(i, i + batchCount);
+            const snapshots = await Promise.all(batch.map((ref) => ref.get()));
+
+            const batchResults = snapshots.map((snapshot) => {
+                const data = snapshot.data() || {};
+                return {
+                    ...data,
+                    id: data.id || snapshot.id,
+                    exists: snapshot.exists,
+                    _doc: snapshot
+                };
+            });
+            allResults.push(...batchResults);
+        }
+
+        return allResults;
+    };
+
 
     /** 當要對一個龐大的collection做read then update(job)，一定要用pagination 處理 */
     async modifyDocumentsOfPaginate(uid, path, job = async (items) => {}, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
@@ -170,23 +193,23 @@ class FirebaseHelper extends BaseFirebase {
 
             const snapshot = await query.get();
             if (snapshot.empty) {
-                Util.appendInfo(`${uid} modify path:/${path} has completed`)
+                Util.appendInfo(`${uid} modify path:/${path} has completed`);
                 break;
             }
 
-            const documents = snapshot.docs.map(doc => ({
-                   ...doc.data(),id: doc.id
+            const documents = snapshot.docs.map((doc) => ({
+                ...doc.data(),
+                id: doc.id
             }));
 
             // 執行每批次的任務，例如更新 updateTime
-            if (_.isFunction(job))
-                await job(documents);
+            if (_.isFunction(job)) await job(documents);
 
             lastDoc = snapshot.docs[snapshot.docs.length - 1]; // 記錄這批最後一筆，下一次從這裡繼續
             batchCount++;
             totalProcessed += documents.length;
 
-            Util.appendInfo(`${uid} path:/${path} modify the ${batchCount} batch, accumulated ${totalProcessed} documents`)
+            Util.appendInfo(`${uid} path:/${path} modify the ${batchCount} batch, accumulated ${totalProcessed} documents`);
             if (snapshot.size < pageSize) {
                 // 小於 pageSize 代表已經到底
                 break;
@@ -211,17 +234,17 @@ class FirebaseHelper extends BaseFirebase {
                 /** 這種概念 {where:(stmt) => stmt.where('id','==','david')}*/
                 stmtOfFunction = Util.getObjectValue(condition);
                 switch (Util.getObjectKey(condition)) {
-                    case 'limit':
+                    case "limit":
                         priority = 1;
                         break;
-                    case 'startAt':
-                    case 'startAfter':
+                    case "startAt":
+                    case "startAfter":
                         priority = 2;
                         break;
-                    case 'orderBy':
-                        priority = 3
+                    case "orderBy":
+                        priority = 3;
                         break;
-                    case 'where':
+                    case "where":
                         priority = 4;
                         break;
                     default:
@@ -229,39 +252,38 @@ class FirebaseHelper extends BaseFirebase {
                 }
             } else if (_.isFunction(condition)) {
                 /** 這種概念 (stmt) => stmt.where('id','==','david') */
-                stmtOfFunction = condition
+                stmtOfFunction = condition;
             } else {
-                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`)
+                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`);
             }
-            raw.push({stmt: stmtOfFunction, priority})
+            raw.push({ stmt: stmtOfFunction, priority });
         }
-        return _.isEmpty(raw) ? [] : _.orderBy(raw, ['priority'], ['desc']).map((each) => each.stmt);
+        return _.isEmpty(raw) ? [] : _.orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
     }
 
     fetchDocument = async (path, id) => {
         const docSnap = await this.reference(path, id).get();
-        return docSnap.exists ? {...docSnap.data(), id, _doc: docSnap, exists: true} : {exists: false};
-    }
+        return docSnap.exists ? { ...docSnap.data(), id, _doc: docSnap, exists: true } : { exists: false };
+    };
 
     deleteDocument = async (path, id) => {
         await this.reference(path, id).delete();
-    }
+    };
 
     deleteDocuments = async (path, whole = false, ...conditions) => {
         const all = [];
-        if (whole) all.push(...(await this.reference(path).listDocuments()))
+        if (whole) all.push(...(await this.reference(path).listDocuments()));
         else {
             const query = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
             const querySnapshot = await query.get();
-            querySnapshot.forEach((doc) => all.push(doc.ref))
+            querySnapshot.forEach((doc) => all.push(doc.ref));
         }
         await this.batchDo(all, (batch, ref) => batch.delete(ref));
-    }
+    };
 
     transaction = async (task = async (transaction) => true) => {
-        return await this.firestore().runTransaction(task)
-    }
-
+        return await this.firestore().runTransaction(task);
+    };
 
     /** predict(document,transaction) 裡面是atomic的行為，transcation可以get() -> document
      * 例如購物系統，當countOfProduct > 1時，就可以atomically得去更新為 {countOfProduct:countOfProduct - 1}
@@ -281,14 +303,14 @@ class FirebaseHelper extends BaseFirebase {
     async updateDocumentAtomically(path, predict = async (document, transaction) => document, id) {
         const self = this;
         if (Util.isUndefinedNullEmpty(id)) {
-            throw new ERROR(9999, '474845146451964 updateDocumentAtomically 的id 不能為空值')
+            throw new ERROR(9999, "474845146451964 updateDocumentAtomically 的id 不能為空值");
         }
 
         const behavior = async (transaction) => {
             const ref = self.reference(path, id);
             const docSnap = await transaction.get(ref);
             if (!docSnap.exists) {
-                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist`)
+                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist`);
             }
             const document = docSnap.data();
             document.exists = true;
@@ -296,8 +318,7 @@ class FirebaseHelper extends BaseFirebase {
             const content = await predict(document, transaction, ref);
             transaction.update(ref, content);
             Util.appendInfo(`transaction update => path:/${path}/${id}`, `content ==> `, content);
-
-        }
+        };
         return await this.transaction(behavior);
     }
 
@@ -309,13 +330,16 @@ class FirebaseHelper extends BaseFirebase {
      * callback {status:[local|server|error|cache], changes: document, error:object }
      */
     listenDocument = (path, id, callback = (source, data, error) => true) => {
-        const unsubscribe = this.reference(path, id).onSnapshot((doc) => {
-            callback('server', doc.data())
-        }, (error) => {
-            callback("error", undefined, error)
-        })
+        const unsubscribe = this.reference(path, id).onSnapshot(
+            (doc) => {
+                callback("server", doc.data());
+            },
+            (error) => {
+                callback("error", undefined, error);
+            }
+        );
         return unsubscribe;
-    }
+    };
 
     /**
      * status =>string[local|server|error|cache]是指本地端寫入一個document時,就會收到一個local端的callback, 等到資料完整在remote端部署，就會再收到server端的callback
@@ -325,35 +349,38 @@ class FirebaseHelper extends BaseFirebase {
      * callback {status:[local|server|error|cache], changes:[...{document}], error:object }
      * */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
-        const unsubscribe = this.reference(path).onSnapshot((snapshot) => {
-            const changes = [];
-            const status = "server";
-            // snapshot.docs; snapshot.size; snapshot.empty;
-            snapshot.docChanges().forEach((change) => {
-                changes.push({
-                    type: change.type, /** [added|modified|removed] */
-                    id: change.doc.id,
-                    data: change.doc.data()
-                })
-            })
-            callback(status, changes, undefined)
-        }, (error) => callback('error', undefined, error))
+        const unsubscribe = this.reference(path).onSnapshot(
+            (snapshot) => {
+                const changes = [];
+                const status = "server";
+                // snapshot.docs; snapshot.size; snapshot.empty;
+                snapshot.docChanges().forEach((change) => {
+                    changes.push({
+                        type: change.type /** [added|modified|removed] */,
+                        id: change.doc.id,
+                        data: change.doc.data()
+                    });
+                });
+                callback(status, changes, undefined);
+            },
+            (error) => callback("error", undefined, error)
+        );
         return unsubscribe;
-    }
+    };
 
     fetchCountOfCollection = async (path) => {
         const list = await this.reference(path).listDocuments();
         return _.size(list);
-    }
+    };
 
-    async deployDocxFileToAdminStorage(buffer, fileName = 'folder/filename.extension') {
-        if (!fileName.endsWith('.docx')) {
+    async deployDocxFileToAdminStorage(buffer, fileName = "folder/filename.extension") {
+        if (!fileName.endsWith(".docx")) {
             return {
                 succeed: false,
                 message: `檔案產生失敗，原因：副檔名不是.docx`
-            }
+            };
         }
-        return await this.deployButterAsFile2AdminStorage(buffer, fileName, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`)
+        return await this.deployButterAsFile2AdminStorage(buffer, fileName, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`);
     }
 
     async deployPDFtoAdminStorage(buffer, fileName = `folder/filename.extension`) {
@@ -361,37 +388,37 @@ class FirebaseHelper extends BaseFirebase {
             return {
                 succeed: false,
                 message: `檔案產生失敗，原因：副檔名不是.pdf`
-            }
+            };
         }
-        return await this.deployButterAsFile2AdminStorage(buffer, fileName, `application/pdf`)
+        return await this.deployButterAsFile2AdminStorage(buffer, fileName, `application/pdf`);
     }
 
     async deployButterAsFile2AdminStorage(buffer, fileName, contentType) {
         const ref = this.storage().bucket();
         const core = ref.file(fileName);
         try {
-            await core.save(buffer, {contentType});
+            await core.save(buffer, { contentType });
             // console.log('File uploaded successfully:', result.metadata);
 
             const downloadUrl = await core.getSignedUrl({
                 action: "read",
-                expires: "03-09-3000",
-            })
+                expires: "03-09-3000"
+            });
 
             return {
                 succeed: true,
                 path: downloadUrl[0],
                 message: `produce doc file succeed`
-            }
+            };
         } catch (error) {
             return {
                 succeed: false,
                 message: `檔案產生失敗，原因：${error.message}`
-            }
+            };
         }
     }
 
-    async getBufferOfGeneratedDocx(pathOfDocxTemplate = {}, data = {nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countOfPeople: "2"}) {
+    async getBufferOfGeneratedDocx(pathOfDocxTemplate = {}, data = { nameOfTravel: "小卉國8日行", startDateOfTravel: "2月17號", countOfPeople: "2" }) {
         /** Load the docx file as binary content */
         const content = fs.readFileSync(pathOfDocxTemplate);
         /** Unzip the content of the file */
@@ -400,13 +427,13 @@ class FirebaseHelper extends BaseFirebase {
          invalid, for example, if the template is "{user" (no closing tag) */
         const doc = new Docxtemplater(zip, {
             paragraphLoop: true,
-            linebreaks: true,
+            linebreaks: true
         });
         /** Render the document (Replace {first_name} by John, {last _name} by Doe, ...) */
         doc.render(data);
         /** Get the zip document and generate it as a nodebuffer */
         const buf = doc.getZip().generate({
-            type: "nodebuffer",
+            type: "nodebuffer"
             /** compression: DEFLATE adds a compression step.
              For a 50MB output document, expect 500ms additional CPU time */
             // compression: "DEFLATE",
@@ -418,94 +445,91 @@ class FirebaseHelper extends BaseFirebase {
 
     async authenticate() {
         const auth = new google.auth.GoogleAuth({
-            keyFile: 'template/googleapi.json', // Path to your service account key file
-            scopes: ['https://www.googleapis.com/auth/drive.file', 'https://www.googleapis.com/auth/drive'],
+            keyFile: "template/googleapi.json", // Path to your service account key file
+            scopes: ["https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
         });
         return await auth.getClient();
     }
 
     async convertDocxToPdfBuffer(docxBuffer, name) {
         const auth = await this.authenticate();
-        const drive = google.drive({version: 'v3', auth});
+        const drive = google.drive({ version: "v3", auth });
         // Create a readable stream from the docx buffer
         const docxStream = new stream.PassThrough();
         docxStream.end(docxBuffer);
         // Upload the docx buffer as a new Google Docs file
         const fileMetadata = {
             name: name,
-            mimeType: 'application/vnd.google-apps.document',
+            mimeType: "application/vnd.google-apps.document"
         };
         const media = {
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            body: docxStream,
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            body: docxStream
         };
         const file = await drive.files.create({
             resource: fileMetadata,
             media: media,
-            fields: 'id',
+            fields: "id"
         });
         const fileId = file.data.id;
         // Export the Google Docs file as a PDF
         const response = await drive.files.export(
             {
                 fileId: fileId,
-                mimeType: 'application/pdf',
+                mimeType: "application/pdf"
             },
-            {responseType: 'arraybuffer'}
+            { responseType: "arraybuffer" }
         );
         // Delete the temporary Google Docs file
-        await drive.files.delete({fileId: fileId});
+        await drive.files.delete({ fileId: fileId });
         // Return the PDF buffer
         return Buffer.from(response.data);
     }
 
     async uploadBufferOFDocx2Drive(bufferOfDocx, filePath) {
         const auth = await this.authenticate();
-        const drive = google.drive({version: 'v3', auth});
+        const drive = google.drive({ version: "v3", auth });
 
         const fileMetadata = {
             name: libpath.basename(filePath),
-            mimeType: 'application/vnd.google-apps.document', // Google Docs mime type
+            mimeType: "application/vnd.google-apps.document" // Google Docs mime type
         };
 
         const media = {
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // DOCX mime type
-            body: Readable.from(bufferOfDocx),
+            mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX mime type
+            body: Readable.from(bufferOfDocx)
         };
 
         try {
             const file = await drive.files.create({
                 resource: fileMetadata,
                 media: media,
-                fields: 'id',
+                fields: "id"
             });
             const fileId = file.data.id;
             await drive.permissions.create({
                 fileId: fileId,
                 requestBody: {
-                    role: 'writer',
-                    type: 'anyone',
-                },
+                    role: "writer",
+                    type: "anyone"
+                }
             });
 
             const result = await drive.files.get({
                 fileId: fileId,
-                fields: 'webViewLink',
+                fields: "webViewLink"
             });
             return {
                 succeed: true,
-                path: result.data.webViewLink,
+                path: result.data.webViewLink
             };
-
         } catch (error) {
             return {
                 succeed: false,
-                message: `'4123132 error uploading or sharing file:', ${error.message}`,
+                message: `'4123132 error uploading or sharing file:', ${error.message}`
             };
         }
     }
-
-
 }
 
 export default new FirebaseHelper();

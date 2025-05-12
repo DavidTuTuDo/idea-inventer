@@ -1,20 +1,19 @@
 const edit = true;
 import config from "../config";
-import {initializeApp,cert} from 'firebase-admin/app';
-import {getFunctions} from "firebase-admin/functions";
-import {getStorage} from "firebase-admin/storage";
-import {getAuth} from "firebase-admin/auth";
-import {getFirestore} from "firebase-admin/firestore";
-import {getDatabase} from "firebase-admin/database";
+import { initializeApp, cert } from "firebase-admin/app";
+import { getFunctions } from "firebase-admin/functions";
+import { getStorage } from "firebase-admin/storage";
+import { getAuth } from "firebase-admin/auth";
+import { getFirestore } from "firebase-admin/firestore";
+import { getDatabase } from "firebase-admin/database";
 
 class BaseFirebase {
-
     constructor() {
         const credential = config.admin;
         this._app = initializeApp({
             credential: cert(credential),
             databaseURL: config.server,
-            storageBucket:`${config.admin.project_id}.appspot.com`,
+            storageBucket: `${config.admin.project_id}.appspot.com`
         });
         this._storage = getStorage(this._app);
         this._firestore = getFirestore(this._app);
@@ -46,9 +45,6 @@ class BaseFirebase {
     storage() {
         return this._storage;
     }
-
-
 }
 
-
-export default BaseFirebase
+export default BaseFirebase;
