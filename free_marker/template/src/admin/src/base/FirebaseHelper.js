@@ -64,9 +64,13 @@ class FirebaseHelper extends BaseFirebase {
 
     /** firestore 的 modular api 使用原則 */
 
-    reference = (path, id) => {
-        return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(_.toString(id));
+    reference = (path, id, ) => {
+        return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(id);
     };
+
+    getAutoDocumentID(xpath) {
+        return this.collectionRef(xpath).doc().id;
+    }
 
     submitDocument = async (path, item = {}, id) => {
         const ref = this.reference(path, id);
@@ -88,7 +92,7 @@ class FirebaseHelper extends BaseFirebase {
     /** batch提供set, delete, update的功能
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    batchDo = async (items, predicate = (batch, item) => true) => {
+    batchDo = async (items, predicate = (batch, item) => true, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
@@ -105,7 +109,7 @@ class FirebaseHelper extends BaseFirebase {
             /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
             count = count + 1;
             /** 超過MAX先COMMIT次再歸零 */
-            if (count >= MAX_COUNT_OF_FIRESTORE_BATCH) {
+            if (count >= batchCount) {
                 await commit(batch, count);
                 count = 0;
                 batch = this.firestore().batch();
@@ -133,6 +137,33 @@ class FirebaseHelper extends BaseFirebase {
         });
     };
 
+    async submitBatchParentsDocuments(
+      pathOfParent = ["father", "children"],
+      items = [{ father: { id: '' }, children: [{ id: '' }, { id: '' }] }],
+      batchCount = 100
+    ) {
+        const [parentCollection, childCollection] = pathOfParent;
+
+        await this.batchDo(items, (batch, object) => {
+            const parentData = object[parentCollection];
+            const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
+            parentData.id = parentId;
+
+            const parentRef = this.reference(parentCollection,parentId);
+            batch.set(parentRef, parentData);
+
+            const children = object[childCollection] || [];
+
+            for (const childData of children) {
+                const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
+                childData.id = childId;
+
+                const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`,childId);
+                batch.set(childRef, childData);
+            }
+        }, batchCount);
+    }
+
     fetchDocuments = async (path, ...conditions) => {
         const query = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         const querySnapshot = await query.get();
@@ -147,36 +178,6 @@ class FirebaseHelper extends BaseFirebase {
             });
         return all;
     };
-
-    /**
-     * 批次讀取 Firestore documents（使用 firebase-admin），支援分批與額外欄位封裝。
-     * @param {FirebaseFirestore.DocumentReference[]} references - 要讀取的 document references 陣列
-     * @param {number} batchCount - 每批最大請求數，預設為 Firestore 限制（例如 10）
-     * @returns {Promise<Array<Object>>} - 每筆資料包含 `id`, `exists`, `_doc`, 以及其他資料欄位
-     */
-    fetchBatchDocuments = async (references, batchCount = 10) => {
-        if (!references.length) return [];
-
-        const allResults = [];
-        for (let i = 0; i < references.length; i += batchCount) {
-            const batch = references.slice(i, i + batchCount);
-            const snapshots = await Promise.all(batch.map((ref) => ref.get()));
-
-            const batchResults = snapshots.map((snapshot) => {
-                const data = snapshot.data() || {};
-                return {
-                    ...data,
-                    id: data.id || snapshot.id,
-                    exists: snapshot.exists,
-                    _doc: snapshot
-                };
-            });
-            allResults.push(...batchResults);
-        }
-
-        return allResults;
-    };
-
 
     /** 當要對一個龐大的collection做read then update(job)，一定要用pagination 處理 */
     async modifyDocumentsOfPaginate(uid, path, job = async (items) => {}, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
@@ -331,12 +332,12 @@ class FirebaseHelper extends BaseFirebase {
      */
     listenDocument = (path, id, callback = (source, data, error) => true) => {
         const unsubscribe = this.reference(path, id).onSnapshot(
-            (doc) => {
-                callback("server", doc.data());
-            },
-            (error) => {
-                callback("error", undefined, error);
-            }
+          (doc) => {
+              callback("server", doc.data());
+          },
+          (error) => {
+              callback("error", undefined, error);
+          }
         );
         return unsubscribe;
     };
@@ -350,20 +351,20 @@ class FirebaseHelper extends BaseFirebase {
      * */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
         const unsubscribe = this.reference(path).onSnapshot(
-            (snapshot) => {
-                const changes = [];
-                const status = "server";
-                // snapshot.docs; snapshot.size; snapshot.empty;
-                snapshot.docChanges().forEach((change) => {
-                    changes.push({
-                        type: change.type /** [added|modified|removed] */,
-                        id: change.doc.id,
-                        data: change.doc.data()
-                    });
-                });
-                callback(status, changes, undefined);
-            },
-            (error) => callback("error", undefined, error)
+          (snapshot) => {
+              const changes = [];
+              const status = "server";
+              // snapshot.docs; snapshot.size; snapshot.empty;
+              snapshot.docChanges().forEach((change) => {
+                  changes.push({
+                      type: change.type /** [added|modified|removed] */,
+                      id: change.doc.id,
+                      data: change.doc.data()
+                  });
+              });
+              callback(status, changes, undefined);
+          },
+          (error) => callback("error", undefined, error)
         );
         return unsubscribe;
     };
@@ -474,11 +475,11 @@ class FirebaseHelper extends BaseFirebase {
         const fileId = file.data.id;
         // Export the Google Docs file as a PDF
         const response = await drive.files.export(
-            {
-                fileId: fileId,
-                mimeType: "application/pdf"
-            },
-            { responseType: "arraybuffer" }
+          {
+              fileId: fileId,
+              mimeType: "application/pdf"
+          },
+          { responseType: "arraybuffer" }
         );
         // Delete the temporary Google Docs file
         await drive.files.delete({ fileId: fileId });

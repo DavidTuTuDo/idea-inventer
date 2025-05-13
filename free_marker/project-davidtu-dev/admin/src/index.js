@@ -339,37 +339,72 @@ import moment from "moment";
             10
         );
         // const products = products;
-        await api.submitBoozes(
-            _(products)
-                .map(({ serial, options, category, statement, ...rest }) => {
-                    const lowestPrice = Util.findLowestValue(options);
-                    return {
-                        ...rest,
-                        price: lowestPrice,
-                        id: serial,
-                        specificAttributes: getFakeSpecificAttributes(options),
-                        category: Util.getUniqueValuesBy(category, "valueOfType"),
-                        rangeOfPrice: Util.getStringOfValueRange(options),
-                        statement: normalizeStatement(statement),
-                        priceB4Discount: Math.round(lowestPrice * 1.3),
-                        // 處理 options
-                        options: _(options)
-                            .filter(({ count }) => count > 0)
-                            .map(({ name, price: optPrice, photo, count, ...other }) => ({
-                                name,
-                                photo,
-                                count,
-                                ...other,
-                                price: optPrice,
-                                priceB4Discount: Math.round(optPrice * 1.3)
-                            }))
-                            .value()
-                    };
-                })
-                .value()
-        );
+
+        const deploys = products.map(({ serial, options, category, statement, ...rest }) => {
+            const lowestPrice = Util.findLowestValue(options);
+            return {
+                dionysus: api.normalizeBooze({
+                    ...rest,
+                    price: lowestPrice,
+                    // id: serial,
+                    specificAttributes: getFakeSpecificAttributes(options),
+                    category: Util.getUniqueValuesBy(category, "valueOfType"),
+                    rangeOfPrice: Util.getStringOfValueRange(options),
+                    statement: normalizeStatement(statement),
+                    priceB4Discount: Math.round(lowestPrice * 1.3),
+                    // 處理 options
+                    options: _(options)
+                      .filter(({ count }) => count > 0)
+                      .map(({ name, price: optPrice, photo, count, ...other }) => ({
+                          name,
+                          photo,
+                          count,
+                          ...other,
+                          price: optPrice,
+                          priceB4Discount: Math.round(optPrice * 1.3)
+                      }))
+                      .value()
+                }),
+                variants:getFakeVariants(options,serial).map((variant) => api.normalizeVariant(variant))
+            };
+        })
+        console.log(deploys)
+
+        await api.submitBatchParentsDocuments(["dionysus", "variants"], deploys);
+
+
+
+        // await api.submitBoozes(
+        //     _(products)
+        //         .map(({ serial, options, category, statement, ...rest }) => {
+        //             const lowestPrice = Util.findLowestValue(options);
+        //             return {
+        //                 ...rest,
+        //                 price: lowestPrice,
+        //                 id: serial,
+        //                 specificAttributes: getFakeSpecificAttributes(options),
+        //                 category: Util.getUniqueValuesBy(category, "valueOfType"),
+        //                 rangeOfPrice: Util.getStringOfValueRange(options),
+        //                 statement: normalizeStatement(statement),
+        //                 priceB4Discount: Math.round(lowestPrice * 1.3),
+        //                 // 處理 options
+        //                 options: _(options)
+        //                     .filter(({ count }) => count > 0)
+        //                     .map(({ name, price: optPrice, photo, count, ...other }) => ({
+        //                         name,
+        //                         photo,
+        //                         count,
+        //                         ...other,
+        //                         price: optPrice,
+        //                         priceB4Discount: Math.round(optPrice * 1.3)
+        //                     }))
+        //                     .value()
+        //             };
+        //         })
+        //         .value()
+        // );
         console.log(`＊＊＊已完成products collection 上傳，合計 ${_.size(products)} 筆`);
-        for (const product of products) await api.submitVariants(getFakeVariants(product.options, product.serial), product.serial);
+        // for (const product of products) await api.submitVariants(getFakeVariants(product.options, product.serial), product.serial);
         console.log(`＊＊＊已完成products ->variants collection 上傳，合計 ${_.size(products)} 筆`);
     }
 
@@ -414,12 +449,10 @@ import moment from "moment";
 
     // await uploadProducts();
     await uploadFakedProducts();
-
     // await expiredOrderBehavior();
     // await updateCPRT();
     // await updateCPRTContent();
     // await updateCPRTProjects();
-
     // await uploadPaymentOptions();
     // await sampleOfFetchUrl();
     // await submitSampleProduct();

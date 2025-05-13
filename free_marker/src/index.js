@@ -121,6 +121,10 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** products/{productId}       ← 父 document
+        └── {productId}/variants/{variantId}   ← 讓api產出batch submit product和variants */
+    hasFatherHood = false;
+
     /** 用來取代原本component的props，屬於source級別的設定，例如 要把epay設計為首頁: epay: {path:''}*/
     setsOfComponentProp = {}
     // {
@@ -4719,6 +4723,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `return hasParent ? this.getParentNode().${Util.camel('remove', node.getFieldName())}(item) : true`,
                         ],
                         `delete item of cheap`);
+
 
                     generateApiFunction(
                         node,

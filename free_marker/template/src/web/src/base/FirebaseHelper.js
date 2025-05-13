@@ -155,7 +155,7 @@ class FirebaseHelper extends BaseFirebase {
     /** firestore 的 modular api 使用原則 */
 
     reference = (path, id) => {
-        return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, _.toString(id));
+        return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, id);
     };
 
     submitDocument = async (path, item = {}, id) => {
@@ -191,7 +191,8 @@ class FirebaseHelper extends BaseFirebase {
     /** batch提供set, delete, update的功能, items就是帶進來的參數
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    batchDo = async (items, predicate = (batch, object) => {}) => {
+    batchDo = async (items, predicate = (batch, object) => {
+    }, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
@@ -208,7 +209,7 @@ class FirebaseHelper extends BaseFirebase {
             /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
             count = count + 1;
             /** 超過MAX先COMMIT次再歸零 */
-            if (count >= MAX_COUNT_OF_FIRESTORE_BATCH) {
+            if (count >= batchCount) {
                 await commit(batch, count);
                 count = 0;
                 batch = writeBatch(this.firestore());
@@ -336,6 +337,35 @@ class FirebaseHelper extends BaseFirebase {
         return allResults;
     };
 
+    getAutoDocumentID(xpath) {
+        return doc(this.reference(xpath)).id;
+    }
+
+    async submitBatchParentsDocuments(
+      pathOfParent = ["father", "children"],
+      items = [{ father: { id: '' }, children: [{ id: '' }, { id: '' }] }],
+      batchCount = 100
+    ) {
+        const [parentCollection, childCollection] = pathOfParent;
+
+        await this.batchDo(items, (batch, object) => {
+            const parentData = object[parentCollection];
+            const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
+            parentData.id = parentId;
+            const parentRef = this.reference(parentCollection,parentId);
+            batch.set(parentRef, parentData);
+
+            const children = object[childCollection] || [];
+
+            for (const childData of children) {
+                const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
+                childData.id = childId;
+                const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`, childId);
+                batch.set(childRef, childData);
+            }
+        }, batchCount);
+    }
+
     deleteDocument = async (path, id) => {
         await deleteDoc(this.reference(path, id));
     };
@@ -344,8 +374,8 @@ class FirebaseHelper extends BaseFirebase {
         const all = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...conditions);
         if (_.size(all) > 0)
             await this.batchDo(
-                all.map((data) => data.ref),
-                (batch, ref) => batch.delete(ref)
+              all.map((data) => data.ref),
+              (batch, ref) => batch.delete(ref)
             );
     };
 
@@ -391,8 +421,8 @@ class FirebaseHelper extends BaseFirebase {
 
     constraints = (conditions) => {
         return _.filter(
-            this.sortedByPriority(conditions).map((condition) => this.normalize(condition)),
-            (each) => !_.isUndefined(each)
+          this.sortedByPriority(conditions).map((condition) => this.normalize(condition)),
+          (each) => !_.isUndefined(each)
         );
     };
 
@@ -452,14 +482,14 @@ class FirebaseHelper extends BaseFirebase {
      */
     listenDocument = (path, id, callback = (status, data, error) => true) => {
         const unsubscribe = onSnapshot(
-            this.reference(path, id),
-            (doc) => {
-                const status = doc.metadata.hasPendingWrites ? "local" : "server";
-                callback(status, { ...doc.data(), id: doc.id });
-            },
-            (error) => {
-                callback("error", undefined, error);
-            }
+          this.reference(path, id),
+          (doc) => {
+              const status = doc.metadata.hasPendingWrites ? "local" : "server";
+              callback(status, { ...doc.data(), id: doc.id });
+          },
+          (error) => {
+              callback("error", undefined, error);
+          }
         );
         return unsubscribe;
     };
@@ -473,21 +503,21 @@ class FirebaseHelper extends BaseFirebase {
      * */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
         const unsubscribe = onSnapshot(
-            this.compound(path, conditions),
-            (snapshot) => {
-                const changes = [];
-                const status = snapshot.metadata.hasPendingWrites ? "local" : "server";
-                // snapshot.docs; snapshot.size; snapshot.empty;
-                snapshot.docChanges().forEach((change) => {
-                    changes.push({
-                        type: change.type /** [added|modified|removed] */,
-                        id: change.doc.id,
-                        data: change.doc.data()
-                    });
-                });
-                callback(status, changes, undefined);
-            },
-            (error) => callback("error", undefined, error)
+          this.compound(path, conditions),
+          (snapshot) => {
+              const changes = [];
+              const status = snapshot.metadata.hasPendingWrites ? "local" : "server";
+              // snapshot.docs; snapshot.size; snapshot.empty;
+              snapshot.docChanges().forEach((change) => {
+                  changes.push({
+                      type: change.type /** [added|modified|removed] */,
+                      id: change.doc.id,
+                      data: change.doc.data()
+                  });
+              });
+              callback(status, changes, undefined);
+          },
+          (error) => callback("error", undefined, error)
         );
         return unsubscribe;
     };
