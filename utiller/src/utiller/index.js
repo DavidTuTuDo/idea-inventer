@@ -2620,12 +2620,45 @@ class Utiller {
         );
     }
 
+    /**
+     * 從路徑字串中擷取靜態片段（忽略以指定字元開頭的參數）
+     * @param {string} path - 輸入的路徑字串
+     * @param {string[]} rules - 要忽略的前綴符號規則，預設為 [':']
+     * @returns {string[]} - 篩選後的靜態段落，例如 ['dionysus', 'variants']
+     *
+     * const samples = [
+     *   '/dionysus/:pid/variants',
+     *   './dionysus/*pid/variants/',
+     *   '/shop/@category/:id'
+     * ];
+     * // 預設只忽略 ':'
+     *
+     * console.log(extractStaticSegments(samples[0])); // ['dionysus', 'variants']
+     * // 忽略 ':' 與 '*'
+     * console.log(extractStaticSegments(samples[1], [':', '*'])); // ['dionysus', 'variants']
+     * // 忽略 ':' 與 '@'
+     * console.log(extractStaticSegments(samples[2], [':', '@'])); // ['shop']
+     *
+     */
+    extractStaticSegments(path, rules = [':']) {
+        return path
+          .trim()
+          .replace(/^\.?\/*|\/*$/g, '') // 移除開頭 './' 或 '/'，結尾 '/'
+          .split('/')
+          .filter(segment =>
+            segment &&
+            !rules.some(rule => segment.startsWith(rule))
+          );
+    }
+
+
 
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
             // const  utiller = new Utiller();
+            // console.log(utiller.extractStaticSegments('/dionysus'));
             // const result = utiller.generateCombinations({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
             //   {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})
             // console.log(result)

@@ -1010,14 +1010,11 @@ class CodegenNode {
     /** (params) => (params) => <CustomView {...params} />*/
     isViewPropsFunctionality() { return this.isViewDefinedInProps() && _.isEqual(this.injectViewProp.functionalized, true); }
 
+    setType(type) { this.type = type; }
 
-    setType(type) {
-        this.type = type;
-    }
+    getFunctionNameOfNormalize() { return Util.camel("normalize", this.getName()); }
 
-    getFieldNameOfLabel(sign = '') {
-        return Util.camel('label', 'of', this.getFieldName(), sign);
-    }
+    getFieldNameOfLabel(sign = '') { return Util.camel('label', 'of', this.getFieldName(), sign);}
 
     getFieldNameOfToggle(sign = '') {
         return Util.camel('toggle', 'of', this.getFieldName(), sign);
@@ -1188,26 +1185,19 @@ class CodegenNode {
     /** arrayItem 是一個抽象的概念, 因為type='array', 必須建造出'QuestionsView(forEach邏輯)', 'QuestionView(viewModule)' */
     isArrayItem() { return _.isEqual(this.type, 'arrayItem'); }
 
-    getNodeOfSource() {
-        const node = this.getParentBy((node) => node.isRootNode());
-        return node;
-    }
+    getNodeOfSource() { return this.getParentBy((node) => node.isRootNode()); }
 
     getStorageSuperUserUid() { return this.superUserUid; }
 
     getConditions() { return this.conditions; }
 
-    getNodeOfComponent() {
-        const node = this.getParentBy((node) => node.isComponentNode());
-        return node;
-    }
+    getNodeOfComponent() { return this.getParentBy((node) => node.isComponentNode()); }
 
     getNodeOfStruct() {
         if (this.isComponentNode()) {
             return this.getStruct();
         }
-        const node = this.getParentBy((node) => node.isStructNode());
-        return node;
+        return this.getParentBy((node) => node.isStructNode());
     }
 
     getParamsInRouter(...others) {
@@ -1430,6 +1420,8 @@ class CodegenNode {
     }
 
     getFunctionNameOfSubmitItem() { return Util.camel('submit', this.getName(), 'item'); }
+
+    getFunctionNameOfBatchParentItems(child) { return Util.camel('submit','batch', this.getName(),child.getName(), 'items'); }
 
     getFunctionNameOfSubmit() { return Util.camel('submit', this.getFieldName()); }
 
@@ -3888,6 +3880,9 @@ class BaseBuilder extends PathBase {
             case 'fetch batch items':
                 params = [`...items`];
                 break;
+            case "batch submit parent":
+                params = [`items = [{father:{id:''},child:[{id:''},{id:''}]}]`, `batchCount = 100`];
+                break;
             case 'modify items':
                 params = [...params, 'job = async (items) => {}', 'conditions', 'size']
                 break;
@@ -4576,7 +4571,7 @@ class RemoteFunctionHandler extends BaseBuilder {
         function generateApiFunction(node, name, logicStmts = [], type, isAsync = true, uploadFile = false) {
             const preStmts = [`const self = this`];
             /** asString => 就是把 `${variable}` => '${variable}' 免得造成unknown issue */
-            const asString = _.isEqual(type, "fetch batch items");
+            const asString = Util.isOrEquals(type, "fetch batch items","batch submit parent");
             preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
               `const path = ${asString ? `\'${node.getPathOfRouterString()}/\${id}\'` : `\`${node.getPathOfRouterString()}\``}`
             );
@@ -4661,7 +4656,7 @@ class RemoteFunctionHandler extends BaseBuilder {
 
             if (node.hasPath()) {
                 /** 有path 才代表 這是一個遠端也有的物件 */
-                const functionNameOfNormalize = Util.camel('normalize', node.getName());
+                const functionNameOfNormalize = node.getFunctionNameOfNormalize();
                 generator.appendFunction(functionNameOfNormalize, ['object', 'update = false'], [], [],
                     ...contents,
                     'this.handleCommitment(update, commitment, object)',
@@ -4787,11 +4782,31 @@ class RemoteFunctionHandler extends BaseBuilder {
                       node,
                       node.getFunctionNameOfFetchBatch(),
                       [
-                        ` /** item = {${node.getParamsOfBatchFetch().join(',')}} */`,
-                          `const references = items.map(({${node.getParamsOfBatchFetch().join(',')}}) => this.reference(${node.getBatchFetchOfRefStmt()}))`,
+                        ` /** item = {${node.getParamsOfBatchFetch().join(",")}} */`,
+                          `const references = items.map(({${node.getParamsOfBatchFetch().join(",")}}) => this.reference(${node.getBatchFetchOfRefStmt()}))`,
                           `return await self.fetchBatchItems(path, ...references)`],
                       `fetch batch items`);
 
+                    const childrenOfHasFatherHood = node.getPreciseAttributeChildren().filter((child) => child.hasFatherHood);
+                    for (const child of childrenOfHasFatherHood) {
+                        const segments = Util.extractStaticSegments(child.getPath());
+                        const nameOfChild = child.getName();
+                        const father = _.head(segments);
+                        const son = _.last(segments);
+                        generateApiFunction(
+                          node,
+                          node.getFunctionNameOfBatchParentItems(child),
+                          [
+                              `${this.isWebPlatform() ? `const api = new ${_.upperFirst(child.getName())}()` : ""}`,
+                              `const commitments = items.map((item) => {
+                               return {
+                                 ${father} : self.${functionNameOfNormalize}(item.${father}),
+                                 ${son} : item.${son}.map((${nameOfChild}) => ${this.isWebPlatform() ? "api" : "this"}.${child.getFunctionNameOfNormalize()}(${nameOfChild}))
+                             }
+                             });`,
+                              `return await self.submitBatchParentItems(${JSON.stringify(segments)},commitments,batchCount)`],
+                          "batch submit parent");
+                    }
 
                     generateApiFunction(
                         node,

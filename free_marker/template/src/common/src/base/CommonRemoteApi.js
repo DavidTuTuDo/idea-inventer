@@ -251,6 +251,15 @@ class CommonRemoteApi {
         return item;
     }
 
+    async submitBatchParentItems(pathOfParent = ['father','children'], items = [{father:{},children:{}}], batchCount = 100) {
+        const uid = Util.getRandomHashV2(10);
+        const path = JSON.stringify(pathOfParent);
+        Util.appendInfo(`${uid} start batch parent ${path} items(${_.size(items)})`);
+        const result = await firebase.submitBatchParentsDocuments(pathOfParent, items, batchCount);
+        Util.appendInfo(`${uid} start batch parent ${path} items(${_.size(items)})`);
+        return result;
+    }
+
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
     async deleteItems(path, whole, ...conditions) {
         const uid = Util.getRandomHashV2(10);

@@ -59,6 +59,17 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo("fetch", _async);
     }
 
+    /** 用promise.all()拿不同id的documents，firestore目前不支援給batchFetch(已知id) */
+    async fetchBatchItems(path, ...references) {
+        const _async = async () => super.fetchBatchItems(path, ...references);
+        return await CommonPoolHelper.submitTo("fetch", _async);
+    }
+
+    async submitBatchParentItems(pathOfParent = ['father','children'], items = [{father:{},children:{}}], batchCount = 100) {
+        const _async = async () => super.submitBatchParentItems(pathOfParent,items,batchCount);
+        return await CommonPoolHelper.submitTo("submit", _async);
+    }
+
     async updateItem(path, item, id) {
         const _async = async () => super.updateItem(path, item, id);
         return await CommonPoolHelper.submitTo("submit", _async);
