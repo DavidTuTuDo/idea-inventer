@@ -2,7 +2,6 @@ const edit = true;
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
-import CommonPoolHelper from "./CommonPoolHelper";
 import Config from "../config";
 import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import {
@@ -191,7 +190,7 @@ class FirebaseHelper extends BaseFirebase {
     /** batch提供set, delete, update的功能, items就是帶進來的參數
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    batchDo = async (items, predicate = (batch, object) => {}, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
+    batchDo = async (items, predicate = async (batch, object) => {}, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
@@ -204,7 +203,7 @@ class FirebaseHelper extends BaseFirebase {
         let count = 0;
 
         while (items.length > 0) {
-            predicate(batch, items.shift());
+            await predicate(batch, items.shift());
             /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
             count = count + 1;
             /** 超過MAX先COMMIT次再歸零 */
@@ -364,6 +363,19 @@ class FirebaseHelper extends BaseFirebase {
             batchCount
         );
     }
+
+    deleteBatchParentDocuments = async (pathOfParent = ["father", "children"], idsOfFather = [], batchCount = 200) => {
+        const pathOfFather = _.head(pathOfParent);
+        const pathOfSon = _.last(pathOfParent);
+        await this.batchDo(idsOfFather, async (batch, id) => {
+            const refOfFather = this.reference(pathOfFather, id);
+            const childrenColRef = this.reference(`${pathOfFather}/${idsOfFather}/${pathOfSon}`);
+            const childrenDocsSnap = await getDocs(childrenColRef);
+            for (const childDoc of childrenDocsSnap.docs) batch.delete(childDoc.ref);
+            batch.delete(refOfFather);
+
+        }, batchCount);
+    };
 
     deleteDocument = async (path, id) => {
         await deleteDoc(this.reference(path, id));

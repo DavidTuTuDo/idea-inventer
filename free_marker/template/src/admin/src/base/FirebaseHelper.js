@@ -64,7 +64,7 @@ class FirebaseHelper extends BaseFirebase {
 
     /** firestore 的 modular api 使用原則 */
 
-    reference = (path, id, ) => {
+    reference = (path, id) => {
         return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(id);
     };
 
@@ -92,7 +92,7 @@ class FirebaseHelper extends BaseFirebase {
     /** batch提供set, delete, update的功能
      * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
      * */
-    batchDo = async (items, predicate = (batch, item) => true, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
+    batchDo = async (items, predicate = async (batch, item) => true, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         async function commit(batch, count) {
             if (count > 0) {
                 await batch.commit();
@@ -105,7 +105,7 @@ class FirebaseHelper extends BaseFirebase {
         let count = 0;
 
         while (items.length > 0) {
-            predicate(batch, items.shift());
+            await predicate(batch, items.shift());
             /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
             count = count + 1;
             /** 超過MAX先COMMIT次再歸零 */
@@ -137,32 +137,44 @@ class FirebaseHelper extends BaseFirebase {
         });
     };
 
-    async submitBatchParentsDocuments(
-      pathOfParent = ["father", "children"],
-      items = [{ father: { id: '' }, children: [{ id: '' }, { id: '' }] }],
-      batchCount = 100
-    ) {
+    async submitBatchParentDocuments(pathOfParent = ["father", "children"], items = [{ father: { id: "" }, children: [{ id: "" }, { id: "" }] }], batchCount = 100) {
         const [parentCollection, childCollection] = pathOfParent;
 
-        await this.batchDo(items, (batch, object) => {
-            const parentData = object[parentCollection];
-            const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
-            parentData.id = parentId;
+        await this.batchDo(
+          items,
+          (batch, object) => {
+              const parentData = object[parentCollection];
+              const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
+              parentData.id = parentId;
 
-            const parentRef = this.reference(parentCollection,parentId);
-            batch.set(parentRef, parentData);
+              const parentRef = this.reference(parentCollection, parentId);
+              batch.set(parentRef, parentData);
 
-            const children = object[childCollection] || [];
+              const children = object[childCollection] || [];
 
-            for (const childData of children) {
-                const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
-                childData.id = childId;
+              for (const childData of children) {
+                  const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
+                  childData.id = childId;
 
-                const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`,childId);
-                batch.set(childRef, childData);
-            }
-        }, batchCount);
+                  const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`, childId);
+                  batch.set(childRef, childData);
+              }
+          },
+          batchCount
+        );
     }
+
+    deleteBatchParentDocuments = async (pathOfParent = ["father", "children"], idsOfFather = [], batchCount = 200) => {
+        const pathOfFather = _.head(pathOfParent);
+        const pathOfSon = _.last(pathOfParent);
+        await this.batchDo(idsOfFather, async (batch, id) => {
+            const refOfFather = this.reference(pathOfFather, id);
+            const childrenSnap = await refOfFather.collection(pathOfSon).get();
+            for (const childSnap of childrenSnap.docs) batch.delete(childSnap.ref);
+            batch.delete(refOfFather);
+
+        }, batchCount);
+    };
 
     fetchDocuments = async (path, ...conditions) => {
         const query = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));

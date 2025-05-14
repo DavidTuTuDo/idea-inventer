@@ -1421,7 +1421,9 @@ class CodegenNode {
 
     getFunctionNameOfSubmitItem() { return Util.camel('submit', this.getName(), 'item'); }
 
-    getFunctionNameOfBatchParentItems(child) { return Util.camel('submit','batch', this.getName(),child.getName(), 'items'); }
+    getFunctionNameOfBatchSubmitParentItems(child) { return Util.camel('submit','batch', this.getName(),child.getName(), 'items'); }
+
+    getFunctionNameOfBatchDeleteParentItems(child) { return Util.camel('delete','batch', this.getName(),child.getName(), 'items'); }
 
     getFunctionNameOfSubmit() { return Util.camel('submit', this.getFieldName()); }
 
@@ -3883,6 +3885,9 @@ class BaseBuilder extends PathBase {
             case "batch submit parent":
                 params = [`items = [{father:{id:''},child:[{id:''},{id:''}]}]`, `batchCount = 100`];
                 break;
+            case "batch delete parent":
+                params = [`idsOf${_.upperFirst(node.getName())} = ['']`,`batchCount = 100`]
+                break;
             case 'modify items':
                 params = [...params, 'job = async (items) => {}', 'conditions', 'size']
                 break;
@@ -4795,7 +4800,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         const son = _.last(segments);
                         generateApiFunction(
                           node,
-                          node.getFunctionNameOfBatchParentItems(child),
+                          node.getFunctionNameOfBatchSubmitParentItems(child),
                           [
                               `${this.isWebPlatform() ? `const api = new ${_.upperFirst(child.getName())}()` : ""}`,
                               `const commitments = items.map((item) => {
@@ -4806,6 +4811,13 @@ class RemoteFunctionHandler extends BaseBuilder {
                              });`,
                               `return await self.submitBatchParentItems(${JSON.stringify(segments)},commitments,batchCount)`],
                           "batch submit parent");
+
+                        generateApiFunction(
+                          node,
+                          node.getFunctionNameOfBatchDeleteParentItems(child),
+                          [
+                              `return await self.deleteBatchParentItems(${JSON.stringify(segments)}, idsOf${_.upperFirst(node.getName())} , batchCount)`],
+                          "batch delete parent");
                     }
 
                     generateApiFunction(

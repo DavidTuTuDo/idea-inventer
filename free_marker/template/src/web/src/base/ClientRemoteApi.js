@@ -70,6 +70,11 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo("submit", _async);
     }
 
+    async deleteBatchParentItems(pathOfParent = ["father", "children"], idsOfFather = [''], batchCount = 100) {
+        const _async = async () => super.submitBatchParentItems(pathOfParent, idsOfFather, batchCount);
+        return await CommonPoolHelper.submitTo("submit", _async);
+    }
+
     async updateItem(path, item, id) {
         const _async = async () => super.updateItem(path, item, id);
         return await CommonPoolHelper.submitTo("submit", _async);

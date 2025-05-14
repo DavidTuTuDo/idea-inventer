@@ -251,12 +251,21 @@ class CommonRemoteApi {
         return item;
     }
 
-    async submitBatchParentItems(pathOfParent = ['father','children'], items = [{father:{},children:{}}], batchCount = 100) {
+    async submitBatchParentItems(pathOfParent = ["father", "children"], items = [{ father: {}, children: {} }], batchCount = 100) {
         const uid = Util.getRandomHashV2(10);
         const path = JSON.stringify(pathOfParent);
         Util.appendInfo(`${uid} start batch parent ${path} items(${_.size(items)})`);
-        const result = await firebase.submitBatchParentsDocuments(pathOfParent, items, batchCount);
-        Util.appendInfo(`${uid} start batch parent ${path} items(${_.size(items)})`);
+        const result = await firebase.submitBatchParentDocuments(pathOfParent, items, batchCount);
+        Util.appendInfo(`${uid} succeed batch parent ${path} items(${_.size(items)})`);
+        return result;
+    }
+
+    async deleteBatchParentItems(pathOfParent = ["father", "children"], idsOfFather = [''], batchCount = 100) {
+        const uid = Util.getRandomHashV2(10);
+        const path = JSON.stringify(pathOfParent);
+        Util.appendInfo(`${uid} start delete batch parent ${path} items(${_.size(idsOfFather)})`);
+        const result = await firebase.deleteBatchParentDocuments(pathOfParent, idsOfFather, batchCount);
+        Util.appendInfo(`${uid} succeed delete batch parent ${path} items(${_.size(idsOfFather)})`);
         return result;
     }
 

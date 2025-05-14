@@ -330,9 +330,8 @@ import moment from "moment";
     async function uploadFakedProducts() {
         /** 拿到所有product id，因為 /product/{id}/variants 要逐個刪除 */
         const ids = await api.fetchDocumentIdsOfBooze();
-        for (const id of ids) await api.deleteVariants(true, id);
-        await api.deleteBoozes(true);
-
+        console.log(ids);
+        await api.deleteBatchParentItems(['dionysus','variants'],ids);
         const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1746177966129.json"), (each) => _.size(each.options) > 1);
         const products = Util.getShuffledArrayWithLimitCount(
           items.filter((item) => _.size(item.options) < 15),
