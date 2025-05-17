@@ -15,6 +15,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return 20;
     }
 
+    getRuleOfExpiredTime = () => {
+        return {hours: 2};
+        //{days,minutes}
+    }
+
     preCheckOfCustomizeRule() {
         this.appendErrorLog(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
     }
@@ -86,7 +91,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             idOfUser: this.getUid(session),
             textOfContract: this.getTextOfContract(itemsOfClientOrdering, remark),
             remark,
-            timeOfExpired: Util.getTimeStampWithConditions({ hours: 2 }),
+            timeOfExpired: Util.getTimeStampWithConditions(this.getRuleOfExpiredTime()),
             timeOfCreate: Util.getCurrentTimeStamp(),
             priceOfTotal: totalPrice,
             imageUrlOfHeadPhoto: _.head(itemsOfClientOrdering)?.photo ?? '',
