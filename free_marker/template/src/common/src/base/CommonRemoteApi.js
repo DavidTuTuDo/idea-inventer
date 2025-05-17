@@ -260,7 +260,7 @@ class CommonRemoteApi {
         return result;
     }
 
-    async deleteBatchParentItems(pathOfParent = ["father", "children"], idsOfFather = [''], batchCount = 100) {
+    async deleteBatchParentItems(pathOfParent = ["father", "children"], idsOfFather = [""], batchCount = 100) {
         const uid = Util.getRandomHashV2(10);
         const path = JSON.stringify(pathOfParent);
         Util.appendInfo(`${uid} start delete batch parent ${path} items(${_.size(idsOfFather)})`);

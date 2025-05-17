@@ -633,7 +633,7 @@ class MobileStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreVertRounded = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
 
@@ -664,6 +664,8 @@ class MobileStyle {
     EpayFootprintTabTabsList = {};
 
     EpayFootprintTabTab = {};
+
+    EpayFootprintDivWrap = {};
 
     EpayFootprintDiv = {};
 

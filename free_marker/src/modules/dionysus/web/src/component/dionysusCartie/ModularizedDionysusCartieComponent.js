@@ -33,6 +33,14 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
     onDionysusCartieSubmitChipClicked(param) {
         this.getStore().updateInfosOfCartieCookie();
         Router.gotoHermesPage(this);
+
+        /** 用來送出preciseOrder的做法
+            const items = UserInfo.getCheckedCartieItem();
+            Util.mutateRemoveKeys(items,['checked','idOfCookieUsage'])
+            Functions.httpOnCallCreateEPayPreciseOrder(this,{items,remark:`${Util.getCurrentTimeFormatYMDHM()}的交易備註`}).then((result) => {
+                console.log(result);
+            })
+         */
     }
 
     onDionysusCartieBriefSureCheckboxChange(param) {

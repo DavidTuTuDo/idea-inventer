@@ -46,6 +46,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             return {
                 imageOfProductPhoto: item.imageUrlOfProduct,
                 nameOfProduct: item.name,
+                specificOfProduct: item.specific,
                 quantity: `x${item.quantity}`,
                 price: `$${item.price}`
             };

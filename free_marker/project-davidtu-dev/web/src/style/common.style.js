@@ -633,7 +633,7 @@ class CommonStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreVertRounded = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
 
@@ -664,6 +664,8 @@ class CommonStyle {
     EpayFootprintTabTabsList = {};
 
     EpayFootprintTabTab = {};
+
+    EpayFootprintDivWrap = {};
 
     EpayFootprintDiv = {};
 

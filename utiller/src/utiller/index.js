@@ -2652,6 +2652,45 @@ class Utiller {
     }
 
 
+    /**
+     * const array = [{ a: 1, b: 2, c: 3 }, { a: 1, b: 2, d: 4 }];
+     * mutateRemoveKeys(array, ['b', 'c']);
+     * console.log(array); // ➜ [ { a: 1 }, { a: 1, d: 4 } ]
+     *
+     * 移除指定 keys，並原地改動原始陣列
+     * @param {Array<Object>} array - 要修改的原始 array
+     * @param {Array<string>} keysToRemove - 要刪除的 key 清單
+     */
+     mutateRemoveKeys(array, keysToRemove) {
+        _.forEach(array, (obj, index) => {
+            const filtered = Object.fromEntries(
+              Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
+            );
+            // 原地替換每個 object 的 key
+            Object.keys(obj).forEach(k => delete obj[k]);
+            Object.assign(obj, filtered);
+        });
+    }
+
+    /**
+     * const array = [{ a: 1, b: 2, c: 3 }, { a: 1, b: 2, d: 4 }];
+     * const newArray = removeKeysFromArrayObjects(array, ['b', 'c']);
+     *
+     * console.log(newArray); // ➜ [ { a: 1 }, { a: 1, d: 4 } ]
+     * console.log(array);    // ➜ 原始 array 不變
+     *
+     * 回傳一個新的 array，移除每個物件中的指定 keys
+     * @param {Array<Object>} array - 原始資料陣列
+     * @param {Array<string>} keysToRemove - 要移除的 key 名稱陣列
+     * @returns {Array<Object>} - 新的 array（不改變原本的 array）
+     */
+    removeKeysFromArrayObjects(array, keysToRemove) {
+        return _.map(array, obj =>
+          Object.fromEntries(
+            Object.entries(obj).filter(([key]) => !keysToRemove.includes(key))
+          )
+        );
+    }
 
 }
 

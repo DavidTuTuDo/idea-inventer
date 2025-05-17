@@ -1,6 +1,5 @@
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import BaseCreateEPayPreciseOrder from "./BaseCreateEPayPreciseOrder";
 import Api from "../../api";
 
@@ -12,127 +11,120 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         super(props);
     }
 
+    getMaxItemsOfPreciseOrder = () => {
+        return 20;
+    }
+
     preCheckOfCustomizeRule() {
         this.appendErrorLog(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
     }
 
+    getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering) {
+        /** 從firestore設計的discount去做公式，例如滿萬打9折| 滿2000免運費 */
+
+        /** 扣掉會員金的概念，老班可從後台給某位註冊帳號一筆會員金 */
+        return this.getTotalPrice(itemsOfClientOrdering);
+    }
+
+    /** 單筆交易最高金額(可能依據付款機構規定) */
+    getMaxPriceOfTSingleTransaction() {
+        return 20000;
+    }
+
     async handleHttpOnCall(data, session) {
-        // /** 合併重複的商品 */
-        // const items = Util.getArrayOfSummarizeBy(data.items, 'id', 'quantity');
-        // if (1 > _.size(items)) {
-        //     this.appendErrorLog(9999, '484118756  帶上來的參數裡,並沒有商品內容')
-        // }
+        const itemsOfClientOrdering = _.filter(data.items, ({ count,idOfVariant }) => count > 0 && !_.isEmpty(idOfVariant));
+        /** items = [...{idOfBooze,idOfVariant,count,nameOfBooze}] */
+        const { remark, address, contact, email } = data;
 
-        const items = data.items;
-        this.remarkOfPreciseOrder = data.remarkOfPreciseOrder ?? "無備註內容";
-        this.imageUrlOfHeadPhoto = data.imageUrlOfHeadPhoto;
+        if (itemsOfClientOrdering.length === 0) this.appendErrorLog(9999, "錯誤：E1200 無有效商品資料");
 
-        const boozes = await Api.fetchPreciseProductsOfLimitation("in", "id", ...items.map((item) => item.idOfBooze));
-        if (
-            _.size(
-                _.difference(
-                    items.map((item) => item.idOfBooze),
-                    boozes.map((booze) => booze.id)
-                )
-            ) > 0
-        ) {
-            this.appendErrorLog(9999, "484117145 您提出的訂單內容與現有商品規格不合，本次交易不成立");
+        if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder())
+            this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
+
+        /** 用batch fetch拿回variants */
+        const params = itemsOfClientOrdering.map(({ idOfVariant, idOfBooze }) => ({ id:idOfVariant, pid: idOfBooze }));
+        const variantsOfRemoteStatus = await Api.fetchVariantBatchItems(...params);
+
+        /** 計算剩餘數量和帶入參數足夠否, count是指client端下的數量 */
+        const mapOfVariantStatus = new Map(variantsOfRemoteStatus.map((v) => [v.id, v])); /** 用map做indexing加快速度(取代_.find)*/
+
+        for (const item of itemsOfClientOrdering) {
+            const variant = mapOfVariantStatus.get(item.idOfVariant);
+            item.price = variant.price;
+            item.photo = variant.photo;
+            item.content = variant.content;
+            if (!variant || variant.quantity < item.count)
+                this.appendErrorLog(9999, `錯誤：E1202 ${item.nameOfBooze} 的 ${variant?.content ?? '未知項目'} 數量不足`);
         }
 
-        this.itemsOfPrecisely = Util.getMergedArrayBy(items, boozes, "id");
-        /** [{name,quantity,id,quantityOfCurrent(庫存量)}]*/
+        const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering);
+        if (totalPrice > this.getMaxPriceOfTSingleTransaction())
+            this.appendErrorLog(9999, `E1204 單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
 
-        /** 計算剩餘數量足夠否 */
-        for (const item of this.itemsOfPrecisely) {
-            if (item.quantity > item.quantityOfCurrent) {
-                this.appendErrorLog(9999, "989473454 庫存不足，本次交易不成立。");
-            }
-        }
-
-        /** 計算總價 */
-        const priceOfTotal = this.getTotalPrice(this.itemsOfPrecisely);
-        if (priceOfTotal > 20000) {
-            this.appendErrorLog(9999, "989474156214 目前不支援單筆超過兩萬的訂單");
-        }
-        this.preCheckOfCustomizeRule();
-        /** 利用atomically method 扣掉數量, 過程中發現其中一個商品數量不足, 得再atomically加回去 再吐回去一個商品數量不足的警告*/
-
+        /** atomic的方式扣除client端下order的count */
+        let rollbackList = [];
         try {
-            for (const item of this.itemsOfPrecisely) {
-                await Api.updatePreciseProductItemAtomically(async (product) => {
-                    if (product.quantityOfCurrent > item.quantity) {
-                        return { quantityOfCurrent: product.quantityOfCurrent - item.quantity };
-                    } else {
-                        this.appendErrorLog(9999, `4647894135 考慮百萬分之一的可能，quantityOfCurrent < quantity，取消交易，並且atomically修改回所有髒掉的數量。`);
-                    }
-                }, item.id);
-                item.succeedOfTransaction = true;
+            for (const item of itemsOfClientOrdering) {
+                const variant = mapOfVariantStatus.get(item.idOfVariant);
+                await Api.updateVariantItemAtomically(async (current) => {
+                    if (current.quantity >= item.count) return { quantity: current.quantity - item.count };
+                    else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
+                }, variant.id, variant.idOfBooze);
+                rollbackList.push({ item, variant });
             }
         } catch (error) {
-            for (const item of _.filter(this.itemsOfPrecisely, (item) => item.succeedOfTransaction)) {
-                await Api.updatePreciseProductItemAtomically(async (product) => {
-                    return { quantityOfCurrent: product.quantityOfCurrent + item.quantity };
-                }, item.id);
+            for (const { item, variant } of rollbackList) {
+                await Api.updateVariantItemAtomically(async (current) => ({
+                    quantity: current.quantity + item.count,
+                }), variant.id, variant.idOfBooze);
             }
-            this.appendErrorLog(9999, "989473454 庫存不足，本次交易不成立。");
+            this.appendErrorLog(9999, error.message);
         }
 
         /** 成立訂單 */
         const result = await Api.submitPreciseOrderItem({
             idOfUser: this.getUid(session),
-            textOfContract: this.getTextOfContract(this.itemsOfPrecisely, this.remarkOfPreciseOrder),
-            remark: this.remarkOfPreciseOrder,
-            timeOfExpired: Util.getTimeStampWithConditions({ days: 1 }),
+            textOfContract: this.getTextOfContract(itemsOfClientOrdering, remark),
+            remark,
+            timeOfExpired: Util.getTimeStampWithConditions({ hours: 2 }),
             timeOfCreate: Util.getCurrentTimeStamp(),
-            priceOfTotal: this.getTotalPrice(this.itemsOfPrecisely),
-            imageUrlOfHeadPhoto: this.getImageUrlOfHeadPhoto(),
-            items: this.getItemsOfOrder(this.itemsOfPrecisely),
-            email: "",
-            address: "",
-            distance: "",
-            name: "",
-            phoneNumber: ""
+            priceOfTotal: totalPrice,
+            imageUrlOfHeadPhoto: _.head(itemsOfClientOrdering)?.photo ?? '',
+            items: this.getPreciseItemsAsRecord(itemsOfClientOrdering),
+            email: email || '',
+            address: address || '',
+            distance: '',
+            name: contact?.name || '',
+            phoneNumber: contact?.phoneNumber || ''
         });
 
-        if (result.succeed) {
-            return { idOfPreciseOrder: result.value.id };
-        } else {
-            this.appendErrorLog(9999, `474445787 創建PreciseOrder時失敗，未知原因。`);
-        }
+        if (result.succeed) return { idOfPreciseOrder: result.value.id };
+        else this.appendErrorLog(9999, `錯誤：E1299 創建訂單時失敗，未知原因(請訊息洽詢)。`);
     }
 
-    getImageUrlOfHeadPhoto() {
-        const urlsOfProductImage = _.flattenDeep(this.itemsOfPrecisely.map((item) => item.photos)).map((photo) => photo.url);
-        return Util.getValueOfPriority(this.imageUrlOfHeadPhoto, _.head(urlsOfProductImage));
-    }
-
-    getItemsOfOrder(items) {
-        return items.map((item) => {
-            const photo = _.head(item.photos);
-            return {
-                idOfPreciseProduct: item.id,
-                quantity: item.quantity,
-                name: item.name,
-                price: item.price,
-                imageUrlOfProduct: Util.isUndefinedNullEmpty(photo) ? "" : photo.url,
-                note: item.note ?? `無單品項備註內容`
-            };
-        });
+    getPreciseItemsAsRecord(variants) {
+        return variants.map(({ idOfBooze,idOfVariant, count, nameOfBooze,content, price, photo, note }) => ({
+            idOfPreciseProduct: `${idOfBooze}-${idOfVariant}`,
+            quantity:count,
+            name:`${nameOfBooze}`,
+            specific:content,
+            price,
+            imageUrlOfProduct: photo,
+            note: note || "無單品項備註內容"
+        }));
     }
 
     getTotalPrice(items) {
-        return _.sum(items.map((item) => item.quantity * item.price));
+        return _.sum(items.map((item) => item.count * item.price));
     }
 
-    getTextOfContract(items, remark) {
-        const stmts = items.map((item) => {
-            return `${item.name} x ${item.quantity} = ${item.quantity * item.price} 元`;
-        });
-        stmts.push(`\n\n總價 ${this.getTotalPrice(items)} 元`);
-
-        if (!Util.isUndefinedNullEmpty(remark)) stmts.push(`\n\n\n※備註: ${remark}`);
-
-        return stmts.join("\n");
+    getTextOfContract(items, remark = "", tipsOfDiscount = []) {
+        const lines = items.map(item => `${item.name} x ${item.quantity} = ${item.quantity * item.price} 元`);
+        lines.push("\n折扣提示：");
+        tipsOfDiscount.forEach(({ reason, discount }) => lines.push(`${reason} 折扣了 ${discount} 元`));
+        lines.push(`\n\n總價 ${this.getTotalPrice(items)} 元`);
+        if (!Util.isUndefinedNullEmpty(remark)) lines.push(`\n\n\n※備註: ${remark}`);
+        return lines.join("\n");
     }
 
     /** -------------------- async api -------------------- **/

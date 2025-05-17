@@ -3771,9 +3771,22 @@
 }
 /** following for epayFootprint  component used  */
 
-.EpayFootprintDiv:extend(.CenterInParentColumn) {
-    min-width: 400px;
+.EpayFootprintDiv {
+    width: 96%;
     padding-bottom: 50px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        min-width: 400px;
+    }
+}
+.EpayFootprintDivWrap:extend(.CenterInParentColumn) {
+    margin: auto;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -3803,11 +3816,14 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
     }
 }
 .EpayFootprintOrderCard {
-    padding: 5px;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -3815,11 +3831,12 @@
         /** empty style */
     }
     @media @desktop {
-        min-width: 500px;
+        width: 550px;
     }
 }
 .EpayFootprintOrderDivList:extend(.CenterInParentColumn) {
     gap: 10px;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -3953,7 +3970,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreHoriz {
+.EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreVertRounded {
     @media @mobile {
         /** empty style */
     }
@@ -3990,8 +4007,11 @@
     }
 }
 .EpayFootprintOrderBriefImageOfProductPhotoImg {
-    flex-grow: 2;
-    width: 40px;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    object-position: center;
+    display: block; /* 確保沒有額外間距 */
     @media @mobile {
         /** empty style */
     }
@@ -3999,12 +4019,13 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        width: 120px;
+        height: 120px;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionDiv:extend(.CenterInParentColumn) {
     align-items: flex-end;
-    flex-grow: 5;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -4016,6 +4037,10 @@
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 270px;
     @media @mobile {
         /** empty style */
     }
@@ -4023,7 +4048,7 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        width: 430px;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap {
@@ -4039,6 +4064,7 @@
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography {
+    margin-top: 8px;
     @media @mobile {
         /** empty style */
     }

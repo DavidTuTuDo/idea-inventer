@@ -61,7 +61,7 @@ class FirebaseHelper extends BaseFirebase {
         });
 
         if (_.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web")) {
-            connectFunctionsEmulator(this.functions(), "localhost", 5001);
+            connectFunctionsEmulator(this.functions(), "localhost", 5002);
         }
     }
 
@@ -367,14 +367,17 @@ class FirebaseHelper extends BaseFirebase {
     deleteBatchParentDocuments = async (pathOfParent = ["father", "children"], idsOfFather = [], batchCount = 200) => {
         const pathOfFather = _.head(pathOfParent);
         const pathOfSon = _.last(pathOfParent);
-        await this.batchDo(idsOfFather, async (batch, id) => {
-            const refOfFather = this.reference(pathOfFather, id);
-            const childrenColRef = this.reference(`${pathOfFather}/${idsOfFather}/${pathOfSon}`);
-            const childrenDocsSnap = await getDocs(childrenColRef);
-            for (const childDoc of childrenDocsSnap.docs) batch.delete(childDoc.ref);
-            batch.delete(refOfFather);
-
-        }, batchCount);
+        await this.batchDo(
+            idsOfFather,
+            async (batch, id) => {
+                const refOfFather = this.reference(pathOfFather, id);
+                const childrenColRef = this.reference(`${pathOfFather}/${idsOfFather}/${pathOfSon}`);
+                const childrenDocsSnap = await getDocs(childrenColRef);
+                for (const childDoc of childrenDocsSnap.docs) batch.delete(childDoc.ref);
+                batch.delete(refOfFather);
+            },
+            batchCount
+        );
     };
 
     deleteDocument = async (path, id) => {
