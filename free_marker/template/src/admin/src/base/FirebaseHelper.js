@@ -192,7 +192,8 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     /** 當要對一個龐大的collection做read then update(job)，一定要用pagination 處理 */
-    async modifyDocumentsOfPaginate(uid, path, job = async (items) => {}, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
+    async modifyDocumentsOfPaginate(uid, path, job = async (items) => {
+    }, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
         const ref = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         let lastDoc = null;
         let batchCount = 0;
@@ -235,18 +236,56 @@ class FirebaseHelper extends BaseFirebase {
      * firebase-admin 沒有modular api，所以condition是以下格式，要做排序，要where().orderBy().limit()
      * {where:(stmt) => stmt.where('id','==','david')}
      * {orderBy:(stmt) => stmt,orderBy('age','desc')}
+     * 上述是firebase-admin使用compound的方式
+     *
+     * 這是firebase-web的寫法{type:'where', params:['name','in',['david','John']]}，目前也能相容
      * */
     conditionsOfRuled(conditions = []) {
-        /** 1.limit() 2.orderBy(), 3.startAt() or startAfter() , 4.where */
-        const raw = [];
+        // 儲存標準化後的條件
+        const normalizedConditions = [];
+
+        // 第一次過濾：將有 type 屬性的條件標準化為 { type: function }
         for (const condition of conditions) {
-            if (condition === undefined || _.isEmpty(condition)) continue;
-            let priority = 99;
-            let stmtOfFunction = (stmt) => stmt;
-            if (_.isObject(condition)) {
-                /** 這種概念 {where:(stmt) => stmt.where('id','==','david')}*/
-                stmtOfFunction = Util.getObjectValue(condition);
-                switch (Util.getObjectKey(condition)) {
+            if (condition?.type && _.isArray(condition.params)) {
+                // 將條件類型作為 key，對應的查詢函式作為 value
+                const key = condition.type;
+                const rule = {
+                    [key]: (stmt) => stmt.where(...condition.params)
+                };
+                normalizedConditions.push(rule);
+            } else if (_.isFunction(condition) || _.isPlainObject(condition)) {
+                // 若已是函式或合法物件，直接保留
+                normalizedConditions.push(condition);
+            } else {
+                // 其他類型忽略
+                continue;
+            }
+        }
+
+        const raw = [];
+
+        // 第二次過濾：計算每個條件的優先順序並組合
+        for (const condition of normalizedConditions) {
+            if (_.isNil(condition) || _.isEmpty(condition)) continue;
+
+            let stmtFn = (stmt) => stmt; // 預設為不變
+            let priority = 99;           // 預設優先順序最低
+
+            if (_.isFunction(condition)) {
+                // 如果是純函式
+                stmtFn = condition;
+            } else if (_.isPlainObject(condition)) {
+                // 如果是物件，假設只含一個 key-value 配對
+                const [key, value] = Object.entries(condition)[0] || [];
+
+                if (!key || !_.isFunction(value)) {
+                    throw new ERROR(9745, `條件物件中應該要有 function 為 value，但實際是：${_.toString(condition)}`);
+                }
+
+                stmtFn = value;
+
+                // 根據 key 指定優先順序
+                switch (key) {
                     case "limit":
                         priority = 1;
                         break;
@@ -261,17 +300,21 @@ class FirebaseHelper extends BaseFirebase {
                         priority = 4;
                         break;
                     default:
-                        break;
+                        priority = 99;
                 }
-            } else if (_.isFunction(condition)) {
-                /** 這種概念 (stmt) => stmt.where('id','==','david') */
-                stmtOfFunction = condition;
             } else {
-                throw new ERROR(9745, `condition should be object|function, but it's ${typeof condition},${_.toString(condition)}`);
+                // 非支援類型，丟出錯誤
+                throw new ERROR(9745, `condition 應該是 object 或 function，但實際是 ${typeof condition}, ${_.toString(condition)}`);
             }
-            raw.push({ stmt: stmtOfFunction, priority });
+
+            raw.push({ stmt: stmtFn, priority });
         }
-        return _.isEmpty(raw) ? [] : _.orderBy(raw, ["priority"], ["desc"]).map((each) => each.stmt);
+
+        // 將條件依優先順序從高到低排序，回傳查詢函式陣列
+        return _.chain(raw)
+          .orderBy("priority", "desc")
+          .map("stmt")
+          .value();
     }
 
     fetchDocument = async (path, id) => {
@@ -389,7 +432,7 @@ class FirebaseHelper extends BaseFirebase {
     async deployDocxFileToAdminStorage(buffer, fileName = "folder/filename.extension") {
         if (!fileName.endsWith(".docx")) {
             return {
-                succeed: false,
+                succeedOfTransaction: false,
                 message: `檔案產生失敗，原因：副檔名不是.docx`
             };
         }
@@ -399,7 +442,7 @@ class FirebaseHelper extends BaseFirebase {
     async deployPDFtoAdminStorage(buffer, fileName = `folder/filename.extension`) {
         if (!fileName.endsWith(`.pdf`)) {
             return {
-                succeed: false,
+                succeedOfTransaction: false,
                 message: `檔案產生失敗，原因：副檔名不是.pdf`
             };
         }
@@ -419,13 +462,13 @@ class FirebaseHelper extends BaseFirebase {
             });
 
             return {
-                succeed: true,
+                succeedOfTransaction: true,
                 path: downloadUrl[0],
                 message: `produce doc file succeed`
             };
         } catch (error) {
             return {
-                succeed: false,
+                succeedOfTransaction: false,
                 message: `檔案產生失敗，原因：${error.message}`
             };
         }
@@ -533,12 +576,12 @@ class FirebaseHelper extends BaseFirebase {
                 fields: "webViewLink"
             });
             return {
-                succeed: true,
+                succeedOfTransaction: true,
                 path: result.data.webViewLink
             };
         } catch (error) {
             return {
-                succeed: false,
+                succeedOfTransaction: false,
                 message: `'4123132 error uploading or sharing file:', ${error.message}`
             };
         }

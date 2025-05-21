@@ -9461,6 +9461,7 @@ class BuildApplication {
         const functions = new ProjectFileHandler(this.getBuildObject('functions', 'prod'));
         await functions.cleanGenDirectory();
         await functions.activate();
+        await functions.leanCodeOfSource()
         await functions.deployFunctionsToProd();
         Util.appendInfo(`deployFunctionsToProd() succeed`);
     }
