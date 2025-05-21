@@ -14,7 +14,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     getMaxItemsOfPreciseOrder = () => {
-        return 200;
+        return 25;
     };
 
     preCheckOfCustomizeRule() {
