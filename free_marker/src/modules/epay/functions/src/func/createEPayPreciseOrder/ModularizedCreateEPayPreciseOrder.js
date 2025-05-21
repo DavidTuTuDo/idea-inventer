@@ -15,14 +15,14 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return 20;
     }
 
-    getRuleOfExpiredTime = () => {
-        return {hours: 2};
-        //{days,minutes}
-    }
-
     preCheckOfCustomizeRule() {
         this.appendErrorLog(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
     }
+
+    getRuleOfExpiredTime = () => {
+        return { hours: 2 };
+        //{days,minutes}
+    };
 
     getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering) {
         /** 從firestore設計的discount去做公式，例如滿萬打9折| 滿2000免運費 */
@@ -37,8 +37,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     async handleHttpOnCall(data, session) {
-        const itemsOfClientOrdering = _.filter(data.items, ({ count,idOfVariant }) => count > 0 && !_.isEmpty(idOfVariant));
-        /** items = [...{idOfBooze,idOfVariant,count,nameOfBooze}] */
+        const itemsOfClientOrdering = _.filter(data.items, ({ quantity,idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
+        /** items = [...{idOfBooze,idOfVariant,quantity,nameOfBooze}] */
         const { remark, address, contact, email } = data;
 
         if (itemsOfClientOrdering.length === 0) this.appendErrorLog(9999, "錯誤：E1200 無有效商品資料");
@@ -58,7 +58,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             item.price = variant.price;
             item.photo = variant.photo;
             item.content = variant.content;
-            if (!variant || variant.quantity < item.count)
+            if (!variant || variant.quantity < item.quantity)
                 this.appendErrorLog(9999, `錯誤：E1202 ${item.nameOfBooze} 的 ${variant?.content ?? '未知項目'} 數量不足`);
         }
 
@@ -66,21 +66,22 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (totalPrice > this.getMaxPriceOfTSingleTransaction())
             this.appendErrorLog(9999, `E1204 單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
 
-        /** atomic的方式扣除client端下order的count */
+        /** atomic的方式扣除client端下order的quantity */
         let rollbackList = [];
         try {
             for (const item of itemsOfClientOrdering) {
                 const variant = mapOfVariantStatus.get(item.idOfVariant);
                 await Api.updateVariantItemAtomically(async (current) => {
-                    if (current.quantity >= item.count) return { quantity: current.quantity - item.count };
+                    if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
                     else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
                 }, variant.id, variant.idOfBooze);
                 rollbackList.push({ item, variant });
             }
         } catch (error) {
+            /** 購物車內扣數量個過程中，發現其中一個數量不足，就必須把之前的補回去*/
             for (const { item, variant } of rollbackList) {
                 await Api.updateVariantItemAtomically(async (current) => ({
-                    quantity: current.quantity + item.count,
+                    quantity: current.quantity + item.quantity,
                 }), variant.id, variant.idOfBooze);
             }
             this.appendErrorLog(9999, error.message);
@@ -108,9 +109,9 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     getPreciseItemsAsRecord(variants) {
-        return variants.map(({ idOfBooze,idOfVariant, count, nameOfBooze,content, price, photo, note }) => ({
-            idOfPreciseProduct: `${idOfBooze}-${idOfVariant}`,
-            quantity:count,
+        return variants.map(({ idOfBooze,idOfVariant, quantity, nameOfBooze,content, price, photo, note }) => ({
+            idOfPreciseProduct: `${idOfBooze}${Util.getSeparatorOfUnique()}${idOfVariant}`,
+            quantity,
             name:`${nameOfBooze}`,
             specific:content,
             price,
@@ -120,13 +121,14 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     getTotalPrice(items) {
-        return _.sum(items.map((item) => item.count * item.price));
+        return _.sum(items.map((item) => item.quantity * item.price));
     }
 
-    getTextOfContract(items, remark = "", tipsOfDiscount = []) {
-        const lines = items.map(item => `${item.name} x ${item.quantity} = ${item.quantity * item.price} 元`);
+    getTextOfContract(items, remark = "", tipsOfDiscount = [],hideDiscountMessage = false) {
+        const lines = items.map(item => `${item.nameOfBooze}(${item.content}) x ${item.quantity} = ${item.quantity * item.price} 元`);
         lines.push("\n折扣提示：");
-        tipsOfDiscount.forEach(({ reason, discount }) => lines.push(`${reason} 折扣了 ${discount} 元`));
+        if(!hideDiscountMessage) tipsOfDiscount.forEach(({ reason, discount }) => lines.push(`${reason} 折扣了 ${discount} 元`));
+
         lines.push(`\n\n總價 ${this.getTotalPrice(items)} 元`);
         if (!Util.isUndefinedNullEmpty(remark)) lines.push(`\n\n\n※備註: ${remark}`);
         return lines.join("\n");

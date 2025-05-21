@@ -30,14 +30,14 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             const result = _.sum([current, 1]);
             /**
              * 要判斷當前數量有沒有超過 銷售數量
-             * this.setCountOfSubmit(current > brief.getCount() ? current : result) */
-            countOfLatest = result <= brief.getCount() ? result : brief.getCount();
+             * this.setCountOfSubmit(current > brief.Quantity() ? current : result) */
+            countOfLatest = result <= brief.getQuantity() ? result : brief.getQuantity();
         } else {
             const result = _.sum([current, -1]);
             countOfLatest = current < 2 ? current : result;
         }
         brief.setCountOfSubmit(countOfLatest);
-        UserInfoRef.updateItemToCart({ key: brief.idOfCookieUsage, updateItemToCart: countOfLatest, checked: brief.getSure() });
+        UserInfoRef.updateItemToCart({ key: brief.idOfCookieUsage, quantity: countOfLatest, checked: brief.getSure() });
     }
 
     async fetch(view = this.getComponent()) {
