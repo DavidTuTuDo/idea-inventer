@@ -1,3 +1,5 @@
+const edit = true;
+
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import BaseCheckoutByECPay from "./BaseCheckoutByECPay";
 import ECPay from "ecpay_aio_nodejs";

@@ -5,7 +5,7 @@ import libpath from "path";
 import mustache from "mustache";
 import { configerer } from "configerer";
 import Lean from "./lean";
-import beauty from './beauty';
+import beauty from "./beauty";
 
 
 /** author:明悅
@@ -7162,10 +7162,13 @@ class ProjectFileHandler extends PathBase {
                 return _.isArray(source.cloudFunctions) ? Util.has(source.cloudFunctions.map(each => each.name), dirName) : false;
             }
 
-            for (const file of Util.findFilePathBy(Util.joinRespectingDot(self.genSourcePath, folder),
-                (each) => (self.isFunctionsPlatform() ? isFunctionBelong2Module(each.dirName) : _.startsWith(_.toLower(each.dirName), _.toLower(module))) &&
-                    _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED))) {
+            const filesOfDestination = Util.findFilePathBy(Util.joinRespectingDot(self.genSourcePath, folder),
+              (each) => (self.isFunctionsPlatform() ? isFunctionBelong2Module(each.dirName) : _.startsWith(_.toLower(each.dirName), _.toLower(module))) &&
+                _.startsWith(each.fileName, KEYWORD_OF_MODULARIZED));
+
+            for (const file of filesOfDestination) {
                 const pathOfDestination = Util.joinRespectingDot(PATH_OF_COMPONENT_MODULE, predict(file));
+
                 if (Util.isFileEditSucceed(file.absolute)) Util.copySingleFileConservative(pathOfDestination, file);
             }
         }

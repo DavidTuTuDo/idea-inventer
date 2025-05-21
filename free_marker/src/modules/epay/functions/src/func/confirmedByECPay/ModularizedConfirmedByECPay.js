@@ -1,3 +1,5 @@
+const edit = true;
+
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseConfirmedByECPay from "./BaseConfirmedByECPay";

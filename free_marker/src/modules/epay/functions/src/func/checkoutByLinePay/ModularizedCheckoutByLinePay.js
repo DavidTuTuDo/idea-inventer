@@ -1,3 +1,5 @@
+const edit = true;
+
 import _ from "lodash";
 import libpath from "path";
 import BaseCheckoutByLinePay from "./BaseCheckoutByLinePay";
