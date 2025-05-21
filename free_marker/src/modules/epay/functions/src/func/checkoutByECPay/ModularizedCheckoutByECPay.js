@@ -60,7 +60,9 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     }
 
     normalizeDescOfItemName(string) {
-        return Util.replaceAllWithSets(string, { from: `\n\n\n`, to: "#" }, { from: `\n\n`, to: "#" }, { from: `\n`, to: "#" });
+        const content =  Util.formatTextWithEllipsis(Util.replaceAllWithSets(string, { from: `\n\n\n`, to: "#" }, { from: `\n\n`, to: "#" }, { from: `\n`, to: "#" }),200);
+        console.log(content);
+        return content;
     }
 
     /** 消費者點選此按鈕後，會將頁面導回到此設定的網址
@@ -71,7 +73,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
      若未設定此參數，則綠界付款完成頁或取號完成頁面，不會顯示[返回商店]的按鈕。
      若導回網址未使用 https 時，部份瀏覽器可能會出現警告訊息。  */
     getURLOfClientBackURL() {
-        return new URL(`epayPurchaseOfHistory/completed`, Config.host).href;
+        return new URL(`epayFootprint/completed`, Config.host).href;
     }
 
     /**

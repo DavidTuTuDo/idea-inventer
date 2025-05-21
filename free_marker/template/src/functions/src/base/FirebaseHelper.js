@@ -167,13 +167,16 @@ class FirebaseHelper extends BaseFirebase {
     deleteBatchParentDocuments = async (pathOfParent = ["father", "children"], idsOfFather = [], batchCount = 200) => {
         const pathOfFather = _.head(pathOfParent);
         const pathOfSon = _.last(pathOfParent);
-        await this.batchDo(idsOfFather, async (batch, id) => {
-            const refOfFather = this.reference(pathOfFather, id);
-            const childrenSnap = await refOfFather.collection(pathOfSon).get();
-            for (const childSnap of childrenSnap.docs) batch.delete(childSnap.ref);
-            batch.delete(refOfFather);
-
-        }, batchCount);
+        await this.batchDo(
+          idsOfFather,
+          async (batch, id) => {
+              const refOfFather = this.reference(pathOfFather, id);
+              const childrenSnap = await refOfFather.collection(pathOfSon).get();
+              for (const childSnap of childrenSnap.docs) batch.delete(childSnap.ref);
+              batch.delete(refOfFather);
+          },
+          batchCount
+        );
     };
 
     fetchDocuments = async (path, ...conditions) => {
@@ -192,8 +195,7 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     /** 當要對一個龐大的collection做read then update(job)，一定要用pagination 處理 */
-    async modifyDocumentsOfPaginate(uid, path, job = async (items) => {
-    }, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
+    async modifyDocumentsOfPaginate(uid, path, job = async (items) => {}, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_FETCH) {
         const ref = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         let lastDoc = null;
         let batchCount = 0;
@@ -233,6 +235,36 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     /**
+     * 批次讀取 Firestore documents（使用 firebase-admin），支援分批與額外欄位封裝。
+     * @param {FirebaseFirestore.DocumentReference[]} references - 要讀取的 document references 陣列
+     * @param {number} batchCount - 每批最大請求數，預設為 Firestore 限制（例如 10）
+     * @returns {Promise<Array<Object>>} - 每筆資料包含 `id`, `exists`, `_doc`, 以及其他資料欄位
+     */
+    fetchBatchDocuments = async (references, batchCount = 10) => {
+        if (!references.length) return [];
+
+        const allResults = [];
+        for (let i = 0; i < references.length; i += batchCount) {
+            const batch = references.slice(i, i + batchCount);
+            const snapshots = await Promise.all(batch.map((ref) => ref.get()));
+
+            const batchResults = snapshots.map((snapshot) => {
+                const data = snapshot.data() || {};
+                return {
+                    ...data,
+                    id: data.id || snapshot.id,
+                    exists: snapshot.exists,
+                    _doc: snapshot
+                };
+            });
+            allResults.push(...batchResults);
+        }
+
+        return allResults;
+    };
+
+
+    /**
      * firebase-admin 沒有modular api，所以condition是以下格式，要做排序，要where().orderBy().limit()
      * {where:(stmt) => stmt.where('id','==','david')}
      * {orderBy:(stmt) => stmt,orderBy('age','desc')}
@@ -269,7 +301,7 @@ class FirebaseHelper extends BaseFirebase {
             if (_.isNil(condition) || _.isEmpty(condition)) continue;
 
             let stmtFn = (stmt) => stmt; // 預設為不變
-            let priority = 99;           // 預設優先順序最低
+            let priority = 99; // 預設優先順序最低
 
             if (_.isFunction(condition)) {
                 // 如果是純函式
@@ -311,10 +343,7 @@ class FirebaseHelper extends BaseFirebase {
         }
 
         // 將條件依優先順序從高到低排序，回傳查詢函式陣列
-        return _.chain(raw)
-          .orderBy("priority", "desc")
-          .map("stmt")
-          .value();
+        return _.chain(raw).orderBy("priority", "desc").map("stmt").value();
     }
 
     fetchDocument = async (path, id) => {
@@ -432,7 +461,7 @@ class FirebaseHelper extends BaseFirebase {
     async deployDocxFileToAdminStorage(buffer, fileName = "folder/filename.extension") {
         if (!fileName.endsWith(".docx")) {
             return {
-                succeedOfTransaction: false,
+                succeed: false,
                 message: `檔案產生失敗，原因：副檔名不是.docx`
             };
         }
@@ -442,7 +471,7 @@ class FirebaseHelper extends BaseFirebase {
     async deployPDFtoAdminStorage(buffer, fileName = `folder/filename.extension`) {
         if (!fileName.endsWith(`.pdf`)) {
             return {
-                succeedOfTransaction: false,
+                succeed: false,
                 message: `檔案產生失敗，原因：副檔名不是.pdf`
             };
         }
@@ -462,13 +491,13 @@ class FirebaseHelper extends BaseFirebase {
             });
 
             return {
-                succeedOfTransaction: true,
+                succeed: true,
                 path: downloadUrl[0],
                 message: `produce doc file succeed`
             };
         } catch (error) {
             return {
-                succeedOfTransaction: false,
+                succeed: false,
                 message: `檔案產生失敗，原因：${error.message}`
             };
         }
@@ -576,12 +605,12 @@ class FirebaseHelper extends BaseFirebase {
                 fields: "webViewLink"
             });
             return {
-                succeedOfTransaction: true,
+                succeed: true,
                 path: result.data.webViewLink
             };
         } catch (error) {
             return {
-                succeedOfTransaction: false,
+                succeed: false,
                 message: `'4123132 error uploading or sharing file:', ${error.message}`
             };
         }

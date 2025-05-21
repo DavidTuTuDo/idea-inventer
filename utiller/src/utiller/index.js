@@ -1,11 +1,12 @@
 import _ from "lodash";
 import CryptoJS from "crypto-js";
-import {configerer} from "configerer";
-import ERROR from '../exceptioner';
+import { configerer } from "configerer";
+import ERROR from "../exceptioner";
 import moment from "moment";
-import 'moment-timezone';
-import {v4} from "uuid";
-import {generate, count} from "../words";
+import "moment-timezone";
+import { v4 } from "uuid";
+import { generate, count } from "../words";
+import { parse } from "node-html-parser";
 
 String.format = function () {
     let param = [];
@@ -1914,10 +1915,10 @@ class Utiller {
      })
 
      */
-    getStringOfHandledHtml(string, predicate = (document) => {
+    getStringOfHandledHtml(htmlString, predicate = (document) => {
         console.log(document)
     }) {
-        const document = parse(string);
+        const document = parse(htmlString);
         predicate(document);
         return document.toString();
     }
@@ -2691,6 +2692,41 @@ class Utiller {
           )
         );
     }
+
+
+    /**
+     * 將過長的文字裁切為「前段......後段」格式
+     * @param {string} originalText - 原始文字內容
+     * @param {number} maxLength - 最終輸出不得超過的總字數（含省略號）
+     * @returns {string} - 處理後的顯示文字
+     */
+    formatTextWithEllipsis(originalText, maxLength) {
+        const ellipsis = "......";
+        const ellipsisLength = ellipsis.length;
+
+        // 若文字本身就短，無需裁切
+        if (_.size(originalText) <= maxLength) return originalText;
+
+        // 若 maxLength 小於 ellipsis 自身長度，回傳空字串或提示錯誤
+        if (maxLength <= ellipsisLength) return "";
+
+        // 可用來切出前後字串的總長度
+        const remainingLength = maxLength - ellipsisLength;
+
+        // 前後平均切一半（如果是奇數則前段較短）
+        const frontLength = Math.floor(remainingLength / 2);
+        const backLength = remainingLength - frontLength;
+
+        const front = _.truncate(originalText, {
+            length: frontLength,
+            omission: ""
+        });
+
+        const back = _.takeRight(originalText, backLength).join("");
+
+        return `${front}${ellipsis}${back}`;
+    }
+
 
 }
 

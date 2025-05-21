@@ -1,3 +1,5 @@
+const edit = true;
+
 import { inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
@@ -29,6 +31,10 @@ class MainComponent extends BaseMainComponent {
 
     onMainTestGotoHistoryButtonClicked(param) {
         Router.gotoEpayFootprintPage(this.getComponentInstance(), "pending");
+    }
+
+    onMainTestGoMarketButtonClicked(param) {
+        Router.gotoDionysusPage(this);
     }
 
     // onMainBannerSwiperSlideClicked(param) {
