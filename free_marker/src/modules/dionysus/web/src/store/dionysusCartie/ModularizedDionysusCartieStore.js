@@ -37,7 +37,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             countOfLatest = current < 2 ? current : result;
         }
         brief.setCountOfSubmit(countOfLatest);
-        UserInfoRef.updateItemToCart({ key: brief.idOfCookieUsage, count: countOfLatest, checked: brief.getSure() });
+        UserInfoRef.updateItemToCart({ key: brief.idOfCookieUsage, updateItemToCart: countOfLatest, checked: brief.getSure() });
     }
 
     async fetch(view = this.getComponent()) {
@@ -110,7 +110,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     /** 1.更新cookie裡面的cartie，checked(送出訂單時，最後選擇的)*/
     updateInfosOfCartieCookie = () => {
-        for (const brief of this.getBriefs()) UserInfoRef.updateItemToCart({ key: brief.getIdOfCookieUsage(), count: brief.getCountOfSubmit(), checked: brief.getSure() });
+        for (const brief of this.getBriefs()) UserInfoRef.updateItemToCart({ key: brief.getIdOfCookieUsage(), quantity: brief.getCountOfSubmit(), checked: brief.getSure() });
         UserInfoRef.setTotalPriceOfCartie(this.getPriceOfTotal());
         Util.appendInfo(UserInfoRef.getArrayOfCartieItem());
     };

@@ -66,8 +66,6 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         for (const cartie of carties) {
             const booze = objectOfBoozes[cartie.idOfBooze];
             const optionOfSelected = _.find(booze.options, (option) => _.isEqual(option.value, cartie.idOfOption));
-            const choiceOfSelected = _.find(booze.choices, (choice) => _.isEqual(choice.value, cartie.idOfChoice));
-            /** 還沒設計 */
             const index = _.indexOf(carties, cartie) + 1;
             stmts.push(`${index}.\n商品：${booze.name}\n編號：${booze.serial}\n選項：${optionOfSelected.name}(${optionOfSelected.price}元) \n數量：${cartie.count} 個`);
         }

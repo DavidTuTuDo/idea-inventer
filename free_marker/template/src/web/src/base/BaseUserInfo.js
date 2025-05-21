@@ -169,24 +169,25 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", count, nameOfBooze = "" }) => {
-        Util.appendInfo({ idOfBooze, count });
+    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "" }) => {
+        Util.appendInfo({ idOfBooze, quantity });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
-        Util.appendInfo({ idOfBooze, idOfVariant, count, key, nameOfBooze });
+        Util.appendInfo(`joinItemToCart ==>`)
+        Util.appendInfo({ idOfBooze, idOfVariant, quantity, key, nameOfBooze });
 
-        if (object) object.count = object.count + count;
-        else infoOfCartie[key] = { idOfBooze, idOfVariant, count, idOfCookieUsage: key, nameOfBooze };
+        if (object) object.quantity = object.quantity + quantity;
+        else infoOfCartie[key] = { idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     };
 
-    updateItemToCart({ key, count, checked }) {
+    updateItemToCart({ key, quantity, checked }) {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const item = infoOfCartie[key];
         if (item) {
-            item.count = _.toNumber(count);
+            item.quantity = _.toNumber(quantity);
             item.checked = checked;
         }
         Cookie.setInfoOfCartie(infoOfCartie);
@@ -245,7 +246,7 @@ class UserInfo {
 
     invalidateCartie = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
-        const countsOfBadge = _.sum(_.values(infoOfCartie).map((info) => info.count));
+        const countsOfBadge = _.sum(_.values(infoOfCartie).map((info) => info.quantity));
         Application.getNavigatorStore().setBadgeOfCartie(countsOfBadge);
     };
 
