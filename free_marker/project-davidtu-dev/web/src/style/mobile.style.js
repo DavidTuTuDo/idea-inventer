@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -953,11 +955,11 @@ class MobileStyle {
 
     DionysusCartieMainSummariseDiv = {};
 
-    DionysusCartieMainBriefSpecTipCountLabelOfCountTypography = {};
+    DionysusCartieMainBriefSpecTipQuantityLabelOfQuantityTypography = {};
 
-    DionysusCartieMainBriefSpecTipCountDivWrap = {};
+    DionysusCartieMainBriefSpecTipQuantityDivWrap = {};
 
-    DionysusCartieMainBriefSpecTipCountTypography = {};
+    DionysusCartieMainBriefSpecTipQuantityTypography = {};
 
     DionysusCartieMainBriefSpecTipPriceB4DiscountDivWrap = {};
 

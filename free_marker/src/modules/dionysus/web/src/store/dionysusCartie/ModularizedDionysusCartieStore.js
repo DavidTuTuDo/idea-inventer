@@ -44,7 +44,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         function pushCurrentBrief(variant, cartieOfCookie) {
             const idOfCookieUsage = cartieOfCookie.idOfCookieUsage;
             const currentCountOfMaximum = variant.quantity;
-            const countOfSubmit = cartieOfCookie.count <= currentCountOfMaximum ? cartieOfCookie.count : currentCountOfMaximum;
+            const countOfSubmit = cartieOfCookie.quantity <= currentCountOfMaximum ? cartieOfCookie.quantity : currentCountOfMaximum;
 
             self.pushBrief({
                 name: cartieOfCookie.nameOfBooze,
@@ -54,7 +54,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
                 price: variant.price,
                 priceB4Discount: variant.priceB4Discount,
                 countOfSubmit,
-                count: currentCountOfMaximum
+                quantity: currentCountOfMaximum
             });
         }
 

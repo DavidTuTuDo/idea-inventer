@@ -174,7 +174,7 @@ class UserInfo {
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
-        Util.appendInfo(`joinItemToCart ==>`)
+        Util.appendInfo(`joinItemToCart ==>`);
         Util.appendInfo({ idOfBooze, idOfVariant, quantity, key, nameOfBooze });
 
         if (object) object.quantity = object.quantity + quantity;
