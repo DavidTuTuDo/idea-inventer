@@ -60,7 +60,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     }
 
     normalizeDescOfItemName(string) {
-        const content =  Util.formatTextWithEllipsis(Util.replaceAllWithSets(string, { from: `\n\n\n`, to: "#" }, { from: `\n\n`, to: "#" }, { from: `\n`, to: "#" }),200);
+        const content = Util.formatTextWithEllipsis(Util.replaceAllWithSets(string, { from: `\n\n\n`, to: "#" }, { from: `\n\n`, to: "#" }, { from: `\n`, to: "#" }), 200);
         console.log(content);
         return content;
     }

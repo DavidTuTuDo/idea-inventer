@@ -84,8 +84,8 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                 }
             ],
             redirectUrls: {
-                confirmUrl: new URL("epayBehaviorOfConfirmLinePay", Config.host).href,
-                cancelUrl: new URL("epayPurchaseOfHistory/all", Config.host).href
+                confirmUrl: new URL("respondtowardlinepay", Config.host).href,
+                cancelUrl: new URL("epayFootprint/all", Config.host).href
             },
             options: {
                 extra: {

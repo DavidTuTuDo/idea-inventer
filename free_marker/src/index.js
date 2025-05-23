@@ -5133,20 +5133,24 @@ class ComponentBuilder extends BaseBuilder {
             arrow: true
         }, ['enable'], [], [], `this.enableInitFetch = enable`);
         baseGenerator.appendFunction({name: `initialize`, arrow: true, async: true}, [], [], [],
-            `const self = this;
-                 let result = {};
-                 await self.getStore().onInitialFetchBeginning();
-                 if (self.getStore().isFetchAbleToGo() && this.isEnableInitFetch()) {
+            `const store = this.getStore();
+                     let result;
+                    await store.onInitialFetchBeginning();
                     try {
-                        result = await self.getStore().fetch(this);
+                        if (store.isFetchAbleToGo() && this.isEnableInitFetch()) 
+                            result = await store.fetch(this);
+                        else result = undefined;
                     } catch (error) {
-                        self.getStore().setHasPageItems(false);
-                        self.onInitialErrorHappened(error);
+                        store.setHasPageItems(false);
+                        this.onInitialErrorHappened(error);
                     } finally {
                         Util.appendInfo("${componentNode.getName()} page initial fetch completed");
-                        await self.getStore().onInitialFetchCompleted(result);
+                        await UserInfoRef.waitLoginCompleted();
+                        await store.onInitialFetchCompleted(result);
                     }
-                 } else await self.getStore().onInitialFetchCompleted();`);
+                 `);
+
+
 
         /** 2022.04.25本來以為離開頁面就要清空所有, 但這樣ios swipe-back 體驗會變得很糟糕
          this.appendStmtIntoComponentDetach(`this.getStore().clean()`);

@@ -68,7 +68,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     onEpayFootprintOrderExtraIconButtonDeleteOrderClicked(param) {
         return async () => {
-            const order = param.object.getParentNode();
+            const order = param.object;
             await this.remoteCancelUnpaidPreciseOrderBehavior(order.raw.id);
         };
     }
@@ -89,8 +89,8 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         this.showInfoSnackMessage(`更新${idOfPreciseOrder} 備註成功`);
     }
 
-    async remoteCancelUnpaidPreciseOrderBehavior(idOfPreciseOrder) {
-        const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder });
+    async remoteCancelUnpaidPreciseOrderBehavior(id) {
+        const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder: id });
         Router.gotoEpayFootprintPage(this.getComponentInstance(), "failure");
     }
 

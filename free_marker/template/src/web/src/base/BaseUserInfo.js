@@ -5,7 +5,7 @@ import _ from "lodash";
 import firebaser from "./FirebaseHelper";
 import Cookie from "../cookie";
 import Configer from "../config";
-import { makeObservable, action, observable } from "mobx";
+import { makeObservable, action, observable, when } from "mobx";
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
@@ -17,7 +17,7 @@ class UserInfo {
     /** -------------------- functions -------------------- **/
 
     @observable
-    isLoginSucceed = false;
+    isLoginSucceed = undefined; //undefined:未完成登入程序; true | false 是否有credential做上次登入
 
     /** 最高級別的admin(增加悅譜的閱讀permission) */
     @observable
@@ -257,6 +257,18 @@ class UserInfo {
     isGotoCartieDirect() {
         const result = Cookie.getGotoCartieDirectly();
         return !Util.isUndefinedNullEmpty(result);
+    }
+
+    waitLoginCompleted = () => {
+        return new Promise((resolve) => {
+            if (this.isLoginSucceed !== undefined) {
+                resolve(this.isLoginSucceed);
+            } else {
+                when(() => this.isLoginSucceed !== undefined, () => {
+                    resolve(this.isLoginSucceed);
+                });
+            }
+        });
     }
 }
 

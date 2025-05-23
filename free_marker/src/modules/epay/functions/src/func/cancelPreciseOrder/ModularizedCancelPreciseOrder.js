@@ -39,7 +39,7 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
                 {
                     stateOfPayment: "failure",
                     timeOfCancel: Util.getCurrentTimeStamp(),
-                    messageOfPayment: `${user.typeOfUser}於 ${Util.getCurrentTimeFormatYMDHM()} 取消訂單 `
+                    messageOfPayment: `${user.typeOfUser}取消訂單 `
                 },
                 true
             );

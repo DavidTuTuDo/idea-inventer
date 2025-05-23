@@ -422,6 +422,12 @@ import moment from "moment";
         );
     }
 
+    async function testUpdate() {
+        const result = await api.updatePreciseOrderItem({ isRestoreItems: true }, "fgttkfVeqoETfys6ZWcK");
+        console.log(result);
+    }
+
+    // await testUpdate();
     // await testFetchResult();
     await uploadProducts();
     // await uploadFakedProducts();

@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -440,6 +442,8 @@ class CommonStyle {
     /** => following for epayBehaviorOfConfirmLinePay  component  */
 
     EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
+
+    EpayBehaviorOfConfirmLinePayDivWrap = {};
 
     EpayBehaviorOfConfirmLinePayDiv = {};
 

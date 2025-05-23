@@ -78,7 +78,7 @@ class FirebaseHelper extends BaseFirebase {
         return { ...item, id: id ?? result.id, exists: true };
     };
 
-    updateDocument = async (path, id, item = {}) => {
+    updateDocument = async (path, item = {}, id) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987824 updateDocument()的id不能為空值`);
         return await this.reference(path, id).update(item);
     };
@@ -262,7 +262,6 @@ class FirebaseHelper extends BaseFirebase {
 
         return allResults;
     };
-
 
     /**
      * firebase-admin 沒有modular api，所以condition是以下格式，要做排序，要where().orderBy().limit()

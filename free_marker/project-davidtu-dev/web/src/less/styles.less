@@ -3651,8 +3651,25 @@
 }
 /** following for epayBehaviorOfConfirmLinePay  component used  */
 
-.EpayBehaviorOfConfirmLinePayDiv {
-    margin-top: 50px;
+.EpayBehaviorOfConfirmLinePayDiv:extend(.CenterInParentColumn) {
+    height: 400px;
+    gap: 20px;
+    padding-top: 40px;
+    justify-content: flex-start;
+    background-color: #eaeaea;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayBehaviorOfConfirmLinePayDivWrap {
+    margin: auto;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -3664,6 +3681,7 @@
     }
 }
 .EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography {
+    text-align: center;
     @media @mobile {
         /** empty style */
     }
