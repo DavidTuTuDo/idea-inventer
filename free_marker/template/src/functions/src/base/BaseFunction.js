@@ -30,9 +30,13 @@ class BaseFunction extends ClientRemoteApi {
             const param = item.idOfPreciseProduct.split(Util.getSeparatorOfUnique());
             const idOfVariant = param.pop();
             const idOfBooze = param.shift();
-            await Api.updateVariantItemAtomically(async (variant, transaction) => {
-                return { quantity: variant.quantity + item.quantity };
-            }, idOfVariant, idOfBooze);
+            await Api.updateVariantItemAtomically(
+                async (variant, transaction) => {
+                    return { quantity: variant.quantity + item.quantity };
+                },
+                idOfVariant,
+                idOfBooze
+            );
         }
         await Api.updatePreciseOrderItem({ isRestoreItems: true }, itemOfPreciseOrder.id);
     }

@@ -70,12 +70,12 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             for (const item of itemsOfClientOrdering) {
                 const variant = mapOfVariantStatus.get(item.idOfVariant);
                 await Api.updateVariantItemAtomically(
-                  async (current) => {
-                      if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
-                      else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
-                  },
-                  variant.id,
-                  variant.idOfBooze
+                    async (current) => {
+                        if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
+                        else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
+                    },
+                    variant.id,
+                    variant.idOfBooze
                 );
                 rollbackList.push({ item, variant });
             }
@@ -83,11 +83,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 購物車內扣數量個過程中，發現其中一個數量不足，就必須把之前的補回去*/
             for (const { item, variant } of rollbackList) {
                 await Api.updateVariantItemAtomically(
-                  async (current) => ({
-                      quantity: current.quantity + item.quantity
-                  }),
-                  variant.id,
-                  variant.idOfBooze
+                    async (current) => ({
+                        quantity: current.quantity + item.quantity
+                    }),
+                    variant.id,
+                    variant.idOfBooze
                 );
             }
             this.appendErrorLog(9999, error.message);

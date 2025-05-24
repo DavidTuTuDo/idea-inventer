@@ -141,26 +141,26 @@ class FirebaseHelper extends BaseFirebase {
         const [parentCollection, childCollection] = pathOfParent;
 
         await this.batchDo(
-          items,
-          (batch, object) => {
-              const parentData = object[parentCollection];
-              const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
-              parentData.id = parentId;
+            items,
+            (batch, object) => {
+                const parentData = object[parentCollection];
+                const parentId = _.isEmpty(parentData.id) ? this.getAutoDocumentID(parentCollection) : parentData.id;
+                parentData.id = parentId;
 
-              const parentRef = this.reference(parentCollection, parentId);
-              batch.set(parentRef, parentData);
+                const parentRef = this.reference(parentCollection, parentId);
+                batch.set(parentRef, parentData);
 
-              const children = object[childCollection] || [];
+                const children = object[childCollection] || [];
 
-              for (const childData of children) {
-                  const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
-                  childData.id = childId;
+                for (const childData of children) {
+                    const childId = _.isEmpty(childData.id) ? this.getAutoDocumentID(`${parentCollection}/${parentId}/${childCollection}`) : childData.id;
+                    childData.id = childId;
 
-                  const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`, childId);
-                  batch.set(childRef, childData);
-              }
-          },
-          batchCount
+                    const childRef = this.reference(`${parentCollection}/${parentId}/${childCollection}`, childId);
+                    batch.set(childRef, childData);
+                }
+            },
+            batchCount
         );
     }
 
@@ -168,14 +168,14 @@ class FirebaseHelper extends BaseFirebase {
         const pathOfFather = _.head(pathOfParent);
         const pathOfSon = _.last(pathOfParent);
         await this.batchDo(
-          idsOfFather,
-          async (batch, id) => {
-              const refOfFather = this.reference(pathOfFather, id);
-              const childrenSnap = await refOfFather.collection(pathOfSon).get();
-              for (const childSnap of childrenSnap.docs) batch.delete(childSnap.ref);
-              batch.delete(refOfFather);
-          },
-          batchCount
+            idsOfFather,
+            async (batch, id) => {
+                const refOfFather = this.reference(pathOfFather, id);
+                const childrenSnap = await refOfFather.collection(pathOfSon).get();
+                for (const childSnap of childrenSnap.docs) batch.delete(childSnap.ref);
+                batch.delete(refOfFather);
+            },
+            batchCount
         );
     };
 
@@ -415,12 +415,12 @@ class FirebaseHelper extends BaseFirebase {
      */
     listenDocument = (path, id, callback = (source, data, error) => true) => {
         const unsubscribe = this.reference(path, id).onSnapshot(
-          (doc) => {
-              callback("server", doc.data());
-          },
-          (error) => {
-              callback("error", undefined, error);
-          }
+            (doc) => {
+                callback("server", doc.data());
+            },
+            (error) => {
+                callback("error", undefined, error);
+            }
         );
         return unsubscribe;
     };
@@ -434,20 +434,20 @@ class FirebaseHelper extends BaseFirebase {
      * */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
         const unsubscribe = this.reference(path).onSnapshot(
-          (snapshot) => {
-              const changes = [];
-              const status = "server";
-              // snapshot.docs; snapshot.size; snapshot.empty;
-              snapshot.docChanges().forEach((change) => {
-                  changes.push({
-                      type: change.type /** [added|modified|removed] */,
-                      id: change.doc.id,
-                      data: change.doc.data()
-                  });
-              });
-              callback(status, changes, undefined);
-          },
-          (error) => callback("error", undefined, error)
+            (snapshot) => {
+                const changes = [];
+                const status = "server";
+                // snapshot.docs; snapshot.size; snapshot.empty;
+                snapshot.docChanges().forEach((change) => {
+                    changes.push({
+                        type: change.type /** [added|modified|removed] */,
+                        id: change.doc.id,
+                        data: change.doc.data()
+                    });
+                });
+                callback(status, changes, undefined);
+            },
+            (error) => callback("error", undefined, error)
         );
         return unsubscribe;
     };
@@ -558,11 +558,11 @@ class FirebaseHelper extends BaseFirebase {
         const fileId = file.data.id;
         // Export the Google Docs file as a PDF
         const response = await drive.files.export(
-          {
-              fileId: fileId,
-              mimeType: "application/pdf"
-          },
-          { responseType: "arraybuffer" }
+            {
+                fileId: fileId,
+                mimeType: "application/pdf"
+            },
+            { responseType: "arraybuffer" }
         );
         // Delete the temporary Google Docs file
         await drive.files.delete({ fileId: fileId });

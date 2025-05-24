@@ -39,29 +39,6 @@ class Utiller {
         }
     }
 
-    /**
-     * 從物件中依條件過濾出符合條件的 key-value pair
-     * @param {Object} object - 原始物件
-     * @param {Function} predict - 過濾條件函式，預設為 each.used === true
-     * @returns {Object} - 符合條件的新物件
-     *
-     * const objects = {
-     *   a: { used: true },
-     *   b: { used: false },
-     *   c: { used: true }
-     * };
-     *
-     * const usedObjects = getObjectBy(objects);
-     *
-     * console.log(usedObjects);
-     * // 👉 { a: { used: true }, c: { used: true } }
-     */
-    getObjectBy = (object, predict = (each) => each.used === true) => {
-        return Object.fromEntries(
-            _.filter(_.entries(object), ([, value]) => predict(value))
-        );
-    };
-
     getNumberOfNormalize(value, defaultValue = 0) {
         if (_.isNumber(value))
             return value;
@@ -2727,6 +2704,26 @@ class Utiller {
         return `${front}${ellipsis}${back}`;
     }
 
+    /**
+     * const obj = {
+     *   a: { idOfBooze: 1, checked: true },
+     *   b: { idOfBooze: 2, checked: false },
+     *   c: { idOfBooze: 3 }, // 無 checked
+     *   d: { idOfBooze: 4, checked: true }
+     * };
+     *
+     * getObjectBy(obj) ==> { b: { idOfBooze: 2, checked: false }, c: { idOfBooze: 3 } }
+     *
+     * 從物件中依條件過濾出符合條件的 key-value pair
+     * @param {Object} obj - 原始物件
+     * @param {Function} predict - 過濾條件函式，預設為 each.used === true
+     * @returns {Object} - 符合條件的新物件
+     */
+    getObjectBy(obj,predict = (attr) => attr.checked !== true) {
+        return _.fromPairs(
+          _.toPairs(obj).filter(([_, value]) => predict(value))
+        );
+    }
 
 }
 

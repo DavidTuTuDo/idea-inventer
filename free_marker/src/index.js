@@ -7118,6 +7118,7 @@ class ProjectFileHandler extends PathBase {
         }, sourceObj.watermark);
         baseConfigGenerator.appendField(`platform`, JSON.stringify(this.platform));
         baseConfigGenerator.appendField(`env`, JSON.stringify(this.env));
+        baseConfigGenerator.appendField(`email`, JSON.stringify(sourceObj.email));
         baseConfigGenerator.appendField(`host`, JSON.stringify(this.isProduction() ? sourceObj.host.prod : sourceObj.host.dev));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
