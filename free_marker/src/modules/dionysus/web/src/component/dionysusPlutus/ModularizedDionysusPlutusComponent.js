@@ -76,6 +76,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     execute = async () => {
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
+        UserInfo.removeCheckedCatieItems();
         switch (UserInfo.getTypeOfTransport()) {
             case 1:
             case 2:
@@ -100,9 +101,9 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             items,
             remark: self.getStore().getRemark(),
             address: self.getStore().getAddress(),
-            phone: self.getStore().getPhone()
+            phone: self.getStore().getPhone(),
+            name: self.getStore().getName()
         });
-        Util.appendInfo(`id of precise order => `, result);
         return result.idOfPreciseOrder;
     };
 

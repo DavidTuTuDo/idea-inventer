@@ -1,3 +1,5 @@
+const edit = true;
+
 import Api from "./api";
 import { databazer as Databaser, builder as Builder } from "databazer";
 import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
@@ -255,7 +257,7 @@ import moment from "moment";
         for (const id of ids) await api.deleteVariants(true, id);
         await api.deleteBoozes(true);
 
-        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1746177966129.json"), (each) => _.size(each.options) > 1);
+        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1747675731188.json"), (each) => _.size(each.options) > 1);
         const products = Util.getShuffledArrayWithLimitCount(
             items.filter((item) => _.size(item.options) < 15),
             10
@@ -331,8 +333,9 @@ import moment from "moment";
         /** 拿到所有product id，因為 /product/{id}/variants 要逐個刪除 */
         const ids = await api.fetchDocumentIdsOfBooze();
         console.log(ids);
+        /** 發生錯誤時注意有沒有sasha_of_products_detail_1747675731188.json **/
         await api.deleteBatchParentItems(["dionysus", "variants"], ids);
-        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1746177966129.json"), (each) => _.size(each.options) > 1);
+        const items = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail_1747675731188.json"), (each) => _.size(each.options) > 1);
         const products = Util.getShuffledArrayWithLimitCount(
             items.filter((item) => _.size(item.options) < 15),
             10
@@ -429,8 +432,8 @@ import moment from "moment";
 
     // await testUpdate();
     // await testFetchResult();
-    await uploadProducts();
-    // await uploadFakedProducts();
+    // await uploadProducts();
+    await uploadFakedProducts();
     // await expiredOrderBehavior();
     // await updateCPRT();
     // await updateCPRTContent();

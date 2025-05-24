@@ -41,8 +41,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     async handleHttpOnCall(data, session) {
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
         /** items = [...{idOfBooze,idOfVariant,quantity,nameOfBooze}] */
-        const { remark, address, contact, email } = data;
-
+        const { remark, address, phone, name, email } = data;
         if (itemsOfClientOrdering.length === 0) this.appendErrorLog(9999, "錯誤：E1200 無有效商品資料");
 
         if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder()) this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
@@ -71,12 +70,12 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             for (const item of itemsOfClientOrdering) {
                 const variant = mapOfVariantStatus.get(item.idOfVariant);
                 await Api.updateVariantItemAtomically(
-                    async (current) => {
-                        if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
-                        else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
-                    },
-                    variant.id,
-                    variant.idOfBooze
+                  async (current) => {
+                      if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
+                      else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
+                  },
+                  variant.id,
+                  variant.idOfBooze
                 );
                 rollbackList.push({ item, variant });
             }
@@ -84,11 +83,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 購物車內扣數量個過程中，發現其中一個數量不足，就必須把之前的補回去*/
             for (const { item, variant } of rollbackList) {
                 await Api.updateVariantItemAtomically(
-                    async (current) => ({
-                        quantity: current.quantity + item.quantity
-                    }),
-                    variant.id,
-                    variant.idOfBooze
+                  async (current) => ({
+                      quantity: current.quantity + item.quantity
+                  }),
+                  variant.id,
+                  variant.idOfBooze
                 );
             }
             this.appendErrorLog(9999, error.message);
@@ -107,8 +106,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             email: email || "",
             address: address || "",
             distance: "",
-            name: contact?.name || "",
-            phoneNumber: contact?.phoneNumber || ""
+            name: name || "",
+            phoneNumber: phone || ""
         });
 
         if (result.succeed) return { idOfPreciseOrder: result.value.id };

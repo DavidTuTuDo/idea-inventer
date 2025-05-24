@@ -29,9 +29,9 @@ class ModularizedEpayBehaviorOfConfirmLinePayStore extends BaseEpayBehaviorOfCon
     }
 
     routeToPage = () => {
-        if(UserInfo.isLoginWithSucceed()) Router.gotoEpayFootprintPage(this.getComponent(), "all");
-        else Router.gotoHomePage(this.getComponent())
-    }
+        if (UserInfo.isLoginWithSucceed()) Router.gotoEpayFootprintPage(this.getComponent(), "all");
+        else Router.gotoHomePage(this.getComponent());
+    };
 
     /** -------------------- async api -------------------- **/
 }

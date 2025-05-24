@@ -17,7 +17,7 @@ class UserInfo {
     /** -------------------- functions -------------------- **/
 
     @observable
-    isLoginSucceed = undefined; //undefined:未完成登入程序; true | false 是否有credential做上次登入
+    isLoginSucceed = undefined;
 
     /** 最高級別的admin(增加悅譜的閱讀permission) */
     @observable
@@ -197,7 +197,6 @@ class UserInfo {
     deleteItemFromCart(key) {
         const infoOfCartie = Cookie.getInfoOfCartie();
         delete infoOfCartie[key];
-        Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     }
 
@@ -214,6 +213,12 @@ class UserInfo {
     getCheckedCartieItem() {
         const infoOfCartie = Cookie.getInfoOfCartie();
         return _.values(_.filter(infoOfCartie, (each) => each.checked));
+    }
+
+    removeCheckedCatieItems() {
+        const latest = _.fromPairs(_.toPairs(Cookie.getInfoOfCartie()).filter(([_, value]) => value.checked !== true));
+        Cookie.setInfoOfCartie(latest);
+        this.invalidateCartie(latest);
     }
 
     getArrayOfCartieItem() {
@@ -264,12 +269,15 @@ class UserInfo {
             if (this.isLoginSucceed !== undefined) {
                 resolve(this.isLoginSucceed);
             } else {
-                when(() => this.isLoginSucceed !== undefined, () => {
-                    resolve(this.isLoginSucceed);
-                });
+                when(
+                    () => this.isLoginSucceed !== undefined,
+                    () => {
+                        resolve(this.isLoginSucceed);
+                    }
+                );
             }
         });
-    }
+    };
 }
 
 export default new UserInfo();
