@@ -53,7 +53,6 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         const item = _.find(array, (each) => _.isEqual(_.toNumber(each.getValue()), _.toNumber(value)));
         return item ? item.label : "";
     }
-
 }
 
 export default ModularizedDionysusPlutusStore;

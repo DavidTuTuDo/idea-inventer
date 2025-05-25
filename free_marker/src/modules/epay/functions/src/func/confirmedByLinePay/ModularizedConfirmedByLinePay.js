@@ -7,6 +7,7 @@ import Config from "../../config";
 import Api from "../../api";
 import { linepayer as LinePay } from "linepayer";
 import BaseConfirmedByLinePay from "./BaseConfirmedByLinePay";
+import sendEmail from "../sendEmailOfReceipt";
 
 const MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT = {
     "0000": "成功",
@@ -84,6 +85,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 };
             }, itemOfPreciseOrder.id);
             this.customizeBehaviorOfSucceedTrade();
+            await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
             return { message: `confirmed by ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed` };
         } else {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {

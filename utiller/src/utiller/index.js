@@ -2725,6 +2725,37 @@ class Utiller {
         );
     }
 
+    /**
+     *
+     const array = [
+     { serial: 'A023' },
+     { serial: 'Z001' },
+     { serial: 'C002' },
+     { serial: 'G123' },
+     { serial: 'A001' },
+     { serial: 'A999' }
+     ];
+
+     mutateBy(array, (item) => {
+     const serial = item.serial;
+     const match = serial.match(/^([A-Z]+)(\d+)$/i);
+     const [letter, number] = match ? [match[1], parseInt(match[2], 10)] : [serial, 0];
+     return [letter, number]; // 多層排序：先字母，再數字
+     });
+     *
+     * [ { serial: 'A001' }, { serial: 'A023' }, { serial: 'A999' }, { serial: 'C002' }, { serial: 'G123' }, { serial: 'Z001' } ]
+     *
+     *
+     * 通用的排序變異工具：依照 predict 提供的排序 key 對 array 進行原地排序(mutated)
+     *
+     * @param {Array} array - 要排序的陣列（會就地變異）
+     * @param {Function} predict - 回傳排序 key（可以是陣列以支援多層排序）
+     */
+    mutateBy(array, predict = (item) => item) {
+        const sorted = _.sortBy(array, predict);
+        array.splice(0, array.length, ...sorted);
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {

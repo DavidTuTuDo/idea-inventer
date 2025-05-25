@@ -62,16 +62,16 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         this.showInfoSnackMessage(`進入付款流程`);
         this.execute().then();
         /**  發信的功能
-        this.getStore()
-            .submitSavior(this)
-            .then((result) => {
-                self.showInfoSnackMessage(`已完成訂購，請收信信件確認`);
-                UserInfo.deleteCheckedCartieItemBehavior();
-                Util.syncDelay(2500).then((result) => {
-                    Router.gotoHomePage(this);
-                });
-            });
-          */
+         this.getStore()
+         .submitSavior(this)
+         .then((result) => {
+         self.showInfoSnackMessage(`已完成訂購，請收信信件確認`);
+         UserInfo.deleteCheckedCartieItemBehavior();
+         Util.syncDelay(2500).then((result) => {
+         Router.gotoHomePage(this);
+         });
+         });
+         */
     }
 
     execute = async () => {
@@ -100,9 +100,10 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {
             items,
             remark: self.getStore().getRemark(),
-            address: self.getStore().getAddress(),
+            address: self.getStore().getPreciselyAddress(),
             phone: self.getStore().getPhone(),
-            name: self.getStore().getName()
+            name: self.getStore().getName(),
+            email: self.getStore().getEmail()
         });
         return result.idOfPreciseOrder;
     };
