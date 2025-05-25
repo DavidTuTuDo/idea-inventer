@@ -2,8 +2,7 @@ import _ from "lodash";
 import CryptoJS from "crypto-js";
 import { configerer } from "configerer";
 import ERROR from "../exceptioner";
-import moment from "moment";
-import "moment-timezone";
+import moment from "moment-timezone";
 import { v4 } from "uuid";
 import { generate, count } from "../words";
 import { parse } from "node-html-parser";
@@ -1135,6 +1134,27 @@ class Utiller {
 
     isAfterTimeStamp(target = this.getCurrentTimeStamp(), time) {
         return moment(target).isAfter(time);
+    }
+
+    /**
+     * 根據地區語系與時區輸出 yyyy/MM/dd hh:mm 時間字串
+     * @param {Date | number | string} ts - 時間戳記、日期物件或字串
+     * @param {string} location - 語系地區代碼（如 'zh-TW'、'en-US'）
+     * @param {string} timezone - 時區（預設為 'Asia/Taipei'）
+     * @param {boolean} use24Hour - 是否使用 24 小時制（預設 true）
+     * @returns {string}
+     */
+     formatTimeByLocale(ts, location = "zh-TW", timezone = "Asia/Taipei", use24Hour = true) {
+        // 設定 moment 語系
+        moment.locale(location);
+
+        // 轉換時區
+        const m = moment(ts).tz(timezone);
+
+        // 格式化字串
+        const formatStr = use24Hour ? "YYYY/MM/DD HH:mm" : "YYYY/MM/DD hh:mm A";
+
+        return m.format(formatStr);
     }
 
     /** 獲得 幾天後的timestamp 的概念 {months: 2,days:3} =>

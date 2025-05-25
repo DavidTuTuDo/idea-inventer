@@ -1,7 +1,8 @@
+const edit = true;
+
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
 import * as functions from "firebase-functions";
-import Config from "../config";
 import Api from "../api";
 import ClientRemoteApi from "../base/CommonRemoteApi";
 
@@ -23,6 +24,11 @@ class BaseFunction extends ClientRemoteApi {
     getUTCTimestampFromECPayTimeString(string, locale = "zh_tw") {
         const offset = this.getOffSetByLocation(locale);
         return Util.getTimeStampWithConditions({ hours: offset }, Util.getTimeStampFromECPayStringFormat(string));
+    }
+
+    getTWTimeOfFireTS(tsOfFirebase) {
+        const ts = this.normalizeTimestamp(tsOfFirebase);
+        return Util.formatTimeByLocale(ts);
     }
 
     async incrementProductCountsAtomically(itemOfPreciseOrder) {

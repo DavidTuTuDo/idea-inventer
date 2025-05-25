@@ -79,7 +79,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 return {
                     stateOfPayment: "completed",
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
-                    timeOfPayment: Util.getCurrentTimeStamp(),
+                    timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: data.idOfTransaction,
                     messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
                 };
@@ -92,7 +92,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 this.validatePreciseOrder(item, false, "74484874345");
                 return {
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
-                    timeOfPayment: Util.getCurrentTimeStamp(),
+                    timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     stateOfPayment: "failure",
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
                 };

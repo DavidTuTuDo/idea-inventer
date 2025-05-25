@@ -56,7 +56,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                 return {
                     stateOfPayment: "completed",
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
-                    timeOfPayment: Util.getCurrentTimeStamp(),
+                    timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
                 };
@@ -80,8 +80,8 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
 
     customizeBehaviorOfSucceedTrade() {
         this.appendErrorLog(
-          9999,
-          `47498454876 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
+            9999,
+            `47498454876 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
         insert(例專案:月薪) 應該要增加 工作行事曆到甲方`
         );
     }
