@@ -33,6 +33,10 @@ class MainComponent extends BaseMainComponent {
         Router.gotoEpayFootprintPage(this.getComponentInstance(), "pending");
     }
 
+    onMainTestGoGaiaButtonClicked(param) {
+        Router.gotoGaiaPage(this);
+    }
+
     onMainTestGoMarketButtonClicked(param) {
         Router.gotoDionysusPage(this);
     }

@@ -216,7 +216,7 @@ class UserInfo {
     }
 
     removeCheckedCatieItems() {
-        const latest = Util.getObjectBy(Cookie.getInfoOfCartie(),(attr) => attr.checked !== true)
+        const latest = Util.getObjectBy(Cookie.getInfoOfCartie(), (attr) => attr.checked !== true);
         Cookie.setInfoOfCartie(latest);
         this.invalidateCartie(latest);
     }

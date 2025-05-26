@@ -85,6 +85,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 };
             }, itemOfPreciseOrder.id);
             this.customizeBehaviorOfSucceedTrade();
+            Util.appendInfo(`LINE-PAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
             await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
             return { message: `confirmed by ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed` };
         } else {

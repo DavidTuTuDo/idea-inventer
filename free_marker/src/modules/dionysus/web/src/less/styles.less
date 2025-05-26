@@ -2979,9 +2979,22 @@
         /** empty style */
     }
 }
-.DionysusCartieMainBriefSpecTipCountTypography {
-    color: darkred;
-    font-size: 0.8rem;
+.DionysusGaiaDiv:extend(.CenterInParentColumn) {
+    width: 95%;
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 600px;
+    }
+}
+.DionysusGaiaDivWrap:extend(.CenterInParentColumn) {
+    margin: auto;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -2992,7 +3005,9 @@
         /** empty style */
     }
 }
-.DionysusCartieMainBriefSpecTipCountDivWrap:extend(.CenterInParentRow) {
+.DionysusGaiaAreaOfPhotoUploadDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    gap: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -3003,9 +3018,577 @@
         /** empty style */
     }
 }
-.DionysusCartieMainBriefSpecTipCountLabelOfCountTypography {
-    color: darkred;
-    font-size: 0.8rem;
+.DionysusGaiaAreaOfPhotoUploadRowDiv:extend(.CenterInParentRow) {
+    justify-content: space-between;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadRowLabelOfUploadPhotoTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadRowJoinPhotoChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 83px;
+    height: 83px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 120px;
+        height: 120px;
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoDivList:extend(.CenterInParentRow) {
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        gap: 10px;
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoImgImg {
+    width: 80px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 100px;
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton {
+    position: absolute;
+    left: -10px;
+    bottom: -12px;
+    z-index: 10;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    &:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        left: -5px;
+        bottom: -5px;
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfNameDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfNameRowDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfNameRowLabelOfNameTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfNameRowStmtOfNameMaximumTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfNameNameTextField {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfDescriptionDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfDescriptionRowDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfDescriptionRowLabelOfDescriptionTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfDescriptionDescriptionTextField:extend(.DionysusGaiaAreaOfNameNameTextField) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainRowDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainRowLabelOfMainTypeTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainRowAppendMainChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainRowAppendMainReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainBriefmainDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainBriefMainDivList:extend(.CenterInParentRow) {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfMainBriefmainMainChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubRowDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubRowLabelOfSubTypeTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubRowAppendSubChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubRowAppendSubReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubBriefSubDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubBriefSubDivList:extend(.DionysusGaiaAreaOfMainBriefMainDivList) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfSubBriefSubSubChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfQuantityDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfQuantityLabelOfEditQuantityTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfQuantityArrowIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfQuantityArrowReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfQuantityArrowIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusTextFetcherPaper {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusTextFetcherDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusTextFetcherTitleDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusTextFetcherTitleDivList {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusTextFetcherTitleMainTextField {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterPaper {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterVariantDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterVariantDivList {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterVariantLabelOfVariantTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterVariantQuantityTextField {
     @media @mobile {
         /** empty style */
     }

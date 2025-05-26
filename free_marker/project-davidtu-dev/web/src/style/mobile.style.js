@@ -449,6 +449,118 @@ class MobileStyle {
 
     EpayDiv = {};
 
+    /** => following for quantitySetter  component  */
+
+    DionysusQuantitySetterVariantQuantityTextField = {};
+
+    DionysusQuantitySetterVariantLabelOfVariantTypography = {};
+
+    DionysusQuantitySetterVariantDivList = {};
+
+    DionysusQuantitySetterVariantDiv = {};
+
+    DionysusQuantitySetterDivWrap = {};
+
+    DionysusQuantitySetterPaper = {};
+
+    /** => following for textFetcher  component  */
+
+    DionysusTextFetcherTitleMainTextField = {};
+
+    DionysusTextFetcherTitleDivList = {};
+
+    DionysusTextFetcherTitleDiv = {};
+
+    DionysusTextFetcherDivWrap = {};
+
+    DionysusTextFetcherPaper = {};
+
+    /** => following for gaia  component  */
+
+    DionysusGaiaAreaOfQuantityArrowIconNavigateNext = {};
+
+    DionysusGaiaAreaOfQuantityArrowReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfQuantityArrowIconButton = {};
+
+    DionysusGaiaAreaOfQuantityLabelOfEditQuantityTypography = {};
+
+    DionysusGaiaAreaOfQuantityDiv = {};
+
+    DionysusGaiaAreaOfSubBriefSubSubChip = {};
+
+    DionysusGaiaAreaOfSubBriefSubDivList = {};
+
+    DionysusGaiaAreaOfSubBriefSubDiv = {};
+
+    DionysusGaiaAreaOfSubRowAppendSubReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfSubRowAppendSubChip = {};
+
+    DionysusGaiaAreaOfSubRowLabelOfSubTypeTypography = {};
+
+    DionysusGaiaAreaOfSubRowDiv = {};
+
+    DionysusGaiaAreaOfSubDiv = {};
+
+    DionysusGaiaAreaOfMainBriefｍainMainChip = {};
+
+    DionysusGaiaAreaOfMainBriefｍainDivList = {};
+
+    DionysusGaiaAreaOfMainBriefｍainDiv = {};
+
+    DionysusGaiaAreaOfMainRowAppendMainReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfMainRowAppendMainChip = {};
+
+    DionysusGaiaAreaOfMainRowLabelOfMainTypeTypography = {};
+
+    DionysusGaiaAreaOfMainRowDiv = {};
+
+    DionysusGaiaAreaOfMainDiv = {};
+
+    DionysusGaiaAreaOfDescriptionDescriptionTextField = {};
+
+    DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography = {};
+
+    DionysusGaiaAreaOfDescriptionRowLabelOfDescriptionTypography = {};
+
+    DionysusGaiaAreaOfDescriptionRowDiv = {};
+
+    DionysusGaiaAreaOfDescriptionDiv = {};
+
+    DionysusGaiaAreaOfNameNameTextField = {};
+
+    DionysusGaiaAreaOfNameRowStmtOfNameMaximumTypography = {};
+
+    DionysusGaiaAreaOfNameRowLabelOfNameTypography = {};
+
+    DionysusGaiaAreaOfNameRowDiv = {};
+
+    DionysusGaiaAreaOfNameDiv = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoImgImg = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDivList = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv = {};
+
+    DionysusGaiaAreaOfPhotoUploadRowJoinPhotoChip = {};
+
+    DionysusGaiaAreaOfPhotoUploadRowLabelOfUploadPhotoTypography = {};
+
+    DionysusGaiaAreaOfPhotoUploadRowDiv = {};
+
+    DionysusGaiaAreaOfPhotoUploadDiv = {};
+
+    DionysusGaiaDivWrap = {};
+
+    DionysusGaiaDiv = {};
+
     /** => following for plutus  component  */
 
     DionysusPlutusFuncOfCheckoutSubmitDivWrap = {};
@@ -967,6 +1079,8 @@ class MobileStyle {
 
     AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
 
+    AccountFuncAreaOfEditCleanCacheButton = {};
+
     AccountFuncAreaOfEditToEditModeButton = {};
 
     AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
@@ -1048,6 +1162,8 @@ class MobileStyle {
     MainTestClockTimePicker = {};
 
     MainTestGotoHistoryButton = {};
+
+    MainTestGoGaiaButton = {};
 
     MainTestGoMarketButton = {};
 
