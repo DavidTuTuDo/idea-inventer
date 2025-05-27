@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -449,7 +451,35 @@ class CommonStyle {
 
     EpayDiv = {};
 
+    /** => following for variantPhotoSetter  component  */
+
+    DionysusVariantPhotoSetterVariantPreviewChip = {};
+
+    DionysusVariantPhotoSetterVariantUpdateIconAddPhotoAlternateRounded = {};
+
+    DionysusVariantPhotoSetterVariantUpdateIconButton = {};
+
+    DionysusVariantPhotoSetterVariantLabelOfVariantTypography = {};
+
+    DionysusVariantPhotoSetterVariantDivList = {};
+
+    DionysusVariantPhotoSetterVariantDiv = {};
+
+    DionysusVariantPhotoSetterDivWrap = {};
+
+    DionysusVariantPhotoSetterPaper = {};
+
     /** => following for quantitySetter  component  */
+
+    DionysusQuantitySetterFuncLeaveChip = {};
+
+    DionysusQuantitySetterFuncBatchUpdateChip = {};
+
+    DionysusQuantitySetterFuncDiv = {};
+
+    DionysusQuantitySetterVariantUpdateIconRefreshRounded = {};
+
+    DionysusQuantitySetterVariantUpdateIconButton = {};
 
     DionysusQuantitySetterVariantQuantityTextField = {};
 
@@ -465,7 +495,19 @@ class CommonStyle {
 
     /** => following for textFetcher  component  */
 
+    DionysusTextFetcherFuncLeaveChip = {};
+
+    DionysusTextFetcherFuncAppendChip = {};
+
+    DionysusTextFetcherFuncDiv = {};
+
+    DionysusTextFetcherTitleClearIconClearRounded = {};
+
+    DionysusTextFetcherTitleClearIconButton = {};
+
     DionysusTextFetcherTitleMainTextField = {};
+
+    DionysusTextFetcherTitleIndexTypography = {};
 
     DionysusTextFetcherTitleDivList = {};
 
@@ -477,6 +519,28 @@ class CommonStyle {
 
     /** => following for gaia  component  */
 
+    DionysusGaiaAreaOfDescriptionDescriptionTextField = {};
+
+    DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography = {};
+
+    DionysusGaiaAreaOfDescriptionRowLabelOfDescriptionTypography = {};
+
+    DionysusGaiaAreaOfDescriptionRowDiv = {};
+
+    DionysusGaiaAreaOfDescriptionDiv = {};
+
+    DionysusGaiaAreaOfPhotoSetArrowIconNavigateNext = {};
+
+    DionysusGaiaAreaOfPhotoSetArrowReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfPhotoSetArrowIconButton = {};
+
+    DionysusGaiaAreaOfPhotoSetLabelOfPhotoSetTypography = {};
+
+    DionysusGaiaAreaOfPhotoSetDivWrap = {};
+
+    DionysusGaiaAreaOfPhotoSetDiv = {};
+
     DionysusGaiaAreaOfQuantityArrowIconNavigateNext = {};
 
     DionysusGaiaAreaOfQuantityArrowReactFragmentWrap = {};
@@ -484,6 +548,8 @@ class CommonStyle {
     DionysusGaiaAreaOfQuantityArrowIconButton = {};
 
     DionysusGaiaAreaOfQuantityLabelOfEditQuantityTypography = {};
+
+    DionysusGaiaAreaOfQuantityDivWrap = {};
 
     DionysusGaiaAreaOfQuantityDiv = {};
 
@@ -503,11 +569,11 @@ class CommonStyle {
 
     DionysusGaiaAreaOfSubDiv = {};
 
-    DionysusGaiaAreaOfMainBriefｍainMainChip = {};
+    DionysusGaiaAreaOfMainBriefMainMainChip = {};
 
-    DionysusGaiaAreaOfMainBriefｍainDivList = {};
+    DionysusGaiaAreaOfMainBriefMainDivList = {};
 
-    DionysusGaiaAreaOfMainBriefｍainDiv = {};
+    DionysusGaiaAreaOfMainBriefMainDiv = {};
 
     DionysusGaiaAreaOfMainRowAppendMainReactFragmentWrap = {};
 
@@ -518,16 +584,6 @@ class CommonStyle {
     DionysusGaiaAreaOfMainRowDiv = {};
 
     DionysusGaiaAreaOfMainDiv = {};
-
-    DionysusGaiaAreaOfDescriptionDescriptionTextField = {};
-
-    DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography = {};
-
-    DionysusGaiaAreaOfDescriptionRowLabelOfDescriptionTypography = {};
-
-    DionysusGaiaAreaOfDescriptionRowDiv = {};
-
-    DionysusGaiaAreaOfDescriptionDiv = {};
 
     DionysusGaiaAreaOfNameNameTextField = {};
 

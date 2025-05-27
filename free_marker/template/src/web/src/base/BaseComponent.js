@@ -924,6 +924,7 @@ class BaseComponent extends MuiComponent {
         textInput,
         component,
         enableCancel,
+        useCustomCancel = false,
         disposablePage = false,
         fullWidth = false,
         strict = false
@@ -941,6 +942,7 @@ class BaseComponent extends MuiComponent {
                 submitAsyncTask={task}
                 needActionButtons={needActionButtons}
                 enableCancel={enableCancel}
+                useCustomCancel={useCustomCancel}
                 customView={customView}
                 paramObject={paramObject}
                 textInput={textInput}
