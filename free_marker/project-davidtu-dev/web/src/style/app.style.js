@@ -5,8 +5,6 @@ import libpath from "path";
 class AppStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -528,6 +526,18 @@ class AppStyle {
     DionysusGaiaAreaOfDescriptionRowDiv = {};
 
     DionysusGaiaAreaOfDescriptionDiv = {};
+
+    DionysusGaiaAreaOfTabSetArrowIconNavigateNext = {};
+
+    DionysusGaiaAreaOfTabSetArrowIconButton = {};
+
+    DionysusGaiaAreaOfTabSetContentsOfTabLabelTypography = {};
+
+    DionysusGaiaAreaOfTabSetLabelOfTabSetTypography = {};
+
+    DionysusGaiaAreaOfTabSetDivWrap = {};
+
+    DionysusGaiaAreaOfTabSetDiv = {};
 
     DionysusGaiaAreaOfPhotoSetArrowIconNavigateNext = {};
 
