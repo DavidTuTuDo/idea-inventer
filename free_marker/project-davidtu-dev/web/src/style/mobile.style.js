@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -531,9 +533,9 @@ class MobileStyle {
 
     DionysusGaiaAreaOfTabSetArrowIconButton = {};
 
-    DionysusGaiaAreaOfTabSetContentsOfTabLabelTypography = {};
+    DionysusGaiaAreaOfTabSetOptionOfTabSetContentTypography = {};
 
-    DionysusGaiaAreaOfTabSetLabelOfTabSetTypography = {};
+    DionysusGaiaAreaOfTabSetOptionOfTabSetTitleTypography = {};
 
     DionysusGaiaAreaOfTabSetDivWrap = {};
 
@@ -545,23 +547,27 @@ class MobileStyle {
 
     DionysusGaiaAreaOfPhotoSetArrowIconButton = {};
 
-    DionysusGaiaAreaOfPhotoSetLabelOfPhotoSetTypography = {};
+    DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetContentTypography = {};
+
+    DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetTitleTypography = {};
 
     DionysusGaiaAreaOfPhotoSetDivWrap = {};
 
     DionysusGaiaAreaOfPhotoSetDiv = {};
 
-    DionysusGaiaAreaOfQuantityArrowIconNavigateNext = {};
+    DionysusGaiaAreaOfQuantitySetArrowIconNavigateNext = {};
 
-    DionysusGaiaAreaOfQuantityArrowReactFragmentWrap = {};
+    DionysusGaiaAreaOfQuantitySetArrowReactFragmentWrap = {};
 
-    DionysusGaiaAreaOfQuantityArrowIconButton = {};
+    DionysusGaiaAreaOfQuantitySetArrowIconButton = {};
 
-    DionysusGaiaAreaOfQuantityLabelOfEditQuantityTypography = {};
+    DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetContentTypography = {};
 
-    DionysusGaiaAreaOfQuantityDivWrap = {};
+    DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetTitleTypography = {};
 
-    DionysusGaiaAreaOfQuantityDiv = {};
+    DionysusGaiaAreaOfQuantitySetDivWrap = {};
+
+    DionysusGaiaAreaOfQuantitySetDiv = {};
 
     DionysusGaiaAreaOfSubBriefSubSubChip = {};
 
@@ -1096,6 +1102,8 @@ class MobileStyle {
     DionysusBacchusDiv = {};
 
     /** => following for dionysus  component  */
+
+    DionysusSelectTabSkeleton = {};
 
     DionysusSelectTabsList = {};
 

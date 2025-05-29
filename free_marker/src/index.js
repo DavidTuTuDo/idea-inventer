@@ -2079,6 +2079,7 @@ class CodegenNode {
         return _.isEqual(this.getView(), 'CustomImageButton');
     }
 
+    /** */
     isArrowOptionView(type = 'default') {
         return _.isEqual(this.getView(), 'ArrowOption')
     }
@@ -7711,40 +7712,45 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             if (node.isArrowOptionView()) {
                 const name = node.getName();
-                node.setView('div');
-                node.setName(Util.camel('area', 'of', name));
+                node.setView("div");
+                node.setName(Util.camel("area", "of", name));
+                if (node.needWrap) node.setWrapView("div");
                 node.needParam = true;
                 node.click = true;
                 node.appendChildrenWithJsons(
-                    {
-                        name: Util.camel('option', 'of', name, 'title'),
-                        type: `string`,
-                        defaultValue: node.defaultTitle,
-                        view: 'Typography',
-                        singleLine: true,
-                        incest: {view: false, attribute: true},
+                  {
+                      name: Util.camel("option", "of", name, "title"),
+                      type: `string`,
+                      defaultValue: node.defaultTitle,
+                      view: "Typography",
+                      singleLine: true,
+                      description: node.description,
+                      incest: { view: false, attribute: true }
 
-                    },
-                    {
-                        name: Util.camel('option', 'of', name, 'content'),
-                        type: `string`,
-                        defaultValue: node.defaultContent,
-                        view: 'Typography',
-                        singleLine: true,
-                        incest: {view: false, attribute: true},
-                    },
-                    {
-                        name: 'arrow',
-                        needParam: true,
-                        view: 'IconButton',
-                        icon: 'NavigateNext',
-                        description: `點及後可以進如到詳細頁面`,
-                        props: {
-                            edge: 'start',
-                            color: 'inherit',
-                        }
-                    },
-                )
+                  },
+                  {
+                      name: Util.camel("option", "of", name, "content"),
+                      type: `string`,
+                      defaultValue: node.defaultContent,
+                      view: "Typography",
+                      singleLine: true,
+                      description: node.description,
+                      incest: { view: false, attribute: true }
+                  },
+                  {
+                      name: "arrow",
+                      needParam: true,
+                      view: "IconButton",
+                      icon: "NavigateNext",
+                      incest: { view: false, attribute: true },
+                      description: `點及後可以進如到詳細頁面`,
+                      alertDialog: node.alertDialog,
+                      props: {
+                          edge: "start",
+                          color: "inherit"
+                      }
+                  }
+                );
             }
 
 

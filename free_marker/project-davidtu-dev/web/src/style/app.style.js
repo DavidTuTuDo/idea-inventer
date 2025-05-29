@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -531,9 +533,9 @@ class AppStyle {
 
     DionysusGaiaAreaOfTabSetArrowIconButton = {};
 
-    DionysusGaiaAreaOfTabSetContentsOfTabLabelTypography = {};
+    DionysusGaiaAreaOfTabSetOptionOfTabSetContentTypography = {};
 
-    DionysusGaiaAreaOfTabSetLabelOfTabSetTypography = {};
+    DionysusGaiaAreaOfTabSetOptionOfTabSetTitleTypography = {};
 
     DionysusGaiaAreaOfTabSetDivWrap = {};
 
@@ -545,23 +547,27 @@ class AppStyle {
 
     DionysusGaiaAreaOfPhotoSetArrowIconButton = {};
 
-    DionysusGaiaAreaOfPhotoSetLabelOfPhotoSetTypography = {};
+    DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetContentTypography = {};
+
+    DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetTitleTypography = {};
 
     DionysusGaiaAreaOfPhotoSetDivWrap = {};
 
     DionysusGaiaAreaOfPhotoSetDiv = {};
 
-    DionysusGaiaAreaOfQuantityArrowIconNavigateNext = {};
+    DionysusGaiaAreaOfQuantitySetArrowIconNavigateNext = {};
 
-    DionysusGaiaAreaOfQuantityArrowReactFragmentWrap = {};
+    DionysusGaiaAreaOfQuantitySetArrowReactFragmentWrap = {};
 
-    DionysusGaiaAreaOfQuantityArrowIconButton = {};
+    DionysusGaiaAreaOfQuantitySetArrowIconButton = {};
 
-    DionysusGaiaAreaOfQuantityLabelOfEditQuantityTypography = {};
+    DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetContentTypography = {};
 
-    DionysusGaiaAreaOfQuantityDivWrap = {};
+    DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetTitleTypography = {};
 
-    DionysusGaiaAreaOfQuantityDiv = {};
+    DionysusGaiaAreaOfQuantitySetDivWrap = {};
+
+    DionysusGaiaAreaOfQuantitySetDiv = {};
 
     DionysusGaiaAreaOfSubBriefSubSubChip = {};
 
@@ -1096,6 +1102,8 @@ class AppStyle {
     DionysusBacchusDiv = {};
 
     /** => following for dionysus  component  */
+
+    DionysusSelectTabSkeleton = {};
 
     DionysusSelectTabsList = {};
 
