@@ -49,6 +49,10 @@ class MainComponent extends BaseMainComponent {
         //忽略換頁通知
     }
 
+    onMainTestGoErosButtonClicked(param) {
+        Router.gotoErosPage(this);
+    }
+
     onMainBannerImageImgClicked(param) {
         console.log(param.object);
         this.getComponentInstance().showInfoSnackMessage(param.object.route);

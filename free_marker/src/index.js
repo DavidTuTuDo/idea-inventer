@@ -7738,7 +7738,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                       incest: { view: false, attribute: true }
                   },
                   {
-                      name: "arrow",
+                      name: Util.camel("arrow", "of", name),
                       needParam: true,
                       view: "IconButton",
                       icon: "NavigateNext",

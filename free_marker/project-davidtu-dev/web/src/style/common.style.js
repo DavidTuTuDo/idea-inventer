@@ -149,6 +149,56 @@ class CommonStyle {
 
     NavigatorDiv = {};
 
+    /** => following for textFetch  component  */
+
+    IreneTextFetchFuncLeaveChip = {};
+
+    IreneTextFetchFuncAppendChip = {};
+
+    IreneTextFetchFuncDiv = {};
+
+    IreneTextFetchRowClearIconClearRounded = {};
+
+    IreneTextFetchRowClearIconButton = {};
+
+    IreneTextFetchRowContentTextField = {};
+
+    IreneTextFetchRowTitleTypography = {};
+
+    IreneTextFetchRowDiv = {};
+
+    IreneTextFetchDivWrap = {};
+
+    IreneTextFetchPaper = {};
+
+    /** => following for textsFetch  component  */
+
+    IreneTextsFetchFuncLeaveChip = {};
+
+    IreneTextsFetchFuncAppendChip = {};
+
+    IreneTextsFetchFuncDiv = {};
+
+    IreneTextsFetchTitleClearIconClearRounded = {};
+
+    IreneTextsFetchTitleClearIconButton = {};
+
+    IreneTextsFetchTitleContentTextField = {};
+
+    IreneTextsFetchTitleIndexTypography = {};
+
+    IreneTextsFetchTitleDivList = {};
+
+    IreneTextsFetchTitleDiv = {};
+
+    IreneTextsFetchDivWrap = {};
+
+    IreneTextsFetchPaper = {};
+
+    /** => following for irene  component  */
+
+    IreneDiv = {};
+
     /** => following for infoOfCopyRightContent  component  */
 
     InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
@@ -517,6 +567,54 @@ class CommonStyle {
 
     DionysusTextFetcherPaper = {};
 
+    /** => following for eros  component  */
+
+    DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
+
+    DionysusErosAreaOfLinepaySetArrowOfLinepaySetReactFragmentWrap = {};
+
+    DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconButton = {};
+
+    DionysusErosAreaOfLinepaySetOptionOfLinepaySetContentTypography = {};
+
+    DionysusErosAreaOfLinepaySetOptionOfLinepaySetTitleTypography = {};
+
+    DionysusErosAreaOfLinepaySetDivWrap = {};
+
+    DionysusErosAreaOfLinepaySetDiv = {};
+
+    DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
+
+    DionysusErosAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap = {};
+
+    DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconButton = {};
+
+    DionysusErosAreaOfTabCreatorOptionOfTabCreatorContentTypography = {};
+
+    DionysusErosAreaOfTabCreatorOptionOfTabCreatorTitleTypography = {};
+
+    DionysusErosAreaOfTabCreatorDivWrap = {};
+
+    DionysusErosAreaOfTabCreatorDiv = {};
+
+    DionysusErosAreaOfBrandNameArrowOfBrandNameIconNavigateNext = {};
+
+    DionysusErosAreaOfBrandNameArrowOfBrandNameReactFragmentWrap = {};
+
+    DionysusErosAreaOfBrandNameArrowOfBrandNameIconButton = {};
+
+    DionysusErosAreaOfBrandNameOptionOfBrandNameContentTypography = {};
+
+    DionysusErosAreaOfBrandNameOptionOfBrandNameTitleTypography = {};
+
+    DionysusErosAreaOfBrandNameDivWrap = {};
+
+    DionysusErosAreaOfBrandNameDiv = {};
+
+    DionysusErosDivWrap = {};
+
+    DionysusErosDiv = {};
+
     /** => following for gaia  component  */
 
     DionysusGaiaAreaOfDescriptionDescriptionTextField = {};
@@ -529,9 +627,9 @@ class CommonStyle {
 
     DionysusGaiaAreaOfDescriptionDiv = {};
 
-    DionysusGaiaAreaOfTabSetArrowIconNavigateNext = {};
+    DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
-    DionysusGaiaAreaOfTabSetArrowIconButton = {};
+    DionysusGaiaAreaOfTabSetArrowOfTabSetIconButton = {};
 
     DionysusGaiaAreaOfTabSetOptionOfTabSetContentTypography = {};
 
@@ -541,11 +639,11 @@ class CommonStyle {
 
     DionysusGaiaAreaOfTabSetDiv = {};
 
-    DionysusGaiaAreaOfPhotoSetArrowIconNavigateNext = {};
+    DionysusGaiaAreaOfPhotoSetArrowOfPhotoSetIconNavigateNext = {};
 
-    DionysusGaiaAreaOfPhotoSetArrowReactFragmentWrap = {};
+    DionysusGaiaAreaOfPhotoSetArrowOfPhotoSetReactFragmentWrap = {};
 
-    DionysusGaiaAreaOfPhotoSetArrowIconButton = {};
+    DionysusGaiaAreaOfPhotoSetArrowOfPhotoSetIconButton = {};
 
     DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetContentTypography = {};
 
@@ -555,11 +653,11 @@ class CommonStyle {
 
     DionysusGaiaAreaOfPhotoSetDiv = {};
 
-    DionysusGaiaAreaOfQuantitySetArrowIconNavigateNext = {};
+    DionysusGaiaAreaOfQuantitySetArrowOfQuantitySetIconNavigateNext = {};
 
-    DionysusGaiaAreaOfQuantitySetArrowReactFragmentWrap = {};
+    DionysusGaiaAreaOfQuantitySetArrowOfQuantitySetReactFragmentWrap = {};
 
-    DionysusGaiaAreaOfQuantitySetArrowIconButton = {};
+    DionysusGaiaAreaOfQuantitySetArrowOfQuantitySetIconButton = {};
 
     DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetContentTypography = {};
 
@@ -1047,9 +1145,9 @@ class CommonStyle {
 
     DionysusBacchusDetailContentDiv = {};
 
-    DionysusBacchusDetailAreaOfBenefitArrowIconNavigateNext = {};
+    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconNavigateNext = {};
 
-    DionysusBacchusDetailAreaOfBenefitArrowIconButton = {};
+    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconButton = {};
 
     DionysusBacchusDetailAreaOfBenefitOptionOfBenefitContentTypography = {};
 
@@ -1057,9 +1155,9 @@ class CommonStyle {
 
     DionysusBacchusDetailAreaOfBenefitDiv = {};
 
-    DionysusBacchusDetailAreaOfShippingArrowIconNavigateNext = {};
+    DionysusBacchusDetailAreaOfShippingArrowOfShippingIconNavigateNext = {};
 
-    DionysusBacchusDetailAreaOfShippingArrowIconButton = {};
+    DionysusBacchusDetailAreaOfShippingArrowOfShippingIconButton = {};
 
     DionysusBacchusDetailAreaOfShippingOptionOfShippingContentTypography = {};
 
@@ -1067,9 +1165,9 @@ class CommonStyle {
 
     DionysusBacchusDetailAreaOfShippingDiv = {};
 
-    DionysusBacchusDetailAreaOfPayArrowIconNavigateNext = {};
+    DionysusBacchusDetailAreaOfPayArrowOfPayIconNavigateNext = {};
 
-    DionysusBacchusDetailAreaOfPayArrowIconButton = {};
+    DionysusBacchusDetailAreaOfPayArrowOfPayIconButton = {};
 
     DionysusBacchusDetailAreaOfPayOptionOfPayContentTypography = {};
 
@@ -1238,6 +1336,8 @@ class CommonStyle {
     MainTestGotoHistoryButton = {};
 
     MainTestGoGaiaButton = {};
+
+    MainTestGoErosButton = {};
 
     MainTestGoMarketButton = {};
 
