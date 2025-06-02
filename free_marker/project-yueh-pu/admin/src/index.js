@@ -16,7 +16,7 @@ import {configerer} from "configerer";
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 670;
+const THRESHOLD_OF_KEYWORD_MATCH = 690;
 
 (async () => {
 
