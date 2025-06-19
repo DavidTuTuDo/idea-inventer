@@ -10,9 +10,9 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
-import BaseIreneTextsFetchComponent from "./BaseIreneTextsFetchComponent";
+import BaseDionysusTextFetcherComponent from "./BaseDionysusTextFetcherComponent";
 
-class ModularizedIreneTextsFetchComponent extends BaseIreneTextsFetchComponent {
+class ModularizedDionysusTextFetcherComponent extends BaseDionysusTextFetcherComponent {
     /** -------------------- fields -------------------- **/
 
     /** -------------------- functions -------------------- **/
@@ -21,25 +21,24 @@ class ModularizedIreneTextsFetchComponent extends BaseIreneTextsFetchComponent {
         super(props);
     }
 
-    onIreneTextsFetchAppendChipClicked(param) {
-        const self = this;
-        this.getStore()
-            .onTextsFetchAppendNotify()
-            .then(() => self.dismiss());
+    onDionysusTextFetcherAppendChipClicked(param) {
+        this.getStore().onTextFetcherAppendNotify().then();
     }
 
-    onIreneTextsFetchLeaveChipClicked(param) {
+    onDionysusTextFetcherLeaveChipClicked(param) {
         this.dismiss();
     }
 
-    onIreneTextsFetchTitleContentTextFieldChange(param) {
-        this.getStore().onTextsFetchChangedNotify().then();
+    onDionysusTextFetcherTitleMainTextFieldChange(param) {
+        this.getStore().onTextFetcherChangedNotify().then();
     }
 
-    onIreneTextsFetchTitleClearIconButtonClicked(param) {
+    onDionysusTextFetcherTitleClearIconButtonClicked(param) {
         const title = param.object;
-        title.removeContent();
+        title.removeMain();
     }
+
+    /** -------------------- async api -------------------- **/
 }
 
-export default ModularizedIreneTextsFetchComponent;
+export default ModularizedDionysusTextFetcherComponent;

@@ -1,15 +1,6 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import { Application } from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseIreneTextsFetchStore from "./BaseIreneTextsFetchStore";
 
 class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
@@ -19,11 +10,15 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
 
     async onTextsFetchChangedNotify() {
         this.invalidate();
-        await this.hookOfParamObject.onTextsFetchChanged();
+        await this.hookOfParamObject.onTextsFetchChanged(this.getStringsOfContent());
     }
 
+    getStringsOfContent = () => {
+        return this.getTitles().map((title) => title.getContent());
+    };
+
     async onTextsFetchAppendNotify() {
-        await this.hookOfParamObject.onTextsFetchAppendClicked();
+        await this.hookOfParamObject.onTextsFetchAppendClicked(this.getStringsOfContent());
     }
 
     async onInitialFetchBeginning() {
@@ -31,8 +26,7 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     }
 
     invalidate() {
-        if (this.hookOfParamObject.autoIncrementOfTextsFetch()) {
-            console.log(`4546465215 invalidate()`);
+        if (this.hookOfParamObject && this.hookOfParamObject.autoIncrementOfTextsFetch()) {
             /** 自動增加index =>. 1. 2. 3.*/
             this.getTitles().forEach((title, index) => title.setIndex(`${_.sum([index, 1])}. `));
             /** 填入 =>. 1. 2. 3.*/

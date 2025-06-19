@@ -10,9 +10,9 @@ import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
-import BaseIreneTextFetchComponent from "./BaseIreneTextFetchComponent";
+import BaseDionysusQuantitySetterComponent from "./BaseDionysusQuantitySetterComponent";
 
-class ModularizedIreneTextFetchComponent extends BaseIreneTextFetchComponent {
+class ModularizedDionysusQuantitySetterComponent extends BaseDionysusQuantitySetterComponent {
     /** -------------------- fields -------------------- **/
 
     /** -------------------- functions -------------------- **/
@@ -21,27 +21,11 @@ class ModularizedIreneTextFetchComponent extends BaseIreneTextFetchComponent {
         super(props);
     }
 
-    onIreneTextFetchAppendChipClicked(param) {
-        const self = this;
-        this.getStore()
-            .onTextFetcherAppendNotify()
-            .then(() => self.dismiss());
-    }
-
-    onIreneTextFetchLeaveChipClicked(param) {
+    onDionysusQuantitySetterLeaveChipClicked(param) {
         this.dismiss();
-    }
-
-    onIreneTextFetchContentTextFieldChange(param) {
-        this.getStore().onTextFetcherChangedNotify().then();
-    }
-
-    onIreneTextFetchClearIconButtonClicked(param) {
-        const title = param.object;
-        title.removeContent();
     }
 
     /** -------------------- async api -------------------- **/
 }
 
-export default ModularizedIreneTextFetchComponent;
+export default ModularizedDionysusQuantitySetterComponent;

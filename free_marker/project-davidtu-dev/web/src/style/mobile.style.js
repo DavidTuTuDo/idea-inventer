@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -542,30 +540,6 @@ class MobileStyle {
     DionysusQuantitySetterDivWrap = {};
 
     DionysusQuantitySetterPaper = {};
-
-    /** => following for textFetcher  component  */
-
-    DionysusTextFetcherFuncLeaveChip = {};
-
-    DionysusTextFetcherFuncAppendChip = {};
-
-    DionysusTextFetcherFuncDiv = {};
-
-    DionysusTextFetcherTitleClearIconClearRounded = {};
-
-    DionysusTextFetcherTitleClearIconButton = {};
-
-    DionysusTextFetcherTitleMainTextField = {};
-
-    DionysusTextFetcherTitleIndexTypography = {};
-
-    DionysusTextFetcherTitleDivList = {};
-
-    DionysusTextFetcherTitleDiv = {};
-
-    DionysusTextFetcherDivWrap = {};
-
-    DionysusTextFetcherPaper = {};
 
     /** => following for eros  component  */
 

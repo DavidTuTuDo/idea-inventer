@@ -2776,6 +2776,65 @@ class Utiller {
         array.splice(0, array.length, ...sorted);
     }
 
+    /**
+     *
+     * const array1 = ['a', 'b', 'c', null];
+     * const array2 = ['b', '', 'd'];
+     * const array3 = ['c', undefined, 'e'];
+     * const result = findUniqueStrings(array1, array2, array3);
+     * console.log(result); // ['a', 'd', 'e']
+     *
+     **/
+    findUniqueStrings(...arrays) {
+        const allStrings = _.flatten(arrays);
+        const grouped = _.countBy(allStrings);
+
+        return _.chain(grouped)
+          .pickBy(count => count === 1)
+          .keys()
+          .compact() // 移除 null、undefined、''、0、false、NaN
+          .value();
+    }
+
+    /**
+     * 減少不必要的{}
+     * 例如 array.map(each => {return {key,value}})
+     **/
+    getObjectOfKey(value, key) {
+        const object = {};
+        object[key] = value;
+        return object;
+    }
+
+    /**
+     *
+     * 參考第一個陣列（array1）；
+     * 回傳所有其他陣列中：
+     * 不在第一個陣列中的字串；
+     * 只出現一次的字串（全體中只出現一次）；
+     *
+     * const array1 = ['apple', 'banana', 'cherry'];
+     * const array2 = ['banana', '', 'date', null];
+     * const array3 = ['apple', undefined, 'elderberry'];
+     * const array4 = ['grape', '', 'honeydew', 'grape'];
+     * const result = findUniqueNonReferenceStrings(array1, array2, array3, array4);
+     * console.log(result); // ['date', 'elderberry', 'honeydew']
+     *
+     */
+    findUniqueNonReferenceStrings(...arrays) {
+        if (arrays.length === 0) return [];
+
+        const [reference, ...rest] = arrays;
+        const allExceptRef = _.flatten(rest);
+        const counted = _.countBy(allExceptRef);
+
+        return _.chain(counted)
+          .pickBy((count, str) => count === 1 && !reference.includes(str))
+          .keys()
+          .compact() // 過濾掉 null, undefined, '' 等 falsy 值
+          .value();
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {

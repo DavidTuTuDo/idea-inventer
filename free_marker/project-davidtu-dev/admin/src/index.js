@@ -430,10 +430,25 @@ import moment from "moment";
         console.log(result);
     }
 
+    async function sendMail() {
+        firebase
+            .firestore()
+            .collection("mail")
+            .add({
+                to: "freshingmoon0725@gmail.com",
+                message: {
+                    subject: "Hello from Firebase!",
+                    text: "This is the plaintext section of the email body.",
+                    html: "This is the <code>HTML</code> section of the email body."
+                }
+            })
+            .then(() => console.log("Queued email for delivery!3"));
+    }
+    await sendMail();
     // await testUpdate();
     // await testFetchResult();
     // await uploadProducts();
-    await uploadFakedProducts();
+    // await uploadFakedProducts();
     // await expiredOrderBehavior();
     // await updateCPRT();
     // await updateCPRTContent();

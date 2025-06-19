@@ -3,14 +3,35 @@ const edit = true;
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import { Application } from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDionysusErosStore from "./BaseDionysusErosStore";
+
+const textsFetchConfig = {
+    tab: {
+        defaultTexts: [{ content: "aaa" }, { content: "bbb" }, { content: "ccc" }],
+        autoIncrement: true,
+        maximumRow: 10,
+        onChanged: async () => {
+            return await Util.appendInfo("tab texts changed");
+        },
+        onAppendClicked: async (param) => {
+            return await Util.appendInfo(`[TEXTSFETCH] tab append clicked ${param}`);
+        }
+    },
+    linepay: {
+        defaultTexts: [
+            { index: "CHANNEL ID", content: "1657284484" },
+            { index: "SECRET ID", content: "61e9945daa3b174b8f63276b2df871cd" }
+        ],
+        autoIncrement: false,
+        maximumRow: 2,
+        onChanged: async () => {
+            return await Util.appendInfo("linepay changed");
+        },
+        onAppendClicked: async (param) => {
+            return await Util.appendInfo(`[TEXTSFETCH] linepay append clicked ${param}`);
+        }
+    }
+};
 
 class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     /** -------------------- fields -------------------- **/
@@ -61,63 +82,33 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     /** texts fetch */
 
+    getSelectedConfig() {
+        return textsFetchConfig[this.getSelected()];
+    }
+
     async getDefaultTextsOfTextFetch() {
-        console.log(`44546554676`, this.getSelected());
-        switch (this.getSelected()) {
-            case "tab":
-                return [{ content: "aaa" }, { content: "bbb" }, { content: "ccc" }];
-            case "linepay":
-                return [
-                    { index: "CHANNEL ID", content: "1657284484" },
-                    { index: "SECRET ID", content: "61e9945daa3b174b8f63276b2df871cd" }
-                ];
-            default:
-                return undefined;
-        }
+        const config = this.getSelectedConfig();
+        return config?.defaultTexts;
     }
 
     autoIncrementOfTextsFetch() {
-        switch (this.getSelected()) {
-            case "tab":
-                return true;
-            case "linepay":
-                return false;
-            default:
-                return false;
-        }
+        const config = this.getSelectedConfig();
+        return config?.autoIncrement ?? false;
     }
 
     getMaximumRowOfTextsFetch() {
-        switch (this.getSelected()) {
-            case "tab":
-                return 10;
-            case "linepay":
-                return 2;
-            default:
-                return true;
-        }
+        const config = this.getSelectedConfig();
+        return config?.maximumRow ?? true;
     }
 
     async onTextsFetchChanged(param) {
-        switch (this.getSelected()) {
-            case "tab":
-                return Util.appendInfo("tab changed");
-            case "linepay":
-                return Util.appendInfo("linepay changed");
-            default:
-                return Util.appendInfo("default changed");
-        }
+        const config = this.getSelectedConfig();
+        return (await config?.onChanged(param)) ?? Util.appendInfo("default changed");
     }
 
     async onTextsFetchAppendClicked(param) {
-        switch (this.getSelected()) {
-            case "tab":
-                return Util.appendInfo(`[TEXTSFETCH] tab append clicked ${param}`);
-            case "linepay":
-                return Util.appendInfo(`[TEXTSFETCH] linepay append clicked ${param}`);
-            default:
-                return Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
-        }
+        const config = this.getSelectedConfig();
+        return (await config?.onAppendClicked(param)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
     }
 
     /** -------------------- async api -------------------- **/
