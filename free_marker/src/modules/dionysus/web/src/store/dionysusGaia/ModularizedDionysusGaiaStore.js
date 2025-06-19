@@ -5,6 +5,9 @@ import _ from "lodash";
 import libpath from "path";
 import BaseDionysusGaiaStore from "./BaseDionysusGaiaStore";
 
+const MAXIMUM_TEXT_OF_NAME = 50;
+const MAXIMUM_TEXT_OF_DESCRIPTION = 300;
+
 const textsFetchConfig = {
     main: {
         // defaultTexts: [{ content: "aaa" }, { content: "bbb" }, { content: "ccc" }],
@@ -81,6 +84,26 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const config = this.getSelectedConfig();
         return (await config?.onAppendClicked(param, this)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
     };
+
+    onNameFieldChanged = () => {
+        const current = this.getName();
+        this.setName(this.truncateString(current, MAXIMUM_TEXT_OF_NAME));
+        this.setStmtOfNameMaximum(`${_.size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
+    };
+
+    onDescriptionFieldChanged = () => {
+        const current = this.getDescription();
+        this.setDescription(this.truncateString(current, MAXIMUM_TEXT_OF_DESCRIPTION));
+        this.setStmtOfDescriptionMaximum(`${_.size(this.getDescription())}/${MAXIMUM_TEXT_OF_DESCRIPTION}`);
+    };
+
+    truncateString(str, length = 30) {
+        if (!_.isString(str)) return "";
+        return _.truncate(str, {
+            length,
+            omission: "" // 不加 "..."，若要保留可以改為 '...'
+        });
+    }
 }
 
 export default ModularizedDionysusGaiaStore;

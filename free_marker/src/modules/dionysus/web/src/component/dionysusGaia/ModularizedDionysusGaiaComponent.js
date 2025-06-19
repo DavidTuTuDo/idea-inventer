@@ -34,6 +34,14 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         const sub = param.object;
         if (sub !== undefined) sub.remove();
     }
+
+    onDionysusGaiaNameTextFieldChange(param) {
+        this.getStore().onNameFieldChanged();
+    }
+
+    onDionysusGaiaDescriptionTextFieldChange(param) {
+        this.getStore().onDescriptionFieldChanged();
+    }
 }
 
 export default ModularizedDionysusGaiaComponent;
