@@ -254,7 +254,7 @@ class CodegenNode {
     /** 要忽略的 componentModule(...epay,navigator,account) */
 
     alertMenu = {
-        items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginO`nly:false} */
+        items: [] /** {icon:'MUI的icon代號',name:'download',notice:{title:'',content:''},loginOnly:false} */
     }
 
     icon

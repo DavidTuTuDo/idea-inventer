@@ -552,8 +552,25 @@ class FirebaseHelper extends BaseFirebase {
      *
      * */
 
-    uploadStorageFile = async (file, folder = "public", fileNameExtension = undefined) => {
-        function getContentType(fileName) {
+    uploadStorageFile = async (
+        file,
+        folder = "public",
+        fileNameExtension = undefined,
+        maxSizeInBytes = 5 * 1024 * 1024 // 預設 5MB
+    ) => {
+        if (!file || !file.name || !file.blob) {
+            throw new Error("Invalid file format. Expecting { name, blob }.");
+        }
+
+        if (!(file.blob instanceof Blob)) {
+            throw new Error("file.blob must be a Blob object.");
+        }
+
+        if (file.blob.size > maxSizeInBytes) {
+            throw new Error(`File size exceeds the limit of ${maxSizeInBytes / 1024 / 1024} MB.`);
+        }
+
+        const getContentType = (fileName) => {
             const extension = fileName.split(".").pop().toLowerCase();
             const mimeTypes = {
                 jpg: "image/jpeg",
@@ -581,23 +598,46 @@ class FirebaseHelper extends BaseFirebase {
                 pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                 xls: "application/vnd.ms-excel",
                 xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                // 其他你可能需要的类型
             };
-
             return mimeTypes[extension] || "application/octet-stream";
+        };
+
+        const uid = Util.getRandomHashV2(10);
+        const fileName = fileNameExtension ?? file.name ?? `file-${uid}`;
+        const storageRef = ref(this.storage(), `${folder}/${fileName}`);
+        const contentType = getContentType(fileName);
+
+        try {
+            const snapshot = await uploadBytes(storageRef, file.blob, { contentType });
+            Util.appendInfo(`${uid} ${fileName} own following meta: `, contentType);
+            Util.appendInfo(`${uid} File uploaded successfully.`);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            Util.appendInfo(`${uid} File available at:`, downloadURL);
+            return downloadURL;
+        } catch (error) {
+            Util.appendError(`${uid} Upload failed: ${error.message}`, error);
+            throw error;
+        }
+    };
+
+    uploadStorageFiles = async (files, folder = "public", fileNameExtensions = [], maxSizeInBytes = 5 * 1024 * 1024) => {
+        if (!Array.isArray(files) || files.length === 0) {
+            throw new Error("Invalid input: files should be a non-empty array.");
         }
 
-        // Create a storage reference
-        const uid = Util.getRandomHashV2(10);
-        const fileName = fileNameExtension ?? file.name;
-        const storageRef = ref(this.storage(), `${folder}/${fileName ?? `file-${Util.getRandomHashV2(10)}`}`);
-        // Upload the file
-        const snapshot = await uploadBytes(storageRef, file.blob, { contentType: getContentType(fileName) });
-        Util.appendInfo(`${uid} ${fileName} own following meta: `, getContentType(fileName));
-        Util.appendInfo(`${uid} File uploaded successfully:`);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        Util.appendInfo(`${uid} File available at:`, downloadURL);
-        return downloadURL;
+        const uploadPromises = files.map(async (file, index) => {
+            try {
+                const fileNameExt = fileNameExtensions[index] ?? undefined;
+                return await this.uploadStorageFile(file, folder, fileNameExt, maxSizeInBytes);
+            } catch (err) {
+                const uid = Util.getRandomHashV2(10);
+                Util.appendError(`${uid} Skipping file due to error: ${err.message}`, err);
+                return null;
+            }
+        });
+
+        const urls = await Promise.all(uploadPromises);
+        return urls.filter(Boolean);
     };
 
     /** 針對query後的documents總數

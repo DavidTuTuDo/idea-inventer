@@ -2800,7 +2800,7 @@ class Utiller {
      * 減少不必要的{}
      * 例如 array.map(each => {return {key,value}})
      **/
-    getObjectOfKey(value, key) {
+    getObjectOfSpecifyKey(value, key) {
         const object = {};
         object[key] = value;
         return object;
