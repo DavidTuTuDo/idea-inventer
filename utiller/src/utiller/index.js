@@ -2835,6 +2835,50 @@ class Utiller {
           .value();
     }
 
+    /**
+     * 直接修改原本 array，將 object 移動到指定 index
+     * @param {Array} array - 要修改的陣列
+     * @param {Object} object - 要移動的物件
+     * @param {number} index - 目標位置（預設為 0）
+     * @returns {Array} 修改後的原陣列（in-place）
+     */
+    mutateIndexOfArrayItem = (array, object, index = 0) => {
+        if (!Array.isArray(array) || !_.isObject(object)) return array;
+
+        const currentIndex = _.findIndex(array, item => _.isEqual(item, object));
+        if (currentIndex === -1) return array; // 找不到物件，直接回傳
+
+        array.splice(currentIndex, 1); // 先移除原位置
+        const targetIndex = _.clamp(index, 0, array.length);
+        array.splice(targetIndex, 0, object); // 插入到新位置
+
+        return array;
+    };
+
+    /**
+     * 將指定 object 移動到 array 中的指定位置
+     * @param {Array} array - 要操作的陣列
+     * @param {Object} object - 要移動的目標物件
+     * @param {number} index - 新的位置（預設為 0）
+     * @returns {Array} 新的陣列
+     */
+    getArrayOfModifyObject2Index = (array, object, index = 0) => {
+        if (!Array.isArray(array) || !_.isObject(object)) return array;
+
+        const cloned = _.cloneDeep(array); // 深拷貝以避免原陣列被 mutate
+        const currentIndex = _.findIndex(cloned, item => _.isEqual(item, object));
+        if (currentIndex === -1) return array; // 沒找到物件就回傳原陣列
+
+        // 移除原來位置
+        cloned.splice(currentIndex, 1);
+
+        // 插入到指定位置（修正越界 index）
+        const targetIndex = _.clamp(index, 0, cloned.length);
+        cloned.splice(targetIndex, 0, object);
+
+        return cloned;
+    };
+
 }
 
 if (configerer.DEBUG_MODE) {

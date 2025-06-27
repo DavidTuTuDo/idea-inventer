@@ -149,6 +149,30 @@ class AppStyle {
 
     NavigatorDiv = {};
 
+    /** => following for textsIndexSetter  component  */
+
+    IreneTextsIndexSetterFuncLeaveChip = {};
+
+    IreneTextsIndexSetterFuncUpdateChip = {};
+
+    IreneTextsIndexSetterFuncDiv = {};
+
+    IreneTextsIndexSetterRowGoTopChip = {};
+
+    IreneTextsIndexSetterRowContentTypography = {};
+
+    IreneTextsIndexSetterRowBelongDivWrap = {};
+
+    IreneTextsIndexSetterRowBelongCheckbox = {};
+
+    IreneTextsIndexSetterRowDivList = {};
+
+    IreneTextsIndexSetterRowDiv = {};
+
+    IreneTextsIndexSetterDivWrap = {};
+
+    IreneTextsIndexSetterPaper = {};
+
     /** => following for textFetch  component  */
 
     IreneTextFetchFuncLeaveChip = {};
@@ -179,7 +203,7 @@ class AppStyle {
 
     IreneTextsFetchFuncDiv = {};
 
-    IreneTextsFetchTitleClearIconClearRounded = {};
+    IreneTextsFetchTitleClearIconDeleteForeverRounded = {};
 
     IreneTextsFetchTitleClearIconButton = {};
 
@@ -604,6 +628,8 @@ class AppStyle {
     DionysusGaiaAreaOfDescriptionDiv = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
+
+    DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconButton = {};
 
