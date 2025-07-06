@@ -723,6 +723,17 @@
         /** empty style */
     }
 }
+.DionysusBacchusFuncEditChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .DionysusMaenadsPaper:extend(.CenterInParentColumn) {
     width: 90vw;
     padding: 5px;
@@ -3069,8 +3080,8 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 83px;
-    height: 83px;
+    width: 85px;
+    height: 85px;
     @media @mobile {
         /** empty style */
     }
@@ -3078,8 +3089,8 @@
         /** empty style */
     }
     @media @desktop {
-        width: 120px;
-        height: 120px;
+        width: 125px;
+        height: 125px;
     }
 }
 .DionysusGaiaAreaOfPhotoUploadBriefPhotoDivList:extend(.CenterInParentRow) {
@@ -3098,20 +3109,26 @@
 }
 .DionysusGaiaAreaOfPhotoUploadBriefPhotoHrefImg {
     width: 80px;
-    @media @mobile {
+    height: 80px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    // 避免 img 預設有底部空隙@media @mobile
+    {
         /** empty style */
     }
     @media @tablet {
         /** empty style */
     }
     @media @desktop {
-        width: 100px;
+        width: 120px;
+        height: 120px;
     }
 }
 .DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton {
     position: absolute;
-    left: -10px;
-    bottom: -12px;
+    left: -15px;
+    bottom: -15px;
     z-index: 10;
     transition:
         transform 0.2s ease,
@@ -3129,8 +3146,8 @@
         /** empty style */
     }
     @media @desktop {
-        left: -5px;
-        bottom: -5px;
+        left: -15px;
+        bottom: -15px;
     }
 }
 .DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded {
@@ -3280,7 +3297,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfMainBriefMainMainChip {
+.DionysusGaiaAreaOfMainBriefMainLabelChip {
     @media @mobile {
         /** empty style */
     }
@@ -3368,7 +3385,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfSubBriefSubSubChip {
+.DionysusGaiaAreaOfSubBriefSubLabelChip {
     @media @mobile {
         /** empty style */
     }
@@ -3655,7 +3672,63 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfDescriptionDescriptionTextField:extend(.DionysusGaiaAreaOfNameNameTextField) {
+.DionysusGaiaAreaOfDescriptionStatementTextField:extend(.DionysusGaiaAreaOfNameNameTextField) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncDiv:extend(.CenterInParentRow) {
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncCreateChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncBackupChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncDeletedChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncDeletedReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -3990,6 +4063,18 @@
         /** empty style */
     }
 }
+.DionysusQuantitySetterVariantLabelOfVariantDivWrap {
+    width: 55%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 280px;
+    }
+}
 .DionysusQuantitySetterVariantQuantityTextField {
     width: 20%;
     text-align: right;
@@ -4121,6 +4206,18 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+.DionysusVariantPhotoSetterVariantLabelOfVariantDivWrap {
+    width: 55%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 280px;
     }
 }
 .DionysusVariantPhotoSetterVariantUpdateIconButton {

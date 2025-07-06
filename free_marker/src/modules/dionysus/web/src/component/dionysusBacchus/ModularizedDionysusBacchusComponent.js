@@ -4,11 +4,11 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import UserInfoRef from "../../base/BaseUserInfo";
 import BaseDionysusBacchusComponent from "./BaseDionysusBacchusComponent";
+import Router from "../../router";
 
 class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
     constructor(props) {
         super(props);
-        /** i have some where to go home now yeah, right? baby */
     }
 
     onDionysusBacchusBackToHomeChipClicked(param) {
@@ -22,6 +22,16 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
 
     onDionysusBacchusJoinToCartChipClicked(param) {
         UserInfoRef.setGotoCartieDirect(false);
+    }
+
+    getInjectStyleOfDionysusBacchusEditChip(dionysusBacchus) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
+    onDionysusBacchusEditChipClicked(param) {
+        const booze = this.getStore().getBooze();
+        if (booze) Router.gotoGaiaPage(this, booze.id, booze);
+        else this.showWarningSnackMessage(`發生錯誤，請稍後再試`);
     }
 }
 

@@ -4,7 +4,7 @@ import { configerer } from "configerer";
 import ERROR from "../exceptioner";
 import moment from "moment-timezone";
 import { v4 } from "uuid";
-import { generate, count } from "../words";
+import { count, generate } from "../words";
 import { parse } from "node-html-parser";
 
 String.format = function () {
@@ -2879,11 +2879,187 @@ class Utiller {
         return cloned;
     };
 
+    /** ------------------------------------------------------------------------------------- 起始UID-COMBINATION
+     * 建立組合清單及 UID 映射清單
+     *
+     * 原始資料組合
+     * const array1 = ['黑色', '綠色']
+     * const array2 = ['S', 'M']
+     * const array3 = ['短袖', '長袖']
+     *
+     * 產生 UID 清單
+     * const uidList = generateUidCombinations([array1, array2, array3])
+     *
+     * console.log('📦 所有組合的 UID 對照：')
+     * console.log(uidList)
+     *
+     * 建立查詢表（可選）
+     * const lookupTable = buildLookupTable(uidList)
+     *
+     * 任選一個 UID 測試還原
+     * const sampleUid = Object.keys(uidList[2])[0]
+     * console.log('\n🔍 測試 UID:', sampleUid)
+     * console.log('✅ 還原結果:', getOriginalFromUid(sampleUid, lookupTable))
+     *
+     */
+    /**
+     * 產生所有排列組合並轉成 Firestore-safe UID
+     * @param {string[][]} arrays - 字串陣列的陣列，例如 [['黑色', '綠色'], ['S', 'M']]
+     * @param {string} separator - 分隔符號，預設為 ' | '
+     * @returns {Array<{[uid: string]: string}>} - 每個 UID 對應一組原始組合的對照表陣列
+     */
+    generateUidCombinations(arrays, separator = ' | ') {
+        if (!arrays.length) return []
+
+        // 過濾每個子陣列中的 null、undefined、空字串
+        const sanitizedArrays = arrays
+          .map(group => group.filter(item => item !== null && item !== undefined && item !== ''))
+          .filter(group => group.length > 0) // 移除空子陣列
+
+        // 若最終沒東西，回傳空
+        if (sanitizedArrays.length === 0) return []
+
+        // 只有一組有效子陣列，直接映射
+        if (sanitizedArrays.length === 1) {
+            return sanitizedArrays[0].map(str => {
+                const uid = this.encodeToUid(str)
+                return { [uid]: str }
+            })
+        }
+
+        // 多組時進行組合
+        const [first, ...rest] = sanitizedArrays
+        const combinations = rest.reduce(
+          (acc, curr) =>
+            _.flatMap(acc, a =>
+              curr.map(b =>
+                (Array.isArray(a) ? a.join(separator) : a) + separator + b
+              )
+            ),
+          first
+        )
+
+        return combinations.map(str => {
+            const uid = this.encodeToUid(str)
+            return { [uid]: str }
+        })
+    }
+
+    /**
+     * 快速建立 UID -> 組合 對照表（Object）
+     */
+    buildLookupTable(uidList) {
+        return uidList.reduce((acc, item) => {
+            const [uid, value] = Object.entries(item)[0]
+            acc[uid] = value
+            return acc
+        }, {})
+    }
+
+    /**
+     * 根據 UID 還原原始組合（透過對照表或解碼備援）
+     */
+    getOriginalFromUid(uid, lookupTable) {
+        return lookupTable?.[uid] || this.decodeFromUid(uid) || null
+    }
+
+    /**
+     * 編碼成 Firestore-safe UID（Base64 URL 安全版，可還原）
+     */
+    encodeToUid = (str) => {
+        const utf8Bytes = new TextEncoder().encode(str)
+        const base64 = btoa(String.fromCharCode(...utf8Bytes))
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+    }
+
+    /**
+     * 解碼 UID 回原始組合
+     */
+    decodeFromUid = (uid) => {
+        const base64 = uid.replace(/-/g, '+').replace(/_/g, '/')
+        const binary = atob(base64)
+        const bytes = Uint8Array.from(binary, c => c.charCodeAt(0))
+        return new TextDecoder().decode(bytes)
+    }
+
+
+    /** ------------------------------------------------------------------------------------- 結束UID-COMBINATION */
+
+
+    /**
+     * const input = [
+     *   { value: 'xx0132', label: 'A款' },
+     *   { value: 'y1y123', label: 'B款' },
+     *   { value: 'yy0123', label: 'C款' },
+     *   { value: '', label: 'D款' },
+     *   { value: null, label: 'E款' },
+     *   { value: undefined, label: 'F款' },
+     * ]
+     *
+     * const output = getArrayOfFillMissingValues(input)
+     * console.log(output)
+     * */
+    getArrayOfFillMissingValues(array) {
+        const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+        const generateRandomValue = () =>
+          _.times(6, () => _.sample(charset)).join('');
+
+        const usedValues = new Set(array.map(item => item.value).filter(Boolean));
+
+        return array.map(item => {
+            if (_.isEmpty(item.value)) {
+                let newValue;
+                do {
+                    newValue = generateRandomValue();
+                } while (usedValues.has(newValue));
+
+                usedValues.add(newValue);
+                return { ...item, value: newValue };
+            }
+            return item;
+        });
+    }
+
+    /**
+     * 判斷是否為 Firestore 自動產生的 Document ID
+     * @param {string} id - 欲檢查的字串
+     * @returns {boolean}
+     *
+     * isFirestoreAutoId('Ab3dEFghiJKLmnPQrStu'); // ✅ true
+     * isFirestoreAutoId('1234567890abcdefghij'); // ✅ true
+     * isFirestoreAutoId('a-b-c-d-e-f-g-h-i-j');  // ❌ false（有非法字元）
+     * isFirestoreAutoId('shortId');              // ❌ false（長度錯誤）
+     * isFirestoreAutoId(null);                   // ❌ false（不是字串）
+     */
+    isFirestoreAutoId(id) {
+        return _.isString(id) &&
+          id.length === 20 &&
+          /^[A-Za-z0-9]{20}$/.test(id);
+    }
+
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-            // const  utiller = new Utiller();
+          // const utiller = new Utiller();
+          //
+          // const input = [
+          //     { value: "", label: "A款" },
+          //     { value: "", label: "B款" },
+          //     { value: "", label: "C款" },
+          //     { value: "", label: "D款" },
+          //     { value: null, label: "E款" },
+          //     { value: undefined, label: "F款" }
+          // ];
+          // const output = utiller.getArrayOfFillMissingValues(input);
+          // console.log(output);
+          //     const array1 = ['黑色', '綠色']
+          //     const array2 = ['S', 'M']
+          //     const array3 = ['長袖', '短袖']
+          //     console.log(utiller.generateUidCombinations([array1,[]]));
+              // console.log(utiller.decodeFromUid('6buR6ImyIHwgUyB8IOmVt-iilg'));
             // console.log(utiller.extractStaticSegments('/dionysus'));
             // const result = utiller.generateCombinations({key: 'color', label: '顏色', options: [  { value: 0, label: '紅' }, { value: 1, label: '白' }, { value: 2, label: '黑'}]},
             //   {key: 'size', label: '尺寸', options: [ { value: 0, label: 'S號' }, { value: 1, label: 'M號' }, { value: 2, label: 'L號' }]})

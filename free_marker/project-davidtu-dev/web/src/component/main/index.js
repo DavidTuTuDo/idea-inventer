@@ -34,7 +34,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainTestGoGaiaButtonClicked(param) {
-        Router.gotoGaiaPage(this);
+        Router.gotoGaiaPage(this, "generate");
     }
 
     onMainTestGoMarketButtonClicked(param) {

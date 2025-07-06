@@ -35,13 +35,13 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     /** 主選項 */
-    onDionysusGaiaBriefMainMainChipDeleted(param) {
+    onDionysusGaiaBriefMainLabelChipDeleted(param) {
         const main = param.object;
         if (main !== undefined) main.remove();
     }
 
     /** 副選項 */
-    onDionysusGaiaBriefSubSubChipDeleted(param) {
+    onDionysusGaiaBriefSubLabelChipDeleted(param) {
         const sub = param.object;
         if (sub !== undefined) sub.remove();
     }
@@ -56,6 +56,23 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     onFilesSelected(files) {
         this.getStore().uploadBriefImages(files).then();
+    }
+
+    onDionysusGaiaCreateChipClicked(param) {
+        /** 新增一個booze */
+        this.getStore().createBooze4Sure().then();
+    }
+
+    onDionysusGaiaBackupChipClicked(param) {
+        /** 草稿一個booze */
+    }
+
+    onDionysusGaiaLeaveChipClicked(param) {
+        /** 離開創立booze畫面 */
+    }
+
+    isValidOfParamOfPid(pid) {
+        return true;
     }
 }
 

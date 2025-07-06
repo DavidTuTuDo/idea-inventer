@@ -43,9 +43,30 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.apiOfImage = new Image();
     }
 
+    async onInitialFetchCompleted(collection) {
+        let booze = this.getBooze();
+        const id = this.getParamOfPidInPath();
+        if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
+
+        if (booze && booze.id) {
+            console.log(booze);
+            this.setIdOfBooze(booze.id);
+            this.setName(booze.name);
+            this.setStatement(booze.statement);
+            this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
+            this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
+            this.setBriefPhotos(...booze.photos);
+        }
+    }
+
+    getOptionsOfBrief = (booze, type = "main") => {
+        const attr = _.find(booze.specificAttributes, (each) => _.isEqual(each.key, type));
+        return attr ? attr.options : [];
+    };
+
     appendMainOptions = async (strings) => {
         const uniques = Util.findUniqueNonReferenceStrings(
-            this.getBriefMains().map((each) => each.main),
+            this.getBriefMains().map((each) => each.label),
             strings
         );
         this.pushBriefMains(...uniques.map((each) => Util.getObjectOfSpecifyKey(each, "main")));
@@ -53,7 +74,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     appendSubOptions = async (strings) => {
         const uniques = Util.findUniqueNonReferenceStrings(
-            this.getBriefSubs().map((each) => each.sub),
+            this.getBriefSubs().map((each) => each.label),
             strings
         );
         this.pushBriefSubs(...uniques.map((each) => Util.getObjectOfSpecifyKey(each, "sub")));
@@ -113,15 +134,57 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     uploadBriefImages = async (files) => {
         if (_.sum([_.size(this.getBriefPhotos()), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
+        await this.handleIdOfBooze();
+        const pathsOfImage = await Promise.all(files.map((file) => this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
+        this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+    };
 
+    handleIdOfBooze = async () => {
         let id = this.getIdOfBooze();
         if (_.isNil(id) || _.isEmpty(id)) {
-            /** 如果商品ID 還沒創建時，必須先拿到ducument id才能有唯一碼作為圖片路徑需求 */
+            /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent());
             this.setIdOfBooze(latest.value.id);
         }
-        const pathsOfImage = await Promise.all(files.map((file) => this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
-        this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+    };
+
+    createBooze4Sure = async () => {
+        await this.handleIdOfBooze();
+        await this.apiOfBooze.updateBoozeItem(
+            this.getComponent(),
+            {
+                name: this.getName(),
+                statement: this.getStatement(),
+                photos: this.getBriefPhotos(),
+                photoOfDemo: _.head(this.getBriefPhotos()).href,
+                specificAttributes: [
+                    {
+                        key: "main",
+                        label: "",
+                        options: this.getHandledAttribute(this.getBriefMains().map((each) => each.columnData()))
+                    },
+                    {
+                        key: "sub",
+                        label: "",
+                        options: this.getHandledAttribute(this.getBriefSubs().map((each) => each.columnData()))
+                    }
+                ]
+
+                /**
+                 * 商品歸屬tab的設定
+                 * 每個variant圖片的設定
+                 */
+            },
+            this.getIdOfBooze()
+        );
+        this.getComponent().showInfoSnackMessage(`成功創立「${this.getName()}」商品`);
+    };
+
+    getHandledAttribute = (attrs) => {
+        console.log(`before:`, attrs);
+        const afters = Util.getArrayOfFillMissingValues(attrs);
+        console.log(`after:`, attrs);
+        return afters;
     };
 
     appendQuantityOfSet() {

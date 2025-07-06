@@ -21,9 +21,9 @@ class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
         await super.onInitialFetchCompleted(collection);
         const booze = collection.booze;
         if (!Util.isUndefinedNullEmpty(booze)) {
-            const banners = booze.options.map((option) => {
+            const banners = booze.photos.map((photo) => {
                 return {
-                    image: option.photo,
+                    image: photo.href,
                     route: ""
                 };
             });

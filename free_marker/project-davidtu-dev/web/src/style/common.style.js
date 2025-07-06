@@ -533,6 +533,8 @@ class CommonStyle {
 
     DionysusVariantPhotoSetterVariantUpdateIconButton = {};
 
+    DionysusVariantPhotoSetterVariantLabelOfVariantDivWrap = {};
+
     DionysusVariantPhotoSetterVariantLabelOfVariantTypography = {};
 
     DionysusVariantPhotoSetterVariantDivList = {};
@@ -556,6 +558,8 @@ class CommonStyle {
     DionysusQuantitySetterVariantUpdateIconButton = {};
 
     DionysusQuantitySetterVariantQuantityTextField = {};
+
+    DionysusQuantitySetterVariantLabelOfVariantDivWrap = {};
 
     DionysusQuantitySetterVariantLabelOfVariantTypography = {};
 
@@ -617,7 +621,17 @@ class CommonStyle {
 
     /** => following for gaia  component  */
 
-    DionysusGaiaAreaOfDescriptionDescriptionTextField = {};
+    DionysusGaiaFuncDeletedReactFragmentWrap = {};
+
+    DionysusGaiaFuncDeletedChip = {};
+
+    DionysusGaiaFuncRecoverChip = {};
+
+    DionysusGaiaFuncCreateChip = {};
+
+    DionysusGaiaFuncDiv = {};
+
+    DionysusGaiaAreaOfDescriptionStatementTextField = {};
 
     DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography = {};
 
@@ -669,7 +683,7 @@ class CommonStyle {
 
     DionysusGaiaAreaOfQuantitySetDiv = {};
 
-    DionysusGaiaAreaOfSubBriefSubSubChip = {};
+    DionysusGaiaAreaOfSubBriefSubLabelChip = {};
 
     DionysusGaiaAreaOfSubBriefSubDivList = {};
 
@@ -685,7 +699,7 @@ class CommonStyle {
 
     DionysusGaiaAreaOfSubDiv = {};
 
-    DionysusGaiaAreaOfMainBriefMainMainChip = {};
+    DionysusGaiaAreaOfMainBriefMainLabelChip = {};
 
     DionysusGaiaAreaOfMainBriefMainDivList = {};
 
@@ -1122,6 +1136,8 @@ class CommonStyle {
     DionysusMaenadsPaper = {};
 
     /** => following for bacchus  component  */
+
+    DionysusBacchusFuncEditChip = {};
 
     DionysusBacchusFuncBoughtReactFragmentWrap = {};
 
