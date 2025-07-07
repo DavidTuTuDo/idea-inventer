@@ -21,16 +21,15 @@ class ModularizedDionysusQuantitySetterStore extends BaseDionysusQuantitySetterS
         const mains = this.getComponent()
             .getStore()
             .getBriefMains()
-            .map((each) => each.main);
+            .map((each) => each.label);
         const subs = this.getComponent()
             .getStore()
             .getBriefSubs()
-            .map((each) => each.sub);
-        console.log(mains);
+            .map((each) => each.label);
         const combinations = Util.generateUidCombinations([mains, subs]);
         this.setVariants(
             ...combinations.map((each) => {
-                return { labelOfVariant: Util.getObjectValue(each), quantity: Util.getRandomValue(10, 30) };
+                return { labelOfVariant: Util.getObjectValue(each), quantity: 1 };
             })
         );
     }

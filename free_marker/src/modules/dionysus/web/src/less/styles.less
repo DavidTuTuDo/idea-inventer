@@ -3004,6 +3004,7 @@
 .DionysusGaiaDiv:extend(.CenterInParentColumn) {
     width: 95%;
     gap: 10px;
+    margin-top: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -3043,6 +3044,7 @@
 .DionysusGaiaAreaOfPhotoUploadRowDiv:extend(.CenterInParentRow) {
     justify-content: space-between;
     width: 100%;
+    min-height: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -3113,8 +3115,7 @@
     object-fit: cover;
     object-position: center;
     display: block;
-    // 避免 img 預設有底部空隙@media @mobile
-    {
+    @media @mobile {
         /** empty style */
     }
     @media @tablet {
@@ -3195,6 +3196,7 @@
     }
 }
 .DionysusGaiaAreaOfNameRowStmtOfNameMaximumTypography {
+    margin-right: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -3661,7 +3663,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography {
+.DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography:extend(.DionysusGaiaAreaOfNameRowStmtOfNameMaximumTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -3706,7 +3708,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaFuncBackupChip {
+.DionysusGaiaFuncRecoverChip {
     @media @mobile {
         /** empty style */
     }

@@ -6509,7 +6509,9 @@ class AppBuilder extends ComponentBuilder {
         if (this.nodeOfAncestor.hasNavigationView())
             appGenerator.appendConstructor(`this.navigatorRef = React.createRef()`);
         if (this.nodeOfAncestor.hasCopyRightView())
-            appGenerator.appendConstructor(`this.copyRightRef = React.createRef()`)
+            appGenerator.appendConstructor(`this.copyRightRef = React.createRef()`);
+        if (!this.isProduction())
+            appGenerator.appendConstructor(`if (process.env.NODE_ENV === 'development') window.store = this.store;`);
 
         appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
 

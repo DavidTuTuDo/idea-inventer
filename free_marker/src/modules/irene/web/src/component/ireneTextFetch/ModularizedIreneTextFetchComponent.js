@@ -24,7 +24,7 @@ class ModularizedIreneTextFetchComponent extends BaseIreneTextFetchComponent {
     onIreneTextFetchAppendChipClicked(param) {
         const self = this;
         this.getStore()
-            .onTextFetcherAppendNotify()
+            .onTextFetchAppendNotify()
             .then(() => self.dismiss());
     }
 
@@ -33,7 +33,7 @@ class ModularizedIreneTextFetchComponent extends BaseIreneTextFetchComponent {
     }
 
     onIreneTextFetchContentTextFieldChange(param) {
-        this.getStore().onTextFetcherChangedNotify().then();
+        this.getStore().onTextFetchChangedNotify().then();
     }
 
     onIreneTextFetchClearIconButtonClicked(param) {

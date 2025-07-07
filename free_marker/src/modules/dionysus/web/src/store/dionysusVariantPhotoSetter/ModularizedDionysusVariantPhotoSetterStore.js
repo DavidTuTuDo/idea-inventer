@@ -21,11 +21,11 @@ class ModularizedDionysusVariantPhotoSetterStore extends BaseDionysusVariantPhot
         const mains = this.getComponent()
             .getStore()
             .getBriefMains()
-            .map((each) => each.main);
+            .map((each) => each.label);
         const subs = this.getComponent()
             .getStore()
             .getBriefSubs()
-            .map((each) => each.sub);
+            .map((each) => each.label);
         const combinations = Util.generateUidCombinations([mains, subs]);
         this.setVariants(
             ...combinations.map((each) => {

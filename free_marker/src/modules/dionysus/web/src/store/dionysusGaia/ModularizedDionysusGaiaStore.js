@@ -49,7 +49,6 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
 
         if (booze && booze.id) {
-            console.log(booze);
             this.setIdOfBooze(booze.id);
             this.setName(booze.name);
             this.setStatement(booze.statement);
@@ -69,7 +68,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getBriefMains().map((each) => each.label),
             strings
         );
-        this.pushBriefMains(...uniques.map((each) => Util.getObjectOfSpecifyKey(each, "main")));
+        this.pushBriefMains(
+            ...this.matchLabelsWithFallback(
+                uniques,
+                _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "main"))
+            )
+        );
     };
 
     appendSubOptions = async (strings) => {
@@ -77,7 +81,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getBriefSubs().map((each) => each.label),
             strings
         );
-        this.pushBriefSubs(...uniques.map((each) => Util.getObjectOfSpecifyKey(each, "sub")));
+        this.pushBriefSubs(
+            ...this.matchLabelsWithFallback(
+                uniques,
+                _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "sub"))
+            )
+        );
     };
 
     /** texts fetch */
@@ -117,9 +126,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setStmtOfNameMaximum(`${_.size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
     };
 
-    onDescriptionFieldChanged = () => {
+    onStatementFieldChanged = () => {
         const current = this.getDescription();
-        this.setDescription(this.truncateString(current, MAXIMUM_TEXT_OF_DESCRIPTION));
+        this.setStatement(this.truncateString(current, MAXIMUM_TEXT_OF_DESCRIPTION));
         this.setStmtOfDescriptionMaximum(`${_.size(this.getDescription())}/${MAXIMUM_TEXT_OF_DESCRIPTION}`);
     };
 
@@ -177,14 +186,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             },
             this.getIdOfBooze()
         );
+        this.setBooze(Util.mergeObject(this.getBooze(), result.value));
         this.getComponent().showInfoSnackMessage(`成功創立「${this.getName()}」商品`);
     };
 
     getHandledAttribute = (attrs) => {
-        console.log(`before:`, attrs);
-        const afters = Util.getArrayOfFillMissingValues(attrs);
-        console.log(`after:`, attrs);
-        return afters;
+        return Util.getArrayOfFillMissingValues(attrs);
     };
 
     appendQuantityOfSet() {
@@ -199,6 +206,31 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     setIndexOfTabSelected() {
         /** 商品在哪個Tab底下，可以複選，所有商品是預設值 */
     }
+
+    /**
+     * 預想用戶可能會刪掉原本的選項，然後再加入相同的選項，這個情況下，應該要維持value(uid)的一致性
+     * const labels = ['a', 'b', 'c', 'd'];
+     * const options = [
+     *   { value: 'xxx', label: 'a' },
+     *   { value: 'x12', label: 'd' },
+     *   { value: 'cdd', label: 'e' }
+     * ];
+     *
+     * console.log(matchLabelsWithFallback(labels, options));
+     * [
+     *   { value: 'xxx', label: 'a' },
+     *   { value: '', label: 'b' },
+     *   { value: '', label: 'c' },
+     *   { value: 'x12', label: 'd' }
+     * ]
+     *
+     */
+    matchLabelsWithFallback = (strings, specifyAttribute) => {
+        const labelMap = _.keyBy((specifyAttribute ?? {}).options || [], "label");
+        return strings.map((label) => {
+            return labelMap[label] || { value: "", label };
+        });
+    };
 }
 
 export default ModularizedDionysusGaiaStore;

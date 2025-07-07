@@ -50,8 +50,8 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         this.getStore().onNameFieldChanged();
     }
 
-    onDionysusGaiaDescriptionTextFieldChange(param) {
-        this.getStore().onDescriptionFieldChanged();
+    onDionysusGaiaStatementTextFieldChange(param) {
+        this.getStore().onStatementFieldChanged();
     }
 
     onFilesSelected(files) {

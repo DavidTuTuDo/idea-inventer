@@ -19,11 +19,11 @@ class ModularizedIreneTextFetchStore extends BaseIreneTextFetchStore {
 
     async onTextFetchChangedNotify() {
         this.invalidate();
-        await this.hookOfParamObject.onTextFetchChanged();
+        await this.hookOfParamObject.onTextFetchChanged(this.getContent());
     }
 
     async onTextFetchAppendNotify() {
-        await this.hookOfParamObject.onTextFetchAppendClicked();
+        await this.hookOfParamObject.onTextFetchAppendClicked(this.getContent());
     }
 
     async onInitialFetchBeginning() {
