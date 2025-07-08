@@ -11,20 +11,22 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         this.api = new Booze();
     }
 
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted();
+        if (_.size(this.getSelects()) > 0) this.pushSelectsByIndex(-1, { label: "所有商品", value: 0, type: "all" });
+    }
+
     fetchBoozeBySelectedTab = async () => {
         this.cleanBoozes();
         this.cleanBoozeConditions();
         this.setHasPageItems(true);
         this.cleanBoozeNextIds();
         this.lastItemOfBooze = undefined;
-
         const valueOfCurrentTab = this.getValueOfSelectClickedTab();
         if (valueOfCurrentTab > 0) this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectClickedTab()] });
         await Util.syncDelay(20);
-        await this.fetch(this.getComponent());
-
-        // const boozes = await this.fetchBoozes(this.getComponent());
-        // this.pushBoozes(...boozes);
+        const boozes = this.enrichBoozes(await this.fetchBoozes(this.getComponent()));
+        this.setBoozes(...boozes);
     };
 }
 

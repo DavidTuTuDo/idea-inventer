@@ -4,24 +4,26 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import libpath from "path";
 import BaseDionysusErosStore from "./BaseDionysusErosStore";
+import DionysusSelect from "../dionysusSelect";
 
 const textsFetchConfig = {
     tab: {
-        defaultTexts: [{ content: "aaa" }, { content: "bbb" }, { content: "ccc" }],
+        fetchDefaultTexts: async (instance) => {
+            return await instance.fetchDefaultTextsOfCategory();
+        },
         autoIncrement: true,
-        maximumRow: 10,
+        maximumRow: 15,
         onChanged: async () => {
             return await Util.appendInfo("tab texts changed");
         },
-        onAppendClicked: async (param) => {
-            return await Util.appendInfo(`[TEXTSFETCH] tab append clicked ${param}`);
+        onAppendClicked: async (param, instance) => {
+            return await instance.submitCategoryRules(param);
         }
     },
     linepay: {
-        defaultTexts: [
-            { index: "CHANNEL ID", content: "1657284484" },
-            { index: "SECRET ID", content: "61e9945daa3b174b8f63276b2df871cd" }
-        ],
+        fetchDefaultTexts: async (instance) => {
+            return await instance.fetchDefaultTextOfLinePay();
+        },
         autoIncrement: false,
         maximumRow: 2,
         onChanged: async () => {
@@ -40,7 +42,34 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     constructor(props) {
         super(props);
+        this.apiOfTab = new DionysusSelect();
     }
+
+    fetchDefaultTextsOfCategory = async () => {
+        this.categoryOfCurrent = (await this.apiOfTab.fetchSelects(this.getComponent())) ?? [];
+        return this.categoryOfCurrent.map((each) => {
+            {
+                return { content: each.label };
+            }
+        });
+    };
+
+    fetchDefaultTextOfLinePay = async () => {
+        return [
+            { index: "CHANNEL ID", content: "1657284484" },
+            { index: "SECRET ID", content: "61e9945daa3b174b8f63276b2df871cd" }
+        ];
+    };
+
+    submitCategoryRules = async (param) => {
+        const result = Util.generateLabelValuePairsWithOrigin(this.categoryOfCurrent, param);
+        await this.apiOfTab.submitSelects(
+            this.getComponent(),
+            result.map((each) => {
+                return { ...each, id: each.value };
+            })
+        );
+    };
 
     /** text fetch */
 
@@ -86,10 +115,10 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         return textsFetchConfig[this.getSelected()];
     }
 
-    async getDefaultTextsOfTextFetch() {
+    getDefaultTextsOfTextFetch = async () => {
         const config = this.getSelectedConfig();
-        return config?.defaultTexts;
-    }
+        return await config?.fetchDefaultTexts(this);
+    };
 
     autoIncrementOfTextsFetch() {
         const config = this.getSelectedConfig();
@@ -108,7 +137,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     async onTextsFetchAppendClicked(param) {
         const config = this.getSelectedConfig();
-        return (await config?.onAppendClicked(param)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
+        return (await config?.onAppendClicked(param, this)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
     }
 
     /** -------------------- async api -------------------- **/

@@ -3038,6 +3038,68 @@ class Utiller {
           /^[A-Za-z0-9]{20}$/.test(id);
     }
 
+    /**
+     * const origin = [
+     *   { label: 'aa', value: 1203 },
+     *   { label: 'cc', value: 1204 },
+     *   { label: 'gg', value: 2 }
+     * ];
+     *
+     * const latest = ['aa', 'bb', 'aa', 'dd'];
+     * console.log(generateLabelValuePairsWithOrigin(origin, latest));
+     * [
+     *   { label: 'aa', value: 1203 },        // 來自 origin
+     *   { label: 'bb', value: 843910 },      // 隨機唯一值
+     *   { label: 'dd', value: 692384 }       // 隨機唯一值
+     * ]
+     *
+     * 根據 latest 字串陣列建立 label/value 物件陣列。
+     * 若 label 存在於 origin 中，則沿用 origin 的 value；
+     * 若 label 不存在，則產生唯一隨機數值作為 value（value 不可重複）。
+     *
+     * @param {Array<{label: string, value: number}>} origin - 原始資料來源，包含已知 label 與對應的 value。
+     * @param {Array<string>} latest - 最新輸入的 label 陣列，可能有重複或新值。
+     * @returns {Array<{label: string, value: number}>} - 轉換完成的唯一 label/value 陣列。
+     */
+     generateLabelValuePairsWithOrigin = (
+      origin = [
+          { label: 'aa', value: 1203 },
+          { label: 'cc', value: 1204 },
+          { label: 'gg', value: 2 }
+      ],
+      latest = ['aa', 'bb']
+    ) => {
+        // 建立已使用過的 value 集合，避免重複
+        const usedValues = new Set(origin.map(o => o.value));
+
+        // 處理 latest label 清單
+        return _.chain(latest)
+          .uniq() // 1. 移除重複的 label（只保留唯一值）
+          .map(label => {
+              // 2. 嘗試從 origin 找出是否已存在該 label
+              const originItem = _.find(origin, { label });
+
+              if (originItem) {
+                  // 3. 若存在，直接使用 origin 中的 value
+                  return { label, value: originItem.value };
+              }
+
+              // 4. 若不存在，產生一個不重複的隨機 value
+              let value;
+              do {
+                  // Firestore 可接受的整數範圍（可調整範圍）
+                  value = _.random(2, 999999);
+              } while (usedValues.has(value)); // 確保 value 唯一
+
+              // 5. 記錄該值為已使用，避免後續重複
+              usedValues.add(value);
+
+              // 6. 回傳新的物件
+              return { label, value };
+          })
+          .value(); // 7. 輸出處理完成的物件陣列
+    };
+
 
 }
 

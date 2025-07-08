@@ -14,7 +14,10 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
     }
 
     getStringsOfContent = () => {
-        return this.getTitles().map((title) => _.trim(title.getContent()));
+        return _.chain(this.getTitles())
+            .map((title) => _.trim(title.getContent()))
+            .filter((str) => _.isString(str) && str !== "")
+            .value();
     };
 
     async onTextsFetchAppendNotify() {
@@ -23,6 +26,7 @@ class ModularizedIreneTextsFetchStore extends BaseIreneTextsFetchStore {
 
     async onInitialFetchBeginning() {
         this.hookOfParamObject = this.getComponent(true).propsMobX().paramObject;
+        this.invalidate();
     }
 
     invalidate() {

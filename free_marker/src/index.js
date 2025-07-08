@@ -105,13 +105,6 @@ const VIEW_IMPORTS =
             object: true,
         },
         {
-            from: `react-slideshow-image`,
-            views: ['Fade', 'Slide'],
-            /** Fade就是有漸入漸出的效果,  Slide就可以滑動 */
-            object: true, /** 就是要加上bracket {Fade} */
-            simplePath: true
-        },
-        {
             from: `swiper/react`,
             views: ['Swiper', "SwiperSlide"],
             object: true,
@@ -1310,7 +1303,6 @@ class CodegenNode {
 
     getFunctionNameOfSwiper() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe'); }
 
-
     getFunctionNameOfSwipeSlide() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Slide'); }
 
     getFunctionNameOfObservableObject() { return Util.camel('get', 'observable', this.getObservableName()); }
@@ -2009,10 +2001,6 @@ class CodegenNode {
 
     hasAutoPlayMechanism() {
         return this.autoplay && this.autoplay.delay > 0
-    }
-
-    isSimpleViewPager(type = 'default') {
-        return this.isArray() && this.isAttributeView('SimpleViewPager', type);
     }
 
     isSimpleGrid(type = 'default') {
@@ -4686,7 +4674,7 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                     generateApiFunction(
                         node, Util.camel('submit', node.getFieldName()),
-                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}({...item, id}))`,
+                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}({...item }))`,
                             `return await self.submitObject(path,{
                                     ${ID_OF_DEFAULT_CHEAP_ARRAY}:commitments,
                                     updateTime:this._firebase().getServerTimeSymbol(),
@@ -7579,7 +7567,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
          */
     }
 
-    /** 有些專有名詞(SimpleViewPager, SimpleGrid)，會重新setView(latest)，而latest對應該產生的行為會實作在 enrichNodesOfBehavior */
+    /** 有些專有名詞(SimpleGrid)，會重新setView(latest)，而latest對應該產生的行為會實作在 enrichNodesOfBehavior */
     enrichNodeWithCustomViewDefined(nodes) {
         function handleSizeOfTimeDatePicker(node) {
             if (node.hasSize()) {
@@ -7949,38 +7937,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         wrapView: 'div',
                         click: true,
                         incest: node.incest,
-                        type: 'string',
-                    }
-                );
-            }
-
-            if (node.isSimpleViewPager()) {
-                node.setView('div');
-                node.setClick(true);
-                node.setListView('Slide');
-                node.disableListEmptyTip();
-                node.appendListProps(
-                    {arrows: false},
-                    {indicators: true},
-                    {canSwipe: true},
-                    {duration: 5000}
-                )
-
-                node.appendChildrenWithJsons({
-                        column: true,
-                        name: 'route',
-                        type: 'string',
-                        incest: node.incest,
-                        description: '點擊圖片後的導頁',
-                    },
-                    {
-                        column: true,
-                        name: 'image',
-                        view: 'img',
-                        needWatermark: true,
-                        incest: node.incest,
-                        description: '顯示的頁面',
-                        wrapView: 'div',
                         type: 'string',
                     }
                 );
@@ -9100,8 +9056,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             if (node.isColumnArray() || node.isPathArray()) {
                 node.disableSelectedArray();
-                if (Util.isOrEquals(node.getListView(), 'Swiper', 'TextField', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) node.setListView('div');
-                if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Fade', 'Slide', 'Grid')) node.setView('div');
+                if (Util.isOrEquals(node.getListView(), 'Swiper', 'TextField', 'FormControlLabel', 'RadioGroup', 'Grid')) node.setListView('div');
+                if (Util.isOrEquals(node.getView(), 'SwiperSlide', 'MenuItem', 'FormControlLabel', 'RadioGroup', 'Grid')) node.setView('div');
                 node.setWrapView('div');
                 node.appendWrapContents([`{this.renderItemEditorView(
                    ${node.getFunctionNameOfItemEditorWithParam()} , ${_.toString(node.hasPath())}
