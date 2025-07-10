@@ -12,8 +12,12 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     }
 
     async onInitialFetchCompleted(collection) {
-        await super.onInitialFetchCompleted();
-        if (_.size(this.getSelects()) > 0) this.pushSelectsByIndex(-1, { label: "所有商品", value: 0, type: "all" });
+        await super.onInitialFetchCompleted(collection);
+        await Util.syncDelay(1);
+
+        if (collection && _.size(collection.selects) > 0) {
+            this.setSelects(...[{ label: "所有商品", value: 0, type: "all" }, ...collection.selects]);
+        }
     }
 
     fetchBoozeBySelectedTab = async () => {

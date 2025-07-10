@@ -766,7 +766,7 @@ class CodegenNode {
      **/
 
     /**
-     * 設計那種children不能被observeble包住的狀況，他就必須待在array裏面(ex Swiper )
+     * 設計那種children不能被observeble包住的狀況，他就必須待在array裏面(EX1:Swiper,EX2:Tabs|Tab)
      * (O)<Swiper
      *        items.map(item =>
      *              <SwiperSlide
@@ -1810,71 +1810,93 @@ class CodegenNode {
 
     isWrapByAppBarView() { return _.isEqual(this.getWrapView(), 'AppBar'); }
 
-    /**isView 就是指gen出view class, 不然就是component */
+    /** isView 就是指 gen 出 view class，不然就是 component */
     getSelfVariableStmts() {
-        const self = this
+        const self = this;
         const stmts = [];
+        const mapOfVariable = {};
+
+        /** 定義避免重複輸出的變數處理函式 */
+        const addViewVariable = (view) => {
+            if (!mapOfVariable[view]) {
+                stmts.push(`const ${view} = self.${view}`);
+                mapOfVariable[view] = true;
+            }
+        };
+
+        // --- AlertDialog 專用 Ref 產生 ---
         if (this.hasAlertDialog() && !this.isAlertDialogNeedGlobalRef()) {
             stmts.push(`const ${this.getFieldNameOfAlertDialog()} = React.createRef()`);
         }
 
+        // --- AlertMenu 專用 Ref 產生 ---
         if (this.hasAlertMenu() || this.hasHelperVisualSupportAlertMenu()) {
             stmts.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
         }
 
+        // --- 若有 method 或為 simple selected，建立 objectOfParam ---
         if (_.size(this.getFunctionMethods()) > 0 || this.isSimpleSelected()) {
-            const content = !Util.isUndefinedNullEmpty(this.getObservableName()) ? `object: ${this.getObservableName()}` : '';
-            stmts.push(`const objectOfParam = { ${content}} /** {object,view} */`);
+            const content = !Util.isUndefinedNullEmpty(this.getObservableName())
+              ? `object: ${this.getObservableName()}`
+              : '';
+            stmts.push(`const objectOfParam = { ${content} } /** {object,view} */`);
         }
 
+        // --- AppBarView 的 ScrollingHide wrap ---
         if (this.isWrapByAppBarView() && this.isScrollingHideDependOnRootNode()) {
             stmts.push(`const ScrollingHideWrap = self.HideOnScroll`);
         }
 
+        // --- AutoCompleteView 的強制更新 key ---
         if (this.isAutoCompleteView()) {
-            stmts.push(`/** force update AutoCompleteView view usage */`)
-            stmts.push(`const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(`get`, this.getFieldNameOfSuggest())}s())+Util.getRandomHash()`)
+            stmts.push(`/** force update AutoCompleteView view usage */`);
+            stmts.push(
+              `const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(
+                'get',
+                this.getFieldNameOfSuggest()
+              )}s()) + Util.getRandomHash()`
+            );
         }
+
+        // --- 建立 renderView 所需的子 View 變數 ---
+        const children = this.getPreciseViewChildren();
 
         if (this.isArray() && !this.isSimpleSelected()) {
             const className = this.getArrayItemNode().getViewClassNameOfRenderView();
-            stmts.push(`const ${className} = self.${className}`);
+            addViewVariable(className);
         } else {
-            const exist = {}
-            for (const child of this.getPreciseViewChildren()) {
-
-                if (child.isReferenceStructNode()) {
-                    continue;
+            for (const child of children) {
+                if (!child.isReferenceStructNode()) {
+                    addViewVariable(child.getViewClassNameOfRenderView());
                 }
-
-                const view = child.getViewClassNameOfRenderView();
-                if (!!!exist[view])
-                    stmts.push(`const ${view} = self.${view}`)
-                exist[view] = true;
             }
         }
 
+        // --- 如果不是 ArrayItem 且禁用 observable，補充建立子 view 變數 ---
         if (!this.isArrayItem() && this.disableObservable) {
-            for (const child of this.getPreciseViewChildren()) {
-                const view = child.getViewClassNameOfRenderView();
-                stmts.push(`const ${view} = self.${view}`)
+            for (const child of children) {
+                addViewVariable(child.getViewClassNameOfRenderView());
             }
         }
 
+        // --- 實作 AlertItemClicked 的相關邏輯 ---
         for (const each of this.listOfImplementsOfAlertItemClicked) {
-            stmts.push(`const ${each.name} = [${each.stmts}]`)
+            stmts.push(`const ${each.name} = [${each.stmts}]`);
         }
 
-        /** 把自己先轉變成參數,準備帶進去view 或是 ui裡面 像是navigator裡面 */
+        // --- 把自己轉為單一參數（例如傳給 navigator）---
         if (this.allowOfParam()) {
-            /** 因為是最小單位,所以父類帶進去得值必須是單數(不加上plural) */
+            /** 因為是最小單位, 所以父類帶進去的值必須是單數 (不加上 plural) */
             if (this.isAttribute() && !this.isArrayItem()) {
-                stmts.push(`const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`)
+                stmts.push(
+                  `const ${this.getFieldName()} = self.${this.getFunctionNameUsingInComponentGetter()}(${self.getPreciseAttributeParentName()})`
+                );
             }
         }
 
         return stmts;
     }
+
 
     hasCookies() { return !!this.cookies && _.size(this.cookies) > 0; }
 
@@ -5340,8 +5362,6 @@ class ComponentBuilder extends BaseBuilder {
             if (node.isViewPropsFunctionality()) {
                 props[STRING_OF_INJECT_PARAM] = `###${STRING_OF_INJECT_PARAM}`;
             }
-
-
             let viewJsxStmt = [];
 
             if (node.isReferenceStructNode()) {
@@ -5470,6 +5490,11 @@ class ComponentBuilder extends BaseBuilder {
             return node.needInjectListStyle() ? `...self.${node.getFunctionNameOfInjectStyle('List')}(${node.getPreciseAttributeParentName()}),` : '';
         }
 
+        function getStmtOfDisableObservable(node) {
+            const arrayItemNode = node.getArrayItemNode();
+            return [`this.${arrayItemNode.getViewClassNameOfRenderView()}({${node.getName()}})`];
+        }
+
         /** type是array就必須的包上一成List,可以調整物件方向 */
         if (node.isArray()) {
             const clazzName = node.getClassNameOfLessUsage('list');
@@ -5485,7 +5510,7 @@ class ComponentBuilder extends BaseBuilder {
             itemViewProps['key'] = node.getUniqueIdStmt();
             itemViewProps[`${node.getName()}`] = `###${node.getName()}`
             const arrayItemNode = node.getArrayItemNode();
-            let arrayItemViewStmts = node.disableObservable ? self.getJSXStringsByNode(generator, arrayItemNode, itemViewProps) : this.getJSXStrings({
+            let arrayItemViewStmts = node.disableObservable ? getStmtOfDisableObservable(node) :this.getJSXStrings({
                 generator,
                 customViewNode: arrayItemNode,
                 typeOfClass: 'component',
@@ -5608,7 +5633,7 @@ class ComponentBuilder extends BaseBuilder {
         if (node.isArray()) {
             props.key = `${node.getUniqueIdStmt()}`;
         }
-
+        if(node.isArrayItem() && node.disableObservable) props.key = node.getUniqueIdStmt();
         let origin = this.getJSXStrings({
             tag: node.getView(true),
             generator,
@@ -5817,12 +5842,12 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             generator.appendFunction({
-                    name: node.getViewClassNameOfRenderView(),
-                    arrow: true,
-                    decorator: 'observer',
-                }, [`{${getStringOfParamOfRenderView(node)}}`], [], [],
-                ...getContentStmt(node, generator)
-            )
+                  name: node.getViewClassNameOfRenderView(),
+                  arrow: true,
+                  ...( !(node.isArrayItem() && node.disableObservable) && { decorator: 'observer' })
+              }, [`{${getStringOfParamOfRenderView(node)}}`], [], [], ...getContentStmt(node, generator)
+            );
+
         }
 
         function generateViewClass(node) {
@@ -5853,7 +5878,6 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         function appendViewFunctionClass(node) {
-            if (node.isArrayItem() && node.isSimpleSelected()) return;
             appendFunctionWithFields(node);
         }
 
@@ -7958,6 +7982,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             if (node.isSimpleSelected()) {
                 node.setType('array');
+                node.disableObservable = true;
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
                     type: node.useStringAsValue() ? 'string' : 'number', /** succeed, fail */

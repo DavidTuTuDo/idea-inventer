@@ -87,8 +87,6 @@ class CommonStyle {
 
     MainEditorBannerRouteTextField = {};
 
-    MainEditorBannerSwiperSlide = {};
-
     MainEditorBannerSwiperList = {};
 
     MainEditorBannerSwiperSlide = {};
@@ -867,9 +865,13 @@ class CommonStyle {
 
     DionysusPlutusMainLocationMainHeadDistrictTextFieldList = {};
 
+    DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
+
     DionysusPlutusMainLocationMainHeadCityMenuItem = {};
 
     DionysusPlutusMainLocationMainHeadCityTextFieldList = {};
+
+    DionysusPlutusMainLocationMainHeadCityMenuItem = {};
 
     DionysusPlutusMainLocationMainHeadDiv = {};
 
@@ -1205,8 +1207,6 @@ class CommonStyle {
 
     DionysusBacchusBannerImageImg = {};
 
-    DionysusBacchusBannerSwiperSlide = {};
-
     DionysusBacchusBannerSwiperList = {};
 
     DionysusBacchusBannerSwiperSlide = {};
@@ -1280,6 +1280,8 @@ class CommonStyle {
     AccountFuncAreaOfEditLangMenuItem = {};
 
     AccountFuncAreaOfEditLangTextFieldList = {};
+
+    AccountFuncAreaOfEditLangMenuItem = {};
 
     AccountFuncAreaOfEditDiv = {};
 
@@ -1368,8 +1370,6 @@ class CommonStyle {
     MainBannerImageDivWrap = {};
 
     MainBannerImageImg = {};
-
-    MainBannerSwiperSlide = {};
 
     MainBannerSwiperList = {};
 

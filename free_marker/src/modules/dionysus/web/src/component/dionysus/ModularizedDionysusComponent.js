@@ -20,10 +20,6 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
         Router.gotoBacchusDetailPage(this.getComponentInstance(), booze.getId(), booze.columnData());
     }
 
-    onDionysusSelectTabChange(param) {
-        const dionysus = param.object;
-    }
-
     onDionysusSelectTabClicked(param) {
         const self = this;
         const select = param.object;
