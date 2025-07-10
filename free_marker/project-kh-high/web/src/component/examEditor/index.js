@@ -1,12 +1,8 @@
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import {observer} from "mobx-react";
-import {inject} from "mobx-react";
+import { observer } from "mobx-react";
+import { inject } from "mobx-react";
 import BaseExamEditorComponent from "./BaseExamEditorComponent";
 import Cookie from "../../cookie";
 import Router from "../../router";
@@ -22,16 +18,13 @@ class ExamEditorComponent extends BaseExamEditorComponent {
         super(props);
     }
 
-    getListInjectStyleOfExamEditorQuestionChoiceDiv(param) {
-    }
+    getListInjectStyleOfExamEditorQuestionChoiceDiv(param) {}
 
-    getListInjectStyleOfExamEditorQuestionOptionalDiv(param) {
-    }
+    getListInjectStyleOfExamEditorQuestionOptionalDiv(param) {}
 
     getInjectStyleOfExamEditorHistoryFilterDiv(examEditor) {
-        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage());
     }
-
 
     getInjectStyleOfExamEditorQuestionAlertDiv(question) {
         return Util.getVisibleOrNone(false);
@@ -39,9 +32,9 @@ class ExamEditorComponent extends BaseExamEditorComponent {
 
     getInjectStyleOfExamEditorQuestionCard(question) {
         if (Util.isOdd(question.qid)) {
-            return {backgroundColor: '#ccc0c0c0'}
+            return { backgroundColor: "#ccc0c0c0" };
         } else {
-            return {backgroundColor: 'transparent'}
+            return { backgroundColor: "transparent" };
         }
     }
 

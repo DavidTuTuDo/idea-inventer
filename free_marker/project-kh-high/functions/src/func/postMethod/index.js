@@ -1,24 +1,20 @@
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BasePostMethod from "./BasePostMethod";
 
 class PostMethod extends BasePostMethod {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  async handleHttpOnRequest(request, response) {
-    return {data:'this is PostMethod:handleHttpOnRequest'}
-  }
+    async handleHttpOnRequest(request, response) {
+        return { data: "this is PostMethod:handleHttpOnRequest" };
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 export default new PostMethod();

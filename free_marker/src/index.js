@@ -33,9 +33,9 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
-// let CURRENT_PROJECT = './project-kh-high';
+let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
-let CURRENT_PROJECT = './project-davidtu-dev';
+// let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
@@ -1129,6 +1129,8 @@ class CodegenNode {
           node.isTimeDatePickerView(type),
           node.isTimeDateRangePickerView(type),
           node.isCheckboxView(type),
+          node.isRadioGroupView(type),
+          node.isButtonGroupView(type),
         );
     }
 
@@ -1468,10 +1470,9 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['example','propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['plural', 'example', 'propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
-            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n', 'textsOfI18n = {};\n' +
-            'setsOfComponentProp']
+            'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n', 'setsOfComponentProp']
     }
 
     setListContents(contents) {
@@ -2001,6 +2002,10 @@ class CodegenNode {
         return this.isAttributeView('Chip', type, node);
     }
 
+    isMenuItem(type = "default", node = this) {
+        return this.isAttributeView("MenuItem", type, node);
+    }
+
     isAlertDialog4Deleted() { return this.getAlertDialog().deleted; }
 
     isAlertDialog4Click() { return !this.getAlertDialog().deleted; }
@@ -2039,6 +2044,14 @@ class CodegenNode {
 
     isRadioView(type = 'default') {
         return this.isAttributeView('Radio', type);
+    }
+
+    isRadioGroupView(type = 'default') {
+        return this.isAttributeView('RadioGroup', type);
+    }
+
+    isButtonGroupView(type = 'default') {
+        return this.isAttributeView('ButtonGroup', type);
     }
 
     isSwitchView(type = 'default', node = this) {
@@ -5406,12 +5419,6 @@ class ComponentBuilder extends BaseBuilder {
             return viewJsxStmt;
         }
 
-        function appendOnChangedStmt() {
-            generator.appendFunction(node.getFunctionNameOfOnSelectedChange(), ['value', `param`], [], [],
-                `Util.appendError('${node.getFunctionNameOfOnSelectedChange()} not implemented')`)
-            return `self.${node.getFunctionNameOfOnSelectedChange()}(value, objectOfParam)`
-        }
-
         /** 就是把標註為 outer 的 child 放在同一個view的層級 */
         function getOuterChildJSXStrings(node) {
             const contentStmts = [];
@@ -5517,23 +5524,6 @@ class ComponentBuilder extends BaseBuilder {
                 tag: `${arrayItemNode.getViewClassNameOfRenderView()}`,
                 props: itemViewProps,
             })
-
-            if (node.isSimpleSelected()) {
-                props['onChange'] = `###(event, value)=>{
-                    const latest = ${node.useStringAsValue() ? `event.target.value;` : `_.toNumber(event.target.value);`}
-                    objectOfParam.value = latest;
-                    objectOfParam.event = event;
-                    ${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)
-                    ${appendOnChangedStmt()}
-                }`;
-
-                props['value'] = `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`;
-                delete itemViewProps[`${node.getName()}`];
-                arrayItemNode.appendViewProps(itemViewProps);
-                arrayItemNode.appendViewProps({value: `###${node.getName()}.value`})
-                arrayItemNode.appendContents(`{${node.getName()}.label}`)
-                arrayItemViewStmts = this.getJSXStringsByNode(generator, arrayItemNode)
-            }
 
             let arrayStmts = this.getJSXStrings({
                 generator,
@@ -7982,6 +7972,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             if (node.isSimpleSelected()) {
                 node.setType('array');
+                node.plural = node.plural ?? 's';
                 node.disableObservable = true;
                 node.getParentNode().appendChildrenWithJsons({
                     name: `${node.getFieldNameOfSelected()}`,
@@ -8241,7 +8232,12 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             let paramStmt = '';
             if (node.isSwitchView()) {
                 paramStmt = `self.getCheckStateByEvent(event)`;
-            } else if (node.isTextFieldView()) {
+            } else if(node.isSimpleSelected() && !node.isButton()){
+                stmts.push(`const latest = ${node.useStringAsValue() ? `event.target.value;` : `_.toNumber(event.target.value);`}`)
+                stmts.push(`objectOfParam.value = latest;`)
+                stmts.push(`objectOfParam.event = event;`)
+                stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)`)
+            }else if (node.isTextFieldView()) {
                 stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
                 paramStmt = `latestValue`;
                 if (node.isBelong2AutoComplete())
@@ -8283,7 +8279,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             if (!Util.isUndefinedNullEmpty(paramStmt))
                 stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSetter()}(${paramStmt})`);
         }
-        stmts.push(`self.${functionName}(objectOfParam)`);
+        stmts.push(`self.${functionName}(${node.isSimpleSelected() ? "value, objectOfParam" : "objectOfParam"})`);
         return stmts.join('\n');
     }
 
@@ -8564,7 +8560,11 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     {onOpen: `###() => ${node.getPreciseAttributeParentName()}.${Util.camel('set', nameOfHook)}(true)`}
                 )
             }
-            if (node.isChipView()) {
+            if (node.isSimpleSelected()) {
+                node.appendListProps({value: `###_.toString(${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectGetter()}())`})
+                node.appendViewProps({value: `###${node.getName()}.value`})
+                node.appendContents(`{${node.getName()}.label}`)
+            } else if (node.isChipView()) {
                 node.appendViewProps({label: `###${node.getName()}`})
             } else if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
@@ -8745,11 +8745,12 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 }
             }
 
+            const funcName = node.isSimpleSelected() ? node.getFunctionNameOfOnSelectedChange() : node.getFunctionNameOfOnChanged();
             appendPropsOfNode(node, node.needOnChangeBehavior,
-                [{onChange: `###(event, value) => {${this.getStmtOfEventInValidate(node, node.getFunctionNameOfOnChanged())}}`}],
+                [{onChange: `###(event, value) => {${this.getStmtOfEventInValidate(node, funcName)}}`}],
                 [{
-                    functionName: node.getFunctionNameOfOnChanged(),
-                    params: ['param'],
+                    functionName: funcName,
+                    params: node.isSimpleSelected() ? ["value", `param`] : ["param"],
                     loginOnly: node.hasLoginRequiredDialog(),
                 }],
             )

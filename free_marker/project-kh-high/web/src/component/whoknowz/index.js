@@ -1,16 +1,12 @@
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import {observer} from "mobx-react";
-import {inject} from "mobx-react";
+import { observer } from "mobx-react";
+import { inject } from "mobx-react";
 import BaseWhoknowzComponent from "./BaseWhoknowzComponent";
 import ExamQuestionView from "../exam";
-import React from 'react';
-import ExamStore from '../../store/exam'
+import React from "react";
+import ExamStore from "../../store/exam";
 @inject("whoknowz")
 @observer
 class WhoknowzComponent extends BaseWhoknowzComponent {
@@ -25,22 +21,16 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
     }
 
     getInjectViewOfWhoknowzQuestionDiv(whoknowz) {
-        const self = this
-        return <ExamQuestionView
-            freeze={true}
-            component={this}
-            injectStore={this.exam}
-            isComponentView={true}
-            question={whoknowz.question}/>
+        const self = this;
+        return <ExamQuestionView freeze={true} component={this} injectStore={this.exam} isComponentView={true} question={whoknowz.question} />;
     }
-
 
     onWhoknowzFastCenterCopylinkButtonClicked(param) {
         this.copyCurrentLinkToClipboard();
     }
 
-    askMrLin(message = '') {
-        this.openLineChatAccountWithMessage(`@546kkjvt`, message)
+    askMrLin(message = "") {
+        this.openLineChatAccountWithMessage(`@546kkjvt`, message);
     }
 
     onWhoknowzSubmitButtonClicked(param) {
@@ -48,25 +38,22 @@ class WhoknowzComponent extends BaseWhoknowzComponent {
     }
 
     getInjectPropsOfWhoknowzSubmitButton = () => {
-        return {disabled : this.getStore().isAnswerReliedOrOwner() ||
-                this.getStore().hasTargetAnswerId()}
-    }
+        return { disabled: this.getStore().isAnswerReliedOrOwner() || this.getStore().hasTargetAnswerId() };
+    };
 
     getInjectPropsOfWhoknowzAnswerAnswerByTextTextField(answer) {
-        return {disabled : this.getStore().isAnswerReliedOrOwner() ||
-                this.getStore().hasTargetAnswerId()}
+        return { disabled: this.getStore().isAnswerReliedOrOwner() || this.getStore().hasTargetAnswerId() };
     }
 
     getInjectStyleOfWhoknowzFastCenterAskmrlinButton = (fastCenter) => {
-        return Util.getVisibleOrHidden(this.getStore().isMathOrEnglish())
-    }
+        return Util.getVisibleOrHidden(this.getStore().isMathOrEnglish());
+    };
 
     enableImageSelectView(multiple) {
-        if(this.getStore().isAnswerReliedOrOwner() ||
-            this.getStore().hasTargetAnswerId()) {
+        if (this.getStore().isAnswerReliedOrOwner() || this.getStore().hasTargetAnswerId()) {
             /** doing nothing */
-        }else {
-            return super.enableImageSelectView(multiple)
+        } else {
+            return super.enableImageSelectView(multiple);
         }
     }
 

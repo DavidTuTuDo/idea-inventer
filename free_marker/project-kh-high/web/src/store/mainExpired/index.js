@@ -1,8 +1,6 @@
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+const edit = true;
+
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseMainExpiredStore from "./BaseMainExpiredStore";
@@ -14,7 +12,7 @@ class MainExpiredStore extends BaseMainExpiredStore {
     constructor(props) {
         super(props);
         setInterval(this.onTick, 0);
-        this.setExpiredTime(this.toFireBaseTimestampObject("2023-01-21"))
+        this.setExpiredTime(this.toFireBaseTimestampObject("2023-01-21"));
     }
 
     clientTime = Date.now();
@@ -22,15 +20,14 @@ class MainExpiredStore extends BaseMainExpiredStore {
 
     now = () => {
         return this.serverTime;
-    }
-
+    };
 
     onTick = () => {
         const self = this;
         const now = Date.now();
         this.serverTime = self.serverTime + (now - self.clientTime);
         this.clientTime = now;
-    }
+    };
     /** -------------------- async api -------------------- **/
 }
 

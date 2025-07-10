@@ -3,795 +3,863 @@ import _ from "lodash";
 import libpath from "path";
 
 class AppStyle {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** following for homeless */
+    /** => following for infoOfCopyRightContent editor component  */
 
-  /** => following for infoOfCopyRightContent editor component  */
+    InfoOfCopyRightContentEditorProjectImageTextField = {};
 
-  InfoOfCopyRightContentEditorProjectImageTextField = {};
+    InfoOfCopyRightContentEditorProjectIdTextField = {};
 
-  InfoOfCopyRightContentEditorProjectIdTextField = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
+    InfoOfCopyRightContentEditorProjectImageCardWrap = {};
 
-  InfoOfCopyRightContentEditorProjectImageCardWrap = {};
+    InfoOfCopyRightContentEditorProjectImageImg = {};
 
-  InfoOfCopyRightContentEditorProjectImageImg = {};
+    InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
 
-  InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
+    InfoOfCopyRightContentEditorProjectRouteTextField = {};
 
-  InfoOfCopyRightContentEditorProjectRouteTextField = {};
+    InfoOfCopyRightContentEditorProjectDivList = {};
 
-  InfoOfCopyRightContentEditorProjectDivList = {};
+    InfoOfCopyRightContentEditorProjectDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDiv = {};
 
-  InfoOfCopyRightContentEditorProjectDiv = {};
+    InfoOfCopyRightContentEditorUpperAreaDiv = {};
 
-  InfoOfCopyRightContentEditorUpperAreaDiv = {};
+    InfoOfCopyRightContentEditorDivWrap = {};
 
-  InfoOfCopyRightContentEditorDivWrap = {};
+    InfoOfCopyRightContentEditorPaper = {};
 
-  InfoOfCopyRightContentEditorPaper = {};
+    /** => following for exam editor component  */
 
-  /** => following for exam editor component  */
+    ExamEditorQuestionSelectedSelectorOfMathTextField = {};
 
-  ExamEditorQuestionSelectedSelectorOfMathTextField = {};
+    ExamEditorQuestionTypeOfMathTextField = {};
 
-  ExamEditorQuestionTypeOfMathTextField = {};
+    ExamEditorQuestionYearTextField = {};
 
-  ExamEditorQuestionYearTextField = {};
+    ExamEditorQuestionTypeTextField = {};
 
-  ExamEditorQuestionTypeTextField = {};
+    ExamEditorQuestionIndexOfAnswerTextField = {};
 
-  ExamEditorQuestionIndexOfAnswerTextField = {};
+    ExamEditorQuestionQidTextField = {};
 
-  ExamEditorQuestionQidTextField = {};
+    ExamEditorQuestionSubjectTextField = {};
 
-  ExamEditorQuestionSubjectTextField = {};
+    ExamEditorQuestionIdTextField = {};
 
-  ExamEditorQuestionIdTextField = {};
+    ExamEditorQuestionFunctionCenterDiv = {};
 
-  ExamEditorQuestionFunctionCenterDiv = {};
+    ExamEditorQuestionAnswerTextField = {};
 
-  ExamEditorQuestionAnswerTextField = {};
+    ExamEditorQuestionTimesOfYearTextField = {};
 
-  ExamEditorQuestionTimesOfYearTextField = {};
+    ExamEditorQuestionTypeOfQuestionTextField = {};
 
-  ExamEditorQuestionTypeOfQuestionTextField = {};
+    ExamEditorQuestionOptionalChoiceDivList = {};
 
-  ExamEditorQuestionOptionalChoiceDivList = {};
+    ExamEditorQuestionOptionalChoiceDiv = {};
 
-  ExamEditorQuestionOptionalChoiceDiv = {};
+    ExamEditorQuestionOptionalDivList = {};
 
-  ExamEditorQuestionOptionalDivList = {};
+    ExamEditorQuestionOptionalDiv = {};
 
-  ExamEditorQuestionOptionalDiv = {};
+    ExamEditorQuestionSelectorOfMathValueTextField = {};
 
-  ExamEditorQuestionSelectorOfMathValueTextField = {};
+    ExamEditorQuestionSelectorOfMathLabelTextField = {};
 
-  ExamEditorQuestionSelectorOfMathLabelTextField = {};
+    ExamEditorQuestionSelectorOfMathRadioGroupList = {};
 
-  ExamEditorQuestionSelectorOfMathFormControlLabel = {};
+    ExamEditorQuestionSelectorOfMathFormControlLabel = {};
 
-  ExamEditorQuestionSelectorOfMathRadioGroupList = {};
+    ExamEditorQuestionChoiceImageUrlTextField = {};
 
-  ExamEditorQuestionChoiceImageUrlTextField = {};
+    ExamEditorQuestionChoiceImageUrlImg = {};
 
-  ExamEditorQuestionChoiceImageUrlImg = {};
+    ExamEditorQuestionChoiceImageDivList = {};
 
-  ExamEditorQuestionChoiceImageDivList = {};
+    ExamEditorQuestionChoiceImageDivWrap = {};
 
-  ExamEditorQuestionChoiceImageDivWrap = {};
+    ExamEditorQuestionChoiceImageDiv = {};
 
-  ExamEditorQuestionChoiceImageDiv = {};
+    ExamEditorQuestionChoiceStatementDivWrap = {};
 
-  ExamEditorQuestionChoiceStatementDivWrap = {};
+    ExamEditorQuestionChoiceStatementTextField = {};
 
-  ExamEditorQuestionChoiceStatementTextField = {};
+    ExamEditorQuestionChoiceDivList = {};
 
-  ExamEditorQuestionChoiceDivList = {};
+    ExamEditorQuestionChoiceDivWrap = {};
 
-  ExamEditorQuestionChoiceDivWrap = {};
+    ExamEditorQuestionChoiceDiv = {};
 
-  ExamEditorQuestionChoiceDiv = {};
+    ExamEditorQuestionTopicImageUrlTextField = {};
 
-  ExamEditorQuestionTopicImageUrlTextField = {};
+    ExamEditorQuestionTopicImageUrlImg = {};
 
-  ExamEditorQuestionTopicImageUrlImg = {};
+    ExamEditorQuestionTopicImageDivList = {};
 
-  ExamEditorQuestionTopicImageDivList = {};
+    ExamEditorQuestionTopicImageDivWrap = {};
 
-  ExamEditorQuestionTopicImageDivWrap = {};
+    ExamEditorQuestionTopicImageDiv = {};
 
-  ExamEditorQuestionTopicImageDiv = {};
+    ExamEditorQuestionTopicNameDivWrap = {};
 
-  ExamEditorQuestionTopicNameDivWrap = {};
+    ExamEditorQuestionTopicNameTextField = {};
 
-  ExamEditorQuestionTopicNameTextField = {};
+    ExamEditorQuestionTopicDiv = {};
 
-  ExamEditorQuestionTopicDiv = {};
+    ExamEditorQuestionTopicOfAssistantImageUrlTextField = {};
 
-  ExamEditorQuestionTopicOfAssistantImageUrlTextField = {};
+    ExamEditorQuestionTopicOfAssistantImageUrlImg = {};
 
-  ExamEditorQuestionTopicOfAssistantImageUrlImg = {};
+    ExamEditorQuestionTopicOfAssistantImageDivList = {};
 
-  ExamEditorQuestionTopicOfAssistantImageDivList = {};
+    ExamEditorQuestionTopicOfAssistantImageDivWrap = {};
 
-  ExamEditorQuestionTopicOfAssistantImageDivWrap = {};
+    ExamEditorQuestionTopicOfAssistantImageDiv = {};
 
-  ExamEditorQuestionTopicOfAssistantImageDiv = {};
+    ExamEditorQuestionTopicOfAssistantNameTextField = {};
 
-  ExamEditorQuestionTopicOfAssistantNameTextField = {};
+    ExamEditorQuestionTopicOfAssistantDiv = {};
 
-  ExamEditorQuestionTopicOfAssistantDiv = {};
+    ExamEditorQuestionAlertDiv = {};
 
-  ExamEditorQuestionAlertDiv = {};
+    ExamEditorQuestionDivList = {};
 
-  ExamEditorQuestionDivList = {};
+    ExamEditorQuestionDivWrap = {};
 
-  ExamEditorQuestionDivWrap = {};
+    ExamEditorQuestionCard = {};
 
-  ExamEditorQuestionCard = {};
+    ExamEditorHistoryFilterSelectedOrderByWhatTextField = {};
 
-  ExamEditorHistoryFilterSelectedOrderByWhatTextField = {};
+    ExamEditorHistoryFilterSelectedWhichSubjectTextField = {};
 
-  ExamEditorHistoryFilterSelectedWhichSubjectTextField = {};
+    ExamEditorHistoryFilterSelectedReplyTypeTextField = {};
 
-  ExamEditorHistoryFilterSelectedReplyTypeTextField = {};
+    ExamEditorHistoryFilterOrderByWhatValueTextField = {};
 
-  ExamEditorHistoryFilterOrderByWhatValueTextField = {};
+    ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
 
-  ExamEditorHistoryFilterOrderByWhatLabelTextField = {};
+    ExamEditorHistoryFilterOrderByWhatTextFieldList = {};
 
-  ExamEditorHistoryFilterOrderByWhatMenuItem = {};
+    ExamEditorHistoryFilterOrderByWhatMenuItem = {};
 
-  ExamEditorHistoryFilterOrderByWhatTextFieldList = {};
+    ExamEditorHistoryFilterWhichSubjectValueTextField = {};
 
-  ExamEditorHistoryFilterWhichSubjectValueTextField = {};
+    ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
 
-  ExamEditorHistoryFilterWhichSubjectLabelTextField = {};
+    ExamEditorHistoryFilterWhichSubjectTextFieldList = {};
 
-  ExamEditorHistoryFilterWhichSubjectMenuItem = {};
+    ExamEditorHistoryFilterWhichSubjectMenuItem = {};
 
-  ExamEditorHistoryFilterWhichSubjectTextFieldList = {};
+    ExamEditorHistoryFilterSpaceDiv = {};
 
-  ExamEditorHistoryFilterSpaceDiv = {};
+    ExamEditorHistoryFilterReplyTypeValueTextField = {};
 
-  ExamEditorHistoryFilterReplyTypeValueTextField = {};
+    ExamEditorHistoryFilterReplyTypeLabelTextField = {};
 
-  ExamEditorHistoryFilterReplyTypeLabelTextField = {};
+    ExamEditorHistoryFilterReplyTypeRadioGroupList = {};
 
-  ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
+    ExamEditorHistoryFilterReplyTypeFormControlLabel = {};
 
-  ExamEditorHistoryFilterReplyTypeRadioGroupList = {};
+    ExamEditorHistoryFilterDivWrap = {};
 
-  ExamEditorHistoryFilterDivWrap = {};
+    ExamEditorHistoryFilterDiv = {};
 
-  ExamEditorHistoryFilterDiv = {};
+    ExamEditorDiv = {};
 
-  ExamEditorDiv = {};
+    /** => following for main editor component  */
 
-  /** => following for main editor component  */
+    MainEditorCountdownPaper = {};
 
-  MainEditorCountdownPaper = {};
+    MainEditorEnterPointSubTitleTextField = {};
 
-  MainEditorEnterPointSubTitleTextField = {};
+    MainEditorEnterPointTitleTextField = {};
 
-  MainEditorEnterPointTitleTextField = {};
+    MainEditorEnterPointIndexOfSequenceTextField = {};
 
-  MainEditorEnterPointIndexOfSequenceTextField = {};
+    MainEditorEnterPointXsTextField = {};
 
-  MainEditorEnterPointXsTextField = {};
+    MainEditorEnterPointRouteTextField = {};
 
-  MainEditorEnterPointRouteTextField = {};
+    MainEditorEnterPointIdTextField = {};
 
-  MainEditorEnterPointIdTextField = {};
+    MainEditorEnterPointDivList = {};
 
-  MainEditorEnterPointDivList = {};
+    MainEditorEnterPointDivWrap = {};
 
-  MainEditorEnterPointDivWrap = {};
+    MainEditorEnterPointPaper = {};
 
-  MainEditorEnterPointPaper = {};
+    MainEditorViewPagerImageTextField = {};
 
-  MainEditorViewPagerImageTextField = {};
+    MainEditorViewPagerImageDivWrap = {};
 
-  MainEditorViewPagerImageDivWrap = {};
+    MainEditorViewPagerImageImg = {};
 
-  MainEditorViewPagerImageImg = {};
+    MainEditorViewPagerRouteTextField = {};
 
-  MainEditorViewPagerRouteTextField = {};
+    MainEditorViewPagerIdTextField = {};
 
-  MainEditorViewPagerIdTextField = {};
+    MainEditorViewPagerDivList = {};
 
-  MainEditorViewPagerDivWrap = {};
+    MainEditorViewPagerDivWrap = {};
 
-  MainEditorViewPagerDiv = {};
+    MainEditorViewPagerDiv = {};
 
-  MainEditorViewPagerDivList = {};
+    MainEditorDiv = {};
 
-  MainEditorViewPagerDivWrap = {};
+    /** => following for navigator  component  */
 
-  MainEditorViewPagerDiv = {};
+    NavigatorDrawerShortcutIconImg = {};
 
-  MainEditorDiv = {};
+    NavigatorDrawerShortcutTitleTypography = {};
 
-  /** => following for navigator  component  */
+    NavigatorDrawerShortcutListItemSkeleton = {};
 
-  NavigatorDrawerShortcutIconImg = {};
+    NavigatorDrawerShortcutListList = {};
 
-  NavigatorDrawerShortcutTitleTypography = {};
+    NavigatorDrawerShortcutListItem = {};
 
-  NavigatorDrawerShortcutListItemSkeleton = {};
+    NavigatorDrawerDrawer = {};
 
-  NavigatorDrawerShortcutListList = {};
+    NavigatorToolBarTipOfLoadingCircularProgress = {};
 
-  NavigatorDrawerShortcutListItem = {};
+    NavigatorToolBarAccountIconAccountCircle = {};
 
-  NavigatorDrawerDrawer = {};
+    NavigatorToolBarAccountReactFragmentWrap = {};
 
-  NavigatorToolBarTipOfLoadingCircularProgress = {};
+    NavigatorToolBarAccountIconButton = {};
 
-  NavigatorToolBarAccountIconAccountCircle = {};
+    NavigatorToolBarLoginIconLogin = {};
 
-  NavigatorToolBarAccountReactFragmentWrap = {};
+    NavigatorToolBarLoginIconButton = {};
 
-  NavigatorToolBarAccountIconButton = {};
+    NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
 
-  NavigatorToolBarLoginIconLogin = {};
+    NavigatorToolBarCartieBadgeOfCartieBadge = {};
 
-  NavigatorToolBarLoginIconButton = {};
+    NavigatorToolBarCartieIconButton = {};
 
-  NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
+    NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
-  NavigatorToolBarCartieBadgeOfCartieBadge = {};
+    NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
-  NavigatorToolBarCartieIconButton = {};
+    NavigatorToolBarCompleteAutocomplete = {};
 
-  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
+    NavigatorToolBarTitleDivWrap = {};
 
-  NavigatorToolBarCompleteInputOfCompleteTextField = {};
+    NavigatorToolBarTitleTypography = {};
 
-  NavigatorToolBarCompleteAutocomplete = {};
+    NavigatorToolBarMenuIconMenuRounded = {};
 
-  NavigatorToolBarTitleDivWrap = {};
+    NavigatorToolBarMenuIconButton = {};
 
-  NavigatorToolBarTitleTypography = {};
+    NavigatorToolBarAppBarWrap = {};
 
-  NavigatorToolBarMenuIconMenuRounded = {};
+    NavigatorToolBarToolbar = {};
 
-  NavigatorToolBarMenuIconButton = {};
+    NavigatorDiv = {};
 
-  NavigatorToolBarAppBarWrap = {};
+    /** => following for textsIndexSetter  component  */
 
-  NavigatorToolBarToolbar = {};
+    IreneTextsIndexSetterFuncLeaveChip = {};
 
-  NavigatorDiv = {};
+    IreneTextsIndexSetterFuncUpdateChip = {};
 
-  /** => following for infoOfCopyRightContent  component  */
+    IreneTextsIndexSetterFuncDiv = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+    IreneTextsIndexSetterRowGoTopChip = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
+    IreneTextsIndexSetterRowContentTypography = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
+    IreneTextsIndexSetterRowBelongDivWrap = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
+    IreneTextsIndexSetterRowBelongCheckbox = {};
 
-  InfoOfCopyRightContentProjectDescriptionDivList = {};
+    IreneTextsIndexSetterRowDivList = {};
 
-  InfoOfCopyRightContentProjectDescriptionDiv = {};
+    IreneTextsIndexSetterRowDiv = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
+    IreneTextsIndexSetterDivWrap = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
+    IreneTextsIndexSetterPaper = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
+    /** => following for textFetch  component  */
 
-  InfoOfCopyRightContentProjectUpperAreaDiv = {};
+    IreneTextFetchFuncLeaveChip = {};
 
-  InfoOfCopyRightContentProjectImageCardWrap = {};
+    IreneTextFetchFuncAppendChip = {};
 
-  InfoOfCopyRightContentProjectImageImg = {};
+    IreneTextFetchFuncDiv = {};
 
-  InfoOfCopyRightContentProjectDivSkeleton = {};
+    IreneTextFetchRowClearIconClearRounded = {};
 
-  InfoOfCopyRightContentProjectDivList = {};
+    IreneTextFetchRowClearIconButton = {};
 
-  InfoOfCopyRightContentProjectDiv = {};
+    IreneTextFetchRowContentTextField = {};
 
-  InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
+    IreneTextFetchRowTitleTypography = {};
 
-  InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
+    IreneTextFetchRowDiv = {};
 
-  InfoOfCopyRightContentUpperAreaDiv = {};
+    IreneTextFetchDivWrap = {};
 
-  InfoOfCopyRightContentDivWrap = {};
+    IreneTextFetchPaper = {};
 
-  InfoOfCopyRightContentPaper = {};
+    /** => following for textsFetch  component  */
 
-  /** => following for infoOfCopyRightContact  component  */
+    IreneTextsFetchFuncLeaveChip = {};
 
-  InfoOfCopyRightContactLowerAreaDetailsTypography = {};
+    IreneTextsFetchFuncAppendChip = {};
 
-  InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
+    IreneTextsFetchFuncDiv = {};
 
-  InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
+    IreneTextsFetchTitleClearIconDeleteForeverRounded = {};
 
-  InfoOfCopyRightContactLowerAreaDiv = {};
+    IreneTextsFetchTitleClearIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
+    IreneTextsFetchTitleContentTextField = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
+    IreneTextsFetchTitleIndexTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
+    IreneTextsFetchTitleDivList = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
+    IreneTextsFetchTitleDiv = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
+    IreneTextsFetchDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
+    IreneTextsFetchPaper = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
+    /** => following for irene  component  */
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
+    IreneDiv = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
+    /** => following for infoOfCopyRightContent  component  */
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
+    InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
+    InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
+    InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
+    InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
+    InfoOfCopyRightContentProjectDescriptionDivList = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
+    InfoOfCopyRightContentProjectDescriptionDiv = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
+    InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
+    InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
+    InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
 
-  InfoOfCopyRightContactUpperAreaContactDivWrap = {};
+    InfoOfCopyRightContentProjectUpperAreaDiv = {};
 
-  InfoOfCopyRightContactUpperAreaContactTypography = {};
+    InfoOfCopyRightContentProjectImageCardWrap = {};
 
-  InfoOfCopyRightContactUpperAreaDiv = {};
+    InfoOfCopyRightContentProjectImageImg = {};
 
-  InfoOfCopyRightContactDivWrap = {};
+    InfoOfCopyRightContentProjectDivSkeleton = {};
 
-  InfoOfCopyRightContactCard = {};
+    InfoOfCopyRightContentProjectDivList = {};
 
-  /** => following for infoOfCopyRight  component  */
+    InfoOfCopyRightContentProjectDiv = {};
 
-  InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
+    InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
 
-  InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
+    InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
 
-  InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
+    InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
+    InfoOfCopyRightContentDivWrap = {};
 
-  InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
+    InfoOfCopyRightContentPaper = {};
 
-  InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
+    /** => following for infoOfCopyRightContact  component  */
 
-  InfoOfCopyRightGroupOfSocialMediaDiv = {};
+    InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
-  InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
+    InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
 
-  InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
+    InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
 
-  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
+    InfoOfCopyRightContactLowerAreaDiv = {};
 
-  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
 
-  InfoOfCopyRightUpperGroupRightAreaDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
 
-  InfoOfCopyRightUpperGroupDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
 
-  InfoOfCopyRightDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
 
-  /** => following for account  component  */
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
 
-  AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
 
-  AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
 
-  AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
 
-  AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
 
-  AccountFuncAreaOfEditToEditModeButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
 
-  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
 
-  AccountFuncAreaOfEditLogoutButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
 
-  AccountFuncAreaOfEditCopyUserIdButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
 
-  AccountFuncAreaOfEditLangMenuItem = {};
+    InfoOfCopyRightContactUpperAreaContactDivWrap = {};
 
-  AccountFuncAreaOfEditLangTextFieldList = {};
+    InfoOfCopyRightContactUpperAreaContactTypography = {};
 
-  AccountFuncAreaOfEditDiv = {};
+    InfoOfCopyRightContactUpperAreaDiv = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+    InfoOfCopyRightContactDivWrap = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+    InfoOfCopyRightContactCard = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+    /** => following for infoOfCopyRight  component  */
 
-  AccountFuncAreaOfIdDiv = {};
+    InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+    InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+    InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+    InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
 
-  AccountFuncAreaOfEmailDiv = {};
+    InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
 
-  AccountSpaceDiv = {};
+    InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+    InfoOfCopyRightGroupOfSocialMediaDiv = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+    InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+    InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
 
-  AccountFuncAreaOfNameDiv = {};
+    InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
 
-  AccountUrlOfHeadPhotoAvatar = {};
+    InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
 
-  AccountDivWrap = {};
+    InfoOfCopyRightUpperGroupRightAreaDiv = {};
 
-  AccountPaper = {};
+    InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
 
-  /** => following for myFatefulQuestions  component  */
+    InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
 
-  MyFatefulQuestionsFatefulItemQuestionInfoCreateTimeTypography = {};
+    InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
 
-  MyFatefulQuestionsFatefulItemQuestionInfoSubjectInfoTypography = {};
+    InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
 
-  MyFatefulQuestionsFatefulItemQuestionInfoDiv = {};
+    InfoOfCopyRightUpperGroupLeftAreaDiv = {};
 
-  MyFatefulQuestionsFatefulItemQuestionTopicTypography = {};
+    InfoOfCopyRightUpperGroupDiv = {};
 
-  MyFatefulQuestionsFatefulItemDivList = {};
+    InfoOfCopyRightDiv = {};
 
-  MyFatefulQuestionsFatefulItemCard = {};
+    /** => following for account  component  */
 
-  MyFatefulQuestionsFilterQuestionTypeMenuItem = {};
+    AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
 
-  MyFatefulQuestionsFilterQuestionTypeTextFieldList = {};
+    AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
 
-  MyFatefulQuestionsFilterWhichSubjectMenuItem = {};
+    AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
 
-  MyFatefulQuestionsFilterWhichSubjectTextFieldList = {};
+    AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
 
-  MyFatefulQuestionsFilterDiv = {};
+    AccountFuncAreaOfEditCleanCacheButton = {};
 
-  MyFatefulQuestionsDiv = {};
+    AccountFuncAreaOfEditToEditModeButton = {};
 
-  /** => following for whoknowz  component  */
+    AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
 
-  WhoknowzSubmitReactFragmentWrap = {};
+    AccountFuncAreaOfEditLogoutButton = {};
 
-  WhoknowzSubmitButton = {};
+    AccountFuncAreaOfEditCopyUserIdButton = {};
 
-  WhoknowzAnswerImageUrlImg = {};
+    AccountFuncAreaOfEditLangTextFieldList = {};
 
-  WhoknowzAnswerImageDivList = {};
+    AccountFuncAreaOfEditLangMenuItem = {};
 
-  WhoknowzAnswerImageDiv = {};
+    AccountFuncAreaOfEditDiv = {};
 
-  WhoknowzAnswerAnswerByTextTextField = {};
+    AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
 
-  WhoknowzAnswerCardSkeleton = {};
+    AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
 
-  WhoknowzAnswerDivList = {};
+    AccountFuncAreaOfIdStateAreaOfIdDiv = {};
 
-  WhoknowzAnswerCard = {};
+    AccountFuncAreaOfIdDiv = {};
 
-  WhoknowzQuestionDiv = {};
+    AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
 
-  WhoknowzFastCenterAskmrlinButton = {};
+    AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
 
-  WhoknowzFastCenterCopylinkButton = {};
+    AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
 
-  WhoknowzFastCenterDiv = {};
+    AccountFuncAreaOfEmailDiv = {};
 
-  WhoknowzDiv = {};
+    AccountSpaceDiv = {};
 
-  /** => following for purchase  component  */
+    AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
 
-  PurchasePurchasePlanBuyDivWrap = {};
+    AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
 
-  PurchasePurchasePlanBuyButton = {};
+    AccountFuncAreaOfNameStateAreaOfNameDiv = {};
 
-  PurchasePurchasePlanPricePriceTipTypography = {};
+    AccountFuncAreaOfNameDiv = {};
 
-  PurchasePurchasePlanPriceDivWrap = {};
+    AccountUrlOfHeadPhotoAvatar = {};
 
-  PurchasePurchasePlanPriceTypography = {};
+    AccountDivWrap = {};
 
-  PurchasePurchasePlanSpaceDiv = {};
+    AccountPaper = {};
 
-  PurchasePurchasePlanNameDivWrap = {};
+    /** => following for myFatefulQuestions  component  */
 
-  PurchasePurchasePlanNameTypography = {};
+    MyFatefulQuestionsFatefulItemQuestionInfoCreateTimeTypography = {};
 
-  PurchasePurchasePlanDivSkeleton = {};
+    MyFatefulQuestionsFatefulItemQuestionInfoSubjectInfoTypography = {};
 
-  PurchasePurchasePlanDivList = {};
+    MyFatefulQuestionsFatefulItemQuestionInfoDiv = {};
 
-  PurchasePurchasePlanDiv = {};
+    MyFatefulQuestionsFatefulItemQuestionTopicTypography = {};
 
-  PurchaseBannerDivWrap = {};
+    MyFatefulQuestionsFatefulItemDivList = {};
 
-  PurchaseBannerImg = {};
+    MyFatefulQuestionsFatefulItemCard = {};
 
-  PurchaseDiv = {};
+    MyFatefulQuestionsFilterQuestionTypeTextFieldList = {};
 
-  /** => following for result  component  */
+    MyFatefulQuestionsFilterQuestionTypeMenuItem = {};
 
-  ResultMessageTypography = {};
+    MyFatefulQuestionsFilterWhichSubjectTextFieldList = {};
 
-  ResultScoreTypography = {};
+    MyFatefulQuestionsFilterWhichSubjectMenuItem = {};
 
-  ResultCard = {};
+    MyFatefulQuestionsFilterDiv = {};
 
-  /** => following for exam  component  */
+    MyFatefulQuestionsDiv = {};
 
-  ExamQuestionReplyTimestampTypography = {};
+    /** => following for whoknowz  component  */
 
-  ExamQuestionDurationTypography = {};
+    WhoknowzSubmitReactFragmentWrap = {};
 
-  ExamQuestionTipDivWrap = {};
+    WhoknowzSubmitButton = {};
 
-  ExamQuestionTipTypography = {};
+    WhoknowzAnswerImageUrlImg = {};
 
-  ExamQuestionFunctionCenterCalloutHelpReactFragmentWrap = {};
+    WhoknowzAnswerImageDivList = {};
 
-  ExamQuestionFunctionCenterCalloutHelpButton = {};
+    WhoknowzAnswerImageDiv = {};
 
-  ExamQuestionFunctionCenterAddToFavoriteReactFragmentWrap = {};
+    WhoknowzAnswerAnswerByTextTextField = {};
 
-  ExamQuestionFunctionCenterAddToFavoriteButton = {};
+    WhoknowzAnswerCardSkeleton = {};
 
-  ExamQuestionFunctionCenterDiv = {};
+    WhoknowzAnswerDivList = {};
 
-  ExamQuestionOptionalChoiceStatementButton = {};
+    WhoknowzAnswerCard = {};
 
-  ExamQuestionOptionalChoiceDivList = {};
+    WhoknowzQuestionDiv = {};
 
-  ExamQuestionOptionalChoiceDiv = {};
+    WhoknowzFastCenterAskmrlinButton = {};
 
-  ExamQuestionOptionalIndexOfAnswerTypography = {};
+    WhoknowzFastCenterCopylinkButton = {};
 
-  ExamQuestionOptionalDivList = {};
+    WhoknowzFastCenterDiv = {};
 
-  ExamQuestionOptionalDiv = {};
+    WhoknowzDiv = {};
 
-  ExamQuestionSelectorOfMathValueRadio = {};
+    /** => following for purchase  component  */
 
-  ExamQuestionSelectorOfMathLabelTypography = {};
+    PurchasePurchasePlanBuyDivWrap = {};
 
-  ExamQuestionSelectorOfMathFormControlLabel = {};
+    PurchasePurchasePlanBuyButton = {};
 
-  ExamQuestionSelectorOfMathRadioGroupList = {};
+    PurchasePurchasePlanPricePriceTipTypography = {};
 
-  ExamQuestionChoiceImageUrlImg = {};
+    PurchasePurchasePlanPriceDivWrap = {};
 
-  ExamQuestionChoiceImageDivList = {};
+    PurchasePurchasePlanPriceTypography = {};
 
-  ExamQuestionChoiceImageDiv = {};
+    PurchasePurchasePlanSpaceDiv = {};
 
-  ExamQuestionChoiceStatementDivWrap = {};
+    PurchasePurchasePlanNameDivWrap = {};
 
-  ExamQuestionChoiceStatementButton = {};
+    PurchasePurchasePlanNameTypography = {};
 
-  ExamQuestionChoiceDivList = {};
+    PurchasePurchasePlanDivSkeleton = {};
 
-  ExamQuestionChoiceDiv = {};
+    PurchasePurchasePlanDivList = {};
 
-  ExamQuestionTopicImageUrlImg = {};
+    PurchasePurchasePlanDiv = {};
 
-  ExamQuestionTopicImageDivList = {};
+    PurchaseBannerDivWrap = {};
 
-  ExamQuestionTopicImageDiv = {};
+    PurchaseBannerImg = {};
 
-  ExamQuestionTopicNameDivWrap = {};
+    PurchaseDiv = {};
 
-  ExamQuestionTopicNameTypography = {};
+    /** => following for result  component  */
 
-  ExamQuestionTopicDiv = {};
+    ResultMessageTypography = {};
 
-  ExamQuestionTopicOfAssistantImageUrlImg = {};
+    ResultScoreTypography = {};
 
-  ExamQuestionTopicOfAssistantImageDivList = {};
+    ResultCard = {};
 
-  ExamQuestionTopicOfAssistantImageDiv = {};
+    /** => following for exam  component  */
 
-  ExamQuestionTopicOfAssistantNameTypography = {};
+    ExamQuestionReplyTimestampTypography = {};
 
-  ExamQuestionTopicOfAssistantDiv = {};
+    ExamQuestionDurationTypography = {};
 
-  ExamQuestionAlertAlertImageDivWrap = {};
+    ExamQuestionTipDivWrap = {};
 
-  ExamQuestionAlertAlertImageImg = {};
+    ExamQuestionTipTypography = {};
 
-  ExamQuestionAlertDiv = {};
+    ExamQuestionFunctionCenterCalloutHelpReactFragmentWrap = {};
 
-  ExamQuestionCardSkeleton = {};
+    ExamQuestionFunctionCenterCalloutHelpButton = {};
 
-  ExamQuestionDivList = {};
+    ExamQuestionFunctionCenterAddToFavoriteReactFragmentWrap = {};
 
-  ExamQuestionDivWrap = {};
+    ExamQuestionFunctionCenterAddToFavoriteButton = {};
 
-  ExamQuestionCard = {};
+    ExamQuestionFunctionCenterDiv = {};
 
-  ExamHistoryFilterOrderByWhatMenuItem = {};
+    ExamQuestionOptionalChoiceStatementButton = {};
 
-  ExamHistoryFilterOrderByWhatTextFieldList = {};
+    ExamQuestionOptionalChoiceDivList = {};
 
-  ExamHistoryFilterWhichSubjectMenuItem = {};
+    ExamQuestionOptionalChoiceDiv = {};
 
-  ExamHistoryFilterWhichSubjectTextFieldList = {};
+    ExamQuestionOptionalIndexOfAnswerTypography = {};
 
-  ExamHistoryFilterSpaceDiv = {};
+    ExamQuestionOptionalDivList = {};
 
-  ExamHistoryFilterReplyTypeValueRadio = {};
+    ExamQuestionOptionalDiv = {};
 
-  ExamHistoryFilterReplyTypeLabelTypography = {};
+    ExamQuestionSelectorOfMathValueRadio = {};
 
-  ExamHistoryFilterReplyTypeFormControlLabel = {};
+    ExamQuestionSelectorOfMathLabelTypography = {};
 
-  ExamHistoryFilterReplyTypeRadioGroupList = {};
+    ExamQuestionSelectorOfMathRadioGroupList = {};
 
-  ExamHistoryFilterDiv = {};
+    ExamQuestionSelectorOfMathFormControlLabel = {};
 
-  ExamDiv = {};
+    ExamQuestionChoiceImageUrlImg = {};
 
-  /** => following for main  component  */
+    ExamQuestionChoiceImageDivList = {};
 
-  MainCountdownPaper = {};
+    ExamQuestionChoiceImageDiv = {};
 
-  MainEnterPointSubTitleTypography = {};
+    ExamQuestionChoiceStatementDivWrap = {};
 
-  MainEnterPointTitleTypography = {};
+    ExamQuestionChoiceStatementButton = {};
 
-  MainEnterPointPaperSkeleton = {};
+    ExamQuestionChoiceDivList = {};
 
-  MainEnterPointGridList = {};
+    ExamQuestionChoiceDiv = {};
 
-  MainEnterPointGridWrap = {};
+    ExamQuestionTopicImageUrlImg = {};
 
-  MainEnterPointPaper = {};
+    ExamQuestionTopicImageDivList = {};
 
-  MainViewPagerImageDivWrap = {};
+    ExamQuestionTopicImageDiv = {};
 
-  MainViewPagerImageImg = {};
+    ExamQuestionTopicNameDivWrap = {};
 
-  MainViewPagerSwiperSlideSkeleton = {};
+    ExamQuestionTopicNameTypography = {};
 
-  MainViewPagerSwiperSlide = {};
+    ExamQuestionTopicDiv = {};
 
-  MainViewPagerSwiperList = {};
+    ExamQuestionTopicOfAssistantImageUrlImg = {};
 
-  MainViewPagerSwiperSlide = {};
+    ExamQuestionTopicOfAssistantImageDivList = {};
 
-  MainDiv = {};
+    ExamQuestionTopicOfAssistantImageDiv = {};
 
-  /** => following for purchaseSucceed  component  */
+    ExamQuestionTopicOfAssistantNameTypography = {};
 
-  PurchaseSucceedConfirmButton = {};
+    ExamQuestionTopicOfAssistantDiv = {};
 
-  PurchaseSucceedSucceedTitleTypography = {};
+    ExamQuestionAlertAlertImageDivWrap = {};
 
-  PurchaseSucceedDiv = {};
+    ExamQuestionAlertAlertImageImg = {};
 
-  /** => following for examFilter  component  */
+    ExamQuestionAlertDiv = {};
 
-  ExamFilterHistoryTestBtnWithHistoryButton = {};
+    ExamQuestionCardSkeleton = {};
 
-  ExamFilterHistoryTestSpaceDiv = {};
+    ExamQuestionDivList = {};
 
-  ExamFilterHistoryTestSelectorMenuItem = {};
+    ExamQuestionDivWrap = {};
 
-  ExamFilterHistoryTestSelectorTextFieldList = {};
+    ExamQuestionCard = {};
 
-  ExamFilterHistoryTestDiv = {};
+    ExamHistoryFilterOrderByWhatTextFieldList = {};
 
-  ExamFilterSpaceDiv = {};
+    ExamHistoryFilterOrderByWhatMenuItem = {};
 
-  ExamFilterRandomTestBtnOfStartExamButton = {};
+    ExamHistoryFilterWhichSubjectTextFieldList = {};
 
-  ExamFilterRandomTestCountsOfExamValueRadio = {};
+    ExamHistoryFilterWhichSubjectMenuItem = {};
 
-  ExamFilterRandomTestCountsOfExamLabelTypography = {};
+    ExamHistoryFilterSpaceDiv = {};
 
-  ExamFilterRandomTestCountsOfExamFormControlLabel = {};
+    ExamHistoryFilterReplyTypeValueRadio = {};
 
-  ExamFilterRandomTestCountsOfExamRadioGroupList = {};
+    ExamHistoryFilterReplyTypeLabelTypography = {};
 
-  ExamFilterRandomTestRangeOfYearSlider = {};
+    ExamHistoryFilterReplyTypeRadioGroupList = {};
 
-  ExamFilterRandomTestSpaceDiv = {};
+    ExamHistoryFilterReplyTypeFormControlLabel = {};
 
-  ExamFilterRandomTestFastRangeButton = {};
+    ExamHistoryFilterDiv = {};
 
-  ExamFilterRandomTestFastRangeButtonGroupList = {};
+    ExamDiv = {};
 
-  ExamFilterRandomTestDiv = {};
+    /** => following for main  component  */
 
-  ExamFilterDiv = {};
+    MainCountdownPaper = {};
 
-  /** => following for editorOfSubject  component  */
+    MainEnterPointSubTitleTypography = {};
 
-  EditorOfSubjectAreaOfStatementUpdateButton = {};
+    MainEnterPointTitleTypography = {};
 
-  EditorOfSubjectAreaOfStatementTotalOfClassifyQLabelOfTotalOfClassifyQTypography = {};
+    MainEnterPointPaperSkeleton = {};
 
-  EditorOfSubjectAreaOfStatementTotalOfClassifyQDivWrap = {};
+    MainEnterPointGridList = {};
 
-  EditorOfSubjectAreaOfStatementTotalOfClassifyQTypography = {};
+    MainEnterPointGridWrap = {};
 
-  EditorOfSubjectAreaOfStatementTotalOfSubjectQLabelOfTotalOfSubjectQTypography = {};
+    MainEnterPointPaper = {};
 
-  EditorOfSubjectAreaOfStatementTotalOfSubjectQDivWrap = {};
+    MainViewPagerImageDivWrap = {};
 
-  EditorOfSubjectAreaOfStatementTotalOfSubjectQTypography = {};
+    MainViewPagerImageImg = {};
 
-  EditorOfSubjectAreaOfStatementYearMenuItem = {};
+    MainViewPagerSwiperSlideSkeleton = {};
 
-  EditorOfSubjectAreaOfStatementYearTextFieldList = {};
+    MainViewPagerSwiperList = {};
 
-  EditorOfSubjectAreaOfStatementDiv = {};
+    MainViewPagerSwiperSlide = {};
 
-  EditorOfSubjectDiv = {};
+    MainDiv = {};
 
-  /** -------------------- functions -------------------- **/
+    /** => following for purchaseSucceed  component  */
 
-  constructor(props) {}
+    PurchaseSucceedConfirmButton = {};
 
-  /** -------------------- async api -------------------- **/
+    PurchaseSucceedSucceedTitleTypography = {};
+
+    PurchaseSucceedDiv = {};
+
+    /** => following for examFilter  component  */
+
+    ExamFilterHistoryTestBtnWithHistoryButton = {};
+
+    ExamFilterHistoryTestSpaceDiv = {};
+
+    ExamFilterHistoryTestSelectorTextFieldList = {};
+
+    ExamFilterHistoryTestSelectorMenuItem = {};
+
+    ExamFilterHistoryTestDiv = {};
+
+    ExamFilterSpaceDiv = {};
+
+    ExamFilterRandomTestBtnOfStartExamButton = {};
+
+    ExamFilterRandomTestCountsOfExamValueRadio = {};
+
+    ExamFilterRandomTestCountsOfExamLabelTypography = {};
+
+    ExamFilterRandomTestCountsOfExamRadioGroupList = {};
+
+    ExamFilterRandomTestCountsOfExamFormControlLabel = {};
+
+    ExamFilterRandomTestRangeOfYearSlider = {};
+
+    ExamFilterRandomTestSpaceDiv = {};
+
+    ExamFilterRandomTestFastRangeButtonGroupList = {};
+
+    ExamFilterRandomTestFastRangeButton = {};
+
+    ExamFilterRandomTestDiv = {};
+
+    ExamFilterDiv = {};
+
+    /** => following for editorOfSubject  component  */
+
+    EditorOfSubjectAreaOfStatementUpdateButton = {};
+
+    EditorOfSubjectAreaOfStatementTotalOfClassifyQLabelOfTotalOfClassifyQTypography = {};
+
+    EditorOfSubjectAreaOfStatementTotalOfClassifyQDivWrap = {};
+
+    EditorOfSubjectAreaOfStatementTotalOfClassifyQTypography = {};
+
+    EditorOfSubjectAreaOfStatementTotalOfSubjectQLabelOfTotalOfSubjectQTypography = {};
+
+    EditorOfSubjectAreaOfStatementTotalOfSubjectQDivWrap = {};
+
+    EditorOfSubjectAreaOfStatementTotalOfSubjectQTypography = {};
+
+    EditorOfSubjectAreaOfStatementYearTextFieldList = {};
+
+    EditorOfSubjectAreaOfStatementYearMenuItem = {};
+
+    EditorOfSubjectAreaOfStatementDiv = {};
+
+    EditorOfSubjectDiv = {};
+
+    /** -------------------- functions -------------------- **/
+
+    constructor(props) {}
+
+    /** -------------------- async api -------------------- **/
 }
 
 export default new AppStyle();

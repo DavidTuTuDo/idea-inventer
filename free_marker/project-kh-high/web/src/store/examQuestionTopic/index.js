@@ -1,28 +1,21 @@
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseExamQuestionTopicStore from "./BaseExamQuestionTopicStore";
 
 class ExamQuestionTopicStore extends BaseExamQuestionTopicStore {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  getName() {
+    getName() {
+        const self = super.getName();
+        return _.isEqual(_.trim(self), "請依照題目作答") ? "" : self;
+    }
 
-    const self =  super.getName();
-    return _.isEqual(_.trim(self),'請依照題目作答') ? '': self
-  }
-
-
-
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 export default ExamQuestionTopicStore;

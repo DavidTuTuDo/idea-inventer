@@ -3,11 +3,11 @@
  email:freshingmoon0725@gmail.com
  updateTime:2021-04-23-17-02-38
  */
-import {observer, inject} from "mobx-react";
+import { observer, inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
-import {Redirect} from 'react-router-dom';
-import React from 'react';
-import moment from 'moment';
+import { Redirect } from "react-router-dom";
+import React from "react";
+import moment from "moment";
 
 @inject("main")
 @observer
@@ -15,17 +15,14 @@ class MainComponent extends BaseMainComponent {
     /** -------------------- fields -------------------- **/
     constructor(prop) {
         super(prop);
-        this.props.main.setState('stable');
+        this.props.main.setState("stable");
         setInterval(this.tick, 100);
     }
 
     getInjectViewOfMainCountdownPaper() {
         const CountdownView = this.CountdownView;
         let time = this.getStore().getExpired().getExpiredTime();
-        return <CountdownView
-            title={'距離學測'}
-            date={time}/>
-
+        return <CountdownView title={"距離學測"} date={time} />;
     }
 
     componentDidMount() {
@@ -33,7 +30,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainViewPagerImageImgClicked(param) {
-        this.gotoUrlWithNewTab(param.object.route)
+        this.gotoUrlWithNewTab(param.object.route);
     }
 
     /** 因為countdown自己會計算時間差, 所以只能藉由觸發他改變時間 */
@@ -47,8 +44,7 @@ class MainComponent extends BaseMainComponent {
             self.getStore().getExpired().setExpiredTime(newTime);
         }
         self.isOdd = !self.isOdd;
-    }
-
+    };
 
     /** -------------------- functions -------------------- **/
     /** -------------------- async api -------------------- **/

@@ -1,24 +1,22 @@
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+const edit = true;
+
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseAutoIncrementNumber from "./BaseAutoIncrementNumber";
 
 class AutoIncrementNumber extends BaseAutoIncrementNumber {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  async handleSchedule(context) {
-      this.appendLog('it really works')
-  }
+    async handleSchedule(context) {
+        this.appendLog("it really works");
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 export default new AutoIncrementNumber();

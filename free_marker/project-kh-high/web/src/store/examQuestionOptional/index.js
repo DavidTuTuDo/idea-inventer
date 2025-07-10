@@ -1,8 +1,6 @@
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+const edit = true;
+
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseExamQuestionOptionalStore from "./BaseExamQuestionOptionalStore";
@@ -16,10 +14,9 @@ class ExamQuestionOptionalStore extends BaseExamQuestionOptionalStore {
     }
 
     setReply(param) {
-        if (this.getCompleted())
-            return;
+        if (this.getCompleted()) return;
 
-        const latest = `${param}${this.getReply()}`
+        const latest = `${param}${this.getReply()}`;
         super.setReply(latest);
         if (this.isAnswerRight() || this.isAnswerWrong()) {
             this.setCompleted(true);
@@ -31,7 +28,7 @@ class ExamQuestionOptionalStore extends BaseExamQuestionOptionalStore {
         this.notifyQuestionRefresh();
     }
 
-    silentCompleted(param){
+    silentCompleted(param) {
         super.setCompleted(param);
     }
 
@@ -39,7 +36,7 @@ class ExamQuestionOptionalStore extends BaseExamQuestionOptionalStore {
     notifyQuestionRefresh = () => {
         const question = this.getParentNode();
         question.optionalValidation();
-    }
+    };
 
     isChoiceDependOnAttachImage() {
         return false;
@@ -47,7 +44,7 @@ class ExamQuestionOptionalStore extends BaseExamQuestionOptionalStore {
 
     isAnswerWrong() {
         let wrong = false;
-        const replies = this.getReply().split('');
+        const replies = this.getReply().split("");
         for (const reply of replies) {
             if (!Util.has(this.getAnswer(), reply)) {
                 wrong = true;

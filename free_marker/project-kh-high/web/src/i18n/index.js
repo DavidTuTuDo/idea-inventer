@@ -1,29 +1,21 @@
-import TW from './zh_TW';
-import CN from './zh_CN';
-import EN from './en_US';
-import {utiller as Util} from "utiller";
-import {
-    makeObservable,
-    action,
-    observable,
-    autorun,
-    computed,
-} from "mobx";
-import {Application} from "../index";
+import TW from "./zh_TW";
+import CN from "./zh_CN";
+import EN from "./en_US";
+import { utiller as Util } from "utiller";
+import { makeObservable, action, observable, autorun, computed } from "mobx";
+import { Application } from "../index";
 import _ from "lodash";
 
 class I18n {
-
     @observable
-    language = 'zh_TW';
+    language = "zh_TW";
 
     constructor() {
         makeObservable(this);
         autorun(() => {
             Util.appendInfo(`i18n autorun, current language => ${this.language}`);
             _.each(Application.getStoreObject(), (store) => store.refreshLocally());
-
-        })
+        });
     }
 
     @action
@@ -37,11 +29,11 @@ class I18n {
 
     location() {
         switch (this.language) {
-            case 'zh_TW':
+            case "zh_TW":
                 return TW;
-            case 'zh_CN':
+            case "zh_CN":
                 return CN;
-            case 'en_US':
+            case "en_US":
                 return EN;
             default:
                 return TW;

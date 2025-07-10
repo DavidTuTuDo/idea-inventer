@@ -3,22 +3,21 @@
  email:freshingmoon0725@gmail.com
  updateTime:2021-04-19-21-49-49
  */
-import {observer, inject} from "mobx-react";
+import { observer, inject } from "mobx-react";
 import BaseExamComponent from "./BaseExamComponent";
-import React from 'react';
-import {Application} from '../../index.js';
-import {utiller as Util} from "utiller";
+import React from "react";
+import { Application } from "../../index.js";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
-import Router from '../../router';
+import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfo from "../../base/BaseUserInfo";
-import Config from '../../config';
-import libpath from 'path';
+import Config from "../../config";
+import libpath from "path";
 
 @inject("exam")
 @observer
 class ExamComponent extends BaseExamComponent {
-
     constructor(props) {
         super(props);
     }
@@ -44,22 +43,22 @@ class ExamComponent extends BaseExamComponent {
     getChoiceButtonColor(choice) {
         const question = choice.getParentNode();
         if (!question.getCompleted()) {
-            return 'primary';
+            return "primary";
         }
 
         if (choice.isRightAnswer()) {
-            return 'primary';
+            return "primary";
         }
 
         if (choice.isMyWrongReply()) {
-            return 'secondary';
+            return "secondary";
         }
 
-        return 'inherit';
+        return "inherit";
     }
 
     handleStatementButtonColorBehavior(choice) {
-        const props = {}
+        const props = {};
         props.color = this.getChoiceButtonColor(choice);
         return props;
     }
@@ -67,10 +66,10 @@ class ExamComponent extends BaseExamComponent {
     handleStatementBorderWidthBehavior(choice, thin = false) {
         const mQuestionOrOptional = choice.getParentNode();
         if (!mQuestionOrOptional.getCompleted()) {
-            return choice.isSelected() ? {borderWidth: thin ? '3px' : '6px'} : {borderWidth: '2px'}
+            return choice.isSelected() ? { borderWidth: thin ? "3px" : "6px" } : { borderWidth: "2px" };
         } else {
             /** 題目已完成 */
-            return choice.isRightAnswer() ? {borderWidth: thin ? '3px' : '6px'} : {borderWidth: '2px'}
+            return choice.isRightAnswer() ? { borderWidth: thin ? "3px" : "6px" } : { borderWidth: "2px" };
         }
     }
 
@@ -93,26 +92,25 @@ class ExamComponent extends BaseExamComponent {
     componentDidMount() {
         const isFreezeUsage = !!this.props.freeze;
         if (isFreezeUsage) {
-            this.getStore().setFreezePage(true)
+            this.getStore().setFreezePage(true);
             this.clearScrollToBottomJobs();
         }
         super.componentDidMount();
-        if (isFreezeUsage)
-            this.getStore().setFreezeQuestion(this.props.question);
+        if (isFreezeUsage) this.getStore().setFreezeQuestion(this.props.question);
     }
 
     getInjectStyleOfExamQuestionChoiceDiv(choice) {
         if (choice.hasPhotos()) {
             return {
-                backgroundColor: 'rgba(0,0,0,0.1)'
-            }
+                backgroundColor: "rgba(0,0,0,0.1)"
+            };
         } else {
-            return {}
+            return {};
         }
     }
 
     getInjectStyleOfExamQuestionAlertDiv(question) {
-        return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
+        return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage());
     }
 
     onExamQuestionChoiceStatementButtonClicked(param) {
@@ -127,7 +125,7 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfExamHistoryFilterDiv(exam) {
-        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage());
     }
 
     getInjectStyleOfExamQuestionTopicOfAssistantDiv(question) {
@@ -135,39 +133,41 @@ class ExamComponent extends BaseExamComponent {
     }
 
     getInjectStyleOfExamQuestionDurationTypography(question) {
-        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage());
     }
 
     getInjectStyleOfExamQuestionReplyTimestampTypography(question) {
-        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage())
+        return Util.getVisibleOrNone(this.getStore().isHistoryWrongPage());
     }
 
     onExamQuestionCalloutHelpButtonClicked(param) {
         const self = this;
         const question = param.object;
-        this.getStore().submitConfusedQuestion(question).then((cid) => {
-            Router.gotoWhoknowzPage(self, cid);
-        })
+        this.getStore()
+            .submitConfusedQuestion(question)
+            .then((cid) => {
+                Router.gotoWhoknowzPage(self, cid);
+            });
     }
 
     onExamQuestionAddToFavoriteButtonClicked(param) {
         const self = this;
         const question = param.object;
-        this.getStore().submitToFavoriteQuestion(question).then((whatever) =>
-            self.showWarningSnackMessage(`已加入我的最愛`)
-        )
+        this.getStore()
+            .submitToFavoriteQuestion(question)
+            .then((whatever) => self.showWarningSnackMessage(`已加入我的最愛`));
     }
 
     getInjectStyleOfExamQuestionFunctionCenterDiv(question) {
-        return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage())
+        return Util.getVisibleOrHidden(question.getCompleted() && !this.getStore().isFreezePage());
     }
 
     getInjectStyleOfExamQuestionTopicOfAssistantNameTypography(topicOfAssistant) {
-        return Util.getVisibleOrNone(!_.isEmpty(topicOfAssistant.getName()))
+        return Util.getVisibleOrNone(!_.isEmpty(topicOfAssistant.getName()));
     }
 
     getInjectStyleOfExamQuestionTopicNameTypography(topic) {
-        return Util.getVisibleOrNone(!topic.getParentNode().isMathOptionalQuestion())
+        return Util.getVisibleOrNone(!topic.getParentNode().isMathOptionalQuestion());
     }
 
     onExamQuestionOptionalChoiceStatementButtonClicked(param) {
@@ -180,7 +180,6 @@ class ExamComponent extends BaseExamComponent {
     getInjectStyleOfExamQuestionSelectorOfMathFormControlLabel(selectorOfMath) {
         return Util.getVisibleOrNone(false);
     }
-
 
     /** -------------------- async api -------------------- **/
 }

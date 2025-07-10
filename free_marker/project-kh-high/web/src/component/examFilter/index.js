@@ -1,16 +1,12 @@
 const edit = true;
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import Cookie from '../../cookie';
-import {observer} from "mobx-react";
-import {inject} from "mobx-react";
+import Cookie from "../../cookie";
+import { observer } from "mobx-react";
+import { inject } from "mobx-react";
 import BaseExamFilterComponent from "./BaseExamFilterComponent";
-import Router from '../../router';
+import Router from "../../router";
 
 @inject("examFilter")
 @observer
@@ -20,7 +16,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     constructor(props) {
         super(props);
-        this.subjectName = '';
+        this.subjectName = "";
     }
 
     componentDidMount() {
@@ -29,8 +25,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
         if (enterPoint !== undefined) {
             const route = enterPoint.route;
             if (route.startsWith(`dialog`)) {
-                this.getStore().setSubject(this.getTitle());
-                this.subjectName = route.split(':').pop();
+                this.subjectName = route.split(":").pop();
             } else {
                 this.handleCustomRouter(route);
                 this.dismiss();
@@ -40,8 +35,7 @@ class ExamFilterComponent extends BaseExamFilterComponent {
 
     getSubjectName() {
         let result = this.subjectName.trim();
-        if (_.isEqual(result, '數學(舊制)'))
-            result = '數學';
+        if (_.isEqual(result, "數學(舊制)")) result = "數學";
         return result;
     }
 
@@ -50,54 +44,51 @@ class ExamFilterComponent extends BaseExamFilterComponent {
     }
 
     getInjectStyleOfExamFilterHistoryTestDiv(examFilter) {
-        return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), '綜合題目'))
-    }
-
-    onExamFilterCloseButtonClicked(param) {
-        this.dismiss();
+        return Util.getVisibleOrNone(!_.isEqual(this.getTitle(), "綜合題目"));
     }
 
     gotoExamPageWithCookie = (obj) => {
         this.dismiss();
         Util.syncDelay(50).then((result) => {
             Cookie.setExamFilter(obj);
-            Router.gotoExamPage(this.getComponentInstance())
-        })
-    }
+            Router.gotoExamPage(this.getComponentInstance());
+        });
+    };
 
     getInjectPropsOfExamFilterRandomTestRangeOfYearSlider(randomTest) {
         return {
             min: this.getStore().getExamHistoryInfo().getMinYear(),
             max: this.getStore().getExamHistoryInfo().getMaxYear(),
             step: this.getStore().getExamHistoryInfo().getStep(),
-            marks: this.getStore().getExamHistoryInfo().getMarks(),
-        }
+            marks: this.getStore().getExamHistoryInfo().getMarks()
+        };
     }
 
     onExamFilterHistoryTestBtnWithHistoryButtonClicked = (param) => {
         const result = {
             range: [this.getStore().getHistoryTest().getSelectedSelector()],
-            type: 'history',
-            subject: this.getSubjectName(),
+            type: "history",
+            subject: this.getSubjectName()
         };
         this.gotoExamPageWithCookie(result);
-    }
-
+    };
 
     onExamFilterRandomTestBtnOfStartExamButtonClicked = (param) => {
         const range = this.getStore().getRandomTest().getRangeOfYear();
         const countsOfExam = this.getStore().getRandomTest().getSelectedCountsOfExam();
-        const result = {range, countsOfExam, type: 'random', subject: this.getSubjectName()};
+        const result = { range, countsOfExam, type: "random", subject: this.getSubjectName() };
         this.gotoExamPageWithCookie(result);
-    }
+    };
 
-    onExamFilterRandomTestFastRangeButtonClicked(param) {
-        this.validateRangeByValue(param.object.value)
+    onExamFilterRandomTestFastRangeButtonClicked(value, param) {
+        this.validateRangeByValue(param.object.value);
     }
 
     validateRangeByValue(value) {
         const max = this.getStore().getExamHistoryInfo().getMaxYear();
-        this.getStore().getRandomTest().setRangeOfYear([max - value, max])
+        this.getStore()
+            .getRandomTest()
+            .setRangeOfYear([max - value, max]);
     }
 
     /** -------------------- async api -------------------- **/

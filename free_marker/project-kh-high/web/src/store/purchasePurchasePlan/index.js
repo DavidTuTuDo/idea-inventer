@@ -1,24 +1,22 @@
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+const edit = true;
+
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BasePurchasePurchasePlanStore from "./BasePurchasePurchasePlanStore";
 
 class PurchasePurchasePlanStore extends BasePurchasePurchasePlanStore {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  isTitle(){
-    return _.isEqual(this.getPid(),-1);
-  }
+    isTitle() {
+        return _.isEqual(this.getPid(), -1);
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 export default PurchasePurchasePlanStore;

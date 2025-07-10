@@ -1,8 +1,6 @@
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+const edit = true;
+
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseExamQuestionOptionalChoiceStore from "./BaseExamQuestionOptionalChoiceStore";
@@ -20,18 +18,17 @@ class ExamQuestionOptionalChoiceStore extends BaseExamQuestionOptionalChoiceStor
     }
 
     isSelected() {
-        return Util.has(this.getOption().getReply(),this.getStatement());
+        return Util.has(this.getOption().getReply(), this.getStatement());
     }
 
     isRightAnswer() {
         /** 選項在reply裏面, 也在Answer裏面 */
-        return this.getOption().getCompleted() && Util.has(this.getOption().getAnswer(), this.getStatement())
+        return this.getOption().getCompleted() && Util.has(this.getOption().getAnswer(), this.getStatement());
     }
 
     isMyWrongReply() {
         /** 選項在reply裏面, 但也在Answer裏面 */
-        return this.getOption().getCompleted() &&
-            (Util.has(this.getOption().getReply(), this.getStatement()) && !Util.has(this.getOption().getAnswer(), this.getStatement()))
+        return this.getOption().getCompleted() && Util.has(this.getOption().getReply(), this.getStatement()) && !Util.has(this.getOption().getAnswer(), this.getStatement());
     }
 
     /** -------------------- async api -------------------- **/
