@@ -155,7 +155,7 @@ class MobileStyle {
 
     IreneTextsIndexSetterRowGoTopChip = {};
 
-    IreneTextsIndexSetterRowContentTypography = {};
+    IreneTextsIndexSetterRowLabelTypography = {};
 
     IreneTextsIndexSetterRowBelongDivWrap = {};
 
@@ -861,13 +861,9 @@ class MobileStyle {
 
     DionysusPlutusMainLocationMainTailDiv = {};
 
-    DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
-
     DionysusPlutusMainLocationMainHeadDistrictTextFieldList = {};
 
     DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
-
-    DionysusPlutusMainLocationMainHeadCityMenuItem = {};
 
     DionysusPlutusMainLocationMainHeadCityTextFieldList = {};
 
@@ -1276,8 +1272,6 @@ class MobileStyle {
     AccountFuncAreaOfEditLogoutButton = {};
 
     AccountFuncAreaOfEditCopyUserIdButton = {};
-
-    AccountFuncAreaOfEditLangMenuItem = {};
 
     AccountFuncAreaOfEditLangTextFieldList = {};
 

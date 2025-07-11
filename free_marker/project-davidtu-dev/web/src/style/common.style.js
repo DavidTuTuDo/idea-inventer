@@ -155,7 +155,7 @@ class CommonStyle {
 
     IreneTextsIndexSetterRowGoTopChip = {};
 
-    IreneTextsIndexSetterRowContentTypography = {};
+    IreneTextsIndexSetterRowLabelTypography = {};
 
     IreneTextsIndexSetterRowBelongDivWrap = {};
 
@@ -861,13 +861,9 @@ class CommonStyle {
 
     DionysusPlutusMainLocationMainTailDiv = {};
 
-    DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
-
     DionysusPlutusMainLocationMainHeadDistrictTextFieldList = {};
 
     DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
-
-    DionysusPlutusMainLocationMainHeadCityMenuItem = {};
 
     DionysusPlutusMainLocationMainHeadCityTextFieldList = {};
 
@@ -1276,8 +1272,6 @@ class CommonStyle {
     AccountFuncAreaOfEditLogoutButton = {};
 
     AccountFuncAreaOfEditCopyUserIdButton = {};
-
-    AccountFuncAreaOfEditLangMenuItem = {};
 
     AccountFuncAreaOfEditLangTextFieldList = {};
 

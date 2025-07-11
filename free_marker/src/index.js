@@ -33,9 +33,9 @@ const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
-let CURRENT_PROJECT = './project-kh-high';
+// let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
-// let CURRENT_PROJECT = './project-davidtu-dev';
+let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
@@ -1471,7 +1471,7 @@ class CodegenNode {
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
         return ['plural', 'example', 'propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
-            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle',
+            'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle', 'useCartie',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n', 'setsOfComponentProp']
     }
 
@@ -7126,6 +7126,8 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`host`, JSON.stringify(this.isProduction() ? sourceObj.host.prod : sourceObj.host.dev));
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
+
+
         const version = Util.getStringOfVersionIncrement(Util.getVersionOfJsFile(this.pathOfSourceJS));
         baseConfigGenerator.appendField(`VERSION_OF_PACKAGE_JSON`, JSON.stringify(version));
         Util.appendInfo(`75645461 VERSION_OF_PACKAGE_JSON ==> ${version}`);
@@ -7147,6 +7149,7 @@ class ProjectFileHandler extends PathBase {
                     baseConfigGenerator.appendField(`password`, JSON.stringify(sourceObj.password));
                 const trueOrFalse = sourceObj.navigation && sourceObj.navigation.isScrollingHide
                 baseConfigGenerator.appendField(`isScrollingHide`, JSON.stringify(trueOrFalse));
+                baseConfigGenerator.appendField(`useCartie`, JSON.stringify(_.isEqual(sourceObj.useCartie, true)));
                 break;
         }
 

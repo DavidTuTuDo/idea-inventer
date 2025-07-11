@@ -19,7 +19,7 @@ class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
-        const booze = collection.booze;
+        const booze = (collection ?? {}).booze;
         if (!Util.isUndefinedNullEmpty(booze)) {
             const banners = booze.photos.map((photo) => {
                 return {

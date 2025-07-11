@@ -558,17 +558,6 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditLangMenuItem {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
 .AccountFuncAreaOfEditCopyUserIdButton {
     @media @mobile {
         /** empty style */
@@ -698,6 +687,7 @@
 }
 .DionysusBoozeDiv {
     width: 48%;
+    aspect-ratio: 1 / 1;
     @media @mobile {
         /** empty style */
     }
@@ -737,7 +727,11 @@
 }
 .DionysusBoozePhotoOfDemoImg {
     width: 100%;
+    aspect-ratio: 1 / 1;
     border-radius: 5px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
     @media @mobile {
         /** empty style */
     }
@@ -1298,6 +1292,9 @@
 }
 .DionysusBacchusDetailContentPhotoHrefImg {
     width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    object-position: center;
     @media @mobile {
         /** empty style */
     }
@@ -3009,17 +3006,6 @@
         /** empty style */
     }
 }
-.DionysusPlutusMainLocationMainHeadCityMenuItem {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
 .DionysusPlutusMainLocationMainHeadDistrictMenuItem {
     @media @mobile {
         /** empty style */
@@ -3033,17 +3019,6 @@
 }
 .DionysusPlutusMainLocationMainHeadDistrictTextFieldList {
     width: 48%;
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusPlutusMainLocationMainHeadDistrictMenuItem {
     @media @mobile {
         /** empty style */
     }
@@ -7064,8 +7039,7 @@
         /** empty style */
     }
 }
-.IreneTextsIndexSetterRowContentTypography {
-    width: 62%;
+.IreneTextsIndexSetterRowLabelTypography {
     @media @mobile {
         /** empty style */
     }
@@ -7073,7 +7047,7 @@
         /** empty style */
     }
     @media @desktop {
-        width: 50%;
+        /** empty style */
     }
 }
 .IreneTextsIndexSetterRowGoTopChip {
@@ -7880,5 +7854,57 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+/** ======== following for homeless ========= */
+
+.IreneTextsIndexSetterRowContentTypography {
+    width: 62%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 50%;
+    }
+}
+.NavigatorToolBarLoginButton {
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarAccountHeadAccountCircle {
+    height: 40px;
+    width: 40px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarCompleteInputTextField {
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.3);
+    @media @mobile {
+        width: 95%;
+    }
+    @media @tablet {
+        width: 95%;
+    }
+    @media @desktop {
+        width: 70%;
+        max-width: 500px;
     }
 }

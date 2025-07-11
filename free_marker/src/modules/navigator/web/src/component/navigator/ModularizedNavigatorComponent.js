@@ -6,6 +6,7 @@ import Router from "../../router";
 import { utiller as Util } from "utiller";
 import UserInfo from "../../base/BaseUserInfo";
 import React from "react";
+import Config from "../../config";
 import { List, ListItemText, IconButton, ListItemIcon, ListItem, Typography, Avatar } from "@mui/material";
 import Collapse from "@mui/material/Collapse";
 import _ from "lodash";
@@ -173,7 +174,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorCartieIconButton(toolBar) {
-        return Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0, true);
+        return Config.useCartie && Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0, true);
     }
 }
 

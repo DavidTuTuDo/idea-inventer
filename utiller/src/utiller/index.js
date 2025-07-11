@@ -3100,6 +3100,38 @@ class Utiller {
           .value(); // 7. 輸出處理完成的物件陣列
     };
 
+    /**
+     * 比對 values 是否出現在 sourceArray 的指定欄位中，並標記 flagKey 欄位
+     *
+     * @param {Array} values - 要比對的值陣列，例如: [1, 3]
+     * @param {Array} sourceArray - 要處理的物件陣列
+     * @param {string} [valueKey='value'] - 要比對的欄位名稱，預設為 'value'
+     * @param {string} [flagKey='belong'] - 回傳中標記的欄位名稱，預設為 'belong'
+     * @returns {Array} 處理後的陣列
+     *           const B = [
+     *               { value: 1, label: 'hi' },
+     *               { value: 2, label: 'hii' },
+     *               { value: 3, label: 'hiii' }
+     *           ];
+     *           console.log(utiller.getItemsOfMarkMatching( B,[1]))
+     *           [
+     *            { value: 1, label: 'hi', belong: true },
+     *            { value: 2, label: 'hii', belong: false },
+     *            { value: 3, label: 'hiii', belong: false }
+     *          ]
+     **/
+    getItemsOfMarkMatching = (
+      sourceArray= [],
+      values= [],
+      valueKey = 'value',
+      flagKey = 'belong'
+    ) => {
+        const valuesSet = new Set(values); // 使用 Set 提高效能
+        return _.map(sourceArray, (item) => ({
+            ...item,
+            [flagKey]: valuesSet.has(item[valueKey]),
+        }));
+    };
 
 }
 

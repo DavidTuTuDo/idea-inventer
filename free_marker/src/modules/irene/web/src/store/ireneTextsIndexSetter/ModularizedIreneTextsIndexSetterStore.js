@@ -21,9 +21,26 @@ class ModularizedIreneTextsIndexSetterStore extends BaseIreneTextsIndexSetterSto
         super(props);
     }
 
+    async onInitialFetchCompleted(collection) {
+        const result = await super.onInitialFetchCompleted(collection);
+        await this.fetchListOfTab();
+    }
+
+    fetchListOfTab = async () => {
+        const functionOfFetchTexts = this.getComponent().getStore().fetchTextsOfIndexSetter;
+        if (_.isFunction(functionOfFetchTexts)) this.setRows(...(await functionOfFetchTexts()));
+        else Util.appendError(`87456646 ${this.getComponent().getComponentName()} not implement 'fetchTextsOfIndexSetter()'`);
+    };
+
     @action
     modifyTabOrder2Top(tab) {
         Util.mutateIndexOfArrayItem(this.getRows(), tab);
+    }
+
+    async onTextsOfIndexUpdateExecuted() {
+        const functionOfSubmitTexts = this.getComponent().getStore().submitTextsOfIndexSetter;
+        if (_.isFunction(functionOfSubmitTexts)) await functionOfSubmitTexts(this.getRows().map((each) => each.columnData()));
+        else Util.appendError(`87456646 ${this.getComponent().getComponentName()} not implement 'submitTextsOfIndexSetter()'`);
     }
 
     /** -------------------- async api -------------------- **/

@@ -5,7 +5,9 @@ import _ from "lodash";
 import libpath from "path";
 import BaseDionysusGaiaStore from "./BaseDionysusGaiaStore";
 import Booze from "../dionysusBooze";
+import DionysusTab from "../dionysusSelect";
 import Image from "../dionysusBoozePhoto";
+import { action } from "mobx";
 
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
@@ -39,6 +41,7 @@ const textsFetchConfig = {
 class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     constructor(props) {
         super(props);
+        this.apiOfTabs = new DionysusTab();
         this.apiOfBooze = new Booze();
         this.apiOfImage = new Image();
     }
@@ -48,14 +51,19 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const id = this.getParamOfPidInPath();
         if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
 
-        if (booze && booze.id) {
-            this.setIdOfBooze(booze.id);
-            this.setName(booze.name);
-            this.setStatement(booze.statement);
-            this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
-            this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
-            this.setBriefPhotos(...booze.photos);
-        }
+        if (id) this.setIdOfBooze(booze.id);
+
+        if (booze && booze.id) this.validateBooze(booze);
+    }
+
+    @action
+    validateBooze(booze) {
+        this.setIdOfBooze(booze.id);
+        this.setName(booze.name);
+        this.setStatement(booze.statement);
+        this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
+        this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
+        this.setBriefPhotos(...booze.photos);
     }
 
     getOptionsOfBrief = (booze, type = "main") => {
@@ -149,7 +157,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     handleIdOfBooze = async () => {
-        let id = this.getIdOfBooze();
+        const id = this.getIdOfBooze();
         if (_.isNil(id) || _.isEmpty(id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent());
@@ -157,9 +165,20 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         }
     };
 
+    recoverBooze4Sure = async () => {
+        const booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), this.getIdOfBooze());
+        this.validateBooze(booze);
+        this.getComponent().showInfoSnackMessage(`已成功復原`);
+    };
+
+    deleteBooze4Sure = async () => {
+        await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
+        this.getComponent().showInfoSnackMessage(`已成功刪除`);
+    };
+
     createBooze4Sure = async () => {
         await this.handleIdOfBooze();
-        await this.apiOfBooze.updateBoozeItem(
+        const result = await this.apiOfBooze.updateBoozeItem(
             this.getComponent(),
             {
                 name: this.getName(),
@@ -186,8 +205,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             },
             this.getIdOfBooze()
         );
-        this.setBooze(Util.mergeObject(this.getBooze(), result.value));
+        await this.invalidateBooze(result.value);
         this.getComponent().showInfoSnackMessage(`成功創立「${this.getName()}」商品`);
+    };
+
+    invalidateBooze = (object) => {
+        this.setBooze(Util.mergeObject(this.getBooze(), object));
     };
 
     getHandledAttribute = (attrs) => {
@@ -223,13 +246,35 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
      *   { value: '', label: 'c' },
      *   { value: 'x12', label: 'd' }
      * ]
-     *
      */
     matchLabelsWithFallback = (strings, specifyAttribute) => {
         const labelMap = _.keyBy((specifyAttribute ?? {}).options || [], "label");
         return strings.map((label) => {
             return labelMap[label] || { value: "", label };
         });
+    };
+
+    /** indexSetter的call function */
+    fetchTextsOfIndexSetter = async () => {
+        const indexOfSelected = this.getBooze().category ?? [];
+        const tabs = (await this.apiOfTabs.fetchSelects(this.getComponent())) ?? [];
+        // console.log('indexOfSelected  ',indexOfSelected);
+        // console.log('tabs', tabs);
+        return Util.getItemsOfMarkMatching(tabs, indexOfSelected);
+    };
+
+    submitTextsOfIndexSetter = async (rows) => {
+        // console.log(rows);
+        await this.handleIdOfBooze();
+        const indexesOfCategory = _.filter(rows, (row) => _.isEqual(true, row.belong)).map((each) => each.value);
+        const tabsOfSubmit = rows.map((row) => {
+            delete row.belong;
+            return row;
+        });
+        console.log("submit tabs:", tabsOfSubmit);
+        await this.apiOfTabs.submitSelects(this.getComponent(), tabsOfSubmit);
+        const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { category: indexesOfCategory }, this.getIdOfBooze());
+        this.invalidateBooze(result.value);
     };
 }
 

@@ -46,6 +46,14 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         if (sub !== undefined) sub.remove();
     }
 
+    getInjectStyleOfDionysusGaiaRecoverChip(dionysusGaia) {
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(this.getStore().getIdOfBooze()), true);
+    }
+
+    getInjectStyleOfDionysusGaiaDeletedChip(dionysusGaia) {
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(this.getStore().getIdOfBooze()), true);
+    }
+
     onDionysusGaiaNameTextFieldChange(param) {
         this.getStore().onNameFieldChanged();
     }
@@ -63,12 +71,15 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         this.getStore().createBooze4Sure().then();
     }
 
-    onDionysusGaiaBackupChipClicked(param) {
-        /** 草稿一個booze */
+    onDionysusGaiaRecoverChipClicked(param) {
+        this.getStore().recoverBooze4Sure().then();
     }
 
-    onDionysusGaiaLeaveChipClicked(param) {
-        /** 離開創立booze畫面 */
+    onDionysusGaiaDeletedChipClicked(param) {
+        const self = this;
+        this.getStore()
+            .deleteBooze4Sure()
+            .then(() => Router.gotoDionysusPage(self));
     }
 
     isValidOfParamOfPid(pid) {

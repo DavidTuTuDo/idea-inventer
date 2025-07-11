@@ -2,14 +2,6 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import i18n from "../../i18n";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { Application } from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
 import BaseIreneTextsIndexSetterComponent from "./BaseIreneTextsIndexSetterComponent";
 
 class ModularizedIreneTextsIndexSetterComponent extends BaseIreneTextsIndexSetterComponent {
@@ -22,7 +14,9 @@ class ModularizedIreneTextsIndexSetterComponent extends BaseIreneTextsIndexSette
     }
 
     onIreneTextsIndexSetterUpdateChipClicked(param) {
-        /** 更新順序 */
+        this.getStore()
+            .onTextsOfIndexUpdateExecuted()
+            .then(() => this.dismiss());
     }
 
     onIreneTextsIndexSetterLeaveChipClicked(param) {
