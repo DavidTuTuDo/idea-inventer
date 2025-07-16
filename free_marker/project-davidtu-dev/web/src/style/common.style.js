@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -541,6 +543,38 @@ class CommonStyle {
 
     DionysusVariantPhotoSetterPaper = {};
 
+    /** => following for priceSetter  component  */
+
+    DionysusPriceSetterFuncLeaveChip = {};
+
+    DionysusPriceSetterFuncBatchUpdateChip = {};
+
+    DionysusPriceSetterFuncDiv = {};
+
+    DionysusPriceSetterVariantCommonChip = {};
+
+    DionysusPriceSetterVariantUpdateIconRefreshRounded = {};
+
+    DionysusPriceSetterVariantUpdateIconButton = {};
+
+    DionysusPriceSetterVariantRowPriceB4DiscountTextField = {};
+
+    DionysusPriceSetterVariantRowPriceTextField = {};
+
+    DionysusPriceSetterVariantRowDiv = {};
+
+    DionysusPriceSetterVariantLabelOfVariantDivWrap = {};
+
+    DionysusPriceSetterVariantLabelOfVariantTypography = {};
+
+    DionysusPriceSetterVariantDivList = {};
+
+    DionysusPriceSetterVariantDiv = {};
+
+    DionysusPriceSetterDivWrap = {};
+
+    DionysusPriceSetterPaper = {};
+
     /** => following for quantitySetter  component  */
 
     DionysusQuantitySetterFuncLeaveChip = {};
@@ -678,6 +712,20 @@ class CommonStyle {
     DionysusGaiaAreaOfQuantitySetDivWrap = {};
 
     DionysusGaiaAreaOfQuantitySetDiv = {};
+
+    DionysusGaiaAreaOfPriceSetArrowOfPriceSetIconNavigateNext = {};
+
+    DionysusGaiaAreaOfPriceSetArrowOfPriceSetReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfPriceSetArrowOfPriceSetIconButton = {};
+
+    DionysusGaiaAreaOfPriceSetOptionOfPriceSetContentTypography = {};
+
+    DionysusGaiaAreaOfPriceSetOptionOfPriceSetTitleTypography = {};
+
+    DionysusGaiaAreaOfPriceSetDivWrap = {};
+
+    DionysusGaiaAreaOfPriceSetDiv = {};
 
     DionysusGaiaAreaOfSubBriefSubLabelChip = {};
 

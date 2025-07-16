@@ -5,8 +5,9 @@ import _ from "lodash";
 import libpath from "path";
 import BaseDionysusGaiaStore from "./BaseDionysusGaiaStore";
 import Booze from "../dionysusBooze";
+import BoozeVariant from "../dionysusBoozeVariant";
 import DionysusTab from "../dionysusSelect";
-import Image from "../dionysusBoozePhoto";
+import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
@@ -43,17 +44,22 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         super(props);
         this.apiOfTabs = new DionysusTab();
         this.apiOfBooze = new Booze();
-        this.apiOfImage = new Image();
+        this.apiOfImage = new BoozeImage();
+        this.apiOfVariant = new BoozeVariant();
     }
 
     async onInitialFetchCompleted(collection) {
         let booze = this.getBooze();
         const id = this.getParamOfPidInPath();
         if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
-
         if (id) this.setIdOfBooze(booze.id);
-
         if (booze && booze.id) this.validateBooze(booze);
+        this.validateSubMainValues();
+    }
+
+    validateSubMainValues() {
+        this.setBriefMains(...Util.getArrayOfFillMissingValues(this.getBriefMains()));
+        this.setBriefSubs(...Util.getArrayOfFillMissingValues(this.getBriefSubs()));
     }
 
     @action
@@ -77,7 +83,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             strings
         );
         this.pushBriefMains(
-            ...this.matchLabelsWithFallback(
+            ...this.getAttributesOfMatchLabels(
                 uniques,
                 _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "main"))
             )
@@ -90,7 +96,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             strings
         );
         this.pushBriefSubs(
-            ...this.matchLabelsWithFallback(
+            ...this.getAttributesOfMatchLabels(
                 uniques,
                 _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "sub"))
             )
@@ -173,6 +179,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     deleteBooze4Sure = async () => {
         await this.apiOfBooze.deleteBoozeItem(this.getComponent(), this.getIdOfBooze());
+        await this.apiOfVariant.deleteVariants(this.getComponent(), true, this.getIdOfBooze());
         this.getComponent().showInfoSnackMessage(`已成功刪除`);
     };
 
@@ -189,12 +196,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                     {
                         key: "main",
                         label: "",
-                        options: this.getHandledAttribute(this.getBriefMains().map((each) => each.columnData()))
+                        options: Util.getArrayOfFillMissingValues(this.getBriefMains().map((each) => each.columnData()))
                     },
                     {
                         key: "sub",
                         label: "",
-                        options: this.getHandledAttribute(this.getBriefSubs().map((each) => each.columnData()))
+                        options: Util.getArrayOfFillMissingValues(this.getBriefSubs().map((each) => each.columnData()))
                     }
                 ]
 
@@ -213,23 +220,6 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setBooze(Util.mergeObject(this.getBooze(), object));
     };
 
-    getHandledAttribute = (attrs) => {
-        return Util.getArrayOfFillMissingValues(attrs);
-    };
-
-    appendQuantityOfSet() {
-        /** 針對某個商品的組合(黑-XL)調整數量，必須用atomic，例如當前數量是10，要增加到500，就要atomic增加490！  */
-    }
-
-    updateMainSubAttr() {
-        /** 更新的時候，就不能刪除既有的主項目｜副項目  */
-        /** 可以新增，也要記得提醒當前數量為0  */
-    }
-
-    setIndexOfTabSelected() {
-        /** 商品在哪個Tab底下，可以複選，所有商品是預設值 */
-    }
-
     /**
      * 預想用戶可能會刪掉原本的選項，然後再加入相同的選項，這個情況下，應該要維持value(uid)的一致性
      * const labels = ['a', 'b', 'c', 'd'];
@@ -247,7 +237,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
      *   { value: 'x12', label: 'd' }
      * ]
      */
-    matchLabelsWithFallback = (strings, specifyAttribute) => {
+    getAttributesOfMatchLabels = (strings, specifyAttribute) => {
         const labelMap = _.keyBy((specifyAttribute ?? {}).options || [], "label");
         return strings.map((label) => {
             return labelMap[label] || { value: "", label };
@@ -258,23 +248,51 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     fetchTextsOfIndexSetter = async () => {
         const indexOfSelected = this.getBooze().category ?? [];
         const tabs = (await this.apiOfTabs.fetchSelects(this.getComponent())) ?? [];
-        // console.log('indexOfSelected  ',indexOfSelected);
-        // console.log('tabs', tabs);
         return Util.getItemsOfMarkMatching(tabs, indexOfSelected);
     };
 
     submitTextsOfIndexSetter = async (rows) => {
-        // console.log(rows);
         await this.handleIdOfBooze();
         const indexesOfCategory = _.filter(rows, (row) => _.isEqual(true, row.belong)).map((each) => each.value);
         const tabsOfSubmit = rows.map((row) => {
             delete row.belong;
             return row;
         });
-        console.log("submit tabs:", tabsOfSubmit);
         await this.apiOfTabs.submitSelects(this.getComponent(), tabsOfSubmit);
         const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { category: indexesOfCategory }, this.getIdOfBooze());
         this.invalidateBooze(result.value);
+    };
+
+    getVariantsOfCombination = async () => {
+        /** label, id:main(value)-sub(value), quantity, priceB4, price, photo */
+        await this.handleIdOfBooze();
+        const variants = Util.renameKeysInArray(Util.generateVariants([this.getBriefMains(), this.getBriefSubs()]), ["label", "labelOfVariant"], ["value", "id"]);
+        const variantsOfRemote = (await this.apiOfVariant.fetchVariants(this.getComponent(), this.getIdOfBooze())) ?? [];
+        const latest = Util.getArrayOfMergeBySpecificId(variants, variantsOfRemote);
+        Util.appendInfo(latest);
+        return latest;
+    };
+
+    onVariantQuantityUpdate = async (variant) => {
+        this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
+        this.getComponent().dismiss();
+    };
+
+    onVariantsQuantityUpdate = async (variants) => {
+        this.getComponent().showSuccessSnackMessage(`已更新數量`);
+    };
+
+    onVariantPriceUpdate = async (variant) => {
+        this.getComponent().showSuccessSnackMessage(`已更新價格`);
+    };
+
+    onVariantsPriceUpdate = async (variants) => {
+        this.getComponent().showSuccessSnackMessage(`已更新全部價格`);
+        this.getComponent().dismiss();
+    };
+
+    onVariantPhotoUpdate = async (variant) => {
+        this.getComponent().showSuccessSnackMessage(`已更新圖片`);
     };
 }
 

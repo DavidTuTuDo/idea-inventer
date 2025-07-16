@@ -10,9 +10,13 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
-import BaseDionysusQuantitySetterStore from "./BaseDionysusQuantitySetterStore";
+import BaseDionysusPriceSetterStore from "./BaseDionysusPriceSetterStore";
 
-class ModularizedDionysusQuantitySetterStore extends BaseDionysusQuantitySetterStore {
+class ModularizedDionysusPriceSetterStore extends BaseDionysusPriceSetterStore {
+    /** -------------------- fields -------------------- **/
+
+    /** -------------------- functions -------------------- **/
+
     constructor(props) {
         super(props);
     }
@@ -21,6 +25,8 @@ class ModularizedDionysusQuantitySetterStore extends BaseDionysusQuantitySetterS
         const variants = await this.getComponent().getStore().getVariantsOfCombination();
         this.setVariants(...variants);
     }
+
+    /** -------------------- async api -------------------- **/
 }
 
-export default ModularizedDionysusQuantitySetterStore;
+export default ModularizedDionysusPriceSetterStore;

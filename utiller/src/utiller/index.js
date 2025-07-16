@@ -2879,114 +2879,7 @@ class Utiller {
         return cloned;
     };
 
-    /** ------------------------------------------------------------------------------------- 起始UID-COMBINATION
-     * 建立組合清單及 UID 映射清單
-     *
-     * 原始資料組合
-     * const array1 = ['黑色', '綠色']
-     * const array2 = ['S', 'M']
-     * const array3 = ['短袖', '長袖']
-     *
-     * 產生 UID 清單
-     * const uidList = generateUidCombinations([array1, array2, array3])
-     *
-     * console.log('📦 所有組合的 UID 對照：')
-     * console.log(uidList)
-     *
-     * 建立查詢表（可選）
-     * const lookupTable = buildLookupTable(uidList)
-     *
-     * 任選一個 UID 測試還原
-     * const sampleUid = Object.keys(uidList[2])[0]
-     * console.log('\n🔍 測試 UID:', sampleUid)
-     * console.log('✅ 還原結果:', getOriginalFromUid(sampleUid, lookupTable))
-     *
-     */
-    /**
-     * 產生所有排列組合並轉成 Firestore-safe UID
-     * @param {string[][]} arrays - 字串陣列的陣列，例如 [['黑色', '綠色'], ['S', 'M']]
-     * @param {string} separator - 分隔符號，預設為 ' | '
-     * @returns {Array<{[uid: string]: string}>} - 每個 UID 對應一組原始組合的對照表陣列
-     */
-    generateUidCombinations(arrays, separator = ' | ') {
-        if (!arrays.length) return []
-
-        // 過濾每個子陣列中的 null、undefined、空字串
-        const sanitizedArrays = arrays
-          .map(group => group.filter(item => item !== null && item !== undefined && item !== ''))
-          .filter(group => group.length > 0) // 移除空子陣列
-
-        // 若最終沒東西，回傳空
-        if (sanitizedArrays.length === 0) return []
-
-        // 只有一組有效子陣列，直接映射
-        if (sanitizedArrays.length === 1) {
-            return sanitizedArrays[0].map(str => {
-                const uid = this.encodeToUid(str)
-                return { [uid]: str }
-            })
-        }
-
-        // 多組時進行組合
-        const [first, ...rest] = sanitizedArrays
-        const combinations = rest.reduce(
-          (acc, curr) =>
-            _.flatMap(acc, a =>
-              curr.map(b =>
-                (Array.isArray(a) ? a.join(separator) : a) + separator + b
-              )
-            ),
-          first
-        )
-
-        return combinations.map(str => {
-            const uid = this.encodeToUid(str)
-            return { [uid]: str }
-        })
-    }
-
-    /**
-     * 快速建立 UID -> 組合 對照表（Object）
-     */
-    buildLookupTable(uidList) {
-        return uidList.reduce((acc, item) => {
-            const [uid, value] = Object.entries(item)[0]
-            acc[uid] = value
-            return acc
-        }, {})
-    }
-
-    /**
-     * 根據 UID 還原原始組合（透過對照表或解碼備援）
-     */
-    getOriginalFromUid(uid, lookupTable) {
-        return lookupTable?.[uid] || this.decodeFromUid(uid) || null
-    }
-
-    /**
-     * 編碼成 Firestore-safe UID（Base64 URL 安全版，可還原）
-     */
-    encodeToUid = (str) => {
-        const utf8Bytes = new TextEncoder().encode(str)
-        const base64 = btoa(String.fromCharCode(...utf8Bytes))
-        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
-    }
-
-    /**
-     * 解碼 UID 回原始組合
-     */
-    decodeFromUid = (uid) => {
-        const base64 = uid.replace(/-/g, '+').replace(/_/g, '/')
-        const binary = atob(base64)
-        const bytes = Uint8Array.from(binary, c => c.charCodeAt(0))
-        return new TextDecoder().decode(bytes)
-    }
-
-
-    /** ------------------------------------------------------------------------------------- 結束UID-COMBINATION */
-
-
-    /**
+     /**
      * const input = [
      *   { value: 'xx0132', label: 'A款' },
      *   { value: 'y1y123', label: 'B款' },
@@ -3132,6 +3025,135 @@ class Utiller {
             [flagKey]: valuesSet.has(item[valueKey]),
         }));
     };
+
+    /**
+     * 將多維屬性陣列進行排列組合，輸出為組合 label 和 value。
+     * @param {Array<Array<{label: string, value: string}>>} arrays - 多個陣列，每個陣列包含 {label, value}
+     * @param {string} labelSeparator - 標籤用的分隔符號（預設為 '｜'）
+     * @param {string} valueSeparator - 值用的分隔符號（預設為 '-'）
+     * @returns {Array<{label: string, value: string}>}
+     *
+     * const arrays = [
+     *   [
+     *     { label: '紅', value: '1b' },
+     *     { label: '黑', value: 'ca' }
+     *   ],
+     *   [
+     *     { label: 'M號', value: 'f2' },
+     *     { label: 'L號', value: 'q5' }
+     *   ],
+     *   [
+     *     { label: '短袖', value: 's1' },
+     *     { label: '長袖', value: 's2' }
+     *   ]
+     * ];
+     * output
+     * [
+     *   { label: '紅｜M號｜短袖', value: '1b-f2-s1' },
+     *   { label: '紅｜M號｜長袖', value: '1b-f2-s2' },
+     *   { label: '紅｜L號｜短袖', value: '1b-q5-s1' },
+     *   { label: '紅｜L號｜長袖', value: '1b-q5-s2' },
+     *   { label: '黑｜M號｜短袖', value: 'ca-f2-s1' },
+     *   { label: '黑｜M號｜長袖', value: 'ca-f2-s2' },
+     *   { label: '黑｜L號｜短袖', value: 'ca-q5-s1' },
+     *   { label: '黑｜L號｜長袖', value: 'ca-q5-s2' }
+     * ]     *
+     */
+    /**
+     * 產生排列組合（容忍空陣列，將非空單一陣列視為結果）
+     * @param {Array<Array<{label: string, value: string}>>} arrays
+     * @param {string} labelSeparator
+     * @param {string} valueSeparator
+     * @returns {Array<{label: string, value: string}>}
+     */
+    generateVariants = (arrays, labelSeparator = '｜', valueSeparator = '-') => {
+        // 過濾掉空陣列
+        const nonEmptyArrays = arrays.filter(arr => arr.length > 0);
+
+        if (nonEmptyArrays.length === 0) return [];
+
+        if (nonEmptyArrays.length === 1) {
+            // 若只有一個非空陣列，回傳它（每項轉為 {label, value} 格式）
+            return nonEmptyArrays[0].map(item => ({
+                label: item.label,
+                value: item.value
+            }));
+        }
+
+        const combinations = _.reduce(
+          nonEmptyArrays,
+          (acc, curr) => _.flatMap(acc, a => curr.map(b => [...a, b])),
+          [[]]
+        );
+
+        return combinations.map(comb => ({
+            label: comb.map(item => item.label).join(labelSeparator),
+            value: comb.map(item => item.value).join(valueSeparator)
+        }));
+    };
+
+    /**
+     * 對物件陣列中的 key 進行重新命名
+     * @param {Array<Object>} arr - 原始資料陣列
+     * @param  {...[string, string]} keyMappings - key 對應對照，例如 ['label', 'labelOfVariant']
+     * @returns {Array<Object>}
+     *
+     * const originalVariants = [
+     *   { label: '紅｜M號', value: '1b-f2' },
+     *   { label: '紅｜L號', value: '1b-q5' }
+     * ];
+     *
+     * renameKeysInArray(
+     *   originalVariants,
+     *   ['label', 'labelOfVariant'],
+     *   ['value', 'valueOfVariant']
+     * );
+     *
+     * outputs:
+     *     [
+     *       { labelOfVariant: '紅｜M號', valueOfVariant: '1b-f2' },
+     *       { labelOfVariant: '紅｜L號', valueOfVariant: '1b-q5' }
+     *     ]
+     *
+     */
+    renameKeysInArray = (arr, ...keyMappings) => {
+        const mapping = Object.fromEntries(keyMappings);
+        return arr.map(item =>
+          _.mapKeys(item, (value, key) => mapping[key] || key)
+        );
+    };
+
+    /**
+     * 將 array2 的對應項目合併到 array1 中（支援巢狀 idKey 路徑）
+     * @param {Array<Object>} array1
+     * @param {Array<Object>} array2
+     * @param {string} idKey - 用來比對的 key（可為巢狀路徑，例如 'meta.id'）
+     * @returns {Array<Object>} - 合併後的 array1
+     *
+     * const array1 = [
+     *   { meta: { id: 'a1' }, name: 'Red' },
+     *   { meta: { id: 'b2' }, name: 'Black' }
+     * ];
+     *
+     * const array2 = [
+     *   { meta: { id: 'a1' }, price: 200 },
+     *   { meta: { id: 'b2' }, name: 'Black Special' }
+     * ];
+     *
+     * const result = mergeById(array1, array2, 'meta.id');
+     * console.log(result);
+     */
+    getArrayOfMergeBySpecificId = (array1, array2, idKey = 'id') => {
+        if (!Array.isArray(array2)) return array1;
+        const map2 = _.keyBy(array2, item => _.get(item, idKey));
+
+        return array1.map(item => {
+            const id = _.get(item, idKey);
+            const match = map2[id];
+            return match ? _.merge({}, item, match) : item;
+        });
+    };
+
 
 }
 
