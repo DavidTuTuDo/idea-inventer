@@ -70,6 +70,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
         this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
         this.setBriefPhotos(...booze.photos);
+        this.setVisibility(booze.visibility ?? false);
     }
 
     getOptionsOfBrief = (booze, type = "main") => {
@@ -78,27 +79,33 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     appendMainOptions = async (strings) => {
+        /** 加入的字串陣列，排除重複的 */
         const uniques = Util.findUniqueNonReferenceStrings(
             this.getBriefMains().map((each) => each.label),
             strings
         );
+        /** 找出是否存在過specificAttribute，然後刪掉的又加回去 */
         const bunchOfLatest = this.getAttributesOfMatchLabels(
             uniques,
             _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "main"))
         );
+        /** 為類別加上一個不重複的unique value */
         const latest = Util.getArrayOfFillMissingValues([...this.getBriefMains().map((each) => each.columnData()), ...bunchOfLatest]);
         this.setBriefMains(...latest);
     };
 
     appendSubOptions = async (strings) => {
+        /** 加入的字串陣列，排除重複的 */
         const uniques = Util.findUniqueNonReferenceStrings(
             this.getBriefSubs().map((each) => each.label),
             strings
         );
+        /** 找出是否存在過specificAttribute，然後刪掉的又加回去 */
         const bunchOfLatest = this.getAttributesOfMatchLabels(
             uniques,
             _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "sub"))
         );
+        /** 為類別加上一個不重複的unique value */
         const latest = Util.getArrayOfFillMissingValues([...this.getBriefSubs().map((each) => each.columnData()), ...bunchOfLatest]);
         this.setBriefSubs(...latest);
     };
@@ -192,8 +199,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                 statement: this.getStatement(),
                 photos: this.getBriefPhotos(),
                 photoOfDemo: _.head(this.getBriefPhotos()).href,
-                ...this.modifySpecificAttribute()
-
+                ...this.modifySpecificAttribute(),
+                visibility: this.getVisibility()
                 /**
                  * 商品歸屬tab的設定
                  * 每個variant圖片的設定
@@ -348,6 +355,11 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         variant.setPhoto(href);
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { photo: href }, variant.id, this.getIdOfBooze());
         this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant})`);
+    };
+
+    onVisibilityChanged = async () => {
+        await this.handleIdOfBooze();
+        await this.apiOfBooze.updateBoozeItem(this.getComponent(), { visibility: this.getVisibility() }, this.getIdOfBooze());
     };
 }
 

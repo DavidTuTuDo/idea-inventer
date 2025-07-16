@@ -669,6 +669,12 @@ class MobileStyle {
 
     DionysusGaiaAreaOfDescriptionDiv = {};
 
+    DionysusGaiaAreaOfStatusVisibilitySwitch = {};
+
+    DionysusGaiaAreaOfStatusLabelOfStatusTypography = {};
+
+    DionysusGaiaAreaOfStatusDiv = {};
+
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};

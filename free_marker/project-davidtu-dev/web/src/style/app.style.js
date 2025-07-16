@@ -669,6 +669,12 @@ class AppStyle {
 
     DionysusGaiaAreaOfDescriptionDiv = {};
 
+    DionysusGaiaAreaOfStatusVisibilitySwitch = {};
+
+    DionysusGaiaAreaOfStatusLabelOfStatusTypography = {};
+
+    DionysusGaiaAreaOfStatusDiv = {};
+
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};

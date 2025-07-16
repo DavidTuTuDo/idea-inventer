@@ -669,6 +669,12 @@ class CommonStyle {
 
     DionysusGaiaAreaOfDescriptionDiv = {};
 
+    DionysusGaiaAreaOfStatusVisibilitySwitch = {};
+
+    DionysusGaiaAreaOfStatusLabelOfStatusTypography = {};
+
+    DionysusGaiaAreaOfStatusDiv = {};
+
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};
