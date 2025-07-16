@@ -1,14 +1,14 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
-import libpath from "path";
 import BaseDionysusGaiaStore from "./BaseDionysusGaiaStore";
 import Booze from "../dionysusBooze";
 import BoozeVariant from "../dionysusBoozeVariant";
 import DionysusTab from "../dionysusSelect";
 import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
+import BaseComponent from "../../base/BaseComponent";
 
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
@@ -82,12 +82,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getBriefMains().map((each) => each.label),
             strings
         );
-        this.pushBriefMains(
-            ...this.getAttributesOfMatchLabels(
-                uniques,
-                _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "main"))
-            )
+        const bunchOfLatest = this.getAttributesOfMatchLabels(
+            uniques,
+            _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "main"))
         );
+        const latest = Util.getArrayOfFillMissingValues([...this.getBriefMains().map((each) => each.columnData()), ...bunchOfLatest]);
+        this.setBriefMains(...latest);
     };
 
     appendSubOptions = async (strings) => {
@@ -95,12 +95,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getBriefSubs().map((each) => each.label),
             strings
         );
-        this.pushBriefSubs(
-            ...this.getAttributesOfMatchLabels(
-                uniques,
-                _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "sub"))
-            )
+        const bunchOfLatest = this.getAttributesOfMatchLabels(
+            uniques,
+            _.find((this.getBooze() ?? {}).specificAttributes, (each) => _.isEqual(each.key, "sub"))
         );
+        const latest = Util.getArrayOfFillMissingValues([...this.getBriefSubs().map((each) => each.columnData()), ...bunchOfLatest]);
+        this.setBriefSubs(...latest);
     };
 
     /** texts fetch */
@@ -192,18 +192,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                 statement: this.getStatement(),
                 photos: this.getBriefPhotos(),
                 photoOfDemo: _.head(this.getBriefPhotos()).href,
-                specificAttributes: [
-                    {
-                        key: "main",
-                        label: "",
-                        options: Util.getArrayOfFillMissingValues(this.getBriefMains().map((each) => each.columnData()))
-                    },
-                    {
-                        key: "sub",
-                        label: "",
-                        options: Util.getArrayOfFillMissingValues(this.getBriefSubs().map((each) => each.columnData()))
-                    }
-                ]
+                ...this.modifySpecificAttribute()
 
                 /**
                  * 商品歸屬tab的設定
@@ -215,6 +204,24 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         await this.invalidateBooze(result.value);
         this.getComponent().showInfoSnackMessage(`成功創立「${this.getName()}」商品`);
     };
+
+    modifySpecificAttribute() {
+        const object = {};
+        object["specificAttributes"] = [
+            {
+                key: "main",
+                label: "",
+                options: Util.getArrayOfFillMissingValues(this.getBriefMains().map((each) => each.columnData()))
+            },
+            {
+                key: "sub",
+                label: "",
+                options: Util.getArrayOfFillMissingValues(this.getBriefSubs().map((each) => each.columnData()))
+            }
+        ];
+        Util.appendInfo(object);
+        return object;
+    }
 
     invalidateBooze = (object) => {
         this.setBooze(Util.mergeObject(this.getBooze(), object));
@@ -263,36 +270,84 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.invalidateBooze(result.value);
     };
 
+    updateSpecificAttributes = async () => {
+        await this.handleIdOfBooze();
+        await this.apiOfBooze.updateBoozeItem(this.getComponent(), this.modifySpecificAttribute(), this.getIdOfBooze());
+    };
+
     getVariantsOfCombination = async () => {
         /** label, id:main(value)-sub(value), quantity, priceB4, price, photo */
         await this.handleIdOfBooze();
         const variants = Util.renameKeysInArray(Util.generateVariants([this.getBriefMains(), this.getBriefSubs()]), ["label", "labelOfVariant"], ["value", "id"]);
         const variantsOfRemote = (await this.apiOfVariant.fetchVariants(this.getComponent(), this.getIdOfBooze())) ?? [];
-        const latest = Util.getArrayOfMergeBySpecificId(variants, variantsOfRemote);
+        const latest = Util.getArrayOfMergeBySpecificId(
+            variants,
+            variantsOfRemote.map((each) => {
+                return { ...each, existing: true };
+            })
+        );
         Util.appendInfo(latest);
         return latest;
     };
 
     onVariantQuantityUpdate = async (variant) => {
-        this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
-        this.getComponent().dismiss();
+        await this.apiOfVariant.updateVariantItem(this.getComponent(), { quantity: variant.quantity }, variant.id, this.getIdOfBooze());
+        this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant}:${variant.quantity})`);
     };
 
-    onVariantsQuantityUpdate = async (variants) => {
-        this.getComponent().showSuccessSnackMessage(`已更新數量`);
+    onVariantsQuantityUpdate = async (variants, component) => {
+        const submits = _.filter(variants, (variant) => !variant.existing);
+        const updates = _.filter(variants, (variants) => variants.existing);
+
+        await this.apiOfVariant.updateVariants(
+            this.getComponent(),
+            updates.map((each) => {
+                return { id: each.id, quantity: each.quantity };
+            }),
+            this.getIdOfBooze()
+        );
+
+        if (_.size(submits) > 0) {
+            await this.updateSpecificAttributes();
+            await this.apiOfVariant.submitVariants(this.getComponent(), submits, this.getIdOfBooze());
+        }
+
+        if (component instanceof BaseComponent) component.dismiss();
+        this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
     };
 
     onVariantPriceUpdate = async (variant) => {
-        this.getComponent().showSuccessSnackMessage(`已更新價格`);
+        await this.apiOfVariant.updateVariantItem(this.getComponent(), { price: variant.price, priceB4Discount: variant.priceB4Discount }, variant.id, this.getIdOfBooze());
+        this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant}:${variant.price})`);
     };
 
-    onVariantsPriceUpdate = async (variants) => {
+    onVariantsPriceUpdate = async (variants, component) => {
+        const submits = _.filter(variants, (variant) => !variant.existing);
+        const updates = _.filter(variants, (variants) => variants.existing);
+
+        if (_.size(submits) > 0) {
+            await this.updateSpecificAttributes();
+            await this.apiOfVariant.submitVariants(this.getComponent(), submits, this.getIdOfBooze());
+        }
+
+        await this.apiOfVariant.updateVariants(
+            this.getComponent(),
+            updates.map((each) => {
+                return { id: each.id, price: each.price, priceB4Discount: each.priceB4Discount };
+            }),
+            this.getIdOfBooze()
+        );
+
+        if (component instanceof BaseComponent) component.dismiss();
         this.getComponent().showSuccessSnackMessage(`已更新全部價格`);
-        this.getComponent().dismiss();
     };
 
-    onVariantPhotoUpdate = async (variant) => {
-        this.getComponent().showSuccessSnackMessage(`已更新圖片`);
+    onVariantPhotoUpdate = async (variant, files) => {
+        if (_.size(files) < 1) this.getComponent().showSuccessSnackMessage(`選取圖片出現異常問題`);
+        const href = await this.apiOfImage.uploadStorageOfHref(this.getComponent(), files[0], this.getIdOfBooze());
+        variant.setPhoto(href);
+        await this.apiOfVariant.updateVariantItem(this.getComponent(), { photo: href }, variant.id, this.getIdOfBooze());
+        this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant})`);
     };
 }
 

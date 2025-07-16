@@ -11,14 +11,28 @@ class ModularizedDionysusVariantPhotoSetterComponent extends BaseDionysusVariant
 
     constructor(props) {
         super(props);
+        this.currentVaient = undefined;
     }
 
     onDionysusVariantPhotoSetterVariantUpdateIconButtonClicked(param) {
-        this.getComponentInstance().getStore().onVariantPhotoUpdate(param.object).then();
+        this.currentVaient = param.object;
+        this.enableImageSelectView(false);
     }
 
     onDionysusVariantPhotoSetterVariantPreviewChipClicked(param) {
-        this.showSuccessSnackMessage(`開啟預覽畫面`);
+        this.openImageDialog(param.object.photo);
+    }
+
+    getInjectStyleOfDionysusVariantPhotoSetterVariantUpdateIconButton(variant) {
+        return Util.getVisibleOrHidden(variant.existing, true);
+    }
+
+    onFilesSelected(files) {
+        this.getComponentInstance().getStore().onVariantPhotoUpdate(this.currentVaient, files).then();
+    }
+
+    getInjectStyleOfDionysusVariantPhotoSetterVariantPreviewChip(variant) {
+        return Util.getVisibleOrHidden(!Util.isUndefinedNullEmpty(variant.photo));
     }
 
     /** -------------------- async api -------------------- **/

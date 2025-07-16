@@ -2,14 +2,6 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import i18n from "../../i18n";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { Application } from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
 import BaseDionysusPriceSetterComponent from "./BaseDionysusPriceSetterComponent";
 
 class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterComponent {
@@ -26,8 +18,7 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
     }
 
     onDionysusPriceSetterBatchUpdateChipClicked(param) {
-        const self = this;
-        this.getComponentInstance().getStore().onVariantsPriceUpdate(this.getStore().getVariants()).then();
+        this.getComponentInstance().getStore().onVariantsPriceUpdate(this.getStore().getVariants(), this).then();
     }
 
     onDionysusPriceSetterVariantUpdateIconButtonClicked(param) {
@@ -36,6 +27,10 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
 
     onDionysusPriceSetterVariantCommonChipClicked(param) {
         this.showSuccessSnackMessage(`統一價格`);
+    }
+
+    getInjectStyleOfDionysusPriceSetterVariantUpdateIconButton(variant) {
+        return Util.getVisibleOrHidden(variant.existing, true);
     }
 
     /** -------------------- async api -------------------- **/
