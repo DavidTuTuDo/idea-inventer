@@ -3143,7 +3143,7 @@ class Utiller {
      * const result = mergeById(array1, array2, 'meta.id');
      * console.log(result);
      */
-    getArrayOfMergeBySpecificId = (array1, array2, idKey = 'id') => {
+    getArrayOfMergeBySpecificId = (array1, array2, idKey = "id") => {
         if (!Array.isArray(array2)) return array1;
         const map2 = _.keyBy(array2, item => _.get(item, idKey));
 
@@ -3153,6 +3153,123 @@ class Utiller {
             return match ? _.merge({}, item, match) : item;
         });
     };
+
+    /**
+     * 需求：
+     * 1.我可以給參數日期區間（25/12/01-16/01/31）
+     * 2.參數-上班時間（08:00-21:30）
+     * 3.參數-課程長度（90分鐘）
+     * 4.參數-課程間隔（30分鐘）
+     * 5.參數-每週公休日（1-7），例［1、4］
+     * 6.參數-時間時間陣列（ [13:00-15:00,17:00-18:00]）
+     *
+     *
+     * 依據上述提昇完成，邏輯程序回傳以下值
+     * 1.日期陣列(例：午休為13:00-15:00)［12/7(日),12/25(四),26/01/02(五),01/05(一)］
+     * 列表中，遇到第一個跨年份的子項，要顯示年份。例26/01/02
+     * 2.課程陣列（課程90分 休息30分 13:00-15:00/17:00-18:00休息）
+     * [08:00- 09:30,10:00-11:30,15:00-16:30,18:00-19:30,20:00-21:30]
+     *
+     * const result = generateSchedule({
+     *   dateRange: '25/12/01-16/01/31',
+     *   workHours: '08:00-21:30',
+     *   classDuration: 90,
+     *   breakBetween: 30,
+     *   weeklyHolidays: [1, 4],
+     *   excludePeriods: ['13:00-15:00', '17:00-18:00']
+     * });
+     *
+     * console.log(result.dates);   // 顯示處理後的日期清單
+     * console.log(result.classes); // 顯示可開課時段
+     * [
+     *   '12/01(日)', '12/02(一)', '25/12/31(三)',
+     *   '26/01/02(五)',  // ← 第一次跨年顯示民國年 ,'01/05(一)', ...
+     * ]
+     *
+     * [ '08:00-09:30', '10:00-11:30', '15:00-16:30','18:00-19:30','20:00-21:30'  ]
+     *
+     * @param {Object} config
+     * @param {string} config.dateRange - 例如 '25/12/01-26/01/31' yy/mm/dd
+     * @param {string} config.workHours - 例如 '08:00-21:30'
+     * @param {number} config.classDuration - 單堂課長度 (分鐘)
+     * @param {number} config.breakBetween - 課與課間的間隔 (分鐘)
+     * @param {number[]} config.weeklyHolidays - 1~7, 週一~週日
+     * @param {string[]} config.excludePeriods - 排除時段 ['13:00-15:00']
+     */
+    generateSchedule({
+                         dateRange,
+                         workHours,
+                         classDuration,
+                         breakBetween,
+                         weeklyHolidays,
+                         excludePeriods,
+                         lang = "zh"
+                     }) {
+        // 語系對應表
+        const weekdayMap = {
+            en: ["(Su)", "(Mo)", "(Tu)", "(We)", "(Th)", "(Fr)", "(Sa)"],
+            zh: ["(日)", "(一)", "(二)", "(三)", "(四)", "(五)", "(六)"]
+        };
+
+        const parseROC = (rocStr) => {
+            const [y, m, d] = rocStr.split("/").map(Number);
+            return moment(`${y + 1911}-${m}-${d}`, "YYYY-MM-DD");
+        };
+
+        const [startStr, endStr] = dateRange.split("-");
+        const start = parseROC(startStr);
+        const end = parseROC(endStr);
+
+        const dateList = [];
+        let cursor = start.clone();
+        let lastYear = cursor.year();
+
+        while (cursor.isSameOrBefore(end, "day")) {
+            const dow = cursor.isoWeekday(); // 1~7 (Mon~Sun)，與題目一致
+            if (!weeklyHolidays.includes(dow)) {
+                const showYear = cursor.year() !== lastYear;
+                const rocYear = cursor.year() - 1911;
+                const day = cursor.day(); // 0~6 (Sun~Sat)
+                const weekday = weekdayMap[lang][day];
+                const dateStr = `${cursor.format("MM/DD")}${weekday}`;
+                dateList.push(showYear ? `${rocYear}/${dateStr}` : dateStr);
+                lastYear = cursor.year();
+            }
+            cursor.add(1, "day");
+        }
+
+        // 課程時間區段處理
+        const [workStartStr, workEndStr] = workHours.split("-");
+        const workStart = moment(workStartStr, "HH:mm");
+        const workEnd = moment(workEndStr, "HH:mm");
+
+        const breaks = excludePeriods.map(period => {
+            const [from, to] = period.split("-");
+            return [moment(from, "HH:mm"), moment(to, "HH:mm")];
+        });
+
+        const classList = [];
+        let timeCursor = workStart.clone();
+
+        while (timeCursor.clone().add(classDuration, "minutes").isSameOrBefore(workEnd)) {
+            const classEnd = timeCursor.clone().add(classDuration, "minutes");
+
+            const hasConflict = breaks.some(([restStart, restEnd]) => {
+                return classEnd.isAfter(restStart) && timeCursor.isBefore(restEnd);
+            });
+
+            if (!hasConflict) {
+                classList.push(`${timeCursor.format("HH:mm")}-${classEnd.format("HH:mm")}`);
+            }
+
+            timeCursor.add(classDuration + breakBetween, "minutes");
+        }
+
+        return {
+            dates: dateList,
+            classes: classList
+        };
+    }
 
 
 }
