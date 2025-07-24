@@ -6,7 +6,7 @@ import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
 
 class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
-    objectOfVariant = {};
+    objectOfVariantq3 = {};
 
     constructor(props) {
         super(props);
@@ -21,7 +21,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             self.setPhoto(booze.photoOfDemo);
             self.setRangeOfPrice(booze.rangeOfPrice);
             self.setCount(`未選擇`);
-            self.setVariants(..._.map(booze.specificAttributes, (attr) => ({ key: attr.key, options: _.map(attr.options, ({ label, value }) => ({ name: label, value })) })));
+            self.setVariants(..._.map(booze.specificAttributes, (attr) => ({ key: attr.key, options: _.map(attr.options, ({ label, value }) => ({ label, value })) })));
         }
 
         function isBooze(param) {
@@ -34,6 +34,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             const booze = isBooze(param) ? param : param.booze;
             setContent(booze);
             this.objectOfVariant = Util.toObjectWithAttributeKey(await this.apiOfVariant.fetch(this.getComponent(), booze.id), "id");
+            Util.appendInfo("65423123 this.objectOfVariant => ", this.objectOfVariant);
         }
     }
 
@@ -45,14 +46,16 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     };
 
     invalidateVariant() {
-        const keyOfVariant = _.flatMap(this.getVariants(), (v) => [v.getKey(), _.find(v.getOptions(), (o) => o.getSelect())?.getValue() ?? -1]).join("_");
+        const keyOfVariant = this.getVariants()
+            .map((v) => _.find(v.getOptions(), (o) => o.getSelect())?.getValue())
+            .filter(Boolean)
+            .join("-");
         const selectedOption = this.objectOfVariant[keyOfVariant];
-        if (selectedOption) this.setCurrentVariant(selectedOption);
-        else this.setCurrentOptionExist(false);
+        selectedOption ? this.setCurrentVariant(selectedOption) : this.setCurrentOptionExist(false);
     }
 
     setCurrentVariant = (variant) => {
-        this.setPhoto(variant.photo);
+        this.setPhoto(Util.isUndefinedNullEmpty(variant.photo) ? this.getBooze().photoOfDemo : variant.photo);
         this.setPrice(variant.price);
         this.setTitleOfShape(variant.name);
         this.setCount(variant.quantity);

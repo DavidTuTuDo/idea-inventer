@@ -7738,7 +7738,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                   {
                       name: Util.camel("option", "of", name, "content"),
                       type: `string`,
-                      defaultValue: node.defaultContent,
+                      defaultValue: node.defaultContent ?? '',
                       view: "Typography",
                       singleLine: true,
                       description: node.description,

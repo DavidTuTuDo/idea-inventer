@@ -1145,7 +1145,7 @@ class CommonStyle {
 
     DionysusMaenadsDecisionDiv = {};
 
-    DionysusMaenadsVariantOptionNameChip = {};
+    DionysusMaenadsVariantOptionLabelChip = {};
 
     DionysusMaenadsVariantOptionDivList = {};
 

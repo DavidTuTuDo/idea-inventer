@@ -21,11 +21,11 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         return Util.getVisibleOrNone(this.getStore().getCurrentOptionExist(), true);
     }
 
-    getInjectPropsOfDionysusMaenadsVariantOptionNameChip(option) {
+    getInjectPropsOfDionysusMaenadsVariantOptionLabelChip(option) {
         return { color: _.isEqual(option.getSelect(), true) ? "error" : "default" };
     }
 
-    onDionysusMaenadsVariantOptionNameChipClicked(param) {
+    onDionysusMaenadsVariantOptionLabelChipClicked(param) {
         this.getStore().setSelectedOption(param.object);
     }
 

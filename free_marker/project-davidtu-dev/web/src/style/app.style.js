@@ -1145,7 +1145,7 @@ class AppStyle {
 
     DionysusMaenadsDecisionDiv = {};
 
-    DionysusMaenadsVariantOptionNameChip = {};
+    DionysusMaenadsVariantOptionLabelChip = {};
 
     DionysusMaenadsVariantOptionDivList = {};
 
