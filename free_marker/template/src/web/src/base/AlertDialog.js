@@ -160,12 +160,13 @@ class AlertDialog extends MuiComponent {
         const paramObject = this.props.paramObject;
         const component = this.props.component;
         const content = this.props.content;
+        const callback = this.props.callback;
 
         if (this.hasCustomView())
             return (
                 <DialogContent className={"BaseAlertDialogContent"}>
                     <div className={"BaseAlertDialogCustomView"}>
-                        <CustomView component={component} paramObject={paramObject} dialog={this} {...this.getStore().getPropsOfCustomView()} />
+                        <CustomView component={component} callback={callback} paramObject={paramObject} dialog={this} {...this.getStore().getPropsOfCustomView()} />
 
                         {this.renderCustomCancelChip()}
                     </div>

@@ -145,6 +145,32 @@ class CommonStyle {
 
     NavigatorDiv = {};
 
+    /** => following for timePeriod  component  */
+
+    IreneTimePeriodFuncLeaveChip = {};
+
+    IreneTimePeriodFuncConfirmChip = {};
+
+    IreneTimePeriodFuncDiv = {};
+
+    IreneTimePeriodMainTimeOfEndLabelOfTimeOfEndTypography = {};
+
+    IreneTimePeriodMainTimeOfEndDivWrap = {};
+
+    IreneTimePeriodMainTimeOfEndTimePicker = {};
+
+    IreneTimePeriodMainTimeOfStartLabelOfTimeOfStartTypography = {};
+
+    IreneTimePeriodMainTimeOfStartDivWrap = {};
+
+    IreneTimePeriodMainTimeOfStartTimePicker = {};
+
+    IreneTimePeriodMainDiv = {};
+
+    IreneTimePeriodDivWrap = {};
+
+    IreneTimePeriodPaper = {};
+
     /** => following for textsIndexSetter  component  */
 
     IreneTextsIndexSetterFuncLeaveChip = {};

@@ -24,6 +24,7 @@ class ModularizedIreneTextsIndexSetterStore extends BaseIreneTextsIndexSetterSto
     async onInitialFetchCompleted(collection) {
         const result = await super.onInitialFetchCompleted(collection);
         await this.fetchListOfTab();
+        this.modifyGoTop();
     }
 
     fetchListOfTab = async () => {
@@ -35,6 +36,12 @@ class ModularizedIreneTextsIndexSetterStore extends BaseIreneTextsIndexSetterSto
     @action
     modifyTabOrder2Top(tab) {
         Util.mutateIndexOfArrayItem(this.getRows(), tab);
+    }
+
+    @action
+    modifyGoTop() {
+        const func = this.getComponent().getStore().enableGopTopOfIndexSetter;
+        this.setEnableOfGoTop(_.isFunction(func) ? func() : true);
     }
 
     async onTextsOfIndexUpdateExecuted() {

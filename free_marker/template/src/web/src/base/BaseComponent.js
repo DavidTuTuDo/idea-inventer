@@ -924,6 +924,7 @@ class BaseComponent extends MuiComponent {
         textInput,
         component,
         enableCancel,
+        callback,
         useCustomCancel = false,
         disposablePage = false,
         fullWidth = false,
@@ -939,6 +940,7 @@ class BaseComponent extends MuiComponent {
             <AlertDialog
                 title={title}
                 content={content}
+                callback={callback}
                 submitAsyncTask={task}
                 needActionButtons={needActionButtons}
                 enableCancel={enableCancel}
@@ -957,6 +959,10 @@ class BaseComponent extends MuiComponent {
     isWrapByDialog() {
         const dialog = this.propsOfMobX.dialog;
         return dialog instanceof AlertDialog;
+    }
+
+    funcOfDialogCallback() {
+        return this.propsMobX().callback;
     }
 
     renderAlertMenu({ ref, items, component }) {

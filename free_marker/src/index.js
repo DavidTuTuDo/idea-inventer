@@ -752,8 +752,11 @@ class CodegenNode {
         strict: false,
         /** 讓彈跳視窗不能用ESC或點擊旁處取消 */
 
-        useCustomCancel: false
+        useCustomCancel: false,
         /** dialog都有自帶sticky button => 如果要客製化自己的cancel button(dading/establish)就要true它 */
+
+        callback: false,
+        /** dialog帶一個當前呼叫它的component內的callback function */
     };
     /** 放admin的json file*/
 
@@ -1548,6 +1551,10 @@ class CodegenNode {
         this.wrapContents.push(...contents);
     }
 
+    getFuncNameOfDialogCallback(name) {
+        return Util.camel("on", name, "dialog", "submit");
+    }
+
     appendAlertDialogStmts(stmt, generator) {
         const self = this;
 
@@ -1571,6 +1578,12 @@ class CodegenNode {
         function getCustomViewStmts() {
             if (self.hasCustomViewDialog()) {
                 return `customView:${self.getAlertDialog().customView}`;
+            }
+        }
+
+        function getStmtCallBack() {
+            if (self.hasCallbackOfDialog() && self.hasCallbackOfDialog()) {
+                return `callback:self.${self.getFuncNameOfDialogCallback(self.getAlertDialog().customView)}`;
             }
         }
 
@@ -1642,6 +1655,7 @@ class CodegenNode {
             props.push(getTaskStmts());
             props.push(getStmtOfDisposable());
             props.push(getCustomViewStmts());
+            props.push(getStmtCallBack());
             props.push(getParamObject());
             props.push(getStmtOfStrictMode());
             props.push(getStmtDialogInput())
@@ -1669,6 +1683,8 @@ class CodegenNode {
     hasInputFieldDialog() { return this.getAlertDialog().textInput.enable; }
 
     hasFullWidthOfDialog() { return this.getAlertDialog().fullWidth; }
+
+    hasCallbackOfDialog() { return this.getAlertDialog().callback; }
 
     hasStrictMode() { return _.isEqual(this.getAlertDialog().strict, true); }
 
@@ -5491,6 +5507,11 @@ class ComponentBuilder extends BaseBuilder {
         if (node.hasCustomViewDialog()) {
             const component = node.getSpecificComponent(node.alertDialog.customView);
             generator.appendImport(component.getName(), `../${component.getNodeOfStruct().getName()}`);
+            const name = component.getName();
+            if (node.alertDialog.callback)
+                generator.appendAsyncFunction(node.getFuncNameOfDialogCallback(name), ["...param"], [],
+                  [`callback function of '${name}' used as dialog`],
+                  [`Util.appendInfo('${name} callback with following param', ...param)`]);
         }
 
         function getStmtsOfInjectListStyle(node) {

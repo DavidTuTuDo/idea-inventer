@@ -29,7 +29,7 @@ class ModularizedIreneTextsIndexSetterComponent extends BaseIreneTextsIndexSette
     }
 
     getInjectStyleOfIreneTextsIndexSetterRowGoTopChip(row) {
-        return Util.getVisibleOrHidden(_.indexOf(this.getStore().getRows(), row) > 0);
+        return Util.getVisibleOrHidden(this.getStore().getEnableOfGoTop() && _.indexOf(this.getStore().getRows(), row) > 0);
     }
 
     /** -------------------- async api -------------------- **/
