@@ -6,7 +6,7 @@ import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
 
 class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
-    objectOfVariantq3 = {};
+    objectOfVariant = {};
 
     constructor(props) {
         super(props);

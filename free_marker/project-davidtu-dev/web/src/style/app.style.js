@@ -599,6 +599,110 @@ class AppStyle {
 
     DionysusQuantitySetterPaper = {};
 
+    /** => following for apollo  component  */
+
+    DionysusApolloFuncLoadChip = {};
+
+    DionysusApolloFuncLeaveChip = {};
+
+    DionysusApolloFuncConfirmChip = {};
+
+    DionysusApolloFuncDiv = {};
+
+    DionysusApolloAreaOfDayOffOffDayLabelChip = {};
+
+    DionysusApolloAreaOfDayOffOffDayDivList = {};
+
+    DionysusApolloAreaOfDayOffOffDayDiv = {};
+
+    DionysusApolloAreaOfDayOffRowAppendOfDayOffReactFragmentWrap = {};
+
+    DionysusApolloAreaOfDayOffRowAppendOfDayOffChip = {};
+
+    DionysusApolloAreaOfDayOffRowLabelOfDayOffTypography = {};
+
+    DionysusApolloAreaOfDayOffRowDiv = {};
+
+    DionysusApolloAreaOfDayOffDiv = {};
+
+    DionysusApolloAreaOfRestRestPeriodLabelChip = {};
+
+    DionysusApolloAreaOfRestRestPeriodDivList = {};
+
+    DionysusApolloAreaOfRestRestPeriodDiv = {};
+
+    DionysusApolloAreaOfRestRowAppendOfRestPeriodReactFragmentWrap = {};
+
+    DionysusApolloAreaOfRestRowAppendOfRestPeriodChip = {};
+
+    DionysusApolloAreaOfRestRowLabelOfRestPeriodTypography = {};
+
+    DionysusApolloAreaOfRestRowDiv = {};
+
+    DionysusApolloAreaOfRestDiv = {};
+
+    DionysusApolloIntervalOfTaskLabelOfIntervalOfTaskTypography = {};
+
+    DionysusApolloIntervalOfTaskDivWrap = {};
+
+    DionysusApolloIntervalOfTaskTextField = {};
+
+    DionysusApolloDurationOfTaskLabelOfDurationOfTaskTypography = {};
+
+    DionysusApolloDurationOfTaskDivWrap = {};
+
+    DionysusApolloDurationOfTaskTextField = {};
+
+    DionysusApolloLineDiv = {};
+
+    DionysusApolloPeriodOfTimeMainTimeOfEndLabelOfTimeOfEndTypography = {};
+
+    DionysusApolloPeriodOfTimeMainTimeOfEndDivWrap = {};
+
+    DionysusApolloPeriodOfTimeMainTimeOfEndTimePicker = {};
+
+    DionysusApolloPeriodOfTimeMainTimeOfStartLabelOfTimeOfStartTypography = {};
+
+    DionysusApolloPeriodOfTimeMainTimeOfStartDivWrap = {};
+
+    DionysusApolloPeriodOfTimeMainTimeOfStartTimePicker = {};
+
+    DionysusApolloPeriodOfTimeMainDiv = {};
+
+    DionysusApolloPeriodOfTimeSectionLineDiv = {};
+
+    DionysusApolloPeriodOfTimeSectionLabelOfTimePeriodTypography = {};
+
+    DionysusApolloPeriodOfTimeSectionDiv = {};
+
+    DionysusApolloPeriodOfTimeDiv = {};
+
+    DionysusApolloPeriodOfDateMainEndOfDateLabelOfEndOfDateTypography = {};
+
+    DionysusApolloPeriodOfDateMainEndOfDateDivWrap = {};
+
+    DionysusApolloPeriodOfDateMainEndOfDateDatePicker = {};
+
+    DionysusApolloPeriodOfDateMainStartOfDateLabelOfStartOfDateTypography = {};
+
+    DionysusApolloPeriodOfDateMainStartOfDateDivWrap = {};
+
+    DionysusApolloPeriodOfDateMainStartOfDateDatePicker = {};
+
+    DionysusApolloPeriodOfDateMainDiv = {};
+
+    DionysusApolloPeriodOfDateSectionLineDiv = {};
+
+    DionysusApolloPeriodOfDateSectionLabelOfDatePeriodTypography = {};
+
+    DionysusApolloPeriodOfDateSectionDiv = {};
+
+    DionysusApolloPeriodOfDateDiv = {};
+
+    DionysusApolloDivWrap = {};
+
+    DionysusApolloPaper = {};
+
     /** => following for eros  component  */
 
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
@@ -648,6 +752,10 @@ class AppStyle {
     DionysusErosDiv = {};
 
     /** => following for gaia  component  */
+
+    DionysusGaiaFuncScheduleReactFragmentWrap = {};
+
+    DionysusGaiaFuncScheduleChip = {};
 
     DionysusGaiaFuncDeletedReactFragmentWrap = {};
 
