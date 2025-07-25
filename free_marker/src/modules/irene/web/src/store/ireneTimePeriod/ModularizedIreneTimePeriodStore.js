@@ -18,7 +18,11 @@ class ModularizedIreneTimePeriodStore extends BaseIreneTimePeriodStore {
     }
 
     onTimeConfirmSelected = async () => {
+        const start = this.getTimeOfStart();
+        const end = this.getTimeOfEnd();
+        const format = (time) => Util.getCustomFormatOfDatePresent(time, "hh:mm");
         const func = this.getComponent(true).funcOfDialogCallback();
+        await func(`${format(start)}-${format(end)}`);
     };
 }
 
