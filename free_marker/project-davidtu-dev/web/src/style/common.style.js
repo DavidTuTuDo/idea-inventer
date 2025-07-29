@@ -145,6 +145,28 @@ class CommonStyle {
 
     NavigatorDiv = {};
 
+    /** => following for numberSetter  component  */
+
+    IreneNumberSetterFuncLeaveChip = {};
+
+    IreneNumberSetterFuncConfirmChip = {};
+
+    IreneNumberSetterFuncDiv = {};
+
+    IreneNumberSetterRowValueTextField = {};
+
+    IreneNumberSetterRowColonTypography = {};
+
+    IreneNumberSetterRowLabelTypography = {};
+
+    IreneNumberSetterRowDivList = {};
+
+    IreneNumberSetterRowDiv = {};
+
+    IreneNumberSetterDivWrap = {};
+
+    IreneNumberSetterPaper = {};
+
     /** => following for timePeriod  component  */
 
     IreneTimePeriodFuncLeaveChip = {};
@@ -569,13 +591,15 @@ class CommonStyle {
 
     /** => following for priceSetter  component  */
 
+    DionysusPriceSetterFuncCommonReactFragmentWrap = {};
+
+    DionysusPriceSetterFuncCommonChip = {};
+
     DionysusPriceSetterFuncLeaveChip = {};
 
     DionysusPriceSetterFuncBatchUpdateChip = {};
 
     DionysusPriceSetterFuncDiv = {};
-
-    DionysusPriceSetterVariantCommonChip = {};
 
     DionysusPriceSetterVariantUpdateIconRefreshRounded = {};
 
@@ -600,6 +624,10 @@ class CommonStyle {
     DionysusPriceSetterPaper = {};
 
     /** => following for quantitySetter  component  */
+
+    DionysusQuantitySetterFuncCommonReactFragmentWrap = {};
+
+    DionysusQuantitySetterFuncCommonChip = {};
 
     DionysusQuantitySetterFuncLeaveChip = {};
 

@@ -5527,7 +5527,7 @@ class ComponentBuilder extends BaseBuilder {
         if (node.isArray()) {
             const clazzName = node.getClassNameOfLessUsage('list');
             this.storeClassName({node, type: 'list'});
-
+            node.plural = node.plural ?? 's';
             const props = {
                 className: clazzName,
                 style: `###{${getStmtsOfInjectListStyle(node)}...${JSON.stringify(node.getListStyle())},...Style.${clazzName}}`,

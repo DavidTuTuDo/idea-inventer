@@ -21,6 +21,10 @@ class ModularizedDionysusQuantitySetterStore extends BaseDionysusQuantitySetterS
         const variants = await this.getComponent().getStore().getVariantsOfCombination();
         this.setVariants(...variants);
     }
+
+    async fetchRowValuesOfNumberSetter() {
+        return [{ label: "數量(均)", value: 1 }];
+    }
 }
 
 export default ModularizedDionysusQuantitySetterStore;

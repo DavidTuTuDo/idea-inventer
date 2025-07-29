@@ -10,9 +10,9 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
-import BaseDionysusPriceSetterStore from "./BaseDionysusPriceSetterStore";
+import BaseIreneNumberSetterStore from "./BaseIreneNumberSetterStore";
 
-class ModularizedDionysusPriceSetterStore extends BaseDionysusPriceSetterStore {
+class ModularizedIreneNumberSetterStore extends BaseIreneNumberSetterStore {
     /** -------------------- fields -------------------- **/
 
     /** -------------------- functions -------------------- **/
@@ -21,19 +21,19 @@ class ModularizedDionysusPriceSetterStore extends BaseDionysusPriceSetterStore {
         super(props);
     }
 
-    async onInitialFetchCompleted(collection) {
-        const variants = await this.getComponent().getStore().getVariantsOfCombination();
-        this.setVariants(...variants);
+    async onNumberSetConfirmed() {
+        const func = this.getComponent(true).funcOfDialogCallback();
+        const values = this.getRows().map((each) => each.getValue());
+        await func(...values);
     }
 
-    async fetchRowValuesOfNumberSetter() {
-        return [
-            { label: "售價(均)", value: "100" },
-            { label: "原價(均)", value: "120" }
-        ];
+    /** rows = [...{label:'',value:0}]*/
+    async onInitialFetchCompleted(collection) {
+        const rows = await this.getComponent().getStore().fetchRowValuesOfNumberSetter();
+        this.setRows(...rows);
     }
 
     /** -------------------- async api -------------------- **/
 }
 
-export default ModularizedDionysusPriceSetterStore;
+export default ModularizedIreneNumberSetterStore;

@@ -37,6 +37,13 @@ class ModularizedDionysusQuantitySetterComponent extends BaseDionysusQuantitySet
         return Util.getVisibleOrHidden(variant.existing, true);
     }
 
+    onNumberSetterDialogSubmit = async (...param) => {
+        const quantity = param.shift();
+        this.getStore()
+            .getVariants()
+            .forEach((each) => each.setQuantity(quantity));
+    };
+
     /** -------------------- async api -------------------- **/
 }
 

@@ -25,13 +25,22 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
         this.getComponentInstance().getStore().onVariantPriceUpdate(param.object).then();
     }
 
-    onDionysusPriceSetterVariantCommonChipClicked(param) {
-        this.showSuccessSnackMessage(`統一價格`);
-    }
-
     getInjectStyleOfDionysusPriceSetterVariantUpdateIconButton(variant) {
         return Util.getVisibleOrHidden(variant.existing, true);
     }
+
+    onNumberSetterDialogSubmit = async (...param) => {
+        console.log(`勁來了嗎。。。。。`, param);
+        const price = param.shift();
+        const priceB4Discount = param.pop();
+        console.log(price, priceB4Discount);
+        this.getStore()
+            .getVariants()
+            .forEach((each) => {
+                each.setPrice(price);
+                each.setPriceB4Discount(priceB4Discount);
+            });
+    };
 
     /** -------------------- async api -------------------- **/
 }

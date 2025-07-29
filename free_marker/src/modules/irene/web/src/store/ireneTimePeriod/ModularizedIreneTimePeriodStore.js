@@ -2,14 +2,7 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import { Application } from "../../";
-import Config from "../../config";
-import i18n from "../../i18n";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
+import moment from "moment";
 import BaseIreneTimePeriodStore from "./BaseIreneTimePeriodStore";
 
 class ModularizedIreneTimePeriodStore extends BaseIreneTimePeriodStore {
@@ -18,11 +11,21 @@ class ModularizedIreneTimePeriodStore extends BaseIreneTimePeriodStore {
     }
 
     onTimeConfirmSelected = async () => {
-        const start = this.getTimeOfStart();
-        const end = this.getTimeOfEnd();
-        const format = (time) => Util.getCustomFormatOfDatePresent(time, "hh:mm");
+        const startTime = this.getTimeOfStart();
+        const endTime = this.getTimeOfEnd();
+
+        // 檢查開始與結束時間是否不合法（相同或結束早於開始）
+        if (!endTime.isAfter(startTime)) throw new Error("開始時間與結束時間不可相同");
+
+        const format = (t) => Util.getCustomFormatOfDatePresent(t, "HH:mm");
+        const timeRange = `${format(startTime)}-${format(endTime)}`;
+
         const func = this.getComponent(true).funcOfDialogCallback();
-        await func(`${format(start)}-${format(end)}`);
+        try {
+            await func(timeRange);
+        } catch (error) {
+            throw new Error(error.message);
+        }
     };
 }
 

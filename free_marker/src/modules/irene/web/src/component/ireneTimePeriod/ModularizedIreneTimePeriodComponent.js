@@ -23,6 +23,9 @@ class ModularizedIreneTimePeriodComponent extends BaseIreneTimePeriodComponent {
             .onTimeConfirmSelected()
             .then(() => {
                 self.dismiss();
+            })
+            .catch((error) => {
+                self.showWarningSnackMessage(error.message);
             });
     }
 
