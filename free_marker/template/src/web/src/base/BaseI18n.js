@@ -1,3 +1,5 @@
+const edit = true;
+
 /** this code are generated, modify is no sense.
  author:David Tu,
  email:freshingmoon0725@gmail.com
@@ -8,6 +10,8 @@ class BaseI18n {
     constructor(props) {
         /** props doing something */
     }
+
+    toastOfPageIsLoading = "頁面載入中，請稍等";
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
     /** -------------------- async api -------------------- **/

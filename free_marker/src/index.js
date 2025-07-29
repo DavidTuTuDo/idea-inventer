@@ -5187,6 +5187,7 @@ class ComponentBuilder extends BaseBuilder {
                         Util.appendInfo("${componentNode.getName()} page initial fetch completed");
                         await UserInfoRef.waitLoginCompleted();
                         await store.onInitialFetchCompleted(result);
+                        store.setInitialFetchCompleted(true);
                     }
                  `);
 
@@ -8078,6 +8079,9 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         node.appendImportStmt({part: icon, from: `@mui/icons-material/${icon}`})
     }
 
+    stmtsOfClickCaution = [`event.stopPropagation()`,
+        `if(!self.getStore().isInitialFetchCompleted()) return self.showWarningSnackMessage(i18n.location().toastOfPageIsLoading)`];
+
     /* typeOfView 可以是 default | list | wrap */
     enrichTextFieldBehavior(node, typeOfView = 'default') {
         const self = this;
@@ -8086,7 +8090,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             const stmts = []
             if (node.hasAlertDialog()) {
                 stmts.push(`objectOfParam.view = event;`);
-                stmts.push(`event.stopPropagation();`)
+                stmts.push(...self.stmtsOfClickCaution)
                 stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
             } else {
                 stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`)
@@ -8204,7 +8208,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     getStmtsOfAlertMenu(node) {
         const stmts = [];
-        stmts.push(`event.stopPropagation()`)
+        stmts.push(...this.stmtsOfClickCaution);
         stmts.push(`objectOfParam.view = event`)
         stmts.push(`${node.getFieldNameOfAlertMenu()}.current.setAnchor(event.currentTarget);`)
         stmts.push(`${node.getFieldNameOfAlertMenu()}.current.open();`)
@@ -8911,14 +8915,14 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     }`)
         }
         if (node.hasConfirmDialog()) {
-            const stmts = [`objectOfParam.view = event;`, `event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+            const stmts = [`objectOfParam.view = event;`, ...this.stmtsOfClickCaution, `${node.getFieldNameOfAlertDialog()}.current.open();`]
             node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
         } else if (node.isTabItemView()) {
             onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
             onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
             onClickStmts.push(`${this.getStmtOfEventInValidate(node, functionNameOfClicked)}`)
         } else if (node.hasCustomViewDialog()) {
-            const stmts = [`event.stopPropagation();`, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+            const stmts = [...this.stmtsOfClickCaution, `${node.getFieldNameOfAlertDialog()}.current.open();`]
             node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
                 onClickStmts.push(...stmts, `self.${functionNameOfClicked}(objectOfParam)`);
         } else if (node.hasAlertMenu()) {

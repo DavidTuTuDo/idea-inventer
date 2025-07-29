@@ -13,6 +13,7 @@ import BaseComponent from "../../base/BaseComponent";
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
 const MAXIMUM_TEXT_OF_DESCRIPTION = 300;
+const BOOZE_OF_UNCREATED = "generate";
 
 const textsFetchConfig = {
     main: {
@@ -52,7 +53,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         let booze = this.getBooze();
         const id = this.getParamOfPidInPath();
         if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
-        if (id) this.setIdOfBooze(booze.id);
+        if (id) this.setIdOfBooze(id);
         if (booze && booze.id) this.validateBooze(booze);
         this.validateSubMainValues();
     }
@@ -170,12 +171,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     handleIdOfBooze = async () => {
-        const id = this.getIdOfBooze();
-        if (_.isNil(id) || _.isEmpty(id)) {
+        const id = Util.isUndefinedNullEmpty(this.getIdOfBooze()) ? this.getParamOfPidInPath() : this.getIdOfBooze();
+        if (Util.isUndefinedNullEmpty(id) || _.isEqual(BOOZE_OF_UNCREATED, id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent());
             this.setIdOfBooze(latest.value.id);
-        }
+        } else this.setIdOfBooze(id);
     };
 
     recoverBooze4Sure = async () => {

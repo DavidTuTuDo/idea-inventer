@@ -131,6 +131,10 @@ class BaseStore extends ClientRemoteApi {
         return !this.isInitialFetchCompleted() && !isLoadingOrError;
     }
 
+    isFetchCompleted() {
+        return this.initialFetchCompleted;
+    }
+
     isErrorState() {
         return _.isEqual(this.state, "error");
     }

@@ -5,10 +5,6 @@ import _ from "lodash";
 import BaseDionysusPriceSetterComponent from "./BaseDionysusPriceSetterComponent";
 
 class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
     }
@@ -30,7 +26,6 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
     }
 
     onNumberSetterDialogSubmit = async (...param) => {
-        console.log(`勁來了嗎。。。。。`, param);
         const price = param.shift();
         const priceB4Discount = param.pop();
         console.log(price, priceB4Discount);
