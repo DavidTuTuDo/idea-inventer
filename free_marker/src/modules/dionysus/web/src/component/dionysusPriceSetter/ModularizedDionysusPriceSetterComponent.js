@@ -28,7 +28,6 @@ class ModularizedDionysusPriceSetterComponent extends BaseDionysusPriceSetterCom
     onNumberSetterDialogSubmit = async (...param) => {
         const price = param.shift();
         const priceB4Discount = param.pop();
-        console.log(price, priceB4Discount);
         this.getStore()
             .getVariants()
             .forEach((each) => {

@@ -13,7 +13,7 @@ class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
     }
 
     onDionysusApolloConfirmChipClicked(param) {
-        super.onDionysusApolloConfirmChipClicked(param);
+        this.getStore().onScheduleConfirmSubmit().then();
     }
 
     onDionysusApolloLoadChipClicked(param) {
@@ -44,7 +44,6 @@ class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
 
     checkTimeOverlap(inputRangeStr, compareRangeArray) {
         const format = "HH:mm";
-
         // 將 "12:00-13:00" 拆解為 moment 區間
         const parseRange = (rangeStr) => {
             const [startStr, endStr] = rangeStr.split("-");
@@ -54,22 +53,17 @@ class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
                 raw: rangeStr
             };
         };
-
         const A = parseRange(inputRangeStr);
-
         if (!A.start.isValid() || !A.end.isValid() || !A.start.isBefore(A.end)) {
             return {
                 succeed: false,
                 message: `輸入時間區間 ${inputRangeStr} 格式錯誤或起始晚於結束`
             };
         }
-
         for (const bStr of compareRangeArray) {
             const B = parseRange(bStr);
 
-            if (!B.start.isValid() || !B.end.isValid() || !B.start.isBefore(B.end)) {
-                continue; // 忽略錯誤的 compare 區間
-            }
+            if (!B.start.isValid() || !B.end.isValid() || !B.start.isBefore(B.end)) continue; // 忽略錯誤的 compare 區間
 
             // 重疊條件：A.start < B.end && A.end > B.start
             const isOverlap = A.start.isBefore(B.end) && A.end.isAfter(B.start);
@@ -80,7 +74,6 @@ class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
                 };
             }
         }
-
         return { success: true };
     }
 

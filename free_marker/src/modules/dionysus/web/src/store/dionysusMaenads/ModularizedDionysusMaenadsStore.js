@@ -33,7 +33,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             const param = component.propsMobX().paramObject;
             const booze = isBooze(param) ? param : param.booze;
             setContent(booze);
-            this.objectOfVariant = Util.toObjectWithAttributeKey(await this.apiOfVariant.fetch(this.getComponent(), booze.id), "id");
+            this.objectOfVariant = Util.toObjectWithAttributeKey(await this.apiOfVariant.fetchPureVariants(this.getComponent(), booze.id), "id");
             Util.appendInfo("65423123 this.objectOfVariant => ", this.objectOfVariant);
         }
     }

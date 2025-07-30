@@ -10,6 +10,11 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         super(props);
     }
 
+    onApolloDialogSubmit = async (...param) => {
+        const result = param.pop();
+        this.getStore().setScheduleResult(result).then();
+    };
+
     onDionysusGaiaAppendMainChipClicked(param) {
         this.getStore().setSelected("main");
     }

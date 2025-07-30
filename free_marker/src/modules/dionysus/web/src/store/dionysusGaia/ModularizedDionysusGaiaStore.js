@@ -53,7 +53,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         let booze = this.getBooze();
         const id = this.getParamOfPidInPath();
         if (Util.isUndefinedNullEmpty(booze) && Util.isFirestoreAutoId(id)) booze = await this.apiOfBooze.fetchBoozeItem(this.getComponent(), id);
-        if (id) this.setIdOfBooze(id);
+        if (!_.isEqual(id, BOOZE_OF_UNCREATED)) this.setIdOfBooze(id);
         if (booze && booze.id) this.validateBooze(booze);
         this.validateSubMainValues();
     }
@@ -62,6 +62,15 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setBriefMains(...Util.getArrayOfFillMissingValues(this.getBriefMains()));
         this.setBriefSubs(...Util.getArrayOfFillMissingValues(this.getBriefSubs()));
     }
+
+    setScheduleResult = async (schedule) => {
+        this.cleanBriefSubs();
+        this.cleanBriefMains();
+        schedule.dates.forEach((date) => this.appendMainOptions(date));
+        schedule.classes.forEach((time) => this.appendSubOptions(time));
+        Util.appendInfo(this.getBriefMains().map((each) => each.columnData()));
+        Util.appendInfo(this.getBriefSubs().map((each) => each.columnData()));
+    };
 
     @action
     validateBooze(booze) {
@@ -287,7 +296,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         /** label, id:main(value)-sub(value), quantity, priceB4, price, photo */
         await this.handleIdOfBooze();
         const variants = Util.renameKeysInArray(Util.generateVariants([this.getBriefMains(), this.getBriefSubs()]), ["label", "labelOfVariant"], ["value", "id"]);
-        const variantsOfRemote = (await this.apiOfVariant.fetchVariants(this.getComponent(), this.getIdOfBooze())) ?? [];
+        const variantsOfRemote = (await this.apiOfVariant.fetchPureVariants(this.getComponent(), this.getIdOfBooze())) ?? [];
         const latest = Util.getArrayOfMergeBySpecificId(
             variants,
             variantsOfRemote.map((each) => {
@@ -317,7 +326,13 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
         if (_.size(submits) > 0) {
             await this.updateSpecificAttributes();
-            await this.apiOfVariant.submitVariants(this.getComponent(), submits, this.getIdOfBooze());
+            await this.apiOfVariant.submitVariants(
+                this.getComponent(),
+                submits.map((each) => {
+                    return { ...each, content: each.labelOfVariant, idOfBooze: this.getIdOfBooze() };
+                }),
+                this.getIdOfBooze()
+            );
         }
 
         if (component instanceof BaseComponent) component.dismiss();
@@ -335,7 +350,13 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
         if (_.size(submits) > 0) {
             await this.updateSpecificAttributes();
-            await this.apiOfVariant.submitVariants(this.getComponent(), submits, this.getIdOfBooze());
+            await this.apiOfVariant.submitVariants(
+                this.getComponent(),
+                submits.map((each) => {
+                    return { ...each, content: each.labelOfVariant, idOfBooze: this.getIdOfBooze() };
+                }),
+                this.getIdOfBooze()
+            );
         }
 
         await this.apiOfVariant.updateVariants(

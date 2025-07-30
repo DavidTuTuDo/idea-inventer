@@ -4794,13 +4794,14 @@ class RemoteFunctionHandler extends BaseBuilder {
                                 `return await this.${node.getFunctionNameOfFetch()}(${this.getArgumentsInFunction(node, 'fetch without condition')}, ...startAfterConditions, ...conditions)`],
                             `fetch next items`);
 
-                        /** 當有 paginate 機制, limit 就會被寫在method裏面, 需要一個fetch all的*/
-                        generateApiFunction(
-                            node,
-                            node.getFunctionNameOfPureFetch(),
-                            [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`],
-                            `fetch items of pure`);
                     }
+
+                    /** 基礎fetch都會限制單筆在50個以內，需要一個fetch pure all的函式處理特殊狀況 */
+                    generateApiFunction(
+                      node,
+                      node.getFunctionNameOfPureFetch(),
+                      [`return await self.fetchItems(path, ...conditions,${getConditionStmts(true)})`],
+                      `fetch items of pure`);
 
                     generateApiFunction(
                         node,

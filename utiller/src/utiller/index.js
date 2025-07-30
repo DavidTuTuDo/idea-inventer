@@ -296,7 +296,7 @@ class Utiller {
         return _.nth(array, index % _.size(array));
     }
 
-    /** 選一個exsist的candidate回傳, 像是firebase 可以 idToken 又可以 oauthIdToken*/
+    /** 選一個exist的candidate回傳, 像是firebase 可以 idToken 又可以 oauthIdToken*/
     getExistOne(...candidates) {
         for (const candidate of candidates) {
             if (candidate)
@@ -3156,7 +3156,7 @@ class Utiller {
 
     /**
      * 需求：
-     * 1.我可以給參數日期區間（25/12/01-16/01/31）
+     * 1.我可以給參數日期區間（25/12/01-26/01/31）
      * 2.參數-上班時間（08:00-21:30）
      * 3.參數-課程長度（90分鐘）
      * 4.參數-課程間隔（30分鐘）
@@ -3196,16 +3196,17 @@ class Utiller {
      * @param {number[]} config.weeklyHolidays - 1~7, 週一~週日
      * @param {string[]} config.excludePeriods - 排除時段 ['13:00-15:00']
      */
-    generateSchedule({
-                         dateRange,
-                         workHours,
-                         classDuration,
-                         breakBetween,
-                         weeklyHolidays,
-                         excludePeriods,
-                         lang = "zh"
-                     }) {
-        // 語系對應表
+    async generateSchedule({
+                               dateRange,
+                               workHours,
+                               classDuration,
+                               breakBetween,
+                               weeklyHolidays,
+                               excludePeriods,
+                               lang = "zh"
+                           }) {
+        const moment = require("moment"); // 確保 moment 有引入
+
         const weekdayMap = {
             en: ["(Su)", "(Mo)", "(Tu)", "(We)", "(Th)", "(Fr)", "(Sa)"],
             zh: ["(日)", "(一)", "(二)", "(三)", "(四)", "(五)", "(六)"]
@@ -3213,23 +3214,65 @@ class Utiller {
 
         const parseROC = (rocStr) => {
             const [y, m, d] = rocStr.split("/").map(Number);
+            if (!y || !m || !d) throw new Error(`無效日期格式: ${rocStr}`);
             return moment(`${y + 1911}-${m}-${d}`, "YYYY-MM-DD");
         };
 
+        // === 基本參數驗證 ===
+        if (!dateRange || !dateRange.includes("-")) {
+            throw new Error("dateRange 格式錯誤，應為 'yy/mm/dd-yy/mm/dd'");
+        }
         const [startStr, endStr] = dateRange.split("-");
         const start = parseROC(startStr);
         const end = parseROC(endStr);
+
+        if (!start.isValid() || !end.isValid()) throw new Error("日期格式不合法");
+        if (start.isAfter(end)) throw new Error("起始日期不能晚於結束日期");
+        if (start.isBefore(moment().startOf("day"))) throw new Error("起始日期不能是過去日期");
+
+        if (!/^[0-9]{2}:[0-9]{2}-[0-9]{2}:[0-9]{2}$/.test(workHours)) {
+            throw new Error("workHours 格式錯誤，應為 'HH:mm-HH:mm'");
+        }
+        const [workStartStr, workEndStr] = workHours.split("-");
+        const workStart = moment(workStartStr, "HH:mm");
+        const workEnd = moment(workEndStr, "HH:mm");
+
+        if (!workStart.isValid() || !workEnd.isValid()) throw new Error("上班時間格式不合法");
+        if (!workStart.isBefore(workEnd)) throw new Error("上班開始時間應早於結束時間");
+
+        if (typeof classDuration !== "number" || classDuration <= 0) {
+            throw new Error("classDuration 應為正整數");
+        }
+        if (typeof breakBetween !== "number" || breakBetween < 0) {
+            throw new Error("breakBetween 應為非負整數");
+        }
+
+        if (!Array.isArray(weeklyHolidays) || weeklyHolidays.some(d => d < 1 || d > 7)) {
+            throw new Error("weeklyHolidays 必須是 1~7 整數的陣列");
+        }
+
+        if (!Array.isArray(excludePeriods)) throw new Error("excludePeriods 應為陣列");
+        const breaks = excludePeriods.map(period => {
+            if (!/^[0-9]{2}:[0-9]{2}-[0-9]{2}:[0-9]{2}$/.test(period)) {
+                throw new Error(`無效排除時段格式: ${period}`);
+            }
+            const [from, to] = period.split("-");
+            const restStart = moment(from, "HH:mm");
+            const restEnd = moment(to, "HH:mm");
+            if (!restStart.isBefore(restEnd)) throw new Error(`排除時段 ${period} 結束時間需晚於開始時間`);
+            return [restStart, restEnd];
+        });
 
         const dateList = [];
         let cursor = start.clone();
         let lastYear = cursor.year();
 
         while (cursor.isSameOrBefore(end, "day")) {
-            const dow = cursor.isoWeekday(); // 1~7 (Mon~Sun)，與題目一致
+            const dow = cursor.isoWeekday();
             if (!weeklyHolidays.includes(dow)) {
                 const showYear = cursor.year() !== lastYear;
                 const rocYear = cursor.year() - 1911;
-                const day = cursor.day(); // 0~6 (Sun~Sat)
+                const day = cursor.day();
                 const weekday = weekdayMap[lang][day];
                 const dateStr = `${cursor.format("MM/DD")}${weekday}`;
                 dateList.push(showYear ? `${rocYear}/${dateStr}` : dateStr);
@@ -3237,16 +3280,6 @@ class Utiller {
             }
             cursor.add(1, "day");
         }
-
-        // 課程時間區段處理
-        const [workStartStr, workEndStr] = workHours.split("-");
-        const workStart = moment(workStartStr, "HH:mm");
-        const workEnd = moment(workEndStr, "HH:mm");
-
-        const breaks = excludePeriods.map(period => {
-            const [from, to] = period.split("-");
-            return [moment(from, "HH:mm"), moment(to, "HH:mm")];
-        });
 
         const classList = [];
         let timeCursor = workStart.clone();
@@ -3270,7 +3303,6 @@ class Utiller {
             classes: classList
         };
     }
-
 
 }
 
