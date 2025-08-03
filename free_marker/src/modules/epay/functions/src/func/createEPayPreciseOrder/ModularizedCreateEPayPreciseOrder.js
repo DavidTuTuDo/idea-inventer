@@ -46,6 +46,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder()) this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
 
+        function extractDate(input) {
+            // 切掉星期和時間，只取到 '2025/08/18'
+            return _.trim(input.split("(")[0]);
+        }
+
         /** 用batch fetch拿回variants */
         const params = itemsOfClientOrdering.map(({ idOfVariant, idOfBooze }) => ({ id: idOfVariant, pid: idOfBooze }));
         const variantsOfRemoteStatus = await Api.fetchVariantBatchItems(...params);
@@ -77,6 +82,19 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     variant.id,
                     variant.idOfBooze
                 );
+
+                /** 未處理variant不存在的狀況*/
+
+                // /** 新增行事曆的邏輯*/
+                // if (variant.isTaskJob && variant.useMainTrunk) {
+                //     const idOfTS = _.toString(Util.getStringOfLocalToUtcTimestamp(extractDate(variant.content)));
+                //     const idOfProcessor = await Api.submitProcessorItem({
+                //         idOfVariant: variant.id,
+                //         idOfBooze: variant.idOfBooze,
+                //         period: Util.getStringOfConvertTimeRange(variant.content)
+                //     }, undefined, variant.idOfAuthor, idOfTS);
+                // }
+
                 rollbackList.push({ item, variant });
             }
         } catch (error) {

@@ -8046,7 +8046,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         objectOfAppend.incest = node.incest;
                         break;
                 }
-
                 for (const key in objectOfAppend)
                     node.appendChildrenWithJsons(objectOfAppend[key]);
 

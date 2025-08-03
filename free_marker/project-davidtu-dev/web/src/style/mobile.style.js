@@ -807,10 +807,6 @@ class MobileStyle {
 
     /** => following for gaia  component  */
 
-    DionysusGaiaFuncScheduleReactFragmentWrap = {};
-
-    DionysusGaiaFuncScheduleChip = {};
-
     DionysusGaiaFuncDeletedReactFragmentWrap = {};
 
     DionysusGaiaFuncDeletedChip = {};
@@ -915,6 +911,10 @@ class MobileStyle {
 
     DionysusGaiaAreaOfMainBriefMainDiv = {};
 
+    DionysusGaiaAreaOfMainRowAppendTaskReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfMainRowAppendTaskChip = {};
+
     DionysusGaiaAreaOfMainRowAppendMainReactFragmentWrap = {};
 
     DionysusGaiaAreaOfMainRowAppendMainChip = {};
@@ -924,6 +924,14 @@ class MobileStyle {
     DionysusGaiaAreaOfMainRowDiv = {};
 
     DionysusGaiaAreaOfMainDiv = {};
+
+    DionysusGaiaAreaOfPropTypeOfPropTextFieldList = {};
+
+    DionysusGaiaAreaOfPropTypeOfPropMenuItem = {};
+
+    DionysusGaiaAreaOfPropLabelOfPropTypography = {};
+
+    DionysusGaiaAreaOfPropDiv = {};
 
     DionysusGaiaAreaOfNameNameTextField = {};
 

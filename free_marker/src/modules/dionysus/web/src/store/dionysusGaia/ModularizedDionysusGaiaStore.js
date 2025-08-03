@@ -9,6 +9,7 @@ import DionysusTab from "../dionysusSelect";
 import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
+import UserInfo from '../../base/BaseUserInfo';
 
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
@@ -324,20 +325,29 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getIdOfBooze()
         );
 
-        if (_.size(submits) > 0) {
-            await this.updateSpecificAttributes();
-            await this.apiOfVariant.submitVariants(
-                this.getComponent(),
-                submits.map((each) => {
-                    return { ...each, content: each.labelOfVariant, idOfBooze: this.getIdOfBooze() };
-                }),
-                this.getIdOfBooze()
-            );
-        }
-
+        if (_.size(submits) > 0) this.submitVariant(submits);
         if (component instanceof BaseComponent) component.dismiss();
         this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
     };
+
+    submitVariant = (submits) => {
+        await this.updateSpecificAttributes();
+        await this.apiOfVariant.submitVariants(
+          this.getComponent(),
+          submits.map((each) => {
+              return {
+                  ...each,
+                  content: each.labelOfVariant,
+                  idOfBooze: this.getIdOfBooze(),
+                  idOfAuthor: UserInfo.getUid(),
+                  nameOfBooze: this.getName(),
+                  isTaskJob: false,
+                  useMainTrunk: false
+              };
+          }),
+          this.getIdOfBooze()
+        );
+    }
 
     onVariantPriceUpdate = async (variant) => {
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { price: variant.price, priceB4Discount: variant.priceB4Discount }, variant.id, this.getIdOfBooze());
@@ -348,16 +358,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const submits = _.filter(variants, (variant) => !variant.existing);
         const updates = _.filter(variants, (variants) => variants.existing);
 
-        if (_.size(submits) > 0) {
-            await this.updateSpecificAttributes();
-            await this.apiOfVariant.submitVariants(
-                this.getComponent(),
-                submits.map((each) => {
-                    return { ...each, content: each.labelOfVariant, idOfBooze: this.getIdOfBooze() };
-                }),
-                this.getIdOfBooze()
-            );
-        }
+        if (_.size(submits) > 0) this.submitVariant(submits);
 
         await this.apiOfVariant.updateVariants(
             this.getComponent(),

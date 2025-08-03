@@ -87,6 +87,18 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     isValidOfParamOfPid(pid) {
         return true;
     }
+
+    getInjectStyleOfDionysusGaiaAppendSubChip(dionysusGaia) {
+        return Util.getVisibleOrNone(_.isEqual(1, dionysusGaia.getSelectedTypeOfProp()), true);
+    }
+
+    getInjectStyleOfDionysusGaiaAppendTaskChip(dionysusGaia) {
+        return Util.getVisibleOrNone(_.isEqual(2, dionysusGaia.getSelectedTypeOfProp()), true);
+    }
+
+    getInjectStyleOfDionysusGaiaAppendMainChip(dionysusGaia) {
+        return Util.getVisibleOrNone(_.isEqual(1, dionysusGaia.getSelectedTypeOfProp()), true);
+    }
 }
 
 export default ModularizedDionysusGaiaComponent;

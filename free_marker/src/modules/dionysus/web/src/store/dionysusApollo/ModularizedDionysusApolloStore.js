@@ -42,7 +42,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
         const endOfThisMonth = moment().endOf("month");
         const daysLeft = endOfThisMonth.diff(now, "days");
 
-        return daysLeft < 5 ? moment().add(1, "month").startOf("month") : now;
+        return daysLeft < 5 ? moment().add(1, "month").startOf("month") : now.add(1, "day");
     }
 
     async onInitialFetchCompleted(collection) {
@@ -185,11 +185,13 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
             const dow = cursor.isoWeekday();
             if (!weeklyHolidays.includes(dow)) {
                 const showYear = cursor.year() !== lastYear;
-                const rocYear = cursor.year() - 1911;
+                // const jesusYear = cursor.format('YY')
                 const day = cursor.day();
                 const weekday = weekdayMap[lang][day];
-                const dateStr = `${cursor.format("MM/DD")} ${weekday}`;
-                dateList.push(showYear ? `${rocYear}/${dateStr}` : dateStr);
+                // const dateStr = `${cursor.format("MM/DD")} ${weekday}`;
+                const dateStr = `${cursor.format("YYYY/MM/DD")}${weekday}`;
+                dateList.push(dateStr);
+                // dateList.push({ display: showYear ? `${jesusYear}/${dateStr}` : dateStr, label: cursor.format("YYYY/MM/DD") });
                 lastYear = cursor.year();
             }
             cursor.add(1, "day");
@@ -300,7 +302,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
             { label: "星期三", value: 3 },
             { label: "星期四", value: 4 },
             { label: "星期五", value: 5 },
-            { label: "星期天", value: 6 },
+            { label: "星期六", value: 6 },
             { label: "星期日", value: 7 }
         ];
         return Util.getItemsOfMarkMatching(tabs, indexOfSelected);

@@ -807,10 +807,6 @@ class AppStyle {
 
     /** => following for gaia  component  */
 
-    DionysusGaiaFuncScheduleReactFragmentWrap = {};
-
-    DionysusGaiaFuncScheduleChip = {};
-
     DionysusGaiaFuncDeletedReactFragmentWrap = {};
 
     DionysusGaiaFuncDeletedChip = {};
@@ -915,6 +911,10 @@ class AppStyle {
 
     DionysusGaiaAreaOfMainBriefMainDiv = {};
 
+    DionysusGaiaAreaOfMainRowAppendTaskReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfMainRowAppendTaskChip = {};
+
     DionysusGaiaAreaOfMainRowAppendMainReactFragmentWrap = {};
 
     DionysusGaiaAreaOfMainRowAppendMainChip = {};
@@ -924,6 +924,14 @@ class AppStyle {
     DionysusGaiaAreaOfMainRowDiv = {};
 
     DionysusGaiaAreaOfMainDiv = {};
+
+    DionysusGaiaAreaOfPropTypeOfPropTextFieldList = {};
+
+    DionysusGaiaAreaOfPropTypeOfPropMenuItem = {};
+
+    DionysusGaiaAreaOfPropLabelOfPropTypography = {};
+
+    DionysusGaiaAreaOfPropDiv = {};
 
     DionysusGaiaAreaOfNameNameTextField = {};
 
