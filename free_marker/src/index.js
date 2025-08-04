@@ -787,7 +787,7 @@ class CodegenNode {
     /** TextField 的 filled會有 圓弧 */
 
     disabled = false;
-    /** TextField 的 diable input */
+    /** TextField 的 disabled input */
 
     /** 設計了defaultValue 然後想要快速地取消掉 */
     disableDefaultValue = false;
@@ -8398,6 +8398,18 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             if (node.isTypographyView()) {
                 node.appendViewProps({whiteSpace: 'pre-line'})
                 node.appendViewProps({variant: 'inherit'})
+            }
+
+            if (node.isSwitchView()) {
+                const nameOfDisabled = Util.camel(node.getName(), "disabled");
+                node.getParentNode().appendChildrenWithJsons(
+                  {
+                      name: nameOfDisabled,
+                      type: "boolean",
+                      defaultValue: node.disabled,
+                      incest: node.incest
+                  });
+                node.appendViewProps({ disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel("get", nameOfDisabled)}()` });
             }
 
             if (node.isTextFieldView()) {

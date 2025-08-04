@@ -833,6 +833,12 @@ class MobileStyle {
 
     DionysusGaiaAreaOfStatusDiv = {};
 
+    DionysusGaiaAreaOfTrunkUseMainTrunkSwitch = {};
+
+    DionysusGaiaAreaOfTrunkLabelOfTrunkTypography = {};
+
+    DionysusGaiaAreaOfTrunkDiv = {};
+
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};

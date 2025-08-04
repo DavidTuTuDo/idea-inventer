@@ -1,6 +1,6 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
 import BaseDionysusGaiaComponent from "./BaseDionysusGaiaComponent";
@@ -88,16 +88,28 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         return true;
     }
 
+    isProductSell(param) {
+        return _.isEqual(1, param.getSelectedTypeOfProp());
+    }
+
+    isClassSell(param) {
+        return _.isEqual(2, param.getSelectedTypeOfProp());
+    }
+
     getInjectStyleOfDionysusGaiaAppendSubChip(dionysusGaia) {
-        return Util.getVisibleOrNone(_.isEqual(1, dionysusGaia.getSelectedTypeOfProp()), true);
+        return Util.getVisibleOrNone(this.isProductSell(dionysusGaia), true);
     }
 
     getInjectStyleOfDionysusGaiaAppendTaskChip(dionysusGaia) {
-        return Util.getVisibleOrNone(_.isEqual(2, dionysusGaia.getSelectedTypeOfProp()), true);
+        return Util.getVisibleOrNone(this.isClassSell(dionysusGaia), true);
+    }
+
+    getInjectStyleOfDionysusGaiaAreaOfTrunkDiv(dionysusGaia) {
+        return Util.getVisibleOrNone(this.isClassSell(dionysusGaia), true);
     }
 
     getInjectStyleOfDionysusGaiaAppendMainChip(dionysusGaia) {
-        return Util.getVisibleOrNone(_.isEqual(1, dionysusGaia.getSelectedTypeOfProp()), true);
+        return Util.getVisibleOrNone(this.isProductSell(dionysusGaia), true);
     }
 }
 

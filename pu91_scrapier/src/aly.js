@@ -7,6 +7,7 @@ import config from './config';
     await database.init();
     // Util.appendInfo(`update {ING => NOT}  succeed  ` + (await database.updateRecords('SINGER', {state: 'NOT'}, new SQL.Builder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
     // Util.appendInfo(`update {ING = > NOT}  succeed  ` + (await database.updateRecords('SINGER', {state: 'NOT'}, new SQL.Builder().equal('state', 'ING').or().equal('state', 'DUP').stmt())).length);
+    // Util.appendInfo(`update {FAIL = > NOT}  succeed  ` + (await database.updateRecords('SINGER', {state: 'NOT'}, new SQL.Builder().equal('state', 'ING').or().equal('state', 'FAIL').stmt())).length);
 
     Util.appendInfo('ING SONG ' + ((await database.fetchRecords('SONG', new SQL.Builder().equal('state', 'ING').stmt())).length));
     Util.appendInfo('NOT SONG  ' + ((await database.fetchRecords('SONG', new SQL.Builder().equal('state', 'NOT').stmt())).length));

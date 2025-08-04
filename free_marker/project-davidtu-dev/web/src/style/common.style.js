@@ -833,6 +833,12 @@ class CommonStyle {
 
     DionysusGaiaAreaOfStatusDiv = {};
 
+    DionysusGaiaAreaOfTrunkUseMainTrunkSwitch = {};
+
+    DionysusGaiaAreaOfTrunkLabelOfTrunkTypography = {};
+
+    DionysusGaiaAreaOfTrunkDiv = {};
+
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};

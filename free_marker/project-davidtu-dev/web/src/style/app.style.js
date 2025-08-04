@@ -833,6 +833,12 @@ class AppStyle {
 
     DionysusGaiaAreaOfStatusDiv = {};
 
+    DionysusGaiaAreaOfTrunkUseMainTrunkSwitch = {};
+
+    DionysusGaiaAreaOfTrunkLabelOfTrunkTypography = {};
+
+    DionysusGaiaAreaOfTrunkDiv = {};
+
     DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
 
     DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};

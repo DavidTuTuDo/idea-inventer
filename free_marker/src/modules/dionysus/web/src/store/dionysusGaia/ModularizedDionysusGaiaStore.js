@@ -9,7 +9,7 @@ import DionysusTab from "../dionysusSelect";
 import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
-import UserInfo from '../../base/BaseUserInfo';
+import UserInfo from "../../base/BaseUserInfo";
 
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
@@ -81,7 +81,10 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setBriefMains(...this.getOptionsOfBrief(booze, "main"));
         this.setBriefSubs(...this.getOptionsOfBrief(booze, "sub"));
         this.setBriefPhotos(...booze.photos);
+        this.setSelectedTypeOfProp(booze.selectedTypeOfProp ?? 1);
         this.setVisibility(booze.visibility ?? false);
+        this.setTypeOfPropDisabled(true);
+        this.setUseMainTrunkDisabled(true);
     }
 
     getOptionsOfBrief = (booze, type = "main") => {
@@ -206,21 +209,32 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const result = await this.apiOfBooze.updateBoozeItem(
             this.getComponent(),
             {
+                id: this.getIdOfBooze(),
                 name: this.getName(),
                 statement: this.getStatement(),
                 photos: this.getBriefPhotos(),
                 photoOfDemo: _.head(this.getBriefPhotos()).href,
                 ...this.modifySpecificAttribute(),
-                visibility: this.getVisibility()
-                /**
-                 * 商品歸屬tab的設定
-                 * 每個variant圖片的設定
-                 */
+                visibility: this.getVisibility(),
+                idOfAuthor: UserInfo.getUid(),
+                isTaskJob: this.belong2TaskJob(),
+                useMainTrunk: this.getUseMainTrunk(),
+                selectedTypeOfProp: this.getSelectedTypeOfProp()
             },
             this.getIdOfBooze()
         );
-        await this.invalidateBooze(result.value);
-        this.getComponent().showInfoSnackMessage(`成功創立「${this.getName()}」商品`);
+        this.invalidateBooze(result.value);
+        /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
+        const variants = await this.apiOfVariant.fetchDocumentIdsOfVariant(this.getComponent(), this.getIdOfBooze());
+        await this.apiOfVariant.updateVariants(
+            this.getComponent(),
+            variants.map((id) => {
+                return { id, nameOfBooze: this.getName() };
+            }),
+            this.getIdOfBooze()
+        );
+
+        this.getComponent().showInfoSnackMessage(`成功設定「${this.getName()}」商品`);
     };
 
     modifySpecificAttribute() {
@@ -242,7 +256,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     }
 
     invalidateBooze = (object) => {
-        this.setBooze(Util.mergeObject(this.getBooze(), object));
+        const latest = Util.mergeObject(this.getBooze(), object);
+        this.setBooze(latest);
+        this.validateBooze(latest);
     };
 
     /**
@@ -330,24 +346,28 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
     };
 
-    submitVariant = (submits) => {
+    submitVariant = async (submits) => {
         await this.updateSpecificAttributes();
         await this.apiOfVariant.submitVariants(
-          this.getComponent(),
-          submits.map((each) => {
-              return {
-                  ...each,
-                  content: each.labelOfVariant,
-                  idOfBooze: this.getIdOfBooze(),
-                  idOfAuthor: UserInfo.getUid(),
-                  nameOfBooze: this.getName(),
-                  isTaskJob: false,
-                  useMainTrunk: false
-              };
-          }),
-          this.getIdOfBooze()
+            this.getComponent(),
+            submits.map((each) => {
+                return {
+                    ...each,
+                    content: each.labelOfVariant,
+                    idOfBooze: this.getIdOfBooze(),
+                    idOfAuthor: UserInfo.getUid(),
+                    nameOfBooze: this.getName(),
+                    isTaskJob: this.belong2TaskJob(),
+                    useMainTrunk: this.getUseMainTrunk()
+                };
+            }),
+            this.getIdOfBooze()
         );
-    }
+    };
+
+    belong2TaskJob = () => {
+        return _.isEqual(2, this.getSelectedTypeOfProp());
+    };
 
     onVariantPriceUpdate = async (variant) => {
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { price: variant.price, priceB4Discount: variant.priceB4Discount }, variant.id, this.getIdOfBooze());
