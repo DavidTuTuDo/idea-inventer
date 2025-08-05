@@ -187,8 +187,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const id = Util.isUndefinedNullEmpty(this.getIdOfBooze()) ? this.getParamOfPidInPath() : this.getIdOfBooze();
         if (Util.isUndefinedNullEmpty(id) || _.isEqual(BOOZE_OF_UNCREATED, id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
-            const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent());
+            const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent(), this.getObjectOfBooze());
             this.setIdOfBooze(latest.value.id);
+            this.setBooze(latest.value);
         } else this.setIdOfBooze(id);
     };
 
@@ -204,25 +205,25 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.getComponent().showInfoSnackMessage(`已成功刪除`);
     };
 
+    getObjectOfBooze = () => {
+        return {
+            id: this.getIdOfBooze(),
+            name: this.getName(),
+            statement: this.getStatement(),
+            photos: this.getBriefPhotos(),
+            photoOfDemo: _.head(this.getBriefPhotos()).href,
+            ...this.modifySpecificAttribute(),
+            visibility: this.getVisibility(),
+            idOfAuthor: UserInfo.getUid(),
+            isTaskJob: this.belong2TaskJob(),
+            useMainTrunk: this.getUseMainTrunk(),
+            selectedTypeOfProp: this.getSelectedTypeOfProp()
+        };
+    };
+
     createBooze4Sure = async () => {
         await this.handleIdOfBooze();
-        const result = await this.apiOfBooze.updateBoozeItem(
-            this.getComponent(),
-            {
-                id: this.getIdOfBooze(),
-                name: this.getName(),
-                statement: this.getStatement(),
-                photos: this.getBriefPhotos(),
-                photoOfDemo: _.head(this.getBriefPhotos()).href,
-                ...this.modifySpecificAttribute(),
-                visibility: this.getVisibility(),
-                idOfAuthor: UserInfo.getUid(),
-                isTaskJob: this.belong2TaskJob(),
-                useMainTrunk: this.getUseMainTrunk(),
-                selectedTypeOfProp: this.getSelectedTypeOfProp()
-            },
-            this.getIdOfBooze()
-        );
+        const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), this.getObjectOfBooze(), this.getIdOfBooze());
         this.invalidateBooze(result.value);
         /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
         const variants = await this.apiOfVariant.fetchDocumentIdsOfVariant(this.getComponent(), this.getIdOfBooze());
@@ -255,8 +256,11 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         return object;
     }
 
-    invalidateBooze = (object) => {
-        const latest = Util.mergeObject(this.getBooze(), object);
+    invalidateBooze = (newbie) => {
+        const latest = Util.mergeObject(this.getBooze(), newbie);
+        Util.appendInfo("origin ==>", this.getBooze());
+        Util.appendInfo("newbie ==>", newbie);
+        Util.appendInfo("latest ==>", latest);
         this.setBooze(latest);
         this.validateBooze(latest);
     };
