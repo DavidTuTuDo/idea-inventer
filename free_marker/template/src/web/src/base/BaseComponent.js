@@ -62,17 +62,17 @@ class BaseComponent extends MuiComponent {
 
     arrowOfBackward() {
         return (
-            <div className={"SlideIndicatorArrowDiv"}>
-                <ArrowBackIosRounded />
-            </div>
+          <div className={"SlideIndicatorArrowDiv"}>
+              <ArrowBackIosRounded />
+          </div>
         );
     }
 
     arrowOfForward() {
         return (
-            <div className={"SlideIndicatorArrowDiv"}>
-                <ArrowForwardIosRounded />
-            </div>
+          <div className={"SlideIndicatorArrowDiv"}>
+              <ArrowForwardIosRounded />
+          </div>
         );
     }
 
@@ -301,9 +301,9 @@ class BaseComponent extends MuiComponent {
     renderLoadingView() {
         if (this.getStore().state === "loading") {
             return (
-                <div className={"BaseLoadingViewDiv"}>
-                    <LinearProgress className={`BaseLoadingLinearProgress`} />
-                </div>
+              <div className={"BaseLoadingViewDiv"}>
+                  <LinearProgress className={`BaseLoadingLinearProgress`} />
+              </div>
             );
         }
     }
@@ -370,15 +370,15 @@ class BaseComponent extends MuiComponent {
     renderErrorView = () => {
         const errorMsg = this.getStore().getErrorMsg();
         return (
-            <Paper className={"BaseComponentErrorViewPaper"}>
-                <Typography className={"BaseComponentErrorViewTitleTypography"}>發生技術問題</Typography>
+          <Paper className={"BaseComponentErrorViewPaper"}>
+              <Typography className={"BaseComponentErrorViewTitleTypography"}>發生技術問題</Typography>
 
-                <Typography className={"BaseComponentErrorViewContentTypography"}>{errorMsg}</Typography>
+              <Typography className={"BaseComponentErrorViewContentTypography"}>{errorMsg}</Typography>
 
-                <Button variant={"outlined"} color={"primary"} onClick={(viewParam) => this.onGoHomeClicked(viewParam)} className={"BaseComponentErrorViewRetryButton"}>
-                    返回首頁
-                </Button>
-            </Paper>
+              <Button variant={"outlined"} color={"primary"} onClick={(viewParam) => this.onGoHomeClicked(viewParam)} className={"BaseComponentErrorViewRetryButton"}>
+                  返回首頁
+              </Button>
+          </Paper>
         );
     };
 
@@ -410,23 +410,23 @@ class BaseComponent extends MuiComponent {
     render() {
         const self = this;
         return (
-            <div className={"RootViewDiv"} style={{ ...this.style, marginTop: self.getStore().getAppBarHeight() }}>
-                {self.renderGlobalLoadingView()}
+          <div className={"RootViewDiv"} style={{ ...this.style, marginTop: self.getStore().getAppBarHeight() }}>
+              {self.renderGlobalLoadingView()}
 
-                <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
-                    {self.renderViewByStatus()}
-                </div>
+              <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
+                  {self.renderViewByStatus()}
+              </div>
 
-                {self.renderLoadingView()}
+              {self.renderLoadingView()}
 
-                {self.renderSelectorView()}
+              {self.renderSelectorView()}
 
-                {self.renderImageDialog()}
+              {self.renderImageDialog()}
 
-                {self.renderSnackView()}
+              {self.renderSnackView()}
 
-                {self.renderGlobalDialogView()}
-            </div>
+              {self.renderGlobalDialogView()}
+          </div>
         );
     }
 
@@ -447,27 +447,27 @@ class BaseComponent extends MuiComponent {
         function renderRetryButton() {
             if (hasPath) {
                 return (
-                    <Button
-                        onClick={async () => {
-                            if (component instanceof BaseComponent) {
-                                const store = component.getStore();
-                                await store.fetch(component);
-                            }
-                        }}
-                        variant={"outlined"}
-                        className={`BaseListEmptyRetryButton`}>
-                        重試
-                    </Button>
+                  <Button
+                    onClick={async () => {
+                        if (component instanceof BaseComponent) {
+                            const store = component.getStore();
+                            await store.fetch(component);
+                        }
+                    }}
+                    variant={"outlined"}
+                    className={`BaseListEmptyRetryButton`}>
+                      重試
+                  </Button>
                 );
             }
             return null;
         }
 
         return (
-            <div className={`BaseListEmptyDiv`}>
-                <Typography className={`BaseListEmptyTypography`}>{this.getStore().getMessageOfListIsEmpty()}</Typography>
-                {renderRetryButton()}
-            </div>
+          <div className={`BaseListEmptyDiv`}>
+              <Typography className={`BaseListEmptyTypography`}>{this.getStore().getMessageOfListIsEmpty()}</Typography>
+              {renderRetryButton()}
+          </div>
         );
     });
 
@@ -478,20 +478,20 @@ class BaseComponent extends MuiComponent {
             return;
         }
         navigator.geolocation.getCurrentPosition(
-            async (position) => {
-                const { latitude, longitude } = position.coords;
-                console.log({ latitude, longitude });
-                try {
-                    const fetchedAddress = await functions.httpOnCallGetCurrentAddress(self, { latitude, longitude });
-                    Util.appendInfo(fetchedAddress);
-                    return fetchedAddress;
-                } catch (error) {
-                    this.showWarningSnackMessage("無法獲取地址，請手動輸入地址");
-                }
-            },
-            (error) => {
-                this.showWarningSnackMessage("無法獲取地理位置，請檢查您的定位服務是否開啟");
-            }
+          async (position) => {
+              const { latitude, longitude } = position.coords;
+              console.log({ latitude, longitude });
+              try {
+                  const fetchedAddress = await functions.httpOnCallGetCurrentAddress(self, { latitude, longitude });
+                  Util.appendInfo(fetchedAddress);
+                  return fetchedAddress;
+              } catch (error) {
+                  this.showWarningSnackMessage("無法獲取地址，請手動輸入地址");
+              }
+          },
+          (error) => {
+              this.showWarningSnackMessage("無法獲取地理位置，請檢查您的定位服務是否開啟");
+          }
         );
     };
 
@@ -499,14 +499,14 @@ class BaseComponent extends MuiComponent {
         const self = this;
         const params = this.getStore().getSelectorParam();
         return (
-            <input
-                multiple={params.multiple}
-                type={params.type}
-                accept={params.accept}
-                ref={self.fileChooserInputRef}
-                style={{ display: "none" }}
-                onChange={this.onFilesSelectedEventReceived.bind(self)}
-            />
+          <input
+            multiple={params.multiple}
+            type={params.type}
+            accept={params.accept}
+            ref={self.fileChooserInputRef}
+            style={{ display: "none" }}
+            onChange={this.onFilesSelectedEventReceived.bind(self)}
+          />
         );
     };
 
@@ -556,13 +556,13 @@ class BaseComponent extends MuiComponent {
         }
 
         return (
-            <Backdrop open={this.getStore().getGlobalLoadingState()} className={"BaseComponentGlobalLoadingRootBackdrop"}>
-                <div className={"BaseComponentGlobalLoadingDiv"}>
-                    <CircularProgress />
+          <Backdrop open={this.getStore().getGlobalLoadingState()} className={"BaseComponentGlobalLoadingRootBackdrop"}>
+              <div className={"BaseComponentGlobalLoadingDiv"}>
+                  <CircularProgress />
 
-                    <Typography className={"BaseComponentGlobalLoadingTypography"}>{this.getStore().getGlobalLoadingTip()}</Typography>
-                </div>
-            </Backdrop>
+                  <Typography className={"BaseComponentGlobalLoadingTypography"}>{this.getStore().getGlobalLoadingTip()}</Typography>
+              </div>
+          </Backdrop>
         );
     }
 
@@ -574,9 +574,9 @@ class BaseComponent extends MuiComponent {
         const trigger = useScrollTrigger({ target: window ? window() : undefined });
 
         return (
-            <Slide appear={false} direction="down" in={!trigger}>
-                {children}
-            </Slide>
+          <Slide appear={false} direction="down" in={!trigger}>
+              {children}
+          </Slide>
         );
     }
 
@@ -656,37 +656,37 @@ class BaseComponent extends MuiComponent {
         function renderSnackExtraFunctionView() {
             if (hasSnackExtraFunction()) {
                 return (
-                    <Button
-                        className={"BaseSnackFuncButton"}
-                        color="secondary"
-                        size="large"
-                        onClick={() => {
-                            self.snackExtraTaskFunction.task().then();
-                            onSnackViewCloseClicked();
-                        }}>
-                        {self.snackExtraTaskFunction.name}
-                    </Button>
+                  <Button
+                    className={"BaseSnackFuncButton"}
+                    color="secondary"
+                    size="large"
+                    onClick={() => {
+                        self.snackExtraTaskFunction.task().then();
+                        onSnackViewCloseClicked();
+                    }}>
+                      {self.snackExtraTaskFunction.name}
+                  </Button>
                 );
             }
             return null;
         }
 
         return (
-            <Snackbar
-                anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "left"
-                }}
-                open={this.getStore().getSnackVisibility()}
-                autoHideDuration={self.durationOfSnackVisible}
-                onClose={onSnackViewCloseClicked}>
-                <div>
-                    <Alert className={"BaseSnackAlert"} onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
-                        {self.snackMessage}
-                    </Alert>
-                    {renderSnackExtraFunctionView()}
-                </div>
-            </Snackbar>
+          <Snackbar
+            anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "left"
+            }}
+            open={this.getStore().getSnackVisibility()}
+            autoHideDuration={self.durationOfSnackVisible}
+            onClose={onSnackViewCloseClicked}>
+              <div>
+                  <Alert className={"BaseSnackAlert"} onClose={onSnackViewCloseClicked} severity={self.snackMessageType}>
+                      {self.snackMessage}
+                  </Alert>
+                  {renderSnackExtraFunctionView()}
+              </div>
+          </Snackbar>
         );
     }
 
@@ -740,10 +740,10 @@ class BaseComponent extends MuiComponent {
         const TimeDisplayView = ({ days, hours, minutes, seconds, completed }) => {
             const UnitView = ({ count, unit }) => {
                 return (
-                    <Card className={"BaseCountdownCountCard"}>
-                        <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
-                        <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
-                    </Card>
+                  <Card className={"BaseCountdownCountCard"}>
+                      <Typography className={"BaseCountdownCountTypography"}>{count}</Typography>
+                      <Typography className={"BaseCountdownUnitTypography"}>{unit}</Typography>
+                  </Card>
                 );
             };
 
@@ -758,15 +758,15 @@ class BaseComponent extends MuiComponent {
                     { unit: "秒", count: seconds }
                 ];
                 return (
-                    <div className={"BaseCountdownCountDiv"}>
-                        <Typography className={"BaseCountdownTitleTypography"}>{title}</Typography>
-                        <div />
-                        <div className={"ListBaseCountdownCountDiv"}>
-                            {times.map((each) => (
-                                <UnitView key={each.unit} count={each.count} unit={each.unit} />
-                            ))}
-                        </div>
-                    </div>
+                  <div className={"BaseCountdownCountDiv"}>
+                      <Typography className={"BaseCountdownTitleTypography"}>{title}</Typography>
+                      <div />
+                      <div className={"ListBaseCountdownCountDiv"}>
+                          {times.map((each) => (
+                            <UnitView key={each.unit} count={each.count} unit={each.unit} />
+                          ))}
+                      </div>
+                  </div>
                 );
             }
         };
@@ -914,22 +914,23 @@ class BaseComponent extends MuiComponent {
     }
 
     renderAlertDialog({
-        ref,
-        title,
-        content,
-        task,
-        customView,
-        paramObject,
-        needActionButtons,
-        textInput,
-        component,
-        enableCancel,
-        callback,
-        useCustomCancel = false,
-        disposablePage = false,
-        fullWidth = false,
-        strict = false
-    }) {
+                          ref,
+                          title,
+                          content,
+                          task,
+                          customView,
+                          paramObject,
+                          needActionButtons,
+                          textInput,
+                          component,
+                          enableCancel,
+                          callback,
+                          storeX,
+                          useCustomCancel = false,
+                          disposablePage = false,
+                          fullWidth = false,
+                          strict = false
+                      }) {
         if (disposablePage && Application.getStoreObject()) {
             const nameOfComponent = customView.nameOfComponent;
             const store = Application.getStoreObject()[`${nameOfComponent}`];
@@ -937,22 +938,23 @@ class BaseComponent extends MuiComponent {
         }
 
         return (
-            <AlertDialog
-                title={title}
-                content={content}
-                callback={callback}
-                submitAsyncTask={task}
-                needActionButtons={needActionButtons}
-                enableCancel={enableCancel}
-                useCustomCancel={useCustomCancel}
-                customView={customView}
-                paramObject={paramObject}
-                textInput={textInput}
-                component={component}
-                fullWidth={fullWidth}
-                strict={strict}
-                ref={ref}
-            />
+          <AlertDialog
+            title={title}
+            content={content}
+            callback={callback}
+            submitAsyncTask={task}
+            needActionButtons={needActionButtons}
+            enableCancel={enableCancel}
+            useCustomCancel={useCustomCancel}
+            customView={customView}
+            paramObject={paramObject}
+            textInput={textInput}
+            component={component}
+            fullWidth={fullWidth}
+            strict={strict}
+            storeX={storeX}
+            ref={ref}
+          />
         );
     }
 

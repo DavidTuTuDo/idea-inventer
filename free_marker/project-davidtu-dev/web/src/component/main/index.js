@@ -15,8 +15,7 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
-@inject("main")
-@observer
+
 class MainComponent extends BaseMainComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

@@ -320,6 +320,12 @@ class CodegenNode {
     /** Chip,Button的畫面屬性 */
     variant;
 
+    /** 用來至底的infoCopyRight view */
+    isCopyRightView = false;
+
+    /** 用來至頂的infoCopyRight view */
+    isNavigatorView = false;
+
     methods = [];
     /** [...{params = [],functionName = 'string',loginOnly = false}]
      *
@@ -1076,7 +1082,7 @@ class CodegenNode {
 
     /**
      * 1.可以從任何一個節點找到node of component, 然後判斷是否為editable
-     * 2.設計了component modoule的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 conrete class , 這樣模組化的 邏輯 就可以放到module class,
+     * 2.設計了component module的觀念, 就是能把component當作模組使用, 增加了component 和 store 增加了 concrete class , 這樣模組化的 邏輯 就可以放到module class,
      * 3.module class 會persist到 free_marker/src/modules/{name}/XXX.js , 這樣換專案就可以無痛移植.  */
     isModuleComponent() {
         const ancestor = this.getNodeOfComponent();
@@ -1577,8 +1583,10 @@ class CodegenNode {
 
         function getCustomViewStmts() {
             if (self.hasCustomViewDialog()) {
-                return `customView:${self.getAlertDialog().customView}`;
-            }
+                const view = self.getAlertDialog().customView;
+                const component = self.getSpecificComponent(view);
+                return [`customView:${self.getAlertDialog().customView}`,`storeX:'${component.getStruct().getName()}'`];
+            } else return [];
         }
 
         function getStmtCallBack() {
@@ -1654,7 +1662,7 @@ class CodegenNode {
             props.push(getEnableCancelStmts());
             props.push(getTaskStmts());
             props.push(getStmtOfDisposable());
-            props.push(getCustomViewStmts());
+            props.push(...getCustomViewStmts());
             props.push(getStmtCallBack());
             props.push(getParamObject());
             props.push(getStmtOfStrictMode());
@@ -5091,8 +5099,8 @@ class ComponentBuilder extends BaseBuilder {
             const fieldNameOfParam = this.getNormalizeFieldOfParamInPath(param);
             const functionNameOfParamConstraint = Util.camel('isValidOf', fieldNameOfParam);
             baseGenerator.appendConstructor(`
-            if (this.propsMobX().match && this.propsMobX().match.params)
-            this.${fieldNameOfParam} = this.isComponentView()? this.propsMobX().${fieldNameOfParam} : this.propsMobX().match.params.${param}`);
+            if (this.propsMobX())
+            this.${fieldNameOfParam} = this.isComponentView()? this.propsMobX().${fieldNameOfParam} : this.propsMobX().${param}`);
             paramsInPath.push({functionNameOfParamConstraint, param: fieldNameOfParam});
             baseGenerator.appendConstructor(`Util.appendInfo(\`param of url => ${fieldNameOfParam}:$\{this.${fieldNameOfParam}\}\`)`);
             baseGenerator.appendFunction(functionNameOfParamConstraint, [param], [], [],
@@ -5115,8 +5123,8 @@ class ComponentBuilder extends BaseBuilder {
                 `return this.${componentNode.getFieldNameOfDetailUid()}`);
 
             this.appendStmtIntoComponentDidMount(`
-            if (this.propsMobX().match && this.propsMobX().match.params)
-            this.${componentNode.getFieldNameOfDetailUid()} = this.propsMobX().match.params.${componentNode.getFieldNameOfDetailUid()};
+            if (this.propsMobX())
+            this.${componentNode.getFieldNameOfDetailUid()} = this.propsMobX().${componentNode.getFieldNameOfDetailUid()};
             if(!this.isComponentView() && Util.isUndefinedNullEmpty(this.${componentNode.getFieldNameOfDetailUid()}))
                 this.getStore().setErrorMsg('網址參數異常');`);
         }
@@ -5239,7 +5247,7 @@ class ComponentBuilder extends BaseBuilder {
                 from: `./${baseClassName}`
             })
             moduleGenerator.needSignature(false);
-            moduleGenerator.needIndexFile(className, [`inject('${componentNode.getStruct().getName()}')`, `observer`])
+            moduleGenerator.needIndexFile(className);
             this.importComponentDefault(moduleGenerator);
             await moduleGenerator.persist();
         } else {
@@ -5899,7 +5907,7 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         if (!this.hasRootRenderViewFunction) {
-            generator.appendFunction('renderView', [], [], [],
+            generator.appendFunction({ name: "renderView", arrow: true }, [], [], [],
                 `const ${node.getName()} = this.getStore()`,
                 ...getContentStmt(node, generator));
             this.hasRootRenderViewFunction = true;
@@ -6397,10 +6405,9 @@ class AppBuilder extends ComponentBuilder {
         /** 產生出key, 這樣每次path的param有改變,都會reload page*/
         function getPropOfKey(component) {
             const params = component.getParamsInPath();
-            if (component.detailPage)
-                params.push(component.getFieldNameOfDetailUid());
+            if (component.detailPage) params.push(component.getFieldNameOfDetailUid());
 
-            const paramsOfProp = params.map((each) => `\$\{props.match.params.${each}\}`);
+            const paramsOfProp = params.map((each) => `\$\{${each}\}`);
             if (_.size(paramsOfProp) > 0) {
                 return {key: `###\`${paramsOfProp.join('')}\``}
             } else {
@@ -6411,14 +6418,15 @@ class AppBuilder extends ComponentBuilder {
         const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{StyledEngineProvider}`, '@mui/material/styles');
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
-        appGenerator.appendImport(`{Route, Router, Switch}`, `react-router-dom`);
         appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
         appGenerator.appendImport(`{createBrowserHistory}`, `history`);
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
         appGenerator.appendImport(`Config`, `./config`);
         appGenerator.appendImport(`BaseComponent`, `./base/BaseComponent`);
-
+        appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
+        appGenerator.appendImport(`{BrowserRouter, useNavigate, useParams}`, `react-router-dom`);
+        appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendClass(`BaseApp`);
 
@@ -6431,9 +6439,10 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
         appGenerator.appendField(`extraPages`, '[]');
+
         appGenerator.appendFunction(`pushPage`, [`page`], [], [], `this.extraPages.push(page)`)
         appGenerator.appendFunction(`getExtraPages`, [], [], [],
-            `/** --- push <Router /> in to pages */`, `return this.extraPages`);
+            `/** --- push <Route /> in to pages */`, `return this.extraPages`);
         appGenerator.appendField(`latestComponent`);
         appGenerator.appendFunction(Util.camel('get', 'latestComponent'), [], [], [],
             `return this.latestComponent;`
@@ -6447,17 +6456,28 @@ class AppBuilder extends ComponentBuilder {
             appGenerator.appendInClassHead(`import ${_.upperFirst(component)} from './component/${component}'`);
         }
 
+        const stmtsOfRenderView = [];
         const childrenStmt = [];
         for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;
 
+            /** 網址會用到的參數 */
+            const params = component.getParamsInPath();
+            if (component.detailPage) params.push(component.getFieldNameOfDetailUid());
+
+            const nameOfComponent = _.upperFirst(component.getStruct().getName());
+            const wrapper = `${nameOfComponent}Wrapper`;
+            const props = { ...component.extra, ...getPropOfKey(component), navigate: `###useNavigate()` };
+            for(const param of params) props[param] = `###${param}`;
+
+            if (component.isNavigatorView) props["ref"] = "###self.navigatorRef";
+            if (component.isCopyRightView) props["ref"] = "###self.copyRightRef";
             const renderStmts = this.getJSXStrings({
-                    generator: appGenerator,
-                    tag: _.upperFirst(component.getStruct().getName()),
-                    props: {...component.extra, ...getPropOfKey(component)},
-                    simpleProps: ['...props'],
-                }
-            );
+                generator: appGenerator,
+                tag: nameOfComponent,
+                props,
+                simpleProps: ["...props"]
+            });
             this.removeJSXSign(renderStmts);
 
             const path = Util.joinRespectingDot(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
@@ -6466,33 +6486,30 @@ class AppBuilder extends ComponentBuilder {
                 tag: `Route`,
                 generator: appGenerator,
                 props: {
-                    exact: component.isRootPath() ? true : undefined,
                     path: path,
-                    render: `###(props) =>
-                     ${renderStmts.join('')}`,
+                    element: `###<${wrapper} />`
                     /** component: `###${_.upperFirst(component.name)}`, */
                 },
             }))
+
+            const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
+            stmtsOfRenderView.push(`const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')(observer( (props) => {
+            ${stmtsOfParams} return ${renderStmts.join('')} }))`)
         }
-        const switchStmt = this.getJSXStrings({
-            tag: 'Switch',
-            generator: appGenerator,
-            contents: [...childrenStmt, `{this.getExtraPages()}`]
-        });
 
         const routerStmt = this.getJSXStrings({
-            tag: 'Router',
+            tag: 'Routes',
             generator: appGenerator,
             props: {history: `###this.history`},
-            contents: [...switchStmt]
+            contents: [...childrenStmt, `{this.getExtraPages()}`]
         })
 
         const providerStmt = this.getJSXStrings({
             tag: 'Provider',
             generator: appGenerator,
             simpleProps: ['...this.getStoreObject()'],
-            contents: [this.nodeOfAncestor.hasNavigationView() ? '{this.getNavigationView(this.history)}' : '', ...routerStmt,
-                this.nodeOfAncestor.hasCopyRightView() ? '{this.getCopyRightView(this.history)}' : '']
+            contents: [this.nodeOfAncestor.hasNavigationView() ? '<NavigatorWrapper />' : '', ...routerStmt,
+                this.nodeOfAncestor.hasCopyRightView() ? '<InfoOfCopyRightWrapper />' : '']
         })
 
         const whole = this.getJSXStrings({
@@ -6502,26 +6519,24 @@ class AppBuilder extends ComponentBuilder {
             contents: [...providerStmt]
         });
 
-        this.removeJSXSign(whole);
-        if (this.nodeOfAncestor.hasNavigationView())
-            appGenerator.appendFunction('getNavigationView', ['history'], [], [], `return (${this.getNavigationStmt(this.nodeOfAncestor.navigation).join('')})`)
+        const entire = this.getJSXStrings({
+            tag: 'BrowserRouter',
+            generator: appGenerator,
+            contents: [...whole]
+        });
 
-        if (this.nodeOfAncestor.hasCopyRightView())
-            appGenerator.appendFunction('getCopyRightView', ['history'], [], [], `return (${this.getCopyRightStmt(this.nodeOfAncestor.useCopyRightView).join('')})`)
+        this.removeJSXSign(entire);
 
         appGenerator.appendFunction('getStoreObject', [], [], [],
             'const stores = {}',
             ...this.getGenStores().map(store => {
                 return `stores['${store}'] = this.store.${store}`
-            }),
-            'return stores'
-        )
+            }), 'return stores')
 
         for (const storeName of this.getGenStores()) {
             appGenerator.appendFunction(Util.camel('get', storeName, 'store'), [], [], [],
                 `return this.store.${storeName}`
-            )
-        }
+            )}
 
         appGenerator.appendFunction(Util.camel('get', 'store'), [], [], [],
             `return this.store`
@@ -6538,7 +6553,8 @@ class AppBuilder extends ComponentBuilder {
         if (!this.isProduction())
             appGenerator.appendConstructor(`if (process.env.NODE_ENV === 'development') window.store = this.store;`);
 
-        appGenerator.appendFunction(`getRenderView`, [], [], [], `return (${whole.join('')})`)
+        appGenerator.appendFunction({ name: `getRenderView`, arrow:true }, [],
+          [], [], 'const self = this;',...stmtsOfRenderView,`return (${entire.join("")})`);
 
         await appGenerator.needIndexFile('App', [], false, [
                 `const self = new App()`,
@@ -6548,36 +6564,6 @@ class AppBuilder extends ComponentBuilder {
             ],
             true);
         await appGenerator.persist();
-    }
-
-    getNavigationStmt(navigation) {
-        const stmt = [];
-        if (navigation && navigation.view) {
-            stmt.push(...this.getJSXStrings({
-                /** 因為import 是大寫, 所以這裡只好hack*/
-                tag: _.upperFirst(navigation.view),
-                props: {
-                    ref: `###this.navigatorRef`,
-                    history: `###history`
-                }
-            }));
-            this.removeJSXSign(stmt);
-        }
-        return stmt;
-    }
-
-    getCopyRightStmt(copyRight) {
-        const stmt = [];
-        stmt.push(...this.getJSXStrings({
-            /** 因為import 是大寫, 所以這裡只好hack*/
-            tag: _.upperFirst(copyRight.view),
-            props: {
-                ref: `###this.copyRightRef`,
-                history: `###history`
-            }
-        }));
-        this.removeJSXSign(stmt);
-        return stmt;
     }
 
     /**

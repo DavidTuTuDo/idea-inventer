@@ -1,13 +1,15 @@
 const edit = true;
+
 import React from "react";
 import { Dialog, DialogActions, Button, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import { action, makeObservable, observable } from "mobx";
-import { observer, inject } from "mobx-react";
 import { utiller as Util } from "utiller";
 import _ from "lodash";
 import MuiComponent from "./MUIComponent";
 import BaseComponent from "./BaseComponent";
 import Chip from "@mui/material/Chip";
+import { inject, observer } from "mobx-react";
+
 
 class DialogStore {
     @observable
@@ -156,23 +158,30 @@ class AlertDialog extends MuiComponent {
     }
 
     renderContent = () => {
+        const self = this;
         const CustomView = this.props.customView;
         const paramObject = this.props.paramObject;
         const component = this.props.component;
         const content = this.props.content;
         const callback = this.props.callback;
+        const storeX = this.props.storeX;
 
-        if (this.hasCustomView())
+        if (this.hasCustomView()){
+            const CustomViewWrapper = inject(storeX)(
+              observer((props) => {
+                  const all = { ...props, ...self.getStore().getPropsOfCustomView() };
+                  return <CustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
+              }));
             return (
                 <DialogContent className={"BaseAlertDialogContent"}>
                     <div className={"BaseAlertDialogCustomView"}>
-                        <CustomView component={component} callback={callback} paramObject={paramObject} dialog={this} {...this.getStore().getPropsOfCustomView()} />
+                        <CustomViewWrapper />
 
                         {this.renderCustomCancelChip()}
                     </div>
                 </DialogContent>
             );
-
+        }
         return (
             <DialogContent>
                 <DialogContentText whiteSpace={"pre-line"}>{content}</DialogContentText>

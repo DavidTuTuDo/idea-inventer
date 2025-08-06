@@ -5,8 +5,6 @@ import _ from "lodash";
 import libpath from "path";
 import { observer } from "mobx-react";
 
-@inject("epayTest")
-@observer
 class EpayTestComponent extends BaseEpayTestComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
