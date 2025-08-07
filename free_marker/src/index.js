@@ -6467,14 +6467,14 @@ class AppBuilder extends ComponentBuilder {
 
             const nameOfComponent = _.upperFirst(component.getStruct().getName());
             const wrapper = `${nameOfComponent}Wrapper`;
+            const observed = `Observed${nameOfComponent}`;
             const props = { ...component.extra, ...getPropOfKey(component), navigate: `###useNavigate()` };
             for(const param of params) props[param] = `###${param}`;
-
             if (component.isNavigatorView) props["ref"] = "###self.navigatorRef";
             if (component.isCopyRightView) props["ref"] = "###self.copyRightRef";
             const renderStmts = this.getJSXStrings({
                 generator: appGenerator,
-                tag: nameOfComponent,
+                tag: observed,
                 props,
                 simpleProps: ["...props"]
             });
@@ -6482,18 +6482,21 @@ class AppBuilder extends ComponentBuilder {
 
             const path = Util.joinRespectingDot(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
 
-            childrenStmt.push(...this.getJSXStrings({
-                tag: `Route`,
-                generator: appGenerator,
-                props: {
-                    path: path,
-                    element: `###<${wrapper} />`
-                    /** component: `###${_.upperFirst(component.name)}`, */
-                },
-            }))
+            if (!component.isNavigatorView && !component.isCopyRightView)
+                childrenStmt.push(...this.getJSXStrings({
+                    tag: `Route`,
+                    generator: appGenerator,
+                    props: {
+                        path: path,
+                        element: `###<${wrapper} />`
+                        /** component: `###${_.upperFirst(component.name)}`, */
+                    }
+                }));
 
             const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
-            stmtsOfRenderView.push(`const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')(observer( (props) => {
+            stmtsOfRenderView.push(`
+            const ${observed} = observer(${nameOfComponent});
+            const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')(observer( (props) => {
             ${stmtsOfParams} return ${renderStmts.join('')} }))`)
         }
 

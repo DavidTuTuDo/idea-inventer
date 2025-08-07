@@ -10,7 +10,7 @@ import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
 import UserInfo from "../../base/BaseUserInfo";
-
+import Router from "../../router";
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
 const MAXIMUM_TEXT_OF_DESCRIPTION = 300;
@@ -234,7 +234,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             }),
             this.getIdOfBooze()
         );
-
+        this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
         this.getComponent().showInfoSnackMessage(`成功設定「${this.getName()}」商品`);
     };
 
