@@ -197,6 +197,7 @@ class UserInfo {
     deleteItemFromCart(key) {
         const infoOfCartie = Cookie.getInfoOfCartie();
         delete infoOfCartie[key];
+        Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     }
 
@@ -241,6 +242,7 @@ class UserInfo {
     }
 
     getTypeOfTransport() {
+        Util.appendInfo('45613123選擇的是', Cookie.getInfoOfSelectedTransport().typeOfTransport);
         return _.toNumber(Cookie.getInfoOfSelectedTransport().typeOfTransport);
     }
 

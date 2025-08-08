@@ -60,7 +60,9 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         }
 
         this.showInfoSnackMessage(`進入付款流程`);
-        this.execute().then();
+        this.execute().then(() => {
+            UserInfo.deleteCheckedCartieItemBehavior();
+        });
         /**  發信的功能
          this.getStore()
          .submitSavior(this)
@@ -76,7 +78,6 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     execute = async () => {
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
-        UserInfo.removeCheckedCatieItems();
         switch (UserInfo.getTypeOfTransport()) {
             case 1:
             case 2:
@@ -87,9 +88,8 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 await this.performCheckoutByECPayBehavior(idOfPreciseOrder);
                 return;
             case 9:
-                return "cash";
             default:
-                return "epay";
+                return Router.gotoEpayFootprintPage(this, "all");
         }
     };
 

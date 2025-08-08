@@ -189,7 +189,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
                 const day = cursor.day();
                 const weekday = weekdayMap[lang][day];
                 // const dateStr = `${cursor.format("MM/DD")} ${weekday}`;
-                const dateStr = `${cursor.format("YYYY/MM/DD")}${weekday}`;
+                const dateStr = `${cursor.format("YYYY/MM/DD")} ${weekday}`;
                 dateList.push(dateStr);
                 // dateList.push({ display: showYear ? `${jesusYear}/${dateStr}` : dateStr, label: cursor.format("YYYY/MM/DD") });
                 lastYear = cursor.year();

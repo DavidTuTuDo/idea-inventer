@@ -258,9 +258,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     invalidateBooze = (newbie) => {
         const latest = Util.mergeObject(this.getBooze(), newbie);
-        Util.appendInfo("origin ==>", this.getBooze());
-        Util.appendInfo("newbie ==>", newbie);
-        Util.appendInfo("latest ==>", latest);
+        Util.appendInfo(" origin ==> ", this.getBooze());
+        Util.appendInfo(" newbie ==> ", newbie);
+        Util.appendInfo(" latest ==> ", latest);
         this.setBooze(latest);
         this.validateBooze(latest);
     };

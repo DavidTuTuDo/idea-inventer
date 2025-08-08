@@ -27,7 +27,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     validateDistrictByCity() {
         const districts = Config.getDistrictsByCity(this.getSelectedCity());
-        this.setDistrict(...districts);
+        this.setDistricts(...districts);
         if (_.size(districts) > 0) this.setSelectedDistrict(districts[0].value);
     }
 
@@ -43,8 +43,8 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     getPreciselyAddress = () => {
         return [
-            this.getSelectedLabelByValue(this.getCity(), this.getSelectedCity()),
-            this.getSelectedLabelByValue(this.getDistrict(), this.getSelectedDistrict()),
+            this.getSelectedLabelByValue(this.getCitys(), this.getSelectedCity()),
+            this.getSelectedLabelByValue(this.getDistricts(), this.getSelectedDistrict()),
             this.getAddress()
         ].join("");
     };

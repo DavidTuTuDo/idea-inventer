@@ -19,8 +19,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     validateCountOfOrder(brief, increase = true, deleted = false) {
         if (deleted) {
             /** 刪除購物車其中一個選項 */
-            brief.remove();
             UserInfoRef.deleteItemFromCart(brief.idOfCookieUsage);
+            brief.remove();
             return;
         }
 

@@ -52,6 +52,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
     updateTransportInfo() {
         const transport = this.getSelectedTransport();
+        Util.appendInfo(`選擇的付費方式:`, transport.data());
         Cookie.setInfoOfSelectedTransport({
             typeOfTransport: transport.getTypeOfTransport(),
             feeOfTransport: transport.getPrice(),
