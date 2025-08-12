@@ -16,7 +16,7 @@ import {configerer} from "configerer";
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 690;
+const THRESHOLD_OF_KEYWORD_MATCH = 780;
 
 (async () => {
 
@@ -792,7 +792,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 690;
         await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
         await updatePopularLevel();
         await syncSingerRemoteIdIntoLocalStorage();
-        await accumulatePopularLevelOfSinger()
+        await accumulatePopularLevelOfSinger();
+        await syncGuitarToneFromRemote();
     }
 
     async function updatePopularLevel() {
@@ -810,7 +811,27 @@ const THRESHOLD_OF_KEYWORD_MATCH = 690;
         }
     }
 
-    // await redoAll();
+    /** 將遠端寫的譜 放進入db,這只能執行一次，不然會duplicate */
+    async function syncGuitarToneFromRemote() {
+        const guitars = await api.fetchGuitarpus({ where: (stmt => stmt.where("uuidOfSong", "==", "")) });
+        console.log(guitars.map((each) => {return { name:each.name, id:each.id, idOfAuthor:each.idOfAuthor }}));
+
+
+        for(const guitar of guitars) {
+            if(guitar.popularLevel > 500) {
+                const content = {};
+                content.name = guitar.name;
+                content.tone = guitar.latestContext;
+                content.idOfRemote = guitar.id;
+                content.idOfRhythm = guitar.id;
+                content.popularLevel = guitar.popularLevel;
+                content.singer = guitar.singer;
+                content.url = Util.getRandomHash(8);
+                console.log(content);
+                await database.insertRecord("TONE", content);
+            }
+        }
+    }
 
     /** 每次都要跑 */
     // await updateToneOfPublishStaff();
@@ -842,5 +863,3 @@ const THRESHOLD_OF_KEYWORD_MATCH = 690;
     // await updateUserAllowRead();
     // await fetchNoneCopyRightPu();
 })();
-
-
