@@ -787,6 +787,30 @@ const THRESHOLD_OF_KEYWORD_MATCH = 690;
         await api.fetchDocumentIdsOfUser()
         await api.fetchChordiventor()
     }
+    /** 如果db刪掉全部重跑的腳本 */
+    async function redoAll() {
+        await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
+        await updatePopularLevel();
+        await syncSingerRemoteIdIntoLocalStorage();
+        await accumulatePopularLevelOfSinger()
+    }
+
+    async function updatePopularLevel() {
+        console.log(`開始了`);
+        for (const g of await api.fetchGuitarpus()) {
+            const tone = await database.fetchRecord("TONE", new Builder().equal("idOfRemote", g.id).stmt());
+            if (!tone) continue;
+            const { popularLevel: gp } = g, { popularLevel: tp } = tone;
+            if (gp !== tp)
+                gp > tp
+                  ? (console.log(`中了！更新DB(${tp})->(${gp})`),
+                    await database.updateRecords("TONE", { popularLevel: gp }, new Builder().equal("idOfRemote", g.id).stmt()))
+                  : (console.log(`中了！更新遠端(${gp})->(${tp})`),
+                    await api.updateGuitarpuItem({ popularLevel: tp }, g.id));
+        }
+    }
+
+    // await redoAll();
 
     /** 每次都要跑 */
     // await updateToneOfPublishStaff();
@@ -804,20 +828,19 @@ const THRESHOLD_OF_KEYWORD_MATCH = 690;
     // await deployGuitarPuByPopularLevel(2000);
     // await deploySingers(2000);
 
-
     // await submitShortcut();
     // await updateTonesWithSameRemoteId();
     // console.log(await getObjectOfSingerUrlAsKey());
     // await updateSpecificGuitarPu();
-    // await syncRemoteIdWithToneAndRhythmIntoLocalStorage();
     // await deployKeywords();
     // await submitLatestGuitarPus();
     // await updatePreludeToRemoteWholeProcess();
+    // await accumulatePopularLevelOfSinger()
+    // await syncRemoteIdWithToneAndRhythmIntoLocalStorage()
     await deployLatestSheet();
     // await updateSingerOfSuggest();
     // await updateUserAllowRead();
     // await fetchNoneCopyRightPu();
-
 })();
 
 
