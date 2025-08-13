@@ -76,26 +76,36 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             for (const item of itemsOfClientOrdering) {
                 const variant = mapOfVariantStatus.get(item.idOfVariant);
                 await Api.updateVariantItemAtomically(
-                  async (current) => {
-                      if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
-                      else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
-                  },
-                  variant.id,
-                  variant.idOfBooze
+                    async (current) => {
+                        if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
+                        else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
+                    },
+                    variant.id,
+                    variant.idOfBooze
                 );
 
-                /** 未處理variant不存在的狀況*/
+                /** 未處理variant不存在的狀況(未實現) */
 
                 /** 新增行事曆的邏輯 以及檢查衝突邏輯 */
                 if (variant.isTaskJob && variant.useMainTrunk) {
                     const idOfTS = _.toString(Util.getStringOfLocalToUtcTimestamp(extractDate(variant.content)));
-                    const idOfProcessor = await Api.submitProcessorItem({
-                        idOfVariant: variant.id,
-                        idOfBooze: variant.idOfBooze,
-                        name:`${variant.nameOfBooze}|${variant.content}`,
-                        period: Util.getStringOfConvertTimeRange(variant.content)
-                    }, undefined, variant.idOfAuthor, idOfTS);
-                    rollbackTimeList.push({ idOfProcessor, idOfAuthor:variant.idOfAuthor, idOfTS });
+
+                    /** 拿idOfTS計算是否有衝突時間(未實現)*/
+
+                    const result = await Api.submitProcessorItem(
+                        {
+                            idOfVariant: variant.id,
+                            idOfBooze: variant.idOfBooze,
+                            name: `${variant.nameOfBooze}|${variant.content}`,
+                            period: Util.getStringOfConvertTimeRange(variant.content)
+                        },
+                        undefined,
+                        variant.idOfAuthor,
+                        idOfTS
+                    );
+                    const objOfProcessor = { id: result.value.id, idOfAuthor: variant.idOfAuthor, idOfTS };
+                    item.infoOfProcessor = JSON.stringify(objOfProcessor);
+                    rollbackTimeList.push(objOfProcessor);
                 }
                 rollbackList.push({ item, variant });
             }
@@ -103,15 +113,14 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 購物車內扣數量個過程中，發現其中一個數量不足，就必須把之前的補回去*/
             for (const { item, variant } of rollbackList) {
                 await Api.updateVariantItemAtomically(
-                  async (current) => ({
-                      quantity: current.quantity + item.quantity
-                  }),
-                  variant.id,
-                  variant.idOfBooze
+                    async (current) => ({
+                        quantity: current.quantity + item.quantity
+                    }),
+                    variant.id,
+                    variant.idOfBooze
                 );
             }
-
-            for(const item of rollbackTimeList)  await Api.deleteProcessorItem(item.idOfProcessor, item.idOfAuthor, item.idOfTS);
+            for (const item of rollbackTimeList) await Api.deleteProcessorItem(item.id, item.idOfAuthor, item.idOfTS);
             this.appendErrorLog(9999, error.message);
         }
 
@@ -137,12 +146,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     getPreciseItemsAsRecord(variants) {
-        return variants.map(({ idOfBooze, idOfVariant, quantity, nameOfBooze, content, price, photo, note }) => ({
+        return variants.map(({ idOfBooze, idOfVariant, quantity, nameOfBooze, content, price, photo, note, infoOfProcessor }) => ({
             idOfPreciseProduct: `${idOfBooze}${Util.getSeparatorOfUnique()}${idOfVariant}`,
             quantity,
             name: `${nameOfBooze}`,
             specific: content,
             price,
+            infoOfProcessor,
             imageUrlOfProduct: photo,
             note: note || "無單品項備註內容"
         }));
