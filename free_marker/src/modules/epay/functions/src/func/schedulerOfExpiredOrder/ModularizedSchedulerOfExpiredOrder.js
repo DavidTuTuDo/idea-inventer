@@ -34,7 +34,7 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
 
         await Api.updatePreciseOrders(expired);
 
-        for (const order of orders) {
+        for (const order of results) {
             await this.incrementProductCountsAtomically(order);
         }
     }

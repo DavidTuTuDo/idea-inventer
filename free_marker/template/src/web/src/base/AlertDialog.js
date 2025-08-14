@@ -10,7 +10,6 @@ import BaseComponent from "./BaseComponent";
 import Chip from "@mui/material/Chip";
 import { inject, observer } from "mobx-react";
 
-
 class DialogStore {
     @observable
     visibility = false;
@@ -170,10 +169,11 @@ class AlertDialog extends MuiComponent {
 
         if (this.hasCustomView()) {
             const CustomViewWrapper = inject(storeX)(
-              observer((props) => {
-                  const all = { ...props, ...self.getStore().getPropsOfCustomView() };
-                  return <CustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
-              }));
+                observer((props) => {
+                    const all = { ...props, ...self.getStore().getPropsOfCustomView() };
+                    return <CustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
+                })
+            );
             return (
                 <DialogContent className={"BaseAlertDialogContent"}>
                     <div className={"BaseAlertDialogCustomView"}>

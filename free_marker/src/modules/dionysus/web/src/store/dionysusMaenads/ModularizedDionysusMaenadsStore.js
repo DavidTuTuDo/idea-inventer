@@ -16,11 +16,6 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     }
 
     async onInitialCompleted(object) {
-        function extractDate(input) {
-            // 切掉星期和時間，只取到 '2025/08/18'
-            return _.trim(input.split("(")[0]);
-        }
-
         const self = this;
 
         function setContent(booze) {
@@ -47,10 +42,17 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             if (booze.useMainTrunk) {
                 const dates = booze.specificAttributes[0].options.map((each) => ({
                     date: each.label,
-                    ts: _.toString(Util.getStringOfLocalToUtcTimestamp(extractDate(each.label)))
+                    ts: _.toString(Util.getSignOfFormatDate(each.label))
                 }));
-                console.log(dates);
-                // await this.apiOfHera.fetchPureHeras(this.getComponent(), booze.idOfAuthor);
+                Util.appendInfo(dates);
+
+                //{ 20250801000001:['202508011400-202508011500','202508011600-202508011700'] }
+                const mapOfDatePeriod = Object.fromEntries(
+                    await Promise.all(
+                        dates.map(async (date) => [date.ts, (await this.apiOfHera.fetchPureHeras(this.getComponent(), booze.idOfAuthor, date.ts)).map((info) => info.period)])
+                    )
+                );
+                Util.appendInfo(mapOfDatePeriod);
             }
         }
     }

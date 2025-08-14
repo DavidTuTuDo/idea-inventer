@@ -3179,6 +3179,18 @@ class Utiller {
         // 轉成 UTC 時間的 timestamp（毫秒）
         return localMoment.utc().valueOf();
     }
+
+    /**
+     _.replace(dateStr, /\//g, '')
+     把 2025/08/18 裡的 / 全部移除 → 20250818
+     _.padStart('1', 6, '0')
+     把 1 補滿到 6 位 → 000001
+     字串相加後就是 20250818000001
+     console.log(getSignOfFormatDate('2025/08/18(一) 12:00 - 14:00')); // 20250818000001
+     */
+    getSignOfFormatDate = (dateStr) => {
+        return _.replace(_.trim(dateStr.split("(")[0]), /\//g, '') + _.padStart('1', 6, '0');
+    }
 }
 
 if (configerer.DEBUG_MODE) {

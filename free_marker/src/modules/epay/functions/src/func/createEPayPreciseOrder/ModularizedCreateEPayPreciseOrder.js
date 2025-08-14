@@ -46,11 +46,6 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder()) this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
 
-        function extractDate(input) {
-            // 切掉星期和時間，只取到 '2025/08/18'
-            return _.trim(input.split("(")[0]);
-        }
-
         /** 用batch fetch拿回variants */
         const params = itemsOfClientOrdering.map(({ idOfVariant, idOfBooze }) => ({ id: idOfVariant, pid: idOfBooze }));
         const variantsOfRemoteStatus = await Api.fetchVariantBatchItems(...params);
@@ -88,7 +83,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
                 /** 新增行事曆的邏輯 以及檢查衝突邏輯 */
                 if (variant.isTaskJob && variant.useMainTrunk) {
-                    const idOfTS = _.toString(Util.getStringOfLocalToUtcTimestamp(extractDate(variant.content)));
+                    const idOfTS = Util.getSignOfFormatDate(variant.content);
 
                     /** 拿idOfTS計算是否有衝突時間(未實現)*/
 
@@ -96,7 +91,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                         {
                             idOfVariant: variant.id,
                             idOfBooze: variant.idOfBooze,
-                            name: `${variant.nameOfBooze}|${variant.content}`,
+                            name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
                             period: Util.getStringOfConvertTimeRange(variant.content)
                         },
                         undefined,
