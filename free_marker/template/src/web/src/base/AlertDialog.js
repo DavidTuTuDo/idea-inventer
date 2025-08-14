@@ -166,7 +166,9 @@ class AlertDialog extends MuiComponent {
         const callback = this.props.callback;
         const storeX = this.props.storeX;
 
-        if (this.hasCustomView()){
+        if (!self.getStore().getVisibility()) return null;
+
+        if (this.hasCustomView()) {
             const CustomViewWrapper = inject(storeX)(
               observer((props) => {
                   const all = { ...props, ...self.getStore().getPropsOfCustomView() };

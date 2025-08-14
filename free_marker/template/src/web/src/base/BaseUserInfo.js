@@ -242,7 +242,7 @@ class UserInfo {
     }
 
     getTypeOfTransport() {
-        Util.appendInfo('45613123選擇的是', Cookie.getInfoOfSelectedTransport().typeOfTransport);
+        Util.appendInfo("45613123選擇的是", Cookie.getInfoOfSelectedTransport().typeOfTransport);
         return _.toNumber(Cookie.getInfoOfSelectedTransport().typeOfTransport);
     }
 

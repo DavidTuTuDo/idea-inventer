@@ -33,33 +33,144 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             const param = component.propsMobX().paramObject;
             const booze = isBooze(param) ? param : param.booze;
             setContent(booze);
-            this.objectOfVariant = Util.toObjectWithAttributeKey(await this.apiOfVariant.fetchPureVariants(this.getComponent(), booze.id), "id");
+            this.listOfVariant = await this.apiOfVariant.fetchPureVariants(this.getComponent(), booze.id);
+            this.objectOfVariant = Util.toObjectWithAttributeKey(this.listOfVariant, "id");
             Util.appendInfo("65423123 this.objectOfVariant => ", this.objectOfVariant);
         }
     }
 
-    setSelectedOption = (option) => {
+    setSelectedOption = async (option) => {
         const variant = option.getParentNode();
-        variant.getOptions().map((each) => each.setSelect(false));
-        option.setSelect(true);
-        this.invalidateVariant();
+        const shouldSelect = !option.getSelect();
+        variant.getOptions().forEach((o) => o.setSelect(false)); // 先全部取消
+        if (shouldSelect) option.setSelect(true); // 若原本沒有被選中，才選中當前 option
+        await this.invalidateVariant();
     };
 
-    invalidateVariant() {
+    invalidateVariant = async () => {
         const keyOfVariant = this.getVariants()
-            .map((v) => _.find(v.getOptions(), (o) => o.getSelect())?.getValue())
-            .filter(Boolean)
+            .map(
+                (v) =>
+                    v
+                        .getOptions()
+                        .find((o) => o.getSelect())
+                        ?.getValue() || ""
+            )
             .join("-");
+
+        const items = this.getListOfSpecific(this.listOfVariant, keyOfVariant);
+        if (!_.isEmpty(items)) {
+            const { level, items: transformed } = this.transformListAutoLevel(items);
+            const options = this.getVariants()[level].getOptions();
+
+            transformed.forEach(({ value, quantity }) => {
+                const option = _.find(options, (o) => o.getValue() === value);
+                option?.setQuantity(quantity);
+            });
+        } else this.getVariants().forEach((v) => v.getOptions().forEach((o) => o.setQuantity(1)));
+
         const selectedOption = this.objectOfVariant[keyOfVariant];
         selectedOption ? this.setCurrentVariant(selectedOption) : this.setCurrentOptionExist(false);
-    }
+    };
+
+    /**
+     * // 範例資料
+     * const obj = [
+     *   {id:'3aAb0-cVc013',count:3},
+     *   {id:'aAb09B-tfc',count:5},
+     *   {id:'3aAb0-vdc',count:5},
+     *   {id:'bbb-cVc013',count:7},
+     *   {id:'3aAb0-cvc',count:9}
+     * ];
+     *
+     * // 前綴匹配 '3aAb0-'
+     * const result1 = filterByAffix(obj, '3aAb0-');
+     * console.log(result1);
+     * // [{id:'3aAb0-cVc013',count:3},{id:'3aAb0-vdc',count:5},{id:'3aAb0-cvc',count:9}]
+     *
+     * // 後綴匹配 '-cVc013'
+     * const result2 = filterByAffix(obj, '-cVc013');
+     * console.log(result2);
+     * // [{id:'3aAb0-cVc013',count:3},{id:'bbb-cVc013',count:7}]
+     *
+     * */
+    getListOfSpecific = (arr, affix, key = "id") => {
+        const lowerAffix = affix.toLowerCase();
+        return _.filter(arr, (o) => {
+            const value = _.get(o, key, "").toLowerCase();
+            // 前綴匹配
+            if (affix.startsWith("-")) {
+                // 後綴匹配
+                return value.endsWith(lowerAffix);
+            } else {
+                // 前綴匹配
+                return value.startsWith(lowerAffix);
+            }
+        });
+    };
+
+    /**
+    const list1 = [
+        { id: 'Vjc7oyWX-J27uNPeK', quantity: 1 },
+        { id: 'Vjc7oyWX-tKiNOOqp', quantity: 1 },
+        { id: 'Vjc7oyWX-uyuWvBA8', quantity: 1 }
+    ];
+    console.log(transformListAutoLevel(list1));
+    {
+      level: 1,
+      items: [
+        { value: 'J27uNPeK', quantity: 1 },
+        { value: 'tKiNOOqp', quantity: 1 },
+        { value: 'uyuWvBA8', quantity: 1 }
+      ]}
+    const list2 = [
+        { id: 'U6WBjgWm-tKiNOOqp', quantity: 1 },
+        { id: 'Vjc7oyWX-tKiNOOqp', quantity: 1 },
+        { id: 'dl4TQ3Ir-tKiNOOqp', quantity: 1 },
+        { id: 'wsuoJ7Gz-tKiNOOqp', quantity: 1 }
+    ];
+    console.log(transformListAutoLevel(list2));
+    { level: 0,
+      items: [
+        { value: 'U6WBjgWm', quantity: 1 },
+        { value: 'Vjc7oyWX', quantity: 1 },
+        { value: 'dl4TQ3Ir', quantity: 1 },
+        { value: 'wsuoJ7Gz', quantity: 1 }
+      ]}
+    */
+    transformListAutoLevel = (list, key = "id") => {
+        if (_.isEmpty(list)) return { level: null, items: [] };
+
+        // 把 id 拆成陣列
+        const splitted = list.map((item) => String(item[key]).split("-"));
+
+        // 找出第一個不一致的 index
+        let level = 0;
+        const maxParts = _.maxBy(splitted, (arr) => arr.length).length;
+
+        for (let i = 0; i < maxParts; i++) {
+            const partsAtIndex = splitted.map((arr) => arr[i] || "");
+            if (!_.every(partsAtIndex, (val) => val === partsAtIndex[0])) {
+                level = i;
+                break;
+            }
+        }
+
+        return {
+            level,
+            items: list.map((item) => ({
+                value: item[key].split("-")[level] || "",
+                quantity: item.quantity
+            }))
+        };
+    };
 
     setCurrentVariant = (variant) => {
         this.setPhoto(Util.isUndefinedNullEmpty(variant.photo) ? this.getBooze().photoOfDemo : variant.photo);
         this.setPrice(variant.price);
-        this.setTitleOfShape(variant.name);
+        this.setTitleOfShape(variant.content);
         this.setCount(variant.quantity);
-        this.setCountOfSubmit(1);
+        this.setCountOfSubmit(variant.quantity > 0 ? 1 : 0);
         this.setCurrentOptionExist(true);
         this.setSelectedVariant(variant);
     };

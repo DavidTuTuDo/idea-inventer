@@ -28,7 +28,7 @@ class BaseRouter {
     routeTo(component, path) {
         if (component !== undefined && component.props !== undefined && component.props.navigate !== undefined) {
             const navigate = component.props.navigate;
-            navigate(path)
+            navigate(path);
         } else {
             Util.appendError(`45665512 component為undefined,可能是為了拿url [${path}]`);
         }

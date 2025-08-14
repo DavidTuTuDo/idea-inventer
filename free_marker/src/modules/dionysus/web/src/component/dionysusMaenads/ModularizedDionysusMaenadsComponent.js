@@ -13,6 +13,10 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         super(props);
     }
 
+    getInjectPropsOfDionysusMaenadsSubmitChip(dionysusMaenads) {
+        return { disabled: dionysusMaenads.getCountOfSubmit() <= 0 };
+    }
+
     getInjectStyleOfDionysusMaenadsRangeOfPriceTypography(dionysusMaenads) {
         return Util.getVisibleOrNone(!this.getStore().getCurrentOptionExist(), true);
     }
@@ -22,11 +26,14 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     }
 
     getInjectPropsOfDionysusMaenadsVariantOptionLabelChip(option) {
-        return { color: _.isEqual(option.getSelect(), true) ? "error" : "default" };
+        return {
+            disabled: option.getQuantity() <= 0,
+            color: _.isEqual(option.getSelect(), true) ? "error" : "default"
+        };
     }
 
     onDionysusMaenadsVariantOptionLabelChipClicked(param) {
-        this.getStore().setSelectedOption(param.object);
+        this.getStore().setSelectedOption(param.object).then();
     }
 
     getMaenadsCount(maenads) {
