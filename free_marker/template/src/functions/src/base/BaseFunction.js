@@ -36,7 +36,7 @@ class BaseFunction extends ClientRemoteApi {
             const param = item.idOfPreciseProduct.split(Util.getSeparatorOfUnique());
             const idOfVariant = param.pop();
             const idOfBooze = param.shift();
-            const infoOfProcessor = item.infoOfProcessor;
+            const infoOfHera = item.infoOfHera;
             await Api.updateVariantItemAtomically(
                 async (variant, transaction) => {
                     return { quantity: variant.quantity + item.quantity };
@@ -45,12 +45,13 @@ class BaseFunction extends ClientRemoteApi {
                 idOfBooze
             );
 
-            /** 刪掉useMainTrunk運用的processor */
-            if (!Util.isUndefinedNullEmpty(infoOfProcessor)) {
+            /** 刪掉useMainTrunk運用的hera */
+            if (!Util.isUndefinedNullEmpty(infoOfHera)) {
                 try {
-                    const obj = JSON.parse(infoOfProcessor);
-                    await Api.deleteProcessorItem(obj.id, obj.idOfAuthor, obj.idOfTS);
-                } catch (error) { /** ignore errors */
+                    const obj = JSON.parse(infoOfHera);
+                    await Api.deleteHeraItem(obj.id, obj.idOfAuthor, obj.idOfTS);
+                } catch (error) {
+                    /** ignore errors */
                 }
             }
         }

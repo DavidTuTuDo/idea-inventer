@@ -330,7 +330,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     onVariantQuantityUpdate = async (variant) => {
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { quantity: variant.quantity }, variant.id, this.getIdOfBooze());
-        this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant}:${variant.quantity})`);
+        this.getComponent().showSuccessSnackMessage(`${variant.labelOfVariant} 數量：${variant.quantity}`);
     };
 
     onVariantsQuantityUpdate = async (variants, component) => {
@@ -375,7 +375,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     onVariantPriceUpdate = async (variant) => {
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { price: variant.price, priceB4Discount: variant.priceB4Discount }, variant.id, this.getIdOfBooze());
-        this.getComponent().showSuccessSnackMessage(`已更新(${variant.labelOfVariant}:${variant.price})`);
+        this.getComponent().showSuccessSnackMessage(`${variant.labelOfVariant} $${variant.price})`);
     };
 
     onVariantsPriceUpdate = async (variants, component) => {

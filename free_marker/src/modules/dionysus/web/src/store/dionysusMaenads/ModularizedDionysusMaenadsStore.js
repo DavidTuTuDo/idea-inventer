@@ -4,6 +4,7 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
+import ApiOfHera from "../dionysusHera";
 
 class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     objectOfVariant = {};
@@ -11,9 +12,15 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     constructor(props) {
         super(props);
         this.apiOfVariant = new ApiOfVariant();
+        this.apiOfHera = new ApiOfHera();
     }
 
     async onInitialCompleted(object) {
+        function extractDate(input) {
+            // 切掉星期和時間，只取到 '2025/08/18'
+            return _.trim(input.split("(")[0]);
+        }
+
         const self = this;
 
         function setContent(booze) {
@@ -36,6 +43,15 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             this.listOfVariant = await this.apiOfVariant.fetchPureVariants(this.getComponent(), booze.id);
             this.objectOfVariant = Util.toObjectWithAttributeKey(this.listOfVariant, "id");
             Util.appendInfo("65423123 this.objectOfVariant => ", this.objectOfVariant);
+
+            if (booze.useMainTrunk) {
+                const dates = booze.specificAttributes[0].options.map((each) => ({
+                    date: each.label,
+                    ts: _.toString(Util.getStringOfLocalToUtcTimestamp(extractDate(each.label)))
+                }));
+                console.log(dates);
+                // await this.apiOfHera.fetchPureHeras(this.getComponent(), booze.idOfAuthor);
+            }
         }
     }
 

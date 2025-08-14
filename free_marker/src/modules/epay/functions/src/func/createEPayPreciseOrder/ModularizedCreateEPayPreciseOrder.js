@@ -92,7 +92,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
                     /** 拿idOfTS計算是否有衝突時間(未實現)*/
 
-                    const result = await Api.submitProcessorItem(
+                    const result = await Api.submitHeraItem(
                         {
                             idOfVariant: variant.id,
                             idOfBooze: variant.idOfBooze,
@@ -103,9 +103,9 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                         variant.idOfAuthor,
                         idOfTS
                     );
-                    const objOfProcessor = { id: result.value.id, idOfAuthor: variant.idOfAuthor, idOfTS };
-                    item.infoOfProcessor = JSON.stringify(objOfProcessor);
-                    rollbackTimeList.push(objOfProcessor);
+                    const objOfHera = { id: result.value.id, idOfAuthor: variant.idOfAuthor, idOfTS };
+                    item.infoOfHera = JSON.stringify(objOfHera);
+                    rollbackTimeList.push(objOfHera);
                 }
                 rollbackList.push({ item, variant });
             }
@@ -120,7 +120,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     variant.idOfBooze
                 );
             }
-            for (const item of rollbackTimeList) await Api.deleteProcessorItem(item.id, item.idOfAuthor, item.idOfTS);
+            for (const item of rollbackTimeList) await Api.deleteHeraItem(item.id, item.idOfAuthor, item.idOfTS);
             this.appendErrorLog(9999, error.message);
         }
 
@@ -146,13 +146,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     }
 
     getPreciseItemsAsRecord(variants) {
-        return variants.map(({ idOfBooze, idOfVariant, quantity, nameOfBooze, content, price, photo, note, infoOfProcessor }) => ({
+        return variants.map(({ idOfBooze, idOfVariant, quantity, nameOfBooze, content, price, photo, note, infoOfHera }) => ({
             idOfPreciseProduct: `${idOfBooze}${Util.getSeparatorOfUnique()}${idOfVariant}`,
             quantity,
             name: `${nameOfBooze}`,
             specific: content,
             price,
-            infoOfProcessor,
+            infoOfHera,
             imageUrlOfProduct: photo,
             note: note || "無單品項備註內容"
         }));
