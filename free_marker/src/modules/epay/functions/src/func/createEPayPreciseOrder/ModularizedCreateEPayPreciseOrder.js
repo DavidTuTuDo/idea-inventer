@@ -38,6 +38,40 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return 20000;
     }
 
+    /** 課程類商品且useMainTrunk，就得計算是否有衝堂問題 */
+    checkConflictAgainst2MainTrunk = async (variant) => {
+        const timesOfOccupied = await Api.fetchPureHeras(
+            variant.idOfAuthor,
+            { where: (stmt) => stmt.where("useMainTrunk", "==", true) },
+            { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)) },
+            { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) }
+        );
+        Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
+        const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, variant.idOfVariant);
+        Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
+        return Util.checkPeriodConflict(variant, itemsOfHera).conflict;
+    };
+
+    /** 當useMainTrunk為true時，要增加一筆hera通知行事曆 */
+    submitHeraSchedule = async ({ variant, useMainTrunk = false }) => {
+        const period = Util.getStringOfConvertTimeRange(variant.content);
+        const splitPeriod = period.split("-");
+        const result = await Api.submitHeraItem(
+            {
+                startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
+                endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
+                idOfVariant: variant.id,
+                idOfBooze: variant.idOfBooze,
+                useMainTrunk,
+                name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
+                period
+            },
+            undefined,
+            variant.idOfAuthor
+        );
+        return result.value;
+    };
+
     async handleHttpOnCall(data, session) {
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
         /** items = [...{idOfBooze,idOfVariant,quantity,nameOfBooze}] */
@@ -58,11 +92,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             item.price = variant.price;
             item.photo = variant.photo;
             item.content = variant.content;
-            if (!variant || variant.quantity < item.quantity) this.appendErrorLog(9999, `錯誤：E1202 ${item.nameOfBooze} 的 ${variant?.content ?? "未知項目"} 數量不足`);
+            if (!variant || variant.quantity < item.quantity) this.appendErrorLog(9999, `${item.nameOfBooze} 的 ${variant?.content ?? "未知項目"} 數量不足`);
         }
 
         const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering);
-        if (totalPrice > this.getMaxPriceOfTSingleTransaction()) this.appendErrorLog(9999, `E1204 單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
+        if (totalPrice > this.getMaxPriceOfTSingleTransaction()) this.appendErrorLog(9999, `單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
 
         /** atomic的方式扣除client端下order的quantity */
         let rollbackList = [];
@@ -73,7 +107,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 await Api.updateVariantItemAtomically(
                     async (current) => {
                         if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
-                        else throw new Error(`E1203 ${item.nameOfBooze} 的 ${variant.content} 數量不足`);
+                        else throw new Error(`${item.nameOfBooze} 的 ${variant.content} 數量不足`);
                     },
                     variant.id,
                     variant.idOfBooze
@@ -81,24 +115,14 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
                 /** 未處理variant不存在的狀況(未實現) */
 
-                /** 新增行事曆的邏輯 以及檢查衝突邏輯 */
-                if (variant.isTaskJob && variant.useMainTrunk) {
-                    /** 拿idOfTS計算是否有衝突時間(未實現)*/
-                    const period = Util.getStringOfConvertTimeRange(variant.content);
-                    const splitPeriod = period.split("-");
-                    const result = await Api.submitHeraItem(
-                        {
-                            startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
-                            endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
-                            idOfVariant: variant.id,
-                            idOfBooze: variant.idOfBooze,
-                            name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
-                            period
-                        },
-                        undefined,
-                        variant.idOfAuthor
-                    );
-                    const objOfHera = { id: result.value.id, idOfAuthor: variant.idOfAuthor };
+                /** 針對課程類的商品-> 新增行事曆的邏輯 以及檢查衝突邏輯 */
+                if (variant.isTaskJob) {
+                    if (variant.useMainTrunk) {
+                        const result = await this.checkConflictAgainst2MainTrunk(variant);
+                        if (result.conflict) throw new Error(`${variant.nameOfBooze}的時段(${variant.content})衝突`);
+                    }
+                    const hera = await this.submitHeraSchedule({ variant, useMainTrunk: variant.useMainTrunk });
+                    const objOfHera = { id: hera.id, idOfAuthor: variant.idOfAuthor };
                     item.infoOfHera = JSON.stringify(objOfHera);
                     rollbackTimeList.push(objOfHera);
                 }

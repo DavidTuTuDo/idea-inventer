@@ -30,6 +30,26 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             return param && !Util.isUndefinedNullEmpty(param.rangeOfPrice) && _.isArray(param.options);
         }
 
+        async function handleConflictIssue() {
+            const [firstOpt, lastOpt] = [_.head(booze.specificAttributes[0].options), _.last(booze.specificAttributes[0].options)];
+            const start = Util.getTSOfSpecificDate(firstOpt.label);
+            const end = Util.getTSOfSpecificDate(lastOpt.label, { end: true });
+            const timesOfOccupied = await self.apiOfHera.fetchPureHeras(
+                self.getComponent(),
+                booze.idOfAuthor,
+                { type: "where", params: ["startYYYYMMDDHHmmss", ">=", start] },
+                { type: "where", params: ["startYYYYMMDDHHmmss", "<=", end] },
+                { type: "where", params: ["useMainTrunk", "==", true] }
+            );
+            Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
+            const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, booze.id);
+            Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
+            /** 如果有課程衝突，就將其數量設定為0，前端用戶看到Chip會是disabled */
+            self.listOfVariant.forEach((v) => {
+                if (Util.checkPeriodConflict(v, itemsOfHera).conflict) v.quantity = 0;
+            });
+        }
+
         const param = this.getComponent(true).propsMobX().paramObject;
         const booze = isBooze(param) ? param : param.booze;
         setContent(booze);
@@ -38,26 +58,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         this.objectOfVariant = Util.toObjectWithAttributeKey(this.listOfVariant, "id");
         Util.appendInfo("商品variant的detail infos => ", this.objectOfVariant);
 
-        if (booze.isTaskJob && booze.useMainTrunk) {
-            const [firstOpt, lastOpt] = [_.head(booze.specificAttributes[0].options), _.last(booze.specificAttributes[0].options)];
-            const start = Util.getTSOfSpecificDate(firstOpt.label);
-            const end = Util.getTSOfSpecificDate(lastOpt.label, { end: true });
-
-            const timesOfOccupied = await this.apiOfHera.fetchPureHeras(
-                this.getComponent(),
-                booze.idOfAuthor,
-                { type: "where", params: ["startYYYYMMDDHHmmss", ">=", start] },
-                { type: "where", params: ["startYYYYMMDDHHmmss", "<=", end] }
-            );
-            Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
-
-            const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, booze.id);
-            Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
-
-            this.listOfVariant.forEach((v) => {
-                if (Util.checkPeriodConflict(v, itemsOfHera).conflict) v.quantity = 0;
-            });
-        }
+        if (booze.isTaskJob && booze.useMainTrunk) await handleConflictIssue();
 
         return await super.onInitialFetchCompleted(collection);
     }
