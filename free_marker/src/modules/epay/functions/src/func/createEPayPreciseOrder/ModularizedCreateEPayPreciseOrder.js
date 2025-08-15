@@ -83,22 +83,22 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
                 /** 新增行事曆的邏輯 以及檢查衝突邏輯 */
                 if (variant.isTaskJob && variant.useMainTrunk) {
-                    const idOfTS = Util.getSignOfFormatDate(variant.content);
-
                     /** 拿idOfTS計算是否有衝突時間(未實現)*/
-
+                    const period = Util.getStringOfConvertTimeRange(variant.content);
+                    const splitPeriod = period.split("-");
                     const result = await Api.submitHeraItem(
                         {
+                            startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
+                            endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
                             idOfVariant: variant.id,
                             idOfBooze: variant.idOfBooze,
                             name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
-                            period: Util.getStringOfConvertTimeRange(variant.content)
+                            period
                         },
                         undefined,
-                        variant.idOfAuthor,
-                        idOfTS
+                        variant.idOfAuthor
                     );
-                    const objOfHera = { id: result.value.id, idOfAuthor: variant.idOfAuthor, idOfTS };
+                    const objOfHera = { id: result.value.id, idOfAuthor: variant.idOfAuthor };
                     item.infoOfHera = JSON.stringify(objOfHera);
                     rollbackTimeList.push(objOfHera);
                 }
@@ -115,7 +115,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     variant.idOfBooze
                 );
             }
-            for (const item of rollbackTimeList) await Api.deleteHeraItem(item.id, item.idOfAuthor, item.idOfTS);
+            for (const item of rollbackTimeList) await Api.deleteHeraItem(item.id, item.idOfAuthor);
             this.appendErrorLog(9999, error.message);
         }
 

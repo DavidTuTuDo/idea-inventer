@@ -15,7 +15,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         this.apiOfHera = new ApiOfHera();
     }
 
-    async onInitialCompleted(object) {
+    async onInitialFetchCompleted(collection) {
         const self = this;
 
         function setContent(booze) {
@@ -30,31 +30,36 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
             return param && !Util.isUndefinedNullEmpty(param.rangeOfPrice) && _.isArray(param.options);
         }
 
-        const component = this.getComponent(true);
-        if (component) {
-            const param = component.propsMobX().paramObject;
-            const booze = isBooze(param) ? param : param.booze;
-            setContent(booze);
-            this.listOfVariant = await this.apiOfVariant.fetchPureVariants(this.getComponent(), booze.id);
-            this.objectOfVariant = Util.toObjectWithAttributeKey(this.listOfVariant, "id");
-            Util.appendInfo("65423123 this.objectOfVariant => ", this.objectOfVariant);
+        const param = this.getComponent(true).propsMobX().paramObject;
+        const booze = isBooze(param) ? param : param.booze;
+        setContent(booze);
 
-            if (booze.useMainTrunk) {
-                const dates = booze.specificAttributes[0].options.map((each) => ({
-                    date: each.label,
-                    ts: _.toString(Util.getSignOfFormatDate(each.label))
-                }));
-                Util.appendInfo(dates);
+        this.listOfVariant = await this.apiOfVariant.fetchPureVariants(this.getComponent(), booze.id);
+        this.objectOfVariant = Util.toObjectWithAttributeKey(this.listOfVariant, "id");
+        Util.appendInfo("商品variant的detail infos => ", this.objectOfVariant);
 
-                //{ 20250801000001:['202508011400-202508011500','202508011600-202508011700'] }
-                const mapOfDatePeriod = Object.fromEntries(
-                    await Promise.all(
-                        dates.map(async (date) => [date.ts, (await this.apiOfHera.fetchPureHeras(this.getComponent(), booze.idOfAuthor, date.ts)).map((info) => info.period)])
-                    )
-                );
-                Util.appendInfo(mapOfDatePeriod);
-            }
+        if (booze.isTaskJob && booze.useMainTrunk) {
+            const [firstOpt, lastOpt] = [_.head(booze.specificAttributes[0].options), _.last(booze.specificAttributes[0].options)];
+            const start = Util.getTSOfSpecificDate(firstOpt.label);
+            const end = Util.getTSOfSpecificDate(lastOpt.label, { end: true });
+
+            const timesOfOccupied = await this.apiOfHera.fetchPureHeras(
+                this.getComponent(),
+                booze.idOfAuthor,
+                { type: "where", params: ["startYYYYMMDDHHmmss", ">=", start] },
+                { type: "where", params: ["startYYYYMMDDHHmmss", "<=", end] }
+            );
+            Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
+
+            const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, booze.id);
+            Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
+
+            this.listOfVariant.forEach((v) => {
+                if (Util.checkPeriodConflict(v, itemsOfHera).conflict) v.quantity = 0;
+            });
         }
+
+        return await super.onInitialFetchCompleted(collection);
     }
 
     setSelectedOption = async (option) => {

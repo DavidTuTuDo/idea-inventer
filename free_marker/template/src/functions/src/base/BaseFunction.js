@@ -49,7 +49,7 @@ class BaseFunction extends ClientRemoteApi {
             if (!Util.isUndefinedNullEmpty(infoOfHera)) {
                 try {
                     const obj = JSON.parse(infoOfHera);
-                    await Api.deleteHeraItem(obj.id, obj.idOfAuthor, obj.idOfTS);
+                    await Api.deleteHeraItem(obj.id, obj.idOfAuthor);
                 } catch (error) {
                     /** ignore errors */
                 }

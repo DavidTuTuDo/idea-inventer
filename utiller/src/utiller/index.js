@@ -3168,35 +3168,136 @@ class Utiller {
     }
 
 
-    /**  ✅ 測試
-     *     const result = localToUtcTimestamp('2025/01/02');
-     *     console.log(result); // 例如：1735785601000（實際值取決於你本地的時區）
-     *     */
-    getStringOfLocalToUtcTimestamp(dateStr) {
-        // 把字串與時間拼接成完整時間（當地時間）
-        const localMoment = moment(`${dateStr} 00:00:01.000`, "YYYY/MM/DD HH:mm:ss.SSS");
+    /**
+     * console.log(getTSOfSpecificDate("2025/08/18(一)", { end: false })); // 20250818000000 (number)
+     * console.log(getTSOfSpecificDate("2025/08/18(一)", { end: true }));  // 20250818235959 (number)
+     */
+    getTSOfSpecificDate(dateStr, { end = false } = {}) {
+        return Number(
+          _(dateStr)
+            .thru(str => moment(str.split("(")[0], "YYYY/MM/DD"))
+            .thru(m => end ? m.endOf("day") : m.startOf("day"))
+            .value() // 取出 moment 物件
+            .format("YYYYMMDDHHmmss")
+        );
+    }
 
-        // 轉成 UTC 時間的 timestamp（毫秒）
-        return localMoment.utc().valueOf();
+    /** ============== 排課系統公式 開始 ============== */
+
+    /**
+     * /const arrayWithDup = [
+     *   { idOfBooze: "A111", idOfVariant: "V001", period: "202508151400-202508151500" },
+     *   { idOfBooze: "B222", idOfVariant: "V002", period: "202508151600-202508151700" },
+     *   { idOfBooze: "A111", idOfVariant: "V001", period: "202508161400-202508161500" }, // 🔁 與第一筆 PK 相同
+     *   { idOfBooze: "B222", idOfVariant: "V003", period: "202508171600-202508171700" },
+     *   { idOfBooze: "A111", idOfVariant: "V004", period: "202508181400-202508181500" }
+     *
+     * ];
+     * const result = getFilteredPeriods(arrayWithDup, "B222"); console.log(result);
+     *   [ "202508151400-202508151500", "202508181400-202508181500" ]
+     * 1. 刪掉所有 idOfBooze = "B222" 的項目
+     * 2. idOfBooze和idOfVariant為PK， 重複的只保留一組
+     * 3. 回傳filter array,(反查出哪些課程重複會用到其他資訊)
+     * */
+    getFilteredHeraPeriods(arr, idOfCurrentBooze) {
+        return _.chain(arr)
+          // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
+          .filter(item => item.idOfBooze !== idOfCurrentBooze)
+          // 2️⃣ 根據 idOfBooze+idOfVariant 組成唯一鍵 僅保留一組
+          .uniqBy(item => `${item.idOfBooze}_${item.idOfVariant}`)
+          // 3️⃣ 只保留 period 欄位
+          // .map('period')
+          // 4️⃣ 過濾掉沒有 period 的項目（避免 undefined）
+          // .filter(Boolean)
+          // 5️⃣ 轉回陣列
+          .value();
     }
 
     /**
-     _.replace(dateStr, /\//g, '')
-     把 2025/08/18 裡的 / 全部移除 → 20250818
-     _.padStart('1', 6, '0')
-     把 1 補滿到 6 位 → 000001
-     字串相加後就是 20250818000001
-     console.log(getSignOfFormatDate('2025/08/18(一) 12:00 - 14:00')); // 20250818000001
+     * 檢查新任務與既有任務是否有時間衝突
+     * @param {Object} newTask - 新任務物件，需包含 timeSlot 屬性 (格式: YYYY/MM/DD (週)｜HH:mm-HH:mm)
+     * @param {Array} existingTasks - 已安排的任務陣列，每個物件需包含 period 屬性 (格式: yyyymmddHHmm-yyyymmddHHmm)
+     * @param {number} resourceCount - 可同時處理任務的人員/資源數量
+     * @returns {Object} { conflict: boolean, items: Array }
      */
-    getSignOfFormatDate = (dateStr) => {
-        return _.replace(_.trim(dateStr.split("(")[0]), /\//g, '') + _.padStart('1', 6, '0');
+    checkPeriodConflict(newTask, existingTasks, resourceCount = 1) {
+        // 1️⃣ 解析 timeSlot 拆成日期與時間
+        const [datePart, timePart] = newTask.content.split('｜');
+        const date = moment(datePart.split(' ')[0], 'YYYY/MM/DD');
+        const [startTimeStr, endTimeStr] = timePart.split('-');
+
+        const start = moment(`${date.format('YYYY/MM/DD')} ${startTimeStr}`, 'YYYY/MM/DD HH:mm');
+        const end = moment(`${date.format('YYYY/MM/DD')} ${endTimeStr}`, 'YYYY/MM/DD HH:mm');
+
+        // 2️⃣ 篩選出有真實時間重疊的任務
+        const conflictItems = _.filter(existingTasks, task => {
+            const [pStartStr, pEndStr] = task.period.split('-');
+            const pStart = moment(pStartStr, 'YYYYMMDDHHmm');
+            const pEnd = moment(pEndStr, 'YYYYMMDDHHmm');
+
+            // 判斷條件：有交集才算衝突
+            return start.isBefore(pEnd) && end.isAfter(pStart);
+        });
+
+        // 3️⃣ 根據資源數量判斷是否真的構成衝突
+        const conflict = conflictItems.length >= resourceCount;
+
+        // 4️⃣ 回傳結果
+        return {
+            conflict,       // true: 超過資源負荷
+            items: conflictItems // 衝突的任務列表
+        };
     }
+
+    // testOfConflict() {
+    //     // ===== 測試資料 =====
+    //     const newTask = {
+    //         timeSlot: "2025/08/20 (三)｜16:00-17:00", // 格式: YYYY/MM/DD (週)｜HH:mm-HH:mm
+    //         id: "JOB001",
+    //         description: "安裝冷氣"
+    //     };
+    //
+    //     const existingTasks = [
+    //         { id: "T001", period: "202508151400-202508151500" },
+    //         { id: "T002", period: "202508151600-202508151700" },
+    //         { id: "T003", period: "202508161400-202508161500" },
+    //         { id: "T004", period: "202508171600-202508171700" },
+    //         { id: "T005", period: "202508201630-202508201700" }, // 衝突
+    //         { id: "T006", period: "202508201645-202508201700" }  // 衝突
+    //     ];
+    //
+    //     // 測試：一人資源
+    //     console.log(this.checkPeriodConflict(newTask, existingTasks, 1));
+    //     /*
+    //     {
+    //       conflict: true,
+    //       items: [
+    //         { id: 'T005', period: '202508201630-202508201700' },
+    //         { id: 'T006', period: '202508201645-202508201700' }
+    //       ]
+    //     }
+    //     */
+    //
+    //     // 測試：兩人資源
+    //     console.log(this.checkPeriodConflict(newTask, existingTasks, 2));
+    //     /*
+    //     {
+    //       conflict: false,
+    //       items: [
+    //         { id: 'T005', period: '202508201630-202508201700' },
+    //         { id: 'T006', period: '202508201645-202508201700' }
+    //       ]
+    //     }
+    //     */
+    // }
+    /** ============== 排課系統公式 結束 ============== */
+
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
           // const utiller = new Utiller();
-          //
+          // console.log(utiller.getTSOfSpecificDate('2025/08/18(一)'))
           // const input = [
           //     { value: "", label: "A款" },
           //     { value: "", label: "B款" },
