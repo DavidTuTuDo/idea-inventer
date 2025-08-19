@@ -53,23 +53,21 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     /** 當useMainTrunk為true時，要增加一筆hera通知行事曆 */
-    submitHeraSchedule = async ({ variant, useMainTrunk = false }) => {
+    submitHeraSchedule = async (variant, transaction) => {
+        const db = this._firebase().firestore();
+        const ref = db.collection(`users/${variant.idOfAuthor}/hera`).doc();
         const period = Util.getStringOfConvertTimeRange(variant.content);
         const splitPeriod = period.split("-");
-        const result = await Api.submitHeraItem(
-            {
-                startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
-                endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
-                idOfVariant: variant.id,
-                idOfBooze: variant.idOfBooze,
-                useMainTrunk,
-                name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
-                period
-            },
-            undefined,
-            variant.idOfAuthor
-        );
-        return result.value;
+        transaction.set(ref, {
+            startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
+            endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
+            idOfVariant: variant.id,
+            idOfBooze: variant.idOfBooze,
+            useMainTrunk: variant.useMainTrunk ?? false,
+            name: `${variant.nameOfBooze}${Util.getSeparatorOfUnique()}${variant.content}`,
+            period
+        });
+        return ref.id;
     };
 
     async handleHttpOnCall(data, session) {
@@ -80,68 +78,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder()) this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
 
-        /** 用batch fetch拿回variants */
-        const params = itemsOfClientOrdering.map(({ idOfVariant, idOfBooze }) => ({ id: idOfVariant, pid: idOfBooze }));
-        const variantsOfRemoteStatus = await Api.fetchVariantBatchItems(...params);
-
-        /** 計算剩餘數量和帶入參數足夠否, count是指client端下的數量 */
-        const mapOfVariantStatus = new Map(variantsOfRemoteStatus.map((v) => [v.id, v])); /** 用map做indexing加快速度(取代_.find)*/
-
-        for (const item of itemsOfClientOrdering) {
-            const variant = mapOfVariantStatus.get(item.idOfVariant);
-            item.price = variant.price;
-            item.photo = variant.photo;
-            item.content = variant.content;
-            if (!variant || variant.quantity < item.quantity) this.appendErrorLog(9999, `${item.nameOfBooze} 的 ${variant?.content ?? "未知項目"} 數量不足`);
-        }
-
-        const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering);
-        if (totalPrice > this.getMaxPriceOfTSingleTransaction()) this.appendErrorLog(9999, `單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
-
-        /** atomic的方式扣除client端下order的quantity */
-        let rollbackList = [];
-        let rollbackTimeList = [];
-        try {
-            for (const item of itemsOfClientOrdering) {
-                const variant = mapOfVariantStatus.get(item.idOfVariant);
-                await Api.updateVariantItemAtomically(
-                    async (current) => {
-                        if (current.quantity >= item.quantity) return { quantity: current.quantity - item.quantity };
-                        else throw new Error(`${item.nameOfBooze} 的 ${variant.content} 數量不足`);
-                    },
-                    variant.id,
-                    variant.idOfBooze
-                );
-
-                /** 未處理variant不存在的狀況(未實現) */
-
-                /** 針對課程類的商品-> 新增行事曆的邏輯 以及檢查衝突邏輯 */
-                if (variant.isTaskJob) {
-                    if (variant.useMainTrunk) {
-                        const result = await this.checkConflictAgainst2MainTrunk(variant);
-                        if (result.conflict) throw new Error(`${variant.nameOfBooze}的時段(${variant.content})衝突`);
-                    }
-                    const hera = await this.submitHeraSchedule({ variant, useMainTrunk: variant.useMainTrunk });
-                    const objOfHera = { id: hera.id, idOfAuthor: variant.idOfAuthor };
-                    item.infoOfHera = JSON.stringify(objOfHera);
-                    rollbackTimeList.push(objOfHera);
-                }
-                rollbackList.push({ item, variant });
-            }
-        } catch (error) {
-            /** 購物車內扣數量個過程中，發現其中一個數量不足，就必須把之前的補回去*/
-            for (const { item, variant } of rollbackList) {
-                await Api.updateVariantItemAtomically(
-                    async (current) => ({
-                        quantity: current.quantity + item.quantity
-                    }),
-                    variant.id,
-                    variant.idOfBooze
-                );
-            }
-            for (const item of rollbackTimeList) await Api.deleteHeraItem(item.id, item.idOfAuthor);
-            this.appendErrorLog(9999, error.message);
-        }
+        await this.checkoutCartWithScheduleCheck(itemsOfClientOrdering);
 
         /** 成立訂單 */
         const result = await Api.submitPreciseOrderItem({
@@ -150,7 +87,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             remark,
             timeOfExpired: Util.getTimeStampWithConditions(this.getRuleOfExpiredTime()),
             timeOfCreate: Util.getCurrentTimeStamp(),
-            priceOfTotal: totalPrice,
+            priceOfTotal: this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering),
             imageUrlOfHeadPhoto: _.head(itemsOfClientOrdering)?.photo ?? "",
             items: this.getPreciseItemsAsRecord(itemsOfClientOrdering),
             email: email || "",
@@ -163,6 +100,64 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (result.succeed) return { idOfPreciseOrder: result.value.id };
         else this.appendErrorLog(9999, `錯誤：E1299 創建訂單時失敗，未知原因(請訊息洽詢)。`);
     }
+
+    /**
+     * 購物車結帳交易處理（含課程衝堂檢查）
+     * @param {array} itemsOfCartie - 購買商品們 [..{idOfBooze,idOfVariant,quantity,nameOfBooze}]
+     */
+    checkoutCartWithScheduleCheck = async (itemsOfCartie) => {
+        function getNameOfSelectBooze(idOfVariant) {
+            const itemOfCartie = _.find(itemsOfCartie, (item) => _.isEqual(item.idOfVariant, idOfVariant));
+            return itemOfCartie ? itemOfCartie.nameOfBooze : "(已過期)";
+        }
+
+        const db = this._firebase().firestore();
+        return await db.runTransaction(async (transaction) => {
+            // 先批次抓所有商品文件
+            const variantRefs = itemsOfCartie.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
+            const variantSnaps = await transaction.getAll(...variantRefs);
+
+            // 建立商品快取 Map
+            const mapOfVariant = {};
+
+            for (let i = 0; i < variantSnaps.length; i++) {
+                const snap = variantSnaps[i];
+                if (!snap.exists) throw new Error(`商品不存在：${getNameOfSelectBooze(variantRefs[i].id)}`);
+                const id = snap.id;
+                const variant = snap.data();
+                mapOfVariant[id] = variant;
+                const item = _.find(itemsOfCartie, (item) => _.isEqual(item.idOfVariant, id));
+                item.price = variant.price;
+                item.photo = variant.photo;
+                item.content = variant.content;
+            }
+
+            const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfCartie);
+            if (totalPrice > this.getMaxPriceOfTSingleTransaction()) throw new ERROR(`單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
+
+            // 開始扣除商品庫存與新增 schedule（如果是課程）
+            for (const item of itemsOfCartie) {
+                const { idOfBooze, idOfVariant, quantity, nameOfBooze } = item;
+                const variant = mapOfVariant[idOfVariant];
+                const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
+
+                const quantityOfBalance = (variant.quantity || 0) - quantity; //當前數量 - 購買數量
+                if (quantityOfBalance < 0) throw new Error(`${variant.nameOfBooze} ${variant.content} 數量不足`);
+
+                // 更新庫存
+                transaction.update(variantRef, { quantity: quantityOfBalance });
+
+                // 如果是課程，先檢查是否衝堂
+                if (variant.isTaskJob) {
+                    if (variant.useMainTrunk) {
+                        const result = await this.checkConflictAgainst2MainTrunk(variant, transaction);
+                        if (result.conflict) throw new Error(`${variant.nameOfBooze}的時段(${variant.content})衝突`);
+                    }
+                    item.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
+                }
+            }
+        });
+    };
 
     getPreciseItemsAsRecord(variants) {
         return variants.map(({ idOfBooze, idOfVariant, quantity, nameOfBooze, content, price, photo, note, infoOfHera }) => ({
