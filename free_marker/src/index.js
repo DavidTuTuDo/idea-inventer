@@ -7301,6 +7301,7 @@ class ProjectFileHandler extends PathBase {
             (each) => {
                 return (
                     _.isEqual(each.fileNameExtension, `index.js`) ||
+                    _.isEqual(each.fileNameExtension, `test.js`) ||
                     _.isEqual(each.extension, `less`) ||
                     _.isEqual(each.fileNameExtension, `app.style.js`) ||
                     _.isEqual(each.fileNameExtension, `mobile.style.js`) ||
@@ -7481,6 +7482,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     }
 
     async buildProdWebDistToProjectThanDeploy(deploy = true, npmBuild = true) {
+        await Util.deleteSelfByPath(Util.joinRespectingDot(this.genSourcePath, 'test.js'), true);
         await this.leanCodeOfSource();
         if (npmBuild) await Util.executeCommandLine(`cd ${this.genRootPath} && npm run build`)
         const pathOfDestination = Util.joinRespectingDot(this.nodeOfAncestor.getDirectoryName(), 'public');
@@ -9368,6 +9370,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
     async functionsGenerateRelease() {
         if (this.needDeployCloudFunctions && this.isFunctionsPlatform()) {
+            await Util.deleteSelfByPath(Util.joinRespectingDot(this.genSourcePath, 'test.js'), true);
             await Util.deleteSelfByPath(Util.joinRespectingDot(this.genRootPath, 'release'), true);
             await Util.generatePackage(this.genRootPath, false);
             /** 會產生出 release folder */
