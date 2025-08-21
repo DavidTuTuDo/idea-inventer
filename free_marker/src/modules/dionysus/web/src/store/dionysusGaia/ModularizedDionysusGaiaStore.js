@@ -10,7 +10,6 @@ import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
 import UserInfo from "../../base/BaseUserInfo";
-import Router from "../../router";
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
 const MAXIMUM_TEXT_OF_DESCRIPTION = 300;
@@ -190,6 +189,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent(), this.getObjectOfBooze());
             this.setIdOfBooze(latest.value.id);
             this.setBooze(latest.value);
+            this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
         } else this.setIdOfBooze(id);
     };
 
@@ -234,7 +234,6 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             }),
             this.getIdOfBooze()
         );
-        this.getComponent().props.navigate(`/gaia/${this.getIdOfBooze()}`);
         this.getComponent().showInfoSnackMessage(`成功設定「${this.getName()}」商品`);
     };
 
@@ -345,12 +344,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getIdOfBooze()
         );
 
-        if (_.size(submits) > 0) this.submitVariant(submits);
+        if (_.size(submits) > 0) await this.submitCustomVariant(submits);
         if (component instanceof BaseComponent) component.dismiss();
         this.getComponent().showSuccessSnackMessage(`已更新全部數量`);
     };
 
-    submitVariant = async (submits) => {
+    submitCustomVariant = async (submits) => {
         await this.updateSpecificAttributes();
         await this.apiOfVariant.submitVariants(
             this.getComponent(),
@@ -362,7 +361,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                     idOfAuthor: UserInfo.getUid(),
                     nameOfBooze: this.getName(),
                     isTaskJob: this.belong2TaskJob(),
-                    useMainTrunk: this.getUseMainTrunk()
+                    useMainTrunk: this.getUseMainTrunk(),
+                    photo: this.getBriefPhotoOfHead()?.getHref()
                 };
             }),
             this.getIdOfBooze()
@@ -373,22 +373,29 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         return _.isEqual(2, this.getSelectedTypeOfProp());
     };
 
-    onVariantPriceUpdate = async (variant) => {
+    onVariantPriceUpdate = async (variant, variants) => {
         await this.apiOfVariant.updateVariantItem(this.getComponent(), { price: variant.price, priceB4Discount: variant.priceB4Discount }, variant.id, this.getIdOfBooze());
+        await this.updatePriceOfBooze(variants);
         this.getComponent().showSuccessSnackMessage(`${variant.labelOfVariant} $${variant.price})`);
+    };
+
+    updatePriceOfBooze = async (variants) => {
+        const lowest = _.minBy(variants, "price");
+        const greatest = _.maxBy(variants, "price");
+        const isEqual = _.isEqual(lowest.price, greatest.price);
+        const rangeOfPrice = isEqual ? `$${lowest.price}` : `$${lowest.price} - $${greatest.price}`;
+        await this.apiOfBooze.updateBoozeItem(this.getComponent(), { rangeOfPrice, price: lowest.price, priceB4Discount: lowest.priceB4Discount }, this.getIdOfBooze());
     };
 
     onVariantsPriceUpdate = async (variants, component) => {
         const submits = _.filter(variants, (variant) => !variant.existing);
         const updates = _.filter(variants, (variants) => variants.existing);
 
-        if (_.size(submits) > 0) this.submitVariant(submits);
-
+        if (_.size(submits) > 0) await this.submitCustomVariant(submits);
+        await this.updatePriceOfBooze(variants);
         await this.apiOfVariant.updateVariants(
             this.getComponent(),
-            updates.map((each) => {
-                return { id: each.id, price: each.price, priceB4Discount: each.priceB4Discount };
-            }),
+            updates.map((each) => ({ id: each.id, price: each.price, priceB4Discount: each.priceB4Discount })),
             this.getIdOfBooze()
         );
 

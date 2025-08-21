@@ -28,8 +28,8 @@ class ModularizedDionysusPriceSetterStore extends BaseDionysusPriceSetterStore {
 
     async fetchRowValuesOfNumberSetter() {
         return [
-            { label: "售價(均)", value: "100" },
-            { label: "原價(均)", value: "120" }
+            { label: "售價", value: "0" }
+            // { label: "原價(均)", value: "120" }
         ];
     }
 

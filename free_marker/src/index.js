@@ -114,6 +114,14 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /**
+     * 如果  path: `/gaia/:pid`,
+     * <ObservedDionysusGaia key={`${pid}`}  pid={pid} {...props} />;
+     * 如果url變動了，pid就會改變，造成component re-render
+     * 不想re-render，就要 disableKeyOfRoute = true;
+     * */
+    disableKeyOfRoute = false;
+
     /** products/{productId}       ← 父 document
         └── {productId}/variants/{variantId}   ← 讓api產出batch submit product和variants */
     hasFatherHood = false;
@@ -6408,7 +6416,7 @@ class AppBuilder extends ComponentBuilder {
             if (component.detailPage) params.push(component.getFieldNameOfDetailUid());
 
             const paramsOfProp = params.map((each) => `\$\{${each}\}`);
-            if (_.size(paramsOfProp) > 0) {
+            if (!component.disableKeyOfRoute && _.size(paramsOfProp) > 0) {
                 return {key: `###\`${paramsOfProp.join('')}\``}
             } else {
                 return {}
