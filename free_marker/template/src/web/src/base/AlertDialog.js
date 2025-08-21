@@ -168,36 +168,29 @@ class AlertDialog extends MuiComponent {
         if (!self.getStore().getVisibility()) return null;
 
         if (this.hasCustomView()) {
-
-            if(Util.isUndefinedNullEmpty(storeX))
+            if (Util.isUndefinedNullEmpty(storeX))
                 /** ImageDialogView 這種不需要inject store的component走這裡！ */
                 return (
-                  <DialogContent className={"BaseAlertDialogContent"}>
-                      <div className={"BaseAlertDialogCustomView"}>
+                    <DialogContent className={"BaseAlertDialogContent"}>
+                        <div className={"BaseAlertDialogCustomView"}>
+                            <CustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...self.getStore().getPropsOfCustomView()} />
 
-                          <CustomView
-                            component={component}
-                            callback={callback}
-                            paramObject={paramObject}
-                            dialog={self}
-                            {...self.getStore().getPropsOfCustomView()} />
-
-                          {this.renderCustomCancelChip()}
-                      </div>
-                  </DialogContent>
+                            {this.renderCustomCancelChip()}
+                        </div>
+                    </DialogContent>
                 );
 
+            const ObservedCustomView = observer(CustomView);
             const CustomViewWrapper = inject(storeX)(
-                observer((props) => {
-                    const all = { ...props, ...self.getStore().getPropsOfCustomView() };
-                    return <CustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
-                })
+              observer((props) => {
+                  const all = { ...props, ...self.getStore().getPropsOfCustomView() };
+                  return <ObservedCustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
+              })
             );
 
             return (
                 <DialogContent className={"BaseAlertDialogContent"}>
                     <div className={"BaseAlertDialogCustomView"}>
-
                         <CustomViewWrapper />
 
                         {this.renderCustomCancelChip()}

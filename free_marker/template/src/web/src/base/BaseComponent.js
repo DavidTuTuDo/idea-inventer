@@ -299,7 +299,7 @@ class BaseComponent extends MuiComponent {
     }
 
     renderLoadingView() {
-        if(this.isDialogComponent()) return null;
+        if (this.isDialogComponent()) return null;
         if (this.getStore().state === "loading") {
             return (
                 <div className={"BaseLoadingViewDiv"}>
@@ -594,7 +594,7 @@ class BaseComponent extends MuiComponent {
     }
 
     renderImageDialog = () => {
-        if(this.isDialogComponent()) return null;
+        if (this.isDialogComponent()) return null;
         const self = this;
         const params = this.getStore().getImageDialogParam();
         return this.renderAlertDialog({
@@ -610,7 +610,7 @@ class BaseComponent extends MuiComponent {
     openImageDialog = (imgUrl) => {
         const component = this.getComponentInstance();
         component.imageDialogRef.current.open({ href: imgUrl });
-    }
+    };
 
     /** 如果頁面有聽callback, 統一用這個method */
     subscribe(subscribeFunction) {
@@ -642,7 +642,7 @@ class BaseComponent extends MuiComponent {
     }
 
     renderSnackView() {
-        if(this.isDialogComponent()) return null;
+        if (this.isDialogComponent()) return null;
         const self = this;
 
         function Alert(props) {
