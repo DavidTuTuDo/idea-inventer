@@ -6504,8 +6504,8 @@ class AppBuilder extends ComponentBuilder {
             const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
             stmtsOfRenderView.push(`
             const ${observed} = observer(${nameOfComponent});
-            const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')(observer( (props) => {
-            ${stmtsOfParams} return ${renderStmts.join('')} }))`)
+            const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')((props) => {
+            ${stmtsOfParams} return ${renderStmts.join('')} })`)
         }
 
         const routerStmt = this.getJSXStrings({
@@ -6566,6 +6566,25 @@ class AppBuilder extends ComponentBuilder {
 
         appGenerator.appendFunction({ name: `getRenderView`, arrow:true }, [],
           [], [], 'const self = this;',...stmtsOfRenderView,`return (${entire.join("")})`);
+
+        appGenerator.appendField(`observedCache`, `new WeakMap()`);
+        appGenerator.appendFunction({ name: `safeObserver`, arrow:true }, ['component'],
+          [], [], `
+            // 若已經被包裝過（不管是 class 還是已包裝結果），直接回傳記憶的版本
+        if (this.observedCache.has(component)) 
+            return this.observedCache.get(component);
+        try {
+            // 嘗試包裝
+            const Observed = observer(component);
+            // 成功包裝後，記憶「原始 component」與「包裝後的 component」
+            this.observedCache.set(component, Observed);
+            this.observedCache.set(Observed, Observed); // 避免未來傳進來的是已包裝的也會識別
+            return Observed;
+        } catch (err) {
+            // 嘗試 fallback：如果是已經包裝過的元件，直接回傳它自己
+            this.observedCache.set(component, component);
+            return component;
+        }`);
 
         await appGenerator.needIndexFile('App', [], false, [
                 `const self = new App()`,
