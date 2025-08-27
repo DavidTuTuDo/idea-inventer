@@ -1439,6 +1439,12 @@ class MobileStyle {
 
     DionysusBacchusDiv = {};
 
+    /** => following for hestia  component  */
+
+    DionysusHestiaDivWrap = {};
+
+    DionysusHestiaDiv = {};
+
     /** => following for dionysus  component  */
 
     DionysusSelectTabSkeleton = {};
@@ -1578,6 +1584,8 @@ class MobileStyle {
     MainTestGoGaiaButton = {};
 
     MainTestGoErosButton = {};
+
+    MainTestGoToBackUpButton = {};
 
     MainTestGoMarketButton = {};
 

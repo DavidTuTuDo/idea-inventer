@@ -182,12 +182,10 @@ class AlertDialog extends MuiComponent {
                 );
 
             const ObservedCustomView = Application.safeObserver(CustomView);
-            const CustomViewWrapper = inject(storeX)(
-                (props) => {
-                    const all = { ...props, ...self.getStore().getPropsOfCustomView() };
-                    return <ObservedCustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
-                }
-            );
+            const CustomViewWrapper = inject(storeX)((props) => {
+                const all = { ...props, ...self.getStore().getPropsOfCustomView() };
+                return <ObservedCustomView component={component} callback={callback} paramObject={paramObject} dialog={self} {...all} />;
+            });
 
             return (
                 <DialogContent className={"BaseAlertDialogContent"}>

@@ -1439,6 +1439,12 @@ class CommonStyle {
 
     DionysusBacchusDiv = {};
 
+    /** => following for hestia  component  */
+
+    DionysusHestiaDivWrap = {};
+
+    DionysusHestiaDiv = {};
+
     /** => following for dionysus  component  */
 
     DionysusSelectTabSkeleton = {};
@@ -1578,6 +1584,8 @@ class CommonStyle {
     MainTestGoGaiaButton = {};
 
     MainTestGoErosButton = {};
+
+    MainTestGoToBackUpButton = {};
 
     MainTestGoMarketButton = {};
 

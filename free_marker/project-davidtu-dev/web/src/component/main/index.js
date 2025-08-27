@@ -65,6 +65,10 @@ class MainComponent extends BaseMainComponent {
         console.log(param.value);
     }
 
+    onMainTestGoToBackUpButtonClicked(param) {
+        Router.gotoHestiaPage(this);
+    }
+
     onMainTestTestUsageButtonClicked(param) {
         this.getStore()
             .getTest()

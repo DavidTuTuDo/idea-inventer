@@ -111,8 +111,7 @@ class BaseComponent extends MuiComponent {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
         }
 
-        Util.appendInfo(`❌ ${this.getComponentName()} goto componentWillUnmount()`)
-
+        Util.appendInfo(`❌ ${this.getComponentName()} goto componentWillUnmount()`);
     }
 
     /** 意指面畫面還沒產出捲軸效果，可以補花(例如item合計有30個，但fetch一次只拿5個，而產生捲軸效果的threshold是10個，那畫面就會再繼續自動fetch，直到產生捲軸效果)*/
@@ -149,7 +148,7 @@ class BaseComponent extends MuiComponent {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
             window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
-        console.log(`✅️  ${this.getComponentName()} goto componentDidMount()`)
+        console.log(`✅️  ${this.getComponentName()} goto componentDidMount()`);
     }
 
     /**
