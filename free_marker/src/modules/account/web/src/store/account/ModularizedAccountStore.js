@@ -1,3 +1,5 @@
+const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
@@ -23,11 +25,11 @@ class ModularizedAccountStore extends BaseAccountStore {
         const user = Cookie.getUser();
         if (UserInfoRef.isValidUser(user)) {
             this.setUrlOfHeadPhoto(user.photoURL);
-            this.getFuncAreaOfEmail().getStateAreaOfEmail().setValueOfEmail(user.email);
-            this.getFuncAreaOfName().getStateAreaOfName().setValueOfName(user.displayName);
-            this.getFuncAreaOfId().getStateAreaOfId().setValueOfId(user.uid);
+            this.setValueOfEmail(user.email);
+            this.setValueOfName(user.displayName);
+            this.setValueOfId(user.uid);
         }
-        this.getFuncAreaOfEdit().setSelectedLang(i18n.getLanguage());
+        this.setSelectedLang(i18n.getLanguage());
     }
 
     /** -------------------- async api -------------------- **/

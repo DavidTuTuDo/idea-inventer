@@ -370,21 +370,30 @@
         /** empty style */
     }
 }
-.AccountUrlOfHeadPhotoAvatar {
+.AccountInfoDiv:extend(.CenterInParentColumn) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountInfoUrlOfHeadPhotoAvatar {
     width: 60px;
     height: 60px;
+    margin-bottom: 10px;
     @media @mobile {
-        margin-bottom: 20px;
     }
     @media @tablet {
         /** empty style */
     }
     @media @desktop {
-        margin-bottom: 40px;
     }
 }
-.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
-    width: 100%;
+.AccountInfoValueOfNameTypography {
     @media @mobile {
         /** empty style */
     }
@@ -395,20 +404,21 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
-    width: 80%;
+.AccountInfoValueOfEmailTypography {
+    @media @mobile {
+        font-size: 0.7rem;
+    }
+    @media @tablet {
+        font-size: 0.7rem;
+    }
+    @media @desktop {
+        font-size: 0.8rem;
+    }
+}
+.AccountBasicDiv:extend(.CenterInParentRow) {
     justify-content: space-between;
-    @media @mobile {
-        width: 90%;
-    }
-    @media @tablet {
-        width: 90%;
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography {
+    width: 95%;
+    min-height: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -419,7 +429,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography {
+.AccountBasicLabelOfPropTypography {
     @media @mobile {
         /** empty style */
     }
@@ -430,21 +440,7 @@
         /** empty style */
     }
 }
-.AccountSpaceDiv {
-    height: 1px;
-    width: 80%;
-    background-color: rgba(0, 0, 0, 0.3);
-    @media @mobile {
-        width: 90%;
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
+.AccountBasicLangMenuItem {
     @media @mobile {
         /** empty style */
     }
@@ -455,7 +451,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+.AccountBasicLangTextFieldList {
     @media @mobile {
         /** empty style */
     }
@@ -466,30 +462,8 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
-    @media @mobile {
-        font-size: 0.8rem;
-    }
-    @media @tablet {
-        font-size: 0.8rem;
-    }
-    @media @desktop {
-        font-size: 0.9rem;
-    }
-}
-.AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
-    @media @mobile {
-        font-size: 0.7rem;
-    }
-    @media @tablet {
-        font-size: 0.7rem;
-    }
-    @media @desktop {
-        font-size: 0.8rem;
-    }
-}
-.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
-    gap: 10px;
+.AccountAreaDiv {
+    width: 95%;
     @media @mobile {
         /** empty style */
     }
@@ -500,7 +474,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+.AccountAreaAreaOfTokenDiv:extend(.AccountBasicDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -511,43 +485,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
-    @media @mobile {
-        font-size: 0.8rem;
-    }
-    @media @tablet {
-        font-size: 0.8rem;
-    }
-    @media @desktop {
-        font-size: 0.9rem;
-    }
-}
-.AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
-    @media @mobile {
-        font-size: 0.7rem;
-    }
-    @media @tablet {
-        font-size: 0.7rem;
-    }
-    @media @desktop {
-        font-size: 0.8rem;
-    }
-}
-.AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-    @media @mobile {
-        margin-top: 20px;
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        margin-top: 30px;
-    }
-}
-.AccountFuncAreaOfEditLangMenuItem {
+.AccountAreaAreaOfTokenDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -558,7 +496,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditLangTextFieldList {
+.AccountAreaAreaOfTokenOptionOfTokenTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -569,7 +507,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditCopyUserIdButton {
+.AccountAreaAreaOfTokenOptionOfTokenContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -580,7 +518,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditLogoutButton {
+.AccountAreaAreaOfTokenArrowOfTokenIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -591,7 +529,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditLogoutReactFragmentWrap {
+.AccountAreaAreaOfTokenArrowOfTokenIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -602,7 +540,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditToEditModeButton {
+.AccountAreaAreaOfAppendBoozeDiv:extend(.AccountBasicDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -613,7 +551,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditCleanCacheButton {
+.AccountAreaAreaOfAppendBoozeDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -624,7 +562,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditBtnOfJoinAdminButton {
+.AccountAreaAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -635,7 +573,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap {
+.AccountAreaAreaOfAppendBoozeOptionOfAppendBoozeContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -646,7 +584,7 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditBtnOfJoinReaderButton {
+.AccountAreaAreaOfAppendBoozeArrowOfAppendBoozeIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -657,7 +595,557 @@
         /** empty style */
     }
 }
-.AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap {
+.AccountAreaAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoToMyBoozeDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoToMyBoozeDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMarketSettingDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMarketSettingDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMarketSettingOptionOfMarketSettingTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMarketSettingOptionOfMarketSettingContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMarketSettingArrowOfMarketSettingIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyScheduleDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyScheduleDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyScheduleOptionOfMyScheduleTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyScheduleOptionOfMyScheduleContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyScheduleArrowOfMyScheduleIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyReportDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyReportDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyReportOptionOfMyReportTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyReportOptionOfMyReportContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyReportArrowOfMyReportIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfMyReportArrowOfMyReportIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoEditModeDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoEditModeDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoEditModeOptionOfGoEditModeTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoEditModeOptionOfGoEditModeContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoEditModeArrowOfGoEditModeIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfCleanCacheDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfCleanCacheDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfCleanCacheOptionOfCleanCacheTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfCleanCacheOptionOfCleanCacheContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfCleanCacheArrowOfCleanCacheIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendAdminDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendAdminDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendAdminOptionOfAppendAdminTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendAdminOptionOfAppendAdminContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendReaderDiv:extend(.AccountBasicDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendReaderDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendReaderOptionOfAppendReaderTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendReaderOptionOfAppendReaderContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountLogoutChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountLogoutReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }

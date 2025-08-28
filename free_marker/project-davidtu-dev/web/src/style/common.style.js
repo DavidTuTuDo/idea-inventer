@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -1489,57 +1491,147 @@ class CommonStyle {
 
     /** => following for account  component  */
 
-    AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+    AccountLogoutReactFragmentWrap = {};
 
-    AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+    AccountLogoutChip = {};
 
-    AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+    AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext = {};
 
-    AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+    AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconButton = {};
 
-    AccountFuncAreaOfEditCleanCacheButton = {};
+    AccountAreaAreaOfAppendReaderOptionOfAppendReaderContentTypography = {};
 
-    AccountFuncAreaOfEditToEditModeButton = {};
+    AccountAreaAreaOfAppendReaderOptionOfAppendReaderTitleTypography = {};
 
-    AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+    AccountAreaAreaOfAppendReaderDivWrap = {};
 
-    AccountFuncAreaOfEditLogoutButton = {};
+    AccountAreaAreaOfAppendReaderDiv = {};
 
-    AccountFuncAreaOfEditCopyUserIdButton = {};
+    AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext = {};
 
-    AccountFuncAreaOfEditLangTextFieldList = {};
+    AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconButton = {};
 
-    AccountFuncAreaOfEditLangMenuItem = {};
+    AccountAreaAreaOfAppendAdminOptionOfAppendAdminContentTypography = {};
 
-    AccountFuncAreaOfEditDiv = {};
+    AccountAreaAreaOfAppendAdminOptionOfAppendAdminTitleTypography = {};
 
-    AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+    AccountAreaAreaOfAppendAdminDivWrap = {};
 
-    AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+    AccountAreaAreaOfAppendAdminDiv = {};
 
-    AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+    AccountAreaAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext = {};
 
-    AccountFuncAreaOfIdDiv = {};
+    AccountAreaAreaOfCleanCacheArrowOfCleanCacheIconButton = {};
 
-    AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+    AccountAreaAreaOfCleanCacheOptionOfCleanCacheContentTypography = {};
 
-    AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+    AccountAreaAreaOfCleanCacheOptionOfCleanCacheTitleTypography = {};
 
-    AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+    AccountAreaAreaOfCleanCacheDivWrap = {};
 
-    AccountFuncAreaOfEmailDiv = {};
+    AccountAreaAreaOfCleanCacheDiv = {};
 
-    AccountSpaceDiv = {};
+    AccountAreaAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext = {};
 
-    AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+    AccountAreaAreaOfGoEditModeArrowOfGoEditModeIconButton = {};
 
-    AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+    AccountAreaAreaOfGoEditModeOptionOfGoEditModeContentTypography = {};
 
-    AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+    AccountAreaAreaOfGoEditModeOptionOfGoEditModeTitleTypography = {};
 
-    AccountFuncAreaOfNameDiv = {};
+    AccountAreaAreaOfGoEditModeDivWrap = {};
 
-    AccountUrlOfHeadPhotoAvatar = {};
+    AccountAreaAreaOfGoEditModeDiv = {};
+
+    AccountAreaAreaOfMyReportArrowOfMyReportIconNavigateNext = {};
+
+    AccountAreaAreaOfMyReportArrowOfMyReportIconButton = {};
+
+    AccountAreaAreaOfMyReportOptionOfMyReportContentTypography = {};
+
+    AccountAreaAreaOfMyReportOptionOfMyReportTitleTypography = {};
+
+    AccountAreaAreaOfMyReportDivWrap = {};
+
+    AccountAreaAreaOfMyReportDiv = {};
+
+    AccountAreaAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext = {};
+
+    AccountAreaAreaOfMyScheduleArrowOfMyScheduleIconButton = {};
+
+    AccountAreaAreaOfMyScheduleOptionOfMyScheduleContentTypography = {};
+
+    AccountAreaAreaOfMyScheduleOptionOfMyScheduleTitleTypography = {};
+
+    AccountAreaAreaOfMyScheduleDivWrap = {};
+
+    AccountAreaAreaOfMyScheduleDiv = {};
+
+    AccountAreaAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext = {};
+
+    AccountAreaAreaOfMarketSettingArrowOfMarketSettingIconButton = {};
+
+    AccountAreaAreaOfMarketSettingOptionOfMarketSettingContentTypography = {};
+
+    AccountAreaAreaOfMarketSettingOptionOfMarketSettingTitleTypography = {};
+
+    AccountAreaAreaOfMarketSettingDivWrap = {};
+
+    AccountAreaAreaOfMarketSettingDiv = {};
+
+    AccountAreaAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext = {};
+
+    AccountAreaAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton = {};
+
+    AccountAreaAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography = {};
+
+    AccountAreaAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography = {};
+
+    AccountAreaAreaOfGoToMyBoozeDivWrap = {};
+
+    AccountAreaAreaOfGoToMyBoozeDiv = {};
+
+    AccountAreaAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext = {};
+
+    AccountAreaAreaOfAppendBoozeArrowOfAppendBoozeIconButton = {};
+
+    AccountAreaAreaOfAppendBoozeOptionOfAppendBoozeContentTypography = {};
+
+    AccountAreaAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography = {};
+
+    AccountAreaAreaOfAppendBoozeDivWrap = {};
+
+    AccountAreaAreaOfAppendBoozeDiv = {};
+
+    AccountAreaAreaOfTokenArrowOfTokenIconNavigateNext = {};
+
+    AccountAreaAreaOfTokenArrowOfTokenIconButton = {};
+
+    AccountAreaAreaOfTokenOptionOfTokenContentTypography = {};
+
+    AccountAreaAreaOfTokenOptionOfTokenTitleTypography = {};
+
+    AccountAreaAreaOfTokenDivWrap = {};
+
+    AccountAreaAreaOfTokenDiv = {};
+
+    AccountAreaDiv = {};
+
+    AccountBasicLangTextFieldList = {};
+
+    AccountBasicLangMenuItem = {};
+
+    AccountBasicLabelOfPropTypography = {};
+
+    AccountBasicDiv = {};
+
+    AccountInfoValueOfEmailTypography = {};
+
+    AccountInfoValueOfNameTypography = {};
+
+    AccountInfoUrlOfHeadPhotoAvatar = {};
+
+    AccountInfoDiv = {};
 
     AccountDivWrap = {};
 
