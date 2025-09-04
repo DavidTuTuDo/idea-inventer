@@ -7790,15 +7790,17 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                       needParam: true,
                       view: "IconButton",
                       icon: "NavigateNext",
+                      type: 'string', // 是attribute child才會被hasInputDialog()才會被呼叫到=>'hack'
                       incest: { view: false, attribute: true },
                       description: `點及後可以進如到詳細頁面`,
-                      alertDialog: node.alertDialog,
+                      alertDialog: _.clone(node.alertDialog),
                       props: {
                           edge: "start",
                           color: "inherit"
                       }
                   }
                 );
+                delete node.alertDialog;
             }
 
 
@@ -8634,7 +8636,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 node.appendViewProps({label: `###${node.getName()}.getLabel()`}, {value: `###${node.getName()}.getValue()`})
             } else if (node.isBadgeView()) {
                 node.appendViewProps({badgeContent: `###${node.getName()}`})
-            } else if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView() || node.isAutoCompleteView()) {
+            } else if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView() || node.isAutoCompleteView() || node.isIconButton()) {
                 /** 不要出現 self.handleTextString() */
             } else if (node.isStringOrNumberAttribute()) {
                 /** 產生出 title, tile是指==> const title=this.getSomeOneTitle() <View >{title} </View> */

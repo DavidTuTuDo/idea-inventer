@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -1497,6 +1495,8 @@ class MobileStyle {
 
     AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext = {};
 
+    AccountAreaAreaOfAppendReaderArrowOfAppendReaderReactFragmentWrap = {};
+
     AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconButton = {};
 
     AccountAreaAreaOfAppendReaderOptionOfAppendReaderContentTypography = {};
@@ -1508,6 +1508,8 @@ class MobileStyle {
     AccountAreaAreaOfAppendReaderDiv = {};
 
     AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext = {};
+
+    AccountAreaAreaOfAppendAdminArrowOfAppendAdminReactFragmentWrap = {};
 
     AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconButton = {};
 

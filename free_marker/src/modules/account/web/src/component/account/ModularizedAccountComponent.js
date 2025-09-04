@@ -19,7 +19,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         this.api = new AccountUser();
     }
 
-    onAccountFuncAreaOfEditLogoutButtonClicked(param) {
+    onAccountLogoutChipClicked(param) {
         const self = this;
         UserInfoRef.logout(this.getComponentInstance())
             .then()
@@ -28,46 +28,34 @@ class ModularizedAccountComponent extends BaseAccountComponent {
             });
     }
 
-    getInjectStyleOfAccountFuncAreaOfEditBtnOfJoinReaderButton(funcAreaOfEdit) {
+    getWrapInjectStyleOfAccountAreaOfAppendReaderDiv(account) {
         return Util.getVisibleOrNone(UserInfoRef.isAdmin());
     }
 
-    getInjectStyleOfAccountFuncAreaOfEditBtnOfJoinAdminButton(funcAreaOfEdit) {
+    getWrapInjectStyleOfAccountAreaOfAppendAdminDiv(account) {
         return Util.getVisibleOrNone(UserInfoRef.isAdmin());
     }
 
-    onAccountFuncAreaOfEditCopyUserIdButtonClicked(param) {
+    onAccountArrowOfTokenIconButtonClicked(param) {
         this.copyTextToClipboard(UserInfoRef.getUid());
     }
 
-    getInjectStyleOfAccountFuncAreaOfEditToEditModeButton(funcAreaOfEdit) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
-    }
-
-    onAccountFuncAreaOfEditToEditModeButtonClicked(param) {
-        Router.gotoEditPage(this.getComponentInstance());
-    }
-
-    onAccountFuncAreaOfEditBtnOfJoinReaderButtonClicked(param) {
+    onAccountArrowOfAppendReaderIconButtonClicked(param) {
         const object = param.object;
-        const hash = object.getDialogInputValueOfAccountFuncAreaOfEditBtnOfJoinReader();
+        const hash = object.getDialogInputValueOfAccountArrowOfAppendReader();
         if (_.size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { allowRead: true }, hash).then((result) => {
                 this.showInfoSnackMessage(`升級 ${hash} 為 ALLOW READ 成功`);
             });
     }
 
-    onAccountFuncAreaOfEditBtnOfJoinAdminButtonClicked(param) {
+    onAccountArrowOfAppendAdminIconButtonClicked(param) {
         const object = param.object;
-        const hash = object.getDialogInputValueOfAccountFuncAreaOfEditBtnOfJoinAdmin();
+        const hash = object.getDialogInputValueOfAccountArrowOfAppendAdmin();
         if (_.size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { isAdmin: true }, hash).then((result) => {
                 this.showInfoSnackMessage(`升級 ${hash} 為 ADMIN 成功`);
             });
-    }
-
-    onAccountCancelChipClicked(param) {
-        this.dismiss();
     }
 
     onLangSelectedChange(value, funcAreaOfEdit) {
