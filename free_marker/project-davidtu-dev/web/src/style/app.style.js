@@ -759,6 +759,34 @@ class AppStyle {
 
     /** => following for eros  component  */
 
+    DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconNavigateNext = {};
+
+    DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerReactFragmentWrap = {};
+
+    DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconButton = {};
+
+    DionysusErosAreaOfNumOfWorkerOptionOfNumOfWorkerContentTypography = {};
+
+    DionysusErosAreaOfNumOfWorkerOptionOfNumOfWorkerTitleTypography = {};
+
+    DionysusErosAreaOfNumOfWorkerDivWrap = {};
+
+    DionysusErosAreaOfNumOfWorkerDiv = {};
+
+    DionysusErosAreaOfEcpaySetArrowOfEcpaySetIconNavigateNext = {};
+
+    DionysusErosAreaOfEcpaySetArrowOfEcpaySetReactFragmentWrap = {};
+
+    DionysusErosAreaOfEcpaySetArrowOfEcpaySetIconButton = {};
+
+    DionysusErosAreaOfEcpaySetOptionOfEcpaySetContentTypography = {};
+
+    DionysusErosAreaOfEcpaySetOptionOfEcpaySetTitleTypography = {};
+
+    DionysusErosAreaOfEcpaySetDivWrap = {};
+
+    DionysusErosAreaOfEcpaySetDiv = {};
+
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
 
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetReactFragmentWrap = {};

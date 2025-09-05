@@ -29,8 +29,21 @@ const textsFetchConfig = {
         onChanged: async () => {
             return await Util.appendInfo("linepay changed");
         },
-        onAppendClicked: async (param) => {
-            return await Util.appendInfo(`[TEXTSFETCH] linepay append clicked ${param}`);
+        onAppendClicked: async (param, instance) => {
+            await instance.submitLinePaySerials(param);
+        }
+    },
+    ecpay: {
+        fetchDefaultTexts: async (instance) => {
+            return await instance.fetchDefaultTextOfECPay();
+        },
+        autoIncrement: false,
+        maximumRow: 3,
+        onChanged: async () => {
+            return await Util.appendInfo("ecpay changed");
+        },
+        onAppendClicked: async (param, instance) => {
+            await instance.submitECPaySerials(param);
         }
     }
 };
@@ -45,6 +58,38 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.apiOfTab = new DionysusSelect();
     }
 
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted(collection);
+        this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(this.getNumOfWorker() ?? 1);
+    }
+
+    submitLinePaySerials = async (param) => {
+        Util.appendInfo(`[TEXTSFETCH] linepay append clicked ${param}`);
+        this.setLinepaySet(...param);
+        await this.submitDionysusEros();
+    };
+
+    submitECPaySerials = async (param) => {
+        Util.appendInfo(`[TEXTSFETCH] ecpay append clicked ${param}`);
+        this.setEcpaySet(...param);
+        await this.submitDionysusEros();
+    };
+
+    submitNumOfWorker = async (num) => {
+        Util.appendInfo(`[textInput] numOfWorker append clicked ${num}`);
+        const target = _.toNumber(num);
+        if (target <= 1) return this.getComponent().showErrorSnackMessage(`人數格式錯誤 '${num}'`);
+        this.setNumOfWorker(target);
+        await this.submitDionysusEros();
+    };
+
+    submitBrandName = async (name) => {
+        Util.appendInfo(`[TEXTFETCH] name text clicked ${name}`);
+        if (_.size(name) <= 0) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
+        this.setBrandName(name);
+        await this.submitDionysusEros();
+    };
+
     fetchDefaultTextsOfCategory = async () => {
         this.categoryOfCurrent = (await this.apiOfTab.fetchSelects(this.getComponent())) ?? [];
         return this.categoryOfCurrent.map((each) => {
@@ -55,10 +100,20 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
 
     fetchDefaultTextOfLinePay = async () => {
-        return [
-            { index: "CHANNEL ID", content: "1657284484" },
-            { index: "SECRET ID", content: "61e9945daa3b174b8f63276b2df871cd" }
-        ];
+        const titles = ["CHANNEL ID", "SECRET  ID"];
+        return this.getNormalizeStmt(titles, this.getLinepaySet());
+    };
+
+    getNormalizeStmt = (titles, items) => {
+        return _.map(titles, (title, idx) => ({
+            index: title,
+            content: _.get(items, idx, "") || ""
+        }));
+    };
+
+    fetchDefaultTextOfECPay = async () => {
+        const titles = ["Merchant ID", "Hash Key", "Hash IV"];
+        return this.getNormalizeStmt(titles, this.getEcpaySet());
     };
 
     submitCategoryRules = async (param) => {
@@ -82,32 +137,32 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         }
     }
 
-    async onTextFetchAppendClicked(param) {
+    onTextFetchAppendClicked = async (param) => {
         switch (this.getSelected()) {
             case "name":
-                return Util.appendInfo(`[TEXTFETCH] name text clicked ${param}`);
+                return this.submitBrandName(param);
             default:
                 return undefined;
         }
-    }
+    };
 
-    getDefaultTextOfTextFetch() {
+    getDefaultTextOfTextFetch = () => {
         switch (this.getSelected()) {
             case "name":
-                return "明悅科技";
+                return this.getBrandName();
             default:
                 return undefined;
         }
-    }
+    };
 
-    getDefaultTitleOfTextFetch() {
+    getDefaultTitleOfTextFetch = () => {
         switch (this.getSelected()) {
             case "name":
                 return "店名：";
             default:
                 return undefined;
         }
-    }
+    };
 
     /** texts fetch */
 

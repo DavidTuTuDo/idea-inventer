@@ -33,6 +33,17 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().setSelected("name");
     }
 
+    onDionysusErosArrowOfNumOfWorkerIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("numOfWorker");
+        const num = object.getDialogInputValueOfDionysusErosArrowOfNumOfWorker();
+        this.getStore().submitNumOfWorker(num).then();
+    }
+
+    onDionysusErosArrowOfEcpaySetIconButtonClicked(param) {
+        this.getStore().setSelected("ecpay");
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

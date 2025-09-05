@@ -4102,6 +4102,8 @@ class StoreBuilder extends BaseBuilder {
             if (child.isString()) propStmt.push(`if(obj && _.isString(obj.${fieldName}))`);
             else if(child.isNumber()) propStmt.push(`if(obj && _.isNumber(obj.${fieldName}))`);
             else if (child.isBoolean()) propStmt.push(`if(obj && _.isBoolean(obj.${fieldName}))`);
+            else if (child.isArrayOfField()) propStmt.push(`if(obj && _.isArray(obj.${fieldName}))`);
+            else if (child.isObjectOfEmpty()) propStmt.push(`if(obj && _.isObject(obj.${fieldName}))`);
             else propStmt.push(`if(obj && !Util.isUndefinedNullEmpty(obj.${fieldName}))`);
             propStmt.push(`{`);
             if (child.isArray()) {
@@ -4131,13 +4133,14 @@ class StoreBuilder extends BaseBuilder {
                     propStmt.push(`this.${child.getFunctionNameOfSetter()}(Util.getNumberOfNormalize(obj.${fieldName}))`);
                 else if (child.isString())
                     propStmt.push(`this.${child.getFunctionNameOfSetter()}(Util.getStringOfNormalize(obj.${fieldName}))`);
+                else if (child.isArrayOfField())
+                    propStmt.push(`this.${child.getFunctionNameOfSetter()}(...obj.${fieldName})`);
                 else
                     propStmt.push(`this.${child.getFunctionNameOfSetter()}(obj.${fieldName})`);
             }
 
             propStmt.push(`}`);
-            if (!child.isArrayOfField())
-                propsStmt.push(...propStmt);
+            propsStmt.push(...propStmt);
 
             if (child.isTimeStamp()) {
                 generator.appendImport('moment', `moment`)
