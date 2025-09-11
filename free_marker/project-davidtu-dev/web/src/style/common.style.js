@@ -1515,6 +1515,10 @@ class CommonStyle {
 
     DionysusDiv = {};
 
+    /** => following for demeter  component  */
+
+    DemeterDiv = {};
+
     /** => following for account  component  */
 
     AccountLogoutReactFragmentWrap = {};

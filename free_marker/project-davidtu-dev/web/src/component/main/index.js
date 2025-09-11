@@ -70,10 +70,11 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainTestTestUsageButtonClicked(param) {
-        this.getStore()
-            .getTest()
-            .submitTest()
-            .then((result) => this.showInfoSnackMessage("上傳成功"));
+        Router.gotoDemeterPage(this);
+        // this.getStore()
+        //     .getTest()
+        //     .submitTest()
+        //     .then((result) => this.showInfoSnackMessage("上傳成功"));
     }
 
     /** -------------------- async api -------------------- **/

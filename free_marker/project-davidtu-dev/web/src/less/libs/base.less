@@ -473,3 +473,213 @@ input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
+
+// --- 行事曆外殼 ---
+.JobCalendarWrapper {
+    padding: 16px;
+
+    @media @mobile {
+        padding: 8px;
+    }
+    @media @tablet {
+        padding: 12px;
+    }
+    @media @desktop {
+        padding: 24px;
+    }
+}
+
+// --- 上方日期顯示文字區 ---
+.JobCalendarHeaderText {
+    font-size: 18px;
+    @media @mobile {
+        font-size: 14px;
+    }
+    @media @tablet {
+        font-size: 16px;
+    }
+    @media @desktop {
+        font-size: 20px;
+    }
+}
+
+// --- 月曆的 Cell ---
+.JobCalendarCalendarCell {
+    border: 1px solid #e0e0e0;
+    min-height: 100px;
+
+    @media @mobile {
+        min-height: 80px;
+    }
+    @media @tablet {
+        min-height: 90px;
+    }
+    @media @desktop {
+        min-height: 120px;
+    }
+}
+
+// --- 課程 Chip ---
+.JobCalendarChipOfCourse {
+    font-size: 12px;
+
+    @media @mobile {
+        font-size: 10px;
+    }
+    @media @tablet {
+        font-size: 11px;
+    }
+    @media @desktop {
+        font-size: 13px;
+    }
+}
+
+// --- 左右滑動箭頭 ---
+.JobCalendarArrowOfEcpaySetIconNavigateNext,
+.JobCalendarArrowOfEcpaySetIconNavigateBefore {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @media @mobile {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+// --- 月/週/日 模式切換按鈕區 ---
+.JobCalendarModeToggleButtonGroup {
+    display: flex;
+    justify-content: center;
+
+    @media @mobile {
+    }
+
+    @media @tablet {
+    }
+
+    @media @desktop {
+        gap: 10px;
+    }
+}
+
+// --- 月曆網格容器 ---
+.JobCalendarMonthGrid {
+    grid-gap: 4px;
+
+    @media @mobile {
+        grid-gap: 2px;
+    }
+    @media @tablet {
+        grid-gap: 3px;
+    }
+    @media @desktop {
+        grid-gap: 6px;
+    }
+}
+
+// --- 日/週模式下的可滑動容器 ---
+.JobCalendarDayGridScrollArea {
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+
+// --- 課程項目顯示方塊 ---
+.JobCalendarCourseEventBox {
+    cursor: pointer;
+    font-size: 12px;
+
+    @media @mobile {
+        font-size: 10px;
+    }
+    @media @tablet {
+        font-size: 11px;
+    }
+    @media @desktop {
+        font-size: 13px;
+    }
+}
+
+// --- 每天的欄位（週/日） ---
+.JobCalendarDayColumn {
+    min-width: 140px;
+
+    @media @mobile {
+        min-width: 100px;
+    }
+    @media @tablet {
+        min-width: 120px;
+    }
+    @media @desktop {
+        min-width: 150px;
+    }
+}
+
+.JobCalendarHeaderControlArea {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+
+    @media @mobile {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}
+
+.JobCalendarFooterControlArea {
+    align-items: center;
+    @media @mobile {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    @media @tablet {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    @media @desktop {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+.JobCalendarScrollableMonthWrapper {
+    overflow-x: auto;
+
+    @media @mobile {
+        padding-bottom: 8px;
+    }
+}
+
+.JobCalendarMonthGridInner {
+    min-width: 700px;
+}
+
+.JobCalendarMonthCell {
+    min-width: 90px;
+    max-width: 120px;
+
+    @media @mobile {
+        min-width: 80px;
+    }
+}
+
+.JobCalendarStickyDateLabel {
+    @media @mobile {
+        font-size: 14px;
+    }
+    @media @tablet {
+        font-size: 15px;
+    }
+    @media @desktop {
+        font-size: 16px;
+    }
+}

@@ -1515,6 +1515,10 @@ class MobileStyle {
 
     DionysusDiv = {};
 
+    /** => following for demeter  component  */
+
+    DemeterDiv = {};
+
     /** => following for account  component  */
 
     AccountLogoutReactFragmentWrap = {};
