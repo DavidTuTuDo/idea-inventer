@@ -93,10 +93,6 @@ class CommonStyle {
 
     MainEditorDiv = {};
 
-    /** => following for hades  component  */
-
-    HadesDiv = {};
-
     /** => following for navigator  component  */
 
     NavigatorDrawerShortcutIconImg = {};
@@ -408,6 +404,10 @@ class CommonStyle {
     InfoOfCopyRightUpperGroupDiv = {};
 
     InfoOfCopyRightDiv = {};
+
+    /** => following for hades  component  */
+
+    HadesDiv = {};
 
     /** => following for epayFootprint  component  */
 

@@ -84,6 +84,18 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                     messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
                 };
             }, itemOfPreciseOrder.id);
+
+            await Api.updateHadeItemAtomically(
+                (item, transaction) => {
+                    return {
+                        stateOfPayment: "completed",
+                        procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
+                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                    };
+                },
+                itemOfPreciseOrder.id,
+                itemOfPreciseOrder.idOfAuthor
+            );
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`LINE-PAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
             await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
@@ -98,6 +110,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
                 };
             }, itemOfPreciseOrder.id);
+            await Api.deleteHadeItem(itemOfPreciseOrder.id, itemOfPreciseOrder.idOfAuthor);
             this.appendErrorLog(9999, `98895454354 訂單('${itemOfPreciseOrder.id}')LinePay線上付款款時發生錯誤(${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]})`);
         }
     }

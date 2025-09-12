@@ -6436,7 +6436,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`Config`, `./config`);
         appGenerator.appendImport(`BaseComponent`, `./base/BaseComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
-        appGenerator.appendImport(`{BrowserRouter, useNavigate, useParams}`, `react-router-dom`);
+        appGenerator.appendImport(`{BrowserRouter, useNavigate, useLocation, useParams}`, `react-router-dom`);
         appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendClass(`BaseApp`);
@@ -6479,7 +6479,7 @@ class AppBuilder extends ComponentBuilder {
             const nameOfComponent = _.upperFirst(component.getStruct().getName());
             const wrapper = `${nameOfComponent}Wrapper`;
             const observed = `Observed${nameOfComponent}`;
-            const props = { ...component.extra, ...getPropOfKey(component), navigate: `###useNavigate()` };
+            const props = { ...component.extra, ...getPropOfKey(component), navigate: `###useNavigate()`, location: `###useLocation()` };
             for(const param of params) props[param] = `###${param}`;
             if (component.isNavigatorView) props["ref"] = "###self.navigatorRef";
             if (component.isCopyRightView) props["ref"] = "###self.copyRightRef";

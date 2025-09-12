@@ -12,14 +12,12 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseHadesComponent from "./BaseHadesComponent";
 import JobCalendar from "../../base/JobCalendar";
+import Hades from "../../store/hadesHade";
 
 class ModularizedHadesComponent extends BaseHadesComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
+        this.apiOfHades = new Hades();
     }
 
     getInjectViewOfDemeterDiv = () => {
@@ -27,12 +25,27 @@ class ModularizedHadesComponent extends BaseHadesComponent {
         return (
             <JobCalendar
                 onPeriodChanged={(start, end) => {
-                    self.fetchHeraOfCompound(start, end).then();
+                    self.fetchHadesOfCompound(start, end).then();
                 }}
                 // courses={self.sample()}
                 courses={self.getStore().getCourses()}
             />
         );
+    };
+
+    fetchHadesOfCompound = async (start, end) => {
+        const ts = (stringOfTS) => this.getStore().toFireBaseTimestampObject(stringOfTS);
+        const startOfPrecisely = _.toNumber(`${start}000000`);
+        const endOfPrecisely = _.toNumber(`${end}235959`);
+
+        const items = await this.apiOfHades.fetchHades(
+            this,
+            UserInfoRef.getUid(),
+            { type: "where", params: ["timeOfPayment", ">=", ts(startOfPrecisely)] },
+            { type: "where", params: ["timeOfPayment", "<=", ts(endOfPrecisely)] }
+        );
+
+        console.log(`ready ==> `, items);
     };
 
     /** -------------------- async api -------------------- **/

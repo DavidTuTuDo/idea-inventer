@@ -61,6 +61,19 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
                 };
             }, preciseOrder.id);
+
+            await Api.updateHadeItemAtomically(
+                (item, transaction) => {
+                    return {
+                        stateOfPayment: "completed",
+                        procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
+                        timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                    };
+                },
+                preciseOrder.id,
+                preciseOrder.idOfAuthor
+            );
+
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
             await sendEmail.handleHttpOnCall({ idOfPreciseOrder: preciseOrder.id });
@@ -74,6 +87,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                 };
             }, preciseOrder.id);
             /**  OrderOfPrecise 應該要 更改 state = failure, 失敗的理由 => contentOfSucceed.RtnMsg */
+            await Api.deleteHadeItem(preciseOrder.id, preciseOrder.idOfAuthor);
             this.appendErrorLog(9999, `5482114456, 訂單(${contentOfSucceed.MerchantTradeNo}) RtnCode不合規範`);
         }
     }

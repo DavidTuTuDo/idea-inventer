@@ -94,8 +94,23 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             address: address || "",
             distance: "",
             name: name || "",
-            phoneNumber: phone || ""
+            phoneNumber: phone || "",
+            idOfAuthor: itemsOfClientOrdering[0].idOfAuthor
         });
+
+        /** 成立hades作為收益報表用 */
+        const order = result.value;
+        await Api.submitHadeItem(
+            {
+                priceOfTotal: order.priceOfTotal,
+                timeOfCreate: order.timeOfCreate,
+                timeOfPayment: order.timeOfPayment,
+                paid: false,
+                id: order.id
+            },
+            order.id,
+            order.idOfAuthor
+        );
 
         if (result.succeed) return { idOfPreciseOrder: result.value.id };
         else this.appendErrorLog(9999, `錯誤：E1299 創建訂單時失敗，未知原因(請訊息洽詢)。`);
@@ -119,17 +134,28 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
             // 建立商品快取 Map
             const mapOfVariant = {};
+            let authorId = null; // 第一個作者 ID，作為檢查基準
 
             for (let i = 0; i < variantSnaps.length; i++) {
                 const snap = variantSnaps[i];
                 if (!snap.exists) throw new Error(`商品不存在：${getNameOfSelectBooze(variantRefs[i].id)}`);
+
                 const id = snap.id;
                 const variant = snap.data();
                 mapOfVariant[id] = variant;
+
                 const item = _.find(itemsOfCartie, (item) => _.isEqual(item.idOfVariant, id));
                 item.price = variant.price;
                 item.photo = variant.photo;
                 item.content = variant.content;
+                item.idOfAuthor = variant.idOfAuthor;
+
+                // 檢查 idOfAuthor 一致性
+                if (authorId === null) {
+                    authorId = variant.idOfAuthor; // 記錄第一個的 idOfAuthor
+                } else if (variant.idOfAuthor !== authorId) {
+                    throw new Error(`購物車中的商品來自不同作者，無法進行交易。`);
+                }
             }
 
             const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfCartie);

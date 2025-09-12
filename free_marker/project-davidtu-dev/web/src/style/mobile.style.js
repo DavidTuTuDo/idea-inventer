@@ -93,10 +93,6 @@ class MobileStyle {
 
     MainEditorDiv = {};
 
-    /** => following for hades  component  */
-
-    HadesDiv = {};
-
     /** => following for navigator  component  */
 
     NavigatorDrawerShortcutIconImg = {};
@@ -408,6 +404,10 @@ class MobileStyle {
     InfoOfCopyRightUpperGroupDiv = {};
 
     InfoOfCopyRightDiv = {};
+
+    /** => following for hades  component  */
+
+    HadesDiv = {};
 
     /** => following for epayFootprint  component  */
 

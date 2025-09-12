@@ -44,7 +44,7 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
                 true
             );
         }, itemOfPreciseOrder.id);
-
+        await Api.deleteHadeItem(itemOfPreciseOrder.id, itemOfPreciseOrder.idOfAuthor);
         await this.incrementProductCountsAtomically(itemOfPreciseOrder);
     }
 
