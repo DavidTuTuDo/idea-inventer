@@ -93,6 +93,10 @@ class AppStyle {
 
     MainEditorDiv = {};
 
+    /** => following for hades  component  */
+
+    HadesDiv = {};
+
     /** => following for navigator  component  */
 
     NavigatorDrawerShortcutIconImg = {};

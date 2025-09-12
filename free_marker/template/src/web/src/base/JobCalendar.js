@@ -165,19 +165,18 @@ class JobCalendar extends React.Component {
                     return (
                         <Box key={i} flex={1} borderLeft="1px solid #ccc" position="relative" minWidth={150}>
                             <Box
-                              textAlign="center"
-                              fontWeight="bold"
-                              fontSize={12}
-                              className="JobCalendarStickyDateLabel"
-                              sx={{
-                                  position: "sticky",
-                                  top: 0,
-                                  zIndex: 2,
-                                  backgroundColor: "white",
-                                  borderBottom: "1px solid #ccc",
-                                  py: 0.5,
-                              }}
-                            >
+                                textAlign="center"
+                                fontWeight="bold"
+                                fontSize={12}
+                                className="JobCalendarStickyDateLabel"
+                                sx={{
+                                    position: "sticky",
+                                    top: 0,
+                                    zIndex: 2,
+                                    backgroundColor: "white",
+                                    borderBottom: "1px solid #ccc",
+                                    py: 0.5
+                                }}>
                                 {`${day.format("M/D")}(${["日", "一", "二", "三", "四", "五", "六"][day.day()]})`}
                             </Box>
                             <Box position="relative" height={1200}>

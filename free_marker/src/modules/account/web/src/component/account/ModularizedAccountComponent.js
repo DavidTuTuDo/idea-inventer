@@ -62,6 +62,39 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         i18n.setLanguage(value);
     }
 
+    onAccountArrowOfAppendBoozeIconButtonClicked(param) {
+        Router.gotoGaiaPage(this.getComponentInstance(), "generate");
+        this.dismiss();
+    }
+
+    onAccountArrowOfGoToMyBoozeIconButtonClicked(param) {
+        Router.gotoHestiaPage(this.getComponentInstance());
+        this.dismiss();
+    }
+
+    onAccountArrowOfMyScheduleIconButtonClicked(param) {
+        Router.gotoDemeterPage(this.getComponentInstance());
+        this.dismiss();
+    }
+
+    onAccountArrowOfMarketSettingIconButtonClicked(param) {
+        Router.gotoErosPage(this.getComponentInstance());
+        this.dismiss();
+    }
+
+    onAccountArrowOfMyReportIconButtonClicked(param) {
+        Router.gotoHadesPage(this.getComponentInstance());
+        this.dismiss();
+    }
+
+    onAccountArrowOfCleanCacheIconButtonClicked(param) {
+        super.onAccountArrowOfCleanCacheIconButtonClicked(param);
+    }
+
+    onAccountArrowOfGoEditModeIconButtonClicked(param) {
+        super.onAccountArrowOfGoEditModeIconButtonClicked(param);
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

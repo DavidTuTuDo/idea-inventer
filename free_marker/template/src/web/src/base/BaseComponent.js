@@ -5,7 +5,7 @@ import React from "react";
 import moment from "moment";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Store from "./BaseStore";
-import { Typography, LinearProgress, CircularProgress, Button, Paper, useScrollTrigger, Slide, Backdrop, Card, Snackbar, IconButton, List } from "@mui/material";
+import { Typography, LinearProgress, CircularProgress, Button, Paper, useScrollTrigger, Slide, Backdrop, Card, Snackbar, Chip } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
 import { Application } from "../";
 import Config from "../config";
@@ -24,6 +24,7 @@ import AlertMenu from "./AlertMenu";
 import copy from "copy-to-clipboard";
 import clipboardy from "clipboardy";
 import functions from "../functions";
+import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 
 class BaseComponent extends MuiComponent {
     listOfFunctionOfUnsubscribe = [];
@@ -451,17 +452,18 @@ class BaseComponent extends MuiComponent {
         function renderRetryButton() {
             if (hasPath) {
                 return (
-                    <Button
+                    <Chip
                         onClick={async () => {
                             if (component instanceof BaseComponent) {
                                 const store = component.getStore();
                                 await store.fetch(component);
                             }
                         }}
+                        icon={<RestartAltOutlined />}
+                        label={"重試"}
+                        color={"primary"}
                         variant={"outlined"}
-                        className={`BaseListEmptyRetryButton`}>
-                        重試
-                    </Button>
+                        className={`BaseListEmptyRetryButton`}></Chip>
                 );
             }
             return null;
