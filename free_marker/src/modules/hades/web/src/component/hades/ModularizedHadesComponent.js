@@ -13,6 +13,7 @@ import Cookie from "../../cookie";
 import BaseHadesComponent from "./BaseHadesComponent";
 import JobCalendar from "../../base/JobCalendar";
 import Hades from "../../store/hadesHade";
+import moment from "moment";
 
 class ModularizedHadesComponent extends BaseHadesComponent {
     constructor(props) {
@@ -20,32 +21,42 @@ class ModularizedHadesComponent extends BaseHadesComponent {
         this.apiOfHades = new Hades();
     }
 
-    getInjectViewOfDemeterDiv = () => {
+    getInjectViewOfHadesDiv = () => {
         const self = this;
         return (
             <JobCalendar
                 onPeriodChanged={(start, end) => {
                     self.fetchHadesOfCompound(start, end).then();
                 }}
-                // courses={self.sample()}
-                courses={self.getStore().getCourses()}
+                courses={self
+                    .getStore()
+                    .getHades()
+                    .map((each) => self.normalize(each))}
             />
         );
     };
 
-    fetchHadesOfCompound = async (start, end) => {
-        const ts = (stringOfTS) => this.getStore().toFireBaseTimestampObject(stringOfTS);
-        const startOfPrecisely = _.toNumber(`${start}000000`);
-        const endOfPrecisely = _.toNumber(`${end}235959`);
+    normalize = (each) => {
+        const format = (firebaseTS) => moment(this.getStore().normalizeTimestamp(firebaseTS)).format("YYYYMMDDHHmmss");
+        const period = `${format(each.timeOfCreate)}-${format(each.timeOfPayment)}`;
+        const name = `＄${each.priceOfTotal}`;
+        return { ...each, period, name };
+    };
 
-        const items = await this.apiOfHades.fetchHades(
+    fetchHadesOfCompound = async (start, end) => {
+        const ts = (stringOfTS) => this.getStore().toFireBaseTimestampObject(moment(stringOfTS, "YYYYMMDDHHmmss"));
+        const startOfPrecisely = `${start}000000`;
+        const endOfPrecisely = `${end}235959`;
+
+        const items = await this.apiOfHades.fetchPureHades(
             this,
             UserInfoRef.getUid(),
             { type: "where", params: ["timeOfPayment", ">=", ts(startOfPrecisely)] },
             { type: "where", params: ["timeOfPayment", "<=", ts(endOfPrecisely)] }
         );
-
-        console.log(`ready ==> `, items);
+        this.getStore().cleanHades();
+        this.getStore().pushHades(...items);
+        // console.log(`ready ==> `, items);
     };
 
     /** -------------------- async api -------------------- **/
