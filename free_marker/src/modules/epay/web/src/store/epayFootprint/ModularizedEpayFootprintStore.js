@@ -16,6 +16,29 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     conditionsOfDefault(state) {
+        const rawText = `
+        asking: 等待賣家允許付費(尚未設計); 1
+        pending: 訂單已成立; 2
+        waiting: 訂單已成立, 而且選擇了第三方平台, 等待付費(CVS,ATM); 3
+        failure: 訂單已失效, 交易商品數量已atomic加回去; 4
+        completed: 訂單已完成; 5
+        invalid: 訂單已將數量加回賣家, 但要保留單號, 避免產生duplicated 交易單號(尚未設計)`;
+
+        // 建立 enum-like 映射物件
+        const StateEnum = _(rawText.trim().split("\n"))
+            .map((line) => {
+                const [keyWithDesc, valueStr] = line.split(";").map((s) => s.trim());
+                const [key] = keyWithDesc.split(":").map((s) => s.trim());
+                return [key, Number(valueStr)];
+            })
+            .fromPairs()
+            .value();
+
+        // 查詢函式
+        function getValueByState(stateName) {
+            return _.get(StateEnum, stateName, null); // 若找不到則回傳 null
+        }
+
         /** all的話就全拿 */
         const conditionOfDefault = { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };
         if (_.isEqual(state, "all")) {
@@ -23,7 +46,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             return [conditionOfDefault];
             /** 如果return undefined會拿不到資料 */
         }
-        const states = _.isEqual(state, "pending") ? ["pending", "waiting"] : [state];
+
+        const states = _.isEqual(state, "pending") ? [2, 3] : [getValueByState(state)]; //2:pending", 3:waiting"
         return [{ type: "where", params: ["stateOfPayment", "in", states] }, conditionOfDefault];
     }
 
@@ -169,12 +193,12 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         function getStringOfPaymentState() {
             switch (order.stateOfPayment) {
-                case "completed":
+                case 5: //"completed":
                     return `已完成`;
-                case "failure":
+                case 4: //"failure":
                     return `已失效`;
-                case "pending":
-                case "waiting":
+                case 2: //"pending":
+                case 3: //"waiting":
                     return `待付款`;
                 default:
                     return `未歸類`;

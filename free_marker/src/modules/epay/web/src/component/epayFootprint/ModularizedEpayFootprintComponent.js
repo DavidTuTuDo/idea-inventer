@@ -37,7 +37,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     getInjectStyleOfEpayFootprintOrderExtraIconButton(order) {
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(), "waiting", "pending"));
+        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(), 2, 3)); //2:"pending", 3:"waiting"
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentDetailDiv(order) {
@@ -59,11 +59,11 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     /** 還沒付費的linepay order(走到Line-Pay,把付費頁面關掉) */
     isWaitingToLinePay(order) {
-        return _.isEqual(order.getTypeOfPayment(), "linepay") && _.isEqual(order.getStateOfPayment(), "waiting");
+        return _.isEqual(order.getTypeOfPayment(), "linepay") && _.isEqual(order.getStateOfPayment(), 3); //3:"waiting"
     }
 
     isWaitingPendingState(order) {
-        return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), "waiting");
+        return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), 3); //3:"waiting"
     }
 
     onEpayFootprintOrderExtraIconButtonDeleteOrderClicked(param) {
@@ -96,39 +96,40 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     getOrderDeadline(order) {
         switch (order.getStateOfPayment()) {
-            case "pending":
+            case 2: //"pending":
                 return order.getDeadline();
-            case "waiting":
+            case 3: //"waiting":
                 return order.getDeadline();
-            case "completed":
+            case 5: //"completed":
                 return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
-            case "failure":
+            case 4: //"failure":
                 return Util.getCurrentTimeFormatV2(order.getTimeOfCreate());
+            default:
+                return "886出問題了";
         }
-        return areaOfPaymentDeadline.getDeadline();
     }
 
     getOrderLabelOfDeadline(order) {
         switch (order.getStateOfPayment()) {
-            case "pending":
-            case "waiting":
+            case 2: //"pending":
+            case 3: //"waiting":
                 return "截止時間：";
-            case "completed":
+            case 5: //"completed":
                 return "完成時間：";
-            case "failure":
+            case 4: //"failure":
                 return "訂單時間：";
         }
         return order.getLabelOfDeadline();
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfChoosePaymentTypeDiv(order) {
-        const condition1 = Util.isOrEquals(order.getStateOfPayment(), "pending", "waiting");
+        const condition1 = Util.isOrEquals(order.getStateOfPayment(), 2, 3); //2:"pending", 3:"waiting"
         const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), "atm", "cvs");
         return Util.getVisibleOrNone(condition1 && condition2, true);
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentFailureDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual("failure", order.getStateOfPayment()), true);
+        return Util.getVisibleOrNone(_.isEqual(4, order.getStateOfPayment()), true); //4:"failure"
     }
 
     onEpayFootprintOrderCheckoutButtonClicked(param) {
@@ -151,7 +152,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     getInjectPropsOfEpayFootprintOrderValueTextField(order) {
         return {
             InputProps: {
-                readOnly: Util.isOrEquals(order.getStateOfPayment(), "completed", "failure")
+                readOnly: Util.isOrEquals(order.getStateOfPayment(), 5, 4) //5:"completed", 4:"failure"
             }
         };
     }

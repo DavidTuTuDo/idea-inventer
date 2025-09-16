@@ -77,7 +77,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "74484874345");
                 return {
-                    stateOfPayment: "completed",
+                    stateOfPayment: 5, //"completed",
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: data.idOfTransaction,
@@ -88,7 +88,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await Api.updateHadeItemAtomically(
                 (item, transaction) => {
                     return {
-                        stateOfPayment: "completed",
+                        stateOfPayment: 5, //"completed",
                         procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
@@ -106,7 +106,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 return {
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
-                    stateOfPayment: "failure",
+                    stateOfPayment: 4, //"failure",
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
                 };
             }, itemOfPreciseOrder.id);

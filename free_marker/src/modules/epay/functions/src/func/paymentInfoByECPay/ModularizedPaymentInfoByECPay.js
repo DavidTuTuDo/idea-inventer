@@ -86,7 +86,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                         procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(timeOfExpired), //CVS ExpireDate: '2022/07/03 15:04:19', ECPay的是台灣國家, 要把timestamp轉回UTC
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
-                        stateOfPayment: "waiting",
+                        stateOfPayment: 3, //"waiting",
                         infoOfPayment: `${contentOfPaymentInfo.PaymentNo}${Util.getSeparatorOfUnique()}`
                     },
                     true
@@ -101,7 +101,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                         procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
-                        stateOfPayment: "waiting",
+                        stateOfPayment: 3, //"waiting",
                         infoOfPayment: `${contentOfPaymentInfo.BankCode}${Util.getSeparatorOfUnique()}${contentOfPaymentInfo.vAccount}`
                     },
                     true

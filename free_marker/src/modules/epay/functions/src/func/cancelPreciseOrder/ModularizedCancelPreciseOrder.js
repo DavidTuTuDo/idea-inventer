@@ -37,7 +37,7 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
             this.validatePreciseOrder(order, false, 151259521453);
             return Api.normalizePreciseOrder(
                 {
-                    stateOfPayment: "failure",
+                    stateOfPayment: 4, //"failure",
                     timeOfCancel: Util.getCurrentTimeStamp(),
                     messageOfPayment: `${user.typeOfUser}取消訂單 `
                 },

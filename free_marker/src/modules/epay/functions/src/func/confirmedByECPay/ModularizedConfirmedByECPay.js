@@ -54,7 +54,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "848646546542");
                 return {
-                    stateOfPayment: "completed",
+                    stateOfPayment: 5, //"completed",
                     procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
@@ -65,7 +65,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updateHadeItemAtomically(
                 (item, transaction) => {
                     return {
-                        stateOfPayment: "completed",
+                        stateOfPayment: 5, //"completed",
                         procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
@@ -82,7 +82,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "848646546542");
                 return {
-                    stateOfPayment: "failure",
+                    stateOfPayment: 4, //"failure",
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
                 };
             }, preciseOrder.id);

@@ -38,11 +38,11 @@ class BaseFunction extends ClientRemoteApi {
             const idOfBooze = param.shift();
             const infoOfHera = item.infoOfHera;
             await Api.updateVariantItemAtomically(
-                async (variant, transaction) => {
-                    return { quantity: variant.quantity + item.quantity };
-                },
-                idOfVariant,
-                idOfBooze
+              async (variant, transaction) => {
+                  return { quantity: variant.quantity + item.quantity };
+              },
+              idOfVariant,
+              idOfBooze
             );
 
             /** 刪掉useMainTrunk運用的hera */
@@ -113,12 +113,12 @@ class BaseFunction extends ClientRemoteApi {
             this.appendErrorLog(9999, `8871231-${idOfError} 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`);
         }
 
-        if (_.isEqual("completed", itemOfPreciseOrder.stateOfPayment)) {
+        if (_.isEqual(5, itemOfPreciseOrder.stateOfPayment)) { //stateOfPayment 5:completed
             this.appendErrorLog(9999, `8871453-${idOfError} 訂單內容已完成手續, 無法再更改狀態`);
         }
 
-        if (isPayingProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, "unknown", "pending", "waiting")) {
-            this.appendErrorLog(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`);
+        if (isPayingProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, 2, 3)) {//stateOfPayment 2:pending 3:waiting
+            this.appendErrorLog(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`); //todo:stateOfPayment是數字
         }
 
         // // if (isPayingProcedure && !_.isEqual(`unknown`, itemOfPreciseOrder.procedureOfPayment)) {
