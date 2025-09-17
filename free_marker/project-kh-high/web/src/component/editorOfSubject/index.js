@@ -58,7 +58,7 @@ class EditorOfSubjectComponent extends BaseEditorOfSubjectComponent {
     }
 
     onYearSelectedChange(value) {
-        this.getStore().setHasPageItems(true);
+        this.getStore().setHasNextPageBehavior(true);
         this.getStore().cleanQuestions();
         this.getStore().cleanQuestionConditions();
         this.getStore().cleanQuestionNextIds();

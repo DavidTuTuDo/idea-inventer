@@ -25,7 +25,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
     fetchBoozeBySelectedTab = async () => {
         this.cleanBoozes();
         this.cleanBoozeConditions();
-        this.setHasPageItems(true);
+        this.setHasNextPageBehavior(true);
         this.cleanBoozeNextIds();
         this.lastItemOfBooze = undefined;
         const valueOfCurrentTab = this.getValueOfSelectClickedTab();

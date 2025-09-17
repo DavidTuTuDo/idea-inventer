@@ -50,7 +50,7 @@ class HistoryRhythmStore extends BaseHistoryRhythmStore {
         this.getPersonalRhythm().setFavoritePus(...items);
         this.setPuOfRecords(...origins);
         /** 為了讓fetchPuOfRecordNextPageItems可以抓到lastItem */
-        if (_.size(origins) === 0) this.setHasPageItems(false);
+        if (_.size(origins) === 0) this.setHasNextPageBehavior(false);
     }
 
     /** -------------------- async api -------------------- **/

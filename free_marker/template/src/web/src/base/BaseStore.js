@@ -74,7 +74,7 @@ class BaseStore extends ClientRemoteApi {
     @observable
     snackVisibility = false;
 
-    hasNextPageItems = true;
+    hasNextPageBehavior = true;
 
     constructor(props) {
         super(props);
@@ -351,7 +351,7 @@ class BaseStore extends ClientRemoteApi {
 
     clean() {
         this.initialFetchCompleted = false;
-        this.hasNextPageItems = true;
+        this.hasNextPageBehavior = true;
         this.setState("stable");
     }
 
@@ -382,11 +382,11 @@ class BaseStore extends ClientRemoteApi {
     };
 
     hasNextPage = () => {
-        return this.hasNextPageItems;
+        return this.hasNextPageBehavior;
     };
 
-    setHasPageItems(has) {
-        return (this.hasNextPageItems = has);
+    setHasNextPageBehavior(has) {
+        return (this.hasNextPageBehavior = has);
     }
 
     /** 當fetch回來的item 要再經過一次sort的機制*/

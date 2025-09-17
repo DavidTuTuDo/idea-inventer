@@ -21,7 +21,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     isValidOfParamOfTypeOfTab(string) {
-        return Util.containsBy(["all", "completed", "pending", "failure"], string);
+        return Util.containsBy(["all", "completed", "pending", "failure", "status", "unpaid", "unshipped", "succeed", "cancelled"], string);
     }
 
     onEpayFootprintTabTabClicked(param) {

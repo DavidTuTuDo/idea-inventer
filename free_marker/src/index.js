@@ -5201,7 +5201,7 @@ class ComponentBuilder extends BaseBuilder {
                             result = await store.fetch(this);
                         else result = undefined;
                     } catch (error) {
-                        store.setHasPageItems(false);
+                        store.setHasNextPageBehavior(false);
                         this.onInitialErrorHappened(error);
                     } finally {
                         Util.appendInfo("${componentNode.getName()} page initial fetch completed");

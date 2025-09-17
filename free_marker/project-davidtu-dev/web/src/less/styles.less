@@ -1448,13 +1448,13 @@
     background: #f7f7f7;
     opacity: 0.85;
     @media @mobile {
-        bottom: 0px;
+        bottom: 0;
     }
     @media @tablet {
-        bottom: 0px;
+        bottom: 0;
     }
     @media @desktop {
-        top: 0px;
+        top: 0;
     }
 }
 .DionysusSelectTabSkeleton {
@@ -6828,8 +6828,8 @@
 }
 /** following for epayFootprint  component used  */
 
-.EpayFootprintDiv {
-    width: 96%;
+.EpayFootprintDiv:extend(.CenterInParentColumn) {
+    width: 100%;
     padding-bottom: 50px;
     @media @mobile {
         /** empty style */
@@ -6838,20 +6838,22 @@
         /** empty style */
     }
     @media @desktop {
-        min-width: 400px;
     }
 }
-.EpayFootprintDivWrap:extend(.CenterInParentColumn) {
+.EpayFootprintDivWrap {
     margin: auto;
     width: 100%;
     @media @mobile {
         /** empty style */
+        width: 97vw;
     }
     @media @tablet {
         /** empty style */
+        width: 97vw;
     }
     @media @desktop {
         /** empty style */
+        max-width: 660px;
     }
 }
 .EpayFootprintTabTab {
@@ -6866,17 +6868,19 @@
     }
 }
 .EpayFootprintTabTabsList {
+    width: 100%;
+    position: sticky;
+    z-index: 3;
+    background: #f7f7f7;
+    opacity: 0.85;
     @media @mobile {
-        /** empty style */
+        top: 0;
     }
     @media @tablet {
-        /** empty style */
+        top: 0;
     }
     @media @desktop {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        top: 0;
     }
 }
 .EpayFootprintOrderCard {
@@ -6889,7 +6893,6 @@
         /** empty style */
     }
     @media @desktop {
-        width: 600px;
     }
 }
 .EpayFootprintOrderDivList:extend(.CenterInParentColumn) {

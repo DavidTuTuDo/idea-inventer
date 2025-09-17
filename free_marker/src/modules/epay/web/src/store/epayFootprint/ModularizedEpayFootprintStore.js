@@ -15,14 +15,27 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         this.api = new EpayPreciseOrderStore();
     }
 
-    conditionsOfDefault(state) {
+    async onInitialFetchBeginning() {
+        //if(is買家)
+        // this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() < 10));
+        //if(is賣家)
+        // this.setTabs(..._.filter(this.getTabs(),(each) => each.getValue() > 10))
+    }
+
+    refreshLocally() {
+        //disable i18n功能會把
+        //設計了賣家和買家分別可以用的tab，refreshLocally後tab會被補回去
+        //要修正i18n功能是，僅針對當前的tab翻譯即可
+    }
+
+    conditionsOfBuyerDefault(state) {
+        /** ↓---------------------等Enum做出來就要刪掉 ----------------------↓ */
         const rawText = `
         asking: 等待賣家允許付費(尚未設計); 1
         pending: 訂單已成立; 2
         waiting: 訂單已成立, 而且選擇了第三方平台, 等待付費(CVS,ATM); 3
         failure: 訂單已失效, 交易商品數量已atomic加回去; 4
-        completed: 訂單已完成; 5
-        invalid: 訂單已將數量加回賣家, 但要保留單號, 避免產生duplicated 交易單號(尚未設計)`;
+        completed: 訂單已完成; 5`;
 
         // 建立 enum-like 映射物件
         const StateEnum = _(rawText.trim().split("\n"))
@@ -39,10 +52,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             return _.get(StateEnum, stateName, null); // 若找不到則回傳 null
         }
 
+        /** ↑---------------------等Enum做出來就要刪掉 ----------------------↑ */
+
         /** all的話就全拿 */
         const conditionOfDefault = { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };
         if (_.isEqual(state, "all")) {
-            this.clearFetchConditions();
             return [conditionOfDefault];
             /** 如果return undefined會拿不到資料 */
         }
@@ -54,16 +68,56 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     fetch = async (view) => {
         const state = this.getParamOfTypeOfTabInPath();
         const ordersOfRemote = [];
-        if (_.size(this.getOrders()) > 0) {
-            ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...this.conditionsOfDefault(state))));
-        } else {
-            ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfDefault(state))));
-        }
-        this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
-        if (_.size(ordersOfRemote) === 0) {
-            this.setHasPageItems(false);
+        switch (state) {
+            /** 買家看到的選項 */
+            case "all":
+            case "pending":
+            case "completed":
+            case "failure":
+                if (_.size(this.getOrders()) > 0)
+                    ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...this.conditionsOfBuyerDefault(state))));
+                else ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfBuyerDefault(state))));
+                this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
+                if (_.size(ordersOfRemote) === 0) this.setHasNextPageBehavior(false);
+                break;
+            /** 賣家看到的選項 */
+            case "status":
+            case "unpaid":
+            case "unshipped":
+            case "succeed":
+            case "cancelled":
+                if (_.size(this.getOrders()) > 0)
+                    ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...this.conditionsOfSellerDefault(state))));
+                else ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfSellerDefault(state))));
+                this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
+                if (_.size(ordersOfRemote) === 0) this.setHasNextPageBehavior(false);
+                break;
         }
     };
+
+    conditionsOfSellerDefault(type) {
+        const conditionOfDefault = { type: "where", params: ["idOfAuthor", "==", UserInfoRef.getUid()] };
+        const conditions = [];
+        switch (type) {
+            case "unpaid":
+                conditions.push({ type: "where", params: ["stateOfPayment", "in", [2, 3]] });
+                break;
+            case "unshipped":
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", 5] }); //5:completed
+                conditions.push({ type: "where", params: ["stateOfDeliver", "==", 2] }); //2:pending
+                break;
+            case "succeed":
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", 5] }); //5:completed
+                conditions.push({ type: "where", params: ["stateOfDeliver", "in", [1, 3]] }); //1:needless 3:sending
+                break;
+            case "cancelled":
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", 4] }); //4:failure
+                break;
+            default:
+                break;
+        }
+        return [conditionOfDefault, ...conditions];
+    }
 
     normalizeOrder(order) {
         function normalizeBriefFromOrderItem(item) {
@@ -232,9 +286,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     async setCurrentTabByType(type) {
+        await Util.syncDelay(10);
         const tab = _.find(this.getTabs(), (tab) => _.isEqual(tab.getType(), type));
-        this.setValueOfTabClickedTab(-1000);
-        await Util.syncDelay(100);
+        // this.setValueOfTabClickedTab(-1000);
+        // await Util.syncDelay(100);
         this.setValueOfTabClickedTab(tab.getValue());
     }
 

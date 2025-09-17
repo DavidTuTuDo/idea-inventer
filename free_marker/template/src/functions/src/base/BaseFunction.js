@@ -159,7 +159,7 @@ class BaseFunction extends ClientRemoteApi {
         if (_.isEqual(this.getUid(session), order.idOfUser)) {
             typeOfUser = "買家";
             allowUpdate = true;
-        } else if (_.isEqual(this.getUid(session), order.idOfSeller)) {
+        } else if (_.isEqual(this.getUid(session), order.idOfAuthor)) {
             typeOfUser = "賣家";
             allowUpdate = true;
         } else if (await this.isAdminUser(session)) {

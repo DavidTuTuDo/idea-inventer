@@ -29,7 +29,7 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
         const select = param.object;
         if (param.changed) {
             self.scrollToTop();
-            this.getStore().setHasPageItems(true);
+            this.getStore().setHasNextPageBehavior(true);
             Util.syncDelay(1)
                 .then(() => this.getStore().fetchBoozeBySelectedTab())
                 .then(() => self.invalidateNextPageBehavior());

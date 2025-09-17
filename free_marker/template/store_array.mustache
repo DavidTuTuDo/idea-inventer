@@ -218,7 +218,7 @@ return this.{{{fieldName}}};
     }
 
     if(_.size(fatefulItems) < {{{fieldClass}}}.sizeOfPerPage) {
-    this.setHasPageItems(false);
+    this.setHasNextPageBehavior(false);
     }
 
     this.push{{{functionName}}}(...fatefulItems);

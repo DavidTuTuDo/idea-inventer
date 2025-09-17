@@ -95,21 +95,21 @@ class MyFatefulQuestionsStore extends BaseMyFatefulQuestionsStore {
                 items.push(...(await new WhoknowzFavoriteStore().fetchNextFavorites(this.getComponent(), undefined, lastItem, ...this.getCompoundQueryStmts())));
 
                 if (items.length < WhoknowzFavoriteStore.sizeOfPerPage) {
-                    this.setHasPageItems(false);
+                    this.setHasNextPageBehavior(false);
                 }
                 break;
             case "stupidAsk":
                 items.push(...(await new WhoknowzConfuseStore().fetchNextConfuses(this.getComponent(), lastItem, ...this.getCompoundQueryStmts(true))));
 
                 if (items.length < WhoknowzConfuseStore.sizeOfPerPage) {
-                    this.setHasPageItems(false);
+                    this.setHasNextPageBehavior(false);
                 }
                 break;
             case "kindlyReply":
                 items.push(...(await new WhoknowzAnswerStore().fetchNextAnswers(this.getComponent(), lastItem, ...this.getCompoundQueryStmts(true))));
 
                 if (items.length < WhoknowzAnswerStore.sizeOfPerPage) {
-                    this.setHasPageItems(false);
+                    this.setHasNextPageBehavior(false);
                 }
                 break;
         }

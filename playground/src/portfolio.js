@@ -246,7 +246,7 @@ class BasePortfolioStore extends BaseStore {
         }
 
         if (fatefulItems < Rhythm.sizeOfPerPage) {
-            this.setHasPageItems(false);
+            this.setHasNextPageBehavior(false);
         }
 
         this.pushRhythms(...fatefulItems);
