@@ -1581,6 +1581,30 @@ class MobileStyle {
 
     AccountAreaAreaOfGoEditModeDiv = {};
 
+    AccountAreaAreaOfListOfUserOrderArrowOfListOfUserOrderIconNavigateNext = {};
+
+    AccountAreaAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton = {};
+
+    AccountAreaAreaOfListOfUserOrderOptionOfListOfUserOrderContentTypography = {};
+
+    AccountAreaAreaOfListOfUserOrderOptionOfListOfUserOrderTitleTypography = {};
+
+    AccountAreaAreaOfListOfUserOrderDivWrap = {};
+
+    AccountAreaAreaOfListOfUserOrderDiv = {};
+
+    AccountAreaAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext = {};
+
+    AccountAreaAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton = {};
+
+    AccountAreaAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderContentTypography = {};
+
+    AccountAreaAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderTitleTypography = {};
+
+    AccountAreaAreaOfListOfAuthorOrderDivWrap = {};
+
+    AccountAreaAreaOfListOfAuthorOrderDiv = {};
+
     AccountAreaAreaOfMyReportArrowOfMyReportIconNavigateNext = {};
 
     AccountAreaAreaOfMyReportArrowOfMyReportIconButton = {};

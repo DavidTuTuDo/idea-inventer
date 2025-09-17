@@ -32,7 +32,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     onEpayFootprintTabTabClicked(param) {
         const tab = param.object;
         if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) {
-            Router.gotoEpayFootprintPage(this,this.paramOfAuthor, tab.getType());
+            Router.gotoEpayFootprintPage(this, this.paramOfAuthor, tab.getType());
         }
     }
 
@@ -105,10 +105,10 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
                 return order.getDeadline();
             case 3: //"waiting":
                 return order.getDeadline();
-            case 5: //"completed":
-                return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
             case 4: //"failure":
                 return Util.getCurrentTimeFormatV2(order.getTimeOfCreate());
+            case 5: //"completed":
+                return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
             default:
                 return "886出問題了";
         }
@@ -144,9 +144,10 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         }
     }
 
+    /** 複製*/
     onEpayFootprintOrderCopyIconButtonClicked(param) {
         const order = param.object;
-        this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.infoOfPayment));
+        this.copyTextToClipboard(Util.getTailStringSplitBy(order.raw.infoOfPayment));
     }
 
     onEpayFootprintOrderCopyIdIconButtonClicked(param) {

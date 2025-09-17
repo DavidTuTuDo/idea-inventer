@@ -87,6 +87,20 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         this.dismiss();
     }
 
+    onAccountAreaOfListOfUserOrderDivClicked(param) {
+        super.onAccountAreaOfListOfUserOrderDivClicked(param);
+    }
+
+    onAccountArrowOfListOfAuthorOrderIconButtonClicked(param) {
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", "status");
+        this.dismiss();
+    }
+
+    onAccountArrowOfListOfUserOrderIconButtonClicked(param) {
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "user", "all");
+        this.dismiss();
+    }
+
     onAccountArrowOfCleanCacheIconButtonClicked(param) {
         super.onAccountArrowOfCleanCacheIconButtonClicked(param);
     }

@@ -27,10 +27,19 @@ class BBB extends AAA {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        const a = {value:-1};
-        const judge = a && a.value;
-        if(judge) console.log(judge,' => ', 'true');
-        else console.log(judge,' => ', 'false');
+
+        enum StateOfPayment {
+            pending = 2,
+            failure = 4
+        }
+
+        console.log(StateOfPayment.pending)
+          // console.log(StateOfPayment[2]);
+
+          // const a = {value:-1};
+        // const judge = a && a.value;
+        // if(judge) console.log(judge,' => ', 'true');
+        // else console.log(judge,' => ', 'false');
           // console.log(libpath.join('./temp','scs','qqq','as.js'));
         // const source = require('./modul
           // e/source');

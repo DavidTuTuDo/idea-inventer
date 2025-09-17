@@ -17,11 +17,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
     async onInitialFetchBeginning() {
         switch (this.getRoleOfPerspective()) {
-            case 'user':
+            case "user":
                 this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() < 10));
-                break
-            case 'author':
-                this.setTabs(..._.filter(this.getTabs(),(each) => each.getValue() > 10))
+                break;
+            case "author":
+                this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() > 10));
                 break;
         }
     }
@@ -35,17 +35,17 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             default:
                 return "user";
         }
-    }
+    };
 
     /** 賣家視角*/
     isRoleOfAuthor = () => {
-        return _.isEqual(this.getRoleOfPerspective(), 'author');
-    }
+        return _.isEqual(this.getRoleOfPerspective(), "author");
+    };
 
     /** 買家視角 */
     isRoleOfUser = () => {
-        return _.isEqual(this.getRoleOfPerspective(), 'user');
-    }
+        return _.isEqual(this.getRoleOfPerspective(), "user");
+    };
 
     refreshLocally() {
         //disable i18n功能會把
@@ -64,13 +64,13 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         // 建立 enum-like 映射物件
         const StateEnum = _(rawText.trim().split("\n"))
-          .map((line) => {
-              const [keyWithDesc, valueStr] = line.split(";").map((s) => s.trim());
-              const [key] = keyWithDesc.split(":").map((s) => s.trim());
-              return [key, Number(valueStr)];
-          })
-          .fromPairs()
-          .value();
+            .map((line) => {
+                const [keyWithDesc, valueStr] = line.split(";").map((s) => s.trim());
+                const [key] = keyWithDesc.split(":").map((s) => s.trim());
+                return [key, Number(valueStr)];
+            })
+            .fromPairs()
+            .value();
 
         // 查詢函式
         function getValueByState(stateName) {
@@ -94,7 +94,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         const state = this.getParamOfTypeOfTabInPath();
         const ordersOfRemote = [];
         switch (state) {
-          /** 買家看到的選項 */
+            /** 買家看到的選項 */
             case "all":
             case "pending":
             case "completed":
@@ -105,7 +105,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
                 if (_.size(ordersOfRemote) === 0) this.setHasNextPageBehavior(false);
                 break;
-          /** 賣家看到的選項 */
+            /** 賣家看到的選項 */
             case "status":
             case "unpaid":
             case "unshipped":
@@ -144,7 +144,9 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         return [conditionOfDefault, ...conditions];
     }
 
-    normalizeOrder(order) {
+    normalizeOrder = (order) => {
+        const self = this;
+
         function normalizeBriefFromOrderItem(item) {
             return {
                 imageOfProductPhoto: item.imageUrlOfProduct,
@@ -271,16 +273,25 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         }
 
         function getStringOfPaymentState() {
-            switch (order.stateOfPayment) {
-                case 5: //"completed":
-                    return `已完成`;
-                case 4: //"failure":
-                    return `已失效`;
-                case 2: //"pending":
-                case 3: //"waiting":
-                    return `待付款`;
-                default:
-                    return `未歸類`;
+            if (self.isRoleOfUser()) {
+                switch (order.stateOfPayment) {
+                    case 5: //"completed":
+                        return `已完成`;
+                    case 4: //"failure":
+                        return `已失效`;
+                    case 2: //"pending":
+                    case 3: //"waiting":
+                        return `待付款`;
+                    default:
+                        return `未歸類`;
+                }
+            }
+
+            if (self.isRoleOfAuthor()) {
+                if (Util.isOrEquals(order.stateOfPayment, 2, 3)) return "未付款";
+                if (order.stateOfPayment === 5 && order.stateOfDeliver === 2) return "未出貨";
+                if (order.stateOfPayment === 5 && Util.isOrEquals(order.stateOfDeliver, 1, 3)) return "已成立";
+                if (order.stateOfPayment === 4) return "已作廢";
             }
         }
 
@@ -308,7 +319,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             code: getStringOfCode(),
             reason: `${order.messageOfPayment}`
         };
-    }
+    };
 
     async setCurrentTabByType(type) {
         await Util.syncDelay(10);
