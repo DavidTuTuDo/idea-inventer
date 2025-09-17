@@ -5,6 +5,7 @@ import _ from "lodash";
 import UserInfoRef from "../../base/BaseUserInfo";
 import EpayPreciseOrderStore from "../epayPreciseOrder";
 import BaseEpayFootprintStore from "./BaseEpayFootprintStore";
+import Config from "../../config";
 
 class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     /** -------------------- fields -------------------- **/
@@ -273,25 +274,33 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         }
 
         function getStringOfPaymentState() {
-            if (self.isRoleOfUser()) {
-                switch (order.stateOfPayment) {
-                    case 5: //"completed":
-                        return `已完成`;
-                    case 4: //"failure":
-                        return `已失效`;
-                    case 2: //"pending":
-                    case 3: //"waiting":
-                        return `待付款`;
-                    default:
-                        return `未歸類`;
-                }
-            }
+            const state = order.stateOfPayment;
+            const deliver = order.stateOfDeliver;
+            const Payment = Config.StateOfPayment;
+            const Deliver = Config.StateOfDeliver;
 
-            if (self.isRoleOfAuthor()) {
-                if (Util.isOrEquals(order.stateOfPayment, 2, 3)) return "未付款";
-                if (order.stateOfPayment === 5 && order.stateOfDeliver === 2) return "未出貨";
-                if (order.stateOfPayment === 5 && Util.isOrEquals(order.stateOfDeliver, 1, 3)) return "已成立";
-                if (order.stateOfPayment === 4) return "已作廢";
+            switch (true) {
+                // User邏輯
+                case self.isRoleOfUser() && state === Payment.Completed:
+                    return "已完成";
+                case self.isRoleOfUser() && state === Payment.Failure:
+                    return "已失效";
+                case self.isRoleOfUser() && (state === Payment.Pending || state === Payment.Waiting):
+                    return "待付款";
+
+                // Author邏輯
+                case self.isRoleOfAuthor() && (state === Payment.Pending || state === Payment.Waiting):
+                    return "未付款";
+                case self.isRoleOfAuthor() && state === Payment.Completed && deliver === Deliver.Pending:
+                    return "未出貨";
+                case self.isRoleOfAuthor() && state === Payment.Completed && Util.isOrEquals(deliver, Deliver.Needless, Deliver.Sending):
+                    return "已成立";
+                case self.isRoleOfAuthor() && state === Payment.Failure:
+                    return "已作廢";
+
+                // fallback
+                default:
+                    return "未歸類";
             }
         }
 

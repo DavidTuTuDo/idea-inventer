@@ -388,6 +388,9 @@ class CodegenNode {
      *  2.用於Button加上icon的位置[start,end]
      * */
 
+    enums = {}
+    /** 顧名思義 a:{b:1 c:2}*/
+
     cloudFunctions
     /** 用來定義serverless的functions
      *
@@ -1487,7 +1490,7 @@ class CodegenNode {
 
     /** 這些屬性不可以enrich */
     static doNotEnrichAttribute() {
-        return ['plural', 'example', 'propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
+        return ['enums','plural', 'example', 'propsOfIcon', 'propsOfBadge', 'COLLECTIONS', 'helperVisual', 'incest', 'label', 'labelIcon', 'useCopyRightView', 'textInput', 'labelView', 'ecpay', 'modulesOfIgnore', 'alertMenu', 'nodeOfOrigin', 'skeleton', 'simpleProps', 'select', 'methods', 'rapidBuild', 'linepay', 'listEmptyTip', 'increment', 'index', 'defaultValue', 'paginate', 'conditions', 'watermark', 'listStyle', 'wrapStyle', 'editIgnore',
             'initFetchOnlyLogin', 'permission', 'alertDialog', 'wrapContents', 'listContents', 'listWrapContents', 'contents', 'style', 'listWrapStyle', 'useCartie',
             'extra', 'firebase', 'mother', 'parent', 'listProps', 'listWrapProps', 'wrapProps', 'props', 'admin', 'server', 'params', 'host', 'payload', 'autoplay', 'textsOfI18n', 'setsOfComponentProp']
     }
@@ -3733,6 +3736,16 @@ class PathBase {
             } else new ERROR(9999, `546564512 ${component.name} 的 cloudFunctions格式不對！`)
         }
         return functions;
+    }
+
+    getAllEnums() {
+        const source = this.nodeOfAncestor;
+        const all = {...source.enums}
+        for (const component of _.filter(source.getComponents(), (each) => !each.isPreciselyEditableComponent())) {
+            const enums = component.enums;
+            if (!Util.isUndefinedNullEmpty(enums)) _.assign(all,enums)
+        }
+        return all;
     }
 
     getStringFromMustache(templateFileName, variable = {}) {
@@ -7169,6 +7182,8 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`watermark`, JSON.stringify(watermarkObj));
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
 
+        const enums = this.getAllEnums();
+        for(const key in enums) baseConfigGenerator.appendField(key, JSON.stringify(enums[key]));
 
         const version = Util.getStringOfVersionIncrement(Util.getVersionOfJsFile(this.pathOfSourceJS));
         baseConfigGenerator.appendField(`VERSION_OF_PACKAGE_JSON`, JSON.stringify(version));
