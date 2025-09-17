@@ -121,7 +121,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         await this.apiOfTab.submitSelects(
             this.getComponent(),
             result.map((each) => {
-                return { ...each, id: each.value };
+                return { ...each, id: _.toString(each.value) };
             })
         );
     };

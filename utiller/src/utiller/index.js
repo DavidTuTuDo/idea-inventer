@@ -2981,7 +2981,7 @@ class Utiller {
               let value;
               do {
                   // Firestore 可接受的整數範圍（可調整範圍）
-                  value = _.random(2, 999999);
+                  value = _.random(2, 999999999);
               } while (usedValues.has(value)); // 確保 value 唯一
 
               // 5. 記錄該值為已使用，避免後續重複
