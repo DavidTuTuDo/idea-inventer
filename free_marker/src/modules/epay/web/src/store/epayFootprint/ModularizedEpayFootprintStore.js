@@ -16,10 +16,35 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     async onInitialFetchBeginning() {
-        //if(is買家)
-        // this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() < 10));
-        //if(is賣家)
-        // this.setTabs(..._.filter(this.getTabs(),(each) => each.getValue() > 10))
+        switch (this.getRoleOfPerspective()) {
+            case 'user':
+                this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() < 10));
+                break
+            case 'author':
+                this.setTabs(..._.filter(this.getTabs(),(each) => each.getValue() > 10))
+                break;
+        }
+    }
+
+    getRoleOfPerspective = () => {
+        switch (this.getParamOfAuthorInPath()) {
+            case "author":
+                return "author";
+            case "user":
+                return "user";
+            default:
+                return "user";
+        }
+    }
+
+    /** 賣家視角*/
+    isRoleOfAuthor = () => {
+        return _.isEqual(this.getRoleOfPerspective(), 'author');
+    }
+
+    /** 買家視角 */
+    isRoleOfUser = () => {
+        return _.isEqual(this.getRoleOfPerspective(), 'user');
     }
 
     refreshLocally() {
@@ -39,13 +64,13 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         // 建立 enum-like 映射物件
         const StateEnum = _(rawText.trim().split("\n"))
-            .map((line) => {
-                const [keyWithDesc, valueStr] = line.split(";").map((s) => s.trim());
-                const [key] = keyWithDesc.split(":").map((s) => s.trim());
-                return [key, Number(valueStr)];
-            })
-            .fromPairs()
-            .value();
+          .map((line) => {
+              const [keyWithDesc, valueStr] = line.split(";").map((s) => s.trim());
+              const [key] = keyWithDesc.split(":").map((s) => s.trim());
+              return [key, Number(valueStr)];
+          })
+          .fromPairs()
+          .value();
 
         // 查詢函式
         function getValueByState(stateName) {
@@ -69,7 +94,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         const state = this.getParamOfTypeOfTabInPath();
         const ordersOfRemote = [];
         switch (state) {
-            /** 買家看到的選項 */
+          /** 買家看到的選項 */
             case "all":
             case "pending":
             case "completed":
@@ -80,7 +105,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
                 if (_.size(ordersOfRemote) === 0) this.setHasNextPageBehavior(false);
                 break;
-            /** 賣家看到的選項 */
+          /** 賣家看到的選項 */
             case "status":
             case "unpaid":
             case "unshipped":

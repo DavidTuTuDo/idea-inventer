@@ -1,4 +1,5 @@
 const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
@@ -24,10 +25,14 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         return Util.containsBy(["all", "completed", "pending", "failure", "status", "unpaid", "unshipped", "succeed", "cancelled"], string);
     }
 
+    isValidOfParamOfAuthor(author) {
+        return Util.containsBy(["author", "user"], author);
+    }
+
     onEpayFootprintTabTabClicked(param) {
         const tab = param.object;
         if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) {
-            Router.gotoEpayFootprintPage(this, tab.getType());
+            Router.gotoEpayFootprintPage(this,this.paramOfAuthor, tab.getType());
         }
     }
 
@@ -91,7 +96,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     async remoteCancelUnpaidPreciseOrderBehavior(id) {
         const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder: id });
-        Router.gotoEpayFootprintPage(this.getComponentInstance(), "failure");
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "user", "failure");
     }
 
     getOrderDeadline(order) {

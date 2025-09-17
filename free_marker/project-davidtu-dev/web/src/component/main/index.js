@@ -29,7 +29,7 @@ class MainComponent extends BaseMainComponent {
     }
 
     onMainTestGotoHistoryButtonClicked(param) {
-        Router.gotoEpayFootprintPage(this.getComponentInstance(), "pending");
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "user", "pending");
     }
 
     onMainTestGoGaiaButtonClicked(param) {

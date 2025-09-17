@@ -89,7 +89,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 return;
             case 9:
             default:
-                return Router.gotoEpayFootprintPage(this, "all");
+                return Router.gotoEpayFootprintPage(this, "user", "all");
         }
     };
 
