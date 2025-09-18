@@ -100,11 +100,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             case "pending":
             case "completed":
             case "failure":
-                if (_.size(this.getOrders()) > 0)
-                    ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...this.conditionsOfBuyerDefault(state))));
-                else ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfBuyerDefault(state))));
-                this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
-                if (_.size(ordersOfRemote) === 0) this.setHasNextPageBehavior(false);
+                await this.fetchAndPushOrders(view, this.conditionsOfBuyerDefault(state));
                 break;
             /** 賣家看到的選項 */
             case "status":
@@ -112,12 +108,21 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             case "unshipped":
             case "succeed":
             case "cancelled":
-                if (_.size(this.getOrders()) > 0)
-                    ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...this.conditionsOfSellerDefault(state))));
-                else ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...this.conditionsOfSellerDefault(state))));
-                this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
-                if (_.size(ordersOfRemote) === 0) this.setHasNextPageBehavior(false);
+                await this.fetchAndPushOrders(view, this.conditionsOfSellerDefault(state));
                 break;
+        }
+    };
+
+    fetchAndPushOrders = async (view, conditions) => {
+        const ordersOfRemote = [];
+        if (_.size(this.getOrders()) > 0) {
+            ordersOfRemote.push(...(await this.api.fetchNextPreciseOrders(view, this.getOrderOfLast().raw, ...conditions)));
+        } else {
+            ordersOfRemote.push(...(await this.api.fetchPreciseOrders(this.getComponent(), ...conditions)));
+        }
+        this.pushOrders(...ordersOfRemote.map((order) => this.normalizeOrder(order)));
+        if (_.size(ordersOfRemote) === 0) {
+            this.setHasNextPageBehavior(false);
         }
     };
 
@@ -285,13 +290,12 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                     return "已完成";
                 case self.isRoleOfUser() && state === Payment.Failure:
                     return "已失效";
-                case self.isRoleOfUser() && (state === Payment.Pending || state === Payment.Waiting):
+                case self.isStateOfPending(order):
                     return "待付款";
-
                 // Author邏輯
-                case self.isRoleOfAuthor() && (state === Payment.Pending || state === Payment.Waiting):
+                case self.isStateOfUnpaid(order):
                     return "未付款";
-                case self.isRoleOfAuthor() && state === Payment.Completed && deliver === Deliver.Pending:
+                case self.isStateOfUnShipped(order):
                     return "未出貨";
                 case self.isRoleOfAuthor() && state === Payment.Completed && Util.isOrEquals(deliver, Deliver.Needless, Deliver.Sending):
                     return "已成立";
@@ -312,10 +316,15 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             raw: order,
             processOfPayment: getStringOfPaymentProcess(),
             stateOfPayment: order.stateOfPayment,
+            stateOfDeliver: order.stateOfDeliver,
             timeOfCreate: order.timeOfCreate,
             timeOfExpired: order.timeOfExpired,
             timeOfPayment: order.timeOfPayment,
             timeOfCancel: order.timeOfCancel,
+            timeOfShipped: order.timeOfCancel,
+            remarkOfAuthor: order.remarkOfAuthor,
+            photoOfAuthors: order.photoOfAuthors,
+            isShipped: order.isShipped,
             stringOfOrderIdentity: order.id,
             stateOfOrder: getStringOfPaymentState(),
             briefs: order.items.map((item) => normalizeBriefFromOrderItem(item)),
@@ -328,6 +337,30 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             code: getStringOfCode(),
             reason: `${order.messageOfPayment}`
         };
+    };
+
+    /** (買家看的畫面) 待付款 */
+    isStateOfPending = (order) => {
+        const Payment = Config.StateOfPayment;
+        const state = order.stateOfPayment;
+        return this.isRoleOfUser() && (state === Payment.Pending || state === Payment.Waiting);
+    };
+
+    /**  (賣家看的畫面) 未付款 */
+    isStateOfUnpaid = (order) => {
+        const Payment = Config.StateOfPayment;
+        const state = order.stateOfPayment;
+        return this.isRoleOfAuthor() && (state === Payment.Pending || state === Payment.Waiting);
+    };
+
+    /**  (賣家看的畫面) 未出貨：未付款就不會出現在未出貨 */
+    isStateOfUnShipped = (order) => {
+        const Payment = Config.StateOfPayment;
+        const Deliver = Config.StateOfDeliver;
+        const state = order.stateOfPayment;
+        const deliver = order.stateOfDeliver;
+
+        return this.isRoleOfAuthor() && state === Payment.Completed && deliver === Deliver.Pending;
     };
 
     async setCurrentTabByType(type) {

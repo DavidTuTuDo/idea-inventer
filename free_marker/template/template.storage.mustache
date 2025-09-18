@@ -10,8 +10,28 @@ service firebase.storage {
         return true;
     }
 
+    function alwaysFalse() {
+       return false;
+    }
+
+    function isAuthorOfEPay(id) {
+      return request.auth != null && get(/databases/$(database)/documents/ordersOfEPay/$(id)).data.idOfAuthor == request.auth.uid;
+    }
+
+    function isUserOfEPay(id) {
+      return request.auth != null && get(/databases/$(database)/documents/ordersOfEPay/$(id)).data.idOfUser == request.auth.uid;
+    }
+
+    function isAuthorEitherUserOfEPay(id) {
+      return isAuthorOfEPay(id) || isUserOfEPay(id);
+    }
+
     function isAdmin() {
-        return request.auth.uid == "{{{superUserUid}}}";
+      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    function sizeLowerThan2MB() {
+      return request.resource.size < 2 * 1024 * 1024;
     }
 
     function sizeLowerThan5MB() {
@@ -28,10 +48,6 @@ service firebase.storage {
 
     function sizeLowerThan30MB() {
         return request.resource.size < 30 * 1024 * 1024;
-    }
-
-    function sizeLowerThan2MB() {
-        return request.resource.size < 2 * 1024 * 1024;
     }
 
 

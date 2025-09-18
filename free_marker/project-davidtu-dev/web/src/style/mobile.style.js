@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -507,11 +509,23 @@ class MobileStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreVertRounded = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconMoreVertRounded = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconButton = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingIconMoreVertRounded = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingIconButton = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
 

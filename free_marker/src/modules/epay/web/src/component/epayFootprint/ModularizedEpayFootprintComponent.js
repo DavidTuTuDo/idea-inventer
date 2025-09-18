@@ -41,8 +41,16 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         this.getStore().setCurrentTabByType(this.paramOfTypeOfTab).then();
     }
 
-    getInjectStyleOfEpayFootprintOrderExtraIconButton(order) {
-        return Util.getVisibleOrNone(Util.isOrEquals(order.getStateOfPayment(), 2, 3)); //2:"pending", 3:"waiting"
+    getInjectStyleOfEpayFootprintOrderOptionOfPendingIconButton(order) {
+        return Util.getVisibleOrNone(this.getStore().isStateOfPending(order));
+    }
+
+    getInjectStyleOfEpayFootprintOrderOptionOfShippedIconButton(order) {
+        return Util.getVisibleOrNone(this.getStore().isStateOfUnShipped(order));
+    }
+
+    getInjectStyleOfEpayFootprintOrderOptionOfUnpaidIconButton(order) {
+        return Util.getVisibleOrNone(this.getStore().isStateOfUnpaid(order));
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentDetailDiv(order) {
