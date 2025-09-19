@@ -3,8 +3,6 @@ const edit = true;
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
 import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
@@ -31,9 +29,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     onEpayFootprintTabTabClicked(param) {
         const tab = param.object;
-        if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) {
-            Router.gotoEpayFootprintPage(this, this.paramOfAuthor, tab.getType());
-        }
+        if (!_.isEqual(tab.getType(), this.paramOfTypeOfTab)) Router.gotoEpayFootprintPage(this, this.paramOfAuthor, tab.getType());
     }
 
     componentDidMount() {
@@ -42,15 +38,15 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     getInjectStyleOfEpayFootprintOrderOptionOfPendingIconButton(order) {
-        return Util.getVisibleOrNone(this.getStore().isStateOfPending(order));
+        return Util.getVisibleOrNone(this.getStore().isStateOfPending(order), true);
     }
 
     getInjectStyleOfEpayFootprintOrderOptionOfShippedIconButton(order) {
-        return Util.getVisibleOrNone(this.getStore().isStateOfUnShipped(order));
+        return Util.getVisibleOrNone(this.getStore().isStateOfUnShipped(order), true);
     }
 
     getInjectStyleOfEpayFootprintOrderOptionOfUnpaidIconButton(order) {
-        return Util.getVisibleOrNone(this.getStore().isStateOfUnpaid(order));
+        return Util.getVisibleOrNone(this.getStore().isStateOfUnpaid(order), true);
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentDetailDiv(order) {
@@ -58,9 +54,8 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfFuncDiv(order) {
-        /**
-         * 1. linepay 未付款
-         * 2. 未選擇付款方式
+        /** 1. linepay 未付款
+         *  2. 未選擇付款方式
          * */
         return Util.getVisibleOrNone(this.isWaitingPendingState(order) && Util.or(this.isUnknownOrder(order), this.isWaitingToLinePay(order)));
     }
@@ -72,24 +67,36 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     /** 還沒付費的linepay order(走到Line-Pay,把付費頁面關掉) */
     isWaitingToLinePay(order) {
-        return _.isEqual(order.getTypeOfPayment(), "linepay") && _.isEqual(order.getStateOfPayment(), 3); //3:"waiting"
+        return _.isEqual(order.getTypeOfPayment(), "linepay") && _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
     }
 
     isWaitingPendingState(order) {
-        return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), 3); //3:"waiting"
+        return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
     }
 
-    onEpayFootprintOrderExtraIconButtonDeleteOrderClicked(param) {
+    onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorCancelOrderClicked(param) {
+        super.onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorCancelOrderClicked(param);
+    }
+
+    onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorForcePaidClicked(param) {
+        super.onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorForcePaidClicked(param);
+    }
+
+    onEpayFootprintOrderOptionOfShippedIconButtonAuthorFormShippedClicked(param) {
+        super.onEpayFootprintOrderOptionOfShippedIconButtonAuthorFormShippedClicked(param);
+    }
+
+    onEpayFootprintOrderOptionOfPendingIconButtonDeleteOrderClicked(param) {
         return async () => {
             const order = param.object;
             await this.remoteCancelUnpaidPreciseOrderBehavior(order.raw.id);
         };
     }
 
-    onEpayFootprintOrderExtraIconButtonUpdateRemarkClicked(param) {
+    onEpayFootprintOrderOptionOfPendingIconButtonUpdateRemarkClicked(param) {
         return async () => {
             const order = param.object.getParentNode();
-            const latestRemarkOfOrder = order.getAreaOfInputMessage().getValue();
+            const latestRemarkOfOrder = order().getRemark();
             await this.remoteUpdateOrderRemarkBehavior(order.raw.id, latestRemarkOfOrder);
         };
     }
@@ -109,13 +116,13 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     getOrderDeadline(order) {
         switch (order.getStateOfPayment()) {
-            case 2: //"pending":
+            case Config.StateOfPayment.Pending:
                 return order.getDeadline();
-            case 3: //"waiting":
+            case Config.StateOfPayment.Waiting:
                 return order.getDeadline();
-            case 4: //"failure":
+            case Config.StateOfPayment.Failure:
                 return Util.getCurrentTimeFormatV2(order.getTimeOfCreate());
-            case 5: //"completed":
+            case Config.StateOfPayment.Completed:
                 return Util.getCurrentTimeFormatV2(order.getTimeOfPayment());
             default:
                 return "886出問題了";
@@ -124,25 +131,25 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     getOrderLabelOfDeadline(order) {
         switch (order.getStateOfPayment()) {
-            case 2: //"pending":
-            case 3: //"waiting":
+            case Config.StateOfPayment.Pending:
+            case Config.StateOfPayment.Waiting:
                 return "截止時間：";
-            case 5: //"completed":
+            case Config.StateOfPayment.Completed:
                 return "完成時間：";
-            case 4: //"failure":
+            case Config.StateOfPayment.Failure:
                 return "訂單時間：";
         }
         return order.getLabelOfDeadline();
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfChoosePaymentTypeDiv(order) {
-        const condition1 = Util.isOrEquals(order.getStateOfPayment(), 2, 3); //2:"pending", 3:"waiting"
+        const condition1 = Util.isOrEquals(order.getStateOfPayment(), Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting);
         const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), "atm", "cvs");
         return Util.getVisibleOrNone(condition1 && condition2, true);
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentFailureDiv(order) {
-        return Util.getVisibleOrNone(_.isEqual(4, order.getStateOfPayment()), true); //4:"failure"
+        return Util.getVisibleOrNone(_.isEqual(Config.StateOfPayment.Failure, order.getStateOfPayment()), true);
     }
 
     onEpayFootprintOrderCheckoutButtonClicked(param) {
@@ -150,6 +157,10 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         if (this.isWaitingToLinePay(order)) {
             this.routeToLinePayCheckoutPage(order.getRaw().contentOfRender);
         }
+    }
+
+    getWrapInjectStyleOfEpayFootprintOrderRemarkOfAuthorTextField(order) {
+        return Util.getVisibleOrNone(this.getStore().isRoleOfAuthor(order), true);
     }
 
     /** 複製*/
@@ -163,10 +174,18 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         this.copyTextToClipboard(Util.getHeadStringSplitBy(order.raw.id));
     }
 
-    getInjectPropsOfEpayFootprintOrderValueTextField(order) {
+    getInjectPropsOfEpayFootprintOrderRemarkTextField(order) {
         return {
             InputProps: {
-                readOnly: Util.isOrEquals(order.getStateOfPayment(), 5, 4) //5:"completed", 4:"failure"
+                readOnly: Util.isOrEquals(order.getStateOfPayment(), Config.StateOfPayment.Completed, Config.StateOfPayment.Failure)
+            }
+        };
+    }
+
+    getInjectPropsOfEpayFootprintOrderRemarkOfAuthorTextField(order) {
+        return {
+            InputProps: {
+                readOnly: Util.isOrEquals(order.getStateOfPayment(), Config.StateOfPayment.Failure)
             }
         };
     }

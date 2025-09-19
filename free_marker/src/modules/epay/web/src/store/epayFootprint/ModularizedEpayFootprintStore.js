@@ -8,9 +8,6 @@ import BaseEpayFootprintStore from "./BaseEpayFootprintStore";
 import Config from "../../config";
 
 class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         this.api = new EpayPreciseOrderStore();
@@ -39,20 +36,14 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     };
 
     /** 賣家視角*/
-    isRoleOfAuthor = () => {
-        return _.isEqual(this.getRoleOfPerspective(), "author");
+    isRoleOfAuthor = (order) => {
+        return _.isEqual(UserInfoRef.getUid(), order.idOfAuthor) && _.isEqual(this.getRoleOfPerspective(), "author");
     };
 
     /** 買家視角 */
-    isRoleOfUser = () => {
-        return _.isEqual(this.getRoleOfPerspective(), "user");
+    isRoleOfUser = (order) => {
+        return _.isEqual(UserInfoRef.getUid(), order.idOfUser) && _.isEqual(this.getRoleOfPerspective(), "user");
     };
-
-    refreshLocally() {
-        //disable i18n功能會把
-        //設計了賣家和買家分別可以用的tab，refreshLocally後tab會被補回去
-        //要修正i18n功能是，僅針對當前的tab翻譯即可
-    }
 
     conditionsOfBuyerDefault(state) {
         /** ↓---------------------等Enum做出來就要刪掉 ----------------------↓ */
@@ -286,9 +277,9 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
             switch (true) {
                 // User邏輯
-                case self.isRoleOfUser() && state === Payment.Completed:
+                case self.isRoleOfUser(order) && state === Payment.Completed:
                     return "已完成";
-                case self.isRoleOfUser() && state === Payment.Failure:
+                case self.isRoleOfUser(order) && state === Payment.Failure:
                     return "已失效";
                 case self.isStateOfPending(order):
                     return "待付款";
@@ -297,12 +288,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                     return "未付款";
                 case self.isStateOfUnShipped(order):
                     return "未出貨";
-                case self.isRoleOfAuthor() && state === Payment.Completed && Util.isOrEquals(deliver, Deliver.Needless, Deliver.Sending):
+                case self.isRoleOfAuthor(order) && state === Payment.Completed && Util.isOrEquals(deliver, Deliver.Needless, Deliver.Sending):
                     return "已成立";
-                case self.isRoleOfAuthor() && state === Payment.Failure:
+                case self.isRoleOfAuthor(order) && state === Payment.Failure:
                     return "已作廢";
-
-                // fallback
                 default:
                     return "未歸類";
             }
@@ -331,11 +320,13 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             valueOfTotalPrice: `$${order.priceOfTotal}`,
             rule: getStringOfRule(),
             deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired)),
-            value: order.remark,
+            remark: order.remark,
             domain: getStringOfDomain(),
             specificOfProduct: getStringOfSpecific(),
             code: getStringOfCode(),
-            reason: `${order.messageOfPayment}`
+            reason: `${order.messageOfPayment}`,
+            idOfUser: order.idOfUser,
+            idOfAuthor: order.idOfUser
         };
     };
 
@@ -343,14 +334,14 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     isStateOfPending = (order) => {
         const Payment = Config.StateOfPayment;
         const state = order.stateOfPayment;
-        return this.isRoleOfUser() && (state === Payment.Pending || state === Payment.Waiting);
+        return this.isRoleOfUser(order) && (state === Payment.Pending || state === Payment.Waiting);
     };
 
     /**  (賣家看的畫面) 未付款 */
     isStateOfUnpaid = (order) => {
         const Payment = Config.StateOfPayment;
         const state = order.stateOfPayment;
-        return this.isRoleOfAuthor() && (state === Payment.Pending || state === Payment.Waiting);
+        return this.isRoleOfAuthor(order) && (state === Payment.Pending || state === Payment.Waiting);
     };
 
     /**  (賣家看的畫面) 未出貨：未付款就不會出現在未出貨 */
@@ -360,14 +351,12 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         const state = order.stateOfPayment;
         const deliver = order.stateOfDeliver;
 
-        return this.isRoleOfAuthor() && state === Payment.Completed && deliver === Deliver.Pending;
+        return this.isRoleOfAuthor(order) && state === Payment.Completed && deliver === Deliver.Pending;
     };
 
     async setCurrentTabByType(type) {
         await Util.syncDelay(10);
         const tab = _.find(this.getTabs(), (tab) => _.isEqual(tab.getType(), type));
-        // this.setValueOfTabClickedTab(-1000);
-        // await Util.syncDelay(100);
         this.setValueOfTabClickedTab(tab.getValue());
     }
 
