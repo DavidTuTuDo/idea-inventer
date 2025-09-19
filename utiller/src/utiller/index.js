@@ -3249,6 +3249,34 @@ class Utiller {
         };
     }
 
+
+    /**
+     * @param {Array<Object>} current - 要更新的目標陣列
+     * @param {Array<Object>} reference - 用來替換屬性的參照陣列
+     * @returns {Array<Object>} - 更新後的陣列
+     *
+     * const current = [{ value: 1, label: 'one' }, { value: 2, label: 'two' }];
+     * const reference = [{ value: 1, label: 'ㄧ', type: 'a' }, { value: 2, label: '二', type: 'b' }, { value: 3, label: '三' }, { value: 3, label: '四' }];
+     * const latest = updateArrayByReference(current, reference);
+     * console.log(latest);
+     *  預期輸出:
+     *  [
+     *    { value: 1, label: 'ㄧ', type: 'a' },
+     *    { value: 2, label: '二', type: 'b' }
+     *  ]
+     */
+    getArrayOfMappingRef = (current, reference) => {
+        // 使用 _.map 迭代 current 陣列，為每個物件建立一個新物件
+        return _.map(current, (currentObj) => {
+            // 使用 _.find 在 reference 陣列中尋找與 currentObj.value 相同的物件
+            const referenceObj = _.find(reference, { value: currentObj.value });
+            // 如果找到對應的參考物件，則使用 _.merge 來合併它們
+            // _.merge 會將 referenceObj 的屬性覆蓋到 currentObj 上
+            // 否則，返回原始的 currentObj
+            return referenceObj ? _.merge({}, currentObj, referenceObj) : currentObj;
+        });
+    };
+
     // testOfConflict() {
     //     // ===== 測試資料 =====
     //     const newTask = {

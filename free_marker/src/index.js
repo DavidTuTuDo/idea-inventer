@@ -4465,17 +4465,16 @@ class StoreBuilder extends BaseBuilder {
             `super.refreshLocally()`,
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
-                        if (child.isCheapArray() || child.isPathArray()) {
+                        if(!child.l10n) return ''
+                        else if(child.isCheapArray() || child.isPathArray())
                             return `_.each(this.${child.getFunctionNameOfGetters()}() , (item) => item.refreshLocally())`
-                        } else if (child.isArray()) {
-                            return `this.${child.getFunctionNameOfSetter()}(...${child.getDefaultValueByType()})`;
-                        } else if (child.isObject()) {
+                         else if (child.isArray())
+                            return `this.${child.getFunctionNameOfSetter()}(...Util.getArrayOfMappingRef(this.${child.getFieldName()},${child.getDefaultValueByType()}))`;
+                         else if (child.isObject())
                             return `this.${child.getFieldName()}.refreshLocally()`;
-                        } else {
-                            if (child.isString())
+                         else if (child.isString() && !Util.isUndefinedNullEmpty(child.getDefaultValue()))
                                 return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
-                            return '';
-                        }
+                         else return '';
                     }
                 ))
 
@@ -8562,7 +8561,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             if (node.isChipView() || node.isButton() || node.isIconButton()) {
                 node.setClick(true);
-                node.l10n = true;
+                if (!Util.isUndefinedNullEmpty(node.getDefaultValue())) node.l10n = true;
                 if (node.hasIcon()) {
                     this.appendMuiIconImport(node, node.getIcon());
                     switch (node.getView()) {
