@@ -114,8 +114,8 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
             await Api.updatePreciseOrderItemAtomically((latestItem, transaction) => {
                 self.validatePreciseOrder(latestItem, true, "15544713");
                 return {
-                    procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_LINEPAY,
-                    stateOfPayment: 3, //"waiting",
+                    procedureOfPayment: Config.EPayType.LinePay,
+                    stateOfPayment: Config.StateOfPayment.Waiting,
                     idOfThirdPartyTradeNo: resultOfLinePayRequest.info.transactionId,
                     infoOfPayment: resultOfLinePayRequest.info.paymentAccessToken,
                     contentOfRender: `${JSON.stringify(resultOfLinePayRequest.info.paymentUrl)}`,

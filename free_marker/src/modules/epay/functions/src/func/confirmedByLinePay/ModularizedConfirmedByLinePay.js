@@ -77,8 +77,8 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "74484874345");
                 return {
-                    stateOfPayment: 5, //"completed",
-                    procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
+                    stateOfPayment: Config.StateOfPayment.Completed,
+                    procedureOfPayment: `${Config.EPayType.LinePay}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: data.idOfTransaction,
                     messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
@@ -88,8 +88,8 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await Api.updateHadeItemAtomically(
                 (item, transaction) => {
                     return {
-                        stateOfPayment: 5, //"completed",
-                        procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
+                        stateOfPayment: Config.StateOfPayment.Completed,
+                        procedureOfPayment: `${Config.EPayType.LinePay}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
                 },
@@ -99,14 +99,14 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`LINE-PAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
             await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
-            return { message: `confirmed by ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed` };
+            return { message: `confirmed by ${Config.EPayType.LinePay}|succeed` };
         } else {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "74484874345");
                 return {
-                    procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_LINEPAY}`,
+                    procedureOfPayment: `${Config.EPayType.LinePay}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
-                    stateOfPayment: 4, //"failure",
+                    stateOfPayment: Config.StateOfPayment.Failure, //"failure",
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
                 };
             }, itemOfPreciseOrder.id);
@@ -116,11 +116,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
     }
 
     customizeBehaviorOfSucceedTrade() {
-        this.appendErrorLog(
-            9999,
-            `47498412486 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
-        insert(例專案:月薪) 應該要增加 工作行事曆到甲方`
-        );
+        this.appendErrorLog(9999, `47498412486 ${Config.EPayType.LinePay}succeed之後，每個專案應該實作各自的record，insert(例專案:月薪) 應該要增加 工作行事曆到甲方`);
     }
 
     /** -------------------- async api -------------------- **/

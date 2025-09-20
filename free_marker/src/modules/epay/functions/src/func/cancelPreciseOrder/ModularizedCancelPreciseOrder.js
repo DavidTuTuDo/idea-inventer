@@ -37,7 +37,7 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
             this.validatePreciseOrder(order, false, 151259521453);
             return Api.normalizePreciseOrder(
                 {
-                    stateOfPayment: 4, //"failure",
+                    stateOfPayment: Config.StateOfPayment.Failure,
                     timeOfCancel: Util.getCurrentTimeStamp(),
                     messageOfPayment: `${user.typeOfUser}取消訂單 `
                 },
@@ -49,7 +49,7 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
     }
 
     customizeBehaviorOfFailureTrade() {
-        this.appendErrorLog(9999, `45612321321 ORDER被CANCEL之後, 每個專案實作各自的record update(例專案:月薪) 要把不可預約的 改成可預約`);
+        this.appendErrorLog(9999, `45612321321 ORDER被CANCEL之後，每個專案實作各自的record update(例專案:月薪) 要把不可預約的 改成可預約`);
     }
 
     /** -------------------- async api -------------------- **/

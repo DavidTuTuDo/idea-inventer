@@ -54,8 +54,8 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "848646546542");
                 return {
-                    stateOfPayment: 5, //"completed",
-                    procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
+                    stateOfPayment: Config.StateOfPayment.Completed,
+                    procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
@@ -65,8 +65,8 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updateHadeItemAtomically(
                 (item, transaction) => {
                     return {
-                        stateOfPayment: 5, //"completed",
-                        procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
+                        stateOfPayment: Config.StateOfPayment.Completed,
+                        procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
                 },
@@ -82,20 +82,20 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updatePreciseOrderItemAtomically((item, transaction) => {
                 this.validatePreciseOrder(item, false, "848646546542");
                 return {
-                    stateOfPayment: 4, //"failure",
+                    stateOfPayment: Config.StateOfPayment.Failure,
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
                 };
             }, preciseOrder.id);
             /**  OrderOfPrecise 應該要 更改 state = failure, 失敗的理由 => contentOfSucceed.RtnMsg */
             await Api.deleteHadeItem(preciseOrder.id, preciseOrder.idOfAuthor);
-            this.appendErrorLog(9999, `5482114456, 訂單(${contentOfSucceed.MerchantTradeNo}) RtnCode不合規範`);
+            this.appendErrorLog(9999, `5482114456 訂單(${contentOfSucceed.MerchantTradeNo})，RtnCode不合規範`);
         }
     }
 
     customizeBehaviorOfSucceedTrade() {
         this.appendErrorLog(
             9999,
-            `47498454876 ${Config.TYPE_OF_THIRD_PARTY_LINEPAY} succeed之後, 每個專案應該實作各自的record 
+            `47498454876 ${Config.EPayType.ECPay}|succeed之後，每個專案應該實作各自的record 
         insert(例專案:月薪) 應該要增加 工作行事曆到甲方`
         );
     }

@@ -83,10 +83,10 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 this.validatePreciseOrder(itemOfPreciseOrder, false, "15984422");
                 return Api.normalizePreciseOrder(
                     {
-                        procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
+                        procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(timeOfExpired), //CVS ExpireDate: '2022/07/03 15:04:19', ECPay的是台灣國家, 要把timestamp轉回UTC
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
-                        stateOfPayment: 3, //"waiting",
+                        stateOfPayment: Config.StateOfPayment.Waiting,
                         infoOfPayment: `${contentOfPaymentInfo.PaymentNo}${Util.getSeparatorOfUnique()}`
                     },
                     true
@@ -98,10 +98,10 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 this.validatePreciseOrder(itemOfPreciseOrder, false, "15984423");
                 return Api.normalizePreciseOrder(
                     {
-                        procedureOfPayment: `${Config.TYPE_OF_THIRD_PARTY_ECPAY}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
+                        procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
-                        stateOfPayment: 3, //"waiting",
+                        stateOfPayment: Config.StateOfPayment.Waiting,
                         infoOfPayment: `${contentOfPaymentInfo.BankCode}${Util.getSeparatorOfUnique()}${contentOfPaymentInfo.vAccount}`
                     },
                     true

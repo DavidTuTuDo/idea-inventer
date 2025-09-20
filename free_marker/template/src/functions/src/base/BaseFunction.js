@@ -4,8 +4,10 @@ import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
 import * as functions from "firebase-functions";
 import Api from "../api";
-import ClientRemoteApi from "../base/CommonRemoteApi";
+import Config from "../config";
 
+import ClientRemoteApi from "../base/CommonRemoteApi";
+let TEST_MODE = false;
 class BaseFunction extends ClientRemoteApi {
     constructor(props) {
         super(props);
@@ -38,11 +40,11 @@ class BaseFunction extends ClientRemoteApi {
             const idOfBooze = param.shift();
             const infoOfHera = item.infoOfHera;
             await Api.updateVariantItemAtomically(
-              async (variant, transaction) => {
-                  return { quantity: variant.quantity + item.quantity };
-              },
-              idOfVariant,
-              idOfBooze
+                async (variant, transaction) => {
+                    return { quantity: variant.quantity + item.quantity };
+                },
+                idOfVariant,
+                idOfBooze
             );
 
             /** 刪掉useMainTrunk運用的hera */
@@ -65,6 +67,10 @@ class BaseFunction extends ClientRemoteApi {
             default:
                 return 0;
         }
+    }
+
+    appendInfoLog(message) {
+        functions.logger.info(message);
     }
 
     appendErrorLog(code, message) {
@@ -108,21 +114,21 @@ class BaseFunction extends ClientRemoteApi {
      * isCreatePaymentProcedure 用於檢查是否訂單用於向第三方建立出訂單, 例如checkoutByXXX(EPAY LINE-PAY), 這就要用來檢查是否已經有選定的支付方式
      *
      * */
-    validatePreciseOrder(itemOfPreciseOrder, isPayingProcedure = true, idOfError = "") {
+    validatePreciseOrder(itemOfPreciseOrder, isUnPaidProcedure = true, idOfError = "") {
         if (!itemOfPreciseOrder.exists) {
-            this.appendErrorLog(9999, `8871231-${idOfError} 訂單內容不存在, idOfPreciseOrder:${data.idOfPreciseOrder}`);
+            this.appendErrorLog(9999, `8871231-${idOfError} 訂單內容不存在，訂單編號:${itemOfPreciseOrder.idOfPreciseOrder}`);
         }
 
-        if (_.isEqual(5, itemOfPreciseOrder.stateOfPayment)) { //stateOfPayment 5:completed
-            this.appendErrorLog(9999, `8871453-${idOfError} 訂單內容已完成手續, 無法再更改狀態`);
+        if (_.isEqual(Config.StateOfPayment.Completed, itemOfPreciseOrder.stateOfPayment)) {
+            this.appendErrorLog(9999, `8871453-${idOfError} 訂單內容已完成手續，無法再更改狀態`);
         }
 
-        if (isPayingProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, 2, 3)) {//stateOfPayment 2:pending 3:waiting
+        if (isUnPaidProcedure && !Util.isOrEquals(itemOfPreciseOrder.stateOfPayment, Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting)) {
             this.appendErrorLog(9999, `8871233-${idOfError} 訂單(${itemOfPreciseOrder.id})狀態已無法更改:${itemOfPreciseOrder.stateOfPayment}`); //todo:stateOfPayment是數字
         }
 
-        // // if (isPayingProcedure && !_.isEqual(`unknown`, itemOfPreciseOrder.procedureOfPayment)) {
-        // //     this.appendErrorLog(9999, `8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
+        // if (isPayingProcedure && !_.isEqual(`unknown`, itemOfPreciseOrder.procedureOfPayment)) {
+        //     this.appendErrorLog(9999, `8871234-${idOfError} 訂單(${itemOfPreciseOrder.id})已有選定的付費方式:${this.getStringOfNormalizeProcedureOfPayment(itemOfPreciseOrder.procedureOfPayment)}`);
         // }
     }
 
@@ -139,17 +145,51 @@ class BaseFunction extends ClientRemoteApi {
         return result;
     }
 
-    validateIdOfDocument(id, idOfError, name = "document") {
+    validateIdOfOrderIsNotEmpty = async (idOfOrder, idOfError) => {
+        if (Util.isUndefinedNullEmpty(idOfOrder)) this.appendErrorLog(9999, `48468445123-${idOfError}，訂單編號未提供`);
+    };
+
+    validateIdOfDocument = async (id, idOfError, name = "document") => {
         if (Util.isUndefinedNullEmpty(id)) {
             this.appendErrorLog(9999, `4846846519-${idOfError} 沒有提供合理${name}編號`);
         }
-    }
+    };
 
-    validateIsLoginUser(session, idOfError) {
-        if (!this.isLoginUser(session)) {
-            this.appendErrorLog(9999, `4845461513-${idOfError} 必須登入才能呼叫此功能`);
-        }
-    }
+    validateOrderIsExist = async (order, id, idOfError) => {
+        if (!order.exists) this.appendErrorLog(9999, `88712314561-${idOfError} 訂單內容不存在，訂單編號:${id}`);
+    };
+
+    /** 確認訂單付款狀態為'已完成' */
+    validateOrderIsCompleted = async (order, idOfError) => {
+        if (!_.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Completed)) this.appendErrorLog(9999, `4845461231-${idOfError} 訂單尚未完成付款，請聯繫管理員`);
+    };
+
+    /** 確認訂單付款狀態為'未付款 等待中(ATM CVS)' */
+    validateOrderIsUnPaidWaiting = async (order, idOfError) => {
+        if (!_.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting))
+            this.appendErrorLog(9999, `484546121565-${idOfError} 訂單無法付款，請聯繫管理員`);
+    };
+
+    /** 確認貨運付款狀態為'未寄出'，備註：訂單內容僅有課程類會是needless */
+    validateOrderIsUnDelivered = async (order, idOfError) => {
+        if (!_.isOrEquals(order.stateOfDeliver, Config.StateOfDeliver.Pending)) this.appendErrorLog(9999, `4845464541-${idOfError} 訂單無法提供運送，請聯繫管理員`);
+    };
+
+    validateIsLoginUser = async (session, idOfError) => {
+        if (!this.isLoginUser(session)) this.appendErrorLog(9999, `4845461513-${idOfError} 必須是訂單關係人才能呼叫`);
+    };
+
+    validateIsUserOfOrder = async (order, session, idOfError) => {
+        if (!_.isEqual(this.getUid(session), order.idOfUser)) this.appendErrorLog(9999, `484546141654-${idOfError} 必須是買家才能呼叫`);
+    };
+
+    validateIsAuthorOfOrder = async (order, session, idOfError) => {
+        if (!_.isEqual(this.getUid(session), order.idOfAuthor)) this.appendErrorLog(9999, `48454615142-${idOfError} 必須是賣家才能呼叫`);
+    };
+
+    validateIsAuthorOrUserOfOrder = async (order, session, idOfError) => {
+        if (!_.isOrEquals(this.getUid(session), order.idOfUser, order.idOfAuthor)) this.appendErrorLog(9999, `4845461515-${idOfError} 必須是訂單關係人才能呼叫`);
+    };
 
     /** { typeOfUser:'買家'|'賣家'|'管理員', allowUpdate: false }*/
     async getLoginUserInfo(order, session) {

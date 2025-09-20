@@ -74,7 +74,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
         /** items = [...{idOfBooze,idOfVariant,quantity,nameOfBooze}] */
         const { remark, address, phone, name, email } = data;
-        if (itemsOfClientOrdering.length === 0) this.appendErrorLog(9999, "錯誤：E1200 無有效商品資料");
+        if (itemsOfClientOrdering.length === 0) this.appendErrorLog(9999, "E1200 無有效商品資料");
 
         if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder()) this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
 
@@ -113,7 +113,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         );
 
         if (result.succeed) return { idOfPreciseOrder: result.value.id };
-        else this.appendErrorLog(9999, `錯誤：E1299 創建訂單時失敗，未知原因(請訊息洽詢)。`);
+        else this.appendErrorLog(9999, `E1299 創建訂單時失敗，未知原因(請訊息洽詢)。`);
     }
 
     /**

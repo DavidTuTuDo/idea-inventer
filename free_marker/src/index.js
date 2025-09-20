@@ -7192,8 +7192,6 @@ class ProjectFileHandler extends PathBase {
             case 'admin':
             case 'functions':
                 baseConfigGenerator.appendField(`email`, JSON.stringify(sourceObj.email));
-                baseConfigGenerator.appendField(`TYPE_OF_THIRD_PARTY_ECPAY`, JSON.stringify('ECPAY'));
-                baseConfigGenerator.appendField(`TYPE_OF_THIRD_PARTY_LINEPAY`, JSON.stringify('LINEPAY'));
                 baseConfigGenerator.appendField(`ecpay`, JSON.stringify(this.isProduction() ? sourceObj.ecpay.prod : sourceObj.ecpay.dev));
                 baseConfigGenerator.appendField(`linepay`, JSON.stringify(this.isProduction() ? sourceObj.linepay.prod : sourceObj.linepay.dev));
                 baseConfigGenerator.appendField(`admin`, JSON.stringify(sourceObj.admin));

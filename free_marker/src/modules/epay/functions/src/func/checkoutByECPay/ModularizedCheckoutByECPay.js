@@ -30,7 +30,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         this.validatePreciseOrder(detailOfPreciseOrder, true, "598498742");
 
         /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */
-        if (Util.isOrEquals(detailOfPreciseOrder.procedureOfPayment, Config.TYPE_OF_THIRD_PARTY_ECPAY, Config.TYPE_OF_THIRD_PARTY_LINEPAY)) {
+        if (Util.isOrEquals(detailOfPreciseOrder.procedureOfPayment, Config.EPayType.ECPay, Config.EPayType.LinePay)) {
             await Api.deletePreciseOrderItem(detailOfPreciseOrder.id);
             delete detailOfPreciseOrder.id;
             const result = await Api.submitPreciseOrderItem({ ...detailOfPreciseOrder });
@@ -51,7 +51,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             order.exists = true;
             this.validatePreciseOrder(order, true, "598498742");
             return {
-                procedureOfPayment: Config.TYPE_OF_THIRD_PARTY_ECPAY,
+                procedureOfPayment: Config.EPayType.ECPay,
                 contentOfRender: result,
                 timesOfTransaction: order.timesOfTransaction + 1
             };

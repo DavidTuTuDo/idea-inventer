@@ -417,7 +417,7 @@ class CommonRemoteApi {
 
     async isAdminUser(uid = undefined) {
         const user = await this.fetchItem("users", uid);
-        return user.exists && user.admin;
+        return user.exists && user.isAdmin;
     }
 
     handleCommitment(update, commitment, object) {
