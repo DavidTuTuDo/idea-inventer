@@ -14,20 +14,12 @@ service firebase.storage {
        return false;
     }
 
-    function isAuthorOfEPay(id) {
-      return request.auth != null && get(/databases/$(database)/documents/ordersOfEPay/$(id)).data.idOfAuthor == request.auth.uid;
-    }
-
-    function isUserOfEPay(id) {
-      return request.auth != null && get(/databases/$(database)/documents/ordersOfEPay/$(id)).data.idOfUser == request.auth.uid;
-    }
-
-    function isAuthorEitherUserOfEPay(id) {
-      return isAuthorOfEPay(id) || isUserOfEPay(id);
+   function isAuthorOfDionysus(id) {
+      return request.auth != null && firestore.get(/databases/(default)/documents/dionysus/$(id)).data.idOfAuthor == request.auth.uid;
     }
 
     function isAdmin() {
-      return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+      return request.auth != null && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }
 
     function sizeLowerThan2MB() {

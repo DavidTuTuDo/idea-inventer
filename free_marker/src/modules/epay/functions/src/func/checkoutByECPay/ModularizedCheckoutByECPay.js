@@ -19,27 +19,26 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     }
 
     async handleHttpOnCall(data, session) {
-        console.log(`CheckoutByByECPay帶進來的資訊:`, data);
+        this.appendLog(`CheckoutByByECPay帶進來的資訊:`, data);
+        /** 訂單編號 */
         const idOfPreciseOrder = data.idOfPreciseOrder;
-        /** 訂單編號*/
-        if (Util.isUndefinedNullEmpty(idOfPreciseOrder)) {
-            this.appendErrorLog(9999, `8181231 沒有訂單內容`);
-        }
-
-        let detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(detailOfPreciseOrder, true, "598498742");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "CheckoutByECPay");
+        let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder, "CheckoutByECPay");
+        await this.validateIsUserOfOrder(itemOfPreciseOrder, session, "CheckoutByECPay");
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CheckoutByECPay");
 
         /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */
-        if (Util.isOrEquals(detailOfPreciseOrder.procedureOfPayment, Config.EPayType.ECPay, Config.EPayType.LinePay)) {
-            await Api.deletePreciseOrderItem(detailOfPreciseOrder.id);
-            delete detailOfPreciseOrder.id;
-            const result = await Api.submitPreciseOrderItem({ ...detailOfPreciseOrder });
-            detailOfPreciseOrder = result.value;
+        if (Util.isOrEquals(itemOfPreciseOrder.procedureOfPayment, Config.EPayType.ECPay, Config.EPayType.LinePay)) {
+            await Api.deletePreciseOrderItem(itemOfPreciseOrder.id);
+            delete itemOfPreciseOrder.id;
+            const result = await Api.submitPreciseOrderItem({ ...itemOfPreciseOrder });
+            itemOfPreciseOrder = result.value;
         }
         /** -------------------------------------------------------------------------------- **/
 
-        const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(detailOfPreciseOrder);
-        console.log(`準備去拿ECPay的result`, dataOfECPayOrder);
+        const dataOfECPayOrder = this.getPayloadOfECPayAIORequest(itemOfPreciseOrder);
+        this.appendLog(`準備去拿ECPay的result`, dataOfECPayOrder);
         let result = this.handlerOfECPay.payment_client.aio_check_out_all(dataOfECPayOrder);
 
         result = Util.getStringOfHandledHtml(result, (document) => {
@@ -47,21 +46,20 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
             element.setAttribute("value", Util.getECPayCheckMacValue(dataOfECPayOrder, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV));
         });
 
-        await Api.updatePreciseOrderItemAtomically((order, transaction) => {
-            order.exists = true;
-            this.validatePreciseOrder(order, true, "598498742");
+        await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
+            await this.validateOrderIsUnPaidWaiting(order, "CheckoutByECPay");
             return {
                 procedureOfPayment: Config.EPayType.ECPay,
                 contentOfRender: result,
                 timesOfTransaction: order.timesOfTransaction + 1
             };
-        }, detailOfPreciseOrder.id);
+        }, itemOfPreciseOrder.id);
         return { textOfRender: result };
     }
 
     normalizeDescOfItemName(string) {
         const content = Util.formatTextWithEllipsis(Util.replaceAllWithSets(string, { from: `\n\n\n`, to: "#" }, { from: `\n\n`, to: "#" }, { from: `\n`, to: "#" }), 200);
-        console.log(content);
+        this.appendLog(content);
         return content;
     }
 

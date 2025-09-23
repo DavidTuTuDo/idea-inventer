@@ -62,9 +62,9 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
     }
 
     async handleHttpOnCall(data, session) {
-        Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "idOfTransaction"], "49898481236");
+        Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "idOfTransaction"], "ConfirmedByLinePay");
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(data.idOfPreciseOrder);
-        this.validatePreciseOrder(itemOfPreciseOrder, false, "7448487434");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, data.idOfPreciseOrder, "ConfirmedByLinePay");
 
         const payloadOfConfirmLinePay = {
             amount: itemOfPreciseOrder.priceOfTotal,
@@ -74,8 +74,8 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
         const resultOfLinePayConfirm = await this.linePayerRef.confirm(payloadOfConfirmLinePay, data.idOfTransaction);
         const codeOfReturn = resultOfLinePayConfirm.returnCode;
         if (_.isEqual(codeOfReturn, "0000")) {
-            await Api.updatePreciseOrderItemAtomically((item, transaction) => {
-                this.validatePreciseOrder(item, false, "74484874345");
+            await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
+                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByLinePay");
                 return {
                     stateOfPayment: Config.StateOfPayment.Completed,
                     procedureOfPayment: `${Config.EPayType.LinePay}`,
@@ -101,12 +101,12 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
             return { message: `confirmed by ${Config.EPayType.LinePay}|succeed` };
         } else {
-            await Api.updatePreciseOrderItemAtomically((item, transaction) => {
-                this.validatePreciseOrder(item, false, "74484874345");
+            await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
+                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByLinePay");
                 return {
                     procedureOfPayment: `${Config.EPayType.LinePay}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
-                    stateOfPayment: Config.StateOfPayment.Failure, //"failure",
+                    stateOfPayment: Config.StateOfPayment.Failure,
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`
                 };
             }, itemOfPreciseOrder.id);

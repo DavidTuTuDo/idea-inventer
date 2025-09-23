@@ -15,22 +15,20 @@ class ModularizedUpdatePreciseOrderRemarkContent extends BaseUpdatePreciseOrderR
     }
 
     async handleHttpOnCall(data, session) {
-        Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "remarkOfPreciseOrder"], 4874546145454);
-        /** get precise order by id */
+        Util.validatePayloadObjectValid(data, ["idOfPreciseOrder", "remarkOfPreciseOrder"], "UpdatePreciseOrderRemarkContent");
+
+        await this.validateIdOfDocumentQualify(data.idOfPreciseOrder, "UpdateOrderRemarkOfAuthor");
+
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(data.idOfPreciseOrder);
 
-        /** 判斷狀態必須為pending才可以更改 */
-        this.validatePreciseOrder(detailOfPreciseOrder, false, 77485448618);
+        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, data.idOfPreciseOrder, "UpdatePreciseOrderRemarkContent");
 
-        /** 判斷user id === buyer id 才可以更改*/
-        const identify = await this.getLoginUserInfo(detailOfPreciseOrder, session);
-        const valildOfUpdate = identify.allowUpdate;
-        if (!valildOfUpdate) {
-            throw new ERROR(9999, `4562313168546 身份為${identify.typeOfUser}，無法呼叫此功能`);
-        }
+        /** 必須是買家才能更改備註 */
+        await this.validateIsUserOfOrder(detailOfPreciseOrder, session, "UpdatePreciseOrderRemarkContent");
+
         /** update order remark info*/
         await Api.updatePreciseOrderItem({ remark: data.remarkOfPreciseOrder }, detailOfPreciseOrder.id);
-        return { message: "成功更新備註內容" };
+        return { message: "[買家]成功更新備註內容" };
     }
 
     /** -------------------- async api -------------------- **/

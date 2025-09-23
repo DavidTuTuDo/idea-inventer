@@ -63,24 +63,24 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
         Util.appendInfo(`以下是PaymentInfoByECPay的帶入內容:`, contentOfPaymentInfo);
 
         /** isValidPaymentInfo */
-        Util.validatePayloadObjectValid(contentOfPaymentInfo, ["CheckMacValue", "MerchantTradeNo", "MerchantID", "PaymentType"], 5481213501);
+        Util.validatePayloadObjectValid(contentOfPaymentInfo, ["CheckMacValue", "MerchantTradeNo", "MerchantID", "PaymentType"], "PaymentInfoByECPay");
 
         /** 檢查 CheckMacValue */
-        this.isECPayCheckMacValueValid(contentOfPaymentInfo, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, 48415468462);
-
+        this.isECPayCheckMacValueValid(contentOfPaymentInfo, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, "PaymentInfoByECPay");
+        await this.validateIdOfDocumentQualify(contentOfPaymentInfo.MerchantTradeNo, "PaymentInfoByECPay");
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfPaymentInfo.MerchantTradeNo);
-
-        this.validatePreciseOrder(itemOfPreciseOrder, false, "15984422");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, contentOfPaymentInfo.MerchantTradeNo, "PaymentInfoByECPay");
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "PaymentInfoByECPay");
 
         /** 利用 PaymentType(CVS-CVS,ATM-BOT) 去更新訂單狀態 */
         const typeOfPayment = contentOfPaymentInfo.PaymentType;
         const timeOfExpired = contentOfPaymentInfo.ExpireDate;
         const idOfOrder = itemOfPreciseOrder.id;
-        Util.appendInfo(`87412316842. 訂單(${itemOfPreciseOrder.id})的採用 '${typeOfPayment}' 付費方式`);
+        Util.appendInfo(`訂單(${itemOfPreciseOrder.id})的採用'${typeOfPayment}'付費方式`);
         if (_.startsWith(typeOfPayment, "CVS")) {
             /** 當user選擇超商付款時 */
-            await Api.updatePreciseOrderItemAtomically((itemOfOrder) => {
-                this.validatePreciseOrder(itemOfPreciseOrder, false, "15984422");
+            await Api.updatePreciseOrderItemAtomically(async (itemOfOrder) => {
+                await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
                 return Api.normalizePreciseOrder(
                     {
                         procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
@@ -94,8 +94,8 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
             }, idOfOrder);
         } else if (_.startsWith(typeOfPayment, "ATM")) {
             /** 當user選擇ATM付款時 */
-            await Api.updatePreciseOrderItemAtomically((itemOfOrder) => {
-                this.validatePreciseOrder(itemOfPreciseOrder, false, "15984423");
+            await Api.updatePreciseOrderItemAtomically(async (itemOfOrder) => {
+                await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
                 return Api.normalizePreciseOrder(
                     {
                         procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
@@ -107,10 +107,8 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                     true
                 );
             }, idOfOrder);
-        } else {
-            this.appendErrorLog(9999, `654481345 還不支援當前的PaymentType ${typeOfPayment})`);
-        }
-        this.appendInfo(`588784546546 成功更新EC-PAYMENT-INFO,訂單(${itemOfPreciseOrder.id})`);
+        } else this.appendErrorLog(9999, `654481345-PaymentInfoByECPay 還不支援當前的支付方式(綠界支付(${typeOfPayment})`);
+        this.appendInfo(`成功更新EC-PAYMENT-INFO，訂單(${itemOfPreciseOrder.id})`);
         return "update ECPAY paymentInfo succeed";
     }
 

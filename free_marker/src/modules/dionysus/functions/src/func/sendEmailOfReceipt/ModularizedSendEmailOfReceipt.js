@@ -129,7 +129,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const { id, email } = order;
 
         if (Util.isUndefinedNullEmpty(email)) {
-            this.appendErrorLog(9999, `E1403 客戶未提供Email，無法送出Email，訂單編號：${id}`);
+            this.appendErrorLog(9999, `4564655-SendEmailOfReceipt 客戶未提供Email，無法送出Email，訂單編號：${id}`);
             return;
         }
 
@@ -152,7 +152,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
                     html: this.getHtmlOfReceipt(order)
                 }
             })
-            .then(() => console.log("Queued email for delivery!"));
+            .then(() => this.appendLog("Queued email for delivery!"));
     }
 }
 

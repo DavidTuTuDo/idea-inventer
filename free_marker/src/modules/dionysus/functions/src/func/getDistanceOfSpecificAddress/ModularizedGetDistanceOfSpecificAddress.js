@@ -45,7 +45,7 @@ class ModularizedGetDistanceOfSpecificAddress extends BaseGetDistanceOfSpecificA
             }
 
             const distanceMatrixData = await distanceMatrixResponse.json();
-            console.log("Distance Matrix API Response:", JSON.stringify(distanceMatrixData, null, 2));
+            this.appendLog("Distance Matrix API Response:", JSON.stringify(distanceMatrixData, null, 2));
 
             const distanceInfo = distanceMatrixData.rows?.[0]?.elements?.[0];
 

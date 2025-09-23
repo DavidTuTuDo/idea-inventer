@@ -20,19 +20,17 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
     async handleHttpOnCall(data, session) {
         const idOfPreciseOrder = data.idOfPreciseOrder;
 
-        if (Util.isUndefinedNullEmpty(idOfPreciseOrder)) {
-            this.appendErrorLog(9999, `81123112 沒有訂單內容`);
-        }
-
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "ForcePaidByAuthor");
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(detailOfPreciseOrder, true, "591232312");
+        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder, "ForcePaidByAuthor");
 
         /** 確認身份為訂單的 idOfAuthor */
-        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session, "454113456");
+        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session, "ForcePaidByAuthor");
+        await this.validateOrderIsUnPaidWaiting(detailOfPreciseOrder, "ForcePaidByAuthor");
 
         /** update order的訂單的timeOfPayment, procedureOfPayment='authorForcePaid', update stateOfPayment=5(completed) */
-        await Api.updatePreciseOrderItemAtomically((order, transaction) => {
-            this.validatePreciseOrder(order, true, "59841541234");
+        await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
+            await this.validateOrderIsUnPaidWaiting(order, "ForcePaidByAuthor");
             return {
                 procedureOfPayment: Config.EPayType.AuthorForcePaid,
                 stateOfPayment: Config.StateOfPayment.Completed,

@@ -41,7 +41,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         return Util.getVisibleOrNone(this.getStore().isStateOfPending(order), true);
     }
 
-    getInjectStyleOfEpayFootprintOrderOptionOfShippedIconButton(order) {
+    getInjectStyleOfEpayFootprintOrderOptionOfDeliverIconButton(order) {
         return Util.getVisibleOrNone(this.getStore().isStateOfUnShipped(order), true);
     }
 
@@ -55,8 +55,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     getInjectStyleOfEpayFootprintOrderAreaOfFuncDiv(order) {
         /** 1. linepay 未付款
-         *  2. 未選擇付款方式
-         * */
+         *  2. 未選擇付款方式 */
         return Util.getVisibleOrNone(this.isWaitingPendingState(order) && Util.or(this.isUnknownOrder(order), this.isWaitingToLinePay(order)));
     }
 
@@ -74,45 +73,68 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         return _.isEqual(order.getStateOfPayment(), "pending") || _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Waiting);
     }
 
+    /** 賣家取消訂單 */
     onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorCancelOrderClicked(param) {
-        super.onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorCancelOrderClicked(param);
+        const order = param.object;
+        return async () => await this.remoteAuthorCancelUnpaidPreciseOrderBehavior(order.raw.id);
     }
 
+    /** 賣家可能斯已卻認付款，幫賣家完成訂單 */
     onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorForcePaidClicked(param) {
-        super.onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorForcePaidClicked(param);
+        const order = param.object;
+        return async () => await this.remoteForceAuthor2PaidBehavior(order);
     }
 
-    onEpayFootprintOrderOptionOfShippedIconButtonAuthorFormShippedClicked(param) {
-        super.onEpayFootprintOrderOptionOfShippedIconButtonAuthorFormShippedClicked(param);
+    /** 賣家填寫運單(id, remarkOfAuthor) */
+    onEpayFootprintOrderOptionOfDeliverIconButtonAuthorFormedClicked(param) {
+        const order = param.object;
+        return async () => await this.remoteAuthorFormDeliver(order);
     }
 
+    /** 賣家更新備註 */
+    onEpayFootprintOrderRemarkOfAuthorTextFieldChange(param) {
+        super.onEpayFootprintOrderRemarkOfAuthorTextFieldChange(param);
+    }
+
+    /** 買家主動刪除訂單 */
     onEpayFootprintOrderOptionOfPendingIconButtonDeleteOrderClicked(param) {
-        return async () => {
-            const order = param.object;
-            await this.remoteCancelUnpaidPreciseOrderBehavior(order.raw.id);
-        };
+        const order = param.object;
+        return async () => await this.remoteCancelUnpaidPreciseOrderBehavior(order.raw.id);
     }
 
+    /** 買家更新備註 */
     onEpayFootprintOrderOptionOfPendingIconButtonUpdateRemarkClicked(param) {
-        return async () => {
-            const order = param.object.getParentNode();
-            const latestRemarkOfOrder = order().getRemark();
-            await this.remoteUpdateOrderRemarkBehavior(order.raw.id, latestRemarkOfOrder);
-        };
+        const order = param.object;
+        return async () => await this.remoteUpdateOrderRemarkBehavior(order.raw.id, order().getRemark());
     }
 
-    async remoteUpdateOrderRemarkBehavior(idOfPreciseOrder, remarkOfPreciseOrder) {
-        const result = await Functions.httpOnCallUpdatePreciseOrderRemarkContent(this.getComponentInstance(), {
+    remoteUpdateOrderRemarkBehavior = async (idOfPreciseOrder, remarkOfPreciseOrder) => {
+        await Functions.httpOnCallUpdatePreciseOrderRemarkContent(this.getComponentInstance(), {
             idOfPreciseOrder,
             remarkOfPreciseOrder
         });
         this.showInfoSnackMessage(`更新${idOfPreciseOrder} 備註成功`);
-    }
+    };
 
-    async remoteCancelUnpaidPreciseOrderBehavior(id) {
-        const result = await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder: id });
+    remoteForceAuthor2PaidBehavior = async (order) => {
+        const stateOfDeliver = order.stateOfDeliver;
+        await Functions.httpOnCallForcePaidByAuthor(this.getComponentInstance(), { idOfPreciseOrder: order.raw.id });
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", stateOfDeliver === Config.StateOfDeliver.Needless ? "succeed" : "unshipped");
+    };
+
+    remoteAuthorCancelUnpaidPreciseOrderBehavior = async (id) => {
+        await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder: id });
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", "cancelled");
+    };
+
+    remoteAuthorFormDeliver = async (order) => {
+        await Functions.httpOnCallInformDeliveringByAuthor(this.getComponentInstance(), { idOfPreciseOrder: order.raw.id, remarkOfAuthor: order.getRemarkOfAuthor() });
+    };
+
+    remoteCancelUnpaidPreciseOrderBehavior = async (id) => {
+        await Functions.httpOnCallCancelPreciseOrder(this.getComponentInstance(), { idOfPreciseOrder: id });
         Router.gotoEpayFootprintPage(this.getComponentInstance(), "user", "failure");
-    }
+    };
 
     getOrderDeadline(order) {
         switch (order.getStateOfPayment()) {

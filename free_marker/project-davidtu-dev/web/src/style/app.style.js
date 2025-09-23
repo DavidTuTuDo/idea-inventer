@@ -513,11 +513,11 @@ class AppStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconMoreVertRounded = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedReactFragmentWrap = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconButton = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconButton = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
 

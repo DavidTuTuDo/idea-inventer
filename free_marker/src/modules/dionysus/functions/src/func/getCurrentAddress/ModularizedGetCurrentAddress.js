@@ -16,20 +16,20 @@ class ModularizedGetCurrentAddress extends BaseGetCurrentAddress {
     /** payload:{"latitude":0,"longitude":0} */
     async handleHttpOnCall(data, session) {
         const { latitude, longitude } = data;
-        console.log({ latitude, longitude });
+        this.appendLog({ latitude, longitude });
         try {
             const address = await this.getAddressFromCoordinates(this.getKeyOfGoogleMapAPI(), latitude, longitude);
-            console.log(address);
+            this.appendLog(address);
             return address;
         } catch (error) {
-            console.log(error.message);
+            this.appendLog(error.message);
             throw new ERROR(9999, `48451232 ${error.message}`);
         }
     }
 
     getAddressFromCoordinates = async (API_KEY, latitude, longitude) => {
         const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${API_KEY}&language=zh-TW`;
-        console.log("url===> ", url);
+        this.appendLog("url===> ", url);
         try {
             const response = await fetch(url);
             const data = await response.json();

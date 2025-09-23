@@ -513,11 +513,11 @@ class MobileStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconMoreVertRounded = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedReactFragmentWrap = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconButton = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconButton = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
 

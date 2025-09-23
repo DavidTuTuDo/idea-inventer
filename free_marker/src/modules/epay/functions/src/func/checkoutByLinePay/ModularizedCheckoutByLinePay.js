@@ -85,7 +85,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
             ],
             redirectUrls: {
                 confirmUrl: new URL("respondtowardlinepay", Config.host).href,
-                cancelUrl: new URL("epayFootprint/all", Config.host).href
+                cancelUrl: new URL("epayFootprint/user/all", Config.host).href
             },
             options: {
                 extra: {
@@ -104,15 +104,20 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
     }
 
     async handleHttpOnCall(data, session) {
-        const self = this;
+        this.appendLog(`CheckoutByByECPay帶進來的資訊:`, data);
+        /** 訂單編號 */
         const idOfPreciseOrder = data.idOfPreciseOrder;
-        const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(itemOfPreciseOrder, true, "45421321");
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "CheckoutByLinePay");
+        let itemOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder, "CheckoutByLinePay");
+        await this.validateIsUserOfOrder(itemOfPreciseOrder, session, "CheckoutByLinePay");
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CheckoutByLinePay");
+
         const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder);
         const resultOfLinePayRequest = await this.linePayerRef.request(payloadOfLinePay);
         if (_.isEqual(resultOfLinePayRequest.returnCode, "0000")) {
-            await Api.updatePreciseOrderItemAtomically((latestItem, transaction) => {
-                self.validatePreciseOrder(latestItem, true, "15544713");
+            await Api.updatePreciseOrderItemAtomically(async (latestItem, transaction) => {
+                await this.validateOrderIsUnPaidWaiting(latestItem, true, "CheckoutByLinePay");
                 return {
                     procedureOfPayment: Config.EPayType.LinePay,
                     stateOfPayment: Config.StateOfPayment.Waiting,

@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.360",
+  "version": "1.0.370",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,6 @@
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "@babel/runtime": "^7.24.8",
     "bl": "^4.1.0",
     "configerer": "^1.0.11",
     "crypto-js": "^4.2.0",
@@ -32,6 +31,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@babel/runtime": "^7.24.8",
     "@babel/cli": "^7.24.8",
     "@babel/core": "^7.24.9",
     "@babel/plugin-proposal-decorators": "^7.24.1",

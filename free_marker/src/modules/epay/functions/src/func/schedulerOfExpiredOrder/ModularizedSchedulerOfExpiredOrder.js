@@ -4,6 +4,7 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import libpath from "path";
 import Api from "../../api";
+import Config from "../../config";
 import BaseSchedulerOfExpiredOrder from "./BaseSchedulerOfExpiredOrder";
 
 class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
@@ -16,8 +17,8 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
 
     async handleSchedule(context) {
         /** 找出 waiting|pending 的使用者 */
-        console.log("執行 SchedulerOfExpiredOrder 腳本");
-        const orders = await Api.fetchPreciseOrdersOfLimitation("in", "stateOfPayment", 2, 3); //2:"pending" 3:"waiting"
+        this.appendLog("執行 SchedulerOfExpiredOrder 腳本");
+        const orders = await Api.fetchPreciseOrdersOfLimitation("in", "stateOfPayment", Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting);
         /** 比對當前時間是否 > expired time，如果過期了 1.把狀態改成failure, 還有增加失效原因 */
         const currentTimeStamp = Util.getCurrentTimeStamp();
         const results = _.filter(orders, (order) => {
@@ -27,7 +28,7 @@ class ModularizedSchedulerOfExpiredOrder extends BaseSchedulerOfExpiredOrder {
             return {
                 ...result,
                 messageOfPayment: `已超過付費期限`,
-                stateOfPayment: 4, //`failure`
+                stateOfPayment: Config.StateOfPayment.Failure,
                 timeOfHouseKeeping: currentTimeStamp
             };
         });

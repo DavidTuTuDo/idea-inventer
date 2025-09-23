@@ -669,7 +669,7 @@ class NodeUtiller extends Utiller {
                 }
                 if (!succeedOfPersistFile) {
                     await this.updateFileOfSpecificLine(path,
-                        (line) => `   "${dependency}":"^${newVersion}"${_.endsWith(_.trim(line), ',' ? ',' : '')}`,
+                        (line) => `       "${dependency}":"^${newVersion}"${_.endsWith(_.trim(line), ',') ? ',' : ''}`,
                         (each) => _.startsWith(_.trim(each), `"${dependency}"`));
                 }
             }
@@ -695,6 +695,7 @@ class NodeUtiller extends Utiller {
         if (index === -1) return; // 無匹配行則略過
         lines[index] = contentOfUpdated(lines[index]);
         this.appendFile(pathOfFile, lines.join('\n'), true, true);
+        await this.prettier(pathOfFile);
     }
 
 

@@ -513,11 +513,11 @@ class CommonStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconMoreVertRounded = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedReactFragmentWrap = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfShippedIconButton = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconButton = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
 

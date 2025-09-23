@@ -184,6 +184,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             return _.startsWith(getKeywordOfProcedure(), "linepay");
         }
 
+        function isAuthorForcePaid() {
+            return _.startsWith(getKeywordOfProcedure(), "authorforcepaid");
+        }
+
         /** 用戶下了訂單, 但沒有走到付款頁面 */
         function isUnknown() {
             return _.startsWith(getKeywordOfProcedure(), "unknown");
@@ -205,6 +209,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 target = { unknown: map.unknown };
             } else if (isECPay()) {
                 target = { ecpay: map.ecpay };
+            } else if (isAuthorForcePaid()) {
+                target = { author: map.author };
             } else {
                 target = { error: map.error };
                 // throw new ERROR(9999, `54564564371 不應該走到這裡`)
@@ -226,6 +232,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 webatm: `網銀付款`,
                 unknown: `尚未選擇`,
                 ecpay: `綠界支付`,
+                author: `賣家自行確認`,
                 error: `未知的錯誤`
             });
         }
@@ -239,6 +246,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 webatm: `webatm`,
                 unknown: `unknown`,
                 ecpay: `ecpay`,
+                author: `author`,
                 error: `error`
             });
         }
@@ -252,6 +260,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 webatm: ``,
                 unknown: ``,
                 error: ``,
+                author: ``,
                 ecpay: ``
             });
         }
@@ -265,6 +274,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 webatm: ``,
                 unknown: ``,
                 error: ``,
+                author: ``,
                 ecpay: ``
             });
         }

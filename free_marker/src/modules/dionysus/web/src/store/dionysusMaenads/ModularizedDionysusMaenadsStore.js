@@ -27,7 +27,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         }
 
         function isBooze(param) {
-            return param && !Util.isUndefinedNullEmpty(param.rangeOfPrice) && _.isArray(param.options);
+            return param && _.isEqual(param.visibility, true);
         }
 
         async function handleConflictIssue() {
@@ -134,34 +134,34 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     };
 
     /**
-    const list1 = [
-        { id: 'Vjc7oyWX-J27uNPeK', quantity: 1 },
-        { id: 'Vjc7oyWX-tKiNOOqp', quantity: 1 },
-        { id: 'Vjc7oyWX-uyuWvBA8', quantity: 1 }
-    ];
-    console.log(transformListAutoLevel(list1));
-    {
-      level: 1,
-      items: [
-        { value: 'J27uNPeK', quantity: 1 },
-        { value: 'tKiNOOqp', quantity: 1 },
-        { value: 'uyuWvBA8', quantity: 1 }
-      ]}
-    const list2 = [
-        { id: 'U6WBjgWm-tKiNOOqp', quantity: 1 },
-        { id: 'Vjc7oyWX-tKiNOOqp', quantity: 1 },
-        { id: 'dl4TQ3Ir-tKiNOOqp', quantity: 1 },
-        { id: 'wsuoJ7Gz-tKiNOOqp', quantity: 1 }
-    ];
-    console.log(transformListAutoLevel(list2));
-    { level: 0,
-      items: [
-        { value: 'U6WBjgWm', quantity: 1 },
-        { value: 'Vjc7oyWX', quantity: 1 },
-        { value: 'dl4TQ3Ir', quantity: 1 },
-        { value: 'wsuoJ7Gz', quantity: 1 }
-      ]}
-    */
+     const list1 = [
+     { id: 'Vjc7oyWX-J27uNPeK', quantity: 1 },
+     { id: 'Vjc7oyWX-tKiNOOqp', quantity: 1 },
+     { id: 'Vjc7oyWX-uyuWvBA8', quantity: 1 }
+     ];
+     console.log(transformListAutoLevel(list1));
+     {
+     level: 1,
+     items: [
+     { value: 'J27uNPeK', quantity: 1 },
+     { value: 'tKiNOOqp', quantity: 1 },
+     { value: 'uyuWvBA8', quantity: 1 }
+     ]}
+     const list2 = [
+     { id: 'U6WBjgWm-tKiNOOqp', quantity: 1 },
+     { id: 'Vjc7oyWX-tKiNOOqp', quantity: 1 },
+     { id: 'dl4TQ3Ir-tKiNOOqp', quantity: 1 },
+     { id: 'wsuoJ7Gz-tKiNOOqp', quantity: 1 }
+     ];
+     console.log(transformListAutoLevel(list2));
+     { level: 0,
+     items: [
+     { value: 'U6WBjgWm', quantity: 1 },
+     { value: 'Vjc7oyWX', quantity: 1 },
+     { value: 'dl4TQ3Ir', quantity: 1 },
+     { value: 'wsuoJ7Gz', quantity: 1 }
+     ]}
+     */
     transformListAutoLevel = (list, key = "id") => {
         if (_.isEmpty(list)) return { level: null, items: [] };
 

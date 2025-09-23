@@ -14,7 +14,7 @@
     "configerer": "^1.0.11",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
-    "utiller": "^1.0.247"
+    "utiller": "^1.0.368"
   },
   "devDependencies": {
     "@babel/cli": "^7.12.8",

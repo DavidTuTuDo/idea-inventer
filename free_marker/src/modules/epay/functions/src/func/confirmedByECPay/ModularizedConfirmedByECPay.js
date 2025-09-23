@@ -46,13 +46,15 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
 
         this.isECPayCheckMacValueValid(contentOfSucceed, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, 415641542115);
 
-        const preciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed.MerchantTradeNo);
+        await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo, "ConfirmedByECPay");
+        const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed.MerchantTradeNo);
 
-        this.validatePreciseOrder(preciseOrder, false, "84864668772");
+        await this.validatePreciseOrderIsExist(itemOfPreciseOrder, contentOfSucceed.MerchantTradeNo, "ConfirmedByECPay");
+        await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "ConfirmedByECPay");
 
         if (_.isEqual(_.toInteger(contentOfSucceed.RtnCode), 1)) {
-            await Api.updatePreciseOrderItemAtomically((item, transaction) => {
-                this.validatePreciseOrder(item, false, "848646546542");
+            await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
+                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByECPay");
                 return {
                     stateOfPayment: Config.StateOfPayment.Completed,
                     procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
@@ -60,34 +62,34 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                     idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
                 };
-            }, preciseOrder.id);
+            }, itemOfPreciseOrder.id);
 
             await Api.updateHadeItemAtomically(
-                (item, transaction) => {
+                async (item, transaction) => {
                     return {
                         stateOfPayment: Config.StateOfPayment.Completed,
                         procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
                 },
-                preciseOrder.id,
-                preciseOrder.idOfAuthor
+                itemOfPreciseOrder.id,
+                itemOfPreciseOrder.idOfAuthor
             );
 
             this.customizeBehaviorOfSucceedTrade();
             Util.appendInfo(`ECPAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
-            await sendEmail.handleHttpOnCall({ idOfPreciseOrder: preciseOrder.id });
+            await sendEmail.handleHttpOnCall({ idOfPreciseOrder: itemOfPreciseOrder.id });
             return "1|OK";
         } else {
-            await Api.updatePreciseOrderItemAtomically((item, transaction) => {
-                this.validatePreciseOrder(item, false, "848646546542");
+            await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
+                await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByECPay");
                 return {
-                    stateOfPayment: Config.StateOfPayment.Failure,
+                    stateOfPayment: Config.StateOfPayment.Failure, //"failure",
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
                 };
-            }, preciseOrder.id);
+            }, itemOfPreciseOrder.id);
             /**  OrderOfPrecise 應該要 更改 state = failure, 失敗的理由 => contentOfSucceed.RtnMsg */
-            await Api.deleteHadeItem(preciseOrder.id, preciseOrder.idOfAuthor);
+            await Api.deleteHadeItem(itemOfPreciseOrder.id, itemOfPreciseOrder.idOfAuthor);
             this.appendErrorLog(9999, `5482114456 訂單(${contentOfSucceed.MerchantTradeNo})，RtnCode不合規範`);
         }
     }

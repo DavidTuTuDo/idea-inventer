@@ -19,7 +19,7 @@ export {gener as gener}
             '../databazer', true)
 
         await Util.generatePackage(
-            '../linepay', true)
+            '../linepayer', true)
 
         await Util.generatePackage(
             '../configerer', true)

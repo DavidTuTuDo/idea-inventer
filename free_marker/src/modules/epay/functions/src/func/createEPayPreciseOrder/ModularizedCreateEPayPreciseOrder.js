@@ -4,6 +4,7 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import BaseCreateEPayPreciseOrder from "./BaseCreateEPayPreciseOrder";
 import Api from "../../api";
+import Config from "../../config";
 
 class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     /** -------------------- fields -------------------- **/
@@ -11,6 +12,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
     constructor(props) {
         super(props);
+        this.hasDeliverdVarient = false;
     }
 
     getMaxItemsOfPreciseOrder = () => {
@@ -18,7 +20,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     preCheckOfCustomizeRule() {
-        this.appendErrorLog(9999, `4841187456 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
+        this.appendErrorLog(9999, `4841187456-CreateEPayPreciseOrder 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
     }
 
     getRuleOfExpiredTime = () => {
@@ -58,6 +60,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const ref = db.collection(`users/${variant.idOfAuthor}/hera`).doc();
         const period = Util.getStringOfConvertTimeRange(variant.content);
         const splitPeriod = period.split("-");
+
         transaction.set(ref, {
             startYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.shift()}00`),
             endYYYYMMDDHHmmss: _.toNumber(`${splitPeriod.pop()}00`),
@@ -70,24 +73,130 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return ref.id;
     };
 
-    async handleHttpOnCall(data, session) {
+    handleHttpOnCall = async (data, session) => {
+        const db = this._firebase().firestore();
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
-        /** items = [...{idOfBooze,idOfVariant,quantity,nameOfBooze}] */
         const { remark, address, phone, name, email } = data;
-        if (itemsOfClientOrdering.length === 0) this.appendErrorLog(9999, "E1200 無有效商品資料");
 
-        if (itemsOfClientOrdering.length > this.getMaxItemsOfPreciseOrder()) this.appendErrorLog(9999, `錯誤：E1201 單筆項目不可超過 ${this.getMaxItemsOfPreciseOrder()} 種`);
+        // 參數驗證
+        this.validateOrderItems(itemsOfClientOrdering);
 
-        await this.checkoutCartWithScheduleCheck(itemsOfClientOrdering);
+        const preciseOrderRef = db.collection(`ordersOfEPay`).doc();
 
-        /** 成立訂單 */
-        const result = await Api.submitPreciseOrderItem({
+        try {
+            await db.runTransaction(async (transaction) => {
+                const { mapOfVariant, authorId, hasDeliverdVarient } = await this.getAndValidateVariants(db, itemsOfClientOrdering, transaction);
+
+                // 驗證最終價格
+                const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering);
+                this.validateTotalPrice(totalPrice);
+
+                // 處理庫存扣除和排程
+                await this.processInventoryAndSchedules(db, itemsOfClientOrdering, mapOfVariant, transaction);
+
+                // 創建訂單與報表
+                await this.createOrderAndHade(
+                    db,
+                    itemsOfClientOrdering,
+                    preciseOrderRef,
+                    authorId,
+                    hasDeliverdVarient,
+                    { remark, address, phone, name, email },
+                    session,
+                    totalPrice,
+                    transaction
+                );
+            });
+            return { idOfPreciseOrder: preciseOrderRef.id };
+        } catch (error) {
+            this.appendErrorLog(9999, `E1299 ${error.message}`);
+        }
+    };
+
+    validateOrderItems = (items) => {
+        if (items.length === 0) {
+            this.appendErrorLog(9999, "5556451123-CreateEPayPreciseOrder 無有效商品資料");
+        }
+        if (items.length > this.getMaxItemsOfPreciseOrder()) {
+            this.appendErrorLog(9999, `15131213-CreateEPayPreciseOrder 單筆項目不可超過${this.getMaxItemsOfPreciseOrder()}種`);
+        }
+    };
+
+    getAndValidateVariants = async (db, itemsOfClientOrdering, transaction) => {
+        const variantRefs = itemsOfClientOrdering.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
+        const variantSnaps = await transaction.getAll(...variantRefs);
+        const mapOfVariant = {};
+        let authorId = null;
+        let hasDeliverdVarient = false;
+
+        for (let i = 0; i < variantSnaps.length; i++) {
+            const snap = variantSnaps[i];
+            if (!snap.exists) {
+                const itemOfCartie = _.find(itemsOfClientOrdering, (item) => _.isEqual(item.idOfVariant, variantRefs[i].id));
+                const name = itemOfCartie ? itemOfCartie.nameOfBooze : "(已過期)";
+                this.appendErrorLog(9999, `5451312321 商品(variant)已不存在(${name})`);
+            }
+
+            const id = snap.id;
+            const variant = snap.data();
+            mapOfVariant[id] = variant;
+
+            const item = _.find(itemsOfClientOrdering, (item) => _.isEqual(item.idOfVariant, id));
+            item.price = variant.price;
+            item.photo = variant.photo;
+            item.content = variant.content;
+            item.idOfAuthor = variant.idOfAuthor;
+
+            if (authorId === null) {
+                authorId = variant.idOfAuthor;
+            } else if (variant.idOfAuthor !== authorId) {
+                this.appendErrorLog(9999, "1152132321 購物車中的商品來自不同作者，無法進行交易");
+            }
+            if (!variant.isTaskJob) hasDeliverdVarient = true;
+        }
+        return { mapOfVariant, authorId, hasDeliverdVarient };
+    };
+
+    validateTotalPrice = (totalPrice) => {
+        if (totalPrice > this.getMaxPriceOfTSingleTransaction()) {
+            this.appendErrorLog(9999, `4564521-CreateEPayPreciseOrder 單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
+        }
+    };
+
+    processInventoryAndSchedules = async (db, itemsOfClientOrdering, mapOfVariant, transaction) => {
+        for (const item of itemsOfClientOrdering) {
+            const { idOfBooze, idOfVariant, quantity, nameOfBooze } = item;
+            const variant = mapOfVariant[idOfVariant];
+            const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
+
+            const quantityOfBalance = (variant.quantity || 0) - quantity;
+            if (quantityOfBalance < 0) {
+                this.appendErrorLog(9999, `1232132321-CreateEPayPreciseOrder ${variant.nameOfBooze}|${variant.content}|數量不足`);
+            }
+
+            transaction.update(variantRef, { quantity: quantityOfBalance });
+
+            if (variant.isTaskJob) {
+                if (variant.useMainTrunk) {
+                    const result = await this.checkConflictAgainst2MainTrunk(variant, transaction);
+                    if (result.conflict) {
+                        this.appendErrorLog(9999, `1124545654-CreateEPayPreciseOrder ${variant.nameOfBooze}的時段(${variant.content})衝突`);
+                    }
+                }
+                item.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
+            } else item.infoOfHera = "";
+        }
+    };
+
+    createOrderAndHade = async (db, itemsOfClientOrdering, preciseOrderRef, authorId, hasDeliverdVarient, data, session, totalPrice, transaction) => {
+        const { remark, address, phone, name, email } = data;
+        const preciseOrderData = Api.normalizePreciseOrder({
             idOfUser: this.getUid(session),
             textOfContract: this.getTextOfContract(itemsOfClientOrdering, remark),
             remark,
             timeOfExpired: Util.getTimeStampWithConditions(this.getRuleOfExpiredTime()),
             timeOfCreate: Util.getCurrentTimeStamp(),
-            priceOfTotal: this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering),
+            priceOfTotal: totalPrice,
             imageUrlOfHeadPhoto: _.head(itemsOfClientOrdering)?.photo ?? "",
             items: this.getPreciseItemsAsRecord(itemsOfClientOrdering),
             email: email || "",
@@ -95,94 +204,19 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             distance: "",
             name: name || "",
             phoneNumber: phone || "",
-            idOfAuthor: itemsOfClientOrdering[0].idOfAuthor
+            stateOfDeliver: hasDeliverdVarient ? Config.StateOfDeliver.Pending : Config.StateOfDeliver.Needless,
+            idOfAuthor: authorId
         });
 
-        /** 成立hades作為收益報表用 */
-        const order = result.value;
-        await Api.submitHadeItem(
-            {
-                priceOfTotal: order.priceOfTotal,
-                timeOfCreate: order.timeOfCreate,
-                timeOfPayment: order.timeOfPayment,
-                paid: false,
-                id: order.id
-            },
-            order.id,
-            order.idOfAuthor
-        );
+        transaction.create(preciseOrderRef, preciseOrderData);
 
-        if (result.succeed) return { idOfPreciseOrder: result.value.id };
-        else this.appendErrorLog(9999, `E1299 創建訂單時失敗，未知原因(請訊息洽詢)。`);
-    }
-
-    /**
-     * 購物車結帳交易處理（含課程衝堂檢查）
-     * @param {array} itemsOfCartie - 購買商品們 [..{idOfBooze,idOfVariant,quantity,nameOfBooze}]
-     */
-    checkoutCartWithScheduleCheck = async (itemsOfCartie) => {
-        function getNameOfSelectBooze(idOfVariant) {
-            const itemOfCartie = _.find(itemsOfCartie, (item) => _.isEqual(item.idOfVariant, idOfVariant));
-            return itemOfCartie ? itemOfCartie.nameOfBooze : "(已過期)";
-        }
-
-        const db = this._firebase().firestore();
-        return await db.runTransaction(async (transaction) => {
-            // 先批次抓所有商品文件
-            const variantRefs = itemsOfCartie.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
-            const variantSnaps = await transaction.getAll(...variantRefs);
-
-            // 建立商品快取 Map
-            const mapOfVariant = {};
-            let authorId = null; // 第一個作者 ID，作為檢查基準
-
-            for (let i = 0; i < variantSnaps.length; i++) {
-                const snap = variantSnaps[i];
-                if (!snap.exists) throw new Error(`商品不存在：${getNameOfSelectBooze(variantRefs[i].id)}`);
-
-                const id = snap.id;
-                const variant = snap.data();
-                mapOfVariant[id] = variant;
-
-                const item = _.find(itemsOfCartie, (item) => _.isEqual(item.idOfVariant, id));
-                item.price = variant.price;
-                item.photo = variant.photo;
-                item.content = variant.content;
-                item.idOfAuthor = variant.idOfAuthor;
-
-                // 檢查 idOfAuthor 一致性
-                if (authorId === null) {
-                    authorId = variant.idOfAuthor; // 記錄第一個的 idOfAuthor
-                } else if (variant.idOfAuthor !== authorId) {
-                    throw new Error(`購物車中的商品來自不同作者，無法進行交易。`);
-                }
-            }
-
-            const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfCartie);
-            if (totalPrice > this.getMaxPriceOfTSingleTransaction()) throw new ERROR(`單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
-
-            // 開始扣除商品庫存與新增 schedule（如果是課程）
-            for (const item of itemsOfCartie) {
-                const { idOfBooze, idOfVariant, quantity, nameOfBooze } = item;
-                const variant = mapOfVariant[idOfVariant];
-                const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
-
-                const quantityOfBalance = (variant.quantity || 0) - quantity; //當前數量 - 購買數量
-                if (quantityOfBalance < 0) throw new Error(`${variant.nameOfBooze} ${variant.content} 數量不足`);
-
-                // 更新庫存
-                transaction.update(variantRef, { quantity: quantityOfBalance });
-
-                // 如果是課程，先檢查是否衝堂
-                if (variant.isTaskJob) {
-                    if (variant.useMainTrunk) {
-                        const result = await this.checkConflictAgainst2MainTrunk(variant, transaction);
-                        if (result.conflict) throw new Error(`${variant.nameOfBooze}的時段(${variant.content})衝突`);
-                    }
-                    item.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
-                }
-            }
+        const hadeData = Api.normalizeHade({
+            priceOfTotal: totalPrice,
+            timeOfCreate: Util.getCurrentTimeStamp(),
+            paid: false,
+            id: preciseOrderRef.id
         });
+        transaction.create(db.collection(`/users/${authorId}/hades`).doc(preciseOrderRef.id), hadeData);
     };
 
     getPreciseItemsAsRecord(variants) {

@@ -20,23 +20,22 @@ class ModularizedInformDeliveringByAuthor extends BaseInformDeliveringByAuthor {
     async handleHttpOnCall(data, session) {
         const idOfPreciseOrder = data.idOfPreciseOrder;
 
-        if (Util.isUndefinedNullEmpty(idOfPreciseOrder)) this.appendErrorLog(9999, `81142343212 沒有訂單內容`);
-
+        await this.validateIdOfDocumentQualify(idOfPreciseOrder, "DeliveringByAuthor");
         const detailOfPreciseOrder = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
-        this.validatePreciseOrder(detailOfPreciseOrder, true, "154654123");
-
+        await this.validatePreciseOrderIsExist(detailOfPreciseOrder, idOfPreciseOrder, "DeliveringByAuthor");
         /** 確認身份為訂單的 idOfAuthor */
-        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session, "45411345612");
-        await this.validateOrderIsCompleted(detailOfPreciseOrder);
-        await Api.updatePreciseOrderItemAtomically((order, transaction) => {
-            this.validatePreciseOrder(order, true, "1551414851");
+        await this.validateIsAuthorOfOrder(detailOfPreciseOrder, session, "DeliveringByAuthor");
+        await this.validateOrderIsCompletedPayment(detailOfPreciseOrder);
+        await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
+            await this.validateOrderIsCompletedPayment(order, "DeliveringByAuthor");
             return {
                 stateOfDeliver: Config.StateOfDeliver.Sending,
+                isDelivered: true,
                 timeOfDelivered: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
             };
         }, detailOfPreciseOrder.id);
 
-        //todo:send email
+        //todo:send email(已出貨)
     }
 
     /** -------------------- async api -------------------- **/
