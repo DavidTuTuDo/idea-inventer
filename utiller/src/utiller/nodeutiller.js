@@ -489,8 +489,10 @@ class NodeUtiller extends Utiller {
         this.appendInfo(`collectionToFile succeed, file name ==> ${fileName}`);
     }
 
-    /** 重複讀取file IO時，要用這個方式，不然IO太吃資源了 */
-    async readFileContentByPath(path, cache) {
+    /** 重複讀取file IO時，要用這個方式，不然IO太吃資源了
+     *  重要！！！！！cache可能會導致node.js的 stack memory爆掉
+     * */
+    async readFileContentByPath(path, cache = {}) {
         return cache[path] ?? (cache[path] = await fsp.readFile(path, 'utf-8'));
     }
 

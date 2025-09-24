@@ -9795,6 +9795,7 @@ class ScheduleManager {
                 await builder.leanCodeOfProjectSrc('web');
                 break;
             default:
+                await builder.leanCodeOfProjectSrc('web');
                 Util.appendInfo(`874845 project=> ${pathOfProject} || behavior=>'${behavior}' jo4你怪怪的`);
                 break
         }

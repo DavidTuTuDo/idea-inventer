@@ -14,7 +14,6 @@ export default class Lean {
         this.files = []; // 檔案路徑集合
         this.listOfAnalysis = [];
         this.listOfCleanImport = {};
-        this.contentsOfFiles = {};
     }
 
     // 初始化，取得所有檔案的路徑
@@ -43,7 +42,7 @@ export default class Lean {
             }
 
             console.log(`📄 正在收集function檔案：${_path}`);
-            const obj = await new collector(_path, await Util.readFileContentByPath(_path, this.contentsOfFiles)).collectFunctions();
+            const obj = await new collector(_path, await fs.readFile(_path, 'utf-8')).collectFunctions();
             this.objectOfFunctions = {...this.objectOfFunctions, ...obj}
         }
         this.listOfFunctions = this.objectToArrayWithKeyField(this.objectOfFunctions);
@@ -117,7 +116,7 @@ export default class Lean {
     extractLinesFromFile = async (target) => {
         const {path: filePath, lineRange} = target;
         const [startLine, endLine] = lineRange;
-        const content = await Util.readFileContentByPath(filePath, this.contentsOfFiles);
+        const content = await fs.readFile(filePath, 'utf-8');
         const lines = content.split('\n');
 
         // 使用 lodash 取出範圍內行（注意行號為 1-based）
@@ -139,8 +138,9 @@ export default class Lean {
                 const functionsOfReference = _.filter(self.listOfFunctions, (func) => referencedNames.includes(func.name));
                 functionsOfReference.forEach(func => func.used = true);
                 /**遞迴處理主func（例如：fetch(){ one();a.two();const c = d.three; }）所引用的子func（例如one two, three）*/
-                // await analyzeFunctionUsage(functionsOfReference, func.sign);
-                functionsOfReference.forEach(async (_func) => await modifyObjectState(_func, func.sign));
+                for (const _func of functionsOfReference) {
+                    await modifyObjectState(_func, func.sign);
+                }
             }
         }
 
@@ -149,7 +149,9 @@ export default class Lean {
             const keywords = latest.map(each => each.name);
             for (const keyword of keywords) {
                 const list = _.filter(self.listOfFunctions, (each) => _.isEqual(each.name, keyword));
-                list.forEach(async (func) => await modifyObjectState(func));
+                for (const func of list) {
+                    await modifyObjectState(func);
+                }
             }
         }
 
@@ -176,7 +178,7 @@ export default class Lean {
                 continue;
             }
             console.log(`📄 正在分析檔案：${_path}`);
-            const content = await Util.readFileContentByPath(_path, this.contentsOfFiles);
+            const content = await fs.readFile(_path, 'utf-8');
             // console.log('121321545 content =>',content);
             /** 範例一 const keywordsOfUsage = _.filter(_.keys(this.objectOfFunctions), keyword => new RegExp(\\.${keyword}\\(, 'g').test(content)); => xxx.functionName( */
             const functionsOfUsage = _.filter(this.listOfFunctions, func => new RegExp(`\\.${func.name}\\b`, 'g').test(content));
@@ -211,16 +213,16 @@ export default class Lean {
     }
 
     cleanMultipleJsFilesAsync = async (targets) => {
-        const tasks = targets.map(async ({path: filePath, lines}) => {
+        for (const {path: filePath, lines} of targets) {
             try {
                 const exists = await fs.stat(filePath).then(() => true).catch(() => false);
                 if (!exists) {
                     console.warn(`⚠️ File not found: ${filePath}`);
-                    return;
+                    continue;
                 }
 
                 // 1. 讀取檔案內容
-                const content = await Util.readFileContentByPath(filePath, this.contentsOfFiles);
+                const content = await fs.readFile(filePath, 'utf-8');
                 let linesArr = content.split('\n');
 
                 // 2. 移除指定行數（轉成 0-based index）
@@ -254,9 +256,9 @@ export default class Lean {
             } catch (err) {
                 console.error(`❌ Failed to process ${filePath}:`, err);
             }
-        });
-
-        await Promise.all(tasks);
+            // Yield to the event loop to allow file descriptors to be closed.
+            await new Promise(resolve => setImmediate(resolve));
+        }
     }
 
     /**
@@ -274,13 +276,21 @@ export default class Lean {
 
 
     fileImportRemover = async () => {
+        const results = {};
         for (const file of this.files) {
-            const _path = path.resolve(this.srcPath, file)
+            const _path = path.resolve(this.srcPath, file);
             console.log(`📄 正在清除沒用到的import檔案：${_path}`);
-            const cleaner = new dissimport(_path);
-            const object = await cleaner.clean();
-            this.listOfCleanImport = {...this.listOfCleanImport, ...object};
+            try {
+                const cleaner = new dissimport(_path);
+                const object = await cleaner.clean();
+                Object.assign(results, object);
+            } catch (err) {
+                console.error(`❌ Failed to process ${_path}:`, err.message);
+            }
+            // Yield to the event loop to allow file descriptors to be closed.
+            await new Promise(resolve => setImmediate(resolve));
         }
+        this.listOfCleanImport = results;
         await Util.persistJsonFilePrettier('./temp/list_of_clean_import.json', this.listOfCleanImport);
     }
 
@@ -294,6 +304,6 @@ export default class Lean {
 
         /** 以下會更動到目的檔案*/
         await this.cleanMultipleJsFilesAsync(this.listOfAnalysis);
-        await this.fileImportRemover()
+        await this.fileImportRemover();
     }
 }
