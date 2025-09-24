@@ -85,9 +85,9 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/material`,
-            views: ['Badge', 'Checkbox', 'Chip', 'Skeleton', 'Autocomplete', 'InputBase', 'Switch', 'SwipeableDrawer', 'MenuItem', 'Grid', 'Paper', 'Card', 'Avatar', 'AppBar', 'Toolbar', 'TextField',
-                'Radio', 'RadioGroup', 'ButtonGroup', 'FormControlLabel', 'Slider', 'Typography', 'Button', 'IconButton',
-                'Drawer', 'ListItem', 'List', 'Tabs', 'Tab', 'CircularProgress']
+            views: ["Accordion", "AccordionSummary", "AccordionDetails","Badge", "Checkbox", "Chip", "Skeleton", "Autocomplete", "InputBase", "Switch", "SwipeableDrawer", "MenuItem", "Grid", "Paper", "Card", "Avatar", "AppBar", "Toolbar", "TextField",
+                "Radio", "RadioGroup", "ButtonGroup", "FormControlLabel", "Slider", "Typography", "Button", "IconButton",
+                "Drawer", "ListItem", "List", "Tabs", "Tab", "CircularProgress"]
         },
         {
             from: `@mui/x-date-pickers`,
@@ -1320,7 +1320,7 @@ class CodegenNode {
     /** 像是新增一個item, 這種屬許array等級的作業, 一個Array只會有一個新增 */
     getFunctionNameOfCollectionEditor() { return Util.camel('on', this.getName(), 'Editor', 'Clicked', 'AsyncTask'); }
 
-    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
+    isContainer() { return Util.isOrEquals(_.toLower(this.getView()), 'accordionsummary','accordiondetails','accordion','grid', 'div', 'card', 'paper', 'swiper', 'swiperslide', 'badge',
       'drawer', 'toolbar', 'appbar', 'iconbutton', 'list', 'listitem', 'menuitem', 'swipeabledrawer', 'tabs', 'react.fragment', 'LocalizationProvider'); }
 
     getFunctionNameOfSwiper() { return Util.camel(`on`, this.getPreciseNameOfAttributeView(), 'Swipe'); }
@@ -2131,6 +2131,10 @@ class CodegenNode {
 
     isCheckboxView(type = 'default', node = this) {
         return node.isAttributeView('Checkbox', type)
+    }
+
+    isAccordion(type = 'default', node = this) {
+        return node.isAttributeView('Accordion', type)
     }
 
     isCustomImageButton(type = 'default') {
@@ -7671,6 +7675,26 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         readOnly: true,
                     })
                 }
+            }
+
+            if (node.view === "AccordionDetails") {
+                node.wrapView = "Accordion";
+                node.ruleOfOuter = "start";
+                node.appendChildrenWithJsons({
+                    outer: true,
+                    name: "summary",
+                    view: "AccordionSummary",
+                    needParam:true,
+                    props:{expandIcon: `###<${node.icon} />`},
+                    children: [{
+                        view: "Typography",
+                        name: `titleOf${_.upperFirst(node.getName())}`,
+                        type: "string",
+                        incest: { view: false, attribute: true },
+                        defaultValue: node.title
+                    }]
+                });
+                this.appendMuiIconImport(node, node.getIcon());
             }
 
             if (node.isTimeDateRangePickerView()) {

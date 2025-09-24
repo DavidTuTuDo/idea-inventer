@@ -465,8 +465,34 @@
         /** empty style */
     }
 }
-.AccountAreaDiv {
+.AccountAreaDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    gap: 2px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAccordionDetails {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAccordionWrap {
     width: 95%;
+    transition: all 0.2s ease;
     @media @mobile {
         /** empty style */
     }
@@ -477,7 +503,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfTokenDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleAreaOfListOfAuthorOrderDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -488,7 +514,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfTokenDivWrap {
+.AccountAreaSaleAreaOfListOfAuthorOrderDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -499,7 +525,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfTokenOptionOfTokenTitleTypography {
+.AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -510,7 +536,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfTokenOptionOfTokenContentTypography {
+.AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -521,7 +547,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfTokenArrowOfTokenIconButton {
+.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -532,7 +558,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfTokenArrowOfTokenIconNavigateNext {
+.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -543,7 +569,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendBoozeDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleAreaOfAppendBoozeDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -554,7 +580,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendBoozeDivWrap {
+.AccountAreaSaleAreaOfAppendBoozeDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -565,7 +591,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography {
+.AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -576,7 +602,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendBoozeOptionOfAppendBoozeContentTypography {
+.AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -587,7 +613,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendBoozeArrowOfAppendBoozeIconButton {
+.AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -598,7 +624,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext {
+.AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -609,7 +635,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoToMyBoozeDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleAreaOfGoToMyBoozeDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -620,7 +646,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoToMyBoozeDivWrap {
+.AccountAreaSaleAreaOfGoToMyBoozeDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -631,7 +657,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography {
+.AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -642,7 +668,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography {
+.AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -653,7 +679,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton {
+.AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -664,7 +690,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext {
+.AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -675,7 +701,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMarketSettingDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleAreaOfMarketSettingDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -686,7 +712,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMarketSettingDivWrap {
+.AccountAreaSaleAreaOfMarketSettingDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -697,7 +723,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMarketSettingOptionOfMarketSettingTitleTypography {
+.AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -708,7 +734,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMarketSettingOptionOfMarketSettingContentTypography {
+.AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -719,7 +745,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMarketSettingArrowOfMarketSettingIconButton {
+.AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -730,7 +756,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext {
+.AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -741,7 +767,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyScheduleDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleAreaOfMyScheduleDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -752,7 +778,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyScheduleDivWrap {
+.AccountAreaSaleAreaOfMyScheduleDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -763,7 +789,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyScheduleOptionOfMyScheduleTitleTypography {
+.AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -774,7 +800,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyScheduleOptionOfMyScheduleContentTypography {
+.AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -785,7 +811,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyScheduleArrowOfMyScheduleIconButton {
+.AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -796,7 +822,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext {
+.AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -807,7 +833,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyReportDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleAreaOfMyReportDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -818,7 +844,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyReportDivWrap {
+.AccountAreaSaleAreaOfMyReportDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -829,7 +855,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyReportOptionOfMyReportTitleTypography {
+.AccountAreaSaleAreaOfMyReportOptionOfMyReportTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -840,7 +866,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyReportOptionOfMyReportContentTypography {
+.AccountAreaSaleAreaOfMyReportOptionOfMyReportContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -851,7 +877,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyReportArrowOfMyReportIconButton {
+.AccountAreaSaleAreaOfMyReportArrowOfMyReportIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -862,7 +888,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfMyReportArrowOfMyReportIconNavigateNext {
+.AccountAreaSaleAreaOfMyReportArrowOfMyReportIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -873,7 +899,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfAuthorOrderDiv:extend(.AccountBasicDiv) {
+.AccountAreaSaleSummaryAccordionSummary {
     @media @mobile {
         /** empty style */
     }
@@ -884,7 +910,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfAuthorOrderDivWrap {
+.AccountAreaSaleSummaryTitleOfSaleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -895,7 +921,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderTitleTypography {
+.AccountAreaBuyAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
     @media @mobile {
         /** empty style */
     }
@@ -906,7 +932,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderContentTypography {
+.AccountAreaBuyAccordionWrap:extend(.AccountAreaSaleAccordionWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -917,7 +943,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton {
+.AccountAreaBuyAreaOfListOfUserOrderDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -928,7 +954,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext {
+.AccountAreaBuyAreaOfListOfUserOrderDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -939,7 +965,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfUserOrderDiv:extend(.AccountBasicDiv) {
+.AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -950,7 +976,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfUserOrderDivWrap {
+.AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -961,7 +987,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfUserOrderOptionOfListOfUserOrderTitleTypography {
+.AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -972,7 +998,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfUserOrderOptionOfListOfUserOrderContentTypography {
+.AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -983,7 +1009,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton {
+.AccountAreaBuySummaryAccordionSummary {
     @media @mobile {
         /** empty style */
     }
@@ -994,7 +1020,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfListOfUserOrderArrowOfListOfUserOrderIconNavigateNext {
+.AccountAreaBuySummaryTitleOfBuyTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1005,7 +1031,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoEditModeDiv:extend(.AccountBasicDiv) {
+.AccountAreaAdminAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
     @media @mobile {
         /** empty style */
     }
@@ -1016,7 +1042,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoEditModeDivWrap {
+.AccountAreaAdminAccordionWrap:extend(.AccountAreaSaleAccordionWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -1027,7 +1053,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoEditModeOptionOfGoEditModeTitleTypography {
+.AccountAreaAdminAreaOfGoEditModeDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -1038,7 +1064,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoEditModeOptionOfGoEditModeContentTypography {
+.AccountAreaAdminAreaOfGoEditModeDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -1049,7 +1075,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoEditModeArrowOfGoEditModeIconButton {
+.AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1060,7 +1086,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext {
+.AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1071,7 +1097,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfCleanCacheDiv:extend(.AccountBasicDiv) {
+.AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -1082,7 +1108,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfCleanCacheDivWrap {
+.AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -1093,7 +1119,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfCleanCacheOptionOfCleanCacheTitleTypography {
+.AccountAreaAdminAreaOfAppendAdminDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -1104,7 +1130,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfCleanCacheOptionOfCleanCacheContentTypography {
+.AccountAreaAdminAreaOfAppendAdminDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -1115,7 +1141,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfCleanCacheArrowOfCleanCacheIconButton {
+.AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1126,7 +1152,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext {
+.AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1137,7 +1163,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminDiv:extend(.AccountBasicDiv) {
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -1148,7 +1174,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminDivWrap {
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -1159,7 +1185,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminOptionOfAppendAdminTitleTypography {
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -1170,7 +1196,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminOptionOfAppendAdminContentTypography {
+.AccountAreaAdminAreaOfAppendReaderDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -1181,7 +1207,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconButton {
+.AccountAreaAdminAreaOfAppendReaderDivWrap {
     @media @mobile {
         /** empty style */
     }
@@ -1192,7 +1218,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminArrowOfAppendAdminReactFragmentWrap {
+.AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1203,7 +1229,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext {
+.AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1214,7 +1240,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderDiv:extend(.AccountBasicDiv) {
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -1225,7 +1251,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderDivWrap {
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -1236,7 +1262,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderOptionOfAppendReaderTitleTypography {
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -1247,7 +1273,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderOptionOfAppendReaderContentTypography {
+.AccountAreaAdminSummaryAccordionSummary {
     @media @mobile {
         /** empty style */
     }
@@ -1258,7 +1284,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconButton {
+.AccountAreaAdminSummaryTitleOfAdminTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1269,7 +1295,7 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderArrowOfAppendReaderReactFragmentWrap {
+.AccountAreaUserAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
     @media @mobile {
         /** empty style */
     }
@@ -1280,7 +1306,162 @@
         /** empty style */
     }
 }
-.AccountAreaAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext {
+.AccountAreaUserAccordionWrap:extend(.AccountAreaSaleAccordionWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenDiv:extend(.AccountBasicDiv) {
+    border-top: 1px solid #e0e0e0;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenOptionOfTokenTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenOptionOfTokenContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenArrowOfTokenIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserSummaryAccordionSummary {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserSummaryTitleOfUserTypography {
     @media @mobile {
         /** empty style */
     }
@@ -1292,6 +1473,8 @@
     }
 }
 .AccountLogoutChip {
+    margin-top: 12px;
+    width: 100px;
     @media @mobile {
         /** empty style */
     }
