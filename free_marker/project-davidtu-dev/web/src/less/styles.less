@@ -1654,13 +1654,8 @@
         /** empty style */
     }
 }
-.DionysusBoozePhotoOfDemoImg {
+.DionysusBoozePhotoOfDemoImg:extend(.SquareRatioImg) {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 5px;
-    object-fit: cover;
-    object-position: center;
-    display: block;
     @media @mobile {
         /** empty style */
     }
@@ -1668,7 +1663,7 @@
         /** empty style */
     }
     @media @desktop {
-        height: 200px;
+        width: 200px;
     }
 }
 .DionysusBoozeNameTypography {
@@ -2243,11 +2238,9 @@
         flex-wrap: wrap;
     }
 }
-.DionysusBacchusDetailContentPhotoHrefImg {
+.DionysusBacchusDetailContentPhotoHrefImg:extend(.SquareRatioImg) {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center;
+    border-radius: 0;
     @media @mobile {
         /** empty style */
     }
@@ -2398,9 +2391,8 @@
         /** empty style */
     }
 }
-.DionysusMaenadsMainPhotoImg {
+.DionysusMaenadsMainPhotoImg:extend(.SquareRatioImg) {
     width: 150px;
-    border-radius: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -2409,6 +2401,7 @@
     }
     @media @desktop {
         /** empty style */
+        width: 220px;
     }
 }
 .DionysusMaenadsMainInfoDiv:extend(.CenterInParentColumn) {
@@ -2781,8 +2774,8 @@
 }
 .DionysusCartieMainBriefDiv:extend(.CenterInParentRow) {
     width: 100%;
-    gap: 10px;
-    padding-left: 8px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #bbb;
     @media @mobile {
         /** empty style */
     }
@@ -2794,8 +2787,7 @@
     }
 }
 .DionysusCartieMainBriefDivList:extend(.CenterInParentColumn) {
-    width: 96%;
-    gap: 10px;
+    width: 100%;
     margin-top: 10px;
     @media @mobile {
         /** empty style */
@@ -2818,8 +2810,8 @@
         /** empty style */
     }
 }
-.DionysusCartieMainBriefSureDivWrap:extend(.CenterInParentRow) {
-    width: 7%;
+.DionysusCartieMainBriefSureDivWrap:extend(.CenterInParentColumn) {
+    width: 10%;
     @media @mobile {
         /** empty style */
     }
@@ -2830,9 +2822,8 @@
         /** empty style */
     }
 }
-.DionysusCartieMainBriefPhotoImg {
+.DionysusCartieMainBriefPhotoImg:extend(.SquareRatioImg) {
     width: 28%;
-    border-radius: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -2845,6 +2836,8 @@
 }
 .DionysusCartieMainBriefSpecDiv:extend(.CenterInParentColumn) {
     width: 60%;
+    padding-left: 5px;
+    padding-right: 3px;
     align-items: flex-start;
     @media @mobile {
         /** empty style */
@@ -7601,11 +7594,9 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderBriefImageOfProductPhotoImg {
+.EpayFootprintOrderBriefImageOfProductPhotoImg:extend(.SquareRatioImg) {
     width: 100px;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: center;
+    border-radius: 0;
     @media @mobile {
         /** empty style */
     }
@@ -7614,7 +7605,6 @@
     }
     @media @desktop {
         width: 120px;
-        height: 120px;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionDiv:extend(.CenterInParentColumn) {

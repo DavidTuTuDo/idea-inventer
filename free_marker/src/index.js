@@ -5331,17 +5331,29 @@ class ComponentBuilder extends BaseBuilder {
      */
 
     getJSXStrings(param) {
+
         function normalize(value) {
-            if (_.isNumber(value)) {
+            if (_.isNumber(value) || _.isBoolean(value)) {
                 return `{${value}}`;
             }
 
-            if (_.isString(value) && _.startsWith(value, `###`)) {
-                return `{${Util.getStringOfDropHeadSign(value, `#`)}}`;
+            if (_.isString(value)) {
+                if (value.startsWith("###")) {
+                    const cleaned = Util.getStringOfDropHeadSign(value, "#");
+                    return `{${cleaned}}`;
+                }
+                return `{${JSON.stringify(value)}}`;
             }
 
-            if (_.isBoolean(value)) {
-                return `{${_.toString(value)}}`;
+            if (_.isObject(value)) {
+                const stmts = Object.entries(value).map(([key, val]) => {
+                    if (_.isString(val) && val.startsWith("###")) {
+                        const cleaned = Util.getStringOfDropHeadSign(val, "#");
+                        return `'${key}' : ${cleaned}`;
+                    }
+                    return `'${key}' : ${JSON.stringify(val)}`;
+                });
+                return `{{${stmts.join(",")}}}`;
             }
 
             return `{${JSON.stringify(value)}}`;

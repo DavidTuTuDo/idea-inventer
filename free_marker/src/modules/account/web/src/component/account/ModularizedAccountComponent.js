@@ -111,7 +111,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     }
 
     onAccountArrowOfCleanCacheIconButtonClicked(param) {
-        super.onAccountArrowOfCleanCacheIconButtonClicked(param);
+        UserInfoRef.deleteWholeItemFromCart();
     }
 
     onAccountArrowOfGoEditModeIconButtonClicked(param) {

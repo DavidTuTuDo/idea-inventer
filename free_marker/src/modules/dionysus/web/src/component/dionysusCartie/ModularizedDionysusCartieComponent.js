@@ -26,6 +26,19 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
         this.getStore().validateCountOfOrder(brief, false, true);
     }
 
+    getInjectPropsOfDionysusCartieBriefSureCheckbox(brief) {
+        return { disabled: brief.quantity <= 0 };
+    }
+
+    getInjectStyleOfDionysusCartieBriefDiv(brief) {
+        return {
+            backgroundColor:
+                brief.quantity <= 0
+                    ? "rgba(200, 200, 200, 0.3)" // 售罄樣式
+                    : "unset" // 還原為預設 class 設定 };
+        };
+    }
+
     onDionysusCartieWholeCheckboxChange(param) {
         this.getStore().updateBriefByWholeStatus();
     }

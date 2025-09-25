@@ -187,7 +187,7 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "" }) => {
+    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "" , quantityOfMaximum}) => {
         Util.appendInfo({ idOfBooze, quantity });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
@@ -195,7 +195,7 @@ class UserInfo {
         Util.appendInfo(`joinItemToCart ==>`);
         Util.appendInfo({ idOfBooze, idOfVariant, quantity, key, nameOfBooze });
 
-        if (object) object.quantity = object.quantity + quantity;
+        if (object) object.quantity = Math.min(object.quantity + quantity, quantityOfMaximum);
         else infoOfCartie[key] = { idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);

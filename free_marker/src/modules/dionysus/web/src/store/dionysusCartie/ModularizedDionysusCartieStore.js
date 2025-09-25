@@ -54,7 +54,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
                 price: variant.price,
                 priceB4Discount: variant.priceB4Discount,
                 countOfSubmit,
-                quantity: currentCountOfMaximum
+                quantity: currentCountOfMaximum,
+                sure: currentCountOfMaximum > 0
             });
         }
 
@@ -118,7 +119,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     /** 如果全選打勾，全部打勾 -> 如果全選消除，全部消除*/
     updateBriefByWholeStatus() {
         const checked = this.getWhole();
-        _.each(this.getBriefs(), (brief) => brief.setSure(checked));
+        _.each(this.getBriefs(), (brief) => brief.setSure(brief.quantity > 0 ? checked : false));
     }
 
     updateWholeStatusByBrief() {

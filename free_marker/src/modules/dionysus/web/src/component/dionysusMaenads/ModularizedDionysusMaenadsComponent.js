@@ -58,13 +58,11 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
             const idOfBooze = maenads.getBooze().id;
             const idOfVariant = maenads.getSelectedVariant().id;
             const quantity = _.toInteger(this.getStore().getCountOfSubmit());
-            UserInfoRef.joinItemToCart({ idOfBooze, idOfVariant, quantity, nameOfBooze: maenads.getBooze().name });
+            const quantityOfMaximum = maenads.getSelectedVariant().quantity;
+            UserInfoRef.joinItemToCart({ quantityOfMaximum, idOfBooze, idOfVariant, quantity, nameOfBooze: maenads.getBooze().name });
             if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(this.getComponentInstance());
             self.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
-            maenads.toggleCartieAnimate();
-            Util.syncDelay(1500).then(() => {
-                self.dismiss();
-            });
+            if (!UserInfoRef.isGotoCartieDirect()) maenads.toggleCartieAnimate();
         }
     }
 

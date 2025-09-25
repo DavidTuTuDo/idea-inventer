@@ -94,7 +94,14 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         } else this.getVariants().forEach((v) => v.getOptions().forEach((o) => o.setQuantity(1)));
 
         const selectedOption = this.objectOfVariant[keyOfVariant];
-        selectedOption ? this.setCurrentVariant(selectedOption) : this.setCurrentOptionExist(false);
+        selectedOption ? this.setCurrentVariant(selectedOption) : this.clearCurrentVariant();
+    };
+
+    clearCurrentVariant = () => {
+        this.setCurrentOptionExist(false);
+        this.setPhoto(this.getBooze().photoOfDemo);
+        this.setRangeOfPrice(this.getBooze().rangeOfPrice);
+        this.setCount(`未選擇`);
     };
 
     /**
