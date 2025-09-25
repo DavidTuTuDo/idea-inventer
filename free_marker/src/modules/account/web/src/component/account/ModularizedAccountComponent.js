@@ -45,7 +45,16 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         const hash = object.getDialogInputValueOfAccountArrowOfAppendReader();
         if (_.size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { allowRead: true }, hash).then((result) => {
-                this.showInfoSnackMessage(`升級 ${hash} 為 ALLOW READ 成功`);
+                this.showInfoSnackMessage(`升級 ${hash} 為「悅讀人」成功`);
+            });
+    }
+
+    onAccountArrowOfAppendAuthorIconButtonClicked(param) {
+        const object = param.object;
+        const hash = object.getDialogInputValueOfAccountArrowOfAppendAuthor();
+        if (_.size(hash) > 8)
+            this.api.updateUserItem(this.getComponentInstance(), { isAuthor: true }, hash).then((result) => {
+                this.showInfoSnackMessage(`升級 ${hash} 為「賣家」成功`);
             });
     }
 
@@ -54,7 +63,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         const hash = object.getDialogInputValueOfAccountArrowOfAppendAdmin();
         if (_.size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { isAdmin: true }, hash).then((result) => {
-                this.showInfoSnackMessage(`升級 ${hash} 為 ADMIN 成功`);
+                this.showInfoSnackMessage(`升級 ${hash} 為「管理者」成功`);
             });
     }
 

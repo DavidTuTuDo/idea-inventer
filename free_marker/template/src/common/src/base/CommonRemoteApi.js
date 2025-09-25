@@ -277,13 +277,13 @@ class CommonRemoteApi {
         Util.appendInfo(`${uid} succeed delete items ${path}`);
     }
 
-    async submitObject(path, content, objName = "field") {
+    async submitObject(path, content) {
         const uid = Util.getRandomHashV2(10);
         const commitment = content;
         path = this.getNormalizePathOfObjectApi(path);
-        Util.appendInfo(`${uid} start submit object => ${path}/${objName}`);
-        const object = await firebase.submitDocument(path, commitment, objName);
-        Util.appendInfo(`${uid} succeed submit object => ${path}/${objName}`);
+        Util.appendInfo(`${uid} start submit object => ${path}`);
+        const object = await firebase.submitDocument(path, commitment, "obj");
+        Util.appendInfo(`${uid} succeed submit object => ${path}`);
         return object;
     }
 
@@ -303,18 +303,29 @@ class CommonRemoteApi {
         Util.appendInfo(`${uid} succeed delete item document->array => ${path}/${id}`);
     }
 
-    async fetchObject(path, objName) {
+    async fetchObject(path) {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
-        Util.appendInfo(`${uid} start fetch object => path:/${path}/${objName}`);
-        const object = await firebase.fetchDocument(path, objName);
-        Util.appendInfo(`${uid} succeed fetch object => path:/${path}/${objName}`);
+        Util.appendInfo(`${uid} start fetch object => path:/${path}`);
+        const object = await firebase.fetchDocument(path, "obj");
+        Util.appendInfo(`${uid} succeed fetch object => path:/${path}`);
         return object;
     }
 
     getNormalizePathOfObjectApi(path) {
-        if (this.isCollectionPath(path)) return path;
-        else return libpath.join(path, "attrs");
+        if (typeof path !== "string") {
+            throw new Error("Path must be a string.");
+        }
+
+        const segments = path.split("/").filter(Boolean); // 移除空段落
+
+        if (segments.length % 2 === 0) {
+            // 已是合法的 document path
+            return segments.join("/");
+        }
+
+        // 非法 document path，補上 /attr
+        return [...segments, "attr"].join("/");
     }
 
     isCollectionPath(path) {
@@ -322,24 +333,24 @@ class CommonRemoteApi {
         return Util.isOdd(segments.length);
     }
 
-    async updateObject(path, objName, updatedObject) {
+    async updateObject(path, updatedObject) {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
-        Util.appendInfo(`${uid} start update object => path:/${path}/${objName}`);
-        await firebase.updateDocument(path, objName, updatedObject);
-        Util.appendInfo(`${uid} succeed update object => path:/${path}/${objName}`);
+        Util.appendInfo(`${uid} start update object => path:/${path}}`);
+        await firebase.updateDocument(path, updatedObject, "obj");
+        Util.appendInfo(`${uid} succeed update object => path:/${path}}`);
     }
 
-    async updateObjectAtomically(path, predict = (object, transaction) => object, objName) {
-        return await this.updateDocumentAtomically(path, predict, objName);
+    async updateObjectAtomically(path, predict = (object, transaction) => object) {
+        return await this.updateDocumentAtomically(path, predict, "obj");
     }
 
-    async deleteObject(path, objName = "contents") {
+    async deleteObject(path) {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
-        Util.appendInfo(`${uid} start delete object => path:/${path}/${objName}`);
-        await firebase.deleteDocument(path, objName);
-        Util.appendInfo(`${uid} succeed delete object => path:/${path}/${objName}`);
+        Util.appendInfo(`${uid} start delete object => path:/${path}`);
+        await firebase.deleteDocument(path, "obj");
+        Util.appendInfo(`${uid} succeed delete object => path:/${path}`);
     }
 
     restfulListenItem(path, id, handler = (data) => data, view) {
@@ -384,8 +395,8 @@ class CommonRemoteApi {
 
     listenObject(path, objName, callback = (data, error) => {}) {
         path = this.getNormalizePathOfObjectApi(path);
-        Util.appendInfo(`listenObject path:/${path}/${objName}`);
-        return firebase.listenDocument(path, objName, callback);
+        Util.appendInfo(`listenObject path:/${path}`);
+        return firebase.listenDocument(path, callback);
     }
 
     showLoadingView(view) {

@@ -154,6 +154,7 @@ class FirebaseHelper extends BaseFirebase {
     /** firestore 的 modular api 使用原則 */
 
     reference = (path, id) => {
+        if (_.isEqual(id, "obj")) return doc(this.firestore(), path);
         return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, id);
     };
 

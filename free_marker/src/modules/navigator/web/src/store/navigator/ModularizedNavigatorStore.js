@@ -30,6 +30,10 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         this.toggleKeyOfComplete();
     }
 
+    getTitle() {
+        return UserInfo.getNameOfBrand() ?? super.getTitle();
+    }
+
     @action
     updateEditButtonStatus() {
         const self = this;
@@ -42,6 +46,8 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         if (_.isArray(this.getKeywords())) {
             this.initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), "label"));
         }
+        const nameOfBrand = this.getInfo().getNameOfBrand();
+        if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
     }
 
     /** -------------------- functions -------------------- **/

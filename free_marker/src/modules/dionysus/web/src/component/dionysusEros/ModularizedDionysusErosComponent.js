@@ -21,12 +21,24 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         super(props);
     }
 
+    getWrapInjectStyleOfDionysusErosAreaOfBrandNameDiv(dionysusEros) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
+    getWrapInjectStyleOfDionysusErosAreaOfTabCreatorDiv(dionysusEros) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
     onDionysusErosArrowOfLinepaySetIconButtonClicked(param) {
         this.getStore().setSelected("linepay");
     }
 
     onDionysusErosArrowOfTabCreatorIconButtonClicked(param) {
         this.getStore().setSelected("tab");
+    }
+
+    onDionysusErosArrowOfLinepayStandIconButtonClicked(param) {
+        this.getStore().setSelected("stand");
     }
 
     onDionysusErosArrowOfBrandNameIconButtonClicked(param) {

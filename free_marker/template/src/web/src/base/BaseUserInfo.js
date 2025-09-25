@@ -13,8 +13,8 @@ import { Application } from "../";
 import CommonPoolHelper from "./CommonPoolHelper";
 
 class UserInfo {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
+    @observable
+    nameOfBrand = "";
 
     @observable
     isLoginSucceed = undefined;
@@ -22,6 +22,10 @@ class UserInfo {
     /** 最高級別的admin(增加悅譜的閱讀permission) */
     @observable
     adminUser = false;
+
+    /** 可以開啟商品的權限 */
+    @observable
+    authorUser = false;
 
     /** 一般級別的admin(修改譜) */
     @observable
@@ -81,6 +85,7 @@ class UserInfo {
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
         this.adminHelper = this.isLoginWithSucceed() && user.isAdmin;
+        this.authorUser = this.isLoginWithSucceed() && user.isAuthor;
         this.setAuthProcessing(false);
         this.invalidateCartie();
     }
@@ -89,11 +94,24 @@ class UserInfo {
         return this.isLoginSucceed;
     }
 
-    isAdmin() {
+    isAuthorUser() {
+        return this.authorUser;
+    }
+
+    isSuperAdmin() {
         return this.adminUser;
     }
 
-    isAdminHelper() {
+    @action
+    setNameOfBrand(name) {
+        this.nameOfBrand = name;
+    }
+
+    getNameOfBrand() {
+        return this.nameOfBrand;
+    }
+
+    isAdmin() {
         return this.adminUser || this.adminHelper;
     }
 

@@ -1258,6 +1258,22 @@ class CodegenNode {
         return undefined;
     }
 
+    getNormalizePathOfObjectApi(path) {
+        if (typeof path !== 'string') {
+            throw new Error("Path must be a string.");
+        }
+
+        const segments = path.split('/').filter(Boolean); // 移除空段落
+
+        if (segments.length % 2 === 0) {
+            // 已是合法的 document path
+            return segments.join('/');
+        }
+
+        // 非法 document path，補上 /attr
+        return [...segments, 'attr'].join('/');
+    }
+
     setStyle(style) {
         this.style = style;
     }
@@ -4581,8 +4597,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     [...defaultParam, `callback = (status, data, error) => {}`],
                     [], [node.isCheapArray() ? 'attention! this is cheap array' : '', `status => 回傳值會有 local|server|`],
                     `${pathStmt}
-                           const objName = '${node.getName()}'
-                        return this.listenObject(path,objName,callback);`
+                        return this.listenObject(path, callback);`
                 )
             } else if (node.isPathArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
@@ -4990,7 +5005,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'doc', 'ref'),
-                        [`return this.reference(path,'${node.getName()}')`],
+                        [`return this.reference(path)`],
                         `get object doc ref`,
                         false)
 
@@ -4999,14 +5014,14 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel(node.getFunctionNameOfSubmit()),
                         [
                             `const commitment = this.${functionNameOfNormalize}(object)`,
-                            `return await self.submitObject(path, commitment,'${node.getName()}')`],
+                            `return await self.submitObject(path, commitment)`],
                         `submit object`)
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
                         [
-                            `const object = await self.fetchObject(path,'${node.getName()}')`,
+                            `const object = await self.fetchObject(path)`,
                             `${this.isWebPlatform() ? 'this.clean()' : ''}`,
                             `${this.isWebPlatform() ? 'this.initial(object)' : ''}`,
                             `return object`
@@ -5016,19 +5031,19 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName()),
-                        [`return await self.updateObject(path, '${node.getName()}',object)`],
+                        [`return await self.updateObject(path,object)`],
                         `update object`);
 
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName(), 'atomically'),
-                        [`return await self.updateObjectAtomically(path, '${node.getName()}',predicate)`],
+                        [`return await self.updateObjectAtomically(path,predicate)`],
                         `update object atomically`);
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfDelete(),
-                        [`return await self.deleteObject(path, '${node.getName()}')`],
+                        [`return await self.deleteObject(path)`],
                         `delete object`);
 
                     for (const child of node.getPreciseColumnChildren()) {
@@ -5037,7 +5052,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                                 node,
                                 Util.camel('submit', 'increment', child.getFieldName()),
                                 [
-                                    `return await self.updateObject(path, '${node.getName()}',{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})})`
+                                    `return await self.updateObject(path,{${child.getFieldName()}: self.getObjectOfIncrement(${node.getDeltaOfIncrement()})})`
                                 ],
                                 `increment attr of object`);
                         }
@@ -7565,11 +7580,13 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await this.buildDeployDocument('firestore.indexes.json', JSON.stringify({indexes}), 'firestore:indexes', deploy)
     }
 
+
+
     getFirebaseRuleOfMatchRoute(node) {
         const path = node.getPath();
         const wildcard = `{${node.getName()}}`;
         const normalize = path.split('\/').map((word) => word.startsWith(':') ? `{${Util.getNormalizedStringNotStartWith(word, ':')}}` : word).join('\/');
-        if (node.isObject()) return Util.joinRespectingDot('/', normalize, node.isCollectionPath() ? '' : 'attrs', wildcard);
+        if (node.isObject()) return Util.joinRespectingDot('/', node.getNormalizePathOfObjectApi(normalize));
         else if (node.isArray()) return Util.joinRespectingDot('/', normalize, wildcard);
         else throw new ERROR(9999, `cant happened this condition ,name:${node.getName()}, type:${node.getType()}`);
     }
@@ -9625,7 +9642,7 @@ class BuildApplication {
         Util.appendInfo(`buildLessFilesOnly() succeed`);
     }
 
-    async buildAdmin(deployToRemote = true) {
+    async deployAdmin(deployToRemote = true) {
         const admin = new ProjectFileHandler(this.getBuildObject('admin'));
         if (!deployToRemote)
             admin.disableRulesRemoteDeploy();
@@ -9760,8 +9777,11 @@ class ScheduleManager {
                 await builder.persistent('functions');
                 await builder.buildCloudFunctions();
                 break;
+            case 'adminBuildOnly':
+                await builder.deployAdmin(false);
+                break;
             case 'adminOnly':
-                await builder.buildAdmin();
+                await builder.deployAdmin();
                 break;
             case 'webOnly':
                 await builder.buildWeb();
@@ -9772,20 +9792,20 @@ class ScheduleManager {
                 break;
             case 'persistentBuildAdmin':
                 await builder.persistent('admin');
-                await builder.buildAdmin();
+                await builder.deployAdmin();
                 break;
             case 'BuildQuickAdmin':
                 await builder.persistent('admin');
-                await builder.buildAdmin(false);
+                await builder.deployAdmin(false);
                 break;
             case 'BuildQuickAdminWithoutPersist':
-                await builder.buildAdmin(false);
+                await builder.deployAdmin(false);
                 break;
             case 'persistentBuild':
                 await builder.persistent('web');
                 await builder.persistent('admin');
                 await builder.buildWeb();
-                await builder.buildAdmin();
+                await builder.deployAdmin();
                 break;
             case 'persistent':
                 await builder.persistent('web');
@@ -9806,7 +9826,7 @@ class ScheduleManager {
                 break;
             case 'buildAllPlatform':
                 await builder.buildWeb();
-                await builder.buildAdmin();
+                await builder.deployAdmin();
                 await builder.buildCloudFunctions();
                 break;
             case 'buildStoreIndexJson':

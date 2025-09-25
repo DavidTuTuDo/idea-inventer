@@ -823,6 +823,20 @@ class MobileStyle {
 
     DionysusErosAreaOfLinepaySetDiv = {};
 
+    DionysusErosAreaOfLinepayStandArrowOfLinepayStandIconNavigateNext = {};
+
+    DionysusErosAreaOfLinepayStandArrowOfLinepayStandReactFragmentWrap = {};
+
+    DionysusErosAreaOfLinepayStandArrowOfLinepayStandIconButton = {};
+
+    DionysusErosAreaOfLinepayStandOptionOfLinepayStandContentTypography = {};
+
+    DionysusErosAreaOfLinepayStandOptionOfLinepayStandTitleTypography = {};
+
+    DionysusErosAreaOfLinepayStandDivWrap = {};
+
+    DionysusErosAreaOfLinepayStandDiv = {};
+
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
 
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap = {};
@@ -1596,6 +1610,20 @@ class MobileStyle {
     AccountAreaAdminAreaOfAppendReaderDivWrap = {};
 
     AccountAreaAdminAreaOfAppendReaderDiv = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconNavigateNext = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorReactFragmentWrap = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton = {};
+
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorContentTypography = {};
+
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorTitleTypography = {};
+
+    AccountAreaAdminAreaOfAppendAuthorDivWrap = {};
+
+    AccountAreaAdminAreaOfAppendAuthorDiv = {};
 
     AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext = {};
 

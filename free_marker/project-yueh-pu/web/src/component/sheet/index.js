@@ -40,7 +40,7 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     rulesOfAllowEditFunction = () => {
-        const rule1 = UserInfoRef.isAdminHelper();
+        const rule1 = UserInfoRef.isAdmin();
         const rule2 = !this.isComponentView();
         const rule3 = _.isEqual(this.getStore().getCurrentPu().getIdOfAuthor(), UserInfoRef.getUid());
         return rule2 && (rule3 || rule1)

@@ -116,7 +116,7 @@ class ChordiventorStore extends BaseChordiventorStore {
 
             const pu = await this.apiOfPu.fetchGuitarpuItem(this.getComponent(), idOfGuitarPu);
 
-            const conditionA = UserInfo.isAdminHelper();
+            const conditionA = UserInfo.isAdmin();
             const conditionB = _.isEqual(pu.copyright, false) && _.isEqual(pu.idOfAuthor, UserInfo.getUid());
 
             if(conditionA || conditionB) {

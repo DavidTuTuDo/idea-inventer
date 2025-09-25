@@ -823,6 +823,20 @@ class CommonStyle {
 
     DionysusErosAreaOfLinepaySetDiv = {};
 
+    DionysusErosAreaOfLinepayStandArrowOfLinepayStandIconNavigateNext = {};
+
+    DionysusErosAreaOfLinepayStandArrowOfLinepayStandReactFragmentWrap = {};
+
+    DionysusErosAreaOfLinepayStandArrowOfLinepayStandIconButton = {};
+
+    DionysusErosAreaOfLinepayStandOptionOfLinepayStandContentTypography = {};
+
+    DionysusErosAreaOfLinepayStandOptionOfLinepayStandTitleTypography = {};
+
+    DionysusErosAreaOfLinepayStandDivWrap = {};
+
+    DionysusErosAreaOfLinepayStandDiv = {};
+
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
 
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap = {};
@@ -1596,6 +1610,20 @@ class CommonStyle {
     AccountAreaAdminAreaOfAppendReaderDivWrap = {};
 
     AccountAreaAdminAreaOfAppendReaderDiv = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconNavigateNext = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorReactFragmentWrap = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton = {};
+
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorContentTypography = {};
+
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorTitleTypography = {};
+
+    AccountAreaAdminAreaOfAppendAuthorDivWrap = {};
+
+    AccountAreaAdminAreaOfAppendAuthorDiv = {};
 
     AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext = {};
 

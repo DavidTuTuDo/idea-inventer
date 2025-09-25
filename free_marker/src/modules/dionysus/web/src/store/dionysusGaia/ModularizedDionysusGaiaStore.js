@@ -302,6 +302,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             delete row.belong;
             return row;
         });
+
         await this.apiOfTabs.submitSelects(
             this.getComponent(),
             tabsOfSubmit.map((each) => ({ ...each, id: _.toString(each.value) }))

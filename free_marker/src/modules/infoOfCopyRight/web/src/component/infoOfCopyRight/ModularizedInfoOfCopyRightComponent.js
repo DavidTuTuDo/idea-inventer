@@ -10,7 +10,7 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
 
     onInfoOfCopyRightUpperGroupRightAreaCprtButtonClicked(param) {
         this.showInfoSnackMessage(`當前版本：${Config.VERSION_OF_PACKAGE_JSON}`);
-        Router.gotoMainPage(this);
+        Router.gotoHomePage(this);
     }
 
     onInfoOfCopyRightGroupOfSocialMediaFbIconButtonClicked(param) {
