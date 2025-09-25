@@ -112,7 +112,7 @@ class UserInfo {
     }
 
     isAdmin() {
-        return this.adminUser || this.adminHelper;
+        return this.adminHelper;
     }
 
     getUid(allowCache = true) {
@@ -187,7 +187,7 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "" , quantityOfMaximum}) => {
+    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "", quantityOfMaximum }) => {
         Util.appendInfo({ idOfBooze, quantity });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());

@@ -3,7 +3,7 @@ service cloud.firestore {
     match /databases/{database}/documents {
 
         function isSelf(uid){
-            return  request.auth.uid == uid;
+            return request.auth.uid == uid;
         }
 
         function isAllowRead(){
@@ -15,19 +15,23 @@ service cloud.firestore {
         }
 
         function isDocumentUser() {
-            return  request.auth != null && resource.data.idOfUser == request.auth.uid;
+            return request.auth != null && resource.data.idOfUser == request.auth.uid;
         }
 
         function isAuthorEitherUser() {
             return isAuthor() || isDocumentUser();
         }
 
+        function isAuthorOfDionysus(id) {
+            return request.auth != null && get(/databases/$(database)/documents/dionysus/$(id)).data.idOfAuthor == request.auth.uid;
+        }
+
         function isAdmin() {
-            return  request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+            return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
         }
 
         function isAuthor() {
-           return  request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAuthor == true;
+            return request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAuthor == true;
         }
 
         function isSignIn() {
