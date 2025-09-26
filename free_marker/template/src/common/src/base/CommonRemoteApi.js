@@ -4,6 +4,7 @@ import _ from "lodash";
 import moment from "moment";
 import libpath from "path";
 import firebase from "./FirebaseHelper";
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 class CommonRemoteApi {
     _firebase() {
@@ -65,6 +66,7 @@ class CommonRemoteApi {
 
     async callCloudFunctions(functionName = "", data, region = "us-central1") {
         Util.appendInfo(`454546 functions httpOnCall => '${functionName}'`, data);
+        data.fingerprint = await this.getFingerprintUid();
         return await firebase.httpOnCall(functionName, data);
     }
 
@@ -121,6 +123,45 @@ class CommonRemoteApi {
     async fetchSizeOfCollection(path) {
         return await firebase.fetchCountOfCollection(path);
     }
+
+    /**
+     * 異步取得裝置的穩定指紋識別碼 (Visitor ID)。
+     * 這個 ID 可作為未登入使用者的唯一 UID，用於後端限流。
+     * * 注意：此函式應該在使用時才呼叫，而不是在頁面載入時同步執行，
+     * 以避免阻塞主執行緒。
+     * * @returns {Promise<string>} 唯一的瀏覽器指紋 ID (visitorId)。
+     */
+    getFingerprintUid = async () => {
+        try {
+            // 載入 FingerprintJS 代理實例
+            // 這是異步操作，會收集瀏覽器/硬體資訊
+            const fp = await FingerprintJS.load();
+
+            // 獲取指紋結果
+            const result = await fp.get();
+
+            // result.visitorId 就是計算出的唯一指紋 ID (UID)
+            const visitorId = result.visitorId;
+
+            if (!visitorId) {
+                console.error("FingerprintJS 無法生成有效的 visitorId。");
+                // 拋出錯誤或返回一個安全的空值，取決於你的錯誤處理策略
+                return "fingerprint-error-unknown";
+            }
+
+            // 可以選擇在這裡將 ID 暫時儲存在 sessionStorage/memory cache 中，
+            // 避免在單次 session 中重複執行指紋計算，以提升效能。
+            // SessionStorage 在無痕模式結束後也會被清除。
+            // sessionStorage.setItem('cached_fp_uid', visitorId);
+
+            return visitorId;
+
+        } catch (error) {
+            console.error("執行 FingerprintJS 發生錯誤:", error);
+            // 如果指紋計算失敗 (例如被 AdBlocker 阻擋)，返回一個備用值
+            return "fingerprint-calculation-failed";
+        }
+    };
 
     async submitItem(path, item, id) {
         const uid = Util.getRandomHashV2(10);

@@ -298,6 +298,7 @@ class UserInfo {
             }
         });
     };
+
 }
 
 export default new UserInfo();
