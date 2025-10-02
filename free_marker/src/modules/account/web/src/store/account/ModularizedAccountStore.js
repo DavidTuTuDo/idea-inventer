@@ -24,10 +24,10 @@ class ModularizedAccountStore extends BaseAccountStore {
         await super.onInitialFetchCompleted(collection);
         const user = Cookie.getUser();
         if (UserInfoRef.isValidUser(user)) {
-            this.setUrlOfHeadPhoto(user.photoURL);
-            this.setValueOfEmail(user.email);
-            this.setValueOfName(user.displayName);
-            this.setValueOfId(user.uid);
+            this.setUrlOfHeadPhoto(UserInfoRef.getPhotoURL());
+            this.setValueOfEmail(UserInfoRef.getEmailOfCurrentUser());
+            this.setValueOfName(UserInfoRef.getDisplayNameOfUser());
+            this.setValueOfId(UserInfoRef.getUid());
         }
         this.setSelectedLang(i18n.getLanguage());
     }

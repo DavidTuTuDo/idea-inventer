@@ -37,8 +37,8 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().setSelected("tab");
     }
 
-    onDionysusErosArrowOfLinepayStandIconButtonClicked(param) {
-        this.getStore().setSelected("stand");
+    onDionysusErosArrowOfPayOfDirectIconButtonClicked(param) {
+        this.getStore().setSelected("direct");
     }
 
     onDionysusErosArrowOfBrandNameIconButtonClicked(param) {
@@ -52,8 +52,33 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitNumOfWorker(num).then();
     }
 
+    onDionysusErosArrowOfPriceOfFreeShippingIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("priceOfFreeShipping");
+        const price = object.getDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping();
+        this.getStore().submitPriceOfFreeShipping(price).then();
+    }
+
+    onDionysusErosArrowOfPercentageOfDiscountIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("percentageOfDiscount");
+        const percent = object.getDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount();
+        this.getStore().submitPercentageOfDiscount(percent).then();
+    }
+
+    onDionysusErosArrowOfAmountOfAllowAnonymousBuyIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("percentageOfDiscount");
+        const amount = object.getDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy();
+        this.getStore().submitAmountOfAllowAnonymousBuy(amount).then();
+    }
+
     onDionysusErosArrowOfEcpaySetIconButtonClicked(param) {
         this.getStore().setSelected("ecpay");
+    }
+
+    onDionysusErosAllowBoughtWithoutLoginInSwitchChange(param) {
+        this.getStore().submitWhetherBoughtWithoutLogin().then();
     }
 
     /** -------------------- async api -------------------- **/

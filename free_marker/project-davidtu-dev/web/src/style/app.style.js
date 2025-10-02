@@ -169,9 +169,9 @@ class AppStyle {
 
     /** => following for timePeriod  component  */
 
-    IreneTimePeriodFuncLeaveChip = {};
-
     IreneTimePeriodFuncConfirmChip = {};
+
+    IreneTimePeriodFuncLeaveChip = {};
 
     IreneTimePeriodFuncDiv = {};
 
@@ -195,9 +195,9 @@ class AppStyle {
 
     /** => following for textsIndexSetter  component  */
 
-    IreneTextsIndexSetterFuncLeaveChip = {};
-
     IreneTextsIndexSetterFuncUpdateChip = {};
+
+    IreneTextsIndexSetterFuncLeaveChip = {};
 
     IreneTextsIndexSetterFuncDiv = {};
 
@@ -241,9 +241,9 @@ class AppStyle {
 
     /** => following for textsFetch  component  */
 
-    IreneTextsFetchFuncLeaveChip = {};
-
     IreneTextsFetchFuncAppendChip = {};
+
+    IreneTextsFetchFuncLeaveChip = {};
 
     IreneTextsFetchFuncDiv = {};
 
@@ -613,13 +613,13 @@ class AppStyle {
 
     /** => following for priceSetter  component  */
 
-    DionysusPriceSetterFuncCommonReactFragmentWrap = {};
-
-    DionysusPriceSetterFuncCommonChip = {};
+    DionysusPriceSetterFuncBatchUpdateChip = {};
 
     DionysusPriceSetterFuncLeaveChip = {};
 
-    DionysusPriceSetterFuncBatchUpdateChip = {};
+    DionysusPriceSetterFuncCommonReactFragmentWrap = {};
+
+    DionysusPriceSetterFuncCommonChip = {};
 
     DionysusPriceSetterFuncDiv = {};
 
@@ -781,6 +781,26 @@ class AppStyle {
 
     /** => following for eros  component  */
 
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconNavigateNext = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyReactFragmentWrap = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconButton = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyContentTypography = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyTitleTypography = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyDivWrap = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyDiv = {};
+
+    DionysusErosRuleAllowBoughtWithoutLoginInSwitch = {};
+
+    DionysusErosRuleLabelOfRuleTypography = {};
+
+    DionysusErosRuleDiv = {};
+
     DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconNavigateNext = {};
 
     DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerReactFragmentWrap = {};
@@ -794,6 +814,34 @@ class AppStyle {
     DionysusErosAreaOfNumOfWorkerDivWrap = {};
 
     DionysusErosAreaOfNumOfWorkerDiv = {};
+
+    DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconNavigateNext = {};
+
+    DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountReactFragmentWrap = {};
+
+    DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconButton = {};
+
+    DionysusErosAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountContentTypography = {};
+
+    DionysusErosAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountTitleTypography = {};
+
+    DionysusErosAreaOfPercentageOfDiscountDivWrap = {};
+
+    DionysusErosAreaOfPercentageOfDiscountDiv = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingIconNavigateNext = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingReactFragmentWrap = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingIconButton = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingOptionOfPriceOfFreeShippingContentTypography = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingOptionOfPriceOfFreeShippingTitleTypography = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingDivWrap = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingDiv = {};
 
     DionysusErosAreaOfEcpaySetArrowOfEcpaySetIconNavigateNext = {};
 
@@ -809,6 +857,20 @@ class AppStyle {
 
     DionysusErosAreaOfEcpaySetDiv = {};
 
+    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconNavigateNext = {};
+
+    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectReactFragmentWrap = {};
+
+    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconButton = {};
+
+    DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectContentTypography = {};
+
+    DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectTitleTypography = {};
+
+    DionysusErosAreaOfPayOfDirectDivWrap = {};
+
+    DionysusErosAreaOfPayOfDirectDiv = {};
+
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
 
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetReactFragmentWrap = {};
@@ -822,20 +884,6 @@ class AppStyle {
     DionysusErosAreaOfLinepaySetDivWrap = {};
 
     DionysusErosAreaOfLinepaySetDiv = {};
-
-    DionysusErosAreaOfLinepayStandArrowOfLinepayStandIconNavigateNext = {};
-
-    DionysusErosAreaOfLinepayStandArrowOfLinepayStandReactFragmentWrap = {};
-
-    DionysusErosAreaOfLinepayStandArrowOfLinepayStandIconButton = {};
-
-    DionysusErosAreaOfLinepayStandOptionOfLinepayStandContentTypography = {};
-
-    DionysusErosAreaOfLinepayStandOptionOfLinepayStandTitleTypography = {};
-
-    DionysusErosAreaOfLinepayStandDivWrap = {};
-
-    DionysusErosAreaOfLinepayStandDiv = {};
 
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
 
@@ -871,6 +919,10 @@ class AppStyle {
 
     /** => following for gaia  component  */
 
+    DionysusGaiaFuncBackToHomeReactFragmentWrap = {};
+
+    DionysusGaiaFuncBackToHomeChip = {};
+
     DionysusGaiaFuncDeletedReactFragmentWrap = {};
 
     DionysusGaiaFuncDeletedChip = {};
@@ -896,6 +948,18 @@ class AppStyle {
     DionysusGaiaAreaOfStatusLabelOfStatusTypography = {};
 
     DionysusGaiaAreaOfStatusDiv = {};
+
+    DionysusGaiaDestIsHomeTeachingSwitch = {};
+
+    DionysusGaiaDestLabelOfHomeTeachingTypography = {};
+
+    DionysusGaiaDestDiv = {};
+
+    DionysusGaiaTakenAllowSelfPickUpSwitch = {};
+
+    DionysusGaiaTakenLabelOfPickUpTypography = {};
+
+    DionysusGaiaTakenDiv = {};
 
     DionysusGaiaAreaOfTrunkUseMainTrunkSwitch = {};
 
@@ -1145,30 +1209,6 @@ class AppStyle {
 
     DionysusPlutusMainRemarkTextField = {};
 
-    DionysusPlutusMainLocationMainTailFindIconWifiFind = {};
-
-    DionysusPlutusMainLocationMainTailFindIconButton = {};
-
-    DionysusPlutusMainLocationMainTailAddressTextField = {};
-
-    DionysusPlutusMainLocationMainTailDiv = {};
-
-    DionysusPlutusMainLocationMainHeadDistrictTextFieldList = {};
-
-    DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
-
-    DionysusPlutusMainLocationMainHeadCityTextFieldList = {};
-
-    DionysusPlutusMainLocationMainHeadCityMenuItem = {};
-
-    DionysusPlutusMainLocationMainHeadDiv = {};
-
-    DionysusPlutusMainLocationMainDiv = {};
-
-    DionysusPlutusMainLocationHeadLabelOfAddressTypography = {};
-
-    DionysusPlutusMainLocationDiv = {};
-
     DionysusPlutusMainPhoneLabelOfPhoneTypography = {};
 
     DionysusPlutusMainPhoneDivWrap = {};
@@ -1186,6 +1226,40 @@ class AppStyle {
     DionysusPlutusMainNameDivWrap = {};
 
     DionysusPlutusMainNameTextField = {};
+
+    DionysusPlutusMainLocationColMainTailFindIconWifiFind = {};
+
+    DionysusPlutusMainLocationColMainTailFindIconButton = {};
+
+    DionysusPlutusMainLocationColMainTailAddressTextField = {};
+
+    DionysusPlutusMainLocationColMainTailDiv = {};
+
+    DionysusPlutusMainLocationColMainHeadDistrictTextFieldList = {};
+
+    DionysusPlutusMainLocationColMainHeadDistrictMenuItem = {};
+
+    DionysusPlutusMainLocationColMainHeadCityTextFieldList = {};
+
+    DionysusPlutusMainLocationColMainHeadCityMenuItem = {};
+
+    DionysusPlutusMainLocationColMainHeadDiv = {};
+
+    DionysusPlutusMainLocationColMainDiv = {};
+
+    DionysusPlutusMainLocationColTakenByMySelfLabelOfByMySelfTypography = {};
+
+    DionysusPlutusMainLocationColTakenByMySelfDivWrap = {};
+
+    DionysusPlutusMainLocationColTakenByMySelfCheckbox = {};
+
+    DionysusPlutusMainLocationColTakenDiv = {};
+
+    DionysusPlutusMainLocationColDiv = {};
+
+    DionysusPlutusMainLocationHeadLabelOfAddressTypography = {};
+
+    DionysusPlutusMainLocationDiv = {};
 
     DionysusPlutusMainDiv = {};
 

@@ -12,7 +12,7 @@ import BaseComponent from "../../base/BaseComponent";
 import UserInfo from "../../base/BaseUserInfo";
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
-const MAXIMUM_TEXT_OF_DESCRIPTION = 300;
+const MAXIMUM_TEXT_OF_STATEMENT = 300;
 const BOOZE_OF_UNCREATED = "generate";
 
 const textsFetchConfig = {
@@ -83,7 +83,14 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setSelectedTypeOfProp(booze.selectedTypeOfProp ?? 1);
         this.setVisibility(booze.visibility ?? false);
         this.setTypeOfPropDisabled(true);
+        this.setAllowSelfPickUp(booze.allowSelfPickUp);
+        this.setIsHomeTeaching(booze.isHomeTeaching);
         this.setUseMainTrunkDisabled(true);
+        this.setIsBoozeAlreadyDone(true);
+        this.setIsHomeTeachingDisabled(true);
+        this.setAllowSelfPickUpDisabled(true);
+        this.setStmtOfDescriptionMaximum(`${_.size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
+        this.setStmtOfNameMaximum(`${_.size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
     }
 
     getOptionsOfBrief = (booze, type = "main") => {
@@ -161,9 +168,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     onStatementFieldChanged = () => {
-        const current = this.getDescription();
-        this.setStatement(this.truncateString(current, MAXIMUM_TEXT_OF_DESCRIPTION));
-        this.setStmtOfDescriptionMaximum(`${_.size(this.getDescription())}/${MAXIMUM_TEXT_OF_DESCRIPTION}`);
+        const current = this.getStatement();
+        this.setStatement(this.truncateString(current, MAXIMUM_TEXT_OF_STATEMENT));
+        this.setStmtOfDescriptionMaximum(`${_.size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
     };
 
     truncateString(str, length = 30) {
@@ -186,6 +193,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         const id = Util.isUndefinedNullEmpty(this.getIdOfBooze()) ? this.getParamOfPidInPath() : this.getIdOfBooze();
         if (Util.isUndefinedNullEmpty(id) || _.isEqual(BOOZE_OF_UNCREATED, id)) {
             /** 如果商品ID 還沒創建時，必須先拿到document id才能有唯一碼作為圖片路徑需求 */
+            Util.appendInfo(" debug ==> ", this.getObjectOfBooze());
             const latest = await this.apiOfBooze.submitBoozeItem(this.getComponent(), this.getObjectOfBooze());
             this.setIdOfBooze(latest.value.id);
             this.setBooze(latest.value);
@@ -217,7 +225,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             idOfAuthor: UserInfo.getUid(),
             isTaskJob: this.belong2TaskJob(),
             useMainTrunk: this.getUseMainTrunk(),
-            selectedTypeOfProp: this.getSelectedTypeOfProp()
+            selectedTypeOfProp: this.getSelectedTypeOfProp(),
+            allowSelfPickUp: this.getAllowSelfPickUp(),
+            isHomeTeaching: this.getIsHomeTeaching()
         };
     };
 
@@ -295,6 +305,10 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         return Util.getItemsOfMarkMatching(tabs, indexOfSelected);
     };
 
+    enableGopTopOfIndexSetter = () => {
+        return UserInfo.isAdmin();
+    };
+
     submitTextsOfIndexSetter = async (rows) => {
         await this.handleIdOfBooze();
         const indexesOfCategory = _.filter(rows, (row) => _.isEqual(true, row.belong)).map((each) => each.value);
@@ -303,10 +317,11 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             return row;
         });
 
-        await this.apiOfTabs.submitSelects(
-            this.getComponent(),
-            tabsOfSubmit.map((each) => ({ ...each, id: _.toString(each.value) }))
-        );
+        if (UserInfo.isAdmin())
+            await this.apiOfTabs.submitSelects(
+                this.getComponent(),
+                tabsOfSubmit.map((each) => ({ ...each, id: _.toString(each.value) }))
+            );
         const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { category: indexesOfCategory }, this.getIdOfBooze());
         this.invalidateBooze(result.value);
     };
@@ -366,7 +381,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                     nameOfBooze: this.getName(),
                     isTaskJob: this.belong2TaskJob(),
                     useMainTrunk: this.getUseMainTrunk(),
-                    photo: this.getBriefPhotoOfHead()?.getHref()
+                    photo: this.getBriefPhotoOfHead()?.getHref(),
+                    allowSelfPickUp: this.getAllowSelfPickUp(),
+                    isHomeTeaching: this.getIsHomeTeaching()
                 };
             }),
             this.getIdOfBooze()

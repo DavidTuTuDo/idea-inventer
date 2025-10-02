@@ -37,6 +37,21 @@ class UserInfo {
     @observable
     isAuthProcessingState = true;
 
+    @observable
+    email = "";
+
+    @observable
+    phone = "";
+
+    @observable
+    displayName = "";
+
+    @observable
+    uid = "";
+
+    @observable
+    photoURL = "";
+
     constructor(props) {
         makeObservable(this);
         this.subscribeAuthStateChanged();
@@ -51,6 +66,22 @@ class UserInfo {
         return user && !_.isEmpty(user.uid);
     }
 
+    getEmailOfCurrentUser = () => {
+        return this.email;
+    };
+
+    getPhoneOfCurrentUser = () => {
+        return this.phone;
+    };
+
+    getDisplayNameOfUser = () => {
+        return this.displayName;
+    };
+
+    getPhotoURL = () => {
+        return this.photoURL;
+    };
+
     onAuthStateChangedReceive = (user) => {
         Util.appendInfo("4565231213 收到authStateChanged 通知，我改變了 =>", user);
         this.specificBehaviorOfLoginStateChange(user).then();
@@ -64,8 +95,8 @@ class UserInfo {
             CommonPoolHelper.enableParallelMode();
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
             current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
-            if (!current.exists) await this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid);
-            else await this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid);
+            if (!current.exists) this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid).then();
+            else this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid).then(); //不要讓main thread卡住
             Cookie.setUser(user);
             Util.appendInfo("登入成功, 所以寫入資料");
             Util.appendInfo("user info:", user);
@@ -79,43 +110,49 @@ class UserInfo {
     }
 
     @action
-    invalidateLoginState(user) {
+    invalidateLoginState = (user) => {
         Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`);
         CommonPoolHelper.enableParallelMode();
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
         this.adminHelper = this.isLoginWithSucceed() && user.isAdmin;
         this.authorUser = this.isLoginWithSucceed() && user.isAuthor;
+        this.displayName = this.isLoginWithSucceed() && user.displayName;
+        this.email = this.isLoginWithSucceed() && user.email;
+        this.phone = this.isLoginWithSucceed() && user.phone;
+        this.photoURL = this.isLoginWithSucceed() && user.photoURL;
+        this.uid = this.isLoginWithSucceed() && user.url;
         this.setAuthProcessing(false);
         this.invalidateCartie();
-    }
+    };
 
-    isLoginWithSucceed() {
+    isLoginWithSucceed = () => {
         return this.isLoginSucceed;
-    }
+    };
 
-    isAuthorUser() {
+    isAuthorUser = () => {
         return this.authorUser;
-    }
+    };
 
     isSuperAdmin() {
         return this.adminUser;
     }
 
     @action
-    setNameOfBrand(name) {
+    setNameOfBrand = (name) => {
         this.nameOfBrand = name;
-    }
+    };
 
-    getNameOfBrand() {
+    getNameOfBrand = () => {
         return this.nameOfBrand;
-    }
+    };
 
-    isAdmin() {
+    isAdmin = () => {
         return this.adminHelper;
-    }
+    };
 
-    getUid(allowCache = true) {
+    getUid = (allowCache = true) => {
+        if (!_.isEmpty(this.uid)) return this.uid;
         let uid = firebaser.getUid();
         if (!_.isEmpty(uid)) return uid;
         if (allowCache) {
@@ -123,8 +160,8 @@ class UserInfo {
             if (Util.exist(user)) uid = user.uid;
             if (!_.isEmpty(uid)) return uid;
         }
-        return "empty";
-    }
+        return "";
+    };
 
     performLoginBehavior = async (view) => {
         const self = this;
@@ -187,7 +224,7 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "", quantityOfMaximum }) => {
+    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "", quantityOfMaximum, isTaskJob, allowSelfPickUp, isHomeTeaching }) => {
         Util.appendInfo({ idOfBooze, quantity });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
@@ -196,7 +233,7 @@ class UserInfo {
         Util.appendInfo({ idOfBooze, idOfVariant, quantity, key, nameOfBooze });
 
         if (object) object.quantity = Math.min(object.quantity + quantity, quantityOfMaximum);
-        else infoOfCartie[key] = { idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze };
+        else infoOfCartie[key] = { idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze, isTaskJob, allowSelfPickUp, isHomeTeaching };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     };
@@ -234,12 +271,6 @@ class UserInfo {
         return _.values(_.filter(infoOfCartie, (each) => each.checked));
     }
 
-    removeCheckedCatieItems() {
-        const latest = Util.getObjectBy(Cookie.getInfoOfCartie(), (attr) => attr.checked !== true);
-        Cookie.setInfoOfCartie(latest);
-        this.invalidateCartie(latest);
-    }
-
     getArrayOfCartieItem() {
         const infoOfCartie = Cookie.getInfoOfCartie();
         return _.values(infoOfCartie);
@@ -270,9 +301,12 @@ class UserInfo {
     }
 
     invalidateCartie = (cartie) => {
+        Application.getNavigatorStore().setBadgeOfCartie(this.getCountOfBadge(cartie));
+    };
+
+    getCountOfBadge = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
-        const countsOfBadge = _.sum(_.values(infoOfCartie).map((info) => info.quantity));
-        Application.getNavigatorStore().setBadgeOfCartie(countsOfBadge);
+        return _.sum(_.values(infoOfCartie).map((info) => info.quantity));
     };
 
     setGotoCartieDirect(enable = false) {
@@ -298,7 +332,6 @@ class UserInfo {
             }
         });
     };
-
 }
 
 export default new UserInfo();

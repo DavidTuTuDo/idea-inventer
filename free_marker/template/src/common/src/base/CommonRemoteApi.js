@@ -4,7 +4,7 @@ import _ from "lodash";
 import moment from "moment";
 import libpath from "path";
 import firebase from "./FirebaseHelper";
-import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
 class CommonRemoteApi {
     _firebase() {
@@ -155,7 +155,6 @@ class CommonRemoteApi {
             // sessionStorage.setItem('cached_fp_uid', visitorId);
 
             return visitorId;
-
         } catch (error) {
             console.error("執行 FingerprintJS 發生錯誤:", error);
             // 如果指紋計算失敗 (例如被 AdBlocker 阻擋)，返回一個備用值

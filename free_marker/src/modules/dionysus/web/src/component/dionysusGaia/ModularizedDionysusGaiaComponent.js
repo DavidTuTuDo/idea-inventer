@@ -111,6 +111,20 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     getInjectStyleOfDionysusGaiaAppendMainChip(dionysusGaia) {
         return Util.getVisibleOrNone(this.isProductSell(dionysusGaia), true);
     }
+
+    /** 可否自取（實體商品）*/
+    getInjectStyleOfDionysusGaiaTakenDiv(dionysusGaia) {
+        return Util.getVisibleOrNone(this.isProductSell(dionysusGaia), true);
+    }
+
+    /** 到府授課（課程商品）*/
+    getInjectStyleOfDionysusGaiaDestDiv(dionysusGaia) {
+        return Util.getVisibleOrNone(this.isClassSell(dionysusGaia), true);
+    }
+
+    getInjectPropsOfDionysusGaiaAppendTaskChip(dionysusGaia) {
+        return { disabled: dionysusGaia.getIsBoozeAlreadyDone() };
+    }
 }
 
 export default ModularizedDionysusGaiaComponent;

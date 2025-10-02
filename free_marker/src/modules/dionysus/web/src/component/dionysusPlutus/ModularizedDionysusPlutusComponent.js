@@ -122,6 +122,27 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const result = await Functions.httpOnCallCheckoutByECPay(this, { idOfPreciseOrder: id });
         this.renderHtmlOfDocument(result.textOfRender);
     };
+
+    /** 計算兩地相差的距離 */
+    getInjectStyleOfDionysusPlutusSeventhDiv(dionysusPlutus) {
+        return Util.getVisibleOrNone(false);
+    }
+
+    getInjectStyleOfDionysusPlutusLocationDiv(dionysusPlutus) {
+        return Util.getVisibleOrNone(dionysusPlutus.getNeedAddress());
+    }
+
+    getInjectStyleOfDionysusPlutusTakenDiv(dionysusPlutus) {
+        return Util.getVisibleOrNone(dionysusPlutus.getNeedSelfPickingChoice());
+    }
+
+    getInjectStyleOfDionysusPlutusMainDiv(dionysusPlutus) {
+        return Util.getVisibleOrNone(!dionysusPlutus.getByMySelf(), true);
+    }
+
+    getInjectStyleOfDionysusPlutusDividerDiv(dionysusPlutus) {
+        return Util.getVisibleOrNone(!dionysusPlutus.getByMySelf(), true);
+    }
 }
 
 export default ModularizedDionysusPlutusComponent;

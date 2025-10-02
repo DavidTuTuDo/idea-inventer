@@ -1,12 +1,14 @@
 const edit = true;
 
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
 import FlyToCartie from "../../base/FlyToCartie";
 import React from "react";
+
+const MAX_BADGE_OF_UN_SIGN = 2;
 
 class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     constructor(props) {
@@ -50,19 +52,45 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     }
 
     onDionysusMaenadsSubmitChipClicked(param) {
-        const self = this;
-        if (!this.getStore().getCurrentOptionExist()) {
-            this.getComponentInstance(true).showWarningSnackMessage(`尚未選擇商品`);
-        } else {
-            const maenads = param.object;
-            const idOfBooze = maenads.getBooze().id;
-            const idOfVariant = maenads.getSelectedVariant().id;
-            const quantity = _.toInteger(this.getStore().getCountOfSubmit());
-            const quantityOfMaximum = maenads.getSelectedVariant().quantity;
-            UserInfoRef.joinItemToCart({ quantityOfMaximum, idOfBooze, idOfVariant, quantity, nameOfBooze: maenads.getBooze().name });
-            if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(this.getComponentInstance());
-            self.getComponentInstance(true).showInfoSnackMessage(`已加入購物車`);
-            if (!UserInfoRef.isGotoCartieDirect()) maenads.toggleCartieAnimate();
+        const store = this.getStore();
+        const component = this.getComponentInstance(true);
+
+        if (!store.getCurrentOptionExist()) {
+            component.showWarningSnackMessage(`尚未選擇商品`);
+            return;
+        }
+
+        const maenads = param.object;
+        const booze = maenads.getBooze();
+        const variant = maenads.getSelectedVariant();
+        const quantity = _.toInteger(store.getCountOfSubmit());
+        const quantityOfMaximum = variant.quantity;
+
+        const cartItem = {
+            quantityOfMaximum,
+            idOfBooze: booze.id,
+            idOfVariant: variant.id,
+            quantity,
+            isTaskJob: variant.isTaskJob,
+            allowSelfPickUp: variant.allowSelfPickUp,
+            isHomeTeaching: variant.isHomeTeaching,
+            nameOfBooze: booze.name
+        };
+
+        const isLogin = UserInfoRef.isLoginWithSucceed();
+        const badgeCount = UserInfoRef.getCountOfBadge();
+
+        const canJoinUnSign = !isLogin && badgeCount < MAX_BADGE_OF_UN_SIGN;
+        const canJoin = isLogin || canJoinUnSign;
+
+        if (!canJoin) return component.showWarningSnackMessage(`未登入用戶限購 ${MAX_BADGE_OF_UN_SIGN} 件`);
+
+        UserInfoRef.joinItemToCart(cartItem);
+
+        if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(component);
+        else {
+            component.showInfoSnackMessage(`已加入購物車`);
+            maenads.toggleCartieAnimate();
         }
     }
 

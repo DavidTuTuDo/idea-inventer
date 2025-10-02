@@ -45,7 +45,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         const hash = object.getDialogInputValueOfAccountArrowOfAppendReader();
         if (_.size(hash) > 8)
             this.api.updateUserItem(this.getComponentInstance(), { allowRead: true }, hash).then((result) => {
-                this.showInfoSnackMessage(`升級 ${hash} 為「悅讀人」成功`);
+                this.showInfoSnackMessage(`升級 ${hash} 為「無限悅讀」成功`);
             });
     }
 
@@ -117,8 +117,6 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfGoEditModeIconButtonClicked(param) {
         super.onAccountArrowOfGoEditModeIconButtonClicked(param);
     }
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedAccountComponent;

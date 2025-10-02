@@ -22,6 +22,10 @@ service cloud.firestore {
             return isAuthor() || isDocumentUser();
         }
 
+        function isAuthorNSelf(uid) {
+            return isAuthor() && isSelf(uid);
+        }
+
         function isAuthorOfDionysus(id) {
             return request.auth != null && get(/databases/$(database)/documents/dionysus/$(id)).data.idOfAuthor == request.auth.uid;
         }
