@@ -2157,7 +2157,10 @@ class CodegenNode {
         return _.isEqual(this.getView(), 'CustomImageButton');
     }
 
-    /** */
+    /** useSwitch:true, 改用Switch
+     *  defaultTitle,   預設標題
+     *  defaultContent, 中間的解釋
+     * */
     isArrowOptionView(type = 'default') {
         return _.isEqual(this.getView(), 'ArrowOption')
     }
@@ -7853,7 +7856,16 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                       description: node.description,
                       incest: { view: false, attribute: true }
                   },
-                  {
+
+                  node.useSwitch ? {
+                      name: Util.camel("enable", "of", name),
+                      needParam: true,
+                      view: "Switch",
+                      type: 'boolean', // 是attribute child才會被hasInputDialog()才會被呼叫到=>'hack'
+                      defaultValue: name.defaultValue,
+                      incest: { view: false, attribute: true },
+                      description: `關於${name} 的開關功能`
+                  }:{
                       name: Util.camel("arrow", "of", name),
                       needParam: true,
                       view: "IconButton",

@@ -13,10 +13,6 @@ import Cookie from "../../cookie";
 import BaseDionysusErosComponent from "./BaseDionysusErosComponent";
 
 class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
     }
@@ -80,12 +76,35 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitAmountOfAllowMaximumBuy(amount).then();
     }
 
-    onDionysusErosArrowOfEcpaySetIconButtonClicked(param) {
+    onDionysusErosArrowOfEcPaySetIconButtonClicked(param) {
         this.getStore().setSelected("ecpay");
     }
 
-    onDionysusErosAllowBoughtWithoutLoginInSwitchChange(param) {
+    onDionysusErosEnableOfBoughtWithoutLoginInSwitchChange(param) {
         this.getStore().submitWhetherBoughtWithoutLogin().then();
+    }
+
+    onDionysusErosEnableOfLinepaySwitchChange(param) {
+        this.getStore().submitWhetherEnableOfLinePay().then();
+    }
+
+    onDionysusErosEnableOfEcPaySwitchChange(param) {
+        this.getStore().submitWhetherEnableOfEcPay().then();
+    }
+
+    onDionysusErosEnableOfDirectSwitchChange(param) {
+        this.getStore().submitWhetherEnableOfDirect().then();
+    }
+
+    onDionysusErosEnableOfCashOnDeliverySwitchChange(param) {
+        this.getStore().submitWhetherEnableCOD().then();
+    }
+
+    onDionysusErosArrowOfFeeOfCashOnDeliveryIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("feeOfCashOnDelivery");
+        const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery();
+        this.getStore().submitFeeOfCashOnDelivery(fee).then();
     }
 
     /** -------------------- async api -------------------- **/

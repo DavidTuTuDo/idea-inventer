@@ -415,7 +415,7 @@ class BaseComponent extends MuiComponent {
     render() {
         const self = this;
         return (
-            <div className={"RootViewDiv"} style={{ ...this.style, marginTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
+            <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
                 {self.renderGlobalLoadingView()}
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>

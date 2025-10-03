@@ -411,6 +411,10 @@ class AppStyle {
 
     /** => following for epayFootprint  component  */
 
+    EpayFootprintTabTabsList = {};
+
+    EpayFootprintTabTab = {};
+
     EpayFootprintOrderRemarkOfAuthorLabelOfRemarkOfAuthorTypography = {};
 
     EpayFootprintOrderRemarkOfAuthorDivWrap = {};
@@ -552,10 +556,6 @@ class AppStyle {
     EpayFootprintOrderDivList = {};
 
     EpayFootprintOrderCard = {};
-
-    EpayFootprintTabTabsList = {};
-
-    EpayFootprintTabTab = {};
 
     EpayFootprintDivWrap = {};
 
@@ -809,11 +809,15 @@ class AppStyle {
 
     DionysusErosAreaOfAmountOfAllowAnonymousBuyDiv = {};
 
-    DionysusErosRuleAllowBoughtWithoutLoginInSwitch = {};
+    DionysusErosAreaOfBoughtWithoutLoginInEnableOfBoughtWithoutLoginInSwitch = {};
 
-    DionysusErosRuleLabelOfRuleTypography = {};
+    DionysusErosAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInContentTypography = {};
 
-    DionysusErosRuleDiv = {};
+    DionysusErosAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInTitleTypography = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInDivWrap = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInDiv = {};
 
     DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconNavigateNext = {};
 
@@ -857,19 +861,29 @@ class AppStyle {
 
     DionysusErosAreaOfPriceOfFreeShippingDiv = {};
 
-    DionysusErosAreaOfEcpaySetArrowOfEcpaySetIconNavigateNext = {};
+    DionysusErosAreaOfEcPaySetArrowOfEcPaySetIconNavigateNext = {};
 
-    DionysusErosAreaOfEcpaySetArrowOfEcpaySetReactFragmentWrap = {};
+    DionysusErosAreaOfEcPaySetArrowOfEcPaySetReactFragmentWrap = {};
 
-    DionysusErosAreaOfEcpaySetArrowOfEcpaySetIconButton = {};
+    DionysusErosAreaOfEcPaySetArrowOfEcPaySetIconButton = {};
 
-    DionysusErosAreaOfEcpaySetOptionOfEcpaySetContentTypography = {};
+    DionysusErosAreaOfEcPaySetOptionOfEcPaySetContentTypography = {};
 
-    DionysusErosAreaOfEcpaySetOptionOfEcpaySetTitleTypography = {};
+    DionysusErosAreaOfEcPaySetOptionOfEcPaySetTitleTypography = {};
 
-    DionysusErosAreaOfEcpaySetDivWrap = {};
+    DionysusErosAreaOfEcPaySetDivWrap = {};
 
-    DionysusErosAreaOfEcpaySetDiv = {};
+    DionysusErosAreaOfEcPaySetDiv = {};
+
+    DionysusErosAreaOfEcPayEnableOfEcPaySwitch = {};
+
+    DionysusErosAreaOfEcPayOptionOfEcPayContentTypography = {};
+
+    DionysusErosAreaOfEcPayOptionOfEcPayTitleTypography = {};
+
+    DionysusErosAreaOfEcPayDivWrap = {};
+
+    DionysusErosAreaOfEcPayDiv = {};
 
     DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconNavigateNext = {};
 
@@ -885,6 +899,16 @@ class AppStyle {
 
     DionysusErosAreaOfPayOfDirectDiv = {};
 
+    DionysusErosAreaOfDirectEnableOfDirectSwitch = {};
+
+    DionysusErosAreaOfDirectOptionOfDirectContentTypography = {};
+
+    DionysusErosAreaOfDirectOptionOfDirectTitleTypography = {};
+
+    DionysusErosAreaOfDirectDivWrap = {};
+
+    DionysusErosAreaOfDirectDiv = {};
+
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
 
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetReactFragmentWrap = {};
@@ -898,6 +922,40 @@ class AppStyle {
     DionysusErosAreaOfLinepaySetDivWrap = {};
 
     DionysusErosAreaOfLinepaySetDiv = {};
+
+    DionysusErosAreaOfLinepayEnableOfLinepaySwitch = {};
+
+    DionysusErosAreaOfLinepayOptionOfLinepayContentTypography = {};
+
+    DionysusErosAreaOfLinepayOptionOfLinepayTitleTypography = {};
+
+    DionysusErosAreaOfLinepayDivWrap = {};
+
+    DionysusErosAreaOfLinepayDiv = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconNavigateNext = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryReactFragmentWrap = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconButton = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryOptionOfFeeOfCashOnDeliveryContentTypography = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryOptionOfFeeOfCashOnDeliveryTitleTypography = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryDivWrap = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryDiv = {};
+
+    DionysusErosAreaOfCashOnDeliveryEnableOfCashOnDeliverySwitch = {};
+
+    DionysusErosAreaOfCashOnDeliveryOptionOfCashOnDeliveryContentTypography = {};
+
+    DionysusErosAreaOfCashOnDeliveryOptionOfCashOnDeliveryTitleTypography = {};
+
+    DionysusErosAreaOfCashOnDeliveryDivWrap = {};
+
+    DionysusErosAreaOfCashOnDeliveryDiv = {};
 
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
 

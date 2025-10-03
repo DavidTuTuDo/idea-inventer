@@ -10,56 +10,32 @@ import UserInfo from "../../base/BaseUserInfo";
 
 const textsFetchConfig = {
     direct: {
-        fetchDefaultTexts: async (instance) => {
-            return await instance.fetchDefaultTextDirectPay();
-        },
+        fetchDefaultTexts: (inst) => inst.fetchDefaultTextDirectPay(),
         autoIncrement: false,
         maximumRow: 1,
-        onChanged: async () => {
-            return await Util.appendInfo("direct-pay texts changed");
-        },
-        onAppendClicked: async (param, instance) => {
-            return await instance.submitDirectPay(param);
-        }
+        onChanged: () => Util.appendInfo("direct-pay texts changed"),
+        onAppendClicked: (param, inst) => inst.submitDirectPay(param)
     },
     tab: {
-        fetchDefaultTexts: async (instance) => {
-            return await instance.fetchDefaultTextsOfCategory();
-        },
+        fetchDefaultTexts: (inst) => inst.fetchDefaultTextsOfCategory(),
         autoIncrement: true,
         maximumRow: 15,
-        onChanged: async () => {
-            return await Util.appendInfo("tab texts changed");
-        },
-        onAppendClicked: async (param, instance) => {
-            return await instance.submitCategoryRules(param);
-        }
+        onChanged: () => Util.appendInfo("tab texts changed"),
+        onAppendClicked: (param, inst) => inst.submitCategoryRules(param)
     },
     linepay: {
-        fetchDefaultTexts: async (instance) => {
-            return await instance.fetchDefaultTextOfLinePay();
-        },
+        fetchDefaultTexts: (inst) => inst.fetchDefaultTextOfLinePay(),
         autoIncrement: false,
         maximumRow: 3,
-        onChanged: async () => {
-            return await Util.appendInfo("linepay changed");
-        },
-        onAppendClicked: async (param, instance) => {
-            await instance.submitLinePaySerials(param);
-        }
+        onChanged: () => Util.appendInfo("linepay changed"),
+        onAppendClicked: (param, inst) => inst.submitLinePaySerials(param)
     },
     ecpay: {
-        fetchDefaultTexts: async (instance) => {
-            return await instance.fetchDefaultTextOfECPay();
-        },
+        fetchDefaultTexts: (inst) => inst.fetchDefaultTextOfECPay(),
         autoIncrement: false,
         maximumRow: 3,
-        onChanged: async () => {
-            return await Util.appendInfo("ecpay changed");
-        },
-        onAppendClicked: async (param, instance) => {
-            await instance.submitECPaySerials(param);
-        }
+        onChanged: () => Util.appendInfo("ecpay changed"),
+        onAppendClicked: (param, inst) => inst.submitECPaySerials(param)
     }
 };
 
@@ -72,328 +48,182 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
-        this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(this.getPublic().getNumOfWorker());
-        this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(this.getPublic().getPriceOfFreeShipping());
-        this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(this.getPublic().getAmountOfAllowAnonymousBuy());
-        this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(this.getPublic().getPercentageOfDiscount());
-        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(this.getPublic().getAmountOfMaximumBuy());
-        this.setAllowBoughtWithoutLoginIn(this.getPublic().getAllowBoughtWithoutLoginIn());
+        const pub = this.getPublic();
+        this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(pub.getNumOfWorker());
+        this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(pub.getPriceOfFreeShipping());
+        this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(pub.getAmountOfAllowAnonymousBuy());
+        this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(pub.getPercentageOfDiscount());
+        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(pub.getAmountOfMaximumBuy());
+        this.setDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery(pub.getFeeOfCashOnDelivery());
+        this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
+        this.setEnableOfLinepay(pub.getEnableOfLinePay());
+        this.setEnableOfEcPay(pub.getEnableOfECPay());
+        this.setEnableOfDirect(pub.getEnableOfDirectPay());
+        this.setEnableOfCashOnDelivery(pub.getEnableOfCashOnDelivery());
+    }
+
+    /** 共同提交處理器 */
+    async submitWithValidation({ validator, value, errorMessage, setter, afterSet }) {
+        if (validator && !validator(value)) {
+            return this.getComponent().showErrorSnackMessage(errorMessage);
+        }
+        setter(value);
+        if (afterSet) afterSet(value);
+        await this.getPublic().submitPublic(this.getComponent());
     }
 
     /** public */
-    submitPercentageOfDiscount = async (percent) => {
-        if (!this.isValidDiscountPercentNumber(percent)) return this.getComponent().showErrorSnackMessage(`折扣常數格式錯誤 ${percent}`);
-        await this.getPublic().setPercentageOfDiscount(percent);
-        this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(percent);
-        //TODO:改成MergeSubmit
-        await this.getPublic().submitPublic(this.getComponent());
-    };
+    submitPercentageOfDiscount = (percent) =>
+        this.submitWithValidation({
+            validator: this.isValidDiscountPercentNumber,
+            value: percent,
+            errorMessage: `折扣常數格式錯誤 ${percent}`,
+            setter: (val) => this.getPublic().setPercentageOfDiscount(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(val)
+        });
 
-    /** public */
-    submitAmountOfAllowAnonymousBuy = async (amount) => {
-        if (amount < 1) return this.getComponent().showErrorSnackMessage(`未登入消費金額格式錯誤 ${amount}`);
-        await this.getPublic().setAmountOfAllowAnonymousBuy(amount);
-        this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(amount);
-        //TODO:改成MergeSubmit
-        await this.getPublic().submitPublic(this.getComponent());
-    };
+    submitAmountOfAllowAnonymousBuy = (amount) =>
+        this.submitWithValidation({
+            validator: (v) => v >= 1,
+            value: amount,
+            errorMessage: `未登入消費金額格式錯誤 ${amount}`,
+            setter: (val) => this.getPublic().setAmountOfAllowAnonymousBuy(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(val)
+        });
 
-    /** public */
-    submitAmountOfAllowMaximumBuy = async (amount) => {
-        if (amount < 1) return this.getComponent().showErrorSnackMessage(`消費額度格式錯誤 ${amount}`);
-        await this.getPublic().setAmountOfMaximumBuy(amount);
-        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(amount);
-        //TODO:改成MergeSubmit
-        await this.getPublic().submitPublic(this.getComponent());
-    };
+    submitAmountOfAllowMaximumBuy = (amount) =>
+        this.submitWithValidation({
+            validator: (v) => v >= 1,
+            value: amount,
+            errorMessage: `消費額度格式錯誤 ${amount}`,
+            setter: (val) => this.getPublic().setAmountOfMaximumBuy(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(val)
+        });
 
-    /** secret */
-    submitLinePaySerials = async (param) => {
-        Util.appendInfo(`[TEXTSFETCH] linepay append clicked ${param}`);
-        if (!this.isValidLinePayConfig(...param)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
-        this.getSecret().setLinepaySet(...param);
-        this.getPublic().setHasLinePay(true);
-        //TODO:改成MergeSubmit
-        await this.getSecret().submitSecret(this.getComponent());
-        await this.getPublic().submitPublic(this.getComponent());
-    };
+    submitPriceOfFreeShipping = (price) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(price),
+            errorMessage: `金額格式錯誤 '${price}'`,
+            setter: (val) => this.getPublic().setPriceOfFreeShipping(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(val)
+        });
 
-    /** secret */
-    submitECPaySerials = async (param) => {
-        Util.appendInfo(`[TEXTSFETCH] ecpay append clicked ${param}`);
-        if (!this.isValidECPayConfig(...param)) return this.getComponent().showErrorSnackMessage(`綠界支付(格式錯誤)`);
-        this.getSecret().setEcpaySet(...param);
-        this.getPublic().setHasECPay(true);
-        //TODO:改成MergeSubmit
-        await this.getSecret().submitSecret(this.getComponent());
-        await this.getPublic().submitPublic(this.getComponent());
-    };
+    submitNumOfWorker = (num) =>
+        this.submitWithValidation({
+            validator: (v) => _.isNumber(v) && v > 0,
+            value: _.toNumber(num),
+            errorMessage: `人數格式錯誤 '${num}'`,
+            setter: (val) => this.getPublic().setNumOfWorker(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(val)
+        });
 
-    /** public */
-    submitDirectPay = async (param) => {
-        const path = param[0];
-        Util.appendInfo(`[textInput] direct append clicked ${path}`);
-        const target = _.toString(path);
-        if (!this.isLinePayCallbackUrl(target)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${path}'`);
-        this.getPublic().setPayOfDirect(target);
-        //TODO:改成MergeSubmit
-        await this.getPublic().submitPublic(this.getComponent());
-    };
+    submitFeeOfCashOnDelivery = (fee) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(fee),
+            errorMessage: `COD運費格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setFeeOfCashOnDelivery(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery(val)
+        });
 
-    /** public */
-    submitPriceOfFreeShipping = async (price) => {
-        Util.appendInfo(`[textInput] priceShipping append clicked ${price}`);
-        const target = _.toNumber(price);
-        if (!_.isNumber(target)) return this.getComponent().showErrorSnackMessage(`金額格式錯誤 '${price}'`);
-        this.getPublic().setPriceOfFreeShipping(target);
-        this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(target);
-        //TODO:改成MergeSubmit
-        await this.getPublic().submitPublic(this.getComponent());
-    };
-
-    /** public */
-    submitNumOfWorker = async (num) => {
-        Util.appendInfo(`[textInput] numOfWorker append clicked ${num}`);
-        const target = _.toNumber(num);
-        if (!_.isNumber(target) || target < 1) return this.getComponent().showErrorSnackMessage(`人數格式錯誤 '${num}'`);
-        this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(target);
-        this.getPublic().setNumOfWorker(target);
-        //TODO:改成MergeSubmit
-        await this.getPublic().submitPublic(this.getComponent());
-    };
-
-    /** public */
+    /** enable toggles */
     submitWhetherBoughtWithoutLogin = async () => {
-        Util.appendInfo(` 免登入下單 ${this.getAllowBoughtWithoutLoginIn()}`);
-        this.getPublic().setAllowBoughtWithoutLoginIn(this.getAllowBoughtWithoutLoginIn());
-        //TODO:改成MergeSubmit
+        this.getPublic().setEnableOfBoughtWithoutLoginIn(this.getEnableOfBoughtWithoutLoginIn());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+    submitWhetherEnableOfLinePay = async () => {
+        this.getPublic().setEnableOfLinePay(this.getEnableOfLinepay());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+    submitWhetherEnableOfEcPay = async () => {
+        this.getPublic().setEnableOfECPay(this.getEnableOfEcPay());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+    submitWhetherEnableOfDirect = async () => {
+        this.getPublic().setEnableOfDirectPay(this.getEnableOfDirect());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+    submitWhetherEnableCOD = async () => {
+        this.getPublic().setEnableOfCashOnDelivery(this.getEnableOfCashOnDelivery());
         await this.getPublic().submitPublic(this.getComponent());
     };
 
-    /** admin */
+    /** pay secrets */
+    submitLinePaySerials = async ([channelId, channelSecret]) => {
+        if (!this.isValidLinePayConfig(channelId, channelSecret)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
+        this.getSecret().setLinepaySet(channelId, channelSecret);
+        this.getPublic().setHasLinePay(true);
+        await this.getSecret().submitSecret(this.getComponent());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+
+    submitECPaySerials = async ([merchantID, hashKey, hashIV]) => {
+        if (!this.isValidECPayConfig(merchantID, hashKey, hashIV)) return this.getComponent().showErrorSnackMessage(`綠界支付(格式錯誤)`);
+        this.getSecret().setECPaySet(merchantID, hashKey, hashIV);
+        this.getPublic().setHasECPay(true);
+        await this.getSecret().submitSecret(this.getComponent());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+
+    submitDirectPay = async ([url]) => {
+        if (!this.isLinePayCallbackUrl(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
+        this.getPublic().setPayOfDirect(url);
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+
     submitBrandName = async (name) => {
-        Util.appendInfo(`[TEXTFETCH] name text clicked ${name}`);
-        if (_.size(name) <= 0) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
-        //TODO:改成MergeSubmit
+        if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
         const info = await this.apiOfInfo.fetchInfo(this.getComponent());
         info.nameOfBrand = name;
         await this.apiOfInfo.submitInfo(this.getComponent(), info);
         UserInfo.setNameOfBrand(name);
     };
 
-    /** admin */
     submitCategoryRules = async (param) => {
         const result = Util.generateLabelValuePairsWithOrigin(this.categoryOfCurrent, param);
-        //TODO:改成MergeSubmit
         await this.apiOfTab.submitSelects(
             this.getComponent(),
-            result.map((each) => {
-                return { ...each, id: _.toString(each.value) };
-            })
+            result.map((each) => ({ ...each, id: _.toString(each.value) }))
         );
     };
 
-    /** admin */
+    /** fetch */
     fetchDefaultTextsOfCategory = async () => {
         this.categoryOfCurrent = (await this.apiOfTab.fetchSelects(this.getComponent())) ?? [];
-        return this.categoryOfCurrent.map((each) => {
-            {
-                return { content: each.label };
-            }
-        });
+        return this.categoryOfCurrent.map((each) => ({ content: each.label }));
     };
+    fetchDefaultTextOfLinePay = async () => this.getNormalizeStmt(["CHANNEL ID", "SECRET  ID"], this.getSecret().getLinepaySet());
+    fetchDefaultTextOfECPay = async () => this.getNormalizeStmt(["Merchant ID", "Hash Key", "Hash IV"], this.getSecret().getECPaySet());
+    fetchDefaultTextDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getPublic().getPayOfDirect()]);
 
-    /** secret */
-    fetchDefaultTextOfLinePay = async () => {
-        const titles = ["CHANNEL ID", "SECRET  ID"];
-        return this.getNormalizeStmt(titles, this.getSecret().getLinepaySet());
-    };
-
-    /** secret */
-    fetchDefaultTextOfECPay = async () => {
-        const titles = ["Merchant ID", "Hash Key", "Hash IV"];
-        return this.getNormalizeStmt(titles, this.getSecret().getEcpaySet());
-    };
-
-    /** public */
-    fetchDefaultTextDirectPay = async () => {
-        const titles = ["付費連結"];
-        return this.getNormalizeStmt(titles, [this.getPublic().getPayOfDirect()]);
-    };
-
-    getNormalizeStmt = (titles, items) => {
-        return _.map(titles, (title, idx) => ({
-            index: title,
-            content: _.get(items, idx, "") || ""
-        }));
-    };
+    getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: _.get(items, idx, "") || "" }));
 
     /** text fetch */
-
-    async onTextFetchChanged(param) {
-        switch (this.getSelected()) {
-            case "name":
-                return Util.appendInfo(`[TEXTFETCH] name text changed ${param}`);
-            default:
-                return undefined;
-        }
-    }
-
-    onTextFetchAppendClicked = async (param) => {
-        switch (this.getSelected()) {
-            case "name":
-                return this.submitBrandName(param);
-            default:
-                return undefined;
-        }
-    };
-
-    getDefaultTextOfTextFetch = () => {
-        switch (this.getSelected()) {
-            case "name":
-                return UserInfo.getNameOfBrand();
-            default:
-                return undefined;
-        }
-    };
-
-    getDefaultTitleOfTextFetch = () => {
-        switch (this.getSelected()) {
-            case "name":
-                return "店名：";
-            default:
-                return undefined;
-        }
-    };
+    onTextFetchChanged = (param) => (this.getSelected() === "name" ? Util.appendInfo(`[TEXTFETCH] name text changed ${param}`) : undefined);
+    onTextFetchAppendClicked = (param) => (this.getSelected() === "name" ? this.submitBrandName(param) : undefined);
+    getDefaultTextOfTextFetch = () => (this.getSelected() === "name" ? UserInfo.getNameOfBrand() : undefined);
+    getDefaultTitleOfTextFetch = () => (this.getSelected() === "name" ? "店名：" : undefined);
 
     /** texts fetch */
+    getSelectedConfig = () => textsFetchConfig[this.getSelected()];
+    getDefaultTextsOfTextFetch = async () => await this.getSelectedConfig()?.fetchDefaultTexts(this);
+    autoIncrementOfTextsFetch = () => this.getSelectedConfig()?.autoIncrement ?? false;
+    getMaximumRowOfTextsFetch = () => this.getSelectedConfig()?.maximumRow ?? true;
+    onTextsFetchChanged = async (param) => (await this.getSelectedConfig()?.onChanged(param)) ?? Util.appendInfo("default changed");
+    onTextsFetchAppendClicked = async (param) => (await this.getSelectedConfig()?.onAppendClicked(param, this)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
 
-    getSelectedConfig() {
-        return textsFetchConfig[this.getSelected()];
-    }
-
-    getDefaultTextsOfTextFetch = async () => {
-        const config = this.getSelectedConfig();
-        return await config?.fetchDefaultTexts(this);
-    };
-
-    autoIncrementOfTextsFetch() {
-        const config = this.getSelectedConfig();
-        return config?.autoIncrement ?? false;
-    }
-
-    getMaximumRowOfTextsFetch() {
-        const config = this.getSelectedConfig();
-        return config?.maximumRow ?? true;
-    }
-
-    async onTextsFetchChanged(param) {
-        const config = this.getSelectedConfig();
-        return (await config?.onChanged(param)) ?? Util.appendInfo("default changed");
-    }
-
-    async onTextsFetchAppendClicked(param) {
-        const config = this.getSelectedConfig();
-        return (await config?.onAppendClicked(param, this)) ?? Util.appendInfo(`[TEXTSFETCH] default append clicked ${param}`);
-    }
-
-    isValidECPayConfig = (merchantID, hashKey, hashIV) => {
-        // 定義檢查單一參數的輔助函式
-        const checkStringParam = (param, name) => {
-            // 檢查是否為字串型別且內容非空
-            if (!(_.isString(param) && !_.isEmpty(param))) {
-                console.error(`${name} 格式無效 (必須為非空字串)。實際值: ${param}`);
-                return false;
-            }
-            return true;
-        };
-        // 獨立檢查 MerchantID
-        if (!checkStringParam(merchantID, "MerchantID")) {
-            return false;
-        }
-        // 獨立檢查 HashKey
-        if (!checkStringParam(hashKey, "HashKey")) {
-            return false;
-        }
-        // 獨立檢查 HashIV
-        if (!checkStringParam(hashIV, "HashIV")) {
-            return false;
-        }
-        // 所有參數都檢查通過
-        return true;
-    };
-
-    isValidLinePayConfig = (channelId, channelSecret) => {
-        // 定義檢查單一參數的輔助函式
-        const checkStringParam = (param, name) => {
-            // 使用 Lodash 檢查是否為字串型別且內容非空
-            if (!(_.isString(param) && !_.isEmpty(param))) {
-                // Log 資訊：清楚指出哪個參數無效，以及它的實際值/型別
-                console.error(`LINE Pay 驗證失敗：${name} 格式不符合要求（必須為非空字串）。`);
-                console.error(` -> 錯誤項目: ${name}，實際值: [${param}]，實際型別: ${typeof param}`);
-                return false;
-            }
-            return true;
-        };
-
-        // 獨立檢查 channelId
-        if (!checkStringParam(channelId, "channelId")) {
-            return false;
-        }
-
-        // 獨立檢查 channelSecret
-        if (!checkStringParam(channelSecret, "channelSecret")) {
-            return false;
-        }
-
-        // 所有參數都檢查通過
-        return true;
-    };
-
+    /** validators */
+    isValidECPayConfig = (id, key, iv) => [id, key, iv].every((p) => _.isString(p) && !_.isEmpty(p));
+    isValidLinePayConfig = (id, secret) => [id, secret].every((p) => _.isString(p) && !_.isEmpty(p));
+    isValidDiscountPercentNumber = (val) => _.inRange(_.toNumber(val), 10, 101);
     isLinePayCallbackUrl = (urlString) => {
-        if (!_.isString(urlString) || _.isEmpty(urlString)) {
-            console.warn("輸入的 URL 為空或不是字串。");
-            return false;
-        }
-
         try {
-            // 1. 使用瀏覽器原生的 URL 類來解析 URL 字串
             const url = new URL(urlString);
-            // 2. 獲取 URL 中的所有查詢參數
-            const params = url.searchParams;
-            // 3. 定義 LINE Pay 支付回傳時必須包含的關鍵參數
-            const requiredParams = ["transactionId", "orderId"];
-            // 4. 檢查所有必要參數是否都存在於 URL 中
-            const allRequiredParamsExist = _.every(requiredParams, (paramName) => {
-                const isExist = params.has(paramName);
-                if (!isExist) {
-                    console.log(`[LINE Pay 檢查] 缺少關鍵參數: ${paramName}`);
-                }
-                return isExist;
-            });
-
-            // 5. 如果所有參數都存在，則認為是有效的回傳連結
-            return allRequiredParamsExist;
-        } catch (error) {
-            // 如果 URL 格式無效 (例如不是完整的 http/https 連結)
-            console.error("無法解析 URL，請檢查格式是否正確:", error.message);
+            return ["transactionId", "orderId"].every((p) => url.searchParams.has(p));
+        } catch {
             return false;
         }
-    };
-
-    isValidDiscountPercentNumber = (input) => {
-        // 將輸入轉為數字（可處理字串數字如 "42"）
-        const num = _.toNumber(input);
-
-        // 檢查是否為有限的數字，排除 NaN、Infinity 等非實際數字情況
-        const isFiniteNumber = _.isFinite(num);
-
-        // 檢查數字是否落在 [10, 100] 區間
-        // _.inRange 的範圍是 [start, end)，所以 end 要設為 101 才包含 100
-        const isInRange = _.inRange(num, 10, 101);
-
-        // 綜合判斷：必須是有限數字，且在合法範圍內才回傳 true
-        return isFiniteNumber && isInRange;
     };
 }
 
