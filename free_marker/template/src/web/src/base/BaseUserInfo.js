@@ -268,10 +268,15 @@ class UserInfo {
         this.invalidateCartie(latest);
     }
 
-    getCheckedCartieItem() {
+    getCheckedCartieItem = () => {
         const infoOfCartie = Cookie.getInfoOfCartie();
         return _.values(_.filter(infoOfCartie, (each) => each.checked));
-    }
+    };
+
+    /**
+     * 檢查勾選商品裡有沒有實體商品
+     * _.some(collection, predicate)：會遍歷陣列，只要有一個元素符合條件就回傳 true。 */
+    hasTransportOfCheckedItem = () => _.some(this.getCheckedCartieItem(), { isTaskJob: false });
 
     anonymous = () => {
         return !_.isEmpty(this.uid);

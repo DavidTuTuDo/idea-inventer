@@ -22,7 +22,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @action
     modifyErosInfoOfAuthor = async (idOfAuthor) => {
-        this.erosOfPublic = this.apiOfErosPublic.fetchPublic(this.getComponent(), idOfAuthor);
+        this.erosOfPublic = await this.apiOfErosPublic.fetchPublic(this.getComponent(), idOfAuthor);
+        Util.appendInfo(this.erosOfPublic);
     };
 
     getErosOfPublic = () => {
@@ -32,16 +33,17 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     isCheckedVariantValid = async () => {
         /** 檢查商品是否皆為同一人 */
         const variantsOfSelected = _.filter(this.getBriefs(), (brief) => brief.getSure());
+        if (_.size(variantsOfSelected) < 1) throw new Error(`沒有選取的商品`);
+
         if (!Util.areAllValuesTheSameOnKeys(variantsOfSelected, "idOfAuthor")) throw new Error(`勾選的商品來自不同賣家，無法進行交易`);
-        await this.modifyErosInfoOfAuthor(variantsOfSelected[0]);
+        await this.modifyErosInfoOfAuthor(variantsOfSelected[0].idOfAuthor);
 
         /** 未登入檢查是否超過金額 */
-        if (UserInfoRef.anonymous() && this.getErosOfPublic().amountOfAllowAnonymousBuy > this.getPriceOfTotal())
-            throw new Error(`「未登入購物，金額限制」不得超過＄${this.getErosOfPublic().amountOfAllowAnonymousBuy}`);
+        if (UserInfoRef.anonymous() && this.getErosOfPublic().amountOfAllowAnonymousBuy < this.getPriceOfTotal())
+            throw new Error(`「未登入購物，金額限制」不得超過＄${this.getErosOfPublic().amountOfAllowAnonymousBuy} 元`);
 
         /** 登入檢查是否超過金額 */
-        if (this.getErosOfPublic().amountOfMaximumBuy > this.getStore().getPriceOfTotal())
-            throw new Error(`「購物金額限制」不得超過＄${this.getErosOfPublic().amountOfMaximumBuy}`);
+        if (this.getErosOfPublic().amountOfMaximumBuy < this.getPriceOfTotal()) throw new Error(`「購物金額限制」不得超過 ${this.getErosOfPublic().amountOfMaximumBuy} 元`);
     };
 
     validateCountOfOrder(brief, increase = true, deleted = false) {

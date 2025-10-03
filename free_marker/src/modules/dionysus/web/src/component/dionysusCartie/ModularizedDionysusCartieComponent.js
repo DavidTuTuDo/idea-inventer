@@ -46,13 +46,13 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
 
     onDionysusCartieSubmitChipClicked = (param) => {
         const self = this;
-        this.getStore()
+        self.getStore()
             .isCheckedVariantValid()
             .then(() => {
                 self.getStore().updateInfosOfCartieCookie();
                 Router.gotoHermesPage(self);
             })
-            .catch((error) => self.showWarningSnackMessage(error.message()));
+            .catch((error) => self.showWarningSnackMessage(error.message));
     };
 
     onDionysusCartieBriefSureCheckboxChange(param) {
