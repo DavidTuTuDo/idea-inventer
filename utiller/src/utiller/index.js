@@ -3277,6 +3277,39 @@ class Utiller {
         });
     };
 
+    /**
+     * 檢查多個鍵 (authorId 和 teamId)
+     * const result2 = areAllValuesTheSameOnKeys(items, 'authorId', 'teamId');
+     * console.log(`檢查 authorId 和 teamId: ${result2}`); // 輸出: true (A, T1 都相同)
+     */
+    areAllValuesTheSameOnKeys = (array, ...keys) => {
+        // 處理邊界情況：陣列為空、只有一個元素，或沒有指定任何鍵時，直接返回 true
+        if (!array || array.length <= 1 || keys.length === 0) {
+            return true;
+        }
+
+        // 依序檢查每個傳入的 keyName
+        for (const keyName of keys) {
+
+            // 確保第一個元素有所需的鍵，避免不必要的檢查
+            // 使用 ES10 可選鏈 (Optional Chaining)
+            const firstValue = array[0]?.[keyName];
+
+            // 使用 _.every 檢查陣列中所有元素，確保其值與第一個元素的值相同
+            const isCurrentKeySame = _.every(array, (item) => {
+                return item[keyName] === firstValue;
+            });
+
+            // 只要發現有一個鍵的值不相同，立即返回 false
+            if (!isCurrentKeySame) {
+                return false;
+            }
+        }
+
+        // 如果所有鍵都通過了檢查，則返回 true
+        return true;
+    };
+
     // testOfConflict() {
     //     // ===== 測試資料 =====
     //     const newTask = {

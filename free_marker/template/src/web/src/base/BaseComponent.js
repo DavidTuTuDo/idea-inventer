@@ -178,7 +178,7 @@ class BaseComponent extends MuiComponent {
         this.fileChooserInputRef = React.createRef();
         if (!this.isNavigator() && Config.isScrollingHide) {
             /** 這邊應該要監聽navigator發送的事件, 然後更改ViewHeight*/
-            if (!this.isComponentView()) this.getStore().setAppBarHeight(isMobile ? 60 : 60);
+            if (!this.isComponentView()) this.getStore().setAppBarHeight(isMobile ? 60 : 55);
         }
         this.imageDialogRef = React.createRef();
     }
@@ -415,7 +415,7 @@ class BaseComponent extends MuiComponent {
     render() {
         const self = this;
         return (
-            <div className={"RootViewDiv"} style={{ ...this.style, marginTop: self.getStore().getAppBarHeight() }}>
+            <div className={"RootViewDiv"} style={{ ...this.style, marginTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
                 {self.renderGlobalLoadingView()}
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>

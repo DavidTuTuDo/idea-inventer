@@ -7,14 +7,42 @@ import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDionysusCartieStore from "./BaseDionysusCartieStore";
 import VariantApi from "../dionysusBoozeVariant";
+import ErosPublic from "../dionysusErosPublic";
 
 class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
+    @observable
+    erosOfPublic;
+
     constructor(props) {
         super(props);
         this.api = new VariantApi();
+        this.apiOfErosPublic = new ErosPublic();
         UserInfoRef.setGotoCartieDirect(false);
-        /** cool man */
     }
+
+    @action
+    modifyErosInfoOfAuthor = async (idOfAuthor) => {
+        this.erosOfPublic = this.apiOfErosPublic.fetchPublic(this.getComponent(), idOfAuthor);
+    };
+
+    getErosOfPublic = () => {
+        return this.erosOfPublic;
+    };
+
+    isCheckedVariantValid = async () => {
+        /** 檢查商品是否皆為同一人 */
+        const variantsOfSelected = _.filter(this.getBriefs(), (brief) => brief.getSure());
+        if (!Util.areAllValuesTheSameOnKeys(variantsOfSelected, "idOfAuthor")) throw new Error(`勾選的商品來自不同賣家，無法進行交易`);
+        await this.modifyErosInfoOfAuthor(variantsOfSelected[0]);
+
+        /** 未登入檢查是否超過金額 */
+        if (UserInfoRef.anonymous() && this.getErosOfPublic().amountOfAllowAnonymousBuy > this.getPriceOfTotal())
+            throw new Error(`「未登入購物，金額限制」不得超過＄${this.getErosOfPublic().amountOfAllowAnonymousBuy}`);
+
+        /** 登入檢查是否超過金額 */
+        if (this.getErosOfPublic().amountOfMaximumBuy > this.getStore().getPriceOfTotal())
+            throw new Error(`「購物金額限制」不得超過＄${this.getErosOfPublic().amountOfMaximumBuy}`);
+    };
 
     validateCountOfOrder(brief, increase = true, deleted = false) {
         if (deleted) {
@@ -55,6 +83,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
                 priceB4Discount: variant.priceB4Discount,
                 countOfSubmit,
                 quantity: currentCountOfMaximum,
+                idOfAuthor: variant.idOfAuthor,
                 sure: currentCountOfMaximum > 0
             });
         }

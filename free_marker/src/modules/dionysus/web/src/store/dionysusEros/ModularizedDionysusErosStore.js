@@ -64,10 +64,6 @@ const textsFetchConfig = {
 };
 
 class ModularizedDionysusErosStore extends BaseDionysusErosStore {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         this.apiOfTab = new DionysusSelect();
@@ -80,6 +76,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(this.getPublic().getPriceOfFreeShipping());
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(this.getPublic().getAmountOfAllowAnonymousBuy());
         this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(this.getPublic().getPercentageOfDiscount());
+        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(this.getPublic().getAmountOfMaximumBuy());
         this.setAllowBoughtWithoutLoginIn(this.getPublic().getAllowBoughtWithoutLoginIn());
     }
 
@@ -88,6 +85,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!this.isValidDiscountPercentNumber(percent)) return this.getComponent().showErrorSnackMessage(`折扣常數格式錯誤 ${percent}`);
         await this.getPublic().setPercentageOfDiscount(percent);
         this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(percent);
+        //TODO:改成MergeSubmit
         await this.getPublic().submitPublic(this.getComponent());
     };
 
@@ -96,6 +94,16 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (amount < 1) return this.getComponent().showErrorSnackMessage(`未登入消費金額格式錯誤 ${amount}`);
         await this.getPublic().setAmountOfAllowAnonymousBuy(amount);
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(amount);
+        //TODO:改成MergeSubmit
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+
+    /** public */
+    submitAmountOfAllowMaximumBuy = async (amount) => {
+        if (amount < 1) return this.getComponent().showErrorSnackMessage(`消費額度格式錯誤 ${amount}`);
+        await this.getPublic().setAmountOfMaximumBuy(amount);
+        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(amount);
+        //TODO:改成MergeSubmit
         await this.getPublic().submitPublic(this.getComponent());
     };
 
@@ -105,6 +113,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!this.isValidLinePayConfig(...param)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
         this.getSecret().setLinepaySet(...param);
         this.getPublic().setHasLinePay(true);
+        //TODO:改成MergeSubmit
         await this.getSecret().submitSecret(this.getComponent());
         await this.getPublic().submitPublic(this.getComponent());
     };
@@ -115,6 +124,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!this.isValidECPayConfig(...param)) return this.getComponent().showErrorSnackMessage(`綠界支付(格式錯誤)`);
         this.getSecret().setEcpaySet(...param);
         this.getPublic().setHasECPay(true);
+        //TODO:改成MergeSubmit
         await this.getSecret().submitSecret(this.getComponent());
         await this.getPublic().submitPublic(this.getComponent());
     };
@@ -126,6 +136,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         const target = _.toString(path);
         if (!this.isLinePayCallbackUrl(target)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${path}'`);
         this.getPublic().setPayOfDirect(target);
+        //TODO:改成MergeSubmit
         await this.getPublic().submitPublic(this.getComponent());
     };
 
@@ -136,6 +147,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!_.isNumber(target)) return this.getComponent().showErrorSnackMessage(`金額格式錯誤 '${price}'`);
         this.getPublic().setPriceOfFreeShipping(target);
         this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(target);
+        //TODO:改成MergeSubmit
         await this.getPublic().submitPublic(this.getComponent());
     };
 
@@ -146,6 +158,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!_.isNumber(target) || target < 1) return this.getComponent().showErrorSnackMessage(`人數格式錯誤 '${num}'`);
         this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(target);
         this.getPublic().setNumOfWorker(target);
+        //TODO:改成MergeSubmit
         await this.getPublic().submitPublic(this.getComponent());
     };
 
@@ -153,6 +166,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitWhetherBoughtWithoutLogin = async () => {
         Util.appendInfo(` 免登入下單 ${this.getAllowBoughtWithoutLoginIn()}`);
         this.getPublic().setAllowBoughtWithoutLoginIn(this.getAllowBoughtWithoutLoginIn());
+        //TODO:改成MergeSubmit
         await this.getPublic().submitPublic(this.getComponent());
     };
 
@@ -160,6 +174,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     submitBrandName = async (name) => {
         Util.appendInfo(`[TEXTFETCH] name text clicked ${name}`);
         if (_.size(name) <= 0) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
+        //TODO:改成MergeSubmit
         const info = await this.apiOfInfo.fetchInfo(this.getComponent());
         info.nameOfBrand = name;
         await this.apiOfInfo.submitInfo(this.getComponent(), info);
@@ -169,6 +184,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     /** admin */
     submitCategoryRules = async (param) => {
         const result = Util.generateLabelValuePairsWithOrigin(this.categoryOfCurrent, param);
+        //TODO:改成MergeSubmit
         await this.apiOfTab.submitSelects(
             this.getComponent(),
             result.map((each) => {

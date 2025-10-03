@@ -14,6 +14,7 @@
     }
 }
 .NavigatorToolBarToolbar {
+    border-radius: 36px;
     @media @mobile {
         /** empty style */
     }
@@ -26,9 +27,13 @@
 }
 .NavigatorToolBarAppBarWrap {
     background-color: black !important;
-    height: 60px;
+    height: 55px;
     display: flex;
     justify-content: center;
+    border-radius: 36px;
+    margin: 8px 8px;
+    width: calc(100% - 16px);
+    z-index: 1100;
     @media @mobile {
         /** empty style */
     }

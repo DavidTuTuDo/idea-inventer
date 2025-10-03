@@ -152,6 +152,10 @@ class BaseStore extends ClientRemoteApi {
         return this.appBarHeight;
     }
 
+    hasAppBar() {
+        return this.appBarHeight > 0;
+    }
+
     getIdOfUniqueView() {
         return this.idOfUniqueView;
     }

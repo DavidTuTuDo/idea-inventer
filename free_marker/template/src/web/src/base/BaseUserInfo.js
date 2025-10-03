@@ -95,6 +95,8 @@ class UserInfo {
             CommonPoolHelper.enableParallelMode();
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
             current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
+
+            //TODO:改成MergeSubmit
             if (!current.exists) this.apiOfUser.submitUserItem(Application.getLatestComponent(), { ...user, id: user.uid }, user.uid).then();
             else this.apiOfUser.updateUserItem(Application.getLatestComponent(), user, user.uid).then(); //不要讓main thread卡住
             Cookie.setUser(user);
@@ -134,9 +136,9 @@ class UserInfo {
         return this.authorUser;
     };
 
-    isSuperAdmin() {
+    isSuperAdmin = () => {
         return this.adminUser;
-    }
+    };
 
     @action
     setNameOfBrand = (name) => {
@@ -270,6 +272,10 @@ class UserInfo {
         const infoOfCartie = Cookie.getInfoOfCartie();
         return _.values(_.filter(infoOfCartie, (each) => each.checked));
     }
+
+    anonymous = () => {
+        return !_.isEmpty(this.uid);
+    };
 
     getArrayOfCartieItem() {
         const infoOfCartie = Cookie.getInfoOfCartie();

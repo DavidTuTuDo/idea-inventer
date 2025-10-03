@@ -781,6 +781,20 @@ class CommonStyle {
 
     /** => following for eros  component  */
 
+    DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconNavigateNext = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyReactFragmentWrap = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconButton = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyContentTypography = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyTitleTypography = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyDivWrap = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyDiv = {};
+
     DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconNavigateNext = {};
 
     DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyReactFragmentWrap = {};

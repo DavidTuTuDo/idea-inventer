@@ -68,9 +68,16 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
 
     onDionysusErosArrowOfAmountOfAllowAnonymousBuyIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("percentageOfDiscount");
+        this.getStore().setSelected("allowAnonymousBuy");
         const amount = object.getDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy();
         this.getStore().submitAmountOfAllowAnonymousBuy(amount).then();
+    }
+
+    onDionysusErosArrowOfAmountOfMaximumBuyIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("amountOfMaximum");
+        const amount = object.getDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy();
+        this.getStore().submitAmountOfAllowMaximumBuy(amount).then();
     }
 
     onDionysusErosArrowOfEcpaySetIconButtonClicked(param) {
