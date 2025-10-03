@@ -6,6 +6,7 @@ import * as functions from "firebase-functions";
 import Api from "../api";
 import Config from "../config";
 import ClientRemoteApi from "../base/CommonRemoteApi";
+import crypto from 'crypto';
 
 class BaseFunction extends ClientRemoteApi {
     constructor(props) {
@@ -189,6 +190,43 @@ class BaseFunction extends ClientRemoteApi {
         }
         return { typeOfUser, allowUpdate };
     }
+
+    /**
+     * 取得發送者 IP（取第一個 x-forwarded-for 或 rawRequest.ip）
+     * @param {functions.https.CallableContext} context
+     * @returns {string} IP address
+     */
+    getIp = (context) => {
+        const forwarded = context.rawRequest.headers['x-forwarded-for'] || '';
+        const ip = forwarded.split(',')[0].trim() || context.rawRequest.ip || 'unknown';
+        return ip;
+    }
+
+    /**
+     * 取得發送者的 User-Agent
+     * @param {functions.https.CallableContext} context
+     * @returns {string} userAgent string
+     */
+    getUserAgent = (context) => {
+        return context.rawRequest.headers['user-agent'] || 'unknown';
+    }
+
+    /**
+     * 使用 IP + User-Agent 產生唯一 fingerprint（作為 Firestore doc ID）
+     * @param {functions.https.CallableContext} context
+     * @returns {string} fingerprint（safe for Firestore doc ID）
+     */
+    getClientFingerprint = (context) => {
+        const ip = this.getIp(context);
+        const userAgent = this.getUserAgent(context);
+        const rawFingerprint = `${ip}_${userAgent}`;
+
+        const hash = crypto.createHash('sha256').update(rawFingerprint).digest('base64');
+
+        // Firestore-safe base64url 格式
+        return hash.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
 }
 
 export default BaseFunction;

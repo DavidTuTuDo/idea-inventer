@@ -74,6 +74,18 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     handleHttpOnCall = async (data, session) => {
+        console.log("session==> ", this.getIp(session));
+        console.log("ip==> ", this.getIp(session));
+        console.log("uid==> ", this.getClientFingerprint(session));
+        console.log("fingerprint==>", data.fingerprint);
+        this.appendErrorLog(`9999`, "2025/09/26 為了反覆測試帳號");
+
+        /** 未登入帳號，是否距離上一次REQUEST間隔2分鐘以上 */
+
+        /** 未登入帳號，商品是否超過兩個 */
+
+        /** 未登入idOfUser:'anonymous', anonymous:true */
+
         const db = this._firebase().firestore();
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
         const { remark, address, phone, name, email } = data;
