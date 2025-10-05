@@ -66,11 +66,17 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         }
     }
 
-    validateDistrictByCity() {
+    validateDistrictByCity = () => {
         const districts = Config.getDistrictsByCity(this.getSelectedCity());
         this.setDistricts(...districts);
         if (_.size(districts) > 0) this.setSelectedDistrict(districts[0].value);
-    }
+    };
+
+    whetherPickupByMySelfValidate = async () => {
+        const checked = this.getWhetherPickupByMySelf();
+        const info = Cookie.getInfoOfSelectedTransport();
+        this.setFeeOfTransport(checked ? 0 : _.toNumber(info.feeOfTransport));
+    };
 
     @computed
     get getComputedPriceOfTotal() {

@@ -55,6 +55,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(pub.getPercentageOfDiscount());
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(pub.getAmountOfMaximumBuy());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery(pub.getFeeOfCashOnDelivery());
+        this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(pub.getFeeOfInStorePickup());
         this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
         this.setEnableOfEcPay(pub.getEnableOfECPay());
@@ -125,6 +126,15 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             errorMessage: `COD運費格式錯誤 '${fee}'`,
             setter: (val) => this.getPublic().setFeeOfCashOnDelivery(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery(val)
+        });
+
+    submitFeeOfInStorePickup = (fee) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(fee),
+            errorMessage: `店到店運費格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setFeeOfInStorePickup(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(val)
         });
 
     /** enable toggles */

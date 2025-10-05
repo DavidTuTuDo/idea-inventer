@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -933,6 +935,20 @@ class MobileStyle {
 
     DionysusErosAreaOfLinepayDiv = {};
 
+    DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconNavigateNext = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupReactFragmentWrap = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconButton = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupContentTypography = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupTitleTypography = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupDivWrap = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupDiv = {};
+
     DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconNavigateNext = {};
 
     DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryReactFragmentWrap = {};
@@ -1319,11 +1335,11 @@ class MobileStyle {
 
     DionysusPlutusMainLocationColMainDiv = {};
 
-    DionysusPlutusMainLocationColTakenByMySelfLabelOfByMySelfTypography = {};
+    DionysusPlutusMainLocationColTakenWhetherPickupByMySelfLabelOfWhetherPickupByMySelfTypography = {};
 
-    DionysusPlutusMainLocationColTakenByMySelfDivWrap = {};
+    DionysusPlutusMainLocationColTakenWhetherPickupByMySelfDivWrap = {};
 
-    DionysusPlutusMainLocationColTakenByMySelfCheckbox = {};
+    DionysusPlutusMainLocationColTakenWhetherPickupByMySelfCheckbox = {};
 
     DionysusPlutusMainLocationColTakenDiv = {};
 

@@ -53,7 +53,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
 
     onDionysusMaenadsSubmitChipClicked(param) {
         const store = this.getStore();
-        const component = this.getComponentInstance(true);
+        const component = this.getComponentInstance();
 
         if (!store.getCurrentOptionExist()) {
             component.showWarningSnackMessage(`尚未選擇商品`);
@@ -72,6 +72,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
             idOfVariant: variant.id,
             quantity,
             isTaskJob: variant.isTaskJob,
+            idOfAuthor: variant.idOfAuthor,
             allowSelfPickUp: variant.allowSelfPickUp,
             isHomeTeaching: variant.isHomeTeaching,
             nameOfBooze: booze.name
@@ -86,7 +87,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         if (!canJoin) return component.showWarningSnackMessage(`未登入用戶限購 ${MAX_BADGE_OF_UN_SIGN} 件`);
 
         UserInfoRef.joinItemToCart(cartItem);
-
+        Util.appendInfo(`isGo2CartieDirect -> ${UserInfoRef.isGotoCartieDirect()}`);
         if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(component);
         else {
             component.showInfoSnackMessage(`已加入購物車`);

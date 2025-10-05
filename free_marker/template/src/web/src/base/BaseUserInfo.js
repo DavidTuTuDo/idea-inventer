@@ -226,7 +226,7 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "", quantityOfMaximum, isTaskJob, allowSelfPickUp, isHomeTeaching }) => {
+    joinItemToCart = ({ idOfAuthor, idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "", quantityOfMaximum, isTaskJob, allowSelfPickUp, isHomeTeaching }) => {
         Util.appendInfo({ idOfBooze, quantity });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
@@ -235,7 +235,7 @@ class UserInfo {
         Util.appendInfo({ idOfBooze, idOfVariant, quantity, key, nameOfBooze });
 
         if (object) object.quantity = Math.min(object.quantity + quantity, quantityOfMaximum);
-        else infoOfCartie[key] = { idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze, isTaskJob, allowSelfPickUp, isHomeTeaching };
+        else infoOfCartie[key] = { idOfAuthor, idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze, isTaskJob, allowSelfPickUp, isHomeTeaching };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     };
@@ -277,6 +277,11 @@ class UserInfo {
      * 檢查勾選商品裡有沒有實體商品
      * _.some(collection, predicate)：會遍歷陣列，只要有一個元素符合條件就回傳 true。 */
     hasTransportOfCheckedItem = () => _.some(this.getCheckedCartieItem(), { isTaskJob: false });
+
+    getAuthorOfHeadItemOfCartie = () => {
+        const items = this.getCheckedCartieItem();
+        return _.isArray(items) && items.length > 0 ? items[0].idOfAuthor : "";
+    };
 
     anonymous = () => {
         return !_.isEmpty(this.uid);
@@ -321,12 +326,12 @@ class UserInfo {
     };
 
     setGotoCartieDirect(enable = false) {
-        Cookie.setGotoCartieDirectly(enable ? "true" : "");
+        Cookie.setGotoCartieDirectly(enable ? "true" : "false");
     }
 
     isGotoCartieDirect() {
         const result = Cookie.getGotoCartieDirectly();
-        return !Util.isUndefinedNullEmpty(result);
+        return _.isEqual(result, "true");
     }
 
     waitLoginCompleted = () => {

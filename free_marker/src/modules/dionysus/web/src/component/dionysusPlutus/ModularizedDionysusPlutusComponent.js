@@ -37,6 +37,11 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         });
     }
 
+    onDionysusPlutusWhetherPickupByMySelfCheckboxChange(param) {
+        const self = this;
+        self.getStore().whetherPickupByMySelfValidate().then();
+    }
+
     getInjectStyleOfDionysusPlutusSecondDiv(plutus) {
         return Util.getVisibleOrNone(false, true);
     }
@@ -103,7 +108,8 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             address: self.getStore().getPreciselyAddress(),
             phone: self.getStore().getPhone(),
             name: self.getStore().getName(),
-            email: self.getStore().getEmail()
+            email: self.getStore().getEmail(),
+            pickupByThemself: self.getStore().getWhetherPickupByMySelf()
         });
         return result.idOfPreciseOrder;
     };
@@ -137,11 +143,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     getInjectStyleOfDionysusPlutusMainDiv(dionysusPlutus) {
-        return Util.getVisibleOrNone(!dionysusPlutus.getByMySelf(), true);
-    }
-
-    getInjectStyleOfDionysusPlutusDividerDiv(dionysusPlutus) {
-        return Util.getVisibleOrNone(!dionysusPlutus.getByMySelf(), true);
+        return Util.getVisibleOrNone(!dionysusPlutus.getWhetherPickupByMySelf(), true);
     }
 }
 

@@ -21,9 +21,13 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     }
 
     @action
-    modifyErosInfoOfAuthor = async (idOfAuthor) => {
+    modifyErosInfoOfAuthor = async (idOfAuthor, refresh) => {
+        const exist = this.erosOfPublic && this.erosOfPublic.numOfWorker > 0;
+        if (!refresh && exist) return this.erosOfPublic;
+
         this.erosOfPublic = await this.apiOfErosPublic.fetchPublic(this.getComponent(), idOfAuthor);
         Util.appendInfo(this.erosOfPublic);
+        return this.erosOfPublic;
     };
 
     getErosOfPublic = () => {

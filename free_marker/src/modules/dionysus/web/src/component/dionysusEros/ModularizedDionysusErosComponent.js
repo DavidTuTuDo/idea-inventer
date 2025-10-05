@@ -107,6 +107,13 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitFeeOfCashOnDelivery(fee).then();
     }
 
+    onDionysusErosArrowOfFeeOfInStorePickupIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("feeOfInStorePickup");
+        const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup();
+        this.getStore().submitFeeOfInStorePickup(fee).then();
+    }
+
     /** -------------------- async api -------------------- **/
 }
 

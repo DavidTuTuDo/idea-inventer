@@ -17,10 +17,12 @@ class ModularizedDionysusBacchusComponent extends BaseDionysusBacchusComponent {
     }
 
     onDionysusBacchusBoughtChipClicked(param) {
+        Util.appendInfo(`cookie紀錄->直接購買`);
         UserInfoRef.setGotoCartieDirect(true);
     }
 
     onDionysusBacchusJoinToCartChipClicked(param) {
+        Util.appendInfo(`cookie紀錄->加入購物車`);
         UserInfoRef.setGotoCartieDirect(false);
     }
 
