@@ -27,7 +27,6 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
             Router.gotoBacchusDetailPage(this, content.uid);
         }
     }
-
 }
 
 export default NavigatorComponent;
