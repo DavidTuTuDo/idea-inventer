@@ -6,6 +6,7 @@ import UserInfo from "../../base/BaseUserInfo";
 import Router from "../../router";
 import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
 import Functions from "../../functions";
+import Config from "../../config";
 
 class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     constructor(props) {
@@ -14,6 +15,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     onDionysusPlutusFindIconButtonClicked(param) {
         const self = this;
+
         if (!_.isEmpty(this.getStore().getAddress())) {
             const address = this.getStore().getPreciselyAddress();
             Functions.httpOnCallGetDistanceOfSpecificAddress(this, { address }).then((result) => {
@@ -58,8 +60,17 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
             return;
         }
+        const containsPhysicalGood = UserInfo.containsPhysicalGoodOfCheckedItem();
 
-        if (Util.or(_.isEmpty(this.getStore().getAddress()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
+        function isAddressNotValid() {
+            if (containsPhysicalGood) {
+                if (self.getStore().getWhetherPickupByMySelf()) return false;
+                return _.isEmpty(self.getStore().getAddress());
+            }
+            return false;
+        }
+
+        if (Util.or(isAddressNotValid(), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
             this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`);
             return;
         }
@@ -83,6 +94,12 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     execute = async () => {
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
+        Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
+        if (!UserInfo.isLoginWithSucceed()) {
+            Router.gotoHomePage(this);
+            return this.showSuccessSnackMessage(`已成功購買，請檢查您的信箱`);
+        }
+
         switch (UserInfo.getTypeOfTransport()) {
             case 1:
             case 2:
@@ -101,6 +118,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     performEPayCreateOrderBehavior = async () => {
         const self = this;
         const items = UserInfo.getCheckedCartieItem();
+        const containsPhysicalGood = UserInfo.containsPhysicalGoodOfCheckedItem();
         Util.mutateRemoveKeys(items, ["checked", "idOfCookieUsage"]);
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {
             items,
@@ -109,7 +127,11 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             phone: self.getStore().getPhone(),
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
-            transport: self.getStore().getWhetherPickupByMySelf() ? 2 : 4 //寫成enum
+            transport: containsPhysicalGood
+                ? self.getStore().getWhetherPickupByMySelf()
+                    ? Config.TransportMethod.SelfPickup
+                    : Config.TransportMethod.Freight
+                : Config.TransportMethod.SelfPickup //寫成enum
         });
         return result.idOfPreciseOrder;
     };

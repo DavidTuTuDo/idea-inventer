@@ -177,7 +177,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
 
     submitDirectPay = async ([url]) => {
-        if (!this.isLinePayCallbackUrl(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
+        if (!this.isLinePayDirectQRUrl(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
         this.getPublic().setPayOfDirect(url);
         await this.getPublic().submitPublic(this.getComponent());
     };
@@ -227,7 +227,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     isValidECPayConfig = (id, key, iv) => [id, key, iv].every((p) => _.isString(p) && !_.isEmpty(p));
     isValidLinePayConfig = (id, secret) => [id, secret].every((p) => _.isString(p) && !_.isEmpty(p));
     isValidDiscountPercentNumber = (val) => _.inRange(_.toNumber(val), 10, 101);
-    isLinePayCallbackUrl = (urlString) => {
+    isLinePayDirectQRUrl = (urlString) => {
         try {
             const url = new URL(urlString);
             return ["transactionId", "orderId"].every((p) => url.searchParams.has(p));

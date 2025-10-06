@@ -3279,6 +3279,7 @@ class ClassGenerator {
             const _stmts = [`let result = {};`,
                 `let succeed = true;`,
                 `try {`];
+            _stmts.push(`${fieldName}.setFingerprint(data.fingerprint);`);
             _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,
@@ -3286,7 +3287,7 @@ class ClassGenerator {
                 `functions.logger.error(result);`,
                 `}`,
                 `${getStringOfFunctionFinally()}`
-            ])
+            ]);
             return _stmts;
         }
 
@@ -9604,7 +9605,7 @@ class BuildApplication {
 
     async deployFunctionsWithoutBuild() {
         const functions = new ProjectFileHandler(this.getBuildObject('functions'));
-        await functions.leanCodeOfProjectSrc('functions');
+        await functions.leanCodeOfSource();
         await functions.deployFunctionsToProd();
         Util.appendInfo(`deployFunctionsWithoutBuild() succeed`);
     }

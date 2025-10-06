@@ -24,7 +24,7 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
 
     getInjectStyleOfDionysusHermesTransportDiv(transport) {
         const visible = transport.getAvailable();
-        if (!UserInfo.hasTransportOfCheckedItem() && Util.isOrEquals(transport.getTypeOfTransport(), 4, 5, 7, 8)) return Util.getVisibleOrNone(false);
+        if (!UserInfo.containsPhysicalGoodOfCheckedItem() && Util.isOrEquals(transport.getTypeOfTransport(), 4, 5, 7, 8)) return Util.getVisibleOrNone(false);
         return Util.getVisibleOrNone(visible);
     }
 
@@ -34,11 +34,11 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
     }
 
     getInjectStyleOfDionysusHermesTransportDescriptionTypography(transport) {
-        return Util.getVisibleOrNone(UserInfo.hasTransportOfCheckedItem());
+        return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
     }
 
     getWrapInjectStyleOfDionysusHermesTransportPriceTypography(transport) {
-        return Util.getVisibleOrHidden(UserInfo.hasTransportOfCheckedItem());
+        return Util.getVisibleOrHidden(UserInfo.containsPhysicalGoodOfCheckedItem());
     }
 }
 

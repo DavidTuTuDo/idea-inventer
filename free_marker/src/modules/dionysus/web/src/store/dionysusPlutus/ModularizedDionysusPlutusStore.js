@@ -24,6 +24,12 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         this.setFeeOfTransport(_.toNumber(info.feeOfTransport));
         this.setProcedureOfPayment(info.stringOfTransport);
         this.setPrice(UserInfoRef.getTotalPriceOfCartie());
+        if (UserInfoRef.isLoginWithSucceed()) {
+            this.setEmail(UserInfoRef.getEmailOfCurrentUser());
+            this.setPhone(UserInfoRef.getPhoneOfCurrentUser());
+            this.setName(UserInfoRef.getDisplayNameOfUser());
+        }
+
         this.getComponent().scrollToTop();
         const itemsOfCarie = UserInfoRef.getCheckedCartieItem();
 

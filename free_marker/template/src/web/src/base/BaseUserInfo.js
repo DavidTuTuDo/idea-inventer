@@ -276,7 +276,7 @@ class UserInfo {
     /**
      * 檢查勾選商品裡有沒有實體商品
      * _.some(collection, predicate)：會遍歷陣列，只要有一個元素符合條件就回傳 true。 */
-    hasTransportOfCheckedItem = () => _.some(this.getCheckedCartieItem(), { isTaskJob: false });
+    containsPhysicalGoodOfCheckedItem = () => _.some(this.getCheckedCartieItem(), { isTaskJob: false });
 
     getAuthorOfHeadItemOfCartie = () => {
         const items = this.getCheckedCartieItem();

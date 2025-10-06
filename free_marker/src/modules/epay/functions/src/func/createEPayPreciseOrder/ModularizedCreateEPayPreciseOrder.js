@@ -12,7 +12,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
     constructor(props) {
         super(props);
-        this.hasDeliverdVarient = false;
+        this.containsDeliveredVariant = false;
     }
 
     getMaxItemsOfPreciseOrder = () => {
@@ -74,21 +74,21 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     handleHttpOnCall = async (data, session) => {
-        console.log("session==> ", this.getIp(session));
-        console.log("ip==> ", this.getIp(session));
-        console.log("uid==> ", this.getClientFingerprint(session));
-        console.log("fingerprint==>", data.fingerprint);
-        this.appendErrorLog(`9999`, "2025/09/26 為了反覆測試帳號");
+        /** todo:未登入帳號，是否距離上一次REQUEST間隔2分鐘以上 */
 
-        /** 未登入帳號，是否距離上一次REQUEST間隔2分鐘以上 */
+        /** todo:未登入帳號，價格是否超過eros裡的 amountOfAllowAnonymousBuy */
 
-        /** 未登入帳號，商品是否超過兩個 */
+        /** todo:未登入帳號，價格是否超過eros裡的 amountOfMaximumBuy */
 
-        /** 未登入idOfUser:'anonymous', anonymous:true */
+        /** todo:透過idOfAuthor拿到eros，如果超過免運就免，否則就是依照買家 transport的(feeOfPickupStore, feeOfCOD) */
+
+        /** todo:運費方式寫進去methodOfTransport */
+
+        /** todo:完成交易後，填寫地址和姓名紀錄在user的欄位(latestName, latestAddress) */
 
         const db = this._firebase().firestore();
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
-        const { remark, address, phone, name, email } = data;
+        const { remark, address, phone, name, email, transport } = data;
 
         // 參數驗證
         this.validateOrderItems(itemsOfClientOrdering);
@@ -97,7 +97,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         try {
             await db.runTransaction(async (transaction) => {
-                const { mapOfVariant, authorId, hasDeliverdVarient } = await this.getAndValidateVariants(db, itemsOfClientOrdering, transaction);
+                const { mapOfVariant, authorId, containsDeliveredVariant } = await this.getAndValidateVariants(db, itemsOfClientOrdering, transaction);
 
                 // 驗證最終價格
                 const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering);
@@ -107,12 +107,12 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 await this.processInventoryAndSchedules(db, itemsOfClientOrdering, mapOfVariant, transaction);
 
                 // 創建訂單與報表
-                await this.createOrderAndHade(
+                await this.createOrderAndHades(
                     db,
                     itemsOfClientOrdering,
                     preciseOrderRef,
                     authorId,
-                    hasDeliverdVarient,
+                    containsDeliveredVariant,
                     { remark, address, phone, name, email },
                     session,
                     totalPrice,
@@ -139,7 +139,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const variantSnaps = await transaction.getAll(...variantRefs);
         const mapOfVariant = {};
         let authorId = null;
-        let hasDeliverdVarient = false;
+        let containsDeliveredVariant = false;
 
         for (let i = 0; i < variantSnaps.length; i++) {
             const snap = variantSnaps[i];
@@ -164,9 +164,10 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             } else if (variant.idOfAuthor !== authorId) {
                 this.appendErrorLog(9999, "1152132321 購物車中的商品來自不同作者，無法進行交易");
             }
-            if (!variant.isTaskJob) hasDeliverdVarient = true;
+            const isPhysicalGood = !variant.isTaskJob;
+            if (isPhysicalGood) containsDeliveredVariant = true;
         }
-        return { mapOfVariant, authorId, hasDeliverdVarient };
+        return { mapOfVariant, authorId, containsDeliveredVariant: containsDeliveredVariant };
     };
 
     validateTotalPrice = (totalPrice) => {
@@ -200,10 +201,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         }
     };
 
-    createOrderAndHade = async (db, itemsOfClientOrdering, preciseOrderRef, authorId, hasDeliverdVarient, data, session, totalPrice, transaction) => {
+    createOrderAndHades = async (db, itemsOfClientOrdering, preciseOrderRef, authorId, containsDeliveredVariant, data, session, totalPrice, transaction) => {
         const { remark, address, phone, name, email } = data;
         const preciseOrderData = Api.normalizePreciseOrder({
-            idOfUser: this.getUid(session),
+            /** todo:未登入idOfUser:'', anonymous:true */
+            anonymous: this.isAnonymousUser(session),
+            fingerprint: this.getFingerprint(),
+            idOfUser: this.isAnonymousUser(session) ? "" : this.getUid(session),
             textOfContract: this.getTextOfContract(itemsOfClientOrdering, remark),
             remark,
             timeOfExpired: Util.getTimeStampWithConditions(this.getRuleOfExpiredTime()),
@@ -216,19 +220,19 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             distance: "",
             name: name || "",
             phoneNumber: phone || "",
-            stateOfDeliver: hasDeliverdVarient ? Config.StateOfDeliver.Pending : Config.StateOfDeliver.Needless,
+            stateOfDeliver: containsDeliveredVariant ? Config.StateOfDeliver.Pending : Config.StateOfDeliver.Needless,
             idOfAuthor: authorId
         });
 
         transaction.create(preciseOrderRef, preciseOrderData);
 
-        const hadeData = Api.normalizeHade({
+        const hadesData = Api.normalizeHade({
             priceOfTotal: totalPrice,
             timeOfCreate: Util.getCurrentTimeStamp(),
             paid: false,
             id: preciseOrderRef.id
         });
-        transaction.create(db.collection(`/users/${authorId}/hades`).doc(preciseOrderRef.id), hadeData);
+        transaction.create(db.collection(`/users/${authorId}/hades`).doc(preciseOrderRef.id), hadesData);
     };
 
     getPreciseItemsAsRecord(variants) {
