@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -64,10 +66,6 @@ class MobileStyle {
     MainEditorPromotedBannerRouteTextField = {};
 
     MainEditorPromotedBannerIdTextField = {};
-
-    MainEditorPromotedBannerDivWrap = {};
-
-    MainEditorPromotedBannerDiv = {};
 
     MainEditorPromotedBannerDivList = {};
 
@@ -241,13 +239,13 @@ class MobileStyle {
 
     MetisSetUpClazzAreaOfFuncDiv = {};
 
-    MetisSetUpClazzInfoStateOfClassMenuItem = {};
-
     MetisSetUpClazzInfoStateOfClassTextFieldList = {};
 
-    MetisSetUpClazzInfoTypeOfClassMenuItem = {};
+    MetisSetUpClazzInfoStateOfClassMenuItem = {};
 
     MetisSetUpClazzInfoTypeOfClassTextFieldList = {};
+
+    MetisSetUpClazzInfoTypeOfClassMenuItem = {};
 
     MetisSetUpClazzInfoCountsOfStudentCapacityTextField = {};
 
@@ -265,9 +263,9 @@ class MobileStyle {
 
     MetisSetUpClazzClassTimeStartOfTimeTimePicker = {};
 
-    MetisSetUpClazzClassTimeDayOfWeekMenuItem = {};
-
     MetisSetUpClazzClassTimeDayOfWeekTextFieldList = {};
+
+    MetisSetUpClazzClassTimeDayOfWeekMenuItem = {};
 
     MetisSetUpClazzClassTimeDivList = {};
 
@@ -378,6 +376,128 @@ class MobileStyle {
     MetisClazzCard = {};
 
     MetisDiv = {};
+
+    /** => following for numberSetter  component  */
+
+    IreneNumberSetterFuncLeaveChip = {};
+
+    IreneNumberSetterFuncConfirmChip = {};
+
+    IreneNumberSetterFuncDiv = {};
+
+    IreneNumberSetterRowValueTextField = {};
+
+    IreneNumberSetterRowColonTypography = {};
+
+    IreneNumberSetterRowLabelTypography = {};
+
+    IreneNumberSetterRowDivList = {};
+
+    IreneNumberSetterRowDiv = {};
+
+    IreneNumberSetterDivWrap = {};
+
+    IreneNumberSetterPaper = {};
+
+    /** => following for timePeriod  component  */
+
+    IreneTimePeriodFuncConfirmChip = {};
+
+    IreneTimePeriodFuncLeaveChip = {};
+
+    IreneTimePeriodFuncDiv = {};
+
+    IreneTimePeriodMainTimeOfEndLabelOfTimeOfEndTypography = {};
+
+    IreneTimePeriodMainTimeOfEndDivWrap = {};
+
+    IreneTimePeriodMainTimeOfEndTimePicker = {};
+
+    IreneTimePeriodMainTimeOfStartLabelOfTimeOfStartTypography = {};
+
+    IreneTimePeriodMainTimeOfStartDivWrap = {};
+
+    IreneTimePeriodMainTimeOfStartTimePicker = {};
+
+    IreneTimePeriodMainDiv = {};
+
+    IreneTimePeriodDivWrap = {};
+
+    IreneTimePeriodPaper = {};
+
+    /** => following for textsIndexSetter  component  */
+
+    IreneTextsIndexSetterFuncUpdateChip = {};
+
+    IreneTextsIndexSetterFuncLeaveChip = {};
+
+    IreneTextsIndexSetterFuncDiv = {};
+
+    IreneTextsIndexSetterRowGoTopChip = {};
+
+    IreneTextsIndexSetterRowLabelTypography = {};
+
+    IreneTextsIndexSetterRowBelongDivWrap = {};
+
+    IreneTextsIndexSetterRowBelongCheckbox = {};
+
+    IreneTextsIndexSetterRowDivList = {};
+
+    IreneTextsIndexSetterRowDiv = {};
+
+    IreneTextsIndexSetterDivWrap = {};
+
+    IreneTextsIndexSetterPaper = {};
+
+    /** => following for textFetch  component  */
+
+    IreneTextFetchFuncLeaveChip = {};
+
+    IreneTextFetchFuncAppendChip = {};
+
+    IreneTextFetchFuncDiv = {};
+
+    IreneTextFetchRowClearIconClearRounded = {};
+
+    IreneTextFetchRowClearIconButton = {};
+
+    IreneTextFetchRowContentTextField = {};
+
+    IreneTextFetchRowTitleTypography = {};
+
+    IreneTextFetchRowDiv = {};
+
+    IreneTextFetchDivWrap = {};
+
+    IreneTextFetchPaper = {};
+
+    /** => following for textsFetch  component  */
+
+    IreneTextsFetchFuncAppendChip = {};
+
+    IreneTextsFetchFuncLeaveChip = {};
+
+    IreneTextsFetchFuncDiv = {};
+
+    IreneTextsFetchTitleClearIconDeleteForeverRounded = {};
+
+    IreneTextsFetchTitleClearIconButton = {};
+
+    IreneTextsFetchTitleContentTextField = {};
+
+    IreneTextsFetchTitleIndexTypography = {};
+
+    IreneTextsFetchTitleDivList = {};
+
+    IreneTextsFetchTitleDiv = {};
+
+    IreneTextsFetchDivWrap = {};
+
+    IreneTextsFetchPaper = {};
+
+    /** => following for irene  component  */
+
+    IreneDiv = {};
 
     /** => following for infoOfCopyRightContent  component  */
 
@@ -517,165 +637,603 @@ class MobileStyle {
 
     InfoOfCopyRightDiv = {};
 
-    /** => following for epayFootprint  component  */
+    /** => following for hades  component  */
 
-    EpayFootprintOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
+    HadesDiv = {};
 
-    EpayFootprintOrderAreaOfPaymentFailureReasonDivWrap = {};
+    /** => following for variantPhotoSetter  component  */
 
-    EpayFootprintOrderAreaOfPaymentFailureReasonTypography = {};
+    DionysusVariantPhotoSetterVariantPreviewChip = {};
 
-    EpayFootprintOrderAreaOfPaymentFailureDiv = {};
+    DionysusVariantPhotoSetterVariantUpdateIconAddPhotoAlternateRounded = {};
 
-    EpayFootprintOrderAreaOfFuncCheckoutButton = {};
+    DionysusVariantPhotoSetterVariantUpdateIconButton = {};
 
-    EpayFootprintOrderAreaOfFuncDiv = {};
+    DionysusVariantPhotoSetterVariantLabelOfVariantDivWrap = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll = {};
+    DionysusVariantPhotoSetterVariantLabelOfVariantTypography = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton = {};
+    DionysusVariantPhotoSetterVariantDivList = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography = {};
+    DionysusVariantPhotoSetterVariantDiv = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap = {};
+    DionysusVariantPhotoSetterDivWrap = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeTypography = {};
+    DionysusVariantPhotoSetterPaper = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeDiv = {};
+    /** => following for priceSetter  component  */
 
-    EpayFootprintOrderAreaOfPaymentDetailDomainLabelOfDomainTypography = {};
+    DionysusPriceSetterFuncBatchUpdateChip = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailDomainDivWrap = {};
+    DionysusPriceSetterFuncLeaveChip = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailDomainTypography = {};
+    DionysusPriceSetterFuncCommonReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailDivWrap = {};
+    DionysusPriceSetterFuncCommonChip = {};
 
-    EpayFootprintOrderAreaOfPaymentDetailDiv = {};
+    DionysusPriceSetterFuncDiv = {};
 
-    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography = {};
+    DionysusPriceSetterVariantUpdateIconRefreshRounded = {};
 
-    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineDivWrap = {};
+    DionysusPriceSetterVariantUpdateIconButton = {};
 
-    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineTypography = {};
+    DionysusPriceSetterVariantRowPriceB4DiscountTextField = {};
 
-    EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
+    DionysusPriceSetterVariantRowPriceTextField = {};
 
-    EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
+    DionysusPriceSetterVariantRowDiv = {};
 
-    EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
+    DionysusPriceSetterVariantLabelOfVariantDivWrap = {};
 
-    EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
+    DionysusPriceSetterVariantLabelOfVariantTypography = {};
 
-    EpayFootprintOrderAreaOfPaymentRuleDiv = {};
+    DionysusPriceSetterVariantDivList = {};
 
-    EpayFootprintOrderAreaOfInputMessageValueTextField = {};
+    DionysusPriceSetterVariantDiv = {};
 
-    EpayFootprintOrderAreaOfInputMessageLabelTypography = {};
+    DionysusPriceSetterDivWrap = {};
 
-    EpayFootprintOrderAreaOfInputMessageDiv = {};
+    DionysusPriceSetterPaper = {};
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconChevronRight = {};
+    /** => following for quantitySetter  component  */
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap = {};
+    DionysusQuantitySetterFuncCommonReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton = {};
+    DionysusQuantitySetterFuncCommonChip = {};
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography = {};
+    DionysusQuantitySetterFuncLeaveChip = {};
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv = {};
+    DionysusQuantitySetterFuncBatchUpdateChip = {};
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeLabelOfPaymentTypeTypography = {};
+    DionysusQuantitySetterFuncDiv = {};
 
-    EpayFootprintOrderAreaOfChoosePaymentTypeDiv = {};
+    DionysusQuantitySetterVariantUpdateIconRefreshRounded = {};
 
-    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography = {};
+    DionysusQuantitySetterVariantUpdateIconButton = {};
 
-    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceDivWrap = {};
+    DionysusQuantitySetterVariantQuantityTextField = {};
 
-    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
+    DionysusQuantitySetterVariantLabelOfVariantDivWrap = {};
 
-    EpayFootprintOrderAreaOfTotalPriceDiv = {};
+    DionysusQuantitySetterVariantLabelOfVariantTypography = {};
 
-    EpayFootprintOrderBriefSectionOfDescriptionPriceTypography = {};
+    DionysusQuantitySetterVariantDivList = {};
 
-    EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography = {};
+    DionysusQuantitySetterVariantDiv = {};
 
-    EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography = {};
+    DionysusQuantitySetterDivWrap = {};
 
-    EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap = {};
+    DionysusQuantitySetterPaper = {};
 
-    EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography = {};
+    /** => following for apollo  component  */
 
-    EpayFootprintOrderBriefSectionOfDescriptionDiv = {};
+    DionysusApolloFuncLoadChip = {};
 
-    EpayFootprintOrderBriefImageOfProductPhotoImg = {};
+    DionysusApolloFuncLeaveChip = {};
 
-    EpayFootprintOrderBriefDivList = {};
+    DionysusApolloFuncConfirmChip = {};
 
-    EpayFootprintOrderBriefDiv = {};
+    DionysusApolloFuncDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconMoreHoriz = {};
+    DionysusApolloAreaOfDayOffOffDayLabelChip = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraReactFragmentWrap = {};
+    DionysusApolloAreaOfDayOffOffDayDivList = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailExtraIconButton = {};
+    DionysusApolloAreaOfDayOffOffDayDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
+    DionysusApolloAreaOfDayOffRowAppendOfDayOffReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailDiv = {};
+    DionysusApolloAreaOfDayOffRowAppendOfDayOffChip = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
+    DionysusApolloAreaOfDayOffRowLabelOfDayOffTypography = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
+    DionysusApolloAreaOfDayOffRowDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography = {};
+    DionysusApolloAreaOfDayOffDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap = {};
+    DionysusApolloAreaOfRestRestPeriodLabelChip = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
+    DionysusApolloAreaOfRestRestPeriodDivList = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfHeadDiv = {};
+    DionysusApolloAreaOfRestRestPeriodDiv = {};
 
-    EpayFootprintOrderAreaOfTopDiv = {};
+    DionysusApolloAreaOfRestRowAppendOfRestPeriodReactFragmentWrap = {};
 
-    EpayFootprintOrderDivList = {};
+    DionysusApolloAreaOfRestRowAppendOfRestPeriodChip = {};
 
-    EpayFootprintOrderCard = {};
+    DionysusApolloAreaOfRestRowLabelOfRestPeriodTypography = {};
 
-    EpayFootprintTabTabsList = {};
+    DionysusApolloAreaOfRestRowDiv = {};
 
-    EpayFootprintTabTab = {};
+    DionysusApolloAreaOfRestDiv = {};
 
-    EpayFootprintDiv = {};
+    DionysusApolloIntervalOfTaskLabelOfIntervalOfTaskTypography = {};
 
-    /** => following for epayMethodOfPayment  component  */
+    DionysusApolloIntervalOfTaskDivWrap = {};
 
-    EpayMethodOfPaymentOptionDescriptionTypography = {};
+    DionysusApolloIntervalOfTaskTextField = {};
 
-    EpayMethodOfPaymentOptionImageImg = {};
+    DionysusApolloDurationOfTaskLabelOfDurationOfTaskTypography = {};
 
-    EpayMethodOfPaymentOptionNameTypography = {};
+    DionysusApolloDurationOfTaskDivWrap = {};
 
-    EpayMethodOfPaymentOptionCardSkeleton = {};
+    DionysusApolloDurationOfTaskTextField = {};
 
-    EpayMethodOfPaymentOptionDivList = {};
+    DionysusApolloLineDiv = {};
 
-    EpayMethodOfPaymentOptionCard = {};
+    DionysusApolloPeriodOfTimeMainTimeOfEndLabelOfTimeOfEndTypography = {};
 
-    EpayMethodOfPaymentTitleTypography = {};
+    DionysusApolloPeriodOfTimeMainTimeOfEndDivWrap = {};
 
-    EpayMethodOfPaymentPaper = {};
+    DionysusApolloPeriodOfTimeMainTimeOfEndTimePicker = {};
 
-    /** => following for epayBehaviorOfConfirmLinePay  component  */
+    DionysusApolloPeriodOfTimeMainTimeOfStartLabelOfTimeOfStartTypography = {};
 
-    EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
+    DionysusApolloPeriodOfTimeMainTimeOfStartDivWrap = {};
 
-    EpayBehaviorOfConfirmLinePayDiv = {};
+    DionysusApolloPeriodOfTimeMainTimeOfStartTimePicker = {};
 
-    /** => following for epay  component  */
+    DionysusApolloPeriodOfTimeMainDiv = {};
 
-    EpayDiv = {};
+    DionysusApolloPeriodOfTimeSectionLineDiv = {};
+
+    DionysusApolloPeriodOfTimeSectionLabelOfTimePeriodTypography = {};
+
+    DionysusApolloPeriodOfTimeSectionDiv = {};
+
+    DionysusApolloPeriodOfTimeDiv = {};
+
+    DionysusApolloPeriodOfDateMainEndOfDateLabelOfEndOfDateTypography = {};
+
+    DionysusApolloPeriodOfDateMainEndOfDateDivWrap = {};
+
+    DionysusApolloPeriodOfDateMainEndOfDateDatePicker = {};
+
+    DionysusApolloPeriodOfDateMainStartOfDateLabelOfStartOfDateTypography = {};
+
+    DionysusApolloPeriodOfDateMainStartOfDateDivWrap = {};
+
+    DionysusApolloPeriodOfDateMainStartOfDateDatePicker = {};
+
+    DionysusApolloPeriodOfDateMainDiv = {};
+
+    DionysusApolloPeriodOfDateSectionLineDiv = {};
+
+    DionysusApolloPeriodOfDateSectionLabelOfDatePeriodTypography = {};
+
+    DionysusApolloPeriodOfDateSectionDiv = {};
+
+    DionysusApolloPeriodOfDateDiv = {};
+
+    DionysusApolloDivWrap = {};
+
+    DionysusApolloPaper = {};
+
+    /** => following for eros  component  */
+
+    DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconNavigateNext = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyReactFragmentWrap = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconButton = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyContentTypography = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyTitleTypography = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyDivWrap = {};
+
+    DionysusErosAreaOfAmountOfMaximumBuyDiv = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconNavigateNext = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyReactFragmentWrap = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconButton = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyContentTypography = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyTitleTypography = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyDivWrap = {};
+
+    DionysusErosAreaOfAmountOfAllowAnonymousBuyDiv = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInEnableOfBoughtWithoutLoginInSwitch = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInContentTypography = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInTitleTypography = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInDivWrap = {};
+
+    DionysusErosAreaOfBoughtWithoutLoginInDiv = {};
+
+    DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconNavigateNext = {};
+
+    DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerReactFragmentWrap = {};
+
+    DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconButton = {};
+
+    DionysusErosAreaOfNumOfWorkerOptionOfNumOfWorkerContentTypography = {};
+
+    DionysusErosAreaOfNumOfWorkerOptionOfNumOfWorkerTitleTypography = {};
+
+    DionysusErosAreaOfNumOfWorkerDivWrap = {};
+
+    DionysusErosAreaOfNumOfWorkerDiv = {};
+
+    DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconNavigateNext = {};
+
+    DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountReactFragmentWrap = {};
+
+    DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconButton = {};
+
+    DionysusErosAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountContentTypography = {};
+
+    DionysusErosAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountTitleTypography = {};
+
+    DionysusErosAreaOfPercentageOfDiscountDivWrap = {};
+
+    DionysusErosAreaOfPercentageOfDiscountDiv = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingIconNavigateNext = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingReactFragmentWrap = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingIconButton = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingOptionOfPriceOfFreeShippingContentTypography = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingOptionOfPriceOfFreeShippingTitleTypography = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingDivWrap = {};
+
+    DionysusErosAreaOfPriceOfFreeShippingDiv = {};
+
+    DionysusErosAreaOfEcPaySetArrowOfEcPaySetIconNavigateNext = {};
+
+    DionysusErosAreaOfEcPaySetArrowOfEcPaySetReactFragmentWrap = {};
+
+    DionysusErosAreaOfEcPaySetArrowOfEcPaySetIconButton = {};
+
+    DionysusErosAreaOfEcPaySetOptionOfEcPaySetContentTypography = {};
+
+    DionysusErosAreaOfEcPaySetOptionOfEcPaySetTitleTypography = {};
+
+    DionysusErosAreaOfEcPaySetDivWrap = {};
+
+    DionysusErosAreaOfEcPaySetDiv = {};
+
+    DionysusErosAreaOfEcPayEnableOfEcPaySwitch = {};
+
+    DionysusErosAreaOfEcPayOptionOfEcPayContentTypography = {};
+
+    DionysusErosAreaOfEcPayOptionOfEcPayTitleTypography = {};
+
+    DionysusErosAreaOfEcPayDivWrap = {};
+
+    DionysusErosAreaOfEcPayDiv = {};
+
+    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconNavigateNext = {};
+
+    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectReactFragmentWrap = {};
+
+    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconButton = {};
+
+    DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectContentTypography = {};
+
+    DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectTitleTypography = {};
+
+    DionysusErosAreaOfPayOfDirectDivWrap = {};
+
+    DionysusErosAreaOfPayOfDirectDiv = {};
+
+    DionysusErosAreaOfDirectEnableOfDirectSwitch = {};
+
+    DionysusErosAreaOfDirectOptionOfDirectContentTypography = {};
+
+    DionysusErosAreaOfDirectOptionOfDirectTitleTypography = {};
+
+    DionysusErosAreaOfDirectDivWrap = {};
+
+    DionysusErosAreaOfDirectDiv = {};
+
+    DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
+
+    DionysusErosAreaOfLinepaySetArrowOfLinepaySetReactFragmentWrap = {};
+
+    DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconButton = {};
+
+    DionysusErosAreaOfLinepaySetOptionOfLinepaySetContentTypography = {};
+
+    DionysusErosAreaOfLinepaySetOptionOfLinepaySetTitleTypography = {};
+
+    DionysusErosAreaOfLinepaySetDivWrap = {};
+
+    DionysusErosAreaOfLinepaySetDiv = {};
+
+    DionysusErosAreaOfLinepayEnableOfLinepaySwitch = {};
+
+    DionysusErosAreaOfLinepayOptionOfLinepayContentTypography = {};
+
+    DionysusErosAreaOfLinepayOptionOfLinepayTitleTypography = {};
+
+    DionysusErosAreaOfLinepayDivWrap = {};
+
+    DionysusErosAreaOfLinepayDiv = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconNavigateNext = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupReactFragmentWrap = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconButton = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupContentTypography = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupTitleTypography = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupDivWrap = {};
+
+    DionysusErosAreaOfFeeOfInStorePickupDiv = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconNavigateNext = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryReactFragmentWrap = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconButton = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryOptionOfFeeOfCashOnDeliveryContentTypography = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryOptionOfFeeOfCashOnDeliveryTitleTypography = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryDivWrap = {};
+
+    DionysusErosAreaOfFeeOfCashOnDeliveryDiv = {};
+
+    DionysusErosAreaOfCashOnDeliveryEnableOfCashOnDeliverySwitch = {};
+
+    DionysusErosAreaOfCashOnDeliveryOptionOfCashOnDeliveryContentTypography = {};
+
+    DionysusErosAreaOfCashOnDeliveryOptionOfCashOnDeliveryTitleTypography = {};
+
+    DionysusErosAreaOfCashOnDeliveryDivWrap = {};
+
+    DionysusErosAreaOfCashOnDeliveryDiv = {};
+
+    DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
+
+    DionysusErosAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap = {};
+
+    DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconButton = {};
+
+    DionysusErosAreaOfTabCreatorOptionOfTabCreatorContentTypography = {};
+
+    DionysusErosAreaOfTabCreatorOptionOfTabCreatorTitleTypography = {};
+
+    DionysusErosAreaOfTabCreatorDivWrap = {};
+
+    DionysusErosAreaOfTabCreatorDiv = {};
+
+    DionysusErosAreaOfBrandNameArrowOfBrandNameIconNavigateNext = {};
+
+    DionysusErosAreaOfBrandNameArrowOfBrandNameReactFragmentWrap = {};
+
+    DionysusErosAreaOfBrandNameArrowOfBrandNameIconButton = {};
+
+    DionysusErosAreaOfBrandNameOptionOfBrandNameContentTypography = {};
+
+    DionysusErosAreaOfBrandNameOptionOfBrandNameTitleTypography = {};
+
+    DionysusErosAreaOfBrandNameDivWrap = {};
+
+    DionysusErosAreaOfBrandNameDiv = {};
+
+    DionysusErosDivWrap = {};
+
+    DionysusErosDiv = {};
+
+    /** => following for gaia  component  */
+
+    DionysusGaiaFuncBackToHomeReactFragmentWrap = {};
+
+    DionysusGaiaFuncBackToHomeChip = {};
+
+    DionysusGaiaFuncDeletedReactFragmentWrap = {};
+
+    DionysusGaiaFuncDeletedChip = {};
+
+    DionysusGaiaFuncRecoverChip = {};
+
+    DionysusGaiaFuncCreateChip = {};
+
+    DionysusGaiaFuncDiv = {};
+
+    DionysusGaiaAreaOfDescriptionStatementTextField = {};
+
+    DionysusGaiaAreaOfDescriptionRowStmtOfDescriptionMaximumTypography = {};
+
+    DionysusGaiaAreaOfDescriptionRowLabelOfDescriptionTypography = {};
+
+    DionysusGaiaAreaOfDescriptionRowDiv = {};
+
+    DionysusGaiaAreaOfDescriptionDiv = {};
+
+    DionysusGaiaAreaOfStatusVisibilitySwitch = {};
+
+    DionysusGaiaAreaOfStatusLabelOfStatusTypography = {};
+
+    DionysusGaiaAreaOfStatusDiv = {};
+
+    DionysusGaiaDestIsHomeTeachingSwitch = {};
+
+    DionysusGaiaDestLabelOfHomeTeachingTypography = {};
+
+    DionysusGaiaDestDiv = {};
+
+    DionysusGaiaTakenAllowSelfPickUpSwitch = {};
+
+    DionysusGaiaTakenLabelOfPickUpTypography = {};
+
+    DionysusGaiaTakenDiv = {};
+
+    DionysusGaiaAreaOfTrunkUseMainTrunkSwitch = {};
+
+    DionysusGaiaAreaOfTrunkLabelOfTrunkTypography = {};
+
+    DionysusGaiaAreaOfTrunkDiv = {};
+
+    DionysusGaiaAreaOfTabSetArrowOfTabSetIconNavigateNext = {};
+
+    DionysusGaiaAreaOfTabSetArrowOfTabSetReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfTabSetArrowOfTabSetIconButton = {};
+
+    DionysusGaiaAreaOfTabSetOptionOfTabSetContentTypography = {};
+
+    DionysusGaiaAreaOfTabSetOptionOfTabSetTitleTypography = {};
+
+    DionysusGaiaAreaOfTabSetDivWrap = {};
+
+    DionysusGaiaAreaOfTabSetDiv = {};
+
+    DionysusGaiaAreaOfPhotoSetArrowOfPhotoSetIconNavigateNext = {};
+
+    DionysusGaiaAreaOfPhotoSetArrowOfPhotoSetReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfPhotoSetArrowOfPhotoSetIconButton = {};
+
+    DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetContentTypography = {};
+
+    DionysusGaiaAreaOfPhotoSetOptionOfPhotoSetTitleTypography = {};
+
+    DionysusGaiaAreaOfPhotoSetDivWrap = {};
+
+    DionysusGaiaAreaOfPhotoSetDiv = {};
+
+    DionysusGaiaAreaOfQuantitySetArrowOfQuantitySetIconNavigateNext = {};
+
+    DionysusGaiaAreaOfQuantitySetArrowOfQuantitySetReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfQuantitySetArrowOfQuantitySetIconButton = {};
+
+    DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetContentTypography = {};
+
+    DionysusGaiaAreaOfQuantitySetOptionOfQuantitySetTitleTypography = {};
+
+    DionysusGaiaAreaOfQuantitySetDivWrap = {};
+
+    DionysusGaiaAreaOfQuantitySetDiv = {};
+
+    DionysusGaiaAreaOfPriceSetArrowOfPriceSetIconNavigateNext = {};
+
+    DionysusGaiaAreaOfPriceSetArrowOfPriceSetReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfPriceSetArrowOfPriceSetIconButton = {};
+
+    DionysusGaiaAreaOfPriceSetOptionOfPriceSetContentTypography = {};
+
+    DionysusGaiaAreaOfPriceSetOptionOfPriceSetTitleTypography = {};
+
+    DionysusGaiaAreaOfPriceSetDivWrap = {};
+
+    DionysusGaiaAreaOfPriceSetDiv = {};
+
+    DionysusGaiaAreaOfSubBriefSubLabelChip = {};
+
+    DionysusGaiaAreaOfSubBriefSubDivList = {};
+
+    DionysusGaiaAreaOfSubBriefSubDiv = {};
+
+    DionysusGaiaAreaOfSubRowAppendSubReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfSubRowAppendSubChip = {};
+
+    DionysusGaiaAreaOfSubRowLabelOfSubTypeTypography = {};
+
+    DionysusGaiaAreaOfSubRowDiv = {};
+
+    DionysusGaiaAreaOfSubDiv = {};
+
+    DionysusGaiaAreaOfMainBriefMainLabelChip = {};
+
+    DionysusGaiaAreaOfMainBriefMainDivList = {};
+
+    DionysusGaiaAreaOfMainBriefMainDiv = {};
+
+    DionysusGaiaAreaOfMainRowAppendTaskReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfMainRowAppendTaskChip = {};
+
+    DionysusGaiaAreaOfMainRowAppendMainReactFragmentWrap = {};
+
+    DionysusGaiaAreaOfMainRowAppendMainChip = {};
+
+    DionysusGaiaAreaOfMainRowLabelOfMainTypeTypography = {};
+
+    DionysusGaiaAreaOfMainRowDiv = {};
+
+    DionysusGaiaAreaOfMainDiv = {};
+
+    DionysusGaiaAreaOfPropTypeOfPropTextFieldList = {};
+
+    DionysusGaiaAreaOfPropTypeOfPropMenuItem = {};
+
+    DionysusGaiaAreaOfPropLabelOfPropTypography = {};
+
+    DionysusGaiaAreaOfPropDiv = {};
+
+    DionysusGaiaAreaOfNameNameTextField = {};
+
+    DionysusGaiaAreaOfNameRowStmtOfNameMaximumTypography = {};
+
+    DionysusGaiaAreaOfNameRowLabelOfNameTypography = {};
+
+    DionysusGaiaAreaOfNameRowDiv = {};
+
+    DionysusGaiaAreaOfNameDiv = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconHighlightOffRounded = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDeleteIconButton = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoHrefImg = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDivList = {};
+
+    DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv = {};
+
+    DionysusGaiaAreaOfPhotoUploadRowJoinPhotoChip = {};
+
+    DionysusGaiaAreaOfPhotoUploadRowLabelOfUploadPhotoTypography = {};
+
+    DionysusGaiaAreaOfPhotoUploadRowDiv = {};
+
+    DionysusGaiaAreaOfPhotoUploadDiv = {};
+
+    DionysusGaiaDivWrap = {};
+
+    DionysusGaiaDiv = {};
 
     /** => following for plutus  component  */
 
@@ -787,30 +1345,6 @@ class MobileStyle {
 
     DionysusPlutusMainRemarkTextField = {};
 
-    DionysusPlutusMainLocationMainTailFindIconWifiFind = {};
-
-    DionysusPlutusMainLocationMainTailFindIconButton = {};
-
-    DionysusPlutusMainLocationMainTailAddressTextField = {};
-
-    DionysusPlutusMainLocationMainTailDiv = {};
-
-    DionysusPlutusMainLocationMainHeadDistrictMenuItem = {};
-
-    DionysusPlutusMainLocationMainHeadDistrictTextFieldList = {};
-
-    DionysusPlutusMainLocationMainHeadCityMenuItem = {};
-
-    DionysusPlutusMainLocationMainHeadCityTextFieldList = {};
-
-    DionysusPlutusMainLocationMainHeadDiv = {};
-
-    DionysusPlutusMainLocationMainDiv = {};
-
-    DionysusPlutusMainLocationHeadLabelOfAddressTypography = {};
-
-    DionysusPlutusMainLocationDiv = {};
-
     DionysusPlutusMainPhoneLabelOfPhoneTypography = {};
 
     DionysusPlutusMainPhoneDivWrap = {};
@@ -828,6 +1362,40 @@ class MobileStyle {
     DionysusPlutusMainNameDivWrap = {};
 
     DionysusPlutusMainNameTextField = {};
+
+    DionysusPlutusMainLocationColMainTailFindIconWifiFind = {};
+
+    DionysusPlutusMainLocationColMainTailFindIconButton = {};
+
+    DionysusPlutusMainLocationColMainTailAddressTextField = {};
+
+    DionysusPlutusMainLocationColMainTailDiv = {};
+
+    DionysusPlutusMainLocationColMainHeadDistrictTextFieldList = {};
+
+    DionysusPlutusMainLocationColMainHeadDistrictMenuItem = {};
+
+    DionysusPlutusMainLocationColMainHeadCityTextFieldList = {};
+
+    DionysusPlutusMainLocationColMainHeadCityMenuItem = {};
+
+    DionysusPlutusMainLocationColMainHeadDiv = {};
+
+    DionysusPlutusMainLocationColMainDiv = {};
+
+    DionysusPlutusMainLocationColTakenWhetherPickupByMySelfLabelOfWhetherPickupByMySelfTypography = {};
+
+    DionysusPlutusMainLocationColTakenWhetherPickupByMySelfDivWrap = {};
+
+    DionysusPlutusMainLocationColTakenWhetherPickupByMySelfCheckbox = {};
+
+    DionysusPlutusMainLocationColTakenDiv = {};
+
+    DionysusPlutusMainLocationColDiv = {};
+
+    DionysusPlutusMainLocationHeadLabelOfAddressTypography = {};
+
+    DionysusPlutusMainLocationDiv = {};
 
     DionysusPlutusMainDiv = {};
 
@@ -933,11 +1501,11 @@ class MobileStyle {
 
     DionysusCartieMainSummariseDiv = {};
 
-    DionysusCartieMainBriefSpecTipCountLabelOfCountTypography = {};
+    DionysusCartieMainBriefSpecTipQuantityLabelOfQuantityTypography = {};
 
-    DionysusCartieMainBriefSpecTipCountDivWrap = {};
+    DionysusCartieMainBriefSpecTipQuantityDivWrap = {};
 
-    DionysusCartieMainBriefSpecTipCountTypography = {};
+    DionysusCartieMainBriefSpecTipQuantityTypography = {};
 
     DionysusCartieMainBriefSpecTipPriceB4DiscountDivWrap = {};
 
@@ -971,7 +1539,7 @@ class MobileStyle {
 
     DionysusCartieMainBriefSpecInfoOfBenefitTypography = {};
 
-    DionysusCartieMainBriefSpecNameOfOptionChip = {};
+    DionysusCartieMainBriefSpecNameOfVariantChip = {};
 
     DionysusCartieMainBriefSpecFullCancelIconDeleteForeverRounded = {};
 
@@ -1027,11 +1595,15 @@ class MobileStyle {
 
     DionysusMaenadsDecisionDiv = {};
 
-    DionysusMaenadsOptionNameChip = {};
+    DionysusMaenadsVariantOptionLabelChip = {};
 
-    DionysusMaenadsOptionDivList = {};
+    DionysusMaenadsVariantOptionDivList = {};
 
-    DionysusMaenadsOptionDiv = {};
+    DionysusMaenadsVariantOptionDiv = {};
+
+    DionysusMaenadsVariantDivList = {};
+
+    DionysusMaenadsVariantDiv = {};
 
     DionysusMaenadsTitleOfShapeTypography = {};
 
@@ -1041,7 +1613,13 @@ class MobileStyle {
 
     DionysusMaenadsMainInfoCountTypography = {};
 
+    DionysusMaenadsMainInfoRowPriceLabelOfPriceTypography = {};
+
+    DionysusMaenadsMainInfoRowPriceDivWrap = {};
+
     DionysusMaenadsMainInfoRowPriceTypography = {};
+
+    DionysusMaenadsMainInfoRowRangeOfPriceTypography = {};
 
     DionysusMaenadsMainInfoRowDiv = {};
 
@@ -1056,6 +1634,8 @@ class MobileStyle {
     DionysusMaenadsPaper = {};
 
     /** => following for bacchus  component  */
+
+    DionysusBacchusFuncEditChip = {};
 
     DionysusBacchusFuncBoughtReactFragmentWrap = {};
 
@@ -1081,9 +1661,9 @@ class MobileStyle {
 
     DionysusBacchusDetailContentDiv = {};
 
-    DionysusBacchusDetailAreaOfBenefitArrowIconNavigateNext = {};
+    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconNavigateNext = {};
 
-    DionysusBacchusDetailAreaOfBenefitArrowIconButton = {};
+    DionysusBacchusDetailAreaOfBenefitArrowOfBenefitIconButton = {};
 
     DionysusBacchusDetailAreaOfBenefitOptionOfBenefitContentTypography = {};
 
@@ -1091,9 +1671,9 @@ class MobileStyle {
 
     DionysusBacchusDetailAreaOfBenefitDiv = {};
 
-    DionysusBacchusDetailAreaOfShippingArrowIconNavigateNext = {};
+    DionysusBacchusDetailAreaOfShippingArrowOfShippingIconNavigateNext = {};
 
-    DionysusBacchusDetailAreaOfShippingArrowIconButton = {};
+    DionysusBacchusDetailAreaOfShippingArrowOfShippingIconButton = {};
 
     DionysusBacchusDetailAreaOfShippingOptionOfShippingContentTypography = {};
 
@@ -1101,9 +1681,9 @@ class MobileStyle {
 
     DionysusBacchusDetailAreaOfShippingDiv = {};
 
-    DionysusBacchusDetailAreaOfPayArrowIconNavigateNext = {};
+    DionysusBacchusDetailAreaOfPayArrowOfPayIconNavigateNext = {};
 
-    DionysusBacchusDetailAreaOfPayArrowIconButton = {};
+    DionysusBacchusDetailAreaOfPayArrowOfPayIconButton = {};
 
     DionysusBacchusDetailAreaOfPayOptionOfPayContentTypography = {};
 
@@ -1125,8 +1705,6 @@ class MobileStyle {
 
     DionysusBacchusBannerImageImg = {};
 
-    DionysusBacchusBannerSwiperSlide = {};
-
     DionysusBacchusBannerSwiperList = {};
 
     DionysusBacchusBannerSwiperSlide = {};
@@ -1135,7 +1713,15 @@ class MobileStyle {
 
     DionysusBacchusDiv = {};
 
+    /** => following for hestia  component  */
+
+    DionysusHestiaDivWrap = {};
+
+    DionysusHestiaDiv = {};
+
     /** => following for dionysus  component  */
+
+    DionysusSelectTabSkeleton = {};
 
     DionysusSelectTabsList = {};
 
@@ -1175,57 +1761,227 @@ class MobileStyle {
 
     DionysusDiv = {};
 
+    /** => following for demeter  component  */
+
+    DemeterDiv = {};
+
     /** => following for account  component  */
 
-    AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+    AccountLogoutReactFragmentWrap = {};
 
-    AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+    AccountLogoutChip = {};
 
-    AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+    AccountAreaUserSummaryTitleOfUserTypography = {};
 
-    AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+    AccountAreaUserSummaryAccordionSummary = {};
 
-    AccountFuncAreaOfEditToEditModeButton = {};
+    AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext = {};
 
-    AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+    AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconButton = {};
 
-    AccountFuncAreaOfEditLogoutButton = {};
+    AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheContentTypography = {};
 
-    AccountFuncAreaOfEditCopyUserIdButton = {};
+    AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheTitleTypography = {};
 
-    AccountFuncAreaOfEditLangMenuItem = {};
+    AccountAreaUserAreaOfCleanCacheDivWrap = {};
 
-    AccountFuncAreaOfEditLangTextFieldList = {};
+    AccountAreaUserAreaOfCleanCacheDiv = {};
 
-    AccountFuncAreaOfEditDiv = {};
+    AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext = {};
 
-    AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+    AccountAreaUserAreaOfTokenArrowOfTokenIconButton = {};
 
-    AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+    AccountAreaUserAreaOfTokenOptionOfTokenContentTypography = {};
 
-    AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+    AccountAreaUserAreaOfTokenOptionOfTokenTitleTypography = {};
 
-    AccountFuncAreaOfIdDiv = {};
+    AccountAreaUserAreaOfTokenDivWrap = {};
 
-    AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+    AccountAreaUserAreaOfTokenDiv = {};
 
-    AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+    AccountAreaUserAccordionWrap = {};
 
-    AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+    AccountAreaUserAccordionDetails = {};
 
-    AccountFuncAreaOfEmailDiv = {};
+    AccountAreaAdminSummaryTitleOfAdminTypography = {};
 
-    AccountSpaceDiv = {};
+    AccountAreaAdminSummaryAccordionSummary = {};
 
-    AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+    AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext = {};
 
-    AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+    AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderReactFragmentWrap = {};
 
-    AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+    AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconButton = {};
 
-    AccountFuncAreaOfNameDiv = {};
+    AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderContentTypography = {};
 
-    AccountUrlOfHeadPhotoAvatar = {};
+    AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderTitleTypography = {};
+
+    AccountAreaAdminAreaOfAppendReaderDivWrap = {};
+
+    AccountAreaAdminAreaOfAppendReaderDiv = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconNavigateNext = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorReactFragmentWrap = {};
+
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton = {};
+
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorContentTypography = {};
+
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorTitleTypography = {};
+
+    AccountAreaAdminAreaOfAppendAuthorDivWrap = {};
+
+    AccountAreaAdminAreaOfAppendAuthorDiv = {};
+
+    AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext = {};
+
+    AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminReactFragmentWrap = {};
+
+    AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconButton = {};
+
+    AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminContentTypography = {};
+
+    AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminTitleTypography = {};
+
+    AccountAreaAdminAreaOfAppendAdminDivWrap = {};
+
+    AccountAreaAdminAreaOfAppendAdminDiv = {};
+
+    AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext = {};
+
+    AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconButton = {};
+
+    AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeContentTypography = {};
+
+    AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeTitleTypography = {};
+
+    AccountAreaAdminAreaOfGoEditModeDivWrap = {};
+
+    AccountAreaAdminAreaOfGoEditModeDiv = {};
+
+    AccountAreaAdminAccordionWrap = {};
+
+    AccountAreaAdminAccordionDetails = {};
+
+    AccountAreaBuySummaryTitleOfBuyTypography = {};
+
+    AccountAreaBuySummaryAccordionSummary = {};
+
+    AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconNavigateNext = {};
+
+    AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton = {};
+
+    AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderContentTypography = {};
+
+    AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderTitleTypography = {};
+
+    AccountAreaBuyAreaOfListOfUserOrderDivWrap = {};
+
+    AccountAreaBuyAreaOfListOfUserOrderDiv = {};
+
+    AccountAreaBuyAccordionWrap = {};
+
+    AccountAreaBuyAccordionDetails = {};
+
+    AccountAreaSaleSummaryTitleOfSaleTypography = {};
+
+    AccountAreaSaleSummaryAccordionSummary = {};
+
+    AccountAreaSaleAreaOfMyReportArrowOfMyReportIconNavigateNext = {};
+
+    AccountAreaSaleAreaOfMyReportArrowOfMyReportIconButton = {};
+
+    AccountAreaSaleAreaOfMyReportOptionOfMyReportContentTypography = {};
+
+    AccountAreaSaleAreaOfMyReportOptionOfMyReportTitleTypography = {};
+
+    AccountAreaSaleAreaOfMyReportDivWrap = {};
+
+    AccountAreaSaleAreaOfMyReportDiv = {};
+
+    AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext = {};
+
+    AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconButton = {};
+
+    AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleContentTypography = {};
+
+    AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleTitleTypography = {};
+
+    AccountAreaSaleAreaOfMyScheduleDivWrap = {};
+
+    AccountAreaSaleAreaOfMyScheduleDiv = {};
+
+    AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext = {};
+
+    AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconButton = {};
+
+    AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingContentTypography = {};
+
+    AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingTitleTypography = {};
+
+    AccountAreaSaleAreaOfMarketSettingDivWrap = {};
+
+    AccountAreaSaleAreaOfMarketSettingDiv = {};
+
+    AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext = {};
+
+    AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton = {};
+
+    AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography = {};
+
+    AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography = {};
+
+    AccountAreaSaleAreaOfGoToMyBoozeDivWrap = {};
+
+    AccountAreaSaleAreaOfGoToMyBoozeDiv = {};
+
+    AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext = {};
+
+    AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconButton = {};
+
+    AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeContentTypography = {};
+
+    AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography = {};
+
+    AccountAreaSaleAreaOfAppendBoozeDivWrap = {};
+
+    AccountAreaSaleAreaOfAppendBoozeDiv = {};
+
+    AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext = {};
+
+    AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton = {};
+
+    AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderContentTypography = {};
+
+    AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderTitleTypography = {};
+
+    AccountAreaSaleAreaOfListOfAuthorOrderDivWrap = {};
+
+    AccountAreaSaleAreaOfListOfAuthorOrderDiv = {};
+
+    AccountAreaSaleAccordionWrap = {};
+
+    AccountAreaSaleAccordionDetails = {};
+
+    AccountAreaDiv = {};
+
+    AccountBasicLangTextFieldList = {};
+
+    AccountBasicLangMenuItem = {};
+
+    AccountBasicLabelOfPropTypography = {};
+
+    AccountBasicDiv = {};
+
+    AccountInfoValueOfEmailTypography = {};
+
+    AccountInfoValueOfNameTypography = {};
+
+    AccountInfoUrlOfHeadPhotoAvatar = {};
+
+    AccountInfoDiv = {};
 
     AccountDivWrap = {};
 
@@ -1250,8 +2006,6 @@ class MobileStyle {
     MainPromotedBannerImageImg = {};
 
     MainPromotedBannerSwiperSlideSkeleton = {};
-
-    MainPromotedBannerSwiperSlide = {};
 
     MainPromotedBannerSwiperList = {};
 

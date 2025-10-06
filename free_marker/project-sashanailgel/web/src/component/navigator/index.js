@@ -28,19 +28,6 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
         }
     }
 
-    getInjectStyleOfNavigatorLoginIconButton(toolBar) {
-        return Util.getVisibleOrNone(false);
-    }
-
-    getInjectStyleOfNavigatorAccountIconButton() {
-        return Util.getVisibleOrNone(false);
-    }
-
-    getInjectStyleOfNavigatorMenuIconButton() {
-        return Util.getVisibleOrNone(false);
-    }
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default NavigatorComponent;
