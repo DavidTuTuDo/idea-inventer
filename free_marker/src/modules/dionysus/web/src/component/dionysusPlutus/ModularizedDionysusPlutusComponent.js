@@ -109,7 +109,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             phone: self.getStore().getPhone(),
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
-            pickupByThemself: self.getStore().getWhetherPickupByMySelf()
+            transport: self.getStore().getWhetherPickupByMySelf() ? 2 : 4 //寫成enum
         });
         return result.idOfPreciseOrder;
     };
