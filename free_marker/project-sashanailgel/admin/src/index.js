@@ -47,8 +47,8 @@ import fs from "fs";
             { comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`, id: "OHvWFHEsQQ5MEIU1nQya" },
             {
                 id: "eU4KfbkVVbGS3w1nbYx3",
-                comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`,
-            },
+                comment: `更新${Util.getSimpleTimeYYMMDDHHmmFormat()}`
+            }
         ]);
     }
 
@@ -100,33 +100,90 @@ import fs from "fs";
     }
 
     async function uploadProducts() {
-        await api.deleteBoozes(true);
-        const items = _.filter(Util.getFileContextInJSON("./sasha_of_product_list_latest.json"),(each) => _.size(each.options) > 1);
-        console.log(_.size(items));
-        // await api.submitBoozes(Util.getShuffledArrayWithLimitCount(items, 60).map(product => {
-        await api.submitBoozes(
-          items.map((product) => {
-              const price = Util.findLowestValue(product.options);
-              return {
-                  ...product,
-                  price,
-                  category: Util.getUniqueValuesBy(product.category, "valueOfType"),
-                  rangeOfPrice: Util.getStringOfValueRange(product.options),
-                  statement: normalizeStatement(product.statement),
-                  priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])),
-                  options: _.filter(product.options, (option) => !Util.isUndefinedNullEmpty(option.name)).map((option) => {
-                      const price = option.price;
-                      return {
-                          ...option,
-                          priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])),
-                      };
-                  }),
-              };
-          }),
-        );
+        const ids = await api.fetchDocumentIdsOfBooze();
+        console.log("current ids of Booze ==> ", ids);
+
+        for (const id of ids) {
+            console.log(`delete booze(id === ${id}) and it's variant`);
+            await api.deleteBoozeItem(id);
+            await api.deleteVariants(true, id);
+        }
+
+        const products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
+        console.log(`莎夏美學合計商品共有： `, _.size(products), ` 個`);
+        // for(const product of Util.getShuffledArrayWithLimitCount(products, 5)){
+        for (const product of products) {
+            const price = Util.findLowestValue(product.options);
+            const options = product.options;
+            options.shift(); /** 第一個都是null */
+            await api.submitVariants(
+                options.map((option) => ({
+                    id: `${_.toString(option.value)}sasha`,
+                    content: option.name,
+                    photo: option.photo,
+                    nameOfBooze: product.name,
+                    idOfBooze: product.serial,
+                    isTaskJob: false,
+                    idOfAuthor: `6tirrjZd2ESAPD7RA64pd2N1Bdf2`,
+                    allowSelfPickUp: true,
+                    quantity: option.count,
+                    price: option.price,
+                    priceB4Discount: Math.round(_.sum([option.price, _.multiply(0.3, option.price)]))
+                })),
+                product.serial
+            );
+            await api.submitBoozeItem(
+                {
+                    ...product,
+                    price,
+                    id: product.serial,
+                    category: Util.getUniqueValuesBy(product.category, "valueOfType"),
+                    rangeOfPrice: Util.getStringOfValueRange(product.options),
+                    statement: normalizeStatement(product.statement),
+                    needAddress: true,
+                    selectedTypeOfProp: 1,
+                    visibility: true,
+                    idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
+                    allowSelfPickUp: true,
+                    specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],
+                    priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
+                },
+                product.serial
+            );
+        }
+    }
+
+    async function uploadCatalogs() {
+        function groupByValueOfType(data) {
+            return _(data)
+                .groupBy("valueOfType")
+                .map((items, valueOfType) => {
+                    const mainItem = items.find((i) => !_.has(i, "labelOfSubType"));
+                    const subItems = items
+                        .filter((i) => _.has(i, "labelOfSubType"))
+                        .map((i) => ({
+                            label: i.labelOfSubType,
+                            value: i.valueOfSubType,
+                            href: i.href
+                        }));
+
+                    return {
+                        valueOfType: Number(valueOfType),
+                        labelOfType: mainItem?.labelOfType ?? items[0].labelOfType,
+                        subTypes: subItems
+                    };
+                })
+                .value();
+        }
+
+        const array = Util.getFileContextInJSON("./sasha_of_product_catalog.json");
+        const itemsOfCatalog = groupByValueOfType(array);
+        // await api.deleteSelects();
+        await api.submitSelects(itemsOfCatalog.map((item) => ({ label: item.labelOfType, id: _.toString(item.valueOfType), value: item.valueOfType })));
     }
 
     await uploadProducts();
+    // await uploadCatalogs();
 
     // console.log(await testOfAdminFetchItems());
     // console.log(await testOfAdminSubmitItems());

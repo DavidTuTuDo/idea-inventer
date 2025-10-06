@@ -1,6 +1,5 @@
-import fs from "fs";
-
 const edit = true;
+
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
@@ -65,6 +64,7 @@ class FirebaseHelper extends BaseFirebase {
     /** firestore 的 modular api 使用原則 */
 
     reference = (path, id) => {
+        if (_.isEqual(id, "obj")) return this.firestore().doc(path);
         return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(id);
     };
 
