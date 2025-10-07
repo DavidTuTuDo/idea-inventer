@@ -96,7 +96,8 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
 
         // 付款資訊
         const paymentInfo = [];
-        if (!_.isEmpty(procedureOfPayment)) paymentInfo.push(`<p style="margin: 4px 0;">付款方式：${safeEscape(procedureOfPayment)}</p>`);
+        if (!_.isEmpty(procedureOfPayment))
+            paymentInfo.push(`<p style="margin: 4px 0;">付款方式：${safeEscape(_.isEqual(procedureOfPayment, "AuthorForcePaid") ? "買家已確認" : procedureOfPayment)}</p>`);
         if (!_.isEmpty(timeOfPayment)) paymentInfo.push(`<p style="margin: 4px 0;">付款日期：${safeEscape(this.getTWTimeOfFireTS(timeOfPayment))}</p>`);
         if (!_.isEmpty(priceOfTotal)) paymentInfo.push(`<p style="margin: 4px 0;">付款金額：NT$ ${safeEscape(priceOfTotal)}</p>`);
 
@@ -132,16 +133,16 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             this.appendErrorLog(9999, `4564655-SendEmailOfReceipt 客戶未提供Email，無法送出Email，訂單編號：${id}`);
             return;
         }
-
+        const global = await Api.fetchInfo();
         this.appendLog(`${idOfPreciseOrder} 準備發送Email給賣家｜買家`);
 
-        [true, false].forEach((isBuyer) => this.sendEmailTo({ isBuyer, ...order }));
+        [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, ...order }));
         /** 非買家既為賣家 */
     }
 
-    sendEmailTo({ isBuyer, email, ...order }) {
+    sendEmailTo({ nameOfBrand, isBuyer, email, ...order }) {
         const recipient = isBuyer ? email : Config.email;
-        const subject = isBuyer ? `您的款項已確認` : `您有新的成交訂單`;
+        const subject = isBuyer ? `[${nameOfBrand}]您的款項已確認` : `[${nameOfBrand}]您有新的成交訂單`;
 
         FirebaseHelper.firestore()
             .collection("mail")

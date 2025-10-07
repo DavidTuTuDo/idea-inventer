@@ -28,11 +28,12 @@ class ModularizedCancelPreciseOrder extends BaseCancelPreciseOrder {
         /** 更新order的狀態為failure, messageOfPayment要寫'XXX取消了訂單 賣家取消了訂單', 把所有的數量atomic累加回去 */
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
             await this.validateOrderIsUnPaidWaiting(order, "CancelPreciseOrder");
+            const info = await this.getLoginUserInfo(itemOfPreciseOrder, session);
             return Api.normalizePreciseOrder(
                 {
                     stateOfPayment: Config.StateOfPayment.Failure,
                     timeOfCancel: Util.getCurrentTimeStamp(),
-                    messageOfPayment: `${await this.getLoginUserInfo(itemOfPreciseOrder, session)}取消訂單 `
+                    messageOfPayment: `${info.typeOfUser}取消訂單`
                 },
                 true
             );

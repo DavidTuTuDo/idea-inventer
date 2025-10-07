@@ -49,7 +49,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
     }
 
     /** 目前只支援一個package => _.size(packages) === 1*/
-    getPayloadOfLinePayRequest(itemOfPreciseOrder) {
+    getPayloadOfLinePayRequest(itemOfPreciseOrder, nameOfBrand) {
         function getNameOfProduct() {
             const items = itemOfPreciseOrder.items;
             if (_.size(items) === 1) return items[0].name;
@@ -89,18 +89,13 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
             },
             options: {
                 extra: {
-                    branchName: this.getBranchName()
+                    branchName: nameOfBrand
                 },
                 display: {
                     locale: "zh_TW"
                 }
             }
         };
-    }
-
-    /** 店家名稱 */
-    getBranchName() {
-        this.appendErrorLog(9999, `58641845 必須在index.js實作getBranchName()`);
     }
 
     async handleHttpOnCall(data, session) {
@@ -112,8 +107,8 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
         await this.validatePreciseOrderIsExist(itemOfPreciseOrder, idOfPreciseOrder, "CheckoutByLinePay");
         await this.validateIsUserOfOrder(itemOfPreciseOrder, session, "CheckoutByLinePay");
         await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CheckoutByLinePay");
-
-        const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder);
+        const info = await Api.fetchInfo();
+        const payloadOfLinePay = this.getPayloadOfLinePayRequest(itemOfPreciseOrder, info.nameOfBrand);
         const resultOfLinePayRequest = await this.linePayerRef.request(payloadOfLinePay);
         if (_.isEqual(resultOfLinePayRequest.returnCode, "0000")) {
             await Api.updatePreciseOrderItemAtomically(async (latestItem, transaction) => {

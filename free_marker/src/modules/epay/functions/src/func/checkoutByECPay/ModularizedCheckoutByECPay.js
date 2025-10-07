@@ -71,7 +71,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
      若未設定此參數，則綠界付款完成頁或取號完成頁面，不會顯示[返回商店]的按鈕。
      若導回網址未使用 https 時，部份瀏覽器可能會出現警告訊息。  */
     getURLOfClientBackURL() {
-        return new URL(`epayFootprint/completed`, Config.host).href;
+        return new URL(`epayFootprint/user/completed`, Config.host).href;
     }
 
     /**
