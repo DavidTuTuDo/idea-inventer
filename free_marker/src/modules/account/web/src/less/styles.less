@@ -571,14 +571,20 @@
     }
 }
 .AccountAreaSaleSummaryTitleOfSaleTypography {
+    font-size: 1.6rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    color: #333;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
     @media @mobile {
-        /** empty style */
+        font-size: 1.2rem;
     }
     @media @tablet {
-        /** empty style */
+        font-size: 1.2rem;
     }
     @media @desktop {
-        /** empty style */
+        font-size: 1.4rem;
     }
 }
 .AccountAreaBuyAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
@@ -669,7 +675,7 @@
         /** empty style */
     }
 }
-.AccountAreaBuySummaryAccordionSummary {
+.AccountAreaBuySummaryAccordionSummary:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -1021,7 +1027,7 @@
         /** empty style */
     }
 }
-.AccountAreaAdminSummaryTitleOfAdminTypography {
+.AccountAreaAdminSummaryTitleOfAdminTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -1198,7 +1204,7 @@
         /** empty style */
     }
 }
-.AccountAreaUserSummaryTitleOfUserTypography {
+.AccountAreaUserSummaryTitleOfUserTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -1211,7 +1217,7 @@
 }
 .AccountLogoutChip {
     margin-top: 12px;
-    width: 100px;
+    width: 120px;
     @media @mobile {
         /** empty style */
     }

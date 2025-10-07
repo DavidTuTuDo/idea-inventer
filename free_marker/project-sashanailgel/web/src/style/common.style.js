@@ -639,6 +639,188 @@ class CommonStyle {
 
     HadesDiv = {};
 
+    /** => following for epayFootprint  component  */
+
+    EpayFootprintTabTabsList = {};
+
+    EpayFootprintTabTab = {};
+
+    EpayFootprintOrderRemarkOfAuthorLabelOfRemarkOfAuthorTypography = {};
+
+    EpayFootprintOrderRemarkOfAuthorDivWrap = {};
+
+    EpayFootprintOrderRemarkOfAuthorTextField = {};
+
+    EpayFootprintOrderAreaOfPaymentFailureReasonLabelOfReasonTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentFailureReasonDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentFailureReasonTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentFailureDiv = {};
+
+    EpayFootprintOrderAreaOfFuncCheckoutButton = {};
+
+    EpayFootprintOrderAreaOfFuncDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconCopyAll = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCopyIconButton = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeLabelOfCodeTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeCodeTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailSectionOfCodeDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDomainLabelOfDomainTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDomainDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDomainTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDetailDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineLabelOfDeadlineTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDeadlineTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleRuleTypography = {};
+
+    EpayFootprintOrderAreaOfPaymentRuleDiv = {};
+
+    EpayFootprintOrderRemarkLabelOfRemarkTypography = {};
+
+    EpayFootprintOrderRemarkDivWrap = {};
+
+    EpayFootprintOrderRemarkTextField = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconChevronRight = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeArrowIconButton = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeValueOfPaymentTypeTypography = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeSectionOfChooseTypeDiv = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeLabelOfPaymentTypeTypography = {};
+
+    EpayFootprintOrderAreaOfChoosePaymentTypeDiv = {};
+
+    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceLabelOfValueOfTotalPriceTypography = {};
+
+    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceDivWrap = {};
+
+    EpayFootprintOrderAreaOfTotalPriceValueOfTotalPriceTypography = {};
+
+    EpayFootprintOrderAreaOfTotalPriceDiv = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionPriceTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionQuantityTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography = {};
+
+    EpayFootprintOrderBriefSectionOfDescriptionDiv = {};
+
+    EpayFootprintOrderBriefImageOfProductPhotoImg = {};
+
+    EpayFootprintOrderBriefDivList = {};
+
+    EpayFootprintOrderBriefDiv = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingIconMoreVertRounded = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingReactFragmentWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfPendingIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailStateOfOrderTypography = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfTailDiv = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconCopyAll = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadCopyIdIconButton = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityLabelOfStringOfOrderIdentityTypography = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityDivWrap = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadStringOfOrderIdentityTypography = {};
+
+    EpayFootprintOrderAreaOfTopSectionOfHeadDiv = {};
+
+    EpayFootprintOrderAreaOfTopDiv = {};
+
+    EpayFootprintOrderDivList = {};
+
+    EpayFootprintOrderCard = {};
+
+    EpayFootprintDivWrap = {};
+
+    EpayFootprintDiv = {};
+
+    /** => following for epayMethodOfPayment  component  */
+
+    EpayMethodOfPaymentOptionDescriptionTypography = {};
+
+    EpayMethodOfPaymentOptionImageImg = {};
+
+    EpayMethodOfPaymentOptionNameTypography = {};
+
+    EpayMethodOfPaymentOptionCardSkeleton = {};
+
+    EpayMethodOfPaymentOptionDivList = {};
+
+    EpayMethodOfPaymentOptionCard = {};
+
+    EpayMethodOfPaymentTitleTypography = {};
+
+    EpayMethodOfPaymentPaper = {};
+
+    /** => following for epayBehaviorOfConfirmLinePay  component  */
+
+    EpayBehaviorOfConfirmLinePayMessageOfFreezeTypography = {};
+
+    EpayBehaviorOfConfirmLinePayDivWrap = {};
+
+    EpayBehaviorOfConfirmLinePayDiv = {};
+
+    /** => following for epay  component  */
+
+    EpayDiv = {};
+
     /** => following for variantPhotoSetter  component  */
 
     DionysusVariantPhotoSetterVariantPreviewChip = {};

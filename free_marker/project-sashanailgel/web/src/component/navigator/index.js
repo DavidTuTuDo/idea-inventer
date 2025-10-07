@@ -22,6 +22,10 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
         Router.gotoHomePage(this);
     }
 
+    getInjectStyleOfNavigatorMenuIconButton() {
+        return Util.getVisibleOrNone(false);
+    }
+
     onSearchPressed(content) {
         if (_.isObject(content) && content.uid) {
             Router.gotoBacchusDetailPage(this, content.uid);

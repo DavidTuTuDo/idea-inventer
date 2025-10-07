@@ -135,7 +135,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         }
     };
 
-    onNavigatorInputOfCompleteTextFieldSearchPressed(input, toolBar) {
+    onNavigatorInputOfCompleteTextFieldSearchPressed(input, navigator) {
         /** 先判斷autoComplete 有沒有selectedItem()
          *
          * 沒有的話再用 getInput() 去搜尋
@@ -148,7 +148,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
             this.onSearchPressed(data);
             this.getStore().clearKeywordDetail();
         } else {
-            this.onSearchPressed(toolBar.getComplete());
+            this.onSearchPressed(navigator.getComplete());
         }
     }
 
@@ -161,11 +161,11 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         return Util.getVisibleOrNone(UserInfo.isLoginWithSucceed(), true);
     }
 
-    getInjectStyleOfNavigatorLoginIconButton(toolBar) {
+    getInjectStyleOfNavigatorLoginIconButton(navigator) {
         return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing(), true);
     }
 
-    getInjectStyleOfNavigatorTipOfLoadingCircularProgress(toolBar) {
+    getInjectStyleOfNavigatorTipOfLoadingCircularProgress(navigator) {
         return Util.getVisibleOrNone(UserInfo.isAuthProcessing(), true);
     }
 
@@ -173,8 +173,8 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         Router.gotoCartiePage(this);
     }
 
-    getInjectStyleOfNavigatorCartieIconButton(toolBar) {
-        return Config.useCartie && Util.getVisibleOrNone(toolBar.getBadgeOfCartie() > 0, true);
+    getInjectStyleOfNavigatorCartieIconButton(navigator) {
+        return Util.getVisibleOrNone(Config.useCartie && navigator.getBadgeOfCartie() > 0, true);
     }
 }
 

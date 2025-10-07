@@ -149,7 +149,7 @@ class BaseComponent extends MuiComponent {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
             window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
-        console.log(`✅️  ${this.getComponentName()} goto componentDidMount()`);
+        Util.appendInfo(`✅️  ${this.getComponentName()} goto componentDidMount()`);
     }
 
     /**
