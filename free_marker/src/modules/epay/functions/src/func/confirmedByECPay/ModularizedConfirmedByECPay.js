@@ -42,9 +42,9 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
     }
 
     async handlePreciseOrderByECPay(contentOfSucceed) {
-        Util.validatePayloadObjectValid(contentOfSucceed, ["CheckMacValue", "MerchantTradeNo", "MerchantID", "PaymentType"], 5481213501);
+        Util.validatePayloadObjectValid(contentOfSucceed, ["CheckMacValue", "MerchantTradeNo", "MerchantID", "PaymentType"], "ConfirmedByECPay");
 
-        this.isECPayCheckMacValueValid(contentOfSucceed, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, 415641542115);
+        this.isECPayCheckMacValueValid(contentOfSucceed, Config.ecpay.MercProfile.HashKey, Config.ecpay.MercProfile.HashIV, "ConfirmedByECPay");
 
         await this.validateIdOfDocumentQualify(contentOfSucceed.MerchantTradeNo, "ConfirmedByECPay");
         const itemOfPreciseOrder = await Api.fetchPreciseOrderItem(contentOfSucceed.MerchantTradeNo);

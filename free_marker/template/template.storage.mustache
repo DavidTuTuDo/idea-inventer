@@ -18,6 +18,10 @@ service firebase.storage {
       return request.auth != null && firestore.get(/databases/(default)/documents/dionysus/$(id)).data.idOfAuthor == request.auth.uid;
     }
 
+    function isAuthorOfEPay(id) {
+      return request.auth != null && firestore.get(/databases/(default)/documents/ordersOfEpay/$(id)).data.idOfAuthor == request.auth.uid;
+    }
+
     function isAdmin() {
       return request.auth != null && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin == true;
     }

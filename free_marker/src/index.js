@@ -164,7 +164,7 @@ class CodegenNode {
     typeOfTextField = '';
 
     idOfProject = ''
-    /** firebase上專屬的id好，這才能deploy 到雲端專案的uid*/
+    /** firebase上專屬的id好，這才能deploy 到雲端專案的uid，還有function組合的request/httpOnCall url都要看這個碼，早期的都是看name*/
 
     autoplay = {
         delay: 0,
@@ -1012,7 +1012,7 @@ class CodegenNode {
 
     getHostOfCloudFunction() {
         const node = this.getNodeOfSource();
-        return `https://${node.localeOfServer}-${node.getName()}.cloudfunctions.net`;
+        return `https://${node.localeOfServer}-${node.getIdOfProject()}.cloudfunctions.net`;
         /** dev:  http://localhost:5001/${node.getName()}/${node.localeOfServer}; */
     }
 
@@ -1051,10 +1051,8 @@ class CodegenNode {
 
     getIdOfProject() {
         const root = this.getNodeOfSource();
-        return root.getIdOfProject();
+        return Util.isUndefinedNullEmpty(root.idOfProject) ? root.name : root.idOfProject;
     }
-
-    getIdOfProject() { return this.idOfProject ?? ''; }
 
     setColumn(col = false) {
         this.column = col;
@@ -3279,7 +3277,7 @@ class ClassGenerator {
             const _stmts = [`let result = {};`,
                 `let succeed = true;`,
                 `try {`];
-            _stmts.push(`${fieldName}.setFingerprint(data.fingerprint);`);
+            if (_.isEqual(func.getType(), 'httpOnCall')) _stmts.push(`${fieldName}.setFingerprint(data.fingerprint);`);
             _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,

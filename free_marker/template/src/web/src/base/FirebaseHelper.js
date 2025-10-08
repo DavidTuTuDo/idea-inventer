@@ -61,7 +61,7 @@ class FirebaseHelper extends BaseFirebase {
         });
 
         if (_.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web")) {
-            connectFunctionsEmulator(this.functions(), "localhost", 5002);
+            connectFunctionsEmulator(this.functions(), "localhost", 5001);
         }
     }
 
