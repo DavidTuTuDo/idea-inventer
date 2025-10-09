@@ -11,10 +11,11 @@ import ErosPublic from "../dionysusErosPublic";
 
 class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     @observable
-    erosOfPublic;
+    erosOfPublic = {};
 
     constructor(props) {
         super(props);
+        makeObservable(this);
         this.api = new VariantApi();
         this.apiOfErosPublic = new ErosPublic();
         UserInfoRef.setGotoCartieDirect(false);
@@ -34,13 +35,23 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         return this.erosOfPublic;
     };
 
+    onInitialFetchCompleted = async (collection) => {
+        const self = this;
+        await super.onInitialFetchCompleted(collection);
+        Util.syncDelay(1).then(async () => {
+            console.log(`咻咻咻`);
+            const cartie = self.getBriefOfHead();
+            if (!_.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
+        });
+    };
+
     isCheckedVariantValid = async () => {
         /** 檢查商品是否皆為同一人 */
         const variantsOfSelected = _.filter(this.getBriefs(), (brief) => brief.getSure());
         if (_.size(variantsOfSelected) < 1) throw new Error(`沒有選取的商品`);
 
         if (!Util.areAllValuesTheSameOnKeys(variantsOfSelected, "idOfAuthor")) throw new Error(`勾選的商品來自不同賣家，無法進行交易`);
-        await this.modifyErosInfoOfAuthor(variantsOfSelected[0].idOfAuthor);
+        await this.modifyErosInfoOfAuthor(variantsOfSelected[0].idOfAuthor, true);
 
         /** 未登入檢查是否超過金額 */
         if (UserInfoRef.anonymous() && this.getErosOfPublic().amountOfAllowAnonymousBuy < this.getPriceOfTotal())
@@ -50,7 +61,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         if (this.getErosOfPublic().amountOfMaximumBuy < this.getPriceOfTotal()) throw new Error(`「購物金額限制」不得超過 ${this.getErosOfPublic().amountOfMaximumBuy} 元`);
     };
 
-    validateCountOfOrder(brief, increase = true, deleted = false) {
+    validateCountOfOrder = (brief, increase = true, deleted = false) => {
         if (deleted) {
             /** 刪除購物車其中一個選項 */
             UserInfoRef.deleteItemFromCart(brief.idOfCookieUsage);
@@ -72,7 +83,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         }
         brief.setCountOfSubmit(countOfLatest);
         UserInfoRef.updateItemToCart({ key: brief.idOfCookieUsage, quantity: countOfLatest, checked: brief.getSure() });
-    }
+    };
 
     async fetch(view = this.getComponent()) {
         function pushCurrentBrief(variant, cartieOfCookie) {
@@ -130,7 +141,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @computed
     get getComputedDiscountOfMember() {
-        const discount = _.multiply(this.getPriceWithoutDiscount(), 0.03);
+        const percentage = this.getErosOfPublic()?.percentageOfDiscount ?? 1;
+        const discount = _.multiply(this.getPriceWithoutDiscount(), 1 - Util.toPercentageDecimal(percentage));
         const computed = _.subtract(0, discount);
         const result = computed < 0 ? _.round(computed) : 0;
         this.setDiscountOfMember(result);

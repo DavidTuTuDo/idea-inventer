@@ -33,7 +33,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         if (idOfAuthor) {
             await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             eros = Application.getDionysusCartieStore().getErosOfPublic();
-            Util.appendInfo(`hermes拿到了 Eros => `, eros);
+            Util.appendInfo(`hermes拿到了 eros => `, eros);
         } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
 
         /** 如果購物車已超過該項目的免運金額(freeOfThreshold)*/
@@ -145,7 +145,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         Util.appendInfo(`選擇的物流方式:`, transport ? transport.data() : "");
 
         if (UserInfo.containsPhysicalGoodOfCheckedItem()) {
-            Cookie.setInfoOfSelectedTransport({
+            Cookie.setInfoOfSelectedTrans({
                 typeOfTransaction: transaction.getTypeOfTransaction(),
                 stringOfTransaction: transaction.getName(),
                 typeOfTransport: transport.getTypeOfTransport(),
@@ -153,7 +153,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                 stringOfTransport: transport.getName()
             });
         } else {
-            Cookie.setInfoOfSelectedTransport({
+            Cookie.setInfoOfSelectedTrans({
                 typeOfTransaction: transaction.getTypeOfTransaction(),
                 stringOfTransaction: transaction.getName()
             });

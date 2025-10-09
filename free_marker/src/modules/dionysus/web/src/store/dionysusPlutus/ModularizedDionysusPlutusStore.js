@@ -19,10 +19,12 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         await super.onInitialFetchCompleted(collection);
         this.setCitys(...Config.cities);
         this.validateDistrictByCity();
-        const info = Cookie.getInfoOfSelectedTransport();
+        const infoOfSelectedTrans = Cookie.getInfoOfSelectedTrans();
 
-        this.setFeeOfTransport(_.toNumber(info.feeOfTransport));
-        this.setProcedureOfPayment(info.stringOfTransport);
+        this.setFeeOfTransport(_.toNumber(infoOfSelectedTrans.feeOfTransport));
+        this.setProcedureOfTransport(infoOfSelectedTrans.stringOfTransport);
+        this.setProcedureOfPayment(infoOfSelectedTrans.stringOfTransaction);
+
         this.setPrice(UserInfoRef.getTotalPriceOfCartie());
         if (UserInfoRef.isLoginWithSucceed()) {
             this.setEmail(UserInfoRef.getEmailOfCurrentUser());
@@ -54,7 +56,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     whetherPickupByMySelfValidate = async () => {
         const checked = this.getWhetherPickupByMySelf();
-        const info = Cookie.getInfoOfSelectedTransport();
+        const info = Cookie.getInfoOfSelectedTrans();
         this.setFeeOfTransport(checked ? 0 : _.toNumber(info.feeOfTransport));
     };
 

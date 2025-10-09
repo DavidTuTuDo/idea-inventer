@@ -3200,6 +3200,17 @@ class Utiller {
         }
     }
 
+    /**
+     * console.log(toPercentageDecimal(100)); // 1
+     * console.log(toPercentageDecimal(97));  // 0.97
+     * console.log(toPercentageDecimal('97')); // 0（非數字）
+     */
+    toPercentageDecimal = (num) => {
+        const parsed = _.toNumber(num);
+        if (!_.isFinite(parsed)) return 1;
+        return _.round(parsed / 100, 10);
+    };
+
     /** ============== 排課系統公式 開始 ============== */
 
     /**

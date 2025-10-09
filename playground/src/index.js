@@ -28,12 +28,14 @@ class BBB extends AAA {
 if (configerer.DEBUG_MODE) {
     (async () => {
 
-        enum StateOfPayment {
-            pending = 2,
-            failure = 4
-        }
+        // enum StateOfPayment {
+        //     pending = 2,
+        //     failure = 4
+        // }
 
-        console.log(StateOfPayment.pending)
+        const percentage = 88
+        console.log(_.multiply(100, (1 - Util.toPercentageDecimal(percentage))))
+        // console.log(StateOfPayment.pending)
           // console.log(StateOfPayment[2]);
 
           // const a = {value:-1};

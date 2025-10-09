@@ -1589,6 +1589,16 @@ class MobileStyle {
 
     DionysusPlutusFuncOfCheckoutDiv = {};
 
+    DionysusPlutusMainSummariseEighthProcedureOfPaymentDivWrap = {};
+
+    DionysusPlutusMainSummariseEighthProcedureOfPaymentTypography = {};
+
+    DionysusPlutusMainSummariseEighthHeadLabelOfProcedurePaymentDivWrap = {};
+
+    DionysusPlutusMainSummariseEighthHeadLabelOfProcedurePaymentTypography = {};
+
+    DionysusPlutusMainSummariseEighthDiv = {};
+
     DionysusPlutusMainSummariseSeventhDistanceOfSashaDivWrap = {};
 
     DionysusPlutusMainSummariseSeventhDistanceOfSashaTypography = {};
@@ -1599,13 +1609,13 @@ class MobileStyle {
 
     DionysusPlutusMainSummariseSeventhDiv = {};
 
-    DionysusPlutusMainSummariseSixthProcedureOfPaymentDivWrap = {};
+    DionysusPlutusMainSummariseSixthProcedureOfTransportDivWrap = {};
 
-    DionysusPlutusMainSummariseSixthProcedureOfPaymentTypography = {};
+    DionysusPlutusMainSummariseSixthProcedureOfTransportTypography = {};
 
-    DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureDivWrap = {};
+    DionysusPlutusMainSummariseSixthHeadLabelOfProcedureOfTransportDivWrap = {};
 
-    DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureTypography = {};
+    DionysusPlutusMainSummariseSixthHeadLabelOfProcedureOfTransportTypography = {};
 
     DionysusPlutusMainSummariseSixthDiv = {};
 

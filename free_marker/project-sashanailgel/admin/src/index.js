@@ -182,7 +182,27 @@ import fs from "fs";
         await api.submitSelects(itemsOfCatalog.map((item) => ({ label: item.labelOfType, id: _.toString(item.valueOfType), value: item.valueOfType })));
     }
 
-    await uploadProducts();
+    async function uploadPaymentOptions() {
+        await api.submitOptions([
+            {
+                name: "LINE支付",
+                image: "https://d.line-scdn.net/linepay/portal/v-250924/portal/assets/img/linepay-logo-tw.png",
+                description: "",
+                indexOfSequence: 3,
+                idOfUnique: "linepay"
+            },
+            {
+                name: "綠界支付",
+                image: "https://www.ecpay.com.tw/Content/themes/WebStyle20131201/images/service/ecpay_fb.png",
+                description: "信用卡、ATM、超商條碼",
+                indexOfSequence: 2,
+                idOfUnique: "ecpay"
+            }
+        ]);
+    }
+
+    await uploadPaymentOptions();
+    // await uploadProducts();
     // await uploadCatalogs();
 
     // console.log(await testOfAdminFetchItems());

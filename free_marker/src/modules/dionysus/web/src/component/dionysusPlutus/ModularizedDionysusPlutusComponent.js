@@ -64,7 +64,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
         function isAddressNotValid() {
             if (containsPhysicalGood) {
-                if (self.getStore().getWhetherPickupByMySelf()) return false;
+                if (typeOfTransport === 3) return false; //todo enum:自行取貨
                 return _.isEmpty(self.getStore().getAddress());
             }
             return false;

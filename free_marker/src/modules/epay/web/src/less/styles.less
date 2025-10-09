@@ -130,12 +130,9 @@
         /** empty style */
     }
 }
-.EpayMethodOfPaymentOptionImageImg {
-    object-fit: cover;
-    border-radius: 5px;
+.EpayMethodOfPaymentOptionImageImg:extend(.SquareRatioImg) {
     margin-top: 2px;
     width: 70%;
-    height: 70%;
     @media @mobile {
         /** empty style */
     }
@@ -1039,17 +1036,5 @@
     }
     @media @desktop {
         top: 0;
-    }
-}
-.EpayTestDiv:extend(.CenterInParentColumn) {
-    gap: 25px;
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
     }
 }
