@@ -170,9 +170,20 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
 
     onDionysusErosArrowOfFeeOfRapidOnDeliveryIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("RapidOnDelivery");
+        this.getStore().setSelected("rapidOnDelivery");
         const fee = object.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery();
         this.getStore().submitFeeOfRapidOnDelivery(fee).then();
+    }
+
+    onDionysusErosArrowOfThresholdOfAllowSelfPickupIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("thresholdOfAllowSelfPickup");
+        const fee = object.getDialogInputValueOfDionysusErosArrowOfThresholdOfAllowSelfPickup();
+        this.getStore().submitThresholdOfAllowSelfPickup(fee).then();
+    }
+
+    onDionysusErosEnableOfWhetherPickupByBuyerSelfSwitchChange(param) {
+        this.getStore().submitWhetherPickupByBuyerSelf().then();
     }
 
     /** -------------------- async api -------------------- **/

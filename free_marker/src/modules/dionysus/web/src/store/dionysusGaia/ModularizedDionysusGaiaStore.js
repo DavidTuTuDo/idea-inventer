@@ -219,7 +219,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             name: this.getName(),
             statement: this.getStatement(),
             photos: this.getBriefPhotos(),
-            photoOfDemo: _.head(this.getBriefPhotos()).href,
+            photoOfDemo: _.size(this.getBriefPhotos()) > 0 ? _.head(this.getBriefPhotos()).href : "",
             ...this.modifySpecificAttribute(),
             visibility: this.getVisibility(),
             idOfAuthor: UserInfo.getUid(),
@@ -234,7 +234,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     createBooze4Sure = async () => {
         await this.handleIdOfBooze();
         const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), this.getObjectOfBooze(), this.getIdOfBooze());
-        this.invalidateBooze(result.value);
+        // this.invalidateBooze(result.value);
         /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
         const variants = await this.apiOfVariant.fetchDocumentIdsOfVariant(this.getComponent(), this.getIdOfBooze());
         await this.apiOfVariant.updateVariants(

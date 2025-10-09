@@ -34,33 +34,35 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
             await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             eros = Application.getDionysusCartieStore().getErosOfPublic();
             Util.appendInfo(`hermes拿到了 Eros => `, eros);
-            //todo:更新所有運費資訊
         } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
 
         /** 如果購物車已超過該項目的免運金額(freeOfThreshold)*/
         const transportsOfShouldHidden = [];
 
-        for (const transport of this.getTransactions()) {
-            switch (transport.getTypeOfTransaction()) {
+        for (const transaction of this.getTransactions()) {
+            switch (transaction.getTypeOfTransaction()) {
                 case 1: //LINE支付
-                    transport.setDescription(`滿 ${eros.thresholdOfCheckoutByLinePay} 元免運`);
-                    transport.setPrice(-1);
-                    transport.setFreeOfThreshold(eros.thresholdOfCheckoutByLinePay);
+                    transaction.setDescription(`消費需滿 ${eros.thresholdOfCheckoutByLinePay} 元`);
+                    transaction.setPrice(-1);
+                    transaction.setFreeOfThreshold(eros.thresholdOfCheckoutByLinePay);
+                    transaction.setAvailable(eros.enableOfLinePay && eros.hasLinePay);
                     break;
                 case 3: //信用卡（綠界支付x`
-                    transport.setDescription(`滿 ${eros.thresholdOfCheckoutByCredit} 元免運`);
-                    transport.setPrice(-1);
-                    transport.setFreeOfThreshold(eros.thresholdOfCheckoutByCredit);
+                    transaction.setDescription(`消費需滿 ${eros.thresholdOfCheckoutByCredit} 元`);
+                    transaction.setPrice(-1);
+                    transaction.setFreeOfThreshold(eros.thresholdOfCheckoutByCredit);
+                    transaction.setAvailable(eros.enableOfECPay && eros.hasECPay);
                     break;
                 case 4: //貨到付款`
-                    transport.setDescription(`滿 ${eros.thresholdOfFreeShipByCOD} 元免運`);
-                    transport.setPrice(-1);
-                    transport.setFreeOfThreshold(eros.thresholdOfFreeShipByCOD);
+                    transaction.setDescription(`消費需滿 ${eros.thresholdOfFreeShipByCOD} 元`);
+                    transaction.setPrice(-1);
+                    transaction.setFreeOfThreshold(eros.thresholdOfFreeShipByCOD);
+                    transaction.setAvailable(eros.whetherHomeShipByCOD);
                     break;
                 case 9: //現金
-                    transport.setDescription(`滿 ${eros.thresholdOfFreeShipByCash} 元免運`);
-                    transport.setPrice(-1);
-                    transport.setFreeOfThreshold(eros.thresholdOfFreeShipByCash);
+                    transaction.setDescription(``);
+                    transaction.setPrice(-1);
+                    transaction.setFreeOfThreshold(0);
                     break;
             }
         }
@@ -68,29 +70,34 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         for (const transport of this.getTransports()) {
             switch (transport.getTypeOfTransport()) {
                 case 3: //自行取貨`
-                    transport.setDescription(`無運送費用產生`);
+                    transport.setDescription(`消費滿 ${eros.thresholdOfAllowSelfPickup} 元提供自取`);
                     transport.setPrice(0);
                     transport.setFreeOfThreshold(0);
+                    transport.setAvailable(eros.whetherShipByStorePickup && priceOfWithoutTransport >= eros.thresholdOfAllowSelfPickup);
                     break;
                 case 4: //7-11 取貨
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByStorePickup} 元免運`);
                     transport.setPrice(eros.feeOfInStorePickup);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByStorePickup);
+                    transport.setAvailable(eros.whetherShipByStorePickup);
                     break;
                 case 5: //全家 取貨
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByStorePickup} 元免運`);
                     transport.setPrice(eros.feeOfInStorePickup);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByStorePickup);
+                    transport.setAvailable(eros.whetherShipByStorePickup);
                     break;
                 case 7: //當日到(14:00前下單)
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByRapidly} 元免運`);
                     transport.setPrice(eros.feeOfRapidOnDelivery);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByRapidly);
+                    transport.setAvailable(eros.whetherShipByRapidly);
                     break;
                 case 8: //宅配
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByHomeDelivery} 元免運`);
                     transport.setPrice(eros.feeOfHomeDelivery);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByHomeDelivery);
+                    transport.setAvailable(eros.whetherHomeDelivery);
                     break;
             }
 
@@ -112,22 +119,45 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
     }
 
     hasSurelyChoice() {
-        const choice = _.find(this.getTransports(), (transport) => transport.getChoice());
-        return !Util.isUndefinedNullEmpty(choice);
+        const transport = this.getSelectedTransport();
+        const transaction = this.getSelectedTransaction();
+        Util.appendInfo(`選擇的付費方式:`, transaction ? transaction.data() : "");
+        Util.appendInfo(`選擇的物流方式:`, transport ? transport.data() : "");
+
+        if (UserInfo.containsPhysicalGoodOfCheckedItem())
+            return !Util.isUndefinedNullEmpty(this.getSelectedTransport()) && !Util.isUndefinedNullEmpty(this.getSelectedTransaction());
+        else return !Util.isUndefinedNullEmpty(this.getSelectedTransaction());
     }
 
     getSelectedTransport = () => {
         return _.find(this.getTransports(), (transport) => transport.getChoice());
     };
 
+    getSelectedTransaction = () => {
+        return _.find(this.getTransactions(), (transaction) => transaction.getChoice());
+    };
+
     updateTransportInfo() {
         const transport = this.getSelectedTransport();
-        Util.appendInfo(`選擇的付費方式:`, transport.data());
-        Cookie.setInfoOfSelectedTransport({
-            typeOfTransport: transport.getTypeOfTransport(),
-            feeOfTransport: transport.getPrice(),
-            stringOfTransport: transport.getName()
-        });
+        const transaction = this.getSelectedTransaction();
+
+        Util.appendInfo(`選擇的付費方式:`, transaction ? transaction.data() : "");
+        Util.appendInfo(`選擇的物流方式:`, transport ? transport.data() : "");
+
+        if (UserInfo.containsPhysicalGoodOfCheckedItem()) {
+            Cookie.setInfoOfSelectedTransport({
+                typeOfTransaction: transaction.getTypeOfTransaction(),
+                stringOfTransaction: transaction.getName(),
+                typeOfTransport: transport.getTypeOfTransport(),
+                feeOfTransport: transport.getPrice(),
+                stringOfTransport: transport.getName()
+            });
+        } else {
+            Cookie.setInfoOfSelectedTransport({
+                typeOfTransaction: transaction.getTypeOfTransaction(),
+                stringOfTransaction: transaction.getName()
+            });
+        }
     }
 }
 

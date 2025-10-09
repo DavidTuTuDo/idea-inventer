@@ -1229,6 +1229,30 @@ class AppStyle {
 
     DionysusErosAreaOfWhetherHomeShipByCodDiv = {};
 
+    DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupIconNavigateNext = {};
+
+    DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupReactFragmentWrap = {};
+
+    DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupIconButton = {};
+
+    DionysusErosAreaOfThresholdOfAllowSelfPickupOptionOfThresholdOfAllowSelfPickupContentTypography = {};
+
+    DionysusErosAreaOfThresholdOfAllowSelfPickupOptionOfThresholdOfAllowSelfPickupTitleTypography = {};
+
+    DionysusErosAreaOfThresholdOfAllowSelfPickupDivWrap = {};
+
+    DionysusErosAreaOfThresholdOfAllowSelfPickupDiv = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfEnableOfWhetherPickupByBuyerSelfSwitch = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfContentTypography = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfTitleTypography = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfDivWrap = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfDiv = {};
+
     DionysusErosAreaOfThresholdOfCheckoutByCreditArrowOfThresholdOfCheckoutByCreditIconNavigateNext = {};
 
     DionysusErosAreaOfThresholdOfCheckoutByCreditArrowOfThresholdOfCheckoutByCreditReactFragmentWrap = {};

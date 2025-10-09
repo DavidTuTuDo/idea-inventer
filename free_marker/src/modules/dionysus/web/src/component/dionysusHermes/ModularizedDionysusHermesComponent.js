@@ -19,13 +19,21 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
         if (this.getStore().hasSurelyChoice()) {
             this.getStore().updateTransportInfo();
             Router.gotoPlutusPage(this);
-        } else this.showWarningSnackMessage(`尚未選擇付款方式`);
+        } else this.showWarningSnackMessage(`尚未選擇付款、物流方式`);
     }
 
     getInjectStyleOfDionysusHermesTransportDiv(transport) {
         const visible = transport.getAvailable();
-        if (!UserInfo.containsPhysicalGoodOfCheckedItem() && Util.isOrEquals(transport.getTypeOfTransport(), 4, 5, 7, 8)) return Util.getVisibleOrNone(false);
         return Util.getVisibleOrNone(visible);
+    }
+
+    getInjectStyleOfDionysusHermesTransactionDiv(transaction) {
+        const visible = transaction.getAvailable();
+        return Util.getVisibleOrNone(visible);
+    }
+
+    getListInjectStyleOfDionysusHermesTransportDiv(dionysusHermes) {
+        return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
     }
 
     onDionysusHermesTransportChoiceCheckboxChange(param) {

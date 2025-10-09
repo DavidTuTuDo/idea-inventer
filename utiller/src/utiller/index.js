@@ -3182,6 +3182,24 @@ class Utiller {
         );
     }
 
+    /**
+     * 檢查是否為 HTTPS 網址
+     * @param {string} url
+     * @returns {boolean}
+     */
+    isHttpsURL(url) {
+        if (!_.isString(url)) return false;
+
+        try {
+            const decoded = decodeURIComponent(url.trim());
+            const parsed = new URL(decoded);
+
+            return parsed.protocol === 'https:';
+        } catch (e) {
+            return false;
+        }
+    }
+
     /** ============== 排課系統公式 開始 ============== */
 
     /**

@@ -56,8 +56,14 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(pub.getFeeOfHomeDelivery());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(pub.getFeeOfInStorePickup());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod(pub.getFeeOfShipByCOD());
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(pub.getFeeOfRapidOnDelivery());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfAllowSelfPickup(pub.getThresholdOfAllowSelfPickup());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(pub.getThresholdOfFreeShipByStorePickup());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay(pub.getThresholdOfCheckoutByLinePay());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery(pub.getThresholdOfFreeShipByHomeDelivery());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(pub.getThresholdOfCheckoutByCredit());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(pub.getThresholdOfFreeShipByCOD());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
 
         this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
@@ -67,13 +73,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setEnableOfWhetherShipByStorePickup(pub.getWhetherShipByStorePickup());
         this.setEnableOfWhetherShipByRapidly(pub.getWhetherShipByRapidly());
         this.setEnableOfWhetherHomeShipByCod(pub.getWhetherHomeShipByCOD());
-
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(pub.getThresholdOfFreeShipByStorePickup());
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay(pub.getThresholdOfCheckoutByLinePay());
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery(pub.getThresholdOfFreeShipByHomeDelivery());
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(pub.getThresholdOfCheckoutByCredit());
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(pub.getThresholdOfFreeShipByCOD());
-        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
+        this.setEnableOfWhetherPickupByBuyerSelf(pub.getWhetherPickupByBuyerSelf());
     }
 
     /** 共同提交處理器 */
@@ -213,6 +213,15 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
         });
 
+    submitThresholdOfAllowSelfPickup = (fee) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(fee),
+            errorMessage: `自費最低門檻格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setThresholdOfAllowSelfPickup(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
+        });
+
     /** enable toggles */
     submitWhetherBoughtWithoutLogin = async () => {
         this.getPublic().setEnableOfBoughtWithoutLoginIn(this.getEnableOfBoughtWithoutLoginIn());
@@ -246,6 +255,10 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.getPublic().setWhetherHomeShipByCOD(this.getEnableOfWhetherHomeShipByCod());
         await this.getPublic().submitPublic(this.getComponent());
     };
+    submitWhetherPickupByBuyerSelf = async () => {
+        this.getPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherPickupByBuyerSelf());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
     /** pay secrets */
     submitLinePaySerials = async ([channelId, channelSecret]) => {
         if (!this.isValidLinePayConfig(channelId, channelSecret)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
@@ -264,7 +277,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
 
     submitDirectPay = async ([url]) => {
-        if (!this.isLinePayDirectQRUrl(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
+        if (!Util.isHttpsURL(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
         this.getPublic().setPayOfDirect(url);
         await this.getPublic().submitPublic(this.getComponent());
     };
@@ -314,14 +327,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     isValidECPayConfig = (id, key, iv) => [id, key, iv].every((p) => _.isString(p) && !_.isEmpty(p));
     isValidLinePayConfig = (id, secret) => [id, secret].every((p) => _.isString(p) && !_.isEmpty(p));
     isValidDiscountPercentNumber = (val) => _.inRange(_.toNumber(val), 10, 101);
-    isLinePayDirectQRUrl = (urlString) => {
-        try {
-            const url = new URL(urlString);
-            return ["transactionId", "orderId"].every((p) => url.searchParams.has(p));
-        } catch {
-            return false;
-        }
-    };
 }
 
 export default ModularizedDionysusErosStore;

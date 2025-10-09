@@ -114,7 +114,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     /** 可否自取（實體商品）*/
     getInjectStyleOfDionysusGaiaTakenDiv(dionysusGaia) {
-        return Util.getVisibleOrNone(this.isProductSell(dionysusGaia), true);
+        return Util.getVisibleOrNone(false);
     }
 
     /** 到府授課（課程商品）*/
@@ -124,6 +124,10 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     getInjectPropsOfDionysusGaiaAppendTaskChip(dionysusGaia) {
         return { disabled: dionysusGaia.getIsBoozeAlreadyDone() };
+    }
+
+    onDionysusGaiaBackToHomeChipClicked(param) {
+        Router.gotoDionysusPage(this);
     }
 }
 

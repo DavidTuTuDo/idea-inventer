@@ -32,44 +32,18 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
         this.getComponent().scrollToTop();
         const itemsOfCarie = UserInfoRef.getCheckedCartieItem();
+        this.setNeedSelfPickingChoice(false);
 
-        // 新增追蹤變數，用於防止後續邏輯覆寫
-        // 追蹤地址是否曾經被設定為 true
-        let hasAddressBeenSetToTrue = false;
-        // 追蹤自取選項是否曾經被設定為 false
-        let hasSelfPickingChoiceBeenSetToFalse = false;
-
-        // 迴圈遍歷所有購物車項目
-        for (const item of itemsOfCarie) {
+        // 使用 Array.prototype.some() 來檢查陣列中是否存在符合條件的項目。
+        const isHomeTeachingLesson = itemsOfCarie.some((item) => {
             const isLesson = item.isTaskJob;
-            const isProduct = !item.isTaskJob;
+            const isHomeTeaching = item.isHomeTeaching;
 
-            // --- 處理 setNeedAddress 邏輯 ---
-            // 規則：如果地址需求曾經被設為 true，就不能再改回 false。
+            // 條件：必須是課程 (isLesson) 且必須是在家教學 (isHomeTeaching)
+            return isLesson && isHomeTeaching;
+        });
 
-            // 如果目前項目是產品，或是在家教學的課程，就需要地址
-            if (isProduct || (isLesson && item.isHomeTeaching)) {
-                this.setNeedAddress(true);
-                hasAddressBeenSetToTrue = true;
-            }
-            // 否則，只有在地址需求**尚未**被設為 true 時，才可能將其設為 false
-            else if (!hasAddressBeenSetToTrue) {
-                this.setNeedAddress(false);
-            }
-
-            // --- 處理 setNeedSelfPickingChoice 邏輯 ---
-            // 規則：如果自取選項曾經被設為 false，就不能再改為 true。
-
-            // 如果目前項目是產品，且不允許自取，就將自取選項設為 false
-            if (isProduct && !item.allowSelfPickUp) {
-                this.setNeedSelfPickingChoice(false);
-                hasSelfPickingChoiceBeenSetToFalse = true;
-            }
-            // 否則，只有在自取選項**尚未**被設為 false 時，才可能將其設為 true
-            else if (!hasSelfPickingChoiceBeenSetToFalse && isProduct && item.allowSelfPickUp) {
-                this.setNeedSelfPickingChoice(true);
-            }
-        }
+        if (isHomeTeachingLesson) this.setNeedAddress(true);
     }
 
     validateDistrictByCity = () => {
