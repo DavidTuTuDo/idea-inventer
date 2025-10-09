@@ -4,7 +4,7 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import libpath from "path";
 import BaseDionysusErosStore from "./BaseDionysusErosStore";
-import NavigatorInfo from "../navigatorInfo";
+import NavigatorInfo from "../navigatorGlobalPerspective";
 import DionysusSelect from "../dionysusSelect";
 import UserInfo from "../../base/BaseUserInfo";
 
@@ -50,17 +50,30 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         await super.onInitialFetchCompleted(collection);
         const pub = this.getPublic();
         this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(pub.getNumOfWorker());
-        this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(pub.getPriceOfFreeShipping());
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(pub.getAmountOfAllowAnonymousBuy());
         this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(pub.getPercentageOfDiscount());
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(pub.getAmountOfMaximumBuy());
-        this.setDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery(pub.getFeeOfCashOnDelivery());
+        this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(pub.getFeeOfHomeDelivery());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(pub.getFeeOfInStorePickup());
+        this.setDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod(pub.getFeeOfShipByCOD());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
+        this.setDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(pub.getFeeOfRapidOnDelivery());
+
         this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
         this.setEnableOfEcPay(pub.getEnableOfECPay());
         this.setEnableOfDirect(pub.getEnableOfDirectPay());
-        this.setEnableOfCashOnDelivery(pub.getEnableOfCashOnDelivery());
+        this.setEnableOfWhetherHomeDelivery(pub.getWhetherHomeDelivery());
+        this.setEnableOfWhetherShipByStorePickup(pub.getWhetherShipByStorePickup());
+        this.setEnableOfWhetherShipByRapidly(pub.getWhetherShipByRapidly());
+        this.setEnableOfWhetherHomeShipByCod(pub.getWhetherHomeShipByCOD());
+
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(pub.getThresholdOfFreeShipByStorePickup());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay(pub.getThresholdOfCheckoutByLinePay());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery(pub.getThresholdOfFreeShipByHomeDelivery());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(pub.getThresholdOfCheckoutByCredit());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(pub.getThresholdOfFreeShipByCOD());
+        this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
     }
 
     /** 共同提交處理器 */
@@ -101,13 +114,58 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(val)
         });
 
-    submitPriceOfFreeShipping = (price) =>
+    submitThresholdOFreeShipByCod = (price) =>
         this.submitWithValidation({
             validator: _.isNumber,
             value: _.toNumber(price),
             errorMessage: `金額格式錯誤 '${price}'`,
-            setter: (val) => this.getPublic().setPriceOfFreeShipping(val),
-            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPriceOfFreeShipping(val)
+            setter: (val) => this.getPublic().setThresholdOfFreeShipByCOD(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(val)
+        });
+
+    submitThresholdOfCheckoutByCredit = (price) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(price),
+            errorMessage: `金額格式錯誤 '${price}'`,
+            setter: (val) => this.getPublic().setThresholdOfCheckoutByCredit(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(val)
+        });
+
+    submitThresholdOfFreeShipByRapidly = (price) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(price),
+            errorMessage: `金額格式錯誤 '${price}'`,
+            setter: (val) => this.getPublic().setThresholdOfFreeShipByRapidly(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(val)
+        });
+
+    submitThresholdOfFreeShipByHomeDelivery = (price) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(price),
+            errorMessage: `金額格式錯誤 '${price}'`,
+            setter: (val) => this.getPublic().setThresholdOfFreeShipByHomeDelivery(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery(val)
+        });
+
+    submitThresholdOfCheckoutByLinePay = (price) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(price),
+            errorMessage: `金額格式錯誤 '${price}'`,
+            setter: (val) => this.getPublic().setThresholdOfCheckoutByLinePay(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay(val)
+        });
+
+    submitThresholdOfFreeShipByStorePickup = (fee) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(fee),
+            errorMessage: `店到店運費格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setThresholdOfFreeShipByStorePickup(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(val)
         });
 
     submitNumOfWorker = (num) =>
@@ -119,13 +177,13 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(val)
         });
 
-    submitFeeOfCashOnDelivery = (fee) =>
+    submitFeeOfHomeDelivery = (fee) =>
         this.submitWithValidation({
             validator: _.isNumber,
             value: _.toNumber(fee),
-            errorMessage: `COD運費格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setFeeOfCashOnDelivery(val),
-            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfCashOnDelivery(val)
+            errorMessage: `宅配運費格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setFeeOfHomeDelivery(val),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(val)
         });
 
     submitFeeOfInStorePickup = (fee) =>
@@ -135,6 +193,24 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getPublic().setFeeOfInStorePickup(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(val)
+        });
+
+    submitFeeOfShipByCOD = (fee) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(fee),
+            errorMessage: `COD運費格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setFeeOfShipByCOD(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod(val)
+        });
+
+    submitFeeOfRapidOnDelivery = (fee) =>
+        this.submitWithValidation({
+            validator: _.isNumber,
+            value: _.toNumber(fee),
+            errorMessage: `店到店運費格式錯誤 '${fee}'`,
+            setter: (val) => this.getPublic().setFeeOfRapidOnDelivery(val),
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
         });
 
     /** enable toggles */
@@ -154,11 +230,22 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.getPublic().setEnableOfDirectPay(this.getEnableOfDirect());
         await this.getPublic().submitPublic(this.getComponent());
     };
-    submitWhetherEnableCOD = async () => {
-        this.getPublic().setEnableOfCashOnDelivery(this.getEnableOfCashOnDelivery());
+    submitWhetherHomeDelivery = async () => {
+        this.getPublic().setWhetherHomeDelivery(this.getEnableOfWhetherHomeDelivery());
         await this.getPublic().submitPublic(this.getComponent());
     };
-
+    submitWhetherShipByRapidly = async () => {
+        this.getPublic().setWhetherShipByRapidly(this.getEnableOfWhetherShipByRapidly());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+    submitWhetherShipByStorePickup = async () => {
+        this.getPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherShipByStorePickup());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
+    submitWhetherHomeShipByCOD = async () => {
+        this.getPublic().setWhetherHomeShipByCOD(this.getEnableOfWhetherHomeShipByCod());
+        await this.getPublic().submitPublic(this.getComponent());
+    };
     /** pay secrets */
     submitLinePaySerials = async ([channelId, channelSecret]) => {
         if (!this.isValidLinePayConfig(channelId, channelSecret)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
@@ -184,9 +271,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitBrandName = async (name) => {
         if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
-        const info = await this.apiOfInfo.fetchInfo(this.getComponent());
+        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
         info.nameOfBrand = name;
-        await this.apiOfInfo.submitInfo(this.getComponent(), info);
+        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
         UserInfo.setNameOfBrand(name);
     };
 

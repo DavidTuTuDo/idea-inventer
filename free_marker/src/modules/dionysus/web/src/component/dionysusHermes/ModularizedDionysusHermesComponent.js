@@ -30,7 +30,12 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
 
     onDionysusHermesTransportChoiceCheckboxChange(param) {
         const transport = param.object;
-        this.getStore().updateCheckboxStatus(transport);
+        this.getStore().updateTransportCheckboxStatus(transport);
+    }
+
+    onDionysusHermesTransactionChoiceCheckboxChange(param) {
+        const transport = param.object;
+        this.getStore().updateTransactionCheckboxStatus(transport);
     }
 
     getInjectStyleOfDionysusHermesTransportDescriptionTypography(transport) {
@@ -39,6 +44,10 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
 
     getWrapInjectStyleOfDionysusHermesTransportPriceTypography(transport) {
         return Util.getVisibleOrHidden(UserInfo.containsPhysicalGoodOfCheckedItem());
+    }
+
+    getWrapInjectStyleOfDionysusHermesTransactionPriceTypography(transaction) {
+        return Util.getVisibleOrHidden(false);
     }
 }
 

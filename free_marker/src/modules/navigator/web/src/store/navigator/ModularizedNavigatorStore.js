@@ -46,7 +46,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         if (_.isArray(this.getKeywords())) {
             this.initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), "label"));
         }
-        const nameOfBrand = this.getInfo().getNameOfBrand();
+        const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
         if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
     }
 

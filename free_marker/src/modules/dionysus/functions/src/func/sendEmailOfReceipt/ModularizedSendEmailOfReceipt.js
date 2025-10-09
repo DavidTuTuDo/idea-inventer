@@ -133,7 +133,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             this.appendErrorLog(9999, `4564655-SendEmailOfReceipt 客戶未提供Email，無法送出Email，訂單編號：${id}`);
             return;
         }
-        const global = await Api.fetchInfo();
+        const global = await Api.fetchGlobalPerspective();
         this.appendLog(`${idOfPreciseOrder} 準備發送Email給賣家｜買家`);
 
         [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, ...order }));
