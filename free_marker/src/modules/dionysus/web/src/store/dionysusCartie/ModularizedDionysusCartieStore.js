@@ -15,6 +15,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     constructor(props) {
         super(props);
+        /** 在子class裡面使用observable(erosOfPublic)就必須makeObservable*/
         makeObservable(this);
         this.api = new VariantApi();
         this.apiOfErosPublic = new ErosPublic();
@@ -39,7 +40,6 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         const self = this;
         await super.onInitialFetchCompleted(collection);
         Util.syncDelay(1).then(async () => {
-            console.log(`咻咻咻`);
             const cartie = self.getBriefOfHead();
             if (!_.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
         });
