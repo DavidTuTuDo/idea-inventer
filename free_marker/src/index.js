@@ -9858,8 +9858,11 @@ class ScheduleManager {
             case 'developLatestFunction':
                 await builder.modifiedI18n();
                 break;
-            case 'leanUnusedFunction':
+            case 'leanUnusedFunctionWeb':
                 await builder.leanCodeOfProjectSrc('web');
+                break;
+            case 'leanUnusedFunctionFunctions':
+                await builder.leanCodeOfProjectSrc('functions');
                 break;
             default:
                 await builder.leanCodeOfProjectSrc('web');

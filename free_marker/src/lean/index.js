@@ -14,6 +14,12 @@ export default class Lean {
         this.files = []; // 檔案路徑集合
         this.listOfAnalysis = [];
         this.listOfCleanImport = {};
+        this.removeWhiteList = true; // 新增白名單開關
+        this.whiteList = ['Util.appendInfo', 'console.log']; // 新增白名單
+    }
+
+    setRemoveWhiteList(shouldRemove) {
+        this.removeWhiteList = !!shouldRemove;
     }
 
     // 初始化，取得所有檔案的路徑
@@ -157,7 +163,12 @@ export default class Lean {
 
         const namesOfMustUsed = ['constructor', 'getRenderView', 'data', 'columnData', 'clean', 'handleCommitment'];
         _.filter(this.listOfFunctions,
-            (func) => /^normalize/.test(func.name) | /Conditions$/.test(func.name) | namesOfMustUsed.includes(func.name))
+            (func) =>
+                /^normalize/.test(func.name) ||
+                /Conditions$/.test(func.name) ||
+                /ecpay/i.test(func.name) || // 保留所有和 ecpay 相關的函式
+                namesOfMustUsed.includes(func.name)
+            )
             .forEach((func) => func.used = true);
 
         for (const file of this.files) {
@@ -213,33 +224,40 @@ export default class Lean {
     }
 
     cleanMultipleJsFilesAsync = async (targets) => {
-        for (const {path: filePath, lines} of targets) {
-            try {
-                const exists = await fs.stat(filePath).then(() => true).catch(() => false);
-                if (!exists) {
-                    console.warn(`⚠️ File not found: ${filePath}`);
-                    continue;
-                }
+        // 1. 建立一個從檔案路徑到要刪除行號的映射
+        const linesToRemoveByFile = _.groupBy(targets, 'path');
+        const filesWithUnusedFuncs = new Set(Object.keys(linesToRemoveByFile));
 
-                // 1. 讀取檔案內容
+        // 2. 決定要處理哪些檔案：如果 removeWhiteList 為 true，處理所有檔案；否則，只處理有未使用函式的檔案
+        const filesToProcess = this.removeWhiteList ? this.files : Array.from(filesWithUnusedFuncs);
+
+        for (const filePath of filesToProcess) {
+            try {
+                const unusedFunctionBlocks = linesToRemoveByFile[filePath] || [];
+                const unusedLines = _.flatMap(unusedFunctionBlocks, 'lines');
+                const lineSet = new Set(unusedLines.map(l => l - 1));
+
                 const content = await fs.readFile(filePath, 'utf-8');
                 let linesArr = content.split('\n');
 
-                // 2. 移除指定行數（轉成 0-based index）
-                const lineSet = new Set(lines.map((l) => l - 1));
-                linesArr = linesArr.filter((_, index) => !lineSet.has(index));
+                // 根據原始行號移除未使用的函式
+                let newLinesArr = linesArr.filter((_, index) => !lineSet.has(index));
 
-                // 3. 遞迴移除被空白行包夾的空白行
+                // 如果啟用，移除白名單中的行
+                if (this.removeWhiteList) {
+                    newLinesArr = newLinesArr.filter(line => {
+                        const trimmedLine = line.trim();
+                        if (trimmedLine === '') return true; // 保留空行
+                        const startsWithWhiteListItem = this.whiteList.some(item => _.startsWith(trimmedLine, item));
+                        return !startsWithWhiteListItem;
+                    });
+                }
+
+                // 遞迴移除被空白行包夾的空白行
                 const removeSurroundedEmptyLines = (arr) => {
                     let changed = false;
                     const result = arr.filter((line, i, array) => {
-                        if (
-                            line.trim() === '' &&
-                            i > 0 &&
-                            i < array.length - 1 &&
-                            array[i - 1].trim() === '' &&
-                            array[i + 1].trim() === ''
-                        ) {
+                        if (line.trim() === '' && i > 0 && i < array.length - 1 && array[i - 1].trim() === '' && array[i + 1].trim() === '') {
                             changed = true;
                             return false;
                         }
@@ -248,11 +266,15 @@ export default class Lean {
                     return changed ? removeSurroundedEmptyLines(result) : result;
                 };
 
-                linesArr = removeSurroundedEmptyLines(linesArr);
+                const finalLines = removeSurroundedEmptyLines(newLinesArr);
+                const newContent = finalLines.join('\n');
 
-                // 4. 寫回檔案
-                await fs.writeFile(filePath, linesArr.join('\n'), 'utf-8');
-                console.log(`✅ Cleaned file: ${filePath}`);
+                // 只有在內容有變更時才寫回檔案
+                if (newContent !== content) {
+                    await fs.writeFile(filePath, newContent, 'utf-8');
+                    console.log(`✅ Cleaned file: ${filePath}`);
+                }
+
             } catch (err) {
                 console.error(`❌ Failed to process ${filePath}:`, err);
             }
