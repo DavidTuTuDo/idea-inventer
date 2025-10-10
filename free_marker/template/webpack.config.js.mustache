@@ -4,11 +4,12 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const CompressionPlugin = require("compression-webpack-plugin"); // <<<<<<<<<<< 1. 引入壓縮套件
 
 // 載入我們在步驟 1 中生成的映射表
 const classNameMap = require('./classNameMap.json');
 
-const isProd = process.env.typeOfEnv === "prod";
+const isProd = process.env.NODE_ENV === 'production';
 const enableOfBundleSize = false;
 const enableSourceMap = false;
 
@@ -41,6 +42,20 @@ const config = {
     assetModuleFilename: "[name][ext]",
     clean: true,
     publicPath: "/", // 確保 Firebase 能正確載入資源
+  },
+  optimization: {
+    splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+            vendors: {
+                test: /[\\/]node_modules[\\/]/,
+                name: 'vendors',
+                chunks: 'all',
+                priority: 10,
+                enforce: true
+            },
+        },
+    },
   },
   watchOptions: {
     aggregateTimeout: 200,
@@ -141,22 +156,30 @@ const config = {
         },
       },
     }),
+    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-tw|en-gb/),
   ],
 };
 
 if (isProd) {
   config.mode = "production";
-  config.optimization = {
+  Object.assign(config.optimization, {
     minimize: true,
     minimizer: [new TerserPlugin()],
     sideEffects: true,
     usedExports: true,
-  };
+  });
 
   config.plugins.push(
     new MiniCssExtractPlugin({
       filename: "[name].[contenthash:8].css",
       chunkFilename: "[id].[contenthash:8].css",
+    }),
+    new CompressionPlugin({
+        test: /\.(js|css|html|svg)$/,
+        filename: '[path][base].gz',
+        algorithm: 'gzip',
+        threshold: 10240, // 只壓縮超過 10KB 的檔案
+        minRatio: 0.8,
     })
   );
 } else {
