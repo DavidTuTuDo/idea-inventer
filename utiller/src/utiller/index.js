@@ -3277,11 +3277,9 @@ class Utiller {
             return code;
         };
 
-        return _.transform(array, (result, rawKey) => {
-            const key = _.camelCase(rawKey);
-
+        return _.transform(array, (result, key) => {
             if (usedKeys.has(key)) {
-                throw new Error(`Duplicate key detected: "${key}" (原始值: "${rawKey}")`);
+                throw new Error(`23125453 Duplicate key detected: "${key}"`);
             }
 
             usedKeys.add(key);

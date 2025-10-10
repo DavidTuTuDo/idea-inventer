@@ -6835,7 +6835,7 @@ class AppBuilder extends ComponentBuilder {
 
                 const preciselyClazzName = node.getClassNameOfLessUsage(className.type);
                 const existObj = existedLessAttributeObj[preciselyClazzName]; /** 從file裡面找出定義過的屬性敘述*/
-                classNames.push(preciselyClazzName);
+                classNames.push(_.upperFirst(preciselyClazzName));
                 if (isEditPage) {
                     const original = node.getOriginalClassNameOfLessUsage(type);
                     const extendStmt = (type === 'default' && node.isTextFieldView()) ? `BaseEditorTextField` : `${original.value}`
@@ -6862,7 +6862,7 @@ class AppBuilder extends ComponentBuilder {
         generator.needSignature(false);
         generator.disableDefaultImports();
         await generator.persist();
-        await Util.persistJsonFilePrettier(Util.joinRespectingDot(this.projectPlatformPath, 'classNameMap.json'), Util.generateUniqueCodeMap(classNames));
+        await Util.persistJsonFilePrettier(Util.joinRespectingDot(this.genRootPath, 'classNameMap.json'), Util.generateUniqueCodeMap(classNames));
         await Util.deleteFileOrFolder(Util.joinRespectingDot(this.projectPlatformSourcePath, 'less', 'index.js'));
         await this.appendMustacheFile('less.index.mustache', Util.persistByPath(Util.joinRespectingDot(this.genSourcePath, 'less', 'index.js')));
         Util.appendInfo(`persist ./less/index.js succeed`);

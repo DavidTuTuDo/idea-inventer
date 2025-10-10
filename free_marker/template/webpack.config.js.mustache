@@ -14,13 +14,22 @@ const enableSourceMap = false;
 
 // 建立一個給 string-replace-loader 使用的替換規則陣列
 const replacements = [];
+// \b (Word Boundary) 確保只匹配完整的字詞
 for (const [longName, shortName] of Object.entries(classNameMap)) {
-  replacements.push({
-    search: longName,
+    const searchRegex = new RegExp('\\b' + longName + '\\b', 'g');
+    replacements.push({
+    search: searchRegex,
     replace: shortName,
     flags: 'g',
   });
 }
+
+const stringReplaceLoader = {
+    loader: 'string-replace-loader',
+    options: {
+        multiple: replacements
+    }
+};
 
 const config = {
   entry: {
@@ -44,13 +53,7 @@ const config = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: [
-          {
-            loader: 'string-replace-loader',
-            options: {
-              // 使用 multiple 選項來傳遞所有替換規則
-              multiple: replacements
-            }
-          },
+          stringReplaceLoader, // <<<<<<<<<<< JS/JSX 替換
           {
             loader: "babel-loader",
             options: {
@@ -79,12 +82,14 @@ const config = {
                   },
                 },
               },
+              stringReplaceLoader, // <<<<<<<<<<< CSS Module 替換
             ],
           },
           {
             use: [
               isProd ? MiniCssExtractPlugin.loader : "style-loader",
               "css-loader",
+              stringReplaceLoader, // <<<<<<<<<<< 一般 CSS 替換
             ],
           },
         ],
