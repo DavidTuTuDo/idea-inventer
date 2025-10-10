@@ -6807,7 +6807,7 @@ class AppBuilder extends ComponentBuilder {
 
     async buildAllNewBrandLessFiles(classNameInfos) {
         const self = this;
-
+        const classNames = [];
         function getLessLibs() {
             return Util.findFilePathBy(Util.joinRespectingDot(self.freeMarkerRootPath, 'less', 'libs'),
                 (file) => _.isEqual(file.extension, 'less'))
@@ -6835,7 +6835,7 @@ class AppBuilder extends ComponentBuilder {
 
                 const preciselyClazzName = node.getClassNameOfLessUsage(className.type);
                 const existObj = existedLessAttributeObj[preciselyClazzName]; /** 從file裡面找出定義過的屬性敘述*/
-
+                classNames.push(preciselyClazzName);
                 if (isEditPage) {
                     const original = node.getOriginalClassNameOfLessUsage(type);
                     const extendStmt = (type === 'default' && node.isTextFieldView()) ? `BaseEditorTextField` : `${original.value}`
@@ -6862,98 +6862,10 @@ class AppBuilder extends ComponentBuilder {
         generator.needSignature(false);
         generator.disableDefaultImports();
         await generator.persist();
-
+        await Util.persistJsonFilePrettier(Util.joinRespectingDot(this.projectPlatformPath, 'classNameMap.json'), Util.generateUniqueCodeMap(classNames));
         await Util.deleteFileOrFolder(Util.joinRespectingDot(this.projectPlatformSourcePath, 'less', 'index.js'));
         await this.appendMustacheFile('less.index.mustache', Util.persistByPath(Util.joinRespectingDot(this.genSourcePath, 'less', 'index.js')));
         Util.appendInfo(`persist ./less/index.js succeed`);
-    }
-
-    /**
-     * @deprecate
-     * {[...{component,names}], srcPath}
-     * srcPath 就是 keep file 的根目錄
-     * */
-
-    async buildLessFile(classNameInfos) {
-        /** 先取得 libs file list*/
-        const libs = Util.findFilePathBy(Util.joinRespectingDot(this.freeMarkerRootPath, 'less', 'libs'),
-            (file) => _.isEqual(file.extension, 'less'))
-            .map((file) => file.fileNameExtension);
-
-
-        /** 先把舊的整理過, 除掉 comment的字樣line */
-        const sign = `/** style */`;
-        const types = [`app`, `common`, `mobile`];
-        for (const type of types) {
-            const srcLessPath = Util.joinRespectingDot(this.projectPlatformSourcePath, `less`, `${type}.less`)
-            const lessAttributesFromSrc = [];
-            if (fs.existsSync(srcLessPath)) {
-                const stub = Util.getFileContextInRaw(srcLessPath).split('\n');
-                _.remove(stub, (each) => (
-                    _.startsWith(each, '/** ') ||
-                    _.isEqual(each.trim(), '') ||
-                    _.startsWith(each, '@import')))
-                lessAttributesFromSrc.push(...(stub.join('').split('}')))
-                /** 移除掉最後一個,因為split */
-                lessAttributesFromSrc.pop();
-            }
-
-            /** 刪掉沒定義過less....  沒定義過的 => ' .ExamDiv { /** style */
-            _.remove(lessAttributesFromSrc, (each) => (_.isEqual(each.split(`{`)[1].trim(), sign)))
-
-            const generator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, 'less', `${type}.less`), this.nodeOfAncestor);
-            for (const info of classNameInfos) {
-                const isEditPage = info.component.isPreciselyEditableComponent();
-                generator.appendInClassTail(`/** following for ${info.component.getName()} ${isEditPage ? 'editor' : ''} component used  */\n\n`);
-                for (const className of info.classNames) {
-                    /** 注意!! 是用 remove,會mutate 原本的 array */
-                    const node = className.node;
-                    const type = className.type;
-                    const name = node.getClassNameOfLessUsage(type);
-                    /** 從file裡面找出定義過的屬性敘述*/
-                    const srcAttribute = _.remove(lessAttributesFromSrc, (each) => _.startsWith(each, `.${name}`))
-
-                    if (srcAttribute.length > 1)
-                        throw new ERROR(7003, `origin ==> ${Util.deepFlat(srcAttribute)}`)
-
-                    const undefinedInFile = _.isEmpty(srcAttribute);
-
-                    if (isEditPage) {
-                        if (type === 'default' && node.isTextFieldView()) {
-                            const extendStmt = `:extend(.BaseEditorTextField all)`;
-                            generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
-                        } else {
-                            const original = node.getOriginalClassNameOfLessUsage(type);
-                            if (original.exists) {
-                                const extendStmt = `:extend(.${original.value} all)`;
-                                generator.appendInClassTail(undefinedInFile ? `.${name}${extendStmt} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
-                            }
-                        }
-                    } else
-                        generator.appendInClassTail(_.isEmpty(srcAttribute) ? `.${name} { ${sign} }\n\n` : `${srcAttribute[0]}}\n\n`);
-                }
-            }
-
-            if (lessAttributesFromSrc.length > 0) {
-                generator.appendInClassTail(`/** ======== following for homeless ========= */\n\n`);
-                lessAttributesFromSrc.map(each => generator.appendInClassTail(`${each} }\n\n`))
-            }
-
-            for (const nameExtension of libs) {
-                generator.appendInClassHead(`@import "./libs/${nameExtension}";`)
-            }
-
-            generator.needSignature(false);
-            generator.disableDefaultImports();
-            await generator.persist();
-
-            if (!fs.existsSync(Util.joinRespectingDot(this.projectPlatformSourcePath, 'less', 'index.js'))) {
-                await this.appendMustacheFile('less.index.mustache',
-                    Util.persistByPath(Util.joinRespectingDot(this.genSourcePath, 'less', 'index.js'))
-                );
-                Util.appendInfo(`persist ./less/index.js succeed`);
-            }
-        }
     }
 
     /** 拿到[... '@mobile' ,'@table'] 的陣列 */

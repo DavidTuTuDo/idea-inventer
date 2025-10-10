@@ -5,9 +5,22 @@ const TerserPlugin = require("terser-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
+// 載入我們在步驟 1 中生成的映射表
+const classNameMap = require('./classNameMap.json');
+
 const isProd = process.env.typeOfEnv === "prod";
 const enableOfBundleSize = false;
 const enableSourceMap = false;
+
+// 建立一個給 string-replace-loader 使用的替換規則陣列
+const replacements = [];
+for (const [longName, shortName] of Object.entries(classNameMap)) {
+  replacements.push({
+    search: longName,
+    replace: shortName,
+    flags: 'g',
+  });
+}
 
 const config = {
   entry: {
@@ -30,17 +43,26 @@ const config = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: {
-          loader: "babel-loader",
-          options: {
-            presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-react"],
-            plugins: [
-              ["@babel/plugin-proposal-decorators", { legacy: true }],
-              "@babel/plugin-transform-class-properties",
-              "@babel/plugin-transform-runtime",
-            ],
+        use: [
+          {
+            loader: 'string-replace-loader',
+            options: {
+              // 使用 multiple 選項來傳遞所有替換規則
+              multiple: replacements
+            }
           },
-        },
+          {
+            loader: "babel-loader",
+            options: {
+              presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-react"],
+              plugins: [
+                ["@babel/plugin-proposal-decorators", { legacy: true }],
+                "@babel/plugin-transform-class-properties",
+                "@babel/plugin-transform-runtime",
+              ],
+            },
+          },
+        ],
       },
       {
         test: /\.css$/,

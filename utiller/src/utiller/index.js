@@ -3211,6 +3211,85 @@ class Utiller {
         return _.round(parsed / 100, 10);
     };
 
+    /**
+     * 🧩 產生合法變數命名的唯一亂碼代碼對照表（支援自訂長度）
+     *
+     * 將輸入的字串陣列轉換成：
+     * 1️⃣ 合法變數命名 key（以 _.camelCase() 處理）
+     * 2️⃣ 對應唯一亂碼代碼（預設長度 3，第一字母必須為英文字母）
+     * 3️⃣ 若 key 重複，拋出錯誤並指出是哪個 key 重複
+     *
+     * @param {string[]} array - 要轉換的字串陣列
+     * @param {number} [length=3] - 代碼長度（預設為 3，最小為 2）
+     * @returns {Object} 回傳一個 JSON 物件，例如：
+     *                   { mainDiv: 'f2x', mainBanner: 'k9A' }
+     *
+     * 📘 範例：
+     * ```js
+     * const arr = ["MainDiv", "MainPromotedBannerSwiperSlide", "MainPromotedBannerSwiperList"];
+     *
+     * console.log(generateUniqueCodeMap(arr)); // 預設長度3
+     * // => { mainDiv: 'a9F', mainPromotedBannerSwiperSlide: 'm2q', mainPromotedBannerSwiperList: 'z5K' }
+     *
+     * console.log(generateUniqueCodeMap(arr, 4)); // 改為4字元
+     * // => { mainDiv: 'a9Fz', mainPromotedBannerSwiperSlide: 'm2qR', mainPromotedBannerSwiperList: 'z5K2' }
+     * ```
+     *
+     * // === 🧪 測試範例 ===
+     *     const arr = [
+     *         "MainDiv",
+     *         "MainPromotedBannerSwiperSlide",
+     *         "MainPromotedBannerSwiperList",
+     *     ];
+     *
+     *     console.log("3字元預設：", generateUniqueCodeMap(arr));
+     *     console.log("4字元代碼：", generateUniqueCodeMap(arr, 4));
+     *
+     */
+     generateUniqueCodeMap(array, length = 3) {
+        if (length < 2) {
+            throw new Error("代碼長度最少必須為 2。");
+        }
+
+        const usedCodes = new Set();
+        const usedKeys = new Set();
+
+        /**
+         * 產生合法變數代碼（指定長度亂碼）
+         * 第1字母：a-zA-Z
+         * 其餘字元：a-zA-Z0-9
+         */
+        const generateRandomCode = () => {
+            const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const chars = letters + "0123456789";
+            let code;
+
+            do {
+                // 第一個字母必須是英文
+                code = letters[Math.floor(Math.random() * letters.length)];
+                // 其餘字元隨機取
+                for (let i = 1; i < length; i++) {
+                    code += chars[Math.floor(Math.random() * chars.length)];
+                }
+            } while (usedCodes.has(code));
+
+            usedCodes.add(code);
+            return code;
+        };
+
+        return _.transform(array, (result, rawKey) => {
+            const key = _.camelCase(rawKey);
+
+            if (usedKeys.has(key)) {
+                throw new Error(`Duplicate key detected: "${key}" (原始值: "${rawKey}")`);
+            }
+
+            usedKeys.add(key);
+            result[key] = generateRandomCode();
+        }, {});
+    }
+
+
     /** ============== 排課系統公式 開始 ============== */
 
     /**
