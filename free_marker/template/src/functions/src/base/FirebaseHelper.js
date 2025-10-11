@@ -61,10 +61,13 @@ class FirebaseHelper extends BaseFirebase {
         return this.firestore().collection(path);
     }
 
-    /** firestore 的 modular api 使用原則 */
-
-    reference = (path, id) => {
-        if (_.isEqual(id, "obj")) return this.firestore().doc(path);
+    /**
+     * 有點彈性有點抽象，要硬記的function，如果id為空直，回傳collection()|反之就一定會回doc()，一定要想清楚當下情境是要collection還是doc
+     * @param asDoc 強制回傳一個doc()=>document path
+     * */
+    reference = (path, id, { asDoc = false } = {}) => {
+        if (asDoc) return _.isEmpty(id) ? this.collectionRef(path).doc() : this.collectionRef(path).doc(id); /** 用於假制一個ref 常用於transaction(ref,{...content})*/
+        if (_.isEqual(id, "asObj")) return this.firestore().doc(path); /** 用於submit object物件的設定(firestore)*/
         return Util.isUndefinedNullEmpty(id) ? this.collectionRef(path) : this.collectionRef(path).doc(id);
     };
 
@@ -614,6 +617,94 @@ class FirebaseHelper extends BaseFirebase {
             };
         }
     }
+
+    /**
+     * firebase-admin 專用
+     * 批量串行删除 Firebase Storage 中多个前缀下的所有文件，并控制并发度。
+     * @param {string[]} prefixes 路径前缀字符串数组，例如 ['dionysus/id_1/', 'dionysus/id_2/']。
+     * @param {number} [batchCount=50] 限制同时处理的前缀数量（批次大小）。
+     * @returns {Promise<Object[]>} 返回所有操作结果的状态数组（包含 status, prefix, reason/message）。
+     */
+    batchDeleteStorageByPrefixes = async (prefixes = [""], batchCount = 50) => {
+        if (!prefixes || prefixes.length === 0) {
+            console.log("batchDeleteStorageByPrefixes: 没有要处理的前缀。");
+            return [];
+        }
+
+        const BUCKET = this.storage().bucket();
+
+        /**
+         * 辅助函数：将数组分割成指定大小的块
+         */
+        const chunkArray = (array, size) => {
+            const chunked = [];
+            for (let i = 0; i < array.length; i += size) {
+                chunked.push(array.slice(i, i + size));
+            }
+            return chunked;
+        };
+
+        /**
+         * 删除单个 Storage 前缀下的所有文件，并处理错误。
+         */
+        const deleteSinglePrefix = async (prefix) => {
+            try {
+                // 使用 Google Cloud Storage 的 deleteFiles 方法批量删除文件
+                await BUCKET.deleteFiles({ prefix });
+
+                console.log(`[成功] 删除了前缀: ${prefix}`);
+                return { status: "fulfilled", prefix, message: `Deleted files under ${prefix}` };
+            } catch (error) {
+                // 捕获所有错误，包括路径下没有文件的“错误”（如果 GCS 抛出的话），
+                // 确保不中断主流程，并记录失败信息。
+                const errorMessage = error.message || String(error);
+                console.error(`[失败] 删除前缀 ${prefix} 时出错: ${errorMessage}`);
+                return { status: "rejected", prefix, reason: errorMessage };
+            }
+        };
+
+        console.log(`batchDeleteStorageByPrefixes: 开始批量删除，共 ${prefixes.length} 个前缀，批次大小: ${batchCount}`);
+
+        const prefixChunks = chunkArray(prefixes, batchCount);
+        let allResults = [];
+        let chunkIndex = 0;
+
+        // 使用 for...of 和 await 确保批次串行执行
+        for (const chunk of prefixChunks) {
+            chunkIndex++;
+            console.log(`\n--- 开始处理批次 ${chunkIndex}/${prefixChunks.length} (${chunk.length} 个任务) ---`);
+
+            // 将当前批次中的所有前缀转换为 Promise
+            const deletePromises = chunk.map((prefix) => deleteSinglePrefix(prefix));
+
+            // 使用 Promise.allSettled 并行执行当前批次的所有删除操作
+            const results = await Promise.allSettled(deletePromises);
+
+            // 收集结果。allSettled 的结果是 {status, value/reason}
+            allResults = allResults.concat(results.map((r) => r.value || r.reason));
+        }
+
+        // 统计和报告最终结果
+        const successfulDeletes = allResults.filter((r) => r.status === "fulfilled");
+        const failedDeletes = allResults.filter((r) => r.status === "rejected");
+
+        console.log(`\n========================================================`);
+        console.log(`总删除尝试: ${allResults.length}`);
+        console.log(`成功处理前缀数量: ${successfulDeletes.length}`);
+        console.log(`失败处理前缀数量: ${failedDeletes.length}`);
+
+        if (failedDeletes.length > 0) {
+            console.error("部分删除失败详情:");
+            failedDeletes.forEach((f) => {
+                console.error(` - 前缀: ${f.prefix}, 原因: ${f.reason}`);
+            });
+        } else {
+            console.log("所有前缀批次处理成功完成。");
+        }
+        console.log(`========================================================\n`);
+
+        return allResults;
+    };
 }
 
 export default new FirebaseHelper();

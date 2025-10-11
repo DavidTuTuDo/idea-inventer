@@ -4672,7 +4672,7 @@ class RemoteFunctionHandler extends BaseBuilder {
         function generateApiFunction(node, name, logicStmts = [], type, isAsync = true, uploadFile = false) {
             const preStmts = [`const self = this`];
             /** asString => 就是把 `${variable}` => '${variable}' 免得造成unknown issue */
-            const asString = Util.isOrEquals(type, "fetch batch items","batch submit parent");
+            const asString = Util.isOrEquals(type, "fetch batch items", "batch submit parent");
             preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
               `const path = ${asString ? `\'${node.getPathOfRouterString()}/\${id}\'` : `\`${node.getPathOfRouterString()}\``}`
             );
@@ -4862,7 +4862,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'item', 'doc', 'ref'),
-                        [`return this.reference(path, id)`],
+                        [`return this.reference(path, id, {asDoc:true})`],
                         `fetch item's doc ref`,
                         false,
                     )

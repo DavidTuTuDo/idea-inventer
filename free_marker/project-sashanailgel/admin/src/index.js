@@ -103,54 +103,50 @@ import fs from "fs";
         const ids = await api.fetchDocumentIdsOfBooze();
         console.log("current ids of Booze ==> ", ids);
 
-        for (const id of ids) {
-            console.log(`delete booze(id === ${id}) and it's variant`);
-            await api.deleteBoozeItem(id);
-            await api.deleteVariants(true, id);
-        }
+        await api.batchDeleteStorageByPrefixes(ids.map((id) => `dionysus/${id}/images/`));
+        /** batch delete booze/variant */
+        await api.deleteBatchBoozeVariantItems(ids);
+        /** batch delete storage */
 
         const products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
         console.log(`莎夏美學合計商品共有： `, _.size(products), ` 個`);
-        // for(const product of Util.getShuffledArrayWithLimitCount(products, 5)){
-        for (const product of products) {
-            const price = Util.findLowestValue(product.options);
-            const options = product.options;
-            options.shift(); /** 第一個都是null */
-            await api.submitVariants(
-                options.map((option) => ({
-                    id: `${_.toString(option.value)}sasha`,
-                    content: option.name,
-                    photo: option.photo,
-                    nameOfBooze: product.name,
-                    idOfBooze: product.serial,
-                    isTaskJob: false,
-                    idOfAuthor: `6tirrjZd2ESAPD7RA64pd2N1Bdf2`,
-                    allowSelfPickUp: true,
-                    quantity: option.count,
-                    price: option.price,
-                    priceB4Discount: Math.round(_.sum([option.price, _.multiply(0.3, option.price)]))
-                })),
-                product.serial
-            );
-            await api.submitBoozeItem(
-                {
-                    ...product,
-                    price,
-                    id: product.serial,
-                    category: Util.getUniqueValuesBy(product.category, "valueOfType"),
-                    rangeOfPrice: Util.getStringOfValueRange(product.options),
-                    statement: normalizeStatement(product.statement),
-                    needAddress: true,
-                    selectedTypeOfProp: 1,
-                    visibility: true,
-                    idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
-                    allowSelfPickUp: true,
-                    specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],
-                    priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
-                },
-                product.serial
-            );
-        }
+        await api.submitBatchBoozeVariantItems(
+            products.map((product) => {
+                const price = Util.findLowestValue(product.options);
+                const options = product.options;
+                options.shift();
+                return {
+                    dionysus: {
+                        ...product,
+                        price,
+                        id: product.serial,
+                        category: Util.getUniqueValuesBy(product.category, "valueOfType"),
+                        rangeOfPrice: Util.getStringOfValueRange(product.options),
+                        statement: normalizeStatement(product.statement),
+                        needAddress: true,
+                        selectedTypeOfProp: 1,
+                        visibility: true,
+                        idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
+                        allowSelfPickUp: true,
+                        specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],
+                        priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
+                    },
+                    variants: options.map((option) => ({
+                        id: `${_.toString(option.value)}sasha`,
+                        content: option.name,
+                        photo: option.photo,
+                        nameOfBooze: product.name,
+                        idOfBooze: product.serial,
+                        isTaskJob: false,
+                        idOfAuthor: `6tirrjZd2ESAPD7RA64pd2N1Bdf2`,
+                        allowSelfPickUp: true,
+                        quantity: option.count,
+                        price: option.price,
+                        priceB4Discount: Math.round(_.sum([option.price, _.multiply(0.3, option.price)]))
+                    }))
+                };
+            })
+        );
     }
 
     async function uploadCatalogs() {
@@ -201,7 +197,7 @@ import fs from "fs";
         ]);
     }
 
-    await uploadPaymentOptions();
+    // await uploadPaymentOptions();
     // await uploadProducts();
     // await uploadCatalogs();
 

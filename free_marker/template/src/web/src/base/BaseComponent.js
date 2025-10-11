@@ -614,7 +614,7 @@ class BaseComponent extends MuiComponent {
     /** imageDialogRef只會實作在 '非dialog的' component */
     openImageDialog = (imgUrl) => {
         const component = this.getComponentInstance();
-        component.imageDialogRef.current.open({ href: imgUrl });
+        component?.imageDialogRef?.current?.open({ href: imgUrl });
     };
 
     /** 如果頁面有聽callback, 統一用這個method */

@@ -11,6 +11,10 @@ class CommonRemoteApi {
         return firebase;
     }
 
+    batchDeleteStorageByPrefixes = async (prefixes = [""], batchCount = 50) => {
+        return firebase.batchDeleteStorageByPrefixes(prefixes, batchCount);
+    };
+
     normalizeTimestamp(obj) {
         if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis();
         else return obj;
@@ -509,17 +513,13 @@ class CommonRemoteApi {
         }
     }
 
-    async firestoreDocRef(path, id) {
-        return firebase.reference(path, id);
-    }
-
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
     async uploadStorageFile(blob, folder = "public", fileNameExtension) {
         return await firebase.uploadStorageFile(blob, folder, fileNameExtension);
     }
 
-    reference(path, id) {
-        return firebase.reference(path, id);
+    reference(path, id, config = { asDoc: false }) {
+        return firebase.reference(path, id, config);
     }
 
     async fetchCountOfSpecificCondition(path, ...conditions) {
