@@ -3175,13 +3175,11 @@ class ClassGenerator {
     }
 
     /**
-     *
-     * @param function {name:'doSomeThing',async:false}
-     * @param params, string[]
-     * @param macros, string[]
-     * @param comments, string[]
-     * @param contents, triple dot
-     *
+     * @param func {name:'doSomeThing',async:false}
+     * @param params string[]
+     * @param macros string[]
+     * @param comments string[]
+     * @param contents triple dot
      */
     getFunctionContent(func, params = [], macros = [], comments = [], ...contents) {
         /** 應該要檢查file 沒有class的話, 要跳出Error提示 */
@@ -3193,13 +3191,17 @@ class ClassGenerator {
         stmt.push(`\n`);
 
         for (const comment of comments) {
-            stmt.push(`\n`);
-            stmt.push(`/** ${comment} */`);
+            if (!_.isEmpty(comment)) {
+                stmt.push(`\n`);
+                stmt.push(`/** ${comment} */`);
+            }
         }
 
         for (const m of macros) {
-            stmt.push(`\n`);
-            stmt.push(`@${m}`);
+            if (!_.isEmpty(m)) {
+                stmt.push(`\n`);
+                stmt.push(`@${m}`);
+            }
         }
         stmt.push(`\n`);
 
@@ -3220,8 +3222,10 @@ class ClassGenerator {
         }
 
         for (let content of contents) {
-            stmt.push(`\n`);
-            stmt.push(`${content}`);
+            if (!_.isEmpty(content)) {
+                stmt.push(`\n`);
+                stmt.push(`${content}`);
+            }
         }
 
         stmt.push(`\n`);
@@ -8091,7 +8095,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     }
 
     stmtsOfClickCaution = [`event.stopPropagation()`,
-        `if(!self.getStore().isInitialFetchCompleted()) return self.showWarningSnackMessage(i18n.location().toastOfPageIsLoading)`];
+        `if(self.getStore().isGlobalLoading()) return self.showWarningSnackMessage(i18n.location().toastOfPageIsLoading)`];
 
     /* typeOfView 可以是 default | list | wrap */
     enrichTextFieldBehavior(node, typeOfView = 'default') {
@@ -8263,10 +8267,13 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         return content;
     }
 
-    getStmtOfEventInValidate(node, functionName) {
+    /**
+     * @param onChangeStmtsOnly 因為這個function有可能會append到onClick的stmts，但是onChange也會單獨用到，避免重複邏輯被寫在一起(this.stmtsOfClickCaution)，這個tag
+     * */
+    getStmtOfEventInValidate(node, functionName,onChangeStmtsOnly = false) {
         const stmts = [];
         stmts.push(`objectOfParam.view = event;`);
-
+        if (onChangeStmtsOnly) stmts.push(...this.stmtsOfClickCaution);
         if (node.isAttribute() && !node.disableOnChangeSetter) {
             let paramStmt = '';
             if (node.isSwitchView()) {
@@ -8489,9 +8496,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
             if (node.isImageView()) {
-                if (node.needImageDialog) {
-                    node.appendViewProps({onClick: `###(param) => this.openImageDialog(${node.getName()})`})
-                }
+                node.appendViewProps({ onClick: `###(param) => self.openImageDialog(${node.getName()})` });
             }
 
             if (node.isCheckboxView()) {
@@ -8798,7 +8803,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             const funcName = node.isSimpleSelected() ? node.getFunctionNameOfOnSelectedChange() : node.getFunctionNameOfOnChanged();
             appendPropsOfNode(node, node.needOnChangeBehavior,
-                [{onChange: `###(event, value) => {${this.getStmtOfEventInValidate(node, funcName)}}`}],
+                [{onChange: `###(event, value) => {${this.getStmtOfEventInValidate(node, funcName, true)}}`}],
                 [{
                     functionName: funcName,
                     params: node.isSimpleSelected() ? ["value", `param`] : ["param"],
@@ -8928,8 +8933,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 loginOnly: node.hasLoginRequiredDialog(),
             });
         }
-        const onClickStmts = [];
-        const onDeleteStmts = [];
+        const onClickStmts = [`objectOfParam.view = event;`, ...this.stmtsOfClickCaution];
+        const onDeleteStmts = [`objectOfParam.view = event;`, ...this.stmtsOfClickCaution];
         if (node.hasLoginRequiredDialog()) {
             onClickStmts.push(
                 `if(!UserInfoRef.isLoginWithSucceed()) {
@@ -8938,14 +8943,14 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     }`)
         }
         if (node.hasConfirmDialog()) {
-            const stmts = [`objectOfParam.view = event;`, ...this.stmtsOfClickCaution, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+            const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
             node.isAlertDialog4Deleted() ? onDeleteStmts.push(...stmts) : onClickStmts.push(...stmts);
         } else if (node.isTabItemView()) {
             onClickStmts.push(`objectOfParam.changed = !_.isEqual(self.getStore().getValueOf${_.upperFirst(node.getName())}ClickedTab(), ${node.getName()}.getValue()); /** tab是否有改變，還點擊同一個 */`)
             onClickStmts.push(`self.getStore().setValueOf${_.upperFirst(node.getName())}ClickedTab(${node.getName()}.getValue())`)
             onClickStmts.push(`${this.getStmtOfEventInValidate(node, functionNameOfClicked)}`)
         } else if (node.hasCustomViewDialog()) {
-            const stmts = [...this.stmtsOfClickCaution, `${node.getFieldNameOfAlertDialog()}.current.open();`]
+            const stmts = [`${node.getFieldNameOfAlertDialog()}.current.open();`]
             node.isAlertDialog4Deleted() ? onDeleteStmts.push([...stmts, `self.${node.getFunctionNameOfDeleted()}(objectOfParam)`]) :
                 onClickStmts.push(...stmts, `self.${functionNameOfClicked}(objectOfParam)`);
         } else if (node.hasAlertMenu()) {
@@ -9820,7 +9825,6 @@ if (configerer.DEBUG_MODE) {
 
             if (_.isEmpty(result.indexes))
                 return Util.appendInfo(`489498444 get error of input => ${result}`);
-
 
             await Util.persistJsonFilePrettier(FILENAME_OF_LATEST_REPLY, result, true);
             const indexes = result.indexes.split('').map((each) => _.toNumber(each));

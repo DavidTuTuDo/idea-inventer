@@ -49,10 +49,10 @@ class BaseStore extends ClientRemoteApi {
     messageOfListIsEmpty = "目前遠端沒有資料";
 
     @observable
-    globalLoadingState = false;
+    overallLoading = false;
 
     @observable
-    globalLoadingTip = "正在載入中．．．";
+    overallLoadingTip = "正在載入中．．．";
 
     parentNode;
 
@@ -131,10 +131,6 @@ class BaseStore extends ClientRemoteApi {
         return !this.isInitialFetchCompleted() && !isLoadingOrError;
     }
 
-    isFetchCompleted() {
-        return this.initialFetchCompleted;
-    }
-
     isErrorState() {
         return _.isEqual(this.state, "error");
     }
@@ -201,6 +197,7 @@ class BaseStore extends ClientRemoteApi {
     @action
     setState(state) {
         if (Util.isOrEquals(state, "loading", "stable", "error")) {
+            Util.appendInfo(`${this.getComponent(true)?.getComponentName() ?? "[not ready]"} state changed => '${this.state}'`);
             this.state = state;
         } else {
             Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);
@@ -215,8 +212,8 @@ class BaseStore extends ClientRemoteApi {
         return _.isEqual(this.state, "loading");
     }
 
-    getGlobalLoadingState() {
-        return this.globalLoadingState;
+    isOverallLoading() {
+        return this.overallLoading;
     }
 
     @action
@@ -276,13 +273,13 @@ class BaseStore extends ClientRemoteApi {
     }
 
     @action
-    setGlobalLoading(loading, string) {
-        this.globalLoadingState = loading;
-        this.globalLoadingTip = string;
+    setOverallLoadingStatus(loading, string) {
+        this.overallLoading = loading;
+        this.overallLoadingTip = string;
     }
 
-    getGlobalLoadingTip() {
-        return this.globalLoadingTip;
+    getTipOfOverallLoading() {
+        return this.overallLoadingTip;
     }
 
     getSelectorParam() {

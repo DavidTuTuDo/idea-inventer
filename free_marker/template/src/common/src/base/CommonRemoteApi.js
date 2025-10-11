@@ -186,6 +186,18 @@ class CommonRemoteApi {
         };
     }
 
+    async upsertItem(path, item, id) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start upsert item => path:/${path}/${id}`);
+        await firebase.upsertDocument(path, item, id);
+        Util.appendInfo(`${uid} succeed upsert item => path:/${path}/${id}`);
+        return {
+            succeed: true,
+            message: `upsert path:${path}/${id} succeed`,
+            value: item
+        };
+    }
+
     /** firestore transaction 的呼叫入口*/
     async runTransaction(asyncTask = async (behavior) => true) {
         return await firebase.transaction(asyncTask);
@@ -324,6 +336,16 @@ class CommonRemoteApi {
         Util.appendInfo(`${uid} start submit object => ${path}`);
         const object = await firebase.submitDocument(path, commitment, "obj");
         Util.appendInfo(`${uid} succeed submit object => ${path}`);
+        return object;
+    }
+
+    async upsertObject(path, content) {
+        const uid = Util.getRandomHashV2(10);
+        const commitment = content;
+        path = this.getNormalizePathOfObjectApi(path);
+        Util.appendInfo(`${uid} start upsert object => ${path}`);
+        const object = await firebase.upsertDocument(path, commitment, "obj");
+        Util.appendInfo(`${uid} succeed upsert object => ${path}`);
         return object;
     }
 

@@ -304,7 +304,7 @@ class BaseComponent extends MuiComponent {
 
     renderLoadingView() {
         if (this.isDialogComponent()) return null;
-        if (this.getStore().state === "loading") {
+        if (this.getStore().isGlobalLoading()) {
             return (
                 <div className={"BaseLoadingViewDiv"}>
                     <LinearProgress className={`BaseLoadingLinearProgress`} />
@@ -353,8 +353,8 @@ class BaseComponent extends MuiComponent {
         this.getLoginDialogRef().open();
     };
 
-    renderViewByStatus() {
-        switch (this.getStore().state) {
+    renderViewByStatus = () => {
+        switch (this.getStore().getState()) {
             case "stable":
                 return this.renderView();
             case "error":
@@ -362,7 +362,7 @@ class BaseComponent extends MuiComponent {
             default:
                 return this.renderView();
         }
-    }
+    };
 
     onGoHomeClicked = (viewParam) => {
         Router.routeToHomePage(this.getComponentInstance());
@@ -416,7 +416,7 @@ class BaseComponent extends MuiComponent {
         const self = this;
         return (
             <div className={"RootViewDiv"} style={{ ...this.style, paddingTop: (self.getStore().hasAppBar() ? 8 : 0) + self.getStore().getAppBarHeight() }}>
-                {self.renderGlobalLoadingView()}
+                {self.renderOverallLoadingView()}
 
                 <div className={"ComponentViewDiv"} style={{ ...this.componentStyle }}>
                     {self.renderViewByStatus()}
@@ -556,17 +556,17 @@ class BaseComponent extends MuiComponent {
         this.enableFileSelectView(accepts, multiple);
     }
 
-    renderGlobalLoadingView() {
+    renderOverallLoadingView() {
         if (this.isNavigator()) {
             return undefined;
         }
 
         return (
-            <Backdrop open={this.getStore().getGlobalLoadingState()} className={"BaseComponentGlobalLoadingRootBackdrop"}>
+            <Backdrop open={this.getStore().isOverallLoading()} className={"BaseComponentGlobalLoadingRootBackdrop"}>
                 <div className={"BaseComponentGlobalLoadingDiv"}>
                     <CircularProgress />
 
-                    <Typography className={"BaseComponentGlobalLoadingTypography"}>{this.getStore().getGlobalLoadingTip()}</Typography>
+                    <Typography className={"BaseComponentGlobalLoadingTypography"}>{this.getStore().getTipOfOverallLoading()}</Typography>
                 </div>
             </Backdrop>
         );
@@ -595,7 +595,7 @@ class BaseComponent extends MuiComponent {
     }
 
     setGlobalLoadingViewVisibility(visibility = true, loadingStringTip = "正在載入中") {
-        this.getStore().setGlobalLoading(visibility, visibility ? loadingStringTip : ``);
+        this.getStore().setOverallLoadingStatus(visibility, visibility ? loadingStringTip : ``);
     }
 
     renderImageDialog = () => {

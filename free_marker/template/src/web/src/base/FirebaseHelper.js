@@ -165,6 +165,15 @@ class FirebaseHelper extends BaseFirebase {
         return { ...item, id: !hasDocumentID ? docRef.id : id, exists: true };
     };
 
+    async upsertDocument(path, data, id) {
+        // 使用您專案中既有的檢查函式
+        if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, "upsertDocument 需要一個明確的 id");
+        // 使用您專案中既有的 reference 函式來取得文件參考
+        const docRef = this.reference(path, id);
+        // 使用 { merge: true } 選項來實現 "upsert"，並讓錯誤自然向上拋出
+        await setDoc(docRef, data, { merge: true });
+    }
+
     updateDocument = async (path, item = {}, id) => {
         if (Util.isUndefinedNullEmpty(id)) throw new ERROR(9999, `5987864 updateDocument()的id不能為空值`);
         return await updateDoc(this.reference(path, id), item);
@@ -231,7 +240,6 @@ class FirebaseHelper extends BaseFirebase {
 
     /**
      * 1. this.updateDocuments(path,{verified:true},{type:'where',params:['age','>','12']})
-     *
      * 2. this.updateDocuments(path,[...{ id:'sdjaoisdosa',verified:true },{ id:'sdjaoisfsdfdsfs',hieght:120 }]
      */
     updateDocuments = async (path, items, ...conditions) => {
