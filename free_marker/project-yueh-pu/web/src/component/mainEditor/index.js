@@ -14,8 +14,6 @@ import Router from "../../router";
 import Cookie from "../../cookie";
 import BaseEditorComponent from "../../base/BaseEditorComponent";
 
-@inject("main")
-@observer
 class MainEditorComponent extends BaseMainEditorComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

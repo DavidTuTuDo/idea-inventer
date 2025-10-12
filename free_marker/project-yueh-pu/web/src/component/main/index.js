@@ -7,8 +7,6 @@ import _ from "lodash";
 import Router from "../../router";
 import PortfolioRhythmStore from "../../store/portfolioRhythm";
 
-@inject("main")
-@observer
 class MainComponent extends BaseMainComponent {
     constructor(props) {
         super(props);

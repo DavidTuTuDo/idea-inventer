@@ -5,8 +5,6 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -139,8 +137,6 @@ class MobileStyle {
 
     NavigatorDrawerDrawer = {};
 
-    NavigatorToolBarTipOfLoadingCircularProgress = {};
-
     NavigatorToolBarAccountIconAccountCircle = {};
 
     NavigatorToolBarAccountReactFragmentWrap = {};
@@ -150,6 +146,8 @@ class MobileStyle {
     NavigatorToolBarLoginIconLogin = {};
 
     NavigatorToolBarLoginIconButton = {};
+
+    NavigatorToolBarTipOfLoadingCircularProgress = {};
 
     NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
 

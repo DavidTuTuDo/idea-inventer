@@ -6,8 +6,6 @@ import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import UserInfoRef from "../../base/BaseUserInfo";
 
-@inject("navigator")
-@observer
 class NavigatorComponent extends ModularizedNavigatorComponent {
     gotoPageByContent = (keyword) => {
         switch (keyword.type) {
@@ -26,11 +24,6 @@ class NavigatorComponent extends ModularizedNavigatorComponent {
 
     onSearchPressed(content) {
         const inputOfComplete = this.getStore().getInputOfComplete();
-        if (!UserInfoRef.isLoginWithSucceed()) {
-            this.showWarningSnackMessage(`請IG詢問 明悅 如何開通搜尋功能`);
-            return;
-        }
-
         if (_.isObject(content) && content.type) {
             this.gotoPageByContent.call(this, content);
         } else if (!Util.isUndefinedNullEmpty(content)) {

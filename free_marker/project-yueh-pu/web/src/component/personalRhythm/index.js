@@ -6,8 +6,6 @@ import { utiller as Util } from "utiller";
 import { observer } from "mobx-react";
 import Router from "../../router";
 
-@inject("personalRhythm")
-@observer
 class PersonalRhythmComponent extends BasePersonalRhythmComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

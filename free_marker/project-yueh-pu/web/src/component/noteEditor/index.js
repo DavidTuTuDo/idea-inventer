@@ -2,8 +2,6 @@ import { inject } from "mobx-react";
 import BaseNoteEditorComponent from "./BaseNoteEditorComponent";
 import { observer } from "mobx-react";
 
-@inject("noteEditor")
-@observer
 class NoteEditorComponent extends BaseNoteEditorComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

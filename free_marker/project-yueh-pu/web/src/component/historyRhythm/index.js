@@ -3,8 +3,6 @@ import { observer } from "mobx-react";
 import { inject } from "mobx-react";
 import BaseHistoryRhythmComponent from "./BaseHistoryRhythmComponent";
 
-@inject("historyRhythm")
-@observer
 class HistoryRhythmComponent extends BaseHistoryRhythmComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

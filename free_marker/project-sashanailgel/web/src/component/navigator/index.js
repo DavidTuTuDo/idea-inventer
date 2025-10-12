@@ -1,14 +1,10 @@
 const edit = true;
 
-import { observer } from "mobx-react";
-import { inject } from "mobx-react";
 import ModularizedNavigatorComponent from "./ModularizedNavigatorComponent";
 import { utiller as Util } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
 
-@inject("navigator")
-@observer
 class NavigatorComponent extends ModularizedNavigatorComponent {
     /** -------------------- fields -------------------- **/
 

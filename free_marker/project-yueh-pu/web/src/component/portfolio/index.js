@@ -3,8 +3,6 @@ import BasePortfolioComponent from "./BasePortfolioComponent";
 import { observer } from "mobx-react";
 import Router from "../../router";
 
-@inject("portfolio")
-@observer
 class PortfolioComponent extends BasePortfolioComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

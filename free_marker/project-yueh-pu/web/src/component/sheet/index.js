@@ -9,8 +9,6 @@ import React from "react";
 import UserInfoRef from "../../base/BaseUserInfo";
 import Router from "../../router";
 
-@inject("sheet")
-@observer
 class SheetComponent extends BaseSheetComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

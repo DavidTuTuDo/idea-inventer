@@ -166,7 +166,7 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
     }
 
     getInjectStyleOfNavigatorTipOfLoadingCircularProgress(navigator) {
-        return Util.getVisibleOrNone(UserInfo.isAuthProcessing(), true);
+        return Util.getVisibleOrNone(navigator.getWhetherKeywordWasFetching() || UserInfo.isAuthProcessing(), true);
     }
 
     onNavigatorCartieIconButtonClicked(param) {

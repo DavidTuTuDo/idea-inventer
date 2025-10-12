@@ -8,8 +8,6 @@ import UserInfo from "../../base/BaseUserInfo";
 import Router from "../../router";
 import { isMobile, isTablet } from "react-device-detect";
 
-@inject("chordiventor")
-@observer
 class ChordiventorComponent extends BaseChordiventorComponent {
     constructor(props) {
         super(props);

@@ -4,6 +4,7 @@ import _ from "lodash";
 import { makeObservable, action, observable } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
 import UserInfo from "../../base/BaseUserInfo";
+import { utiller as Util } from "utiller";
 
 class ModularizedNavigatorStore extends BaseNavigatorStore {
     /** -------------------- fields -------------------- **/
@@ -41,14 +42,24 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         self.setToEditMode(editButton);
     }
 
-    async onInitialFetchCompleted(collection) {
+    onInitialFetchCompleted = async (collection) => {
         await super.onInitialFetchCompleted(collection);
-        if (_.isArray(this.getKeywords())) {
-            this.initialCompleteSuggestBehavior(_.uniqBy(this.getKeywords(), "label"));
-        }
+        this.fetchKeywordInBackgroundBehavior(this).then();
         const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
         if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
-    }
+    };
+
+    fetchKeywordInBackgroundBehavior = async (self) => {
+        try {
+            const result = await self.fetchKeywords();
+            if (_.isArray(self.getKeywords())) self.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
+            Util.appendInfo(`已拿取完關鍵字！`);
+        } catch (error) {
+            Util.appendError(`fetchKeywordInBackgroundBehavior => ${error.message}`);
+        } finally {
+            self.setWhetherKeywordWasFetching(false);
+        }
+    };
 
     /** -------------------- functions -------------------- **/
 
