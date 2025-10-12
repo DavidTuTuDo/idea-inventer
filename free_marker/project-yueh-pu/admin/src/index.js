@@ -1,22 +1,22 @@
 const edit = true;
 
 import Api from './api';
-import { databazer as Databaser, builder as Builder } from "databazer";
-import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "utiller";
+import {databazer as Databaser, builder as Builder} from "databazer";
+import {utiller as Util, pooller as InfinitePool, exceptioner as ERROR} from "utiller";
 import _ from 'lodash';
-import Listener from './listener';
+import Listener from './listener'
 import firebase from "./base/FirebaseHelper";
-import { linepayer as LinePay } from "linepayer";
+import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';
 import moment from 'moment';
-import { configerer } from "configerer";
+import {configerer} from "configerer";
 
 /** 超過這個數量就用最浪費資源的方式 */
 const THRESHOLD_OF_BATCH_MODE = 100;
 
 /** 放入關鍵字的截止點，不然一個document沒辦法塞那麼多字 */
-const THRESHOLD_OF_KEYWORD_MATCH = 850;
+const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
 (async () => {
 
@@ -116,6 +116,11 @@ const THRESHOLD_OF_KEYWORD_MATCH = 850;
 
     async function deployKeywords() {
         /** 部署Keywords*/
+
+        /** 一個doc 存所有歌名 (在背景 用.then)*/
+        /** 一個doc 存取歌名對應的 document id(在背景 用.then) **/
+        /** 尚未完成前要用一個提示 關鍵字下載中*/
+
 
         const singers = await fetchSingersContainRemoteId();
         const rhythms = await fetchTonesContainRemoteId();
@@ -295,16 +300,15 @@ const THRESHOLD_OF_KEYWORD_MATCH = 850;
             speed: info['速度'] ? _.toNumber(info['速度']) : -1,
             singer: tone.singer,
             name: tone.name,
-            uid: tone.id,
-            /** database 裡面的column id */
+            uid: tone.id, /** database 裡面的column id */
             uuidOfSong: tone.url,
             uuidOfSinger: tone.singerUrl,
             composer: parseMusicCredits(tone.composer).composer,
             lyricist: parseMusicCredits(tone.composer).lyricist,
             popularLevel: tone.popularLevel,
             idOfSinger: getSingerDocumentId(),
-            copyright: true
-        };
+            copyright: true,
+        }
 
         function getSingerDocumentId() {
             const singerUrl = tone.singerUrl;
@@ -407,12 +411,15 @@ const THRESHOLD_OF_KEYWORD_MATCH = 850;
     }
 
     async function updateSpecificGuitarPu(id = 'Wipyxry0V0CKLkPxjaS1') {
-        const records = await database.fetchRecords('TONE', new Builder().equal('idOfRemote', id).stmt());
+        const records = await database.fetchRecords('TONE', new Builder().equal('idOfRemote', id).stmt())
         const record = _.head(records);
-        const guitar = getSubmitGuitarPuItemWithNormalized(record);
-        await api.updateGuitarpuItem(guitar.id, {
-            currentContext: guitar.currentContext, originalContext: guitar.originalContext
-        });
+        const guitar = getSubmitGuitarPuItemWithNormalized(record)
+        await api.updateGuitarpuItem(guitar.id,
+            {
+                currentContext: guitar.currentContext,
+                originalContext: guitar.originalContext
+            }
+        )
     }
 
     async function updateSpecificToneOfGuitarPu(id = '2qKAHVsPo4wriTPjSR3X', tone) {
@@ -476,8 +483,8 @@ const THRESHOLD_OF_KEYWORD_MATCH = 850;
                 const fileOfC = _.find(files, (item) => _.startsWith(item.fileName, 'CAm'));
                 const fileOfG = _.find(files, (item) => _.startsWith(item.fileName, 'GEm'));
                 const prefix = `preludes/${_.trim(record.uid)}-${_.trim(record.name)}`;
-                const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `${prefix}-CAm.png`);
-                const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `${prefix}-GEm.png`);
+                const urlOfC = await uploadFileToPublicStorage(fileOfC.absolute, `${prefix}-CAm.png`)
+                const urlOfG = await uploadFileToPublicStorage(fileOfG.absolute, `${prefix}-GEm.png`)
                 /** update pathOfPreludeC/pathOfPreludeG || hasPrelude必須改成true */
 
                 await database.lazyInsertRecord('TONE', {
