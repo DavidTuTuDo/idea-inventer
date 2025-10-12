@@ -1,10 +1,6 @@
 import "./less";
 import BaseApp from "./BaseApp";
-import {
-  utiller as Util,
-  exceptioner as ERROR,
-  pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
 import BaseComponent from "./base/BaseComponent";
@@ -18,15 +14,15 @@ import ReactDOM from "react-dom";
 import { Provider } from "mobx-react";
 
 class App extends BaseApp {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 const self = new App();

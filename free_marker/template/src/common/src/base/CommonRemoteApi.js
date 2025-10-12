@@ -338,7 +338,7 @@ class CommonRemoteApi {
         const commitment = content;
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start submit object => ${path}`);
-        const object = await firebase.submitDocument(path, commitment, "obj");
+        const object = await firebase.submitDocument(path, commitment, "asObj");
         Util.appendInfo(`${uid} succeed submit object => ${path}`);
         return object;
     }
@@ -348,7 +348,7 @@ class CommonRemoteApi {
         const commitment = content;
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start upsert object => ${path}`);
-        const object = await firebase.upsertDocument(path, commitment, "obj");
+        const object = await firebase.upsertDocument(path, commitment, "asObj");
         Util.appendInfo(`${uid} succeed upsert object => ${path}`);
         return object;
     }
@@ -373,7 +373,7 @@ class CommonRemoteApi {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start fetch object => path:/${path}`);
-        const object = await firebase.fetchDocument(path, "obj");
+        const object = await firebase.fetchDocument(path, "asObj");
         Util.appendInfo(`${uid} succeed fetch object => path:/${path}`);
         return object;
     }

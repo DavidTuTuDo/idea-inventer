@@ -15,19 +15,19 @@ import { makeAutoObservable, makeObservable, action, observable, comparer, compu
 import BaseNavigatorStore from "./BaseNavigatorStore";
 
 class NavigatorStore extends ModularizedNavigatorStore {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  getTitle() {
-    return '悅譜';
-  }
+    getTitle() {
+        return "悅譜";
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default NavigatorStore;

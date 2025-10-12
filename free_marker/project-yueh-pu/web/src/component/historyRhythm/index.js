@@ -6,14 +6,14 @@ import BaseHistoryRhythmComponent from "./BaseHistoryRhythmComponent";
 @inject("historyRhythm")
 @observer
 class HistoryRhythmComponent extends BaseHistoryRhythmComponent {
-  /** -------------------- fields -------------------- **/
-  /** -------------------- functions -------------------- **/
+    /** -------------------- fields -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-    this.registerScrollToBottomJob(this.getStore().fetchNext)
-  }
+    constructor(props) {
+        super(props);
+        this.registerScrollToBottomJob(this.getStore().fetchNext);
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 export default HistoryRhythmComponent;

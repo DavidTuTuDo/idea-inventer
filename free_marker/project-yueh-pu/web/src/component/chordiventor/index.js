@@ -1,26 +1,23 @@
 const edit = true;
 
-import {inject} from "mobx-react";
+import { inject } from "mobx-react";
 import BaseChordiventorComponent from "./BaseChordiventorComponent";
-import {utiller as Util } from "utiller";
-import {observer} from "mobx-react";
-import UserInfo from '../../base/BaseUserInfo';
+import { utiller as Util } from "utiller";
+import { observer } from "mobx-react";
+import UserInfo from "../../base/BaseUserInfo";
 import Router from "../../router";
-import {isMobile,isTablet} from 'react-device-detect'
-
-
+import { isMobile, isTablet } from "react-device-detect";
 
 @inject("chordiventor")
 @observer
 class ChordiventorComponent extends BaseChordiventorComponent {
-
     constructor(props) {
         super(props);
     }
 
     getInjectPropsOfChordiventorTxtTextField(chordiventor) {
-        if (isMobile || isTablet) return {inputProps:{style: {fontSize: '0.55rem'}}}
-        else return {inputProps:{style: {fontSize: '0.82rem'}}}
+        if (isMobile || isTablet) return { inputProps: { style: { fontSize: "0.55rem" } } };
+        else return { inputProps: { style: { fontSize: "0.82rem" } } };
     }
 
     getInjectStyleOfChordiventorClearIdChip(chordiventor) {
@@ -46,9 +43,11 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     onChordiventorPersistChipClicked(param) {
         /** 按下發佈按鈕 */
         const self = this;
-        this.getStore().submitCustomPu().then((result) => {
-            if(result) Router.gotoHomePage(self);
-        });
+        this.getStore()
+            .submitCustomPu()
+            .then((result) => {
+                if (result) Router.gotoHomePage(self);
+            });
     }
 
     onChordiventorClearIdChipClicked(param) {
@@ -61,9 +60,11 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     onChordiventorCancelChipClicked(param) {
         const self = this;
-        self.getStore().persistent().then((result) => {
-            if(result) Router.gotoHomePage(self);
-        });
+        self.getStore()
+            .persistent()
+            .then((result) => {
+                if (result) Router.gotoHomePage(self);
+            });
     }
 
     onChordiventorNameTextFieldChange(param) {
@@ -75,7 +76,7 @@ class ChordiventorComponent extends BaseChordiventorComponent {
     }
 
     onChordiventorInputOfSingerTextFieldChange(param) {
-        this.getStore().invalidate({cleanIdOfSinger: true});
+        this.getStore().invalidate({ cleanIdOfSinger: true });
     }
 
     onChordiventorSpeedTextFieldChange(param) {
@@ -112,16 +113,17 @@ class ChordiventorComponent extends BaseChordiventorComponent {
 
     getInjectStyleOfChordiventorBriefDiv(chordiventor) {
         return {
-            flexDirection: this.getStore().getVertical() ? 'column' : 'row',
-            alignItems: this.getStore().getVertical() ? 'center':'flex-start'};
+            flexDirection: this.getStore().getVertical() ? "column" : "row",
+            alignItems: this.getStore().getVertical() ? "center" : "flex-start"
+        };
     }
 
     getChordiventorRotate(chordiventor) {
-        return chordiventor.getVertical()? '平行' : '垂直';
+        return chordiventor.getVertical() ? "平行" : "垂直";
     }
 
     getInjectStyleOfChordiventorRotateChip(chordiventor) {
-        return Util.getVisibleOrNone(!isMobile && !isTablet,true);
+        return Util.getVisibleOrNone(!isMobile && !isTablet, true);
     }
 
     /** -------------------- async api -------------------- **/

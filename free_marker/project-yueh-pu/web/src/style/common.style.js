@@ -3,715 +3,885 @@ import _ from "lodash";
 import libpath from "path";
 
 class CommonStyle {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** => following for infoOfCopyRightContent editor component  */
+    /** following for homeless */
 
-  InfoOfCopyRightContentEditorProjectImageTextField = {};
+    /** => following for infoOfCopyRightContent editor component  */
 
-  InfoOfCopyRightContentEditorProjectIdTextField = {};
+    InfoOfCopyRightContentEditorProjectImageTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+    InfoOfCopyRightContentEditorProjectIdTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
+    InfoOfCopyRightContentEditorProjectDescriptionStatementTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDivList = {};
 
-  InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDescriptionDiv = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField = {};
 
-  InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField = {};
 
-  InfoOfCopyRightContentEditorProjectImageCardWrap = {};
+    InfoOfCopyRightContentEditorProjectUpperAreaDiv = {};
 
-  InfoOfCopyRightContentEditorProjectImageImg = {};
+    InfoOfCopyRightContentEditorProjectImageCardWrap = {};
 
-  InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
+    InfoOfCopyRightContentEditorProjectImageImg = {};
 
-  InfoOfCopyRightContentEditorProjectRouteTextField = {};
+    InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDivList = {};
+    InfoOfCopyRightContentEditorProjectRouteTextField = {};
 
-  InfoOfCopyRightContentEditorProjectDivWrap = {};
+    InfoOfCopyRightContentEditorProjectDivList = {};
 
-  InfoOfCopyRightContentEditorProjectDiv = {};
+    InfoOfCopyRightContentEditorProjectDivWrap = {};
 
-  InfoOfCopyRightContentEditorUpperAreaDiv = {};
+    InfoOfCopyRightContentEditorProjectDiv = {};
 
-  InfoOfCopyRightContentEditorDivWrap = {};
+    InfoOfCopyRightContentEditorUpperAreaDiv = {};
 
-  InfoOfCopyRightContentEditorPaper = {};
+    InfoOfCopyRightContentEditorDivWrap = {};
 
-  /** => following for main editor component  */
+    InfoOfCopyRightContentEditorPaper = {};
 
-  MainEditorInterestingOfFunctionSubTitleTextField = {};
+    /** => following for main editor component  */
 
-  MainEditorInterestingOfFunctionTitleTextField = {};
+    MainEditorInterestingOfFunctionSubTitleTextField = {};
 
-  MainEditorInterestingOfFunctionIndexOfSequenceTextField = {};
+    MainEditorInterestingOfFunctionTitleTextField = {};
 
-  MainEditorInterestingOfFunctionXsTextField = {};
+    MainEditorInterestingOfFunctionIndexOfSequenceTextField = {};
 
-  MainEditorInterestingOfFunctionRouteTextField = {};
+    MainEditorInterestingOfFunctionXsTextField = {};
 
-  MainEditorInterestingOfFunctionIdTextField = {};
+    MainEditorInterestingOfFunctionRouteTextField = {};
 
-  MainEditorInterestingOfFunctionDivList = {};
+    MainEditorInterestingOfFunctionIdTextField = {};
 
-  MainEditorInterestingOfFunctionDivWrap = {};
+    MainEditorInterestingOfFunctionDivList = {};
 
-  MainEditorInterestingOfFunctionPaper = {};
+    MainEditorInterestingOfFunctionDivWrap = {};
 
-  MainEditorHotSingerIdTextField = {};
+    MainEditorInterestingOfFunctionPaper = {};
 
-  MainEditorHotSingerStatementTextField = {};
+    MainEditorHotSingerIdTextField = {};
 
-  MainEditorHotSingerIdOfSingerTextField = {};
+    MainEditorHotSingerStatementTextField = {};
 
-  MainEditorHotSingerIndexOfSequenceTextField = {};
+    MainEditorHotSingerIdOfSingerTextField = {};
 
-  MainEditorHotSingerNameTextField = {};
+    MainEditorHotSingerIndexOfSequenceTextField = {};
 
-  MainEditorHotSingerDivList = {};
+    MainEditorHotSingerNameTextField = {};
 
-  MainEditorHotSingerDivWrap = {};
+    MainEditorHotSingerDivList = {};
 
-  MainEditorHotSingerCard = {};
+    MainEditorHotSingerDivWrap = {};
 
-  MainEditorHotRhythmIdTextField = {};
+    MainEditorHotSingerCard = {};
 
-  MainEditorHotRhythmIdOfGuitarPuTextField = {};
+    MainEditorHotRhythmIdTextField = {};
 
-  MainEditorHotRhythmIndexOfSequenceTextField = {};
+    MainEditorHotRhythmIdOfGuitarPuTextField = {};
 
-  MainEditorHotRhythmSingerTextField = {};
+    MainEditorHotRhythmIndexOfSequenceTextField = {};
 
-  MainEditorHotRhythmNameTextField = {};
+    MainEditorHotRhythmSingerTextField = {};
 
-  MainEditorHotRhythmDivList = {};
+    MainEditorHotRhythmNameTextField = {};
 
-  MainEditorHotRhythmDivWrap = {};
+    MainEditorHotRhythmDivList = {};
 
-  MainEditorHotRhythmCard = {};
+    MainEditorHotRhythmDivWrap = {};
 
-  MainEditorPromotedBannerImageTextField = {};
+    MainEditorHotRhythmCard = {};
 
-  MainEditorPromotedBannerImageDivWrap = {};
+    MainEditorPromotedBannerImageTextField = {};
 
-  MainEditorPromotedBannerImageImg = {};
+    MainEditorPromotedBannerImageDivWrap = {};
 
-  MainEditorPromotedBannerRouteTextField = {};
+    MainEditorPromotedBannerImageImg = {};
 
-  MainEditorPromotedBannerIdTextField = {};
+    MainEditorPromotedBannerRouteTextField = {};
 
-  MainEditorPromotedBannerDivWrap = {};
+    MainEditorPromotedBannerIdTextField = {};
 
-  MainEditorPromotedBannerDiv = {};
+    MainEditorPromotedBannerDivList = {};
 
-  MainEditorPromotedBannerDivList = {};
+    MainEditorPromotedBannerDivWrap = {};
 
-  MainEditorPromotedBannerDivWrap = {};
+    MainEditorPromotedBannerDiv = {};
 
-  MainEditorPromotedBannerDiv = {};
+    MainEditorDiv = {};
 
-  MainEditorDiv = {};
+    /** => following for navigator  component  */
 
-  /** => following for navigator  component  */
+    NavigatorDrawerShortcutIconImg = {};
 
-  NavigatorDrawerShortcutIconImg = {};
+    NavigatorDrawerShortcutTitleTypography = {};
 
-  NavigatorDrawerShortcutTitleTypography = {};
+    NavigatorDrawerShortcutListItemSkeleton = {};
 
-  NavigatorDrawerShortcutListItemSkeleton = {};
+    NavigatorDrawerShortcutListList = {};
 
-  NavigatorDrawerShortcutListList = {};
+    NavigatorDrawerShortcutListItem = {};
 
-  NavigatorDrawerShortcutListItem = {};
+    NavigatorDrawerDrawer = {};
 
-  NavigatorDrawerDrawer = {};
+    NavigatorToolBarTipOfLoadingCircularProgress = {};
 
-  NavigatorToolBarTipOfLoadingCircularProgress = {};
+    NavigatorToolBarAccountIconAccountCircle = {};
 
-  NavigatorToolBarAccountIconAccountCircle = {};
+    NavigatorToolBarAccountReactFragmentWrap = {};
 
-  NavigatorToolBarAccountReactFragmentWrap = {};
+    NavigatorToolBarAccountIconButton = {};
 
-  NavigatorToolBarAccountIconButton = {};
+    NavigatorToolBarLoginIconLogin = {};
 
-  NavigatorToolBarLoginIconLogin = {};
+    NavigatorToolBarLoginIconButton = {};
 
-  NavigatorToolBarLoginIconButton = {};
+    NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
 
-  NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
+    NavigatorToolBarCartieBadgeOfCartieBadge = {};
 
-  NavigatorToolBarCartieBadgeOfCartieBadge = {};
+    NavigatorToolBarCartieIconButton = {};
 
-  NavigatorToolBarCartieIconButton = {};
+    NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
 
-  NavigatorToolBarCompleteInputOfCompleteFormWrap = {};
+    NavigatorToolBarCompleteInputOfCompleteTextField = {};
 
-  NavigatorToolBarCompleteInputOfCompleteTextField = {};
+    NavigatorToolBarCompleteAutocomplete = {};
 
-  NavigatorToolBarCompleteAutocomplete = {};
+    NavigatorToolBarTitleDivWrap = {};
 
-  NavigatorToolBarTitleDivWrap = {};
+    NavigatorToolBarTitleTypography = {};
 
-  NavigatorToolBarTitleTypography = {};
+    NavigatorToolBarMenuIconMenuRounded = {};
 
-  NavigatorToolBarMenuIconMenuRounded = {};
+    NavigatorToolBarMenuIconButton = {};
 
-  NavigatorToolBarMenuIconButton = {};
+    NavigatorToolBarAppBarWrap = {};
 
-  NavigatorToolBarAppBarWrap = {};
+    NavigatorToolBarToolbar = {};
 
-  NavigatorToolBarToolbar = {};
+    NavigatorDiv = {};
 
-  NavigatorDiv = {};
+    /** => following for infoOfCopyRightContent  component  */
 
-  /** => following for infoOfCopyRightContent  component  */
+    InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded = {};
+    InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton = {};
+    InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementDivWrap = {};
+    InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
 
-  InfoOfCopyRightContentProjectDescriptionStatementTypography = {};
+    InfoOfCopyRightContentProjectDescriptionDivList = {};
 
-  InfoOfCopyRightContentProjectDescriptionDivList = {};
+    InfoOfCopyRightContentProjectDescriptionDiv = {};
 
-  InfoOfCopyRightContentProjectDescriptionDiv = {};
+    InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTraitDivWrap = {};
+    InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTraitTypography = {};
+    InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
 
-  InfoOfCopyRightContentProjectUpperAreaTitleTypography = {};
+    InfoOfCopyRightContentProjectUpperAreaDiv = {};
 
-  InfoOfCopyRightContentProjectUpperAreaDiv = {};
+    InfoOfCopyRightContentProjectImageCardWrap = {};
 
-  InfoOfCopyRightContentProjectImageCardWrap = {};
+    InfoOfCopyRightContentProjectImageImg = {};
 
-  InfoOfCopyRightContentProjectImageImg = {};
+    InfoOfCopyRightContentProjectDivSkeleton = {};
 
-  InfoOfCopyRightContentProjectDivSkeleton = {};
+    InfoOfCopyRightContentProjectDivList = {};
 
-  InfoOfCopyRightContentProjectDivList = {};
+    InfoOfCopyRightContentProjectDiv = {};
 
-  InfoOfCopyRightContentProjectDiv = {};
+    InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
 
-  InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap = {};
+    InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
 
-  InfoOfCopyRightContentUpperAreaAdvantageStmtTypography = {};
+    InfoOfCopyRightContentUpperAreaDiv = {};
 
-  InfoOfCopyRightContentUpperAreaDiv = {};
+    InfoOfCopyRightContentDivWrap = {};
 
-  InfoOfCopyRightContentDivWrap = {};
+    InfoOfCopyRightContentPaper = {};
 
-  InfoOfCopyRightContentPaper = {};
+    /** => following for infoOfCopyRightContact  component  */
 
-  /** => following for infoOfCopyRightContact  component  */
+    InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
-  InfoOfCopyRightContactLowerAreaDetailsTypography = {};
+    InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
 
-  InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
+    InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
 
-  InfoOfCopyRightContactLowerAreaIntroduceTypography = {};
+    InfoOfCopyRightContactLowerAreaDiv = {};
 
-  InfoOfCopyRightContactLowerAreaDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
 
-  InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
+    InfoOfCopyRightContactUpperAreaContactDivWrap = {};
 
-  InfoOfCopyRightContactUpperAreaContactDivWrap = {};
+    InfoOfCopyRightContactUpperAreaContactTypography = {};
 
-  InfoOfCopyRightContactUpperAreaContactTypography = {};
+    InfoOfCopyRightContactUpperAreaDiv = {};
 
-  InfoOfCopyRightContactUpperAreaDiv = {};
+    InfoOfCopyRightContactDivWrap = {};
 
-  InfoOfCopyRightContactDivWrap = {};
+    InfoOfCopyRightContactCard = {};
 
-  InfoOfCopyRightContactCard = {};
+    /** => following for infoOfCopyRight  component  */
 
-  /** => following for infoOfCopyRight  component  */
+    InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
 
-  InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
+    InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
 
-  InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
+    InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
 
-  InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
+    InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
 
-  InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
+    InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
 
-  InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
+    InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
 
-  InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
+    InfoOfCopyRightGroupOfSocialMediaDiv = {};
 
-  InfoOfCopyRightGroupOfSocialMediaDiv = {};
+    InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
 
-  InfoOfCopyRightUpperGroupRightAreaCprtButton = {};
+    InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
 
-  InfoOfCopyRightUpperGroupRightAreaSeparatorTypography = {};
+    InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
 
-  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
+    InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
 
-  InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+    InfoOfCopyRightUpperGroupRightAreaDiv = {};
 
-  InfoOfCopyRightUpperGroupRightAreaDiv = {};
+    InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
+    InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
+    InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
+    InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaContactButton = {};
+    InfoOfCopyRightUpperGroupLeftAreaDiv = {};
 
-  InfoOfCopyRightUpperGroupLeftAreaDiv = {};
+    InfoOfCopyRightUpperGroupDiv = {};
 
-  InfoOfCopyRightUpperGroupDiv = {};
+    InfoOfCopyRightDiv = {};
 
-  InfoOfCopyRightDiv = {};
+    /** => following for hades  component  */
 
-  /** => following for account  component  */
+    HadesDiv = {};
 
-  AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap = {};
+    /** => following for account  component  */
 
-  AccountFuncAreaOfEditBtnOfJoinReaderButton = {};
+    AccountLogoutReactFragmentWrap = {};
 
-  AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap = {};
+    AccountLogoutChip = {};
 
-  AccountFuncAreaOfEditBtnOfJoinAdminButton = {};
+    AccountAreaUserSummaryTitleOfUserTypography = {};
 
-  AccountFuncAreaOfEditToEditModeButton = {};
+    AccountAreaUserSummaryAccordionSummary = {};
 
-  AccountFuncAreaOfEditLogoutReactFragmentWrap = {};
+    AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext = {};
 
-  AccountFuncAreaOfEditLogoutButton = {};
+    AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconButton = {};
 
-  AccountFuncAreaOfEditCopyUserIdButton = {};
+    AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheContentTypography = {};
 
-  AccountFuncAreaOfEditLangMenuItem = {};
+    AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheTitleTypography = {};
 
-  AccountFuncAreaOfEditLangTextFieldList = {};
+    AccountAreaUserAreaOfCleanCacheDivWrap = {};
 
-  AccountFuncAreaOfEditDiv = {};
+    AccountAreaUserAreaOfCleanCacheDiv = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography = {};
+    AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography = {};
+    AccountAreaUserAreaOfTokenArrowOfTokenIconButton = {};
 
-  AccountFuncAreaOfIdStateAreaOfIdDiv = {};
+    AccountAreaUserAreaOfTokenOptionOfTokenContentTypography = {};
 
-  AccountFuncAreaOfIdDiv = {};
+    AccountAreaUserAreaOfTokenOptionOfTokenTitleTypography = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography = {};
+    AccountAreaUserAreaOfTokenDivWrap = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography = {};
+    AccountAreaUserAreaOfTokenDiv = {};
 
-  AccountFuncAreaOfEmailStateAreaOfEmailDiv = {};
+    AccountAreaUserAccordionWrap = {};
 
-  AccountFuncAreaOfEmailDiv = {};
+    AccountAreaUserAccordionDetails = {};
 
-  AccountSpaceDiv = {};
+    AccountAreaAdminSummaryTitleOfAdminTypography = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography = {};
+    AccountAreaAdminSummaryAccordionSummary = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography = {};
+    AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext = {};
 
-  AccountFuncAreaOfNameStateAreaOfNameDiv = {};
+    AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderReactFragmentWrap = {};
 
-  AccountFuncAreaOfNameDiv = {};
+    AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconButton = {};
 
-  AccountUrlOfHeadPhotoAvatar = {};
+    AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderContentTypography = {};
 
-  AccountDivWrap = {};
+    AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderTitleTypography = {};
 
-  AccountPaper = {};
+    AccountAreaAdminAreaOfAppendReaderDivWrap = {};
 
-  /** => following for chordiventor  component  */
+    AccountAreaAdminAreaOfAppendReaderDiv = {};
 
-  ChordiventorFuncClearIdChip = {};
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconNavigateNext = {};
 
-  ChordiventorFuncClearReactFragmentWrap = {};
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorReactFragmentWrap = {};
 
-  ChordiventorFuncClearChip = {};
+    AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton = {};
 
-  ChordiventorFuncCancelChip = {};
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorContentTypography = {};
 
-  ChordiventorFuncLoadChip = {};
+    AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorTitleTypography = {};
 
-  ChordiventorFuncPersistReactFragmentWrap = {};
+    AccountAreaAdminAreaOfAppendAuthorDivWrap = {};
 
-  ChordiventorFuncPersistChip = {};
+    AccountAreaAdminAreaOfAppendAuthorDiv = {};
 
-  ChordiventorFuncDiv = {};
+    AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext = {};
 
-  ChordiventorInfoCautionTypography = {};
+    AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminReactFragmentWrap = {};
 
-  ChordiventorInfoHorizonLyricistLabelOfLyricistTypography = {};
+    AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconButton = {};
 
-  ChordiventorInfoHorizonLyricistDivWrap = {};
+    AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminContentTypography = {};
 
-  ChordiventorInfoHorizonLyricistTextField = {};
+    AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminTitleTypography = {};
 
-  ChordiventorInfoHorizonComposerLabelOfComposerTypography = {};
+    AccountAreaAdminAreaOfAppendAdminDivWrap = {};
 
-  ChordiventorInfoHorizonComposerDivWrap = {};
+    AccountAreaAdminAreaOfAppendAdminDiv = {};
 
-  ChordiventorInfoHorizonComposerTextField = {};
+    AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext = {};
 
-  ChordiventorInfoHorizonSpeedLabelOfSpeedTypography = {};
+    AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconButton = {};
 
-  ChordiventorInfoHorizonSpeedDivWrap = {};
+    AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeContentTypography = {};
 
-  ChordiventorInfoHorizonSpeedTextField = {};
+    AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeTitleTypography = {};
 
-  ChordiventorInfoHorizonDiv = {};
+    AccountAreaAdminAreaOfGoEditModeDivWrap = {};
 
-  ChordiventorInfoRowTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
+    AccountAreaAdminAreaOfGoEditModeDiv = {};
 
-  ChordiventorInfoRowTonalityOfMaleDivListWrap = {};
+    AccountAreaAdminAccordionWrap = {};
 
-  ChordiventorInfoRowTonalityOfMaleMenuItem = {};
+    AccountAreaAdminAccordionDetails = {};
 
-  ChordiventorInfoRowTonalityOfMaleTextFieldList = {};
+    AccountAreaBuySummaryTitleOfBuyTypography = {};
 
-  ChordiventorInfoRowTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
+    AccountAreaBuySummaryAccordionSummary = {};
 
-  ChordiventorInfoRowTonalityOfFemaleDivListWrap = {};
+    AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconNavigateNext = {};
 
-  ChordiventorInfoRowTonalityOfFemaleMenuItem = {};
+    AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton = {};
 
-  ChordiventorInfoRowTonalityOfFemaleTextFieldList = {};
+    AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderContentTypography = {};
 
-  ChordiventorInfoRowTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
+    AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderTitleTypography = {};
 
-  ChordiventorInfoRowTonalityOfOriginalDivListWrap = {};
+    AccountAreaBuyAreaOfListOfUserOrderDivWrap = {};
 
-  ChordiventorInfoRowTonalityOfOriginalMenuItem = {};
+    AccountAreaBuyAreaOfListOfUserOrderDiv = {};
 
-  ChordiventorInfoRowTonalityOfOriginalTextFieldList = {};
+    AccountAreaBuyAccordionWrap = {};
 
-  ChordiventorInfoRowTonalityOfContextLabelOfTonalityOfContextTypography = {};
+    AccountAreaBuyAccordionDetails = {};
 
-  ChordiventorInfoRowTonalityOfContextDivListWrap = {};
+    AccountAreaSaleSummaryTitleOfSaleTypography = {};
 
-  ChordiventorInfoRowTonalityOfContextMenuItem = {};
+    AccountAreaSaleSummaryAccordionSummary = {};
 
-  ChordiventorInfoRowTonalityOfContextTextFieldList = {};
+    AccountAreaSaleAreaOfMyReportArrowOfMyReportIconNavigateNext = {};
 
-  ChordiventorInfoRowDiv = {};
+    AccountAreaSaleAreaOfMyReportArrowOfMyReportIconButton = {};
 
-  ChordiventorInfoSingerInputOfSingerTextField = {};
+    AccountAreaSaleAreaOfMyReportOptionOfMyReportContentTypography = {};
 
-  ChordiventorInfoSingerLabelOfSingerTypography = {};
+    AccountAreaSaleAreaOfMyReportOptionOfMyReportTitleTypography = {};
 
-  ChordiventorInfoSingerDivWrap = {};
+    AccountAreaSaleAreaOfMyReportDivWrap = {};
 
-  ChordiventorInfoSingerAutocomplete = {};
+    AccountAreaSaleAreaOfMyReportDiv = {};
 
-  ChordiventorInfoNameLabelOfNameTypography = {};
+    AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext = {};
 
-  ChordiventorInfoNameDivWrap = {};
+    AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconButton = {};
 
-  ChordiventorInfoNameTextField = {};
+    AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleContentTypography = {};
 
-  ChordiventorInfoIdOfGuitarPuLabelOfIdOfGuitarPuTypography = {};
+    AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleTitleTypography = {};
 
-  ChordiventorInfoIdOfGuitarPuDivWrap = {};
+    AccountAreaSaleAreaOfMyScheduleDivWrap = {};
 
-  ChordiventorInfoIdOfGuitarPuTextField = {};
+    AccountAreaSaleAreaOfMyScheduleDiv = {};
 
-  ChordiventorInfoIdOfSingerLabelOfIdOfSingerTypography = {};
+    AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext = {};
 
-  ChordiventorInfoIdOfSingerDivWrap = {};
+    AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconButton = {};
 
-  ChordiventorInfoIdOfSingerTextField = {};
+    AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingContentTypography = {};
 
-  ChordiventorInfoDiv = {};
+    AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingTitleTypography = {};
 
-  ChordiventorBriefFrameAreaOfPreviewLabelOfTipDivWrap = {};
+    AccountAreaSaleAreaOfMarketSettingDivWrap = {};
 
-  ChordiventorBriefFrameAreaOfPreviewLabelOfTipTypography = {};
+    AccountAreaSaleAreaOfMarketSettingDiv = {};
 
-  ChordiventorBriefFrameAreaOfPreviewDiv = {};
+    AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext = {};
 
-  ChordiventorBriefFrameDiv = {};
+    AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton = {};
 
-  ChordiventorBriefTxtTextField = {};
+    AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography = {};
 
-  ChordiventorBriefDiv = {};
+    AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography = {};
 
-  ChordiventorDivWrap = {};
+    AccountAreaSaleAreaOfGoToMyBoozeDivWrap = {};
 
-  ChordiventorDiv = {};
+    AccountAreaSaleAreaOfGoToMyBoozeDiv = {};
 
-  /** => following for noteEditor  component  */
+    AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext = {};
 
-  NoteEditorFunctionAreaCancelButton = {};
+    AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconButton = {};
 
-  NoteEditorFunctionAreaSubmitButton = {};
+    AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeContentTypography = {};
 
-  NoteEditorFunctionAreaDiv = {};
+    AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography = {};
 
-  NoteEditorContentTextField = {};
+    AccountAreaSaleAreaOfAppendBoozeDivWrap = {};
 
-  NoteEditorPaper = {};
+    AccountAreaSaleAreaOfAppendBoozeDiv = {};
 
-  /** => following for inventedOfPu  component  */
+    AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext = {};
 
-  InventedOfPuDiv = {};
+    AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton = {};
 
-  /** => following for personalRhythm  component  */
+    AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderContentTypography = {};
 
-  PersonalRhythmFavoritePuExtraIconMoreHoriz = {};
+    AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderTitleTypography = {};
 
-  PersonalRhythmFavoritePuExtraReactFragmentWrap = {};
+    AccountAreaSaleAreaOfListOfAuthorOrderDivWrap = {};
 
-  PersonalRhythmFavoritePuExtraIconButton = {};
+    AccountAreaSaleAreaOfListOfAuthorOrderDiv = {};
 
-  PersonalRhythmFavoritePuNameTypography = {};
+    AccountAreaSaleAccordionWrap = {};
 
-  PersonalRhythmFavoritePuTitleDivWrap = {};
+    AccountAreaSaleAccordionDetails = {};
 
-  PersonalRhythmFavoritePuTitleTypography = {};
+    AccountAreaDiv = {};
 
-  PersonalRhythmFavoritePuCardSkeleton = {};
+    AccountBasicLangTextFieldList = {};
 
-  PersonalRhythmFavoritePuDivList = {};
+    AccountBasicLangMenuItem = {};
 
-  PersonalRhythmFavoritePuDivWrap = {};
+    AccountBasicLabelOfPropTypography = {};
 
-  PersonalRhythmFavoritePuCard = {};
+    AccountBasicDiv = {};
 
-  PersonalRhythmDiv = {};
+    AccountInfoValueOfEmailTypography = {};
 
-  /** => following for historyRhythm  component  */
+    AccountInfoValueOfNameTypography = {};
 
-  HistoryRhythmDiv = {};
+    AccountInfoUrlOfHeadPhotoAvatar = {};
 
-  /** => following for artist  component  */
+    AccountInfoDiv = {};
 
-  ArtistDiv = {};
+    AccountDivWrap = {};
 
-  /** => following for portfolio  component  */
+    AccountPaper = {};
 
-  PortfolioRhythmComposerTypography = {};
+    /** => following for chordiventor  component  */
 
-  PortfolioRhythmSingerTypography = {};
+    ChordiventorFuncClearIdChip = {};
 
-  PortfolioRhythmNameTypography = {};
+    ChordiventorFuncClearReactFragmentWrap = {};
 
-  PortfolioRhythmCardSkeleton = {};
+    ChordiventorFuncClearChip = {};
 
-  PortfolioRhythmDivList = {};
+    ChordiventorFuncCancelReactFragmentWrap = {};
 
-  PortfolioRhythmCard = {};
+    ChordiventorFuncCancelChip = {};
 
-  PortfolioDiv = {};
+    ChordiventorFuncLoadChip = {};
 
-  /** => following for sheet  component  */
+    ChordiventorFuncPersistReactFragmentWrap = {};
 
-  SheetAdjustCenterToggleWrapperNoteReactFragmentWrap = {};
+    ChordiventorFuncPersistChip = {};
 
-  SheetAdjustCenterToggleWrapperNoteButton = {};
+    ChordiventorFuncRotateChip = {};
 
-  SheetAdjustCenterToggleWrapperJoinToFavoriteLabelOfJoinToFavoriteTypography = {};
+    ChordiventorFuncDiv = {};
 
-  SheetAdjustCenterToggleWrapperJoinToFavoriteToggleOfJoinToFavoriteSwitch = {};
+    ChordiventorInfoCautionTypography = {};
 
-  SheetAdjustCenterToggleWrapperJoinToFavoriteFormControlLabel = {};
+    ChordiventorInfoHorizonLyricistLabelOfLyricistTypography = {};
 
-  SheetAdjustCenterToggleWrapperHideChordLabelOfHideChordTypography = {};
+    ChordiventorInfoHorizonLyricistDivWrap = {};
 
-  SheetAdjustCenterToggleWrapperHideChordToggleOfHideChordSwitch = {};
+    ChordiventorInfoHorizonLyricistTextField = {};
 
-  SheetAdjustCenterToggleWrapperHideChordFormControlLabel = {};
+    ChordiventorInfoHorizonComposerLabelOfComposerTypography = {};
 
-  SheetAdjustCenterToggleWrapperDiv = {};
+    ChordiventorInfoHorizonComposerDivWrap = {};
 
-  SheetAdjustCenterGenderWrapperToOriginalTonalityButton = {};
+    ChordiventorInfoHorizonComposerTextField = {};
 
-  SheetAdjustCenterGenderWrapperToFemaleTonalityButton = {};
+    ChordiventorInfoHorizonSpeedLabelOfSpeedTypography = {};
 
-  SheetAdjustCenterGenderWrapperToMaleTonalityButton = {};
+    ChordiventorInfoHorizonSpeedDivWrap = {};
 
-  SheetAdjustCenterGenderWrapperDiv = {};
+    ChordiventorInfoHorizonSpeedTextField = {};
 
-  SheetAdjustCenterFontWrapperLinkButton = {};
+    ChordiventorInfoHorizonDiv = {};
 
-  SheetAdjustCenterFontWrapperShrinkButton = {};
+    ChordiventorInfoRowTonalityOfMaleLabelOfTonalityOfMaleTypography = {};
 
-  SheetAdjustCenterFontWrapperEnlargeButton = {};
+    ChordiventorInfoRowTonalityOfMaleDivListWrap = {};
 
-  SheetAdjustCenterFontWrapperDiv = {};
+    ChordiventorInfoRowTonalityOfMaleTextFieldList = {};
 
-  SheetAdjustCenterTonalityWrapperEditorButton = {};
+    ChordiventorInfoRowTonalityOfMaleMenuItem = {};
 
-  SheetAdjustCenterTonalityWrapperFlattenButton = {};
+    ChordiventorInfoRowTonalityOfFemaleLabelOfTonalityOfFemaleTypography = {};
 
-  SheetAdjustCenterTonalityWrapperSharpenButton = {};
+    ChordiventorInfoRowTonalityOfFemaleDivListWrap = {};
 
-  SheetAdjustCenterTonalityWrapperDiv = {};
+    ChordiventorInfoRowTonalityOfFemaleTextFieldList = {};
 
-  SheetAdjustCenterPreludeWrapperPreludeOfGButton = {};
+    ChordiventorInfoRowTonalityOfFemaleMenuItem = {};
 
-  SheetAdjustCenterPreludeWrapperPreludeOfCButton = {};
+    ChordiventorInfoRowTonalityOfOriginalLabelOfTonalityOfOriginalTypography = {};
 
-  SheetAdjustCenterPreludeWrapperDiv = {};
+    ChordiventorInfoRowTonalityOfOriginalDivListWrap = {};
 
-  SheetAdjustCenterDiv = {};
+    ChordiventorInfoRowTonalityOfOriginalTextFieldList = {};
 
-  SheetAdjustSwipeableDrawerWrap = {};
+    ChordiventorInfoRowTonalityOfOriginalMenuItem = {};
 
-  SheetAdjustDiv = {};
+    ChordiventorInfoRowTonalityOfContextLabelOfTonalityOfContextTypography = {};
 
-  SheetTipOfLoadingTypography = {};
+    ChordiventorInfoRowTonalityOfContextDivListWrap = {};
 
-  SheetNameOfSongAndSingerTypography = {};
+    ChordiventorInfoRowTonalityOfContextTextFieldList = {};
 
-  SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
+    ChordiventorInfoRowTonalityOfContextMenuItem = {};
 
-  SheetGuitarpuFloatAreaMarkOfYuehImg = {};
+    ChordiventorInfoRowDiv = {};
 
-  SheetGuitarpuFloatAreaDiv = {};
+    ChordiventorInfoSingerInputOfSingerTextField = {};
 
-  SheetGuitarpuCurrentContextTypography = {};
+    ChordiventorInfoSingerLabelOfSingerTypography = {};
 
-  SheetGuitarpuImageOfPreludeImg = {};
+    ChordiventorInfoSingerDivWrap = {};
 
-  SheetGuitarpuInfoCapoLabelOfCapoTypography = {};
+    ChordiventorInfoSingerAutocomplete = {};
 
-  SheetGuitarpuInfoCapoDivWrap = {};
+    ChordiventorInfoNameLabelOfNameTypography = {};
 
-  SheetGuitarpuInfoCapoTypography = {};
+    ChordiventorInfoNameDivWrap = {};
 
-  SheetGuitarpuInfoSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+    ChordiventorInfoNameTextField = {};
 
-  SheetGuitarpuInfoSpeedOfRhythmDivWrap = {};
+    ChordiventorInfoIdOfGuitarPuLabelOfIdOfGuitarPuTypography = {};
 
-  SheetGuitarpuInfoSpeedOfRhythmTypography = {};
+    ChordiventorInfoIdOfGuitarPuDivWrap = {};
 
-  SheetGuitarpuInfoDivWrap = {};
+    ChordiventorInfoIdOfGuitarPuTextField = {};
 
-  SheetGuitarpuInfoDiv = {};
+    ChordiventorInfoIdOfSingerLabelOfIdOfSingerTypography = {};
 
-  SheetGuitarpuDivSkeleton = {};
+    ChordiventorInfoIdOfSingerDivWrap = {};
 
-  SheetGuitarpuDivList = {};
+    ChordiventorInfoIdOfSingerTextField = {};
 
-  SheetGuitarpuPaperWrap = {};
+    ChordiventorInfoDiv = {};
 
-  SheetGuitarpuDiv = {};
+    ChordiventorBriefFrameAreaOfPreviewLabelOfTipDivWrap = {};
 
-  SheetDiv = {};
+    ChordiventorBriefFrameAreaOfPreviewLabelOfTipTypography = {};
 
-  /** => following for main  component  */
+    ChordiventorBriefFrameAreaOfPreviewDiv = {};
 
-  MainInterestingOfFunctionSubTitleTypography = {};
+    ChordiventorBriefFrameDiv = {};
 
-  MainInterestingOfFunctionTitleTypography = {};
+    ChordiventorBriefTxtTextField = {};
 
-  MainInterestingOfFunctionPaperSkeleton = {};
+    ChordiventorBriefDiv = {};
 
-  MainInterestingOfFunctionGridList = {};
+    ChordiventorDivWrap = {};
 
-  MainInterestingOfFunctionGridWrap = {};
+    ChordiventorDiv = {};
 
-  MainInterestingOfFunctionPaper = {};
+    /** => following for noteEditor  component  */
 
-  MainHotSingerStatementTypography = {};
+    NoteEditorFunctionAreaCancelButton = {};
 
-  MainHotSingerIndexOfSequenceTypography = {};
+    NoteEditorFunctionAreaSubmitButton = {};
 
-  MainHotSingerNameTypography = {};
+    NoteEditorFunctionAreaDiv = {};
 
-  MainHotSingerCardSkeleton = {};
+    NoteEditorContentTextField = {};
 
-  MainHotSingerDivList = {};
+    NoteEditorPaper = {};
 
-  MainHotSingerCard = {};
+    /** => following for inventedOfPu  component  */
 
-  MainTitleOfHotSingerTypography = {};
+    InventedOfPuDiv = {};
 
-  MainHotRhythmIndexOfSequenceTypography = {};
+    /** => following for personalRhythm  component  */
 
-  MainHotRhythmSingerTypography = {};
+    PersonalRhythmFavoritePuExtraIconMoreHoriz = {};
 
-  MainHotRhythmNameTypography = {};
+    PersonalRhythmFavoritePuExtraReactFragmentWrap = {};
 
-  MainHotRhythmCardSkeleton = {};
+    PersonalRhythmFavoritePuExtraIconButton = {};
 
-  MainHotRhythmDivList = {};
+    PersonalRhythmFavoritePuNameTypography = {};
 
-  MainHotRhythmCard = {};
+    PersonalRhythmFavoritePuTitleDivWrap = {};
 
-  MainTitleOfHotRhythmTypography = {};
+    PersonalRhythmFavoritePuTitleTypography = {};
 
-  MainPromotedBannerImageDivWrap = {};
+    PersonalRhythmFavoritePuCardSkeleton = {};
 
-  MainPromotedBannerImageImg = {};
+    PersonalRhythmFavoritePuDivList = {};
 
-  MainPromotedBannerSwiperSlideSkeleton = {};
+    PersonalRhythmFavoritePuDivWrap = {};
 
-  MainPromotedBannerSwiperSlide = {};
+    PersonalRhythmFavoritePuCard = {};
 
-  MainPromotedBannerSwiperList = {};
+    PersonalRhythmDiv = {};
 
-  MainPromotedBannerSwiperSlide = {};
+    /** => following for historyRhythm  component  */
 
-  MainDiv = {};
+    HistoryRhythmDiv = {};
 
-  /** -------------------- functions -------------------- **/
+    /** => following for artist  component  */
 
-  constructor(props) {}
+    ArtistDiv = {};
 
-  /** -------------------- async api -------------------- **/
+    /** => following for portfolio  component  */
+
+    PortfolioRhythmComposerTypography = {};
+
+    PortfolioRhythmSingerTypography = {};
+
+    PortfolioRhythmNameTypography = {};
+
+    PortfolioRhythmCardSkeleton = {};
+
+    PortfolioRhythmDivList = {};
+
+    PortfolioRhythmCard = {};
+
+    PortfolioDiv = {};
+
+    /** => following for sheet  component  */
+
+    SheetAdjustCenterToggleWrapperNoteReactFragmentWrap = {};
+
+    SheetAdjustCenterToggleWrapperNoteButton = {};
+
+    SheetAdjustCenterToggleWrapperJoinToFavoriteLabelOfJoinToFavoriteTypography = {};
+
+    SheetAdjustCenterToggleWrapperJoinToFavoriteToggleOfJoinToFavoriteSwitch = {};
+
+    SheetAdjustCenterToggleWrapperJoinToFavoriteFormControlLabel = {};
+
+    SheetAdjustCenterToggleWrapperHideChordLabelOfHideChordTypography = {};
+
+    SheetAdjustCenterToggleWrapperHideChordToggleOfHideChordSwitch = {};
+
+    SheetAdjustCenterToggleWrapperHideChordFormControlLabel = {};
+
+    SheetAdjustCenterToggleWrapperDiv = {};
+
+    SheetAdjustCenterGenderWrapperToOriginalTonalityButton = {};
+
+    SheetAdjustCenterGenderWrapperToFemaleTonalityButton = {};
+
+    SheetAdjustCenterGenderWrapperToMaleTonalityButton = {};
+
+    SheetAdjustCenterGenderWrapperDiv = {};
+
+    SheetAdjustCenterFontWrapperLinkButton = {};
+
+    SheetAdjustCenterFontWrapperShrinkButton = {};
+
+    SheetAdjustCenterFontWrapperEnlargeButton = {};
+
+    SheetAdjustCenterFontWrapperDiv = {};
+
+    SheetAdjustCenterTonalityWrapperEditorButton = {};
+
+    SheetAdjustCenterTonalityWrapperFlattenButton = {};
+
+    SheetAdjustCenterTonalityWrapperSharpenButton = {};
+
+    SheetAdjustCenterTonalityWrapperDiv = {};
+
+    SheetAdjustCenterPreludeWrapperPreludeOfGButton = {};
+
+    SheetAdjustCenterPreludeWrapperPreludeOfCButton = {};
+
+    SheetAdjustCenterPreludeWrapperDiv = {};
+
+    SheetAdjustCenterDiv = {};
+
+    SheetAdjustSwipeableDrawerWrap = {};
+
+    SheetAdjustDiv = {};
+
+    SheetTipOfLoadingTypography = {};
+
+    SheetNameOfSongAndSingerTypography = {};
+
+    SheetGuitarpuFloatAreaMarkOfYuehDivWrap = {};
+
+    SheetGuitarpuFloatAreaMarkOfYuehImg = {};
+
+    SheetGuitarpuFloatAreaDiv = {};
+
+    SheetGuitarpuCurrentContextTypography = {};
+
+    SheetGuitarpuImageOfPreludeImg = {};
+
+    SheetGuitarpuInfoCapoLabelOfCapoTypography = {};
+
+    SheetGuitarpuInfoCapoDivWrap = {};
+
+    SheetGuitarpuInfoCapoTypography = {};
+
+    SheetGuitarpuInfoSpeedOfRhythmLabelOfSpeedOfRhythmTypography = {};
+
+    SheetGuitarpuInfoSpeedOfRhythmDivWrap = {};
+
+    SheetGuitarpuInfoSpeedOfRhythmTypography = {};
+
+    SheetGuitarpuInfoDivWrap = {};
+
+    SheetGuitarpuInfoDiv = {};
+
+    SheetGuitarpuDivSkeleton = {};
+
+    SheetGuitarpuDivList = {};
+
+    SheetGuitarpuPaperWrap = {};
+
+    SheetGuitarpuDiv = {};
+
+    SheetDiv = {};
+
+    /** => following for main  component  */
+
+    MainInterestingOfFunctionSubTitleTypography = {};
+
+    MainInterestingOfFunctionTitleTypography = {};
+
+    MainInterestingOfFunctionPaperSkeleton = {};
+
+    MainInterestingOfFunctionGridList = {};
+
+    MainInterestingOfFunctionGridWrap = {};
+
+    MainInterestingOfFunctionPaper = {};
+
+    MainHotSingerStatementTypography = {};
+
+    MainHotSingerIndexOfSequenceTypography = {};
+
+    MainHotSingerNameTypography = {};
+
+    MainHotSingerCardSkeleton = {};
+
+    MainHotSingerDivList = {};
+
+    MainHotSingerCard = {};
+
+    MainTitleOfHotSingerTypography = {};
+
+    MainHotRhythmIndexOfSequenceTypography = {};
+
+    MainHotRhythmSingerTypography = {};
+
+    MainHotRhythmNameTypography = {};
+
+    MainHotRhythmCardSkeleton = {};
+
+    MainHotRhythmDivList = {};
+
+    MainHotRhythmCard = {};
+
+    MainTitleOfHotRhythmTypography = {};
+
+    MainPromotedBannerImageDivWrap = {};
+
+    MainPromotedBannerImageImg = {};
+
+    MainPromotedBannerSwiperSlideSkeleton = {};
+
+    MainPromotedBannerSwiperList = {};
+
+    MainPromotedBannerSwiperSlide = {};
+
+    MainDiv = {};
+
+    /** -------------------- functions -------------------- **/
+
+    constructor(props) {}
+
+    /** -------------------- async api -------------------- **/
 }
 
 export default new CommonStyle();

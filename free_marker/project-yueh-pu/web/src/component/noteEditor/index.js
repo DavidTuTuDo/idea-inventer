@@ -1,6 +1,6 @@
-import {inject} from "mobx-react";
+import { inject } from "mobx-react";
 import BaseNoteEditorComponent from "./BaseNoteEditorComponent";
-import {observer} from "mobx-react";
+import { observer } from "mobx-react";
 
 @inject("noteEditor")
 @observer
@@ -10,7 +10,7 @@ class NoteEditorComponent extends BaseNoteEditorComponent {
 
     constructor(props) {
         super(props);
-        this.getStore().setNoteId(this.getComponentInstance().getUidOfSheetDetail())
+        this.getStore().setNoteId(this.getComponentInstance().getUidOfSheetDetail());
     }
 
     onNoteEditorFunctionAreaSubmitButtonClicked(param) {

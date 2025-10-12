@@ -157,7 +157,7 @@ class FirebaseHelper extends BaseFirebase {
      * */
     reference = (path, id, { asDoc = false } = {}) => {
         if (asDoc) return Util.isUndefinedNullEmpty(id) ? doc(this.firestore(), path) : doc(this.firestore(), path, id);
-        if (_.isEqual(id, "obj")) return doc(this.firestore(), path);
+        if (_.isEqual(id, "asObj")) return doc(this.firestore(), path);
         return Util.isUndefinedNullEmpty(id) ? collection(this.firestore(), path) : doc(this.firestore(), path, id);
     };
 
@@ -737,7 +737,7 @@ class FirebaseHelper extends BaseFirebase {
                 // 如果 listAll 失败（例如：路径不存在或权限不足），记录错误并返回空结果
                 const path = currentRef.fullPath || currentRef.toString();
                 console.error(`[List Failed] 无法列出路径 ${path} 下的文件: ${listError.message}`);
-                return [{ status: 'rejected', path, reason: `List failed: ${listError.message}` }];
+                return [{ status: "rejected", path, reason: `List failed: ${listError.message}` }];
             }
 
             let allDeletePromises = [];
@@ -746,8 +746,8 @@ class FirebaseHelper extends BaseFirebase {
             for (const itemRef of listResult.items) {
                 // 对每个文件创建删除 Promise，并捕获错误
                 const deletePromise = deleteObject(itemRef)
-                    .then(() => ({ status: 'fulfilled', path: itemRef.fullPath, message: `Deleted ${itemRef.fullPath}` }))
-                    .catch(error => ({ status: 'rejected', path: itemRef.fullPath, reason: error.message }));
+                    .then(() => ({ status: "fulfilled", path: itemRef.fullPath, message: `Deleted ${itemRef.fullPath}` }))
+                    .catch((error) => ({ status: "rejected", path: itemRef.fullPath, reason: error.message }));
 
                 allDeletePromises.push(deletePromise);
             }
@@ -756,7 +756,7 @@ class FirebaseHelper extends BaseFirebase {
             for (const prefixRef of listResult.prefixes) {
                 // 递归调用，并将返回的 Promise 收集起来
                 const nestedResultsPromise = deleteFolderContents(prefixRef, internalBatchSize);
-                allDeletePromises.push(nestedResultsPromise.then(res => res.flat())); // 扁平化嵌套结果
+                allDeletePromises.push(nestedResultsPromise.then((res) => res.flat())); // 扁平化嵌套结果
             }
 
             // 3. 严格执行批次删除，防止过多并发请求
@@ -769,7 +769,7 @@ class FirebaseHelper extends BaseFirebase {
 
                 // 收集结果：处理来自递归调用的嵌套数组结果
                 for (const result of chunkResults) {
-                    if (result.status === 'fulfilled') {
+                    if (result.status === "fulfilled") {
                         // 如果结果是数组（来自嵌套递归），则扁平化；否则直接添加
                         if (Array.isArray(result.value)) {
                             finalResults.push(...result.value);
@@ -786,7 +786,7 @@ class FirebaseHelper extends BaseFirebase {
         }
 
         if (!prefixes || prefixes.length === 0) {
-            console.log('batchDeleteStorageByPrefixesWeb: 沒有要處理的前綴。');
+            console.log("batchDeleteStorageByPrefixesWeb: 沒有要處理的前綴。");
             return [];
         }
 
@@ -802,30 +802,30 @@ class FirebaseHelper extends BaseFirebase {
             console.log(`\n--- 開始處理批次 ${chunkIndex}/${prefixChunks.length} (${prefixChunk.length} 個前綴) ---`);
 
             // 2. 在每個批次內部，並行發起 "list and delete" 任務 (使用 Promise.allSettled)
-            const prefixDeleteTasks = prefixChunk.map(prefix => {
+            const prefixDeleteTasks = prefixChunk.map((prefix) => {
                 const pathRef = ref(this.storage(), prefix);
 
                 // deleteFolderContents 負責遞歸和內部批次控制
                 return deleteFolderContents(pathRef, batchCount)
-                    .then(results => ({ status: 'fulfilled', prefix, results }))
-                    .catch(error => ({ status: 'rejected', prefix, reason: error.message }));
+                    .then((results) => ({ status: "fulfilled", prefix, results }))
+                    .catch((error) => ({ status: "rejected", prefix, reason: error.message }));
             });
 
             // 3. 等待當前批次中的所有前綴處理完成
             const chunkResults = await Promise.allSettled(prefixDeleteTasks);
 
             // 收集結果
-            allOperationResults = allOperationResults.concat(chunkResults.map(r => r.value || r.reason));
+            allOperationResults = allOperationResults.concat(chunkResults.map((r) => r.value || r.reason));
         }
 
         // 4. 統計和報告最終結果
-        const successfulDeletes = allOperationResults.filter(r => r.status === 'fulfilled');
-        const failedDeletes = allOperationResults.filter(r => r.status === 'rejected');
+        const successfulDeletes = allOperationResults.filter((r) => r.status === "fulfilled");
+        const failedDeletes = allOperationResults.filter((r) => r.status === "rejected");
         let totalFilesDeleted = 0;
-        successfulDeletes.forEach(s => {
+        successfulDeletes.forEach((s) => {
             if (s.results) {
                 // s.results 是內部檔案刪除的結果列表
-                totalFilesDeleted += s.results.filter(r => r.status === 'fulfilled').length;
+                totalFilesDeleted += s.results.filter((r) => r.status === "fulfilled").length;
             }
         });
 
@@ -836,12 +836,12 @@ class FirebaseHelper extends BaseFirebase {
         console.log(`-> 總計成功刪除的文件數: ${totalFilesDeleted}`);
 
         if (failedDeletes.length > 0) {
-            console.error('部分前綴處理失敗詳情:');
-            failedDeletes.forEach(f => {
+            console.error("部分前綴處理失敗詳情:");
+            failedDeletes.forEach((f) => {
                 console.error(` - 前綴: ${f.prefix}, 原因: ${f.reason}`);
             });
         } else {
-            console.log('所有前綴批次處理成功完成。');
+            console.log("所有前綴批次處理成功完成。");
         }
         console.log(`========================================================\n`);
 

@@ -1,61 +1,31 @@
 const edit = true;
 import BaseSheetStore from "./BaseSheetStore";
-import {
-    utiller as Util,
-} from "utiller";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
 import UserInfoRef from "../../base/BaseUserInfo";
 import FavoritePu from "../personalRhythmFavoritePu";
-import HistoryPu from '../historyRhythmPuOfRecord';
-import GuitarPu from '../sheetGuitarpu';
-import {
-    action,
-} from "mobx";
+import HistoryPu from "../historyRhythmPuOfRecord";
+import GuitarPu from "../sheetGuitarpu";
+import { action } from "mobx";
 
-const RULE_OF_CHANGE_CHORD_MAJOR_SIGN = [
-    ['C'],
-    ['Db', 'C#'],
-    ['D'],
-    ['Eb', 'D#'],
-    ['E'],
-    ['F'],
-    ['F#', 'Gb'],
-    ['G'],
-    ['Ab', 'G#'],
-    ['A'],
-    ['Bb', 'A#'],
-    ['B'],
-];
+const RULE_OF_CHANGE_CHORD_MAJOR_SIGN = [["C"], ["Db", "C#"], ["D"], ["Eb", "D#"], ["E"], ["F"], ["F#", "Gb"], ["G"], ["Ab", "G#"], ["A"], ["Bb", "A#"], ["B"]];
 
 const RULE_OF_CHANGE_CHORD_MINOR_SIGN_BACK_UP = [
-    ['Am'],
-    ['Bbm', 'A#m'],
-    ['Bm'],
-    ['Cm'],
-    ['C#m', 'Dbm'],
-    ['Dm'],
-    ['Ebm', 'D#m'],
-    ['Em'],
-    ['Fm'],
-    ['F#m', 'Gbm'],
-    ['Gm'],
-    ['G#m', 'Abm'],
+    ["Am"],
+    ["Bbm", "A#m"],
+    ["Bm"],
+    ["Cm"],
+    ["C#m", "Dbm"],
+    ["Dm"],
+    ["Ebm", "D#m"],
+    ["Em"],
+    ["Fm"],
+    ["F#m", "Gbm"],
+    ["Gm"],
+    ["G#m", "Abm"]
 ];
 
-const RULE_OF_CHANGE_CHORD_MINOR_SIGN = [
-    ['Am'],
-    ['Bbm', 'A#m'],
-    ['Bm'],
-    ['Cm'],
-    ['C#m', 'Dbm'],
-    ['Dm'],
-    ['Ebm', 'D#m'],
-    ['Em'],
-    ['Fm'],
-    ['F#m', 'Gbm'],
-    ['Gm'],
-    ['G#m', 'Abm'],
-];
+const RULE_OF_CHANGE_CHORD_MINOR_SIGN = [["Am"], ["Bbm", "A#m"], ["Bm"], ["Cm"], ["C#m", "Dbm"], ["Dm"], ["Ebm", "D#m"], ["Em"], ["Fm"], ["F#m", "Gbm"], ["Gm"], ["G#m", "Abm"]];
 
 const RULE_OF_CHANGE_CHORD_WHOLE_SIGN = _.zip(RULE_OF_CHANGE_CHORD_MAJOR_SIGN, RULE_OF_CHANGE_CHORD_MINOR_SIGN).map((each) => _.flatten(each));
 /**
@@ -64,7 +34,7 @@ const RULE_OF_CHANGE_CHORD_WHOLE_SIGN = _.zip(RULE_OF_CHANGE_CHORD_MAJOR_SIGN, R
  2: (3) ['B', 'G#m', 'Abm']
  */
 
-const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RULE_OF_CHANGE_CHORD_MAJOR_SIGN), (each) => _.size(each), 'desc')
+const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RULE_OF_CHANGE_CHORD_MAJOR_SIGN), (each) => _.size(each), "desc");
 
 /**
  * ['Bb', 'A#', 'Db', 'C#', 'Eb', 'D#', 'F#', 'Gb', 'Ab', 'G#', 'A', 'B', 'C', 'D', 'E', 'F', 'G']
@@ -72,8 +42,8 @@ const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RUL
  * order的目的是避免 [A]b => [Ab]b, 要以字數長的作為替換優先
  */
 
-const SEPARATOR_OF_CHORD = '།';
-const SEPARATOR_OF_TONALITY = '|';
+const SEPARATOR_OF_CHORD = "།";
+const SEPARATOR_OF_TONALITY = "|";
 
 class SheetStore extends BaseSheetStore {
     /** -------------------- fields -------------------- **/
@@ -93,12 +63,12 @@ class SheetStore extends BaseSheetStore {
         const result = await super.fetch(view);
         if (_.size(result.guitarpus) > 0) {
             const pu = result.guitarpus[0];
-            await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? pu.id : '');
+            await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? pu.id : "");
             await this.apiOfHistory.submitPuOfRecordItem(view, {
                 idOfGuitarPu: pu.id,
                 name: pu.name,
-                singer: pu.singer,
-            })
+                singer: pu.singer
+            });
         }
         return result;
     }
@@ -110,8 +80,7 @@ class SheetStore extends BaseSheetStore {
     }
 
     async getFavoritePuByIdOfGuitarPu(idOfGuitarPu) {
-        const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(),
-            UserInfoRef.getUid(), {type: 'where', params: ['idOfGuitarPu', '==', idOfGuitarPu]})
+        const items = await this.apiOfFavorite.fetchFavoritePus(this.getComponent(), UserInfoRef.getUid(), { type: "where", params: ["idOfGuitarPu", "==", idOfGuitarPu] });
         return _.head(items);
     }
 
@@ -121,14 +90,13 @@ class SheetStore extends BaseSheetStore {
                 await this.apiOfFavorite.submitFavoritePuItem(this.getComponent(), {
                     idOfGuitarPu: this.getCurrentPu().getId(),
                     name: this.getCurrentPu().getName(),
-                    singer: this.getCurrentPu().getSinger(),
+                    singer: this.getCurrentPu().getSinger()
                 });
             } else {
                 const item = await this.getFavoritePuByIdOfGuitarPu(this.getCurrentPu().getId());
                 if (item) {
                     await this.apiOfFavorite.deleteFavoritePuItem(this.getComponent(), item.id);
                 }
-
             }
         }
     }
@@ -139,50 +107,48 @@ class SheetStore extends BaseSheetStore {
         await Util.syncDelay(1);
 
         /** 用在預覽畫面上 */
-        if(this.getComponent(true).isComponentView()) return;
+        if (this.getComponent(true).isComponentView()) return;
 
         if (pu instanceof GuitarPu && pu.getPopularLevel() > 1) {
             /** popularLevel 代表 取得遠端資料*/
             pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
             pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
-            pu.setTonalityOfFemale(this.normalizeTonality(pu.getTonalityOfFemale()))
+            pu.setTonalityOfFemale(this.normalizeTonality(pu.getTonalityOfFemale()));
             pu.setTonalityOfMale(this.normalizeTonality(pu.getTonalityOfMale()));
             pu.setTonalityOfOriginal(this.normalizeTonality(pu.getTonalityOfOriginal()));
-            pu.setTonalityOfContext((this.normalizeTonality(pu.getTonalityOfContext())))
+            pu.setTonalityOfContext(this.normalizeTonality(pu.getTonalityOfContext()));
             this.invalidate(true);
         } else {
             this.setMessageOfListIsEmpty(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
-            this.setErrorMsg(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`)
+            this.setErrorMsg(`使用悅譜需要審核流程，請在Instagram上詢問「明悅」開通辦法。`);
             this.setTipOfLoading(``);
         }
     }
 
     invalidate = (announce = false) => {
         const pu = this.getCurrentPu();
-        pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed())
-        pu.setCapo(this.getCurrentPu().getCapoLevel())
-        this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(pu.getTonalityOfFemale())}`)
-        this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(pu.getTonalityOfMale())}`)
-        this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(pu.getTonalityOfOriginal())}`)
-        this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`)
-        if (announce) this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`)
-    }
+        pu.setSpeedOfRhythm(this.getCurrentPu().getSpeed());
+        pu.setCapo(this.getCurrentPu().getCapoLevel());
+        this.getAdjustCenter().setToFemaleTonality(`女建議${this.getStringOfSuggestDescription(pu.getTonalityOfFemale())}`);
+        this.getAdjustCenter().setToMaleTonality(`男建議${this.getStringOfSuggestDescription(pu.getTonalityOfMale())}`);
+        this.getAdjustCenter().setToOriginalTonality(`原${this.getStringOfSuggestDescription(pu.getTonalityOfOriginal())}`);
+        this.setNameOfSongAndSinger(`${this.getCurrentPu().getSinger()}:${this.getCurrentPu().getName()}`);
+        if (announce) this.getComponent().showInfoSnackMessage(`${pu.getSinger()}:${pu.getName()}`);
+    };
 
     getStringOfSuggestDescription(tone) {
         if (Util.isUndefinedNullEmpty(tone)) return;
         const result = this.getSuggestTonalityCapoLevel(tone);
-        return `${result.from}調\n(彈${result.to}夾${result.level}格)`
+        return `${result.from}調\n(彈${result.to}夾${result.level}格)`;
     }
-
 
     normalizeTonality(string) {
         const result = string.split(SEPARATOR_OF_TONALITY).shift();
-        return Util.isUndefinedNullEmpty(result) ? 'C' : result;
+        return Util.isUndefinedNullEmpty(result) ? "C" : result;
     }
 
-
     getAdjustCenter() {
-        return this.getAdjust().getCenter()
+        return this.getAdjust().getCenter();
     }
 
     @action
@@ -190,14 +156,14 @@ class SheetStore extends BaseSheetStore {
         /** context如果拿回空，不處理以下 */
         if (Util.isUndefinedNullEmpty(context)) return;
 
-        const segmentsOfContext = context.split('\n');
+        const segmentsOfContext = context.split("\n");
         const segmentsOfContextChord = _.filter(segmentsOfContext, (each) => this.isGuitarChordParagraph(each));
         for (const segment of segmentsOfContextChord) {
-            Util.replaceArrayByContentIndex(segmentsOfContext, segment, this.getStringOfTranspositionBySigns(segment, level, [' ', '/']));
+            Util.replaceArrayByContentIndex(segmentsOfContext, segment, this.getStringOfTranspositionBySigns(segment, level, [" ", "/"]));
         }
-        const contextOfTransposition = segmentsOfContext.join('\n');
+        const contextOfTransposition = segmentsOfContext.join("\n");
         this.updatePuContext(contextOfTransposition);
-    }
+    };
 
     updatePuContext(latest) {
         const normalize = this.normalizePu(latest);
@@ -205,13 +171,12 @@ class SheetStore extends BaseSheetStore {
     }
 
     normalizePu = (context, decrypt = false) => {
-        if (decrypt && !this.getComponent(true).isComponentView())
-            context = Util.getDecryptStringV2(context);
-        let segments = context.split('\n');
+        if (decrypt && !this.getComponent(true).isComponentView()) context = Util.getDecryptStringV2(context);
+        let segments = context.split("\n");
         segments = _.dropWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));
         segments = _.dropRightWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));
-        return segments.join('\n');
-    }
+        return segments.join("\n");
+    };
 
     getCurrentPuContext() {
         return this.getCurrentPu().getCurrentContext();
@@ -227,42 +192,47 @@ class SheetStore extends BaseSheetStore {
 
     setVisibleOfChordInContext(hide = false) {
         function getStringOfRemoveChordsAndSeparator(paragraph) {
-            const after = Util.replaceAllWithSets(paragraph, {from: SEPARATOR_OF_CHORD, to: ' '}, {
-                from: '－',
-                to: ' '
-            }, {from: '-', to: ' '});
-            const reg = new RegExp(`^[A-G]`, 'g');
-            return Util.getStringHandledByEachLine(after,
+            const after = Util.replaceAllWithSets(
+                paragraph,
+                { from: SEPARATOR_OF_CHORD, to: " " },
+                {
+                    from: "－",
+                    to: " "
+                },
+                { from: "-", to: " " }
+            );
+            const reg = new RegExp(`^[A-G]`, "g");
+            return Util.getStringHandledByEachLine(
+                after,
                 (segment, index, segments) => {
                     if (reg.test(_.trim(segment))) {
-                        Util.replaceArrayByContentIndex(segments, segment, '');
+                        Util.replaceArrayByContentIndex(segments, segment, "");
                     }
                 },
-                ' ',
+                " "
             );
         }
 
-        const segments = this.getOriginalPuContext().split('\n');
+        const segments = this.getOriginalPuContext().split("\n");
         if (hide) {
             for (const segment of segments) {
-                if (this.isGuitarChordParagraph(segment))
-                    Util.replaceArrayByContentIndex(segments, segment, getStringOfRemoveChordsAndSeparator(segment));
+                if (this.isGuitarChordParagraph(segment)) Util.replaceArrayByContentIndex(segments, segment, getStringOfRemoveChordsAndSeparator(segment));
             }
         }
-        this.updatePuContext(segments.join('\n'));
+        this.updatePuContext(segments.join("\n"));
     }
 
     transpositionByGender = (gender) => {
         const pu = this.getCurrentPu();
-        let tone = '';
+        let tone = "";
         switch (gender) {
-            case 'male':
+            case "male":
                 tone = pu.getTonalityOfMale();
                 break;
-            case 'female':
-                tone = pu.getTonalityOfFemale()
-                break
-            case 'original':
+            case "female":
+                tone = pu.getTonalityOfFemale();
+                break;
+            case "original":
                 tone = pu.getTonalityOfOriginal();
                 break;
         }
@@ -272,8 +242,7 @@ class SheetStore extends BaseSheetStore {
         const tonalityOfContext = pu.getTonalityOfContext();
         const level = this.getLevelOfBetweenChords(tonalityOfContext, tonalityOfDestination);
         this.invalidateTranspositionChord(level, this.getOriginalPuContext());
-    }
-
+    };
 
     /** -------------------- 以下為弦轉換相關的邏輯 最好放到utiller裏面 -------------------- **/
     /***
@@ -293,7 +262,7 @@ class SheetStore extends BaseSheetStore {
         for (const SIGN of RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH) {
             if (Util.has(paragraph, SIGN)) {
                 /** console.log(`${RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_LENGTH} , origin:${string}`, ` sign:${SIGN}, to:${getChordOfTransposition(SIGN, sharpen)}`); */
-                latest = Util.replaceAll(paragraph, SIGN, this.getChordOfTransposition(SIGN, level))
+                latest = Util.replaceAll(paragraph, SIGN, this.getChordOfTransposition(SIGN, level));
                 break;
             }
         }
@@ -301,10 +270,10 @@ class SheetStore extends BaseSheetStore {
     }
 
     /** 取得'C','C#','Abm','Em'... 的index */
-    getIndexOfChordLevel(chord = 'C') {
+    getIndexOfChordLevel(chord = "C") {
         for (const compound of RULE_OF_CHANGE_CHORD_WHOLE_SIGN) {
             if (Util.containsBy(compound, chord)) {
-                return _.indexOf(RULE_OF_CHANGE_CHORD_WHOLE_SIGN, compound)
+                return _.indexOf(RULE_OF_CHANGE_CHORD_WHOLE_SIGN, compound);
             }
         }
         Util.appendError(`878415451 ${chord} is not handled`);
@@ -332,11 +301,15 @@ class SheetStore extends BaseSheetStore {
      */
 
     getSuggestTonalityCapoLevel(tonality) {
-        const isMinerTonality = Util.has(tonality, 'm');
-        const suggestTonality = isMinerTonality ? ['Am', 'Em'] : ['C', 'G'];
-        const resultOfSuggest = _.orderBy(suggestTonality.map((each) => {
-            return {from: tonality, to: each, level: this.getLevelOfBetweenChords(each, tonality)}
-        }), (each) => each.level, 'desc');
+        const isMinerTonality = Util.has(tonality, "m");
+        const suggestTonality = isMinerTonality ? ["Am", "Em"] : ["C", "G"];
+        const resultOfSuggest = _.orderBy(
+            suggestTonality.map((each) => {
+                return { from: tonality, to: each, level: this.getLevelOfBetweenChords(each, tonality) };
+            }),
+            (each) => each.level,
+            "desc"
+        );
         return _.last(resultOfSuggest).level >= 0 ? _.last(resultOfSuggest) : _.head(resultOfSuggest);
     }
 
@@ -350,7 +323,7 @@ class SheetStore extends BaseSheetStore {
      * @returns {string}
      */
     getStringOfTranspositionBySigns(string, level, signs) {
-        const latest = []
+        const latest = [];
         let currentSign;
         const result = Util.getStateOfStringContainsSign(string, ...signs);
         if (result.exists) {
@@ -359,14 +332,13 @@ class SheetStore extends BaseSheetStore {
         } else {
             latest.push(this.transpositionParagraph(string, level));
         }
-        return latest.join(currentSign)
+        return latest.join(currentSign);
     }
 
     /** 檢查這條訊息是吉他Chord*/
     isGuitarChordParagraph(string) {
-        return _.size(Util.indexesOf(string, SEPARATOR_OF_CHORD)) > 1
+        return _.size(Util.indexesOf(string, SEPARATOR_OF_CHORD)) > 1;
     }
-
 }
 
 export default SheetStore;

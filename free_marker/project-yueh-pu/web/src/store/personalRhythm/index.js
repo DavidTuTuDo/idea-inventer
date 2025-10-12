@@ -1,24 +1,20 @@
 const edit = true;
 import BasePersonalRhythmStore from "./BasePersonalRhythmStore";
-import {
-    utiller as Util,
-} from "utiller";
+import { utiller as Util } from "utiller";
 import _ from "lodash";
-import {
-    action,
-} from "mobx";
+import { action } from "mobx";
 
 class PersonalRhythmStore extends BasePersonalRhythmStore {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
 
     /** 讓fetch功能改成手動的模式，因為共用history 和 favorite */
-    controlOfManual = false
+    controlOfManual = false;
 
     onClickOfDeleteOfMenuItem;
 
     enableManual() {
-        this.controlOfManual = true
+        this.controlOfManual = true;
     }
 
     setOnClickOfDeleteMenuItem(func) {
@@ -27,7 +23,7 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
 
     getOnClickOfDeleteOfMenuItem = (item) => {
         return this.onClickOfDeleteOfMenuItem(item);
-    }
+    };
 
     hasOnClickOfDeleteOfMenuItem() {
         return _.isFunction(this.onClickOfDeleteOfMenuItem);
@@ -42,31 +38,28 @@ class PersonalRhythmStore extends BasePersonalRhythmStore {
     }
 
     ruleOfPreviouslySort(items) {
-        if (this.controlOfManual)
-            return items;
+        if (this.controlOfManual) return items;
 
-        let latest = items.map(item => {
+        let latest = items.map((item) => {
             return {
                 ...item,
-                title: `${item.singer} 系列`,
-            }
-        })
+                title: `${item.singer} 系列`
+            };
+        });
         return latest;
     }
 
     @action
     invalidate() {
-        if (this.controlOfManual)
-            return;
+        if (this.controlOfManual) return;
 
-        const itemsOfPu = _.orderBy(this.getFavoritePus(), ['singer', 'name'])
+        const itemsOfPu = _.orderBy(this.getFavoritePus(), ["singer", "name"]);
         for (const item of itemsOfPu) {
             item.setNeedTitle(true);
             const index = _.indexOf(itemsOfPu, item);
             if (index > 0) {
                 const itemOfPreview = itemsOfPu[index - 1];
-                if (_.isEqual(itemOfPreview.singer, item.singer))
-                    item.setNeedTitle(false);
+                if (_.isEqual(itemOfPreview.singer, item.singer)) item.setNeedTitle(false);
             }
         }
         this.setFavoritePus(...itemsOfPu);

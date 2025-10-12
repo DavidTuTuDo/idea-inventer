@@ -1,13 +1,13 @@
-import {utiller as Util} from 'utiller';
+import { utiller as Util } from "utiller";
 
-import {isMobile} from 'react-device-detect'
+import { isMobile } from "react-device-detect";
 
-let common = require('./common.style.js').default;
+let common = require("./common.style.js").default;
 let device;
 if (isMobile) {
-    device = require('./mobile.style.js').default;
+    device = require("./mobile.style.js").default;
 } else {
-    device = require('./app.style.js').default;
+    device = require("./app.style.js").default;
 }
 
-export default Util.mergeObject(common, device)
+export default Util.mergeObject(common, device);

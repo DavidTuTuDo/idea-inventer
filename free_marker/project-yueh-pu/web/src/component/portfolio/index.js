@@ -1,6 +1,6 @@
-import {inject} from "mobx-react";
+import { inject } from "mobx-react";
 import BasePortfolioComponent from "./BasePortfolioComponent";
-import {observer} from "mobx-react";
+import { observer } from "mobx-react";
 import Router from "../../router";
 
 @inject("portfolio")
@@ -15,7 +15,7 @@ class PortfolioComponent extends BasePortfolioComponent {
 
     onPortfolioRhythmCardClicked(param) {
         const rhythm = param.object;
-        Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu)
+        Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu);
     }
 
     isValidOfParamOfId(id) {
@@ -23,7 +23,7 @@ class PortfolioComponent extends BasePortfolioComponent {
     }
 
     isValidOfParamOfType(type) {
-        return this.constraintOfParam(type, 'list', 'search', 'preludes');
+        return this.constraintOfParam(type, "list", "search", "preludes");
     }
 
     /** -------------------- async api -------------------- **/

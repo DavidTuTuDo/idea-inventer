@@ -1,5 +1,5 @@
 import BaseNoteEditorStore from "./BaseNoteEditorStore";
-import GuitarPuNote from '../personalRhythmGuitarPuNote';
+import GuitarPuNote from "../personalRhythmGuitarPuNote";
 
 class NoteEditorStore extends BaseNoteEditorStore {
     /** -------------------- fields -------------------- **/
@@ -9,10 +9,10 @@ class NoteEditorStore extends BaseNoteEditorStore {
         super(props);
         this.apiOfGuitarNote = new GuitarPuNote();
         this.setContentDisabled(true);
-        this.idOfNote = '';
+        this.idOfNote = "";
     }
 
-    setNoteId(id = '') {
+    setNoteId(id = "") {
         this.idOfNote = id;
     }
 
@@ -30,19 +30,22 @@ class NoteEditorStore extends BaseNoteEditorStore {
         switch (this.getContentDisabled()) {
             case true:
                 this.setContentDisabled(false);
-                this.getFunctionArea().setSubmit('儲存');
-                break
+                this.getFunctionArea().setSubmit("儲存");
+                break;
             case false:
-                const result = await this.apiOfGuitarNote.submitGuitarPuNoteItem(this.getComponent(),  {
-                    idOfGuitarPu: this.idOfNote,
-                    statement: this.getContent(),
-
-                },this.idOfNote);
-                this.getComponent().showInfoSnackMessage('已更新 筆記內容');
+                const result = await this.apiOfGuitarNote.submitGuitarPuNoteItem(
+                    this.getComponent(),
+                    {
+                        idOfGuitarPu: this.idOfNote,
+                        statement: this.getContent()
+                    },
+                    this.idOfNote
+                );
+                this.getComponent().showInfoSnackMessage("已更新 筆記內容");
                 this.setContentDisabled(true);
-                this.getFunctionArea().setSubmit('編輯');
+                this.getFunctionArea().setSubmit("編輯");
                 /** update remote item */
-                break
+                break;
         }
     }
 
