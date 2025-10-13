@@ -64,18 +64,13 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         const booze = maenads.getBooze();
         const variant = maenads.getSelectedVariant();
         const quantity = _.toInteger(store.getCountOfSubmit());
-        const quantityOfMaximum = variant.quantity;
 
         const cartItem = {
-            quantityOfMaximum,
             idOfBooze: booze.id,
             idOfVariant: variant.id,
             quantity,
-            isTaskJob: variant.isTaskJob,
             idOfAuthor: variant.idOfAuthor,
-            allowSelfPickUp: variant.allowSelfPickUp,
-            isHomeTeaching: variant.isHomeTeaching,
-            nameOfBooze: booze.name
+            quantityOfMaximum: variant.quantity
         };
 
         const isLogin = UserInfoRef.isLoginWithSucceed();

@@ -611,10 +611,10 @@ class BaseComponent extends MuiComponent {
             };
 
             const target = targetWindow.document ? targetWindow : window; // 獲取正確的目標
-            target.addEventListener('scroll', handleScroll);
+            target.addEventListener("scroll", handleScroll);
 
             return () => {
-                target.removeEventListener('scroll', handleScroll);
+                target.removeEventListener("scroll", handleScroll);
             };
         }, [targetWindow]);
 
@@ -643,7 +643,7 @@ class BaseComponent extends MuiComponent {
                 {children}
             </Slide>
         );
-    }
+    };
 
     getApplication() {
         return Application;

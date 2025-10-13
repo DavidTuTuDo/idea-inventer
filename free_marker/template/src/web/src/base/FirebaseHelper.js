@@ -503,14 +503,13 @@ class FirebaseHelper extends BaseFirebase {
         const ref = this.reference(path, id);
 
         const behavior = async (transaction) => {
-
             // --- 1. 讀取 (Read) ---
             const docSnap = await transaction.get(ref);
             let document = docSnap.data() || {};
             document.exists = docSnap.exists;
 
             // --- 2. 驗證 (Validation) for 'update' 類型 ---
-            if (operationType === 'update' && !docSnap.exists) {
+            if (operationType === "update" && !docSnap.exists) {
                 throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist. Cannot update a non-existent document.`);
             }
 
@@ -520,10 +519,10 @@ class FirebaseHelper extends BaseFirebase {
 
             // --- 4. 寫入 (Write) ---
             if (!Util.isUndefinedNullEmpty(contentOfUpdate)) {
-                if (operationType === 'update') {
+                if (operationType === "update") {
                     // 如果是更新操作，則使用 update()
                     transaction.update(ref, contentOfUpdate);
-                } else if (operationType === 'upsert') {
+                } else if (operationType === "upsert") {
                     // 如果是 upsert 操作，則使用 set() 搭配 merge: true
                     transaction.set(ref, contentOfUpdate, { merge: true });
                 }
@@ -545,7 +544,7 @@ class FirebaseHelper extends BaseFirebase {
      */
     async updateDocumentAtomically(path, predict, id) {
         // 使用核心執行器，並指定操作類型為 'update'
-        return await this.executeAtomicOperation(path, id, 'update', predict);
+        return await this.executeAtomicOperation(path, id, "update", predict);
     }
 
     /**
@@ -558,7 +557,7 @@ class FirebaseHelper extends BaseFirebase {
      */
     async upsertDocumentAtomically(path, predict, id) {
         // 使用核心執行器，並指定操作類型為 'upsert'
-        return await this.executeAtomicOperation(path, id, 'upsert', predict);
+        return await this.executeAtomicOperation(path, id, "upsert", predict);
     }
 
     /**

@@ -3287,6 +3287,16 @@ class Utiller {
         }, {});
     }
 
+    /**
+     *
+     *     multiplyCeil(1.24, 3);        // => 4
+     *     multiplyCeil(1.24, 3, 1);     // => 3.8
+     *     multiplyCeil(1.24, 3, 2);     // => 3.72
+     */
+    getNumberOfMultiplyCeil = (a, b, precision = 0) => {
+        const factor = Math.pow(10, precision);
+        return Math.ceil(a * b * factor) / factor;
+    };
 
     /** ============== 排課系統公式 開始 ============== */
 

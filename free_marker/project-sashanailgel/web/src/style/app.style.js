@@ -1741,6 +1741,24 @@ class AppStyle {
 
     DionysusPlutusMainDiv = {};
 
+    DionysusPlutusBriefSectionOfDescriptionPriceTypography = {};
+
+    DionysusPlutusBriefSectionOfDescriptionQuantityTypography = {};
+
+    DionysusPlutusBriefSectionOfDescriptionSpecificOfProductTypography = {};
+
+    DionysusPlutusBriefSectionOfDescriptionNameOfProductDivWrap = {};
+
+    DionysusPlutusBriefSectionOfDescriptionNameOfProductTypography = {};
+
+    DionysusPlutusBriefSectionOfDescriptionDiv = {};
+
+    DionysusPlutusBriefImageOfProductPhotoImg = {};
+
+    DionysusPlutusBriefDivList = {};
+
+    DionysusPlutusBriefDiv = {};
+
     DionysusPlutusDivWrap = {};
 
     DionysusPlutusDiv = {};

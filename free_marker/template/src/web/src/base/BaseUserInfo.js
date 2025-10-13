@@ -226,16 +226,16 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ idOfAuthor, idOfBooze = "", idOfVariant = "", quantity, nameOfBooze = "", quantityOfMaximum, isTaskJob, allowSelfPickUp, isHomeTeaching }) => {
+    joinItemToCart = ({ idOfAuthor, idOfBooze = "", idOfVariant = "", quantity, quantityOfMaximum }) => {
         Util.appendInfo({ idOfBooze, quantity });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
         const object = infoOfCartie[key];
         Util.appendInfo(`joinItemToCart ==>`);
-        Util.appendInfo({ idOfBooze, idOfVariant, quantity, key, nameOfBooze });
+        Util.appendInfo({ idOfBooze, idOfVariant, quantity, key });
 
         if (object) object.quantity = Math.min(object.quantity + quantity, quantityOfMaximum);
-        else infoOfCartie[key] = { idOfAuthor, idOfBooze, idOfVariant, quantity, idOfCookieUsage: key, nameOfBooze, isTaskJob, allowSelfPickUp, isHomeTeaching };
+        else infoOfCartie[key] = { idOfAuthor, idOfBooze, idOfVariant, quantity, idOfCookieUsage: key };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
     };
@@ -268,7 +268,7 @@ class UserInfo {
         this.invalidateCartie(latest);
     }
 
-    getCheckedCartieItem = () => {
+    getCheckedCartieItems = () => {
         const infoOfCartie = Cookie.getInfoOfCartie();
         return _.values(_.filter(infoOfCartie, (each) => each.checked));
     };
@@ -276,10 +276,10 @@ class UserInfo {
     /**
      * 檢查勾選商品裡有沒有實體商品
      * _.some(collection, predicate)：會遍歷陣列，只要有一個元素符合條件就回傳 true。 */
-    containsPhysicalGoodOfCheckedItem = () => _.some(this.getCheckedCartieItem(), { isTaskJob: false });
+    containsPhysicalGoodOfCheckedItem = () => _.some(this.getCheckedCartieItems(), { isTaskJob: false });
 
     getAuthorOfHeadItemOfCartie = () => {
-        const items = this.getCheckedCartieItem();
+        const items = this.getCheckedCartieItems();
         return _.isArray(items) && items.length > 0 ? items[0].idOfAuthor : "";
     };
 

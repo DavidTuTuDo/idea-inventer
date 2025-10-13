@@ -44,10 +44,6 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         self.getStore().whetherPickupByMySelfValidate().then();
     }
 
-    getInjectStyleOfDionysusPlutusSecondDiv(plutus) {
-        return Util.getVisibleOrNone(false, true);
-    }
-
     getInjectStyleOfDionysusPlutusFourthDiv(plutus) {
         return Util.getVisibleOrNone(false, true);
     }
@@ -117,7 +113,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     performEPayCreateOrderBehavior = async () => {
         const self = this;
-        const items = UserInfo.getCheckedCartieItem();
+        const items = UserInfo.getCheckedCartieItems();
         const containsPhysicalGood = UserInfo.containsPhysicalGoodOfCheckedItem();
         Util.mutateRemoveKeys(items, ["checked", "idOfCookieUsage"]);
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {

@@ -141,8 +141,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @computed
     get getComputedDiscountOfMember() {
-        const percentage = this.getErosOfPublic()?.percentageOfDiscount ?? 1;
-        const discount = _.multiply(this.getPriceWithoutDiscount(), 1 - Util.toPercentageDecimal(percentage));
+        const discount = Util.getNumberOfMultiplyCeil(this.getPriceWithoutDiscount(), 1 - Util.toPercentageDecimal(this.getErosOfPublic()?.percentageOfDiscount ?? 1));
         const computed = _.subtract(0, discount);
         const result = computed < 0 ? _.round(computed) : 0;
         this.setDiscountOfMember(result);
