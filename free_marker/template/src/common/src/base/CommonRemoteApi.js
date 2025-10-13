@@ -1,4 +1,5 @@
 const edit = true;
+
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import moment from "moment";
@@ -224,8 +225,16 @@ class CommonRemoteApi {
         return await firebase.updateDocumentAtomically(path, predict, id);
     }
 
+    async upsertDocumentAtomically(path, predict = async (documentOfLatest, transaction) => documentOfLatest, id) {
+        return await firebase.upsertDocumentAtomically(path, predict, id);
+    }
+
     async updateItemAtomically(path, predict = (item, transaction) => item, id) {
         return await this.updateDocumentAtomically(path, predict, id);
+    }
+
+    async upsertItemAtomically(path, predict = (item, transaction) => item, id) {
+        return await this.upsertDocumentAtomically(path, predict, id);
     }
 
     async deleteItem(path, id) {
@@ -403,19 +412,23 @@ class CommonRemoteApi {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start update object => path:/${path}}`);
-        await firebase.updateDocument(path, updatedObject, "obj");
+        await firebase.updateDocument(path, updatedObject, "asObj");
         Util.appendInfo(`${uid} succeed update object => path:/${path}}`);
     }
 
     async updateObjectAtomically(path, predict = (object, transaction) => object) {
-        return await this.updateDocumentAtomically(path, predict, "obj");
+        return await this.updateDocumentAtomically(path, predict, "asObj");
+    }
+
+    async upsertObjectAtomically(path, predict = (object, transaction) => object) {
+        return await this.upsertObjectAtomically(path, predict, "asObj");
     }
 
     async deleteObject(path) {
         const uid = Util.getRandomHashV2(10);
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`${uid} start delete object => path:/${path}`);
-        await firebase.deleteDocument(path, "obj");
+        await firebase.deleteDocument(path, "asObj");
         Util.appendInfo(`${uid} succeed delete object => path:/${path}`);
     }
 

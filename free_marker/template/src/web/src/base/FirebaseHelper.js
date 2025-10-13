@@ -476,27 +476,89 @@ class FirebaseHelper extends BaseFirebase {
      const latest = old - 1;
      return {count: latest}
      }
-     *
+     *atomic = transaction邏輯
+     * fetch回來一個document時遠端會針當前doc寫一個sign，如果update document時發現sign不一樣(代表document被更動過)，就會執行retry，而且transaction update/delete/set 不需要加上await，只有get需要
      * */
-    async updateDocumentAtomically(path, predict = async (documentOfLatest, transaction, ref) => documentOfLatest, id) {
-        const self = this;
+    /**
+     * 處理 Firestore 原子操作的核心邏輯。
+     * @param {string} path - 集合路徑。
+     * @param {string} id - 文件 ID。
+     * @param {function} behavior - 事務執行函數，處理讀取和寫入邏輯。
+     */
+    /**
+     * 處理 Firestore 原子操作的核心執行函式。
+     * 它執行讀取、呼叫預測函數，並處理共同的驗證和日誌記錄。
+     * @param {string} path - 集合路徑。
+     * @param {string} id - 文件 ID。
+     * @param {string} operationType - 操作類型 ('update' 或 'upsert')，用於日誌記錄和驗證。
+     * @param {function(documentOfLatest|null, transaction, ref): Promise<object>} predictFn - 預測更新/插入內容的回調函數。
+     * @returns {Promise<any>} - 事務的結果。
+     */
+    async executeAtomicOperation(path, id, operationType, predictFn) {
         if (Util.isUndefinedNullEmpty(id)) {
-            throw new ERROR(9999, "474845146451964 updateDocumentAtomically 的id 不能為空值");
+            throw new ERROR(9999, `994784746 ${operationType}DocumentAtomically 的 id 不能為空值`);
         }
+
         const uid = Util.getRandomHashV2(10);
+        const ref = this.reference(path, id);
+
         const behavior = async (transaction) => {
-            const ref = self.reference(path, id);
+
+            // --- 1. 讀取 (Read) ---
             const docSnap = await transaction.get(ref);
-            if (!docSnap.exists) {
-                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist`);
+            let document = docSnap.data() || {};
+            document.exists = docSnap.exists;
+
+            // --- 2. 驗證 (Validation) for 'update' 類型 ---
+            if (operationType === 'update' && !docSnap.exists) {
+                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist. Cannot update a non-existent document.`);
             }
-            const document = docSnap.data();
-            document.exists = true;
-            const content = await predict(document, transaction, ref);
-            if (!Util.isUndefinedNullEmpty(content)) transaction.update(ref, content);
-            Util.appendInfo(`${uid} transaction update => path:/${path}/${id}`, `content ==> `, content);
+
+            // --- 3. 預測寫入內容 (Prediction) ---
+            // predictFn: (documentOfLatest, transaction, ref) => contentOfUpdate
+            const contentOfUpdate = await predictFn(document, transaction, ref);
+
+            // --- 4. 寫入 (Write) ---
+            if (!Util.isUndefinedNullEmpty(contentOfUpdate)) {
+                if (operationType === 'update') {
+                    // 如果是更新操作，則使用 update()
+                    transaction.update(ref, contentOfUpdate);
+                } else if (operationType === 'upsert') {
+                    // 如果是 upsert 操作，則使用 set() 搭配 merge: true
+                    transaction.set(ref, contentOfUpdate, { merge: true });
+                }
+
+                Util.appendInfo(`${uid} transaction ${operationType} => path:/${path}/${id}`, `content ==> `, contentOfUpdate);
+            }
         };
+
+        // 執行事務
         return await this.transaction(behavior);
+    }
+
+    /**
+     * 原子地更新一個現有的文件。如果文件不存在則拋出錯誤。
+     * @param {string} path - 集合路徑。
+     * @param {function(documentOfLatest, transaction, ref): Promise<object>} predict - 預測更新內容的回調函數。
+     * @param {string} id - 文件 ID。
+     * @returns {Promise<any>} - 事務的結果。
+     */
+    async updateDocumentAtomically(path, predict, id) {
+        // 使用核心執行器，並指定操作類型為 'update'
+        return await this.executeAtomicOperation(path, id, 'update', predict);
+    }
+
+    /**
+     * 原子地插入或更新一個文件 (Upsert)。
+     * 如果文件存在則更新 (merge)，不存在則創建。
+     * @param {string} path - 集合路徑。
+     * @param {function(documentOfLatest|{exists: false}, transaction, ref): Promise<object>} predict - 預測更新/插入內容的回調函數。
+     * @param {string} id - 文件 ID。
+     * @returns {Promise<any>} - 事務的結果。
+     */
+    async upsertDocumentAtomically(path, predict, id) {
+        // 使用核心執行器，並指定操作類型為 'upsert'
+        return await this.executeAtomicOperation(path, id, 'upsert', predict);
     }
 
     /**

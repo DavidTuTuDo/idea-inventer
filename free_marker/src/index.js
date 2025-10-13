@@ -1441,6 +1441,8 @@ class CodegenNode {
 
     getFunctionNameOfUpdateItemAtomically() { return Util.camel('update', this.getName(), 'item', 'atomically'); }
 
+    getFunctionNameOfUpsertItemAtomically() { return Util.camel('upsert', this.getName(), 'item', 'atomically'); }
+
     getFunctionNameOfDeleteItem() {
         return Util.camel('delete', this.getName(), 'item')
     }
@@ -4031,6 +4033,7 @@ class BaseBuilder extends PathBase {
                 params = ['items', ...params, '...conditions'];
                 break;
             case `update item atomically`:
+            case `upsert item atomically`:
                 params = ['predicate = async (itemOfLatest, transaction,ref) => itemOfLatest', 'id', ...params]
                 break;
             case `submit object`:
@@ -4039,6 +4042,7 @@ class BaseBuilder extends PathBase {
                 params = ['object', ...params];
                 break;
             case `update object atomically`:
+            case `upsert object atomically`:
                 params = [`predicate = async (objectOfLatest,transaction,ref) => objectOfLatest`, ...params]
                 break;
             case `upload storage file`:
@@ -4974,6 +4978,12 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                     generateApiFunction(
                         node,
+                        node.getFunctionNameOfUpsertItemAtomically(),
+                        [`return await self.upsertItemAtomically(path,predicate,id)`],
+                        'upsert item atomically')
+
+                    generateApiFunction(
+                        node,
                         node.getFunctionNameOfDeleteItem(),
                         [`const result = await self.deleteItem(path, id)`,
                             ...houseKeepingStmt(),
@@ -5063,6 +5073,12 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel('update', node.getFieldName(), 'atomically'),
                         [`return await self.updateObjectAtomically(path,predicate)`],
                         `update object atomically`);
+
+                    generateApiFunction(
+                        node,
+                        Util.camel('upsert', node.getFieldName(), 'atomically'),
+                        [`return await self.upsertObjectAtomically(path,predicate)`],
+                        `upsert object atomically`);
 
                     generateApiFunction(
                         node,
