@@ -165,6 +165,10 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         return Util.getVisibleOrNone(!UserInfo.isLoginWithSucceed() && !UserInfo.isAuthProcessing(), true);
     }
 
+    getInjectStyleOfNavigatorCompleteAutocomplete(navigator) {
+        return Util.getVisibleOrHidden(!navigator.getWhetherKeywordWasFetching());
+    }
+
     getInjectStyleOfNavigatorTipOfLoadingCircularProgress(navigator) {
         return Util.getVisibleOrNone(navigator.getWhetherKeywordWasFetching() || UserInfo.isAuthProcessing(), true);
     }

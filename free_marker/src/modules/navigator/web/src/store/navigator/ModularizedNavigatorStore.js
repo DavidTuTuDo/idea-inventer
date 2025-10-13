@@ -3,6 +3,7 @@ const edit = true;
 import _ from "lodash";
 import { makeObservable, action, observable } from "mobx";
 import BaseNavigatorStore from "./BaseNavigatorStore";
+import NavigatorKeywordStore from "../navigatorKeyword";
 import UserInfo from "../../base/BaseUserInfo";
 import { utiller as Util } from "utiller";
 
@@ -51,7 +52,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
 
     fetchKeywordInBackgroundBehavior = async (self) => {
         try {
-            const result = await self.fetchKeywords();
+            const result = await self.apiOfKeyword.fetchKeywords();
             if (_.isArray(self.getKeywords())) self.initialCompleteSuggestBehavior(_.uniqBy(result, "label"));
             Util.appendInfo(`已拿取完關鍵字！`);
         } catch (error) {
@@ -67,6 +68,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         super(props);
         makeObservable(this);
         this.setState("stable");
+        this.apiOfKeyword = new NavigatorKeywordStore();
     }
 
     getLabelOfComplete() {

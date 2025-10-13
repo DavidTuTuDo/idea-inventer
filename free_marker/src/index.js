@@ -1437,6 +1437,8 @@ class CodegenNode {
 
     getFunctionNameOfUpdateItem() { return Util.camel('update', this.getName(), 'item'); }
 
+    getFunctionNameOfUpsertItem() { return Util.camel('upsert', this.getName(), 'item'); }
+
     getFunctionNameOfUpdateItemAtomically() { return Util.camel('update', this.getName(), 'item', 'atomically'); }
 
     getFunctionNameOfDeleteItem() {
@@ -3967,7 +3969,7 @@ class BaseBuilder extends PathBase {
             case 'fetch items':
             case 'fetch':
                 if (node.isCheapArray()) {
-                    params = [STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params];
+                    params = [...params];
                 } else if (node.isPathArray()) {
                     params = [...params, `...conditions`];
                 } else {
@@ -3990,7 +3992,7 @@ class BaseBuilder extends PathBase {
                 params = [...params, 'lastItem', '...conditions']
                 break;
             case `submit items of cheap`:
-                params = ['items', STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params]
+                params = ['items', ...params]
                 break;
             case `submit item of cheap`:
                 params = ['item', 'id', ...params]
@@ -3999,10 +4001,10 @@ class BaseBuilder extends PathBase {
                 params = ['item', 'id', ...params]
                 break;
             case `delete cheap`:
-                params = ['id', ...params]
+                params = [...params]
                 break;
             case `fetch size of cheap`:
-                params = [STRING_OF_ID_OF_DEFAULT_CHEAP_ARRAY, ...params];
+                params = [ ...params];
                 break;
             case `fetch items of limitation`:
                 params = [...params, `action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'];
@@ -4018,6 +4020,7 @@ class BaseBuilder extends PathBase {
                 break;
 
             case `submit item`:
+            case `upsert item`:
             case `update item`:
                 params = ['item', 'id', ...params];
                 break;
@@ -4032,6 +4035,7 @@ class BaseBuilder extends PathBase {
                 break;
             case `submit object`:
             case `update object`:
+            case `upsert object`:
                 params = ['object', ...params];
                 break;
             case `update object atomically`:
@@ -4785,13 +4789,13 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `return await self.submitObject(path,{
                                     ${ID_OF_DEFAULT_CHEAP_ARRAY}:commitments,
                                     updateTime:this._firebase().getServerTimeSymbol(),
-                            }, id)`],
+                            })`],
                         `submit items of cheap`)
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        [`const result = await self.fetchObject(path, id)`,
+                        [`const result = await self.fetchObject(path)`,
                             `return result.${ID_OF_DEFAULT_CHEAP_ARRAY} ?? []`],
                         `fetch items of cheap`);
 
@@ -4824,14 +4828,14 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfDelete(),
-                        [`return await self.deleteObject(path, id);`],
+                        [`return await self.deleteObject(path);`],
                         `delete cheap`,
                     )
 
                     generateApiFunction(
                         node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(${needView()}${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
+                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
                         `fetch size of cheap`)
 
 
@@ -4956,6 +4960,14 @@ class RemoteFunctionHandler extends BaseBuilder {
 
                     generateApiFunction(
                         node,
+                        node.getFunctionNameOfUpsertItem(),
+                        [
+                            `const commitment = this.${functionNameOfNormalize}(item, true)`,
+                            `return await self.upsertItem(path, commitment, id)`],
+                        'upsert item')
+
+                    generateApiFunction(
+                        node,
                         node.getFunctionNameOfUpdateItemAtomically(),
                         [`return await self.updateItemAtomically(path,predicate,id)`],
                         'update item atomically')
@@ -5039,6 +5051,12 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel('update', node.getFieldName()),
                         [`return await self.updateObject(path,object)`],
                         `update object`);
+
+                    generateApiFunction(
+                        node,
+                        Util.camel('upsert', node.getFieldName()),
+                        [`return await self.upsertObject(path,object)`],
+                        `upsert object`);
 
                     generateApiFunction(
                         node,
