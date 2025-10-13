@@ -87,8 +87,6 @@ class MobileStyle {
 
     NavigatorDrawerDrawer = {};
 
-    NavigatorToolBarTipOfLoadingCircularProgress = {};
-
     NavigatorToolBarAccountIconAccountCircle = {};
 
     NavigatorToolBarAccountReactFragmentWrap = {};
@@ -98,6 +96,8 @@ class MobileStyle {
     NavigatorToolBarLoginIconLogin = {};
 
     NavigatorToolBarLoginIconButton = {};
+
+    NavigatorToolBarTipOfLoadingCircularProgress = {};
 
     NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
 

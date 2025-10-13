@@ -87,8 +87,6 @@ class CommonStyle {
 
     NavigatorDrawerDrawer = {};
 
-    NavigatorToolBarTipOfLoadingCircularProgress = {};
-
     NavigatorToolBarAccountIconAccountCircle = {};
 
     NavigatorToolBarAccountReactFragmentWrap = {};
@@ -98,6 +96,8 @@ class CommonStyle {
     NavigatorToolBarLoginIconLogin = {};
 
     NavigatorToolBarLoginIconButton = {};
+
+    NavigatorToolBarTipOfLoadingCircularProgress = {};
 
     NavigatorToolBarCartieBadgeOfCartieIconShoppingCart = {};
 

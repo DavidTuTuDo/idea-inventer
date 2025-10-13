@@ -12968,7 +12968,7 @@
     }
 }
 .NavigatorToolBarTitleDivWrap:extend(.CenterInParentColumn) {
-    padding-right: 10px;
+    padding-right: 12px;
     @media @mobile {
         /** empty style */
     }
@@ -12976,12 +12976,12 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        padding-right: 18px;
     }
 }
 .NavigatorToolBarCompleteAutocomplete {
     flex-grow: 1;
-    margin-right: 5px;
+    margin-right: 3px;
     @media @mobile {
         /** empty style */
     }
@@ -12993,17 +12993,15 @@
     }
 }
 .NavigatorToolBarCompleteInputOfCompleteTextField {
-    border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.3);
     @media @mobile {
-        width: 95%;
+        width: 97%;
     }
     @media @tablet {
-        width: 95%;
+        width: 97%;
     }
     @media @desktop {
-        width: 70%;
-        max-width: 500px;
+        width: 99%;
     }
 }
 .NavigatorToolBarCompleteInputOfCompleteFormWrap {
@@ -13040,6 +13038,18 @@
     }
 }
 .NavigatorToolBarCartieBadgeOfCartieIconShoppingCart:extend(.NavigatorToolBarAccountIconAccountCircle) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarTipOfLoadingCircularProgress {
+    margin-right: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -13107,27 +13117,21 @@
         /** empty style */
     }
 }
-.NavigatorToolBarTipOfLoadingCircularProgress {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
 .NavigatorDrawerDrawer {
-    margin-top: 60px !important;
+    margin-top: 68px !important;
+    border-radius: 23px;
     @media @mobile {
-        width: 100%;
+        width: 96%;
+        margin-left: 8px;
     }
     @media @tablet {
-        width: 100%;
+        width: 96%;
+        margin-left: 8px;
     }
     @media @desktop {
-        width: 350px;
+        width: 360px;
+        margin-top: 70px !important;
+        margin-left: 10px;
     }
 }
 .NavigatorDrawerShortcutListItem {
@@ -13540,5 +13544,162 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+/** ======== following for homeless ========= */
+
+.AccountUrlOfHeadPhotoAvatar {
+    width: 60px;
+    height: 60px;
+    @media @mobile {
+        margin-bottom: 20px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin-bottom: 40px;
+    }
+}
+.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
+    width: 80%;
+    justify-content: space-between;
+    @media @mobile {
+        width: 90%;
+    }
+    @media @tablet {
+        width: 90%;
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountSpaceDiv {
+    height: 1px;
+    width: 80%;
+    background-color: rgba(0, 0, 0, 0.3);
+    @media @mobile {
+        width: 90%;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        font-size: 0.8rem;
+    }
+    @media @desktop {
+        font-size: 0.9rem;
+    }
+}
+.AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
+    @media @mobile {
+        font-size: 0.7rem;
+    }
+    @media @tablet {
+        font-size: 0.7rem;
+    }
+    @media @desktop {
+        font-size: 0.8rem;
+    }
+}
+.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        font-size: 0.8rem;
+    }
+    @media @desktop {
+        font-size: 0.9rem;
+    }
+}
+.AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
+    @media @mobile {
+        font-size: 0.7rem;
+    }
+    @media @tablet {
+        font-size: 0.7rem;
+    }
+    @media @desktop {
+        font-size: 0.8rem;
+    }
+}
+.AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    @media @mobile {
+        margin-top: 20px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin-top: 30px;
     }
 }

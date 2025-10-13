@@ -572,15 +572,74 @@ class BaseComponent extends MuiComponent {
         );
     }
 
-    HideOnScroll(props) {
+    /**
+     * Custom hook to trigger the visibility based on scroll direction.
+     * 只有在向上滑動 (Scrolled Up) 時才返回 true。
+     *
+     * @param {object} props - 包含 window 參考的屬性。
+     * @returns {boolean} - 是否應該顯示元件 (true = 顯示)。
+     */
+    useScrollDirection(targetWindow) {
+        const [shouldShow, setShouldShow] = React.useState(true); // 初始值為 true：載入時顯示
+        const prevScrollY = React.useRef(0);
+
+        React.useEffect(() => {
+            const handleScroll = () => {
+                const currentScrollY = targetWindow.pageYOffset || targetWindow.scrollY || targetWindow.document.documentElement.scrollTop;
+
+                // 1. 判斷捲動方向
+                const scrollingUp = currentScrollY < prevScrollY.current;
+                const scrollingDown = currentScrollY > prevScrollY.current;
+
+                // 避免在捲動位置很小時（抖動）影響判斷
+                const scrollThreshold = 10;
+                const isSignificantScroll = Math.abs(currentScrollY - prevScrollY.current) > scrollThreshold;
+
+                if (isSignificantScroll) {
+                    // 2. 只有在有明顯捲動時才更新狀態
+                    if (scrollingUp) {
+                        // 向上滑動時，顯示
+                        setShouldShow(true);
+                    } else if (scrollingDown) {
+                        // 向下滑動時，隱藏
+                        setShouldShow(false);
+                    }
+                }
+
+                // 3. 更新上次的捲動位置
+                prevScrollY.current = currentScrollY;
+            };
+
+            const target = targetWindow.document ? targetWindow : window; // 獲取正確的目標
+            target.addEventListener('scroll', handleScroll);
+
+            return () => {
+                target.removeEventListener('scroll', handleScroll);
+            };
+        }, [targetWindow]);
+
+        return shouldShow;
+    }
+
+    /**
+     * 實現向上滑動時顯示，向下滑動時隱藏的 MUI Slide 元件。
+     * @param {object} props - 傳遞給 Slide 元件的屬性。
+     * @param {React.ReactNode} props.children - 要隱藏/顯示的內容 (通常是 AppBar)。
+     * @param {function} [props.window] - 窗口物件的引用，用於自定義捲動目標 (例如在 iframe 中)。
+     */
+    HideOnScroll = (props) => {
         const { children, window } = props;
-        // Note that you normally won't need to set the window ref as useScrollTrigger
-        // will default to window.
-        // This is only being set here because the demo is in an iframe.
-        const trigger = useScrollTrigger({ target: window ? window() : undefined });
+
+        // 獲取實際的目標窗口物件
+        const targetWindow = window ? window() : globalThis.window;
+
+        // 使用自定義 Hook 取得是否應該顯示的狀態
+        const triggerShow = this.useScrollDirection(targetWindow);
 
         return (
-            <Slide appear={false} direction="down" in={!trigger}>
+            // in={true} = 顯示 (向下), in={false} = 隱藏 (向上)
+            // 為了向上隱藏，向下滑動時隱藏，我們使用 in={triggerShow}
+            <Slide appear={false} direction="down" in={triggerShow}>
                 {children}
             </Slide>
         );
