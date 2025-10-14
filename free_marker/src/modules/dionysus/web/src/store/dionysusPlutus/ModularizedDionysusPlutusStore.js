@@ -92,12 +92,16 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
 
     @computed
     get getComputedPriceOfTotal() {
-        return _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
+        const total = _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
+        this.setPriceOfTotal(total);
+        return total;
     }
 
     @computed
     get getComputedFeeOfPayment() {
-        return _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
+        const total = _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
+        this.setFeeOfTransport(total);
+        return total;
     }
 
     getPreciselyAddress = () => {

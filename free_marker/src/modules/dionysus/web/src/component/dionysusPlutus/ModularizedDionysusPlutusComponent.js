@@ -110,7 +110,8 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
             transport: UserInfo.getSelectedOfTransport(),
-            transaction: UserInfo.getSelectedOfTransaction()
+            transaction: UserInfo.getSelectedOfTransaction(),
+            priceOfTotal: self.getStore().getFeeOfPayment()
         });
         return result.idOfPreciseOrder;
     };
