@@ -7,7 +7,7 @@ import UserInfoRef from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDionysusCartieStore from "./BaseDionysusCartieStore";
 import VariantApi from "../dionysusBoozeVariant";
-import ErosPublic from "../dionysusErosPublic";
+import ErosPublic from "../dionysusErosCupidPublic";
 
 class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     @observable
@@ -27,7 +27,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         const exist = this.erosOfPublic && this.erosOfPublic.numOfWorker > 0;
         if (!refresh && exist) return this.erosOfPublic;
 
-        this.erosOfPublic = await this.apiOfErosPublic.fetchPublic(this.getComponent(), idOfAuthor);
+        this.erosOfPublic = await this.apiOfErosPublic.fetchCupidPublic(this.getComponent(), idOfAuthor);
         Util.appendInfo(this.erosOfPublic);
         return this.erosOfPublic;
     };

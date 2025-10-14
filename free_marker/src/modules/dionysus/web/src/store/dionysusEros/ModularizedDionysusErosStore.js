@@ -48,7 +48,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
-        const pub = this.getPublic();
+        const pub = this.getCupidPublic();
         this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(pub.getNumOfWorker());
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(pub.getAmountOfAllowAnonymousBuy());
         this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(pub.getPercentageOfDiscount());
@@ -83,7 +83,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         }
         setter(value);
         if (afterSet) afterSet(value);
-        await this.getPublic().submitPublic(this.getComponent());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     }
 
     /** public */
@@ -92,7 +92,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: this.isValidDiscountPercentNumber,
             value: percent,
             errorMessage: `折扣常數格式錯誤 ${percent}`,
-            setter: (val) => this.getPublic().setPercentageOfDiscount(val),
+            setter: (val) => this.getCupidPublic().setPercentageOfDiscount(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(val)
         });
 
@@ -101,7 +101,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: (v) => v >= 1,
             value: amount,
             errorMessage: `未登入消費金額格式錯誤 ${amount}`,
-            setter: (val) => this.getPublic().setAmountOfAllowAnonymousBuy(val),
+            setter: (val) => this.getCupidPublic().setAmountOfAllowAnonymousBuy(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(val)
         });
 
@@ -110,7 +110,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: (v) => v >= 1,
             value: amount,
             errorMessage: `消費額度格式錯誤 ${amount}`,
-            setter: (val) => this.getPublic().setAmountOfMaximumBuy(val),
+            setter: (val) => this.getCupidPublic().setAmountOfMaximumBuy(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(val)
         });
 
@@ -119,7 +119,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(price),
             errorMessage: `金額格式錯誤 '${price}'`,
-            setter: (val) => this.getPublic().setThresholdOfFreeShipByCOD(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByCOD(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(val)
         });
 
@@ -128,7 +128,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(price),
             errorMessage: `金額格式錯誤 '${price}'`,
-            setter: (val) => this.getPublic().setThresholdOfCheckoutByCredit(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfCheckoutByCredit(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(val)
         });
 
@@ -137,7 +137,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(price),
             errorMessage: `金額格式錯誤 '${price}'`,
-            setter: (val) => this.getPublic().setThresholdOfFreeShipByRapidly(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByRapidly(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(val)
         });
 
@@ -146,7 +146,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(price),
             errorMessage: `金額格式錯誤 '${price}'`,
-            setter: (val) => this.getPublic().setThresholdOfFreeShipByHomeDelivery(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByHomeDelivery(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery(val)
         });
 
@@ -155,7 +155,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(price),
             errorMessage: `金額格式錯誤 '${price}'`,
-            setter: (val) => this.getPublic().setThresholdOfCheckoutByLinePay(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfCheckoutByLinePay(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay(val)
         });
 
@@ -164,7 +164,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(fee),
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setThresholdOfFreeShipByStorePickup(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByStorePickup(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(val)
         });
 
@@ -173,7 +173,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: (v) => _.isNumber(v) && v > 0,
             value: _.toNumber(num),
             errorMessage: `人數格式錯誤 '${num}'`,
-            setter: (val) => this.getPublic().setNumOfWorker(val),
+            setter: (val) => this.getCupidPublic().setNumOfWorker(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(val)
         });
 
@@ -182,7 +182,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(fee),
             errorMessage: `宅配運費格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setFeeOfHomeDelivery(val),
+            setter: (val) => this.getCupidPublic().setFeeOfHomeDelivery(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(val)
         });
 
@@ -191,7 +191,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(fee),
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setFeeOfInStorePickup(val),
+            setter: (val) => this.getCupidPublic().setFeeOfInStorePickup(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(val)
         });
 
@@ -200,7 +200,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(fee),
             errorMessage: `COD運費格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setFeeOfShipByCOD(val),
+            setter: (val) => this.getCupidPublic().setFeeOfShipByCOD(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod(val)
         });
 
@@ -209,7 +209,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(fee),
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setFeeOfRapidOnDelivery(val),
+            setter: (val) => this.getCupidPublic().setFeeOfRapidOnDelivery(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
         });
 
@@ -218,68 +218,68 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             validator: _.isNumber,
             value: _.toNumber(fee),
             errorMessage: `自費最低門檻格式錯誤 '${fee}'`,
-            setter: (val) => this.getPublic().setThresholdOfAllowSelfPickup(val),
+            setter: (val) => this.getCupidPublic().setThresholdOfAllowSelfPickup(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
         });
 
     /** enable toggles */
     submitWhetherBoughtWithoutLogin = async () => {
-        this.getPublic().setEnableOfBoughtWithoutLoginIn(this.getEnableOfBoughtWithoutLoginIn());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setEnableOfBoughtWithoutLoginIn(this.getEnableOfBoughtWithoutLoginIn());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherEnableOfLinePay = async () => {
-        this.getPublic().setEnableOfLinePay(this.getEnableOfLinepay());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setEnableOfLinePay(this.getEnableOfLinepay());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherEnableOfEcPay = async () => {
-        this.getPublic().setEnableOfECPay(this.getEnableOfEcPay());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setEnableOfECPay(this.getEnableOfEcPay());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherEnableOfDirect = async () => {
-        this.getPublic().setEnableOfDirectPay(this.getEnableOfDirect());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setEnableOfDirectPay(this.getEnableOfDirect());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherHomeDelivery = async () => {
-        this.getPublic().setWhetherHomeDelivery(this.getEnableOfWhetherHomeDelivery());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setWhetherHomeDelivery(this.getEnableOfWhetherHomeDelivery());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherShipByRapidly = async () => {
-        this.getPublic().setWhetherShipByRapidly(this.getEnableOfWhetherShipByRapidly());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setWhetherShipByRapidly(this.getEnableOfWhetherShipByRapidly());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherShipByStorePickup = async () => {
-        this.getPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherShipByStorePickup());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherShipByStorePickup());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherHomeShipByCOD = async () => {
-        this.getPublic().setWhetherHomeShipByCOD(this.getEnableOfWhetherHomeShipByCod());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setWhetherHomeShipByCOD(this.getEnableOfWhetherHomeShipByCod());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherPickupByBuyerSelf = async () => {
-        this.getPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherPickupByBuyerSelf());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setWhetherPickupByBuyerSelf(this.getEnableOfWhetherPickupByBuyerSelf());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     /** pay secrets */
     submitLinePaySerials = async ([channelId, channelSecret]) => {
         if (!this.isValidLinePayConfig(channelId, channelSecret)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
-        this.getSecret().setLinepaySet(channelId, channelSecret);
-        this.getPublic().setHasLinePay(true);
-        await this.getSecret().submitSecret(this.getComponent());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidSecret().setLinepaySet(channelId, channelSecret);
+        this.getCupidPublic().setHasLinePay(true);
+        await this.getCupidSecret().submitCupidSecret(this.getComponent());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
 
     submitECPaySerials = async ([merchantID, hashKey, hashIV]) => {
         if (!this.isValidECPayConfig(merchantID, hashKey, hashIV)) return this.getComponent().showErrorSnackMessage(`綠界支付(格式錯誤)`);
-        this.getSecret().setECPaySet(merchantID, hashKey, hashIV);
-        this.getPublic().setHasECPay(true);
-        await this.getSecret().submitSecret(this.getComponent());
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidSecret().setECPaySet(merchantID, hashKey, hashIV);
+        this.getCupidPublic().setHasECPay(true);
+        await this.getCupidSecret().submitCupidSecret(this.getComponent());
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
 
     submitDirectPay = async ([url]) => {
         if (!Util.isHttpsURL(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
-        this.getPublic().setPayOfDirect(url);
-        await this.getPublic().submitPublic(this.getComponent());
+        this.getCupidPublic().setPayOfDirect(url);
+        await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
 
     submitBrandName = async (name) => {
@@ -303,9 +303,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.categoryOfCurrent = (await this.apiOfTab.fetchSelects(this.getComponent())) ?? [];
         return this.categoryOfCurrent.map((each) => ({ content: each.label }));
     };
-    fetchDefaultTextOfLinePay = async () => this.getNormalizeStmt(["CHANNEL ID", "SECRET  ID"], this.getSecret().getLinepaySet());
-    fetchDefaultTextOfECPay = async () => this.getNormalizeStmt(["Merchant ID", "Hash Key", "Hash IV"], this.getSecret().getECPaySet());
-    fetchDefaultTextDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getPublic().getPayOfDirect()]);
+    fetchDefaultTextOfLinePay = async () => this.getNormalizeStmt(["CHANNEL ID", "SECRET  ID"], this.getCupidSecret().getLinepaySet());
+    fetchDefaultTextOfECPay = async () => this.getNormalizeStmt(["Merchant ID", "Hash Key", "Hash IV"], this.getCupidSecret().getECPaySet());
+    fetchDefaultTextDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getCupidPublic().getPayOfDirect()]);
 
     getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: _.get(items, idx, "") || "" }));
 
