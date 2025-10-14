@@ -73,7 +73,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                     transport.setDescription(`消費滿 ${eros.thresholdOfAllowSelfPickup} 元提供自取`);
                     transport.setPrice(0);
                     transport.setFreeOfThreshold(0);
-                    transport.setAvailable(eros.whetherShipByStorePickup && priceOfWithoutTransport >= eros.thresholdOfAllowSelfPickup);
+                    transport.setAvailable(eros.whetherPickupByBuyerSelf && priceOfWithoutTransport >= eros.thresholdOfAllowSelfPickup);
                     break;
                 case Config.TransportMethod.Store711: //7-11 取貨
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByStorePickup} 元免運`);
@@ -145,15 +145,15 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
         if (UserInfo.containsPhysicalGoodOfCheckedItem()) {
             Cookie.setInfoOfSelectedTrans({
-                typeOfTransaction: transaction.getSelectedOfTransaction(),
+                typeOfTransaction: transaction.getTypeOfTransaction(),
                 stringOfTransaction: transaction.getName(),
-                typeOfTransport: transport.getSelectedOfTransport(),
+                typeOfTransport: transport.getTypeOfTransport(),
                 feeOfTransport: transport.getPrice(),
                 stringOfTransport: transport.getName()
             });
         } else {
             Cookie.setInfoOfSelectedTrans({
-                typeOfTransaction: transaction.getSelectedOfTransaction(),
+                typeOfTransaction: transaction.getTypeOfTransaction(),
                 stringOfTransaction: transaction.getName(),
                 typeOfTransport: Config.TransportMethod.Needless,
                 feeOfTransport: 0,

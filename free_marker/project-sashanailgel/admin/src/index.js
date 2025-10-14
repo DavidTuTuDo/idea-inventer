@@ -102,11 +102,10 @@ import fs from "fs";
     async function uploadProducts() {
         const ids = await api.fetchDocumentIdsOfBooze();
         console.log("current ids of Booze ==> ", ids);
-
+        /** batch delete storage : 要記得firestore/storage/甚至firebase上所有的路徑(a/b/c/d.png)都是視覺化，真正要刪除的d.png並非是在 a/b/c底下，所以要針對每個檔案regEx去做CRUD */
         await api.batchDeleteStorageByPrefixes(ids.map((id) => `dionysus/${id}/images/`));
         /** batch delete booze/variant */
         await api.deleteBatchBoozeVariantItems(ids);
-        /** batch delete storage */
 
         const products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
         console.log(`莎夏美學合計商品共有： `, _.size(products), ` 個`);

@@ -16,7 +16,6 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     onDionysusPlutusFindIconButtonClicked(param) {
         const self = this;
-
         if (!_.isEmpty(this.getStore().getAddress())) {
             const address = this.getStore().getPreciselyAddress();
             Functions.httpOnCallGetDistanceOfSpecificAddress(this, { address }).then((result) => {
@@ -86,21 +85,17 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
         switch (UserInfo.getSelectedOfTransaction()) {
             case Config.TransactionMethod.LinePay:
-                return await this.performCheckoutByLinePayBehavior(idOfPreciseOrder);
+                const validate1 = eros.enableOfLinepay && eros.hasLinePay;
+                return validate1 ? await this.performCheckoutByLinePayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.ECPay:
-                return await this.performCheckoutByECPayBehavior(idOfPreciseOrder);
+                const validate2 = eros.enableOfECPay && eros.hasECPay;
+                return validate2 ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.CashPay:
-                const validate = eros.enableOfDirectPay && eros.hasDirectPay;
-                return validate ? this.gotoExternalUrlDirectly(eros.payOfDirect) : Router.gotoEpayFootprintPage(this, "user", "all");
+                const validate3 = eros.enableOfDirectPay && eros.hasDirectPay;
+                return validate3 ? this.gotoExternalUrlDirectly(eros.payOfDirect) : Router.gotoEpayFootprintPage(this, "user", "all");
             default:
                 return Router.gotoEpayFootprintPage(this, "user", "all");
         }
-
-        /** 最一開始用Eamil的方法
-        if (!UserInfo.isLoginWithSucceed()) {
-            Router.gotoHomePage(this);
-            return this.showSuccessSnackMessage(`已成功購買，請檢查您的信箱`);
-        } */
     };
 
     performEPayCreateOrderBehavior = async () => {

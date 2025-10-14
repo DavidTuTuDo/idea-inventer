@@ -278,6 +278,7 @@ class UserInfo {
      * _.some(collection, predicate)：會遍歷陣列，只要有一個元素符合條件就回傳 true。 */
     containsPhysicalGoodOfCheckedItem = () => _.some(this.getCheckedCartieItems(), { isTaskJob: false });
 
+    /** 拿勾選項目裡第一個idOfAuthor */
     getAuthorOfHeadItemOfCartie = () => {
         const items = this.getCheckedCartieItems();
         return _.isArray(items) && items.length > 0 ? items[0].idOfAuthor : "";

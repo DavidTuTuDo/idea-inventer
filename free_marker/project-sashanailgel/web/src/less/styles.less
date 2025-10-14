@@ -9411,6 +9411,7 @@
 .EpayFootprintOrderBriefDiv:extend(.CenterInParentRow) {
     justify-content: flex-start;
     gap: 5px;
+    width: 99%;
     border-bottom: 1px solid #bbb;
     @media @mobile {
         /** empty style */
@@ -9424,14 +9425,15 @@
 }
 .EpayFootprintOrderBriefDivList {
     width: 100%;
+    overflow-y: auto;
     @media @mobile {
-        /** empty style */
+        max-height: 40vh;
     }
     @media @tablet {
-        /** empty style */
+        max-height: 40vh;
     }
     @media @desktop {
-        /** empty style */
+        max-height: 500px;
     }
 }
 .EpayFootprintOrderBriefImageOfProductPhotoImg:extend(.SquareRatioImg) {
@@ -9464,7 +9466,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 270px;
+    width: 280px;
     @media @mobile {
         /** empty style */
     }
@@ -9472,7 +9474,7 @@
         /** empty style */
     }
     @media @desktop {
-        width: 430px;
+        width: 600px;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap {
