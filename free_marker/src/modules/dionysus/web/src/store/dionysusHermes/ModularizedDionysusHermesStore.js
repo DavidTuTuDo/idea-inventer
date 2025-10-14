@@ -7,6 +7,7 @@ import UserInfo from "../../base/BaseUserInfo";
 import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
 import BaseDionysusHermesStore from "./BaseDionysusHermesStore";
 import { Application } from "../../index";
+import Config from "../../config";
 
 class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
     constructor(props) {
@@ -31,8 +32,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         const idOfAuthor = UserInfo.getAuthorOfHeadItemOfCartie();
 
         if (idOfAuthor) {
-            await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
-            eros = Application.getDionysusCartieStore().getErosOfPublic();
+            eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             Util.appendInfo(`hermes拿到了 eros => `, eros);
         } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
 
@@ -41,25 +41,25 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
         for (const transaction of this.getTransactions()) {
             switch (transaction.getTypeOfTransaction()) {
-                case 1: //LINE支付
+                case Config.TransactionMethod.LinePay: //LINE支付
                     transaction.setDescription(`消費需滿 ${eros.thresholdOfCheckoutByLinePay} 元`);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(eros.thresholdOfCheckoutByLinePay);
                     transaction.setAvailable(eros.enableOfLinePay && eros.hasLinePay);
                     break;
-                case 3: //信用卡（綠界支付x`
+                case Config.TransactionMethod.ECPay: //信用卡（綠界支付x`
                     transaction.setDescription(`消費需滿 ${eros.thresholdOfCheckoutByCredit} 元`);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(eros.thresholdOfCheckoutByCredit);
                     transaction.setAvailable(eros.enableOfECPay && eros.hasECPay);
                     break;
-                case 4: //貨到付款`
+                case Config.TransactionMethod.COD: //貨到付款`
                     transaction.setDescription(`消費需滿 ${eros.thresholdOfFreeShipByCOD} 元`);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(eros.thresholdOfFreeShipByCOD);
                     transaction.setAvailable(eros.whetherHomeShipByCOD);
                     break;
-                case 9: //現金
+                case Config.TransactionMethod.CashPay: //現金
                     transaction.setDescription(``);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(0);
@@ -69,31 +69,31 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
         for (const transport of this.getTransports()) {
             switch (transport.getTypeOfTransport()) {
-                case 3: //自行取貨`
+                case Config.TransportMethod.SelfPickup: //自行取貨`
                     transport.setDescription(`消費滿 ${eros.thresholdOfAllowSelfPickup} 元提供自取`);
                     transport.setPrice(0);
                     transport.setFreeOfThreshold(0);
                     transport.setAvailable(eros.whetherShipByStorePickup && priceOfWithoutTransport >= eros.thresholdOfAllowSelfPickup);
                     break;
-                case 4: //7-11 取貨
+                case Config.TransportMethod.Store711: //7-11 取貨
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByStorePickup} 元免運`);
                     transport.setPrice(eros.feeOfInStorePickup);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByStorePickup);
                     transport.setAvailable(eros.whetherShipByStorePickup);
                     break;
-                case 5: //全家 取貨
+                case Config.TransportMethod.StoreFamily: //全家 取貨
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByStorePickup} 元免運`);
                     transport.setPrice(eros.feeOfInStorePickup);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByStorePickup);
                     transport.setAvailable(eros.whetherShipByStorePickup);
                     break;
-                case 7: //當日到(14:00前下單)
+                case Config.TransportMethod.RapidOnDay: //當日到(14:00前下單)
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByRapidly} 元免運`);
                     transport.setPrice(eros.feeOfRapidOnDelivery);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByRapidly);
                     transport.setAvailable(eros.whetherShipByRapidly);
                     break;
-                case 8: //宅配
+                case Config.TransportMethod.Freight: //宅配
                     transport.setDescription(`滿 ${eros.thresholdOfFreeShipByHomeDelivery} 元免運`);
                     transport.setPrice(eros.feeOfHomeDelivery);
                     transport.setFreeOfThreshold(eros.thresholdOfFreeShipByHomeDelivery);
@@ -123,7 +123,6 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         const transaction = this.getSelectedTransaction();
         Util.appendInfo(`選擇的付費方式:`, transaction ? transaction.data() : "");
         Util.appendInfo(`選擇的物流方式:`, transport ? transport.data() : "");
-
         if (UserInfo.containsPhysicalGoodOfCheckedItem())
             return !Util.isUndefinedNullEmpty(this.getSelectedTransport()) && !Util.isUndefinedNullEmpty(this.getSelectedTransaction());
         else return !Util.isUndefinedNullEmpty(this.getSelectedTransaction());
@@ -146,16 +145,19 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
         if (UserInfo.containsPhysicalGoodOfCheckedItem()) {
             Cookie.setInfoOfSelectedTrans({
-                typeOfTransaction: transaction.getTypeOfTransaction(),
+                typeOfTransaction: transaction.getSelectedOfTransaction(),
                 stringOfTransaction: transaction.getName(),
-                typeOfTransport: transport.getTypeOfTransport(),
+                typeOfTransport: transport.getSelectedOfTransport(),
                 feeOfTransport: transport.getPrice(),
                 stringOfTransport: transport.getName()
             });
         } else {
             Cookie.setInfoOfSelectedTrans({
-                typeOfTransaction: transaction.getTypeOfTransaction(),
-                stringOfTransaction: transaction.getName()
+                typeOfTransaction: transaction.getSelectedOfTransaction(),
+                stringOfTransaction: transaction.getName(),
+                typeOfTransport: Config.TransportMethod.Needless,
+                feeOfTransport: 0,
+                stringOfTransport: Config.LangOfMethod.Needless
             });
         }
     }

@@ -7,6 +7,7 @@ import Router from "../../router";
 import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
 import Functions from "../../functions";
 import Config from "../../config";
+import { Application } from "../../index";
 
 class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     constructor(props) {
@@ -28,10 +29,6 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         return Util.getVisibleOrHidden(false);
     }
 
-    // getWrapInjectStyleOfDionysusPlutusEmailTextField(plutus) {
-    //     return Util.getVisibleOrNone(!UserInfoRef.isLoginWithSucceed())
-    // }
-
     onCitySelectedChange(value, param) {
         const self = this;
         Util.syncDelay(1).then(() => {
@@ -50,23 +47,17 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     onDionysusPlutusSubmitChipClicked(param) {
         const self = this;
-        const typeOfTransport = UserInfo.getTypeOfTransport();
+        const selectedOfTransport = UserInfo.getSelectedOfTransport();
+        const selectedOfTransaction = UserInfo.getSelectedOfTransaction();
         const price = UserInfo.getTotalPriceOfCartie();
-        if (typeOfTransport < 0 || price <= 0) {
-            this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
-            return;
-        }
-        const containsPhysicalGood = UserInfo.containsPhysicalGoodOfCheckedItem();
+        if (selectedOfTransaction < 0 || selectedOfTransport < 0 || price <= 0) return this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
 
-        function isAddressNotValid() {
-            if (containsPhysicalGood) {
-                if (typeOfTransport === 3) return false; //todo enum:自行取貨
-                return _.isEmpty(self.getStore().getAddress());
-            }
-            return false;
+        function isValidOfAddressShouldFormed() {
+            if (_.isOrEquals(selectedOfTransport, Config.TransportMethod.Needless, Config.TransportMethod.SelfPickup)) return false;
+            return _.isEmpty(self.getStore().getAddress());
         }
 
-        if (Util.or(isAddressNotValid(), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
+        if (Util.or(isValidOfAddressShouldFormed(), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
             this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`);
             return;
         }
@@ -75,6 +66,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         this.execute().then(() => {
             UserInfo.deleteCheckedCartieItemBehavior();
         });
+
         /**  發信的功能
          this.getStore()
          .submitSavior(this)
@@ -89,32 +81,31 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     execute = async () => {
+        const eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor();
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
         Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
-        if (!UserInfo.isLoginWithSucceed()) {
-            Router.gotoHomePage(this);
-            return this.showSuccessSnackMessage(`已成功購買，請檢查您的信箱`);
-        }
-
-        switch (UserInfo.getTypeOfTransport()) {
-            case 1:
-            case 2:
-                await this.performCheckoutByLinePayBehavior(idOfPreciseOrder);
-                return;
-            case 3:
-            case 6:
-                await this.performCheckoutByECPayBehavior(idOfPreciseOrder);
-                return;
-            case 9:
+        switch (UserInfo.getSelectedOfTransaction()) {
+            case Config.TransactionMethod.LinePay:
+                return await this.performCheckoutByLinePayBehavior(idOfPreciseOrder);
+            case Config.TransactionMethod.ECPay:
+                return await this.performCheckoutByECPayBehavior(idOfPreciseOrder);
+            case Config.TransactionMethod.CashPay:
+                const validate = eros.enableOfDirectPay && eros.hasDirectPay;
+                return validate ? this.gotoExternalUrlDirectly(eros.payOfDirect) : Router.gotoEpayFootprintPage(this, "user", "all");
             default:
                 return Router.gotoEpayFootprintPage(this, "user", "all");
         }
+
+        /** 最一開始用Eamil的方法
+        if (!UserInfo.isLoginWithSucceed()) {
+            Router.gotoHomePage(this);
+            return this.showSuccessSnackMessage(`已成功購買，請檢查您的信箱`);
+        } */
     };
 
     performEPayCreateOrderBehavior = async () => {
         const self = this;
         const items = UserInfo.getCheckedCartieItems();
-        const containsPhysicalGood = UserInfo.containsPhysicalGoodOfCheckedItem();
         Util.mutateRemoveKeys(items, ["checked", "idOfCookieUsage"]);
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {
             items,
@@ -123,18 +114,10 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             phone: self.getStore().getPhone(),
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
-            transport: containsPhysicalGood
-                ? self.getStore().getWhetherPickupByMySelf()
-                    ? Config.TransportMethod.SelfPickup
-                    : Config.TransportMethod.Freight
-                : Config.TransportMethod.SelfPickup //寫成enum
+            transport: UserInfo.getSelectedOfTransport(),
+            transaction: UserInfo.getSelectedOfTransaction()
         });
         return result.idOfPreciseOrder;
-    };
-
-    performEPayCancelOrderBehavior = async (id) => {
-        await Functions.httpOnCallCancelPreciseOrder(this, { idOfPreciseOrder: id });
-        this.showInfoSnackMessage(`已成功cancel ${this.getIdOfCurrentPreciseOrder()}`);
     };
 
     performCheckoutByLinePayBehavior = async (id) => {

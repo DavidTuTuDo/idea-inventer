@@ -306,9 +306,14 @@ class UserInfo {
         return _.isNumber(price) && price > 0 ? price : 0;
     }
 
-    getTypeOfTransport() {
-        Util.appendInfo("45613123選擇的是", Cookie.getInfoOfSelectedTrans().typeOfTransport);
+    getSelectedOfTransport() {
+        Util.appendInfo("45613123選擇的是", Cookie?.getInfoOfSelectedTrans()?.typeOfTransport);
         return _.toNumber(Cookie.getInfoOfSelectedTrans().typeOfTransport);
+    }
+
+    getSelectedOfTransaction() {
+        Util.appendInfo("45613123選擇的是", Cookie?.getInfoOfSelectedTrans()?.typeOfTransaction);
+        return _.toNumber(Cookie.getInfoOfSelectedTrans().typeOfTransaction);
     }
 
     cleanCookieAfterSubmitToTransaction() {
