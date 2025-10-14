@@ -13,7 +13,7 @@ import puppeteer from 'puppeteer';
  * $$ 是拿到 element list
  * sample  const items = await page.$$eval('#gl-container > *', elements => {
  * sample  const titles = await page.$$eval('#gl-container .gl-title', elements => {
- * '#' =>代表id | '.'=>代表class | <tag不用加前綴  #id > .className > tag
+ * '#'=>代表id | '.'=>代表class | <tag不用加前綴  #id > .className > tag
  * innerText => <tag class='class' >{innerText}<tag>
  *
  * ========================================================================
@@ -79,121 +79,104 @@ const ENABLE_OF_OPEN_BROWSER = false;
 class sashanailgel_scraper {
 
     constructor(engine) {
-        this.browser = engine; // <<<<<<<<<<< 核心修改：瀏覽器實例由外部傳入並重複使用
-        this.items = {}
+        this.browser = engine;
+        this.items = {};
     }
 
     async fetchListOfTypeHref() {
+        const pages = [];
         const page = await this.browser.newPage();
-        try {
-            await page.goto(`https://www.sachianail.com/`, { waitUntil: 'networkidle2', timeout: 0 });
-            const rowElement = await page.$$('#mTopBar > *');
-
-            // 並行處理，但保留您原本的 for...of 結構
-            const pages = [];
-            for (const each of rowElement) {
-                const barElement = await each.$('.mbcUshop-firstLvBarItem > a');
-                if (!barElement) continue;
-                const titleText = await barElement.evaluate(el => {
-                    return { href: el.href, labelOfType: el.innerText }
-                });
-                pages.push({ valueOfType: _.indexOf(rowElement, each), ...titleText });
-            }
-            return pages;
-        } finally {
-            await page.close();
+        await page.goto(`https://www.sachianail.com/`, { waitUntil: 'networkidle2', timeout: 0 });
+        const rowElement = await page.$$('#mTopBar > *');
+        for (const each of rowElement) {
+            const barElement = await each.$('.mbcUshop-firstLvBarItem > a');  // 获取父元素
+            const titleText = await barElement.evaluate(el => {
+                return { href: el.href, labelOfType: el.innerText };
+            });
+            pages.push({ valueOfType: _.indexOf(rowElement, each), ...titleText });
         }
+        await page.close();
+        return pages;
     }
 
     async fetchProductsInPage({ href, valueOfType, valueOfSubType, labelOfType, labelOfSubType } = {}) {
         const productsOfBrief = {};
         const page = await this.browser.newPage();
-        try {
-            await page.goto(href, { waitUntil: 'networkidle2', timeout: 0 });
-            console.log(`打開了 TYPE: ${labelOfType}-SUB-TYPE ${labelOfSubType} PATH:${href}`)
-            await this.scrollToBottomAndCheck(page);
-            if (THREAD_OF_INFO_FETCHER > 1)
-                await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000)
-            await Util.syncDelay(Util.getRandomValue(300, 600));
-            await page.bringToFront();
-            console.log(`已確認到底部，開始抓取每個項目`);
-
-            const parentElement = await page.$$('#gl-container > *');
-            // console.log(`parentElement =>`, _.size(parentElement))
-
-            // <<<<<<<<<<< 優化：並行處理所有商品元素的資料抓取
+        await page.goto(href, { waitUntil: 'networkidle2', timeout: 0 });
+        console.log(`打開了 TYPE: ${labelOfType}-SUB-TYPE ${labelOfSubType} PATH:${href}`);
+        await this.scrollToBottomAndCheck(page);
+        if (THREAD_OF_INFO_FETCHER > 1)
+            await this.waitForStyleAndClose(page, '#m-content-box > #gl-loading-bar', 30000);
+        await Util.syncDelay(Util.getRandomValue(300, 600));
+        await page.bringToFront();
+        console.log(`已確認到底部，開始抓取每個項目`);
+        const parentElement = await page.$$('#gl-container > *');  // 获取父元素
+        // console.log(`parentElement =>`, _.size(parentElement))
+        for (const row of parentElement) {
+            const head = _.indexOf(parentElement, row);
             const rowElement = await page.$$('.divFormProductListItem');
             // console.log(`rowElement =>`, _.size(rowElement))
-
-            await Promise.all(rowElement.map(async (each, tail) => {
-                const [titleText, srcValue, subItemOptionElement] = await Promise.all([
-                    Util.fetchElementAttributes(each, '.gl-title', 'empty', 'innerText'),
-                    Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'empty', 'href'),
-                    each.$$('.addon-select option')
-                ]);
-
-                if (!srcValue || srcValue === 'empty') return;
-
-                const subs = await Promise.all(subItemOptionElement.map(async (item, index) => {
+            for (const each of rowElement) {
+                const tail = _.indexOf(rowElement, each);
+                const titleText = await Util.fetchElementAttributes(each, '.gl-title', 'empty', 'innerText');
+                const srcValue = await Util.fetchElementAttributes(each, '.gl-img > .gl-item-image > .img-link', 'empty', 'href');
+                const subs = [];
+                const subItemOptionElement = await each.$$('.addon-select option');
+                for (const item of subItemOptionElement) {
                     const sub = await item.evaluate(((el) => {
                         if (el.value && parseInt(el.value) > 0)
-                            return { name: el.innerText, value: el.value }
+                            return { name: el.innerText, value: el.value };
                     }));
-                    return sub ? { ...sub, index } : null;
-                }));
+                    subs.push({ ...sub, index: _.indexOf(subItemOptionElement, item) });
+                }
 
                 productsOfBrief[srcValue] = {
-                    index: _.toNumber(`${_.indexOf(parentElement, each)}${tail}`), // 這裡的 head 邏輯需要調整，暫時用 each 的 index
+                    index: _.toNumber(`${head}${tail}`),
                     valueOfType, valueOfSubType,
-                    category: [{ valueOfType, valueOfSubType }],
+                    category: [{ valueOfType, valueOfSubType }], //一個商品可能出現在多個分頁(value) 和 分頁子類(sub)
                     name: titleText,
-                    options: _.compact(subs).map(each => ({ name: _.trim(each.name), value: _.toNumber(each.value) })),
-                    href: srcValue,
+                    options: _.filter(subs, sub => !_.isUndefined(sub)).map(each => {
+                        return { name: _.trim(each.name), value: _.toNumber(each.value) };
+                    }),
+                    href: srcValue
                 };
                 console.log(`5655123 list 推了 ${titleText} TYPE:${labelOfType}-SUB-TYPE ${labelOfSubType}`);
-            }));
-
-            return productsOfBrief;
-        } finally {
-            await page.close();
+            }
         }
+        await page.close();
+        return productsOfBrief;
     }
 
     async fetchSubTypeOfProduct(pathObj = { href: '', type: '' }) {
         const page = await this.browser.newPage();
-        try {
-            await page.goto(pathObj.href, { waitUntil: 'networkidle2', timeout: 0 });
-            const pages = [];
-            await Util.syncDelay(Util.getRandomValue(300, 600));
-            await page.bringToFront(); // 将目标页面带到前台
-            if (THREAD_OF_INFO_FETCHER > 1)
-                await this.waitSelectorTilAppear(page, `#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container`, 30000)
-
-            const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > li');
-            console.log('商品主項目：', pathObj.labelOfType, ' 有副項目：', _.size(listOfSubType));
-
-            if (_.size(listOfSubType) > 0) {
-                for (const subtitle of listOfSubType) {
-                    const subtitleElement = await subtitle.$('a');
-                    if (!subtitleElement) continue;
-                    const objectOfSubtitle = await subtitleElement.evaluate(el => {
-                        return { href: el.href, labelOfSubType: el.innerText }
-                    });
-                    delete pathObj.href;
-                    pages.push({ ...objectOfSubtitle, ...pathObj, valueOfSubType: _.indexOf(listOfSubType, subtitle) })
-                }
-                return pages;
-            } else {
-                return [pathObj];
+        await page.goto(pathObj.href, { waitUntil: 'networkidle2', timeout: 0 });
+        const pages = [];
+        await Util.syncDelay(Util.getRandomValue(300, 600));
+        await page.bringToFront(); // 将目标页面带到前台
+        if (THREAD_OF_INFO_FETCHER > 1)
+            await this.waitSelectorTilAppear(page, `#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container`, 30000);
+        const listOfSubType = await page.$$('#mTopSubBar > .m-list-sub-wrap > .list-row-sub-container > ul > li');
+        console.log('商品主項目：', pathObj.labelOfType, ' 有副項目：', _.size(listOfSubType));
+        if (_.size(listOfSubType) > 0) {
+            for (const subtitle of listOfSubType) {
+                const subtitleElement = await subtitle.$('a');
+                const objectOfSubtitle = await subtitleElement.evaluate(el => {
+                    return { href: el.href, labelOfSubType: el.innerText };
+                });
+                delete pathObj.href;
+                pages.push({ ...objectOfSubtitle, ...pathObj, valueOfSubType: _.indexOf(listOfSubType, subtitle) });
             }
-        } finally {
             await page.close();
+            return pages;
+        } else {
+            await page.close();
+            return [pathObj];
         }
     }
 
     async fetchProductListPageInfos() {
         if (USE_PERSISTENT_FILE) {
-            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`))
+            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`));
             await this.fetchWholeProductDetailBehavior(list);
             return;
         }
@@ -205,16 +188,16 @@ class sashanailgel_scraper {
             const id = _.toNumber(splits.pop());
             const path = splits.pop();
             return id > 0 && _.isEqual(path, 'plist');
-        })
+        });
 
         const targets = [];
         /** 抓取商品Catalog */
-        let poolOfSubType = new InfinitePool(THREAD_OF_INFO_FETCHER)
+        let poolOfSubType = new InfinitePool(THREAD_OF_INFO_FETCHER);
         poolOfSubType.enableTaskTimeout(true, 120000);
         await poolOfSubType.runByParams(async (param) => {
             const pages = await self.fetchSubTypeOfProduct(param);
             targets.push(...pages);
-        }, ...pagesShouldFetch)
+        }, ...pagesShouldFetch);
 
         if (PRINT_REPORT_OF_PRODUCTS_DETAIL)
             await Util.persistJsonFilePrettier(`./temp/sasha_of_product_catalog.json`, targets);
@@ -222,8 +205,8 @@ class sashanailgel_scraper {
         /** 抓取商品列表
          * 將 sasha_of_product_catalog.json 裡的path全都觸及至底後fetch
          * */
-        const objectOfProducts = {}
-        const poolOfFetchProduct = new InfinitePool(THREAD_OF_INFO_FETCHER)
+        const objectOfProducts = {};
+        const poolOfFetchProduct = new InfinitePool(THREAD_OF_INFO_FETCHER);
         poolOfFetchProduct.enableTaskTimeout(true, 200000);
         await poolOfFetchProduct.runByParams(async (param) => {
             const products = await self.fetchProductsInPage(param);
@@ -240,7 +223,7 @@ class sashanailgel_scraper {
             await Util.persistJsonFilePrettier(`./temp/sasha_of_product_list.json`, listOfProducts);
 
         if (FETCH_LIST_ONLY) {
-            Util.appendInfo(`已取得商品資訊列表，不繼續拿detail資訊`)
+            Util.appendInfo(`已取得商品資訊列表，不繼續拿detail資訊`);
             return;
         }
 
@@ -256,24 +239,21 @@ class sashanailgel_scraper {
         const poolOfFetchProductDetail = new InfinitePool(THREAD_OF_DETAIL_PRODUCT);
         poolOfFetchProductDetail.enableTaskTimeout(true, 3456789);
 
-        const listOfProduct = RANDOM_LIST_ENABLE ? Util.getShuffledArrayWithLimitCount(list, SIZE_OF_RANDOM) : list
-
-        // <<<<<<<<<<< 核心修改：將 browser 實例傳遞給每一個任務
+        const listOfProduct = RANDOM_LIST_ENABLE ? Util.getShuffledArrayWithLimitCount(list, SIZE_OF_RANDOM) : list;
         await poolOfFetchProductDetail.runByParams(async (product) => {
             try {
-                // 將共享的 browser 實例傳入，而不是每次都新建
-                const productDetail = await self.fetchProductPriceDetail(product, self.browser);
+                const productDetail = await self.fetchProductPriceDetail(product);
                 /**
                  * brief page -> detail page
                  * brief page商品的裡面有 序號(integer) 所有和 detail page的option 做merge
                  * */
-                const options = this.mergeArraysByName(product.options, productDetail.options)
-                delete productDetail.options
+                const options = this.mergeArraysByName(product.options, productDetail.options);
+                delete productDetail.options;
                 productsOfDetail.push({
                     ...product, options, ...productDetail
-                })
+                });
             } catch (error) {
-                console.log(`PRODUCT:${product.name} 抓取DETAIL資料失敗：`, error.message)
+                console.log(`PRODUCT:${product.name} 抓取DETAIL資料失敗：`, error.message);
                 listOfFailFetch.push(product);
             }
 
@@ -288,35 +268,30 @@ class sashanailgel_scraper {
         }
     }
 
-    // <<<<<<<<<<< 核心修改：修改函式簽名，接收 browser 實例
-    fetchProductPriceDetail = async (product, browser) => {
-        const self = this;
-        // <<<<<<<<<<< 核心修改：不再呼叫 getBrowserPage，而是使用傳入的 browser 建立無痕分頁
-        const context = await browser.createBrowserContext();
-        const page = await context.newPage();
 
+    fetchProductPriceDetail = async (product) => {
+        const self = this;
+        const { browser, page } = await this.getBrowserPage(ENABLE_OF_OPEN_BROWSER, true);
         const path = product.href;
         const options = [];
 
         async function fetchItemObject(nameOfOption) {
             console.log('fetchItemObject ==> ', nameOfOption);
-            const [stringOfPrice, srcOfOptionPhoto] = await Promise.all([
-                Util.fetchElementAttributes(page, '#gd-price > span', '0', 'innerText'),
-                Util.fetchElementAttributes(page, '#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img', 'empty', 'src')
-            ]);
+            const stringOfPrice = await Util.fetchElementAttributes(page, '#gd-price > span', '0', 'innerText');
+            const srcOfOptionPhoto = await Util.fetchElementAttributes(page, '#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img', 'empty', 'src');
             const price = Util.extractNumber(stringOfPrice);
-            console.log(stringOfPrice, srcOfOptionPhoto, price)
+            console.log(stringOfPrice, srcOfOptionPhoto, price);
             if (price > 0) {
-                const input = `#gd-detail > table > tbody > .product-number > td > input`
-                console.log(`[${product.name}-${nameOfOption}]輸入框[${input}]得到focus`)
+                const input = `#gd-detail > table > tbody > .product-number > td > input`;
+                console.log(`[${product.name}-${nameOfOption}]輸入框[${input}]得到focus`);
                 /** 加入購物車 */
                 const countsOfRandom = Util.getRandomValue(10000, 20000);
-                await Util.writeElementAttributes(page, input, { value: _.toString(countsOfRandom) })
+                await Util.writeElementAttributes(page, input, { value: _.toString(countsOfRandom) });
                 console.log(`加了 ${nameOfOption} ：${countsOfRandom} 個 `);
                 const button = `#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`;
                 const selectorOfAppendToCart = await page.$(button);
                 await Util.syncDelay(300);
-                await self.clickSolution(page, selectorOfAppendToCart)
+                await self.clickSolution(page, selectorOfAppendToCart);
                 await Util.syncDelay(300); //加入購物車要讓子彈飛一下～
                 options.push({ name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto });
             }
@@ -325,67 +300,60 @@ class sashanailgel_scraper {
         async function fetchIntroduceOfProductDetail() {
             const statements = [];
             const photos = [];
-            const selectorOfIntro = `#gd-good-detail > #ushop_content_iframe`
+            const selectorOfIntro = `#gd-good-detail > #ushop_content_iframe`;
             const detail = await page.$(selectorOfIntro);
-            if (!detail) return { statement: '', photos: [] }; // 如果沒有 iframe，直接返回
             const frameOfDetail = await detail.contentFrame();
-            if (!frameOfDetail) return { statement: '', photos: [] }; // 如果 iframe 沒有內容，直接返回
-
-            const stmts = await frameOfDetail.$$('#_mbc_frame_container_pc > #A1 > *');
+            const stmts = await frameOfDetail.$$(`#_mbc_frame_container_pc > #A1 > *`);
             console.log(`產品描述的項目有 -> `, _.size(stmts), ` 個`);
-
-            // 並行處理所有描述項目
-            const details = await Promise.all(stmts.map(async (stmt) => {
+            for (const stmt of stmts) {
                 let tagName = '';
                 try {
                     tagName = _.trim(await stmt.evaluate((el) => el.tagName));
                 } catch (error) {
                     Util.appendError(`15121321301 找不到tagName`);
-                    return null;
                 }
 
                 const key = _.lowerCase(tagName);
                 switch (key) {
                     case 'p':
+                        /** 文字 */
                         const text = await Util.fetchElementAttributes(stmt, `span`, '', `innerText`);
-                        return { type: 'text', content: text };
+                        statements.push(text);
+                        break;
                     case 'div':
+                        /** 圖片 */
                         const img = await Util.fetchElementAttributes(stmt, `img`, '', `src`);
-                        return !Util.isUndefinedNullEmpty(img) ? { type: 'image', content: { href: img } } : null;
+                        if (!Util.isUndefinedNullEmpty(img)) photos.push({ href: img });
+                        break;
                     case '':
-                        return null;
+                        /** ignore default value*/
+                        break;
                     default:
-                        console.log(`65421321 未預期的tagName=> ${tagName}`)
-                        return null;
+                        console.log(`65421321 未預期的tagName=> ${tagName}`);
+                        break;
                 }
-            }));
-
-            statements.push(..._.compact(details).filter(d => d.type === 'text').map(d => d.content));
-            photos.push(..._.compact(details).filter(d => d.type === 'image').map(d => d.content));
-
+            }
             return { statement: statements.join('\n'), photos };
+
         }
 
         try {
             await page.goto(path, { waitUntil: 'networkidle2', timeout: 0 });
-            // await this.managePages(path, browser); // 這個函式有 10 秒延遲，會拖慢速度，暫時註解
-            const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`
-            await this.waitSelectorTilAppear(page, selectorOfSrc, 40000)
+            await this.managePages(path, browser);
+            const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`;
+            await this.waitSelectorTilAppear(page, selectorOfSrc, 40000);
             await page.bringToFront();
             const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
             const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
             console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
-
-            const [serial, photoOfDemo, introduce] = await Promise.all([
-                Util.fetchElementAttributes(page, '.gd-good-id', '', 'innerText'),
-                Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src'),
-                fetchIntroduceOfProductDetail()
-            ]);
+            const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '', 'innerText');
+            const photoOfDemo = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
+            const introduce = await fetchIntroduceOfProductDetail();
 
             for (const element of optionsOfProductNPriceDetails) {
-                const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title')
+                const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title');
                 if (sizeOfSubItem > 1 && element) {
-                    await element.click()
+                    await element.click();
                     await Util.syncDelay(1200);
                     await fetchItemObject(nameOfOption);
                     /** 商品項目只有一個的時候，會預設回圈選 */
@@ -397,36 +365,34 @@ class sashanailgel_scraper {
 
             await this.clickSolution(page, selectorOfAppendToCart);
             // console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
-            await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000)
+            await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000);
             // await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 30000}) // 等待页面加载完成
-
             const optionsInCart = [];
-            const listInCart = await page.$$('#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr');
-            for (const productInCart of listInCart) {
-                const nameOfOption = await Util.fetchElementAttributes(productInCart, `.t1-4`, 'empty', `innerText`);
-                const countOfMax = await Util.fetchElementAttributes(productInCart, `.t1-6 > input`, '0', `value`);
-                optionsInCart.push({ name: _.trim(nameOfOption), count: _.toNumber(countOfMax) })
+            const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
+            for (const product of listInCart) {
+                const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, 'empty', `innerText`);
+                const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
+                optionsInCart.push({ name: _.trim(nameOfOption), count: _.toNumber(countOfMax) });
             }
 
             const result = {
                 serial, statement: introduce.statement,
                 photos: introduce.photos, photoOfDemo: photoOfDemo, options: this.mergeArraysByName(options, optionsInCart)
-            }
+            };
             console.log(result);
             return result;
         } catch (error) {
-            console.log(`[${product.name}]點擊購物車之後，等待檢驗數量過程中失敗`, error.message)
-            throw new ERROR(9999, `[${product.name}]發生錯誤${error.message}`)
+            console.log(`[${product.name}]點擊購物車之後，等待檢驗數量過程中失敗`, error.message);
+            throw new ERROR(9999, `[${product.name}]發生錯誤${error.message}`);
         } finally {
-            // <<<<<<<<<<< 核心修改：只關閉無痕分頁，不關閉瀏覽器
-            await context.close();
+            await page.close();
+            await browser.close();
             console.log(`[${product.name}]關閉頁面的所有PERSISTENT`);
         }
-    }
+    };
 
     async sampleOfFetchSingleItem() {
-        // <<<<<<<<<<< 核心修改：需要傳入 browser 實例來測試
-        await this.fetchProductPriceDetail({ name: '測試', href: `https://www.sachianail.com/pitem/M00000677` }, this.browser);
+        await this.fetchProductPriceDetail({ name: '測試', href: `https://www.sachianail.com/pitem/M00000677` });
     }
 
     /** --------------------------------------------------------------------------- 關於puppeteer util的部分 --------------------------------------------------------------------------- */
@@ -448,7 +414,7 @@ class sashanailgel_scraper {
             }
             lastHeight = newHeight;
         }
-    }
+    };
 
     mergeArraysByName = (a1, a2) => {
         // 使用 _.mergeWith 和 _.keyBy 基于 'name' 键合并数组
@@ -467,7 +433,7 @@ class sashanailgel_scraper {
 
         // 返回合并后的数组
         return merged;
-    }
+    };
 
     /** 清空當前頁面的cookie(不然購物車會爆掉)*/
     async clearCookies(page) {
@@ -520,7 +486,7 @@ class sashanailgel_scraper {
                     const element = document.querySelector(selector);
                     return element && window.getComputedStyle(element).display === 'none';
                 },
-                {timeout: 10000}, // 最多等10秒
+                { timeout: 10000 }, // 最多等10秒
                 selector
             );
 
@@ -529,7 +495,7 @@ class sashanailgel_scraper {
             console.error(`元素 ${selector} 的 display 沒有在指定時間內設為 none。`, error);
         }
 
-    }
+    };
 
     /** 等待某個element出現代表可以抓取dom,有時候networkidle 不等於 dom已經render成功 */
     waitSelectorTilAppear = async (page, selector, timeout = 10000) => {
@@ -548,42 +514,39 @@ class sashanailgel_scraper {
         } catch (error) {
             console.error(`元素 ${selector} 未在指定時間內出現。`, error);
         }
+    };
+
+
+    async getBrowser(visible) {
+        const browser = await puppeteer.launch({
+            headless: !visible
+        });
+        for (const page of await browser.pages()) await page.close();
+        return browser;
     }
 
-    // <<<<<<<<<<< 核心修改：這個函式不再需要，由最外層的 main function 取代
-    // async getBrowser(visible) {
-    //     const browser = await puppeteer.launch({
-    //         headless: !visible
-    //     });
-    //     for (const page of await browser.pages()) await page.close();
-    //     return browser;
-    // }
+    /** incognito = true 就是無痕模式 */
+    async getBrowserPage(visible = false, incognito = false, browser) {
+        if (browser)
+            return { page: await brow.newPage(), browser: browser };
 
-    // <<<<<<<<<<< 核心修改：這個函式不再需要，由 fetchProductPriceDetail 內部邏輯取代
-    // /** incognito = true 就是無痕模式 */
-    // async getBrowserPage(visible = false, incognito = false, browser) {
-    //     if (browser)
-    //         return {page: await brow.newPage(), browser: browser};
-    //
-    //     const brow = await this.getBrowser(visible);
-    //     // 創建一個無痕模式的上下文
-    //     if (incognito) {
-    //         const context = await brow.createBrowserContext();
-    //         return {page: await context.newPage(), browser: brow};
-    //     } else return {page: await brow.newPage(), browser: brow};
-    // }
+        const brow = await this.getBrowser(visible);
+        // 創建一個無痕模式的上下文
+        if (incognito) {
+            const context = await brow.createBrowserContext();
+            return { page: await context.newPage(), browser: brow };
+        } else return { page: await brow.newPage(), browser: brow };
+    }
 
     async finish() {
         // this.printSucceedFailureLog();
-        // <<<<<<<<<<< 核心修改：finish 不再需要關閉瀏覽器，交由最外層的 finally 區塊處理
-        // await this.browser.close()
-        console.log('所有爬蟲任務已提交，等待主程序關閉瀏覽器...');
+        await this.browser.close();
     }
 
     async clickSolution(page, element) {
         await page.evaluate((el) => {
             el.click();
-        }, element)
+        }, element);
     }
 
     /**
@@ -672,12 +635,12 @@ class sashanailgel_scraper {
     }
 
     printSucceedFailureLog() {
-        const listOfTotal = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`))
-        const listOfSucceed = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_detail.json`))
-        const listOfFailure = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_list_failure.json`))
-        console.log('listOfTotal：', _.size(listOfTotal))
-        console.log('succeed：', _.size(listOfSucceed))
-        console.log('failure：', _.size(listOfFailure))
+        const listOfTotal = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`));
+        const listOfSucceed = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_detail.json`));
+        const listOfFailure = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_list_failure.json`));
+        console.log('listOfTotal：', _.size(listOfTotal));
+        console.log('succeed：', _.size(listOfSucceed));
+        console.log('failure：', _.size(listOfFailure));
 
         for (const item of [...listOfFailure, ...listOfSucceed])
             _.remove(listOfTotal, (each) => item.href === each.href);
@@ -688,7 +651,9 @@ class sashanailgel_scraper {
     }
 
     async buildNewList() {
-        const listA = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`)).map((each) => { return { href: each.href, category: each.category } });
+        const listA = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`)).map((each) => {
+            return { href: each.href, category: each.category };
+        });
         const listB = JSON.parse(Util.getFileContextInRaw(`./sasha_of_products_detail.json`));
         const latest = Util.mergeArrayBy("href", listA, listB);
         await Util.persistJsonFilePrettier(`./temp/sasha_of_product_list_latest.json`, latest);
@@ -696,18 +661,20 @@ class sashanailgel_scraper {
 
 }
 
-export { sashanailgel_scraper as sashanailgel_scraper }
+export { sashanailgel_scraper as sashanailgel_scraper };
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // <<<<<<<<<<< 核心修改：在所有任務開始前，只啟動一次瀏覽器
-        let browser = null;
-        try {
-            browser = await puppeteer.launch({
-                headless: !ENABLE_OF_OPEN_BROWSER
-            });
-            // <<<<<<<<<<< 核心修改：將 browser 實例傳入
-            const handler = new sashanailgel_scraper(browser);
+
+            async function getBrowser(visible) {
+                const browser = await puppeteer.launch({
+                    headless: !visible
+                });
+                for (const page of await browser.pages()) await page.close();
+                return browser;
+            }
+
+            const handler = new sashanailgel_scraper(await getBrowser(ENABLE_OF_OPEN_BROWSER));
             /**
              * 測試單一品項抓取detail的function
              * await handler.sampleOfFetchSingleItem();
@@ -715,14 +682,6 @@ if (configerer.DEBUG_MODE) {
              * */
             await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
             await handler.finish();
-        } catch (error) {
-            console.error("爬蟲主流程發生嚴重錯誤:", error);
-        } finally {
-            // <<<<<<<<<<< 核心修改：所有任務結束後，才在這裡統一關閉瀏覽器
-            if (browser) {
-                await browser.close();
-                console.log('所有任務完成，瀏覽器已關閉。');
-            }
         }
-    })();
+    )();
 }
