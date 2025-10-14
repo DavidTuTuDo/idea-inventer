@@ -88,7 +88,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         const db = this._firebase().firestore();
         const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
-        const { remark, address, phone, name, email, transport } = data;
+        const { remark, address, phone, name, email, transport, transaction } = data; //Config.TransportMethod; Config.Transaction
 
         // 參數驗證
         this.validateOrderItems(itemsOfClientOrdering);
