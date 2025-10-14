@@ -137,6 +137,7 @@ import fs from "fs";
                         nameOfBooze: product.name,
                         idOfBooze: product.serial,
                         isTaskJob: false,
+                        visibility: true,
                         idOfAuthor: `6tirrjZd2ESAPD7RA64pd2N1Bdf2`,
                         allowSelfPickUp: true,
                         quantity: option.count,

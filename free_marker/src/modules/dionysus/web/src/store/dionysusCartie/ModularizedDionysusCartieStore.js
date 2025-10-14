@@ -88,7 +88,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     async fetch(view = this.getComponent()) {
         function pushCurrentBrief(variant, cartieOfCookie) {
             const idOfCookieUsage = cartieOfCookie.idOfCookieUsage;
-            const currentCountOfMaximum = variant.quantity;
+            const currentCountOfMaximum = variant.visibility ? variant.quantity : 0;
             const countOfSubmit = cartieOfCookie.quantity <= currentCountOfMaximum ? cartieOfCookie.quantity : currentCountOfMaximum;
 
             self.pushBrief({
@@ -99,6 +99,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
                 price: variant.price,
                 priceB4Discount: variant.priceB4Discount,
                 countOfSubmit,
+                visibility: variant.visibility,
                 quantity: currentCountOfMaximum,
                 idOfAuthor: variant.idOfAuthor,
                 sure: currentCountOfMaximum > 0
