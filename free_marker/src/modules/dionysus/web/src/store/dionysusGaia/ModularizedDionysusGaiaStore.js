@@ -240,7 +240,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         await this.apiOfVariant.updateVariants(
             this.getComponent(),
             variants.map((id) => {
-                return { id, nameOfBooze: this.getName() };
+                return { id, nameOfBooze: this.getName(), visibility: this.getVisibility() };
             }),
             this.getIdOfBooze()
         );
@@ -383,7 +383,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                     useMainTrunk: this.getUseMainTrunk(),
                     photo: this.getBriefPhotoOfHead()?.getHref(),
                     allowSelfPickUp: this.getAllowSelfPickUp(),
-                    isHomeTeaching: this.getIsHomeTeaching()
+                    isHomeTeaching: this.getIsHomeTeaching(),
+                    visibility: this.getVisibility()
                 };
             }),
             this.getIdOfBooze()
