@@ -52,6 +52,9 @@ class UserInfo {
     @observable
     photoURL = "";
 
+    @observable
+    globalPerspective = {};
+
     constructor(props) {
         makeObservable(this);
         this.subscribeAuthStateChanged();
@@ -143,6 +146,20 @@ class UserInfo {
     @action
     setNameOfBrand = (name) => {
         this.nameOfBrand = name;
+    };
+
+    @action
+    setGlobalPerspective = (setting) => {
+        this.globalPerspective = setting;
+    };
+
+    @action
+    setGlobalPerspectiveAttr = (attr) => {
+        this.globalPerspective[Util.getObjectKey(attr)] = Util.getObjectValue(attr);
+    };
+
+    getGlobalPerspectiveAttr = (key) => {
+        return this.globalPerspective[key];
     };
 
     getNameOfBrand = () => {

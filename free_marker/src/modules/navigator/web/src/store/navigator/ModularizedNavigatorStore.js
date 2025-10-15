@@ -48,6 +48,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         this.fetchKeywordInBackgroundBehavior(this).then();
         const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
         if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
+        UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());
     };
 
     fetchKeywordInBackgroundBehavior = async (self) => {

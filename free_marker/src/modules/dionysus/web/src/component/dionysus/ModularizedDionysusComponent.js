@@ -21,7 +21,7 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
     }
 
     getListInjectStyleOfDionysusSelectTab(dionysus) {
-        return Util.getVisibleOrNone(_.size(this.getStore().getSelects()) > 1, true);
+        return Util.getVisibleOrNone(_.size(this.getStore().getSelectBounds()) > 1, true);
     }
 
     onDionysusSelectTabClicked(param) {

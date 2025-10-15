@@ -25,6 +25,18 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         return Util.getVisibleOrNone(UserInfoRef.isAdmin());
     }
 
+    getWrapInjectStyleOfDionysusErosAreaOfTtlOfAnonymousDiv(dionysusEros) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
+    getWrapInjectStyleOfDionysusErosAreaOfTtlOfPaymentDiv(dionysusEros) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
+    getWrapInjectStyleOfDionysusErosAreaOfMaximumOfUniqueItemsDiv(dionysusEros) {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
     onDionysusErosArrowOfLinepaySetIconButtonClicked(param) {
         this.getStore().setSelected("linepay");
     }
@@ -184,6 +196,27 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
 
     onDionysusErosEnableOfWhetherPickupByBuyerSelfSwitchChange(param) {
         this.getStore().submitWhetherPickupByBuyerSelf().then();
+    }
+
+    onDionysusErosArrowOfMaximumOfUniqueItemsIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("maximumOfUniqueItems");
+        const count = object.getDialogInputValueOfDionysusErosArrowOfMaximumOfUniqueItems();
+        this.getStore().submitMaximumOfUniqueItems(count).then();
+    }
+
+    onDionysusErosArrowOfTtlOfPaymentIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("ttlOfPayment");
+        const min = object.getDialogInputValueOfDionysusErosArrowOfTtlOfPayment();
+        this.getStore().submitTTLOfPayment(min).then();
+    }
+
+    onDionysusErosArrowOfTtlOfAnonymousIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("ttlOfAnonymous");
+        const min = object.getDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous();
+        this.getStore().submitTTLOfAnonymous(min).then();
     }
 }
 

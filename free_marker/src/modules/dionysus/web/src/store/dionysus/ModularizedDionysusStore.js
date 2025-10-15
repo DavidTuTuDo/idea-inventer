@@ -18,7 +18,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         await Util.syncDelay(1);
 
         if (collection && _.size(collection.selects) > 0) {
-            this.setSelects(...[{ label: "所有商品", value: 0, type: "all" }, ...collection.selects]);
+            this.setSelectBounds(...[{ label: "所有商品", value: 0, type: "all" }, ...collection.selects]);
         }
     }
 

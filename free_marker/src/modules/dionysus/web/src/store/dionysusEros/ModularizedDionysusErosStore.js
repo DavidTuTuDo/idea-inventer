@@ -5,7 +5,7 @@ import _ from "lodash";
 import libpath from "path";
 import BaseDionysusErosStore from "./BaseDionysusErosStore";
 import NavigatorInfo from "../navigatorGlobalPerspective";
-import DionysusSelect from "../dionysusSelect";
+import DionysusSelect from "../dionysusSelectBound";
 import UserInfo from "../../base/BaseUserInfo";
 
 const textsFetchConfig = {
@@ -64,6 +64,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(pub.getThresholdOfCheckoutByCredit());
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(pub.getThresholdOfFreeShipByCOD());
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
+        this.setDialogInputValueOfDionysusErosArrowOfMaximumOfUniqueItems(UserInfo.getGlobalPerspectiveAttr(`maximumOfUniqueItems`));
+        this.setDialogInputValueOfDionysusErosArrowOfTtlOfPayment(UserInfo.getGlobalPerspectiveAttr(`ttlOfPayment`));
+        this.setDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous(UserInfo.getGlobalPerspectiveAttr(`ttlOfAnonymous`));
 
         this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
@@ -290,6 +293,30 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         UserInfo.setNameOfBrand(name);
     };
 
+    submitMaximumOfUniqueItems = async (count) => {
+        if (_.isNumber(count)) return this.getComponent().showErrorSnackMessage(`自費最低門檻 格式錯誤`);
+        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
+        info.maximumOfUniqueItems = count;
+        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        UserInfo.setGlobalPerspectiveAttr({ maximumOfUniqueItems: count });
+    };
+
+    submitTTLOfPayment = async (minute) => {
+        if (_.isNumber(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝 格式錯誤`);
+        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
+        info.ttlOfPayment = minute;
+        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        UserInfo.setGlobalPerspectiveAttr({ ttlOfPayment: minute });
+    };
+
+    submitTTLOfAnonymous = async (minute) => {
+        if (_.isNumber(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝（陌生）格式錯誤`);
+        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
+        info.ttlOfAnonymous = minute;
+        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        UserInfo.setGlobalPerspectiveAttr({ ttlOfAnonymous: minute });
+    };
+
     submitCategoryRules = async (param) => {
         const result = Util.generateLabelValuePairsWithOrigin(this.categoryOfCurrent, param);
         await this.apiOfTab.submitSelects(
@@ -300,7 +327,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     /** fetch */
     fetchDefaultTextsOfCategory = async () => {
-        this.categoryOfCurrent = (await this.apiOfTab.fetchSelects(this.getComponent())) ?? [];
+        this.categoryOfCurrent = (await this.apiOfTab.fetchSelectBounds(this.getComponent())) ?? [];
         return this.categoryOfCurrent.map((each) => ({ content: each.label }));
     };
     fetchDefaultTextOfLinePay = async () => this.getNormalizeStmt(["CHANNEL ID", "SECRET  ID"], this.getCupidSecret().getLinepaySet());

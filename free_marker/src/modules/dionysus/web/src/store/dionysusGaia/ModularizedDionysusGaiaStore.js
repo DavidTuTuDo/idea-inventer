@@ -5,7 +5,7 @@ import _ from "lodash";
 import BaseDionysusGaiaStore from "./BaseDionysusGaiaStore";
 import Booze from "../dionysusBooze";
 import BoozeVariant from "../dionysusBoozeVariant";
-import DionysusTab from "../dionysusSelect";
+import DionysusTab from "../dionysusSelectBound";
 import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
@@ -301,7 +301,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     /** indexSetter的call function */
     fetchTextsOfIndexSetter = async () => {
         const indexOfSelected = this.getBooze().category ?? [];
-        const tabs = (await this.apiOfTabs.fetchSelects(this.getComponent())) ?? [];
+        const tabs = (await this.apiOfTabs.fetchSelectBounds(this.getComponent())) ?? [];
         return Util.getItemsOfMarkMatching(tabs, indexOfSelected);
     };
 

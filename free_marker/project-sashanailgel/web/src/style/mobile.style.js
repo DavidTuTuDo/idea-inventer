@@ -1353,6 +1353,48 @@ class MobileStyle {
 
     DionysusErosAreaOfLinepayDiv = {};
 
+    DionysusErosAreaOfTtlOfAnonymousArrowOfTtlOfAnonymousIconNavigateNext = {};
+
+    DionysusErosAreaOfTtlOfAnonymousArrowOfTtlOfAnonymousReactFragmentWrap = {};
+
+    DionysusErosAreaOfTtlOfAnonymousArrowOfTtlOfAnonymousIconButton = {};
+
+    DionysusErosAreaOfTtlOfAnonymousOptionOfTtlOfAnonymousContentTypography = {};
+
+    DionysusErosAreaOfTtlOfAnonymousOptionOfTtlOfAnonymousTitleTypography = {};
+
+    DionysusErosAreaOfTtlOfAnonymousDivWrap = {};
+
+    DionysusErosAreaOfTtlOfAnonymousDiv = {};
+
+    DionysusErosAreaOfTtlOfPaymentArrowOfTtlOfPaymentIconNavigateNext = {};
+
+    DionysusErosAreaOfTtlOfPaymentArrowOfTtlOfPaymentReactFragmentWrap = {};
+
+    DionysusErosAreaOfTtlOfPaymentArrowOfTtlOfPaymentIconButton = {};
+
+    DionysusErosAreaOfTtlOfPaymentOptionOfTtlOfPaymentContentTypography = {};
+
+    DionysusErosAreaOfTtlOfPaymentOptionOfTtlOfPaymentTitleTypography = {};
+
+    DionysusErosAreaOfTtlOfPaymentDivWrap = {};
+
+    DionysusErosAreaOfTtlOfPaymentDiv = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsArrowOfMaximumOfUniqueItemsIconNavigateNext = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsArrowOfMaximumOfUniqueItemsReactFragmentWrap = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsArrowOfMaximumOfUniqueItemsIconButton = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsOptionOfMaximumOfUniqueItemsContentTypography = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsOptionOfMaximumOfUniqueItemsTitleTypography = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsDivWrap = {};
+
+    DionysusErosAreaOfMaximumOfUniqueItemsDiv = {};
+
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
 
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap = {};
@@ -2109,11 +2151,11 @@ class MobileStyle {
 
     /** => following for dionysus  component  */
 
-    DionysusSelectTabSkeleton = {};
+    DionysusSelectBoundTabSkeleton = {};
 
-    DionysusSelectTabsList = {};
+    DionysusSelectBoundTabsList = {};
 
-    DionysusSelectTab = {};
+    DionysusSelectBoundTab = {};
 
     DionysusBoozeRowTailCartIconShoppingCartTwoTone = {};
 
