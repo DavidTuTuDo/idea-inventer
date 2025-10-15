@@ -1219,15 +1219,15 @@ class CommonStyle {
 
     DionysusErosAreaOfFeeOfShipByCodDiv = {};
 
-    DionysusErosAreaOfWhetherHomeShipByCodEnableOfWhetherHomeShipByCodSwitch = {};
+    DionysusErosAreaOfEnableOfCodEnableOfEnableOfCodSwitch = {};
 
-    DionysusErosAreaOfWhetherHomeShipByCodOptionOfWhetherHomeShipByCodContentTypography = {};
+    DionysusErosAreaOfEnableOfCodOptionOfEnableOfCodContentTypography = {};
 
-    DionysusErosAreaOfWhetherHomeShipByCodOptionOfWhetherHomeShipByCodTitleTypography = {};
+    DionysusErosAreaOfEnableOfCodOptionOfEnableOfCodTitleTypography = {};
 
-    DionysusErosAreaOfWhetherHomeShipByCodDivWrap = {};
+    DionysusErosAreaOfEnableOfCodDivWrap = {};
 
-    DionysusErosAreaOfWhetherHomeShipByCodDiv = {};
+    DionysusErosAreaOfEnableOfCodDiv = {};
 
     DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupIconNavigateNext = {};
 

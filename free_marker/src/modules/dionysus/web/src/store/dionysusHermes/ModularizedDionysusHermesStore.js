@@ -57,9 +57,9 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                     transaction.setDescription(`消費需滿 ${eros.thresholdOfFreeShipByCOD} 元`);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(eros.thresholdOfFreeShipByCOD);
-                    transaction.setAvailable(eros.whetherHomeShipByCOD);
+                    transaction.setAvailable(eros.enableOfCOD);
                     break;
-                case Config.TransactionMethod.CashPay: //現金
+                case Config.TransactionMethod.DirectPay: //現金
                     transaction.setDescription(``);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(0);
@@ -157,7 +157,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                 stringOfTransaction: transaction.getName(),
                 typeOfTransport: Config.TransportMethod.Needless,
                 feeOfTransport: 0,
-                stringOfTransport: Config.LangOfMethod.Needless
+                stringOfTransport: Config.LangOfTransportMethod.Needless
             });
         }
     }

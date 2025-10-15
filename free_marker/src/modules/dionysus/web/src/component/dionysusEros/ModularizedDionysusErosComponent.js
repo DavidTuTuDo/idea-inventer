@@ -115,6 +115,10 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().setSelected("ecpay");
     }
 
+    onDionysusErosEnableOfEnableOfCodSwitchChange(param) {
+        this.getStore().submitEnableOfCOD().then();
+    }
+
     onDionysusErosEnableOfBoughtWithoutLoginInSwitchChange(param) {
         this.getStore().submitWhetherBoughtWithoutLogin().then();
     }
@@ -137,10 +141,6 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
 
     onDionysusErosEnableOfWhetherShipByRapidlySwitchChange(param) {
         this.getStore().submitWhetherShipByRapidly().then();
-    }
-
-    onDionysusErosEnableOfWhetherHomeShipByCodSwitchChange(param) {
-        this.getStore().submitWhetherHomeShipByCOD().then();
     }
 
     onDionysusErosEnableOfWhetherShipByStorePickupSwitchChange(param) {
@@ -185,8 +185,6 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
     onDionysusErosEnableOfWhetherPickupByBuyerSelfSwitchChange(param) {
         this.getStore().submitWhetherPickupByBuyerSelf().then();
     }
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedDionysusErosComponent;

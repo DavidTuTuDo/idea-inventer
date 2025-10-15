@@ -69,10 +69,10 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
         this.setEnableOfEcPay(pub.getEnableOfECPay());
         this.setEnableOfDirect(pub.getEnableOfDirectPay());
+        this.setEnableOfEnableOfCod(pub.getEnableOfCOD());
         this.setEnableOfWhetherHomeDelivery(pub.getWhetherHomeDelivery());
         this.setEnableOfWhetherShipByStorePickup(pub.getWhetherShipByStorePickup());
         this.setEnableOfWhetherShipByRapidly(pub.getWhetherShipByRapidly());
-        this.setEnableOfWhetherHomeShipByCod(pub.getWhetherHomeShipByCOD());
         this.setEnableOfWhetherPickupByBuyerSelf(pub.getWhetherPickupByBuyerSelf());
     }
 
@@ -251,8 +251,8 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.getCupidPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherShipByStorePickup());
         await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
-    submitWhetherHomeShipByCOD = async () => {
-        this.getCupidPublic().setWhetherHomeShipByCOD(this.getEnableOfWhetherHomeShipByCod());
+    submitEnableOfCOD = async () => {
+        this.getCupidPublic().setEnableOfCOD(this.getEnableOfEnableOfCod());
         await this.getCupidPublic().submitCupidPublic(this.getComponent());
     };
     submitWhetherPickupByBuyerSelf = async () => {

@@ -34,7 +34,7 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
     getInjectStyleOfDionysusCartieBriefDiv(brief) {
         return {
             backgroundColor:
-                (brief.quantity <= 0 || !brief.visibility)
+                brief.quantity <= 0 || !brief.visibility
                     ? "rgba(200, 200, 200, 0.3)" // 售罄樣式
                     : "unset" // 還原為預設 class 設定 };
         };
