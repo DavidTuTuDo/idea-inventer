@@ -9,7 +9,7 @@ import ERROR from '../exceptioner';
  Pooller 有以下特點:
  1.task可以設定timeout
  2.queue滿了的可以設定task interval
- 3.如果是runByEachTask length, queue裡面沒有task時，可以設定sleeptime, 以及Sleepcounts
+ 3.如果是runByEachTask length, queue裡面沒有task時,可以設定sleeptime, 以及Sleepcounts
  4.task 可以cancelled by hash
  5.runByParams,runByTimes,runInInfinite,runByEachTask
  6.可以設定taskFailHandler, 這樣遇到錯誤就不會停掉poollers
@@ -110,13 +110,16 @@ class InfinitePool {
     }
 
     /** return true if task completed, after 15 secs, force leave
-     *  TODO:應該要設計成當terminate後, 監聽executingTaskInQueue為零時,回傳結束 */
+     * TODO:應該要設計成當terminate後, 監聽executingTaskInQueue為零時,回傳結束 */
     stopInBackground = async () => {
         this.terminate();
-        while (_.size(this.queueOfExecutingTask) > 0) {
+        let attempts = 0;
+        const maxAttempts = 30; // 30 * 500ms = 15 seconds wait
+        while (_.size(this.queueOfExecutingTask) > 0 && attempts < maxAttempts) {
             await Util.syncDelay(500);
             this.printLogMessage(`784512, 咬在 stopInBackground 出不來,${this.getLogMessageOfExecutingTaskQueueCount()}`)
             this.showState();
+            attempts++;
         }
         return true;
     }
@@ -423,9 +426,14 @@ class InfinitePool {
 
         return setTimeout(async () => {
             try {
-                await asyncfunc(...params);
+                await asyncfunc.apply(this, params); // 使用 apply/call 確保 'this' 指向 InfinitePool
             } catch (error) {
-                throw new ERROR(4009, {message: `${this.getPoollerLogFormat('')}`}, error);
+                // 如果是 Promise Rejection, 錯誤可能已經被 taskWrapper 或其他地方捕獲
+                if (error instanceof ERROR) {
+                    this.printLogMessage(`7812123, runInBackGround() 執行錯誤: ${error.message}`, true, error);
+                } else {
+                    throw new ERROR(4009, {message: `${this.getPoollerLogFormat('')}`}, error);
+                }
             } finally {
                 this.terminate();
                 this.printLogMessage(`7812123, runInBackGround() 走到finally`)
@@ -448,7 +456,8 @@ class InfinitePool {
         this.state = _state;
     }
 
-    isFirstTaskCompleted() {
+    /** [優化] 重新命名以明確說明它具有副作用 (Side Effect) */
+    checkAndMarkInitialTaskStatus() {
         if (!this.initialTaskCompleted) {
             this.initialTaskCompleted = true;
             return false
@@ -490,11 +499,14 @@ class InfinitePool {
     /** 依照config 把委託任務放置到Queue裡面 */
     async syncTaskDispatcher() {
         this.printLogMessage(`448984466, 走進來了 syncTaskDispatcher()`)
-        const initialTaskShouldNotRun = this.disableFirstRun && !this.isFirstTaskCompleted()
+
+        // [修正/優化] 使用新的方法名稱，並將檢查和標記分開處理
+        const initialTaskShouldNotRun = this.disableFirstRun && !this.checkAndMarkInitialTaskStatus();
+
         const isExecutingTaskAlmostFull = this.queueOfExecutingTask.length >= this.maximumOfWorker - 1;
         /** 因為走能到syncTaskDispatcher表示其中一個工作完成了, 這個瞬間不可能 === maximumOfWorker,
-         *  所以必須減1, 除非這個syncTaskDispatcher是單獨一個線程 */
-        const comparison = this.isFirstTaskCompleted() && isExecutingTaskAlmostFull && this.enableOfTaskSleepByInterval;
+         * 所以必須減1, 除非這個syncTaskDispatcher是單獨一個線程 */
+        const comparison = this.checkAndMarkInitialTaskStatus() && isExecutingTaskAlmostFull && this.enableOfTaskSleepByInterval;
 
         if (initialTaskShouldNotRun || comparison) {
             const restInInterval = await Util.syncDelayRandom(this.taskSleepInterval.min, this.taskSleepInterval.max)
@@ -506,7 +518,14 @@ class InfinitePool {
             const taskInfo = this.getTaskInfoDependOnPriority();
             if (taskInfo) {
                 const promise = this.taskWrapper(taskInfo.task, taskInfo.hash, this.queueOfWaitingParam.shift());
-                this.removeTaskMapByHash(taskInfo.hash);
+                // 如果是重複執行的 Task，就不移除 TaskMap，因為它只追蹤任務函數的參考，並在下次執行時產生新的 Hash
+                if (this.state === configerer.POOLLER_STATE.RUN_BY_EACH_TASK) {
+                    this.removeTaskMapByHash(taskInfo.hash);
+                } else {
+                    // 對於重複執行的任務，只需移除本次執行時生成的臨時 Hash
+                    // 由於 getTaskInfoDependOnPriority 現在會產生新的 hash，這裡不需要額外處理
+                }
+
                 this.appendTaskToExecuteQueue(taskInfo.hash, promise);
             } else {
                 /** 沒有taskInfo, 也許有未知的isssue,保險起見break */
@@ -525,9 +544,9 @@ class InfinitePool {
             case configerer.POOLLER_STATE.RUN_BY_PARAMS:
                 return this.isRunning() && !this.isExecutingQueueFull() && _.size(this.queueOfWaitingParam) > 0;
             case configerer.POOLLER_STATE.RUN_BY_TIMES:
-                return this.isRunning() && !this.isExecutingQueueFull() && this.countsOfRunByTimes > 0;
             case configerer.POOLLER_STATE.RUN_INFINITE:
-                return this.isRunning() && !this.isExecutingQueueFull();
+                // 這三種模式的任務數在 AssignTaskQueue 中只有一個或一組
+                return this.isRunning() && !this.isExecutingQueueFull() && this.getCountOfAssignTaskInQueue() > 0;
             default:
                 throw new ERROR(4005, `this.state ==> ${this.state}`)
         }
@@ -604,19 +623,34 @@ class InfinitePool {
 
     }
 
+    /** [新增] 輔助方法：獲取用於重複執行模式的任務資訊（複製任務並賦予新 hash） */
+    getTaskInfoForRepetitiveRun = (originalTaskInfo) => {
+        // 必須複製任務函數並給予一個新的 hash，用於在 executingTaskQueue 中追蹤
+        const newTaskInfo = {
+            task: originalTaskInfo.task,
+            hash: Util.getRandomHash()
+        };
+        this.appendHashTaskMap(newTaskInfo); // 追蹤這個新的 hash 直到任務開始執行
+        return newTaskInfo;
+    }
+
     /** taskInfo = { task, hash }*/
     getTaskInfoDependOnPriority = () => {
         for (const prior of configerer.POOLLER_PRIORITY) {
             if (this.queueOfAssignTask[prior].length > 0) {
                 switch (this.state) {
                     case configerer.POOLLER_STATE.RUN_BY_EACH_TASK:
+                        // [修正] RUN_BY_EACH_TASK: 移除任務
                         return this.queueOfAssignTask[prior].shift();
                     case configerer.POOLLER_STATE.RUN_BY_PARAMS:
                     case configerer.POOLLER_STATE.RUN_BY_TIMES:
                     case configerer.POOLLER_STATE.RUN_INFINITE:
-                        const taskInfo = this.queueOfAssignTask[prior].shift();
-                        this.add(taskInfo.task);
-                        return taskInfo;
+                        // [重大 Bug 修正] 針對重複執行模式：
+                        // 1. 不使用 shift() 移除任務 (因為需要重複執行)
+                        // 2. 獲取任務函數的引用 (Peek)
+                        // 3. 複製任務函數並賦予新的 Hash 以便追蹤本次執行
+                        const originalTaskInfo = this.queueOfAssignTask[prior][0];
+                        return this.getTaskInfoForRepetitiveRun(originalTaskInfo);
                     default:
                         throw new ERROR(4005, `this.state ==> ${this.state}`)
                 }
@@ -674,292 +708,294 @@ class InfinitePool {
         return this;
     }
 
-    /** following function are examples **/
-    /** following function are examples **/
-
-    /** following function are examples **/
-    /** following function are examples **/
-
-    async exampleOfRunByTaskWait4ResultAndRunInBackground() {
-        const pool = new InfinitePool(1, 'david').runByEachTaskInBackGround();
-        pool.enableTaskTimeout(true, 3000);
-
-        function asyncTask(sign, taskSpend = 2000) {
-            return async () => {
-                await Util.syncDelay(taskSpend)
-                return sign;
-            }
-        }
-
-        function startTimoutTask(delayTime, taskSpendTime, sign, priority = 'low') {
-            setTimeout(async () => {
-                try {
-                    const printSign = await pool.addTaskAndWait4Result(asyncTask(sign, taskSpendTime), priority);
-                    Util.appendInfo('answer => ', printSign);
-                } catch (error) {
-                    Util.appendError(`sign ${sign} perform fail`, error.message);
-                }
-            }, delayTime);
-        }
-
-        startTimoutTask(0, 1000, 'A', 'low')
-        startTimoutTask(1000, 1000, 'C', 'low')
-        startTimoutTask(1000, 1000, 'G', 'high')
-        startTimoutTask(500, 4000, 'B', 'low')
-        startTimoutTask(3000, 1000, 'D', 'medium')
-        startTimoutTask(10000, 2000, 'E', 'medium')
-
-
-        while (pool.isRunning()) {
-            console.log('system is running');
-            pool.showState();
-            await Util.syncDelay(1000);
-        }
-    }
-
-    async exampleOfRunInBackgroundInfinite() {
-
-        async function myAsyncTask() {
-            const taskSpend = Util.getRandomValue(1000, 1000);
-            const sign = Util.getRandomHash(15)
-
-            if (Util.isOdd(taskSpend)) {
-                throw new Error(`45100 Oops, ${taskSpend} is odd啦`)
-            }
-
-            await Util.syncDelay(taskSpend)
-            Util.appendInfo(sign, taskSpend);
-            return sign;
-
-        }
-
-        const pool = new InfinitePool(2);
-        pool.runInfiniteInBackground(myAsyncTask, 5000);
-        pool.setDisableFirstRun(true);
-        pool.setTaskFailHandler((error) => {
-            console.error(error.message)
-        })
-
-
-        setTimeout(async () => {
-            await pool.stopInBackground()
-        }, 100000)
-
-        while (pool.isRunning()) {
-            Util.appendInfo('system is running');
-            await Util.syncDelay(3000);
-            pool.showState()
-        }
-    }
-
-    async exampleOfRunInfinite() {
-        await new InfinitePool(3).runInInfinite(async () => {
-            console.log('1000');
-        }, 1000)
-    }
-
-    async exampleOfRunByParamInBackground() {
-        const pool = new InfinitePool(0);
-        pool.runByParamInBackGround(
-            async (param) => {
-                const ms = await Util.syncDelayRandom()
-                console.log(`wait ${ms} ms`, 'param', param);
-            }, 'david', 'susan', 'golden', 'weber', 'kevin')
-
-        setTimeout(() => {
-            pool.appendParamInToQueue('apple', 'Rui', 'Rui', 'Qui', 'Seiu', 'Bikky', 'apple', 'Rui', 'Rui', 'Qui', 'Seiu', 'Bikky')
-        }, 12000)
-
-        setTimeout(() => {
-            pool.setWorker(5)
-        }, 6000)
-
-        while (true) {
-            Util.appendInfo('system is running after 2 seconds');
-            await Util.syncDelay(2000);
-            // pool.showState()
-        }
-    }
-
-    async exampleOfRunByTimesInBackground() {
-        const pool = new InfinitePool(0);
-        let count = 0;
-        pool.runByTimesInBackGround(
-            async () => {
-                const ms = await Util.syncDelayRandom()
-                count++
-                console.log(`wait for time: ${ms} ms, count:${count}`);
-            }, 50)
-
-
-        setTimeout(() => {
-            pool.setWorker(3)
-        }, 10000);
-
-        while (true) {
-            Util.appendInfo('system is running after 2.5 seconds');
-            await Util.syncDelay(2500);
-            // pool.showState()
-        }
-
-    }
-
-    async exampleOfRunByParam() {
-        const oneToTen = _.range(1, 10);
-        const pool = new InfinitePool(5);
-        Util.appendInfo(`....start method of runByParams`);
-
-        await pool.runByParams(async (param) => {
-            const ms = await Util.syncDelayRandom();
-            console.log(param, `${ms} ms`);
-        }, ...oneToTen)
-        Util.appendInfo(`....finish method of runByParams`);
-
-    }
-
-    async exampleOfRunByTask() {
-        const pool = new InfinitePool(1);
-        const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each * 1000));
-        Util.appendInfo(`....start method of exampleOfRunByTask`);
-        const all = await pool.runByEachTask(tasks);
-        Util.appendInfo(all);
-        Util.appendInfo(`....finish method of exampleOfRunByTask`);
-
-    }
-
-    async exampleOfRunByTimes() {
-        const pool = new InfinitePool(5);
-        let time = 0
-        Util.appendInfo(`....start method of runByTimes`);
-
-        await pool.runByTimes(async () => {
-            await Util.syncDelay(1000);
-            time++
-            console.log(`execute the ${time} time`)
-        }, 10)
-        Util.appendInfo(`....finish method of runByTimes`);
-
-    }
-
-
-    async exampleOfAsyncTaskOfFunctionInside() {
-        const result = [];
-        await new InfinitePool(2).runByEachTask([
-            async () => {
-                const item = Util.asyncUnitTaskFunction(1000);
-                result.push(await item());
-            },
-            async () => {
-                const item = await Util.asyncUnitTaskFunction(3000);
-                result.push(await item());
-            },
-            async () => {
-                const item = await Util.asyncUnitTaskFunction(4000);
-                result.push(await item());
-            },
-            async () => {
-                const item = await Util.asyncUnitTaskFunction(9000);
-                result.push(await item());
-            },
-            async () => {
-                const item = await Util.asyncUnitTaskFunction(6000);
-                result.push(await item());
-            },
-            async () => {
-                const item = await Util.asyncUnitTaskFunction(6000);
-                result.push(await item());
-            },
-        ])
-        Util.appendInfo(result);
-    }
-
-    async exampleOfInfiniteUnStopLoopingIssue() {
-
-        async function persistTone() {
-            try {
-                const sign = Util.getRandomHash(20);
-                const time = await Util.syncDelayRandom(1, 10);
-                Util.appendInfo(`${time} ms, yoyoyo ${sign}`);
-                // Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500, 3500)}`)
-                return `任務ID:${sign}`;
-            } catch (error) {
-                Util.appendError(error.message);
-            }
-        }
-
-        const poollers = []
-        const pool = new InfinitePool(3);
-        pool.setPoolId('tone fetch');
-        pool.setDisableFirstRun(true);
-        pool.runInfiniteInBackground(persistTone,
-            5000);
-        pool.setTaskFailHandler((error) => Util.appendError(`5165 error ${error.message}`));
-        poollers.push(pool);
-
-        let isRequiredTerminate = false;
-        setTimeout(() => {
-            isRequiredTerminate = true;
-        }, 20000)
-
-        while (true) {
-            Util.exeAll(poollers, (each) => each.showState())
-            const random = await Util.syncDelayRandom();
-            // Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
-            await Util.syncDelay(random);
-            if (isRequiredTerminate) {
-                Util.appendInfo(`主線程收到關閉指令...`);
-                for (const pooller of poollers) {
-                    Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
-                    await pooller.stopInBackground();
-                    pooller.showState();
-                    Util.appendInfo(`POOLER ${pooller.getPoolId()} 關閉成功!`);
-                }
-                break;
-            }
-        }
-    }
-
-    async sampleOfEachTaskInFreeMarker() {
-        const test = [];
-        await new InfinitePool(6).runByEachTask([
-            async () => {
-                const answer = await Util.syncDelayRandom(2000, 5000);
-                console.log(answer);
-                test.push(answer)
-            },
-            async () => {
-                const answer = await Util.syncDelayRandom(2000, 5000);
-                console.log(answer);
-                test.push(answer);
-            },
-            async () => {
-                const answer = await Util.syncDelayRandom(2000, 5000);
-                console.log(answer);
-                test.push(answer);
-            },
-            async () => {
-                const answer = await Util.syncDelayRandom(2000, 5000);
-                console.log(answer);
-                test.push(answer);
-            },
-            async () => {
-                const answer = await Util.syncDelayRandom(2000, 5000);
-                console.log(answer);
-                test.push(answer);
-            },
-            async () => {
-                const answer = await Util.syncDelayRandom(2000, 5000);
-                console.log(answer);
-                test.push(answer);
-            },
-        ]);
-        console.log('我好了！！', test);
-    }
 }
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        // await new InfinitePool().exampleOfRunByTimesInBackground()
+
+        /** following function are examples **/
+        /** following function are examples **/
+
+        /** following function are examples **/
+        /** following function are examples **/
+
+        async function exampleOfRunByTaskWait4ResultAndRunInBackground() {
+            const pool = new InfinitePool(1, 'david').runByEachTaskInBackGround();
+            pool.enableTaskTimeout(true, 3000);
+
+            function asyncTask(sign, taskSpend = 2000) {
+                return async () => {
+                    await Util.syncDelay(taskSpend)
+                    return sign;
+                }
+            }
+
+            function startTimoutTask(delayTime, taskSpendTime, sign, priority = 'low') {
+                setTimeout(async () => {
+                    try {
+                        const printSign = await pool.addTaskAndWait4Result(asyncTask(sign, taskSpendTime), priority);
+                        Util.appendInfo('answer => ', printSign);
+                    } catch (error) {
+                        Util.appendError(`sign ${sign} perform fail`, error.message);
+                    }
+                }, delayTime);
+            }
+
+            startTimoutTask(0, 1000, 'A', 'low')
+            startTimoutTask(1000, 1000, 'C', 'low')
+            startTimoutTask(1000, 1000, 'G', 'high')
+            startTimoutTask(500, 4000, 'B', 'low')
+            startTimoutTask(3000, 1000, 'D', 'medium')
+            startTimoutTask(10000, 2000, 'E', 'medium')
+
+
+            while (pool.isRunning()) {
+                console.log('system is running');
+                pool.showState();
+                await Util.syncDelay(1000);
+            }
+        }
+
+        async function exampleOfRunInBackgroundInfinite() {
+
+            async function myAsyncTask() {
+                const taskSpend = Util.getRandomValue(1000, 1000);
+                const sign = Util.getRandomHash(15)
+
+                if (Util.isOdd(taskSpend)) {
+                    throw new Error(`45100 Oops, ${taskSpend} is odd啦`)
+                }
+
+                await Util.syncDelay(taskSpend)
+                Util.appendInfo(sign, taskSpend);
+                return sign;
+
+            }
+
+            const pool = new InfinitePool(2);
+            pool.runInfiniteInBackground(myAsyncTask, 5000);
+            pool.setDisableFirstRun(true);
+            pool.setTaskFailHandler((error) => {
+                console.error(error.message)
+            })
+
+
+            setTimeout(async () => {
+                await pool.stopInBackground()
+            }, 100000)
+
+            while (pool.isRunning()) {
+                Util.appendInfo('system is running');
+                await Util.syncDelay(3000);
+                pool.showState()
+            }
+        }
+
+        async function exampleOfRunInfinite() {
+            await new InfinitePool(3).runInInfinite(async () => {
+                console.log('1000');
+            }, 1000)
+        }
+
+        async function exampleOfRunByParamInBackground() {
+            const pool = new InfinitePool(0);
+            pool.runByParamInBackGround(
+                async (param) => {
+                    const ms = await Util.syncDelayRandom()
+                    console.log(`wait ${ms} ms`, 'param', param);
+                }, 'david', 'susan', 'golden', 'weber', 'kevin')
+
+            setTimeout(() => {
+                pool.appendParamInToQueue('apple', 'Rui', 'Rui', 'Qui', 'Seiu', 'Bikky', 'apple', 'Rui', 'Rui', 'Qui', 'Seiu', 'Bikky')
+            }, 12000)
+
+            setTimeout(() => {
+                pool.setWorker(5)
+            }, 6000)
+
+            while (true) {
+                Util.appendInfo('system is running after 2 seconds');
+                await Util.syncDelay(2000);
+                // pool.showState()
+            }
+        }
+
+        async function exampleOfRunByTimesInBackground() {
+            const pool = new InfinitePool(0);
+            let count = 0;
+            pool.runByTimesInBackGround(
+                async () => {
+                    const ms = await Util.syncDelayRandom()
+                    count++
+                    console.log(`wait for time: ${ms} ms, count:${count}`);
+                }, 50)
+
+
+            setTimeout(() => {
+                pool.setWorker(3)
+            }, 10000);
+
+            while (true) {
+                Util.appendInfo('system is running after 2.5 seconds');
+                await Util.syncDelay(2500);
+                // pool.showState()
+            }
+
+        }
+
+        async function exampleOfRunByParam() {
+            const oneToTen = _.range(1, 10);
+            const pool = new InfinitePool(5);
+            Util.appendInfo(`....start method of runByParams`);
+
+            await pool.runByParams(async (param) => {
+                const ms = await Util.syncDelayRandom();
+                console.log(param, `${ms} ms`);
+            }, ...oneToTen)
+            Util.appendInfo(`....finish method of runByParams`);
+
+        }
+
+        async function exampleOfRunByTask() {
+            const pool = new InfinitePool(1);
+            const tasks = _.range(1, 5).map(each => Util.asyncUnitTaskFunction(each * 1000));
+            Util.appendInfo(`....start method of exampleOfRunByTask`);
+            const all = await pool.runByEachTask(tasks);
+            Util.appendInfo(all);
+            Util.appendInfo(`....finish method of exampleOfRunByTask`);
+
+        }
+
+        async function exampleOfRunByTimes() {
+            const pool = new InfinitePool(5);
+            let time = 0
+            Util.appendInfo(`....start method of runByTimes`);
+
+            await pool.runByTimes(async () => {
+                await Util.syncDelay(1000);
+                time++
+                console.log(`execute the ${time} time`)
+            }, 10)
+            Util.appendInfo(`....finish method of runByTimes`);
+
+        }
+
+
+        async function exampleOfAsyncTaskOfFunctionInside() {
+            const result = [];
+            await new InfinitePool(2).runByEachTask([
+                async () => {
+                    const item = Util.asyncUnitTaskFunction(1000);
+                    result.push(await item());
+                },
+                async () => {
+                    const item = await Util.asyncUnitTaskFunction(3000);
+                    result.push(await item());
+                },
+                async () => {
+                    const item = await Util.asyncUnitTaskFunction(4000);
+                    result.push(await item());
+                },
+                async () => {
+                    const item = await Util.asyncUnitTaskFunction(9000);
+                    result.push(await item());
+                },
+                async () => {
+                    const item = await Util.asyncUnitTaskFunction(6000);
+                    result.push(await item());
+                },
+                async () => {
+                    const item = await Util.asyncUnitTaskFunction(6000);
+                    result.push(await item());
+                },
+            ])
+            Util.appendInfo(result);
+        }
+
+        async function exampleOfInfiniteUnStopLoopingIssue() {
+
+            async function persistTone() {
+                try {
+                    const sign = Util.getRandomHash(20);
+                    const time = await Util.syncDelayRandom(1, 10);
+                    Util.appendInfo(`${time} ms, yoyoyo ${sign}`);
+                    // Util.appendInfo(`沒有TONE可以下載了....隨機睡個${await Util.syncDelayRandom(1500, 3500)}`)
+                    return `任務ID:${sign}`;
+                } catch (error) {
+                    Util.appendError(error.message);
+                }
+            }
+
+            const poollers = []
+            const pool = new InfinitePool(3);
+            pool.setPoolId('tone fetch');
+            pool.setDisableFirstRun(true);
+            pool.runInfiniteInBackground(persistTone,
+                5000);
+            pool.setTaskFailHandler((error) => Util.appendError(`5165 error ${error.message}`));
+            poollers.push(pool);
+
+            let isRequiredTerminate = false;
+            setTimeout(() => {
+                isRequiredTerminate = true;
+            }, 20000)
+
+            while (true) {
+                Util.exeAll(poollers, (each) => each.showState())
+                const random = await Util.syncDelayRandom();
+                // Util.appendInfo(`主線程還在努中工作中, 休息一毀兒 ${random} mms`);
+                await Util.syncDelay(random);
+                if (isRequiredTerminate) {
+                    Util.appendInfo(`主線程收到關閉指令...`);
+                    for (const pooller of poollers) {
+                        Util.appendInfo(`POOLER ${pooller.getPoolId()} 正在關閉中`);
+                        await pooller.stopInBackground();
+                        pooller.showState();
+                        Util.appendInfo(`POOLER ${pooller.getPoolId()} 關閉成功!`);
+                    }
+                    break;
+                }
+            }
+        }
+
+        async function sampleOfEachTaskInFreeMarker() {
+            const test = [];
+            await new InfinitePool(6).runByEachTask([
+                async () => {
+                    const answer = await Util.syncDelayRandom(2000, 5000);
+                    console.log(answer);
+                    test.push(answer)
+                },
+                async () => {
+                    const answer = await Util.syncDelayRandom(2000, 5000);
+                    console.log(answer);
+                    test.push(answer);
+                },
+                async () => {
+                    const answer = await Util.syncDelayRandom(2000, 5000);
+                    console.log(answer);
+                    test.push(answer);
+                },
+                async () => {
+                    const answer = await Util.syncDelayRandom(2000, 5000);
+                    console.log(answer);
+                    test.push(answer);
+                },
+                async () => {
+                    const answer = await Util.syncDelayRandom(2000, 5000);
+                    console.log(answer);
+                    test.push(answer);
+                },
+                async () => {
+                    const answer = await Util.syncDelayRandom(2000, 5000);
+                    console.log(answer);
+                    test.push(answer);
+                },
+            ]);
+            console.log('我好了！！', test);
+        }
+
+        await exampleOfRunByTimesInBackground()
     })();
 
 }
