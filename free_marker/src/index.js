@@ -6576,7 +6576,7 @@ class AppBuilder extends ComponentBuilder {
 
             const path = Util.joinRespectingDot(component.path, component.detailPage ? `:${component.getFieldNameOfDetailUid()}?` : '');
 
-            if (!component.isNavigatorView && !component.isCopyRightView)
+            if (!component.isNavigatorView && !component.isCopyRightView) {
                 childrenStmt.push(...this.getJSXStrings({
                     tag: `Route`,
                     generator: appGenerator,
@@ -6587,6 +6587,18 @@ class AppBuilder extends ComponentBuilder {
                     }
                 }));
 
+                if(component.routeHash) {
+                    childrenStmt.push(...this.getJSXStrings({
+                        tag: `Route`,
+                        generator: appGenerator,
+                        props: {
+                            path: `${path}/:hash?`,
+                            element: `###<${wrapper} />`
+                            /** component: `###${_.upperFirst(component.name)}`, */
+                        }
+                    }));
+                }
+            }
             const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
             stmtsOfRenderView.push(`
             const ${observed} = observer(${nameOfComponent});
