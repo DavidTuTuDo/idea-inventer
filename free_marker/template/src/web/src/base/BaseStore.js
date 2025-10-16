@@ -197,7 +197,7 @@ class BaseStore extends ClientRemoteApi {
     @action
     setState(state) {
         if (Util.isOrEquals(state, "loading", "stable", "error")) {
-            Util.appendInfo(`${this.getComponent(true)?.getComponentName() ?? "[not ready]"} state changed => '${this.state}'`);
+            Util.appendInfo(`${this.getComponent(true)?.getComponentName() ?? "[not ready]"} state changed => '${this.state}' -> '${state}'`);
             this.state = state;
         } else {
             Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);

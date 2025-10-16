@@ -575,17 +575,36 @@ class BaseComponent extends MuiComponent {
     /**
      * Custom hook to trigger the visibility based on scroll direction.
      * 只有在向上滑動 (Scrolled Up) 時才返回 true。
+     * * [修正項目]
+     * 1. 緩衝 (Debounce): **移除向上滑動 (顯示) 的緩衝**，改為即時顯示，解決向上滑動延遲問題。
+     * 2. 置頂檢查: 確保捲動位置為 0 時 Bar 必定顯示，解決頂部隱藏和導頁問題。
+     * 3. 優化顯示/隱藏: 向下捲動 (Hide) 時移除緩衝，實現即時隱藏。
+     * 4. 內容加載修正: **移除複雜的 prevScrollY 更新邏輯**，改為始終更新，依賴 scrollThreshold 避免抖動。
      *
-     * @param {object} props - 包含 window 參考的屬性。
+     * @param {object} targetWindow - 包含 window 參考的屬性。
      * @returns {boolean} - 是否應該顯示元件 (true = 顯示)。
      */
     useScrollDirection(targetWindow) {
-        const [shouldShow, setShouldShow] = React.useState(true); // 初始值為 true：載入時顯示
+        const [shouldShow, setShouldShow] = React.useState(true);
         const prevScrollY = React.useRef(0);
+        // 移除 timeoutRef，因為向上顯示不再需要緩衝
 
         React.useEffect(() => {
+            const target = targetWindow.document ? targetWindow : window;
+            // 移除 DEBOUNCE_DELAY 常數
+
             const handleScroll = () => {
-                const currentScrollY = targetWindow.pageYOffset || targetWindow.scrollY || targetWindow.document.documentElement.scrollTop;
+                const currentScrollY = target.pageYOffset || target.scrollY || target.document.documentElement.scrollTop;
+
+                // [FIX 3] 捲動到頂部時 (currentScrollY === 0)，強制顯示 Bar
+                if (currentScrollY === 0) {
+                    // 如果 Bar 已經顯示，則不需要做任何事
+                    if (!shouldShow) {
+                        setShouldShow(true);
+                    }
+                    prevScrollY.current = currentScrollY;
+                    return;
+                }
 
                 // 1. 判斷捲動方向
                 const scrollingUp = currentScrollY < prevScrollY.current;
@@ -596,27 +615,33 @@ class BaseComponent extends MuiComponent {
                 const isSignificantScroll = Math.abs(currentScrollY - prevScrollY.current) > scrollThreshold;
 
                 if (isSignificantScroll) {
-                    // 2. 只有在有明顯捲動時才更新狀態
-                    if (scrollingUp) {
-                        // 向上滑動時，顯示
-                        setShouldShow(true);
-                    } else if (scrollingDown) {
-                        // 向下滑動時，隱藏
-                        setShouldShow(false);
+                    const newShouldShow = scrollingUp; // 向上為 true (顯示), 向下為 false (隱藏)
+
+                    if (newShouldShow !== shouldShow) {
+                        if (newShouldShow === false) {
+                            // **向下捲動 (Scrolled Down) - 應該隱藏 (Hide)**
+                            // 立即隱藏
+                            setShouldShow(false);
+                        } else {
+                            // **向上捲動 (Scrolled Up) - 應該顯示 (Show)**
+                            // 立即顯示 (解決向上滑動不會顯示的問題)
+                            setShouldShow(true);
+                        }
                     }
                 }
 
                 // 3. 更新上次的捲動位置
+                // 移除 [FIX 4] 的複雜條件，始終更新 prevScrollY.current，確保能夠在向上捲動時正確觸發顯示。
                 prevScrollY.current = currentScrollY;
             };
 
-            const target = targetWindow.document ? targetWindow : window; // 獲取正確的目標
-            target.addEventListener("scroll", handleScroll);
+            const targetEl = targetWindow.document ? targetWindow : window;
+            targetEl.addEventListener("scroll", handleScroll);
 
             return () => {
-                target.removeEventListener("scroll", handleScroll);
+                targetEl.removeEventListener("scroll", handleScroll);
             };
-        }, [targetWindow]);
+        }, [targetWindow, shouldShow]);
 
         return shouldShow;
     }
@@ -626,9 +651,10 @@ class BaseComponent extends MuiComponent {
      * @param {object} props - 傳遞給 Slide 元件的屬性。
      * @param {React.ReactNode} props.children - 要隱藏/顯示的內容 (通常是 AppBar)。
      * @param {function} [props.window] - 窗口物件的引用，用於自定義捲動目標 (例如在 iframe 中)。
+     * @param {boolean} [props.hidden=false] - 是否強制隱藏 Bar，忽略捲動狀態。 (新增)
      */
     HideOnScroll = (props) => {
-        const { children, window } = props;
+        const { children, window, hidden = false } = props; // 接受 hidden 屬性
 
         // 獲取實際的目標窗口物件
         const targetWindow = window ? window() : globalThis.window;
@@ -636,10 +662,14 @@ class BaseComponent extends MuiComponent {
         // 使用自定義 Hook 取得是否應該顯示的狀態
         const triggerShow = this.useScrollDirection(targetWindow);
 
+        // 決定最終的顯示狀態：
+        // 如果 hidden=true，in 永遠為 false (隱藏)。
+        // 如果 hidden=false，in 跟隨 triggerShow (捲動邏輯)。
+        const finalInState = hidden ? false : triggerShow;
+
         return (
-            // in={true} = 顯示 (向下), in={false} = 隱藏 (向上)
-            // 為了向上隱藏，向下滑動時隱藏，我們使用 in={triggerShow}
-            <Slide appear={false} direction="down" in={triggerShow}>
+            // [FIX 5] 加入 unmountOnExit 確保子元件在隱藏後從 DOM 中移除，解決 AutoComplete 邊框殘留問題。
+            <Slide appear={false} direction="down" in={finalInState} unmountOnExit>
                 {children}
             </Slide>
         );

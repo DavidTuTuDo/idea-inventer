@@ -121,6 +121,8 @@ class MobileStyle {
 
     MainEditorPromotedBannerDiv = {};
 
+    MainEditorDivWrap = {};
+
     MainEditorDiv = {};
 
     /** => following for navigator  component  */
@@ -872,6 +874,8 @@ class MobileStyle {
     MainPromotedBannerSwiperList = {};
 
     MainPromotedBannerSwiperSlide = {};
+
+    MainDivWrap = {};
 
     MainDiv = {};
 

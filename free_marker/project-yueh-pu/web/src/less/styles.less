@@ -7,7 +7,7 @@
 /** following for main  component used  */
 
 .MainDiv:extend(.CenterInParentColumn) {
-    margin: auto;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -16,6 +16,19 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+.MainDivWrap {
+    margin: auto;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        max-width: 880px;
     }
 }
 .MainPromotedBannerSwiperSlide {
@@ -107,6 +120,7 @@
 }
 .MainHotRhythmDivList:extend(.ContainerOfHorizontalScroll) {
     gap: 5px;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -114,7 +128,7 @@
         /** empty style */
     }
     @media @desktop {
-        max-width: 1080px;
+        /** empty style */
     }
 }
 .MainHotRhythmCardSkeleton {
@@ -178,7 +192,7 @@
         /** empty style */
     }
 }
-.MainHotSingerCard:extend(.MainHotRhythmCard all) {
+.MainHotSingerCard:extend(.MainHotRhythmCard) {
     @media @mobile {
         /** empty style */
     }
@@ -189,7 +203,7 @@
         /** empty style */
     }
 }
-.MainHotSingerDivList:extend(.MainHotRhythmDivList all) {
+.MainHotSingerDivList:extend(.MainHotRhythmDivList) {
     @media @mobile {
         /** empty style */
     }
@@ -4167,9 +4181,9 @@
         /** empty style */
     }
 }
-.NavigatorToolBarAccountIconButton {
-    height: 32px;
+.NavigatorToolBarAccountIconButton:extend(.SquareRatioImg) {
     width: 32px;
+    margin-left: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -4278,6 +4292,17 @@
 /** following for main editor component used  */
 
 .MainEditorDiv:extend(.MainDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.MainEditorDivWrap:extend(.MainDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -4905,162 +4930,5 @@
     }
     @media @desktop {
         /** empty style */
-    }
-}
-/** ======== following for homeless ========= */
-
-.AccountUrlOfHeadPhotoAvatar {
-    width: 60px;
-    height: 60px;
-    @media @mobile {
-        margin-bottom: 20px;
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        margin-bottom: 40px;
-    }
-}
-.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
-    width: 100%;
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
-    width: 80%;
-    justify-content: space-between;
-    @media @mobile {
-        width: 90%;
-    }
-    @media @tablet {
-        width: 90%;
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountSpaceDiv {
-    height: 1px;
-    width: 80%;
-    background-color: rgba(0, 0, 0, 0.3);
-    @media @mobile {
-        width: 90%;
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
-    @media @mobile {
-        font-size: 0.8rem;
-    }
-    @media @tablet {
-        font-size: 0.8rem;
-    }
-    @media @desktop {
-        font-size: 0.9rem;
-    }
-}
-.AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
-    @media @mobile {
-        font-size: 0.7rem;
-    }
-    @media @tablet {
-        font-size: 0.7rem;
-    }
-    @media @desktop {
-        font-size: 0.8rem;
-    }
-}
-.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
-    gap: 10px;
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
-    @media @mobile {
-        font-size: 0.8rem;
-    }
-    @media @tablet {
-        font-size: 0.8rem;
-    }
-    @media @desktop {
-        font-size: 0.9rem;
-    }
-}
-.AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
-    @media @mobile {
-        font-size: 0.7rem;
-    }
-    @media @tablet {
-        font-size: 0.7rem;
-    }
-    @media @desktop {
-        font-size: 0.8rem;
-    }
-}
-.AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
-    gap: 10px;
-    margin-top: 20px;
-    flex-wrap: wrap;
-    @media @mobile {
-        margin-top: 20px;
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        margin-top: 30px;
     }
 }

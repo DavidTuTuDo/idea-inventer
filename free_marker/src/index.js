@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -5793,7 +5793,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: 'ScrollingHideWrap',
                 typeOfClass: 'component',
-                props: {...props, ...propsOfExtra},
+                props: { ...props, ...propsOfExtra, hidden: `###self.getStore().getWhetherAlwaysHidden()` },
                 simpleProps: ['...self.propsMobX()'],
                 contents: [...origin]
             })
@@ -8567,6 +8567,18 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             if (node.hasMargin())
                 node.appendViewProps({margin: `${node.getMargin()}`})
 
+            if (node.isWrapByAppBarView()) {
+                node.appendChildrenWithJsons(
+                    {
+                        name: `whetherAlwaysHidden`,
+                        needParam: true,
+                        type: 'boolean',
+                        defaultValue: false,
+                        incest: {view: false, attribute: true},
+                        description: '是否keep navigator hidden的開關'
+                    }
+                );
+            }
 
             if (node.isWrapByAppBarView() && !node.isScrollingHideDependOnRootNode()) {
                 node.appendWrapProps({position: 'static'})

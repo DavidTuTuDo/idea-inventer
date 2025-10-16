@@ -6,7 +6,7 @@ import UserInfoRef from "../../base/BaseUserInfo";
 import FavoritePu from "../personalRhythmFavoritePu";
 import HistoryPu from "../historyRhythmPuOfRecord";
 import GuitarPu from "../sheetGuitarpu";
-import { action } from "mobx";
+import { action, reaction, runInAction } from "mobx";
 
 const RULE_OF_CHANGE_CHORD_MAJOR_SIGN = [["C"], ["Db", "C#"], ["D"], ["Eb", "D#"], ["E"], ["F"], ["F#", "Gb"], ["G"], ["Ab", "G#"], ["A"], ["Bb", "A#"], ["B"]];
 
@@ -44,18 +44,39 @@ const RULE_OF_CHANGE_CHORD_SIGN_ORDER_BY_STRING_LENGTH = _.orderBy(_.flatten(RUL
 
 const SEPARATOR_OF_CHORD = "།";
 const SEPARATOR_OF_TONALITY = "|";
-
+const SECONDS_MILLI_OF_ADJUST_HIDE = 5000;
 class SheetStore extends BaseSheetStore {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
+    counterOfAdjust = null;
 
     constructor(props) {
         super(props);
         this.apiOfFavorite = new FavoritePu();
         this.apiOfHistory = new HistoryPu();
+        this.activateAdjustControllerCloseReaction();
     }
 
-    /** -------------------- async api -------------------- **/
+    activateAdjustControllerCloseReaction = () => {
+        reaction(
+            // (1) 第一個函式：告訴 reaction 要觀察什麼資料
+            () => this.isAdjustVisible,
+            // (2) 第二個函式：當 isAdjustVisible 改變時，要執行的副作用
+            (isVisible) => {
+                // 如果 Drawer 現在是可見的，就啟動一個新的 5 秒自動關閉計時器
+                if (isVisible) this.refreshTickOfAdjustController();
+                else clearTimeout(this.counterOfAdjust);
+            }
+        );
+    };
+
+    refreshTickOfAdjustController = () => {
+        clearTimeout(this.counterOfAdjust);
+        this.counterOfAdjust = setTimeout(() => {
+            // 在 MobX 的非同步回呼中修改狀態，建議使用 runInAction
+            runInAction(() => {
+                this.setIsAdjustVisible(false);
+            });
+        }, SECONDS_MILLI_OF_ADJUST_HIDE); // 5000 毫秒 = 5 秒
+    };
 
     async fetch(view) {
         if (Util.isUndefinedNullEmpty(this.getUidOfSheetDetail())) return {};

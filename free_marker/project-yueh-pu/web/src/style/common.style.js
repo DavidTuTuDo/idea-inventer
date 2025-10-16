@@ -121,6 +121,8 @@ class CommonStyle {
 
     MainEditorPromotedBannerDiv = {};
 
+    MainEditorDivWrap = {};
+
     MainEditorDiv = {};
 
     /** => following for navigator  component  */
@@ -872,6 +874,8 @@ class CommonStyle {
     MainPromotedBannerSwiperList = {};
 
     MainPromotedBannerSwiperSlide = {};
+
+    MainDivWrap = {};
 
     MainDiv = {};
 

@@ -121,6 +121,8 @@ class AppStyle {
 
     MainEditorPromotedBannerDiv = {};
 
+    MainEditorDivWrap = {};
+
     MainEditorDiv = {};
 
     /** => following for navigator  component  */
@@ -872,6 +874,8 @@ class AppStyle {
     MainPromotedBannerSwiperList = {};
 
     MainPromotedBannerSwiperSlide = {};
+
+    MainDivWrap = {};
 
     MainDiv = {};
 

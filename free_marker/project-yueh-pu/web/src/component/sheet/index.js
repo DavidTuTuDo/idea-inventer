@@ -79,50 +79,61 @@ class SheetComponent extends BaseSheetComponent {
     }
 
     onSheetAdjustCenterSharpenButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().invalidateTranspositionChord(1);
     }
 
     onSheetAdjustCenterFlattenButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().invalidateTranspositionChord(-1);
     }
 
     onSheetAdjustCenterEnlargeButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.adjustBunchOfFontSizeByClassName("SheetGuitarpuCurrentContextTypography");
     }
 
     onSheetAdjustCenterShrinkButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.adjustBunchOfFontSizeByClassName("SheetGuitarpuCurrentContextTypography", false);
     }
 
     onSheetAdjustCenterToggleOfJoinToFavoriteSwitchChange(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().submitFavoritePuState(this.getCheckStateByEvent(param.view)).then();
     }
 
     onSheetAdjustCenterToggleOfHideChordSwitchChange(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().setVisibleOfChordInContext(this.getCheckStateByEvent(param.view));
     }
 
     onSheetAdjustCenterToMaleTonalityButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().transpositionByGender("male");
         this.showMessageOfSucceedOnTonalityChange(this.getCenterToMaleTonality(param.object));
     }
 
     onSheetAdjustCenterToFemaleTonalityButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().transpositionByGender("female");
         this.showMessageOfSucceedOnTonalityChange(this.getCenterToFemaleTonality(param.object), "warning");
     }
 
     onSheetAdjustCenterToOriginalTonalityButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().transpositionByGender("original");
         this.showMessageOfSucceedOnTonalityChange(this.getCenterToOriginalTonality(param.object));
     }
 
     onSheetAdjustCenterPreludeOfGButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().getCurrentPu().setVisibleOfPrelude(true);
         this.getStore().getCurrentPu().setImageOfPrelude(this.getStore().getCurrentPu().getPathOfPreludeG());
     }
 
     onSheetAdjustCenterPreludeOfCButtonClicked(param) {
+        this.getStore().refreshTickOfAdjustController();
         this.getStore().getCurrentPu().setVisibleOfPrelude(true);
         this.getStore().getCurrentPu().setImageOfPrelude(this.getStore().getCurrentPu().getPathOfPreludeC());
     }
