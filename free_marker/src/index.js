@@ -9749,6 +9749,7 @@ class ScheduleManager {
                 break;
             case 'persistentFunctions':
                 await builder.persistent('functions');
+                await Util.syncDelay(1);
                 await builder.buildCloudFunctions(false);
                 break;
             case 'adminBuildOnly':

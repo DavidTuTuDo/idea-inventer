@@ -6,39 +6,33 @@ import BaseCreateEPayPreciseOrder from "./BaseCreateEPayPreciseOrder";
 import Api from "../../api";
 import Config from "../../config";
 
+const INTERVAL_OF_ANONYMOUS_VISIT = 2 * 60 * 1000; //2  minute
 class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         this.containsDeliveredVariant = false;
     }
 
-    getMaxItemsOfPreciseOrder = () => {
-        return 25;
+    isAnonymousAllowVisit = async (fingerprint = "") => {
+        const ref = Api.getFingerprintItemDocRef(fingerprint);
+        // 兩分鐘的毫秒數
+        return await Api.runTransaction(async (tx) => {
+            const doc = await tx.get(ref);
+            const exists = doc.exists;
+            // 使用伺服器時間作為當前時間
+            const now = Api.getCurrentFirestoreTimeStamp();
+            // 預設允許存取
+            let isAllowed = true;
+            if (exists) {
+                const oldData = doc.data();
+                const lastAccessTime = oldData.lastAccessedAt; // 檢查 lastAccessedAt 是否存在(防止數據結構不完整)
+                const timeElapsedMs = now.toMillis() - lastAccessTime.toMillis();
+                if (timeElapsedMs < INTERVAL_OF_ANONYMOUS_VISIT) isAllowed = false; // 如果間隔小於 2 分鐘，則不允許存取
+                tx.update(ref, { lastAccessedAt: now }); // 無論是否允許，都更新最新的存取時間
+            } else tx.set(ref, { lastAccessedAt: now }); // 首次存取 (文件不存在)，允許存取並設定初始時間
+            return isAllowed;
+        });
     };
-
-    preCheckOfCustomizeRule() {
-        this.appendErrorLog(9999, `4841187456-CreateEPayPreciseOrder 專案里特規的檢查條件,例如(專案名:悅薪)的時段檢查機制`);
-    }
-
-    getRuleOfExpiredTime = () => {
-        return { hours: 2 };
-        //{days,minutes}
-    };
-
-    getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering) {
-        /** 從firestore設計的discount去做公式，例如滿萬打9折| 滿2000免運費 */
-
-        /** 扣掉會員金的概念，老班可從後台給某位註冊帳號一筆會員金 */
-        return this.getTotalPrice(itemsOfClientOrdering);
-    }
-
-    /** 單筆交易最高金額(可能依據付款機構規定) */
-    getMaxPriceOfTSingleTransaction() {
-        return 20000;
-    }
 
     /** 課程類商品且useMainTrunk，就得計算是否有衝堂問題 */
     checkConflictAgainst2MainTrunk = async (variant) => {
@@ -54,10 +48,12 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return Util.checkPeriodConflict(variant, itemsOfHera).conflict;
     };
 
-    /** 當useMainTrunk為true時，要增加一筆hera通知行事曆 */
+    /** (done) todo:當useMainTrunk為true時，要增加一筆hera通知行事曆 */
     submitHeraSchedule = async (variant, transaction) => {
-        const db = this._firebase().firestore();
-        const ref = db.collection(`users/${variant.idOfAuthor}/hera`).doc();
+        // const db = this._firebase().firestore();
+        // const ref = db.collection(`users/${variant.idOfAuthor}/hera`).doc();
+        const ref = Api.getHeraItemDocRef("", variant.idOfAuthor);
+
         const period = Util.getStringOfConvertTimeRange(variant.content);
         const splitPeriod = period.split("-");
 
@@ -74,117 +70,195 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     handleHttpOnCall = async (data, session) => {
-        /** todo:未登入帳號，是否距離上一次REQUEST間隔2分鐘以上 */
+        const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal } = data; //Config.TransportMethod; Config.Transaction
+        const itemsOfClientOrdering = items;
+        /** (done) todo:沒有fingerprint直接當成邪魔歪道，拋出錯誤 */
+        if (_.isEmpty(fingerprint)) this.appendErrorLog(9999, `55151214612 你是壞狗，不可以玩伺服器`);
 
-        /** todo:未登入帳號，價格是否超過eros裡的 amountOfAllowAnonymousBuy */
+        /** (done) todo:未登入帳號，是否距離上一次REQUEST超過規範的間隔 */
+        const anonymousAllowed = await this.isAnonymousAllowVisit(fingerprint);
+        if (!anonymousAllowed) this.appendErrorLog(9999, `4534535447534 陌生訪問太過於頻繁，請稍後再試`);
 
-        /** todo:未登入帳號，價格是否超過eros裡的 amountOfMaximumBuy */
+        const globalPerspective = await Api.fetchGlobalPerspective();
+        /** (done) todo:檢查_.size(items)有沒有超過maximumOfOrderingItem */
+        if (_.size(items) > globalPerspective.maximumOfUniqueItems) this.appendErrorLog(9999, `453543741232113 購買品項不可超過 ${globalPerspective.maximumOfUniqueItems} 個`);
 
-        /** todo:透過idOfAuthor拿到eros，如果超過免運就免，否則就是依照買家 transport的(feeOfPickupStore, feeOfCOD) */
-
-        /** todo:運費方式寫進去methodOfTransport */
-
-        /** todo:完成交易後，填寫地址和姓名紀錄在user的欄位(latestName, latestAddress) */
-
-        const db = this._firebase().firestore();
-        const itemsOfClientOrdering = _.filter(data.items, ({ quantity, idOfVariant }) => quantity > 0 && !_.isEmpty(idOfVariant));
-        const { remark, address, phone, name, email, transport, transaction } = data; //Config.TransportMethod; Config.Transaction
-
-        // 參數驗證
-        this.validateOrderItems(itemsOfClientOrdering);
-
-        const preciseOrderRef = db.collection(`ordersOfEPay`).doc();
+        // const preciseOrderRef = db.collection(`ordersOfEPay`).doc();
+        const preciseOrderRef = Api.getPreciseOrderItemDocRef();
 
         try {
-            await db.runTransaction(async (transaction) => {
-                const { mapOfVariant, authorId, containsDeliveredVariant } = await this.getAndValidateVariants(db, itemsOfClientOrdering, transaction);
-
-                // 驗證最終價格
-                const totalPrice = this.getFinalPriceOfCustomDiscountRule(itemsOfClientOrdering);
-                this.validateTotalPrice(totalPrice);
+            await Api.runTransaction(async (transaction) => {
+                const { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal, feeOfTransport, discount } = await this.fetchThenValidateBoozeVariants({
+                    itemsOfClientOrdering,
+                    typeOfTransaction,
+                    typeOfTransport,
+                    priceOfTotal,
+                    transaction,
+                    session
+                });
 
                 // 處理庫存扣除和排程
-                await this.processInventoryAndSchedules(db, itemsOfClientOrdering, mapOfVariant, transaction);
+                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction);
 
                 // 創建訂單與報表
-                await this.createOrderAndHades(
-                    db,
+                await this.createOrderAndHades({
                     itemsOfClientOrdering,
                     preciseOrderRef,
-                    authorId,
+                    idOfAuthor,
                     containsDeliveredVariant,
-                    { remark, address, phone, name, email },
+                    remark,
+                    address,
+                    phone,
+                    name,
+                    email,
                     session,
-                    totalPrice,
-                    transaction
-                );
+                    discount,
+                    feeOfTransport,
+                    priceOfTotal,
+                    typeOfTransport,
+                    transaction,
+                    globalPerspective
+                });
             });
             return { idOfPreciseOrder: preciseOrderRef.id };
         } catch (error) {
-            this.appendErrorLog(9999, `E1299 ${error.message}`);
+            this.appendErrorLog(9999, `454561211211165 ${error.message}`);
         }
     };
 
-    validateOrderItems = (items) => {
-        if (items.length === 0) {
-            this.appendErrorLog(9999, "5556451123-CreateEPayPreciseOrder 無有效商品資料");
-        }
-        if (items.length > this.getMaxItemsOfPreciseOrder()) {
-            this.appendErrorLog(9999, `15131213-CreateEPayPreciseOrder 單筆項目不可超過${this.getMaxItemsOfPreciseOrder()}種`);
-        }
-    };
-
-    getAndValidateVariants = async (db, itemsOfClientOrdering, transaction) => {
-        const variantRefs = itemsOfClientOrdering.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
-        const variantSnaps = await transaction.getAll(...variantRefs);
-        const mapOfVariant = {};
-        let authorId = null;
+    /** itemsOfClientOrdering = [...{idOfBooze, idOfVariant, nameOfBooze, quantity}]*/
+    fetchThenValidateBoozeVariants = async ({ itemsOfClientOrdering, typeOfTransaction, typeOfTransport, priceOfTotal, transaction, session }) => {
+        // const variantRefs = itemsOfClientOrdering.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
+        const variantRefs = itemsOfClientOrdering.map((itemOfClientOrdering) => Api.getVariantItemDocRef(itemOfClientOrdering.idOfVariant, itemOfClientOrdering.idOfBooze));
+        const variantSnaps = await transaction.getAll(...variantRefs); //variant = {...idOfBooze, price,idOfVariant, nameOfBooze, quantity,visibility,isTaskJob,photo,isHomeTeaching}
+        let idOfAuthor = null;
         let containsDeliveredVariant = false;
 
-        for (let i = 0; i < variantSnaps.length; i++) {
-            const snap = variantSnaps[i];
-            if (!snap.exists) {
-                const itemOfCartie = _.find(itemsOfClientOrdering, (item) => _.isEqual(item.idOfVariant, variantRefs[i].id));
-                const name = itemOfCartie ? itemOfCartie.nameOfBooze : "(已過期)";
-                this.appendErrorLog(9999, `5451312321 商品(variant)已不存在(${name})`);
+        /** (done) todo:確認 _.size(_.filter(variantSnaps,snap => snap.exists && snap.data().visibility) === _.size(itemsOfClientOrdering)，否則拋出錯誤(部分商品不存在) */
+        const existingAndVisibleVariants = _.filter(variantSnaps, (snap) => snap.exists && snap.data()?.visibility);
+        if (_.size(existingAndVisibleVariants) !== _.size(itemsOfClientOrdering)) {
+            throw new Error("部分商品不存在或已下架 (Some items do not exist or are not visible).");
+        }
+
+        /** (done) todo:確認產品的idOfAuthor都相同，否則拋出錯誤(僅能購買同一個idOfAuthor的商品) */
+        const uniqueAuthors = _.uniq(_.map(existingAndVisibleVariants, (snap) => snap.data()?.idOfAuthor));
+        if (uniqueAuthors.length !== 1 || !uniqueAuthors[0]) {
+            throw new Error("僅能購買同一個 idOfAuthor 的商品 (Can only purchase items from the same idOfAuthor).");
+        }
+        idOfAuthor = uniqueAuthors[0];
+
+        /** todo:透過其中idOfAuthor拿到const eros = await Api.getCupidPublic(idOfAuthor)， 且eros必須存在(eros.numOfWorker > 0)，否則拋出錯誤(無法未能找到賣家的商場設定)*/
+        const eros = await Api.getCupidPublic(idOfAuthor);
+        if (!eros || eros.numOfWorker <= 0) {
+            throw new Error("未能找到賣家的商場設定或賣家已停止服務 (Could not find seller's shop settings or seller has stopped service).");
+        }
+
+        /** (done) todo(擴增屬性):itemsOfClientOrdering擴增屬性(依據{idOfVariant,idOfBooze}相同) 例如：itemsOfClientOrdering = [...{...,variant:variant:variantSnap.ata()}],itemsOfClientOrdering必須找到並增加一個variant，否則泡出錯誤 */
+        /** (done) todo(數量檢查):依據每個idOfVariant相同的比較 variantSnaps和商品數量(quantity) >= itemOfClientOrdering的下單數量(quantity)，否則拋出錯誤(部分商品數量不足) */
+        /** (done) todo(累加計算總價):計算出itemsOfClientOrdering裡面的總價，priceOfTotalOfShould(itemsOfClientOrdering裡面的總價 = _.sum([...(itemOfClientOrdering.quantity*itemOfClientOrdering.variant.price)] )，必須等於priceOfTotal，否則拋出錯誤(remote計算結果和client端不同) */
+        let priceOfTotalOfShould = 0;
+
+        _.forEach(itemsOfClientOrdering, (itemOfClientOrdering, index) => {
+            const variantSnap = variantSnaps[index];
+            const variant = variantSnap.data();
+
+            /** 數量檢查 */
+            if (itemOfClientOrdering.quantity > variant.quantity) {
+                this.appendErrorLog(
+                    9999,
+                    `123151561566156 商品 ${itemOfClientOrdering.nameOfBooze} 數量不足 (Insufficient quantity for item ${itemOfClientOrdering.nameOfBooze}).`
+                );
             }
 
-            const id = snap.id;
-            const variant = snap.data();
-            mapOfVariant[id] = variant;
+            /** 擴增屬性 */
+            itemOfClientOrdering.variant = variant;
+            /** 設定 containsDeliveredVariant */
+            if (!variant.isTaskJob) containsDeliveredVariant = true;
+            /** 累加計算總價 */
+            priceOfTotalOfShould += itemOfClientOrdering.quantity * variant.price;
+        });
+        const discount = _.subtract(0, Util.getNumberOfMultiplyCeil(priceOfTotalOfShould, 1 - Util.toPercentageDecimal(eros.percentageOfDiscount ?? 1)));
+        const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, discount]);
 
-            const item = _.find(itemsOfClientOrdering, (item) => _.isEqual(item.idOfVariant, id));
-            item.price = variant.price;
-            item.photo = variant.photo;
-            item.content = variant.content;
-            item.idOfAuthor = variant.idOfAuthor;
-
-            if (authorId === null) {
-                authorId = variant.idOfAuthor;
-            } else if (variant.idOfAuthor !== authorId) {
-                this.appendErrorLog(9999, "1152132321 購物車中的商品來自不同作者，無法進行交易");
-            }
-            const isPhysicalGood = !variant.isTaskJob;
-            if (isPhysicalGood) containsDeliveredVariant = true;
+        /** (done) todo:透過eros是否支援transport */
+        /** (done) todo:如果超過免運就免，否則就是依照transport的(feeOfPickupStore, feeOfCOD) */
+        let feeOfTransport = 0;
+        switch (typeOfTransport) {
+            case Config.TransportMethod.SelfPickup:
+                if (!eros.whetherPickupByBuyerSelf) this.appendErrorLog(9999, `687352354354 不支援物流方式：${Config.LangOfTransportMethod.SelfPickup}`);
+                break;
+            case Config.TransportMethod.Freight:
+                if (!eros.whetherHomeDelivery) this.appendErrorLog(9999, `354532132321 不支援物流方式：${Config.LangOfTransportMethod.Freight}`);
+                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByHomeDelivery ? 0 : eros.feeOfHomeDelivery;
+                break;
+            case Config.TransportMethod.RapidOnDay:
+                if (!eros.whetherShipByRapidly) this.appendErrorLog(9999, `1238532123320 不支援物流方式：${Config.LangOfTransportMethod.RapidOnDay}`);
+                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByRapidly ? 0 : eros.feeOfRapidOnDelivery;
+                break;
+            case Config.TransportMethod.StoreFamily:
+                if (!eros.whetherShipByStorePickup) this.appendErrorLog(9999, `1235123132 不支援物流方式：${Config.LangOfTransportMethod.StoreFamily}`);
+                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByStorePickup ? 0 : eros.feeOfInStorePickup;
+                break;
+            case Config.TransportMethod.Store711:
+                if (!eros.whetherShipByStorePickup) this.appendErrorLog(9999, `12321024245 不支援物流方式：${Config.LangOfTransportMethod.Store711}`);
+                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByStorePickup ? 0 : eros.feeOfInStorePickup;
+                break;
+            case Config.TransportMethod.Needless:
+                break;
+            default:
+                this.appendErrorLog(9999, `5444556546 物流方式選擇錯誤，請重新操作`);
         }
-        return { mapOfVariant, authorId, containsDeliveredVariant: containsDeliveredVariant };
+
+        /** (done) todo:檢查eros是否支援transaction */
+        switch (typeOfTransaction) {
+            case Config.TransactionMethod.ECPay:
+                const validOfECPay = eros.enableOfECPay && eros.hasECPay && priceOfTotalIncludingDiscount >= eros.thresholdOfCheckoutByCredit;
+                if (!validOfECPay) this.appendErrorLog(9999, `12311298775 不支援支付方式：${Config.LangOfTransactionMethod.ECPay}`);
+                break;
+            case Config.TransactionMethod.LinePay:
+                const validOfLinePay = eros.enableOfLinepay && eros.hasLinePay && priceOfTotalIncludingDiscount >= eros.thresholdOfCheckoutByLinePay;
+                if (!validOfLinePay) this.appendErrorLog(9999, `87975543454 不支援支付方式：${Config.LangOfTransactionMethod.LinePay}`);
+                break;
+            case Config.TransactionMethod.COD:
+                const validOfCOD = eros.enableOfCOD;
+                if (!validOfCOD) this.appendErrorLog(9999, `97888756432 不支援支付方式：${Config.LangOfTransactionMethod.COD}`);
+                break;
+            case Config.TransactionMethod.DirectPay:
+                const validOfDirectPay = eros.enableOfDirectPay;
+                if (!validOfDirectPay) this.appendErrorLog(9999, `9784564534 不支援支付方式：${Config.LangOfTransactionMethod.DirectPay}`);
+                break;
+        }
+
+        priceOfTotalOfShould = _.sum([priceOfTotalIncludingDiscount, feeOfTransport]); //遠端計算出來的總價
+
+        /**  (done) todo:總價驗證(client端計算的結果是否等於remote端的結果，防止Hack機制) */
+        if (!_.isEqual(priceOfTotalOfShould, priceOfTotal))
+            this.appendErrorLog(
+                9999,
+                `655345675546 遠端計算總價 (${priceOfTotalOfShould}) 與客戶端提交總價 (${priceOfTotal}) 不符 (Remote total price does not match client total price).`
+            );
+
+        /** (done) todo:未登入帳號，價格(percentageOfDiscount*totalPrice)是否超過eros.amountOfAllowAnonymousBuy */
+        if (this.isAnonymousUser(session) && priceOfTotalOfShould > eros.amountOfAllowAnonymousBuy)
+            this.appendErrorLog(9999, `45645535375 [未登入購物]金額限於 $${eros.amountOfAllowAnonymousBuy} 元內`);
+
+        /** (done) todo:登入帳號，價格(percentageOfDiscount*totalPrice)是否超過eros.amountOfMaximumBuy */
+        if (this.isLoginUser(session) && priceOfTotalOfShould > eros.amountOfMaximumBuy)
+            this.appendErrorLog(9999, `45645687895 [購物限制] 消費金額必須小於 $${eros.amountOfMaximumBuy} 元內`);
+
+        return { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal, feeOfTransport, discount };
     };
 
-    validateTotalPrice = (totalPrice) => {
-        if (totalPrice > this.getMaxPriceOfTSingleTransaction()) {
-            this.appendErrorLog(9999, `4564521-CreateEPayPreciseOrder 單筆交易金額不能超過 ${this.getMaxPriceOfTSingleTransaction()} 元，請分批購買`);
-        }
-    };
-
-    processInventoryAndSchedules = async (db, itemsOfClientOrdering, mapOfVariant, transaction) => {
-        for (const item of itemsOfClientOrdering) {
-            const { idOfBooze, idOfVariant, quantity, nameOfBooze } = item;
-            const variant = mapOfVariant[idOfVariant];
-            const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
+    processInventoryAndSchedules = async (itemsOfClientOrdering, transaction) => {
+        for (const itemOfClientOrdering of itemsOfClientOrdering) {
+            const { idOfBooze, idOfVariant, quantity } = itemOfClientOrdering;
+            const variant = itemOfClientOrdering.variant; //{quantity:商品總量}
+            // const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
+            const variantRef = Api.getVariantItemDocRef(idOfVariant, idOfBooze);
 
             const quantityOfBalance = (variant.quantity || 0) - quantity;
             if (quantityOfBalance < 0) {
-                this.appendErrorLog(9999, `1232132321-CreateEPayPreciseOrder ${variant.nameOfBooze}|${variant.content}|數量不足`);
+                this.appendErrorLog(9999, `123213453213 ${variant.nameOfBooze}|${variant.content}|數量不足`);
             }
 
             transaction.update(variantRef, { quantity: quantityOfBalance });
@@ -193,26 +267,43 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 if (variant.useMainTrunk) {
                     const result = await this.checkConflictAgainst2MainTrunk(variant, transaction);
                     if (result.conflict) {
-                        this.appendErrorLog(9999, `1124545654-CreateEPayPreciseOrder ${variant.nameOfBooze}的時段(${variant.content})衝突`);
+                        this.appendErrorLog(9999, `112454565412312321 ${variant.nameOfBooze}的時段(${variant.content})衝突`);
                     }
                 }
-                item.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
-            } else item.infoOfHera = "";
+                itemOfClientOrdering.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
+            } else itemOfClientOrdering.infoOfHera = "";
         }
     };
 
-    createOrderAndHades = async (db, itemsOfClientOrdering, preciseOrderRef, authorId, containsDeliveredVariant, data, session, totalPrice, transaction) => {
-        const { remark, address, phone, name, email } = data;
+    createOrderAndHades = async ({
+        itemsOfClientOrdering,
+        preciseOrderRef,
+        idOfAuthor,
+        containsDeliveredVariant,
+        remark,
+        address,
+        phone,
+        name,
+        email,
+        discount,
+        feeOfTransport,
+        session,
+        priceOfTotal,
+        typeOfTransport,
+        transaction,
+        globalPerspective
+    }) => {
         const preciseOrderData = Api.normalizePreciseOrder({
-            /** todo:未登入idOfUser:'', anonymous:true */
+            /** (done)todo:未登入idOfUser:'', anonymous:true */
+            /** (done)todo:運費方式寫進去typeOfTransport */
             anonymous: this.isAnonymousUser(session),
             fingerprint: this.getFingerprint(),
             idOfUser: this.isAnonymousUser(session) ? "" : this.getUid(session),
-            textOfContract: this.getTextOfContract(itemsOfClientOrdering, remark),
+            textOfContract: this.getTextOfContract({ itemsOfClientOrdering, discount, feeOfTransport, priceOfTotal }),
             remark,
-            timeOfExpired: Util.getTimeStampWithConditions(this.getRuleOfExpiredTime()),
+            timeOfExpired: Util.getTimeStampWithConditions({ minutes: this.isAnonymousUser(session) ? globalPerspective.ttlOfAnonymous : globalPerspective.ttlOfPayment }),
             timeOfCreate: Util.getCurrentTimeStamp(),
-            priceOfTotal: totalPrice,
+            priceOfTotal,
             imageUrlOfHeadPhoto: _.head(itemsOfClientOrdering)?.photo ?? "",
             items: this.getPreciseItemsAsRecord(itemsOfClientOrdering),
             email: email || "",
@@ -220,19 +311,28 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             distance: "",
             name: name || "",
             phoneNumber: phone || "",
-            stateOfDeliver: containsDeliveredVariant ? Config.StateOfDeliver.Pending : Config.StateOfDeliver.Needless,
-            idOfAuthor: authorId
+            typeOfTransport,
+            stateOfDeliver: containsDeliveredVariant
+                ? _.isEqual(typeOfTransport, Config.TransportMethod.SelfPickup)
+                    ? Config.StateOfDeliver.Needless
+                    : Config.StateOfDeliver.Pending
+                : Config.StateOfDeliver.Needless,
+            idOfAuthor: idOfAuthor
         });
 
         transaction.create(preciseOrderRef, preciseOrderData);
 
         const hadesData = Api.normalizeHade({
-            priceOfTotal: totalPrice,
+            priceOfTotal: priceOfTotal,
             timeOfCreate: Util.getCurrentTimeStamp(),
             paid: false,
             id: preciseOrderRef.id
         });
-        transaction.create(db.collection(`/users/${authorId}/hades`).doc(preciseOrderRef.id), hadesData);
+
+        // transaction.create(db.collection(`/users/${idOfAuthor}/hades`).doc(preciseOrderRef.id), hadesData);
+        transaction.create(Api.getHadeItemDocRef(preciseOrderRef.id, idOfAuthor), hadesData);
+
+        /** todo:完成交易後，填寫地址和姓名紀錄在user的欄位(latestName, latestAddress) */
     };
 
     getPreciseItemsAsRecord(variants) {
@@ -248,17 +348,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         }));
     }
 
-    getTotalPrice(items) {
-        return _.sum(items.map((item) => item.quantity * item.price));
-    }
-
-    getTextOfContract(items, remark = "", tipsOfDiscount = [], hideDiscountMessage = false) {
-        const lines = items.map((item) => `${item.nameOfBooze}(${item.content}) x ${item.quantity} = ${item.quantity * item.price} 元`);
-        if (!hideDiscountMessage && _.size(tipsOfDiscount) > 0) {
-            lines.push("\n折扣提示：");
-            tipsOfDiscount.forEach(({ reason, discount }) => lines.push(`${reason} 折扣了 ${discount} 元`));
-        }
-        lines.push(`\n\n總價 ${this.getTotalPrice(items)} 元`);
+    getTextOfContract({ itemsOfClientOrdering, discount, feeOfTransport, priceOfTotal }) {
+        const lines = itemsOfClientOrdering.map((item) => `${item.variant.nameOfBooze}(${item.variant.content}) x ${item.quantity} = ${item.quantity * item.price} 元`);
+        if (discount > 0) lines.push(`會員禮金： ${discount} 元`);
+        if (feeOfTransport > 0) lines.push(`物流費用： ${feeOfTransport} 元`);
+        lines.push(`\n合計費用： ${priceOfTotal} 元`);
         return lines.join("\n");
     }
 
