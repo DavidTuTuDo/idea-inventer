@@ -152,7 +152,10 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     /**
+     * 拿到ref => firestore的ref有區分 collectionRef 和 documentRef
      * 有點彈性有點抽象，要硬記的function，如果id為空直，回傳collection()|反之就一定會回doc()，一定要想清楚當下情境是要collection還是doc
+     * @param path 通常意義是collection name
+     * @param id 通常意義是指 document name
      * @param asDoc 強制回傳一個doc()=>document path
      * */
     reference = (path, id, { asDoc = false } = {}) => {

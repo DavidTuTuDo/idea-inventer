@@ -16,7 +16,7 @@ let ENABLE_FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
 /** 是array 也是 string */
 
-const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
+const SIGN_OF_FUNCTION_START = `\/** -------------------- functi：ons -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
@@ -1908,7 +1908,7 @@ class CodegenNode {
               `const forceUpdate = _.toString(${this.getPreciseAttributeParentName()}.${Util.camel(
                 'get',
                 this.getFieldNameOfSuggest()
-              )}s()) + Util.getRandomHash()`
+              )}s()) + Util.getRandomHashV2()`
             );
         }
 
@@ -6432,7 +6432,7 @@ class AppBuilder extends ComponentBuilder {
 
             const route = Util.joinRespectingDot(nodeOfComponent.getPathOfRouterString(),
                 isDetail ? `\$\{${nodeOfComponent.getFieldNameOfDetailUid()}\}` : '',
-                nodeOfComponent.routeHash ? '${Util.getRandomHash(15)}' : ''
+                nodeOfComponent.routeHash ? '${Util.getRandomHashV2(15)}' : ''
             )
 
             const attrs = nodeOfComponent.getPresetAttributes();
@@ -6581,24 +6581,13 @@ class AppBuilder extends ComponentBuilder {
                     tag: `Route`,
                     generator: appGenerator,
                     props: {
-                        path: path,
+                        path: component.routeHash ? `${path}/*` : path,
                         element: `###<${wrapper} />`
                         /** component: `###${_.upperFirst(component.name)}`, */
                     }
                 }));
-
-                if(component.routeHash) {
-                    childrenStmt.push(...this.getJSXStrings({
-                        tag: `Route`,
-                        generator: appGenerator,
-                        props: {
-                            path: `${path}/:hash?`,
-                            element: `###<${wrapper} />`
-                            /** component: `###${_.upperFirst(component.name)}`, */
-                        }
-                    }));
-                }
             }
+
             const stmtsOfParams = _.size(params) > 0 ? `const {${params.join(',')}} = useParams();` : '';
             stmtsOfRenderView.push(`
             const ${observed} = observer(${nameOfComponent});

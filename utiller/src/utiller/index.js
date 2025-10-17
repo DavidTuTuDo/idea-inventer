@@ -234,8 +234,8 @@ class Utiller {
         }
     }
 
-    /** 就是把 target 放到 condition 裡面處理, 然後取代原本的target
-     *
+    /**
+     * 把敘述句和條件子句累加在一起，讓其變成一個合理的functional呼叫
      * condition2(condition1(target)) =>  為了應付 collection(path).where('age','>',11).orderBy('age');
      * */
     accumulate(target, conditions) {
