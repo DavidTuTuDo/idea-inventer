@@ -50,20 +50,43 @@ class FirebaseHelper extends BaseFirebase {
 
     constructor() {
         super();
+        this.unsubscribeAuth = null;
         if (this.auth() === undefined) return;
-        const self = this;
-        /** 因為和admin共用, firebase-admin沒有onAuthStateChanged 這個 function */
-        onAuthStateChanged(this.auth(), (user) => {
-            self.user = user;
-            const event = require("../event").default;
-            event.emitAuthStateChanged(user);
-            Util.appendInfo(`8745412 FirebaseHelper登入後發布event了`, user);
-        });
-
         if (_.isEqual(Config.env, "dev") && _.isEqual(Config.platform, "web")) {
             connectFunctionsEmulator(this.functions(), "localhost", 5001);
         }
     }
+
+    /**
+     * 專門用於啟動 Firebase 認證狀態監聽的方法
+     * 該方法應在應用程式啟動時，需要監聽狀態變化的組件之前被調用。
+     */
+    startAuthListener = () => {
+        if (this.auth() === undefined || this.unsubscribeAuth !== null) {
+            // 已經啟動了，或者沒有 Auth 實例
+            return;
+        }
+
+        const self = this;
+        const event = require("../event").default;
+
+        // 啟動監聽，並將取消函數儲存起來
+        this.unsubscribeAuth = onAuthStateChanged(this.auth(), (user) => {
+            self.user = user;
+            // 首次載入時和狀態變化時都會觸發
+            event.emitAuthStateChanged(user);
+        });
+    };
+
+    /**
+     * 取消認證狀態監聽
+     */
+    stopAuthListener = () => {
+        if (this.unsubscribeAuth) {
+            this.unsubscribeAuth();
+            this.unsubscribeAuth = null;
+        }
+    };
 
     FirebaseTimestamp() {
         return serverTimestamp();

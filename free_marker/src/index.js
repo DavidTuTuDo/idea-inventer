@@ -16,7 +16,7 @@ let ENABLE_FAST_DEVELOP_MODE = false;
 let TARGET_COMPONENT_FAST_DEVELOP_MODE = '';
 /** 是array 也是 string */
 
-const SIGN_OF_FUNCTION_START = `\/** -------------------- functi：ons -------------------- **\/`;
+const SIGN_OF_FUNCTION_START = `\/** -------------------- functions -------------------- **\/`;
 const SIGN_OF_FIELD_START = `\/** -------------------- fields -------------------- **\/`;
 const SIGN_OF_RESTFUL_API_START = `\/** -------------------- async api -------------------- **\/`;
 const SIGN_OF_COLLECTION_START = `/** --- documents--- **/`;
@@ -44,7 +44,7 @@ const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
 const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
 const SIGN_OF_EMPTY_STORE = 'pure';
 const FILE_EXTENSION_OF_I18N = 'i18n.stmts';
-
+const MAXIMUM_DOCUMENTS_PER_FETCH = 50;
 
 /** source.js 是專有名詞的概念*/
 
@@ -279,7 +279,7 @@ class CodegenNode {
     imitate = false;
     /** 如果是ref,然後把整個節點給取代掉 */
 
-    maxSizeOfFetchItem = 50;
+    maxSizeOfFetchItem = MAXIMUM_DOCUMENTS_PER_FETCH;
     /** 一個collection 最多能拿的比數, 不然邏輯沒寫好, client端就能把一整串collection給download下來 */
 
     disposablePage = true;
@@ -1826,7 +1826,8 @@ class CodegenNode {
             update: 'isAdmin()',
             delete: 'isAdmin()',
             create: 'isAdmin()',
-            read: 'isAdmin()'
+            read: 'isAdmin()',
+            list: `(request.query.limit is int && request.query.limit <= ${MAXIMUM_DOCUMENTS_PER_FETCH})`
         }
         const customize = this.permission ? this.permission : {};
         return {...defaultPermission, ...customize};
@@ -6522,13 +6523,16 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`{BrowserRouter, useNavigate, useLocation, useParams}`, `react-router-dom`);
         appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
+        appGenerator.appendImport(`FirebaseHelper`, `./base/FirebaseHelper`);
+
         appGenerator.appendClass(`BaseApp`);
 
         appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
         appGenerator.appendFunction(`mount`, [], [], [],
             `const container = document.getElementById('app');`,
             `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
-            `root.render(this.getRenderView())`)
+            `root.render(this.getRenderView())`,
+            `FirebaseHelper.startAuthListener()`)
 
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);

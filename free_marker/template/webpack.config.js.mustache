@@ -166,8 +166,51 @@ if (isProd) {
     minimize: true,
     minimizer: [new TerserPlugin()],
     sideEffects: true,
-    usedExports: true,
-  });
+    usedExports: true, // 保持現有配置
+
+    // ===================================================
+    // ✨ 核心優化：程式碼拆分 (Code Splitting)
+    // ===================================================
+    splitChunks: {
+        chunks: 'all', // 對所有 chunk 進行優化 (async 和 initial)
+        minSize: 20000, // 模組超過 20kb 才拆分
+        maxInitialRequests: 25, // 初始載入時最多允許 25 個請求
+        maxAsyncRequests: 25, // 非同步載入時最多允許 25 個請求
+        cacheGroups: {
+            // 1. 核心框架 (Core Frameworks): 穩定且變動少
+            // 確保 React 和 MobX 等核心框架在一個獨立的小 bundle
+            framework: {
+                chunks: 'all',
+                name: 'framework', // 輸出檔案名為 framework.xxxxx.js
+                test: /[\\/]node_modules[\\/](react|react-dom|mobx|mobx-react)[\\/]/,
+                priority: 40, // 優先級最高
+                enforce: true, // 即使不符合其他條件也強制創建
+            },
+            // 2. Material UI (MUI): 大型 UI 函式庫
+            // 將所有 @mui/ 相關函式庫集中打包
+            mui: {
+                chunks: 'all',
+                name: 'mui',
+                test: /[\\/]node_modules[\\/](@mui)[\\/]/,
+                priority: 30,
+            },
+            // 3. 第三方函式庫 (General Vendors): 其他 node_modules 依賴
+            defaultVendors: {
+                chunks: 'all',
+                name: 'vendors',
+                test: /[\\/]node_modules[\\/]/,
+                priority: 20, // 優先級較低，讓 framework 和 mui 優先
+                reuseExistingChunk: true,
+            },
+            // 4. 應用程式公用程式 (App Chunks): 您的 src/ 程式碼
+            default: {
+                minChunks: 2, // 至少被兩個以上的檔案引用才打包
+                priority: 10,
+                reuseExistingChunk: true,
+            },
+        },
+    },
+});
 
   config.plugins.push(
     new MiniCssExtractPlugin({
