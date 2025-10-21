@@ -17,8 +17,8 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         await super.onInitialFetchCompleted(collection);
         await Util.syncDelay(1);
 
-        if (collection && _.size(collection.selects) > 0) {
-            this.setSelectBounds(...[{ label: "所有商品", value: 0, type: "all" }, ...collection.selects]);
+        if (collection && _.size(collection.selectBounds) > 0) {
+            this.setSelectBounds(...[{ label: "所有商品", value: 0, type: "all" }, ...collection.selectBounds]);
         }
     }
 
@@ -28,10 +28,8 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         this.setHasNextPageBehavior(true);
         this.cleanBoozeNextIds();
         this.lastItemOfBooze = undefined;
-        const valueOfCurrentTab = this.getValueOfSelectClickedTab();
-        if (valueOfCurrentTab > 0) {
-            this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectClickedTab()] });
-        }
+        const valueOfCurrentTab = this.getValueOfSelectBoundClickedTab();
+        if (valueOfCurrentTab > 0) this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectBoundClickedTab()] });
         await Util.syncDelay(20);
         const boozes = this.enrichBoozes(await this.fetchBoozes(this.getComponent(), { type: "where", params: ["visibility", "==", true] }));
         this.setBoozes(...boozes);

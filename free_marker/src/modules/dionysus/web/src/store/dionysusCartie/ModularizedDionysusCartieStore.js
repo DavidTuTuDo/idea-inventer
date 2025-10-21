@@ -92,7 +92,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             const countOfSubmit = cartieOfCookie.quantity <= currentCountOfMaximum ? cartieOfCookie.quantity : currentCountOfMaximum;
 
             self.pushBrief({
-                name: cartieOfCookie.nameOfBooze,
+                name: variant.nameOfBooze,
                 idOfCookieUsage,
                 nameOfVariant: variant.content,
                 photo: variant.photo,

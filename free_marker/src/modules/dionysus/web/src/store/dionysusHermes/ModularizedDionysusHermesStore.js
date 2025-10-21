@@ -57,7 +57,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                     transaction.setDescription(`消費需滿 ${eros.thresholdOfFreeShipByCOD} 元`);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(eros.thresholdOfFreeShipByCOD);
-                    transaction.setAvailable(eros.enableOfCOD);
+                    transaction.setAvailable(UserInfo.containsPhysicalGoodOfCheckedItem() && eros.enableOfCOD);
                     break;
                 case Config.TransactionMethod.DirectPay: //現金
                     transaction.setDescription(``);

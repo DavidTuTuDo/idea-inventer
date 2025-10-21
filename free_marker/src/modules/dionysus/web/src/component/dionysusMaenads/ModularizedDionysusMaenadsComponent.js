@@ -68,6 +68,7 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         const cartItem = {
             idOfBooze: booze.id,
             idOfVariant: variant.id,
+            isTaskJob: variant.isTaskJob,
             quantity,
             idOfAuthor: variant.idOfAuthor,
             quantityOfMaximum: variant.quantity

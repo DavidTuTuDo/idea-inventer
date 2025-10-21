@@ -20,11 +20,11 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
         Router.gotoBacchusDetailPage(this.getComponentInstance(), booze.getId(), booze.columnData());
     }
 
-    getListInjectStyleOfDionysusSelectTab(dionysus) {
+    getListInjectStyleOfDionysusSelectBoundTab(dionysus) {
         return Util.getVisibleOrNone(_.size(this.getStore().getSelectBounds()) > 1, true);
     }
 
-    onDionysusSelectTabClicked(param) {
+    onDionysusSelectBoundTabClicked(param) {
         const self = this;
         const select = param.object;
         if (param.changed) {

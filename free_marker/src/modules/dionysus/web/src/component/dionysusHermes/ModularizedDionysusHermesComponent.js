@@ -33,6 +33,11 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
     }
 
     getListInjectStyleOfDionysusHermesTransportDiv(dionysusHermes) {
+        Util.appendInfo("UserInfo.containsPhysicalGoodOfCheckedItem()==> ", UserInfo.containsPhysicalGoodOfCheckedItem());
+        return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
+    }
+
+    getInjectStyleOfDionysusHermesDividerDiv() {
         return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
     }
 

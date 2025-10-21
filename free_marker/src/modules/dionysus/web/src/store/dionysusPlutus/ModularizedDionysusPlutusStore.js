@@ -65,7 +65,9 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
             return isLesson && isHomeTeaching;
         });
 
-        if (isHomeTeachingLesson) this.setNeedAddress(true);
+        const useAddressAsDestin = Util.isOrEquals(infoOfSelectedTrans.typeOfTransport, Config.TransportMethod.Freight, Config.TransportMethod.RapidOnDay);
+        const containsPhysical = UserInfoRef.containsPhysicalGoodOfCheckedItem();
+        if (isHomeTeachingLesson || (useAddressAsDestin && containsPhysical)) this.setNeedAddress(true);
     }
 
     normalizeBriefFromOrderItem = (item) => {
@@ -100,7 +102,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     @computed
     get getComputedFeeOfPayment() {
         const total = _.sum([this.getPrice(), this.getDiscount(), this.getFeeOfTransport()]);
-        this.setFeeOfTransport(total);
+        this.setFeeOfPayment(total);
         return total;
     }
 

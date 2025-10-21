@@ -46,13 +46,14 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     onDionysusPlutusSubmitChipClicked(param) {
         const self = this;
+
         const selectedOfTransport = UserInfo.getSelectedOfTransport();
         const selectedOfTransaction = UserInfo.getSelectedOfTransaction();
         const price = UserInfo.getTotalPriceOfCartie();
         if (selectedOfTransaction < 0 || selectedOfTransport < 0 || price <= 0) return this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
 
         function isValidOfAddressShouldFormed() {
-            if (_.isOrEquals(selectedOfTransport, Config.TransportMethod.Needless, Config.TransportMethod.SelfPickup)) return false;
+            if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.Needless, Config.TransportMethod.SelfPickup)) return false;
             return _.isEmpty(self.getStore().getAddress());
         }
 
@@ -80,12 +81,21 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     execute = async () => {
+        const self = this;
+
         const eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor();
+
+        if (UserInfo.isLoginWithSucceed() && !eros.enableOfBoughtWithoutLoginIn) return this.showErrorSnackMessage("請先登入，才能完成結帳程序");
+        if (!UserInfo.isLoginWithSucceed() && eros.enableOfBoughtWithoutLoginIn && self.getStore().getFeeOfPayment() > eros.amountOfAllowAnonymousBuy)
+            return this.showErrorSnackMessage(`未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內`);
+        if (UserInfo.isLoginWithSucceed() && self.getStore().getFeeOfPayment() > eros.amountOfMaximumBuy)
+            return this.showErrorSnackMessage(`購物金額上限 ${eros.amountOfMaximumBuy} 元內`);
+
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
         Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
         switch (UserInfo.getSelectedOfTransaction()) {
             case Config.TransactionMethod.LinePay:
-                const validate1 = eros.enableOfLinepay && eros.hasLinePay;
+                const validate1 = eros.enableOfLinePay && eros.hasLinePay;
                 return validate1 ? await this.performCheckoutByLinePayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.ECPay:
                 const validate2 = eros.enableOfECPay && eros.hasECPay;
@@ -111,7 +121,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             email: self.getStore().getEmail(),
             typeOfTransport: UserInfo.getSelectedOfTransport(),
             typeOfTransaction: UserInfo.getSelectedOfTransaction(),
-            priceOfTotal: self.getStore().getFeeOfPayment()
+            priceOfTotal4Client: self.getStore().getFeeOfPayment()
         });
         return result.idOfPreciseOrder;
     };

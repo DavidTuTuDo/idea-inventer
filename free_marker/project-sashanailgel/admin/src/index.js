@@ -175,7 +175,7 @@ import fs from "fs";
         const array = Util.getFileContextInJSON("./sasha_of_product_catalog.json");
         const itemsOfCatalog = groupByValueOfType(array);
         // await api.deleteSelects();
-        await api.submitSelects(itemsOfCatalog.map((item) => ({ label: item.labelOfType, id: _.toString(item.valueOfType), value: item.valueOfType })));
+        await api.submitSelectBounds(itemsOfCatalog.map((item) => ({ label: item.labelOfType, id: _.toString(item.valueOfType), value: item.valueOfType })));
     }
 
     async function uploadPaymentOptions() {

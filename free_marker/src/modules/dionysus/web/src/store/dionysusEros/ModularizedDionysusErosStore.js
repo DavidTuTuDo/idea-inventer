@@ -319,7 +319,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitCategoryRules = async (param) => {
         const result = Util.generateLabelValuePairsWithOrigin(this.categoryOfCurrent, param);
-        await this.apiOfTab.submitSelects(
+        await this.apiOfTab.submitSelectBounds(
             this.getComponent(),
             result.map((each) => ({ ...each, id: _.toString(each.value) }))
         );

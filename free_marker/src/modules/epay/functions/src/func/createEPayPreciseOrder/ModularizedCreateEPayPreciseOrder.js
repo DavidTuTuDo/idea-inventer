@@ -20,7 +20,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             const doc = await tx.get(ref);
             const exists = doc.exists;
             // 使用伺服器時間作為當前時間
-            const now = Api.getCurrentFirestoreTimeStamp();
+            const now = Api.getObjectOfCurrentTimeStamp();
             // 預設允許存取
             let isAllowed = true;
             if (exists) {
@@ -42,6 +42,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)) },
             { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) }
         );
+
         Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
         const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, variant.idOfVariant);
         Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
@@ -50,8 +51,6 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
     /** (done) todo:當useMainTrunk為true時，要增加一筆hera通知行事曆 */
     submitHeraSchedule = async (variant, transaction) => {
-        // const db = this._firebase().firestore();
-        // const ref = db.collection(`users/${variant.idOfAuthor}/hera`).doc();
         const ref = Api.getHeraItemDocRef("", variant.idOfAuthor);
 
         const period = Util.getStringOfConvertTimeRange(variant.content);
@@ -70,20 +69,21 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     handleHttpOnCall = async (data, session) => {
-        const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal } = data; //Config.TransportMethod; Config.Transaction
+        const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client } = data; //Config.TransportMethod; Config.Transaction
+        console.log({ fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client });
         const itemsOfClientOrdering = items;
         /** (done) todo:沒有fingerprint直接當成邪魔歪道，拋出錯誤 */
         if (_.isEmpty(fingerprint)) this.appendErrorLog(9999, `55151214612 你是壞狗，不可以玩伺服器`);
 
         /** (done) todo:未登入帳號，是否距離上一次REQUEST超過規範的間隔 */
-        const anonymousAllowed = await this.isAnonymousAllowVisit(fingerprint);
-        if (!anonymousAllowed) this.appendErrorLog(9999, `4534535447534 陌生訪問太過於頻繁，請稍後再試`);
+        if (!this.isLoginUser(session)) {
+            const anonymousAllowed = await this.isAnonymousAllowVisit(fingerprint);
+            if (!anonymousAllowed) this.appendErrorLog(9999, `4534535447534 陌生訪問太過於頻繁，請稍後再試`);
+        }
 
         const globalPerspective = await Api.fetchGlobalPerspective();
         /** (done) todo:檢查_.size(items)有沒有超過maximumOfOrderingItem */
         if (_.size(items) > globalPerspective.maximumOfUniqueItems) this.appendErrorLog(9999, `453543741232113 購買品項不可超過 ${globalPerspective.maximumOfUniqueItems} 個`);
-
-        // const preciseOrderRef = db.collection(`ordersOfEPay`).doc();
         const preciseOrderRef = Api.getPreciseOrderItemDocRef();
 
         try {
@@ -92,7 +92,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     itemsOfClientOrdering,
                     typeOfTransaction,
                     typeOfTransport,
-                    priceOfTotal,
+                    priceOfTotal4Client,
                     transaction,
                     session
                 });
@@ -127,7 +127,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     /** itemsOfClientOrdering = [...{idOfBooze, idOfVariant, nameOfBooze, quantity}]*/
-    fetchThenValidateBoozeVariants = async ({ itemsOfClientOrdering, typeOfTransaction, typeOfTransport, priceOfTotal, transaction, session }) => {
+    fetchThenValidateBoozeVariants = async ({ itemsOfClientOrdering, typeOfTransaction, typeOfTransport, priceOfTotal4Client, transaction, session }) => {
         // const variantRefs = itemsOfClientOrdering.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
         const variantRefs = itemsOfClientOrdering.map((itemOfClientOrdering) => Api.getVariantItemDocRef(itemOfClientOrdering.idOfVariant, itemOfClientOrdering.idOfBooze));
         const variantSnaps = await transaction.getAll(...variantRefs); //variant = {...idOfBooze, price,idOfVariant, nameOfBooze, quantity,visibility,isTaskJob,photo,isHomeTeaching}
@@ -148,7 +148,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         idOfAuthor = uniqueAuthors[0];
 
         /** todo:透過其中idOfAuthor拿到const eros = await Api.getCupidPublic(idOfAuthor)， 且eros必須存在(eros.numOfWorker > 0)，否則拋出錯誤(無法未能找到賣家的商場設定)*/
-        const eros = await Api.getCupidPublic(idOfAuthor);
+        const eros = await Api.fetchCupidPublic(idOfAuthor);
         if (!eros || eros.numOfWorker <= 0) {
             throw new Error("未能找到賣家的商場設定或賣家已停止服務 (Could not find seller's shop settings or seller has stopped service).");
         }
@@ -216,7 +216,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                 if (!validOfECPay) this.appendErrorLog(9999, `12311298775 不支援支付方式：${Config.LangOfTransactionMethod.ECPay}`);
                 break;
             case Config.TransactionMethod.LinePay:
-                const validOfLinePay = eros.enableOfLinepay && eros.hasLinePay && priceOfTotalIncludingDiscount >= eros.thresholdOfCheckoutByLinePay;
+                const validOfLinePay = eros.enableOfLinePay && eros.hasLinePay && priceOfTotalIncludingDiscount >= eros.thresholdOfCheckoutByLinePay;
                 if (!validOfLinePay) this.appendErrorLog(9999, `87975543454 不支援支付方式：${Config.LangOfTransactionMethod.LinePay}`);
                 break;
             case Config.TransactionMethod.COD:
@@ -231,11 +231,16 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         priceOfTotalOfShould = _.sum([priceOfTotalIncludingDiscount, feeOfTransport]); //遠端計算出來的總價
 
+        if (this.isAnonymousUser(session) && !eros.enableOfBoughtWithoutLoginIn) return this.appendErrorLog("未登入，無法完成結帳程序");
+        if (eros.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > eros.amountOfAllowAnonymousBuy)
+            return this.appendErrorLog(9999, `97845645341 未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內（不含運費）`);
+        if (priceOfTotalOfShould > eros.amountOfMaximumBuy) return this.appendErrorLog(9999, `97845611232 未登入購物上限 ${eros.amountOfMaximumBuy} 元內（不含運費）`);
+
         /**  (done) todo:總價驗證(client端計算的結果是否等於remote端的結果，防止Hack機制) */
-        if (!_.isEqual(priceOfTotalOfShould, priceOfTotal))
+        if (!_.isEqual(priceOfTotalOfShould, priceOfTotal4Client))
             this.appendErrorLog(
                 9999,
-                `655345675546 遠端計算總價 (${priceOfTotalOfShould}) 與客戶端提交總價 (${priceOfTotal}) 不符 (Remote total price does not match client total price).`
+                `655345675546 遠端計算總價 (${priceOfTotalOfShould}) 與客戶端提交總價 (${priceOfTotal4Client}) 不符 (Remote total price does not match client total price).`
             );
 
         /** (done) todo:未登入帳號，價格(percentageOfDiscount*totalPrice)是否超過eros.amountOfAllowAnonymousBuy */
@@ -246,14 +251,17 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (this.isLoginUser(session) && priceOfTotalOfShould > eros.amountOfMaximumBuy)
             this.appendErrorLog(9999, `45645687895 [購物限制] 消費金額必須小於 $${eros.amountOfMaximumBuy} 元內`);
 
-        return { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal, feeOfTransport, discount };
+        return { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discount };
     };
 
     processInventoryAndSchedules = async (itemsOfClientOrdering, transaction) => {
+        Util.appendInfo(`processInventoryAndSchedules() coming!`);
         for (const itemOfClientOrdering of itemsOfClientOrdering) {
             const { idOfBooze, idOfVariant, quantity } = itemOfClientOrdering;
             const variant = itemOfClientOrdering.variant; //{quantity:商品總量}
             // const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
+            Util.appendInfo(`processInventoryAndSchedules() coming! => ${_.indexOf(itemsOfClientOrdering, itemOfClientOrdering)} idB='${idOfBooze}', idV='${idOfVariant}'`);
+
             const variantRef = Api.getVariantItemDocRef(idOfVariant, idOfBooze);
 
             const quantityOfBalance = (variant.quantity || 0) - quantity;
@@ -293,6 +301,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         transaction,
         globalPerspective
     }) => {
+        Util.appendInfo(`createOrderAndHades() coming!`);
         const preciseOrderData = Api.normalizePreciseOrder({
             /** (done)todo:未登入idOfUser:'', anonymous:true */
             /** (done)todo:運費方式寫進去typeOfTransport */
@@ -329,21 +338,23 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             id: preciseOrderRef.id
         });
 
-        // transaction.create(db.collection(`/users/${idOfAuthor}/hades`).doc(preciseOrderRef.id), hadesData);
+        Util.appendInfo(`hades data coming!`);
+
         transaction.create(Api.getHadeItemDocRef(preciseOrderRef.id, idOfAuthor), hadesData);
 
         /** todo:完成交易後，填寫地址和姓名紀錄在user的欄位(latestName, latestAddress) */
     };
 
-    getPreciseItemsAsRecord(variants) {
-        return variants.map(({ idOfBooze, idOfVariant, quantity, nameOfBooze, content, price, photo, note, infoOfHera }) => ({
+    getPreciseItemsAsRecord(items) {
+        return items.map(({ idOfBooze, idOfVariant, quantity, variant, infoOfHera, note }) => ({
+            // nameOfBooze, content, price, photo, note,
             idOfPreciseProduct: `${idOfBooze}${Util.getSeparatorOfUnique()}${idOfVariant}`,
             quantity,
-            name: `${nameOfBooze}`,
-            specific: content,
-            price,
+            name: `${variant.nameOfBooze}`,
+            specific: variant.content,
+            price: variant.price,
             infoOfHera,
-            imageUrlOfProduct: photo,
+            imageUrlOfProduct: variant.photo,
             note: note || "無單品項備註內容"
         }));
     }

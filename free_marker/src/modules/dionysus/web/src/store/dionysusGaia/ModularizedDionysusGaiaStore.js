@@ -318,12 +318,12 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         });
 
         if (UserInfo.isAdmin())
-            await this.apiOfTabs.submitSelects(
+            await this.apiOfTabs.submitSelectBounds(
                 this.getComponent(),
                 tabsOfSubmit.map((each) => ({ ...each, id: _.toString(each.value) }))
             );
-        const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { category: indexesOfCategory }, this.getIdOfBooze());
-        this.invalidateBooze(result.value);
+        await this.apiOfBooze.updateBoozeItem(this.getComponent(), { category: indexesOfCategory }, this.getIdOfBooze());
+        this.getBooze().category = indexesOfCategory;
     };
 
     updateSpecificAttributes = async () => {
