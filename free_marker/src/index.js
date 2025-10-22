@@ -7318,7 +7318,7 @@ class ProjectFileHandler extends PathBase {
 
                     /** 因為admin 和 functions 共用 baseFirebase,FirebaseHelper，所以有以下balence措施 */
                     if ((this.isFunctionsPlatform() || this.isAdminPlatform()) &&
-                        Util.isOrEquals(file.fileName, 'BaseFirebase', 'FirebaseHelper')) {
+                        Util.isOrEquals(file.fileName, 'BaseFirebase', 'FirebaseHelper', 'GCPHelper')) {
                         const pathOfDestination = Util.joinRespectingDot(Util.getPathOfReplaceLastDir(this.freeMarkerSourcePlatformPath, this.isFunctionsPlatform() ? 'admin' : 'functions'), 'src', 'base', file.fileNameExtension);
                         Util.copySingleFileConservative(pathOfDestination, file);
                     }

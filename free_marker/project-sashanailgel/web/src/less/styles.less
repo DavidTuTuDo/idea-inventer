@@ -3751,14 +3751,18 @@
     }
 }
 .DionysusPlutusBriefDiv:extend(.EpayFootprintOrderBriefDiv) {
+    padding-right: 5px;
     @media @mobile {
         /** empty style */
+        padding-right: 5px;
     }
     @media @tablet {
         /** empty style */
+        padding-right: 5px;
     }
     @media @desktop {
         /** empty style */
+        padding-right: 5px;
     }
 }
 .DionysusPlutusBriefDivList:extend(.EpayFootprintOrderBriefDivList) {
@@ -9404,18 +9408,17 @@
     margin: auto;
     width: 100%;
     @media @mobile {
-        width: 97vw;
+        width: 98vw;
     }
     @media @tablet {
-        width: 97vw;
+        width: 98vw;
     }
     @media @desktop {
-        max-width: 660px;
+        width: 760px;
     }
 }
 .EpayFootprintOrderCard {
     width: 100%;
-    padding: 3px;
     @media @mobile {
         /** empty style */
     }
@@ -9642,8 +9645,11 @@
 .EpayFootprintOrderBriefDiv:extend(.CenterInParentRow) {
     justify-content: flex-start;
     gap: 5px;
-    width: 99%;
+    width: 100%;
+    padding-right: 1px;
     border-bottom: 1px solid #bbb;
+    max-width: 100%;
+    box-sizing: border-box;
     @media @mobile {
         /** empty style */
     }
@@ -9656,13 +9662,19 @@
 }
 .EpayFootprintOrderBriefDivList {
     width: 100%;
+    max-width: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    display: block;
     @media @mobile {
         max-height: 40vh;
     }
+
     @media @tablet {
         max-height: 40vh;
     }
+
     @media @desktop {
         max-height: 500px;
     }
