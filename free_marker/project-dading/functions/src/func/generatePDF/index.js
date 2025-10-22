@@ -4,8 +4,9 @@ import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "ut
 import _ from "lodash";
 import libpath from "path";
 import config from "../../config";
-import Api from "../../api";1
-import firebase from "../../base/FirebaseHelper";
+import Api from "../../api";
+import gcp from "../../base/GCPHelper";
+
 
 class GeneratePDF extends BaseGeneratePDF {
     /** -------------------- fields -------------------- **/
@@ -47,9 +48,9 @@ class GeneratePDF extends BaseGeneratePDF {
         }
         const fileName = `大鼎旅行社(訂單|${idOfOrder})`;
 
-        const bufferOfDocx4PDF = await firebase.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07-forPDF.docx`, paramsOfTemplate)
-        const bufferOfPDF = await firebase.convertDocxToPdfBuffer(bufferOfDocx4PDF, fileName);
-        const result = await firebase.deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `${fileName}.pdf`));
+        const bufferOfDocx4PDF = await gcp.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07-forPDF.docx`, paramsOfTemplate)
+        const bufferOfPDF = await gcp.convertDocxToPdfBuffer(bufferOfDocx4PDF, fileName);
+        const result = await gcp.deployPDFtoAdminStorage(bufferOfPDF, libpath.join('contract', `${fileName}.pdf`));
 
         /**
          * 部署docx的腳本，可是會用微軟的word開啟，格式會亂掉

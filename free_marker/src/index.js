@@ -4013,7 +4013,13 @@ class BaseBuilder extends PathBase {
                 params = [...params, `action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'];
                 break;
             case `delete items`:
-                params = ['whole = false', ...params, '...conditions'];
+                params = ['items', ...params];
+                break;
+            case `delete eligible items`:
+                params = [...params, '...conditions'];
+                break;
+            case `delete whole items`:
+                params = [...params];
                 break;
             case `increment attr of item`:
             case `fetch item's doc ref`:
@@ -4031,7 +4037,10 @@ class BaseBuilder extends PathBase {
                 params = ['items', ...params];
                 break;
             case `update items`:
-                params = ['items', ...params, '...conditions'];
+                params = ['items', ...params];
+                break;
+            case `update eligible items`:
+                params = [...params, 'obj2Update', '...conditions'];
                 break;
             case `update item atomically`:
             case `upsert item atomically`:
@@ -4944,8 +4953,20 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         Util.camel(`delete`, node.getFieldName()),
-                        [`return await self.deleteItems(path, whole, ...conditions)`],
+                        [`return await self.deleteItems(path, items)`],
                         'delete items')
+
+                    generateApiFunction(
+                        node,
+                        Util.camel(`delete`, `whole`,node.getFieldName()),
+                        [`return await self.deleteWholeItems(path)`],
+                        'delete whole items')
+
+                    generateApiFunction(
+                        node,
+                        Util.camel(`delete`, `eligible`, node.getFieldName()),
+                        [`return await self.deleteEligibleItems(path, ...conditions)`],
+                        'delete eligible items')
 
                     generateApiFunction(
                         node,
@@ -5005,6 +5026,13 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `const commitments = items.map(item => this.${functionNameOfNormalize}(item, true))`,
                             `return await self.updateItems(path, commitments, ...conditions)`],
                         `update items`)
+
+                    generateApiFunction(
+                        node,
+                        Util.camel('update', 'eligible', node.getFieldName()),
+                        [
+                            `return await self.updateEligibleItems(path, obj2Update, ...conditions)`],
+                        `update eligible items`);
 
                     generateApiFunction(
                         node,

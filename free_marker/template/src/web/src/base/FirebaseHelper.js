@@ -41,8 +41,12 @@ import { getDatabase } from "firebase/database";
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll, deleteObject } from "firebase/storage";
 import libpath from "path";
 
-const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
-const MAX_COUNT_OF_FIRESTORE_FETCH = 150;
+const MAX_COUNT_OF_FIRESTORE_BATCH = 200;
+
+const RemoteDo = {
+    Query: 1, // fetch
+    Modified: 2 // set, update, delete
+};
 
 class FirebaseHelper extends BaseFirebase {
     /** web端當前的user */
@@ -226,34 +230,54 @@ class FirebaseHelper extends BaseFirebase {
         return await this.updateDocument(path, id, Util.getObject(attribute, increment(value)));
     };
 
-    /** batch提供set, delete, update的功能, items就是帶進來的參數
-     * todo: 可以設計為[....{ path:'route', content:{id:ioOfDoc}, behavior:'delete|set|update'}]，然後在predicate by case 處理
-     * */
-    batchDo = async (items, predicate = async (batch, object) => {}, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
+    /**
+     * 執行批次寫入操作（Set, Delete, Update）。
+     * 函式會在達到最大批次數量時自動提交（Commit）並開始新的批次。
+     * 【重要】此函式將不會捕獲 predicate 函式中的任何錯誤，錯誤將直接傳播到 batchDo 的呼叫端。
+     * @param {Array<Object>} documents - 要處理的文件資料陣列。
+     * @param {function(batch: MAX_COUNT_OF_FIRESTORE_BATCH.WriteBatch, document: Object): (void | Promise<any>)} [predicate] - 處理每個文件的函式。應使用 batch.set/delete/update 將操作加入批次中。其中 `document` 包含 `id` 和 `_doc` 屬性。
+     * @param {number} [batchCount=MAX_COUNT_OF_FIRESTORE_BATCH] - 單個批次最多包含的操作數量 (Firestore 限制為 500)。
+     * @returns {Promise<Number>}
+     * @throws {Error} - 如果在 predicate 或 batch commit 中發生錯誤。
+     */
+    batchDo = async (documents, predicate = async (batch, document) => {}, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         async function commit(batch, count) {
             if (count > 0) {
+                // commit 失敗會拋出錯誤，由外部呼叫者處理
                 await batch.commit();
-                Util.appendInfo(`5465465 batchDo execute commit(count:${count}) succeed`);
+                Util.appendInfo(`1242232 web batch do commit(count:${count}) succeed`);
             }
         }
 
-        Util.appendInfo(`54654456 batchDo is going to handle (count:${_.size(items)})`);
-        let batch = writeBatch(this.firestore());
-        let count = 0;
+        // 檢查 documents
+        if (!Array.isArray(documents) || documents.length === 0) {
+            Util.appendInfo(`1231232 web batch do: documents array is empty or invalid.`);
+            return;
+        }
 
-        while (items.length > 0) {
-            await predicate(batch, items.shift());
-            /** 由呼叫端去針對每個item視作 set/delete/update 的行為 */
-            count = count + 1;
-            /** 超過MAX先COMMIT次再歸零 */
+        const totalCount = documents.length;
+        Util.appendInfo(`1231232 web batch do is going to handle (count:${totalCount})`);
+        let batch = writeBatch(this.firestore()); // Web SDK: 使用 writeBatch(db)
+        let count = 0; // 當前批次中的操作數量
+
+        // 使用 for...of 迴圈以確保串行控制
+        for (const document of documents) {
+            // 1. 執行 predicate。
+            const result = predicate(batch, document);
+            // 2. 檢查是否為 Promise，並等待其完成。
+            if (result && typeof result.then === "function") await result;
+            count++; // 累加操作數量
+            // 檢查是否達到批次上限，如果是，則提交並重置
             if (count >= batchCount) {
                 await commit(batch, count);
                 count = 0;
-                batch = writeBatch(this.firestore());
+                batch = writeBatch(this.firestore()); // 開始新的批次
             }
         }
+        // 提交最後一個未滿的批次
         await commit(batch, count);
-        Util.appendInfo(`5465466 batchDo (count:${_.size(items)}) succeed`);
+        Util.appendInfo(`32312312 web batch do (count:${totalCount}) succeed`);
+        return totalCount;
     };
 
     submitDocuments = async (path, items) => {
@@ -268,50 +292,44 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     /**
-     * 1. this.updateDocuments(path,{verified:true},{type:'where',params:['age','>','12']})
-     * 2. this.updateDocuments(path,[...{ id:'sdjaoisdosa',verified:true },{ id:'sdjaoisfsdfdsfs',hieght:120 }]
+     * 批次更新指定的 id 文件。
+     * @param {string} path - Collection 路徑。
+     * @param {Array<object>} [documents=[]] - 要更新的文件陣列，每個文件必須包含 'id' 欄位。
+     * @returns {Promise<void>}
      */
-    updateDocuments = async (path, items, ...conditions) => {
-        const result = [];
-        if (_.size(conditions) > 0) {
-            /** 1.如果有condition,就是針對條件篩選後的document執行update */
-            const contentOfUpdate = items[0];
-            const colRef = this.reference(path);
-            const q = query(colRef, ...this.constraints(conditions));
-            const querySnapshot = await getDocs(q);
-            const idsOfConstraint = querySnapshot.docs.map((doc) => doc.id);
-            await this.batchDo(idsOfConstraint, (batch, id) => {
-                const ref = this.reference(path, id);
-                batch.update(ref, contentOfUpdate);
-                result.push({ ...contentOfUpdate, id: ref.id });
-            });
-        } else {
-            /** 2.針對已知的document id做batch update */
-            await this.batchDo(items, (batch, item) => {
-                const ref = this.reference(path, item.id);
-                batch.update(ref, item);
-                result.push({ ...item, id: ref.id });
-            });
-        }
-        return result;
+    updateDocuments = async (path, documents = [{ id: "" }]) => {
+        await this.batchDo(documents, (batch, document) => {
+            batch.update(this.reference(path, document.id), document);
+        });
     };
 
+    /**
+     * 批次更新所有符合條件的文件。
+     * @param {string} path - Collection 路徑。
+     * @param {object} obj2Update - 要套用到所有符合文件上的更新內容。
+     * @param {...object|function} conditions - Firestore 查詢條件。
+     * @returns {Promise<Array>} - 操作成功回傳 true。
+     */
+    updateEligibleDocuments = async (path, obj2Update, ...conditions) => {
+        const task = (batch, document) => {
+            // 注意：這裡使用 document._doc.ref 取得 documentRef
+            batch.update(document._doc.ref, obj2Update);
+        };
+        // 在 Modified 模式下，不需要 selected: true
+        return await this.pagination({ path, conditions, task });
+    };
+
+    /**
+     * 獲取符合條件的所有文件 (使用分頁讀取)。
+     * @param {string} path - Collection 路徑。
+     * @param {...object|function} conditions - Firestore 查詢條件 (where, orderBy, limit, 等)。
+     * @returns {Promise<Array<object>>} - 文件陣列。
+     */
     fetchDocuments = async (path, ...conditions) => {
-        const querySnapshot = await getDocs(this.compound(path, conditions));
-        const all = [];
-        if (!querySnapshot.empty)
-            querySnapshot.forEach((doc) => {
-                // const total = querySnapshot.size;
-                const data = doc.data();
-                data._doc = doc;
-                data.ref = doc.ref;
-                data.id = _.isEmpty(data.id) ? doc.id : data.id;
-                all.push(data);
-            });
-        return all;
+        return this.pagination({ path, conditions });
     };
 
-    async modifyDocumentsOfPaginate(uid, path, job, conditions, size = MAX_COUNT_OF_FIRESTORE_FETCH) {
+    async modifyDocumentsOfPaginate(uid, path, job, conditions, size = MAX_COUNT_OF_FIRESTORE_BATCH) {
         const collectionRef = this.compound(path, conditions);
         let lastDoc = null;
         let batchCount = 0;
@@ -351,7 +369,7 @@ class FirebaseHelper extends BaseFirebase {
      * @param {number} batchCount - 每批最大請求數，預設為 Firestore 最大值（例如 10）
      * @returns {Promise<Array<Object>>} - 每筆資料包含 `id`, `exists`, `_doc`, 以及其他資料欄位
      */
-    fetchBatchDocuments = async (references, batchCount = MAX_COUNT_OF_FIRESTORE_FETCH) => {
+    fetchBatchDocuments = async (references, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         if (!references.length) return [];
         const allResults = [];
         for (let i = 0; i < references.length; i += batchCount) {
@@ -422,13 +440,43 @@ class FirebaseHelper extends BaseFirebase {
         await deleteDoc(this.reference(path, id));
     };
 
-    deleteDocuments = async (path, whole, ...conditions) => {
-        const all = _.isEqual(whole, true) ? await this.fetchDocuments(path) : await this.fetchDocuments(path, ...conditions);
-        if (_.size(all) > 0)
-            await this.batchDo(
-                all.map((data) => data.ref),
-                (batch, ref) => batch.delete(ref)
-            );
+    /**
+     * 批次刪除指定的 id 文件。
+     * @param {string} path - Collection 路徑。
+     * @param {Array<object>} documents - 要刪除的文件陣列，每個文件必須包含 'id' 欄位。
+     * @returns {Promise<void>}
+     */
+    deleteDocuments = async (path, documents) => {
+        await this.batchDo(documents, (batch, document) => {
+            batch.delete(this.reference(path, document.id));
+        });
+    };
+
+    /**
+     * 批次刪除所有符合條件的文件。
+     * @param {string} path - Collection 路徑。
+     * @param {...object|function} conditions - Firestore 查詢條件。
+     * @returns {Promise<Array>} - 操作成功回傳。
+     */
+    deleteEligibleDocuments = async (path, ...conditions) => {
+        const task = (batch, document) => {
+            batch.delete(document._doc.ref);
+        };
+        // 在 Modified 模式下，不需要 selected: true
+        return await this.pagination({ path, conditions, task });
+    };
+
+    /**
+     * 刪除整個 Collection 中的所有文件 (透過分頁刪除)。
+     * @param {string} path - Collection 路徑。
+     * @returns {Promise<Array>} - 操作成功回傳 true。
+     */
+    deleteWholeDocuments = async (path) => {
+        const task = (batch, document) => {
+            batch.delete(document._doc.ref);
+        };
+        // 注意：這裡的 conditions 陣列為空，表示刪除所有
+        return await this.pagination({ path, conditions: [], task });
     };
 
     /** {type:'where',params:['countOfPeople','>','10']} => where(...params) */
@@ -441,10 +489,14 @@ class FirebaseHelper extends BaseFirebase {
                 return orderBy(...condition.params);
             case "limit":
                 return limit(...condition.params);
-            case "startAt":
-                return startAt(...condition.params);
             case "startAfter":
                 return startAfter(...condition.params);
+            case "startAt":
+                return startAt(...condition.params);
+            case "or":
+                return or(...condition.params);
+            case "and":
+                return and(...condition.params);
             default:
                 return undefined;
         }
@@ -454,6 +506,8 @@ class FirebaseHelper extends BaseFirebase {
         _.each(conditions, (each) => {
             switch (each.type) {
                 case `where`:
+                case `or`:
+                case `and`:
                     each.index = 1;
                     break;
                 case `orderBy`:
@@ -469,6 +523,87 @@ class FirebaseHelper extends BaseFirebase {
             }
         });
         return _.orderBy(conditions, ["index"], "asc");
+    };
+
+    /**
+     * 【分頁讀取與批次處理】 迭代地讀取符合條件的所有文件。
+     * @param {object} options - 分頁選項。
+     * @param {string} [options.path=''] - Collection 路徑。
+     * @param {Array<any>} [options.conditions=[]] - 查詢條件 (where, orderBy等)。Web SDK 格式：`{ type: 'where', params: ['field', '==', 'value'] }`。
+     * @param {number} [options.pageSize=MAX_COUNT_OF_FIRESTORE_BATCH] - 每次查詢獲取的文件數量。
+     * @param {function(batch: Firestore.WriteBatch, document: Object): (void | Promise<any>)} [options.task=null] - 可選的處理函式。如果提供，將啟用 Modified 模式，並使用 batchDo 進行批次寫入。
+     * @returns {Promise<Array>} - Query 模式返回文件陣列；Modified 模式返回 true (表示操作成功)。
+     */
+    pagination = async ({ path = "", conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH, task = null }) => {
+        const hasTask = task && _.isFunction(task);
+        const behavior = hasTask ? RemoteDo.Modified : RemoteDo.Query;
+
+        // ---【分頁穩定性檢查】---
+        const hasOrderBy = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("orderBy")) || (_.isPlainObject(c) && c.type === "orderBy"));
+
+        let finalConditions = conditions;
+        if (!hasOrderBy) {
+            // Web SDK: 如果沒有明確排序，強制以 documentId 進行排序
+            const orderByCondition = { type: "orderBy", params: [documentId()] };
+            finalConditions = [...conditions, orderByCondition];
+        }
+        // ---【分頁穩定性檢查】---
+
+        let lastDocSnap = null;
+        let batchCount = 0;
+        let totalFetched = 0;
+        const all = [];
+
+        while (true) {
+            let queryConstraints = [...finalConditions];
+
+            // 設置游標 (StartAfter)
+            if (lastDocSnap) queryConstraints.push({ type: "startAfter", params: [lastDocSnap] });
+
+            //設置查詢限制 (Limit)
+            const hasLimit = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("limit")) || (_.isPlainObject(c) && c.type === "limit"));
+
+            if (!hasLimit) queryConstraints.push({ type: "limit", params: [pageSize] });
+
+            //  執行查詢
+            const snapshot = await getDocs(this.compound(path, queryConstraints));
+
+            if (snapshot.empty) {
+                Util.appendInfo(`991235 path:/${path} paginate has completed.`);
+                break;
+            }
+
+            const documents = snapshot.docs.map((docSnap) => {
+                const data = docSnap.data();
+                data._doc = docSnap; // 將原始快照物件保留，以便在 Modified 模式下進行操作
+                data.id = docSnap.id || data.id;
+                return data;
+            });
+
+            switch (behavior) {
+                case RemoteDo.Query:
+                    all.push(...documents);
+                    break;
+                case RemoteDo.Modified:
+                    // 將 task 傳遞給 batchDo 的 predicate 參數
+                    all.push(...documents.map((each) => each.id));
+                    await this.batchDo(documents, task);
+                    break;
+                default:
+                    throw new Error(`1561521213421 un-handled behavior => ${behavior}`);
+            }
+
+            lastDocSnap = snapshot.docs[snapshot.docs.length - 1]; // 記錄這批最後一筆的 DocumentSnapshot
+            batchCount++;
+            totalFetched += documents.length;
+            Util.appendInfo(`991236 path:/${path} fetched ${documents.length} documents in batch ${batchCount}. Total fetched: ${totalFetched}`);
+
+            if (snapshot.size < pageSize) {
+                // 如果獲取的數量少於 pageSize，代表已經到底
+                break;
+            }
+        }
+        return all;
     };
 
     constraints = (conditions) => {
@@ -505,6 +640,7 @@ class FirebaseHelper extends BaseFirebase {
      *atomic = transaction邏輯
      * fetch回來一個document時遠端會針當前doc寫一個sign，如果update document時發現sign不一樣(代表document被更動過)，就會執行retry，而且transaction update/delete/set 不需要加上await，只有get需要
      * */
+
     /**
      * 處理 Firestore 原子操作的核心邏輯。
      * @param {string} path - 集合路徑。

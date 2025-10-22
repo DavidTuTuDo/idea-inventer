@@ -4,7 +4,7 @@ import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "ut
 import _ from "lodash";
 import libpath from "path";
 import Api from '../../api';
-import firebase from "../../base/FirebaseHelper";
+import gcp from "../../base/GCPHelper";
 import config from "../../config";
 
 
@@ -47,8 +47,8 @@ class GenerateDocx extends BaseGenerateDocx {
             yearOfROC: Util.getStringOfYearADConvertToMinguoYear(_.toNumber(yearOfAD)),
         }
         const fileName = `大鼎旅行社(訂單|${idOfOrder})`;
-        const bufferOfDocx4Word = await firebase.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07-forDocx.docx`, paramsOfTemplate)
-        const result = await firebase.uploadBufferOFDocx2Drive(bufferOfDocx4Word, `${fileName}.docx`)
+        const bufferOfDocx4Word = await gcp.getBufferOfGeneratedDocx(`./template/template_of_dading_contract_20240711-07-forDocx.docx`, paramsOfTemplate)
+        const result = await gcp.uploadBufferOFDocx2Drive(bufferOfDocx4Word, `${fileName}.docx`)
 
         /**
          * 部署docx的腳本，可是會用微軟的word開啟，格式會亂掉

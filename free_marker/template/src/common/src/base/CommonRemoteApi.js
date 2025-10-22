@@ -92,17 +92,25 @@ class CommonRemoteApi {
     async submitItems(path, ...items) {
         const size = items.length;
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} batch submit => path:${path}, size:${size} start`);
+        Util.appendInfo(`${uid} batch submit => path:${path}, size:(${_.size(items)})`);
         const result = await firebase.submitDocuments(path, items);
         Util.appendInfo(`${uid} batch submit path:${path}, size:${size} succeed`);
         return result;
     }
 
-    async updateItems(path, items, ...conditions) {
+    async updateItems(path, items) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} batch update path:${path}`);
-        const result = await firebase.updateDocuments(path, items, ...conditions);
+        Util.appendInfo(`${uid} batch update path:${path} size:(${_.size(items)})`);
+        const result = await firebase.updateDocuments(path, items);
         Util.appendInfo(`${uid} batch update path:${path}, size:${_.size(result)} succeed`);
+        return result;
+    }
+
+    async updateEligibleItems(path, obj2Update = {}, ...conditions) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} batch eligible update path:${path}`);
+        const result = await firebase.updateEligibleDocuments(path, obj2Update, ...conditions);
+        Util.appendInfo(`${uid} batch eligible update path:${path}, size:${_.size(result)} succeed`);
         return result;
     }
 
@@ -335,11 +343,25 @@ class CommonRemoteApi {
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, whole, ...conditions) {
+    async deleteItems(path, items) {
         const uid = Util.getRandomHashV2(10);
-        Util.appendInfo(`${uid} start delete items ${path}`);
-        await firebase.deleteDocuments(path, whole, ...conditions);
+        Util.appendInfo(`${uid} start delete items ${path} size:(${_.size(items)})`);
+        await firebase.deleteDocuments(path, items);
         Util.appendInfo(`${uid} succeed delete items ${path}`);
+    }
+
+    async deleteEligibleItems(path, ...conditions) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start eligible delete items ${path} `);
+        const result = await firebase.deleteEligibleDocuments(path, ...conditions);
+        Util.appendInfo(`${uid} succeed eligible delete items ${path} size:(${_.size(result)})`);
+    }
+
+    async deleteWholeItems(path) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start delete whole items ${path}`);
+        const result = await firebase.deleteWholeDocuments(path);
+        Util.appendInfo(`${uid} succeed delete whole  items ${path} size:(${_.size(result)})`);
     }
 
     async submitObject(path, content) {

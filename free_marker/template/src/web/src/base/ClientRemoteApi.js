@@ -90,14 +90,31 @@ class ClientRemoteApi extends CommonRemoteApi {
         return await CommonPoolHelper.submitTo("submit", _async);
     }
 
+    async updateEligibleItems(path, obj2Update = {}, ...conditions) {
+        const _async = async () => super.updateEligibleItems(path, obj2Update, ...conditions);
+        return await CommonPoolHelper.submitTo("submit", _async);
+    }
+
     async deleteItem(path, item) {
         const _async = async () => super.deleteItem(path, item);
         return await CommonPoolHelper.submitTo("submit", _async);
     }
 
     /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
-    async deleteItems(path, whole, ...conditions) {
-        const _async = async () => super.deleteItems(path, whole, ...conditions);
+    async deleteItems(path, items) {
+        const _async = async () => super.deleteItems(path, items);
+        return await CommonPoolHelper.submitTo("submit", _async);
+    }
+
+    /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
+    async deleteEligibleItems(path, ...conditions) {
+        const _async = async () => super.deleteEligibleItems(path, ...conditions);
+        return await CommonPoolHelper.submitTo("submit", _async);
+    }
+
+    /**  condition 的範本大概是 => (stmt) => stmt.limit(6), where('','')*/
+    async deleteWholeItems(path) {
+        const _async = async () => super.deleteWholeItems(path);
         return await CommonPoolHelper.submitTo("submit", _async);
     }
 
