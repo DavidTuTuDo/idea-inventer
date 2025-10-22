@@ -88,7 +88,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         try {
             await Api.runTransaction(async (transaction) => {
-                const { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal, feeOfTransport, discount } = await this.fetchThenValidateBoozeVariants({
+                const { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal, feeOfTransport, discountOfTotal } = await this.fetchThenValidateBoozeVariants({
                     itemsOfClientOrdering,
                     typeOfTransaction,
                     typeOfTransport,
@@ -112,7 +112,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     name,
                     email,
                     session,
-                    discount,
+                    discountOfTotal,
                     feeOfTransport,
                     priceOfTotal,
                     typeOfTransport,
@@ -177,8 +177,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 累加計算總價 */
             priceOfTotalOfShould += itemOfClientOrdering.quantity * variant.price;
         });
-        const discount = _.subtract(0, Util.getNumberOfMultiplyCeil(priceOfTotalOfShould, 1 - Util.toPercentageDecimal(eros.percentageOfDiscount ?? 1)));
-        const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, discount]);
+        const discountOfTotal = _.subtract(0, Util.getNumberOfMultiplyCeil(priceOfTotalOfShould, 1 - Util.toPercentageDecimal(eros.percentageOfDiscount ?? 1)));
+        const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, discountOfTotal]);
 
         /** (done) todo:透過eros是否支援transport */
         /** (done) todo:如果超過免運就免，否則就是依照transport的(feeOfPickupStore, feeOfCOD) */
@@ -232,7 +232,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         priceOfTotalOfShould = _.sum([priceOfTotalIncludingDiscount, feeOfTransport]); //遠端計算出來的總價
 
         if (this.isAnonymousUser(session) && !eros.enableOfBoughtWithoutLoginIn) return this.appendErrorLog("未登入，無法完成結帳程序");
-        if (eros.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > eros.amountOfAllowAnonymousBuy)
+        if (this.isAnonymousUser(session) && eros.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > eros.amountOfAllowAnonymousBuy)
             return this.appendErrorLog(9999, `97845645341 未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內（不含運費）`);
         if (priceOfTotalOfShould > eros.amountOfMaximumBuy) return this.appendErrorLog(9999, `97845611232 未登入購物上限 ${eros.amountOfMaximumBuy} 元內（不含運費）`);
 
@@ -251,7 +251,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (this.isLoginUser(session) && priceOfTotalOfShould > eros.amountOfMaximumBuy)
             this.appendErrorLog(9999, `45645687895 [購物限制] 消費金額必須小於 $${eros.amountOfMaximumBuy} 元內`);
 
-        return { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discount };
+        return { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal };
     };
 
     processInventoryAndSchedules = async (itemsOfClientOrdering, transaction) => {
@@ -293,7 +293,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         phone,
         name,
         email,
-        discount,
+        discountOfTotal,
         feeOfTransport,
         session,
         priceOfTotal,
@@ -308,7 +308,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             anonymous: this.isAnonymousUser(session),
             fingerprint: this.getFingerprint(),
             idOfUser: this.isAnonymousUser(session) ? "" : this.getUid(session),
-            textOfContract: this.getTextOfContract({ itemsOfClientOrdering, discount, feeOfTransport, priceOfTotal }),
+            textOfContract: this.getTextOfContract({ itemsOfClientOrdering, discountOfTotal, feeOfTransport, priceOfTotal }),
             remark,
             timeOfExpired: Util.getTimeStampWithConditions({ minutes: this.isAnonymousUser(session) ? globalPerspective.ttlOfAnonymous : globalPerspective.ttlOfPayment }),
             timeOfCreate: Util.getCurrentTimeStamp(),
@@ -321,6 +321,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             name: name || "",
             phoneNumber: phone || "",
             typeOfTransport,
+            feeOfTransport,
+            discountOfTotal,
             stateOfDeliver: containsDeliveredVariant
                 ? _.isEqual(typeOfTransport, Config.TransportMethod.SelfPickup)
                     ? Config.StateOfDeliver.Needless
@@ -359,9 +361,9 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         }));
     }
 
-    getTextOfContract({ itemsOfClientOrdering, discount, feeOfTransport, priceOfTotal }) {
-        const lines = itemsOfClientOrdering.map((item) => `${item.variant.nameOfBooze}(${item.variant.content}) x ${item.quantity} = ${item.quantity * item.price} 元`);
-        if (discount > 0) lines.push(`會員禮金： ${discount} 元`);
+    getTextOfContract({ itemsOfClientOrdering, discountOfTotal, feeOfTransport, priceOfTotal }) {
+        const lines = itemsOfClientOrdering.map((item) => `${item.variant.nameOfBooze}(${item.variant.content}) x ${item.quantity} = ${item.quantity * item.variant.price} 元`);
+        if (discountOfTotal < 0) lines.push(`優惠禮金： ${discountOfTotal} 元`);
         if (feeOfTransport > 0) lines.push(`物流費用： ${feeOfTransport} 元`);
         lines.push(`\n合計費用： ${priceOfTotal} 元`);
         return lines.join("\n");
