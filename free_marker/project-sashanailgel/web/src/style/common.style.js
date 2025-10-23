@@ -755,11 +755,11 @@ class CommonStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportIconMoreVertRounded = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconButton = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportIconButton = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
 

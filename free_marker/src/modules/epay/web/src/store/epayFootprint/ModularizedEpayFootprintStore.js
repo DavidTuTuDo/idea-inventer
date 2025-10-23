@@ -126,11 +126,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                 break;
             case "unshipped":
                 conditions.push({ type: "where", params: ["stateOfPayment", "==", 5] }); //5:completed
-                conditions.push({ type: "where", params: ["stateOfDeliver", "==", 2] }); //2:pending
+                conditions.push({ type: "where", params: ["stateOfTransport", "==", 2] }); //2:pending
                 break;
             case "succeed":
                 conditions.push({ type: "where", params: ["stateOfPayment", "==", 5] }); //5:completed
-                conditions.push({ type: "where", params: ["stateOfDeliver", "in", [1, 3]] }); //1:needless 3:sending
+                conditions.push({ type: "where", params: ["stateOfTransport", "in", [1, 3]] }); //1:needless 3:sending
                 break;
             case "cancelled":
                 conditions.push({ type: "where", params: ["stateOfPayment", "==", 4] }); //4:failure
@@ -281,9 +281,9 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
         function getStringOfPaymentState() {
             const state = order.stateOfPayment;
-            const deliver = order.stateOfDeliver;
+            const transport = order.stateOfTransport;
             const Payment = Config.StateOfPayment;
-            const Deliver = Config.StateOfDeliver;
+            const Transport = Config.StateOfTransport;
 
             switch (true) {
                 // User邏輯
@@ -298,7 +298,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
                     return "未付款";
                 case self.isStateOfUnShipped(order):
                     return "未出貨";
-                case self.isRoleOfAuthor(order) && state === Payment.Completed && Util.isOrEquals(deliver, Deliver.Needless, Deliver.Sending):
+                case self.isRoleOfAuthor(order) && state === Payment.Completed && Util.isOrEquals(transport, Transport.Needless, Transport.Sending):
                     return "已成立";
                 case self.isRoleOfAuthor(order) && state === Payment.Failure:
                     return "已作廢";
@@ -315,7 +315,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             raw: order,
             processOfPayment: getStringOfPaymentProcess(),
             stateOfPayment: order.stateOfPayment,
-            stateOfDeliver: order.stateOfDeliver,
+            stateOfTransport: order.stateOfTransport,
             timeOfCreate: order.timeOfCreate,
             timeOfExpired: order.timeOfExpired,
             timeOfPayment: order.timeOfPayment,
@@ -358,11 +358,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     /**  (賣家看的畫面) 未出貨：未付款就不會出現在未出貨 */
     isStateOfUnShipped = (order) => {
         const Payment = Config.StateOfPayment;
-        const Deliver = Config.StateOfDeliver;
+        const Transport = Config.StateOfTransport;
         const state = order.stateOfPayment;
-        const deliver = order.stateOfDeliver;
+        const transport = order.stateOfTransport;
 
-        return this.isRoleOfAuthor(order) && state === Payment.Completed && deliver === Deliver.Pending;
+        return this.isRoleOfAuthor(order) && state === Payment.Completed && transport === Transport.Pending;
     };
 
     async setCurrentTabByType(type) {

@@ -163,8 +163,8 @@ class BaseFunction extends ClientRemoteApi {
     };
 
     /** 確認貨運付款狀態為'未寄出'，備註：訂單內容僅有課程類會是needless */
-    validateOrderIsUnDelivered = async (order, idOfError) => {
-        if (!Util.isOrEquals(order.stateOfDeliver, Config.StateOfDeliver.Pending)) this.appendErrorLog(9999, `4845464541-${idOfError} 訂單必須為「未寄出」，請聯繫管理員`);
+    validateOrderIsNotTransportYet = async (order, idOfError) => {
+        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `4845464541-${idOfError} 訂單必須為「未寄出」，請聯繫管理員`);
     };
 
     validateIsLoginUser = async (session, idOfError) => {

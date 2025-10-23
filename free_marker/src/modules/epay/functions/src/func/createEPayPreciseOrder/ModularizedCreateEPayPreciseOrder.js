@@ -10,7 +10,7 @@ const INTERVAL_OF_ANONYMOUS_VISIT = 2 * 60 * 1000; //2  minute
 class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     constructor(props) {
         super(props);
-        this.containsDeliveredVariant = false;
+        this.containsTransportedVariant = false;
     }
 
     isAnonymousAllowVisit = async (fingerprint = "") => {
@@ -88,7 +88,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         try {
             await Api.runTransaction(async (transaction) => {
-                const { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal, feeOfTransport, discountOfTotal } = await this.fetchThenValidateBoozeVariants({
+                const { eros, idOfAuthor, containsTransportedVariant, priceOfTotal, feeOfTransport, discountOfTotal } = await this.fetchThenValidateBoozeVariants({
                     itemsOfClientOrdering,
                     typeOfTransaction,
                     typeOfTransport,
@@ -105,7 +105,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     itemsOfClientOrdering,
                     preciseOrderRef,
                     idOfAuthor,
-                    containsDeliveredVariant,
+                    containsTransportedVariant,
                     remark,
                     address,
                     phone,
@@ -132,7 +132,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const variantRefs = itemsOfClientOrdering.map((itemOfClientOrdering) => Api.getVariantItemDocRef(itemOfClientOrdering.idOfVariant, itemOfClientOrdering.idOfBooze));
         const variantSnaps = await transaction.getAll(...variantRefs); //variant = {...idOfBooze, price,idOfVariant, nameOfBooze, quantity,visibility,isTaskJob,photo,isHomeTeaching}
         let idOfAuthor = null;
-        let containsDeliveredVariant = false;
+        let containsTransportedVariant = false;
 
         /** (done) todo:確認 _.size(_.filter(variantSnaps,snap => snap.exists && snap.data().visibility) === _.size(itemsOfClientOrdering)，否則拋出錯誤(部分商品不存在) */
         const existingAndVisibleVariants = _.filter(variantSnaps, (snap) => snap.exists && snap.data()?.visibility);
@@ -172,8 +172,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
             /** 擴增屬性 */
             itemOfClientOrdering.variant = variant;
-            /** 設定 containsDeliveredVariant */
-            if (!variant.isTaskJob) containsDeliveredVariant = true;
+            /** 設定 containsTransportedVariant */
+            if (!variant.isTaskJob) containsTransportedVariant = true;
             /** 累加計算總價 */
             priceOfTotalOfShould += itemOfClientOrdering.quantity * variant.price;
         });
@@ -251,7 +251,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (this.isLoginUser(session) && priceOfTotalOfShould > eros.amountOfMaximumBuy)
             this.appendErrorLog(9999, `45645687895 [購物限制] 消費金額必須小於 $${eros.amountOfMaximumBuy} 元內`);
 
-        return { eros, idOfAuthor, containsDeliveredVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal };
+        return { eros, idOfAuthor, containsTransportedVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal };
     };
 
     processInventoryAndSchedules = async (itemsOfClientOrdering, transaction) => {
@@ -287,7 +287,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         itemsOfClientOrdering,
         preciseOrderRef,
         idOfAuthor,
-        containsDeliveredVariant,
+        containsTransportedVariant,
         remark,
         address,
         phone,
@@ -323,11 +323,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             typeOfTransport,
             feeOfTransport,
             discountOfTotal,
-            stateOfDeliver: containsDeliveredVariant
+            stateOfTransport: containsTransportedVariant
                 ? _.isEqual(typeOfTransport, Config.TransportMethod.SelfPickup)
-                    ? Config.StateOfDeliver.Needless
-                    : Config.StateOfDeliver.Pending
-                : Config.StateOfDeliver.Needless,
+                    ? Config.StateOfTransport.Needless
+                    : Config.StateOfTransport.Pending
+                : Config.StateOfTransport.Needless,
             idOfAuthor: idOfAuthor
         });
 

@@ -755,11 +755,11 @@ class AppStyle {
 
     EpayFootprintOrderBriefDiv = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportIconMoreVertRounded = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportReactFragmentWrap = {};
 
-    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconButton = {};
+    EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportIconButton = {};
 
     EpayFootprintOrderAreaOfTopSectionOfTailOptionOfUnpaidIconMoreVertRounded = {};
 

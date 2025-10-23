@@ -41,7 +41,7 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         return Util.getVisibleOrNone(this.getStore().isStateOfPending(order), true);
     }
 
-    getInjectStyleOfEpayFootprintOrderOptionOfDeliverIconButton(order) {
+    getInjectStyleOfEpayFootprintOrderOptionOfTransportIconButton(order) {
         return Util.getVisibleOrNone(this.getStore().isStateOfUnShipped(order), true);
     }
 
@@ -86,9 +86,9 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     }
 
     /** 賣家填寫運單(id, remarkOfAuthor) */
-    onEpayFootprintOrderOptionOfDeliverIconButtonAuthorFormedClicked(param) {
+    onEpayFootprintOrderOptionOfTransportIconButtonAuthorFormedClicked(param) {
         const order = param.object;
-        return async () => await this.remoteAuthorFormDeliver(order);
+        return async () => await this.remoteAuthorFormTransport(order);
     }
 
     /** 賣家更新備註 */
@@ -117,9 +117,9 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     };
 
     remoteForceAuthor2PaidBehavior = async (order) => {
-        const stateOfDeliver = order.stateOfDeliver;
+        const stateOfTransport = order.stateOfTransport;
         await Functions.httpOnCallForcePaidByAuthor(this.getComponentInstance(), { idOfPreciseOrder: order.raw.id });
-        Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", stateOfDeliver === Config.StateOfDeliver.Needless ? "succeed" : "unshipped");
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", stateOfTransport === Config.StateOfTransport.Needless ? "succeed" : "unshipped");
     };
 
     remoteAuthorCancelUnpaidPreciseOrderBehavior = async (id) => {
@@ -127,8 +127,8 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", "cancelled");
     };
 
-    remoteAuthorFormDeliver = async (order) => {
-        await Functions.httpOnCallInformDeliveringByAuthor(this.getComponentInstance(), { idOfPreciseOrder: order.raw.id, remarkOfAuthor: order.getRemarkOfAuthor() });
+    remoteAuthorFormTransport = async (order) => {
+        await Functions.httpOnCallInformTransportingByAuthor(this.getComponentInstance(), { idOfPreciseOrder: order.raw.id, remarkOfAuthor: order.getRemarkOfAuthor() });
     };
 
     remoteCancelUnpaidPreciseOrderBehavior = async (id) => {

@@ -6,9 +6,9 @@ import libpath from "path";
 import Config from "../../config";
 import Api from "../../api";
 
-import BaseInformDeliveringByAuthor from "./BaseInformDeliveringByAuthor";
+import BaseInformTransportingByAuthor from "./BaseInformTransportingByAuthor";
 
-class ModularizedInformDeliveringByAuthor extends BaseInformDeliveringByAuthor {
+class ModularizedInformTransportingByAuthor extends BaseInformTransportingByAuthor {
     /** -------------------- fields -------------------- **/
 
     /** -------------------- functions -------------------- **/
@@ -29,9 +29,9 @@ class ModularizedInformDeliveringByAuthor extends BaseInformDeliveringByAuthor {
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
             await this.validateOrderIsCompletedPayment(order, "DeliveringByAuthor");
             return {
-                stateOfDeliver: Config.StateOfDeliver.Sending,
-                isDelivered: true,
-                timeOfDelivered: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                stateOfTransport: Config.StateOfTransport.Sending,
+                isTransported: true,
+                timeOfTransport: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
             };
         }, detailOfPreciseOrder.id);
 
@@ -41,4 +41,4 @@ class ModularizedInformDeliveringByAuthor extends BaseInformDeliveringByAuthor {
     /** -------------------- async api -------------------- **/
 }
 
-export default ModularizedInformDeliveringByAuthor;
+export default ModularizedInformTransportingByAuthor;
