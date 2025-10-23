@@ -52,12 +52,21 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const price = UserInfo.getTotalPriceOfCartie();
         if (selectedOfTransaction < 0 || selectedOfTransport < 0 || price <= 0) return this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
 
-        function isValidOfAddressShouldFormed() {
-            if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.Needless, Config.TransportMethod.SelfPickup)) return false;
+        function isAddressShouldFormed() {
+            if (
+                Util.isOrEquals(
+                    selectedOfTransport,
+                    Config.TransportMethod.Needless,
+                    Config.TransportMethod.SelfPickup,
+                    Config.TransportMethod.Store711,
+                    Config.TransportMethod.StoreFamily
+                )
+            )
+                return false;
             return _.isEmpty(self.getStore().getAddress());
         }
 
-        if (Util.or(isValidOfAddressShouldFormed(), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
+        if (Util.or(isAddressShouldFormed(), _.isEmpty(this.getStore().getEmail()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
             this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`);
             return;
         }
@@ -101,8 +110,8 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 const validate2 = eros.enableOfECPay && eros.hasECPay;
                 return validate2 ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.DirectPay:
-                const validate3 = eros.enableOfDirectPay && eros.hasDirectPay;
-                return validate3 ? this.gotoExternalUrlDirectly(eros.payOfDirect) : Router.gotoEpayFootprintPage(this, "user", "all");
+                if (eros.enableOfDirectPay && eros.hasDirectPay) this.gotoUrlWithNewTabDirectly(eros.payOfDirect);
+                return Router.gotoEpayFootprintPage(this, "user", "all");
             default:
                 return Router.gotoEpayFootprintPage(this, "user", "all");
         }

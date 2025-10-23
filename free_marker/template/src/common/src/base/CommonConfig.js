@@ -1,8 +1,8 @@
 const edit = true;
 
 class CommonConfig {
-    getLabelByValue = (target, value) => {
-        return Object.entries(target).find(([_, v]) => v === value)?.[0] ? target[Object.entries(target).find(([_, v]) => v === value)[0]] : undefined;
+    getLabelByValue = (values, labels, value) => {
+        return Object.entries(values).find(([_, v]) => v === value)?.[0] ? labels[Object.entries(values).find(([_, v]) => v === value)[0]] : undefined;
     };
 }
 

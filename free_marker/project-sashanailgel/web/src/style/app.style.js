@@ -693,6 +693,14 @@ class AppStyle {
 
     EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
 
+    EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography = {};
+
+    EpayFootprintOrderAreaOfTransportTransportByDivWrap = {};
+
+    EpayFootprintOrderAreaOfTransportTransportByTypography = {};
+
+    EpayFootprintOrderAreaOfTransportDiv = {};
+
     EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};

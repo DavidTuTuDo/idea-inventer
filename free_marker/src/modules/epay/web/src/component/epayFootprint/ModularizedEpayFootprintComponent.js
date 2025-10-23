@@ -211,6 +211,16 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
             }
         };
     }
+
+    getInjectStyleOfEpayFootprintOrderAreaOfTransportDiv(order) {
+        const type = order.getTypeOfTransport();
+        const enable = type > 0 && type !== Config.TransportMethod.Needless;
+        return Util.getVisibleOrNone(enable);
+    }
+
+    getOrderTransportBy(order) {
+        return Config.LabelOfTransportMethod(order.getTypeOfTransport());
+    }
 }
 
 export default ModularizedEpayFootprintComponent;

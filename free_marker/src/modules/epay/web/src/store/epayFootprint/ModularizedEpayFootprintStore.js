@@ -336,7 +336,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             code: getStringOfCode(),
             reason: `${order.messageOfPayment}`,
             idOfUser: order.idOfUser,
-            idOfAuthor: order.idOfUser
+            idOfAuthor: order.idOfUser,
+            typeOfTransport: order.typeOfTransport
         };
     };
 

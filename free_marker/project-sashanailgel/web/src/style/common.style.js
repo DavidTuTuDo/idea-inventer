@@ -693,6 +693,14 @@ class CommonStyle {
 
     EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
 
+    EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography = {};
+
+    EpayFootprintOrderAreaOfTransportTransportByDivWrap = {};
+
+    EpayFootprintOrderAreaOfTransportTransportByTypography = {};
+
+    EpayFootprintOrderAreaOfTransportDiv = {};
+
     EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography = {};
 
     EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap = {};

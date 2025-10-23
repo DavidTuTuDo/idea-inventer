@@ -7182,7 +7182,6 @@ class ProjectFileHandler extends PathBase {
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `config`, `BaseConfig.js`), this.nodeOfAncestor);
         baseConfigGenerator.appendClass(`BaseConfig`,{name: 'CommonConfig', from: '../base/CommonConfig'});
-        baseConfigGenerator.setSingleton(true);
         const watermarkObj = Util.mergeObject({
             type: 'string',
             src: 'defaultTexts',
@@ -7198,19 +7197,16 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
 
         const enums = this.getAllEnums();
-        for(const key in enums) {
+        for (const key in enums) {
             const objOfMain = enums[key];
             const lang = Object.fromEntries(Object.entries(objOfMain).map(([key, { label }]) => [key, label]));
             const value = Object.fromEntries(Object.entries(objOfMain).map(([key, { value }]) => [key, value]));
-            baseConfigGenerator.appendField(`LangOf${_.upperFirst(key)}`, JSON.stringify(lang));
+            const field = _.upperFirst(key);
+            baseConfigGenerator.appendField(`LangOf${field}`, JSON.stringify(lang));
             baseConfigGenerator.appendField(key, JSON.stringify(value));
             baseConfigGenerator.appendFunction(
-                {name:`LabelOf${_.upperFirst(key)}`,arrow:true,simple:true},['value'],[],[],
-                `this.getLabelByValue(this.${key},value)`)
-                // name: functionName
-                // arrow: 箭頭函數, 可以省去this的領域問題
-                // decorator: 有沒有需要修飾 像是observer(({store}) => ...functionStmt)
-                // async: 註記是否需要非同步
+                { name: `LabelOf${field}`, arrow: true, simple: true }, ['value'], [], [],
+                `this.getLabelByValue(this.${key},this.LangOf${field},value)`);
         }
 
         const version = Util.getStringOfVersionIncrement(Util.getVersionOfJsFile(this.pathOfSourceJS));
@@ -9805,11 +9801,6 @@ class ScheduleManager {
                 await builder.deployFunctionsToProd();
                 await builder.deployWebProd();
                 break;
-            case 'persistentFunctions':
-                await builder.persistent('functions');
-                await Util.syncDelay(1);
-                await builder.buildCloudFunctions(false);
-                break;
             case 'adminBuildOnly':
                 await builder.deployAdmin(false);
                 break;
@@ -9829,6 +9820,10 @@ class ScheduleManager {
                 break;
             case 'persistentBuildFunctionsThanRefresh':
                 await builder.persistent('functions');
+                await builder.buildCloudFunctions(false);
+                await builder.refreshFunctionsFolder();
+                break;
+            case 'BuildFunctionsThanRefresh':
                 await builder.buildCloudFunctions(false);
                 await builder.refreshFunctionsFolder();
                 break;
