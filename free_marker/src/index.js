@@ -9810,6 +9810,10 @@ class ScheduleManager {
                 await builder.persistent('web');
                 await builder.buildWeb();
                 break;
+            case 'persistentBuildFunctions':
+                await builder.persistent('functions');
+                await builder.buildCloudFunctions(false);
+                break;
             case 'persistentBuildAdmin':
                 await builder.persistent('admin');
                 await builder.deployAdmin();

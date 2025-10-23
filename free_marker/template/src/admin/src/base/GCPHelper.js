@@ -4,10 +4,9 @@ import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { google } from "googleapis";
 import stream, { Readable } from "stream";
-import FirebaseHelper from './FirebaseHelper';
+import FirebaseHelper from "./FirebaseHelper";
 
 class GCPHelper {
-
     async deployDocxFileToAdminStorage(buffer, fileName = "folder/filename.extension") {
         if (!fileName.endsWith(".docx")) {
             return {

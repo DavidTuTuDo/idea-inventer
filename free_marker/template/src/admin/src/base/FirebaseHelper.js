@@ -13,7 +13,6 @@ import libpath from "path";
 const MAX_COUNT_OF_FIRESTORE_BATCH = 300;
 const MAX_COUNT_OF_STORAGE_BATCH = 50;
 
-
 const RemoteDo = {
     Query: 1, //fetch
     Modified: 2 //set, update, delete
@@ -186,7 +185,7 @@ class FirebaseHelper extends BaseFirebase {
      * @param {Array<object>} [documents=[]] - 要更新的文件陣列，每個文件必須包含 'id' 欄位。
      * @returns {Promise<void>}
      */
-    updateDocuments = async (path, documents = [{ id: '' }]) => {
+    updateDocuments = async (path, documents = [{ id: "" }]) => {
         await this.batchDo(documents, (batch, document) => {
             batch.update(this.reference(path, document.id), document);
         });
@@ -199,7 +198,11 @@ class FirebaseHelper extends BaseFirebase {
      * @param {number} [batchCount=MAX_COUNT_OF_FIRESTORE_BATCH] - 單個批次最多包含的操作數量。
      * @returns {Promise<void>}
      */
-    async submitBatchParentDocuments(pathOfParent = ["father", "children"], items = [{ father: { id: "" }, children: [{ id: "" }, { id: "" }] }], batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) {
+    async submitBatchParentDocuments(
+        pathOfParent = ["father", "children"],
+        items = [{ father: { id: "" }, children: [{ id: "" }, { id: "" }] }],
+        batchCount = MAX_COUNT_OF_FIRESTORE_BATCH
+    ) {
         const [parentCollection, childCollection] = pathOfParent;
 
         await this.batchDo(
@@ -259,8 +262,7 @@ class FirebaseHelper extends BaseFirebase {
      * @param {number} [pageSize=MAX_COUNT_OF_FIRESTORE_BATCH] - 每次查詢獲取的文件數量。
      * @returns {Promise<number>} - 總共處理的文件數量。
      */
-    async modifyDocumentsOfPaginate(uid, path, job = async (items) => {
-    }, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH) {
+    async modifyDocumentsOfPaginate(uid, path, job = async (items) => {}, conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH) {
         const ref = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
         let lastDoc = null;
         let batchCount = 0;
@@ -512,7 +514,6 @@ class FirebaseHelper extends BaseFirebase {
         return _.size(list);
     };
 
-
     /**
      * 獲取符合條件的所有文件 (使用分頁讀取)。
      * @param {string} path - Collection 路徑。
@@ -589,18 +590,14 @@ class FirebaseHelper extends BaseFirebase {
      * @param {boolean} [options.selected=false] - 性能優化：在 Modified 模式下，如果只需要 Document ID，可設定為 true (不一定能顯著優化 Admin SDK 性能)。
      * @returns {Promise<Array>} - Query 模式返回文件陣列；Modified 模式返回 true (表示操作成功)。
      */
-    pagination = async ({ path = '', conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH, task = null, selected = false }) => {
-
+    pagination = async ({ path = "", conditions = [], pageSize = MAX_COUNT_OF_FIRESTORE_BATCH, task = null, selected = false }) => {
         // 修正 behavior 判斷：提供 task -> Modified；未提供 task -> Query
         const hasTask = task && _.isFunction(task);
         const behavior = hasTask ? RemoteDo.Modified : RemoteDo.Query;
 
         // ---【分頁穩定性檢查】---
         // 確保有排序條件 (這是分頁的必要條件，避免 startAfter 錯亂)
-        const hasOrderBy = conditions.some(c =>
-            (_.isPlainObject(c) && Object.keys(c).includes('orderBy')) ||
-            (_.isPlainObject(c) && c.type === 'orderBy')
-        );
+        const hasOrderBy = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("orderBy")) || (_.isPlainObject(c) && c.type === "orderBy"));
 
         let finalConditions = conditions;
         if (!hasOrderBy) {
@@ -610,10 +607,7 @@ class FirebaseHelper extends BaseFirebase {
         }
         // ---【分頁穩定性檢查】---
         // 3. 設置查詢限制 (Limit)
-        const hasLimit = conditions.some(c =>
-            (_.isPlainObject(c) && Object.keys(c).includes('limit')) ||
-            (_.isPlainObject(c) && c.type === 'limit')
-        );
+        const hasLimit = conditions.some((c) => (_.isPlainObject(c) && Object.keys(c).includes("limit")) || (_.isPlainObject(c) && c.type === "limit"));
 
         if (!hasLimit) finalConditions = [...finalConditions, { limit: (stmt) => stmt.limit(pageSize) }];
 
@@ -664,7 +658,7 @@ class FirebaseHelper extends BaseFirebase {
                     break;
                 case RemoteDo.Modified:
                     // 將 task 傳遞給 batchDo 的 predicate 參數，documents 包含 _doc 供 batchDo 內的 task 使用
-                    all.push(...documents.map(each => each.id));
+                    all.push(...documents.map((each) => each.id));
                     await this.batchDo(documents, task);
                     break;
                 default:
@@ -694,8 +688,7 @@ class FirebaseHelper extends BaseFirebase {
      * @returns {Promise<void>}
      * @throws {Error} - 如果在 predicate 或 batch commit 中發生錯誤。
      */
-    batchDo = async (documents, predicate = async (batch, document) => {
-    }, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
+    batchDo = async (documents, predicate = async (batch, document) => {}, batchCount = MAX_COUNT_OF_FIRESTORE_BATCH) => {
         // 檢查 documents
         if (!Array.isArray(documents) || documents.length === 0) {
             Util.appendInfo(`1231232 admin batch do: documents array is empty or invalid.`);
@@ -718,14 +711,13 @@ class FirebaseHelper extends BaseFirebase {
 
         // 使用 for...of 迴圈以確保串行控制
         for (const document of documents) {
-
             // 1. 執行 predicate。
             // 如果 predicate 是同步的且拋出錯誤，會立即退出 batchDo。
             const result = predicate(batch, document);
 
             // 2. 檢查是否為 Promise，並等待其完成。
             // 如果 result 是 Promise 且拒絕（reject），會立即退出 batchDo。
-            if (result && typeof result.then === 'function') {
+            if (result && typeof result.then === "function") {
                 await result;
             }
 
@@ -814,15 +806,21 @@ class FirebaseHelper extends BaseFirebase {
 
             // 收集结果。allSettled 的结果是 {status, value/reason}
             // 只有 fulfilled 状态的结果包含 value，rejected 状态包含 reason
-            allResults = allResults.concat(results.map((r) => r.status === "fulfilled" ? r.value : {
-                status: r.status,
-                prefix: r.reason?.prefix || 'Unknown',
-                reason: r.reason?.message || String(r.reason)
-            }));
+            allResults = allResults.concat(
+                results.map((r) =>
+                    r.status === "fulfilled"
+                        ? r.value
+                        : {
+                              status: r.status,
+                              prefix: r.reason?.prefix || "Unknown",
+                              reason: r.reason?.message || String(r.reason)
+                          }
+                )
+            );
         }
 
         // 修正 Promise.allSettled 结果处理
-        allResults = allResults.filter(r => r.prefix); // 过滤掉可能由 Promise.allSettled 格式導致的無效結果
+        allResults = allResults.filter((r) => r.prefix); // 过滤掉可能由 Promise.allSettled 格式導致的無效結果
 
         // 统计和报告最终结果
         const successfulDeletes = allResults.filter((r) => r.status === "fulfilled");

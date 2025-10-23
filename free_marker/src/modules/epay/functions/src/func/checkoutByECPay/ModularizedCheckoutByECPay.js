@@ -9,9 +9,6 @@ import _ from "lodash";
 import libpath from "path";
 
 class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         this.handlerOfECPay = new ECPay(Config.ecpay);
