@@ -57,7 +57,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                 await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByECPay");
                 return {
                     stateOfPayment: Config.StateOfPayment.Completed,
-                    procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
+                    procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
                     messageOfPayment: `${contentOfSucceed.RtnMsg}`
@@ -68,7 +68,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                 async (item, transaction) => {
                     return {
                         stateOfPayment: Config.StateOfPayment.Completed,
-                        procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
+                        procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
                 },
@@ -97,7 +97,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
     customizeBehaviorOfSucceedTrade() {
         this.appendErrorLog(
             9999,
-            `47498454876 ${Config.EPayType.ECPay}|succeed之後，每個專案應該實作各自的record 
+            `47498454876 ${Config.LangOfEPayType.ECPay}|succeed之後，每個專案應該實作各自的record 
         insert(例專案:月薪) 應該要增加 工作行事曆到甲方`
         );
     }

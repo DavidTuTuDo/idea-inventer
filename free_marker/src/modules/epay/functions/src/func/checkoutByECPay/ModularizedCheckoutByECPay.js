@@ -26,7 +26,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         await this.validateOrderIsUnPaidWaiting(itemOfPreciseOrder, "CheckoutByECPay");
 
         /** ECPay的訂單編號不能重複：用id建立過訂單無法再次返回相同頁面，必須在產出一筆的preciseOrder，id必須是全新的 */
-        if (Util.isOrEquals(itemOfPreciseOrder.procedureOfPayment, Config.EPayType.ECPay, Config.EPayType.LinePay)) {
+        if (Util.isOrEquals(itemOfPreciseOrder.procedureOfPayment, Config.LangOfEPayType.ECPay, Config.LangOfEPayType.LinePay)) {
             await Api.deletePreciseOrderItem(itemOfPreciseOrder.id);
             delete itemOfPreciseOrder.id;
             const result = await Api.submitPreciseOrderItem({ ...itemOfPreciseOrder });
@@ -46,7 +46,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
             await this.validateOrderIsUnPaidWaiting(order, "CheckoutByECPay");
             return {
-                procedureOfPayment: Config.EPayType.ECPay,
+                procedureOfPayment: Config.LangOfEPayType.ECPay,
                 contentOfRender: result,
                 timesOfTransaction: order.timesOfTransaction + 1
             };

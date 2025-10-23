@@ -40,9 +40,6 @@ const MAP_OF_CODE_MESSAGE_FROM_REQUEST_RESULT = {
  */
 
 class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
         this.linePayerRef = new LinePay(Config.linepay);

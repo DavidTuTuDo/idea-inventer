@@ -9,10 +9,6 @@ import BaseForcePaidByAuthor from "./BaseForcePaidByAuthor";
 import Api from "../../api";
 
 class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
     }
@@ -32,7 +28,7 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
             await this.validateOrderIsUnPaidWaiting(order, "ForcePaidByAuthor");
             return {
-                procedureOfPayment: Config.EPayType.AuthorForcePaid,
+                procedureOfPayment: Config.LangOfEPayType.AuthorForcePaid,
                 stateOfPayment: Config.StateOfPayment.Completed,
                 timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
             };

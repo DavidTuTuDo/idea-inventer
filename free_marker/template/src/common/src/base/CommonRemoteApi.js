@@ -3,7 +3,6 @@ const edit = true;
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import moment from "moment";
-import libpath from "path";
 import firebase from "./FirebaseHelper";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 

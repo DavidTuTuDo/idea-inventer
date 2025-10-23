@@ -83,7 +83,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
                 return Api.normalizePreciseOrder(
                     {
-                        procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
+                        procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(timeOfExpired), //CVS ExpireDate: '2022/07/03 15:04:19', ECPay的是台灣國家, 要把timestamp轉回UTC
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
                         stateOfPayment: Config.StateOfPayment.Waiting,
@@ -98,7 +98,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
                 return Api.normalizePreciseOrder(
                     {
-                        procedureOfPayment: `${Config.EPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
+                        procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,
                         stateOfPayment: Config.StateOfPayment.Waiting,

@@ -3189,9 +3189,10 @@ class ClassGenerator {
     getFunctionContent(func, params = [], macros = [], comments = [], ...contents) {
         /** 應該要檢查file 沒有class的話, 要跳出Error提示 */
         const functionName = func.name;
-        const arrow = func.arrow;
-        const async = func.async;
-        const decorator = func.decorator;
+        const arrow = func?.arrow ?? false;
+        const async = func?.async ?? false;
+        const simple = func?.simple ?? false;
+        const decorator = func?.decorator ?? false;
         const stmt = [];
         stmt.push(`\n`);
 
@@ -3212,9 +3213,9 @@ class ClassGenerator {
 
         _.remove(params, param => Util.isEmptyString(param));
 
-        if (!!arrow || decorator) {
+        if (arrow || decorator) {
             /** arrow function 不支援 super QQ 08/03 的筆記有紀錄 */
-            stmt.push(`${functionName} = ${async ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => {`);
+            stmt.push(`${functionName} = ${async ? 'async' : ''}${decorator ? `${decorator} (` : ``}(${_.isEmpty(params) ? '' : params.join(' ,')}) => ${simple ? '':'{'}`);
         } else
             stmt.push(`${async ? 'async ' : ' '}${functionName}(${_.isEmpty(params) ? '' : params.join(' ,')}) {`);
 
@@ -3234,20 +3235,18 @@ class ClassGenerator {
         }
 
         stmt.push(`\n`);
-        stmt.push(`}`);
-
-        if (decorator) {
-            stmt.push(`)`);
-        }
+        stmt.push(arrow && simple ? `` : `}`);
+        if (decorator) stmt.push(`)`);
         return stmt;
     }
 
     /**
      func = {
      name: functionName
-     arrow: 箭頭函數, 可以省去this的領域問題
+     arrow: true,箭頭函數, 可以省去this的領域問題
      decorator: 有沒有需要修飾 像是observer(({store}) => ...functionStmt)
      async: 註記是否需要非同步
+     simple: true, 如果arrow=true 又不要{} 例如：XXX = (...param) => logic()
      }
      */
     appendFunction(func, params = [], macros = [], comments = [], ...contents) {
@@ -7182,7 +7181,8 @@ class ProjectFileHandler extends PathBase {
 
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `config`, `BaseConfig.js`), this.nodeOfAncestor);
-        baseConfigGenerator.appendClass(`BaseConfig`);
+        baseConfigGenerator.appendClass(`BaseConfig`,{name: 'CommonConfig', from: '../base/CommonConfig'});
+        baseConfigGenerator.setSingleton(true);
         const watermarkObj = Util.mergeObject({
             type: 'string',
             src: 'defaultTexts',
@@ -7198,7 +7198,20 @@ class ProjectFileHandler extends PathBase {
         baseConfigGenerator.appendField(`superUserUid`, JSON.stringify(sourceObj.superUserUid));
 
         const enums = this.getAllEnums();
-        for(const key in enums) baseConfigGenerator.appendField(key, JSON.stringify(enums[key]));
+        for(const key in enums) {
+            const objOfMain = enums[key];
+            const lang = Object.fromEntries(Object.entries(objOfMain).map(([key, { label }]) => [key, label]));
+            const value = Object.fromEntries(Object.entries(objOfMain).map(([key, { value }]) => [key, value]));
+            baseConfigGenerator.appendField(`LangOf${_.upperFirst(key)}`, JSON.stringify(lang));
+            baseConfigGenerator.appendField(key, JSON.stringify(value));
+            baseConfigGenerator.appendFunction(
+                {name:`LabelOf${_.upperFirst(key)}`,arrow:true,simple:true},['value'],[],[],
+                `this.getLabelByValue(this.${key},value)`)
+                // name: functionName
+                // arrow: 箭頭函數, 可以省去this的領域問題
+                // decorator: 有沒有需要修飾 像是observer(({store}) => ...functionStmt)
+                // async: 註記是否需要非同步
+        }
 
         const version = Util.getStringOfVersionIncrement(Util.getVersionOfJsFile(this.pathOfSourceJS));
         baseConfigGenerator.appendField(`VERSION_OF_PACKAGE_JSON`, JSON.stringify(version));
@@ -9813,6 +9826,11 @@ class ScheduleManager {
             case 'persistentBuildFunctions':
                 await builder.persistent('functions');
                 await builder.buildCloudFunctions(false);
+                break;
+            case 'persistentBuildFunctionsThanRefresh':
+                await builder.persistent('functions');
+                await builder.buildCloudFunctions(false);
+                await builder.refreshFunctionsFolder();
                 break;
             case 'persistentBuildAdmin':
                 await builder.persistent('admin');
