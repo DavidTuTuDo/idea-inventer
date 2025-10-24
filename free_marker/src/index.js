@@ -1661,7 +1661,7 @@ class CodegenNode {
         }
 
         function getStmtOfStrictMode() {
-            return self.hasStrictMode() ? `strict:true` : ``;
+            return self.hasStrictMode() || self.hasInputFieldDialog() ? `strict:true` : ``;
         }
 
         function getStmtOfCustomCancelButton() {
@@ -3285,7 +3285,14 @@ class ClassGenerator {
             const _stmts = [`let result = {};`,
                 `let succeed = true;`,
                 `try {`];
-            if (_.isEqual(func.getType(), 'httpOnCall')) _stmts.push(`${fieldName}.setFingerprint(data.fingerprint);`);
+            if (Util.isOrEquals(func.getType(), 'httpOnCall', 'httpOnRequest'))
+                _stmts.push(`functions.logger.info('functions(${fieldName}) data from client => ',JSON.stringify(data));`);
+
+            if (_.isEqual(func.getType(), 'httpOnCall')) {
+                _stmts.push(`if(_.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
+                _stmts.push(`${fieldName}.setFingerprint(data.fingerprint);`);
+            }
+
             _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
             _stmts.push(...[`} catch (error) {`,
                 `succeed = false;`,
@@ -3310,7 +3317,8 @@ class ClassGenerator {
     appendAsyncFunction(functionName, params = [], macros = [], comments = [], ...contents) {
         this.appendFunction({
             name: functionName,
-            async: true
+            async: true,
+            arrow: true
         }, params, macros, comments, ...contents)
     }
 
@@ -4081,6 +4089,27 @@ class BaseBuilder extends PathBase {
     getStringOfArgumentInFunction(node, type) {
         return this.getArgumentsInFunction(node, type).join(',');
     }
+
+    getCommentDescription(node) {
+        return `\/** ${node.getType()}:${node.getDescription()} *\/`
+    }
+
+    getPreciseValue = (child) => {
+        if (child.isArray())
+            return `obj.${child.getFieldName()} ? obj.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
+        else if (child.isObject())
+            return `obj.${child.getFieldName()} ? this.getColumnData(obj.${child.getFieldName()}) : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}.columnData(),${this.getCommentDescription(child)}`;
+        else if (child.isTimeStamp())
+            return `!_.isUndefined(obj.${child.getFieldName()}) ? this.toFireBaseTimestampObject(obj.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp(),${this.getCommentDescription(child)}`;
+        else if (child.isString())
+            return `Util.getStringOfNormalize(obj.${child.getFieldName()}, ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true' : ''}),${this.getCommentDescription(child)}`;
+        else if (child.isNumber())
+            return `Util.getNumberOfNormalize(obj.${child.getFieldName()}, ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}),${this.getCommentDescription(child)}`;
+        else if (child.isBoolean())
+            return `_.isBoolean(obj.${child.getFieldName()}) ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
+        else if (child.useServerTime()) return `this._firebase().getServerTimeSymbol(),`;
+        else return `obj.${child.getFieldName()} ? obj.${child.getFieldName()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
+    };
 }
 
 class StoreBuilder extends BaseBuilder {
@@ -4206,7 +4235,7 @@ class StoreBuilder extends BaseBuilder {
         return propsStmt;
     }
 
-    async buildBaseStore(node) {
+    buildBaseStore = async (node) => {
         const self = this;
 
         function getChildFetchStmtV2() {
@@ -4446,35 +4475,19 @@ class StoreBuilder extends BaseBuilder {
             {
                 name: `columnData`,
                 fetcher: (node) => _.filter(node.getPreciseColumnChildren(), (child) => !child.isDisableOfColumn())
-            },
-            {name: `data`, fetcher: (node) => node.getPreciseAttributeChildren()}
+            }, {
+                name: `data`,
+                join: true,
+                fetcher: (node) => _.filter(node.getPreciseAttributeChildren(), child => !child.isColumn() || child.isDisableOfColumn())
+            }
         ];
 
         types.map(type => {
-            baseGenerator.appendFunction(type.name, [], [], [],
+            baseGenerator.appendFunction({ name: type.name, arrow: true }, [`obj = this`], [], [],
                 'return {',
-                type.fetcher(node).map((child) => {
-                        const key = child.getFieldName();
-                        let value = '';
-                        if (child.isArray()) {
-                            value = `this.${child.getFieldName()}.map(each => each.${type.name}())`
-                        } else if (child.isObject()) {
-                            value = `this.${child.getFieldName()}.${type.name}()`
-                        } else if (child.isTimeStamp()) {
-                            value = `this.toFireBaseTimestampObject(this.${child.name})`
-                        } else if (child.isString()) {
-                            value = `Util.getStringOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()}${child.asTrim() ? ',true' : ''})`
-                        } else if (child.isNumber()) {
-                            value = `Util.getNumberOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
-                        } else if (child.isBoolean()) {
-                            value = `Util.getBooleanOfNormalize(this.${child.getFieldName()},${child.getDefaultValueByType()})`
-                        } else {
-                            value = `this.${child.getFieldName()}`;
-                        }
-                        return `${key}:${value}`;
-
-                    }
-                ).join(','), '}')
+                type.fetcher(node).map((child) => `${child.getFieldName()}:${this.getPreciseValue(child)}`).join('\n'),
+                `${type.join ? `...this.columnData(obj)` : ''}`,
+                '}');
         });
 
         if (_.isEqual(folderName, SIGN_OF_EMPTY_STORE)) {
@@ -4669,10 +4682,6 @@ class RemoteFunctionHandler extends BaseBuilder {
             return [];
         }
 
-        function getCommentDescription(node) {
-            return `\/\/ ${node.getType()}:${node.getDescription()}`
-        }
-
         function getConditionStmts(isFetchAll = false) {
             const stmts = [];
             if (self.isWebPlatform())
@@ -4713,14 +4722,13 @@ class RemoteFunctionHandler extends BaseBuilder {
                 generator.appendAsyncFunction(name, pramsOfWhole, [], [comment],
                     ...stmtsOfWhole)
             } else {
-                generator.appendFunction(name, pramsOfWhole, [], [comment],
+                generator.appendFunction({name,arrow:true}, pramsOfWhole, [], [comment],
                     ...stmtsOfWhole)
             }
         }
 
         if (node.isCollection()) {
             const contents = [];
-            const children = [];
 
             if (generator === undefined)
                 throw new ERROR(8016)
@@ -4735,51 +4743,26 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         child, Util.camel('uploadStorageOf', child.getName()),
                         [
-                            `return await self.uploadStorageFile(blob, folder);`,
-                        ], `upload storage file`, true, true)
+                            `return await self.uploadStorageFile(blob, folder);`
+                        ], `upload storage file`, true, true);
                 }
-                if (child.isString()) {
-                    contents.push(`const _${child.getFieldName()} = Util.getStringOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}${child.asTrim() ? ',true' : ''});${getCommentDescription(child)}`);
-                } else if (child.isNumber()) {
-                    contents.push(`const _${child.getFieldName()} = Util.getNumberOfNormalize(object.${child.getFieldName()}, ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())});${getCommentDescription(child)}`);
-                } else if (child.useServerTime()) {
-                    contents.push(`const  _${child.getFieldName()} = this._firebase().getServerTimeSymbol()`);
-                } else if (child.isTimeStamp()) {
-                    contents.push(`const _${child.getFieldName()} = !_.isUndefined(object.${child.getFieldName()}) ? 
-                this.toFireBaseTimestampObject(object.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp();${getCommentDescription(child)}`);
-                } else if (child.isObject() && self.isWebPlatform()) {
-                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                this.getColumnData(object.${child.getFieldName()}) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())}.columnData();${getCommentDescription(child)}`);
-                } else if (child.isArray() && self.isWebPlatform()) {
-                    contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? 
-                object.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
-                } else if (child.isBoolean()) {
-                    contents.push(`const _${child.getFieldName()} = _.isBoolean(object.${child.getFieldName()}) ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
-                } else {
-                    appendGeneralStmts(contents, child);
-                }
-                children.push(child.getFieldName());
-            }
-
-            function appendGeneralStmts(contents, child) {
-                contents.push(`const _${child.getFieldName()} = object.${child.getFieldName()} ? object.${child.getFieldName()} : ${child.getDefaultValueByType(self.isAdminORFunctionsPlatform())};${getCommentDescription(child)}`);
+                contents.push(`${child.getFieldName()} : ${this.getPreciseValue(child)}`);
             }
 
             if (!node.isCheapArray()) {
-                contents.push(`const _updateTime = this._firebase().getServerTimeSymbol()`);
-                children.push(`updateTime`);
+                contents.push(`updateTime : this._firebase().getServerTimeSymbol(),`);
             }
-
-            contents.push(`const commitment = \{${children.map(child => `${child}: _${child}`).join(',')}\}`);
+            const content = self.isWebPlatform() ? `...this.columnData(obj)`: `${contents.map(each => each).join('\n')}`;
+            const stmts = `const commitment = \{ ${content}`;
 
             if (node.hasPath()) {
                 /** 有path 才代表 這是一個遠端也有的物件 */
                 const functionNameOfNormalize = node.getFunctionNameOfNormalize();
-                generator.appendFunction(functionNameOfNormalize, ['object', 'update = false'], [], [],
-                    ...contents,
-                    'this.handleCommitment(update, commitment, object)',
+                generator.appendFunction({ name: functionNameOfNormalize, arrow: true }, ['obj', 'update = false'], [], [],
+                    stmts, '}',
+                    'this.handleCommitment(update, commitment, obj)',
                     'return commitment'
-                )
+                );
 
                 if (node.isCheapArray()) {
                     function needView() {
@@ -5080,20 +5063,24 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `const object = await self.fetchObject(path)`,
                             `${this.isWebPlatform() ? 'this.clean()' : ''}`,
                             `${this.isWebPlatform() ? 'this.initial(object)' : ''}`,
-                            `return object`
+                            `return object.exists ? object : self.columnData()`
                         ],
                         `fetch object`)
 
                     generateApiFunction(
                         node,
                         Util.camel('update', node.getFieldName()),
-                        [`return await self.updateObject(path,object)`],
+                        [
+                            `const commitment = this.${functionNameOfNormalize}(object, true)`,
+                            `return await self.updateObject(path, commitment)`],
                         `update object`);
 
                     generateApiFunction(
                         node,
                         Util.camel('upsert', node.getFieldName()),
-                        [`return await self.upsertObject(path,object)`],
+                        [
+                            `const commitment = this.${functionNameOfNormalize}(object, true)`,
+                            `return await self.upsertObject(path, commitment)`],
                         `upsert object`);
 
                     generateApiFunction(

@@ -243,7 +243,7 @@ class UserInfo {
     }
 
     /** 購物車邏輯 */
-    joinItemToCart = ({ isTaskJob = false, idOfAuthor, idOfBooze = "", idOfVariant = "", quantity, quantityOfMaximum }) => {
+    joinItemToCart = ({ isTaskJob = false, idOfAuthor, idOfBooze = "", idOfVariant = "", quantity, quantityOfMaximum, component }) => {
         Util.appendInfo({ idOfBooze, quantity, isTaskJob });
         const infoOfCartie = Cookie.getInfoOfCartie();
         const key = [idOfBooze, _.toString(idOfVariant)].filter((each) => !Util.isUndefinedNullEmpty(each)).join(Util.getSeparatorOfUnique());
@@ -251,10 +251,15 @@ class UserInfo {
         Util.appendInfo(`joinItemToCart ==>`);
         Util.appendInfo({ idOfBooze, idOfVariant, quantity, isTaskJob, key });
 
+        const maximum = this.getGlobalPerspectiveAttr(`maximumOfUniqueItems`);
         if (object) object.quantity = Math.min(object.quantity + quantity, quantityOfMaximum);
-        else infoOfCartie[key] = { idOfAuthor, isTaskJob, idOfBooze, idOfVariant, quantity, idOfCookieUsage: key };
+        else if (this.getCountsOfVariant(infoOfCartie) >= maximum) {
+            component?.showErrorSnackMessage(`添加失敗，購物車數量上限為 ${maximum} 個`);
+            return false;
+        } else infoOfCartie[key] = { idOfAuthor, isTaskJob, idOfBooze, idOfVariant, quantity, idOfCookieUsage: key };
         Cookie.setInfoOfCartie(infoOfCartie);
         this.invalidateCartie(infoOfCartie);
+        return true;
     };
 
     updateItemToCart({ key, quantity, checked }) {
@@ -346,6 +351,11 @@ class UserInfo {
     getCountOfBadge = (cartie) => {
         const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
         return _.sum(_.values(infoOfCartie).map((info) => info.quantity));
+    };
+
+    getCountsOfVariant = (cartie) => {
+        const infoOfCartie = cartie ?? Cookie.getInfoOfCartie();
+        return _.size(_.values(infoOfCartie).map((info) => info.idOfVariant));
     };
 
     setGotoCartieDirect(enable = false) {

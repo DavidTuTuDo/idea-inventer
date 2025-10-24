@@ -70,10 +70,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
     handleHttpOnCall = async (data, session) => {
         const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client } = data; //Config.TransportMethod; Config.Transaction
-        console.log({ fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client });
         const itemsOfClientOrdering = items;
-        /** (done) todo:沒有fingerprint直接當成邪魔歪道，拋出錯誤 */
-        if (_.isEmpty(fingerprint)) this.appendErrorLog(9999, `55151214612 你是壞狗，不可以玩伺服器`);
 
         /** (done) todo:未登入帳號，是否距離上一次REQUEST超過規範的間隔 */
         if (!this.isLoginUser(session)) {
@@ -82,6 +79,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         }
 
         const globalPerspective = await Api.fetchGlobalPerspective();
+
         /** (done) todo:檢查_.size(items)有沒有超過maximumOfOrderingItem */
         if (_.size(items) > globalPerspective.maximumOfUniqueItems) this.appendErrorLog(9999, `453543741232113 購買品項不可超過 ${globalPerspective.maximumOfUniqueItems} 個`);
         const preciseOrderRef = Api.getPreciseOrderItemDocRef();

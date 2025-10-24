@@ -97,7 +97,7 @@ class AlertDialog extends MuiComponent {
                 fullWidth={!!self.fullWidth}
                 fullScreen={self.hasCustomView() ? true : false}
                 maxWidth={false}
-                onClick={(event) => {
+                onClick={(event, reason) => {
                     event.stopPropagation();
                 }}
                 open={self.getStore().getVisibility()}

@@ -1337,6 +1337,8 @@ class MobileStyle {
 
     DionysusErosAreaOfDirectDiv = {};
 
+    DionysusErosDividerDiv = {};
+
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetIconNavigateNext = {};
 
     DionysusErosAreaOfLinepaySetArrowOfLinepaySetReactFragmentWrap = {};
@@ -1402,6 +1404,8 @@ class MobileStyle {
     DionysusErosAreaOfMaximumOfUniqueItemsDivWrap = {};
 
     DionysusErosAreaOfMaximumOfUniqueItemsDiv = {};
+
+    DionysusErosDividerTopDiv = {};
 
     DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext = {};
 

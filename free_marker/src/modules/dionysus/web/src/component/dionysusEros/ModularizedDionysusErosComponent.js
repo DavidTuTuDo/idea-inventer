@@ -37,6 +37,10 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         return Util.getVisibleOrNone(UserInfoRef.isAdmin());
     }
 
+    getInjectStyleOfDionysusErosDividerTopDiv() {
+        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
+    }
+
     onDionysusErosArrowOfLinepaySetIconButtonClicked(param) {
         this.getStore().setSelected("linepay");
     }
@@ -120,7 +124,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         const object = param.object;
         this.getStore().setSelected("amountOfMaximum");
         const amount = object.getDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy();
-        this.getStore().submitAmountOfAllowMaximumBuy(amount).then();
+        this.getStore().submitAmountOfMaximumBuy(amount).then();
     }
 
     onDionysusErosArrowOfEcPaySetIconButtonClicked(param) {

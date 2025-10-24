@@ -8,8 +8,6 @@ import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
 import FlyToCartie from "../../base/FlyToCartie";
 import React from "react";
 
-const MAX_BADGE_OF_UN_SIGN = 2;
-
 class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     constructor(props) {
         super(props);
@@ -71,18 +69,12 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
             isTaskJob: variant.isTaskJob,
             quantity,
             idOfAuthor: variant.idOfAuthor,
-            quantityOfMaximum: variant.quantity
+            quantityOfMaximum: variant.quantity,
+            component: this.getComponentInstance()
         };
 
-        const isLogin = UserInfoRef.isLoginWithSucceed();
-        const badgeCount = UserInfoRef.getCountOfBadge();
-
-        const canJoinUnSign = !isLogin && badgeCount < MAX_BADGE_OF_UN_SIGN;
-        const canJoin = isLogin || canJoinUnSign;
-
-        if (!canJoin) return component.showWarningSnackMessage(`未登入用戶限購 ${MAX_BADGE_OF_UN_SIGN} 件`);
-
-        UserInfoRef.joinItemToCart(cartItem);
+        const result = UserInfoRef.joinItemToCart(cartItem);
+        if (!result) return; /** 因各種原因無法添加到購物車 */
         Util.appendInfo(`isGo2CartieDirect -> ${UserInfoRef.isGotoCartieDirect()}`);
         if (UserInfoRef.isGotoCartieDirect()) Router.gotoCartiePage(component);
         else {

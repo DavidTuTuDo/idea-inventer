@@ -358,11 +358,11 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     /**  (賣家看的畫面) 未出貨：未付款就不會出現在未出貨 */
     isStateOfUnShipped = (order) => {
         const Payment = Config.StateOfPayment;
-        const Transport = Config.StateOfTransport;
+        const Deliver = Config.StateOfTransport;
         const state = order.stateOfPayment;
         const transport = order.stateOfTransport;
 
-        return this.isRoleOfAuthor(order) && state === Payment.Completed && transport === Transport.Pending;
+        return this.isRoleOfAuthor(order) && state === Payment.Completed && transport === Deliver.Pending;
     };
 
     async setCurrentTabByType(type) {

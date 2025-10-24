@@ -80,13 +80,11 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     }
 
     /** 共同提交處理器 */
-    async submitWithValidation({ validator, value, errorMessage, setter, afterSet }) {
-        if (validator && !validator(value)) {
-            return this.getComponent().showErrorSnackMessage(errorMessage);
-        }
+    async submitWithValidation({ validator, value, errorMessage, setter, afterSet, key }) {
+        if (validator && !validator(value)) return this.getComponent().showErrorSnackMessage(errorMessage);
         setter(value);
         if (afterSet) afterSet(value);
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), Util.getObject(key, value));
     }
 
     /** public */
@@ -94,6 +92,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.submitWithValidation({
             validator: this.isValidDiscountPercentNumber,
             value: percent,
+            key: `percentageOfDiscount`,
             errorMessage: `折扣常數格式錯誤 ${percent}`,
             setter: (val) => this.getCupidPublic().setPercentageOfDiscount(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(val)
@@ -101,26 +100,29 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitAmountOfAllowAnonymousBuy = (amount) =>
         this.submitWithValidation({
-            validator: (v) => v >= 1,
-            value: amount,
-            errorMessage: `未登入消費金額格式錯誤 ${amount}`,
+            validator: (v) => this.isPositiveNum(v),
+            value: _.toNumber(amount),
+            key: `amountOfAllowAnonymousBuy`,
+            errorMessage: `未登入消費金額格式錯誤 ${amount} 元`,
             setter: (val) => this.getCupidPublic().setAmountOfAllowAnonymousBuy(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(val)
         });
 
-    submitAmountOfAllowMaximumBuy = (amount) =>
+    submitAmountOfMaximumBuy = (amount) =>
         this.submitWithValidation({
-            validator: (v) => v >= 1,
-            value: amount,
-            errorMessage: `消費額度格式錯誤 ${amount}`,
+            validator: (v) => this.isPositiveNum(v),
+            value: _.toNumber(amount),
+            key: `amountOfMaximumBuy`,
+            errorMessage: `消費額度格式錯誤 ${amount} 元`,
             setter: (val) => this.getCupidPublic().setAmountOfMaximumBuy(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(val)
         });
 
     submitThresholdOFreeShipByCod = (price) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(price),
+            key: `thresholdOfFreeShipByCOD`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByCOD(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(val)
@@ -128,8 +130,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitThresholdOfCheckoutByCredit = (price) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(price),
+            key: `thresholdOfCheckoutByCredit`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfCheckoutByCredit(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(val)
@@ -137,8 +140,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitThresholdOfFreeShipByRapidly = (price) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(price),
+            key: `thresholdOfFreeShipByRapidly`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByRapidly(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(val)
@@ -146,8 +150,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitThresholdOfFreeShipByHomeDelivery = (price) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(price),
+            key: `thresholdOfFreeShipByHomeDelivery`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByHomeDelivery(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByHomeDelivery(val)
@@ -155,8 +160,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitThresholdOfCheckoutByLinePay = (price) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(price),
+            key: `thresholdOfCheckoutByLinePay`,
             errorMessage: `金額格式錯誤 '${price}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfCheckoutByLinePay(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByLinePay(val)
@@ -164,8 +170,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitThresholdOfFreeShipByStorePickup = (fee) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(fee),
+            key: `thresholdOfFreeShipByStorePickup`,
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfFreeShipByStorePickup(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(val)
@@ -173,8 +180,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitNumOfWorker = (num) =>
         this.submitWithValidation({
-            validator: (v) => _.isNumber(v) && v > 0,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(num),
+            key: `numOfWorker`,
             errorMessage: `人數格式錯誤 '${num}'`,
             setter: (val) => this.getCupidPublic().setNumOfWorker(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(val)
@@ -182,8 +190,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitFeeOfHomeDelivery = (fee) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(fee),
+            key: `feeOfHomeDelivery`,
             errorMessage: `宅配運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfHomeDelivery(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(val)
@@ -191,8 +200,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitFeeOfInStorePickup = (fee) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(fee),
+            key: `feeOfInStorePickup`,
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfInStorePickup(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(val)
@@ -200,8 +210,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitFeeOfShipByCOD = (fee) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(fee),
+            key: `feeOfShipByCOD`,
             errorMessage: `COD運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfShipByCOD(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod(val)
@@ -209,8 +220,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitFeeOfRapidOnDelivery = (fee) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(fee),
+            key: `feeOfRapidOnDelivery`,
             errorMessage: `店到店運費格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setFeeOfRapidOnDelivery(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
@@ -218,8 +230,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
 
     submitThresholdOfAllowSelfPickup = (fee) =>
         this.submitWithValidation({
-            validator: _.isNumber,
+            validator: (v) => this.isPositiveNum(v),
             value: _.toNumber(fee),
+            key: `thresholdOfAllowSelfPickup`,
             errorMessage: `自費最低門檻格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfAllowSelfPickup(val),
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
@@ -228,92 +241,88 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     /** enable toggles */
     submitWhetherBoughtWithoutLogin = async () => {
         this.getCupidPublic().setEnableOfBoughtWithoutLoginIn(this.getEnableOfBoughtWithoutLoginIn());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
     };
     submitWhetherEnableOfLinePay = async () => {
         this.getCupidPublic().setEnableOfLinePay(this.getEnableOfLinepay());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfLinePay: this.getEnableOfLinepay() });
     };
     submitWhetherEnableOfEcPay = async () => {
         this.getCupidPublic().setEnableOfECPay(this.getEnableOfEcPay());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfECPay: this.getEnableOfEcPay() });
     };
     submitWhetherEnableOfDirect = async () => {
         this.getCupidPublic().setEnableOfDirectPay(this.getEnableOfDirect());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfDirectPay: this.getEnableOfDirect() });
     };
     submitWhetherHomeDelivery = async () => {
         this.getCupidPublic().setWhetherHomeDelivery(this.getEnableOfWhetherHomeDelivery());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { whetherHomeDelivery: this.getEnableOfWhetherHomeDelivery() });
     };
     submitWhetherShipByRapidly = async () => {
         this.getCupidPublic().setWhetherShipByRapidly(this.getEnableOfWhetherShipByRapidly());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { whetherShipByRapidly: this.getEnableOfWhetherShipByRapidly() });
     };
     submitWhetherShipByStorePickup = async () => {
         this.getCupidPublic().setWhetherShipByStorePickup(this.getEnableOfWhetherShipByStorePickup());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { whetherShipByStorePickup: this.getEnableOfWhetherShipByStorePickup() });
     };
     submitEnableOfCOD = async () => {
         this.getCupidPublic().setEnableOfCOD(this.getEnableOfEnableOfCod());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfCOD: this.getEnableOfEnableOfCod() });
     };
     submitWhetherPickupByBuyerSelf = async () => {
         this.getCupidPublic().setWhetherPickupByBuyerSelf(this.getEnableOfWhetherPickupByBuyerSelf());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { whetherPickupByBuyerSelf: this.getEnableOfWhetherPickupByBuyerSelf() });
     };
     /** pay secrets */
     submitLinePaySerials = async ([channelId, channelSecret]) => {
         if (!this.isValidLinePayConfig(channelId, channelSecret)) return this.getComponent().showErrorSnackMessage(`LINE PAY支付(格式錯誤)`);
         this.getCupidSecret().setLinepaySet(channelId, channelSecret);
         this.getCupidPublic().setHasLinePay(true);
-        await this.getCupidSecret().submitCupidSecret(this.getComponent());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidSecret().upsertCupidSecret(this.getComponent(), { linepaySet: [channelId, channelSecret] });
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { hasLinePay: true });
     };
 
     submitECPaySerials = async ([merchantID, hashKey, hashIV]) => {
         if (!this.isValidECPayConfig(merchantID, hashKey, hashIV)) return this.getComponent().showErrorSnackMessage(`綠界支付(格式錯誤)`);
         this.getCupidSecret().setECPaySet(merchantID, hashKey, hashIV);
         this.getCupidPublic().setHasECPay(true);
-        await this.getCupidSecret().submitCupidSecret(this.getComponent());
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidSecret().upsertCupidSecret(this.getComponent(), { ECPaySet: [merchantID, hashKey, hashIV] });
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { hasECPay: true });
     };
 
     submitDirectPay = async ([url]) => {
         if (!Util.isHttpsURL(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
         this.getCupidPublic().setPayOfDirect(url);
-        await this.getCupidPublic().submitCupidPublic(this.getComponent());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { payOfDirect: url });
     };
 
     submitBrandName = async (name) => {
         if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
-        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
-        info.nameOfBrand = name;
-        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { nameOfBrand: name });
         UserInfo.setNameOfBrand(name);
     };
 
+    isPositiveNum = (value) => {
+        return _.isNumber(value) && value >= 0;
+    };
+
     submitMaximumOfUniqueItems = async (count) => {
-        if (_.isNumber(count)) return this.getComponent().showErrorSnackMessage(`自費最低門檻 格式錯誤`);
-        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
-        info.maximumOfUniqueItems = count;
-        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        if (this.isPositiveNum(count)) return this.getComponent().showErrorSnackMessage(`購物車數量限制 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { maximumOfUniqueItems: count });
         UserInfo.setGlobalPerspectiveAttr({ maximumOfUniqueItems: count });
     };
 
     submitTTLOfPayment = async (minute) => {
-        if (_.isNumber(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝 格式錯誤`);
-        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
-        info.ttlOfPayment = minute;
-        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        if (this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ttlOfPayment: minute });
         UserInfo.setGlobalPerspectiveAttr({ ttlOfPayment: minute });
     };
 
     submitTTLOfAnonymous = async (minute) => {
-        if (_.isNumber(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝（陌生）格式錯誤`);
-        const info = await this.apiOfInfo.fetchGlobalPerspective(this.getComponent());
-        info.ttlOfAnonymous = minute;
-        await this.apiOfInfo.submitGlobalPerspective(this.getComponent(), info);
+        if (this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝（陌生）格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ttlOfAnonymous: minute });
         UserInfo.setGlobalPerspectiveAttr({ ttlOfAnonymous: minute });
     };
 

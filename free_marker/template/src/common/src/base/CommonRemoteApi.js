@@ -532,19 +532,17 @@ class CommonRemoteApi {
     }
 
     handleCommitment(update, commitment, object) {
-        for (const key in commitment) if (_.isUndefined(commitment[key]) || _.isNull(commitment[key])) delete commitment[key];
+        // 移除 undefined 或 null 的屬性
+        Object.keys(commitment).forEach(k => {
+            if (commitment[k] == null) delete commitment[k];
+        });
 
-        if (update) {
-            for (const key in commitment) {
-                if (key in object) {
-                    /** 保留屬性 */
-                } else if (_.isEqual(key, "updateTime")) {
-                    /** 保留屬性 */
-                } else {
-                    delete commitment[key];
-                }
-            }
-        }
+        if (!update) return;
+
+        // 僅保留 object 內存在的屬性與 updateTime
+        Object.keys(commitment).forEach(k => {
+            if (!(k in object) && k !== "updateTime") delete commitment[k];
+        });
     }
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
