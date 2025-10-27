@@ -3318,7 +3318,6 @@ class ClassGenerator {
         this.appendFunction({
             name: functionName,
             async: true,
-            arrow: true
         }, params, macros, comments, ...contents)
     }
 
@@ -4095,10 +4094,22 @@ class BaseBuilder extends PathBase {
     }
 
     getPreciseValue = (child) => {
+        const self = this;
+
+        function getPreciseObj() {
+            const isCloudSide = self.isAdminPlatform() || self.isFunctionsPlatform();
+            return isCloudSide ? `obj.${child.getFieldName()}` : `this.getColumnData(obj.${child.getFieldName()})`
+        }
+
+        function getPreciseArray() {
+            const isCloudSide = self.isAdminPlatform() || self.isFunctionsPlatform();
+            return isCloudSide ? `obj.${child.getFieldName()}` : `obj.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()}))`
+        }
+
         if (child.isArray())
-            return `obj.${child.getFieldName()} ? obj.${child.getFieldName()}.map((${child.getName()}) => this.getColumnData(${child.getName()})) : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
+            return `obj.${child.getFieldName()} ? ${getPreciseArray()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())},${this.getCommentDescription(child)}`;
         else if (child.isObject())
-            return `obj.${child.getFieldName()} ? this.getColumnData(obj.${child.getFieldName()}) : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}.columnData(),${this.getCommentDescription(child)}`;
+            return `obj.${child.getFieldName()} ? ${getPreciseObj()} : ${child.getDefaultValueByType(this.isAdminORFunctionsPlatform())}.columnData(),${this.getCommentDescription(child)}`;
         else if (child.isTimeStamp())
             return `!_.isUndefined(obj.${child.getFieldName()}) ? this.toFireBaseTimestampObject(obj.${child.getFieldName()}) : this.getObjectOfCurrentTimeStamp(),${this.getCommentDescription(child)}`;
         else if (child.isString())
@@ -5063,7 +5074,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `const object = await self.fetchObject(path)`,
                             `${this.isWebPlatform() ? 'this.clean()' : ''}`,
                             `${this.isWebPlatform() ? 'this.initial(object)' : ''}`,
-                            `return object.exists ? object : self.columnData()`
+                            `return object.exists ? object : ${this.isWebPlatform() ? `self.columnData()`: `self.${functionNameOfNormalize}({})`}`
                         ],
                         `fetch object`)
 

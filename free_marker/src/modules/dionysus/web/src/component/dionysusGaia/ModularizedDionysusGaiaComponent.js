@@ -10,6 +10,14 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         super(props);
     }
 
+    getInjectStyleOfDionysusGaiaAddImageIconButton(dionysusGaia) {
+        return Util.getVisibleOrNone(_.size(dionysusGaia.getBriefPhotos()) === 0);
+    }
+
+    onDionysusGaiaAddImageIconButtonClicked(param) {
+        this.enableImageSelectView(true);
+    }
+
     onApolloDialogSubmit = async (...param) => {
         const result = param.pop();
         this.getStore().setScheduleResult(result).then();

@@ -1609,6 +1609,10 @@ class MobileStyle {
 
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv = {};
 
+    DionysusGaiaAreaOfPhotoUploadAddImageIconAddPhotoAlternateOutlined = {};
+
+    DionysusGaiaAreaOfPhotoUploadAddImageIconButton = {};
+
     DionysusGaiaAreaOfPhotoUploadRowJoinPhotoChip = {};
 
     DionysusGaiaAreaOfPhotoUploadRowLabelOfUploadPhotoTypography = {};

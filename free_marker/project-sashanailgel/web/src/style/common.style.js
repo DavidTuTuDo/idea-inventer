@@ -1609,6 +1609,10 @@ class CommonStyle {
 
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv = {};
 
+    DionysusGaiaAreaOfPhotoUploadAddImageIconAddPhotoAlternateOutlined = {};
+
+    DionysusGaiaAreaOfPhotoUploadAddImageIconButton = {};
+
     DionysusGaiaAreaOfPhotoUploadRowJoinPhotoChip = {};
 
     DionysusGaiaAreaOfPhotoUploadRowLabelOfUploadPhotoTypography = {};

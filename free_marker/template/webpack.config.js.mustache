@@ -44,18 +44,21 @@ const config = {
     publicPath: "/", // 確保 Firebase 能正確載入資源
   },
   optimization: {
-    splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-            vendors: {
-                test: /[\\/]node_modules[\\/]/,
-                name: 'vendors',
-                chunks: 'all',
-                priority: 10,
-                enforce: true
-            },
+      splitChunks: {
+      chunks: 'all',
+      cacheGroups: {
+        mui: {
+          test: /[\\/]node_modules[\\/]@mui[\\/]/,
+          name: 'mui',
+          chunks: 'all',
         },
-    },
+        lodash: {
+          test: /[\\/]node_modules[\\/]lodash[\\/]/,
+          name: 'lodash',
+          chunks: 'all',
+        },
+      },
+  },
   },
   watchOptions: {
     aggregateTimeout: 200,

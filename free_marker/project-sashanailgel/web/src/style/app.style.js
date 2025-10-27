@@ -1609,6 +1609,10 @@ class AppStyle {
 
     DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv = {};
 
+    DionysusGaiaAreaOfPhotoUploadAddImageIconAddPhotoAlternateOutlined = {};
+
+    DionysusGaiaAreaOfPhotoUploadAddImageIconButton = {};
+
     DionysusGaiaAreaOfPhotoUploadRowJoinPhotoChip = {};
 
     DionysusGaiaAreaOfPhotoUploadRowLabelOfUploadPhotoTypography = {};

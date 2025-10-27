@@ -533,14 +533,14 @@ class CommonRemoteApi {
 
     handleCommitment(update, commitment, object) {
         // 移除 undefined 或 null 的屬性
-        Object.keys(commitment).forEach(k => {
+        Object.keys(commitment).forEach((k) => {
             if (commitment[k] == null) delete commitment[k];
         });
 
         if (!update) return;
 
         // 僅保留 object 內存在的屬性與 updateTime
-        Object.keys(commitment).forEach(k => {
+        Object.keys(commitment).forEach((k) => {
             if (!(k in object) && k !== "updateTime") delete commitment[k];
         });
     }
