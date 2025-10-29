@@ -82,13 +82,13 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.setBriefPhotos(...booze.photos);
         this.setSelectedTypeOfProp(booze.selectedTypeOfProp ?? 1);
         this.setVisibility(booze.visibility ?? false);
-        this.setTypeOfPropDisabled(true);
+        this.setTypeOfPropDisabled(booze.initCompleted);
         this.setAllowSelfPickUp(booze.allowSelfPickUp);
         this.setIsHomeTeaching(booze.isHomeTeaching);
-        this.setUseMainTrunkDisabled(true);
-        this.setIsBoozeAlreadyDone(true);
-        this.setIsHomeTeachingDisabled(true);
-        this.setAllowSelfPickUpDisabled(true);
+        this.setInitCompleted(booze.initCompleted);
+        this.setUseMainTrunkDisabled(booze.initCompleted);
+        this.setIsHomeTeachingDisabled(booze.initCompleted);
+        this.setAllowSelfPickUpDisabled(booze.initCompleted);
         this.setStmtOfDescriptionMaximum(`${_.size(this.getStatement())}/${MAXIMUM_TEXT_OF_STATEMENT}`);
         this.setStmtOfNameMaximum(`${_.size(this.getName())}/${MAXIMUM_TEXT_OF_NAME}`);
     }
@@ -187,6 +187,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         await this.handleIdOfBooze();
         const pathsOfImage = await Promise.all(files.map((file) => this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
+        await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
     };
 
     handleIdOfBooze = async () => {
@@ -231,20 +232,30 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         };
     };
 
+    showErrorMsg4UpdateVisibility = async (msg) => {
+        await this.apiOfBooze.updateBoozeItem(this.getComponent(), { visibility: false }, this.getIdOfBooze());
+        this.setVisibility(false);
+        this.getComponent().showErrorSnackMessage(msg);
+    };
+
     createBooze4Sure = async () => {
         await this.handleIdOfBooze();
-        const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), this.getObjectOfBooze(), this.getIdOfBooze());
-        // this.invalidateBooze(result.value);
+        if (_.size(this.getBriefPhotos()) === 0) return this.showErrorMsg4UpdateVisibility(`至少需要上傳一張「商品圖片」`);
+        if (_.size(this.getName()) < 2) return this.showErrorMsg4UpdateVisibility(`「商品名稱」必須超過2個字元`);
+        if (this.belong2TaskJob() && _.size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`需要新增課程的「日期與「時段」`);
+        if (_.size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`商品選項至少需要一個「主選項」`);
+
+        const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { ...this.getObjectOfBooze(), initCompleted: true, visibility: true }, this.getIdOfBooze());
         /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
+        this.setInitCompleted(true);
         const variants = await this.apiOfVariant.fetchDocumentIdsOfVariant(this.getComponent(), this.getIdOfBooze());
         await this.apiOfVariant.updateVariants(
             this.getComponent(),
-            variants.map((id) => {
-                return { id, nameOfBooze: this.getName(), visibility: this.getVisibility() };
-            }),
+            variants.map((id) => ({ id, nameOfBooze: this.getName(), visibility: this.getVisibility(), isHomeTeaching: this.getIsHomeTeaching() })),
             this.getIdOfBooze()
         );
-        this.getComponent().showInfoSnackMessage(`成功設定「${this.getName()}」商品`);
+        this.invalidateBooze({ ...result.value });
+        if (this.getInitCompleted()) this.getComponent().showInfoSnackMessage(`成功更新「${this.getName()}」商品`);
     };
 
     modifySpecificAttribute() {
@@ -434,6 +445,10 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     onVisibilityChanged = async () => {
+        if (!this.getInitCompleted()) {
+            this.setVisibility(false);
+            return this.getComponent().showErrorSnackMessage(`必須先點擊「下一步」`);
+        }
         await this.handleIdOfBooze();
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { visibility: this.getVisibility() }, this.getIdOfBooze());
     };

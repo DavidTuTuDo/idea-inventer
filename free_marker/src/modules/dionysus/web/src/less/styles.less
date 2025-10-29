@@ -3406,9 +3406,9 @@
     }
 }
 .DionysusGaiaDiv:extend(.CenterInParentColumn) {
-    width: 95%;
-    gap: 10px;
-    margin-top: 10px;
+    width: 100%;
+    gap: 8px;
+    padding-top: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -3416,12 +3416,13 @@
         /** empty style */
     }
     @media @desktop {
-        width: 600px;
+        margin-top: 20px;
     }
 }
-.DionysusGaiaDivWrap:extend(.CenterInParentColumn) {
+.DionysusGaiaDivWrap {
     margin: auto;
     width: 100%;
+    background: #eee;
     @media @mobile {
         /** empty style */
     }
@@ -3429,12 +3430,17 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        max-width: 720px;
+        border-radius: 15px;
     }
 }
 .DionysusGaiaAreaOfPhotoUploadDiv:extend(.CenterInParentColumn) {
-    width: 100%;
+    width: 97%;
     gap: 5px;
+    border-radius: 10px;
+    background: white;
+    padding-top: 8px;
+    padding-bottom: 8px;
     @media @mobile {
         /** empty style */
     }
@@ -3447,7 +3453,7 @@
 }
 .DionysusGaiaAreaOfPhotoUploadRowDiv:extend(.CenterInParentRow) {
     justify-content: space-between;
-    width: 100%;
+    width: 97%;
     min-height: 10px;
     @media @mobile {
         /** empty style */
@@ -3639,7 +3645,8 @@
     }
 }
 .DionysusGaiaAreaOfNameNameTextField {
-    width: 100%;
+    width: 97%;
+    padding-bottom: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -3651,6 +3658,10 @@
     }
 }
 .DionysusGaiaAreaOfPropDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    width: 97%;
+    border-radius: 10px;
+    background: white;
+    padding: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -3696,6 +3707,7 @@
     }
 }
 .DionysusGaiaAreaOfMainDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    padding-bottom: 13px;
     @media @mobile {
         /** empty style */
     }
@@ -3808,7 +3820,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfSubDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+.DionysusGaiaAreaOfSubDiv:extend(.DionysusGaiaAreaOfMainDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -3907,7 +3919,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfPriceSetDivWrap:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaAreaOfPriceSetDivWrap:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -4128,7 +4140,6 @@
     }
 }
 .DionysusGaiaAreaOfTabSetDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
-    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -4205,7 +4216,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfTrunkDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaAreaOfTrunkDiv:extend(.DionysusGaiaAreaOfPropDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -4271,7 +4282,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaDestDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaDestDiv:extend(.DionysusGaiaAreaOfPropDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -4304,7 +4315,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfStatusDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaAreaOfStatusDiv:extend(.DionysusGaiaAreaOfPropDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -4397,50 +4408,7 @@
     position: sticky;
     z-index: 3;
     bottom: 3px;
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncCreateChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncRecoverChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncDeletedChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncDeletedReactFragmentWrap {
+    padding-bottom: 50px;
     @media @mobile {
         /** empty style */
     }
@@ -4473,8 +4441,7 @@
         /** empty style */
     }
 }
-.DionysusErosDiv:extend(.CenterInParentColumn) {
-    width: 95vw;
+.DionysusGaiaFuncDeletedChip {
     @media @mobile {
         /** empty style */
     }
@@ -4482,10 +4449,55 @@
         /** empty style */
     }
     @media @desktop {
-        width: 600px;
+        /** empty style */
     }
 }
-.DionysusErosDivWrap:extend(.CenterInParentColumn) {
+.DionysusGaiaFuncDeletedReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncCreateChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncCreateReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 720px;
+    }
+}
+.DionysusErosDivWrap {
     margin: auto;
     width: 100%;
     @media @mobile {
@@ -4576,9 +4588,11 @@
     }
 }
 .DionysusErosAreaOfTabCreatorDiv:extend(.CenterInParentRow) {
+    box-sizing: border-box;
     justify-content: space-between;
     width: 100%;
     border-bottom: 1px solid #bbb;
+    padding-left: 15px;
     @media @mobile {
         /** empty style */
     }
@@ -7508,7 +7522,18 @@
         /** empty style */
     }
 }
-.DionysusQuantitySetterFuncBatchUpdateChip {
+.DionysusQuantitySetterFuncCommonChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterFuncCommonReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -7530,18 +7555,7 @@
         /** empty style */
     }
 }
-.DionysusQuantitySetterFuncCommonChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusQuantitySetterFuncCommonReactFragmentWrap {
+.DionysusQuantitySetterFuncBatchUpdateChip {
     @media @mobile {
         /** empty style */
     }

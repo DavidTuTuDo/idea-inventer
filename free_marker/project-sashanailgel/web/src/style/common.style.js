@@ -885,13 +885,13 @@ class CommonStyle {
 
     /** => following for quantitySetter  component  */
 
-    DionysusQuantitySetterFuncCommonReactFragmentWrap = {};
-
-    DionysusQuantitySetterFuncCommonChip = {};
+    DionysusQuantitySetterFuncBatchUpdateChip = {};
 
     DionysusQuantitySetterFuncLeaveChip = {};
 
-    DionysusQuantitySetterFuncBatchUpdateChip = {};
+    DionysusQuantitySetterFuncCommonReactFragmentWrap = {};
+
+    DionysusQuantitySetterFuncCommonChip = {};
 
     DionysusQuantitySetterFuncDiv = {};
 
@@ -1441,17 +1441,17 @@ class CommonStyle {
 
     /** => following for gaia  component  */
 
-    DionysusGaiaFuncBackToHomeReactFragmentWrap = {};
+    DionysusGaiaFuncCreateReactFragmentWrap = {};
 
-    DionysusGaiaFuncBackToHomeChip = {};
+    DionysusGaiaFuncCreateChip = {};
 
     DionysusGaiaFuncDeletedReactFragmentWrap = {};
 
     DionysusGaiaFuncDeletedChip = {};
 
-    DionysusGaiaFuncRecoverChip = {};
+    DionysusGaiaFuncBackToHomeReactFragmentWrap = {};
 
-    DionysusGaiaFuncCreateChip = {};
+    DionysusGaiaFuncBackToHomeChip = {};
 
     DionysusGaiaFuncDiv = {};
 

@@ -125,6 +125,7 @@ import fs from "fs";
                         needAddress: true,
                         selectedTypeOfProp: 1,
                         visibility: true,
+                        allowedOfEdit: false,
                         idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
                         allowSelfPickUp: true,
                         specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],

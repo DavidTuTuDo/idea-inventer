@@ -40,6 +40,7 @@ import { connectFunctionsEmulator, httpsCallable } from "firebase/functions";
 import { getDatabase } from "firebase/database";
 import { ref, uploadBytes, getDownloadURL, getStorage, listAll, deleteObject } from "firebase/storage";
 import libpath from "path";
+import event from "../event";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 200;
 
@@ -70,10 +71,7 @@ class FirebaseHelper extends BaseFirebase {
             // 已經啟動了，或者沒有 Auth 實例
             return;
         }
-
         const self = this;
-        const event = require("../event").default;
-
         // 啟動監聽，並將取消函數儲存起來
         this.unsubscribeAuth = onAuthStateChanged(this.auth(), (user) => {
             self.user = user;

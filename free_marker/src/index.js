@@ -5017,7 +5017,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         Util.camel('update', node.getFieldName()),
                         [
                             `const commitments = items.map(item => this.${functionNameOfNormalize}(item, true))`,
-                            `return await self.updateItems(path, commitments, ...conditions)`],
+                            `return await self.updateItems(path, commitments)`],
                         `update items`)
 
                     generateApiFunction(
