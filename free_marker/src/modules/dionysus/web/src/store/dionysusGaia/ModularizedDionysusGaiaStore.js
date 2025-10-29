@@ -10,6 +10,7 @@ import BoozeImage from "../dionysusBoozePhoto";
 import { action } from "mobx";
 import BaseComponent from "../../base/BaseComponent";
 import UserInfo from "../../base/BaseUserInfo";
+
 const MAXIMUM_IMAGE_OF_BOOZE = 8;
 const MAXIMUM_TEXT_OF_NAME = 50;
 const MAXIMUM_TEXT_OF_STATEMENT = 300;
@@ -182,7 +183,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     }
 
     uploadBriefImages = async (files) => {
-        if (_.sum([_.size(this.getBriefPhotos()), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
+        if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
         await this.handleIdOfBooze();
         const pathsOfImage = await Promise.all(files.map((file) => this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
@@ -220,7 +221,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             name: this.getName(),
             statement: this.getStatement(),
             photos: this.getBriefPhotos(),
-            photoOfDemo: _.size(this.getBriefPhotos()) > 0 ? _.head(this.getBriefPhotos()).href : "",
+            photoOfDemo: this.getLengthOfBriefPhoto() > 0 ? _.head(this.getBriefPhotos()).href : "",
             ...this.modifySpecificAttribute(),
             visibility: this.getVisibility(),
             idOfAuthor: UserInfo.getUid(),
@@ -240,10 +241,10 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
 
     createBooze4Sure = async () => {
         await this.handleIdOfBooze();
-        if (_.size(this.getBriefPhotos()) === 0) return this.showErrorMsg4UpdateVisibility(`至少需要上傳一張「商品圖片」`);
+        if (this.getLengthOfBriefPhoto() === 0) return this.showErrorMsg4UpdateVisibility(`至少需要上傳一張「商品圖片」`);
         if (_.size(this.getName()) < 2) return this.showErrorMsg4UpdateVisibility(`「商品名稱」必須超過2個字元`);
         if (this.belong2TaskJob() && _.size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`需要新增課程的「日期與「時段」`);
-        if (_.size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`商品選項至少需要一個「主選項」`);
+        if (this.getLengthOfBriefMain() === 0) return this.showErrorMsg4UpdateVisibility(`商品選項至少需要一個「主選項」`);
 
         const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { ...this.getObjectOfBooze(), initCompleted: true, visibility: true }, this.getIdOfBooze());
         /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
@@ -277,12 +278,8 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     }
 
     invalidateBooze = (newbie) => {
-        const latest = Util.mergeObject(this.getBooze(), newbie);
-        Util.appendInfo(" origin ==> ", this.getBooze());
-        Util.appendInfo(" newbie ==> ", newbie);
-        Util.appendInfo(" latest ==> ", latest);
-        this.setBooze(latest);
-        this.validateBooze(latest);
+        this.setBooze(newbie);
+        this.validateBooze(newbie);
     };
 
     /**

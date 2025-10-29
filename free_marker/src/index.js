@@ -7872,7 +7872,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 delete node.alertDialog;
             }
 
-
             if (node.isCustomImageButton()) {
                 node.setView('IconButton');
                 node.needParam = true;
@@ -7888,7 +7887,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendImportStmt({part: '{AdapterMoment}', from: '@mui/x-date-pickers/AdapterMoment'});
             }
-
 
             if (node.isSimpleSwitch()) {
                 node.setView('FormControlLabel');
@@ -8011,7 +8009,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             }
 
-
             if (node.isSimperSwiper()) {
                 const functionNameOfSwipe = node.getFunctionNameOfSwiper();
                 const functionNameOfSlide = node.getFunctionNameOfSwipeSlide();
@@ -8105,8 +8102,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         node.setListView('TextField');
                         if (node.hasSize()) /** 只有outlined 才有size的概念 */
                         node.appendListProps({size: `${node.getSize()}`});
-                        if (node.hasVariant())
-                            node.appendListProps({variant: node.getVariant()});
+                        if (node.hasColor()) node.appendListProps({color: node.get});
+                        if (node.hasVariant()) node.appendListProps({variant: node.getVariant()});
                         if (node.disableBorder()) {
                             node.appendListProps({
                                 sx: {
@@ -8269,8 +8266,18 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             const stmts = [];
             appendContentOfObjectOfProps(visual.start, 'start', stmts);
             appendContentOfObjectOfProps(visual.end, 'end', stmts);
-            arrayOfProps.push({InputProps: `###{${stmts.join(',')}}`})
+            arrayOfProps.push({ slotProps: { input: `###{${stmts.join(',')}}` } });
         }
+
+        if (node.hasTypeOfTextField()) {
+            arrayOfProps.push({type: node.getTypeOfTextField()});
+            arrayOfProps.push({ slotProps: { inputLabel: { shrink: true } } });
+        } else if (node.isNumber()) {
+            arrayOfProps.push({type: 'number'});
+            arrayOfProps.push({ slotProps: { inputLabel: { shrink: true } } });
+        }
+
+        Util.mergeArrayByKey(arrayOfProps);
 
         const nameOfDisabled = Util.camel(node.getName(), 'disabled');
         node.getParentNode().appendChildrenWithJsons(
@@ -8518,14 +8525,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 }
 
                 this.enrichTextFieldBehavior(node, 'default');
-
-                if (node.hasTypeOfTextField()) {
-                    node.appendViewProps({type: node.getTypeOfTextField()});
-                    node.appendViewProps({InputLabelProps: {shrink: true}});
-                } else if (node.isNumber()) {
-                    node.appendViewProps({type: 'number'});
-                    node.appendViewProps({InputLabelProps: {shrink: true}});
-                }
 
                 if (node.isString() && !node.isSingleLine() && !node.search) {
                     node.appendViewProps({multiline: '###true'});

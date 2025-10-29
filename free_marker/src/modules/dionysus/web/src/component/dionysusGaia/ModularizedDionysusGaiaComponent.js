@@ -11,7 +11,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     getInjectStyleOfDionysusGaiaAddImageIconButton(dionysusGaia) {
-        return Util.getVisibleOrNone(_.size(dionysusGaia.getBriefPhotos()) === 0);
+        return Util.getVisibleOrNone(dionysusGaia.getLengthOfBriefPhoto() === 0);
     }
 
     onDionysusGaiaAddImageIconButtonClicked(param) {
@@ -36,6 +36,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     }
 
     onDionysusGaiaBriefPhotoDeleteIconButtonClicked(param) {
+        if (this.getStore().getLengthOfBriefPhoto() <= 1) return this.showWarningSnackMessage(`需要至少一張商品圖片`);
         const photo = param.object;
         if (photo !== undefined) photo.remove();
     }
@@ -43,7 +44,6 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
     /** 主選項 */
     onDionysusGaiaBriefMainLabelChipDeleted(param) {
         if (this.getStore().getInitCompleted()) return this.showWarningSnackMessage(`商品已成立，無法刪除選項`);
-
         const main = param.object;
         if (main !== undefined) main.remove();
     }

@@ -3298,6 +3298,51 @@ class Utiller {
         return Math.ceil(a * b * factor) / factor;
     };
 
+    /**
+     * 📦 mergeArrayByKey(array)
+     * ---------------------------------------
+     * 將陣列中相同 key 的物件進行「巢狀合併」，並直接 mutate 原陣列內容。
+     *
+     * ✅ 特點：
+     * - 自動合併相同 key 的物件內容（深層合併）
+     * - 不建立新陣列，會直接修改傳入的 array
+     * - 適用於需要整併設定、狀態、表單資料等情境
+     *
+     * 🧩 範例：
+     * ```js
+     * const array = [
+     *   { a: { c: 1 } },
+     *   { b: { d: 2 } },
+     *   { a: { f: 3 } }
+     * ];
+     *
+     * ArrayHelper.mergeArrayByKey(array);
+     *
+     * console.log(array);
+     * // 👉 [ { a: { c: 1, f: 3 } }, { b: { d: 2 } } ]
+     * ```
+     *
+     * @param {Array<Object>} array - 需被合併的物件陣列
+     * @returns {Array<Object>} - 回傳同一個（已被 mutate 的）陣列
+     */
+    mergeArrayByKey(array) {
+        if (!Array.isArray(array)) return array;
+
+        // 1️⃣ 利用 lodash 深層合併所有物件（例如 {a:{x}} + {a:{y}} => {a:{x,y}})
+        const merged = _.merge({}, ...array);
+
+        // 2️⃣ 清空原陣列（mutate）
+        array.length = 0;
+
+        // 3️⃣ 將合併結果重新拆成 [{a:{...}}, {b:{...}}] 結構
+        Object.entries(merged).forEach(([key, value]) => {
+            array.push({ [key]: value });
+        });
+
+        return array;
+    }
+
+
     /** ============== 排課系統公式 開始 ============== */
 
     /**
