@@ -995,7 +995,7 @@ if (configerer.DEBUG_MODE) {
             console.log('我好了！！', test);
         }
 
-        await exampleOfRunByTimesInBackground()
+        // await exampleOfRunByTimesInBackground()
     })();
 
 }

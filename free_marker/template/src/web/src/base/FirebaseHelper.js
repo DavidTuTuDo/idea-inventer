@@ -545,6 +545,8 @@ class FirebaseHelper extends BaseFirebase {
             const orderByCondition = { type: "orderBy", params: [documentId()] };
             finalConditions = [...conditions, orderByCondition];
         }
+
+        console.log(`搜尋條件：`,finalConditions);
         // ---【分頁穩定性檢查】---
 
         let lastDocSnap = null;

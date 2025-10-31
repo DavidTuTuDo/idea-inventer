@@ -35,6 +35,10 @@ class ModularizedDionysusComponent extends BaseDionysusComponent {
                 .then(() => self.invalidateNextPageBehavior());
         }
     }
+
+    isValidOfParamOfKeyword(keyword) {
+        return true;
+    }
 }
 
 export default ModularizedDionysusComponent;

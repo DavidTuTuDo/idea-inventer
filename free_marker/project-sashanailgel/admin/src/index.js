@@ -198,6 +198,12 @@ import fs from "fs";
         ]);
     }
 
+    async function getAllNames() {
+        const products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
+        return products.map((each) => each.name);
+    }
+
+    await Util.persistJsonFilePrettier("./names.js", await getAllNames());
     // await uploadPaymentOptions();
     // await uploadProducts();
     // await uploadCatalogs();

@@ -2797,6 +2797,98 @@ class Utiller {
     }
 
     /**
+     * 使用 ES10+ 和 Lodash，將短句子轉換為潛在的搜尋關鍵字陣列。
+     * 策略：1. 提取英文單字 2. 提取規格/色號詞組 3. 清理中文 4. 窮舉中文 N-gram 5. 去重和過濾
+     * @param {string} sentence - 原始字串。
+     * @param {number} [maxLength=50] - 允許的最大字串長度。
+     * @param {number} [maxNgramLength=3] - N-gram 的最大長度，預設為 3。
+     * @returns {string[]} - 潛在關鍵字陣列（至少 2 個字/中文字）。
+     */
+    generateUniversalKeywords = (sentence, maxLength = 50, maxNgramLength = 4) => {
+        // 引入 Lodash，確保在執行環境中可用
+        if (!sentence || typeof sentence !== 'string') {
+            return [];
+        }
+
+        // 假設 Lodash 已經全域引入為 '_'
+        if (typeof _ === 'undefined') {
+            console.error('Lodash is not available. Please ensure it is imported.');
+            return [];
+        }
+
+        let textToProcess = sentence.trim();
+        let keywords = []; // 最終所有關鍵字的集合
+
+        // 參數安全檢查 (確保 N-gram 長度至少為 2)
+        maxNgramLength = Math.max(2, maxNgramLength);
+
+        // 警告/截斷邏輯
+        if (textToProcess.length > maxLength) {
+            console.warn(`警告：輸入字串長度為 ${textToProcess.length}，已根據 maxLength: ${maxLength} 截斷。`);
+            textToProcess = textToProcess.substring(0, maxLength);
+        }
+
+        // --- 步驟 1: 提取完整英文單字 (SACHIA, sachia, Sachia) ---
+        const englishWords = textToProcess.match(/[a-zA-Z]+/g) || [];
+
+        englishWords.forEach(word => {
+            if (word.length >= 2) {
+                keywords.push(word.toUpperCase());
+                keywords.push(word.toLowerCase());
+                const capitalized = word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                keywords.push(capitalized);
+            }
+        });
+
+        // --- 步驟 2: 提取規格、數量和色號關鍵字 (12W, 10ml, 10色, 1號) ---
+        const specKeywordsRegex = /\b[0-9]+[a-zA-Z]{1,4}\b|\b[0-9]{1,3}(w|ml|g|oz|k)\b|[\u4e00-\u9fa5a-zA-Z0-9]{1,4}(色|號)[\u4e00-\u9fa5a-zA-Z0-9]{0,2}/gi;
+
+        const specKeywords = (textToProcess.match(specKeywordsRegex) || [])
+            .filter(k => k.length >= 2)
+            .map(k => k.toLowerCase());
+
+        keywords.push(...specKeywords);
+
+        // --- 步驟 3: 清理和標準化 (用於 N-gram 提取) ---
+
+        let cleanText = textToProcess.toLowerCase();
+
+        // 1. 將所有提取過的規格詞彙（數字+單位/字母）替換為空格
+        cleanText = cleanText
+            .replace(/[0-9]+([\u4e00-\u9fa5a-z]{1,4}|[\/\-\~\\])/g, ' ')
+            .replace(/\b[a-z]{1,4}\b/g, ' ')
+            .replace(/\b[0-9]{1,3}\b/g, ' ');
+
+        // 2. 移除通用詞和符號
+        cleanText = cleanText
+            .replace(/[!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|`~]/g, ' ')
+            .replace(/系列|一組|單色|多款|套組|全套|專用|迷你|頂級|高品質|超閃|奢華|最新|款式|新款|超亮|的|與|和|閃|美甲/g, ' ')
+            .replace(/\s+/g, '') // **移除所有空格**
+            .trim();
+
+        // --- 步驟 4: 窮舉所有 >= 2 個字的 N-gram 詞組 (針對純中文) ---
+        const minLength = 2;
+        // maxNgramLength 現在是從參數傳入的
+
+        for (let len = minLength; len <= maxNgramLength; len++) {
+            for (let i = 0; i <= cleanText.length - len; i++) {
+                const keyword = cleanText.substring(i, i + len);
+                keywords.push(keyword);
+            }
+        }
+
+        // --- 步驟 5: 標準化、去重和過濾 ---
+        const finalKeywords = _.chain(keywords)
+            .filter(k => k.length >= 2)
+            .filter(k => k.length > 2 || !/^[\u4e00-\u9fa5a-z0-9]$/.test(k))
+            .uniq()
+            .sortBy()
+            .value();
+
+        return finalKeywords;
+    };
+
+    /**
      * 減少不必要的{}
      * 例如 array.map(each => {return {key,value}})
      **/
@@ -3410,7 +3502,6 @@ class Utiller {
         };
     }
 
-
     /**
      * @param {Array<Object>} current - 要更新的目標陣列
      * @param {Array<Object>} reference - 用來替換屬性的參照陣列
@@ -3519,6 +3610,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           // const utiller = new Utiller();
+          // console.log(utiller.generateUniversalKeywords('刻在我心底的名字'))
           // console.log(utiller.getTSOfSpecificDate('2025/08/18(一)'))
           // const input = [
           //     { value: "", label: "A款" },

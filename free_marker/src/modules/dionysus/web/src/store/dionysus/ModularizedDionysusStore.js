@@ -4,22 +4,33 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import BaseDionysusStore from "./BaseDionysusStore";
 
+const INDEX_VALUE_OF_SEARCH = 8591;
+
 class ModularizedDionysusStore extends BaseDionysusStore {
     constructor(props) {
         super(props);
     }
 
     async onInitialFetchBeginning() {
+        this.clean();
+        this.keyword4CompoundSearch = this.getParamOfKeywordInPath();
+        if (_.size(this.keyword4CompoundSearch) > 1) {
+            this.setValueOfSelectBoundClickedTab(INDEX_VALUE_OF_SEARCH);
+            this.pushBoozeConditions({ type: "where", params: ["keywords", "array-contains", this.keyword4CompoundSearch] });
+        }
+
         this.pushBoozeConditions({ type: "where", params: ["visibility", "==", true] });
     }
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         await Util.syncDelay(1);
+        if (collection && _.size(collection.selectBounds) > 0) this.setSelectBounds(...[{ label: "一覽表", value: 0, type: "all" }, ...collection.selectBounds]);
 
-        if (collection && _.size(collection.selectBounds) > 0) {
-            this.setSelectBounds(...[{ label: "所有商品", value: 0, type: "all" }, ...collection.selectBounds]);
-        }
+        if (_.size(this.keyword4CompoundSearch) > 1)
+            this.pushSelectBoundsByIndex(-1, { label: `搜尋「${this.keyword4CompoundSearch}」`, value: INDEX_VALUE_OF_SEARCH, type: "search" });
+
+        if (collection && _.size(collection.selectBounds) === 0) this.pushSelectBoundsByIndex(0, { label: "一覽表", value: 0, type: "all" });
     }
 
     fetchBoozeBySelectedTab = async () => {
@@ -29,7 +40,10 @@ class ModularizedDionysusStore extends BaseDionysusStore {
         this.cleanBoozeNextIds();
         this.lastItemOfBooze = undefined;
         const valueOfCurrentTab = this.getValueOfSelectBoundClickedTab();
-        if (valueOfCurrentTab > 0) this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectBoundClickedTab()] });
+
+        if (valueOfCurrentTab === INDEX_VALUE_OF_SEARCH && _.size(this.keyword4CompoundSearch) > 1) {
+            this.pushBoozeConditions({ type: "where", params: ["keywords", "array-contains", this.keyword4CompoundSearch] });
+        } else if (valueOfCurrentTab > 0) this.pushBoozeConditions({ type: "where", params: ["category", "array-contains", this.getValueOfSelectBoundClickedTab()] });
         await Util.syncDelay(20);
         const boozes = this.enrichBoozes(await this.fetchBoozes(this.getComponent(), { type: "where", params: ["visibility", "==", true] }));
         this.setBoozes(...boozes);

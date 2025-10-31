@@ -137,22 +137,20 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     onNavigatorInputOfCompleteTextFieldSearchPressed(input, navigator) {
         /** 先判斷autoComplete 有沒有selectedItem()
-         *
-         * 沒有的話再用 getInput() 去搜尋
-         * */
+         *  沒有的話再用 getInput() 去搜尋
+         **/
         this.disappearKeyboard();
         const selected = this.getStore().getSuggestKeywordDetail();
-
         if (!Util.isUndefinedNullEmpty(selected) && selected.data) {
             const data = _.cloneDeep(selected.data());
             this.onSearchPressed(data);
             this.getStore().clearKeywordDetail();
         } else {
-            this.onSearchPressed(navigator.getComplete());
+            this.onSearchPressed(navigator.getInputOfComplete());
         }
     }
 
-    /** content 可能是string | {suggestedObject}*/
+    /** content 可能是string | {suggestedObject} */
     onSearchPressed(content) {
         Util.appendInfo("onSearchPressed not implemented");
     }
