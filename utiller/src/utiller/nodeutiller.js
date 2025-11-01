@@ -589,9 +589,8 @@ class NodeUtiller extends Utiller {
 
                 /** 產生release資料夾 */
                 const release = this.persistByPath(libpath.join(path, 'release'))
-
                 /** 利用babel 產生出 es5相容性高的src file */
-                await this.executeCommandLine(`cd ${path} && npx babel ./temp --out-dir ./release/lib`);
+                await this.executeCommandLine(`cd ${path} && babel ./temp --out-dir ./release/lib --config-file ./babel.config.js`);
 
                 const pathOfPackageJson = libpath.join(path, 'package.json');
                 try {

@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.383",
+  "version": "1.0.394",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "updateConfigerer": "npm update configerer --save"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   },
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",

@@ -107,7 +107,8 @@ import fs from "fs";
         /** batch delete booze/variant */
         await api.deleteBatchBoozeVariantItems(ids);
 
-        const products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
+        let products = _.filter(Util.getFileContextInJSON("./sasha_of_products_detail.json"), (each) => _.size(each.options) > 1);
+        // products = Util.getShuffledArrayWithLimitCount(products, 100);
         console.log(`莎夏美學合計商品共有： `, _.size(products), ` 個`);
         await api.submitBatchBoozeVariantItems(
             products.map((product) => {
@@ -128,6 +129,7 @@ import fs from "fs";
                         allowedOfEdit: false,
                         idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
                         allowSelfPickUp: true,
+                        keywords: [...Util.generateUniversalKeywords(product.name), '莎夏美學'],
                         specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],
                         priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
                     },
@@ -203,11 +205,11 @@ import fs from "fs";
         return products.map((each) => each.name);
     }
 
-    await Util.persistJsonFilePrettier("./names.js", await getAllNames());
+    // await Util.persistJsonFilePrettier("./names.js", await getAllNames());
     // await uploadPaymentOptions();
     // await uploadProducts();
     // await uploadCatalogs();
-
+    // console.log(`全桌壞光光！`)
     // console.log(await testOfAdminFetchItems());
     // console.log(await testOfAdminSubmitItems());
     // console.log(await testOfAdminFetchItem());
