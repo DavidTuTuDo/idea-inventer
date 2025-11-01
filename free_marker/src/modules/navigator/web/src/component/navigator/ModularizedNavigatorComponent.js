@@ -152,7 +152,10 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     /** content 可能是string | {suggestedObject} */
     onSearchPressed(content) {
-        Util.appendInfo("onSearchPressed not implemented");
+        if (_.isObject(content) && content.uid) {
+            /** 處理整理過的關鍵字們{參考悅譜} */
+        } else if (Config.TransactionMethod && _.size(content) > 1) Router.gotoDionysusPage(this, content);
+        else this.showWarningSnackMessage(`搜尋條件至少2個字元`);
     }
 
     getInjectStyleOfNavigatorAccountIconButton() {
