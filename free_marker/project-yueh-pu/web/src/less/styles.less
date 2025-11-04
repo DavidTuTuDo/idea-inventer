@@ -1238,10 +1238,9 @@
         /** empty style */
     }
 }
-.ChordiventorDivWrap:extend(.CenterInParentColumn) {
+.ChordiventorDivWrap {
     margin: auto;
-    padding-top: 10px;
-    width: 97vw;
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -1336,6 +1335,8 @@
 .ChordiventorInfoDiv:extend(.CenterInParentColumn) {
     gap: 10px;
     width: 100%;
+    padding-left: 5px;
+    padding-right: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -1347,6 +1348,7 @@
     }
 }
 .ChordiventorInfoIdOfSingerTextField {
+    flex: 1;
     @media @mobile {
         /** empty style */
     }
@@ -1358,6 +1360,7 @@
     }
 }
 .ChordiventorInfoIdOfSingerDivWrap:extend(.CenterInParentRow) {
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -1380,6 +1383,7 @@
     }
 }
 .ChordiventorInfoIdOfGuitarPuTextField {
+    flex: 1;
     @media @mobile {
         /** empty style */
     }
@@ -1391,6 +1395,7 @@
     }
 }
 .ChordiventorInfoIdOfGuitarPuDivWrap:extend(.CenterInParentRow) {
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -1815,12 +1820,11 @@
     }
 }
 .ChordiventorFuncDiv:extend(.CenterInParentRow) {
-    gap: 10px;
-    height: 40px;
+    gap: 20px;
+    height: 50px;
     position: sticky;
-    padding-bottom: 5px;
-    padding-top: 5px;
     bottom: 0;
+    flex-wrap: wrap;
     @media @mobile {
         /** empty style */
     }
@@ -3160,19 +3164,6 @@
     }
 }
 .AccountLogoutReactFragmentWrap {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-/** following for hades  component used  */
-
-.HadesDiv {
     @media @mobile {
         /** empty style */
     }

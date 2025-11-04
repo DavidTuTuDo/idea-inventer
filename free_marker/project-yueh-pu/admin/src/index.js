@@ -348,6 +348,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         return {
             id: Util.isUndefinedNullEmpty(tone.idOfRemote) ? undefined : tone.idOfRemote,
             tonalityOfContext: info.tonalityOfContext,
+            context: Util.getDecryptString(latestTone),
             latestContext: Util.getEncryptStringV2(Util.getDecryptString(latestTone)),
             capoLevel: info.capo ? _.toNumber(info.capo) : -1,
             tonalityOfFemale: info["女調"],
@@ -499,6 +500,16 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
         const submits = tones.map((tone) => getSubmitGuitarPuItemWithNormalized(tone, objectOfSinger));
         await api.submitGuitarpus(...submits);
+    }
+
+    /** 哪個遠端code被改髒了，改快用local資料庫救回來 */
+    async function syncLocalDatabase2Remote(id) {
+        const records = await database.fetchRecords("TONE", new Builder().equal("idOfRemote", id).stmt());
+        const record = _.head(records);
+        const singers = await getObjectOfSingerUrlAsKey();
+        const guitar = getSubmitGuitarPuItemWithNormalized(record, singers);
+        await api.updateGuitarpuItem(guitar, id);
+        await api.updateRhythmItem(guitar, id);
     }
 
     async function updateSpecificGuitarPu(id = "Wipyxry0V0CKLkPxjaS1") {
@@ -847,6 +858,18 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         }
     }
 
+    async function rewritePlantContext() {
+        await api.modifyGuitarpusOfPaginate(async (items) => {
+            await api.updateGuitarpus(items.map((pu) => ({ id: pu.id, context: Util.getDecryptStringV2(pu.latestContext) })));
+        });
+    }
+
+    async function singleRewrite(id) {
+        const pu = await api.fetchGuitarpuItem(id);
+        const context = Util.getDecryptStringV2(pu.latestContext);
+        await api.updateGuitarpuItem({ context }, id);
+    }
+
     /** 指定遠端的歌曲放進來茲料故 */
     async function syncToneIntoLocalSQLByEachID(...idOFTone) {
         for (const id of idOFTone) {
@@ -871,7 +894,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     }
 
     /** 每次都要跑 */
-
+    // await syncLocalDatabase2Remote(`jKXnWpriJh21Z8DpZRuy`);
+    // await singleRewrite(`jKXnWpriJh21Z8DpZRuy`);
+    // await rewritePlantContext();
     // await syncToneIntoLocalSQLByEachID('YllpcIlVQkJCi2hEZPnf','IqhgXac9Oij5q87piZbg')
     // await getTonesOfCustomCompose()
     // await updateToneOfPublishStaff();

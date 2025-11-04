@@ -151,7 +151,7 @@ class ChordiventorStore extends BaseChordiventorStore {
 
         const spec = this.normalize(this.columnData());
         const content = this.getTxtOfNormalize();
-        const normalize = { latestContext: Util.getEncryptStringV2(content), popularLevel: 10000, ...spec };
+        const normalize = { context: content, ...spec };
         let update = false;
         if (_.size(this.getIdOfGuitarPu()) > 3) {
             update = true;
@@ -171,6 +171,7 @@ class ChordiventorStore extends BaseChordiventorStore {
         } else {
             const resultOfPu = await this.apiOfPu.submitGuitarpuItem(this.getComponent(), {
                 ...normalize,
+                popularLevel: 10000,
                 idOfAuthor: UserInfo.getUid(),
                 copyright: false
             });
@@ -180,7 +181,7 @@ class ChordiventorStore extends BaseChordiventorStore {
                 {
                     ...normalize,
                     idOfAuthor: UserInfo.getUid(),
-                    idOfGuitarPu,
+                    id: idOfGuitarPu,
                     composer: `詞：${spec.lyricist} 曲：${spec.composer}`,
                     copyright: false
                 },

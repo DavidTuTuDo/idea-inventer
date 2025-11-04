@@ -85,11 +85,13 @@ class SheetStore extends BaseSheetStore {
         if (_.size(result.guitarpus) > 0) {
             const pu = result.guitarpus[0];
             await this.updateFavoriteToggleState(_.size(result.guitarpus) > 0 ? pu.id : "");
-            await this.apiOfHistory.submitPuOfRecordItem(view, {
-                idOfGuitarPu: pu.id,
-                name: pu.name,
-                singer: pu.singer
-            });
+            this.apiOfHistory
+                .submitPuOfRecordItem(view, {
+                    idOfGuitarPu: pu.id,
+                    name: pu.name,
+                    singer: pu.singer
+                })
+                .then();
         }
         return result;
     }
@@ -132,8 +134,8 @@ class SheetStore extends BaseSheetStore {
 
         if (pu instanceof GuitarPu && pu.getPopularLevel() > 1) {
             /** popularLevel 代表 取得遠端資料*/
-            pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
-            pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getLatestContext(), true));
+            pu.setOriginalContext(this.normalizePu(this.getCurrentPu().getContext()));
+            pu.setCurrentContext(this.normalizePu(this.getCurrentPu().getContext()));
             pu.setTonalityOfFemale(this.normalizeTonality(pu.getTonalityOfFemale()));
             pu.setTonalityOfMale(this.normalizeTonality(pu.getTonalityOfMale()));
             pu.setTonalityOfOriginal(this.normalizeTonality(pu.getTonalityOfOriginal()));
@@ -191,8 +193,7 @@ class SheetStore extends BaseSheetStore {
         this.getCurrentPu().setCurrentContext(normalize);
     }
 
-    normalizePu = (context, decrypt = false) => {
-        if (decrypt && !this.getComponent(true).isComponentView()) context = Util.getDecryptStringV2(context);
+    normalizePu = (context) => {
         let segments = context.split("\n");
         segments = _.dropWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));
         segments = _.dropRightWhile(segments, (each) => Util.isUndefinedNullEmpty(_.trim(each)));

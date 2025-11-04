@@ -315,10 +315,6 @@ class MobileStyle {
 
     InfoOfCopyRightDiv = {};
 
-    /** => following for hades  component  */
-
-    HadesDiv = {};
-
     /** => following for account  component  */
 
     AccountLogoutReactFragmentWrap = {};
