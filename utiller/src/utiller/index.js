@@ -3407,15 +3407,14 @@ class Utiller {
      * 🧩 範例：
      * ```js
      * const array = [
-     *   { a: { c: 1 } },
-     *   { b: { d: 2 } },
-     *   { a: { f: 3 } }
+     *   { a: { b: { c: 2 } } },
+     *   { b: { d: { g: 1 } }, a: { b: { y: 1 }, h: { e: 1 } } }
      * ];
      *
      * ArrayHelper.mergeArrayByKey(array);
      *
      * console.log(array);
-     * // 👉 [ { a: { c: 1, f: 3 } }, { b: { d: 2 } } ]
+     * // 👉 [ { a: { b: { c: 2, y: 1 }, h: { e: 1 } } }, { b: { d: { g: 1 } } } ]
      * ```
      *
      * @param {Array<Object>} array - 需被合併的物件陣列
@@ -3424,14 +3423,25 @@ class Utiller {
     mergeArrayByKey(array) {
         if (!Array.isArray(array)) return array;
 
-        // 1️⃣ 利用 lodash 深層合併所有物件（例如 {a:{x}} + {a:{y}} => {a:{x,y}})
-        const merged = _.merge({}, ...array);
+        // 收集所有 key 的合併結果
+        const resultMap = {};
 
-        // 2️⃣ 清空原陣列（mutate）
+        for (const obj of array) {
+            if (!_.isPlainObject(obj)) continue;
+            for (const [key, value] of Object.entries(obj)) {
+                if (!resultMap[key]) {
+                    resultMap[key] = _.cloneDeep(value);
+                } else {
+                    _.merge(resultMap[key], value);
+                }
+            }
+        }
+
+        // 清空原陣列（mutate）
         array.length = 0;
 
-        // 3️⃣ 將合併結果重新拆成 [{a:{...}}, {b:{...}}] 結構
-        Object.entries(merged).forEach(([key, value]) => {
+        // 重建結構
+        Object.entries(resultMap).forEach(([key, value]) => {
             array.push({ [key]: value });
         });
 

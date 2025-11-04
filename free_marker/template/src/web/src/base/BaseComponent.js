@@ -98,6 +98,27 @@ class BaseComponent extends MuiComponent {
         this.jobsOfScrollToBottom.length = 0;
     }
 
+    toPreciseNumber = (input, regEx) => {
+        // 核心邏輯 B：處理負號：確保負號 (-) 只在開頭，並只出現一次
+        let numericValue = input.replace(regEx, "");
+        const negativeMatch = numericValue.match(/-/g);
+        if (negativeMatch && negativeMatch.length > 1) {
+            // 如果有多個負號，只保留第一個（開頭的）
+            numericValue = numericValue.substring(0, numericValue.indexOf("-") + 1) + numericValue.substring(numericValue.indexOf("-") + 1).replace(/-/g, "");
+        } else if (negativeMatch && numericValue.indexOf("-") > 0) {
+            // 如果負號不在開頭，將其移除
+            numericValue = numericValue.replace(/-/g, "");
+        }
+
+        // 核心邏輯 C：處理小數點：確保小數點 (.) 只出現一次
+        const decimalMatch = numericValue.match(/\./g);
+        if (decimalMatch && decimalMatch.length > 1) {
+            // 如果有多個小數點，只保留第一個
+            numericValue = numericValue.substring(0, numericValue.indexOf(".") + 1) + numericValue.substring(numericValue.indexOf(".") + 1).replace(/\./g, "");
+        }
+        return _.toNumber(numericValue) ?? "";
+    };
+
     componentWillUnmount() {
         /** 執行unsubscribe */
 

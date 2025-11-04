@@ -218,6 +218,9 @@ class CodegenNode {
     email = '';
     /** firebase 的註冊帳號，用來切換身份deploy|rules */
 
+    inputRegEx = '';
+    /** TextField有時書入帶碼會是 00153，他不屬於number但卻只能輸入0-9 */
+
     size = '';
     /** autocomplete textField 會用到*/
 
@@ -963,6 +966,18 @@ class CodegenNode {
     isSingleLine() { return this.singleLine; }
 
     useAutoFuse() { return _.isEqual(true, this.autoFuse); }
+
+    hasInputRegEx() {
+        return !_.isEmpty(this.inputRegEx);
+    }
+
+    getInputRegEx() {
+        return this.inputRegEx;
+    }
+
+    setInputRegEx(regEx) {
+        this.inputRegEx = regEx;
+    }
 
     getTextOfHelperVisual() { return this.getHelperVisual().text; }
 
@@ -5399,31 +5414,76 @@ class ComponentBuilder extends BaseBuilder {
 
     getJSXStrings(param) {
 
-        function normalize(value) {
-            if (_.isNumber(value) || _.isBoolean(value)) {
-                return `{${value}}`;
-            }
+        /**
+         * 遞迴地將值轉換為特定字串格式。
+         * @param {*} value 要正規化的值
+         * @param {boolean} [isNested=false] 標記此調用是否為巢狀物件或陣列的內部元素
+         * @returns {string} 正規化後的字串
+         */
+        function normalize(value, isNested = false) {
+            let result;
 
-            if (_.isString(value)) {
+            // --- 1. 處理基本類型：數字 / 布林值 / 字串 ---
+            if (_.isNumber(value) || _.isBoolean(value)) {
+                // 巢狀時不加 {}，頂層時加上 {}
+                result = isNested ? `${value}` : `{${value}}`;
+            } else if (_.isString(value)) {
                 if (value.startsWith("###")) {
                     const cleaned = Util.getStringOfDropHeadSign(value, "#");
-                    return `{${cleaned}}`;
+                    // 處理 ### 字串：巢狀時不加 {}，頂層時加上 {}
+                    result = isNested ? cleaned : `{${cleaned}}`;
+                } else {
+                    // 處理普通字串：巢狀時不加 {} (JSON.stringify 會自動加上 "")，頂層時加上 {}
+                    const stringified = JSON.stringify(value);
+                    result = isNested ? stringified : `{${stringified}}`;
                 }
-                return `{${JSON.stringify(value)}}`;
             }
 
+            // 如果結果已經在基本類型中確定，直接返回
+            if (result !== undefined) {
+                return result;
+            }
+
+            // --- 2. 處理陣列 (遞迴點 1) ---
+            if (_.isArray(value)) {
+                // 對陣列中的每個元素遞迴調用 normalize，並標記 isNested = true
+                // 陣列總是使用 [] 包圍
+                const stmts = value.map(val => normalize(val, true));
+                return `[${stmts.join(',')}]`;
+            }
+
+            // --- 3. 處理物件 (遞迴點 2) ---
             if (_.isObject(value)) {
                 const stmts = Object.entries(value).map(([key, val]) => {
+                    let normalizedVal;
+
+                    // 檢查值是否為特殊字串：物件內 ### 字串的終止條件，保持不變
                     if (_.isString(val) && val.startsWith("###")) {
-                        const cleaned = Util.getStringOfDropHeadSign(val, "#");
-                        return `'${key}' : ${cleaned}`;
+                        // 在物件內部，特殊字串始終不加 {} (因為父層的 {} 已經被 ' : ' 隔開)
+                        normalizedVal = Util.getStringOfDropHeadSign(val, "#");
+                    } else {
+                        // 對於所有其他類型，進行遞迴調用，並標記 isNested = true
+                        normalizedVal = normalize(val, true);
                     }
-                    return `'${key}' : ${JSON.stringify(val)}`;
+
+                    return `'${key}' : ${normalizedVal}`;
                 });
-                return `{{${stmts.join(",")}}}`;
+
+                // 關鍵修正：物件的包裝邏輯
+                if (isNested) {
+                    // 如果是巢狀物件，只返回單層括號 {...}
+                    return `{${stmts.join(",")}}`;
+                } else {
+                    // 只有頂層物件才返回雙層括號 {{...}}
+                    return `{{${stmts.join(",")}}}`;
+                }
             }
 
-            return `{${JSON.stringify(value)}}`;
+            // --- 4. 處理其他類型 (如 null, undefined, Symbol 等) ---
+            // 這些類型通常需要被 JSON.stringify 處理
+            const stringified = JSON.stringify(value);
+            // 巢狀時不加 {}，頂層時加上 {}
+            return isNested ? stringified : `{${stringified}}`;
         }
 
         function appendViewsImport() {
@@ -8187,7 +8247,6 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         }
 
         const arrayOfProps = [];
-
         if (!node.isBelong2AutoComplete() && node.hasLabel()) {
             const label = node.getFieldNameOfLabel('sticky');
             node.getParentNode().appendChildrenWithJsons({
@@ -8224,7 +8283,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         }
 
         if (node.hasHelperVisual()) {
-            function appendContentOfObjectOfProps(view, position, _stmt) {
+            function appendContentOfObjectOfProps(view, position, array) {
                 if (_.isUndefined(view)) return;
                 const hasAlertMenu = !Util.isUndefinedNullEmpty(view.alertMenu);
                 const hasClick = _.isEqual(view.click, true);
@@ -8259,28 +8318,20 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     contentOfVisual = `<IconButton onClick={(event, value) => {${contentOfClicked}}} 
                                 edge="${position}">${contentOfVisual}</IconButton>`;
                 }
-                _stmt.push(`${position}Adornment: <InputAdornment position="${position}">${contentOfVisual}${hasAlertMenu ? self.getContentOfAlertMenu(node, view.alertMenu, Util.camel(`helperVisual`, position)) : ''}</InputAdornment>`)
+                // _stmt.push(`${position}Adornment: `)
+                const adornment = Util.getObject(`${position}Adornment`,`###(<InputAdornment position="${position}">${contentOfVisual}${hasAlertMenu ? self.getContentOfAlertMenu(node, view.alertMenu, Util.camel(`helperVisual`, position)) : ''}</InputAdornment>)`)
+                array.push({ slotProps:{input:adornment}});
             }
 
 
             const visual = node.getHelperVisual();
             node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
-            const stmts = [];
-            appendContentOfObjectOfProps(visual.start, 'start', stmts);
-            appendContentOfObjectOfProps(visual.end, 'end', stmts);
-            arrayOfProps.push({ slotProps: { input: `###{${stmts.join(',')}}` } });
+            // const stmts = [];
+            appendContentOfObjectOfProps(visual.start, 'start', arrayOfProps);
+            appendContentOfObjectOfProps(visual.end, 'end', arrayOfProps);
+            // arrayOfProps.push({ slotProps: { input: `###{${stmts.join(',')}}` } });
         }
-
-        if (node.hasTypeOfTextField()) {
-            arrayOfProps.push({type: node.getTypeOfTextField()});
-            arrayOfProps.push({ slotProps: { inputLabel: { shrink: true } } });
-        } else if (node.isNumber()) {
-            arrayOfProps.push({type: 'number'});
-            arrayOfProps.push({ slotProps: { inputLabel: { shrink: true } } });
-        }
-
         Util.mergeArrayByKey(arrayOfProps);
-
         const nameOfDisabled = Util.camel(node.getName(), 'disabled');
         node.getParentNode().appendChildrenWithJsons(
             {
@@ -8292,7 +8343,11 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
         )
         if (!node.isPreciselyEditableComponent())
-            arrayOfProps.push({disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDisabled)}()`})
+            arrayOfProps.push({ disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel('get', nameOfDisabled)}()` });
+
+        if (node.hasTypeOfTextField()) arrayOfProps.push({ type: node.getTypeOfTextField() });
+        else if (node.isNumber()) arrayOfProps.push({ type: 'number' });
+
 
         switch (typeOfView) {
             case 'default':
@@ -8367,7 +8422,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 stmts.push(`objectOfParam.event = event;`)
                 stmts.push(`${node.getPreciseAttributeParentName()}.${node.getFunctionNameOfSelectSetter()}(latest)`)
             }else if (node.isTextFieldView()) {
-                stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(self.getLatestValueByEvent(event))` : `self.getLatestValueByEvent(event)`}`);
+                const latest = () => node.hasInputRegEx() ? `self.getLatestValueByEvent(event).replace(${node.getInputRegEx()},'')` : 'self.getLatestValueByEvent(event)';
+                stmts.push(`const latestValue = ${node.isNumber() ? `_.toNumber(${latest()})` : `${latest()}`}`);
                 paramStmt = `latestValue`;
                 if (node.isBelong2AutoComplete())
                     stmts.push(`${node.getPreciseAttributeParentName()}.${node.getPreciseViewParent().getFunctionNameOfAutoCompleteInvalidate()}(latestValue).then()`)
