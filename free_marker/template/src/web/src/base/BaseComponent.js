@@ -112,6 +112,8 @@ class BaseComponent extends MuiComponent {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
         }
 
+        this.getStore()?.onComponentUnmount();
+
         Util.appendInfo(`❌ ${this.getComponentName()} goto componentWillUnmount()`);
     }
 

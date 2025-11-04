@@ -14,6 +14,24 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         super(props);
     }
 
+    onDionysusPlutusCvsTextFieldEndSearchClicked(param) {
+        const type = UserInfo.getSelectedOfTransport();
+
+        switch (type) {
+            case Config.TransportMethod.Store711:
+                const tempVar = Util.getRandomHashV2(20);
+                this.getStore().waitResultOfCVS(tempVar).then();
+                if (_.isEqual(UserInfo.getSelectedOfTransport(), Config.TransportMethod.Store711)) {
+                    const url = `${Config.urlOfSelectorOfCVS}&TempVar=${tempVar}`;
+                    this.gotoUrlWithNewTabDirectly(`https://emap.presco.com.tw/c2cemap.ashx?eshopid=870&url=${url}`);
+                }
+                break;
+            case Config.TransportMethod.StoreFamily:
+                this.gotoUrlWithNewTabDirectly(`https://mfme.map.com.tw`);
+                break;
+        }
+    }
+
     onDionysusPlutusFindIconButtonClicked(param) {
         const self = this;
         if (!_.isEmpty(this.getStore().getAddress())) {
@@ -44,8 +62,31 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         return Util.getVisibleOrNone(false, true);
     }
 
+    getWrapInjectStyleOfDionysusPlutusCvsTextField(dionysusPlutus) {
+        return Util.getVisibleOrNone(dionysusPlutus.getNeedCVS());
+    }
+
     onDionysusPlutusSubmitChipClicked(param) {
+        this.execute().then(() => {
+            UserInfo.deleteCheckedCartieItemBehavior();
+        });
+
+        /**  發信的功能
+         this.getStore()
+         .submitSavior(this)
+         .then((result) => {
+         self.showInfoSnackMessage(`已完成訂購，請收信信件確認`);
+         UserInfo.deleteCheckedCartieItemBehavior();
+         Util.syncDelay(2500).then((result) => {
+         Router.gotoHomePage(this);
+         });
+         });
+         */
+    }
+
+    execute = async () => {
         const self = this;
+        const eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor();
 
         const selectedOfTransport = UserInfo.getSelectedOfTransport();
         const selectedOfTransaction = UserInfo.getSelectedOfTransaction();
@@ -66,33 +107,11 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             return _.isEmpty(self.getStore().getAddress());
         }
 
-        if (Util.or(isAddressShouldFormed(), _.isEmpty(this.getStore().getEmail()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName()))) {
-            this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`);
-            return;
-        }
+        if (Util.or(isAddressShouldFormed(), _.isEmpty(this.getStore().getEmail()), _.isEmpty(this.getStore().getPhone()), _.isEmpty(this.getStore().getName())))
+            return this.showWarningSnackMessage(`資料尚未完整填寫，請再度確認欄位內容`);
 
-        this.showInfoSnackMessage(`進入付款流程`);
-        this.execute().then(() => {
-            UserInfo.deleteCheckedCartieItemBehavior();
-        });
-
-        /**  發信的功能
-         this.getStore()
-         .submitSavior(this)
-         .then((result) => {
-         self.showInfoSnackMessage(`已完成訂購，請收信信件確認`);
-         UserInfo.deleteCheckedCartieItemBehavior();
-         Util.syncDelay(2500).then((result) => {
-         Router.gotoHomePage(this);
-         });
-         });
-         */
-    }
-
-    execute = async () => {
-        const self = this;
-
-        const eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor();
+        if (Util.isOrEquals(selectedOfTransport, Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711) && _.size(this.getStore().getCvs()) < 3)
+            return this.showWarningSnackMessage(`需填入收店代碼`);
 
         if (UserInfo.isLoginWithSucceed() && !eros.enableOfBoughtWithoutLoginIn) return this.showErrorSnackMessage("請先登入，才能完成結帳程序");
         if (!UserInfo.isLoginWithSucceed() && eros.enableOfBoughtWithoutLoginIn && self.getStore().getFeeOfPayment() > eros.amountOfAllowAnonymousBuy)
@@ -102,6 +121,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
         Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
+        this.showInfoSnackMessage(`進入付款流程`);
         switch (UserInfo.getSelectedOfTransaction()) {
             case Config.TransactionMethod.LinePay:
                 const validate1 = eros.enableOfLinePay && eros.hasLinePay;
@@ -120,6 +140,8 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     performEPayCreateOrderBehavior = async () => {
         const self = this;
         const items = UserInfo.getCheckedCartieItems();
+        const typeOfTransport = UserInfo.getSelectedOfTransport();
+        const isCVS = Util.isOrEquals(typeOfTransport, Config.TransportMethod.Store711, Config.TransportMethod.StoreFamily);
         Util.mutateRemoveKeys(items, ["checked", "idOfCookieUsage"]);
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {
             items,
@@ -128,9 +150,10 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             phone: self.getStore().getPhone(),
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
-            typeOfTransport: UserInfo.getSelectedOfTransport(),
+            typeOfTransport,
             typeOfTransaction: UserInfo.getSelectedOfTransaction(),
-            priceOfTotal4Client: self.getStore().getFeeOfPayment()
+            priceOfTotal4Client: self.getStore().getFeeOfPayment(),
+            cvs: isCVS ? { storeid: this.getStore().getCvs(), storeaddress: this.getStore().getHelperTextOfCvs(), storename: this.getStore().getLabelOfCvsSticky() } : {}
         });
         return result.idOfPreciseOrder;
     };

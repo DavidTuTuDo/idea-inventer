@@ -3023,6 +3023,10 @@ class Utiller {
           /^[A-Za-z0-9]{20}$/.test(id);
     }
 
+    getAutoIdOfFirestore() {
+        return this.getRandomHashV2(20);
+    }
+
     /**
      * const origin = [
      *   { label: 'aa', value: 1203 },

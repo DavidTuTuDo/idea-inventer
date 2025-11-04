@@ -3286,11 +3286,11 @@ class ClassGenerator {
                 `let succeed = true;`,
                 `try {`];
             if (Util.isOrEquals(func.getType(), 'httpOnCall', 'httpOnRequest'))
-                _stmts.push(`functions.logger.info('functions(${fieldName}) data from client => ',JSON.stringify(data));`);
+                _stmts.push(`functions.logger.info('functions(${fieldName}) data from client => ',${func.getType() === 'httpOnRequest' ? 'request' : 'data'});`);
 
             if (_.isEqual(func.getType(), 'httpOnCall')) {
                 _stmts.push(`if(_.isEmpty(data.fingerprint)) throw new Error('E0001-${fieldName} 你是壞狗，不可以玩伺服器');`);
-                _stmts.push(`${fieldName}.setFingerprint(data.fingerprint);`);
+                _stmts.push(`${fieldName}.setFingerprint(data.fingerprint); `);
             }
 
             _stmts.push(`result = await ${fieldName}.${functionNameOfHandleBy}(${params.join(',')});`);
@@ -4506,6 +4506,7 @@ class StoreBuilder extends BaseBuilder {
         }
 
         baseGenerator.appendFunction('clean', [], ['action'], [],
+            `Util.appendInfo('🧹 ${className} store info clean 🧹')`,
             `super.clean()`,
             ...node.getPreciseAttributeChildren()
                 .map((child) => {
@@ -4642,7 +4643,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             if ((node.isObject() && node.hasPath()) || node.isCheapArray()) {
                 this.generator.appendFunction(Util.camel(`listen`, node.getFieldName()),
                     [...defaultParam, `callback = (status, data, error) => {}`],
-                    [], [node.isCheapArray() ? 'attention! this is cheap array' : '', `status => 回傳值會有 local|server|`],
+                    [], [node.isCheapArray() ? 'attention! this is cheap array' : '', `status => 回傳值會有 local|server|cache`],
                     `${pathStmt}
                         return this.listenObject(path, callback);`
                 )
@@ -8178,6 +8179,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 stmts.push(`objectOfParam.view = event;`);
                 stmts.push(...self.stmtsOfClickCaution)
                 stmts.push(`${node.getFieldNameOfAlertDialog()}.current.open();`)
+                stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`)
             } else {
                 stmts.push(`self.${functionNameOfCustom ?? node.getFunctionNameOfClicked(typeOfView)}(objectOfParam);`)
             }

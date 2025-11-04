@@ -477,7 +477,7 @@ class CommonRemoteApi {
      * callback {status:[local|server|error|cache], changes:[...{document}], error:object }
      * */
     listenItems(path, callback = (status, changes, error) => {}, ...conditions) {
-        Util.appendInfo(`15412313 listenItems path:/${path}`);
+        Util.appendInfo(`listenItems path:/${path}`);
         return firebase.listenDocuments(path, callback, ...conditions);
     }
 
@@ -489,14 +489,14 @@ class CommonRemoteApi {
      * callback {status:[local|server|error|cache], changes: document, error:object }
      */
     listenItem(path, id, callback = (status, data, error) => {}) {
-        Util.appendInfo(`6347871 listenItem path:/${path}/${id}`);
+        Util.appendInfo(`listenItem path:/${path}/${id}`);
         return firebase.listenDocument(path, id, callback);
     }
 
-    listenObject(path, objName, callback = (data, error) => {}) {
+    listenObject(path, callback = (status, data, error) => {}) {
         path = this.getNormalizePathOfObjectApi(path);
         Util.appendInfo(`listenObject path:/${path}`);
-        return firebase.listenDocument(path, callback);
+        return firebase.listenDocument(path, "asObj", callback);
     }
 
     showLoadingView(view) {

@@ -407,6 +407,8 @@ class BaseStore extends ClientRemoteApi {
     columnData() {
         return {};
     }
+
+    onComponentUnmount() {}
 }
 
 export default BaseStore;

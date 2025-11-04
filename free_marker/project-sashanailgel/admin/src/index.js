@@ -129,7 +129,7 @@ import fs from "fs";
                         allowedOfEdit: false,
                         idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
                         allowSelfPickUp: true,
-                        keywords: [...Util.generateUniversalKeywords(product.name), '莎夏美學'],
+                        keywords: [...Util.generateUniversalKeywords(product.name), "莎夏美學"],
                         specificAttributes: [{ key: "main", label: "", options: options.map((option) => ({ label: option.name, value: `${_.toString(option.value)}sasha` })) }],
                         priceB4Discount: Math.round(_.sum([price, _.multiply(0.3, price)])) //generateLabelValuePairsWithOrigin //)
                     },

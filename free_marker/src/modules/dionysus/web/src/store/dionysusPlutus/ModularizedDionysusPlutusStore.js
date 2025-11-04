@@ -9,12 +9,32 @@ import { makeAutoObservable, makeObservable, action, observable, comparer, compu
 import BaseDionysusPlutusStore from "./BaseDionysusPlutusStore";
 import Variant from "../dionysusBoozeVariant";
 import { Application } from "../../index";
+import SelectorOfCvs from "../epaySelectorOfCvs";
 
 class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
     constructor(props) {
         super(props);
         this.api = new Variant();
+        this.apiOfCVS = new SelectorOfCvs();
     }
+
+    async onInitialCompleted(props) {
+        this.unsubscribeCVS?.();
+    }
+
+    waitResultOfCVS = async (tempVar) => {
+        this.unsubscribeCVS = this.apiOfCVS.listenSelectorOfCvsItem(tempVar, this.handleCVSonReceived);
+        return this.unsubscribeCVS;
+    };
+
+    handleCVSonReceived = async (status, data, error) => {
+        if (data?.storeid) {
+            this.setCvs(data.storeid);
+            this.setLabelOfCvsSticky(data.storename);
+            this.setHelperTextOfCvs(`${data.storeaddress}`);
+            this.unsubscribeCVS();
+        }
+    };
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
@@ -68,6 +88,8 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         const useAddressAsDestin = Util.isOrEquals(infoOfSelectedTrans.typeOfTransport, Config.TransportMethod.Freight, Config.TransportMethod.RapidOnDay);
         const containsPhysical = UserInfoRef.containsPhysicalGoodOfCheckedItem();
         if (isHomeTeachingLesson || (useAddressAsDestin && containsPhysical)) this.setNeedAddress(true);
+
+        this.setNeedCVS(Util.isOrEquals(infoOfSelectedTrans.typeOfTransport, Config.TransportMethod.Store711, Config.TransportMethod.StoreFamily));
     }
 
     normalizeBriefFromOrderItem = (item) => {

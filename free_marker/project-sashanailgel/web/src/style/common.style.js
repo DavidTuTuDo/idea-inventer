@@ -493,6 +493,12 @@ class CommonStyle {
 
     IreneTextsFetchPaper = {};
 
+    /** => following for miniWeb  component  */
+
+    IreneMiniWebDivWrap = {};
+
+    IreneMiniWebDiv = {};
+
     /** => following for irene  component  */
 
     IreneDiv = {};
@@ -1762,6 +1768,12 @@ class CommonStyle {
     DionysusPlutusMainNameDivWrap = {};
 
     DionysusPlutusMainNameTextField = {};
+
+    DionysusPlutusMainCvsLabelOfCvsTypography = {};
+
+    DionysusPlutusMainCvsDivWrap = {};
+
+    DionysusPlutusMainCvsTextField = {};
 
     DionysusPlutusMainLocationColMainTailFindIconWifiFind = {};
 

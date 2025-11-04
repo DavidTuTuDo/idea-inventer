@@ -546,7 +546,7 @@ class FirebaseHelper extends BaseFirebase {
             finalConditions = [...conditions, orderByCondition];
         }
 
-        console.log(`搜尋條件：`,finalConditions);
+        console.log(`搜尋條件：`, finalConditions);
         // ---【分頁穩定性檢查】---
 
         let lastDocSnap = null;
@@ -723,20 +723,44 @@ class FirebaseHelper extends BaseFirebase {
     }
 
     /**
-     * status =>string[local|server|error|cache]是指本地端寫入一個document時,就會收到一個local端的callback, 等到資料完整在remote端部署，就會再收到server端的callback
-     * data 就是寫入後的document value
-     *
-     * 回傳一個unsubscribe的function，需要要在componentDidUnmount的地方呼叫unsubscribe()
-     * callback {status:[local|server|error|cache], changes: document, error:object }
+     * status => string [local | server | error | cache | not-found]
+     * local:   本地寫入未同步到伺服器
+     * server:  資料已由伺服器確認
+     * cache:   資料來自本地快取，且未被本地修改
+     * not-found: Document 尚不存在 (或已被刪除)
+     * error:   監聽發生錯誤
      */
     listenDocument = (path, id, callback = (status, data, error) => true) => {
+        const docRef = this.reference(path, id);
+
         const unsubscribe = onSnapshot(
-            this.reference(path, id),
-            (doc) => {
-                const status = doc.metadata.hasPendingWrites ? "local" : "server";
-                callback(status, { ...doc.data(), id: doc.id });
+            docRef,
+            (docSnapshot) => {
+                const metadata = docSnapshot.metadata;
+                let status;
+                let data = undefined;
+
+                if (!docSnapshot.exists()) {
+                    // 1. Document 不存在 (初始載入或已被刪除)
+                    status = "not-found";
+                } else if (metadata.hasPendingWrites) {
+                    // 2. 本地寫入，未同步到伺服器
+                    status = "local";
+                    data = { ...docSnapshot.data(), id: docSnapshot.id };
+                } else if (metadata.fromCache) {
+                    // 3. 來自本地快取（沒有待處理的寫入，但未與伺服器同步）
+                    status = "cache";
+                    data = { ...docSnapshot.data(), id: docSnapshot.id };
+                } else {
+                    // 4. 來自伺服器（已確認同步）
+                    status = "server";
+                    data = { ...docSnapshot.data(), id: docSnapshot.id };
+                }
+                // 傳遞 status, data (如果存在), error (undefined)
+                callback(status, data);
             },
             (error) => {
+                // 處理錯誤
                 callback("error", undefined, error);
             }
         );
@@ -749,25 +773,52 @@ class FirebaseHelper extends BaseFirebase {
      * change:{type,data,id} ;type:['added','modified','removed'], 回傳的就是function of unsubscribe
      *
      * callback {status:[local|server|error|cache], changes:[...{document}], error:object }
-     * */
+     */
     listenDocuments = (path, callback = (status, array, error) => true, ...conditions) => {
+        // 假设 this.compound 已经正确地根据 path 和 conditions 建立了一个 Query Reference
+        const queryRef = this.compound(path, conditions);
+
         const unsubscribe = onSnapshot(
-            this.compound(path, conditions),
+            queryRef,
             (snapshot) => {
+                const metadata = snapshot.metadata;
+                let status;
+
+                // 判斷狀態
+                if (metadata.hasPendingWrites) {
+                    // 1. 本地寫入，未同步到伺服器 (Local State)
+                    status = "local";
+                } else if (metadata.fromCache) {
+                    // 2. 來自本地快取（沒有待處理的本地寫入，但未與伺服器同步）
+                    status = "cache";
+                } else {
+                    // 3. 來自伺服器（已確認同步或首次同步資料）
+                    status = "server";
+                }
+
+                // 整理變更清單
                 const changes = [];
-                const status = snapshot.metadata.hasPendingWrites ? "local" : "server";
-                // snapshot.docs; snapshot.size; snapshot.empty;
+
+                // 迭代所有變更，包括 initial 'added' (初始資料)
                 snapshot.docChanges().forEach((change) => {
+                    // 在 Collection 監聽中，不需要像 Document 監聽那樣處理 'not-found'
+                    // 因為 'removed' 類型會處理 Document 消失的情況
                     changes.push({
                         type: change.type /** [added|modified|removed] */,
                         id: change.doc.id,
                         data: change.doc.data()
                     });
                 });
+
+                // 回調
                 callback(status, changes, undefined);
             },
-            (error) => callback("error", undefined, error)
+            (error) => {
+                // 處理錯誤
+                callback("error", undefined, error);
+            }
         );
+
         return unsubscribe;
     };
 
