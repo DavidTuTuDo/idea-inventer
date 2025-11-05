@@ -377,9 +377,9 @@ class AppStyle {
 
     /** => following for numberSetter  component  */
 
-    IreneNumberSetterFuncLeaveChip = {};
-
     IreneNumberSetterFuncConfirmChip = {};
+
+    IreneNumberSetterFuncLeaveChip = {};
 
     IreneNumberSetterFuncDiv = {};
 
@@ -449,9 +449,9 @@ class AppStyle {
 
     /** => following for textFetch  component  */
 
-    IreneTextFetchFuncLeaveChip = {};
-
     IreneTextFetchFuncAppendChip = {};
+
+    IreneTextFetchFuncLeaveChip = {};
 
     IreneTextFetchFuncDiv = {};
 
@@ -698,6 +698,14 @@ class AppStyle {
     EpayFootprintOrderAreaOfPaymentDeadlineDeadlineTypography = {};
 
     EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
+
+    EpayFootprintOrderAreaOfCvsPickUpCvsLabelOfPickUpCvsTypography = {};
+
+    EpayFootprintOrderAreaOfCvsPickUpCvsDivWrap = {};
+
+    EpayFootprintOrderAreaOfCvsPickUpCvsTypography = {};
+
+    EpayFootprintOrderAreaOfCvsDiv = {};
 
     EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography = {};
 

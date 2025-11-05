@@ -14,6 +14,9 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     async onInitialFetchBeginning() {
+        this.clean();
+        this.setInitialFetchCompleted(false);
+
         switch (this.getRoleOfPerspective()) {
             case "user":
                 this.setTabs(..._.filter(this.getTabs(), (each) => each.getValue() < 10));
@@ -46,43 +49,30 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     };
 
     conditionsOfBuyerDefault(state) {
-        /** ↓---------------------等Enum做出來就要刪掉 ----------------------↓ */
-        const rawText = `
-        asking: 等待賣家允許付費(尚未設計); 1
-        pending: 訂單已成立; 2
-        waiting: 訂單已成立, 而且選擇了第三方平台, 等待付費(CVS,ATM); 3
-        failure: 訂單已失效, 交易商品數量已atomic加回去; 4
-        completed: 訂單已完成; 5`;
-
-        // 建立 enum-like 映射物件
-        const StateEnum = _(rawText.trim().split("\n"))
-            .map((line) => {
-                const [keyWithDesc, valueStr] = line.split(";").map((s) => s.trim());
-                const [key] = keyWithDesc.split(":").map((s) => s.trim());
-                return [key, Number(valueStr)];
-            })
-            .fromPairs()
-            .value();
-
-        // 查詢函式
-        function getValueByState(stateName) {
-            return _.get(StateEnum, stateName, null); // 若找不到則回傳 null
-        }
-
-        /** ↑---------------------等Enum做出來就要刪掉 ----------------------↑ */
-
-        /** all的話就全拿 */
         const conditionOfDefault = { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };
-        if (_.isEqual(state, "all")) {
-            return [conditionOfDefault];
-            /** 如果return undefined會拿不到資料 */
+        const conditions = [];
+        switch (state) {
+            case "pending":
+                conditions.push({ type: "where", params: ["stateOfPayment", "in", [Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting]] });
+                break;
+            case "processing":
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Completed] }); //5:completed
+                conditions.push({ type: "where", params: ["stateOfTransport", "==", Config.StateOfTransport.Pending] }); //2:pending
+                break;
+            case "completed":
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Completed] }); //5:completed
+                conditions.push({ type: "where", params: ["stateOfTransport", "in", [Config.StateOfTransport.Needless, Config.StateOfTransport.Sending]] }); //1:needless 3:sending
+                break;
+            case "failure":
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Failure] }); //4:failure
+                break;
+            default:
+                throw new Error(`conditionsOfBuyerDefault() type => ${state}`);
         }
-
-        const states = _.isEqual(state, "pending") ? [2, 3] : [getValueByState(state)]; //2:pending", 3:waiting"
-        return [{ type: "where", params: ["stateOfPayment", "in", states] }, conditionOfDefault];
+        return [conditionOfDefault, ...conditions];
     }
 
-    fetch = async (view) => {
+    async fetch(view) {
         const state = this.getParamOfTypeOfTabInPath();
         const ordersOfRemote = [];
         switch (state) {
@@ -90,19 +80,20 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             case "all":
             case "pending":
             case "completed":
+            case "processing":
             case "failure":
-                await this.fetchAndPushOrders(view, this.conditionsOfBuyerDefault(state));
-                break;
+                return await this.fetchAndPushOrders(view, this.conditionsOfBuyerDefault(state));
             /** 賣家看到的選項 */
             case "status":
             case "unpaid":
             case "unshipped":
             case "succeed":
             case "cancelled":
-                await this.fetchAndPushOrders(view, this.conditionsOfSellerDefault(state));
-                break;
+                return await this.fetchAndPushOrders(view, this.conditionsOfSellerDefault(state));
+            default:
+                throw new Error(`fetch() state => ${state}`);
         }
-    };
+    }
 
     fetchAndPushOrders = async (view, conditions) => {
         const ordersOfRemote = [];
@@ -122,21 +113,21 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         const conditions = [];
         switch (type) {
             case "unpaid":
-                conditions.push({ type: "where", params: ["stateOfPayment", "in", [2, 3]] });
+                conditions.push({ type: "where", params: ["stateOfPayment", "in", [Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting]] });
                 break;
             case "unshipped":
-                conditions.push({ type: "where", params: ["stateOfPayment", "==", 5] }); //5:completed
-                conditions.push({ type: "where", params: ["stateOfTransport", "==", 2] }); //2:pending
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Completed] }); //5:completed
+                conditions.push({ type: "where", params: ["stateOfTransport", "==", Config.StateOfTransport.Pending] }); //2:pending
                 break;
             case "succeed":
-                conditions.push({ type: "where", params: ["stateOfPayment", "==", 5] }); //5:completed
-                conditions.push({ type: "where", params: ["stateOfTransport", "in", [1, 3]] }); //1:needless 3:sending
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Completed] }); //5:completed
+                conditions.push({ type: "where", params: ["stateOfTransport", "in", [Config.StateOfTransport.Needless, Config.StateOfTransport.Sending]] }); //1:needless 3:sending
                 break;
             case "cancelled":
-                conditions.push({ type: "where", params: ["stateOfPayment", "==", 4] }); //4:failure
+                conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Failure] }); //4:failure
                 break;
             default:
-                break;
+                throw new Error(`conditionsOfSellerDefault() type => ${type}`);
         }
         return [conditionOfDefault, ...conditions];
     }
@@ -287,8 +278,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
 
             switch (true) {
                 // User邏輯
-                case self.isRoleOfUser(order) && state === Payment.Completed:
+                case self.isRoleOfUser(order) && state === Payment.Completed && Util.isOrEquals(transport, Transport.Needless, Transport.Sending):
                     return "已完成";
+                case self.isRoleOfUser(order) && state === Payment.Completed && transport === Transport.Pending:
+                    return "待出貨";
                 case self.isRoleOfUser(order) && state === Payment.Failure:
                     return "已失效";
                 case self.isStateOfPending(order):
@@ -324,6 +317,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             remarkOfAuthor: order.remarkOfAuthor,
             photoOfAuthors: order.photoOfAuthors,
             isShipped: order.isShipped,
+            cvs: order.cvs,
             stringOfOrderIdentity: order.id,
             stateOfOrder: getStringOfPaymentState(),
             briefs: order.items.map((item) => normalizeBriefFromOrderItem(item)),
@@ -331,6 +325,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             rule: getStringOfRule(),
             deadline: Util.getECPayCurrentTimeFormat(this.normalizeTimestamp(order.timeOfExpired)),
             remark: order.remark,
+            pickUpCVS: order.cvs?.storeid ? `${order.cvs.storeid}（${order.cvs.storename ?? "未提供"}）` : `待提供`,
             domain: getStringOfDomain(),
             specificOfProduct: getStringOfSpecific(),
             code: getStringOfCode(),
@@ -368,7 +363,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     async setCurrentTabByType(type) {
         await Util.syncDelay(10);
         const tab = _.find(this.getTabs(), (tab) => _.isEqual(tab.getType(), type));
-        this.setValueOfTabClickedTab(tab.getValue());
+        this.setValueOfTabClickedTab(tab?.value);
     }
 
     /** -------------------- async api -------------------- **/

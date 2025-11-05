@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -4521,7 +4521,7 @@ class StoreBuilder extends BaseBuilder {
         }
 
         baseGenerator.appendFunction('clean', [], ['action'], [],
-            `Util.appendInfo('🧹 ${className} store info clean 🧹')`,
+            // `Util.appendInfo('🧹 ${className} store info clean 🧹')`,
             `super.clean()`,
             ...node.getPreciseAttributeChildren()
                 .map((child) => {

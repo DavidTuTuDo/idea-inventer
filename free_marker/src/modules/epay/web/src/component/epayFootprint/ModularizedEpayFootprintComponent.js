@@ -79,6 +79,12 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         return async () => await this.remoteAuthorCancelUnpaidPreciseOrderBehavior(order.raw.id);
     }
 
+    getInjectStyleOfEpayFootprintOrderAreaOfCvsDiv(order) {
+        const conditionA = Util.isOrEquals(order.getTypeOfTransport(), Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711);
+        const conditionB = !_.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Failure);
+        return Util.getVisibleOrNone(conditionA && conditionB);
+    }
+
     /** 賣家可能斯已卻認付款，幫賣家完成訂單 */
     onEpayFootprintOrderOptionOfUnpaidIconButtonAuthorForcePaidClicked(param) {
         const order = param.object;

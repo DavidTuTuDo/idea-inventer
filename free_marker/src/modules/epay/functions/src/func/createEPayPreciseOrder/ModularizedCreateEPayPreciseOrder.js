@@ -69,7 +69,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     handleHttpOnCall = async (data, session) => {
-        const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client } = data; //Config.TransportMethod; Config.Transaction
+        const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client, cvs } = data; //Config.TransportMethod; Config.Transaction
         const itemsOfClientOrdering = items;
 
         /** (done) todo:未登入帳號，是否距離上一次REQUEST超過規範的間隔 */
@@ -115,6 +115,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     priceOfTotal,
                     typeOfTransport,
                     transaction,
+                    cvs,
                     globalPerspective
                 });
             });
@@ -297,7 +298,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         priceOfTotal,
         typeOfTransport,
         transaction,
-        globalPerspective
+        globalPerspective,
+        cvs
     }) => {
         Util.appendInfo(`createOrderAndHades() coming!`);
         const preciseOrderData = Api.normalizePreciseOrder({
@@ -316,6 +318,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             email: email || "",
             address: address || "",
             distance: "",
+            cvs,
             name: name || "",
             phoneNumber: phone || "",
             typeOfTransport,
