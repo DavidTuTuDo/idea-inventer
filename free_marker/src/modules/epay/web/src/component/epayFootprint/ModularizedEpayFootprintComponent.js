@@ -79,6 +79,12 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         return async () => await this.remoteAuthorCancelUnpaidPreciseOrderBehavior(order.raw.id);
     }
 
+    getInjectStyleOfEpayFootprintOrderAreaOfSerialDiv(order) {
+        const conditionA = Util.isOrEquals(order.getTypeOfTransport(), Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711);
+        const conditionB = _.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Completed);
+        return Util.getVisibleOrNone(conditionA && conditionB);
+    }
+
     getInjectStyleOfEpayFootprintOrderAreaOfCvsDiv(order) {
         const conditionA = Util.isOrEquals(order.getTypeOfTransport(), Config.TransportMethod.StoreFamily, Config.TransportMethod.Store711);
         const conditionB = !_.isEqual(order.getStateOfPayment(), Config.StateOfPayment.Failure);
@@ -94,7 +100,14 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     /** 賣家填寫運單(id, remarkOfAuthor) */
     onEpayFootprintOrderOptionOfTransportIconButtonAuthorFormedClicked(param) {
         const order = param.object;
-        return async () => await this.remoteAuthorFormTransport(order);
+        return async () => this.getTransNotifyDivAlertDialogRef().open();
+    }
+
+    onEpayFootprintOrderTransNotifyDivClicked(param) {
+        const order = param.object;
+        const serial = order.getDialogInputValueOfEpayFootprintOrderTransNotify();
+        if (_.size(serial) < 2) return this.showErrorSnackMessage(`物流編號填寫不正確`);
+        this.remoteAuthorFormTransport(order, serial).then();
     }
 
     /** 賣家更新備註 */
@@ -133,8 +146,13 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
         Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", "cancelled");
     };
 
-    remoteAuthorFormTransport = async (order) => {
-        await Functions.httpOnCallInformTransportingByAuthor(this.getComponentInstance(), { idOfPreciseOrder: order.raw.id, remarkOfAuthor: order.getRemarkOfAuthor() });
+    remoteAuthorFormTransport = async (order, serialOfTransport) => {
+        await Functions.httpOnCallInformTransportingByAuthor(this.getComponentInstance(), {
+            idOfPreciseOrder: order.raw.id,
+            serialOfTransport,
+            remarkOfAuthor: order.getRemarkOfAuthor()
+        });
+        Router.gotoEpayFootprintPage(this.getComponentInstance(), "author", "succeed");
     };
 
     remoteCancelUnpaidPreciseOrderBehavior = async (id) => {

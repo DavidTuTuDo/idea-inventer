@@ -66,8 +66,6 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             case "failure":
                 conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Failure] }); //4:failure
                 break;
-            default:
-                throw new Error(`conditionsOfBuyerDefault() type => ${state}`);
         }
         return [conditionOfDefault, ...conditions];
     }
@@ -126,8 +124,6 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             case "cancelled":
                 conditions.push({ type: "where", params: ["stateOfPayment", "==", Config.StateOfPayment.Failure] }); //4:failure
                 break;
-            default:
-                throw new Error(`conditionsOfSellerDefault() type => ${type}`);
         }
         return [conditionOfDefault, ...conditions];
     }
@@ -332,7 +328,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             reason: `${order.messageOfPayment}`,
             idOfUser: order.idOfUser,
             idOfAuthor: order.idOfUser,
-            typeOfTransport: order.typeOfTransport
+            typeOfTransport: order.typeOfTransport,
+            serialOfTransport: order.serialOfTransport
         };
     };
 

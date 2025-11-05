@@ -7,6 +7,7 @@ import Router from "../../router";
 import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
 import FlyToCartie from "../../base/FlyToCartie";
 import React from "react";
+import i18n from "../../i18n";
 
 class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     constructor(props) {
@@ -81,6 +82,10 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
             component.showInfoSnackMessage(`已加入購物車`);
             maenads.toggleCartieAnimate();
         }
+    }
+
+    getDionysusMaenadsSubmit(dionysusMaenads) {
+        return this.handleTextString(UserInfoRef.isGotoCartieDirect() ? i18n.location().dionysusBacchusBought : i18n.location().dionysusMaenadsSubmit);
     }
 
     /** React.render() */

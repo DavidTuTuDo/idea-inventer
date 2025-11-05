@@ -61,6 +61,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
                     break;
                 case Config.TransactionMethod.DirectPay: //現金
                     transaction.setDescription(``);
+                    transaction.setAvailable(eros.enableOfDirectPay);
                     transaction.setPrice(-1);
                     transaction.setFreeOfThreshold(0);
                     break;

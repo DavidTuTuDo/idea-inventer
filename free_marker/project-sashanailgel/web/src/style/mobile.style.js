@@ -651,6 +651,10 @@ class MobileStyle {
 
     EpayFootprintTabTab = {};
 
+    EpayFootprintOrderTransNotifyReactFragmentWrap = {};
+
+    EpayFootprintOrderTransNotifyDiv = {};
+
     EpayFootprintOrderRemarkOfAuthorLabelOfRemarkOfAuthorTypography = {};
 
     EpayFootprintOrderRemarkOfAuthorDivWrap = {};
@@ -698,6 +702,14 @@ class MobileStyle {
     EpayFootprintOrderAreaOfPaymentDeadlineDeadlineTypography = {};
 
     EpayFootprintOrderAreaOfPaymentDeadlineDiv = {};
+
+    EpayFootprintOrderAreaOfSerialSerialOfTransportLabelOfSerialOfTransportTypography = {};
+
+    EpayFootprintOrderAreaOfSerialSerialOfTransportDivWrap = {};
+
+    EpayFootprintOrderAreaOfSerialSerialOfTransportTypography = {};
+
+    EpayFootprintOrderAreaOfSerialDiv = {};
 
     EpayFootprintOrderAreaOfCvsPickUpCvsLabelOfPickUpCvsTypography = {};
 
@@ -1251,6 +1263,30 @@ class MobileStyle {
 
     DionysusErosAreaOfEnableOfCodDiv = {};
 
+    DionysusErosAreaOfAddressTimeOfSelfPickUpArrowOfAddressTimeOfSelfPickUpIconNavigateNext = {};
+
+    DionysusErosAreaOfAddressTimeOfSelfPickUpArrowOfAddressTimeOfSelfPickUpReactFragmentWrap = {};
+
+    DionysusErosAreaOfAddressTimeOfSelfPickUpArrowOfAddressTimeOfSelfPickUpIconButton = {};
+
+    DionysusErosAreaOfAddressTimeOfSelfPickUpOptionOfAddressTimeOfSelfPickUpContentTypography = {};
+
+    DionysusErosAreaOfAddressTimeOfSelfPickUpOptionOfAddressTimeOfSelfPickUpTitleTypography = {};
+
+    DionysusErosAreaOfAddressTimeOfSelfPickUpDivWrap = {};
+
+    DionysusErosAreaOfAddressTimeOfSelfPickUpDiv = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfEnableOfWhetherPickupByBuyerSelfSwitch = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfContentTypography = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfTitleTypography = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfDivWrap = {};
+
+    DionysusErosAreaOfWhetherPickupByBuyerSelfDiv = {};
+
     DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupIconNavigateNext = {};
 
     DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupReactFragmentWrap = {};
@@ -1264,16 +1300,6 @@ class MobileStyle {
     DionysusErosAreaOfThresholdOfAllowSelfPickupDivWrap = {};
 
     DionysusErosAreaOfThresholdOfAllowSelfPickupDiv = {};
-
-    DionysusErosAreaOfWhetherPickupByBuyerSelfEnableOfWhetherPickupByBuyerSelfSwitch = {};
-
-    DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfContentTypography = {};
-
-    DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfTitleTypography = {};
-
-    DionysusErosAreaOfWhetherPickupByBuyerSelfDivWrap = {};
-
-    DionysusErosAreaOfWhetherPickupByBuyerSelfDiv = {};
 
     DionysusErosAreaOfThresholdOfCheckoutByCreditArrowOfThresholdOfCheckoutByCreditIconNavigateNext = {};
 
