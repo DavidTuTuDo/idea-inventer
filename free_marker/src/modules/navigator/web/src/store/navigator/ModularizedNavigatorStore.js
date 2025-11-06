@@ -23,15 +23,6 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         return this.drawerOpenStatus;
     }
 
-    getSuggestKeywordDetail() {
-        return this.getSelectedComplete();
-    }
-
-    clearKeywordDetail() {
-        this.removeSelectedComplete();
-        this.toggleKeyOfComplete();
-    }
-
     getTitle() {
         return UserInfo.getNameOfBrand() ?? super.getTitle();
     }
