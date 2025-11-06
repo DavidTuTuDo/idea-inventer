@@ -359,6 +359,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             specific: variant.content,
             price: variant.price,
             infoOfHera,
+            id: variant.idOfBooze,
+            idOfV: variant.id,
             imageUrlOfProduct: variant.photo,
             note: note || "無單品項備註內容"
         }));
