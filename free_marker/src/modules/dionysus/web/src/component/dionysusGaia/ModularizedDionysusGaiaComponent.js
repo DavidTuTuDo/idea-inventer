@@ -78,7 +78,7 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
 
     onDionysusGaiaCreateChipClicked(param) {
         /** 新增一個booze */
-        this.getStore().createBooze4Sure().then();
+        this.getStore().updateBooze4Sure().then();
     }
 
     onDionysusGaiaRecoverChipClicked(param) {

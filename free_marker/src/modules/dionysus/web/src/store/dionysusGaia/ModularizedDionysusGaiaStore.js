@@ -239,14 +239,23 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         this.getComponent().showErrorSnackMessage(msg);
     };
 
-    createBooze4Sure = async () => {
+    updateBooze4Sure = async () => {
         await this.handleIdOfBooze();
         if (this.getLengthOfBriefPhoto() === 0) return this.showErrorMsg4UpdateVisibility(`至少需要上傳一張「商品圖片」`);
         if (_.size(this.getName()) < 2) return this.showErrorMsg4UpdateVisibility(`「商品名稱」必須超過2個字元`);
         if (this.belong2TaskJob() && _.size(this.getBriefSubs()) === 0) return this.showErrorMsg4UpdateVisibility(`需要新增課程的「日期與「時段」`);
         if (this.getLengthOfBriefMain() === 0) return this.showErrorMsg4UpdateVisibility(`商品選項至少需要一個「主選項」`);
 
-        const result = await this.apiOfBooze.updateBoozeItem(this.getComponent(), { ...this.getObjectOfBooze(), initCompleted: true, visibility: true }, this.getIdOfBooze());
+        const result = await this.apiOfBooze.updateBoozeItem(
+            this.getComponent(),
+            {
+                ...this.getObjectOfBooze(),
+                initCompleted: true,
+                visibility: true,
+                keywords: Util.generateUniversalKeywords(this.getName())
+            },
+            this.getIdOfBooze()
+        );
         /** variants裡面要放商品名稱，免得結帳還要去拿龐大的Booze物件 */
         this.setInitCompleted(true);
         const variants = await this.apiOfVariant.fetchDocumentIdsOfVariant(this.getComponent(), this.getIdOfBooze());

@@ -1481,6 +1481,8 @@ class MobileStyle {
 
     /** => following for gaia  component  */
 
+    DionysusGaiaFuncUpdateChip = {};
+
     DionysusGaiaFuncCreateReactFragmentWrap = {};
 
     DionysusGaiaFuncCreateChip = {};

@@ -3448,6 +3448,206 @@ class Utiller {
         return array;
     }
 
+    /**
+     * 根據課程資訊生成 Google Calendar 的行事曆新增連結。
+     * @param {object} event - 行程物件。
+     * @param {string} event.title - 行程主題 (e.g., '吉他課')。
+     * @param {string} event.startDate - 開始日期 (e.g., '2025/11/10')。
+     * @param {string} event.startTime - 開始時間 (e.g., '14:00')。
+     * @param {string} event.endDate - 結束日期 (e.g., '2025/11/10')。
+     * @param {string} event.endTime - 結束時間 (e.g., '16:00')。
+     * @param {string} event.location - 地點/地址 (e.g., '台北市大安區信義路三段 162 號')。
+     * @param {string} event.details - 描述/備註 (e.g., '請攜帶吉他，並預習第5頁。')。
+     * @returns {string} Google Calendar 的新增連結。
+     */
+     generateGoogleCalendarLink = ({
+                                            title,
+                                            startDate,
+                                            startTime,
+                                            endDate,
+                                            endTime,
+                                            location,
+                                            details
+                                        }) => {
+        // 使用 moment 結合日期和時間，並格式化為 YYYYMMDDTHHMMSS
+        // 注意: 日期格式已從 YYYY-MM-DD 變更為 YYYY/MM/DD
+        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHMMSS');
+        const endDateTime = moment(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHMMSS');
+
+        // 進行 URL 編碼
+        const encodedTitle = encodeURIComponent(title);
+        const encodedLocation = encodeURIComponent(location);
+        const encodedDetails = encodeURIComponent(details);
+
+        // --- Google Calendar 連結 (使用 https://calendar.google.com/calendar/r/eventedit) ---
+        const googleCalendarLink = `https://calendar.google.com/calendar/r/eventedit?` +
+            `text=${encodedTitle}` +
+            `&dates=${startDateTime}/${endDateTime}` +
+            `&details=${encodedDetails}` +
+            `&location=${encodedLocation}` +
+            `&ctz=Asia/Taipei` + // 台灣時區
+            `&trp=true`; // 設為忙碌 (Busy)
+
+        return googleCalendarLink;
+    };
+
+    /**
+     * 根據課程資訊生成 TimeTree 的行事曆新增連結。
+     * (此函式不需要 moment.js，但維持其結構)
+     * @param {object} event - 行程物件。
+     * @param {string} event.title - 行程主題 (e.g., '吉他課')。
+     * @param {string} event.startDate - 開始日期 (YYYY/MM/DD, e.g., '2025/11/10')。
+     * @param {string} event.startTime - 開始時間 (HH:MM, e.g., '14:00')。
+     * @param {string} event.endDate - 結束日期 (YYYY/MM/DD, e.g., '2025/11/10')。
+     * @param {string} event.endTime - 結束時間 (HH:MM, e.g., '16:00')。
+     * @param {string} [event.location=''] - 地點/地址 (選填)。
+     * @param {string} [event.memo=''] - 描述/備註 (選填，TimeTree 使用 'memo')。
+     * @returns {string} TimeTree 行事曆新增連結。
+     */
+     generateTimeTreeLink = ({
+                                      title,
+                                      startDate,
+                                      startTime,
+                                      endDate,
+                                      endTime,
+                                      location = '',
+                                      memo = ''
+                                  }) => {
+        // 進行 URL 編碼
+        const encodedTitle = encodeURIComponent(title);
+        const encodedLocation = encodeURIComponent(location);
+        const encodedMemo = encodeURIComponent(memo);
+
+        // TimeTree 網址結構相對簡單，直接使用模板字串
+        // 注意: TimeTree 連結直接使用 YYYY-MM-DD 格式，故此函式仍傳遞原始 YYYY/MM/DD 字串
+        // 在實際應用中，如果 TimeTree 不接受 YYYY/MM/DD，則需要在傳入前轉換 (但 TimeTree 連結通常較為寬鬆)
+        const timeTreeLink = `https://timetreeapp.com/plans/new?` +
+            `title=${encodedTitle}` +
+            `&start_date=${startDate.replace(/\//g, '-')}` + // 將 YYYY/MM/DD 轉換回 YYYY-MM-DD
+            `&start_time=${startTime}` +
+            `&end_date=${endDate.replace(/\//g, '-')}` + // 將 YYYY/MM/DD 轉換回 YYYY-MM-DD
+            `&end_time=${endTime}` +
+            `${location ? `&location=${encodedLocation}` : ''}` +
+            `${memo ? `&memo=${encodedMemo}` : ''}`;
+
+        return timeTreeLink;
+    };
+
+    /**
+     * 根據課程資訊生成 iCalendar (.ics) 檔案內容。
+     * @param {object} event - 行程物件。
+     * @param {string} event.title - 行程主題。
+     * @param {string} event.startDate - 開始日期 (YYYY/MM/DD)。
+     * @param {string} event.startTime - 開始時間 (HH:MM)。
+     * @param {string} event.endDate - 結束日期 (YYYY/MM/DD)。
+     * @param {string} event.endTime - 結束時間 (HH:MM)。
+     * @param {string} event.location - 地點/地址。
+     * @param {string} event.details - 描述/備註。
+     * @returns {string} 遵循 iCalendar 規範的字串內容。
+     */
+     generateIcsContent = ({
+                                    title,
+                                    startDate,
+                                    startTime,
+                                    endDate,
+                                    endTime,
+                                    location,
+                                    details
+                                }) => {
+        // 使用 moment-timezone 結合日期和時間，並格式化為 YYYYMMDDTHHMMSS
+        // 注意: 日期格式已從 YYYY-MM-DD 變更為 YYYY/MM/DD
+        const startDateTime = moment.tz(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHMMSS');
+        const endDateTime = moment.tz(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHMMSS');
+
+        // DTSTAMP 必須是 UTC 格式 (以 Z 結尾)
+        const stamp = moment().utc().format('YYYYMMDDTHHMMSS') + 'Z';
+
+        // 唯一識別碼 (UID)
+        const uid = Date.now().toString(36) + Math.random().toString(36).substring(2, 5) + '@gemini-app.com';
+
+        // 確保內容中的特殊字元（如換行、逗號、分號）被正確逸出
+        const escapeIcs = (text) => text
+            .replace(/\\/g, '\\\\')
+            .replace(/,/g, '\\,')
+            .replace(/;/g, '\\;')
+            .replace(/\n/g, '\\n');
+
+        const escapedTitle = escapeIcs(title);
+        const escapedLocation = escapeIcs(location);
+        const escapedDetails = escapeIcs(details);
+
+        // 產生 ICS 內容
+        const icsContent = `BEGIN:VCALENDAR\n` +
+            `VERSION:2.0\n` +
+            `PRODID:-//Gemini AI//NONSGML v1.0//EN\n` +
+            `BEGIN:VEVENT\n` +
+            `UID:${uid}\n` +
+            `DTSTAMP:${stamp}\n` +
+            // 採用 Asia/Taipei 時區
+            `DTSTART;TZID=Asia/Taipei:${startDateTime}\n` +
+            `DTEND;TZID=Asia/Taipei:${endDateTime}\n` +
+            `SUMMARY:${escapedTitle}\n` +
+            `LOCATION:${escapedLocation}\n` +
+            `DESCRIPTION:${escapedDetails}\n` +
+            `END:VEVENT\n` +
+            `END:VCALENDAR`;
+
+        // 確保使用 CRLF (\r\n) 換行符號，這是 ICS 規範的要求
+        return icsContent.replace(/\n/g, '\r\n');
+    };
+
+    /**
+     * 根據行程物件，生成所有主要的行事曆新增連結 (Google, TimeTree, iCalendar/ICS)。
+     * @param {object} event - 行程物件。
+     * @param {string} event.title - 行程主題。
+     * @param {string} event.startDate - 開始日期 (YYYY/MM/DD)。
+     * @param {string} event.startTime - 開始時間 (HH:MM)。
+     * @param {string} event.endDate - 結束日期 (YYYY/MM/DD)。
+     * @param {string} event.endTime - 結束時間 (HH:MM)。
+     * @param {string} event.location - 地點/地址。
+     * @param {string} event.details - 描述/備註。
+     * @returns {{google: string, timeTree: string, ics: string}} 包含所有連結的物件。
+     */
+     generateAllCalendarLinks = (event) => {
+        // 1. Google Calendar Link
+        const googleLink = this.generateGoogleCalendarLink(event);
+
+        // 2. TimeTree Link
+        // TimeTree 使用 'memo' 參數，因此將 event.details 映射到 memo
+        const timeTreeEvent = { ...event, memo: event.details };
+        const timeTreeLink = this.generateTimeTreeLink(timeTreeEvent);
+
+        // 3. iCalendar (ICS) Link (Data URI 格式，用於 iOS/Outlook/下載)
+        const icsContent = this.generateIcsContent(event);
+        const icsLink = `data:text/calendar;charset=utf8,${encodeURIComponent(icsContent)}`;
+
+        return {
+            google: googleLink,
+            timeTree: timeTreeLink,
+            ics: icsLink // iCalendar 連結
+        };
+    };
+
+// 範例用法 (請確保 moment.js 已載入)
+    /*
+    const myEvent = {
+        title: '吉他課 (Moment.js)',
+        startDate: '2026/01/15', // 使用新的 YYYY/MM/DD 格式
+        startTime: '10:30',
+        endDate: '2026/01/15',
+        endTime: '12:00',
+        location: '新北市板橋區縣民大道一段 1 號',
+        details: 'Moment.js 測試：請記得帶譜架。'
+    };
+
+    if (typeof moment !== 'undefined') {
+        const links = generateAllCalendarLinks(myEvent);
+        console.log('--- 使用 Moment.js 生成的連結 ---');
+        console.log(links);
+    } else {
+        console.warn('moment.js 函式庫未載入，無法執行。');
+    }
+    */
 
     /** ============== 排課系統公式 開始 ============== */
 

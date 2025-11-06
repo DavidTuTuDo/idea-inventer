@@ -1481,6 +1481,8 @@ class AppStyle {
 
     /** => following for gaia  component  */
 
+    DionysusGaiaFuncUpdateChip = {};
+
     DionysusGaiaFuncCreateReactFragmentWrap = {};
 
     DionysusGaiaFuncCreateChip = {};

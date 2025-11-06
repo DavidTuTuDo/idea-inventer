@@ -39,7 +39,8 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
                 booze.idOfAuthor,
                 { type: "where", params: ["startYYYYMMDDHHmmss", ">=", start] },
                 { type: "where", params: ["startYYYYMMDDHHmmss", "<=", end] },
-                { type: "where", params: ["useMainTrunk", "==", true] }
+                { type: "where", params: ["useMainTrunk", "==", true] },
+                { type: "orderBy", params: ["startYYYYMMDDHHmmss"] }
             );
             Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
             const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, booze.id);

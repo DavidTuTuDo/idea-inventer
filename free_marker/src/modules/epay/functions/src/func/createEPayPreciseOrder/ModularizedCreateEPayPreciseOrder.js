@@ -40,7 +40,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             variant.idOfAuthor,
             { where: (stmt) => stmt.where("useMainTrunk", "==", true) },
             { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)) },
-            { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) }
+            { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) },
+            { orderBy: (stmt) => stmt.orderBy("startYYYYMMDDHHmmss") }
         );
 
         Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
@@ -353,6 +354,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             // nameOfBooze, content, price, photo, note,
             idOfPreciseProduct: `${idOfBooze}${Util.getSeparatorOfUnique()}${idOfVariant}`,
             quantity,
+            isTaskJob: variant.isTaskJob,
             name: `${variant.nameOfBooze}`,
             specific: variant.content,
             price: variant.price,

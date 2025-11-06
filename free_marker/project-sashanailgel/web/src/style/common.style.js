@@ -1481,6 +1481,8 @@ class CommonStyle {
 
     /** => following for gaia  component  */
 
+    DionysusGaiaFuncUpdateChip = {};
+
     DionysusGaiaFuncCreateReactFragmentWrap = {};
 
     DionysusGaiaFuncCreateChip = {};

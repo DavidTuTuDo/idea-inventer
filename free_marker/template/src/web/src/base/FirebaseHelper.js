@@ -546,7 +546,6 @@ class FirebaseHelper extends BaseFirebase {
             finalConditions = [...conditions, orderByCondition];
         }
 
-        console.log(`搜尋條件：`, finalConditions);
         // ---【分頁穩定性檢查】---
 
         let lastDocSnap = null;
@@ -614,6 +613,7 @@ class FirebaseHelper extends BaseFirebase {
     };
 
     compound = (path, conditions) => {
+        console.log(`搜尋條件：`, conditions);
         const ref = this.reference(path);
         return _.size(conditions) > 0 ? query(ref, ...this.constraints(conditions)) : query(ref);
     };
