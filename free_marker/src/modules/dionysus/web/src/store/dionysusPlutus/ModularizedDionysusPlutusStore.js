@@ -77,14 +77,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         this.getComponent().scrollToTop();
         this.setNeedSelfPickingChoice(false);
 
-        // 使用 Array.prototype.some() 來檢查陣列中是否存在符合條件的項目。
-        const isHomeTeachingLesson = variantsOfCheckedItem.some((item) => {
-            const isLesson = item.isTaskJob;
-            const isHomeTeaching = item.isHomeTeaching;
-            // 條件：必須是課程 (isLesson) 且必須是在家教學 (isHomeTeaching)
-            return isLesson && isHomeTeaching;
-        });
-
+        const isHomeTeachingLesson = variantsOfCheckedItem.some((item) => item.isHomeTeaching); //some() 來檢查陣列中是否存在符合條件的項目。// 在家教學 (isHomeTeaching:學生提供地址)
         const useAddressAsDestin = Util.isOrEquals(infoOfSelectedTrans.typeOfTransport, Config.TransportMethod.Freight, Config.TransportMethod.RapidOnDay);
         const containsPhysical = UserInfoRef.containsPhysicalGoodOfCheckedItem();
         if (isHomeTeachingLesson || (useAddressAsDestin && containsPhysical)) this.setNeedAddress(true);

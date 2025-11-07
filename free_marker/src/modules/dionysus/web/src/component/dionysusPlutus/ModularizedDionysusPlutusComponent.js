@@ -141,6 +141,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const self = this;
         const items = UserInfo.getCheckedCartieItems();
         const typeOfTransport = UserInfo.getSelectedOfTransport();
+
         const isCVS = Util.isOrEquals(typeOfTransport, Config.TransportMethod.Store711, Config.TransportMethod.StoreFamily);
         Util.mutateRemoveKeys(items, ["checked", "idOfCookieUsage"]);
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {
@@ -151,6 +152,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
             typeOfTransport,
+            needAddress: self.getStore().getNeedAddress(),
             typeOfTransaction: UserInfo.getSelectedOfTransaction(),
             priceOfTotal4Client: self.getStore().getFeeOfPayment(),
             cvs: isCVS ? { storeid: this.getStore().getCvs(), storeaddress: this.getStore().getHelperTextOfCvs(), storename: this.getStore().getLabelOfCvsSticky() } : {}

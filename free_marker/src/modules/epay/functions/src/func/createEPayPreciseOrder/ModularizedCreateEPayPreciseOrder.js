@@ -70,7 +70,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     handleHttpOnCall = async (data, session) => {
-        const { fingerprint, items, remark, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client, cvs } = data; //Config.TransportMethod; Config.Transaction
+        const { fingerprint, items, remark, needAddress, address, phone, name, email, typeOfTransport, typeOfTransaction, priceOfTotal4Client, cvs } = data; //Config.TransportMethod; Config.Transaction
         const itemsOfClientOrdering = items;
 
         /** (done) todo:未登入帳號，是否距離上一次REQUEST超過規範的間隔 */
@@ -107,6 +107,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     containsTransportedVariant,
                     remark,
                     address,
+                    needAddress,
                     phone,
                     name,
                     email,
@@ -115,6 +116,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     feeOfTransport,
                     priceOfTotal,
                     typeOfTransport,
+                    typeOfTransaction,
                     transaction,
                     cvs,
                     globalPerspective
@@ -259,24 +261,17 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         for (const itemOfClientOrdering of itemsOfClientOrdering) {
             const { idOfBooze, idOfVariant, quantity } = itemOfClientOrdering;
             const variant = itemOfClientOrdering.variant; //{quantity:商品總量}
-            // const variantRef = db.collection(`dionysus/${idOfBooze}/variants`).doc(idOfVariant);
             Util.appendInfo(`processInventoryAndSchedules() coming! => ${_.indexOf(itemsOfClientOrdering, itemOfClientOrdering)} idB='${idOfBooze}', idV='${idOfVariant}'`);
-
             const variantRef = Api.getVariantItemDocRef(idOfVariant, idOfBooze);
-
             const quantityOfBalance = (variant.quantity || 0) - quantity;
-            if (quantityOfBalance < 0) {
-                this.appendErrorLog(9999, `123213453213 ${variant.nameOfBooze}|${variant.content}|數量不足`);
-            }
+            if (quantityOfBalance < 0) this.appendErrorLog(9999, `123213453213 ${variant.nameOfBooze}|${variant.content}|數量不足`);
 
             transaction.update(variantRef, { quantity: quantityOfBalance });
 
             if (variant.isTaskJob) {
                 if (variant.useMainTrunk) {
                     const result = await this.checkConflictAgainst2MainTrunk(variant, transaction);
-                    if (result.conflict) {
-                        this.appendErrorLog(9999, `112454565412312321 ${variant.nameOfBooze}的時段(${variant.content})衝突`);
-                    }
+                    if (result.conflict) this.appendErrorLog(9999, `112454565412312321 ${variant.nameOfBooze}的時段(${variant.content})衝突`);
                 }
                 itemOfClientOrdering.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
             } else itemOfClientOrdering.infoOfHera = "";
@@ -290,6 +285,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         containsTransportedVariant,
         remark,
         address,
+        needAddress,
         phone,
         name,
         email,
@@ -298,6 +294,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         session,
         priceOfTotal,
         typeOfTransport,
+        typeOfTransaction,
         transaction,
         globalPerspective,
         cvs
@@ -318,11 +315,13 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             items: this.getPreciseItemsAsRecord(itemsOfClientOrdering),
             email: email || "",
             address: address || "",
+            needAddress,
             distance: "",
             cvs,
             name: name || "",
             phoneNumber: phone || "",
             typeOfTransport,
+            typeOfTransaction,
             feeOfTransport,
             discountOfTotal,
             stateOfTransport: containsTransportedVariant

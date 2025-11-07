@@ -156,6 +156,10 @@ class BaseFunction extends ClientRemoteApi {
         if (!Util.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Completed)) this.appendErrorLog(9999, `4845461231-${idOfError} 訂單必須為「已付款」，請聯繫管理員`);
     };
 
+    validateOrderIsNotSendingYet = async (order, idOfError) => {
+        if (!Util.isOrEquals(order.stateOfTransport, Config.StateOfTransport.Pending)) this.appendErrorLog(9999, `484546123121-${idOfError} 訂單必須為「待出貨」，請聯繫管理員`);
+    }
+
     /** 確認訂單付款狀態為'未付款 等待中(ATM CVS)' */
     validateOrderIsUnPaidWaiting = async (order, idOfError) => {
         if (!Util.isOrEquals(order.stateOfPayment, Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting))

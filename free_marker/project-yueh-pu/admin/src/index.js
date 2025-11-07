@@ -859,9 +859,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     }
 
     async function rewritePlantContext() {
-        await api.modifyGuitarpusOfPaginate(async (items) => {
-            await api.updateGuitarpus(items.map((pu) => ({ id: pu.id, context: Util.getDecryptStringV2(pu.latestContext) })));
-        });
+        await api.modifyGuitarpusOfPaginate( async (items) => {
+            await api.updateGuitarpus(items.map(pu => ({ id: pu.id, context: Util.getDecryptStringV2(pu.latestContext) })));
+        })
     }
 
     async function singleRewrite(id) {
@@ -894,7 +894,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     }
 
     /** 每次都要跑 */
-    // await syncLocalDatabase2Remote(`jKXnWpriJh21Z8DpZRuy`);
+    // await syncLocalDatabase2Remote(`n3ugkgfsrkkB3Bu3jBRi`);
     // await singleRewrite(`jKXnWpriJh21Z8DpZRuy`);
     // await rewritePlantContext();
     // await syncToneIntoLocalSQLByEachID('YllpcIlVQkJCi2hEZPnf','IqhgXac9Oij5q87piZbg')

@@ -11,8 +11,7 @@ import BaseEpayFootprintComponent from "./BaseEpayFootprintComponent";
 import Functions from "../../functions";
 
 class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
-    /** -------------------- fields -------------------- **/
-    /** -------------------- functions -------------------- **/
+    order = {};
 
     constructor(props) {
         super(props);
@@ -99,15 +98,18 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
 
     /** 賣家填寫運單(id, remarkOfAuthor) */
     onEpayFootprintOrderOptionOfTransportIconButtonAuthorFormedClicked(param) {
-        const order = param.object;
-        return async () => this.getTransNotifyDivAlertDialogRef().open();
+        const self = this;
+        return async () => {
+            self.order = param.object;
+            await Util.syncDelay(10);
+            this.getTransNotifyDivAlertDialogRef().open();
+        };
     }
 
-    onEpayFootprintOrderTransNotifyDivClicked(param) {
-        const order = param.object;
-        const serial = order.getDialogInputValueOfEpayFootprintOrderTransNotify();
+    onEpayFootprintTransNotifyDivClicked(param) {
+        const serial = this.getStore().getDialogInputValueOfEpayFootprintTransNotify();
         if (_.size(serial) < 2) return this.showErrorSnackMessage(`物流編號填寫不正確`);
-        this.remoteAuthorFormTransport(order, serial).then();
+        this.remoteAuthorFormTransport(this.order, serial).then();
     }
 
     /** 賣家更新備註 */

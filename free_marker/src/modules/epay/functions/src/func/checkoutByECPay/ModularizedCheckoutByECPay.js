@@ -46,6 +46,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
             await this.validateOrderIsUnPaidWaiting(order, "CheckoutByECPay");
             return {
+                typeOfTransaction: Config.TransactionMethod.ECPay,
                 procedureOfPayment: Config.LangOfEPayType.ECPay,
                 contentOfRender: result,
                 timesOfTransaction: order.timesOfTransaction + 1

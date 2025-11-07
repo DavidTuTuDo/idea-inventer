@@ -28,6 +28,7 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
         await Api.updatePreciseOrderItemAtomically(async (order, transaction) => {
             await this.validateOrderIsUnPaidWaiting(order, "ForcePaidByAuthor");
             return {
+                typeOfTransaction: Config.TransactionMethod.AuthorForcePaid,
                 procedureOfPayment: Config.LangOfEPayType.AuthorForcePaid,
                 stateOfPayment: Config.StateOfPayment.Completed,
                 timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())

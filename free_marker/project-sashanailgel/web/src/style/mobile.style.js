@@ -647,13 +647,13 @@ class MobileStyle {
 
     /** => following for epayFootprint  component  */
 
+    EpayFootprintTransNotifyReactFragmentWrap = {};
+
+    EpayFootprintTransNotifyDiv = {};
+
     EpayFootprintTabTabsList = {};
 
     EpayFootprintTabTab = {};
-
-    EpayFootprintOrderTransNotifyReactFragmentWrap = {};
-
-    EpayFootprintOrderTransNotifyDiv = {};
 
     EpayFootprintOrderRemarkOfAuthorLabelOfRemarkOfAuthorTypography = {};
 

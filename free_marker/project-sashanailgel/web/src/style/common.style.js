@@ -647,13 +647,13 @@ class CommonStyle {
 
     /** => following for epayFootprint  component  */
 
+    EpayFootprintTransNotifyReactFragmentWrap = {};
+
+    EpayFootprintTransNotifyDiv = {};
+
     EpayFootprintTabTabsList = {};
 
     EpayFootprintTabTab = {};
-
-    EpayFootprintOrderTransNotifyReactFragmentWrap = {};
-
-    EpayFootprintOrderTransNotifyDiv = {};
 
     EpayFootprintOrderRemarkOfAuthorLabelOfRemarkOfAuthorTypography = {};
 

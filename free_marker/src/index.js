@@ -1904,7 +1904,7 @@ class CodegenNode {
             stmts.push(`const ${this.getFieldNameOfAlertMenu()} = React.createRef()`);
         }
 
-        // --- 若有 method 或為 simple selected，建立 objectOfParam ---
+        /** TODO(注意):objectOfParam：若有 點擊事件 objectOfParam */
         if (_.size(this.getFunctionMethods()) > 0 || this.isSimpleSelected()) {
             const content = !Util.isUndefinedNullEmpty(this.getObservableName())
               ? `object: ${this.getObservableName()}`
@@ -2927,6 +2927,8 @@ class CodegenNode {
                         objName = this.getName();
                         break;
                     }
+                    objName = this.getPreciseAttributeParentName();
+                    break;
                 case 'object':
                     objName = this.getPreciseAttributeParentName();
                     break;
@@ -5600,7 +5602,7 @@ class ComponentBuilder extends BaseBuilder {
                     /** 產生component底下所有的onClick injectStyle override method */
                     for (const method of node.getNodeOfComponent().getFunctionMethods()) {
                         props[method.functionName] = `###self.${method.functionName}()`;
-                        generator.appendFunction(method.functionName, [], [], [],
+                        generator.appendFunction(method.functionName, [], [], method.comments ?? [],
                             `/** component view override method param content (${method.params.join(',')}), 
                             回傳 typeof === function, 就可以覆蓋原本的實作 */`);
                     }
@@ -6108,7 +6110,7 @@ class ComponentBuilder extends BaseBuilder {
                 generator.appendFunction(method.functionName,
                     method.params,
                     [],
-                    [],
+                    method.comments ?? [],
                     `Util.appendInfo('${method.functionName} not override')`
                 )
             }
@@ -7195,7 +7197,8 @@ class ProjectFileHandler extends PathBase {
             const stmts = [];
             stmts.push(...['\n', object.comment]);
             _.each(object.i18n, (value, key) => {
-                stmts.push(`${key} = "${value.split('\n').join(`\/n`)}";`)
+                stmts.push(`${key} = ${JSON.stringify(value)};`)
+                // stmts.push(`${key} = "${value.split('\n').join(`\/n`)}";`)
             })
             return stmts.join('\n');
         }
@@ -8309,6 +8312,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     node.appendMethods({
                         functionName: functionNameOfVisualIconClick,
                         params: ['param'],
+                        comments: ['AlertMenu點擊事件 => 必須 return async () => {instance = param.object}']
                     })
                     contentOfClicked = getContentsOfClickBehavior(node, functionNameOfVisualIconClick)
                 }
@@ -8365,6 +8369,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         stmts.push(`objectOfParam.view = event`)
         stmts.push(`${node.getFieldNameOfAlertMenu()}.current.setAnchor(event.currentTarget);`)
         stmts.push(`${node.getFieldNameOfAlertMenu()}.current.open();`)
+        stmts.push(`self.${node.getFunctionNameOfClicked()}(objectOfParam)`)
         return stmts;
     }
 
@@ -8375,7 +8380,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         for (const item of alertMenu.items) {
             const functionName = node.getFunctionNameOfClicked(Util.camel(item.name, sign));
             implementsOfClicked.push(`{"id":${item.id},"onClick":self.${functionName}(objectOfParam)}`);
-            node.appendMethods({functionName, params: ['param']});
+            node.appendMethods({functionName, params: ['param'], comments: ['AlertMenu點擊事件 => 必須 return async () => {instance = param.object}']});
             const objectOfItem = {};
             objectOfItem.label = item.label;
             objectOfItem.icon = item.icon;

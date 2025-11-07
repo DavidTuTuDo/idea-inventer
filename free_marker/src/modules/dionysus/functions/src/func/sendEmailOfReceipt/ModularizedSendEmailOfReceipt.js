@@ -38,12 +38,13 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         priceOfTotal,
         feeOfTransport,
         discountOfTotal,
-        methodOfPayment,
+        methodOfTransaction,
         methodOTransport,
         serialOfTransport,
         remark,
         phone,
         address,
+        needAddress,
         id,
         anonymous,
         displayImage,
@@ -88,7 +89,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const customerInfo = `
     ${remark ? `<div style="margin-bottom:4px;">客戶備註：${remark}</div>` : ""}
     ${
-        address
+        address && needAddress
             ? `<div style="margin-bottom:4px;">客戶地址：${address} 
         <a href="https://www.google.com/maps/search/${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>`
             : ""
@@ -102,7 +103,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
     <div>物流費用：NT$${toCurrency(feeOfTransport)}</div>
     <div>優惠禮金：NT$${toCurrency(discountOfTotal)}</div>
     <div style="font-weight:bold;">實收費用：NT$${toCurrency(priceOfTotal)}</div>
-    <div style="color:#555;">付費方式：${methodOfPayment}</div>
+    <div style="color:#555;">付費方式：${methodOfTransaction}</div>
   `;
 
         const footer = `
@@ -150,8 +151,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
     }
 
     async handleHttpOnCall(data, session) {
-        const idOfPreciseOrder = data.idOfPreciseOrder;
-
+        const { idOfPreciseOrder, isTransportCompleted } = data;
         const order = await Api.fetchPreciseOrderItem(idOfPreciseOrder);
         const { id, email } = order;
 
@@ -162,16 +162,22 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         const global = await Api.fetchGlobalPerspective();
         this.appendLog(`${idOfPreciseOrder} 準備發送Email給賣家｜買家`);
 
-        [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order }));
-        /** 非買家既為賣家 */
+        if (isTransportCompleted) {
+            /** 商品已寄出通知 */
+            if (!order.isTransported) this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
+            _.remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
+            const isBuyer = true;
+            this.sendEmailTo({ isTransportCompleted, nameOfBrand: global.nameOfBrand, isBuyer, order });
+        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order }));
+        /** 買家/賣家各寄送一份通知 */
     }
 
-    sendEmailTo({ nameOfBrand, isBuyer, order }) {
+    sendEmailTo({ isTransportCompleted, nameOfBrand, isBuyer, order }) {
         const recipient = isBuyer ? order.email : Config.email;
-        const subject = isBuyer ? `[${nameOfBrand}]您的款項已確認` : `[${nameOfBrand}]您有新的成交訂單`;
+        const subject = isTransportCompleted ? `[${nameOfBrand}]您的商品已寄出，請留意簡訊` : isBuyer ? `[${nameOfBrand}]您的款項已確認` : `[${nameOfBrand}]您有新的成交訂單`;
 
         const xxx = {
-            methodOfPayment: order.procedureOfPayment,
+            methodOfTransaction: Config.LabelOfTransactionMethod(order.typeOfTransaction),
             methodOfTransport: Config.LabelOfTransportMethod(order.typeOfTransport),
             isBuyer,
             displayImage: isBuyer,

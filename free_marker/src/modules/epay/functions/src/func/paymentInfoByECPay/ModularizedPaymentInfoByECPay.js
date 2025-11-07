@@ -98,6 +98,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
                 return Api.normalizePreciseOrder(
                     {
+                        typeOfTransaction: Config.TransactionMethod.ECPay,
                         procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(`${timeOfExpired} 23:59:59`), //    ATM ExpireDate:'2022/07/03',
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,

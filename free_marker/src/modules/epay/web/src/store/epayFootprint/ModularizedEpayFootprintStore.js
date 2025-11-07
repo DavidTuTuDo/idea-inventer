@@ -70,7 +70,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
         return [conditionOfDefault, ...conditions];
     }
 
-    async fetch(view) {
+    /** 如果不用 => function 補花會失敗，this.getParamOfTypeOfTabInPath() 會找不到*/
+    fetch = async (view) => {
         const state = this.getParamOfTypeOfTabInPath();
         const ordersOfRemote = [];
         switch (state) {
@@ -91,7 +92,7 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
             default:
                 throw new Error(`fetch() state => ${state}`);
         }
-    }
+    };
 
     fetchAndPushOrders = async (view, conditions) => {
         const ordersOfRemote = [];
