@@ -191,7 +191,8 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     getInjectStyleOfEpayFootprintOrderAreaOfChoosePaymentTypeDiv(order) {
         const condition1 = Util.isOrEquals(order.getStateOfPayment(), Config.StateOfPayment.Pending, Config.StateOfPayment.Waiting);
         const condition2 = !Util.isOrEquals(order.getProcessOfPayment(), "atm", "cvs");
-        return Util.getVisibleOrNone(condition1 && condition2, true);
+        const condition3 = !_.isEqual(this.paramOfAuthor, "author");
+        return Util.getVisibleOrNone(condition1 && condition2 && condition3, true);
     }
 
     getInjectStyleOfEpayFootprintOrderAreaOfPaymentFailureDiv(order) {

@@ -3449,15 +3449,80 @@ class Utiller {
     }
 
     /**
+     * 將時間字串解析為物件，回傳 {startDate, startTime, endDate, endTime}
+     *
+     * 支援格式：
+     * 1. '2025/11/10 (一)｜13:00-15:00'
+     *    => { startDate:'2025/11/10', startTime:'13:00', endDate:'2025/11/10', endTime:'15:00' }
+     *
+     * 2. '2025/11/10 (一) 13:00 - 2025/11/12 (三) 15:00'
+     *    => { startDate:'2025/11/10', startTime:'13:00', endDate:'2025/11/12', endTime:'15:00' }
+     *
+     * @param {string} input - 欲解析的時間字串
+     * @returns {{startDate: string, startTime: string, endDate: string, endTime: string}} 解析後的時間物件
+     *
+     * @example
+     * getObjectOfStartEndDateTime('2025/11/10 (一)｜13:00-15:00');
+     * // => { startDate:'2025/11/10', startTime:'13:00', endDate:'2025/11/10', endTime:'15:00' }
+     *
+     * @example
+     * getObjectOfStartEndDateTime('2025/11/10 (一) 13:00 - 2025/11/12 (三) 15:00');
+     * // => { startDate:'2025/11/10', startTime:'13:00', endDate:'2025/11/12', endTime:'15:00' }
+     */
+    getObjectOfStartEndDateTime(input) {
+        if (!input || typeof input !== 'string') {
+            return { startDate: '', startTime: '', endDate: '', endTime: '' };
+        }
+
+        // 將全形符號與多餘空白轉換為標準形式
+        const cleaned = input
+            .replace(/｜/g, ' ')
+            .replace(/－/g, '-') // 全形破折號轉半形
+            .replace(/\s+/g, ' ')
+            .trim();
+
+        // 跨日期格式 (例：2025/11/10 13:00 - 2025/11/12 15:00)
+        const crossDatePattern =
+            /(\d{4}\/\d{1,2}\/\d{1,2})(?:\s*\([^)]*\))?\s*(\d{2}:\d{2})\s*-\s*(\d{4}\/\d{1,2}\/\d{1,2})(?:\s*\([^)]*\))?\s*(\d{2}:\d{2})/;
+
+        // 同日期格式 (例：2025/11/10 13:00 - 15:00)
+        const sameDatePattern =
+            /(\d{4}\/\d{1,2}\/\d{1,2})(?:\s*\([^)]*\))?\s*(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})/;
+
+        let startDate, startTime, endDate, endTime;
+
+        if (crossDatePattern.test(cleaned)) {
+            [, startDate, startTime, endDate, endTime] = cleaned.match(crossDatePattern);
+        } else if (sameDatePattern.test(cleaned)) {
+            [, startDate, startTime, endTime] = cleaned.match(sameDatePattern);
+            endDate = startDate;
+        } else {
+            return { startDate: '', startTime: '', endDate: '', endTime: '' };
+        }
+
+        // 將日期時間轉為可比較的 Date 物件
+        const start = new Date(`${startDate} ${startTime}`);
+        const end = new Date(`${endDate} ${endTime}`);
+
+        if (end < start) {
+            throw new Error(`End time cannot be earlier than start time: ${input}`);
+        }
+
+        return { startDate, startTime, endDate, endTime };
+    }
+
+    /**
      * 根據課程資訊生成 Google Calendar 的行事曆新增連結。
+     * 若部分參數為空值，則不加入連結中。
+     *
      * @param {object} event - 行程物件。
      * @param {string} event.title - 行程主題 (e.g., '吉他課')。
      * @param {string} event.startDate - 開始日期 (e.g., '2025/11/10')。
      * @param {string} event.startTime - 開始時間 (e.g., '14:00')。
      * @param {string} event.endDate - 結束日期 (e.g., '2025/11/10')。
      * @param {string} event.endTime - 結束時間 (e.g., '16:00')。
-     * @param {string} event.location - 地點/地址 (e.g., '台北市大安區信義路三段 162 號')。
-     * @param {string} event.details - 描述/備註 (e.g., '請攜帶吉他，並預習第5頁。')。
+     * @param {string} [event.location] - 地點/地址。
+     * @param {string} [event.details] - 描述/備註。
      * @returns {string} Google Calendar 的新增連結。
      */
      generateGoogleCalendarLink = ({
@@ -3467,41 +3532,36 @@ class Utiller {
                                             endDate,
                                             endTime,
                                             location,
-                                            details
+                                            details,
                                         }) => {
-        // 使用 moment 結合日期和時間，並格式化為 YYYYMMDDTHHMMSS
-        // 注意: 日期格式已從 YYYY-MM-DD 變更為 YYYY/MM/DD
-        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHMMSS');
-        const endDateTime = moment(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHMMSS');
+        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHmmss');
+        const endDateTime = moment(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHmmss');
 
-        // 進行 URL 編碼
-        const encodedTitle = encodeURIComponent(title);
-        const encodedLocation = encodeURIComponent(location);
-        const encodedDetails = encodeURIComponent(details);
+        const params = new URLSearchParams();
 
-        // --- Google Calendar 連結 (使用 https://calendar.google.com/calendar/r/eventedit) ---
-        const googleCalendarLink = `https://calendar.google.com/calendar/r/eventedit?` +
-            `text=${encodedTitle}` +
-            `&dates=${startDateTime}/${endDateTime}` +
-            `&details=${encodedDetails}` +
-            `&location=${encodedLocation}` +
-            `&ctz=Asia/Taipei` + // 台灣時區
-            `&trp=true`; // 設為忙碌 (Busy)
+        if (title) params.append('text', title);
+        if (startDateTime && endDateTime) params.append('dates', `${startDateTime}/${endDateTime}`);
+        if (details) params.append('details', details);
+        if (location) params.append('location', location);
 
-        return googleCalendarLink;
+        params.append('ctz', 'Asia/Taipei');
+        params.append('trp', 'true');
+
+        return `https://calendar.google.com/calendar/r/eventedit?${params.toString()}`;
     };
 
     /**
      * 根據課程資訊生成 TimeTree 的行事曆新增連結。
-     * (此函式不需要 moment.js，但維持其結構)
+     * 若部分參數為空值，則不加入連結中。
+     *
      * @param {object} event - 行程物件。
-     * @param {string} event.title - 行程主題 (e.g., '吉他課')。
-     * @param {string} event.startDate - 開始日期 (YYYY/MM/DD, e.g., '2025/11/10')。
-     * @param {string} event.startTime - 開始時間 (HH:MM, e.g., '14:00')。
-     * @param {string} event.endDate - 結束日期 (YYYY/MM/DD, e.g., '2025/11/10')。
-     * @param {string} event.endTime - 結束時間 (HH:MM, e.g., '16:00')。
-     * @param {string} [event.location=''] - 地點/地址 (選填)。
-     * @param {string} [event.memo=''] - 描述/備註 (選填，TimeTree 使用 'memo')。
+     * @param {string} event.title - 行程主題。
+     * @param {string} event.startDate - 開始日期 (YYYY/MM/DD)。
+     * @param {string} event.startTime - 開始時間 (HH:MM)。
+     * @param {string} event.endDate - 結束日期 (YYYY/MM/DD)。
+     * @param {string} event.endTime - 結束時間 (HH:MM)。
+     * @param {string} [event.location] - 地點/地址。
+     * @param {string} [event.memo] - 描述/備註 (TimeTree 使用 'memo')。
      * @returns {string} TimeTree 行事曆新增連結。
      */
      generateTimeTreeLink = ({
@@ -3510,39 +3570,34 @@ class Utiller {
                                       startTime,
                                       endDate,
                                       endTime,
-                                      location = '',
-                                      memo = ''
+                                      location,
+                                      memo,
                                   }) => {
-        // 進行 URL 編碼
-        const encodedTitle = encodeURIComponent(title);
-        const encodedLocation = encodeURIComponent(location);
-        const encodedMemo = encodeURIComponent(memo);
+        const params = new URLSearchParams();
 
-        // TimeTree 網址結構相對簡單，直接使用模板字串
-        // 注意: TimeTree 連結直接使用 YYYY-MM-DD 格式，故此函式仍傳遞原始 YYYY/MM/DD 字串
-        // 在實際應用中，如果 TimeTree 不接受 YYYY/MM/DD，則需要在傳入前轉換 (但 TimeTree 連結通常較為寬鬆)
-        const timeTreeLink = `https://timetreeapp.com/plans/new?` +
-            `title=${encodedTitle}` +
-            `&start_date=${startDate.replace(/\//g, '-')}` + // 將 YYYY/MM/DD 轉換回 YYYY-MM-DD
-            `&start_time=${startTime}` +
-            `&end_date=${endDate.replace(/\//g, '-')}` + // 將 YYYY/MM/DD 轉換回 YYYY-MM-DD
-            `&end_time=${endTime}` +
-            `${location ? `&location=${encodedLocation}` : ''}` +
-            `${memo ? `&memo=${encodedMemo}` : ''}`;
+        if (title) params.append('title', title);
+        if (startDate) params.append('start_date', startDate.replace(/\//g, '-'));
+        if (startTime) params.append('start_time', startTime);
+        if (endDate) params.append('end_date', endDate.replace(/\//g, '-'));
+        if (endTime) params.append('end_time', endTime);
+        if (location) params.append('location', location);
+        if (memo) params.append('memo', memo);
 
-        return timeTreeLink;
+        return `https://timetreeapp.com/plans/new?${params.toString()}`;
     };
 
     /**
      * 根據課程資訊生成 iCalendar (.ics) 檔案內容。
+     * 若部分欄位為空值，則不寫入該欄位。
+     *
      * @param {object} event - 行程物件。
      * @param {string} event.title - 行程主題。
      * @param {string} event.startDate - 開始日期 (YYYY/MM/DD)。
      * @param {string} event.startTime - 開始時間 (HH:MM)。
      * @param {string} event.endDate - 結束日期 (YYYY/MM/DD)。
      * @param {string} event.endTime - 結束時間 (HH:MM)。
-     * @param {string} event.location - 地點/地址。
-     * @param {string} event.details - 描述/備註。
+     * @param {string} [event.location] - 地點/地址。
+     * @param {string} [event.details] - 描述/備註。
      * @returns {string} 遵循 iCalendar 規範的字串內容。
      */
      generateIcsContent = ({
@@ -3552,49 +3607,40 @@ class Utiller {
                                     endDate,
                                     endTime,
                                     location,
-                                    details
+                                    details,
                                 }) => {
-        // 使用 moment-timezone 結合日期和時間，並格式化為 YYYYMMDDTHHMMSS
-        // 注意: 日期格式已從 YYYY-MM-DD 變更為 YYYY/MM/DD
-        const startDateTime = moment.tz(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHMMSS');
-        const endDateTime = moment.tz(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHMMSS');
-
-        // DTSTAMP 必須是 UTC 格式 (以 Z 結尾)
-        const stamp = moment().utc().format('YYYYMMDDTHHMMSS') + 'Z';
-
-        // 唯一識別碼 (UID)
+        const startDateTime = moment.tz(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHmmss');
+        const endDateTime = moment.tz(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHmmss');
+        const stamp = moment().utc().format('YYYYMMDDTHHmmss') + 'Z';
         const uid = Date.now().toString(36) + Math.random().toString(36).substring(2, 5) + '@gemini-app.com';
 
-        // 確保內容中的特殊字元（如換行、逗號、分號）被正確逸出
-        const escapeIcs = (text) => text
-            .replace(/\\/g, '\\\\')
-            .replace(/,/g, '\\,')
-            .replace(/;/g, '\\;')
-            .replace(/\n/g, '\\n');
+        const escapeIcs = (text) =>
+            text
+                .replace(/\\/g, '\\\\')
+                .replace(/,/g, '\\,')
+                .replace(/;/g, '\\;')
+                .replace(/\n/g, '\\n');
 
-        const escapedTitle = escapeIcs(title);
-        const escapedLocation = escapeIcs(location);
-        const escapedDetails = escapeIcs(details);
+        const lines = [
+            'BEGIN:VCALENDAR',
+            'VERSION:2.0',
+            'PRODID:-//Gemini AI//NONSGML v1.0//EN',
+            'BEGIN:VEVENT',
+            `UID:${uid}`,
+            `DTSTAMP:${stamp}`,
+        ];
 
-        // 產生 ICS 內容
-        const icsContent = `BEGIN:VCALENDAR\n` +
-            `VERSION:2.0\n` +
-            `PRODID:-//Gemini AI//NONSGML v1.0//EN\n` +
-            `BEGIN:VEVENT\n` +
-            `UID:${uid}\n` +
-            `DTSTAMP:${stamp}\n` +
-            // 採用 Asia/Taipei 時區
-            `DTSTART;TZID=Asia/Taipei:${startDateTime}\n` +
-            `DTEND;TZID=Asia/Taipei:${endDateTime}\n` +
-            `SUMMARY:${escapedTitle}\n` +
-            `LOCATION:${escapedLocation}\n` +
-            `DESCRIPTION:${escapedDetails}\n` +
-            `END:VEVENT\n` +
-            `END:VCALENDAR`;
+        if (startDateTime) lines.push(`DTSTART;TZID=Asia/Taipei:${startDateTime}`);
+        if (endDateTime) lines.push(`DTEND;TZID=Asia/Taipei:${endDateTime}`);
+        if (title) lines.push(`SUMMARY:${escapeIcs(title)}`);
+        if (location) lines.push(`LOCATION:${escapeIcs(location)}`);
+        if (details) lines.push(`DESCRIPTION:${escapeIcs(details)}`);
 
-        // 確保使用 CRLF (\r\n) 換行符號，這是 ICS 規範的要求
-        return icsContent.replace(/\n/g, '\r\n');
+        lines.push('END:VEVENT', 'END:VCALENDAR');
+
+        return lines.join('\r\n');
     };
+
 
     /**
      * 根據行程物件，生成所有主要的行事曆新增連結 (Google, TimeTree, iCalendar/ICS)。
@@ -3824,6 +3870,7 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           // const utiller = new Utiller();
+          // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));
           // console.log(utiller.generateUniversalKeywords('刻在我心底的名字'))
           // console.log(utiller.getTSOfSpecificDate('2025/08/18(一)'))
           // const input = [

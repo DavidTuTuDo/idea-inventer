@@ -941,11 +941,11 @@ class AppStyle {
 
     /** => following for apollo  component  */
 
-    DionysusApolloFuncLoadChip = {};
+    DionysusApolloFuncConfirmChip = {};
 
     DionysusApolloFuncLeaveChip = {};
 
-    DionysusApolloFuncConfirmChip = {};
+    DionysusApolloFuncLoadChip = {};
 
     DionysusApolloFuncDiv = {};
 

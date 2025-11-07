@@ -1,10 +1,8 @@
 module.exports = {
-
     presets: [
         "@babel/preset-env",
         "@babel/preset-react"
     ],
-
     plugins: [
         [
             "@babel/plugin-proposal-decorators",
@@ -12,13 +10,12 @@ module.exports = {
                 "legacy": true
             }
         ],
-        [
-            "@babel/transform-runtime",
-            {
-                "regenerator": true
-            }
-        ],
+        ["@babel/transform-runtime", {
+            "regenerator": true
+        }],
         ["@babel/plugin-transform-class-properties"]
-    ]
-
+    ],
+    comments: false,
+    minified: true,
+    compact: true,
 };

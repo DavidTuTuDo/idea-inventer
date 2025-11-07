@@ -7,5 +7,8 @@ module.exports = {
         [ "@babel/plugin-proposal-decorators", { "legacy": true }],
         [ "@babel/transform-runtime", { "regenerator": true }],
         [ "@babel/plugin-transform-class-properties"]
-    ]
+    ],
+    comments: false,
+    minified: true,
+    compact: true,
 };

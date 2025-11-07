@@ -16,4 +16,7 @@ module.exports = {
         ["@babel/plugin-proposal-class-properties", { loose: true }],
         ["@babel/plugin-transform-runtime", { regenerator: true }],
     ],
+    comments: false,
+    minified: true,
+    compact: true,
 };

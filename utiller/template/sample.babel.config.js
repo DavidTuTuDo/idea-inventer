@@ -14,6 +14,8 @@ module.exports = {
             "regenerator": true
         }],
         ["@babel/plugin-transform-class-properties"]
-    ]
-
+    ],
+    comments: false,
+    minified: true,
+    compact: true,
 };

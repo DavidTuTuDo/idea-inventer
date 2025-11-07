@@ -941,11 +941,11 @@ class CommonStyle {
 
     /** => following for apollo  component  */
 
-    DionysusApolloFuncLoadChip = {};
+    DionysusApolloFuncConfirmChip = {};
 
     DionysusApolloFuncLeaveChip = {};
 
-    DionysusApolloFuncConfirmChip = {};
+    DionysusApolloFuncLoadChip = {};
 
     DionysusApolloFuncDiv = {};
 
