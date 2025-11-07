@@ -49,8 +49,9 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         anonymous,
         displayImage,
         isBuyer,
-        isTransportSucceed
+        eros
     }) {
+        const valid = (string) => _.isString(string) && _.size(string) > 0;
         const toCurrency = (n) => Number(n).toLocaleString("zh-TW");
         // <a href="${timeTree}" style="${chipStyle}"><img src="https://img.icons8.com/ios-filled/50/000000/calendar--v1.png" style="${iconStyle}">新增至TimeTree</a>
         // <a href="${ics}" style="${chipStyle}"><img src="https://img.icons8.com/ios/50/000000/calendar--v1.png" style="${iconStyle}">新增至行事曆</a>
@@ -79,7 +80,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
           <div style="font-size:13px;color:#555;">規格：${item.specific}</div>
           <div style="font-size:13px;color:#555;">數量：${item.quantity}</div>
           ${isBuyer && item.price ? `<div style="font-size:13px;color:#555;">價格：NT$${toCurrency(item.price)}</div>` : ""}
-          ${item.note ? `<div style="font-size:13px;color:#6c6c6c;">備註：${item.note}</div>` : ""}
+          ${valid(item.note) ? `<div style="font-size:13px;color:#6c6c6c;">備註：${item.note}</div>` : ""}
           ${generateCalendarButtons(item)}
         </td>
       </tr>`
@@ -87,38 +88,35 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             .join("");
 
         const customerInfo = `
-    ${remark ? `<div style="margin-bottom:4px;">客戶備註：${remark}</div>` : ""}
+    ${valid(remark) ? `<div style="margin-bottom:4px;">客戶備註：${remark}</div>` : ""}
     ${
-        address && needAddress
+        valid(address) && needAddress
             ? `<div style="margin-bottom:4px;">客戶地址：${address} 
         <a href="https://www.google.com/maps/search/${encodeURIComponent(address)}" style="font-size:12px;color:#0066cc;text-decoration:none;">[開啟地圖]</a></div>`
             : ""
     }
     ${methodOTransport ? `<div style="margin-bottom:4px;">取貨方式：${methodOTransport}</div>` : ""}
     ${serialOfTransport ? `<div style="margin-bottom:4px;">物流編號：${serialOfTransport}</div>` : ""}
-    ${phone ? `<div>聯絡方式：${phone}</div>` : ""}
-  `;
+    ${phone ? `<div>聯絡方式：${phone}</div>` : ""}`;
 
         const paymentInfo = `
     <div>物流費用：NT$${toCurrency(feeOfTransport)}</div>
     <div>優惠禮金：NT$${toCurrency(discountOfTotal)}</div>
     <div style="font-weight:bold;">實收費用：NT$${toCurrency(priceOfTotal)}</div>
-    <div style="color:#555;">付費方式：${methodOfTransaction}</div>
-  `;
+    <div style="color:#555;">付費方式：${methodOfTransaction}</div>`;
 
         const footer = `
     <div style="margin-top:20px;font-size:12px;color:#555;border-top:1px solid #ccc;padding-top:10px;">
-      <div>明悅科技公司</div>
-      <div>統編：89745974</div>
-      <div>電話：0982-763-479</div>
+      ${valid(eros?.company) ? `<div>${eros.company}</div>` : ""}
+      ${valid(eros?.unifiedB) ? `<div>統編：${eros.unifiedB}</div>` : ""}
+      ${valid(eros?.phone) ? `<div>電話：${eros.phone}</div>` : ""}
       <div style="margin-top:6px;">
-        <a href="https://www.facebook.com/?locale=zh_TW" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>
-        <a href="https://www.instagram.com/david.tu.guitar" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>
-        <a href="https://www.youtube.com/@laogao" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>
-        <a href="https://www.tiktok.com/@power306787878"><img src="https://img.icons8.com/ios-filled/50/808080/tiktok.png" width="18"></a>
+        ${valid(eros?.fb) ? `<a href="${eros.fb}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
+        ${valid(eros?.ig) ? `<a href="${eros.ig}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
+        ${valid(eros?.yt) ? `<a href="${eros.yt}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
+        ${valid(eros?.tiktok) ? `<a href="${eros.tiktok}"><img src="https://img.icons8.com/ios-filled/50/808080/tiktok.png" width="18"></a>` : ""}
       </div>
-    </div>
-  `;
+    </div>`;
 
         const confirmButton = !anonymous
             ? `<div style="text-align:right;margin-bottom:10px;">
@@ -167,12 +165,12 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             if (!order.isTransported) this.appendErrorLog(9999, `652112132132 商品尚未完成物流程序`);
             _.remove(order.items, (item) => item.isTaskJob); //只有實體商品需要寄出，把課程拿掉
             const isBuyer = true;
-            this.sendEmailTo({ isTransportCompleted, nameOfBrand: global.nameOfBrand, isBuyer, order });
-        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order }));
+            this.sendEmailTo({ isTransportCompleted, nameOfBrand: global.nameOfBrand, isBuyer, order, eros: global });
+        } else [true, false].forEach((isBuyer) => this.sendEmailTo({ nameOfBrand: global.nameOfBrand, isBuyer, order, eros: global }));
         /** 買家/賣家各寄送一份通知 */
     }
 
-    sendEmailTo({ isTransportCompleted, nameOfBrand, isBuyer, order }) {
+    sendEmailTo({ isTransportCompleted, nameOfBrand, isBuyer, order, eros }) {
         const recipient = isBuyer ? order.email : Config.email;
         const subject = isTransportCompleted ? `[${nameOfBrand}]您的商品已寄出，請留意簡訊` : isBuyer ? `[${nameOfBrand}]您的款項已確認` : `[${nameOfBrand}]您有新的成交訂單`;
 
@@ -181,7 +179,8 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             methodOfTransport: Config.LabelOfTransportMethod(order.typeOfTransport),
             isBuyer,
             displayImage: isBuyer,
-            isTransportSucceed: order.isTransported
+            isTransportSucceed: order.isTransported,
+            eros
         };
 
         const latest = Util.mergeObject(order, xxx);

@@ -2,8 +2,6 @@ const edit = true;
 
 import ModularizedSendEmailOfReceipt from "./ModularizedSendEmailOfReceipt";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
 import BaseSendEmailOfReceipt from "./BaseSendEmailOfReceipt";
 
 const TRANSPORT_SUPPLIES = [

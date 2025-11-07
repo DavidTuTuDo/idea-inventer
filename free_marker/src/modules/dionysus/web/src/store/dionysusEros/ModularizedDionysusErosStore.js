@@ -67,6 +67,13 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfMaximumOfUniqueItems(UserInfo.getGlobalPerspectiveAttr(`maximumOfUniqueItems`));
         this.setDialogInputValueOfDionysusErosArrowOfTtlOfPayment(UserInfo.getGlobalPerspectiveAttr(`ttlOfPayment`));
         this.setDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous(UserInfo.getGlobalPerspectiveAttr(`ttlOfAnonymous`));
+        this.setDialogInputValueOfDionysusErosArrowOfFb(UserInfo.getGlobalPerspectiveAttr(`fb`));
+        this.setDialogInputValueOfDionysusErosArrowOfYt(UserInfo.getGlobalPerspectiveAttr(`yt`));
+        this.setDialogInputValueOfDionysusErosArrowOfTiktok(UserInfo.getGlobalPerspectiveAttr(`tiktok`));
+        this.setDialogInputValueOfDionysusErosArrowOfIg(UserInfo.getGlobalPerspectiveAttr(`ig`));
+        this.setDialogInputValueOfDionysusErosArrowOfCompany(UserInfo.getGlobalPerspectiveAttr(`company`));
+        this.setDialogInputValueOfDionysusErosArrowOfPhone(UserInfo.getGlobalPerspectiveAttr(`phone`));
+        this.setDialogInputValueOfDionysusErosArrowOfUnifiedB(UserInfo.getGlobalPerspectiveAttr(`unifiedB`));
 
         this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
@@ -302,6 +309,48 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { nameOfBrand: name });
         UserInfo.setNameOfBrand(name);
+    };
+
+    submitCompany = async (company) => {
+        if (_.isEmpty(company)) return this.getComponent().showErrorSnackMessage(`公司登記名稱格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { company });
+        UserInfo.setGlobalPerspectiveAttr({ company });
+    };
+
+    submitYT = async (youtube) => {
+        if (_.isEmpty(youtube)) return this.getComponent().showErrorSnackMessage(`YouTube 頻道/帳號格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { yt: youtube });
+        UserInfo.setGlobalPerspectiveAttr({ yt: youtube });
+    };
+
+    submitFB = async (facebook) => {
+        if (_.isEmpty(facebook)) return this.getComponent().showErrorSnackMessage(`Facebook 帳號/專頁格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { fb: facebook });
+        UserInfo.setGlobalPerspectiveAttr({ fb: facebook });
+    };
+
+    submitIG = async (instagram) => {
+        if (_.isEmpty(instagram)) return this.getComponent().showErrorSnackMessage(`Instagram 帳號格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ig: instagram });
+        UserInfo.setGlobalPerspectiveAttr({ ig: instagram });
+    };
+
+    submitTikTok = async (tiktok) => {
+        if (_.isEmpty(tiktok)) return this.getComponent().showErrorSnackMessage(`TikTok 帳號格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { tiktok });
+        UserInfo.setGlobalPerspectiveAttr({ tiktok });
+    };
+
+    submitUnifiedB = async (unifiedB) => {
+        if (_.isEmpty(unifiedB)) return this.getComponent().showErrorSnackMessage(`統一編號 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { unifiedB });
+        UserInfo.setGlobalPerspectiveAttr({ unifiedB });
+    };
+
+    submitPhone = async (phone) => {
+        if (_.isEmpty(phone)) return this.getComponent().showErrorSnackMessage(`手機電話 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { phone });
+        UserInfo.setGlobalPerspectiveAttr({ phone });
     };
 
     isPositiveNum = (value) => {

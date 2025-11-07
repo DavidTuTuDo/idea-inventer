@@ -216,11 +216,60 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitTTLOfPayment(min).then();
     }
 
-    onDionysusErosArrowOfTtlOfAnonymousIconButtonClicked(param) {
+    // YouTube 頻道/帳號
+    onDionysusErosArrowOfYtIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("ttlOfAnonymous");
-        const min = object.getDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous();
-        this.getStore().submitTTLOfAnonymous(min).then();
+        this.getStore().setSelected("yt");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfYt();
+        this.getStore().submitYT(value).then();
+    }
+
+    // Instagram 帳號
+    onDionysusErosArrowOfIgIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("ig");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfIg();
+        this.getStore().submitIG(value).then();
+    }
+
+    // TikTok 帳號
+    onDionysusErosArrowOfTiktokIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("tiktok");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfTiktok();
+        this.getStore().submitTikTok(value).then();
+    }
+
+    // Facebook 帳號/專頁
+    onDionysusErosArrowOfFbIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("fb");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfFb();
+        this.getStore().submitFB(value).then();
+    }
+
+    // 電話號碼
+    onDionysusErosArrowOfPhoneIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("phone");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfPhone();
+        this.getStore().submitPhone(value).then();
+    }
+
+    // UnifiedB (假設是某種統一業務 ID)
+    onDionysusErosArrowOfUnifiedBIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("unifiedB");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfUnifiedB();
+        this.getStore().submitUnifiedB(value).then();
+    }
+
+    // 公司名稱
+    onDionysusErosArrowOfCompanyIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("company");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfCompany();
+        this.getStore().submitCompany(value).then();
     }
 }
 
