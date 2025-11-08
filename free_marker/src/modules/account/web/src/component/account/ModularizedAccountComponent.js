@@ -19,7 +19,7 @@ class ModularizedAccountComponent extends BaseAccountComponent {
         this.api = new AccountUser();
     }
 
-    onAccountLogoutChipClicked(param) {
+    onAccountArrowOfLogoutIconButtonClicked(param) {
         const self = this;
         UserInfoRef.logout(this.getComponentInstance())
             .then()

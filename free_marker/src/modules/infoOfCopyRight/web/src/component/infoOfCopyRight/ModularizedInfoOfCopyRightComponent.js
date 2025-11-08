@@ -1,7 +1,10 @@
 const edit = true;
+
 import Config from "../../config";
 import BaseInfoOfCopyRightComponent from "./BaseInfoOfCopyRightComponent";
 import Router from "../../router";
+import { isMobile } from "react-device-detect";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 
 class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     constructor(props) {
@@ -23,6 +26,10 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
 
     onInfoOfCopyRightGroupOfSocialMediaLineIconButtonClicked(param) {
         this.invokeLineApp(this.getStore().getLine());
+    }
+
+    getInjectStyleOfInfoOfCopyRightUpperGroupRightAreaPrivilegeDiv(rightArea) {
+        return Util.getVisibleOrNone(!isMobile);
     }
 }
 

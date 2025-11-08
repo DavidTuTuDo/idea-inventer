@@ -601,6 +601,34 @@ class AppStyle {
 
     InfoOfCopyRightContactCard = {};
 
+    /** => following for infoOfCopyRightUsages  component  */
+
+    InfoOfCopyRightUsagesMainContentTypography = {};
+
+    InfoOfCopyRightUsagesMainSeparatorDiv = {};
+
+    InfoOfCopyRightUsagesMainTitleTypography = {};
+
+    InfoOfCopyRightUsagesMainDiv = {};
+
+    InfoOfCopyRightUsagesPaperWrap = {};
+
+    InfoOfCopyRightUsagesDiv = {};
+
+    /** => following for infoOfCopyRightPrivacy  component  */
+
+    InfoOfCopyRightPrivacyMainContentTypography = {};
+
+    InfoOfCopyRightPrivacyMainSeparatorDiv = {};
+
+    InfoOfCopyRightPrivacyMainTitleTypography = {};
+
+    InfoOfCopyRightPrivacyMainDiv = {};
+
+    InfoOfCopyRightPrivacyPaperWrap = {};
+
+    InfoOfCopyRightPrivacyDiv = {};
+
     /** => following for infoOfCopyRight  component  */
 
     InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
@@ -624,6 +652,18 @@ class AppStyle {
     InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap = {};
 
     InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyButton = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparatorTypography = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv = {};
 
     InfoOfCopyRightUpperGroupRightAreaDiv = {};
 
@@ -2359,13 +2399,23 @@ class AppStyle {
 
     /** => following for account  component  */
 
-    AccountLogoutReactFragmentWrap = {};
-
-    AccountLogoutChip = {};
-
     AccountAreaUserSummaryTitleOfUserTypography = {};
 
     AccountAreaUserSummaryAccordionSummary = {};
+
+    AccountAreaUserAreaOfLogoutArrowOfLogoutIconNavigateNext = {};
+
+    AccountAreaUserAreaOfLogoutArrowOfLogoutReactFragmentWrap = {};
+
+    AccountAreaUserAreaOfLogoutArrowOfLogoutIconButton = {};
+
+    AccountAreaUserAreaOfLogoutOptionOfLogoutContentTypography = {};
+
+    AccountAreaUserAreaOfLogoutOptionOfLogoutTitleTypography = {};
+
+    AccountAreaUserAreaOfLogoutDivWrap = {};
+
+    AccountAreaUserAreaOfLogoutDiv = {};
 
     AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext = {};
 
@@ -2378,6 +2428,34 @@ class AppStyle {
     AccountAreaUserAreaOfCleanCacheDivWrap = {};
 
     AccountAreaUserAreaOfCleanCacheDiv = {};
+
+    AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconNavigateNext = {};
+
+    AccountAreaUserAreaOfPrivacyArrowOfPrivacyReactFragmentWrap = {};
+
+    AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconButton = {};
+
+    AccountAreaUserAreaOfPrivacyOptionOfPrivacyContentTypography = {};
+
+    AccountAreaUserAreaOfPrivacyOptionOfPrivacyTitleTypography = {};
+
+    AccountAreaUserAreaOfPrivacyDivWrap = {};
+
+    AccountAreaUserAreaOfPrivacyDiv = {};
+
+    AccountAreaUserAreaOfUsagesArrowOfUsagesIconNavigateNext = {};
+
+    AccountAreaUserAreaOfUsagesArrowOfUsagesReactFragmentWrap = {};
+
+    AccountAreaUserAreaOfUsagesArrowOfUsagesIconButton = {};
+
+    AccountAreaUserAreaOfUsagesOptionOfUsagesContentTypography = {};
+
+    AccountAreaUserAreaOfUsagesOptionOfUsagesTitleTypography = {};
+
+    AccountAreaUserAreaOfUsagesDivWrap = {};
+
+    AccountAreaUserAreaOfUsagesDiv = {};
 
     AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext = {};
 
