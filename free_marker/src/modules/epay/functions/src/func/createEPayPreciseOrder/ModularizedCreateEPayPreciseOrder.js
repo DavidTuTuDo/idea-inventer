@@ -185,25 +185,44 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         /** (done) todo:透過eros是否支援transport */
         /** (done) todo:如果超過免運就免，否則就是依照transport的(feeOfPickupStore, feeOfCOD) */
         let feeOfTransport = 0;
+
+        /**
+         * 計算實際運費（包含貨到付款狀況與免運門檻判斷）
+         * @param {number} thresholdOfFreeTransport - 免運門檻金額
+         * @param {number} feeOfTransport - 基本運費
+         * @returns {number} 實際需支付的運費
+         */
+        const getPreciseTransportFee = (thresholdOfFreeTransport, feeOfTransport) => {
+            const isCOD = _.isEqual(typeOfTransaction, Config.TransactionMethod.COD);
+            const reachFreeShip = priceOfTotalIncludingDiscount >= thresholdOfFreeTransport;
+
+            // 非貨到付款：達免運門檻則免運，否則收取基本運費
+            if (!isCOD) return reachFreeShip ? 0 : feeOfTransport;
+
+            // 貨到付款：同時達到「貨到付款免運門檻」與「一般免運門檻」才免運
+            const isFreeCOD = reachFreeShip && priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByCOD;
+            return isFreeCOD ? 0 : Util.getPriceOfPercentageBehavior(feeOfTransport, eros.percentageFeeOfCOD);
+        };
+
         switch (typeOfTransport) {
             case Config.TransportMethod.SelfPickup:
                 if (!eros.whetherPickupByBuyerSelf) this.appendErrorLog(9999, `687352354354 不支援物流方式：${Config.LangOfTransportMethod.SelfPickup}`);
                 break;
             case Config.TransportMethod.Freight:
                 if (!eros.whetherHomeDelivery) this.appendErrorLog(9999, `354532132321 不支援物流方式：${Config.LangOfTransportMethod.Freight}`);
-                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByHomeDelivery ? 0 : eros.feeOfHomeDelivery;
+                feeOfTransport = getPreciseTransportFee(eros.thresholdOfFreeShipByHomeDelivery, eros.feeOfHomeDelivery);
                 break;
             case Config.TransportMethod.RapidOnDay:
                 if (!eros.whetherShipByRapidly) this.appendErrorLog(9999, `1238532123320 不支援物流方式：${Config.LangOfTransportMethod.RapidOnDay}`);
-                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByRapidly ? 0 : eros.feeOfRapidOnDelivery;
+                feeOfTransport = getPreciseTransportFee(eros.thresholdOfFreeShipByRapidly, eros.feeOfRapidOnDelivery);
                 break;
             case Config.TransportMethod.StoreFamily:
                 if (!eros.whetherShipByStorePickup) this.appendErrorLog(9999, `1235123132 不支援物流方式：${Config.LangOfTransportMethod.StoreFamily}`);
-                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByStorePickup ? 0 : eros.feeOfInStorePickup;
+                feeOfTransport = getPreciseTransportFee(eros.thresholdOfFreeShipByStorePickup, eros.feeOfInStorePickup);
                 break;
             case Config.TransportMethod.Store711:
                 if (!eros.whetherShipByStorePickup) this.appendErrorLog(9999, `12321024245 不支援物流方式：${Config.LangOfTransportMethod.Store711}`);
-                feeOfTransport = priceOfTotalIncludingDiscount >= eros.thresholdOfFreeShipByStorePickup ? 0 : eros.feeOfInStorePickup;
+                feeOfTransport = getPreciseTransportFee(eros.thresholdOfFreeShipByStorePickup, eros.feeOfInStorePickup);
                 break;
             case Config.TransportMethod.Needless:
                 break;

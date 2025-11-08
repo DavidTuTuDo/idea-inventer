@@ -3297,15 +3297,37 @@ class Utiller {
     }
 
     /**
-     * console.log(toPercentageDecimal(100)); // 1
-     * console.log(toPercentageDecimal(97));  // 0.97
-     * console.log(toPercentageDecimal('97')); // 0（非數字）
+     * 將百分比數值轉換為小數形式。
+     *
+     * @example
+     * toPercentageDecimal(100);     // 1
+     * toPercentageDecimal(97);      // 0.97
+     * toPercentageDecimal('97');    // 0.97
+     * toPercentageDecimal('97%');   // 0.97
+     * toPercentageDecimal('10 %');  // 0.1
+     * toPercentageDecimal('abc');   // 1  （非數字字串時，回傳 1）
+     *
+     * @param {number|string} num - 百分比值，可包含 "%" 符號或字串格式。
+     * @returns {number} - 轉換後的小數值，若轉換失敗則回傳 1。
      */
     toPercentageDecimal = (num) => {
+        if (_.isNil(num)) return 1;
+
+        // 若輸入為字串，先移除 "%" 符號與多餘空白
+        if (_.isString(num)) {
+            num = num.replace(/%/g, '').trim();
+        }
+
+        // 轉換為數字
         const parsed = _.toNumber(num);
+
+        // 若不是有限數字，回傳預設值 1
         if (!_.isFinite(parsed)) return 1;
+
+        // 四捨五入到小數點第 10 位
         return _.round(parsed / 100, 10);
     };
+
 
     /**
      * 🧩 產生合法變數命名的唯一亂碼代碼對照表（支援自訂長度）
@@ -3384,7 +3406,7 @@ class Utiller {
     }
 
     /**
-     *
+     *     無條件進位的公式
      *     multiplyCeil(1.24, 3);        // => 4
      *     multiplyCeil(1.24, 3, 1);     // => 3.8
      *     multiplyCeil(1.24, 3, 2);     // => 3.72
@@ -3393,6 +3415,29 @@ class Utiller {
         const factor = Math.pow(10, precision);
         return Math.ceil(a * b * factor) / factor;
     };
+
+    /**
+     * 根據百分比計算價格變化後的金額。
+     *
+     * @param {number} price - 原始價格。
+     * @param {number} percentage - 百分比（例如 10 表示 10%）。
+     * @param {boolean} [discount=false] - 是否為折扣模式。
+     *    - true：表示減價（例如 10% 折扣 → 價格 * (1 - 0.1)）
+     *    - false：表示加價（例如 10% 加成 → 價格 * (1 + 0.1)）
+     * @returns {number} - 計算後的金額，並取「向上取整」結果。
+     *
+     * 範例：
+     * getPriceOfPercentageBehavior(100, 10, true)  → 90
+     * getPriceOfPercentageBehavior(100, 10, false) → 110
+     */
+    getPriceOfPercentageBehavior(price, percentage, discount = false) {
+        // 將百分比（例如 10）轉為小數（0.1）
+        const decimal = this.toPercentageDecimal(percentage);
+
+        // 根據是否為折扣，決定乘上 (1 - 0.1) 或 (1 + 0.1)
+        // 並呼叫 getNumberOfMultiplyCeil 進行乘法後向上取整
+        return this.getNumberOfMultiplyCeil(price, discount ? 1 - decimal : 1 + decimal);
+    }
 
     /**
      * 📦 mergeArrayByKey(array)
@@ -3869,7 +3914,9 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-          // const utiller = new Utiller();
+          const utiller = new Utiller();
+          // console.log(utiller.toPercentageDecimal(30))
+          // console.log(utiller.getPriceOfPercentageBehavior(60,30, false));
           // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));
           // console.log(utiller.generateUniversalKeywords('刻在我心底的名字'))
           // console.log(utiller.getTSOfSpecificDate('2025/08/18(一)'))

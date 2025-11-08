@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -74,6 +74,11 @@ const LESS_MODULES = [
 
 const VIEW_IMPORTS =
     [
+        {
+            from: `react-qr-cod`,
+            views: ['QRCode'],
+            simplePath: true, /** from後面 不用接views import AudioPlayer from 'react-h5-audio-player' */
+        },
         {
             from: `react-h5-audio-player`,
             views: ['AudioPlayer'],
@@ -2125,6 +2130,10 @@ class CodegenNode {
 
     isSwitchView(type = 'default', node = this) {
         return node.isAttributeView('Switch', type);
+    }
+
+    isQRCodeView(type = 'default', node = this) {
+        return node.isAttributeView('QRCode', type);
     }
 
     isSliderView(type = 'default', node = this) {
@@ -8653,6 +8662,16 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     });
                 }
 
+                const nameOfDisabled = Util.camel(node.getName(), "disabled");
+                node.getParentNode().appendChildrenWithJsons(
+                    {
+                        name: nameOfDisabled,
+                        type: "boolean",
+                        defaultValue: node.disabled,
+                        incest: node.incest
+                    });
+                node.appendViewProps({ disabled: `###${node.getPreciseAttributeParentName()}.${Util.camel("get", nameOfDisabled)}()` });
+
                 if (node.hasIcon()) {
                     this.appendMuiIconImport(node, node.getIcon());
                     this.appendMuiIconImport(node, node.getCheckedIcon());
@@ -8770,7 +8789,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 node.appendContents(`{${node.getName()}.label}`)
             } else if (node.isChipView()) {
                 node.appendViewProps({label: `###${node.getName()}`})
-            } else if (node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
+            } else if (node.isQRCodeView() && node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView() || node.isCheckboxView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});
