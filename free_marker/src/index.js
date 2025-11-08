@@ -75,7 +75,7 @@ const LESS_MODULES = [
 const VIEW_IMPORTS =
     [
         {
-            from: `react-qr-cod`,
+            from: `react-qr-code`,
             views: ['QRCode'],
             simplePath: true, /** from後面 不用接views import AudioPlayer from 'react-h5-audio-player' */
         },
@@ -8789,7 +8789,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                 node.appendContents(`{${node.getName()}.label}`)
             } else if (node.isChipView()) {
                 node.appendViewProps({label: `###${node.getName()}`})
-            } else if (node.isQRCodeView() && node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
+            } else if (node.isQRCodeView() || node.isTextFieldView() || node.isRadioView() || node.isSliderView() || node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
                 node.appendViewProps({value: `###${node.getName()}`})
             } else if (node.isSwitchView() || node.isCheckboxView()) {
                 node.appendViewProps({checked: `###${node.getName()}`});

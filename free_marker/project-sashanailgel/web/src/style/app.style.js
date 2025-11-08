@@ -493,6 +493,24 @@ class AppStyle {
 
     IreneTextsFetchPaper = {};
 
+    /** => following for ireneQrcode  component  */
+
+    IreneQrcodeMainContentTypography = {};
+
+    IreneQrcodeMainSubTypography = {};
+
+    IreneQrcodeMainHrefCardWrap = {};
+
+    IreneQrcodeMainHrefQrCode = {};
+
+    IreneQrcodeMainTitleTypography = {};
+
+    IreneQrcodeMainDiv = {};
+
+    IreneQrcodePaperWrap = {};
+
+    IreneQrcodeDiv = {};
+
     /** => following for miniWeb  component  */
 
     IreneMiniWebDivWrap = {};
