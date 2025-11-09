@@ -117,6 +117,11 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfGoEditModeIconButtonClicked(param) {
         super.onAccountArrowOfGoEditModeIconButtonClicked(param);
     }
+
+    getPresetObjOfIreneQrcode() {
+        console.log(`我是被需要才被呼叫到的QQQQ`);
+        return { href: "https://tw.yahoo.com/?p=us", title: "測試Title", content: "測試content" };
+    }
 }
 
 export default ModularizedAccountComponent;

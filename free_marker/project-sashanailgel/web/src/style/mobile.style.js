@@ -5,6 +5,8 @@ import libpath from "path";
 class MobileStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -499,7 +501,7 @@ class MobileStyle {
 
     IreneQrcodeMainSubTypography = {};
 
-    IreneQrcodeMainHrefCardWrap = {};
+    IreneQrcodeMainHrefDivWrap = {};
 
     IreneQrcodeMainHrefQrCode = {};
 
@@ -2472,6 +2474,10 @@ class MobileStyle {
     DemeterDiv = {};
 
     /** => following for account  component  */
+
+    AccountTestButtonReactFragmentWrap = {};
+
+    AccountTestButtonButton = {};
 
     AccountAreaUserSummaryTitleOfUserTypography = {};
 

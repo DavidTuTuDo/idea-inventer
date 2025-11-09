@@ -198,7 +198,7 @@ class CodegenNode {
     isExtraComponent = false;
 
     listOfImplementsOfAlertItemClicked = [];
-    /** alertMenu的 items,在點擊後的事件實作 */
+    /** dalertMenu的 items,在點擊後的事件實作 */
 
     /** 如果 Typoghraphy 只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
     labelView = {
@@ -767,6 +767,19 @@ class CodegenNode {
         /** 取消鍵的控制，例如合約型態的就enable=false **/
         fullWidth: false,
         /** 讓dialog可以橫幅滿版，不然web最多到600px,mobile最多到350px **/
+
+        presetObj: false,
+        /** 像 ireneQrcode，可以透過預設參數打開畫面，不要每次都用cookie=>function實作在呼叫dialog的component
+         *                 alertDialog: {
+         *                     customView: "ireneQrcode",
+         *                     needActionButtons: false,
+         *                     presetObj: true
+         *                 }
+         *                 component => getPresetObjOfIreneQrcode() {
+         *                    console.log(`我是被需要才被呼叫到的QQQQ`);
+         *                    return { href: "https://tw.yahoo.com/?p=us", title: "測試Title", content: "測試content" };
+         *                 }
+         * */
 
         deleted: false,
         /** 放在onDeleted的邏輯裡,目前只有Chip*/
@@ -1610,6 +1623,10 @@ class CodegenNode {
         return Util.camel("on", name, "dialog", "submit");
     }
 
+    getFunctionNameOfDialogPesetObj(name) {
+        return  Util.camel('get', 'presetObj', 'Of', name)
+    }
+
     appendAlertDialogStmts(stmt, generator) {
         const self = this;
 
@@ -1701,6 +1718,9 @@ class CodegenNode {
                 generator.appendFunction(Util.camel('get', nameOfRef), [], [], [],
                   `return this.${nameOfRef}.current`)
             }
+
+            if (this.hasCustomViewDialog() && this.getAlertDialog().presetObj)
+                generator.appendFunction(this.getFunctionNameOfDialogPesetObj(self.getAlertDialog().customView), [], [], [], `return {}`);
 
             const stmtOfRef = this.isAlertDialogNeedGlobalRef() ? `self.${nameOfRef}` : nameOfRef
             const props = [
@@ -5332,6 +5352,7 @@ class ComponentBuilder extends BaseBuilder {
                         await UserInfoRef.waitLoginCompleted();
                         await store.onInitialFetchCompleted(result);
                         store.setInitialFetchCompleted(true);
+                        if(this.isDialogComponent()) this.getStore().initial(this.getComponentInstance()?.${componentNode.getFunctionNameOfDialogPesetObj(baseComponentName)}?.())
                     }
                  `);
 
@@ -6519,6 +6540,7 @@ class AppBuilder extends ComponentBuilder {
             for (const attr of attrs)
                 stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
 
+            stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
             return stmts;
         }
 
@@ -6535,7 +6557,7 @@ class AppBuilder extends ComponentBuilder {
 
             const attrs = nodeOfComponent.getPresetAttributes();
 
-            const params = ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined], ...attrs.map(attr => attr.getFieldName())])];
+            const params = ['component', ...getArrayWithDefaultValue([...nodeOfComponent.getParamsInPath(), ...[isDetail ? nodeOfComponent.getFieldNameOfDetailUid() : undefined], ...attrs.map(attr => attr.getFieldName())]), 'presetObj = {}'];
 
             generator.appendFunction({
                     name: Util.camel('goto', nodeOfComponent.name,
@@ -8830,6 +8852,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     type: 'string',
                     name: 'testUsage',
                     click: true,
+                    variant: 'outlined',
                     defaultValue: '測試按鈕',
                     incest: node.incest,
                 })
