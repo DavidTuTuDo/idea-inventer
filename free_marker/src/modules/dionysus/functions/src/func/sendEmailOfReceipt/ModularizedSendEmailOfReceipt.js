@@ -109,12 +109,12 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
     <div style="margin-top:20px;font-size:12px;color:#555;border-top:1px solid #ccc;padding-top:10px;">
       ${valid(eros?.company) ? `<div>${eros.company}</div>` : ""}
       ${valid(eros?.unifiedB) ? `<div>統編：${eros.unifiedB}</div>` : ""}
-      ${valid(eros?.phone) ? `<div>電話：${eros.phone}</div>` : ""}
+      ${valid(eros?.phoneO) ? `<div>電話：${eros.phoneO}</div>` : ""}
       <div style="margin-top:6px;">
-        ${valid(eros?.fb) ? `<a href="${eros.fb}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
-        ${valid(eros?.ig) ? `<a href="${eros.ig}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
-        ${valid(eros?.yt) ? `<a href="${eros.yt}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
-        ${valid(eros?.tiktok) ? `<a href="${eros.tiktok}"><img src="https://img.icons8.com/ios-filled/50/808080/tiktok.png" width="18"></a>` : ""}
+        ${valid(eros?.fbO) ? `<a href="${eros.fb}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/facebook-new.png" width="18"></a>` : ""}
+        ${valid(eros?.igO) ? `<a href="${eros.ig}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/instagram-new.png" width="18"></a>` : ""}
+        ${valid(eros?.ytO) ? `<a href="${eros.yt}" style="margin-right:8px;"><img src="https://img.icons8.com/ios-filled/50/808080/youtube-play.png" width="18"></a>` : ""}
+        ${valid(eros?.lineO) ? `<a href="https://line.me/R/ti/g/${eros.lineO}"><img src="https://img.icons8.com/ios-filled/50/808080/line-me.png" width="18"></a>` : ""}
       </div>
     </div>`;
 

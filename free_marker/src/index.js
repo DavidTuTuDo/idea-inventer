@@ -6127,8 +6127,19 @@ class ComponentBuilder extends BaseBuilder {
         }
 
         const existedFunctions = {};
-        for (const child of node.getPreciseViewChildren()) {
 
+        function persistMethod(generator, method) {
+            generator.appendFunction(method.functionName,
+                method.params,
+                [],
+                method.comments ?? [],
+                `Util.appendInfo('${method.functionName} not override')`
+            );
+        }
+
+        for (const method of node.getFunctionMethods()) persistMethod(generator, method);
+
+        for (const child of node.getPreciseViewChildren()) {
             const functionName = child.getViewClassNameOfRenderView();
             /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
             if (existedFunctions[functionName]) continue;
@@ -6136,18 +6147,9 @@ class ComponentBuilder extends BaseBuilder {
             /** 避免掉進去遞迴build */
             if (child.isReferenceStructNode()) continue;
 
-            for (const method of child.getFunctionMethods()) {
-                generator.appendFunction(method.functionName,
-                    method.params,
-                    [],
-                    method.comments ?? [],
-                    `Util.appendInfo('${method.functionName} not override')`
-                )
-            }
+            for (const method of child.getFunctionMethods()) persistMethod(generator, method);
 
-            for (const _import of child.getStmtsOfImport()) {
-                generator.appendImport(_import.part, _import.from);
-            }
+            for (const _import of child.getStmtsOfImport()) generator.appendImport(_import.part, _import.from);
 
             if (child.isArray()) {
                 if (child.hasPaginate()) {

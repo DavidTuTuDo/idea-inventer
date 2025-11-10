@@ -49,7 +49,11 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().setSelected("tab");
     }
 
-    onDionysusErosArrowOfPayOfDirectIconButtonClicked(param) {
+    onDionysusErosArrowOfPreviewDirectPayIconButtonClicked(param) {
+        this.getStore().setSelected("direct");
+    }
+
+    onDionysusErosArrowOfHrefOfDirectPayIconButtonClicked(param) {
         this.getStore().setSelected("direct");
     }
 
@@ -113,6 +117,13 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitPercentageOfDiscount(percent).then();
     }
 
+    onDionysusErosArrowOfPercentageFeeOfCodIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("percentageFeeOfCOD");
+        const percent = object.getDialogInputValueOfDionysusErosArrowOfPercentageFeeOfCod();
+        this.getStore().submitPercentageFeeOfCOD(percent).then();
+    }
+
     onDionysusErosArrowOfAmountOfAllowAnonymousBuyIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("allowAnonymousBuy");
@@ -147,8 +158,8 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitWhetherEnableOfEcPay().then();
     }
 
-    onDionysusErosEnableOfDirectSwitchChange(param) {
-        this.getStore().submitWhetherEnableOfDirect().then();
+    onDionysusErosEnableOfDirectPaySwitchChange(param) {
+        this.getStore().submitWhetherEnableOfDirectPay().then();
     }
 
     onDionysusErosEnableOfWhetherHomeDeliverySwitchChange(param) {
@@ -216,44 +227,51 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitTTLOfPayment(min).then();
     }
 
+    onDionysusErosArrowOfTtlOfAnonymousIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("ttlOfAnonymous");
+        const min = object.getDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous();
+        this.getStore().submitTTLOfAnonymous(min).then();
+    }
+
     // YouTube 頻道/帳號
-    onDionysusErosArrowOfYtIconButtonClicked(param) {
+    onDionysusErosArrowOfYtOIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("yt");
-        const value = object.getDialogInputValueOfDionysusErosArrowOfYt();
-        this.getStore().submitYT(value).then();
+        const value = object.getDialogInputValueOfDionysusErosArrowOfYtO();
+        this.getStore().submitYTQ(value).then();
     }
 
     // Instagram 帳號
-    onDionysusErosArrowOfIgIconButtonClicked(param) {
+    onDionysusErosArrowOfIgOIconButtonClicked(param) {
         const object = param.object;
         this.getStore().setSelected("ig");
-        const value = object.getDialogInputValueOfDionysusErosArrowOfIg();
-        this.getStore().submitIG(value).then();
+        const value = object.getDialogInputValueOfDionysusErosArrowOfIgO();
+        this.getStore().submitIGO(value).then();
     }
 
     // TikTok 帳號
-    onDionysusErosArrowOfTiktokIconButtonClicked(param) {
+    onDionysusErosArrowOfTiktokOIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("tiktok");
-        const value = object.getDialogInputValueOfDionysusErosArrowOfTiktok();
-        this.getStore().submitTikTok(value).then();
+        this.getStore().setSelected("tiktokO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfTiktokO();
+        this.getStore().submitTikTokO(value).then();
     }
 
     // Facebook 帳號/專頁
-    onDionysusErosArrowOfFbIconButtonClicked(param) {
+    onDionysusErosArrowOfFbOIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("fb");
-        const value = object.getDialogInputValueOfDionysusErosArrowOfFb();
-        this.getStore().submitFB(value).then();
+        this.getStore().setSelected("fbO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfFbO();
+        this.getStore().submitFBO(value).then();
     }
 
     // 電話號碼
-    onDionysusErosArrowOfPhoneIconButtonClicked(param) {
+    onDionysusErosArrowOfPhoneOIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("phone");
-        const value = object.getDialogInputValueOfDionysusErosArrowOfPhone();
-        this.getStore().submitPhone(value).then();
+        this.getStore().setSelected("phoneO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfPhoneO();
+        this.getStore().submitPhoneO(value).then();
     }
 
     // UnifiedB (假設是某種統一業務 ID)
@@ -270,6 +288,46 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().setSelected("company");
         const value = object.getDialogInputValueOfDionysusErosArrowOfCompany();
         this.getStore().submitCompany(value).then();
+    }
+
+    onDionysusErosArrowOfAddressOIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("addressO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfAddressO();
+        this.getStore().submitAddressO(value).then();
+    }
+
+    onDionysusErosArrowOfEmailOIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("emailO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfEmailO();
+        this.getStore().submitEmailO(value).then();
+    }
+
+    onDionysusErosArrowOfLineOIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("lineO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfLineO();
+        this.getStore().submitLineO(value).then();
+    }
+
+    onDionysusErosArrowOfNameOfDirectPayIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("nameOfDirectPay");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfNameOfDirectPay();
+        this.getStore().submitNameOfDirectPay(value).then();
+    }
+
+    getPresetObjOfIreneQrcode() {
+        return {
+            main: "LINE",
+            sub: "PAY",
+            title: this.getStore().getCupidPublic().getNameOfDirectPay(),
+            href: this.getStore().getCupidPublic().getHrefOfDirectPay(),
+            content: `NT$ 999 元`,
+            caution: `(完成支付後，截圖給小編)`,
+            color: `#06a748`
+        };
     }
 }
 

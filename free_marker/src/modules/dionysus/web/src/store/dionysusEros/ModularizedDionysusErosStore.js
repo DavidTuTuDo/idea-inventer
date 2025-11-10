@@ -10,11 +10,11 @@ import UserInfo from "../../base/BaseUserInfo";
 
 const textsFetchConfig = {
     direct: {
-        fetchDefaultTexts: (inst) => inst.fetchDefaultTextDirectPay(),
+        fetchDefaultTexts: (inst) => inst.fetchDefaultHrefOfDirectPay(),
         autoIncrement: false,
         maximumRow: 1,
         onChanged: () => Util.appendInfo("direct-pay texts changed"),
-        onAppendClicked: (param, inst) => inst.submitDirectPay(param)
+        onAppendClicked: (param, inst) => inst.submitHrefOfDirectPay(param)
     },
     tab: {
         fetchDefaultTexts: (inst) => inst.fetchDefaultTextsOfCategory(),
@@ -64,21 +64,24 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(pub.getThresholdOfCheckoutByCredit());
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(pub.getThresholdOfFreeShipByCOD());
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
+
         this.setDialogInputValueOfDionysusErosArrowOfMaximumOfUniqueItems(UserInfo.getGlobalPerspectiveAttr(`maximumOfUniqueItems`));
         this.setDialogInputValueOfDionysusErosArrowOfTtlOfPayment(UserInfo.getGlobalPerspectiveAttr(`ttlOfPayment`));
         this.setDialogInputValueOfDionysusErosArrowOfTtlOfAnonymous(UserInfo.getGlobalPerspectiveAttr(`ttlOfAnonymous`));
-        this.setDialogInputValueOfDionysusErosArrowOfFb(UserInfo.getGlobalPerspectiveAttr(`fb`));
-        this.setDialogInputValueOfDionysusErosArrowOfYt(UserInfo.getGlobalPerspectiveAttr(`yt`));
-        this.setDialogInputValueOfDionysusErosArrowOfTiktok(UserInfo.getGlobalPerspectiveAttr(`tiktok`));
-        this.setDialogInputValueOfDionysusErosArrowOfIg(UserInfo.getGlobalPerspectiveAttr(`ig`));
+        this.setDialogInputValueOfDionysusErosArrowOfFbO(UserInfo.getGlobalPerspectiveAttr(`fbO`));
+        this.setDialogInputValueOfDionysusErosArrowOfYtO(UserInfo.getGlobalPerspectiveAttr(`ytO`));
+        this.setDialogInputValueOfDionysusErosArrowOfTiktokO(UserInfo.getGlobalPerspectiveAttr(`tiktokO`));
+        this.setDialogInputValueOfDionysusErosArrowOfIgO(UserInfo.getGlobalPerspectiveAttr(`igO`));
         this.setDialogInputValueOfDionysusErosArrowOfCompany(UserInfo.getGlobalPerspectiveAttr(`company`));
-        this.setDialogInputValueOfDionysusErosArrowOfPhone(UserInfo.getGlobalPerspectiveAttr(`phone`));
+        this.setDialogInputValueOfDionysusErosArrowOfPhoneO(UserInfo.getGlobalPerspectiveAttr(`phoneO`));
         this.setDialogInputValueOfDionysusErosArrowOfUnifiedB(UserInfo.getGlobalPerspectiveAttr(`unifiedB`));
-
+        this.setDialogInputValueOfDionysusErosArrowOfAddressO(UserInfo.getGlobalPerspectiveAttr(`addressO`));
+        this.setDialogInputValueOfDionysusErosArrowOfEmailO(UserInfo.getGlobalPerspectiveAttr(`emailO`));
+        this.setDialogInputValueOfDionysusErosArrowOfLineO(UserInfo.getGlobalPerspectiveAttr(`lineO`));
         this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
         this.setEnableOfEcPay(pub.getEnableOfECPay());
-        this.setEnableOfDirect(pub.getEnableOfDirectPay());
+        this.setEnableOfDirectPay(pub.getEnableOfDirectPay());
         this.setEnableOfEnableOfCod(pub.getEnableOfCOD());
         this.setEnableOfWhetherHomeDelivery(pub.getWhetherHomeDelivery());
         this.setEnableOfWhetherShipByStorePickup(pub.getWhetherShipByStorePickup());
@@ -103,6 +106,16 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             errorMessage: `折扣常數格式錯誤 ${percent}`,
             setter: (val) => this.getCupidPublic().setPercentageOfDiscount(val),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(val)
+        });
+
+    submitPercentageFeeOfCOD = (percent) =>
+        this.submitWithValidation({
+            validator: this.isValidDiscountPercentNumber,
+            value: percent,
+            key: `percentageOfDiscount`,
+            errorMessage: `貨到付款(COD)手續費 ${percent} %錯誤`,
+            setter: (val) => this.getCupidPublic().setPercentageFeeOfCOD(percent),
+            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageFeeOfCod(percent)
         });
 
     submitAmountOfAllowAnonymousBuy = (amount) =>
@@ -258,9 +271,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.getCupidPublic().setEnableOfECPay(this.getEnableOfEcPay());
         await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfECPay: this.getEnableOfEcPay() });
     };
-    submitWhetherEnableOfDirect = async () => {
-        this.getCupidPublic().setEnableOfDirectPay(this.getEnableOfDirect());
-        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfDirectPay: this.getEnableOfDirect() });
+    submitWhetherEnableOfDirectPay = async () => {
+        this.getCupidPublic().setEnableOfDirectPay(this.getEnableOfDirectPay());
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfDirectPay: this.getEnableOfDirectPay() });
     };
     submitWhetherHomeDelivery = async () => {
         this.getCupidPublic().setWhetherHomeDelivery(this.getEnableOfWhetherHomeDelivery());
@@ -299,58 +312,86 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { hasECPay: true });
     };
 
-    submitDirectPay = async ([url]) => {
+    submitHrefOfDirectPay = async ([url]) => {
         if (!Util.isHttpsURL(url)) return this.getComponent().showErrorSnackMessage(`立牌連結格式錯誤 '${url}'`);
-        this.getCupidPublic().setPayOfDirect(url);
-        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { payOfDirect: url });
+        this.getCupidPublic().setHrefOfDirectPay(url);
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { hrefOfDirectPay: url });
+    };
+
+    submitNameOfDirectPay = async (name) => {
+        if (!this.isValidText(name)) return this.getComponent().showErrorSnackMessage(`立牌連結的店舖名格式錯誤`);
+        this.getCupidPublic().setNameOfDirectPay(name);
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { nameOfDirectPay: name });
     };
 
     submitBrandName = async (name) => {
-        if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`店名格式錯誤`);
+        if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`網頁抬頭 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { nameOfBrand: name });
         UserInfo.setNameOfBrand(name);
     };
 
     submitCompany = async (company) => {
-        if (_.isEmpty(company)) return this.getComponent().showErrorSnackMessage(`公司登記名稱格式錯誤`);
+        if (!this.isValidText(company)) return this.getComponent().showErrorSnackMessage(`公司登記名稱格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { company });
         UserInfo.setGlobalPerspectiveAttr({ company });
     };
 
-    submitYT = async (youtube) => {
-        if (_.isEmpty(youtube)) return this.getComponent().showErrorSnackMessage(`YouTube 頻道/帳號格式錯誤`);
-        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { yt: youtube });
-        UserInfo.setGlobalPerspectiveAttr({ yt: youtube });
+    submitYTQ = async (ytO) => {
+        if (!this.isValidText(ytO)) return this.getComponent().showErrorSnackMessage(`YouTube 頻道/帳號格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ytO });
+        UserInfo.setGlobalPerspectiveAttr({ ytO });
     };
 
-    submitFB = async (facebook) => {
-        if (_.isEmpty(facebook)) return this.getComponent().showErrorSnackMessage(`Facebook 帳號/專頁格式錯誤`);
-        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { fb: facebook });
-        UserInfo.setGlobalPerspectiveAttr({ fb: facebook });
+    submitFBO = async (fbO) => {
+        if (!this.isValidText(fbO)) return this.getComponent().showErrorSnackMessage(`Facebook 帳號/專頁格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { fbO });
+        UserInfo.setGlobalPerspectiveAttr({ fbO });
     };
 
-    submitIG = async (instagram) => {
-        if (_.isEmpty(instagram)) return this.getComponent().showErrorSnackMessage(`Instagram 帳號格式錯誤`);
-        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ig: instagram });
-        UserInfo.setGlobalPerspectiveAttr({ ig: instagram });
+    submitIGO = async (igO) => {
+        if (!this.isValidText(igO)) return this.getComponent().showErrorSnackMessage(`Instagram 帳號格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { igO });
+        UserInfo.setGlobalPerspectiveAttr({ igO });
     };
 
-    submitTikTok = async (tiktok) => {
-        if (_.isEmpty(tiktok)) return this.getComponent().showErrorSnackMessage(`TikTok 帳號格式錯誤`);
-        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { tiktok });
-        UserInfo.setGlobalPerspectiveAttr({ tiktok });
+    submitTikTokO = async (tiktokO) => {
+        if (!this.isValidText(tiktokO)) return this.getComponent().showErrorSnackMessage(`TikTok 帳號格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { tiktokO });
+        UserInfo.setGlobalPerspectiveAttr({ tiktokO });
     };
 
     submitUnifiedB = async (unifiedB) => {
-        if (_.isEmpty(unifiedB)) return this.getComponent().showErrorSnackMessage(`統一編號 格式錯誤`);
+        if (!this.isValidText(unifiedB)) return this.getComponent().showErrorSnackMessage(`統一編號 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { unifiedB });
         UserInfo.setGlobalPerspectiveAttr({ unifiedB });
     };
 
-    submitPhone = async (phone) => {
-        if (_.isEmpty(phone)) return this.getComponent().showErrorSnackMessage(`手機電話 格式錯誤`);
-        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { phone });
-        UserInfo.setGlobalPerspectiveAttr({ phone });
+    submitPhoneO = async (phoneO) => {
+        if (!this.isValidText(phoneO)) return this.getComponent().showErrorSnackMessage(`工作用手機電話 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { phoneO });
+        UserInfo.setGlobalPerspectiveAttr({ phoneO });
+    };
+
+    submitLineO = async (lineO) => {
+        if (!this.isValidText(lineO)) return this.getComponent().showErrorSnackMessage(`官方Line 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { lineO });
+        UserInfo.setGlobalPerspectiveAttr({ lineO });
+    };
+
+    isValidText = () => {
+        return true;
+    };
+
+    submitAddressO = async (addressO) => {
+        if (!this.isValidText(addressO)) return this.getComponent().showErrorSnackMessage(`公司地址 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { addressO });
+        UserInfo.setGlobalPerspectiveAttr({ addressO });
+    };
+
+    submitEmailO = async (emailO) => {
+        if (!this.isValidText(emailO)) return this.getComponent().showErrorSnackMessage(`公司Emal 格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { emailO });
+        UserInfo.setGlobalPerspectiveAttr({ emailO });
     };
 
     isPositiveNum = (value) => {
@@ -390,7 +431,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
     fetchDefaultTextOfLinePay = async () => this.getNormalizeStmt(["CHANNEL ID", "SECRET  ID"], this.getCupidSecret().getLinepaySet());
     fetchDefaultTextOfECPay = async () => this.getNormalizeStmt(["Merchant ID", "Hash Key", "Hash IV"], this.getCupidSecret().getECPaySet());
-    fetchDefaultTextDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getCupidPublic().getPayOfDirect()]);
+    fetchDefaultHrefOfDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getCupidPublic().getHrefOfDirectPay()]);
 
     getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: _.get(items, idx, "") || "" }));
 

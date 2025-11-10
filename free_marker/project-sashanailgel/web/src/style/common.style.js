@@ -5,8 +5,6 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
-    /** following for homeless */
-
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -497,15 +495,29 @@ class CommonStyle {
 
     /** => following for ireneQrcode  component  */
 
+    IreneQrcodeMainCautionTypography = {};
+
+    IreneQrcodeMainContentLabelOfContentTypography = {};
+
+    IreneQrcodeMainContentDivWrap = {};
+
     IreneQrcodeMainContentTypography = {};
 
-    IreneQrcodeMainSubTypography = {};
+    IreneQrcodeMainScanTitleTypography = {};
 
-    IreneQrcodeMainHrefDivWrap = {};
+    IreneQrcodeMainScanHrefDivWrap = {};
 
-    IreneQrcodeMainHrefQrCode = {};
+    IreneQrcodeMainScanHrefQrCode = {};
 
-    IreneQrcodeMainTitleTypography = {};
+    IreneQrcodeMainScanDiv = {};
+
+    IreneQrcodeMainRowSubDivWrap = {};
+
+    IreneQrcodeMainRowSubTypography = {};
+
+    IreneQrcodeMainRowMainTypography = {};
+
+    IreneQrcodeMainRowDiv = {};
 
     IreneQrcodeMainDiv = {};
 
@@ -1427,29 +1439,57 @@ class CommonStyle {
 
     DionysusErosAreaOfEcPayDiv = {};
 
-    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconNavigateNext = {};
+    DionysusErosAreaOfPreviewDirectPayArrowOfPreviewDirectPayIconNavigateNext = {};
 
-    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectReactFragmentWrap = {};
+    DionysusErosAreaOfPreviewDirectPayArrowOfPreviewDirectPayReactFragmentWrap = {};
 
-    DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconButton = {};
+    DionysusErosAreaOfPreviewDirectPayArrowOfPreviewDirectPayIconButton = {};
 
-    DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectContentTypography = {};
+    DionysusErosAreaOfPreviewDirectPayOptionOfPreviewDirectPayContentTypography = {};
 
-    DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectTitleTypography = {};
+    DionysusErosAreaOfPreviewDirectPayOptionOfPreviewDirectPayTitleTypography = {};
 
-    DionysusErosAreaOfPayOfDirectDivWrap = {};
+    DionysusErosAreaOfPreviewDirectPayDivWrap = {};
 
-    DionysusErosAreaOfPayOfDirectDiv = {};
+    DionysusErosAreaOfPreviewDirectPayDiv = {};
 
-    DionysusErosAreaOfDirectEnableOfDirectSwitch = {};
+    DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayIconNavigateNext = {};
 
-    DionysusErosAreaOfDirectOptionOfDirectContentTypography = {};
+    DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayReactFragmentWrap = {};
 
-    DionysusErosAreaOfDirectOptionOfDirectTitleTypography = {};
+    DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayIconButton = {};
 
-    DionysusErosAreaOfDirectDivWrap = {};
+    DionysusErosAreaOfHrefOfDirectPayOptionOfHrefOfDirectPayContentTypography = {};
 
-    DionysusErosAreaOfDirectDiv = {};
+    DionysusErosAreaOfHrefOfDirectPayOptionOfHrefOfDirectPayTitleTypography = {};
+
+    DionysusErosAreaOfHrefOfDirectPayDivWrap = {};
+
+    DionysusErosAreaOfHrefOfDirectPayDiv = {};
+
+    DionysusErosAreaOfNameOfDirectPayArrowOfNameOfDirectPayIconNavigateNext = {};
+
+    DionysusErosAreaOfNameOfDirectPayArrowOfNameOfDirectPayReactFragmentWrap = {};
+
+    DionysusErosAreaOfNameOfDirectPayArrowOfNameOfDirectPayIconButton = {};
+
+    DionysusErosAreaOfNameOfDirectPayOptionOfNameOfDirectPayContentTypography = {};
+
+    DionysusErosAreaOfNameOfDirectPayOptionOfNameOfDirectPayTitleTypography = {};
+
+    DionysusErosAreaOfNameOfDirectPayDivWrap = {};
+
+    DionysusErosAreaOfNameOfDirectPayDiv = {};
+
+    DionysusErosAreaOfDirectPayEnableOfDirectPaySwitch = {};
+
+    DionysusErosAreaOfDirectPayOptionOfDirectPayContentTypography = {};
+
+    DionysusErosAreaOfDirectPayOptionOfDirectPayTitleTypography = {};
+
+    DionysusErosAreaOfDirectPayDivWrap = {};
+
+    DionysusErosAreaOfDirectPayDiv = {};
 
     DionysusErosDividerDiv = {};
 
@@ -1519,119 +1559,119 @@ class CommonStyle {
 
     DionysusErosAreaOfMaximumOfUniqueItemsDiv = {};
 
-    DionysusErosAreaOfLineIdArrowOfLineIdIconNavigateNext = {};
+    DionysusErosAreaOfLineOArrowOfLineOIconNavigateNext = {};
 
-    DionysusErosAreaOfLineIdArrowOfLineIdReactFragmentWrap = {};
+    DionysusErosAreaOfLineOArrowOfLineOReactFragmentWrap = {};
 
-    DionysusErosAreaOfLineIdArrowOfLineIdIconButton = {};
+    DionysusErosAreaOfLineOArrowOfLineOIconButton = {};
 
-    DionysusErosAreaOfLineIdOptionOfLineIdContentTypography = {};
+    DionysusErosAreaOfLineOOptionOfLineOContentTypography = {};
 
-    DionysusErosAreaOfLineIdOptionOfLineIdTitleTypography = {};
+    DionysusErosAreaOfLineOOptionOfLineOTitleTypography = {};
 
-    DionysusErosAreaOfLineIdDivWrap = {};
+    DionysusErosAreaOfLineODivWrap = {};
 
-    DionysusErosAreaOfLineIdDiv = {};
+    DionysusErosAreaOfLineODiv = {};
 
-    DionysusErosAreaOfYtArrowOfYtIconNavigateNext = {};
+    DionysusErosAreaOfYtOArrowOfYtOIconNavigateNext = {};
 
-    DionysusErosAreaOfYtArrowOfYtReactFragmentWrap = {};
+    DionysusErosAreaOfYtOArrowOfYtOReactFragmentWrap = {};
 
-    DionysusErosAreaOfYtArrowOfYtIconButton = {};
+    DionysusErosAreaOfYtOArrowOfYtOIconButton = {};
 
-    DionysusErosAreaOfYtOptionOfYtContentTypography = {};
+    DionysusErosAreaOfYtOOptionOfYtOContentTypography = {};
 
-    DionysusErosAreaOfYtOptionOfYtTitleTypography = {};
+    DionysusErosAreaOfYtOOptionOfYtOTitleTypography = {};
 
-    DionysusErosAreaOfYtDivWrap = {};
+    DionysusErosAreaOfYtODivWrap = {};
 
-    DionysusErosAreaOfYtDiv = {};
+    DionysusErosAreaOfYtODiv = {};
 
-    DionysusErosAreaOfTiktokArrowOfTiktokIconNavigateNext = {};
+    DionysusErosAreaOfTiktokOArrowOfTiktokOIconNavigateNext = {};
 
-    DionysusErosAreaOfTiktokArrowOfTiktokReactFragmentWrap = {};
+    DionysusErosAreaOfTiktokOArrowOfTiktokOReactFragmentWrap = {};
 
-    DionysusErosAreaOfTiktokArrowOfTiktokIconButton = {};
+    DionysusErosAreaOfTiktokOArrowOfTiktokOIconButton = {};
 
-    DionysusErosAreaOfTiktokOptionOfTiktokContentTypography = {};
+    DionysusErosAreaOfTiktokOOptionOfTiktokOContentTypography = {};
 
-    DionysusErosAreaOfTiktokOptionOfTiktokTitleTypography = {};
+    DionysusErosAreaOfTiktokOOptionOfTiktokOTitleTypography = {};
 
-    DionysusErosAreaOfTiktokDivWrap = {};
+    DionysusErosAreaOfTiktokODivWrap = {};
 
-    DionysusErosAreaOfTiktokDiv = {};
+    DionysusErosAreaOfTiktokODiv = {};
 
-    DionysusErosAreaOfIgArrowOfIgIconNavigateNext = {};
+    DionysusErosAreaOfIgOArrowOfIgOIconNavigateNext = {};
 
-    DionysusErosAreaOfIgArrowOfIgReactFragmentWrap = {};
+    DionysusErosAreaOfIgOArrowOfIgOReactFragmentWrap = {};
 
-    DionysusErosAreaOfIgArrowOfIgIconButton = {};
+    DionysusErosAreaOfIgOArrowOfIgOIconButton = {};
 
-    DionysusErosAreaOfIgOptionOfIgContentTypography = {};
+    DionysusErosAreaOfIgOOptionOfIgOContentTypography = {};
 
-    DionysusErosAreaOfIgOptionOfIgTitleTypography = {};
+    DionysusErosAreaOfIgOOptionOfIgOTitleTypography = {};
 
-    DionysusErosAreaOfIgDivWrap = {};
+    DionysusErosAreaOfIgODivWrap = {};
 
-    DionysusErosAreaOfIgDiv = {};
+    DionysusErosAreaOfIgODiv = {};
 
-    DionysusErosAreaOfFbArrowOfFbIconNavigateNext = {};
+    DionysusErosAreaOfFbOArrowOfFbOIconNavigateNext = {};
 
-    DionysusErosAreaOfFbArrowOfFbReactFragmentWrap = {};
+    DionysusErosAreaOfFbOArrowOfFbOReactFragmentWrap = {};
 
-    DionysusErosAreaOfFbArrowOfFbIconButton = {};
+    DionysusErosAreaOfFbOArrowOfFbOIconButton = {};
 
-    DionysusErosAreaOfFbOptionOfFbContentTypography = {};
+    DionysusErosAreaOfFbOOptionOfFbOContentTypography = {};
 
-    DionysusErosAreaOfFbOptionOfFbTitleTypography = {};
+    DionysusErosAreaOfFbOOptionOfFbOTitleTypography = {};
 
-    DionysusErosAreaOfFbDivWrap = {};
+    DionysusErosAreaOfFbODivWrap = {};
 
-    DionysusErosAreaOfFbDiv = {};
+    DionysusErosAreaOfFbODiv = {};
 
     DionysusErosDividerTopDiv = {};
 
-    DionysusErosAreaOfEmailArrowOfEmailIconNavigateNext = {};
+    DionysusErosAreaOfEmailOArrowOfEmailOIconNavigateNext = {};
 
-    DionysusErosAreaOfEmailArrowOfEmailReactFragmentWrap = {};
+    DionysusErosAreaOfEmailOArrowOfEmailOReactFragmentWrap = {};
 
-    DionysusErosAreaOfEmailArrowOfEmailIconButton = {};
+    DionysusErosAreaOfEmailOArrowOfEmailOIconButton = {};
 
-    DionysusErosAreaOfEmailOptionOfEmailContentTypography = {};
+    DionysusErosAreaOfEmailOOptionOfEmailOContentTypography = {};
 
-    DionysusErosAreaOfEmailOptionOfEmailTitleTypography = {};
+    DionysusErosAreaOfEmailOOptionOfEmailOTitleTypography = {};
 
-    DionysusErosAreaOfEmailDivWrap = {};
+    DionysusErosAreaOfEmailODivWrap = {};
 
-    DionysusErosAreaOfEmailDiv = {};
+    DionysusErosAreaOfEmailODiv = {};
 
-    DionysusErosAreaOfPhoneArrowOfPhoneIconNavigateNext = {};
+    DionysusErosAreaOfPhoneOArrowOfPhoneOIconNavigateNext = {};
 
-    DionysusErosAreaOfPhoneArrowOfPhoneReactFragmentWrap = {};
+    DionysusErosAreaOfPhoneOArrowOfPhoneOReactFragmentWrap = {};
 
-    DionysusErosAreaOfPhoneArrowOfPhoneIconButton = {};
+    DionysusErosAreaOfPhoneOArrowOfPhoneOIconButton = {};
 
-    DionysusErosAreaOfPhoneOptionOfPhoneContentTypography = {};
+    DionysusErosAreaOfPhoneOOptionOfPhoneOContentTypography = {};
 
-    DionysusErosAreaOfPhoneOptionOfPhoneTitleTypography = {};
+    DionysusErosAreaOfPhoneOOptionOfPhoneOTitleTypography = {};
 
-    DionysusErosAreaOfPhoneDivWrap = {};
+    DionysusErosAreaOfPhoneODivWrap = {};
 
-    DionysusErosAreaOfPhoneDiv = {};
+    DionysusErosAreaOfPhoneODiv = {};
 
-    DionysusErosAreaOfAddressArrowOfAddressIconNavigateNext = {};
+    DionysusErosAreaOfAddressOArrowOfAddressOIconNavigateNext = {};
 
-    DionysusErosAreaOfAddressArrowOfAddressReactFragmentWrap = {};
+    DionysusErosAreaOfAddressOArrowOfAddressOReactFragmentWrap = {};
 
-    DionysusErosAreaOfAddressArrowOfAddressIconButton = {};
+    DionysusErosAreaOfAddressOArrowOfAddressOIconButton = {};
 
-    DionysusErosAreaOfAddressOptionOfAddressContentTypography = {};
+    DionysusErosAreaOfAddressOOptionOfAddressOContentTypography = {};
 
-    DionysusErosAreaOfAddressOptionOfAddressTitleTypography = {};
+    DionysusErosAreaOfAddressOOptionOfAddressOTitleTypography = {};
 
-    DionysusErosAreaOfAddressDivWrap = {};
+    DionysusErosAreaOfAddressODivWrap = {};
 
-    DionysusErosAreaOfAddressDiv = {};
+    DionysusErosAreaOfAddressODiv = {};
 
     DionysusErosAreaOfUnifiedBArrowOfUnifiedBIconNavigateNext = {};
 
@@ -2474,10 +2514,6 @@ class CommonStyle {
     DemeterDiv = {};
 
     /** => following for account  component  */
-
-    AccountTestButtonReactFragmentWrap = {};
-
-    AccountTestButtonButton = {};
 
     AccountAreaUserSummaryTitleOfUserTypography = {};
 

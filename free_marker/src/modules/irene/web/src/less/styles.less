@@ -35,7 +35,7 @@
     }
 }
 .IreneQrcodeDiv:extend(.CenterInParentColumn) {
-    padding: 20px;
+    padding: 30px;
     @media @mobile {
         /** empty style */
     }
@@ -50,6 +50,8 @@
     margin: auto;
     width: 100%;
     height: 100%;
+    border-radius: 10px;
+    min-height: 60vh;
     @media @mobile {
         /** empty style */
     }
@@ -71,7 +73,8 @@
         /** empty style */
     }
 }
-.IreneQrcodeMainTitleTypography {
+.IreneQrcodeMainRowDiv:extend(.CenterInParentRow) {
+    gap: 3px;
     @media @mobile {
         /** empty style */
     }
@@ -82,7 +85,19 @@
         /** empty style */
     }
 }
-.IreneQrcodeMainHrefQrCode {
+.IreneQrcodeMainRowMainTypography:extend(.BeautyTitle) {
+    font-size: 1.3rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 1.5rem;
+    }
+}
+.IreneQrcodeMainRowSubTypography:extend(.IreneQrcodeMainRowMainTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -93,8 +108,12 @@
         /** empty style */
     }
 }
-.IreneQrcodeMainHrefDivWrap {
-    padding: 17px;
+.IreneQrcodeMainRowSubDivWrap:extend(.CenterInParentColumn) {
+    background: white;
+    padding: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 18px;
     @media @mobile {
         /** empty style */
     }
@@ -105,7 +124,12 @@
         /** empty style */
     }
 }
-.IreneQrcodeMainSubTypography {
+.IreneQrcodeMainScanDiv:extend(.CenterInParentColumn) {
+    background: white;
+    padding: 13px;
+    border-radius: 8px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -116,7 +140,7 @@
         /** empty style */
     }
 }
-.IreneQrcodeMainContentTypography {
+.IreneQrcodeMainScanHrefQrCode {
     @media @mobile {
         /** empty style */
     }
@@ -125,6 +149,79 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+.IreneQrcodeMainScanHrefDivWrap {
+    border-radius: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanTitleTypography:extend(.BeautyTitle) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainContentTypography:extend(.BeautyTitle) {
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainContentDivWrap:extend(.CenterInParentRow) {
+    font-size: 1.2rem;
+    border-bottom: 1px solid #fff;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 1.3rem;
+    }
+}
+.IreneQrcodeMainContentLabelOfContentTypography:extend(.BeautyContent) {
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainCautionTypography:extend(.BeautyContent) {
+    font-size: 0.8rem;
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.9rem;
     }
 }
 .IreneTextsFetchPaper:extend(.CenterInParentColumn) {
