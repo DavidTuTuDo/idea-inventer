@@ -3,7 +3,6 @@ const edit = true;
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
-import UserInfo from "../../base/BaseUserInfo";
 import BaseDionysusHermesComponent from "./BaseDionysusHermesComponent";
 
 class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
@@ -16,9 +15,11 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
     }
 
     onDionysusHermesSubmitChipClicked(param) {
+        const self = this;
         if (this.getStore().hasSurelyChoice()) {
-            this.getStore().updateTransportInfo();
-            Router.gotoPlutusPage(this);
+            const result = this.getStore().updateTransportInfo();
+            /** result = {typeOfTransaction,typeOfTransport,feeOfTransport} */
+            Router.gotoPlutusPage(this, result);
         } else this.showWarningSnackMessage(`尚未選擇付款、物流方式`);
     }
 
@@ -33,12 +34,11 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
     }
 
     getListInjectStyleOfDionysusHermesTransportDiv(dionysusHermes) {
-        Util.appendInfo("UserInfo.containsPhysicalGoodOfCheckedItem()==> ", UserInfo.containsPhysicalGoodOfCheckedItem());
-        return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
+        return Util.getVisibleOrNone(this.getStore().getHasPhysical());
     }
 
     getInjectStyleOfDionysusHermesDividerDiv() {
-        return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
+        return Util.getVisibleOrNone(this.getStore().getHasPhysical());
     }
 
     onDionysusHermesTransportChoiceCheckboxChange(param) {
@@ -52,11 +52,11 @@ class ModularizedDionysusHermesComponent extends BaseDionysusHermesComponent {
     }
 
     getInjectStyleOfDionysusHermesTransportDescriptionTypography(transport) {
-        return Util.getVisibleOrNone(UserInfo.containsPhysicalGoodOfCheckedItem());
+        return Util.getVisibleOrNone(this.getStore().getHasPhysical());
     }
 
     getWrapInjectStyleOfDionysusHermesTransportPriceTypography(transport) {
-        return Util.getVisibleOrHidden(UserInfo.containsPhysicalGoodOfCheckedItem());
+        return Util.getVisibleOrHidden(this.getStore().getHasPhysical());
     }
 
     getWrapInjectStyleOfDionysusHermesTransactionPriceTypography(transaction) {

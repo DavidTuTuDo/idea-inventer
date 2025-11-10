@@ -2,9 +2,8 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import Cookie from "../../cookie";
 import UserInfo from "../../base/BaseUserInfo";
-import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS } from "mobx";
+import { computed, toJS } from "mobx";
 import BaseDionysusHermesStore from "./BaseDionysusHermesStore";
 import { Application } from "../../index";
 import Config from "../../config";
@@ -27,11 +26,9 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
 
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
-        const priceOfWithoutTransport = _.toNumber(Cookie.getTotalPriceOfCartie());
-        this.setPriceB4Transport(priceOfWithoutTransport);
-
-        const idOfAuthor = UserInfo.getAuthorOfHeadItemOfCartie();
-
+        const idOfAuthor = this.getItemsOfChecked()?.[0]?.idOfAuthor;
+        const priceOfWithoutTransport = this.getPriceB4Transport();
+        this.setHasPhysical(_.some(this.getItemsOfChecked(), { isTaskJob: false }));
         if (idOfAuthor) {
             this.eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             Util.appendInfo(`hermes拿到了 eros => `, this.eros);
@@ -153,31 +150,23 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         return _.find(this.getTransactions(), (transaction) => transaction.getChoice());
     };
 
-    updateTransportInfo() {
+    updateTransportInfo = () => {
         const transport = this.getSelectedTransport();
         const transaction = this.getSelectedTransaction();
 
         Util.appendInfo(`選擇的付費方式:`, transaction ? transaction.data() : "");
         Util.appendInfo(`選擇的物流方式:`, transport ? transport.data() : "");
 
-        if (UserInfo.containsPhysicalGoodOfCheckedItem()) {
-            Cookie.setInfoOfSelectedTrans({
-                typeOfTransaction: transaction.getTypeOfTransaction(),
-                stringOfTransaction: transaction.getName(),
-                typeOfTransport: transport.getTypeOfTransport(),
-                feeOfTransport: transport.getPrice(),
-                stringOfTransport: transport.getName()
-            });
-        } else {
-            Cookie.setInfoOfSelectedTrans({
-                typeOfTransaction: transaction.getTypeOfTransaction(),
-                stringOfTransaction: transaction.getName(),
-                typeOfTransport: Config.TransportMethod.Needless,
-                feeOfTransport: 0,
-                stringOfTransport: Config.LangOfTransportMethod.Needless
-            });
-        }
-    }
+        return {
+            typeOfTransaction: _.toNumber(transaction.getTypeOfTransaction()),
+            typeOfTransport: this.getHasPhysical() ? _.toNumber(transport.getTypeOfTransport()) : Config.TransportMethod.Needless,
+            feeOfTransport: this.getHasPhysical() ? _.toNumber(transport.getPrice()) : 0,
+            priceB4Transport: this.getPriceB4Transport(),
+            price: this.getPriceOfTotal(),
+            itemsOfChecked: this.getItemsOfChecked(),
+            hasPhysical: this.getHasPhysical()
+        };
+    };
 }
 
 export default ModularizedDionysusHermesStore;

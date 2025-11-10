@@ -67,6 +67,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
             await Api.updateHadeItemAtomically(
                 async (item, transaction) => {
                     return {
+                        typeOfTransaction: Config.TransactionMethod.ECPay,
                         stateOfPayment: Config.StateOfPayment.Completed,
                         procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())

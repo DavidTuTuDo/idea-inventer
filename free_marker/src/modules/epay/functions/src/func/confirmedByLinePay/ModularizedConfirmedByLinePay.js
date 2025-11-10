@@ -78,7 +78,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByLinePay");
                 return {
                     stateOfPayment: Config.StateOfPayment.Completed,
-                    procedureOfPayment: `${Config.EPayType.LinePay}`,
+                    procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: data.idOfTransaction,
                     messageOfPayment: `${resultOfLinePayConfirm.returnMessage}`
@@ -88,8 +88,9 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await Api.updateHadeItemAtomically(
                 (item, transaction) => {
                     return {
+                        typeOfTransaction: Config.TransactionMethod.LinePay,
                         stateOfPayment: Config.StateOfPayment.Completed,
-                        procedureOfPayment: `${Config.EPayType.LinePay}`,
+                        procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };
                 },
@@ -104,7 +105,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
                 await this.validateOrderIsUnPaidWaiting(item, "ConfirmedByLinePay");
                 return {
-                    procedureOfPayment: `${Config.EPayType.LinePay}`,
+                    procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     stateOfPayment: Config.StateOfPayment.Failure,
                     messageOfPayment: `${MAP_OF_CODE_MESSAGE_FROM_CONFIRM_RESULT[codeOfReturn]}-${resultOfLinePayConfirm.returnMessage}`

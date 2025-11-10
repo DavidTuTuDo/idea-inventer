@@ -83,6 +83,7 @@ class ModularizedPaymentInfoByECPay extends BasePaymentInfoByECPay {
                 await this.validateOrderIsUnPaidWaiting(itemOfOrder, "PaymentInfoByECPay");
                 return Api.normalizePreciseOrder(
                     {
+                        typeOfTransaction: Config.TransactionMethod.ECPay,
                         procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${typeOfPayment}`,
                         timeOfExpired: this.getUTCTimestampFromECPayTimeString(timeOfExpired), //CVS ExpireDate: '2022/07/03 15:04:19', ECPay的是台灣國家, 要把timestamp轉回UTC
                         idOfThirdPartyTradeNo: contentOfPaymentInfo.TradeNo,

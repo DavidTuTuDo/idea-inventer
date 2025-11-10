@@ -4,7 +4,6 @@ import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "
 import _ from "lodash";
 import Router from "../../router";
 import BaseDionysusCartieComponent from "./BaseDionysusCartieComponent";
-import UserInfo from "../../base/BaseUserInfo";
 
 class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
     constructor(props) {
@@ -48,10 +47,7 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
         const self = this;
         self.getStore()
             .isCheckedVariantValid()
-            .then(() => {
-                self.getStore().updateInfosOfCartieCookie();
-                Router.gotoHermesPage(self);
-            })
+            .then((itemsOfChecked) => Router.gotoHermesPage(self, { priceB4Transport: self.getStore().getPriceOfTotal(), itemsOfChecked }))
             .catch((error) => self.showWarningSnackMessage(error.message));
     };
 

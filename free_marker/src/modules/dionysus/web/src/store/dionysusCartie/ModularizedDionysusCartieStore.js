@@ -47,7 +47,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     isCheckedVariantValid = async () => {
         /** 檢查商品是否皆為同一人 */
-        const variantsOfSelected = _.filter(this.getBriefs(), (brief) => brief.getSure());
+        const variantsOfSelected = _.filter(this.getBriefs(), (brief) => brief.sure);
         if (_.size(variantsOfSelected) < 1) throw new Error(`沒有選取的商品`);
 
         if (!Util.areAllValuesTheSameOnKeys(variantsOfSelected, "idOfAuthor")) throw new Error(`勾選的商品來自不同賣家，無法進行交易`);
@@ -59,6 +59,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
         /** 登入檢查是否超過金額 */
         if (this.getErosOfPublic().amountOfMaximumBuy < this.getPriceOfTotal()) throw new Error(`「購物金額限制」不得超過 ${this.getErosOfPublic().amountOfMaximumBuy} 元`);
+        this.updateInfosOfCartieCookie();
+        return variantsOfSelected.map((v) => ({ ...v, countOfSubmit: v.getCountOfSubmit() }));
     };
 
     validateCountOfOrder = (brief, increase = true, deleted = false) => {
@@ -94,6 +96,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             self.pushBrief({
                 name: variant.nameOfBooze,
                 idOfCookieUsage,
+                idOfBooze: variant.idOfBooze,
+                idOfVariant: variant.id,
                 nameOfVariant: variant.content,
                 photo: variant.photo,
                 price: variant.price,
@@ -102,6 +106,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
                 visibility: variant.visibility,
                 quantity: currentCountOfMaximum,
                 idOfAuthor: variant.idOfAuthor,
+                isHomeTeaching: variant.isHomeTeaching,
+                isTaskJob: variant.isTaskJob,
                 sure: currentCountOfMaximum > 0
             });
         }
@@ -158,9 +164,8 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     /** 1.更新cookie裡面的cartie，checked(送出訂單時，最後選擇的)*/
     updateInfosOfCartieCookie = () => {
-        for (const brief of this.getBriefs()) UserInfoRef.updateItemToCart({ key: brief.getIdOfCookieUsage(), quantity: brief.getCountOfSubmit(), checked: brief.getSure() });
-        UserInfoRef.setTotalPriceOfCartie(this.getPriceOfTotal());
-        Util.appendInfo(UserInfoRef.getArrayOfCartieItem());
+        for (const brief of this.getBriefs()) UserInfoRef.updateItemToCart({ key: brief.getIdOfCookieUsage(), quantity: brief.getCountOfSubmit(), checked: brief.sure });
+        Util.appendInfo(`購物車裡的商品們：`, UserInfoRef.getArrayOfCartieItem());
     };
 
     /** 如果全選打勾，全部打勾 -> 如果全選消除，全部消除*/

@@ -8,6 +8,7 @@ import BaseDionysusMaenadsComponent from "./BaseDionysusMaenadsComponent";
 import FlyToCartie from "../../base/FlyToCartie";
 import React from "react";
 import i18n from "../../i18n";
+import { toJS } from "mobx";
 
 class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
     constructor(props) {
@@ -60,8 +61,8 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         }
 
         const maenads = param.object;
-        const booze = maenads.getBooze();
-        const variant = maenads.getSelectedVariant();
+        const booze = toJS(maenads.getBooze());
+        const variant = toJS(maenads.getSelectedVariant());
         const quantity = _.toInteger(store.getCountOfSubmit());
 
         const cartItem = {

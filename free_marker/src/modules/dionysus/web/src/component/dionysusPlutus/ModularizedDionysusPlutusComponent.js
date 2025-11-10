@@ -7,6 +7,7 @@ import Router from "../../router";
 import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
 import Functions from "../../functions";
 import Config from "../../config";
+import { toJS } from "mobx";
 import { Application } from "../../index";
 
 class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
@@ -15,20 +16,15 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     onDionysusPlutusCvsTextFieldEndSearchClicked(param) {
-        const type = UserInfo.getSelectedOfTransport();
-
-        switch (type) {
+        const transport = this.getStore().getTypeOfTransport();
+        switch (transport) {
             case Config.TransportMethod.Store711:
                 const tempVar = Util.getRandomHashV2(20);
                 this.getStore().waitResultOfCVS(tempVar).then();
-                if (_.isEqual(UserInfo.getSelectedOfTransport(), Config.TransportMethod.Store711)) {
-                    const url = `${Config.urlOfSelectorOfCVS}&TempVar=${tempVar}`;
-                    this.gotoUrlWithNewTabDirectly(`https://emap.presco.com.tw/c2cemap.ashx?eshopid=870&url=${url}`);
-                }
-                break;
+                const url = `${Config.urlOfSelectorOfCVS}&TempVar=${tempVar}`;
+                return this.gotoUrlWithNewTabDirectly(`https://emap.presco.com.tw/c2cemap.ashx?eshopid=870&url=${url}`);
             case Config.TransportMethod.StoreFamily:
-                this.gotoUrlWithNewTabDirectly(`https://mfme.map.com.tw`);
-                break;
+                return this.gotoUrlWithNewTabDirectly(`https://mfme.map.com.tw`);
         }
     }
 
@@ -67,30 +63,16 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     }
 
     onDionysusPlutusSubmitChipClicked(param) {
-        this.execute().then(() => {
-            UserInfo.deleteCheckedCartieItemBehavior();
-        });
-
-        /**  發信的功能
-         this.getStore()
-         .submitSavior(this)
-         .then((result) => {
-         self.showInfoSnackMessage(`已完成訂購，請收信信件確認`);
-         UserInfo.deleteCheckedCartieItemBehavior();
-         Util.syncDelay(2500).then((result) => {
-         Router.gotoHomePage(this);
-         });
-         });
-         */
+        this.execute().then(() => UserInfo.deleteCheckedCartieItemBehavior());
     }
 
     execute = async () => {
         const self = this;
         const eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor();
 
-        const selectedOfTransport = UserInfo.getSelectedOfTransport();
-        const selectedOfTransaction = UserInfo.getSelectedOfTransaction();
-        const price = UserInfo.getTotalPriceOfCartie();
+        const selectedOfTransport = this.getStore().getTypeOfTransport();
+        const selectedOfTransaction = this.getStore().getTypeOfTransaction();
+        const price = this.getStore().getFeeOfPayment();
         if (selectedOfTransaction < 0 || selectedOfTransport < 0 || price <= 0) return this.showWarningSnackMessage(`流程發生錯誤，請回到購物車流程`);
 
         function isAddressShouldFormed() {
@@ -122,7 +104,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
         Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
         this.showInfoSnackMessage(`進入付款流程`);
-        switch (UserInfo.getSelectedOfTransaction()) {
+        switch (selectedOfTransaction) {
             case Config.TransactionMethod.LinePay:
                 const validate1 = eros.enableOfLinePay && eros.hasLinePay;
                 return validate1 ? await this.performCheckoutByLinePayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
@@ -139,21 +121,23 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     performEPayCreateOrderBehavior = async () => {
         const self = this;
-        const items = UserInfo.getCheckedCartieItems();
-        const typeOfTransport = UserInfo.getSelectedOfTransport();
-
+        const items = toJS(this.getStore().getItemsOfChecked());
+        const typeOfTransport = toJS(this.getStore().getTypeOfTransport());
+        const typeOfTransaction = toJS(this.getStore().getTypeOfTransaction());
+        console.log(items, " typeOfTransport=>", typeOfTransport, " typeOfTransaction=>", typeOfTransaction);
         const isCVS = Util.isOrEquals(typeOfTransport, Config.TransportMethod.Store711, Config.TransportMethod.StoreFamily);
         Util.mutateRemoveKeys(items, ["checked", "idOfCookieUsage"]);
+        // nameOfBooze,idOfVariant:'商品的id',quantity:4
         const result = await Functions.httpOnCallCreateEPayPreciseOrder(this, {
-            items,
+            items: items.map((i) => ({ idOfBooze: i.idOfBooze, idOfVariant: i.idOfVariant, quantity: i.countOfSubmit })),
             remark: self.getStore().getRemark(),
             address: self.getStore().getPreciselyAddress(),
             phone: self.getStore().getPhone(),
             name: self.getStore().getName(),
             email: self.getStore().getEmail(),
             typeOfTransport,
+            typeOfTransaction,
             needAddress: self.getStore().getNeedAddress(),
-            typeOfTransaction: UserInfo.getSelectedOfTransaction(),
             priceOfTotal4Client: self.getStore().getFeeOfPayment(),
             cvs: isCVS ? { storeid: this.getStore().getCvs(), storeaddress: this.getStore().getHelperTextOfCvs(), storename: this.getStore().getLabelOfCvsSticky() } : {}
         });

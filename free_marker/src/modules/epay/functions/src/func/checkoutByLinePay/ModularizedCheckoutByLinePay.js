@@ -119,7 +119,7 @@ class ModularizedCheckoutByLinePay extends BaseCheckoutByLinePay {
                 await this.validateOrderIsUnPaidWaiting(latestItem, true, "CheckoutByLinePay");
                 return {
                     typeOfTransaction: Config.TransactionMethod.LinePay,
-                    procedureOfPayment: Config.EPayType.LinePay,
+                    procedureOfPayment: Config.LangOfEPayType.LinePay,
                     stateOfPayment: Config.StateOfPayment.Waiting,
                     idOfThirdPartyTradeNo: resultOfLinePayRequest.info.transactionId,
                     infoOfPayment: resultOfLinePayRequest.info.paymentAccessToken,

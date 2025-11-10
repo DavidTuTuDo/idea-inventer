@@ -374,7 +374,7 @@
         border-radius: 10px;
     }
 }
-.DionysusBacchusRangeOfPriceTypography {
+.DionysusBacchusRangeOfPriceTypography:extend(.BeautyTitle) {
     font-size: 1.2rem;
     @media @mobile {
         /** empty style */
@@ -398,7 +398,7 @@
         /** empty style */
     }
 }
-.DionysusBacchusNameTypography {
+.DionysusBacchusNameTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -435,7 +435,7 @@
         /** empty style */
     }
 }
-.DionysusBacchusDetailAreaOfPayDiv:extend(.CenterInParentRow) {
+.DionysusBacchusDetailAreaOfPayDiv:extend(.CenterInParentRow, .BeautyContent) {
     width: 100%;
     justify-content: space-between;
     background: #ececec;
@@ -617,7 +617,7 @@
         max-width: 880px;
     }
 }
-.DionysusBacchusDetailContentStatementTypography {
+.DionysusBacchusDetailContentStatementTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
