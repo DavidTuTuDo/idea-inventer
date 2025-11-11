@@ -49,10 +49,12 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     async onInitialFetchCompleted(collection) {
         await super.onInitialFetchCompleted(collection);
         const pub = this.getCupidPublic();
-        this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(pub.getNumOfWorker());
-        this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(pub.getAmountOfAllowAnonymousBuy());
-        this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(pub.getPercentageOfDiscount());
-        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(pub.getAmountOfMaximumBuy());
+        this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(UserInfo.getGlobalPerspectiveAttr(`numOfWorker`));
+        this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(UserInfo.getGlobalPerspectiveAttr(`percentageOfDiscount`));
+        this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(UserInfo.getGlobalPerspectiveAttr(`amountOfAllowAnonymousBuy`));
+        this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(UserInfo.getGlobalPerspectiveAttr(`amountOfMaximumBuy`));
+        this.setEnableOfBoughtWithoutLoginIn(UserInfo.getGlobalPerspectiveAttr(`enableOfBoughtWithoutLoginIn`));
+
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(pub.getFeeOfHomeDelivery());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(pub.getFeeOfInStorePickup());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfShipByCod(pub.getFeeOfShipByCOD());
@@ -78,7 +80,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfAddressO(UserInfo.getGlobalPerspectiveAttr(`addressO`));
         this.setDialogInputValueOfDionysusErosArrowOfEmailO(UserInfo.getGlobalPerspectiveAttr(`emailO`));
         this.setDialogInputValueOfDionysusErosArrowOfLineO(UserInfo.getGlobalPerspectiveAttr(`lineO`));
-        this.setEnableOfBoughtWithoutLoginIn(pub.getEnableOfBoughtWithoutLoginIn());
         this.setEnableOfLinepay(pub.getEnableOfLinePay());
         this.setEnableOfEcPay(pub.getEnableOfECPay());
         this.setEnableOfDirectPay(pub.getEnableOfDirectPay());
@@ -97,17 +98,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         await this.getCupidPublic().upsertCupidPublic(this.getComponent(), Util.getObject(key, value));
     }
 
-    /** public */
-    submitPercentageOfDiscount = (percent) =>
-        this.submitWithValidation({
-            validator: this.isValidDiscountPercentNumber,
-            value: percent,
-            key: `percentageOfDiscount`,
-            errorMessage: `折扣常數格式錯誤 ${percent}`,
-            setter: (val) => this.getCupidPublic().setPercentageOfDiscount(val),
-            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageOfDiscount(val)
-        });
-
     submitPercentageFeeOfCOD = (percent) =>
         this.submitWithValidation({
             validator: this.isValidDiscountPercentNumber,
@@ -116,26 +106,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             errorMessage: `貨到付款(COD)手續費 ${percent} %錯誤`,
             setter: (val) => this.getCupidPublic().setPercentageFeeOfCOD(percent),
             afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfPercentageFeeOfCod(percent)
-        });
-
-    submitAmountOfAllowAnonymousBuy = (amount) =>
-        this.submitWithValidation({
-            validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(amount),
-            key: `amountOfAllowAnonymousBuy`,
-            errorMessage: `未登入消費金額格式錯誤 ${amount} 元`,
-            setter: (val) => this.getCupidPublic().setAmountOfAllowAnonymousBuy(val),
-            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(val)
-        });
-
-    submitAmountOfMaximumBuy = (amount) =>
-        this.submitWithValidation({
-            validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(amount),
-            key: `amountOfMaximumBuy`,
-            errorMessage: `消費額度格式錯誤 ${amount} 元`,
-            setter: (val) => this.getCupidPublic().setAmountOfMaximumBuy(val),
-            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(val)
         });
 
     submitThresholdOFreeShipByCod = (price) =>
@@ -198,16 +168,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByStorePickup(val)
         });
 
-    submitNumOfWorker = (num) =>
-        this.submitWithValidation({
-            validator: (v) => this.isPositiveNum(v),
-            value: _.toNumber(num),
-            key: `numOfWorker`,
-            errorMessage: `人數格式錯誤 '${num}'`,
-            setter: (val) => this.getCupidPublic().setNumOfWorker(val),
-            afterSet: (val) => this.setDialogInputValueOfDionysusErosArrowOfNumOfWorker(val)
-        });
-
     submitFeeOfHomeDelivery = (fee) =>
         this.submitWithValidation({
             validator: (v) => this.isPositiveNum(v),
@@ -255,14 +215,9 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             key: `thresholdOfAllowSelfPickup`,
             errorMessage: `自費最低門檻格式錯誤 '${fee}'`,
             setter: (val) => this.getCupidPublic().setThresholdOfAllowSelfPickup(val),
-            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfFeeOfRapidOnDelivery(val)
+            afterSet: (val) => this.getDialogInputValueOfDionysusErosArrowOfThresholdOfAllowSelfPickup(val)
         });
 
-    /** enable toggles */
-    submitWhetherBoughtWithoutLogin = async () => {
-        this.getCupidPublic().setEnableOfBoughtWithoutLoginIn(this.getEnableOfBoughtWithoutLoginIn());
-        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
-    };
     submitWhetherEnableOfLinePay = async () => {
         this.getCupidPublic().setEnableOfLinePay(this.getEnableOfLinepay());
         await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { enableOfLinePay: this.getEnableOfLinepay() });
@@ -399,19 +354,22 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     };
 
     submitMaximumOfUniqueItems = async (count) => {
-        if (this.isPositiveNum(count)) return this.getComponent().showErrorSnackMessage(`購物車數量限制 格式錯誤`);
+        count = _.toNumber(count);
+        if (!this.isPositiveNum(count)) return this.getComponent().showErrorSnackMessage(`購物車數量限制 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { maximumOfUniqueItems: count });
         UserInfo.setGlobalPerspectiveAttr({ maximumOfUniqueItems: count });
     };
 
     submitTTLOfPayment = async (minute) => {
-        if (this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝 格式錯誤`);
+        minute = _.toNumber(minute);
+        if (!this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ttlOfPayment: minute });
         UserInfo.setGlobalPerspectiveAttr({ ttlOfPayment: minute });
     };
 
     submitTTLOfAnonymous = async (minute) => {
-        if (this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝（陌生）格式錯誤`);
+        minute = _.toNumber(minute);
+        if (!this.isPositiveNum(minute)) return this.getComponent().showErrorSnackMessage(`付款緩衝（陌生）格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { ttlOfAnonymous: minute });
         UserInfo.setGlobalPerspectiveAttr({ ttlOfAnonymous: minute });
     };
@@ -422,6 +380,40 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
             this.getComponent(),
             result.map((each) => ({ ...each, id: _.toString(each.value) }))
         );
+    };
+
+    submitNumOfWorker = async (num) => {
+        num = _.toNumber(num);
+        if (!this.isPositiveNum(num)) return this.getComponent().showErrorSnackMessage(`人數格式錯誤 '${num}'`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { numOfWorker: num });
+        UserInfo.setGlobalPerspectiveAttr({ numOfWorker: num });
+    };
+
+    submitAmountOfMaximumBuy = async (amount) => {
+        amount = _.toNumber(amount);
+        if (!this.isPositiveNum(amount)) return this.getComponent().showErrorSnackMessage(`消費額度格式錯誤 ${amount} 元`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { amountOfMaximumBuy: amount });
+        UserInfo.setGlobalPerspectiveAttr({ amountOfMaximumBuy: amount });
+    };
+
+    submitPercentageOfDiscount = async (percent) => {
+        percent = _.toNumber(percent);
+        if (!this.isPositiveNum(percent)) return this.getComponent().showErrorSnackMessage(`折扣常數格式錯誤 ${percent} 折`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { percentageOfDiscount: percent });
+        UserInfo.setGlobalPerspectiveAttr({ percentageOfDiscount: percent });
+    };
+
+    submitAmountOfAllowAnonymousBuy = async (amount) => {
+        amount = _.toNumber(amount);
+        if (!this.isPositiveNum(amount)) return this.getComponent().showErrorSnackMessage(`未登入消費金額格式錯誤 ${amount} 元`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { amountOfAllowAnonymousBuy: amount });
+        UserInfo.setGlobalPerspectiveAttr({ amountOfAllowAnonymousBuy: amount });
+    };
+
+    submitWhetherBoughtWithoutLogin = async () => {
+        if (!_.isBoolean(this.getEnableOfBoughtWithoutLoginIn())) return this.getComponent().showErrorSnackMessage(`是否同意免登入下單功能的必須賦予布林值`);
+        UserInfo.setGlobalPerspectiveAttr({ enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
     };
 
     /** fetch */

@@ -584,6 +584,17 @@ class FirebaseHelper extends BaseFirebase {
         });
     };
 
+    /** 在transaction狀態下，拿批次的document做*/
+    transactionGet = async ({ transaction, path = "", conditions = [] }) => {
+        const query = Util.accumulate(this.reference(path), this.conditionsOfRuled(conditions));
+        const snapsShot = await transaction.get(query);
+        return snapsShot.forEach((doc) => {
+            const data = doc.data();
+            data.id = doc.id || data.id;
+            return data;
+        });
+    };
+
     /**
      * 【分頁讀取與批次處理】 迭代地讀取符合條件的所有文件。
      * @param {object} options - 分頁選項。

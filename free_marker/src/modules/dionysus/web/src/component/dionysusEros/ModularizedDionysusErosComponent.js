@@ -17,27 +17,7 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         super(props);
     }
 
-    getWrapInjectStyleOfDionysusErosAreaOfBrandNameDiv(dionysusEros) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
-    }
-
-    getWrapInjectStyleOfDionysusErosAreaOfTabCreatorDiv(dionysusEros) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
-    }
-
-    getWrapInjectStyleOfDionysusErosAreaOfTtlOfAnonymousDiv(dionysusEros) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
-    }
-
-    getWrapInjectStyleOfDionysusErosAreaOfTtlOfPaymentDiv(dionysusEros) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
-    }
-
-    getWrapInjectStyleOfDionysusErosAreaOfMaximumOfUniqueItemsDiv(dionysusEros) {
-        return Util.getVisibleOrNone(UserInfoRef.isAdmin());
-    }
-
-    getInjectStyleOfDionysusErosDividerTopDiv() {
+    getInjectStyleOfDionysusErosAdminDiv(dionysusEros) {
         return Util.getVisibleOrNone(UserInfoRef.isAdmin());
     }
 

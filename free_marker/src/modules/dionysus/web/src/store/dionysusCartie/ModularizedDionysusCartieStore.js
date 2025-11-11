@@ -54,11 +54,16 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         await this.modifyErosInfoOfAuthor(variantsOfSelected[0].idOfAuthor, true);
 
         /** 未登入檢查是否超過金額 */
-        if (UserInfoRef.anonymous() && this.getErosOfPublic().amountOfAllowAnonymousBuy < this.getPriceOfTotal())
-            throw new Error(`「未登入購物，金額限制」不得超過＄${this.getErosOfPublic().amountOfAllowAnonymousBuy} 元`);
+        const amountOfAllowAnonymousBuy = UserInfoRef.getGlobalPerspectiveAttr("amountOfAllowAnonymousBuy");
+        if (UserInfoRef.anonymous() && amountOfAllowAnonymousBuy < this.getPriceOfTotal()) throw new Error(`「未登入購物，金額限制」不得超過＄${amountOfAllowAnonymousBuy} 元`);
 
         /** 登入檢查是否超過金額 */
-        if (this.getErosOfPublic().amountOfMaximumBuy < this.getPriceOfTotal()) throw new Error(`「購物金額限制」不得超過 ${this.getErosOfPublic().amountOfMaximumBuy} 元`);
+        const amountOfMaximumBuy = UserInfoRef.getGlobalPerspectiveAttr("amountOfMaximumBuy");
+        if (amountOfMaximumBuy < this.getPriceOfTotal()) throw new Error(`「購物金額限制」不得超過 ${amountOfMaximumBuy} 元`);
+
+        const enableOfBoughtWithoutLoginIn = UserInfoRef.getGlobalPerspectiveAttr("enableOfBoughtWithoutLoginIn");
+        if (!enableOfBoughtWithoutLoginIn) throw new Error(`必須先完成「右上角」快速登入才能結帳`);
+
         this.updateInfosOfCartieCookie();
         return variantsOfSelected.map((v) => ({ ...v, countOfSubmit: v.getCountOfSubmit() }));
     };
@@ -148,7 +153,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @computed
     get getComputedDiscountOfMember() {
-        const discount = Util.getNumberOfMultiplyCeil(this.getPriceWithoutDiscount(), 1 - Util.toPercentageDecimal(this.getErosOfPublic()?.percentageOfDiscount ?? 1));
+        const discount = Util.getPriceOfPercentageBehavior(this.getPriceWithoutDiscount(), Util.toPercentageDecimal(UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount")));
         const computed = _.subtract(0, discount);
         const result = computed < 0 ? _.round(computed) : 0;
         this.setDiscountOfMember(result);

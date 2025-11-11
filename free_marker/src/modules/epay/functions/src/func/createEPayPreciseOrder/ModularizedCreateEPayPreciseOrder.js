@@ -34,20 +34,30 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         });
     };
 
-    /** 課程類商品且useMainTrunk，就得計算是否有衝堂問題 */
-    checkConflictAgainst2MainTrunk = async (variant) => {
-        const timesOfOccupied = await Api.fetchPureHeras(
-            variant.idOfAuthor,
-            { where: (stmt) => stmt.where("useMainTrunk", "==", true) },
-            { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)) },
-            { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) },
-            { orderBy: (stmt) => stmt.orderBy("startYYYYMMDDHHmmss") }
-        );
-
+    /** 課程類商品且useMainTrunk，就得計算是否有衝堂問題
+     *
+     * todo:擔心timesOfOccupied拿回1000筆資料，目標應該是將「衝突檢查」的負擔從 1000 筆文件降到 1 筆文件。
+     * 建議一：優化數據模型（避免讀取大量訂單）
+     * 如果您的使用者通常會訂購大量課程，並且您需要檢查他們是否有時間衝突，最好的方法是建立一個**「使用者預訂時程總表 (User Schedule Summary)」** 文件作為主要檢查點：
+     * 新建 UserSchedules 集合：
+     * docId: UserID
+     * BookedSlots: 一個 Map 或 Array，儲存使用者所有已預訂的時間區間。
+     * */
+    checkConflictAgainst2MainTrunk = async (variant, transaction, globalPerspective) => {
+        const timesOfOccupied = this._firebase.transactionGet({
+            transaction,
+            path: `/users/${variant.idOfAuthor}/hera`,
+            conditions: [
+                { where: (stmt) => stmt.where("useMainTrunk", "==", true) },
+                { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", ">=", Util.getTSOfSpecificDate(variant.content)) },
+                { where: (stmt) => stmt.where("startYYYYMMDDHHmmss", "<=", Util.getTSOfSpecificDate(variant.content, { end: true })) }
+                /** todo:賭了！這裡不做paginate,讓它拿爆 { orderBy: (stmt) => stmt.orderBy("startYYYYMMDDHHmmss") } */
+            ]
+        });
         Util.appendInfo("main trunk裡的項目 itemsOfHera => ", timesOfOccupied);
         const itemsOfHera = Util.getFilteredHeraPeriods(timesOfOccupied, variant.idOfVariant);
         Util.appendInfo("篩選過後的 itemsOfHera => ", itemsOfHera);
-        return Util.checkPeriodConflict(variant, itemsOfHera).conflict;
+        return Util.checkPeriodConflict(variant, itemsOfHera, globalPerspective.numOfWorker).conflict;
     };
 
     /** (done) todo:當useMainTrunk為true時，要增加一筆hera通知行事曆 */
@@ -93,11 +103,12 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
                     typeOfTransport,
                     priceOfTotal4Client,
                     transaction,
-                    session
+                    session,
+                    globalPerspective
                 });
 
                 // 處理庫存扣除和排程
-                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction);
+                await this.processInventoryAndSchedules(itemsOfClientOrdering, transaction, globalPerspective);
 
                 // 創建訂單與報表
                 await this.createOrderAndHades({
@@ -129,7 +140,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
     };
 
     /** itemsOfClientOrdering = [...{idOfBooze, idOfVariant, nameOfBooze, quantity}]*/
-    fetchThenValidateBoozeVariants = async ({ itemsOfClientOrdering, typeOfTransaction, typeOfTransport, priceOfTotal4Client, transaction, session }) => {
+    fetchThenValidateBoozeVariants = async ({ itemsOfClientOrdering, typeOfTransaction, typeOfTransport, priceOfTotal4Client, transaction, session, globalPerspective }) => {
         // const variantRefs = itemsOfClientOrdering.map((item) => db.collection(`dionysus/${item.idOfBooze}/variants`).doc(item.idOfVariant));
         const variantRefs = itemsOfClientOrdering.map((itemOfClientOrdering) => Api.getVariantItemDocRef(itemOfClientOrdering.idOfVariant, itemOfClientOrdering.idOfBooze));
         const variantSnaps = await transaction.getAll(...variantRefs); //variant = {...idOfBooze, price,idOfVariant, nameOfBooze, quantity,visibility,isTaskJob,photo,isHomeTeaching}
@@ -139,21 +150,20 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         /** (done) todo:確認 _.size(_.filter(variantSnaps,snap => snap.exists && snap.data().visibility) === _.size(itemsOfClientOrdering)，否則拋出錯誤(部分商品不存在) */
         const existingAndVisibleVariants = _.filter(variantSnaps, (snap) => snap.exists && snap.data()?.visibility);
         if (_.size(existingAndVisibleVariants) !== _.size(itemsOfClientOrdering)) {
-            throw new Error("部分商品不存在或已下架 (Some items do not exist or are not visible).");
+            throw new Error("12135451231 部分商品不存在或已下架 (Some items do not exist or are not visible).");
         }
 
         /** (done) todo:確認產品的idOfAuthor都相同，否則拋出錯誤(僅能購買同一個idOfAuthor的商品) */
         const uniqueAuthors = _.uniq(_.map(existingAndVisibleVariants, (snap) => snap.data()?.idOfAuthor));
         if (uniqueAuthors.length !== 1 || !uniqueAuthors[0]) {
-            throw new Error("僅能購買同一個 idOfAuthor 的商品 (Can only purchase items from the same idOfAuthor).");
+            throw new Error("154684513213 僅能購買同一個 idOfAuthor 的商品 (Can only purchase items from the same idOfAuthor).");
         }
         idOfAuthor = uniqueAuthors[0];
 
-        /** todo:透過其中idOfAuthor拿到const eros = await Api.getCupidPublic(idOfAuthor)， 且eros必須存在(eros.numOfWorker > 0)，否則拋出錯誤(無法未能找到賣家的商場設定)*/
+        /** todo:透過其中idOfAuthor拿到const eros = await Api.getCupidPublic(idOfAuthor)，否則拋出錯誤(無法未能找到賣家的商場設定)*/
         const eros = await Api.fetchCupidPublic(idOfAuthor);
-        if (!eros || eros.numOfWorker <= 0) {
-            throw new Error("未能找到賣家的商場設定或賣家已停止服務 (Could not find seller's shop settings or seller has stopped service).");
-        }
+        if (Util.isUndefinedNullEmpty(eros))
+            throw new Error("1245621 未能找到賣家的商場設定或賣家已停止服務 (Could not find seller's shop settings or seller has stopped service).");
 
         /** (done) todo(擴增屬性):itemsOfClientOrdering擴增屬性(依據{idOfVariant,idOfBooze}相同) 例如：itemsOfClientOrdering = [...{...,variant:variant:variantSnap.ata()}],itemsOfClientOrdering必須找到並增加一個variant，否則泡出錯誤 */
         /** (done) todo(數量檢查):依據每個idOfVariant相同的比較 variantSnaps和商品數量(quantity) >= itemOfClientOrdering的下單數量(quantity)，否則拋出錯誤(部分商品數量不足) */
@@ -179,7 +189,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 累加計算總價 */
             priceOfTotalOfShould += itemOfClientOrdering.quantity * variant.price;
         });
-        const discountOfTotal = _.subtract(0, Util.getNumberOfMultiplyCeil(priceOfTotalOfShould, 1 - Util.toPercentageDecimal(eros.percentageOfDiscount ?? 1)));
+        const discountOfTotal = _.subtract(0, Util.getPriceOfPercentageBehavior(priceOfTotalOfShould, globalPerspective.percentageOfDiscount));
         const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, discountOfTotal]);
 
         /** (done) todo:透過eros是否支援transport */
@@ -252,10 +262,11 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         priceOfTotalOfShould = _.sum([priceOfTotalIncludingDiscount, feeOfTransport]); //遠端計算出來的總價
 
-        if (this.isAnonymousUser(session) && !eros.enableOfBoughtWithoutLoginIn) return this.appendErrorLog("未登入，無法完成結帳程序");
-        if (this.isAnonymousUser(session) && eros.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > eros.amountOfAllowAnonymousBuy)
+        if (this.isAnonymousUser(session) && !globalPerspective.enableOfBoughtWithoutLoginIn) return this.appendErrorLog("未登入，無法完成結帳程序");
+        if (this.isAnonymousUser(session) && globalPerspective.enableOfBoughtWithoutLoginIn && priceOfTotalOfShould > globalPerspective.amountOfAllowAnonymousBuy)
             return this.appendErrorLog(9999, `97845645341 未登入購物上限 ${eros.amountOfAllowAnonymousBuy} 元內（不含運費）`);
-        if (priceOfTotalOfShould > eros.amountOfMaximumBuy) return this.appendErrorLog(9999, `97845611232 未登入購物上限 ${eros.amountOfMaximumBuy} 元內（不含運費）`);
+        if (priceOfTotalOfShould > globalPerspective.amountOfMaximumBuy)
+            return this.appendErrorLog(9999, `97845611232 未登入購物上限 ${globalPerspective.amountOfMaximumBuy} 元內（不含運費）`);
 
         /**  (done) todo:總價驗證(client端計算的結果是否等於remote端的結果，防止Hack機制) */
         if (!_.isEqual(priceOfTotalOfShould, priceOfTotal4Client))
@@ -275,7 +286,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         return { eros, idOfAuthor, containsTransportedVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal };
     };
 
-    processInventoryAndSchedules = async (itemsOfClientOrdering, transaction) => {
+    processInventoryAndSchedules = async (itemsOfClientOrdering, transaction, globalPerspective) => {
         Util.appendInfo(`processInventoryAndSchedules() coming!`);
         for (const itemOfClientOrdering of itemsOfClientOrdering) {
             const { idOfBooze, idOfVariant, quantity } = itemOfClientOrdering;
@@ -289,7 +300,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
             if (variant.isTaskJob) {
                 if (variant.useMainTrunk) {
-                    const result = await this.checkConflictAgainst2MainTrunk(variant, transaction);
+                    const result = await this.checkConflictAgainst2MainTrunk(variant, transaction, globalPerspective);
                     if (result.conflict) this.appendErrorLog(9999, `112454565412312321 ${variant.nameOfBooze}的時段(${variant.content})衝突`);
                 }
                 itemOfClientOrdering.infoOfHera = JSON.stringify({ id: await this.submitHeraSchedule(variant, transaction), idOfAuthor: variant.idOfAuthor });
@@ -364,7 +375,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
 
         transaction.create(Api.getHadeItemDocRef(preciseOrderRef.id, idOfAuthor), hadesData);
 
-        /** todo:完成交易後，填寫地址和姓名紀錄在user的欄位(latestName, latestAddress) */
+        /** todo:完成交易後，填寫地址和姓名紀錄在user cache的欄位(latestName, latestAddress) */
     };
 
     getPreciseItemsAsRecord(items) {
