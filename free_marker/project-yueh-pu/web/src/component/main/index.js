@@ -31,38 +31,12 @@ class MainComponent extends BaseMainComponent {
         const func = param.object;
         switch (func.route) {
             case "randomRhythm":
-                const rhythm = Util.getRandomItemOfArray(this.getKeywords().filter((each) => _.isEqual(each.type, 11) && each.popularLevel > 10000));
-                Router.gotoSheetDetailPage(this, rhythm.uid);
-                break;
-            case "randomEric":
-                this.gotoSingerRandomRhythm("9UHXP0nujftiTWTxGSva").then();
-                break;
-            case "randomGEM":
-                this.gotoSingerRandomRhythm("Y1SB30qmG7qvcYK7hOQg").then();
-                break;
+                const rhythm = Util.getRandomItemOfArray(this.getKeywordSuggests().filter((each) => _.isEqual(each.type, 11) && each.popularLevel > 10000));
+                return Router.gotoSheetDetailPage(this, rhythm.uid);
             case "preludes":
-                Router.gotoPortfolioPage(this, "preludes", Util.getRandomHash(10));
-                break;
-            case "randomMayday":
-                this.gotoSingerRandomRhythm("Pn84Semny282MbWnKY2C").then();
-                break;
-            case "randomLin":
-                this.gotoSingerRandomRhythm("Urnw1dN0NGg2LB3zu1K4").then();
-                break;
-            case "randomJay":
-                this.gotoSingerRandomRhythm("QXodheBMMm97TZt7AlTY").then();
-                break;
-            case "randomAlin":
-                this.gotoSingerRandomRhythm("wRJ8dKprAu23D4o6y2ji").then();
-                break;
-            case "randomFive":
-                this.gotoSingerRandomRhythm("dWChuHedUIMm17qHuOkl").then();
-                break;
-            case "randomMei":
-                this.gotoSingerRandomRhythm("dTlaBS0zJ83Sgpoiewas").then();
-                break;
+                return Router.gotoPortfolioPage(this, "preludes", Util.getRandomHash(10));
             default:
-                break;
+                return this.gotoSingerRandomRhythm(func.getId()).then();
         }
     }
 
@@ -73,7 +47,13 @@ class MainComponent extends BaseMainComponent {
         if (rhythm) Router.gotoSheetDetailPage(this, rhythm.idOfGuitarPu);
     };
 
-    /** -------------------- async api -------------------- **/
+    getInjectStyleOfMainTitleOfHotSingerTypography(main) {
+        return Util.getVisibleOrNone(main.isInitialFetchCompleted());
+    }
+
+    getInjectStyleOfMainTitleOfHotRhythmTypography(main) {
+        return Util.getVisibleOrNone(main.isInitialFetchCompleted());
+    }
 }
 
 export default MainComponent;

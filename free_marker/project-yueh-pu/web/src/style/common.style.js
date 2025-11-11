@@ -65,43 +65,19 @@ class CommonStyle {
 
     MainEditorInterestingOfFunctionRouteTextField = {};
 
-    MainEditorInterestingOfFunctionIdTextField = {};
+    MainEditorInterestingOfFunctionGridList = {};
 
-    MainEditorInterestingOfFunctionDivList = {};
-
-    MainEditorInterestingOfFunctionDivWrap = {};
+    MainEditorInterestingOfFunctionGridWrap = {};
 
     MainEditorInterestingOfFunctionPaper = {};
 
-    MainEditorHotSingerIdTextField = {};
-
-    MainEditorHotSingerStatementTextField = {};
-
-    MainEditorHotSingerIdOfSingerTextField = {};
-
-    MainEditorHotSingerIndexOfSequenceTextField = {};
-
-    MainEditorHotSingerNameTextField = {};
-
     MainEditorHotSingerDivList = {};
-
-    MainEditorHotSingerDivWrap = {};
 
     MainEditorHotSingerCard = {};
 
-    MainEditorHotRhythmIdTextField = {};
-
     MainEditorHotRhythmIdOfGuitarPuTextField = {};
 
-    MainEditorHotRhythmIndexOfSequenceTextField = {};
-
-    MainEditorHotRhythmSingerTextField = {};
-
-    MainEditorHotRhythmNameTextField = {};
-
     MainEditorHotRhythmDivList = {};
-
-    MainEditorHotRhythmDivWrap = {};
 
     MainEditorHotRhythmCard = {};
 
@@ -275,6 +251,34 @@ class CommonStyle {
 
     InfoOfCopyRightContactCard = {};
 
+    /** => following for infoOfCopyRightUsages  component  */
+
+    InfoOfCopyRightUsagesMainContentTypography = {};
+
+    InfoOfCopyRightUsagesMainSeparatorDiv = {};
+
+    InfoOfCopyRightUsagesMainTitleTypography = {};
+
+    InfoOfCopyRightUsagesMainDiv = {};
+
+    InfoOfCopyRightUsagesPaperWrap = {};
+
+    InfoOfCopyRightUsagesDiv = {};
+
+    /** => following for infoOfCopyRightPrivacy  component  */
+
+    InfoOfCopyRightPrivacyMainContentTypography = {};
+
+    InfoOfCopyRightPrivacyMainSeparatorDiv = {};
+
+    InfoOfCopyRightPrivacyMainTitleTypography = {};
+
+    InfoOfCopyRightPrivacyMainDiv = {};
+
+    InfoOfCopyRightPrivacyPaperWrap = {};
+
+    InfoOfCopyRightPrivacyDiv = {};
+
     /** => following for infoOfCopyRight  component  */
 
     InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
@@ -299,6 +303,18 @@ class CommonStyle {
 
     InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton = {};
 
+    InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyButton = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparatorTypography = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesReactFragmentWrap = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton = {};
+
+    InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv = {};
+
     InfoOfCopyRightUpperGroupRightAreaDiv = {};
 
     InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
@@ -317,13 +333,23 @@ class CommonStyle {
 
     /** => following for account  component  */
 
-    AccountLogoutReactFragmentWrap = {};
-
-    AccountLogoutChip = {};
-
     AccountAreaUserSummaryTitleOfUserTypography = {};
 
     AccountAreaUserSummaryAccordionSummary = {};
+
+    AccountAreaUserAreaOfLogoutArrowOfLogoutIconNavigateNext = {};
+
+    AccountAreaUserAreaOfLogoutArrowOfLogoutReactFragmentWrap = {};
+
+    AccountAreaUserAreaOfLogoutArrowOfLogoutIconButton = {};
+
+    AccountAreaUserAreaOfLogoutOptionOfLogoutContentTypography = {};
+
+    AccountAreaUserAreaOfLogoutOptionOfLogoutTitleTypography = {};
+
+    AccountAreaUserAreaOfLogoutDivWrap = {};
+
+    AccountAreaUserAreaOfLogoutDiv = {};
 
     AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext = {};
 
@@ -336,6 +362,34 @@ class CommonStyle {
     AccountAreaUserAreaOfCleanCacheDivWrap = {};
 
     AccountAreaUserAreaOfCleanCacheDiv = {};
+
+    AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconNavigateNext = {};
+
+    AccountAreaUserAreaOfPrivacyArrowOfPrivacyReactFragmentWrap = {};
+
+    AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconButton = {};
+
+    AccountAreaUserAreaOfPrivacyOptionOfPrivacyContentTypography = {};
+
+    AccountAreaUserAreaOfPrivacyOptionOfPrivacyTitleTypography = {};
+
+    AccountAreaUserAreaOfPrivacyDivWrap = {};
+
+    AccountAreaUserAreaOfPrivacyDiv = {};
+
+    AccountAreaUserAreaOfUsagesArrowOfUsagesIconNavigateNext = {};
+
+    AccountAreaUserAreaOfUsagesArrowOfUsagesReactFragmentWrap = {};
+
+    AccountAreaUserAreaOfUsagesArrowOfUsagesIconButton = {};
+
+    AccountAreaUserAreaOfUsagesOptionOfUsagesContentTypography = {};
+
+    AccountAreaUserAreaOfUsagesOptionOfUsagesTitleTypography = {};
+
+    AccountAreaUserAreaOfUsagesDivWrap = {};
+
+    AccountAreaUserAreaOfUsagesDiv = {};
 
     AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext = {};
 
@@ -825,8 +879,6 @@ class CommonStyle {
 
     MainInterestingOfFunctionTitleTypography = {};
 
-    MainInterestingOfFunctionPaperSkeleton = {};
-
     MainInterestingOfFunctionGridList = {};
 
     MainInterestingOfFunctionGridWrap = {};
@@ -839,8 +891,6 @@ class CommonStyle {
 
     MainHotSingerNameTypography = {};
 
-    MainHotSingerCardSkeleton = {};
-
     MainHotSingerDivList = {};
 
     MainHotSingerCard = {};
@@ -852,8 +902,6 @@ class CommonStyle {
     MainHotRhythmSingerTypography = {};
 
     MainHotRhythmNameTypography = {};
-
-    MainHotRhythmCardSkeleton = {};
 
     MainHotRhythmDivList = {};
 

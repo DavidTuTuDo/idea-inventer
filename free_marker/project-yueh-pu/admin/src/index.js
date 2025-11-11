@@ -55,13 +55,139 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
                 })
             );
         }
+    }
 
+    async function traitOfMainUsage(n = 30) {
         function getDocumentId(rank, guitars) {
             const url = rank.url;
             // console.log(rank.WEEK,' 歌名: ', rank.name, 'url:', rank.url);
             const guitar = guitars[url];
             return guitar ? guitar.idOfRemote : "";
         }
+
+        const ranks = await fetchTopSongsOfRank(n);
+        let guitars = await getObjectOfToneUrlAsKey();
+        const hotRhythm = ranks.map((each) => {
+            return {
+                name: each.name,
+                singer: each.singer,
+                indexOfSequence: each.WEEK,
+                idOfGuitarPu: getDocumentId(each, guitars),
+                uuidOfSong: each.url
+            };
+        });
+
+        const singers = Util.getArrayOfSize(await api.fetchSingers({ orderBy: (stmt) => stmt.orderBy("popularLevel", "desc") }, { limit: (stmt) => stmt.limit(n) }), n);
+        const hotSinger = singers.map((each, index) => {
+            return {
+                name: each.name,
+                // singer: each.singer,
+                indexOfSequence: index,
+                idOfSinger: each.id,
+                statement: `作品 ${each.countsOfRhythm} 件`
+            };
+        });
+
+        const interestingOfFunction = [
+            {
+                route: "randomFive",
+                subTitle: "(告五人)",
+                indexOfSequence: 6,
+                xs: 4,
+                id: "dWChuHedUIMm17qHuOkl",
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomJay",
+                subTitle: "(周杰倫)",
+                indexOfSequence: 4,
+                xs: 4,
+                id: "QXodheBMMm97TZt7AlTY",
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomRhythm",
+                subTitle: "(熱門曲目)",
+                indexOfSequence: 0,
+                xs: 4,
+                id: "DGzzKytBMS3dyGZWxcqH",
+                title: "隨機"
+            },
+            {
+                indexOfSequence: 2,
+                xs: 4,
+                id: "Ix7Fp4FSpauWace0uUAY",
+                route: "preludes",
+                subTitle: "(前奏)",
+                title: "指彈歌曲"
+            },
+            {
+                route: "randomLin",
+                subTitle: "(林俊傑)",
+                indexOfSequence: 3,
+                xs: 4,
+                id: "Urnw1dN0NGg2LB3zu1K4",
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomMayday",
+                subTitle: "(五月天)",
+                indexOfSequence: 5,
+                id: "Pn84Semny282MbWnKY2C",
+                xs: 4,
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomAlin",
+                subTitle: "(A-lin)",
+                indexOfSequence: 5,
+                id: "wRJ8dKprAu23D4o6y2ji",
+                xs: 4,
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomMei",
+                subTitle: "(張惠妹)",
+                indexOfSequence: 6,
+                id: "dTlaBS0zJ83Sgpoiewas",
+                xs: 4,
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomEric",
+                subTitle: "(周興哲)",
+                indexOfSequence: 1,
+                xs: 4,
+                id: "9UHXP0nujftiTWTxGSva",
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomEric",
+                subTitle: "(鄧紫棋)",
+                indexOfSequence: 7,
+                xs: 4,
+                id: "Y1SB30qmG7qvcYK7hOQg",
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomBestards",
+                subTitle: "(理想混蛋)",
+                indexOfSequence: 8,
+                xs: 4,
+                id: "SyB2AWeVmubbFbw3Xddc",
+                title: "隨機歌曲"
+            },
+            {
+                route: "randomYang",
+                subTitle: "(楊丞琳)",
+                indexOfSequence: 9,
+                xs: 4,
+                id: "MNbcB0tGElPQudsqf68z",
+                title: "隨機歌曲"
+            }
+        ];
+        console.log({ hotRhythm, hotSinger, interestingOfFunction });
+        await api.submitTraitOfMainUsage({ hotRhythm, hotSinger, interestingOfFunction });
     }
 
     /** 找出週 rank 對應的tone*/
@@ -349,7 +475,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
             id: Util.isUndefinedNullEmpty(tone.idOfRemote) ? undefined : tone.idOfRemote,
             tonalityOfContext: info.tonalityOfContext,
             context: Util.getDecryptString(latestTone),
-            latestContext: Util.getEncryptStringV2(Util.getDecryptString(latestTone)),
+            // latestContext: Util.getEncryptStringV2(Util.getDecryptString(latestTone)),
             capoLevel: info.capo ? _.toNumber(info.capo) : -1,
             tonalityOfFemale: info["女調"],
             tonalityOfMale: info["男調"],
@@ -535,8 +661,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     async function deployLatestSheet() {
         await deployAllSingerTone(550);
         await deployKeywords();
-        await deployMainPageHotRhythm(25);
-        await deployMainPageHotSingers(25);
+        await traitOfMainUsage(30);
+        // await deployMainPageHotRhythm(25);
+        // await deployMainPageHotSingers(25);
     }
 
     /** 用uid把tone給persistent 方便拉上來當範本 */
@@ -859,9 +986,9 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     }
 
     async function rewritePlantContext() {
-        await api.modifyGuitarpusOfPaginate( async (items) => {
-            await api.updateGuitarpus(items.map(pu => ({ id: pu.id, context: Util.getDecryptStringV2(pu.latestContext) })));
-        })
+        await api.modifyGuitarpusOfPaginate(async (items) => {
+            await api.updateGuitarpus(items.map((pu) => ({ id: pu.id, context: Util.getDecryptStringV2(pu.latestContext) })));
+        });
     }
 
     async function singleRewrite(id) {
@@ -891,6 +1018,16 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     async function getTonesOfCustomCompose() {
         const guitars = await api.fetchGuitarpus({ limit: (stmt) => stmt.limit(10) }, { orderBy: (stmt) => stmt.orderBy("updateTime", "desc") });
         console.log(guitars);
+    }
+
+    async function fetchInterestingFunctions() {
+        const results = await api.fetchInterestingOfFunctions();
+        _.each(results, (each) => {
+            delete each._doc;
+            delete each.updateTime;
+        });
+        console.log(results);
+        await Util.persistJsonFilePrettier("./temp/interest.json", results);
     }
 
     /** 每次都要跑 */
@@ -927,4 +1064,6 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     // await updateSingerOfSuggest();
     // await updateUserAllowRead();
     // await fetchNoneCopyRightPu();
+    // await traitOfMainUsage();
+    // await traitOfMainUsage(30)
 })();

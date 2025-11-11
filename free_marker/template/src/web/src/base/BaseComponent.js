@@ -1017,8 +1017,8 @@ class BaseComponent extends MuiComponent {
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`);
     }
 
-    getKeywords() {
-        return Application.getKeywords();
+    getKeywordSuggests() {
+        return Application.getNavigatorStore().getCompleteSuggests();
     }
 
     onInitialErrorHappened(error) {

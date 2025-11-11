@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -4309,7 +4309,7 @@ class StoreBuilder extends BaseBuilder {
 
         function getCountOfThread(node) {
             const count = _.round(_.divide(_.size(node.getPreciseAttributePathChildren()), 2));
-            return count > 1 ? count : 1;
+            return count > 1 ? count+1 : 2;
         }
 
         function enrichStmtsOfObject(node, stmts) {
@@ -8061,7 +8061,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                         view: 'Typography',
                         incest: node.incest,
                         description: '用來顯示標題'
-                    }
+                    },
                 )
             }
 
