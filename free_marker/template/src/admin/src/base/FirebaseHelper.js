@@ -65,6 +65,10 @@ class FirebaseHelper extends BaseFirebase {
         return FieldValue.serverTimestamp();
     }
 
+    getDeleteDocAttributeSymbol() {
+        return FieldValue.delete();
+    }
+
     /**
      * 透過毫秒數建立一個 Timestamp 物件。
      * @param {number} millis - 毫秒數 (自 Epoch 以來)。

@@ -1030,6 +1030,13 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
         await Util.persistJsonFilePrettier("./temp/interest.json", results);
     }
 
+    async function remoteDeleteUnusedTones() {
+        const task = async (items) => {
+            await api.updateGuitarpus(items.map((item) => ({ id: item.id, latestContext: api._firebase().getDeleteDocAttributeSymbol() })));
+        };
+        await api.modifyGuitarpusOfPaginate(task);
+    }
+
     /** 每次都要跑 */
     // await syncLocalDatabase2Remote(`n3ugkgfsrkkB3Bu3jBRi`);
     // await singleRewrite(`jKXnWpriJh21Z8DpZRuy`);
@@ -1066,4 +1073,5 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
     // await fetchNoneCopyRightPu();
     // await traitOfMainUsage();
     // await traitOfMainUsage(30)
+    // await remoteDeleteUnusedTones();
 })();
