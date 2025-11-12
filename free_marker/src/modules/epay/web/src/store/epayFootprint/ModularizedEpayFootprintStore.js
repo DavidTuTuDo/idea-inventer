@@ -6,6 +6,7 @@ import UserInfoRef from "../../base/BaseUserInfo";
 import EpayPreciseOrderStore from "../epayPreciseOrder";
 import BaseEpayFootprintStore from "./BaseEpayFootprintStore";
 import Config from "../../config";
+import { toJS } from "mobx";
 
 class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     constructor(props) {
@@ -14,9 +15,10 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     async onInitialFetchBeginning() {
-        this.cleanTabs();
-        this.cleanOrders();
+        const payNow = _.cloneDeep(toJS(this.getPayNow()));
         this.setInitialFetchCompleted(false);
+        this.clean();
+        this.setPayNow(payNow);
 
         switch (this.getRoleOfPerspective()) {
             case "user":

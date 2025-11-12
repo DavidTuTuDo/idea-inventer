@@ -167,6 +167,29 @@ class CodegenNode {
     /** RWD應該不准讓使用者可以縮小，所以HtmlScale會設為1，但有些只想做電腦網頁的視覺，就讓他true(大鼎初期) */
 
     typeOfTextField = '';
+    /**
+     * TextField 類型定義與自動填充配置
+     *
+     * 本系統提供多種 TextField 類型以支持不同的表單欄位需求，並透過瀏覽器的自動填充功能提升使用者體驗。
+     *
+     * 電子郵件欄位（email）用於填寫使用者的電子郵件地址，瀏覽器會記住並建議之前輸入過的 email，使用者無需重複輸入。
+     *
+     * 姓名欄位（name）用於填寫使用者的真實姓名，瀏覽器會記住並建議之前輸入過的姓名，方便快速填寫個人資訊。
+     *
+     * 電話欄位（tel）用於填寫使用者的手機或電話號碼，瀏覽器會記住並建議之前輸入過的電話號碼，提高表單填寫效率。
+     *
+     * 地址欄位（address）用於填寫使用者的街道地址，瀏覽器會記住並建議之前輸入過的地址，減少重複輸入的麻煩。
+     *
+     * 郵遞區號欄位（postal-code）用於填寫使用者的郵遞區號或郵編，瀏覽器會記住並建議之前輸入過的郵遞區號。
+     *
+     * 帳號名稱欄位（username）用於填寫使用者的登入帳號，瀏覽器會記住並建議之前輸入過的帳號名稱，加快登入流程。
+     *
+     * 密碼欄位（password）用於填寫使用者的登入密碼，系統使用 "current-password" 機制讓瀏覽器能安全地建議已儲存的密碼，同時保護使用者隱私。
+     *
+     * 預設欄位在沒有特定類型指定時使用，呈現為標準的文字輸入框。
+     *
+     * 所有欄位均配置雙層自動填充屬性（slotProps 與 inputProps），確保在各種情況下都能正確傳遞到底層的 HTML input 元素，提供最佳的跨瀏覽器相容性。
+     */
 
     idOfProject = ''
     /** firebase上專屬的id好，這才能deploy 到雲端專案的uid，還有function組合的request/httpOnCall url都要看這個碼，早期的都是看name*/
@@ -6059,6 +6082,8 @@ class ComponentBuilder extends BaseBuilder {
         _.remove(strings, (each) => _.isEqual(each, SIGN_OF_JSX_CONTENT));
     }
 
+    existedFunctions = new Set();
+    existedMethods = new Set();
     appendRenderViewFunctions(node, generator, isEditPage) {
 
         const self = this;
@@ -6089,26 +6114,6 @@ class ComponentBuilder extends BaseBuilder {
 
         }
 
-        function generateViewClass(node) {
-            const folderName = _.lowerFirst(node.getViewClassNameOfRenderView())
-            const clazzName = node.getViewClassNameOfRenderView();
-            const baseClazzName = `Base${clazzName}`;
-            const viewGenerator = new ClassGenerator(Util.joinRespectingDot(self.genSourcePath, 'view', folderName, `${baseClazzName}.js`), this.nodeOfAncestor);
-            viewGenerator.appendClass(baseClazzName, {
-                name: 'BaseView',
-                from: `../../base/BaseView`
-            },);
-
-            viewGenerator.appendImport('Style', '../../style');
-            viewGenerator.appendFunction('render', [], [], [],
-                ...getContentStmt(node, viewGenerator, true)
-            );
-            viewGenerator.appendFunction(node.getFunctionNameOfObservableObject(), [], [], [],
-                `return this.propsMobX().${node.getObservableName()}`)
-            viewGenerator.needIndexFile(clazzName, ['observer'])
-            viewGenerator.persist().then();
-        }
-
         function getContentStmt(node, _generator) {
             return [
                 'const self = this',
@@ -6131,46 +6136,86 @@ class ComponentBuilder extends BaseBuilder {
             this.hasRootRenderViewFunction = true;
         }
 
-        const existedFunctions = {};
-
         function persistMethod(generator, method) {
-            generator.appendFunction(method.functionName,
+            const functionName = method.functionName;
+            if (self.existedMethods.has(functionName)) return;
+
+            generator.appendFunction(
+                method.functionName,
                 method.params,
                 [],
                 method.comments ?? [],
                 `Util.appendInfo('${method.functionName} not override')`
             );
+            self.existedMethods.add(functionName);
         }
 
-        for (const method of node.getFunctionMethods()) persistMethod(generator, method);
+        function shouldSkipChild(child, functionName) {
+            /** 檢查是否應該跳過該子節點 */
+            if (self.existedFunctions.has(functionName)) return true;  // 重複定義的 view 只出現一次
+            if (child.isReferenceStructNode()) return true;       // 避免遞迴 build
+            return false;
+        }
+
+        function handlePaginateConfig(child, generator, self) {
+            /** 處理分頁相關配置 */
+            if (!child.isArray() || !child.hasPaginate()) return;
+
+            generator.appendFunction(
+                'getThresholdOfScrollToBottom', [], [], [],
+                `return ${child.getPaginateThreshold()}`
+            );
+
+            self.appendStmtIntoComponentDidMount('const view = this;');
+            generator.appendConstructor(
+                `this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfFetch()})`
+            );
+        }
+
+        function handleArrayChild(child, generator) {
+            /** 處理陣列型態的子節點 */
+            if (!child.isArray()) return;
+
+            /**
+             * 因為 type='array'，必須讓 Array 產出一個 itemView
+             * 但 getJSXStringsByNode 邏輯太嚴謹，所以先用 clone 偽裝成一個 object 去 generate
+             */
+            appendViewFunctionClass(child.getArrayItemNode());
+        }
+
+        // 主程序邏輯
+        for (const method of node.getFunctionMethods()) {
+            persistMethod(generator, method);
+        }
 
         for (const child of node.getPreciseViewChildren()) {
             const functionName = child.getViewClassNameOfRenderView();
-            /** 讓重複定義的view只出現一次, 像是space這樣的狀況 */
-            if (existedFunctions[functionName]) continue;
 
-            /** 避免掉進去遞迴build */
-            if (child.isReferenceStructNode()) continue;
+            if (shouldSkipChild(child, functionName)) continue;
 
-            for (const method of child.getFunctionMethods()) persistMethod(generator, method);
-
-            for (const _import of child.getStmtsOfImport()) generator.appendImport(_import.part, _import.from);
-
-            if (child.isArray()) {
-                if (child.hasPaginate()) {
-                    generator.appendFunction(`getThresholdOfScrollToBottom`, [], [], [], `return ${child.getPaginateThreshold()}`)
-                    self.appendStmtIntoComponentDidMount(`const view = this;`)
-                    generator.appendConstructor(`this.registerScrollToBottomJob(this.getStore().${child.getFunctionNameOfFetch()})`)
-                }
-
-                /** 因為type='array', 必須讓Array產出一個itemView, 但getJSXStringsByNode邏輯太嚴謹, 所以先用clone偽裝成一個object去generate */
-                appendViewFunctionClass(child.getArrayItemNode())
+            // 處理方法註冊
+            for (const method of child.getFunctionMethods()) {
+                persistMethod(generator, method);
             }
-            appendViewFunctionClass(child)
+
+            // 處理 imports
+            for (const _import of child.getStmtsOfImport()) {
+                generator.appendImport(_import.part, _import.from);
+            }
+
+            // 處理分頁配置
+            handlePaginateConfig(child, generator, self);
+
+            // 處理陣列子節點
+            handleArrayChild(child, generator);
+
+            // 遞迴處理視圖
+            appendViewFunctionClass(child);
             if (child.hasViewChildren()) {
                 this.appendRenderViewFunctions(child, generator, isEditPage);
             }
-            existedFunctions[functionName] = true;
+
+            self.existedFunctions.add(functionName);
         }
     }
 
@@ -8368,11 +8413,66 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             const visual = node.getHelperVisual();
             node.appendImportStmt({part: 'InputAdornment', from: '@mui/material/InputAdornment'})
-            // const stmts = [];
             appendContentOfObjectOfProps(visual.start, 'start', arrayOfProps);
             appendContentOfObjectOfProps(visual.end, 'end', arrayOfProps);
-            // arrayOfProps.push({ slotProps: { input: `###{${stmts.join(',')}}` } });
         }
+
+        switch (node.getTypeOfTextField()) {
+            case 'email':
+                /** 電子郵件欄位 - 用於填寫使用者的電子郵件地址，瀏覽器會記住並建議之前輸入過的 email */
+                arrayOfProps.push({id:'email-address'})
+                arrayOfProps.push({name:'email'})
+                arrayOfProps.push({type:'email'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "email", inputProps: { autoComplete: "email" } } } });
+                break;
+            case 'name':
+                /** 姓名欄位 - 用於填寫使用者的真實姓名，瀏覽器會記住並建議之前輸入過的姓名 */
+                arrayOfProps.push({id:'full-name'})
+                arrayOfProps.push({name:'name'})
+                arrayOfProps.push({type:'text'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "name", inputProps: { autoComplete: "name" } } } });
+                break;
+            case 'tel':
+                /** 電話欄位 - 用於填寫使用者的手機或電話號碼，瀏覽器會記住並建議之前輸入過的電話號碼 */
+                arrayOfProps.push({id:'phone-number'})
+                arrayOfProps.push({name:'phone'})
+                arrayOfProps.push({type:'tel'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "tel", inputProps: { autoComplete: "tel" } } } });
+                break;
+            case 'address':
+                /** 地址欄位 - 用於填寫使用者的街道地址，瀏覽器會記住並建議之前輸入過的地址 */
+                arrayOfProps.push({id:'address'})
+                arrayOfProps.push({name:'address'})
+                arrayOfProps.push({type:'text'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "address-line1", inputProps: { autoComplete: "address-line1" } } } });
+                break;
+            case 'postal-code':
+                /** 郵遞區號欄位 - 用於填寫使用者的郵遞區號或郵編，瀏覽器會記住並建議之前輸入過的郵遞區號 */
+                arrayOfProps.push({id:'postal-code'})
+                arrayOfProps.push({name:'postalCode'})
+                arrayOfProps.push({type:'text'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "postal-code", inputProps: { autoComplete: "postal-code" } } } });
+                break;
+            case 'username':
+                /** 帳號名稱欄位 - 用於填寫使用者的登入帳號，瀏覽器會記住並建議之前輸入過的帳號名稱 */
+                arrayOfProps.push({id:'username'})
+                arrayOfProps.push({name:'username'})
+                arrayOfProps.push({type:'text'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "username", inputProps: { autoComplete: "username" } } } });
+                break;
+            case 'password':
+                /** 密碼欄位 - 用於填寫使用者的登入密碼，使用 "current-password" 讓瀏覽器能安全地建議已儲存的密碼 */
+                arrayOfProps.push({id:'password'})
+                arrayOfProps.push({name:'password'})
+                arrayOfProps.push({type:'password'})
+                arrayOfProps.push({ slotProps: { input: { autoComplete: "current-password", inputProps: { autoComplete: "current-password" } } } });
+                break;
+            default:
+                /** 預設文字欄位 - 當沒有特定類型時使用 */
+                arrayOfProps.push({type:'text'})
+                break;
+        }
+
         Util.mergeArrayByKey(arrayOfProps);
         const nameOfDisabled = Util.camel(node.getName(), 'disabled');
         node.getParentNode().appendChildrenWithJsons(
