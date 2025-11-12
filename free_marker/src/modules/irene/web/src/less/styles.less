@@ -60,6 +60,7 @@
     }
     @media @desktop {
         min-height: 500px;
+        min-width: 500px;
     }
 }
 .IreneQrcodeMainDiv:extend(.CenterInParentColumn) {
@@ -140,7 +141,8 @@
         /** empty style */
     }
 }
-.IreneQrcodeMainScanHrefQrCode {
+.IreneQrcodeMainScanTipTypography:extend(.BeautyContent) {
+    font-size: 0.8rem;
     @media @mobile {
         /** empty style */
     }
@@ -149,6 +151,19 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+.IreneQrcodeMainScanHrefQrCode {
+    margin: 6px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin-left: 15px;
+        margin-right: 15px;
     }
 }
 .IreneQrcodeMainScanHrefDivWrap {

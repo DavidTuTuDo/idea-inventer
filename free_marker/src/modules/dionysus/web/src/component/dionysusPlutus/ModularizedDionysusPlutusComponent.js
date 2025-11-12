@@ -104,18 +104,22 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
         const idOfPreciseOrder = await this.performEPayCreateOrderBehavior();
         Util.appendInfo(`idOfPreciseOrder ==> `, idOfPreciseOrder);
         this.showInfoSnackMessage(`進入付款流程`);
+        const enableDialogOfDirectPay = eros.enableOfDirectPay && eros.hasDirectPay;
+        const payload = { payNow: { href: eros.hrefOfDirectPay, price: self.getStore().getFeeOfPayment(), title: eros.nameOfDirectPay } };
         switch (selectedOfTransaction) {
             case Config.TransactionMethod.LinePay:
-                const validate1 = eros.enableOfLinePay && eros.hasLinePay;
-                return validate1 ? await this.performCheckoutByLinePayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
+                const validateLP = eros.enableOfLinePay && eros.hasLinePay;
+                return validateLP
+                    ? await this.performCheckoutByLinePayBehavior(idOfPreciseOrder)
+                    : Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {});
             case Config.TransactionMethod.ECPay:
-                const validate2 = eros.enableOfECPay && eros.hasECPay;
-                return validate2 ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
+                const validateEC = eros.enableOfECPay && eros.hasECPay;
+                return validateEC ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.DirectPay:
-                if (eros.enableOfDirectPay && eros.hasDirectPay) this.gotoUrlWithNewTabDirectly(eros.hrefOfDirectPay);
-                return Router.gotoEpayFootprintPage(this, "user", "all");
+                // if (isMobile) this.gotoUrlWithNewTabDirectly(eros.hrefOfDirectPay);
+                return Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {});
             default:
-                return Router.gotoEpayFootprintPage(this, "user", "all");
+                return Router.gotoEpayFootprintPage(this, "user", "all", enableDialogOfDirectPay ? payload : {});
         }
     };
 

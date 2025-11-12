@@ -66,6 +66,8 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfCheckoutByCredit(pub.getThresholdOfCheckoutByCredit());
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByCod(pub.getThresholdOfFreeShipByCOD());
         this.setDialogInputValueOfDionysusErosArrowOfThresholdOfFreeShipByRapidly(pub.getThresholdOfFreeShipByRapidly());
+        this.setDialogInputValueOfDionysusErosArrowOfNameOfDirectPay(pub.getNameOfDirectPay());
+        this.setDialogInputValueOfDionysusErosArrowOfCautionOfDirectPay(pub.getCautionOfDirectPay());
 
         this.setDialogInputValueOfDionysusErosArrowOfMaximumOfUniqueItems(UserInfo.getGlobalPerspectiveAttr(`maximumOfUniqueItems`));
         this.setDialogInputValueOfDionysusErosArrowOfTtlOfPayment(UserInfo.getGlobalPerspectiveAttr(`ttlOfPayment`));
@@ -279,6 +281,12 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { nameOfDirectPay: name });
     };
 
+    submitCautionOfDirectPay = async (name) => {
+        if (!this.isValidText(name)) return this.getComponent().showErrorSnackMessage(`立牌連結的提示標語錯誤`);
+        this.getCupidPublic().setCautionOfDirectPay(name);
+        await this.getCupidPublic().upsertCupidPublic(this.getComponent(), { cautionOfDirectPay: name });
+    };
+
     submitBrandName = async (name) => {
         if (_.isEmpty(name)) return this.getComponent().showErrorSnackMessage(`網頁抬頭 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { nameOfBrand: name });
@@ -333,10 +341,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         UserInfo.setGlobalPerspectiveAttr({ lineO });
     };
 
-    isValidText = () => {
-        return true;
-    };
-
     submitAddressO = async (addressO) => {
         if (!this.isValidText(addressO)) return this.getComponent().showErrorSnackMessage(`公司地址 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { addressO });
@@ -347,10 +351,6 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!this.isValidText(emailO)) return this.getComponent().showErrorSnackMessage(`公司Emal 格式錯誤`);
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { emailO });
         UserInfo.setGlobalPerspectiveAttr({ emailO });
-    };
-
-    isPositiveNum = (value) => {
-        return _.isNumber(value) && value >= 0;
     };
 
     submitMaximumOfUniqueItems = async (count) => {
@@ -426,7 +426,8 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
     fetchDefaultHrefOfDirectPay = async () => this.getNormalizeStmt(["付費連結"], [this.getCupidPublic().getHrefOfDirectPay()]);
 
     getNormalizeStmt = (titles, items) => titles.map((title, idx) => ({ index: title, content: _.get(items, idx, "") || "" }));
-
+    isValidText = () => true;
+    isPositiveNum = (value) => _.isNumber(value) && value >= 0;
     /** text fetch */
     onTextFetchChanged = (param) => (this.getSelected() === "name" ? Util.appendInfo(`[TEXTFETCH] name text changed ${param}`) : undefined);
     onTextFetchAppendClicked = (param) => (this.getSelected() === "name" ? this.submitBrandName(param) : undefined);

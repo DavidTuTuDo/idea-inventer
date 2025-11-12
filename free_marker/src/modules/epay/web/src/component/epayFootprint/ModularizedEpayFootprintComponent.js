@@ -248,6 +248,18 @@ class ModularizedEpayFootprintComponent extends BaseEpayFootprintComponent {
     getOrderTransportBy(order) {
         return Config.LabelOfTransportMethod(order.getTypeOfTransport());
     }
+
+    getPresetObjOfIreneQrcode() {
+        return {
+            main: "LINE",
+            sub: "PAY",
+            title: this.getStore().getPayNow()?.title,
+            href: this.getStore().getPayNow()?.href,
+            content: `NT$ ${this.getStore().getPayNow()?.price} 元`,
+            caution: `(完成支付後，截圖給小編)`,
+            color: `#06a748`
+        };
+    }
 }
 
 export default ModularizedEpayFootprintComponent;

@@ -14,7 +14,8 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     }
 
     async onInitialFetchBeginning() {
-        this.clean();
+        this.cleanTabs();
+        this.cleanOrders();
         this.setInitialFetchCompleted(false);
 
         switch (this.getRoleOfPerspective()) {
@@ -47,6 +48,16 @@ class ModularizedEpayFootprintStore extends BaseEpayFootprintStore {
     isRoleOfUser = (order) => {
         return _.isEqual(UserInfoRef.getUid(), order.idOfUser) && _.isEqual(this.getRoleOfPerspective(), "user");
     };
+
+    async onInitialFetchCompleted(collection) {
+        await super.onInitialFetchCompleted(collection);
+        console.log("onInitialFetchCompleted !!!!! ", this.getPayNow());
+
+        if (this.getPayNow()?.price > 0) {
+            console.log("必須進來");
+            this.getComponent().getPayNowDivAlertDialogRef().open();
+        }
+    }
 
     conditionsOfBuyerDefault(state) {
         const conditionOfDefault = { type: "where", params: ["idOfUser", "==", UserInfoRef.getUid()] };

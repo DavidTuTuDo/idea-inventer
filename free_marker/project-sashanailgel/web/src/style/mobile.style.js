@@ -509,6 +509,8 @@ class MobileStyle {
 
     IreneQrcodeMainScanHrefQrCode = {};
 
+    IreneQrcodeMainScanTipTypography = {};
+
     IreneQrcodeMainScanDiv = {};
 
     IreneQrcodeMainRowSubDivWrap = {};
@@ -718,6 +720,10 @@ class MobileStyle {
     HadesDiv = {};
 
     /** => following for epayFootprint  component  */
+
+    EpayFootprintPayNowReactFragmentWrap = {};
+
+    EpayFootprintPayNowDiv = {};
 
     EpayFootprintTransNotifyReactFragmentWrap = {};
 
@@ -1386,6 +1392,20 @@ class MobileStyle {
     DionysusErosAreaOfPreviewDirectPayDivWrap = {};
 
     DionysusErosAreaOfPreviewDirectPayDiv = {};
+
+    DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayIconNavigateNext = {};
+
+    DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayReactFragmentWrap = {};
+
+    DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayIconButton = {};
+
+    DionysusErosAreaOfCautionOfDirectPayOptionOfCautionOfDirectPayContentTypography = {};
+
+    DionysusErosAreaOfCautionOfDirectPayOptionOfCautionOfDirectPayTitleTypography = {};
+
+    DionysusErosAreaOfCautionOfDirectPayDivWrap = {};
+
+    DionysusErosAreaOfCautionOfDirectPayDiv = {};
 
     DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayIconNavigateNext = {};
 

@@ -298,14 +298,21 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitNameOfDirectPay(value).then();
     }
 
+    onDionysusErosArrowOfCautionOfDirectPayIconButtonClicked(param) {
+        const object = param.object;
+        this.getStore().setSelected("cautionOfDirectPay");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfCautionOfDirectPay();
+        this.getStore().submitCautionOfDirectPay(value).then();
+    }
+
     getPresetObjOfIreneQrcode() {
         return {
             main: "LINE",
             sub: "PAY",
             title: this.getStore().getCupidPublic().getNameOfDirectPay(),
             href: this.getStore().getCupidPublic().getHrefOfDirectPay(),
+            caution: this.getStore().getCupidPublic().getCautionOfDirectPay(),
             content: `NT$ 999 元`,
-            caution: `(完成支付後，截圖給小編)`,
             color: `#06a748`
         };
     }

@@ -509,6 +509,8 @@ class CommonStyle {
 
     IreneQrcodeMainScanHrefQrCode = {};
 
+    IreneQrcodeMainScanTipTypography = {};
+
     IreneQrcodeMainScanDiv = {};
 
     IreneQrcodeMainRowSubDivWrap = {};
@@ -718,6 +720,10 @@ class CommonStyle {
     HadesDiv = {};
 
     /** => following for epayFootprint  component  */
+
+    EpayFootprintPayNowReactFragmentWrap = {};
+
+    EpayFootprintPayNowDiv = {};
 
     EpayFootprintTransNotifyReactFragmentWrap = {};
 
@@ -1386,6 +1392,20 @@ class CommonStyle {
     DionysusErosAreaOfPreviewDirectPayDivWrap = {};
 
     DionysusErosAreaOfPreviewDirectPayDiv = {};
+
+    DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayIconNavigateNext = {};
+
+    DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayReactFragmentWrap = {};
+
+    DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayIconButton = {};
+
+    DionysusErosAreaOfCautionOfDirectPayOptionOfCautionOfDirectPayContentTypography = {};
+
+    DionysusErosAreaOfCautionOfDirectPayOptionOfCautionOfDirectPayTitleTypography = {};
+
+    DionysusErosAreaOfCautionOfDirectPayDivWrap = {};
+
+    DionysusErosAreaOfCautionOfDirectPayDiv = {};
 
     DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayIconNavigateNext = {};
 

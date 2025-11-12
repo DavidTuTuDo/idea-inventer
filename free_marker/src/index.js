@@ -192,6 +192,9 @@ class CodegenNode {
     /** 用於時間moment的time format 例如 YY/MM/DD */
     format = '';
 
+    virtual = false;
+    /** 目前的alertDialog架構是基於一個view，但很多情況是由ref.open()去渲染出dialog，view的產生就很雞肋，所以virtual可以==true，尤其是捲軸畫面，每個item都渲染renderDialog太浪費dom了*/
+
     /**
      * 檢查是不是extra component，會造成 i18n duplicated
      * */
@@ -755,7 +758,8 @@ class CodegenNode {
         /** 在dialog裡面的view 會拿不到history, 會造成無法導頁, 所以要把喚起dialog的 component instance 帶進去 */
         paramObject: 'some object',
         /** 帶入到customView 裡面的變數 */
-
+        useRefOnly: false,
+        /** dialog只需要用ref.open()，所以不用把 觸發(view) 畫出來*/
         textInput: {
             value: '', /** 輸入框的預設值 */
             enable: false,
@@ -5898,13 +5902,14 @@ class ComponentBuilder extends BaseBuilder {
             }
 
             const rule = node.getRuleOfOuter();
+            const content = node.virtual ? [] : origin;
             origin = this.getJSXStrings({
                 tag: node.getWrapView(),
                 generator,
                 props: {...propOfWrap, ...propsOfExtra},
                 typeOfClass: 'component',
-                contents: _.isEqual(rule, 'start') ? [...getOuterChildJSXStrings(node), ...origin, ...node.getWrapContents(generator)] :
-                    [...origin, ...getOuterChildJSXStrings(node), ...node.getWrapContents(generator)]
+                contents: _.isEqual(rule, 'start') ? [...getOuterChildJSXStrings(node), ...content, ...node.getWrapContents(generator)] :
+                    [...content, ...getOuterChildJSXStrings(node), ...node.getWrapContents(generator)]
             })
         }
 

@@ -28,6 +28,10 @@ class ModularizedIreneQrcodeComponent extends BaseIreneQrcodeComponent {
     getWrapInjectStyleOfIreneQrcodeSubTypography(ireneQrcode) {
         return Util.getVisibleOrNone(_.size(ireneQrcode.getSub()) > 0);
     }
+
+    onIreneQrcodeScanDivClicked(param) {
+        this.gotoUrlWithNewTabDirectly(this.getStore().getHref());
+    }
 }
 
 export default ModularizedIreneQrcodeComponent;
