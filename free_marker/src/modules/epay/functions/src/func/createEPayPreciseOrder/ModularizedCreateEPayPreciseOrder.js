@@ -189,8 +189,8 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             /** 累加計算總價 */
             priceOfTotalOfShould += itemOfClientOrdering.quantity * variant.price;
         });
-        const discountOfTotal = _.subtract(0, Util.getPriceOfPercentageBehavior(priceOfTotalOfShould, globalPerspective.percentageOfDiscount));
-        const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, discountOfTotal]);
+        const feeOfDiscount = _.subtract(0, Util.getFeeOfDiscount(priceOfTotalOfShould, globalPerspective.percentageOfDiscount));
+        const priceOfTotalIncludingDiscount = _.sum([priceOfTotalOfShould, feeOfDiscount]);
 
         /** (done) todo:透過eros是否支援transport */
         /** (done) todo:如果超過免運就免，否則就是依照transport的(feeOfPickupStore, feeOfCOD) */
@@ -283,7 +283,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         if (this.isLoginUser(session) && priceOfTotalOfShould > eros.amountOfMaximumBuy)
             this.appendErrorLog(9999, `45645687895 [購物限制] 消費金額必須小於 $${eros.amountOfMaximumBuy} 元內`);
 
-        return { eros, idOfAuthor, containsTransportedVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal };
+        return { eros, idOfAuthor, containsTransportedVariant, priceOfTotal: priceOfTotalOfShould, feeOfTransport, discountOfTotal: feeOfDiscount };
     };
 
     processInventoryAndSchedules = async (itemsOfClientOrdering, transaction, globalPerspective) => {

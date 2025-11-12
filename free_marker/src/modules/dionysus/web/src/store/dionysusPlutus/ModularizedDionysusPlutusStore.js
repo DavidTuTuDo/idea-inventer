@@ -53,7 +53,7 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         this.setProcedureOfTransport(Config.LabelOfTransportMethod(this.getTypeOfTransport()));
         this.setProcedureOfPayment(Config.LabelOfTransactionMethod(this.getTypeOfTransaction()));
         this.setPrice(_.sum(itemsOfChecked.map((each) => _.multiply(each.countOfSubmit, each.price))));
-        this.setDiscount(_.subtract(0, Util.getPriceOfPercentageBehavior(this.getPrice(), eros?.percentageOfDiscount, true)));
+        this.setDiscount(_.subtract(0, Util.getFeeOfDiscount(this.getPrice(), UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount"))));
         if (UserInfoRef.isLoginWithSucceed()) {
             this.setEmail(UserInfoRef.getEmailOfCurrentUser());
             this.setPhone(UserInfoRef.getPhoneOfCurrentUser());

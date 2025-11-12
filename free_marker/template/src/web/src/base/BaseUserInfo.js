@@ -286,7 +286,6 @@ class UserInfo {
         const latestOfInfoOfCartie = Util.toObjectWithAttributeKey(latest, "idOfCookieUsage");
         Cookie.setInfoOfCartie(latestOfInfoOfCartie);
         Cookie.removeTotalPriceOfCartie();
-        Cookie.removeInfoOfSelectedTrans();
         this.invalidateCartie(latest);
     }
 

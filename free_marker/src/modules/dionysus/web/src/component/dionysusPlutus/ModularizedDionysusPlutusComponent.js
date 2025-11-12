@@ -112,7 +112,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
                 const validate2 = eros.enableOfECPay && eros.hasECPay;
                 return validate2 ? await this.performCheckoutByECPayBehavior(idOfPreciseOrder) : Router.gotoEpayFootprintPage(this, "user", "all");
             case Config.TransactionMethod.DirectPay:
-                if (eros.enableOfDirectPay && eros.hasDirectPay) this.gotoUrlWithNewTabDirectly(eros.payOfDirect);
+                if (eros.enableOfDirectPay && eros.hasDirectPay) this.gotoUrlWithNewTabDirectly(eros.hrefOfDirectPay);
                 return Router.gotoEpayFootprintPage(this, "user", "all");
             default:
                 return Router.gotoEpayFootprintPage(this, "user", "all");

@@ -16,6 +16,11 @@ class ModularizedDionysusCartieComponent extends BaseDionysusCartieComponent {
         this.getStore().validateCountOfOrder(brief);
     }
 
+    onDionysusCartieBriefCountOfSubmitTextFieldChange(param) {
+        const brief = param.object;
+        if (brief.getCountOfSubmit() >= brief.getQuantity()) brief.setCountOfSubmit(brief.getQuantity());
+    }
+
     onDionysusCartieBriefDecreaseIconButtonClicked(param) {
         const brief = param.object;
         this.getStore().validateCountOfOrder(brief, false);

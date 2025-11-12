@@ -3417,7 +3417,7 @@ class Utiller {
     };
 
     /**
-     * 根據百分比計算價格變化後的金額。
+     * 根據百分比計算價格變化後的金額(折扣後的總金額)。
      *
      * @param {number} price - 原始價格。
      * @param {number} percentage - 百分比（例如 10 表示 10%）。
@@ -3437,6 +3437,10 @@ class Utiller {
         // 根據是否為折扣，決定乘上 (1 - 0.1) 或 (1 + 0.1)
         // 並呼叫 getNumberOfMultiplyCeil 進行乘法後向上取整
         return this.getNumberOfMultiplyCeil(price, discount ? 1 - decimal : 1 + decimal);
+    }
+
+    getFeeOfDiscount(origin, percentage) {
+        return Math.round(_.multiply(origin, this.toPercentageDecimal(percentage)));
     }
 
     /**

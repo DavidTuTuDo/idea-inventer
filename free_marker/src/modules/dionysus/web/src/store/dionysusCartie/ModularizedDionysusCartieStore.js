@@ -153,11 +153,10 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
 
     @computed
     get getComputedDiscountOfMember() {
-        const discount = Util.getPriceOfPercentageBehavior(this.getPriceWithoutDiscount(), Util.toPercentageDecimal(UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount")));
+        const discount = Util.getFeeOfDiscount(this.getPriceWithoutDiscount(), UserInfoRef.getGlobalPerspectiveAttr("percentageOfDiscount"));
         const computed = _.subtract(0, discount);
-        const result = computed < 0 ? _.round(computed) : 0;
-        this.setDiscountOfMember(result);
-        return result;
+        this.setDiscountOfMember(computed);
+        return computed;
     }
 
     @computed
