@@ -32,12 +32,12 @@ const FIELD_NAME_OF_INJECT_STORE = 'injectStore';
 const TYPES_OF_PROPS_VIEW = ['list', 'listWrap', 'wrap', 'default'];
 const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
-let CURRENT_PROJECT = './project-yueh-voice';
+// let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -4833,11 +4833,10 @@ class RemoteFunctionHandler extends BaseBuilder {
                 }
                 contents.push(`${child.getFieldName()} : ${this.getPreciseValue(child)}`);
             }
+            const updateStmt = `updateTime : this._firebase().getServerTimeSymbol()`;
+            if (!node.isCheapArray()) contents.push(`${updateStmt},`);
 
-            if (!node.isCheapArray()) {
-                contents.push(`updateTime : this._firebase().getServerTimeSymbol(),`);
-            }
-            const content = self.isWebPlatform() ? `...this.columnData(obj)`: `${contents.map(each => each).join('\n')}`;
+            const content = self.isWebPlatform() ? `...Util.mergeObject({${updateStmt}},this.columnData(obj))` : `${contents.map(each => each).join('\n')}`;
             const stmts = `const commitment = \{ ${content}`;
 
             if (node.hasPath()) {
