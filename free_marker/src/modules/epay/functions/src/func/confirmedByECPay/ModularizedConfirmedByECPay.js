@@ -60,7 +60,8 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                     procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                     timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp()),
                     idOfThirdPartyTradeNo: `${contentOfSucceed.TradeNo}`,
-                    messageOfPayment: `${contentOfSucceed.RtnMsg}`
+                    messageOfPayment: `${contentOfSucceed.RtnMsg}`,
+                    contentOfRender: Api._firebase().getDeleteDocAttributeSymbol() /** 成功交易後刪掉，不然太佔document的容量 */
                 };
             }, itemOfPreciseOrder.id);
 
@@ -69,6 +70,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
                     return {
                         typeOfTransaction: Config.TransactionMethod.ECPay,
                         stateOfPayment: Config.StateOfPayment.Completed,
+                        paid: true,
                         procedureOfPayment: `${Config.LangOfEPayType.ECPay}${Util.getSeparatorOfUnique()}${contentOfSucceed.PaymentType}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };

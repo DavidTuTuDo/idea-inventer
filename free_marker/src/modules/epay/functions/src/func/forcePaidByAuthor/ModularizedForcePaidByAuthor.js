@@ -35,6 +35,19 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
             };
         }, detailOfPreciseOrder.id);
 
+        await Api.updateHadeItemAtomically(
+            (item, transaction) => {
+                return {
+                    typeOfTransaction: Config.TransactionMethod.AuthorForcePaid,
+                    procedureOfPayment: `${Config.LabelOfTransactionMethod(Config.TransactionMethod.AuthorForcePaid)}`,
+                    paid: true,
+                    timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
+                };
+            },
+            itemOfPreciseOrder.id,
+            itemOfPreciseOrder.idOfAuthor
+        );
+
         await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
         return { message: `confirmed by ${Config.EPayType.LinePay} succeed` };
     }

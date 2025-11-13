@@ -4,38 +4,43 @@
   "description": "{{{projectDescription}}}",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
     "updateUtiller": "npm update utiller --save",
     "updateConfigerer": "npm update configerer --save"
   },
   "engines": {
-    "node": "18"
+    "node": "20"
   },
-  "author": "davidtu<freshingmoon0725@gmail.com>",
-  "license": "ISC",
+  "main": "./index.js",
   "dependencies": {
     "configerer": "^1.0.23",
-    "databazer": "^1.0.17",
+    "docxtemplater": "^3.48.0",
+    "ecpay_aio_nodejs": "^1.2.2",
     "firebase-admin": "^12.2.0",
-    "js-event-bus": "^1.1.0",
+    "firebase-functions": "^5.0.1",
     "googleapis": "^140.0.1",
     "linepayer": "^1.0.15",
-    "docxtemplater": "^3.48.0",
-    "pizzip": "^3.1.7",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
+    "pizzip": "^3.1.7",
     "utiller": "^1.0.404",
-    "@babel/runtime": "^7.24.8",
-    "@fingerprintjs/fingerprintjs": "^4.6.2"
+    "@fingerprintjs/fingerprintjs": "^4.6.2",
+    "@babel/runtime": "^7.24.8"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
-    "@babel/plugin-proposal-decorators": "^7.24.7",
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/plugin-transform-class-properties": "^7.24.7",
-    "@babel/plugin-transform-runtime": "^7.24.7",
     "@babel/preset-env": "^7.24.8",
     "@babel/preset-react": "^7.24.7",
-    "@babel/register": "^7.24.6"
-  }
+    "@babel/plugin-proposal-decorators": "^7.24.7",
+    "@babel/plugin-transform-class-properties": "^7.24.7",
+    "@babel/plugin-transform-runtime": "^7.24.7",
+    "@babel/register": "^7.24.6",
+    "firebase-functions-test": "^0.2.0"
+  },
+  "private": true,
+  "author": "davidtu<freshingmoon0725@gmail.com>"
 }

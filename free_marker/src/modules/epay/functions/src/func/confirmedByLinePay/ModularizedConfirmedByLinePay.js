@@ -89,7 +89,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 (item, transaction) => {
                     return {
                         typeOfTransaction: Config.TransactionMethod.LinePay,
-                        stateOfPayment: Config.StateOfPayment.Completed,
+                        paid: true,
                         procedureOfPayment: `${Config.LangOfEPayType.LinePay}`,
                         timeOfPayment: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
                     };

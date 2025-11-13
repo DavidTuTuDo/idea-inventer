@@ -352,6 +352,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
             phoneNumber: phone || "",
             typeOfTransport,
             typeOfTransaction,
+            percentageOfDiscount: globalPerspective.percentageOfDiscount,
             feeOfTransport,
             discountOfTotal,
             stateOfTransport: containsTransportedVariant
@@ -367,6 +368,7 @@ class ModularizedCreateEPayPreciseOrder extends BaseCreateEPayPreciseOrder {
         const hadesData = Api.normalizeHade({
             priceOfTotal: priceOfTotal,
             timeOfCreate: Util.getCurrentTimeStamp(),
+            feeOfTransport,
             paid: false,
             id: preciseOrderRef.id
         });
