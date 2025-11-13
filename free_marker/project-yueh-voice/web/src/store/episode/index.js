@@ -1,31 +1,16 @@
 const edit = true;
+
 import BaseEpisodeStore from "./BaseEpisodeStore";
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
-import {Application} from "../../";
+import { Application } from "../../";
 import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 import UserInfoRef from "../../base/BaseUserInfo";
-import {
-    makeAutoObservable,
-    makeObservable,
-    action,
-    observable,
-    comparer,
-    computed,
-    autorun,
-    runInAction,
-} from "mobx";
-import FloatArea from "../episodeFloatArea";
-import StickyBottomArea from "../episodeStickyBottomArea";
+import { makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction } from "mobx";
 import Voice from "../episodeVoice";
-import FuncArea from "../episodeFuncArea";
 import BaseStore from "../../base/BaseStore";
 import PieceStore from "../celestialPiece";
 
@@ -42,13 +27,13 @@ class EpisodeStore extends BaseEpisodeStore {
     }
 
     async fetch(view) {
-        const voices = await this.storeOfVoice.fetchVoices(this.getComponent(), this.getParamOfIdOfEpisodeInPath())
-        this.setVoices(...voices)
+        const voices = await this.storeOfVoice.fetchVoices(this.getComponent(), this.getParamOfIdOfEpisodeInPath());
+        this.setVoices(...voices);
     }
 
     async uploadVoices(files) {
-        const nameOfEpisode = this.getFuncArea().getNameOfEpisode()
-        const nameOfSinger = this.getFuncArea().getNameOfSinger();
+        const nameOfEpisode = this.getNameOfEpisode();
+        const nameOfSinger = this.getNameOfSinger();
 
         if (_.isUndefined(this.getComponent()) || _.size(nameOfEpisode) < 5 || _.size(nameOfSinger) < 2) {
             this.getComponent().showWarningSnackMessage(`不符合上傳規範`);
@@ -67,53 +52,53 @@ class EpisodeStore extends BaseEpisodeStore {
                 name,
                 covered,
                 pathOfResource,
-                singer: nameOfSinger,
-            })
+                singer: nameOfSinger
+            });
             const idOfCelestial = resultOfCelestial.value.id;
-            itemsOfCelestialVoice.push({pathOfResource, idOfCelestial, name, singer: nameOfSinger, covered});
+            itemsOfCelestialVoice.push({ pathOfResource, idOfCelestial, name, singer: nameOfSinger, covered });
         }
         const origin = await this.storeOfVoice.fetchVoices(this.getComponent(), nameOfEpisode);
         await this.storeOfVoice.submitVoices(this.getComponent(), [...itemsOfCelestialVoice, ...origin], nameOfEpisode);
     }
 
     setCurrentVoice(path) {
-        this.getStickyBottomArea().setSrcOfPVoice(path)
+        this.setSrcOfPVoice(path);
     }
 
     getCurrentVoicePath = () => {
-        return this.getStickyBottomArea().getSrcOfPVoice();
-    }
+        return this.getSrcOfPVoice();
+    };
 
     @action
     invalidateVoiceEnableState() {
         let enableAll = false;
-        if (_.isEqual(this.getStickyBottomArea().getFuncOfPlayRule().getEnableAll(), '全閉')) {
-            this.getStickyBottomArea().getFuncOfPlayRule().setEnableAll('全開');
+        if (_.isEqual(this.getEnableAll(), "全閉")) {
+            this.setEnableAll("全開");
         } else {
             enableAll = true;
-            this.getStickyBottomArea().getFuncOfPlayRule().setEnableAll('全閉');
+            this.setEnableAll("全閉");
         }
         const next = this.getVoices().map((voice) => {
-            return Util.mergeObject(voice, {enable: enableAll})
-        })
+            return Util.mergeObject(voice, { enable: enableAll });
+        });
         this.setVoices(...next);
     }
 
     @action
     invalidateRuleOfPlay() {
-        const state = this.getStickyBottomArea().getFuncOfPlayRule().getRulesOfPlay();
-        if (_.isEqual(state, '順序')) {
-            this.getStickyBottomArea().getFuncOfPlayRule().setRulesOfPlay('隨機');
+        const state = this.getRulesOfPlay();
+        if (_.isEqual(state, "順序")) {
+            this.setRulesOfPlay("隨機");
             this.randomPlay = true;
         } else {
-            this.getStickyBottomArea().getFuncOfPlayRule().setRulesOfPlay('順序');
+            this.setRulesOfPlay("順序");
             this.randomPlay = false;
         }
     }
 
     getCurrentVoice = () => {
         return _.find(this.getVoices(), (voice) => _.isEqual(this.getCurrentVoicePath(), voice.getPathOfResource()));
-    }
+    };
 
     async deleteVoicePrecisely(voice) {
         const idOfCelestial = voice.getIdOfCelestial();
@@ -122,9 +107,8 @@ class EpisodeStore extends BaseEpisodeStore {
     }
 
     invalidateCurrentAlert = async () => {
-        if (this.getCurrentVoice() !== undefined)
-            this.getStickyBottomArea().setNameOfPlayingStatement(`正在播放:${this.getCurrentVoice().getName()}`);
-    }
+        if (this.getCurrentVoice() !== undefined) this.setNameOfPlayingStatement(`正在播放:${this.getCurrentVoice().getName()}`);
+    };
 
     performNextVoice = async () => {
         /** 檢查 ignore */
@@ -141,21 +125,21 @@ class EpisodeStore extends BaseEpisodeStore {
         await Util.syncDelay(500);
         let next = undefined;
         if (this.randomPlay) {
-            next = Util.getRandomItemOfArray(this.getVoices().filter((voice) => voice.enable), this.getCurrentVoice());
+            next = Util.getRandomItemOfArray(
+                this.getVoices().filter((voice) => voice.enable),
+                this.getCurrentVoice()
+            );
         } else {
             const currentIndex = _.findIndex(this.getVoices(), (voice) => _.isEqual(voice.getPathOfResource(), this.getCurrentVoicePath()));
-            let nextIndex = _.findIndex([...this.getVoices(), ...this.getVoices()],
-                (voice) => voice.enable,
-                currentIndex + 1);
+            let nextIndex = _.findIndex([...this.getVoices(), ...this.getVoices()], (voice) => voice.enable, currentIndex + 1);
             next = Util.nth(this.getVoices(), nextIndex);
         }
         if (next !== undefined && next instanceof Voice) {
-            this.setCurrentVoice('');
+            this.setCurrentVoice("");
             await Util.syncDelay(10);
             this.setCurrentVoice(next.getPathOfResource());
         }
-
-    }
+    };
     /** -------------------- async api -------------------- **/
 }
 

@@ -1,2235 +1,3716 @@
-@mobile: ~"only screen and (min-width: 320px) and (max-width: 600px)";
-@tablet: ~"only screen and (min-width: 320px) and (max-width: 600px)";
-@desktop: ~"only screen and (min-width: 601px)";
+@mobile: ~'only screen and (min-width: 320px) and (max-width: 600px)';
+@tablet: ~'only screen and (min-width: 320px) and (max-width: 600px)';
+@desktop: ~'only screen and (min-width: 601px)';
 @import "./libs/slideshow.less";
 @import "./libs/firebaseui.less";
 @import "./libs/base.less";
 /** following for main  component used  */
 
 .MainDiv:extend(.CenterInParentColumn) {
-  background-color: black;
-  min-height: 40vh;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    background-color: black;
+    min-height: 40vh;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for episode  component used  */
 
 .EpisodeDiv:extend(.CenterInParentColumn) {
-  background-color: black;
-  min-height: 40vh;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    background-color: black;
+    min-height: 40vh;
+    border-radius: 5px;
+    margin: 6px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeDivWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin: auto;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFuncAreaDiv:extend(.CenterInParentRow) {
-  margin: 10px;
-  gap: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin: 10px;
+    gap: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFuncAreaUploadVoiceButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFuncAreaDeleteAllButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFuncAreaNameOfEpisodeTextField {
-  background-color: white;
-  border-radius: 3px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    background-color: white;
+    border-radius: 3px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFuncAreaNameOfSingerTextField {
-  background-color: white;
-  border-radius: 3px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    background-color: white;
+    border-radius: 3px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoicePaper:extend(.CenterInParentRow) {
-  justify-content: space-between;
-  padding-left: 5px;
-  padding-right: 5px;
-  background-color: rgba(255, 255, 255, 0.2);
-  @media @mobile {
-    width: 95vw;
-    min-height: 55px;
-  }
-  @media @tablet {
-    width: 95vw;
-    min-height: 55px;
-  }
-  @media @desktop {
-    width: 60vw;
-    max-width: 500px;
-    min-height: 58px;
-  }
+    justify-content: space-between;
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    @media @mobile {
+        width: 95vw;
+        min-height: 55px;
+    }
+    @media @tablet {
+        width: 95vw;
+        min-height: 55px;
+    }
+    @media @desktop {
+        width: 60vw;
+        max-width: 500px;
+        min-height: 58px;
+    }
 }
 .EpisodeVoiceDivWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceDivList:extend(.CenterInHorizontalColumn) {
-  padding-top: 10px;
-  min-height: 50vh;
-  padding-bottom: 5px;
-  gap: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    padding-top: 10px;
+    min-height: 50vh;
+    padding-bottom: 5px;
+    gap: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoicePaperSkeleton {
-  width: 100vw;
-  min-height: 60vh;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: 100vw;
+    min-height: 60vh;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceEnableSwitch {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceExecutingCoveredDiv:extend(.EpisodeVoicePaper) {
-  pointer-events: none;
-  background-color: rgba(0, 0, 0, 0.7);
-  position: absolute;
-  z-index: 3;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    pointer-events: none;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: absolute;
+    z-index: 3;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceTitleAreaDiv:extend(.CenterInParentColumn) {
-  gap: 3px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    gap: 3px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceTitleAreaNameTypography {
-  color: white;
-  @media @mobile {
-    font-size: 0.9rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: white;
+    @media @mobile {
+        font-size: 0.9rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceTitleAreaSingerTypography {
-  color: rgba(255, 255, 255, 0.4);
-  @media @mobile {
-    font-size: 0.6rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: rgba(255, 255, 255, 0.4);
+    @media @mobile {
+        font-size: 0.6rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceExtraIconButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceExtraReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeVoiceExtraIconMoreHoriz {
-  color: white;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeStickyBottomAreaDiv {
-  width: 100vw;
-  position: sticky;
-  bottom: 0px;
-  z-index: 3;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: 100vw;
+    position: sticky;
+    bottom: 0px;
+    z-index: 3;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeStickyBottomAreaNameOfPlayingStatementTypography {
-  margin-bottom: 5px;
-  margin-left: 5px;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-bottom: 5px;
+    margin-left: 5px;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.7);
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeStickyBottomAreaFuncOfPlayRuleDiv {
-  position: absolute;
-  z-index: 3;
-  bottom: 5px;
-  left: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    position: absolute;
+    z-index: 3;
+    bottom: 5px;
+    left: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton {
-  border-color: #868686;
-  color: #868686;
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    border-color: #868686;
+    color: #868686;
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton:extend(.EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton) {
-  margin-left: 8px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-left: 8px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFloatAreaDiv:extend(.CenterInParentRelative) {
-  pointer-events: none;
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    pointer-events: none;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .EpisodeFloatAreaLogoImg {
-  opacity: 0.1;
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 70%;
-  }
+    opacity: 0.1;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 70%;
+    }
 }
 .EpisodeFloatAreaLogoDivWrap:extend(.CenterInParentColumn) {
-  height: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    height: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for celestial  component used  */
 
 .CelestialDiv:extend(.CenterInHorizontalColumn) {
-  padding-top: 80px;
-  background-color: black;
-  min-height: 80vh;
-  @media @mobile {
-    padding-top: 100px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    padding-top: 130px;
-  }
+    padding-top: 80px;
+    background-color: black;
+    min-height: 80vh;
+    @media @mobile {
+        padding-top: 100px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        padding-top: 130px;
+    }
 }
 .CelestialFuncDiv {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialFuncGotoAlbumButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialFuncCopyLinkButton {
-  margin-left: 15px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-left: 15px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceDiv:extend(.CenterInHorizontalColumn) {
-  padding: 10px;
-  margin-bottom: 40px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    margin-bottom: 80px;
-  }
+    padding: 10px;
+    margin-bottom: 40px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin-bottom: 80px;
+    }
 }
 .CelestialPieceDivList {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceDivSkeleton {
-  width: 100vw;
-  height: 30vh;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: 100vw;
+    height: 30vh;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceImageImg {
-  width: 65vw;
-  height: 65vw;
-  border-radius: 10px;
-  object-fit: cover;
-  opacity: 0.8;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    max-width: 500px;
-    max-height: 500px;
-  }
+    width: 65vw;
+    height: 65vw;
+    border-radius: 10px;
+    object-fit: cover;
+    opacity: 0.8;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        max-width: 500px;
+        max-height: 500px;
+    }
 }
 .CelestialPieceImageDivWrap {
-  overflow: hidden;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    overflow: hidden;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceNameTypography {
-  margin-top: 15px;
-  color: white;
-  font-size: 1.4rem;
-  @media @mobile {
-    font-size: 1.3rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-top: 15px;
+    color: white;
+    font-size: 1.4rem;
+    @media @mobile {
+        font-size: 1.3rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceSingerAreaDiv:extend(.CenterInParentRow) {
-  gap: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceSingerAreaSingerTypography {
-  color: rgba(255, 255, 255, 0.3);
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: rgba(255, 255, 255, 0.3);
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceSingerAreaDataOfReleaseTypography {
-  color: rgba(255, 255, 255, 0.3);
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: rgba(255, 255, 255, 0.3);
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceMinorAreaDiv {
-  margin-top: 40px;
-  display: none;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-top: 40px;
+    display: none;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceMinorAreaTitleOfLyricTypography {
-  color: white;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .CelestialPieceMinorAreaContentOfLyricTypography {
-  color: white;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.CelestialStickyBottomAreaDiv:extend(.EpisodeStickyBottomAreaDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.CelestialStickyBottomAreaNameOfPlayingStatementTypography:extend(.EpisodeStickyBottomAreaNameOfPlayingStatementTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.CelestialStickyBottomAreaSrcOfPVoiceAudioPlayer {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.CelestialStickyBottomAreaFuncOfPlayRuleDiv:extend(.EpisodeStickyBottomAreaFuncOfPlayRuleDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.CelestialStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton:extend(.EpisodeStickyBottomAreaFuncOfPlayRuleRulesOfPlayButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.CelestialStickyBottomAreaFuncOfPlayRuleEnableAllButton:extend(.EpisodeStickyBottomAreaFuncOfPlayRuleEnableAllButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for account  component used  */
 
 .AccountPaper:extend(.CenterInParentColumn) {
-  width: 90vw;
-  min-height: 60vh;
-  gap: 4px;
-  padding-top: 15px;
-  padding-bottom: 15px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    max-width: 550px;
-  }
+    gap: 4px;
+    margin: auto;
+    min-height: 50vh;
+    padding: 15px;
+    padding-bottom: 30px;
+    border-radius: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 90%;
+    }
 }
-.AccountUrlOfHeadPhotoAvatar {
-  width: 60px;
-  height: 60px;
-  @media @mobile {
-    margin-bottom: 20px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    margin-bottom: 40px;
-  }
+.AccountDivWrap {
+    gap: 10px;
+    margin: auto;
+    width: 90vw;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 600px;
+    }
 }
-.AccountFuncAreaOfNameDiv:extend(.CenterInParentRow) {
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountInfoDiv:extend(.CenterInParentColumn) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfNameStateAreaOfNameDiv:extend(.CenterInParentRow) {
-  width: 80%;
-  justify-content: space-between;
-  @media @mobile {
-    width: 90%;
-  }
-  @media @tablet {
-    width: 90%;
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountInfoUrlOfHeadPhotoAvatar {
+    width: 60px;
+    height: 60px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfNameStateAreaOfNameLabelOfNameTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountInfoValueOfNameTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfNameStateAreaOfNameValueOfNameTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountInfoValueOfEmailTypography {
+    @media @mobile {
+        font-size: 0.7rem;
+    }
+    @media @tablet {
+        font-size: 0.7rem;
+    }
+    @media @desktop {
+        font-size: 0.8rem;
+    }
 }
-.AccountSpaceDiv {
-  height: 1px;
-  width: 80%;
-  background-color: rgba(0, 0, 0, 0.3);
-  @media @mobile {
-    width: 90%;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountBasicDiv:extend(.CenterInParentRow) {
+    margin-top: 15px;
+    justify-content: space-between;
+    width: 96%;
+    padding-left: 10px;
+    min-height: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEmailDiv:extend(.AccountFuncAreaOfNameDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountBasicLabelOfPropTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEmailStateAreaOfEmailDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountBasicLangMenuItem {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEmailStateAreaOfEmailLabelOfEmailTypography {
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    font-size: 0.8rem;
-  }
-  @media @desktop {
-    font-size: 0.9rem;
-  }
+.AccountBasicLangTextFieldList {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEmailStateAreaOfEmailValueOfEmailTypography {
-  @media @mobile {
-    font-size: 0.7rem;
-  }
-  @media @tablet {
-    font-size: 0.7rem;
-  }
-  @media @desktop {
-    font-size: 0.8rem;
-  }
+.AccountAreaDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    gap: 2px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfIdDiv:extend(.AccountFuncAreaOfNameDiv) {
-  gap: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAccordionDetails {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfIdStateAreaOfIdDiv:extend(.AccountFuncAreaOfNameStateAreaOfNameDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAccordionWrap {
+    width: 97%;
+    transition: all 0.2s ease;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfIdStateAreaOfIdLabelOfIdTypography {
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    font-size: 0.8rem;
-  }
-  @media @desktop {
-    font-size: 0.9rem;
-  }
+.AccountAreaSaleAreaOfListOfAuthorOrderDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfIdStateAreaOfIdValueOfIdTypography {
-  @media @mobile {
-    font-size: 0.7rem;
-  }
-  @media @tablet {
-    font-size: 0.7rem;
-  }
-  @media @desktop {
-    font-size: 0.8rem;
-  }
+.AccountAreaSaleAreaOfListOfAuthorOrderDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditDiv:extend(.CenterInParentRow) {
-  gap: 10px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-  @media @mobile {
-    margin-top: 20px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    margin-top: 30px;
-  }
+.AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditLangTextFieldList {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfListOfAuthorOrderOptionOfListOfAuthorOrderContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditLangMenuItem {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton {
+    color: #8c8c8c;
+    padding-right: 17px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        padding-right: 10px;
+    }
 }
-.AccountFuncAreaOfEditCopyUserIdButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditLogoutButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfAppendBoozeDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditLogoutReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfAppendBoozeDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditToEditModeButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditBtnOfJoinAdminButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfAppendBoozeOptionOfAppendBoozeContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditBtnOfJoinAdminReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditBtnOfJoinReaderButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.AccountFuncAreaOfEditBtnOfJoinReaderReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.AccountAreaSaleAreaOfGoToMyBoozeDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfGoToMyBoozeDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfGoToMyBoozeOptionOfGoToMyBoozeContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMarketSettingDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMarketSettingDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMarketSettingOptionOfMarketSettingContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyScheduleDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyScheduleDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyScheduleOptionOfMyScheduleContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyReportDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyReportDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyReportOptionOfMyReportTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyReportOptionOfMyReportContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyReportArrowOfMyReportIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleAreaOfMyReportArrowOfMyReportIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleSummaryAccordionSummary {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaSaleSummaryTitleOfSaleTypography:extend(.BeautyTitle) {
+    @media @mobile {
+        font-size: 1.1rem;
+    }
+    @media @tablet {
+        font-size: 1.1rem;
+    }
+    @media @desktop {
+        font-size: 1.3rem;
+    }
+}
+.AccountAreaBuyAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAccordionWrap:extend(.AccountAreaSaleAccordionWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAreaOfListOfUserOrderDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAreaOfListOfUserOrderDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAreaOfListOfUserOrderOptionOfListOfUserOrderContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuySummaryAccordionSummary:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaBuySummaryTitleOfBuyTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAccordionWrap:extend(.AccountAreaSaleAccordionWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfGoEditModeDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfGoEditModeDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfGoEditModeOptionOfGoEditModeContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminOptionOfAppendAdminContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorOptionOfAppendAuthorContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderOptionOfAppendReaderContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminSummaryAccordionSummary {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaAdminSummaryTitleOfAdminTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAccordionWrap:extend(.AccountAreaSaleAccordionWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenDiv:extend(.CenterInParentRow) {
+    border-top: 1px solid #e0e0e0;
+    justify-content: space-between;
+    width: 96%;
+    min-height: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenOptionOfTokenTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenOptionOfTokenContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenArrowOfTokenIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesOptionOfUsagesTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesOptionOfUsagesContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesArrowOfUsagesIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesArrowOfUsagesReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesArrowOfUsagesIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyOptionOfPrivacyTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyOptionOfPrivacyContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyArrowOfPrivacyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheOptionOfCleanCacheContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutOptionOfLogoutTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutOptionOfLogoutContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutArrowOfLogoutIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutArrowOfLogoutReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutArrowOfLogoutIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserSummaryAccordionSummary {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserSummaryTitleOfUserTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for infoOfCopyRight  component used  */
 
 .InfoOfCopyRightDiv:extend(.CenterInParentColumn) {
-  margin-top: 5px;
-  margin-bottom: 15px;
-  width: 100vw;
-  margin: auto;
-  align-items: flex-end;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    max-width: 800px;
-  }
+    width: 100vw;
+    margin: auto;
+    align-items: flex-end;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        max-width: 800px;
+    }
 }
 .InfoOfCopyRightUpperGroupDiv:extend(.CenterInParentRow) {
-  justify-content: space-between;
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    justify-content: space-between;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupLeftAreaDiv:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupLeftAreaContactButton {
-  height: 20px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    height: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.InfoOfCopyRightUpperGroupLeftAreaBusinessButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupRightAreaDiv:extend(.CenterInParentRow) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator01Typography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator02Typography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupRightAreaResponsibilityOffButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupRightAreaResponsibilityOffReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupRightAreaSeparatorTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightUpperGroupRightAreaCprtButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightGroupOfSocialMediaDiv {
-  margin-right: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-right: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightGroupOfSocialMediaFbIconButton {
-  width: 30px;
-  height: 30px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 35px;
-    height: 35px;
-  }
+.InfoOfCopyRightGroupOfSocialMediaFbOIconButton {
+    width: 30px;
+    height: 30px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 35px;
+        height: 35px;
+    }
 }
-.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg {
-  width: 25px;
-  height: 25px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    width: 32px;
-    height: 32px;
-  }
+.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg {
+    width: 25px;
+    height: 25px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 32px;
+        height: 32px;
+    }
 }
-.InfoOfCopyRightGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightGroupOfSocialMediaIgOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbOIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightGroupOfSocialMediaIgOImgOfIgOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightGroupOfSocialMediaLineOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbOIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for infoOfCopyRightPrivacy  component used  */
+
+.InfoOfCopyRightPrivacyDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    padding: 15px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyPaperWrap {
+    margin: auto;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainTitleTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainSeparatorDiv {
+    height: 1px;
+    background: #eee;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainContentTypography:extend(.BeautyContent) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for infoOfCopyRightUsages  component used  */
+
+.InfoOfCopyRightUsagesDiv:extend(.InfoOfCopyRightPrivacyDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesPaperWrap:extend(.InfoOfCopyRightPrivacyPaperWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainDiv:extend(.InfoOfCopyRightPrivacyMainDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainTitleTypography:extend(.InfoOfCopyRightPrivacyMainTitleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainSeparatorDiv:extend(.InfoOfCopyRightPrivacyMainSeparatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainContentTypography:extend(.InfoOfCopyRightPrivacyMainContentTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for infoOfCopyRightContact  component used  */
 
 .InfoOfCopyRightContactCard:extend(.CenterInParentColumn) {
-  align-items: flex-start;
-  padding: 30px;
-  gap: 20px;
-  @media @mobile {
-    padding: 10px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    align-items: flex-start;
+    padding: 30px;
+    gap: 20px;
+    @media @mobile {
+        padding: 10px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactDivWrap:extend(.CenterInParentColumn) {
-  gap: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactUpperAreaDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactUpperAreaContactTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactUpperAreaContactDivWrap:extend(.CenterInParentColumn) {
-  width: fit-content;
-  padding: 6px;
-  padding-left: 9px;
-  background: #d2d2d2;
-  border-radius: 15px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: fit-content;
+    padding: 6px;
+    padding-left: 15px;
+    background: #d2d2d2;
+    border-radius: 18px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactUpperAreaGroupOfDetailDiv:extend(.CenterInParentColumn) {
-  margin-top: 20px;
-  gap: 10px;
-  align-items: flex-start;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-top: 20px;
+    gap: 10px;
+    align-items: flex-start;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography {
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography {
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap:extend(.CenterInParentRow) {
-  justify-content: flex-start;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneODivWrap:extend(.CenterInParentRow) {
+    justify-content: flex-start;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOBtnOfPhoneOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOBtnOfPhoneOIconPhoneOutlined {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOLabelOfPhoneOTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailODivWrap:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneODivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOBtnOfEmailOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOBtnOfEmailOIconMailOutlined {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOLabelOfEmailOTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv:extend(.CenterInParentRow) {
-  width: 100%;
-  justify-content: flex-end;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: 100%;
+    justify-content: flex-end;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbOIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbOImgOfFbOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgOIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgOImgOfIgOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgOIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineOImgOfLineOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactLowerAreaDiv:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactLowerAreaIntroduceTypography {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactLowerAreaIntroduceDivWrap:extend(.InfoOfCopyRightContactUpperAreaContactDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContactLowerAreaDetailsTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
-  margin-top: 20px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-top: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.InfoOfCopyRightContactCancelButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.InfoOfCopyRightContactPortfolioTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactPortfolioDivWrap:extend(.CenterInParentColumn) {
+    margin-top: 15px;
+    width: fit-content;
+    padding: 6px;
+    padding-left: 9px;
+    padding-right: 12px;
+    background: #d2d2d2;
+    border-radius: 18px;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    &:hover {
+        box-shadow:
+            0 6px 12px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    &:active {
+        box-shadow:
+            inset 0 2px 4px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transform: translateY(1px);
+    }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for infoOfCopyRightContent  component used  */
 
 .InfoOfCopyRightContentPaper {
-  padding: 5px;
-  width: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    padding: 10px;
-    width: 650px;
-  }
+    padding: 5px;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        padding: 10px;
+        width: 650px;
+    }
 }
 .InfoOfCopyRightContentDivWrap:extend(.CenterInParentColumn) {
-  gap: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.InfoOfCopyRightContentCancelButton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    gap: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentUpperAreaDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentUpperAreaAdvantageStmtTypography {
-  font-size: 0.7rem;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    font-size: 0.9rem;
-  }
+    font-size: 0.7rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.9rem;
+    }
 }
 .InfoOfCopyRightContentUpperAreaAdvantageStmtDivWrap {
-  background: #d2d2d2;
-  padding: 3px;
-  border-radius: 5px;
-  @media @mobile {
-    margin: 3px;
-    margin-left: 6px;
-    margin-right: 6px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    margin: 5px;
-    margin-left: 35px;
-    margin-right: 35px;
-  }
+    background: #d2d2d2;
+    padding: 3px;
+    border-radius: 5px;
+    @media @mobile {
+        margin: 3px;
+        margin-left: 6px;
+        margin-right: 6px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin: 5px;
+        margin-left: 35px;
+        margin-right: 35px;
+    }
 }
 .InfoOfCopyRightContentProjectDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    min-height: 280px;
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        min-height: 280px;
+    }
 }
 .InfoOfCopyRightContentProjectDivList:extend(.CenterInParentColumn) {
-  gap: 15px;
-  @media @mobile {
-    gap: 40px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
+    gap: 15px;
+    @media @mobile {
+        gap: 40px;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 }
 .InfoOfCopyRightContentProjectDivSkeleton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectImageImg {
-  object-fit: cover;
-  width: 100%;
-  height: 100%;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectImageCardWrap {
-  height: 180px;
-  width: 280px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    height: 200px;
+    height: 180px;
     width: 280px;
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        height: 200px;
+        width: 280px;
+    }
 }
 .InfoOfCopyRightContentProjectUpperAreaDiv:extend(.CenterInParentRow) {
-  padding-left: 5px;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 15px;
-  margin-top: 5px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    padding-left: 5px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    margin-top: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectUpperAreaTitleTypography {
-  font-weight: bold;
-  font-size: 1rem;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    font-size: 1.2rem;
-  }
+    font-weight: bold;
+    font-size: 1rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 1.2rem;
+    }
 }
 .InfoOfCopyRightContentProjectUpperAreaTraitTypography {
-  font-size: 0.7rem;
-  margin-top: 2px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    font-size: 0.9rem;
-  }
+    font-size: 0.7rem;
+    margin-top: 2px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.9rem;
+    }
 }
 .InfoOfCopyRightContentProjectUpperAreaTraitDivWrap {
-  width: fit-content;
-  padding-left: 5px;
-  padding-right: 5px;
-  background: #d2d2d2;
-  border-radius: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: fit-content;
+    padding-left: 5px;
+    padding-right: 5px;
+    background: #d2d2d2;
+    border-radius: 10px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectDescriptionDiv {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectDescriptionDivList:extend(.CenterInParentColumn) {
-  align-items: flex-start;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    align-items: flex-start;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectDescriptionStatementTypography {
-  font-size: 0.7rem;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    font-size: 0.8rem;
-  }
+    font-size: 0.7rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.8rem;
+    }
 }
 .InfoOfCopyRightContentProjectDescriptionStatementDivWrap:extend(.CenterInParentRow) {
-  margin-top: 3px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-top: 3px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton {
-  width: 18px;
-  height: 18px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: 18px;
+    height: 18px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded {
-  width: 15px;
-  height: 15px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    width: 15px;
+    height: 15px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for navigator  component used  */
 
 .NavigatorDiv {
-  flex-grow: 1;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    flex-grow: 1;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarToolbar {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    border-radius: 36px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarAppBarWrap {
-  background-color: #111111;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    background-color: black !important;
+    height: 55px;
+    display: flex;
+    justify-content: center;
+    border-radius: 36px;
+    margin: 8px 8px;
+    width: calc(100% - 16px);
+    z-index: 1100;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarMenuIconButton {
-  margin-right: 10px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarMenuIconMenuRounded {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarTitleTypography {
-  width: 80px;
-  font-size: 1.4rem;
-  @media @mobile {
-    font-size: 1rem;
-    width: 50px;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    font-size: 1.3rem;
+    @media @mobile {
+        font-size: 1rem;
+    }
+    @media @tablet {
+        font-size: 1rem;
+    }
+    @media @desktop {
+        font-size: 1.2rem;
+    }
+}
+.NavigatorToolBarTitleDivWrap:extend(.CenterInParentColumn) {
+    padding-right: 12px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        padding-right: 18px;
+    }
 }
 .NavigatorToolBarCompleteAutocomplete {
-  flex-grow: 1;
-  margin-right: 20px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    flex-grow: 1;
+    margin-right: 3px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarCompleteInputOfCompleteTextField {
-  border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.3);
-  @media @mobile {
-    width: 95%;
-  }
-  @media @tablet {
-    width: 95%;
-  }
-  @media @desktop {
-    width: 70%;
-    max-width: 500px;
-  }
+    background-color: rgba(255, 255, 255, 0.3);
+    @media @mobile {
+        width: 97%;
+    }
+    @media @tablet {
+        width: 97%;
+    }
+    @media @desktop {
+        width: 99%;
+    }
 }
 .NavigatorToolBarCompleteInputOfCompleteFormWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.NavigatorToolBarLoginButton {
-  @media @mobile {
-    font-size: 0.8rem;
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.NavigatorToolBarCartieIconButton:extend(.NavigatorToolBarAccountIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.NavigatorToolBarAccountIconButton {
-  background-color: rgba(255, 255, 255, 0.9);
-  height: 32px;
-  width: 32px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.NavigatorToolBarCartieBadgeOfCartieBadge {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
-.NavigatorToolBarAccountReactFragmentWrap {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-.NavigatorToolBarAccountHeadAccountCircle {
-  height: 40px;
-  width: 40px;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+.NavigatorToolBarCartieBadgeOfCartieIconShoppingCart:extend(.NavigatorToolBarAccountIconAccountCircle) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorToolBarTipOfLoadingCircularProgress {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-right: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarLoginIconButton:extend(.NavigatorToolBarAccountIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarLoginIconLogin:extend(.NavigatorToolBarAccountIconAccountCircle) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarAccountIconButton:extend(.SquareRatioImg) {
+    width: 32px;
+    margin-left: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarAccountReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.NavigatorToolBarAccountIconAccountCircle {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorDrawerDrawer {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    margin-top: 68px !important;
+    border-radius: 23px;
+    @media @mobile {
+        width: 96%;
+        margin-left: 8px;
+    }
+    @media @tablet {
+        width: 96%;
+        margin-left: 8px;
+    }
+    @media @desktop {
+        width: 360px;
+        margin-top: 70px !important;
+        margin-left: 10px;
+    }
 }
 .NavigatorDrawerShortcutListItem {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorDrawerShortcutListList {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorDrawerShortcutListItemSkeleton {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorDrawerShortcutTitleTypography {
-  font-size: 3rem;
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    font-size: 3rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .NavigatorDrawerShortcutIconImg {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 /** following for infoOfCopyRightContent editor component used  */
 
 .InfoOfCopyRightContentEditorPaper:extend(.InfoOfCopyRightContentPaper) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorDivWrap:extend(.InfoOfCopyRightContentDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorUpperAreaDiv:extend(.InfoOfCopyRightContentUpperAreaDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDiv:extend(.InfoOfCopyRightContentProjectDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDivWrap:extend(.InfoOfCopyRightContentProjectDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDivList:extend(.InfoOfCopyRightContentProjectDivList) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectRouteTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectIndexOfSequenceTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectImageImg:extend(.InfoOfCopyRightContentProjectImageImg) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectImageCardWrap:extend(.InfoOfCopyRightContentProjectImageCardWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectUpperAreaDiv:extend(.InfoOfCopyRightContentProjectUpperAreaDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectUpperAreaTitleTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectUpperAreaTraitTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectUpperAreaTraitDivWrap:extend(.InfoOfCopyRightContentProjectUpperAreaTraitDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionDiv:extend(.InfoOfCopyRightContentProjectDescriptionDiv) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionDivWrap:extend(.InfoOfCopyRightContentProjectDescriptionDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionDivList:extend(.InfoOfCopyRightContentProjectDescriptionDivList) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionStatementTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionStatementDivWrap:extend(.InfoOfCopyRightContentProjectDescriptionStatementDivWrap) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconButton:extend(.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconButton) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectDescriptionStatementBtnOfStatementIconStarRounded:extend(.InfoOfCopyRightContentProjectDescriptionStatementBtnOfStatementIconStarRounded) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectIdTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }
 .InfoOfCopyRightContentEditorProjectImageTextField:extend(.BaseEditorTextField) {
-  @media @mobile {
-    /** empty style */
-  }
-  @media @tablet {
-    /** empty style */
-  }
-  @media @desktop {
-    /** empty style */
-  }
-}
-/** ======== following for homeless ========= */
-
-.NavigatorToolBarCompleteInputTextField {
-  border-radius: 5px;
-  background-color: rgba(255, 255, 255, 0.3);
-  @media @mobile {
-    width: 95%;
-  }
-  @media @tablet {
-    width: 95%;
-  }
-  @media @desktop {
-    width: 70%;
-    max-width: 500px;
-  }
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
 }

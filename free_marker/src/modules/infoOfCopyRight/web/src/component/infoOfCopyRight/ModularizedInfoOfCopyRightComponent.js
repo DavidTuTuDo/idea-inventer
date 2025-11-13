@@ -28,7 +28,7 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
         this.invokeLineApp(this.getStore().getLine());
     }
 
-    getInjectStyleOfInfoOfCopyRightUpperGroupRightAreaPrivilegeDiv(rightArea) {
+    getInjectStyleOfInfoOfCopyRightPrivilegeDiv(rightArea) {
         return Util.getVisibleOrNone(!isMobile);
     }
 }

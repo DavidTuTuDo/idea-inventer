@@ -4055,7 +4055,7 @@ class BaseBuilder extends PathBase {
             case 'fetch items':
             case 'fetch':
                 if (node.isCheapArray()) {
-                    params = [...params];
+                    params = [...params, `${node.getName()} = 'attr'`];
                 } else if (node.isPathArray()) {
                     params = [...params, `...conditions`];
                 } else {
@@ -4078,19 +4078,15 @@ class BaseBuilder extends PathBase {
                 params = [...params, 'lastItem', '...conditions']
                 break;
             case `submit items of cheap`:
-                params = ['items', ...params]
+                params = ['items', ...params, `${node.getName()} = 'attr'`];
                 break;
             case `submit item of cheap`:
-                params = ['item', 'id', ...params]
-                break;
             case `delete item of cheap`:
-                params = ['item', 'id', ...params]
+                params = ['item', 'id', ...params, `${node.getName()} = 'attr'`];
                 break;
             case `delete cheap`:
-                params = [...params]
-                break;
             case `fetch size of cheap`:
-                params = [ ...params];
+                params = [...params, `${node.getName()} = 'attr'`];
                 break;
             case `fetch items of limitation`:
                 params = [...params, `action = 'in'`, `fieldName = 'name'`, '...valuesOfComparison'];
@@ -4789,7 +4785,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             /** asString => 就是把 `${variable}` => '${variable}' 免得造成unknown issue */
             const asString = Util.isOrEquals(type, "fetch batch items", "batch submit parent");
             preStmts.push(uploadFile ? `const folder = \`${node.getStorageFolderOfRouterString()}\`` :
-              `const path = ${asString ? `\'${node.getPathOfRouterString()}/\${id}\'` : `\`${node.getPathOfRouterString()}\``}`
+              `let path = ${asString ? `\'${node.getPathOfRouterString()}/\${id}\'` : `\`${node.getPathOfRouterString()}\``}`
             );
             let stmts = [];
             if (isAsync) {
@@ -4865,12 +4861,15 @@ class RemoteFunctionHandler extends BaseBuilder {
                         node,
                         node.getFunctionNameOfFetchDocumentIds(),
                         [
+                            `path = this.buildPath(path, ${node.getName()})`,
                             `return this.fetchIdsOfDocument(path)`],
                         `fetch cheap ids of array`);
 
                     generateApiFunction(
                         node, Util.camel('submit', node.getFieldName()),
-                        [`const commitments = items.map((item) => this.${functionNameOfNormalize}({...item }))`,
+                        [
+                            `path = this.buildPath(path, ${node.getName()})`,
+                            `const commitments = items.map((item) => this.${functionNameOfNormalize}({...item }))`,
                             `return await self.submitObject(path,{
                                     ${ID_OF_DEFAULT_CHEAP_ARRAY}:commitments,
                                     updateTime:this._firebase().getServerTimeSymbol(),
@@ -4880,15 +4879,17 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfFetch(),
-                        [`const result = await self.fetchObject(path)`,
+                        [
+                            `path = this.buildPath(path, ${node.getName()})`,
+                            `const result = await self.fetchObject(path)`,
                             `return result.${ID_OF_DEFAULT_CHEAP_ARRAY} ?? []`],
                         `fetch items of cheap`);
-
 
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfSubmitItem(),
                         [
+                            `path = this.buildPath(path, ${node.getName()})`,
                             `const hasParent = this.getParentNode && this.getParentNode()`,
                             `const all = hasParent ? this.getParentNode().${self.getFunctionNameOfSimpleGetter(node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
                             `all.push(this.${functionNameOfNormalize}({...item,id}))`,
@@ -4902,6 +4903,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                         node,
                         node.getFunctionNameOfDeleteItem(),
                         [
+                            `path = this.buildPath(path, ${node.getName()})`,
                             `const hasParent = this.getParentNode && this.getParentNode()`,
                             `const all = hasParent ? this.getParentNode().${Util.camel('get', node.getFieldName())}() : await self.${node.getFunctionNameOfFetch()}()`,
                             `await self.${node.getFunctionNameOfSubmit()}(${needView()} _.without(all, item), id)`,
@@ -4913,14 +4915,18 @@ class RemoteFunctionHandler extends BaseBuilder {
                     generateApiFunction(
                         node,
                         node.getFunctionNameOfDelete(),
-                        [`return await self.deleteObject(path);`],
+                        [
+                            `path = this.buildPath(path, ${node.getName()})`,
+                            `return await self.deleteObject(path);`],
                         `delete cheap`,
                     )
 
                     generateApiFunction(
                         node,
                         Util.camel(`fetch`, `size`, `of`, node.getFieldName()),
-                        [`return _.size(await self.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
+                        [
+                            `path = this.buildPath(path, ${node.getName()})`,
+                            `return _.size(await self.${node.getFunctionNameOfFetch()}(${self.getStringOfArgumentInFunction(node, 'fetch')}))`],
                         `fetch size of cheap`)
 
 

@@ -1,28 +1,9 @@
 const edit = true;
 
-import {inject} from "mobx-react";
 import BaseCelestialComponent from "./BaseCelestialComponent";
-import {
-    utiller as Util,
-    exceptioner as ERROR,
-    pooller as InfinitePool,
-} from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import Button from "@mui/material/Button";
-import AudioPlayer from "react-h5-audio-player";
-import Typography from "@mui/material/Typography";
-import {observer} from "mobx-react";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import {Application} from "../../";
-import Config from "../../config";
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
-import {isMobile} from 'react-device-detect'
-
+import { isMobile } from "react-device-detect";
 
 class CelestialComponent extends BaseCelestialComponent {
     /** -------------------- fields -------------------- **/
@@ -42,15 +23,15 @@ class CelestialComponent extends BaseCelestialComponent {
         return `original by ${singer}`;
     }
 
-    getInjectStyleOfEpisodeStickyBottomAreaFuncOfPlayRuleDiv(stickyBottomArea) {
+    getInjectStyleOfEpisodeFuncOfPlayRuleDiv(stickyBottomArea) {
         return Util.getVisibleOrNone(false);
     }
 
-    getInjectPropsOfEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayer(stickyBottomArea) {
-        return isMobile ? {customVolumeControls: []} : {};
+    getInjectPropsOfEpisodeSrcOfPVoiceAudioPlayer(stickyBottomArea) {
+        return isMobile ? { customVolumeControls: [] } : {};
     }
 
-    onCelestialFuncCopyLinkButtonClicked(param) {
+    onCelestialCopyLinkButtonClicked(param) {
         this.copyCurrentLinkToClipboard();
     }
 
@@ -58,20 +39,17 @@ class CelestialComponent extends BaseCelestialComponent {
         return Util.getTodayTimeFormat(super.getPieceDataOfRelease(piece));
     }
 
-    onCelestialFuncGotoAlbumButtonClicked(param) {
-        if (this.getStore().hasValidPiece())
-            Router.gotoEpisodePage(this.getComponentInstance(), this.getStore().getPieceOfHead().getNameOfEpisode())
+    onCelestialGotoAlbumButtonClicked(param) {
+        if (this.getStore().hasValidPiece()) Router.gotoEpisodePage(this.getComponentInstance(), this.getStore().getPieceOfHead().getNameOfEpisode());
     }
 
-    onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerEnded(param) {
+    onEpisodeSrcOfPVoiceAudioPlayerEnded(param) {
         this.getStore().repeat();
     }
 
-    onEpisodeStickyBottomAreaSrcOfPVoiceAudioPlayerError(param) {
-        if (this.getStore().isPiecePathValid())
-            this.showWarningSnackMessage(`音樂檔案異常，請稍後再試。`)
+    onEpisodeSrcOfPVoiceAudioPlayerError(param) {
+        if (this.getStore().isPiecePathValid()) this.showWarningSnackMessage(`音樂檔案異常，請稍後再試。`);
     }
-
 
     /** -------------------- async api -------------------- **/
 }

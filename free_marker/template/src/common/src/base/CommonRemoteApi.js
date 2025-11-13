@@ -424,6 +424,11 @@ class CommonRemoteApi {
         return [...segments, "attr"].join("/");
     }
 
+    buildPath = (main, sub) => {
+        const isValidSub = sub && String(sub).trim();
+        return `${main}${isValidSub ? `/${sub}` : ""}`;
+    };
+
     isCollectionPath(path) {
         const segments = _.split(Util.getNormalizedStringNotStartWith(path, "/"), "/");
         return Util.isOdd(segments.length);

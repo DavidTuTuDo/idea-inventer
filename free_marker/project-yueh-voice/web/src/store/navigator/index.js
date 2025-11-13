@@ -3,19 +3,19 @@ const edit = true;
 import ModularizedNavigatorStore from "./ModularizedNavigatorStore";
 
 class NavigatorStore extends ModularizedNavigatorStore {
-  /** -------------------- fields -------------------- **/
+    /** -------------------- fields -------------------- **/
 
-  /** -------------------- functions -------------------- **/
+    /** -------------------- functions -------------------- **/
 
-  constructor(props) {
-    super(props);
-  }
+    constructor(props) {
+        super(props);
+    }
 
-  getTitle() {
-    return `悅耳`;
-  }
+    getTitle() {
+        return `悅耳`;
+    }
 
-  /** -------------------- async api -------------------- **/
+    /** -------------------- async api -------------------- **/
 }
 
 export default NavigatorStore;
