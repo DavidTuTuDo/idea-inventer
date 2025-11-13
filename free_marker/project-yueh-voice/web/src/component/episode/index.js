@@ -1,3 +1,5 @@
+const edit = true;
+
 import {inject} from "mobx-react";
 import BaseEpisodeComponent from "./BaseEpisodeComponent";
 import {
@@ -26,8 +28,6 @@ import Cookie from "../../cookie";
 import BaseComponent from "../../base/BaseComponent";
 import {isMobile} from "react-device-detect";
 
-@inject("episode")
-@observer
 class EpisodeComponent extends BaseEpisodeComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

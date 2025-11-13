@@ -1,3 +1,5 @@
+const edit = true;
+
 import {observer} from "mobx-react";
 import {inject} from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
@@ -16,9 +18,6 @@ import Config from "../../config";
 import Router from "../../router";
 import Cookie from "../../cookie";
 
-
-@inject("main")
-@observer
 class MainComponent extends BaseMainComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/

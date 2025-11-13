@@ -1,3 +1,5 @@
+const edit = true;
+
 import {inject} from "mobx-react";
 import BaseCelestialComponent from "./BaseCelestialComponent";
 import {
@@ -22,8 +24,6 @@ import BaseComponent from "../../base/BaseComponent";
 import {isMobile} from 'react-device-detect'
 
 
-@inject("celestial")
-@observer
 class CelestialComponent extends BaseCelestialComponent {
     /** -------------------- fields -------------------- **/
     /** -------------------- functions -------------------- **/
