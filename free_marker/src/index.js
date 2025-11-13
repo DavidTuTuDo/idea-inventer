@@ -6691,7 +6691,7 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`Config`, `./config`);
         appGenerator.appendImport(`BaseComponent`, `./base/BaseComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
-        appGenerator.appendImport(`{BrowserRouter, useNavigate, useLocation, useParams}`, `react-router-dom`);
+        appGenerator.appendImport(`{BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
         appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendImport(`FirebaseHelper`, `./base/FirebaseHelper`);
@@ -6769,6 +6769,12 @@ class AppBuilder extends ComponentBuilder {
             const ${wrapper} = inject('${_.lowerFirst(nameOfComponent)}')((props) => {
             ${stmtsOfParams} return ${renderStmts.join('')} })`)
         }
+
+        childrenStmt.push(...this.getJSXStrings({
+            tag: `Route`,
+            generator: appGenerator,
+            props: { path: "*", element: `###<Navigate to="/" replace />` }
+        }));
 
         const routerStmt = this.getJSXStrings({
             tag: 'Routes',
