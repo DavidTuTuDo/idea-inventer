@@ -16,15 +16,15 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
         Router.gotoHomePage(this);
     }
 
-    onInfoOfCopyRightGroupOfSocialMediaFbIconButtonClicked(param) {
+    onInfoOfCopyRightFbOIconButtonClicked(param) {
         this.invokeFacebookApp(this.getStore().getFb());
     }
 
-    onInfoOfCopyRightGroupOfSocialMediaIgIconButtonClicked(param) {
+    onInfoOfCopyRightIgOIconButtonClicked(param) {
         this.invokeInstagramApp(this.getStore().getIg());
     }
 
-    onInfoOfCopyRightGroupOfSocialMediaLineIconButtonClicked(param) {
+    onInfoOfCopyRightLineOIconButtonClicked(param) {
         this.invokeLineApp(this.getStore().getLine());
     }
 

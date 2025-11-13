@@ -5,6 +5,8 @@ import libpath from "path";
 class AppStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -197,6 +199,10 @@ class AppStyle {
 
     /** => following for infoOfCopyRightContact  component  */
 
+    InfoOfCopyRightContactPortfolioDivWrap = {};
+
+    InfoOfCopyRightContactPortfolioTypography = {};
+
     InfoOfCopyRightContactLowerAreaDetailsTypography = {};
 
     InfoOfCopyRightContactLowerAreaIntroduceDivWrap = {};
@@ -205,39 +211,39 @@ class AppStyle {
 
     InfoOfCopyRightContactLowerAreaDiv = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineOImgOfLineOImg = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineOIconButton = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgOImgOfIgOImg = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgOIconButton = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbOImgOfFbOImg = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbOIconButton = {};
 
     InfoOfCopyRightContactUpperAreaGroupOfSocialMediaDiv = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOLabelOfEmailOTypography = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOBtnOfEmailOIconMailOutlined = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOBtnOfEmailOIconButton = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailODivWrap = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOTypography = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOLabelOfPhoneOTypography = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOBtnOfPhoneOIconPhoneOutlined = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOBtnOfPhoneOIconButton = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneODivWrap = {};
 
-    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography = {};
+    InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography = {};
 
     InfoOfCopyRightContactUpperAreaGroupOfDetailDiv = {};
 
@@ -281,17 +287,17 @@ class AppStyle {
 
     /** => following for infoOfCopyRight  component  */
 
-    InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg = {};
+    InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg = {};
 
-    InfoOfCopyRightGroupOfSocialMediaLineIconButton = {};
+    InfoOfCopyRightGroupOfSocialMediaLineOIconButton = {};
 
-    InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg = {};
+    InfoOfCopyRightGroupOfSocialMediaIgOImgOfIgOImg = {};
 
-    InfoOfCopyRightGroupOfSocialMediaIgIconButton = {};
+    InfoOfCopyRightGroupOfSocialMediaIgOIconButton = {};
 
-    InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg = {};
+    InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg = {};
 
-    InfoOfCopyRightGroupOfSocialMediaFbIconButton = {};
+    InfoOfCopyRightGroupOfSocialMediaFbOIconButton = {};
 
     InfoOfCopyRightGroupOfSocialMediaDiv = {};
 
@@ -316,10 +322,6 @@ class AppStyle {
     InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv = {};
 
     InfoOfCopyRightUpperGroupRightAreaDiv = {};
-
-    InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap = {};
-
-    InfoOfCopyRightUpperGroupLeftAreaBusinessButton = {};
 
     InfoOfCopyRightUpperGroupLeftAreaContactReactFragmentWrap = {};
 

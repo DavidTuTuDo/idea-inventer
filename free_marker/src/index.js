@@ -119,13 +119,17 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
-    /*
+    /**
      * 如果  path: `/gaia/:pid`,
      * <ObservedDionysusGaia key={`${pid}`}  pid={pid} {...props} />;
      * 如果url變動了，pid就會改變，造成component re-render
      * 不想re-render，就要 disableKeyOfRoute = true;
      * */
     disableKeyOfRoute = false;
+
+    /** 一般情況下，img點擊後都會的有的preview dialog，不想要的話就把imgPreview = false*/
+    imgPreview = true;
+
 
     /** products/{productId}       ← 父 document
         └── {productId}/variants/{variantId}   ← 讓api產出batch submit product和variants */
@@ -8032,7 +8036,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                     name: `imgOf${_.upperFirst(node.getName())}`,
                     view: `img`,
                     type: `string`,
-                    incest: {view: false, attribute: true},
+                    imgPreview: false,
+                    incest: node.incest,
                     defaultValue: `${node.getDefaultValue()}`
                 })
             }
@@ -8776,7 +8781,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
             /** 這裡就是放contents的邏輯 <View > {...contents}<View>,*/
             if (node.isImageView()) {
-                node.appendViewProps({ onClick: `###(param) => self.openImageDialog(${node.getName()})` });
+                if(!node.isClickView() && node.imgPreview)
+                    node.appendViewProps({ onClick: `###(param) => self.openImageDialog(${node.getName()})` });
             }
 
             if (node.isCheckboxView()) {

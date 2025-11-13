@@ -1,4 +1,5 @@
 const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
@@ -11,39 +12,29 @@ import Cookie from "../../cookie";
 import BaseInfoOfCopyRightContactComponent from "./BaseInfoOfCopyRightContactComponent";
 
 class ModularizedInfoOfCopyRightContactComponent extends BaseInfoOfCopyRightContactComponent {
-    /** -------------------- fields -------------------- **/
-
-    /** -------------------- functions -------------------- **/
-
     constructor(props) {
         super(props);
     }
 
-    onInfoOfCopyRightContactUpperAreaGroupOfDetailBtnOfEmailIconButtonClicked(param) {
+    onInfoOfCopyRightContactBtnOfEmailOIconButtonClicked(param) {
         this.invokeEMailBehavior(this.getStore().getEmail(), `網頁開發諮詢-[局處單位]`);
     }
 
-    onInfoOfCopyRightContactUpperAreaGroupOfDetailBtnOfPhoneIconButtonClicked(param) {
+    onInfoOfCopyRightContactBtnOfPhoneOIconButtonClicked(param) {
         this.invokePhoneBehavior(this.getStore().getPhone());
     }
 
-    onInfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButtonClicked(param) {
+    onInfoOfCopyRightContactFbOIconButtonClicked(param) {
         this.invokeFacebookApp(this.getStore().getFb());
     }
 
-    onInfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButtonClicked(param) {
+    onInfoOfCopyRightContactIgOIconButtonClicked(param) {
         this.invokeInstagramApp(this.getStore().getIg());
     }
 
-    onInfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButtonClicked(param) {
+    onInfoOfCopyRightContactLineOIconButtonClicked(param) {
         this.invokeLineApp(this.getStore().getLine(), `明悅您好，請問你軟體開發的問題`);
     }
-
-    onInfoOfCopyRightContactCancelChipClicked(param) {
-        this.dismiss();
-    }
-
-    /** -------------------- async api -------------------- **/
 }
 
 export default ModularizedInfoOfCopyRightContactComponent;
