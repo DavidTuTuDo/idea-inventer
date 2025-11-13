@@ -475,7 +475,6 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
             id: Util.isUndefinedNullEmpty(tone.idOfRemote) ? undefined : tone.idOfRemote,
             tonalityOfContext: info.tonalityOfContext,
             context: Util.getDecryptString(latestTone),
-            // latestContext: Util.getEncryptStringV2(Util.getDecryptString(latestTone)),
             capoLevel: info.capo ? _.toNumber(info.capo) : -1,
             tonalityOfFemale: info["女調"],
             tonalityOfMale: info["男調"],
@@ -973,7 +972,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
             if (guitar.popularLevel > 500) {
                 const content = {};
                 content.name = guitar.name;
-                content.tone = guitar.latestContext;
+                content.tone = guitar.context;
                 content.idOfRemote = guitar.id;
                 content.idOfRhythm = guitar.id;
                 content.popularLevel = guitar.popularLevel;
@@ -987,13 +986,13 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
 
     async function rewritePlantContext() {
         await api.modifyGuitarpusOfPaginate(async (items) => {
-            await api.updateGuitarpus(items.map((pu) => ({ id: pu.id, context: Util.getDecryptStringV2(pu.latestContext) })));
+            await api.updateGuitarpus(items.map((pu) => ({ id: pu.id, context: pu.context })));
         });
     }
 
     async function singleRewrite(id) {
         const pu = await api.fetchGuitarpuItem(id);
-        const context = Util.getDecryptStringV2(pu.latestContext);
+        const context = pu.context;
         await api.updateGuitarpuItem({ context }, id);
     }
 
@@ -1003,7 +1002,7 @@ const THRESHOLD_OF_KEYWORD_MATCH = 999;
             const guitar = await api.fetchGuitarpuItem(id);
             const content = {};
             content.name = guitar.name;
-            content.tone = guitar.latestContext;
+            content.tone = guitar.context;
             content.idOfRemote = guitar.id;
             content.idOfRhythm = guitar.id;
             content.popularLevel = guitar.popularLevel;
