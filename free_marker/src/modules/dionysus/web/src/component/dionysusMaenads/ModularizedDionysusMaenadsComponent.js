@@ -19,6 +19,10 @@ class ModularizedDionysusMaenadsComponent extends BaseDionysusMaenadsComponent {
         return { disabled: dionysusMaenads.getCountOfSubmit() <= 0 };
     }
 
+    onDionysusMaenadsCountOfSubmitTextFieldChange(param) {
+        if (this.getStore().getCountOfSubmit() >= this.getStore().getCount()) this.getStore().setCountOfSubmit(this.getStore().getCount());
+    }
+
     getInjectStyleOfDionysusMaenadsRangeOfPriceTypography(dionysusMaenads) {
         return Util.getVisibleOrNone(!this.getStore().getCurrentOptionExist(), true);
     }

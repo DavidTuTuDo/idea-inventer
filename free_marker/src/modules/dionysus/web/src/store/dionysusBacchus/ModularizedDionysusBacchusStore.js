@@ -2,6 +2,7 @@ const edit = true;
 
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
+import UserInfo from "../../base/BaseUserInfo";
 import BaseDionysusBacchusStore from "./BaseDionysusBacchusStore";
 import ApiOfBooze from "../dionysusBooze";
 
@@ -32,6 +33,7 @@ class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
             await Util.syncDelay(1);
             this.getComponent().scrollToTop();
         }
+        this.getComponent().invalidatePageTitle(`${this.getName() ?? "特選商品"}`);
     }
 }
 

@@ -5352,8 +5352,8 @@ class ComponentBuilder extends BaseBuilder {
         }
         this.appendStmtIntoComponentDidMount(`this.initialize().then()`)
         baseGenerator.appendFunction(
-            {name: `invalidatePageTitle`, arrow: true}, [], [], [],
-            `document.title = this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)}`
+            {name: `invalidatePageTitle`, arrow: true}, ['title'], [], [],
+            `document.title = title ?? this.getStore().${this.getFunctionNameOfSimpleGetter(componentNode.getStruct().getFieldNameOfPageTitle(), false)}`
         )
 
         baseGenerator.appendFunction({name: `isEnableInitFetch`, arrow: true}, [], [], [],

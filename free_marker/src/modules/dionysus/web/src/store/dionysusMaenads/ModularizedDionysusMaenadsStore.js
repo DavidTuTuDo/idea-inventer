@@ -61,6 +61,8 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
 
         if (booze.isTaskJob && booze.useMainTrunk) await handleConflictIssue();
 
+        this.getComponent().invalidatePageTitle(`${booze?.name ?? "特選商品"}`);
+
         return await super.onInitialFetchCompleted(collection);
     }
 
@@ -103,6 +105,7 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         this.setPhoto(this.getBooze().photoOfDemo);
         this.setRangeOfPrice(this.getBooze().rangeOfPrice);
         this.setCount(`未選擇`);
+        this.setCountOfSubmit(0);
     };
 
     /**
