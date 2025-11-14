@@ -1,10 +1,13 @@
+const edit = true;
+
 import React from "react";
-import { Menu, MenuItem, ListItemIcon } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
 import { action, makeObservable, observable } from "mobx";
 import { observer } from "mobx-react";
 import UserInfoRef from "./BaseUserInfo";
 import _ from "lodash";
-import * as MUIcon from "@mui/icons-material";
 import MuiComponent from "./MUIComponent";
 
 class MenuStore {
@@ -79,17 +82,17 @@ class AlertMenu extends MuiComponent {
 
     render() {
         const self = this;
-        const MUIcon = self.MUIconView;
         return (
             <Menu className={"BaseAlertMenu"} open={self.store.visibility} onClose={self.handleOnClose} anchorEl={self.store.anchorEl}>
-                {self.items.map((item) => (
-                    <MenuItem className={"BaseAlertMenuItem"} key={`index${_.indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
+                {self.items.map((item) => {
+                    const Custom = item.icon;
+                    return (<MenuItem className={"BaseAlertMenuItem"} key={`index${_.indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
                         <ListItemIcon>
-                            <MUIcon name={item.icon} />
+                            <Custom />
                         </ListItemIcon>
                         {item.label}
-                    </MenuItem>
-                ))}
+                    </MenuItem>);
+                })}
             </Menu>
         );
     }

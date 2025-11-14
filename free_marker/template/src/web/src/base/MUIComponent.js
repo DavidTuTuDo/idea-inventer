@@ -1,6 +1,8 @@
+const edit = true;
+
 import React from "react";
 import { observer } from "mobx-react";
-import * as MUIcon from "@mui/icons-material";
+import FiberManualRecord from "@mui/icons-material/FiberManualRecord";
 import _ from "lodash";
 import { Parser } from "html-to-react";
 import { utiller as Util } from "utiller";
@@ -15,13 +17,19 @@ class MuiComponent extends React.Component {
         return isObservable(proxyOfObservable) ? toJS(proxyOfObservable) : proxyOfObservable;
     }
 
+    /**  import * as MUIcon from "@mui/icons-material"; <---這種引用方式把整個MUI包進去，導致bundle太大
+     MUIconView = observer(({ name }) => {
+     const CustomView = MUIcon[name];
+     if (CustomView !== undefined) return <CustomView className={"BaseShortcutMUIconView"} />;
+     else {
+     const Random = _.sample(MUIcon);
+     return <Random className={"BaseShortcutMUIconView"} />;
+     }
+     });
+     */
+
     MUIconView = observer(({ name }) => {
-        const CustomView = MUIcon[name];
-        if (CustomView !== undefined) return <CustomView className={"BaseShortcutMUIconView"} />;
-        else {
-            const Random = _.sample(MUIcon);
-            return <Random className={"BaseShortcutMUIconView"} />;
-        }
+        return <FiberManualRecord className={"BaseShortcutMUIconView"} />;
     });
 
     gotoPreviewPage() {

@@ -1,9 +1,14 @@
 const edit = true;
+
 import _ from "lodash";
 import React from "react";
 import moment from "moment";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import { Typography, LinearProgress, CircularProgress, Button, Paper } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import LinearProgress from "@mui/material/LinearProgress";
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
 import { Application } from "../index.js";
 import BaseComponent from "./BaseComponent";
 import Firebaser from "./FirebaseHelper";

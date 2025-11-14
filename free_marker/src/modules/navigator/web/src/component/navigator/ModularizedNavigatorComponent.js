@@ -7,7 +7,16 @@ import { utiller as Util } from "utiller";
 import UserInfo from "../../base/BaseUserInfo";
 import React from "react";
 import Config from "../../config";
-import { List, ListItemText, IconButton, ListItemIcon, ListItem, Typography, Avatar } from "@mui/material";
+import List from "@mui/material/List";
+import ListItemText from "@mui/material/ListItemText";
+import IconButton from "@mui/material/IconButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItem from "@mui/material/ListItem";
+import Typography from "@mui/material/Typography";
+import Avatar from "@mui/material/Avatar";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import NavigateNext from "@mui/icons-material/NavigateNext";
 import Collapse from "@mui/material/Collapse";
 import _ from "lodash";
 import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
@@ -78,18 +87,16 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
             case "muIcon":
                 const muIcon = _.last(words);
                 content = (
-                    <Avatar className={"BaseShortcutItemAvatarView"}>
-                        {" "}
-                        <MUIconView name={muIcon} />{" "}
-                    </Avatar>
+                    <IconButton className={"BaseShortcutItemNavView"}>
+                        <MUIconView name={muIcon} />
+                    </IconButton>
                 );
                 break;
             default:
                 content = (
-                    <Avatar className={"BaseShortcutItemAvatarView"}>
-                        {" "}
-                        <MUIconView />{" "}
-                    </Avatar>
+                    <IconButton className={"BaseShortcutItemNavView"}>
+                        <MUIconView />
+                    </IconButton>
                 );
                 break;
         }
@@ -114,12 +121,16 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
 
     ListItemTailIconView = observer(({ shortcut }) => {
         const self = this;
-        const MUIconView = self.MUIconView;
-        if (!shortcut.hasSubItems()) return null;
+        if (!shortcut.hasSubItems())
+            return (
+                <IconButton className={"BaseShortcutItemNavView"} edge="end" aria-label="delete">
+                    <NavigateNext />
+                </IconButton>
+            );
         return (
             <ListItemSecondaryAction>
                 <IconButton className={"BaseShortcutItemIconView"} edge="end" aria-label="delete">
-                    {shortcut.isSubOpen() ? <MUIconView name={`ExpandLess`} /> : <MUIconView name={"ExpandMore"} />}
+                    {shortcut.isSubOpen() ? <ExpandLess /> : <ExpandMore />}
                 </IconButton>
             </ListItemSecondaryAction>
         );

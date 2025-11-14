@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -45,6 +45,7 @@ const FIELD_NAME_OF_SIZE_PER_PAGE = 'sizeOfPerPage';
 const SIGN_OF_EMPTY_STORE = 'pure';
 const FILE_EXTENSION_OF_I18N = 'i18n.stmts';
 const MAXIMUM_DOCUMENTS_PER_FETCH = 50;
+const SIGN_OF_IMPORT_MUI = 'useAsImportMuiIcon'; /** 在 XXXStore裡面完成import material-icon/${icon} */
 
 /** source.js 是專有名詞的概念*/
 
@@ -2794,6 +2795,8 @@ class CodegenNode {
     /** 就是單純的array,不需要store包過的應用，目前使用在"點點點"出來的彈跳選單 */
     isArrayOfField() { return _.isEqual(this.type, 'arrayOfField'); }
 
+    useAsMuiImport = () => _.isEqual(this.type, SIGN_OF_IMPORT_MUI);
+
     isCollection() {
         return this.isArray() || this.isObject() || this.isArrayItem()
     }
@@ -2847,7 +2850,8 @@ class CodegenNode {
                         refactorI18nMapOfArrayDefaultValue(value, latest)
                     }
 
-                    if (_.isString(value) && !_.isEqual(key, 'value')) {
+                    /** icon要在 XXXStore 拿取 material-ocn/4{icon} */
+                    if (_.isString(value) && !_.isEqual(key, 'value') &&  !_.isEqual(key, 'icon')) {
                         const valueOfI18n = Util.camel(
                           self.getPreciseAttributeGenealogyName(),
                           sign,
@@ -2897,7 +2901,8 @@ class CodegenNode {
 
                     if (_.isString(valueOfMajor)) {
                         const latest = _.startsWith(valueOfMajor, '###') ? Util.getStringOfDropHeadSign(valueOfMajor, `#`) : `'${valueOfMajor}'`;
-                        _stmts.push(`${keyOfMajor}:${latest}`);
+                        if (self.isArrayOfField() && _.isEqual(keyOfMajor, 'icon')) _stmts.push(`${keyOfMajor}: ${valueOfMajor}`); /** SIGN_OF_IMPORT_MUI */
+                        else _stmts.push(`${keyOfMajor}:${latest}`);
                     } else {
                         _stmts.push(`${keyOfMajor}:${_.toString(valueOfMajor)}`)
                     }
@@ -4239,6 +4244,11 @@ class StoreBuilder extends BaseBuilder {
 
         const propsStmt = [];
         for (const child of node.getPreciseAttributeChildren()) {
+            if (child.useAsMuiImport()) {
+                generator.appendImport(child.getDefaultValue(), `@mui/icons-material/${child.getDefaultValue()}`);
+                continue
+            }
+
             const propStmt = [];
             const fieldName = child.getFieldName();
             const defaultValue = child.getDefaultValueByType();
@@ -4595,7 +4605,9 @@ class StoreBuilder extends BaseBuilder {
                             }
                             return stmts.join('\n');
                         } else if (child.isObject()) {
-                            return `this.${child.getFieldName()}.clean()`
+                            return `this.${child.getFieldName()}.clean()`;
+                        } else if (child.useAsMuiImport()) {
+                            return ``;
                         } else {
                             return `this.${child.getFieldName()} = ${child.getDefaultValueByType()}`;
                         }
@@ -8545,6 +8557,11 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             Util.removeAttributeBy(objectOfItem);
             /** 清除掉value為undefined,因為JSON.parse會過不了 */
             stringsOfItem.push(JSON.stringify(objectOfItem));
+            if (_.isString(item.icon)) node.getPreciseAttributeParent().appendChildrenWithJsons({
+                name: `iconOf${_.upperFirst(node.getName())}4Imp${_.indexOf(alertMenu.items, item)}`,
+                type: SIGN_OF_IMPORT_MUI,
+                defaultValue: item.icon,
+            });
         }
 
         const nameOfImpl = `implementsOfAlertItemClicked${_.upperFirst(sign)}`;
