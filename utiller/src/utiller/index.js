@@ -22,9 +22,9 @@ String.format = function () {
     for (let i = 0, l = arguments.length; i < l; i++) {
         param.push(arguments[i]);
     }
-    let statment = param[0]; // get the first element(the original statement)
+    let statement = param[0]; // get the first element(the original statement)
     param.shift(); // remove the first element from array
-    return statment.replace(/\{(\d+)\}/g, function (m, n) {
+    return statement.replace(/\{(\d+)\}/g, function (m, n) {
         return param[n];
     });
 }
