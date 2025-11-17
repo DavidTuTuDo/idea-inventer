@@ -86,12 +86,14 @@ class AlertMenu extends MuiComponent {
             <Menu className={"BaseAlertMenu"} open={self.store.visibility} onClose={self.handleOnClose} anchorEl={self.store.anchorEl}>
                 {self.items.map((item) => {
                     const Custom = item.icon;
-                    return (<MenuItem className={"BaseAlertMenuItem"} key={`index${_.indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
-                        <ListItemIcon>
-                            <Custom />
-                        </ListItemIcon>
-                        {item.label}
-                    </MenuItem>);
+                    return (
+                        <MenuItem className={"BaseAlertMenuItem"} key={`index${_.indexOf(self.items, item)}`} onClick={async (event) => await self.handleClick(item, event)}>
+                            <ListItemIcon>
+                                <Custom />
+                            </ListItemIcon>
+                            {item.label}
+                        </MenuItem>
+                    );
                 })}
             </Menu>
         );

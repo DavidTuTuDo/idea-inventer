@@ -320,18 +320,19 @@
     }
 }
 .SheetGuitarpuPaperWrap:extend(.CenterInParentColumn) {
-    padding-left: 5px;
-    padding-right: 3px;
-    padding-top: 3px;
+    position: relative;
+    padding-left: 2px;
+    padding-right: 2px;
+    padding-top: 5px;
     padding-bottom: 20px;
     margin-bottom: 20px;
     margin-top: 10px;
-    min-height: 237px;
+    min-height: 250px;
     @media @mobile {
-        width: 96vw;
+        width: 97vw;
     }
     @media @tablet {
-        width: 96vw;
+        width: 97vw;
     }
     @media @desktop {
         min-width: 720px;
@@ -379,7 +380,7 @@
 }
 .SheetGuitarpuInfoDivWrap:extend(.CenterInParentRow) {
     position: absolute;
-    z-index: -1; /* 讓它低於其他元素 */
+    z-index: -10;
     right: 3px;
     top: 5px;
     width: 150px;
@@ -5211,4 +5212,3 @@
         /** empty style */
     }
 }
-/** ======== following for homeless ========= */
