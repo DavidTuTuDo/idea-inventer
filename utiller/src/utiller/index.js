@@ -7,6 +7,16 @@ import { v4 } from "uuid";
 import { count, generate } from "../words";
 import { parse } from "node-html-parser";
 
+
+/**
+ * npm_module之後每三個月要更新Granular Token
+ * 到這裡申請新的token => https://www.npmjs.com/settings/davidtu/tokens/
+ * vim ~/.npmrc
+ * 更新=> //registry.npmjs.org/:_authToken=${npm_7a9n_xxxxxxxx} <-新token
+ * npm publish --dry-run
+ * 如果沒報錯 → Token 已生效，可以繼續 deploy。
+ */
+
 String.format = function () {
     let param = [];
     for (let i = 0, l = arguments.length; i < l; i++) {
@@ -49,26 +59,6 @@ class Utiller {
         }
         return defaultValue;
     }
-
-    getBooleanOfNormalize(value, defaultValue = false) {
-        if (_.isBoolean(value))
-            return value;
-
-        if (_.isNumber(value) && _.isEqual(value, 1))
-            return true;
-
-        if (_.isNumber(value) && _.isEqual(value, 0))
-            return true;
-
-        try {
-            const force = JSON.parse(_.toString(value).toLowerCase())
-            return _.isBoolean(force) ? force : defaultValue;
-        } catch (error) {
-            Util.appendError(`448561684562 ${error.message}`)
-        }
-        return defaultValue;
-    }
-
 
     getStringOfNormalize(value, defaultValue = '', trim = false) {
         if (_.isString(value))

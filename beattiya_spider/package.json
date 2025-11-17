@@ -15,6 +15,7 @@
     "databazer": "^1.0.17",
     "linepayer": "^1.0.15",
     "lodash": "^4.17.20",
+    "puppeteer": "^24.30.0",
     "moment": "^2.29.1",
     "utiller": "^1.0.405"
   },

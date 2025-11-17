@@ -7,7 +7,7 @@ import {configerer} from "configerer";
 import Utiller from "./index";
 import ERROR from '../exceptioner/index';
 import pdf from 'pdf-parse';
-import del, {type} from 'del';
+import del from 'del';
 import fse from 'fs-extra';
 import prompt from 'prompt';
 
