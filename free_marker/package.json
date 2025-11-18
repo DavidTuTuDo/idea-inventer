@@ -16,7 +16,7 @@
         "lodash": "^4.17.20",
         "moment": "^2.29.1",
         "mustache": "^4.1.0",
-        "utiller": "^1.0.406"
+        "utiller": "^1.0.407"
     },
     "devDependencies": {
         "@babel/cli": "^7.24.1",
