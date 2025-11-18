@@ -15,6 +15,19 @@ import puppeteer from 'puppeteer';
  * sample  const titles = await page.$$eval('#gl-container .gl-title', elements => {
  * '#'=>代表id | '.'=>代表class | <tag不用加前綴  #id > .className > tag
  * innerText => <tag class='class' >{innerText}<tag>
+ * ========================================================================
+ * 知識點：
+ * 用 > 表示「直接子元素」例如 page.$$('#navbar > #header> .computer_nav > .header_logo');
+ * 不用 > 可以「跳過中間階級」page.$$('#navbar .header_logo');
+ * ========================================================================
+ * 知識點：
+ * class="three-dimension-menu qk-dropdown_menu qk-bg--nav_menu_bg qk-pos--abs qk-display--flex"
+ * 方法1:
+ * const rows = await page.$$('.three-dimension-menu');
+ * 方法2:
+ * const rows = await page.$$('.three-dimension-menu.qk-dropdown_menu');
+ * 方法3:
+ * const rows = await page.$$('[class="three-dimension-menu qk-dropdown_menu qk-bg--nav_menu_bg qk-pos--abs qk-display--flex"]');
  *
  * ========================================================================
  *   // 等待元素加载，确保页面中的 #dg-detail > #add-to-list 存在
