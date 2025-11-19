@@ -616,9 +616,19 @@ class InfinitePool {
         this.appendParamInToQueue(...params)
         this.setState(configerer.POOLLER_STATE.RUN_BY_PARAMS);
 
-        while (!this.ruleOfStopInfiniteRun() && _.size(this.queueOfWaitingParam) > 0) {
+        // [修復] 只要還有參數待處理，就繼續調度
+        while (_.size(this.queueOfWaitingParam) > 0) {
             await this.#run();
         }
+
+        // [新增] 等待所有執行中的任務完成
+        while (!this.isExecutingTaskQueueEmpty()) {
+            await Util.syncDelay(100); // 短暫等待，避免空轉消耗CPU
+            this.printLogMessage(`等待執行中的任務完成，剩餘: ${_.size(this.queueOfExecutingTask)}`);
+        }
+
+        this.printLogMessage(`951281952, runByParams() 結束了while()`);
+        this.terminate();
     }
 
     /**
@@ -899,7 +909,7 @@ class InfinitePool {
             this.countsOfRunByTimes = this.countsOfRunByTimes - 1;
         }
         const task = {state: 'NOT', hash: hash, task: promise};
-        this.printLogMessage(`4484451, 增加了一個assignedTask ${this.getLogMessageOfTaskHash(hash)} 到 QueueOfExecutingTask ,${this.getLogMessageOfExecutingTaskQueueCount}`, false, task)
+        this.printLogMessage(`4484451, 增加了一個assignedTask ${this.getLogMessageOfTaskHash(hash)} 到 QueueOfExecutingTask ,${this.getLogMessageOfExecutingTaskQueueCount()}`, false, task)
         this.queueOfExecutingTask.push(task);
     }
 
@@ -1222,6 +1232,15 @@ if (configerer.DEBUG_MODE) {
             }
         }
 
+        async function exampleOfRunByTimes() {
+            const pool = new InfinitePool(10, 'david987');
+            await pool.runByParams(async() => {
+                const million = await Util.syncDelayRandom();
+                console.log(million);
+            }, ..._.range(0, 20))
+            console.log(`上面完成後才能顯示`);
+        }
+
         /**
          * 示例：無限運行模式
          * 展示如何使用無限模式和錯誤處理
@@ -1258,14 +1277,10 @@ if (configerer.DEBUG_MODE) {
             }
         }
 
-        /**
-         * 其他示例函數...
-         * （為簡潔起見，這裡省略其他示例函數的完整實現）
-         */
-
         // 取消註解以運行示例
         // await exampleOfRunByTaskWait4ResultAndRunInBackground()
         // await exampleOfRunInBackgroundInfinite()
+
     })();
 }
 

@@ -24,13 +24,14 @@ class beattiya_spider {
     };
 
 
-    async vvv() {
-        const page = await this.getDesktopPage();
-        await page.goto(`https://www.its-beattiya.com.tw/`, { waitUntil: 'networkidle2', timeout: 0 });
+    async fetcher() {
+        const self = this;
+        const mainPage = await this.getDesktopPage();
+        await mainPage.goto(`https://www.its-beattiya.com.tw/`, { waitUntil: 'networkidle2', timeout: 0 });
 
         // ==================== 取得所有分類 ====================
         const categorySelector = '#navbar .three-dimension-menu.qk-dropdown_menu .level-2-dropdown.scrollbar > *';
-        const categoryRows = await page.$$(categorySelector);
+        const categoryRows = await mainPage.$$(categorySelector);
 
         const categories = await Promise.all(
             categoryRows.map(async (row, index) => ({
@@ -40,16 +41,33 @@ class beattiya_spider {
             }))
         );
 
-        console.log('📂 分類列表 ==> ', categories);
+        console.log(`📂 分類列表 ==> ${_.size(categories)}`, categories);
 
         // ==================== 爬取所有分類的產品並合併 ====================
-        const listOfBooze = (await Promise.all(categories.map(cat => this.www(cat)))).flat();
+        const boozes = [];
 
-        console.log('📦 所有產品 ==> ', listOfBooze);
-        await page.close();
-        await Util.persistJsonFilePrettier('./temp/listOfBooze.json',listOfBooze);
+        const handler = new InfinitePool(10);
+        handler.enableTaskTimeout(true, 40000);
 
-        // return listOfBooze;
+        await handler.runByParams(async (param) => {
+            const result = await self.boozeFetcher(param);
+            boozes.push(...result);
+        }, ...categories);
+
+        console.log(`📦 所有boozes ==> ${_.size(boozes)}`, boozes);
+
+        // await mainPage.close();
+        await Util.persistJsonFilePrettier('./temp/boozes.json', boozes);
+
+        const variants = [];
+        for (const booze of boozes) variants.push(await this.variantFetcher(booze));
+
+        await handler.runByParams(async (param) => {
+            const result = await self.variantFetcher(param);
+            variants.push(...result);
+        }, ...boozes);
+
+        await Util.persistJsonFilePrettier('./temp/variants.json', variants);
     }
 
     /**
@@ -65,13 +83,10 @@ class beattiya_spider {
      * });
      * // 返回所有分頁的產品列表
      */
-    async www(cat) {
+    boozeFetcher = async (cat) => {
         // ==================== 檢查 URL 是否為分類頁面 ====================
         if (!cat.href?.includes('collections')) return [];
-
         const page = await this.getDesktopPage();
-        await page.goto(cat.href, { waitUntil: 'networkidle2', timeout: 0 });
-
         // ==================== 設定選擇器和屬性映射 ====================
         const selector = '#template #collection .products_content > *';
         const attrMap = {
@@ -94,7 +109,7 @@ class beattiya_spider {
          */
         const fetchBoozes = async (cat) => {
             const rows = await page.$$(selector);
-            return Promise.all(rows.map(async (row) => {
+            return await Promise.all(rows.map(async (row) => {
                 const bean = await this.fetchAttributesOfEl(row, '.productClick', attrMap);
                 return { ...bean, category: cat.category };
             }));
@@ -123,28 +138,64 @@ class beattiya_spider {
          * - 適合「先做一次，再判斷是否重複」的場景
          */
         let listOfBooze = [];
+        try {
+            await page.goto(cat.href, { waitUntil: 'networkidle2', timeout: 0 });
+            do {
+                await Util.syncDelay(10);
+                // ✅ 第一步：取得當前頁面的所有產品
+                const products = await fetchBoozes(cat);
 
-        do {
-            // ✅ 第一步：取得當前頁面的所有產品
-            const products = await fetchBoozes(cat);
+                // ✅ 第二步：將當前頁的產品加入總列表
+                listOfBooze = listOfBooze.concat(products);
 
-            // ✅ 第二步：將當前頁的產品加入總列表
-            listOfBooze = listOfBooze.concat(products);
+                // ⬇️ while 條件判斷
+                // - clickNextPage(page) 會點擊「下一頁」按鈕
+                //   如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
+                //   如果沒有下一頁，返回 false，循環停止
+                // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
+            } while (await this.clickNextPage(page));
+        } catch (error) {
+            console.error(`抓取失敗: ${error.message}`);
+            return [];
+        } finally {
+            // ✅ 關鍵：確保頁面被關閉
+            await page.close();
+        }
 
-            // ⬇️ while 條件判斷
-            // - clickNextPage(page) 會點擊「下一頁」按鈕
-            //   如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
-            //   如果沒有下一頁，返回 false，循環停止
-            // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
-        } while (await this.clickNextPage(page) && await Util.syncDelay(10));
-
-        await page.close();
         return listOfBooze;
     }
 
-    async xxx() {
+    variantFetcher = async (booze) => {
+        const self = this;
+        const page = await this.getDesktopPage();
+        await page.goto(booze.href, { waitUntil: 'networkidle2', timeout: 0 });
+        const node = await page.$(`#product`);
 
-    }
+        async function getVariant() {
+            const name = await self.fetchAttributeOfEl(node, `#product_content .product_title h1`, 'innerText');
+            const brief = await self.fetchAttributeOfEl(node, `#product_content .product_brief`, 'innerText');
+            const fetchOfDescription = async () => {
+                const stmts = [];
+                const children = await node.$$(`#product_description .desc_body .ckeditor > *`);
+                const contents = await Promise.all(children.map(async (child) => await self.fetchAttributeOfEl(child, '', 'innerText')));
+                for (const content of contents) stmts.push(...contents);
+                return stmts.join('\n');
+            };
+            const slogan = await self.fetchAttributeOfEl(node,'#product_content .product_slogan', 'innerText');
+            const fetchOfPhotos = async () => {
+                const children = await node.$$(`#variant_photos .thumb-container`);
+                return await Promise.all(children.map(async (child) => await self.fetchAttributeOfEl(child, 'img', 'src')));
+            };
+            const description = await fetchOfDescription()
+            const photos = await fetchOfPhotos();
+            return { name, brief, slogan, description, photos, category: booze.category };
+        }
+
+        const variant = await getVariant();
+        await Util.syncDelay(10);
+        await page.close();
+        return variant;
+    };
 
     /**
      * 點擊下一頁按鈕
@@ -162,15 +213,12 @@ class beattiya_spider {
             const paginationItems = await page.$$(selector);
 
             if (!paginationItems || paginationItems.length === 0) {
-                console.warn(`⚠️ 找不到頁面按鈕們`);
+                console.log(`⚠️ 找不到頁面按鈕們`);
                 return false;
             }
-
             console.log(`📍 找到 ${paginationItems.length} 個頁面按鈕`);
-
             // ==================== 第二步：從右到左尋找下一頁按鈕（»） ====================
             let nextPageButton = null;
-
             for (const item of [...paginationItems].reverse()) {
                 const buttonText = await this.fetchAttributeOfEl(item, 'a', 'innerText');
 
@@ -179,9 +227,8 @@ class beattiya_spider {
                     break;
                 }
             }
-
             if (!nextPageButton) {
-                console.warn(`⚠️ 找不到下一頁按鈕 (»)`);
+                console.log(`⚠️ 找不到下一頁按鈕 (»)`);
                 return false;
             }
 
@@ -193,7 +240,7 @@ class beattiya_spider {
             );
 
             if (isDisabled) {
-                console.warn(`⚠️ 下一頁按鈕已禁用 (已是最後一頁)`);
+                console.log(`⚠️ 下一頁按鈕已禁用 (已是最後一頁)`);
                 return false;
             }
 
@@ -213,92 +260,169 @@ class beattiya_spider {
             return true;
 
         } catch (error) {
-            console.error(`❌ 點擊下一頁出錯: ${error.message}`);
+            console.log(`❌ 點擊下一頁出錯: ${error.message}`);
             return false;
         }
     };
 
     /**
-     * 通用函數：從元素上提取指定的屬性
+     * 通用函數：從元素或其子元素上批量提取指定的屬性
      *
-     * @param {ElementHandle} element - Puppeteer 的行元素
-     * @param {string} selector - 選擇器（如 '.productClick'）
-     * @param {Object} attrMap - 屬性映射 { 結果key: 屬性名 }
-     *                          例如：{ id: 'data-id', name: 'data-name', href: 'href' }
+     * 此方法支援兩種模式：
+     * 1. 當 selector 為空時，直接從 element 本身批量獲取屬性
+     * 2. 當 selector 有值時，先查找子元素，再從子元素批量獲取屬性
+     *
+     * 屬性查找優先級：
+     * - 優先查找 DOM 屬性（如 innerText、textContent、value、href 等）
+     * - 若 DOM 屬性不存在，則查找 HTML 屬性（如 data-*、class 等）
+     *
+     * @param {ElementHandle} element - Puppeteer 的元素句柄（ElementHandle）
+     * @param {string|null|undefined} selector - CSS 選擇器，用於查找子元素
+     *                                           - 若為空值（''、null、undefined），則直接操作 element 本身
+     *                                           - 若有值，則在 element 內查找匹配的第一個子元素
+     * @param {Object} attrMap - 屬性映射對象，格式為 { 結果key: 屬性名 }
+     *                          - key: 返回對象中的鍵名（自定義命名）
+     *                          - value: 要查詢的屬性名稱（DOM 或 HTML 屬性）
+     *
      * @returns {Promise<Object>} 包含所有屬性的物件
+     *                            - 成功：返回包含所有請求屬性的對象
+     *                            - 部分失敗：不存在的屬性值為 undefined
+     *                            - 完全失敗：找不到元素時返回空對象 {}
      *
      * @example
-     * const result = await extractAttributes(row, '.productClick', {
-     *     id: 'data-id',
-     *     name: 'data-name',
-     *     href: 'href',
-     *     belonging: 'data-list'
+     * // 從子元素中提取多個屬性
+     * const result = await fetchAttributesOfEl(row, '.productClick', {
+     *     id: 'data-id',           // HTML 自定義屬性
+     *     name: 'data-name',       // HTML 自定義屬性
+     *     href: 'href',            // HTML 標準屬性
+     *     text: 'innerText',       // DOM 屬性
+     *     belonging: 'data-list'   // HTML 自定義屬性
      * });
-     * // 返回：{ id: '40088776', name: '1 淨柔雙效潔顏露', href: '/...', belonging: '...' }
+     * // 返回：{ id: '40088776', name: '1 淨柔雙效潔顏露', href: '/...', text: '...', belonging: '...' }
+     *
+     * @example
+     * // 從元素本身提取多個屬性（selector 為空）
+     * const result = await fetchAttributesOfEl(divElement, '', {
+     *     text: 'textContent',
+     *     className: 'className',
+     *     dataId: 'data-id'
+     * });
+     * // 返回：{ text: 'Some text', className: 'my-class', dataId: '123' }
+     *
+     * @example
+     * // 提取表單元素的多個狀態
+     * const formData = await fetchAttributesOfEl(formElement, 'input[name="email"]', {
+     *     value: 'value',
+     *     isDisabled: 'disabled',
+     *     placeholder: 'placeholder'
+     * });
+     * // 返回：{ value: 'user@example.com', isDisabled: false, placeholder: '請輸入郵箱' }
      */
     fetchAttributesOfEl = async (element, selector, attrMap) => {
-        const child = await element.$(selector);
+        let targetElement;
 
-        if (!child) {
-            console.warn(`⚠️ 找不到元素: ${selector}`);
-            return {};
+        // ✅ 處理 selector 為空的情況
+        // 當 selector 為 null、undefined、空字串或只有空白時
+        // 直接使用 element 本身，避免 querySelector 的 SyntaxError
+        if (!selector || selector.trim() === '') {
+            targetElement = element;
+        } else {
+            // 在 element 內部查找匹配 selector 的第一個子元素
+            // 使用 Puppeteer 的 $(selector) 方法
+            targetElement = await element.$(selector);
+
+            // 如果找不到匹配的子元素，返回空對象
+            if (!targetElement) {
+                console.warn(`⚠️ 找不到元素: ${selector}`);
+                return {};
+            }
         }
 
-        // ✅ 建立 evaluate 函數，支援 HTML 屬性和 DOM 屬性
-        return await child.evaluate((el, attrMap) => {
+        // ✅ 在瀏覽器上下文中執行批量屬性查詢
+        // evaluate() 會在瀏覽器環境中執行回調函數
+        return await targetElement.evaluate((el, attrMap) => {
+            // 批量屬性查詢邏輯（在瀏覽器端執行）
             const result = {};
-
-            // 遍歷屬性映射，逐一取值
+            // 遍歷屬性映射對象，逐一提取屬性值
+            // Object.entries() 將對象轉換為 [key, value] 陣列
+            // 例如：{ id: 'data-id', name: 'data-name' }
+            //    => [['id', 'data-id'], ['name', 'data-name']]
             for (const [key, attrName] of Object.entries(attrMap)) {
+                // 屬性查詢邏輯（與 fetchAttributeOfEl 相同）
                 // 優先嘗試 DOM 屬性（innerText、textContent、value 等）
                 // 再嘗試 HTML 屬性（data-* 、href 等）
                 const value = el[attrName] !== undefined
-                    ? el[attrName]
-                    : el.getAttribute(attrName);
+                    ? el[attrName]                    // DOM 屬性存在時使用
+                    : el.getAttribute(attrName);      // 否則使用 HTML 屬性
 
-                // ✅ null 或空字符串改成 undefined
-                result[key] = value || undefined;
+                result[key] = value !== null ? value : undefined;
             }
 
+            // 返回包含所有屬性的結果對象
             return result;
-        }, attrMap);
-    }
+        }, attrMap);  // 將 attrMap 傳遞給瀏覽器端的函數
+    };
 
     /**
-     * 取得單個屬性值
+     * 從元素或其子元素中獲取指定屬性的值
      *
-     * @param {ElementHandle} element - Puppeteer 的行元素
-     * @param {string} selector - 選擇器（如 '.productClick'）
-     * @param {string} attrName - 屬性名（如 'data-id'、'href'、'data-name'）
-     * @returns {Promise<string|null>} 屬性值，找不到則返回 null
+     * 此方法支援兩種模式：
+     * 1. 當 selector 為空時，直接從 element 本身獲取屬性
+     * 2. 當 selector 有值時，先查找子元素，再從子元素獲取屬性
+     *
+     * 屬性查找優先級：
+     * - 優先查找 DOM 屬性（如 innerText、textContent、value、href 等）
+     * - 若 DOM 屬性不存在，則查找 HTML 屬性（如 data-*、class 等）
+     *
+     * @param {ElementHandle} element - Puppeteer 的元素句柄（ElementHandle）
+     * @param {string|null|undefined} selector - CSS 選擇器，用於查找子元素
+     *                                           - 若為空值（''、null、undefined），則直接操作 element 本身
+     *                                           - 若有值，則在 element 內查找匹配的第一個子元素
+     * @param {string} attrName - 要獲取的屬性名稱
+     *                            - DOM 屬性：innerText、textContent、value、href、src 等
+     *                            - HTML 屬性：data-*、class、id、alt 等
+     *
+     * @returns {Promise<any|undefined>}
+     *          - 成功：返回屬性值（可能是字串、數字、布林值等）
+     *          - 失敗：返回 undefined（找不到元素或屬性不存在）
      *
      * @example
-     * const id = await getAttribute(row, '.productClick', 'data-id');
-     * // 返回：'40088776'
+     * // 獲取元素本身的文本內容
+     * const text = await fetchAttributeOfEl(divElement, '', 'textContent');
      *
-     * const name = await getAttribute(row, '.productClick', 'innerText');
-     * // 返回：'1 淨柔雙效潔顏露'
+     * @example
+     * // 獲取子元素的 href 屬性
+     * const href = await fetchAttributeOfEl(parentElement, 'a.link', 'href');
+     *
+     * @example
+     * // 獲取 data 屬性
+     * const dataId = await fetchAttributeOfEl(element, '.item', 'data-id');
      */
-    async fetchAttributeOfEl(element, selector, attrName) {
-        const child = await element.$(selector);
+    fetchAttributeOfEl = async (element, selector, attrName) => {
+        let targetElement;
 
-        if (!child) {
-            console.warn(`⚠️ 找不到元素: ${selector}`);
-            return undefined;
+        // ✅ 當 selector 為空時，直接使用 element 本身
+        if (!selector || selector.trim() === '') {
+            targetElement = element;
+        } else {
+            targetElement = await element.$(selector);
+
+            if (!targetElement) {
+                console.warn(`⚠️ 找不到元素: ${selector}`);
+                return undefined;
+            }
         }
 
         // ✅ 回傳值或 undefined，不回傳 null
-        return await child.evaluate((el, attrName) => {
+        return await targetElement.evaluate((el, attrName) => {
             // 優先嘗試 DOM 屬性（innerText、textContent、value 等）
             // 再嘗試 HTML 屬性（data-* 、href 等）
             const value = el[attrName] !== undefined
                 ? el[attrName]
                 : el.getAttribute(attrName);
-
-            return value || undefined;  // null 改成 undefined
+            return value !== null ? value : undefined;  // null 改成 undefined
         }, attrName);
     }
-
 
 }
 
@@ -315,10 +439,11 @@ if (configerer.DEBUG_MODE) {
                 for (const page of await browser.pages()) await page.close();
                 return browser;
             }
-
-            const handler = new beattiya_spider(await getBrowser(ENABLE_OF_OPEN_BROWSER));
-            await Util.measureExecutionTime(handler.vvv.bind(handler));
-
+            const browser = await getBrowser(ENABLE_OF_OPEN_BROWSER);
+            const handler = new beattiya_spider(browser);
+            await Util.measureExecutionTime(handler.fetcher.bind(handler));
+            await browser.close();
+            return 0;
         }
     )();
 }
