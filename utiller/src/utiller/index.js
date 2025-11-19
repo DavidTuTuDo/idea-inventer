@@ -161,7 +161,7 @@ class Utiller {
 
     appendInfo(...logs) {
         if (this.isProductionEnvironment()) return;
-        console.log(...logs);
+        console.warn(...logs);
     }
 
     appendError(...logs) {
@@ -2340,20 +2340,15 @@ class Utiller {
 
         // 計算總運行時間（毫秒）
         const durationInMilliseconds = endTime - startTime;
-
         // 使用 moment.duration 格式化為 hh:mm:ss.SSS
         const duration = moment.duration(durationInMilliseconds, 'milliseconds');
-
         const hours = Math.floor(duration.asHours());
         const minutes = duration.minutes();
         const seconds = duration.seconds();
         const milliseconds = duration.milliseconds();
-
         // 計算總秒數（包含小數點）
         const totalSeconds = (durationInMilliseconds / 1000).toFixed(3);
-
-        // 返回結果
-        this.appendInfo(`${hours}小時 ${minutes}分 ${seconds}.${milliseconds.toString().padStart(3, '0')}秒 (合計 ${totalSeconds} 秒)`)
+        return { second: totalSeconds, zh_TW: `${hours}小時 ${minutes}分 ${seconds}.${milliseconds.toString().padStart(3, '0')}秒 (合計 ${totalSeconds} 秒)` };
     }
 
     formatPriceWithCurrency = (number, locale) => {

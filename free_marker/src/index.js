@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -231,7 +231,7 @@ class CodegenNode {
     listOfImplementsOfAlertItemClicked = [];
     /** dalertMenu的 items,在點擊後的事件實作 */
 
-    /** 如果 Typoghraphy 只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
+    /** 如果 Typography 只有一個value，想要偷懶的加上Label 和icon 可以這樣做 */
     labelView = {
         enable: false,
         defaultValue: ``,
@@ -6553,7 +6553,7 @@ class AppBuilder extends ComponentBuilder {
         });
         await this.appendMustacheFile('webpack.config.js.mustache', Util.joinRespectingDot(this.genRootPath,
             `webpack.config.js`), {titleOfProject: this.nodeOfAncestor.getTitle()});
-        await this.appendMustacheFile('babel.config.js', Util.joinRespectingDot(this.genRootPath,
+        await this.appendMustacheFile('web.babel.config.js', Util.joinRespectingDot(this.genRootPath,
             `babel.config.js`
         ));
     }
@@ -7812,6 +7812,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         });
 
         Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'node.babel.config.js'), this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'node.terser.config.js'), this.genRootPath, 'terser.config.js', true);
 
         const apiGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `api`, `BaseAdminRemoteApi.js`), this.nodeOfAncestor);
         apiGenerator.appendClass('BaseAdminRemoteApi', {name: 'CommonRemoteApi', from: '../base/CommonRemoteApi'});
@@ -9337,6 +9338,8 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
 
         Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'node.babel.config.js'),
             this.genRootPath, 'babel.config.js', true);
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'node.terser.config.js'),
+            this.genRootPath, 'terser.config.js', true);
 
         Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'template.function.index.js'),
             this.genRootPath, 'index.js', true);

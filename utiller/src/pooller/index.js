@@ -161,10 +161,15 @@ class InfinitePool {
      * 清除所有緩存數據
      * 清空執行隊列、任務映射和分配隊列
      */
-    clearCache() {
+    clearCache = () => {
+        this.isQueuePolling = false;
         this.queueOfExecutingTask.length = 0;
         this.mapOfHashNTask = {};
-        this.queueOfAssignTask = {};
+        this.mapOfHashNCallbackWrapper = {};
+        this.initialTaskCompleted = false;
+        for (const prior of configerer.POOLLER_PRIORITY) {
+            this.queueOfAssignTask[prior].length = 0;
+        }
     }
 
     /**
@@ -560,6 +565,7 @@ class InfinitePool {
             this.printLogMessage(`415123, runInInfinite() 正在無限Loop中, ${this.getLogMessageOfExecutingTaskQueueCount()}`)
             await this.#run();
         }
+        if (!this.isRunInBackgroundMode) this.afterRun();
     }
 
     /**
@@ -623,12 +629,13 @@ class InfinitePool {
 
         // [新增] 等待所有執行中的任務完成
         while (!this.isExecutingTaskQueueEmpty()) {
-            await Util.syncDelay(100); // 短暫等待，避免空轉消耗CPU
+            await Util.syncDelay(33); // 短暫等待，避免空轉消耗CPU
             this.printLogMessage(`等待執行中的任務完成，剩餘: ${_.size(this.queueOfExecutingTask)}`);
         }
 
         this.printLogMessage(`951281952, runByParams() 結束了while()`);
         this.terminate();
+        if (!this.isRunInBackgroundMode) this.afterRun();
     }
 
     /**
@@ -658,6 +665,7 @@ class InfinitePool {
             this.printLogMessage(`788143, runByEachTask() 為了讓while不要停止運算`);
         }
         this.printLogMessage(`7881952, runByEachTask() 結束了while()`);
+        if (!this.isRunInBackgroundMode) this.afterRun();
     }
 
     /**
@@ -685,6 +693,7 @@ class InfinitePool {
         while (!this.ruleOfStopInfiniteRun() && this.countsOfRunByTimes > 0) {
             await this.#run();
         }
+        if (!this.isRunInBackgroundMode) this.afterRun();
     }
 
     /**
@@ -715,6 +724,7 @@ class InfinitePool {
                 }
             } finally {
                 this.terminate();
+                this.afterRun();
                 this.printLogMessage(`7812123, runInBackGround() 走到finally`)
             }
         }, 1);
@@ -1238,7 +1248,12 @@ if (configerer.DEBUG_MODE) {
                 const million = await Util.syncDelayRandom();
                 console.log(million);
             }, ..._.range(0, 20))
-            console.log(`上面完成後才能顯示`);
+            console.log(`上面完成後才能顯示1`);
+            await pool.runByParams(async() => {
+                const million = await Util.syncDelayRandom();
+                console.log(million);
+            }, ..._.range(0, 20))
+            console.log(`上面完成後才能顯示2`);
         }
 
         /**
@@ -1280,7 +1295,7 @@ if (configerer.DEBUG_MODE) {
         // 取消註解以運行示例
         // await exampleOfRunByTaskWait4ResultAndRunInBackground()
         // await exampleOfRunInBackgroundInfinite()
-
+        // await exampleOfRunByTimes()
     })();
 }
 

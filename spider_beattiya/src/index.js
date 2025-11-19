@@ -1,8 +1,6 @@
 import { configerer } from "configerer";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from 'utiller';
 import _ from 'lodash';
-import libpath from 'path';
-import Moment from 'moment';
 import puppeteer from 'puppeteer';
 
 /** author:明悅
@@ -17,19 +15,30 @@ class beattiya_spider {
         this.items = {};
     }
 
-    getDesktopPage = async () => {
-        const page = await this.browser.newPage();
-        page.setViewport({ width: 1920, height: 1080 });
+    /** 取得桌機開啟時的網頁RWD狀態
+     * @param browser puppeteer的browser實體
+     * @param type desktop/mobile
+     * */
+    getFullPage = async ({browser,type='desktop'}) => {
+        const page = await browser.newPage();
+        const width = Util.getRandomValue(1080,1920)
+        const height = Util.getRandomValue(1080,1920)
+        page.setViewport({ width, height });
         return page;
     };
 
+    activatePage4Load = async ({ browser, href = '', type = 'desktop', timeout = 0 }) => {
+        const page = await this.getFullPage({browser,type});
+        /** fingerprint 會記取裝置的長寬高，所以要蕤機 */
+        await page.goto(href, { waitUntil: 'networkidle2', timeout })
+        return page;
+    };
 
-    async fetcher() {
+    fetcher = async () => {
         const self = this;
-        const mainPage = await this.getDesktopPage();
-        await mainPage.goto(`https://www.its-beattiya.com.tw/`, { waitUntil: 'networkidle2', timeout: 0 });
+        const mainPage = await this.activatePage4Load({ browser: this.browser, href: `https://www.its-beattiya.com.tw/` });
 
-        // ==================== 取得所有分類 ====================
+        // ==================== 取得[產品]所有分類(保健系列/精華液系列) ====================
         const categorySelector = '#navbar .three-dimension-menu.qk-dropdown_menu .level-2-dropdown.scrollbar > *';
         const categoryRows = await mainPage.$$(categorySelector);
 
@@ -42,133 +51,64 @@ class beattiya_spider {
         );
 
         console.log(`📂 分類列表 ==> ${_.size(categories)}`, categories);
-
+        await Util.persistJsonFilePrettier('./temp/categories.json', categories);
+        await mainPage.close();
         // ==================== 爬取所有分類的產品並合併 ====================
+        const handler = new InfinitePool(10, 'itsBeat');/** 同時間最多開10個頁面抓取 */
+        handler.enableTaskTimeout(true, 60000);
+
         const boozes = [];
-
-        const handler = new InfinitePool(10);
-        handler.enableTaskTimeout(true, 40000);
-
         await handler.runByParams(async (param) => {
             const result = await self.boozeFetcher(param);
             boozes.push(...result);
         }, ...categories);
 
         console.log(`📦 所有boozes ==> ${_.size(boozes)}`, boozes);
-
-        // await mainPage.close();
         await Util.persistJsonFilePrettier('./temp/boozes.json', boozes);
 
         const variants = [];
-        for (const booze of boozes) variants.push(await this.variantFetcher(booze));
-
+        for (const prior of configerer.POOLLER_PRIORITY) {
+            handler.queueOfAssignTask[prior] = [];
+        }
         await handler.runByParams(async (param) => {
-            const result = await self.variantFetcher(param);
-            variants.push(...result);
+            variants.push(await self.variantFetcher(param));
         }, ...boozes);
 
+        console.log(`📦 所有variants ==> 太長了！不PRINT`);
         await Util.persistJsonFilePrettier('./temp/variants.json', variants);
     }
 
     /**
-     * 爬取指定分類下的所有產品
-     *
+     * 拿都循過一輪[1,2,3...-> 下一頁]之後的商品資訊
      * @param {Object} cat - 分類物件，需包含 href 屬性
      * @param {string} cat.href - 分類的 URL
      * @returns {Promise<Array>} 所有產品的陣列，每個產品包含 { href, name, id, belonging }
-     *
-     * @example
-     * const products = await this.www({
-     *     href: 'https://example.com/collections/skincare'
-     * });
-     * // 返回所有分頁的產品列表
      */
     boozeFetcher = async (cat) => {
-        // ==================== 檢查 URL 是否為分類頁面 ====================
+        /** todo:collections才是有商品列表的頁面 */
         if (!cat.href?.includes('collections')) return [];
-        const page = await this.getDesktopPage();
-        // ==================== 設定選擇器和屬性映射 ====================
-        const selector = '#template #collection .products_content > *';
-        const attrMap = {
-            href: 'href',
-            name: 'data-name',
-            id: 'data-id',
-            belonging: 'data-list'
-        };
-
-        // ==================== 定義：取得單一頁面的產品列表 ====================
-        /**
-         * fetchProducts 函數
-         * 作用：在當前頁面取得所有產品
-         *
-         * 執行步驟：
-         * 1. 用選擇器 ($$ 複數) 找到所有產品元素
-         * 2. 遍歷每個產品元素，用 fetchAttributesOfEl 取得屬性
-         * 3. 用 Promise.all 並行執行所有的屬性取得操作
-         * 4. 返回當前頁面的所有產品
-         */
-        const fetchBoozes = async (cat) => {
+        const page = await this.activatePage4Load({ browser: this.browser, href: cat.href });
+        const fetchBoozes = (cat) => async ()  => {
+            const attrMap = {
+                href: 'href',
+                name: 'data-name',
+                id: 'data-id',
+                belonging: 'data-list'
+            };
+            const selector = '#template #collection .products_content > *';
             const rows = await page.$$(selector);
             return await Promise.all(rows.map(async (row) => {
                 const bean = await this.fetchAttributesOfEl(row, '.productClick', attrMap);
                 return { ...bean, category: cat.category };
             }));
         };
-
-        // ==================== do...while 循環：逐頁爬取所有產品 ====================
-        /**
-         * do...while 循環說明
-         *
-         * 執行順序：
-         * ┌─ 進入循環
-         * │
-         * ├─ do { ... } 區塊
-         * │  ├─ 第一步：fetchProducts() → 取得當前頁面的產品 ✅
-         * │  └─ 第二步：allProducts.concat() → 將產品加入總列表 ✅
-         * │
-         * └─ while (條件判斷)
-         *    ├─ clickNextPage() → 點擊下一頁按鈕
-         *    │  └─ 返回 true：有下一頁 → 回到 do 重新執行
-         *    │  └─ 返回 false：沒有下一頁 → 停止循環
-         *    └─ Util.syncDelay(10) → 延遲 10ms，避免頁面加載過快
-         *
-         * 特點：
-         * - do 區塊一定會執行至少一次（所以第一頁不會被跳過）
-         * - while 判斷是否繼續（根據是否有下一頁）
-         * - 適合「先做一次，再判斷是否重複」的場景
-         */
-        let listOfBooze = [];
-        try {
-            await page.goto(cat.href, { waitUntil: 'networkidle2', timeout: 0 });
-            do {
-                await Util.syncDelay(10);
-                // ✅ 第一步：取得當前頁面的所有產品
-                const products = await fetchBoozes(cat);
-
-                // ✅ 第二步：將當前頁的產品加入總列表
-                listOfBooze = listOfBooze.concat(products);
-
-                // ⬇️ while 條件判斷
-                // - clickNextPage(page) 會點擊「下一頁」按鈕
-                //   如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
-                //   如果沒有下一頁，返回 false，循環停止
-                // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
-            } while (await this.clickNextPage(page));
-        } catch (error) {
-            console.error(`抓取失敗: ${error.message}`);
-            return [];
-        } finally {
-            // ✅ 關鍵：確保頁面被關閉
-            await page.close();
-        }
-
-        return listOfBooze;
+        return this.fetchElementsTilPageEnd(page, cat.href, fetchBoozes(cat), '.pagination-container .pagination > *', '»')
     }
 
+    /** 取得單一商品'細節'資訊 */
     variantFetcher = async (booze) => {
         const self = this;
-        const page = await this.getDesktopPage();
-        await page.goto(booze.href, { waitUntil: 'networkidle2', timeout: 0 });
+        const page = await this.activatePage4Load({ browser: this.browser, href: booze.href });
         const node = await page.$(`#product`);
 
         async function getVariant() {
@@ -192,22 +132,76 @@ class beattiya_spider {
         }
 
         const variant = await getVariant();
-        await Util.syncDelay(10);
+        await Util.syncDelay(5);
         await page.close();
         return variant;
     };
 
     /**
-     * 點擊下一頁按鈕
-     *
+     * 專門處理那種點擊下一頁的網頁設計
+     * @param page - Puppeteer 的元素句柄（ElementHandle）
+     * @param href - 包含下一頁的那種網頁(91譜歌手)
+     * @param fetcher - 如何解析出每一頁的elements
+     * @param selectorOfPagingN -  [上一頁,1,2,3,4,5,6,7,8,9,10,下一頁] 的選擇器描述 例如 '.rlist #page > *'
+     * @param signOfPagingN - 每種網頁的'下一頁'字串都不一樣
+     * @returns {Promise<*[]>} 所有頁面(1~20)跑完之後的[...elements]
+     */
+    async fetchElementsTilPageEnd(page, href, fetcher = async () => {}, selectorOfPagingN, signOfPagingN = '»') {
+        /**
+         * do...while 循環說明
+         *
+         * 執行順序：
+         * ┌─ 進入循環
+         * │
+         * ├─ do { ... } 區塊
+         * │  ├─ 第一步：fetchProducts() → 取得當前頁面的產品 ✅
+         * │  └─ 第二步：allProducts.concat() → 將產品加入總列表 ✅
+         * │
+         * └─ while (條件判斷)
+         *    ├─ clickNextPage() → 點擊下一頁按鈕
+         *    │  └─ 返回 true：有下一頁 → 回到 do 重新執行
+         *    │  └─ 返回 false：沒有下一頁 → 停止循環
+         *    └─ Util.syncDelay(10) → 延遲 10ms，避免頁面加載過快
+         *
+         * 特點：
+         * - do 區塊一定會執行至少一次（所以第一頁不會被跳過）
+         * - while 判斷是否繼續（根據是否有下一頁）
+         * - 適合「先做一次，再判斷是否重複」的場景
+         */
+        let elements = [];
+        try {
+            do {
+                await Util.syncDelay(10);
+                // ✅ 第一步：取得當前頁面的所有產品
+                const items = await fetcher(page);
+                // ✅ 第二步：將當前頁的產品加入總列表
+                elements = elements.concat(items);
+                // ⬇️ while 條件判斷
+                // - clickNextPage(page) 會點擊「下一頁」按鈕
+                // - 如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
+                // - 如果沒有下一頁，返回 false，循環停止
+                // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
+            } while (await this.clickNextPageTilEnd(page, selectorOfPagingN, signOfPagingN));
+        } catch (error) {
+            console.error(`抓取失敗: ${error.message}`);
+            return [];
+        } finally {
+            // ✅ 關鍵：確保頁面被關閉
+            await page.close();
+        }
+        return elements;
+    }
+
+    /**
+     * 尋找到選擇器(selector)指定的陣列->點擊[下一頁=>${sign}]按鈕
      * @param {Page} page - Puppeteer Page 實例
      * @param {string} selector - 頁面按鈕容器選擇器
+     * @param {string} sign 判定下一頁的標誌，每個網頁表示下一頁的字符表示 ex:'下一頁','next'
      * @returns {Promise<boolean>} 成功返回 true，失敗返回 false
-     *
      * @example
      * const success = await this.clickNextPage(page);
      */
-    clickNextPage = async (page, selector = `.pagination-container .pagination > *`) => {
+    clickNextPageTilEnd = async (page, selector = `.pagination-container .pagination > *`, sign = '»') => {
         try {
             // ==================== 第一步：取得所有頁面按鈕 ====================
             const paginationItems = await page.$$(selector);
@@ -217,12 +211,14 @@ class beattiya_spider {
                 return false;
             }
             console.log(`📍 找到 ${paginationItems.length} 個頁面按鈕`);
-            // ==================== 第二步：從右到左尋找下一頁按鈕（»） ====================
+            // ==================== 第二步：從右到左尋找下一頁按鈕（${sign}） ====================
             let nextPageButton = null;
             for (const item of [...paginationItems].reverse()) {
-                const buttonText = await this.fetchAttributeOfEl(item, 'a', 'innerText');
+                const buttonText = await this.fetchAttributeOfEl(item,
+                    (await this.isElementTagBy(item, 'a')) ? '' : 'a',
+                    'innerText');
 
-                if (buttonText === '»') {
+                if (buttonText === sign) {
                     nextPageButton = item;
                     break;
                 }
@@ -423,6 +419,39 @@ class beattiya_spider {
             return value !== null ? value : undefined;  // null 改成 undefined
         }, attrName);
     }
+/**
+ * 判斷 Puppeteer 元素是否為指定的 HTML 標籤
+ *
+ * 此函數在瀏覽器上下文中執行，檢查元素的 tagName 屬性
+ *
+ * @param {ElementHandle} element - Puppeteer 的元素句柄
+ * @param {string} tagName - 要檢查的標籤名稱（不區分大小寫）
+ *                          例如：'a', 'div', 'button', 'input' 等
+ *
+ * @returns {Promise<boolean>}
+ *          - true: 元素是指定的標籤
+ *          - false: 元素不是指定的標籤
+ *
+ * @example
+ * // 檢查元素是否為 <a> 標籤
+ * const isAnchor = await isElementTag(element, 'a');
+ * if (isAnchor) {
+ *     console.log('這是一個連結元素');
+ * }
+ *
+ * @example
+ * // 檢查元素是否為 <button> 標籤
+ * const isButton = await isElementTag(element, 'button');
+ */
+ isElementTagBy = async (element, tagName) => {
+        // ✅ 使用 evaluate 在瀏覽器上下文中執行
+        // 獲取元素的 tagName 並與目標標籤比對
+        return await element.evaluate((el, targetTag) => {
+            // el.tagName 返回大寫的標籤名稱，例如：'A', 'DIV', 'BUTTON'
+            // 統一轉換為小寫進行比對，確保不區分大小寫
+            return el.tagName.toLowerCase() === targetTag.toLowerCase();
+        }, tagName);
+    }
 
 }
 
@@ -441,8 +470,10 @@ if (configerer.DEBUG_MODE) {
             }
             const browser = await getBrowser(ENABLE_OF_OPEN_BROWSER);
             const handler = new beattiya_spider(browser);
-            await Util.measureExecutionTime(handler.fetcher.bind(handler));
+            const result = await Util.measureExecutionTime(handler.fetcher.bind(handler));
+            console.log(result.zh_TW);
             await browser.close();
+            console.log(`完成itsBeattiya的爬蟲`)
             return 0;
         }
     )();

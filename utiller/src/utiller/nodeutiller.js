@@ -386,6 +386,7 @@ class NodeUtiller extends Utiller {
 
         /** 2.要有babel.config.js? */
         fs.copyFileSync('./template/sample.babel.config.js', `${dirPath}/babel.config.js`);
+        fs.copyFileSync('./template/sample.terser.config.js', `${dirPath}/terser.config.js`);
 
         /** 3.要有package,json */
         const packagejson = this.getJsonObjByFilePath('./template/sample.package.json');
@@ -588,9 +589,17 @@ class NodeUtiller extends Utiller {
                 const tempFolderPath = await this.generateTempFolderWithCleanSrc(path);
 
                 /** 產生release資料夾 */
+                await this.deleteSelfByPath(libpath.join(path, 'release'), true);
                 const release = this.persistByPath(libpath.join(path, 'release'))
                 /** 利用babel 產生出 es5相容性高的src file */
                 await this.executeCommandLine(`cd ${path} && babel ./temp --out-dir ./release/lib --config-file ./babel.config.js`);
+                // Step 2: Terser
+                const terserConfig = require(libpath.join(path, './terser.config.js'));
+                const terserArgs = this.getStringOfTerserCommandLine(terserConfig);
+
+                // ✅ find 會自動遞迴查找所有子目錄下的 .js 文件
+                // . 表示當前目錄及其所有子目錄
+                await this.executeCommandLine(`cd ${path}/release/lib && find . -type f -name "*.js" -exec terser {} -o {} ${terserArgs} \\;`);
 
                 const pathOfPackageJson = libpath.join(path, 'package.json');
                 try {
@@ -599,6 +608,10 @@ class NodeUtiller extends Utiller {
                     /** 複製公版的index.js */
                     this.copySingleFile(`/Users/davidtu/cross-achieve/high/idea-inventer/utiller/template/${indexFileName}`,
                         release, 'index.js', true);
+
+                    /** 將公版的index.js也terser一波 */
+                    const filePath = `${path}/release/index.js`;
+                    await this.executeCommandLine(`terser ${filePath} -o ${filePath} ${terserArgs}`);
 
                     /** template就是樣板的概念 */
                     const templatePath = libpath.join(path, 'template');
@@ -642,6 +655,141 @@ class NodeUtiller extends Utiller {
                 }
             }
         }
+    }
+
+    /**
+     * 將 Terser 配置對象轉換為命令行參數字符串
+     *
+     * 此函數會讀取 terser.config.js 的配置，並生成對應的 CLI 參數
+     * 用於在 shell 命令中執行 terser
+     *
+     * @param {Object} terserConfig - Terser 配置對象（來自 terser.config.js）
+     * @param {Object} terserConfig.compress - 壓縮選項
+     * @param {boolean} terserConfig.compress.drop_console - 是否移除 console
+     * @param {boolean} terserConfig.compress.drop_debugger - 是否移除 debugger
+     * @param {number} terserConfig.compress.passes - 壓縮遍數（1-3）
+     * @param {boolean} terserConfig.compress.dead_code - 是否移除死代碼
+     * @param {boolean} terserConfig.compress.unused - 是否移除未使用的變數
+     * @param {boolean} terserConfig.mangle - 是否混淆變數名
+     * @param {Object} terserConfig.format - 格式化選項
+     * @param {boolean} terserConfig.format.beautify - 是否美化代碼
+     * @param {string|boolean} terserConfig.format.comments - 註解處理方式
+     * @param {number} terserConfig.format.indent_level - 縮排層級
+     *
+     * @returns {string} Terser 命令行參數字符串
+     *
+     * @example
+     * const config = {
+     *     compress: { drop_console: true, drop_debugger: true, passes: 2 },
+     *     mangle: true,
+     *     format: { beautify: false, comments: false }
+     * };
+     * const args = getStringOfTerserCommandLine(config);
+     * // 返回: "--compress drop_console=true,drop_debugger=true,passes=2 --mangle --no-comments"
+     */
+    getStringOfTerserCommandLine = (terserConfig) => {
+        // 用於存儲所有命令行參數的數組
+        const args = [];
+
+        // ========================================================================
+        // 處理 compress 選項（壓縮相關配置）
+        // ========================================================================
+        if (terserConfig.compress) {
+            // 用於存儲所有 compress 子選項的數組
+            const compressOpts = [];
+
+            // 移除所有 console.* 語句
+            // 例如：console.log(), console.warn(), console.error() 等
+            if (terserConfig.compress.drop_console) {
+                compressOpts.push('drop_console=true');
+            }
+
+            // 移除所有 debugger 語句
+            if (terserConfig.compress.drop_debugger) {
+                compressOpts.push('drop_debugger=true');
+            }
+
+            // 設置壓縮遍數（1-3）
+            // passes=1: 快速壓縮（推薦開發環境）
+            // passes=2: 平衡壓縮（推薦生產環境）
+            // passes=3: 最大壓縮（體積要求極高時使用）
+            if (terserConfig.compress.passes) {
+                compressOpts.push(`passes=${terserConfig.compress.passes}`);
+            }
+
+            // 移除永遠不會執行的代碼（死代碼）
+            // 例如：if (false) { ... } 或 return 後的代碼
+            if (terserConfig.compress.dead_code) {
+                compressOpts.push('dead_code=true');
+            }
+
+            // 移除未使用的變數和函數
+            // 幫助減少最終打包體積
+            if (terserConfig.compress.unused) {
+                compressOpts.push('unused=true');
+            }
+
+            // 如果有任何 compress 選項，將它們組合成一個 --compress 參數
+            // 格式：--compress option1=value1,option2=value2,...
+            if (compressOpts.length > 0) {
+                args.push(`--compress ${compressOpts.join(',')}`);
+            }
+        }
+
+        // ========================================================================
+        // 處理 mangle 選項（變數名混淆）
+        // ========================================================================
+        // mangle: true  → 混淆變數名（longVariableName → a）
+        // mangle: false → 保持原始變數名
+        if (terserConfig.mangle === true) {
+            args.push('--mangle');
+        }
+        // 注意：如果 mangle: false，則不添加任何參數（默認不混淆）
+
+        // ========================================================================
+        // 處理 format 選項（代碼格式化）
+        // ========================================================================
+        if (terserConfig.format) {
+
+            // 是否美化代碼（保持縮排和換行）
+            // beautify: true  → 代碼易讀，有格式
+            // beautify: false → 壓縮成一行，體積更小
+            if (terserConfig.format.beautify === true) {
+                args.push('--beautify');
+            }
+
+            // 處理註解的保留方式
+            if (terserConfig.format.comments === false) {
+                // comments: false → 移除所有註解
+                // 使用 --no-comments 而不是 --comments false
+                // 因為 --no-comments 在所有 Terser 版本中都更可靠
+                args.push('--no-comments');
+
+            } else if (terserConfig.format.comments === 'all') {
+                // comments: 'all' → 保留所有註解
+                args.push('--comments all');
+
+            } else if (terserConfig.format.comments) {
+                // comments: /正則/ 或其他字符串 → 只保留匹配的註解
+                // 例如：comments: /@license|@preserve/
+                // 用引號包裹以防止 shell 解析問題
+                args.push(`--comments "${terserConfig.format.comments}"`);
+            }
+            // 注意：如果 comments 未設置，則使用 Terser 默認行為
+
+            // 設置縮排層級（只在 beautify: true 時有效）
+            // 例如：indent_level: 4 表示使用 4 個空格縮排
+            if (terserConfig.format.indent_level) {
+                args.push(`--format indent_level=${terserConfig.format.indent_level}`);
+            }
+        }
+
+        // ========================================================================
+        // 返回組合後的命令行參數字符串
+        // ========================================================================
+        // 使用空格將所有參數連接起來
+        // 例如："--compress drop_console=true --mangle --no-comments"
+        return args.join(' ');
     }
 
     /** 用來更新樣板裡面的模組版本 */
@@ -1076,7 +1224,7 @@ if (configerer.DEBUG_MODE) {
             // const path = uii.persistByPath('./one.js');
             // new NodeUtiller().renameFile(path, 'two');
             // await new NodeUtiller().cleanAllFiles('../testing_self/sample');
-            // await new NodeUtiller().generatePackage('../utiller', true);
+            // await new NodeUtiller().generatePackage('../utiller', false);
             // await new NodeUtiller().generatePackage('../databazer');
             // await new NodeUtiller().generatePackage('../linepayer');
             // await new NodeUtiller().generatePackage('../configerer');
