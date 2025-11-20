@@ -17,7 +17,7 @@
     "lodash": "^4.17.20",
     "puppeteer": "^24.30.0",
     "moment": "^2.29.1",
-    "utiller": "^1.0.418"
+    "utiller": "^1.0.425"
   },
   "devDependencies": {
     "@babel/cli": "^7.24.1",

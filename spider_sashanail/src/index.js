@@ -1,83 +1,7 @@
 import { configerer } from "configerer";
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from 'utiller';
+import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool, spider as Spider } from 'utiller';
 import _ from 'lodash';
-import libpath from 'path';
-import Moment from 'moment';
 import puppeteer from 'puppeteer';
-
-/** author:明悅
- * create time:Sun Oct 13 2024 02:27:45 GMT+0800 (Taipei Standard Time)
- * 一些puppeteer使用的心得！！
- * .$eval = evaluate :取得element元素底下的資料
- * $ 是拿到 reference
- * $$ 是拿到 element list
- * sample  const items = await page.$$eval('#gl-container > *', elements => {
- * sample  const titles = await page.$$eval('#gl-container .gl-title', elements => {
- * '#'=>代表id | '.'=>代表class | <tag不用加前綴  #id > .className > tag
- * innerText => <tag class='class' >{innerText}<tag>
- * ========================================================================
- * 知識點：
- * 用 > 表示「直接子元素」例如 page.$$('#navbar > #header> .computer_nav > .header_logo');
- * 不用 > 可以「跳過中間階級」page.$$('#navbar .header_logo');
- * ========================================================================
- * 知識點：
- * class="three-dimension-menu qk-dropdown_menu qk-bg--nav_menu_bg qk-pos--abs qk-display--flex"
- * 方法1:
- * const rows = await page.$$('.three-dimension-menu');
- * 方法2:
- * const rows = await page.$$('.three-dimension-menu.qk-dropdown_menu');
- * 方法3:
- * const rows = await page.$$('[class="three-dimension-menu qk-dropdown_menu qk-bg--nav_menu_bg qk-pos--abs qk-display--flex"]');
- *
- * ========================================================================
- *   // 等待元素加载，确保页面中的 #dg-detail > #add-to-list 存在
- *   await page.waitForSelector('#dg-detail > #add-to-list');
- *
- * ======================================================================== locator是最新推薦的做法
- *   import puppeteer from 'puppeteer';
- * // Or import puppeteer from 'puppeteer-core';
- *
- * // Launch the browser and open a new blank page
- * const browser = await puppeteer.launch();
- * const page = await browser.newPage();
- *
- * // Navigate the page to a URL.
- * await page.goto('https://developer.chrome.com/');
- *
- * // Set screen size.
- * await page.setViewport({width: 1080, height: 1024});
- *
- * // Type into search box.
- * await page.locator('.devsite-search-field').fill('automate beyond recorder');
- *
- * // Wait and click on first result.
- * await page.locator('.devsite-result-item-link').click();
- *
- * // Locate the full title with a unique string.
- * const textSelector = await page
- *   .locator('text/Customize and automate')
- *   .waitHandle();
- * const fullTitle = await textSelector?.evaluate(el => el.textContent);
- *
- * // Print the full title.
- * console.log('The title of this blog post is "%s".', fullTitle);
- *
- * await browser.close();
- * ======================================================================== locator的doc
- * https://pptr.dev/api/puppeteer.locator/
- * https://pptr.dev/guides/page-interactions#locators
- *
- * networkidle 和 dom render的時間點不一樣，要確保dom上可以抓到要記得locator().wait()
- *
- * ======================================================================== 完美的解釋
- * Sometimes you know that the elements are already on the page. In that case, Puppeteer offers multiple ways to find an element or multiple elements matching a selector. These methods exist on Page, Frame and ElementHandle instances.
- *
- * page.$() returns a single element matching a selector.
- * page.$$() returns all elements matching a selector.
- * page.$eval() returns the result of running a JavaScript function on the first element matching a selector.
- * page.$$eval() returns the result of running a JavaScript function on each element matching a selector.
- *
- */
 
 const THREAD_OF_INFO_FETCHER = 1; //取得sasha_product_list.json sasha_of_product_catalog.json，這裡只要 > 1, subType的項目就拿取不穩定
 const THREAD_OF_DETAIL_PRODUCT = 7; // 抓取detail的，因為網頁會擋multi-page，所以每個商品會要新開一個browser
@@ -89,11 +13,11 @@ const SIZE_OF_RANDOM = 100;//如果 RANDOM_LIST_ENABLE = true, 要拿幾個produ
 const FETCH_LIST_ONLY = false;//只會取得取得sasha_product_list.json | sasha_of_product_catalog.json
 const ENABLE_OF_OPEN_BROWSER = false;
 
-class sashanailgel_scraper {
+class sashanailgel_scraper extends Spider {
 
     constructor(engine) {
+        super(engine);
         this.browser = engine;
-        this.items = {};
     }
 
     async fetchListOfTypeHref() {
@@ -281,7 +205,6 @@ class sashanailgel_scraper {
         }
     }
 
-
     fetchProductPriceDetail = async (product) => {
         const self = this;
         const { browser, page } = await this.getBrowserPage(ENABLE_OF_OPEN_BROWSER, true);
@@ -408,27 +331,6 @@ class sashanailgel_scraper {
         await this.fetchProductPriceDetail({ name: '測試', href: `https://www.sachianail.com/pitem/M00000677` });
     }
 
-    /** --------------------------------------------------------------------------- 關於puppeteer util的部分 --------------------------------------------------------------------------- */
-        // 滚动页面并检查是否有新的内容加载
-    scrollToBottomAndCheck = async (page) => {
-        const delay = 2000; // 等待新内容加载的延迟时间
-        let lastHeight = await page.evaluate('document.body.scrollHeight');
-
-        while (true) {
-            await page.evaluate('window.scrollBy(0, document.body.scrollHeight)');
-
-            // 等待新的内容加载
-            await new Promise(resolve => setTimeout(resolve, delay));
-            let newHeight = await page.evaluate('document.body.scrollHeight');
-
-            if (newHeight === lastHeight) {
-                console.log("No more new content, scroller arrived to bottom");
-                break;
-            }
-            lastHeight = newHeight;
-        }
-    };
-
     mergeArraysByName = (a1, a2) => {
         // 使用 _.mergeWith 和 _.keyBy 基于 'name' 键合并数组
         const merged = _.values(_.mergeWith(
@@ -448,96 +350,6 @@ class sashanailgel_scraper {
         return merged;
     };
 
-    /** 清空當前頁面的cookie(不然購物車會爆掉)*/
-    async clearCookies(page) {
-        await page.deleteCookie(...await page.cookies());
-    }
-
-    /** 從element去找出selector route -=> getSelectorRoute = `#div > .class > tag`*/
-    getSelectorRoute = async (page, elementHandle) => {
-        return await page.evaluate(element => {
-            const getSelector = (el) => {
-                if (el.id) {
-                    return `#${el.id}`; // 如果有 ID，使用 ID 选择器
-                }
-
-                let path = [];
-                while (el.parentElement) {
-                    let tagName = el.tagName.toLowerCase(); // 获取标签名
-
-                    // 获取所有兄弟节点，判断是否有相同标签的元素
-                    const siblings = Array.from(el.parentElement.children).filter(e => e.tagName === el.tagName);
-                    if (siblings.length > 1) {
-                        // 如果有多个同类元素，使用 nth-child 来定位
-                        const index = Array.prototype.indexOf.call(el.parentElement.children, el) + 1;
-                        tagName += `:nth-child(${index})`;
-                    }
-
-                    path.unshift(tagName); // 将当前选择器添加到路径的最前面
-                    el = el.parentElement; // 移动到父级元素
-                }
-
-                return path.join(' > '); // 返回完整的 CSS 选择器路径
-            };
-
-            return getSelector(element); // 传入目标元素，获取选择器
-        }, elementHandle);
-    };
-
-    async checkSelectorExists(page, selector) {
-        // 檢查選擇器是否存在
-        const element = await page.$(selector);
-        return !!element;
-    }
-
-    /** 當loading bar 消失時，假定為加載完成 */
-    waitForStyleAndClose = async (page, selector, timeout) => {
-        try {
-            // 使用 evaluate 來檢查元素的 display 屬性，並每隔500毫秒檢查一次
-            await page.waitForFunction(
-                (selector) => {
-                    const element = document.querySelector(selector);
-                    return element && window.getComputedStyle(element).display === 'none';
-                },
-                { timeout: 10000 }, // 最多等10秒
-                selector
-            );
-
-            console.log(`元素 ${selector} 的 display 設為 none 了！`);
-        } catch (error) {
-            console.error(`元素 ${selector} 的 display 沒有在指定時間內設為 none。`, error);
-        }
-
-    };
-
-    /** 等待某個element出現代表可以抓取dom,有時候networkidle 不等於 dom已經render成功 */
-    waitSelectorTilAppear = async (page, selector, timeout = 10000) => {
-        /** 已存在就立即返回 */
-        if (await this.checkSelectorExists(page, selector)) return;
-
-        try {
-            // 等待特定元素出現
-            await page.waitForSelector(selector, {
-                visible: true, // 確保元素是可見的
-                timeout // 可選：最多等10秒
-            });
-
-            console.log(`元素 ${selector} 已出現！`);
-
-        } catch (error) {
-            console.error(`元素 ${selector} 未在指定時間內出現。`, error);
-        }
-    };
-
-
-    async getBrowser(visible) {
-        const browser = await puppeteer.launch({
-            headless: !visible
-        });
-        for (const page of await browser.pages()) await page.close();
-        return browser;
-    }
-
     /** incognito = true 就是無痕模式 */
     async getBrowserPage(visible = false, incognito = false, browser) {
         if (browser)
@@ -549,102 +361,6 @@ class sashanailgel_scraper {
             const context = await brow.createBrowserContext();
             return { page: await context.newPage(), browser: brow };
         } else return { page: await brow.newPage(), browser: brow };
-    }
-
-    async finish() {
-        // this.printSucceedFailureLog();
-        await this.browser.close();
-    }
-
-    async clickSolution(page, element) {
-        await page.evaluate((el) => {
-            el.click();
-        }, element);
-    }
-
-    /**
-     *
-     * browser.on('targetcreated')：當一個新的目標（標籤頁或窗口）被創建時，這個事件會被觸發。target.page() 返回對應的 Page 對象。
-     * URL(page.url()).pathname：我們從頁面的 URL 中提取出 pathname，用來與 onlyPath 進行比較。注意，我們去掉了 /，使得 onlyPath 可以直接比較。
-     * page.close()：如果新的頁面路徑與 onlyPath 不匹配，則立即關閉該頁面。
-     * browser.pages()：這個方法返回當前已打開的所有頁面。你可以用來遍歷現有的頁面，並關閉 onlyPath 以外的頁面。
-     * 這個函數會自動關閉不符合 onlyPath 的頁面，無論是現有的還是新創建的頁面。如果有其他問題或需要調整，隨時告訴我！
-     *
-     */
-    async managePages(onlyPath, browser) {
-        // 監聽當有新頁面創建時的事件
-        browser.on('targetcreated', async target => {
-            const page = await target.page();
-
-            if (page) {
-                const url = new URL(page.url());
-                const path = `https://www.sachianail.com${url.pathname}`;  // 不去掉前導的 "/"
-
-                // 如果新頁面的 path 不等於 onlyPath，則關閉該頁面
-                if (path !== onlyPath) {
-                    console.log(`Closing page with path: ${path},should be ${onlyPath}`);
-                    await page.close();
-                }
-            }
-        });
-
-        // 檢查並關閉所有不等於 onlyPath 的已打開頁面
-        const pages = await browser.pages();
-
-        for (const p of pages) {
-            const url = new URL(p.url());
-            const path = `https://www.sachianail.com${url.pathname}`;  // 不去掉前導的 "/"
-
-            // 關閉 onlyPath 以外的頁面
-            if (path !== onlyPath) {
-                console.log(`Closing page with path: ${path},should be ${onlyPath}`);
-                await p.close();
-            }
-        }
-
-        // 讓瀏覽器保持打開一段時間以便觀察
-        await new Promise(resolve => setTimeout(resolve, 10000));
-    }
-
-    /** // 測試該函數，設置超時為 10 秒（10000 毫秒），重試間隔為 1 秒（1000 毫秒）
-     checkElementVisibleWithRetry('#123 .class1 > tr', 10000, 1000);*/
-    async checkElementVisibleWithRetry(page, selector, timeout = 30000, retryInterval = 1000) {
-        const startTime = Date.now();
-        try {
-            while (Date.now() - startTime < timeout) {
-                // 1. 檢查元素是否存在
-                const elementExists = await page.$(selector);
-                if (elementExists) {
-                    // 2. 檢查元素的 visibility 和 display 屬性是否符合要求
-                    const isVisible = await page.evaluate((selector) => {
-                        const element = document.querySelector(selector);
-                        if (!element) return false;
-
-                        const style = window.getComputedStyle(element);
-                        return style.display !== 'none' && style.visibility !== 'hidden' && style.opacity !== '0';
-                    }, selector);
-
-                    if (isVisible) {
-                        console.log(`元素 ${selector} 存在且可見`);
-                        return true; // 元素存在且可見，退出函數
-                    } else {
-                        console.log(`元素 ${selector} 存在但不可見，繼續等待...`);
-                    }
-                } else {
-                    console.log(`元素 ${selector} 不存在，繼續等待...`);
-                }
-
-                // 3. 等待 retryInterval 再次檢查
-                await new Promise(resolve => setTimeout(resolve, retryInterval));
-            }
-
-            console.log(`超時：元素 ${selector} 未在 ${timeout / 1000} 秒內變為可見`);
-            return false;
-
-        } catch (error) {
-            console.error(`發生錯誤: ${error.message}`);
-            return false;
-        }
     }
 
     printSucceedFailureLog() {
@@ -678,21 +394,13 @@ export { sashanailgel_scraper as sashanailgel_scraper };
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-
-            async function getBrowser(visible) {
-                const browser = await puppeteer.launch({
-                    headless: !visible
-                });
-                for (const page of await browser.pages()) await page.close();
-                return browser;
-            }
-
-            const handler = new sashanailgel_scraper(await getBrowser(ENABLE_OF_OPEN_BROWSER));
+            const handler = new sashanailgel_scraper(puppeteer, { visible: ENABLE_OF_OPEN_BROWSER, host: 'https://www.sachianail.com' });
             /**
              * 測試單一品項抓取detail的function
              * await handler.sampleOfFetchSingleItem();
              * return;
              * */
+            await handler.initial();
             await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
             await handler.finish();
         }

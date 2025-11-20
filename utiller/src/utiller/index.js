@@ -47,6 +47,26 @@ class Utiller {
         }
     }
 
+    /**
+     * 組合 HTTP URL 路徑
+     *
+     * @param {...string|number} segments - URL 的各個部分
+     * @returns {string} 組合後的完整 URL
+     *
+     * @example
+     * joinUrl('https://aa.com/', '/avce/', '12313/', '/re')
+     * // 返回: 'https://aa.com/avce/12313/re'
+     */
+    getUrlPath(...segments) {
+        return segments
+            .filter(segment => segment !== null && segment !== undefined && segment !== '')
+            .map(segment => String(segment))
+            .map(segment => segment.replace(/^\/+|\/+$/g, ''))
+            .filter(segment => segment !== '')
+            .join('/')
+            .replace(/^(https?):\/(?!\/)/, '$1://');
+    }
+
     getNumberOfNormalize(value, defaultValue = 0) {
         if (_.isNumber(value))
             return value;
@@ -88,6 +108,8 @@ class Utiller {
     getSeparatorOfUnique() {
         return '།།';
     }
+
+
 
     /** 1.0.1 => 1.0.2 */
     getStringOfVersionIncrement(stringOfVersion, delta = 1) {
@@ -3801,6 +3823,8 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           const utiller = new Utiller();
+            console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
+            console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
           // console.log(utiller.toPercentageDecimal(30))
           // console.log(utiller.getPriceOfPercentageBehavior(60,30, false));
           // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));

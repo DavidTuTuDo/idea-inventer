@@ -1,5 +1,6 @@
 import ERROR from './exceptioner';
 import pooller from './pooller';
+import spider from './spider';
 import _ from 'lodash';
 
 let instance = undefined;
@@ -11,5 +12,5 @@ if (process !== undefined && !_.isUndefined(process.version) && !_.isEmpty(proce
     instance = new self.default();
 }
 
-export {instance as utiller, ERROR as exceptioner, pooller as pooller};
+export {instance as utiller, ERROR as exceptioner, pooller as pooller, spider as spider};
 
