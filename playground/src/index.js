@@ -32,9 +32,12 @@ if (configerer.DEBUG_MODE) {
         //     pending = 2,
         //     failure = 4
         // }
+        //     const a = async () => Promise.resolve(3)
+        //     console.log(await a())
 
-        const percentage = 88
-        console.log(_.multiply(100, (1 - Util.toPercentageDecimal(percentage))))
+
+        // const percentage = 88
+        // console.log(_.multiply(100, (1 - Util.toPercentageDecimal(percentage))))
         // console.log(StateOfPayment.pending)
           // console.log(StateOfPayment[2]);
 

@@ -1,9 +1,6 @@
-import { inject } from "mobx-react";
+const edit = true;
+
 import BaseEpayTestComponent from "./BaseEpayTestComponent";
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import libpath from "path";
-import { observer } from "mobx-react";
 
 class EpayTestComponent extends BaseEpayTestComponent {
     /** -------------------- fields -------------------- **/

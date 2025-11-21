@@ -78,7 +78,7 @@ const config = {
               presets: [["@babel/preset-env", { targets: "defaults" }], "@babel/preset-react"],
               plugins: [
                 ["@babel/plugin-proposal-decorators", { legacy: true }],
-                "@babel/plugin-transform-class-properties",
+                ["@babel/plugin-transform-class-properties", { loose: true }],
                 "@babel/plugin-transform-runtime",
               ],
             },

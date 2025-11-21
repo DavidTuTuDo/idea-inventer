@@ -12,7 +12,7 @@ module.exports = {
         ["@babel/plugin-transform-runtime", { "regenerator": true }],
         "@babel/plugin-transform-class-properties"
     ],
-    // comments: false,
-    // minified: true,
-    // compact: true
+    // comments: false,     // 移除註解
+    // minified: true,      // 最小化
+    // compact: true        // 緊湊化
 };

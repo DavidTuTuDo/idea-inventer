@@ -135,7 +135,7 @@ class Spider {
 
     visible = true;
 
-    constructor(puppeteer,{visible = false, host = ''}) {
+    constructor(puppeteer, { visible = false, host = '' }) {
         this.puppeteer = puppeteer;
         this.visible = visible;
         this.host = host;
@@ -147,7 +147,7 @@ class Spider {
         });
         for (const page of await browser.pages()) await page.close();
         return browser;
-    }
+    };
 
     /**
      * 啟動puppeteer的必備必備！
@@ -155,7 +155,7 @@ class Spider {
      */
     initial = async () => {
         this.browser = await this.getBrowser();
-    }
+    };
 
     /** 取得桌機開啟時的網頁RWD狀態
      * @param browser 原則上使用puppeteer.lunch() 出來的預設瀏覽器，除非有特殊需求
@@ -169,6 +169,7 @@ class Spider {
         let page = undefined;
         let context = undefined;
         if (incognito) {
+            console.log(`開啟了無痕視窗 => ${href}`)
             context = await browser.createBrowserContext();
             page = await context.newPage();
         } else page = await browser.newPage();
@@ -233,10 +234,10 @@ class Spider {
      * @param incognito 是否啟用無痕模式
      * @returns {Promise<*[]>} 所有頁面(1~20)跑完之後的[...elements]
      */
-    async fetchElementsTilPageEnd({ page, href = '', fetcher = async(page), selectorOfPagingN, signOfPagingN = '»', incognito = false}) {
+    async fetchElementsTilPageEnd({ page, href = '', fetcher = async(page), selectorOfPagingN, signOfPagingN = '»', incognito = false }) {
         let p = page;
         let instance = undefined;
-        if(!page) {
+        if (!page) {
             /** 如果沒有page的實體就自己建一個 */
             instance = await this.activatePage4Load({ href, incognito });
             p = instance.page;
@@ -277,7 +278,7 @@ class Spider {
                 // - 如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
                 // - 如果沒有下一頁，返回 false，循環停止
                 // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
-            } while (await this.clickNextPageTilEnd({ page:p, selector: selectorOfPagingN, sign: signOfPagingN }));
+            } while (await this.clickNextPageTilEnd({ page: p, selector: selectorOfPagingN, sign: signOfPagingN }));
         } catch (error) {
             console.error(`抓取失敗: ${error.message}`);
             return [];
@@ -310,9 +311,7 @@ class Spider {
             // ==================== 第二步：從右到左尋找下一頁按鈕（${sign}） ====================
             let nextPageButton = null;
             for (const item of [...paginationItems].reverse()) {
-                const buttonText = await this.fetchAttributeOfEl(item,
-                    (await this.isElementTagBy(item, 'a')) ? '' : 'a',
-                    'innerText');
+                const buttonText = await this.fetchAttributeOfEl(item, (await this.isElementTagBy(item, 'a')) ? '' : 'a', 'innerText');
 
                 if (buttonText === sign) {
                     nextPageButton = item;
@@ -327,9 +326,7 @@ class Spider {
             console.log(`✅ 找到下一頁按鈕`);
 
             // ==================== 第三步：檢查下一頁按鈕是否禁用 ====================
-            const isDisabled = await nextPageButton.evaluate(el =>
-                el.disabled || el.classList.contains('disabled')
-            );
+            const isDisabled = await nextPageButton.evaluate(el => el.disabled || el.classList.contains('disabled'));
 
             if (isDisabled) {
                 console.log(`⚠️ 下一頁按鈕已禁用 (已是最後一頁)`);
@@ -342,8 +339,7 @@ class Spider {
 
             // ==================== 第五步：等待頁面導航完成 ====================
             await page.waitForNavigation({
-                waitUntil: 'networkidle2',
-                timeout: 0
+                waitUntil: 'networkidle2', timeout: 0
             }).catch(() => {
                 // 忽略超時錯誤
             });
@@ -357,103 +353,222 @@ class Spider {
         }
     };
 
+
+    /** 向下載入的情況頁面，應該要往下滑到完全都載入完畢後，一次拿elements*/
+    async fetchElementsTilPageScrollEnd() {
+
+    }
+
+
     /**
-     * 通用函數：從元素或其子元素上批量提取指定的屬性
+     * 通用函數：從元素或其子元素上批量提取指定的屬性（支持自定義硬編碼值和物件合併）
      *
-     * 此方法支援兩種模式：
+     * 此方法支援四種模式：
      * 1. 當 selector 為空時，直接從 element 本身批量獲取屬性
      * 2. 當 selector 有值時，先查找子元素，再從子元素批量獲取屬性
+     * 3. 當 attrMap 的 value 以特殊前綴開頭時，使用硬編碼值而非從元素提取
+     * 4. 當 attrMap 的 value 是物件時，直接合併到結果中
      *
-     * 屬性查找優先級：
+     * 特殊前綴規則：
+     * - `$$$` 開頭：數字類型的硬編碼值（例如：`$$$123` → 123）
+     * - `###` 開頭：字符串類型的硬編碼值（例如：`###hello` → 'hello'）
+     * - `@@@` 開頭：布林類型的硬編碼值（例如：`@@@true` → true）
+     * - `{...}` 物件：直接合併到結果中（例如：`{ href: '123', id: '3' }` → 展開合併）
+     *
+     * 屬性查找優先級（非硬編碼值）：
      * - 優先查找 DOM 屬性（如 innerText、textContent、value、href 等）
      * - 若 DOM 屬性不存在，則查找 HTML 屬性（如 data-*、class 等）
      *
      * @param {ElementHandle} element - Puppeteer 的元素句柄（ElementHandle）
      * @param {string|null|undefined} selector - CSS 選擇器，用於查找子元素
-     *                                           - 若為空值（''、null、undefined），則直接操作 element 本身
-     *                                           - 若有值，則在 element 內查找匹配的第一個子元素
-     * @param {Object} attrMap - 屬性映射對象，格式為 { 結果key: 屬性名 }
+     * @param {Object} attrMap - 屬性映射對象，格式為 { 結果key: 屬性名或硬編碼值或物件 }
      *                          - key: 返回對象中的鍵名（自定義命名）
-     *                          - value: 要查詢的屬性名稱（DOM 或 HTML 屬性）
+     *                          - value:
+     *                            - 普通屬性名：'data-id', 'href', 'innerText' 等
+     *                            - 數字硬編碼：'$$$123', '$$$456.78'
+     *                            - 字符串硬編碼：'###hello', '###some text'
+     *                            - 布林硬編碼：'@@@true', '@@@false'
+     *                            - 物件：{ key1: value1, key2: value2 }（直接合併）
      *
      * @returns {Promise<Object>} 包含所有屬性的物件
-     *                            - 成功：返回包含所有請求屬性的對象
-     *                            - 部分失敗：不存在的屬性值為 undefined
-     *                            - 完全失敗：找不到元素時返回空對象 {}
      *
      * @example
-     * // 從子元素中提取多個屬性
+     * // 基本用法：從子元素中提取屬性
      * const result = await fetchAttributesOfEl(row, '.productClick', {
-     *     id: 'data-id',           // HTML 自定義屬性
-     *     name: 'data-name',       // HTML 自定義屬性
-     *     href: 'href',            // HTML 標準屬性
-     *     text: 'innerText',       // DOM 屬性
-     *     belonging: 'data-list'   // HTML 自定義屬性
+     *     id: 'data-id',
+     *     name: 'data-name'
      * });
-     * // 返回：{ id: '40088776', name: '1 淨柔雙效潔顏露', href: '/...', text: '...', belonging: '...' }
+     * // 返回：{ id: '40088776', name: '1 淨柔雙效潔顏露' }
      *
      * @example
-     * // 從元素本身提取多個屬性（selector 為空）
-     * const result = await fetchAttributesOfEl(divElement, '', {
+     * // 新功能：使用物件合併
+     * const extraData = { href: '123', id: '3', category: 'electronics' };
+     * const result = await fetchAttributesOfEl(row, '.productClick', {
+     *     // 從元素提取
+     *     productName: 'data-name',
+     *     price: 'data-price',
+     *
+     *     // 物件合併（會展開所有屬性）
+     *     ...extraData
+     * });
+     * // 返回：{
+     * //   productName: '淨柔雙效潔顏露',
+     * //   price: '299',
+     * //   href: '123',        ← 來自 extraData
+     * //   id: '3',            ← 來自 extraData
+     * //   category: 'electronics' ← 來自 extraData
+     * // }
+     *
+     * @example
+     * // 混合使用所有類型
+     * const metadata = {
+     *     batchId: 'batch_001',
+     *     version: '2.0'
+     * };
+     *
+     * const result = await fetchAttributesOfEl(row, '.product-info', {
+     *     // 從元素提取
+     *     productId: 'data-id',
+     *     productName: 'data-name',
+     *
+     *     // 數字硬編碼
+     *     timestamp: `$$$${Date.now()}`,
+     *     pageNumber: '$$$1',
+     *
+     *     // 字符串硬編碼
+     *     source: '###WebScraper',
+     *
+     *     // 布林硬編碼
+     *     isActive: '@@@true',
+     *
+     *     // 物件合併
+     *     ...metadata
+     * });
+     * // 返回：{
+     * //   productId: '123',
+     * //   productName: '商品名',
+     * //   timestamp: 1700000000000,
+     * //   pageNumber: 1,
+     * //   source: 'WebScraper',
+     * //   isActive: true,
+     * //   batchId: 'batch_001',  ← 來自 metadata
+     * //   version: '2.0'         ← 來自 metadata
+     * // }
+     *
+     * @example
+     * // 動態物件合併
+     * const userInfo = { userId: '999', userName: 'John' };
+     * const sessionInfo = { sessionId: 'abc123', timestamp: Date.now() };
+     *
+     * const result = await fetchAttributesOfEl(element, '', {
      *     text: 'textContent',
-     *     className: 'className',
-     *     dataId: 'data-id'
+     *     ...userInfo,
+     *     ...sessionInfo,
+     *     isProcessed: '@@@true'
      * });
-     * // 返回：{ text: 'Some text', className: 'my-class', dataId: '123' }
-     *
-     * @example
-     * // 提取表單元素的多個狀態
-     * const formData = await fetchAttributesOfEl(formElement, 'input[name="email"]', {
-     *     value: 'value',
-     *     isDisabled: 'disabled',
-     *     placeholder: 'placeholder'
-     * });
-     * // 返回：{ value: 'user@example.com', isDisabled: false, placeholder: '請輸入郵箱' }
      */
     fetchAttributesOfEl = async (element, selector, attrMap) => {
         let targetElement;
 
         // ✅ 處理 selector 為空的情況
-        // 當 selector 為 null、undefined、空字串或只有空白時
-        // 直接使用 element 本身，避免 querySelector 的 SyntaxError
         if (!selector || selector.trim() === '') {
             targetElement = element;
         } else {
-            // 在 element 內部查找匹配 selector 的第一個子元素
-            // 使用 Puppeteer 的 $(selector) 方法
             targetElement = await element.$(selector);
 
-            // 如果找不到匹配的子元素，返回空對象
             if (!targetElement) {
                 console.warn(`⚠️ 找不到元素: ${selector}`);
                 return {};
             }
         }
 
+        // ✅ 預處理 attrMap，分離不同類型的值
+        const processedAttrMap = {};  // 需要從元素提取的屬性
+        const hardcodedValues = {};   // 所有硬編碼和物件合併的值
+
+        for (const [key, attrName] of Object.entries(attrMap)) {
+            // ========================================
+            // 檢查是否為物件類型（直接合併）
+            // ========================================
+            if (typeof attrName === 'object' && attrName !== null && !Array.isArray(attrName)) {
+                // 這是一個物件，直接展開合併
+                // 注意：這種情況通常不會發生，因為使用 ...obj 時會直接展開
+                // 但為了完整性還是處理一下
+                Object.assign(hardcodedValues, attrName);
+                continue;
+            }
+
+            const attrStr = String(attrName);
+
+            // ========================================
+            // 檢查是否為數字硬編碼（$$$ 開頭）
+            // ========================================
+            if (attrStr.startsWith('$$$')) {
+                const numberStr = attrStr.substring(3);
+                const numberValue = parseFloat(numberStr);
+
+                if (!isNaN(numberValue)) {
+                    hardcodedValues[key] = numberValue;
+                } else {
+                    console.warn(`⚠️ 無法解析數字: ${attrStr}`);
+                    hardcodedValues[key] = undefined;
+                }
+                continue;
+            }
+
+            // ========================================
+            // 檢查是否為字符串硬編碼（### 開頭）
+            // ========================================
+            if (attrStr.startsWith('###')) {
+                const stringValue = attrStr.substring(3);
+                hardcodedValues[key] = stringValue;
+                continue;
+            }
+
+            // ========================================
+            // 檢查是否為布林硬編碼（@@@ 開頭）
+            // ========================================
+            if (attrStr.startsWith('@@@')) {
+                const boolStr = attrStr.substring(3).toLowerCase().trim();
+
+                let boolValue;
+                if (boolStr === 'true' || boolStr === '1' || boolStr === 'yes' || boolStr === 'y' || boolStr === 'on') {
+                    boolValue = true;
+                } else if (boolStr === 'false' || boolStr === '0' || boolStr === 'no' || boolStr === 'n' || boolStr === 'off' || boolStr === '') {
+                    boolValue = false;
+                } else {
+                    console.warn(`⚠️ 無法解析布林值: ${attrStr}，默認為 false`);
+                    boolValue = false;
+                }
+
+                hardcodedValues[key] = boolValue;
+                continue;
+            }
+
+            // 普通屬性，需要從元素提取
+            processedAttrMap[key] = attrName;
+        }
+
         // ✅ 在瀏覽器上下文中執行批量屬性查詢
-        // evaluate() 會在瀏覽器環境中執行回調函數
-        return await targetElement.evaluate((el, attrMap) => {
-            // 批量屬性查詢邏輯（在瀏覽器端執行）
+        const extractedValues = await targetElement.evaluate((el, attrMap) => {
             const result = {};
-            // 遍歷屬性映射對象，逐一提取屬性值
-            // Object.entries() 將對象轉換為 [key, value] 陣列
-            // 例如：{ id: 'data-id', name: 'data-name' }
-            //    => [['id', 'data-id'], ['name', 'data-name']]
+
             for (const [key, attrName] of Object.entries(attrMap)) {
-                // 屬性查詢邏輯（與 fetchAttributeOfEl 相同）
-                // 優先嘗試 DOM 屬性（innerText、textContent、value 等）
-                // 再嘗試 HTML 屬性（data-* 、href 等）
-                const value = el[attrName] !== undefined
-                    ? el[attrName]                    // DOM 屬性存在時使用
-                    : el.getAttribute(attrName);      // 否則使用 HTML 屬性
+                const value = el[attrName] !== undefined ? el[attrName] : el.getAttribute(attrName);
 
                 result[key] = value !== null ? value : undefined;
             }
 
-            // 返回包含所有屬性的結果對象
             return result;
-        }, attrMap);  // 將 attrMap 傳遞給瀏覽器端的函數
+        }, processedAttrMap);
+
+        // ✅ 合併所有值：提取的值 + 硬編碼值
+        // 注意：如果有重複的 key，後面的會覆蓋前面的
+        return {
+            ...extractedValues, ...hardcodedValues
+        };
     };
+
 
     /**
      * 從元素或其子元素中獲取指定屬性的值
@@ -509,9 +624,7 @@ class Spider {
         return await targetElement.evaluate((el, attrName) => {
             // 優先嘗試 DOM 屬性（innerText、textContent、value 等）
             // 再嘗試 HTML 屬性（data-* 、href 等）
-            const value = el[attrName] !== undefined
-                ? el[attrName]
-                : el.getAttribute(attrName);
+            const value = el[attrName] !== undefined ? el[attrName] : el.getAttribute(attrName);
             return value !== null ? value : undefined;  // null 改成 undefined
         }, attrName);
     };
@@ -549,23 +662,94 @@ class Spider {
         }, tagName);
     };
 
-    // 滚动页面并检查是否有新的内容加载
-    scrollToBottomAndCheck = async (page) => {
-        const delay = 2000; // 等待新内容加载的延迟时间
-        let lastHeight = await page.evaluate('document.body.scrollHeight');
+    /**
+     * [優化版] 等待 Loading Bar 消失 (代表加載完成)。
+     * 使用 { hidden: true } 選項，它能同時檢測元素被移除或樣式設為不可見。
+     * @param {import('puppeteer').Page} page - Puppeteer Page 實例。
+     * @param {string} selector - Loading Bar 的 CSS 選擇器 (例如 '.loading-spinner')。
+     * @param {number} [timeout=10000] - 最大等待時間 (毫秒)。
+     * @returns {Promise<boolean>} - 成功消失回傳 true，超時或錯誤回傳 false。
+     */
+    waitForLoadingToVanish = async (page, selector, timeout = 10000) => {
+        if (!selector) return true; // 如果沒提供選擇器，直接當作成功
+
+        try {
+            // waitForSelector 搭配 hidden: true 是檢查「消失」的最佳實踐
+            // 如果元素一開始就不在 DOM 中，它會立即 Resolve (這正是我們想要的)
+            await page.waitForSelector(selector, {
+                hidden: true,
+                timeout
+            });
+
+            // console.log(`Loading 狀態 (${selector}) 已解除 (消失或隱藏)。`);
+            return true;
+
+        } catch (error) {
+            // 這種情況通常是因為 Loading Bar 卡住一直沒消失，或者超時
+            console.warn(`警告: Loading Bar ${selector} 在 ${timeout}ms 內未消失，將強制繼續執行。`);
+            return false;
+        }
+    };
+
+
+    /**
+     * [終極版] 持續滾動頁面到底部，直到確認所有內容加載完畢。
+     * 整合了「重試機制」與「Loading Bar 消失檢查」，確保動態內容完全載入。
+     *
+     * @param {import('puppeteer').Page} page - Puppeteer 的 Page 實例。
+     * @param {object} options - 配置參數物件。
+     * @param {number} [options.minDelay=1000] - 每次滾動後的最小固定等待時間 (毫秒)。
+     * @param {number} [options.maxRetries=3] - 高度未變化時的最大重試次數。
+     * @param {string|null} [options.loadingSelector=null] - (選填) Loading Bar 的選擇器。如果有傳入，會額外等待此元素消失。
+     * @param {number} [options.loadingTimeout=5000] - 等待 Loading Bar 消失的最大時間。
+     */
+    scrollToBottomAndCheck = async (page, {
+        minDelay = 2000,
+        maxRetries = 3,
+        loadingSelector = null,
+        loadingTimeout = 6000
+    } = {}) => {
+        console.log("🚀 開始執行智能滾動檢查...");
+
+        let lastHeight = await page.evaluate(() => document.body.scrollHeight);
+        let currentRetries = 0;
 
         while (true) {
-            await page.evaluate('window.scrollBy(0, document.body.scrollHeight)');
+            // 1. 執行滾動：觸碰頁面底部
+            await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 
-            // 等待新的内容加载
-            await new Promise(resolve => setTimeout(resolve, delay));
-            let newHeight = await page.evaluate('document.body.scrollHeight');
+            // 2. 基礎等待：給瀏覽器喘息和觸發 JS 的時間 (必要)
+            await new Promise(resolve => setTimeout(resolve, minDelay));
+
+            // 3. [新增] 智能等待：如果有設定 Loading Bar，等待它消失
+            if (loadingSelector) {
+                // 我們使用剛才優化的函數，確保 Loading Bar 真的跑完了
+                await this.waitForLoadingToVanish(page, loadingSelector, loadingTimeout);
+            }
+
+            // 4. 檢查高度變化
+            let newHeight = await page.evaluate(() => document.body.scrollHeight);
 
             if (newHeight === lastHeight) {
-                console.log("No more new content, scroller arrived to bottom");
-                break;
+                // --- A. 高度沒變 ---
+                currentRetries++;
+
+                if (currentRetries >= maxRetries) {
+                    console.log(`✅ 連續 ${maxRetries} 次未檢測到新內容，判定已到達最底部。`);
+                    break; // 任務結束
+                }
+
+                console.log(`🔄 高度未變化，正在重試等待... (${currentRetries}/${maxRetries})`);
+
+                // 重試時，稍微加長一點點等待時間，應對網路波動
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+            } else {
+                // --- B. 高度變了 (有新內容) ---
+                console.log(`⬇️ 檢測到新內容 (高度: ${lastHeight} -> ${newHeight})，繼續滾動...`);
+                lastHeight = newHeight;
+                currentRetries = 0; // 重置重試計數器
             }
-            lastHeight = newHeight;
         }
     };
 
@@ -605,24 +789,15 @@ class Spider {
         }, elementHandle);
     };
 
-    async checkSelectorExists(page, selector) {
-        // 檢查選擇器是否存在
-        const element = await page.$(selector);
-        return !!element;
-    }
-
     /** 當loading bar 消失時，假定為加載完成 */
     waitForStyleAndClose = async (page, selector, timeout) => {
         try {
             // 使用 evaluate 來檢查元素的 display 屬性，並每隔500毫秒檢查一次
-            await page.waitForFunction(
-                (selector) => {
+            await page.waitForFunction((selector) => {
                     const element = document.querySelector(selector);
                     return element && window.getComputedStyle(element).display === 'none';
-                },
-                { timeout: 10000 }, // 最多等10秒
-                selector
-            );
+                }, { timeout: 10000 }, // 最多等10秒
+                selector);
 
             console.log(`元素 ${selector} 的 display 設為 none 了！`);
         } catch (error) {
@@ -631,22 +806,43 @@ class Spider {
 
     };
 
-    /** 等待某個element出現代表可以抓取dom,有時候networkidle 不等於 dom已經render成功 */
+    // 修正後的 checkSelectorExists (僅檢查 DOM 存在性)
+    async checkSelectorExists(page, selector) {
+        // page.$() 會返回 ElementHandle 或 null
+        const element = await page.$(selector);
+        // 使用 !! 確保返回布林值 (true/false)
+        return !!element;
+    }
+
+    /** * [優化後] 等待某個element出現並可見
+     * 這是等待元素可見的最可靠方法。
+     * * @param {Page} page - Puppeteer Page 物件
+     * @param {string} selector - CSS 選擇器
+     * @param {number} timeout - 最大等待時間 (毫秒)
+     */
     waitSelectorTilAppear = async (page, selector, timeout = 10000) => {
-        /** 已存在就立即返回 */
-        if (await this.checkSelectorExists(page, selector)) return;
+        // 💡 最佳實踐：直接使用 waitForSelector。
+        // 如果元素已存在且可見，它會立即返回。
+        // 如果元素存在但不可見，它會等待直到可見或超時。
 
         try {
-            // 等待特定元素出現
             await page.waitForSelector(selector, {
-                visible: true, // 確保元素是可見的
-                timeout // 可選：最多等10秒
+                visible: true, // 核心：確保元素在畫面上是可見的
+                timeout
             });
 
-            console.log(`元素 ${selector} 已出現！`);
+            console.log(`元素 ${selector} 已在 ${page.url()} 上出現！`);
+
+            // 成功，返回 true 或不返回任何東西
+            // 為了明確，我們可以返回 true
+            return true;
 
         } catch (error) {
-            console.error(`元素 ${selector} 未在指定時間內出現。`, error);
+            // 🚨 關鍵：拋出錯誤，通知呼叫方等待失敗。
+            const errorMessage = `元素 ${selector} 未在 ${timeout / 1000} 秒內出現。`;
+            console.error(errorMessage, error);
+            // 拋出一個新的錯誤，可以包含更多上下文資訊
+            // throw new Error(errorMessage);
         }
     };
 
@@ -753,7 +949,7 @@ class Spider {
      * 該函數會忽略因重複關閉而產生的錯誤 (Protocol Error)。
      * * @param {object} instance - 包含要關閉的資源，或資源本身。
      */
-     close = async (instance) => {
+    close = async (instance) => {
 
         // --- 內部輔助函數：安全關閉單一資源 ---
         const safeCloseSingleResource = async (resource) => {
@@ -788,11 +984,11 @@ class Spider {
         }
     };
 
-    terminate = async ()=> {
+    terminate = async () => {
         await this.browser.close();
-    }
+    };
 
 
 }
 
-export default Spider
+export default Spider;
