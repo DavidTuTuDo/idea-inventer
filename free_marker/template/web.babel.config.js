@@ -12,7 +12,7 @@ module.exports = {
         "@babel/preset-react",
     ],
     plugins: [
-        ["@babel/plugin-proposal-decorators", { legacy: truHHe }],
+        ["@babel/plugin-proposal-decorators", { legacy: true }],
         ["@babel/plugin-transform-class-properties", { loose: true }],
         ["@babel/plugin-transform-runtime", { regenerator: true }],
     ],

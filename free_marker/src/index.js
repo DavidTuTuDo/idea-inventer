@@ -34,8 +34,8 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
-let CURRENT_PROJECT = './project-davidtu-dev';
+let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
 
@@ -120,6 +120,14 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+
+
+    /**
+     * google all Oauth頁面都要認證，要到這個網站拿token
+     * https://search.google.com/search-console/welcome
+     * 例如以下：放到index.js 的 <header />
+     * <meta name="google-site-verification" content="MSjPnPz3Sen5MCF1az8dkRVlm8fk80JyxvZveXYPNkM" /> */
+    verification;
     /**
      * 如果  path: `/gaia/:pid`,
      * <ObservedDionysusGaia key={`${pid}`}  pid={pid} {...props} />;
@@ -3884,6 +3892,7 @@ class PathBase {
                                    titleOfProject,
                                    projectName,
                                    title,
+                                   verification,
                                    projectVersion,
                                    projectDescription,
                                    fieldClass,
@@ -3913,6 +3922,7 @@ class PathBase {
             defaultValue,
             fieldUrl,
             title,
+            verification,
             className,
             projectName,
             projectVersion,
@@ -6563,7 +6573,7 @@ class AppBuilder extends ComponentBuilder {
         await this.appendMustacheFile(
             'index.html.mustache',
             Util.joinRespectingDot(path, 'index.html'),
-            {title: this.nodeOfAncestor.title}
+            { title: this.nodeOfAncestor.title, verification: this.nodeOfAncestor.verification }
         );
     }
 
@@ -9564,6 +9574,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
         await this.appendMustacheFile('template.html.mustache', Util.joinRespectingDot(this.genRootPath,
             'template.html'), {
             disableOfHtmlScale: this.nodeOfAncestor.disableOfHtmlScale,
+            verification: this.nodeOfAncestor.verification
         });
     }
 
