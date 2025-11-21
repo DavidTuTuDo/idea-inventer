@@ -15,12 +15,10 @@ class beattiya_spider extends Spider {
         super(pu, {} = { visible: ENABLE_OF_OPEN_BROWSER, host: '' });
     }
 
-    fetcher = async () => {
+    fetch = async () => {
         const self = this;
         // ==================== 取得[產品]所有分類(保健系列/精華液系列) ====================
-        const task = async (page) => {
-            console.log(`heypage ==> `, page);
-
+        const fetcher = async (page) => {
             const categorySelector = '#navbar .three-dimension-menu.qk-dropdown_menu .level-2-dropdown.scrollbar > *';
             const categoryRows = await page.$$(categorySelector);
             const categories = await Promise.all(
@@ -33,7 +31,7 @@ class beattiya_spider extends Spider {
             console.log(`📂 分類列表 ==> ${_.size(categories)}`, categories);
             return categories;
         };
-        const categories = await this.activatePage4Task({ task, href: `https://www.its-beattiya.com.tw/` });
+        const categories = await this.activatePage4Task({ fetcher, href: `https://www.its-beattiya.com.tw/` });
         await Util.persistJsonFilePrettier('./temp/categories.json', categories);
         // ==================== 爬取所有分類的產品並合併 ====================
         const handler = new InfinitePool(MAXIMUM_PAGES_OF_FETCHER, 'itsBeat');
@@ -68,6 +66,7 @@ class beattiya_spider extends Spider {
         /** todo:collections才是有商品列表的頁面 */
         if (!cat.href?.includes('collections')) return [];
         const fetchBoozes = async (page, cat) => {
+            console.log(`coming as ${cat.name}`)
             const attrMap = {
                 href: 'href',
                 name: 'data-name',
@@ -83,14 +82,14 @@ class beattiya_spider extends Spider {
         };
         const selectorOfPagingN = '.pagination-container .pagination > *';
         const fetcher = async (page) => await fetchBoozes(page, cat);
-        return this.fetchElementsTilPageEnd({ href: cat.href, fetcher, selectorOfPagingN, signOfPagingN: '»' });
+        return await this.fetchElementsTilPageEnd({ href: cat.href, fetcher, selectorOfPagingN, signOfPagingN: '»' });
     };
 
     /** 取得單一商品'細節'資訊 */
     variantFetcher = async (booze) => {
         const self = this;
 
-        const fetcher = async (page, booze) => {
+        const task = async (page, booze) => {
             const nodeOfP = await page.$(`#product`);
 
             async function getVariant() {
@@ -115,8 +114,8 @@ class beattiya_spider extends Spider {
             await Util.syncDelay(5);
             return await getVariant();
         };
-        const task = async (page) => await fetcher(page, booze);
-        return this.activatePage4Task({ task, href: booze.href });
+        const fetcher = async (page) => await task(page, booze);
+        return this.activatePage4Task({ fetcher, href: booze.href });
     };
 }
 
@@ -127,7 +126,7 @@ if (configerer.DEBUG_MODE) {
             console.log(`itsBeattiya 爬爬爬開跑`);
             const handler = new beattiya_spider(puppeteer, { visible: ENABLE_OF_OPEN_BROWSER, host: 'https://www.its-beattiya.com.tw' });
             await handler.initial();
-            const result = await Util.measureExecutionTime(handler.fetcher.bind(handler));
+            const result = await Util.measureExecutionTime(handler.fetch.bind(handler));
             console.log(result.zh_TW);
             await handler.terminate();
             console.log(`完成itsBeattiya的爬蟲`);

@@ -10,23 +10,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/runtime": "^7.28.4",
     "configerer": "^1.0.23",
     "databazer": "^1.0.17",
     "linepayer": "^1.0.15",
     "lodash": "^4.17.20",
-    "puppeteer": "^24.30.0",
     "moment": "^2.29.1",
-    "utiller": "^1.0.426"
+    "puppeteer": "^24.30.0",
+    "utiller": "^1.0.446",
+    "@babel/runtime": "^7.28.4"
   },
   "devDependencies": {
-    "@babel/cli": "^7.24.1",
-    "@babel/core": "^7.24.4",
-    "@babel/plugin-proposal-decorators": "^7.24.1",
-    "@babel/plugin-transform-class-properties": "^7.24.1",
-    "@babel/plugin-transform-runtime": "^7.24.3",
-    "@babel/preset-env": "^7.24.4",
-    "@babel/preset-react": "^7.24.1",
-    "@babel/register": "^7.23.7"
+    "@babel/cli": "^7.28.3",
+    "@babel/core": "^7.28.5",
+    "@babel/plugin-proposal-decorators": "^7.28.0",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-runtime": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/register": "^7.25.9"
   }
 }

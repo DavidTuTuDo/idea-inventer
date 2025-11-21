@@ -13,7 +13,7 @@ class ModularizedDionysusStore extends BaseDionysusStore {
 
     async onInitialFetchBeginning() {
         this.clean();
-        this.keyword4CompoundSearch = this.getParamOfKeywordInPath();
+        this.keyword4CompoundSearch = this.getParamOfKeywordInPath?.();
         if (_.size(this.keyword4CompoundSearch) > 1) {
             this.setValueOfSelectBoundClickedTab(INDEX_VALUE_OF_SEARCH);
             this.pushBoozeConditions({ type: "where", params: ["keywords", "array-contains", this.keyword4CompoundSearch] });

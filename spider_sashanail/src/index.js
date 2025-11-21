@@ -8,10 +8,10 @@ const THREAD_OF_DETAIL_PRODUCT = 7; // 抓取detail的，因為網頁會擋multi
 const PRINT_REPORT_OF_PRODUCTS_DETAIL = true; //列印出 XXX.json
 /** 列印出product_detail.json */
 const USE_PERSISTENT_FILE = false;//'sasha_product_list.json'
-const RANDOM_LIST_ENABLE = true;//不要全拿，隨機拿幾個做測試
-const SIZE_OF_RANDOM = 50;//如果 RANDOM_LIST_ENABLE = true, 要拿幾個product detail
+const RANDOM_LIST_ENABLE = false;//不要全拿，隨機拿幾個做測試
+const SIZE_OF_RANDOM = 20;//如果 RANDOM_LIST_ENABLE = true, 要拿幾個product detail
 const FETCH_LIST_ONLY = false;//只會取得取得sasha_product_list.json | sasha_of_product_catalog.json
-const ENABLE_OF_OPEN_BROWSER = true;
+const ENABLE_OF_OPEN_BROWSER = false;
 
 class sashanailgel_scraper extends Spider {
 
@@ -21,7 +21,7 @@ class sashanailgel_scraper extends Spider {
 
     fetchListOfTypeHref = async () => {
         const self = this;
-        const task = async (page) => {
+        const fetcher = async (page) => {
             const children = await page.$$('#mTopBar > *');
             const categories = await Promise.all(
                 children.map(async (child, index) =>
@@ -31,15 +31,15 @@ class sashanailgel_scraper extends Spider {
             console.log(`📂 分類列表 ==> ${_.size(categories)}`, categories);
             return categories;
         };
-        return this.activatePage4Task({ href: `https://www.sachianail.com`, task });
+        return this.activatePage4Task({ href: `https://www.sachianail.com`, fetcher });
     };
 
     async fetchBriefBooze({ href, valueOfType, valueOfSubType, labelOfType, labelOfSubType } = {}) {
         const productsOfBrief = {};
-        const task = async (page) => {
+        const fetcher = async (page) => {
             console.log(`打開了 TYPE: ${labelOfType}-SUB-TYPE ${labelOfSubType} PATH:${href}`);
             await this.scrollToBottomAndCheck(page,
-                { loadingSelector: '#m-content-box > #gl-loading-bar' });
+                { stringOfLoadingSelector: '#m-content-box > #gl-loading-bar' });
             await Util.syncDelayRandom(500, 1000);
             await page.bringToFront();
             console.log(`已確認到底部，開始抓取每個項目`);
@@ -77,12 +77,12 @@ class sashanailgel_scraper extends Spider {
             }
             return productsOfBrief;
         };
-        return this.activatePage4Task({ href, task, incognito: true });
+        return this.activatePage4Task({ href, fetcher, incognito: true });
     }
 
     async fetchSubTypeOfProduct(pathObj = { href: '', labelOfType: '' }) {
         const self = this;
-        const fetcher = async (page, pathObj) => {
+        const task = async (page, pathObj) => {
             await Util.syncDelayRandom(100, 300);
             await page.bringToFront();
             await Util.syncDelayRandom(300, 500);
@@ -101,16 +101,16 @@ class sashanailgel_scraper extends Spider {
                 return  await fetch();
             }));
         };
-        const task = async (page) => await fetcher(page, pathObj);
-        return this.activatePage4Task({ href: pathObj.href, task, incognito: true });
+        const fetcher = async (page) => await task(page, pathObj);
+        return this.activatePage4Task({ href: pathObj.href, fetcher, incognito: true });
     }
 
     async fetchProductListPageInfos() {
-        // if (USE_PERSISTENT_FILE) {
-        //     const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`));
-        //     await this.fetchWholeProductDetailBehavior(list);
-        //     return;
-        // }
+        if (USE_PERSISTENT_FILE) {
+            const list = JSON.parse(Util.getFileContextInRaw(`./sasha_of_product_list.json`));
+            await this.fetchWholeProductDetailBehavior(list);
+            return;
+        }
 
         const self = this;
         const categories = await this.fetchListOfTypeHref();
@@ -200,11 +200,9 @@ class sashanailgel_scraper extends Spider {
 
     fetchProductPriceDetail = async (product) => {
         const self = this;
-        const { browser, page } = await this.getBrowserPage(ENABLE_OF_OPEN_BROWSER, true);
-        const path = product.href;
         const options = [];
 
-        async function fetchItemObject(nameOfOption) {
+        async function fetchItemObject(page, nameOfOption) {
             console.log('fetchItemObject ==> ', nameOfOption);
             const stringOfPrice = await Util.fetchElementAttributes(page, '#gd-price > span', '0', 'innerText');
             const srcOfOptionPhoto = await Util.fetchElementAttributes(page, '#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img', 'empty', 'src');
@@ -219,14 +217,14 @@ class sashanailgel_scraper extends Spider {
                 console.log(`加了 ${nameOfOption} ：${countsOfRandom} 個 `);
                 const button = `#gd-detail > table > tbody > .add-cart-zone > td > #add-to-list`;
                 const selectorOfAppendToCart = await page.$(button);
-                await Util.syncDelay(300);
+                await Util.syncDelay(100);
                 await self.clickSolution(page, selectorOfAppendToCart);
-                await Util.syncDelay(300); //加入購物車要讓子彈飛一下～
+                await Util.syncDelay(100); //加入購物車要讓子彈飛一下～
                 options.push({ name: _.trim(nameOfOption), price, photo: srcOfOptionPhoto });
             }
         }
 
-        async function fetchIntroduceOfProductDetail() {
+        async function fetchIntroduceOfProductDetail(page) {
             const statements = [];
             const photos = [];
             const selectorOfIntro = `#gd-good-detail > #ushop_content_iframe`;
@@ -263,62 +261,62 @@ class sashanailgel_scraper extends Spider {
                 }
             }
             return { statement: statements.join('\n'), photos };
-
         }
 
-        try {
-            await page.goto(path, { waitUntil: 'networkidle2', timeout: 0 });
-            await this.managePages(path, browser);
-            const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`;
-            await this.waitSelectorTilAppear(page, selectorOfSrc, 40000);
-            await page.bringToFront();
-            const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
-            const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
-            console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
-            const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '', 'innerText');
-            const photoOfDemo = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
-            const introduce = await fetchIntroduceOfProductDetail();
+        const task = async (page, product) => {
+            try {
+                await this.managePages(product.href, page.browserContext());
+                const selectorOfSrc = `#m-content-box > .divFormProductDetail > #gd-info-box > .gd-img-box > .gd-img > .just-image > figure > img`;
+                await this.waitSelectorTilAppear(page, selectorOfSrc, 40000);
+                await page.bringToFront();
+                const optionsOfProductNPriceDetails = await page.$$('#gd-detail > table > tbody > .square-style > td > div > *');
+                const sizeOfSubItem = _.size(optionsOfProductNPriceDetails);
+                console.log(`產品的項目有 -> `, sizeOfSubItem, ` 個`);
+                const serial = await Util.fetchElementAttributes(page, '.gd-good-id', '', 'innerText');
+                const photoOfDemo = await Util.fetchElementAttributes(page, selectorOfSrc, 'empty', 'src');
+                const introduce = await fetchIntroduceOfProductDetail(page);
 
-            for (const element of optionsOfProductNPriceDetails) {
-                const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title');
-                if (sizeOfSubItem > 1 && element) {
-                    await element.click();
-                    await Util.syncDelay(1200);
-                    await fetchItemObject(nameOfOption);
-                    /** 商品項目只有一個的時候，會預設回圈選 */
-                } else if (sizeOfSubItem === 1) await fetchItemObject(nameOfOption);
+                for (const element of optionsOfProductNPriceDetails) {
+                    const nameOfOption = await Util.fetchElementAttributes(element, 'label', 'empty', 'title');
+                    if (sizeOfSubItem > 1 && element) {
+                        await element.click();
+                        await Util.syncDelay(1200);
+                        await fetchItemObject(page, nameOfOption);
+                        /** 商品項目只有一個的時候，會預設回圈選 */
+                    } else if (sizeOfSubItem === 1) await fetchItemObject(page, nameOfOption);
+                }
+
+                /** 購物車的點擊，因為購物車才能抓到商品剩餘數量，所以要先放到購物車 */
+                const selectorOfAppendToCart = await page.$(`#mbcUshop-MemberOp > .divCtrlMemberOpView > .member-op`);
+
+                await this.clickSolution(page, selectorOfAppendToCart);
+                // console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
+                await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000);
+                // await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 30000}) // 等待页面加载完成
+                const optionsInCart = [];
+                const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
+                for (const product of listInCart) {
+                    const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, 'empty', `innerText`);
+                    const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
+                    optionsInCart.push({ name: _.trim(nameOfOption), count: _.toNumber(countOfMax) });
+                }
+
+                const result = {
+                    serial, statement: introduce.statement,
+                    photos: introduce.photos, photoOfDemo: photoOfDemo, options: this.mergeArraysByName(options, optionsInCart)
+                };
+                console.log(result);
+                return result;
+            } catch (error) {
+                console.log(`[${product.name}]點擊購物車之後，等待檢驗數量過程中失敗`, error.message);
+                throw new ERROR(9999, `[${product.name}]發生錯誤${error.message}`);
+            } finally {
+                console.log(`[${product.name}]關閉頁面的所有PERSISTENT`);
             }
-
-            /** 購物車的點擊，因為購物車才能抓到商品剩餘數量，所以要先放到購物車 */
-            const selectorOfAppendToCart = await page.$(`#mbcUshop-MemberOp > .divCtrlMemberOpView > .member-op`);
-
-            await this.clickSolution(page, selectorOfAppendToCart);
-            // console.log(`[${product.name}]點擊購物車之後，是否卡在這裡`)
-            await this.checkElementVisibleWithRetry(page, `#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr > .t1-6 > .limit-quota-hint`, 300000);
-            // await page.waitForNavigation({waitUntil: 'networkidle2', timeout: 30000}) // 等待页面加载完成
-            const optionsInCart = [];
-            const listInCart = await page.$$(`#m-content-box > .divFormShopCart > .default-cart > #order-list > table > tbody > tr`);
-            for (const product of listInCart) {
-                const nameOfOption = await Util.fetchElementAttributes(product, `.t1-4`, 'empty', `innerText`);
-                const countOfMax = await Util.fetchElementAttributes(product, `.t1-6 > input`, '0', `value`);
-                optionsInCart.push({ name: _.trim(nameOfOption), count: _.toNumber(countOfMax) });
-            }
-
-            const result = {
-                serial, statement: introduce.statement,
-                photos: introduce.photos, photoOfDemo: photoOfDemo, options: this.mergeArraysByName(options, optionsInCart)
-            };
-            console.log(result);
-            return result;
-        } catch (error) {
-            console.log(`[${product.name}]點擊購物車之後，等待檢驗數量過程中失敗`, error.message);
-            throw new ERROR(9999, `[${product.name}]發生錯誤${error.message}`);
-        } finally {
-            await page.close();
-            await browser.close();
-            console.log(`[${product.name}]關閉頁面的所有PERSISTENT`);
-        }
-    };
+        };
+        const fetcher = async (page) => await task(page,product);
+        return this.activatePage4Task({ href: product.href, fetcher, incognito: true });
+    }
 
     /**
      * @sample 不要刪掉！！！！

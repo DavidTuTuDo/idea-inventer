@@ -163,19 +163,19 @@ class Spider {
      * @param type=['desktop','mobile','tablet'] 為蛇設定viewport
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
-     * @returns {page,context} context是一個像是虛擬browser，他可以繼續newPage()，並且共享session、Cookie
+     * @returns page
      * */
-    getContextPage = async ({ browser = this.browser, type = 'desktop', incognito = false, href = '', timeout = 0 }) => {
+    getPuTeerPage = async ({ browser = this.browser, type = 'desktop', incognito = false, href = '', timeout = 0 }) => {
         let page = undefined;
-        let context = undefined;
         if (incognito) {
-            console.log(`開啟了無痕視窗 => ${href}`)
-            context = await browser.createBrowserContext();
+            const context = await browser.createBrowserContext();
             page = await context.newPage();
-        } else page = await browser.newPage();
-        this.randomViewport({ page, type });
+        } else {
+            page = await browser.newPage();
+        }
+        await this.randomViewport({ page, type });
         if (!Util.isUndefinedNullEmpty(href)) await page.goto(href, { waitUntil: 'networkidle2', timeout });
-        return { context, page };
+        return page;
     };
 
     /**
@@ -183,17 +183,17 @@ class Spider {
      *  @param page puppeteer browser|context.newPage的page
      * @param type=['desktop','mobile','tablet'] 為蛇設定viewport
      */
-    randomViewport = ({ page, type = 'desktop' }) => {
+    randomViewport = async ({ page, type = 'desktop' }) => {
         const width = Util.getRandomValue(1080, 1920);
-        const height = Util.getRandomValue(1080, 1920);
-        page.setViewport({ width, height });
+        const height = Util.getRandomValue(1680, 1920);
+        await page.setViewport({ width, height });
     };
 
     /** 取得乾淨的無載入href的page
-     * @returns {context,page}
+     * @returns page
      * */
-    activateContextPage = async ({ browser = this.browser, type = 'desktop', timeout = 0 }) => {
-        return this.getContextPage({ browser, type, timeout });
+    getPageOfSilent = async ({ browser = this.browser, type = 'desktop', timeout = 0 }) => {
+        return this.getPuTeerPage({ browser, type, timeout });
     };
 
     /** 取得一個新的 page,context,記得要用this.close(instance)
@@ -202,27 +202,42 @@ class Spider {
      * @param type=['desktop','mobile','tablet'] 為蛇設定viewport
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
-     * @returns {context,page} */
+     * @returns page */
     activatePage4Load = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, incognito = false }) => {
-        return this.getContextPage({ browser, href, type, timeout, incognito });
+        return await this.getPuTeerPage({ browser, href, type, timeout, incognito });
     };
 
-    /** 取得一個新的 {page,context} 並且執行Task
+    /** 取得一個新的 {page,context} 並且執行fetcher
      * @param browser 原則上使用puppeteer.lunch() 出來的預設瀏覽器，除非有特殊需求
      * @param href 就是page預設打開網址 例如：'https://google.com'
      * @param type=['desktop','mobile','tablet'] 為蛇設定viewport
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
-     * @param task=async() 直接把task包進來頁面處理，免得每次都要newPage(),page.close()/context.close()
-     * @returns {context,page}|page */
-    activatePage4Task = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, task = async (page) => true, incognito = false }) => {
-        const instance = await this.activatePage4Load({ browser, href, type, timeout, incognito });
+     * @param fetcher=async(page) 直接把task包進來頁面處理，免得每次都要newPage(),page.close()/context.close()
+     * @returns {page}|page */
+    activatePage4Task = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, fetcher = async (page) => true, incognito = false }) => {
+        const page = await this.activatePage4Load({ browser, href, type, timeout, incognito });
         /** 執行網頁要執行的task */
-        const execution = await task(instance.page);
+        const execution = await fetcher(page);
 
-        await this.close(instance);
+        await this.close(page);
         return execution;
     };
+
+    /** 呼叫多可能自行帶入page，延續使用page的行為，若沒有則建立一組context page
+     * @page 客端帶上來的page(puppeteer Page)
+     * @returns page
+     * */
+    auto = async ({ page, incognito = false, href, timeout = 0}) => {
+        if (this.isPuTeerPage(page)) {
+            if (!Util.isUndefinedNullEmpty(href)) await page.goto(href, { waitUntil: 'networkidle2', timeout });
+            await this.randomViewport(page);
+            return page;
+        }
+        return await this.activatePage4Load({ incognito, timeout, href });
+    };
+
+    isPuTeerPage = (page) => page?.focus;
 
     /**
      * 專門處理那種點擊下一頁的網頁設計
@@ -232,18 +247,11 @@ class Spider {
      * @param selectorOfPagingN -  [上一頁,1,2,3,4,5,6,7,8,9,10,下一頁] 的選擇器描述 例如 '.rlist #page > *'
      * @param signOfPagingN - 每種網頁的'下一頁'字串都不一樣
      * @param incognito 是否啟用無痕模式
+     * @param timeout page讀取的逾時 million-seconds
      * @returns {Promise<*[]>} 所有頁面(1~20)跑完之後的[...elements]
      */
-    async fetchElementsTilPageEnd({ page, href = '', fetcher = async(page), selectorOfPagingN, signOfPagingN = '»', incognito = false }) {
-        let p = page;
-        let instance = undefined;
-        if (!page) {
-            /** 如果沒有page的實體就自己建一個 */
-            instance = await this.activatePage4Load({ href, incognito });
-            p = instance.page;
-        }
-
-
+    async fetchElementsTilPageEnd({ page = undefined, href = '', fetcher = async(page) => [], selectorOfPagingN, signOfPagingN = '»', incognito = false, timeout = 0 }) {
+        const p = await this.auto({ page, incognito, href, timeout });
         /**
          * do...while 循環說明
          *
@@ -278,13 +286,13 @@ class Spider {
                 // - 如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
                 // - 如果沒有下一頁，返回 false，循環停止
                 // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
-            } while (await this.clickNextPageTilEnd({ page: p, selector: selectorOfPagingN, sign: signOfPagingN }));
+            } while (await this.clickNextPageTilEnd({ page:p, selector: selectorOfPagingN, sign: signOfPagingN }));
         } catch (error) {
             console.error(`抓取失敗: ${error.message}`);
             return [];
         } finally {
             // ✅ 關鍵：確保頁面被關閉
-            instance ? await this.close(instance) : page.close();
+            await this.close(p);
         }
         return elements;
     }
@@ -355,8 +363,14 @@ class Spider {
 
 
     /** 向下載入的情況頁面，應該要往下滑到完全都載入完畢後，一次拿elements*/
-    async fetchElementsTilPageScrollEnd() {
+    fetchElementsTilPageScrollEnd = async ({ page, href = '', fetcher = async(page) => {}, stringOfLoadingSelector, incognito = false,timeout }) => {
+        const p= await this.auto({page,incognito,href,timeout});
+        await this.scrollToBottomAndCheck(p,{stringOfLoadingSelector})
+        /** 完成載入到底部 */
+        const execution = await fetcher(p);
 
+        await this.close(p);
+        return execution;
     }
 
 
@@ -663,7 +677,7 @@ class Spider {
     };
 
     /**
-     * [優化版] 等待 Loading Bar 消失 (代表加載完成)。
+     * 等待 Loading Bar 消失 (代表加載完成)。
      * 使用 { hidden: true } 選項，它能同時檢測元素被移除或樣式設為不可見。
      * @param {import('puppeteer').Page} page - Puppeteer Page 實例。
      * @param {string} selector - Loading Bar 的 CSS 選擇器 (例如 '.loading-spinner')。
@@ -700,13 +714,13 @@ class Spider {
      * @param {object} options - 配置參數物件。
      * @param {number} [options.minDelay=1000] - 每次滾動後的最小固定等待時間 (毫秒)。
      * @param {number} [options.maxRetries=3] - 高度未變化時的最大重試次數。
-     * @param {string|null} [options.loadingSelector=null] - (選填) Loading Bar 的選擇器。如果有傳入，會額外等待此元素消失。
+     * @param {string|null} [options.stringOfLoadingSelector=undefined] - (選填) Loading畫遍 的選擇器。如果有傳入，會額外(向下生長的元素拿取中)等待此元素消失。
      * @param {number} [options.loadingTimeout=5000] - 等待 Loading Bar 消失的最大時間。
      */
     scrollToBottomAndCheck = async (page, {
         minDelay = 2000,
         maxRetries = 3,
-        loadingSelector = null,
+        stringOfLoadingSelector = undefined,
         loadingTimeout = 6000
     } = {}) => {
         console.log("🚀 開始執行智能滾動檢查...");
@@ -722,9 +736,9 @@ class Spider {
             await new Promise(resolve => setTimeout(resolve, minDelay));
 
             // 3. [新增] 智能等待：如果有設定 Loading Bar，等待它消失
-            if (loadingSelector) {
+            if (stringOfLoadingSelector) {
                 // 我們使用剛才優化的函數，確保 Loading Bar 真的跑完了
-                await this.waitForLoadingToVanish(page, loadingSelector, loadingTimeout);
+                await this.waitForLoadingToVanish(page, stringOfLoadingSelector, loadingTimeout);
             }
 
             // 4. 檢查高度變化
@@ -789,23 +803,6 @@ class Spider {
         }, elementHandle);
     };
 
-    /** 當loading bar 消失時，假定為加載完成 */
-    waitForStyleAndClose = async (page, selector, timeout) => {
-        try {
-            // 使用 evaluate 來檢查元素的 display 屬性，並每隔500毫秒檢查一次
-            await page.waitForFunction((selector) => {
-                    const element = document.querySelector(selector);
-                    return element && window.getComputedStyle(element).display === 'none';
-                }, { timeout: 10000 }, // 最多等10秒
-                selector);
-
-            console.log(`元素 ${selector} 的 display 設為 none 了！`);
-        } catch (error) {
-            console.error(`元素 ${selector} 的 display 沒有在指定時間內設為 none。`, error);
-        }
-
-    };
-
     // 修正後的 checkSelectorExists (僅檢查 DOM 存在性)
     async checkSelectorExists(page, selector) {
         // page.$() 會返回 ElementHandle 或 null
@@ -816,7 +813,7 @@ class Spider {
 
     /** * [優化後] 等待某個element出現並可見
      * 這是等待元素可見的最可靠方法。
-     * * @param {Page} page - Puppeteer Page 物件
+     * @param {Page} page - Puppeteer Page 物件
      * @param {string} selector - CSS 選擇器
      * @param {number} timeout - 最大等待時間 (毫秒)
      */
@@ -858,46 +855,84 @@ class Spider {
     }
 
     /**
+     * 瀏覽器頁面守門員：強制瀏覽器只保留指定的網址，其餘頁面一律關閉。
      *
-     * browser.on('targetcreated')：當一個新的目標（標籤頁或窗口）被創建時，這個事件會被觸發。target.page() 返回對應的 Page 對象。
-     * URL(page.url()).pathname：我們從頁面的 URL 中提取出 pathname，用來與 onlyPath 進行比較。注意，我們去掉了 /，使得 onlyPath 可以直接比較。
-     * page.close()：如果新的頁面路徑與 onlyPath 不匹配，則立即關閉該頁面。
-     * browser.pages()：這個方法返回當前已打開的所有頁面。你可以用來遍歷現有的頁面，並關閉 onlyPath 以外的頁面。
-     * 這個函數會自動關閉不符合 onlyPath 的頁面，無論是現有的還是新創建的頁面。如果有其他問題或需要調整，隨時告訴我！
-     *
+     * @param {string} onlyPath - 唯一允許保留的完整網址 (White List)。
+     * @param {object} browser - Puppeteer 的 Browser 實例，預設為 this.browser。
      */
     async managePages(onlyPath, browser = this.browser) {
-        // 監聽當有新頁面創建時的事件
+
+        // 定義一個內部輔助函式，用來統一計算「當前頁面的標準路徑」
+        // 這樣就不用在兩個地方寫重複的邏輯，也避免寫死網址
+        const getNormalizedPath = (pageUrl) => {
+            try {
+                const urlObj = new URL(pageUrl);
+                // 假設 Util.getUrlPath 的邏輯是組合 host 和 pathname
+                // 如果 this.host 不存在，請確認上下文或直接傳入域名
+                return Util.getUrlPath(this.host, urlObj.pathname);
+            } catch (e) {
+                return null; // 解析失敗（例如 about:blank）時回傳 null
+            }
+        };
+
+        // -------------------------------------------------
+        // 1. 未來防護：監聽是否有「新分頁」被開啟
+        // -------------------------------------------------
         browser.on('targetcreated', async target => {
-            const page = await target.page();
+            // 我們只關心 "page" 類型的目標 (忽略 background_page, service_worker 等)
+            if (target.type() !== 'page') return;
 
-            if (page) {
-                const url = new URL(page.url());
-                const path = `https://www.sachianail.com${url.pathname}`;  // 不去掉前導的 "/"
+            try {
+                const page = await target.page();
+                if (!page) return; // 有時目標建立但頁面尚未準備好
 
-                // 如果新頁面的 path 不等於 onlyPath，則關閉該頁面
-                if (path !== onlyPath) {
-                    console.log(`Closing page with path: ${path},should be ${onlyPath}`);
+                const pageUrl = page.url();
+
+                // 略過空白頁：新分頁剛開啟時通常是 about:blank，還沒載入網址前不要急著關
+                if (pageUrl === 'about:blank') return;
+
+                // 計算標準化路徑
+                const currentPath = getNormalizedPath(pageUrl);
+
+                // 比對：如果不符合唯一路徑，就關閉
+                if (currentPath && currentPath !== onlyPath) {
+                    console.log(`[攔截新分頁] 偵測到非法網址: ${currentPath} (目標應為: ${onlyPath})，正在關閉...`);
                     await page.close();
                 }
+            } catch (err) {
+                // 加上錯誤處理，避免頁面瞬間關閉導致程式報錯崩潰
+                console.error(`[新分頁檢查錯誤] 無法處理頁面: ${err.message}`);
             }
         });
 
-        // 檢查並關閉所有不等於 onlyPath 的已打開頁面
-        const pages = await browser.pages();
+        // -------------------------------------------------
+        // 2. 現狀清理：檢查目前「已經打開」的所有分頁
+        // -------------------------------------------------
+        try {
+            const pages = await browser.pages();
 
-        for (const p of pages) {
-            const url = new URL(p.url());
-            const path = `https://www.sachianail.com${url.pathname}`;  // 不去掉前導的 "/"
+            // 使用迴圈逐一檢查現有頁面
+            for (const p of pages) {
+                const pageUrl = p.url();
 
-            // 關閉 onlyPath 以外的頁面
-            if (path !== onlyPath) {
-                console.log(`Closing page with path: ${path},should be ${onlyPath}`);
-                await p.close();
+                // 同樣略過空白頁與已經關閉的頁面
+                if (p.isClosed() || pageUrl === 'about:blank') continue;
+
+                const currentPath = getNormalizedPath(pageUrl);
+
+                if (currentPath && currentPath !== onlyPath) {
+                    console.log(`[清理舊分頁] 發現非法網址: ${currentPath} (目標應為: ${onlyPath})，正在關閉...`);
+                    await p.close();
+                }
             }
+        } catch (err) {
+            console.error(`[舊分頁清理錯誤] ${err.message}`);
         }
 
-        // 讓瀏覽器保持打開一段時間以便觀察
+        // -------------------------------------------------
+        // 3. 觀察期
+        // -------------------------------------------------
+        console.log('頁面管理已啟動，保持監聽 10 秒...');
         await new Promise(resolve => setTimeout(resolve, 10000));
     }
 
@@ -942,48 +977,32 @@ class Spider {
         }
     }
 
-    /**
-     * [安全關閉資源]
-     * 通用的異步關閉函數，用於安全地關閉 Puppeteer 資源。
-     * 它可以處理包含 { context, page } 的容器物件，或單個 Page/Context/Browser 物件。
-     * 該函數會忽略因重複關閉而產生的錯誤 (Protocol Error)。
-     * * @param {object} instance - 包含要關閉的資源，或資源本身。
-     */
-    close = async (instance) => {
+     close = async (page) => {
+        if (!page) return;
 
-        // --- 內部輔助函數：安全關閉單一資源 ---
-        const safeCloseSingleResource = async (resource) => {
-            // 檢查資源是否存在且有 close 方法
-            if (resource && resource.close) {
-                try {
-                    // 執行關閉
-                    await resource.close();
-                } catch (e) {
-                    // 忽略因資源已關閉而產生的錯誤
-                    // 註：在生產環境中，可以根據錯誤訊息類型做更細緻的篩選。
-                    console.warn(`資源關閉時發生錯誤，可能已被提前關閉: ${e.message}`);
-                }
+        try {
+            const context = page.browserContext();
+
+            // 檢查這個 context 是否為「預設 context」
+            // browser.defaultBrowserContext() 可以取得預設的 context 物件
+            const browser = page.browser();
+            const isDefaultContext = (context === browser.defaultBrowserContext());
+
+            if (!isDefaultContext) {
+                // 如果是自定義 Context (Incognito)，直接關閉 Context 即可
+                // 這會自動關閉底下的該 page，不需要 page.close()
+                await context.close();
+            } else {
+                // 如果是預設 Context，只能關閉 page，不能關閉 context
+                await page.close();
             }
-        };
-        // ------------------------------------
-
-        if (!instance) {
-            return;
-        }
-
-        // 案例 A: 實例是包含 context 或 page 屬性的容器物件
-        if (instance.context || instance.page) {
-            // 先關閉 Page，後關閉 Context
-            await safeCloseSingleResource(instance.page);
-            await safeCloseSingleResource(instance.context);
-
-            // 案例 B: 實例是 Page/Context/Browser 資源本身
-        } else {
-            // 直接關閉該實例
-            await safeCloseSingleResource(instance);
+        } catch (error) {
+            console.error('關閉頁面/Context 時發生錯誤:', error);
+            // 這裡可以視情況加強防錯，例如強制 browser.close()
         }
     };
 
+    /** 一般狀況下，一個spider只用一個browser就好！活動結束就terminate */
     terminate = async () => {
         await this.browser.close();
     };

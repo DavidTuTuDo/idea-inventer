@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.432",
+  "version": "1.0.446",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.24.8",
+    "@babel/cli": "^7.28.3",
     "@babel/core": "^7.24.9",
     "@babel/plugin-proposal-decorators": "^7.24.1",
     "@babel/plugin-transform-class-properties": "^7.24.1",
