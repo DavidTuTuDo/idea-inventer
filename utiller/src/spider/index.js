@@ -126,6 +126,17 @@ import { utiller as Util } from '../index.js';
  *
  * 有fetchAttributesOfEl 去拿到 <tag id='123' data-name='shit' data-id='1' />innerText  </tag>
  * 也可以自己用await element.eval(el, attrMap = {id:123,data-name:shit}) => el.getAttribute()
+ * ======================================================================
+ * 知識點：關於 page.$$('#main .sub > *|div')
+ * 例如：<div class:'dddd'><a href='123' />
+ * 如果是'... > *'    => selector: 'a'
+ * 如果是'... > div'  => selector: '.dddd > a'
+ * 注意再拿子元素做事時的小細節！
+ *
+
+
+ /**
+
  */
 class Spider {
 
