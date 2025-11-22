@@ -342,12 +342,12 @@
 /** following for account  component used  */
 
 .AccountPaper:extend(.CenterInParentColumn) {
-    width: 90vw;
-    min-height: 60vh;
     gap: 4px;
     margin: auto;
-    padding-top: 15px;
-    padding-bottom: 15px;
+    min-height: 50vh;
+    padding: 15px;
+    padding-bottom: 30px;
+    border-radius: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -355,11 +355,13 @@
         /** empty style */
     }
     @media @desktop {
-        max-width: 550px;
+        width: 90%;
     }
 }
-.AccountDivWrap:extend(.CenterInParentColumn) {
+.AccountDivWrap {
     gap: 10px;
+    margin: auto;
+    width: 90vw;
     @media @mobile {
         /** empty style */
     }
@@ -367,11 +369,10 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        width: 600px;
     }
 }
 .AccountInfoDiv:extend(.CenterInParentColumn) {
-    margin-bottom: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -385,6 +386,7 @@
 .AccountInfoUrlOfHeadPhotoAvatar {
     width: 60px;
     height: 60px;
+    margin-top: 10px;
     margin-bottom: 10px;
     @media @mobile {
         /** empty style */
@@ -419,8 +421,10 @@
     }
 }
 .AccountBasicDiv:extend(.CenterInParentRow) {
+    margin-top: 15px;
     justify-content: space-between;
-    width: 95%;
+    width: 96%;
+    padding-left: 10px;
     min-height: 10px;
     @media @mobile {
         /** empty style */
@@ -491,7 +495,7 @@
     }
 }
 .AccountAreaSaleAccordionWrap {
-    width: 95%;
+    width: 97%;
     transition: all 0.2s ease;
     @media @mobile {
         /** empty style */
@@ -548,6 +552,8 @@
     }
 }
 .AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton {
+    color: #8c8c8c;
+    padding-right: 17px;
     @media @mobile {
         /** empty style */
     }
@@ -555,7 +561,7 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        padding-right: 10px;
     }
 }
 .AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconNavigateNext {
@@ -613,7 +619,7 @@
         /** empty style */
     }
 }
-.AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconButton {
+.AccountAreaSaleAreaOfAppendBoozeArrowOfAppendBoozeIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -679,7 +685,7 @@
         /** empty style */
     }
 }
-.AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton {
+.AccountAreaSaleAreaOfGoToMyBoozeArrowOfGoToMyBoozeIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -745,7 +751,7 @@
         /** empty style */
     }
 }
-.AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconButton {
+.AccountAreaSaleAreaOfMarketSettingArrowOfMarketSettingIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -811,7 +817,7 @@
         /** empty style */
     }
 }
-.AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconButton {
+.AccountAreaSaleAreaOfMyScheduleArrowOfMyScheduleIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -877,7 +883,7 @@
         /** empty style */
     }
 }
-.AccountAreaSaleAreaOfMyReportArrowOfMyReportIconButton {
+.AccountAreaSaleAreaOfMyReportArrowOfMyReportIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -910,15 +916,15 @@
         /** empty style */
     }
 }
-.AccountAreaSaleSummaryTitleOfSaleTypography {
+.AccountAreaSaleSummaryTitleOfSaleTypography:extend(.BeautyTitle) {
     @media @mobile {
-        /** empty style */
+        font-size: 1.1rem;
     }
     @media @tablet {
-        /** empty style */
+        font-size: 1.1rem;
     }
     @media @desktop {
-        /** empty style */
+        font-size: 1.3rem;
     }
 }
 .AccountAreaBuyAccordionDetails:extend(.AccountAreaSaleAccordionDetails) {
@@ -987,7 +993,7 @@
         /** empty style */
     }
 }
-.AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton {
+.AccountAreaBuyAreaOfListOfUserOrderArrowOfListOfUserOrderIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1009,7 +1015,7 @@
         /** empty style */
     }
 }
-.AccountAreaBuySummaryAccordionSummary {
+.AccountAreaBuySummaryAccordionSummary:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -1097,7 +1103,7 @@
         /** empty style */
     }
 }
-.AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconButton {
+.AccountAreaAdminAreaOfGoEditModeArrowOfGoEditModeIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1163,7 +1169,7 @@
         /** empty style */
     }
 }
-.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconButton {
+.AccountAreaAdminAreaOfAppendAdminArrowOfAppendAdminIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1240,7 +1246,7 @@
         /** empty style */
     }
 }
-.AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton {
+.AccountAreaAdminAreaOfAppendAuthorArrowOfAppendAuthorIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1317,7 +1323,7 @@
         /** empty style */
     }
 }
-.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconButton {
+.AccountAreaAdminAreaOfAppendReaderArrowOfAppendReaderIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1361,7 +1367,7 @@
         /** empty style */
     }
 }
-.AccountAreaAdminSummaryTitleOfAdminTypography {
+.AccountAreaAdminSummaryTitleOfAdminTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -1394,8 +1400,11 @@
         /** empty style */
     }
 }
-.AccountAreaUserAreaOfTokenDiv:extend(.AccountBasicDiv) {
+.AccountAreaUserAreaOfTokenDiv:extend(.CenterInParentRow) {
     border-top: 1px solid #e0e0e0;
+    justify-content: space-between;
+    width: 96%;
+    min-height: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -1439,7 +1448,7 @@
         /** empty style */
     }
 }
-.AccountAreaUserAreaOfTokenArrowOfTokenIconButton {
+.AccountAreaUserAreaOfTokenArrowOfTokenIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1451,6 +1460,160 @@
     }
 }
 .AccountAreaUserAreaOfTokenArrowOfTokenIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesOptionOfUsagesTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesOptionOfUsagesContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesArrowOfUsagesIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesArrowOfUsagesReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfUsagesArrowOfUsagesIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyOptionOfPrivacyTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyOptionOfPrivacyContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyArrowOfPrivacyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfPrivacyArrowOfPrivacyIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -1505,7 +1668,7 @@
         /** empty style */
     }
 }
-.AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconButton {
+.AccountAreaUserAreaOfCleanCacheArrowOfCleanCacheIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -1527,6 +1690,83 @@
         /** empty style */
     }
 }
+.AccountAreaUserAreaOfLogoutDiv:extend(.AccountAreaUserAreaOfTokenDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutOptionOfLogoutTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutOptionOfLogoutContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutArrowOfLogoutIconButton:extend(.AccountAreaSaleAreaOfListOfAuthorOrderArrowOfListOfAuthorOrderIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutArrowOfLogoutReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.AccountAreaUserAreaOfLogoutArrowOfLogoutIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .AccountAreaUserSummaryAccordionSummary {
     @media @mobile {
         /** empty style */
@@ -1538,18 +1778,7 @@
         /** empty style */
     }
 }
-.AccountAreaUserSummaryTitleOfUserTypography {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.AccountLogoutReactFragmentWrap {
+.AccountAreaUserSummaryTitleOfUserTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -1605,7 +1834,7 @@
     width: 48%;
     aspect-ratio: 1 / 1;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px; /* 可以根據需求調整圓角大小 */
+    border-radius: 8px;
     @media @mobile {
         /** empty style */
     }
@@ -1623,10 +1852,10 @@
     margin-bottom: 20px;
     width: 100%;
     @media @mobile {
-        /** empty style */
+        min-height: 66vh;
     }
     @media @tablet {
-        /** empty style */
+        min-height: 66vh;
     }
     @media @desktop {
         /** empty style */
@@ -1810,7 +2039,7 @@
         /** empty style */
     }
 }
-.DionysusSelectTab {
+.DionysusSelectBoundTab {
     @media @mobile {
         /** empty style */
     }
@@ -1821,7 +2050,7 @@
         /** empty style */
     }
 }
-.DionysusSelectTabsList {
+.DionysusSelectBoundTabsList {
     width: 100%;
     position: sticky;
     z-index: 3;
@@ -1837,7 +2066,7 @@
         top: 0;
     }
 }
-.DionysusSelectTabSkeleton {
+.DionysusSelectBoundTabSkeleton {
     @media @mobile {
         /** empty style */
     }
@@ -1952,7 +2181,7 @@
         border-radius: 10px;
     }
 }
-.DionysusBacchusRangeOfPriceTypography {
+.DionysusBacchusRangeOfPriceTypography:extend(.BeautyTitle) {
     font-size: 1.2rem;
     @media @mobile {
         /** empty style */
@@ -1976,7 +2205,7 @@
         /** empty style */
     }
 }
-.DionysusBacchusNameTypography {
+.DionysusBacchusNameTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -2013,7 +2242,7 @@
         /** empty style */
     }
 }
-.DionysusBacchusDetailAreaOfPayDiv:extend(.CenterInParentRow) {
+.DionysusBacchusDetailAreaOfPayDiv:extend(.CenterInParentRow, .BeautyContent) {
     width: 100%;
     justify-content: space-between;
     background: #ececec;
@@ -2195,7 +2424,7 @@
         max-width: 880px;
     }
 }
-.DionysusBacchusDetailContentStatementTypography {
+.DionysusBacchusDetailContentStatementTypography:extend(.BeautyContent) {
     @media @mobile {
         /** empty style */
     }
@@ -3468,6 +3697,152 @@
         max-width: 880px;
     }
 }
+.DionysusHermesTransactionDiv:extend(.DionysusHermesTransportDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionDivList:extend(.DionysusHermesTransportDivList) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionChoiceCheckbox {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionChoiceDivWrap:extend(.DionysusHermesTransportChoiceDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionMainDiv:extend(.DionysusHermesTransportMainDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionMainTopDiv:extend(.DionysusHermesTransportMainTopDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionMainTopNameTypography:extend(.DionysusHermesTransportMainTopNameTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionMainTopPhotoImg:extend(.DionysusHermesTransportMainTopPhotoImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionMainDescriptionTypography:extend(.DionysusHermesTransportMainDescriptionTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionPriceTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionPriceDivWrap:extend(.DionysusHermesTransportPriceDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesTransactionPriceLabelOfPriceTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesSeparatorDiv {
+    height: 50px;
+    width: 100%;
+    background: #f7f7f7;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .DionysusHermesTransportDiv:extend(.CenterInParentRow) {
     width: 100%;
     height: 75px;
@@ -3484,9 +3859,10 @@
     }
 }
 .DionysusHermesTransportDivList:extend(.CenterInParentColumn) {
+    border-top: 1px solid #bbb;
     justify-content: flex-start;
+    align-items: flex-start;
     width: 100%;
-    min-height: 90vh;
     @media @mobile {
         /** empty style */
     }
@@ -3556,9 +3932,10 @@
         /** empty style */
     }
 }
-.DionysusHermesTransportMainTopPhotoImg {
+.DionysusHermesTransportMainTopPhotoImg:extend(.SquareRatioImg) {
     width: 15px;
     border-radius: 5px;
+    visibility: hidden;
     @media @mobile {
         /** empty style */
     }
@@ -3607,6 +3984,18 @@
     }
 }
 .DionysusHermesTransportPriceLabelOfPriceTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusHermesDividerDiv {
+    height: 40vh;
     @media @mobile {
         /** empty style */
     }
@@ -3733,6 +4122,7 @@
     width: 100%;
     align-items: flex-start;
     padding-top: 10px;
+    gap: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -3754,6 +4144,106 @@
     }
     @media @desktop {
         max-width: 880px;
+    }
+}
+.DionysusPlutusBriefDiv:extend(.EpayFootprintOrderBriefDiv) {
+    padding-right: 5px !important;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefDivList:extend(.EpayFootprintOrderBriefDivList) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefImageOfProductPhotoImg:extend(.EpayFootprintOrderBriefImageOfProductPhotoImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefSectionOfDescriptionDiv:extend(.EpayFootprintOrderBriefSectionOfDescriptionDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefSectionOfDescriptionNameOfProductTypography:extend(.EpayFootprintOrderBriefSectionOfDescriptionNameOfProductTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefSectionOfDescriptionNameOfProductDivWrap:extend(.EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefSectionOfDescriptionSpecificOfProductTypography:extend(.EpayFootprintOrderBriefSectionOfDescriptionSpecificOfProductTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefSectionOfDescriptionQuantityTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusBriefSectionOfDescriptionPriceTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
     }
 }
 .DionysusPlutusMainDiv:extend(.CenterInParentColumn) {
@@ -3971,6 +4461,41 @@
         /** empty style */
     }
 }
+.DionysusPlutusMainCvsTextField:extend(.DionysusPlutusMainNameTextField) {
+    width: 83% !important;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainCvsDivWrap:extend(.DionysusPlutusMainNameDivWrap) {
+    margin-top: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainCvsLabelOfCvsTypography:extend(.DionysusPlutusMainNameLabelOfNameTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .DionysusPlutusMainNameTextField {
     width: 83%;
     @media @mobile {
@@ -4107,7 +4632,7 @@
     }
 }
 .DionysusPlutusMainSummariseDiv:extend(.CenterInParentColumn) {
-    width: 100%;
+    width: 97%;
     @media @mobile {
         /** empty style */
     }
@@ -4466,7 +4991,7 @@
         /** empty style */
     }
 }
-.DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureTypography {
+.DionysusPlutusMainSummariseSixthHeadLabelOfProcedureOfTransportTypography {
     @media @mobile {
         /** empty style */
     }
@@ -4477,7 +5002,7 @@
         /** empty style */
     }
 }
-.DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureDivWrap:extend(.DionysusPlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
+.DionysusPlutusMainSummariseSixthHeadLabelOfProcedureOfTransportDivWrap:extend(.DionysusPlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -4488,7 +5013,7 @@
         /** empty style */
     }
 }
-.DionysusPlutusMainSummariseSixthProcedureOfPaymentTypography {
+.DionysusPlutusMainSummariseSixthProcedureOfTransportTypography {
     @media @mobile {
         /** empty style */
     }
@@ -4499,7 +5024,7 @@
         /** empty style */
     }
 }
-.DionysusPlutusMainSummariseSixthProcedureOfPaymentDivWrap:extend(.DionysusPlutusMainSummariseFirstPriceDivWrap) {
+.DionysusPlutusMainSummariseSixthProcedureOfTransportDivWrap:extend(.DionysusPlutusMainSummariseFirstPriceDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -4555,6 +5080,61 @@
     }
 }
 .DionysusPlutusMainSummariseSeventhDistanceOfSashaDivWrap:extend(.DionysusPlutusMainSummariseFirstPriceDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainSummariseEighthDiv:extend(.DionysusPlutusMainSummariseFirstDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainSummariseEighthHeadLabelOfProcedurePaymentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainSummariseEighthHeadLabelOfProcedurePaymentDivWrap:extend(.DionysusPlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainSummariseEighthProcedureOfPaymentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainSummariseEighthProcedureOfPaymentDivWrap:extend(.DionysusPlutusMainSummariseFirstPriceDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -4678,9 +5258,9 @@
 /** following for gaia  component used  */
 
 .DionysusGaiaDiv:extend(.CenterInParentColumn) {
-    width: 95%;
-    gap: 10px;
-    margin-top: 10px;
+    width: 100%;
+    gap: 8px;
+    padding-top: 20px;
     @media @mobile {
         /** empty style */
     }
@@ -4688,12 +5268,13 @@
         /** empty style */
     }
     @media @desktop {
-        width: 600px;
+        margin-top: 20px;
     }
 }
-.DionysusGaiaDivWrap:extend(.CenterInParentColumn) {
+.DionysusGaiaDivWrap {
     margin: auto;
     width: 100%;
+    background: #eee;
     @media @mobile {
         /** empty style */
     }
@@ -4701,12 +5282,17 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        max-width: 720px;
+        border-radius: 15px;
     }
 }
 .DionysusGaiaAreaOfPhotoUploadDiv:extend(.CenterInParentColumn) {
-    width: 100%;
+    width: 97%;
     gap: 5px;
+    border-radius: 10px;
+    background: white;
+    padding-top: 8px;
+    padding-bottom: 8px;
     @media @mobile {
         /** empty style */
     }
@@ -4719,7 +5305,7 @@
 }
 .DionysusGaiaAreaOfPhotoUploadRowDiv:extend(.CenterInParentRow) {
     justify-content: space-between;
-    width: 100%;
+    width: 97%;
     min-height: 10px;
     @media @mobile {
         /** empty style */
@@ -4751,6 +5337,33 @@
     }
     @media @desktop {
         /** empty style */
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadAddImageIconButton {
+    border: 1px dashed #808080;
+    border-radius: 4px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaAreaOfPhotoUploadAddImageIconAddPhotoAlternateOutlined {
+    width: 60px;
+    height: 60px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 100px;
+        height: 100px;
     }
 }
 .DionysusGaiaAreaOfPhotoUploadBriefPhotoDiv {
@@ -4884,7 +5497,8 @@
     }
 }
 .DionysusGaiaAreaOfNameNameTextField {
-    width: 100%;
+    width: 97%;
+    padding-bottom: 10px;
     @media @mobile {
         /** empty style */
     }
@@ -4896,6 +5510,10 @@
     }
 }
 .DionysusGaiaAreaOfPropDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+    width: 97%;
+    border-radius: 10px;
+    background: white;
+    padding: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -4941,6 +5559,7 @@
     }
 }
 .DionysusGaiaAreaOfMainDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+    padding-bottom: 13px;
     @media @mobile {
         /** empty style */
     }
@@ -5053,7 +5672,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfSubDiv:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
+.DionysusGaiaAreaOfSubDiv:extend(.DionysusGaiaAreaOfMainDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5152,7 +5771,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfPriceSetDivWrap:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaAreaOfPriceSetDivWrap:extend(.DionysusGaiaAreaOfPhotoUploadDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5373,7 +5992,6 @@
     }
 }
 .DionysusGaiaAreaOfTabSetDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
-    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -5450,7 +6068,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfTrunkDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaAreaOfTrunkDiv:extend(.DionysusGaiaAreaOfPropDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5516,7 +6134,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaDestDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaDestDiv:extend(.DionysusGaiaAreaOfPropDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5549,7 +6167,7 @@
         /** empty style */
     }
 }
-.DionysusGaiaAreaOfStatusDiv:extend(.DionysusGaiaAreaOfPhotoUploadRowDiv) {
+.DionysusGaiaAreaOfStatusDiv:extend(.DionysusGaiaAreaOfPropDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5642,50 +6260,7 @@
     position: sticky;
     z-index: 3;
     bottom: 3px;
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncCreateChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncRecoverChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncDeletedChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusGaiaFuncDeletedReactFragmentWrap {
+    padding-bottom: 50px;
     @media @mobile {
         /** empty style */
     }
@@ -5718,10 +6293,7 @@
         /** empty style */
     }
 }
-/** following for eros  component used  */
-
-.DionysusErosDiv:extend(.CenterInParentColumn) {
-    width: 95vw;
+.DionysusGaiaFuncDeletedChip {
     @media @mobile {
         /** empty style */
     }
@@ -5729,10 +6301,68 @@
         /** empty style */
     }
     @media @desktop {
-        width: 600px;
+        /** empty style */
     }
 }
-.DionysusErosDivWrap:extend(.CenterInParentColumn) {
+.DionysusGaiaFuncDeletedReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncCreateChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncCreateReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusGaiaFuncUpdateChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for eros  component used  */
+
+.DionysusErosDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosDivWrap:extend(.BeautyContent) {
     margin: auto;
     width: 100%;
     @media @mobile {
@@ -5742,10 +6372,11 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        width: 720px;
     }
 }
-.DionysusErosAreaOfBrandNameDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAdminDiv:extend(.CenterInParentColumn) {
+    width: 100%;
     @media @mobile {
         /** empty style */
     }
@@ -5756,75 +6387,170 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfBrandNameDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusErosAreaOfBrandNameOptionOfBrandNameTitleTypography {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusErosAreaOfBrandNameOptionOfBrandNameContentTypography {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusErosAreaOfBrandNameArrowOfBrandNameIconButton {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusErosAreaOfBrandNameArrowOfBrandNameReactFragmentWrap {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusErosAreaOfBrandNameArrowOfBrandNameIconNavigateNext {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusErosAreaOfTabCreatorDiv:extend(.CenterInParentRow) {
+.DionysusErosAdminAreaOfBrandNameDiv:extend(.CenterInParentRow) {
+    box-sizing: border-box;
     justify-content: space-between;
     width: 100%;
+    border-bottom: 1px solid #bbb;
+    padding-left: 15px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBrandNameDivWrap:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBrandNameOptionOfBrandNameTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBrandNameOptionOfBrandNameContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBrandNameArrowOfBrandNameIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBrandNameArrowOfBrandNameReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBrandNameArrowOfBrandNameIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorOptionOfTabCreatorTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorOptionOfTabCreatorContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorArrowOfTabCreatorIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminDividerTopDiv {
+    width: 100%;
+    height: 30px;
+    background: #f7f7f7;
     border-bottom: 1px solid #bbb;
     @media @mobile {
         /** empty style */
@@ -5836,8 +6562,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfTabCreatorDivWrap:extend(.CenterInParentColumn) {
-    width: 100%;
+.DionysusErosAdminAreaOfCompanyDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5848,7 +6573,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfTabCreatorOptionOfTabCreatorTitleTypography {
+.DionysusErosAdminAreaOfCompanyDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -5859,7 +6584,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfTabCreatorOptionOfTabCreatorContentTypography {
+.DionysusErosAdminAreaOfCompanyOptionOfCompanyTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -5870,7 +6595,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconButton {
+.DionysusErosAdminAreaOfCompanyOptionOfCompanyContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -5881,7 +6606,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfTabCreatorArrowOfTabCreatorReactFragmentWrap {
+.DionysusErosAdminAreaOfCompanyArrowOfCompanyIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -5892,7 +6617,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfTabCreatorArrowOfTabCreatorIconNavigateNext {
+.DionysusErosAdminAreaOfCompanyArrowOfCompanyReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -5903,7 +6628,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfCashOnDeliveryDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAdminAreaOfCompanyArrowOfCompanyIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -5914,7 +6639,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfCashOnDeliveryDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAdminAreaOfUnifiedBDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -5925,7 +6650,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfCashOnDeliveryOptionOfCashOnDeliveryTitleTypography {
+.DionysusErosAdminAreaOfUnifiedBDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -5936,7 +6661,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfCashOnDeliveryOptionOfCashOnDeliveryContentTypography {
+.DionysusErosAdminAreaOfUnifiedBOptionOfUnifiedBTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -5947,7 +6672,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfCashOnDeliveryEnableOfCashOnDeliverySwitch {
+.DionysusErosAdminAreaOfUnifiedBOptionOfUnifiedBContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -5958,7 +6683,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAdminAreaOfUnifiedBArrowOfUnifiedBIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -5969,7 +6694,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAdminAreaOfUnifiedBArrowOfUnifiedBReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -5980,7 +6705,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryOptionOfFeeOfCashOnDeliveryTitleTypography {
+.DionysusErosAdminAreaOfUnifiedBArrowOfUnifiedBIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -5991,7 +6716,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryOptionOfFeeOfCashOnDeliveryContentTypography {
+.DionysusErosAdminAreaOfAddressODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6002,7 +6727,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconButton {
+.DionysusErosAdminAreaOfAddressODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6013,7 +6738,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryReactFragmentWrap {
+.DionysusErosAdminAreaOfAddressOOptionOfAddressOTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6024,7 +6749,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfCashOnDeliveryArrowOfFeeOfCashOnDeliveryIconNavigateNext {
+.DionysusErosAdminAreaOfAddressOOptionOfAddressOContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6035,7 +6760,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAdminAreaOfAddressOArrowOfAddressOIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6046,7 +6771,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAdminAreaOfAddressOArrowOfAddressOReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -6057,7 +6782,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupTitleTypography {
+.DionysusErosAdminAreaOfAddressOArrowOfAddressOIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -6068,7 +6793,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupContentTypography {
+.DionysusErosAdminAreaOfPhoneODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6079,7 +6804,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconButton {
+.DionysusErosAdminAreaOfPhoneODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6090,7 +6815,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupReactFragmentWrap {
+.DionysusErosAdminAreaOfPhoneOOptionOfPhoneOTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6101,7 +6826,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconNavigateNext {
+.DionysusErosAdminAreaOfPhoneOOptionOfPhoneOContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6112,7 +6837,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfLinepayDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAdminAreaOfPhoneOArrowOfPhoneOIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6123,7 +6848,1096 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfLinepayDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAdminAreaOfPhoneOArrowOfPhoneOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPhoneOArrowOfPhoneOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailOOptionOfEmailOTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailOOptionOfEmailOContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailOArrowOfEmailOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailOArrowOfEmailOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfEmailOArrowOfEmailOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerOptionOfNumOfWorkerTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerOptionOfNumOfWorkerContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerArrowOfNumOfWorkerIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerArrowOfNumOfWorkerReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfNumOfWorkerArrowOfNumOfWorkerIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbOOptionOfFbOTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbOOptionOfFbOContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbOArrowOfFbOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbOArrowOfFbOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfFbOArrowOfFbOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgOOptionOfIgOTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgOOptionOfIgOContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgOArrowOfIgOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgOArrowOfIgOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfIgOArrowOfIgOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokOOptionOfTiktokOTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokOOptionOfTiktokOContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokOArrowOfTiktokOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokOArrowOfTiktokOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTiktokOArrowOfTiktokOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtOOptionOfYtOTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtOOptionOfYtOContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtOArrowOfYtOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtOArrowOfYtOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfYtOArrowOfYtOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineODiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineODivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineOOptionOfLineOTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineOOptionOfLineOContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineOArrowOfLineOIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineOArrowOfLineOReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfLineOArrowOfLineOIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsOptionOfMaximumOfUniqueItemsTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsOptionOfMaximumOfUniqueItemsContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsArrowOfMaximumOfUniqueItemsIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsArrowOfMaximumOfUniqueItemsReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfMaximumOfUniqueItemsArrowOfMaximumOfUniqueItemsIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentOptionOfTtlOfPaymentTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentOptionOfTtlOfPaymentContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentArrowOfTtlOfPaymentIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentArrowOfTtlOfPaymentReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfPaymentArrowOfTtlOfPaymentIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousOptionOfTtlOfAnonymousTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousOptionOfTtlOfAnonymousContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousArrowOfTtlOfAnonymousIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousArrowOfTtlOfAnonymousReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfTtlOfAnonymousArrowOfTtlOfAnonymousIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBoughtWithoutLoginInDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBoughtWithoutLoginInDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfBoughtWithoutLoginInEnableOfBoughtWithoutLoginInSwitch {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAdminAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfLinepayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfLinepayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6167,7 +7981,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfLinepaySetDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfLinepaySetDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6178,7 +7992,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfLinepaySetDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfLinepaySetDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6244,7 +8058,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfDirectDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosDividerDiv:extend(.DionysusErosAdminDividerTopDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6255,7 +8069,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfDirectDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfDirectPayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6266,7 +8080,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfDirectOptionOfDirectTitleTypography {
+.DionysusErosAreaOfDirectPayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6277,7 +8091,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfDirectOptionOfDirectContentTypography {
+.DionysusErosAreaOfDirectPayOptionOfDirectPayTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6288,7 +8102,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfDirectEnableOfDirectSwitch {
+.DionysusErosAreaOfDirectPayOptionOfDirectPayContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6299,7 +8113,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfDirectPayEnableOfDirectPaySwitch {
     @media @mobile {
         /** empty style */
     }
@@ -6310,7 +8124,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfNameOfDirectPayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6321,7 +8135,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectTitleTypography {
+.DionysusErosAreaOfNameOfDirectPayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6332,7 +8146,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectOptionOfPayOfDirectContentTypography {
+.DionysusErosAreaOfNameOfDirectPayOptionOfNameOfDirectPayTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6343,7 +8157,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconButton {
+.DionysusErosAreaOfNameOfDirectPayOptionOfNameOfDirectPayContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6354,7 +8168,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectReactFragmentWrap {
+.DionysusErosAreaOfNameOfDirectPayArrowOfNameOfDirectPayIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6365,7 +8179,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPayOfDirectArrowOfPayOfDirectIconNavigateNext {
+.DionysusErosAreaOfNameOfDirectPayArrowOfNameOfDirectPayReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -6376,7 +8190,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfEcPayDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfNameOfDirectPayArrowOfNameOfDirectPayIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -6387,7 +8201,249 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfEcPayDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfHrefOfDirectPayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfHrefOfDirectPayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfHrefOfDirectPayOptionOfHrefOfDirectPayTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfHrefOfDirectPayOptionOfHrefOfDirectPayContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfHrefOfDirectPayArrowOfHrefOfDirectPayIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayOptionOfCautionOfDirectPayTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayOptionOfCautionOfDirectPayContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCautionOfDirectPayArrowOfCautionOfDirectPayIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayOptionOfPreviewDirectPayTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayOptionOfPreviewDirectPayContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayArrowOfPreviewDirectPayIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayArrowOfPreviewDirectPayReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPreviewDirectPayArrowOfPreviewDirectPayIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfEcPayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfEcPayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6431,7 +8487,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfEcPaySetDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfEcPaySetDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6442,7 +8498,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfEcPaySetDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfEcPaySetDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6508,7 +8564,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6519,7 +8575,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6530,7 +8586,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingOptionOfPriceOfFreeShippingTitleTypography {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayOptionOfThresholdOfCheckoutByLinePayTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6541,7 +8597,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingOptionOfPriceOfFreeShippingContentTypography {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayOptionOfThresholdOfCheckoutByLinePayContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6552,7 +8608,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingIconButton {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayArrowOfThresholdOfCheckoutByLinePayIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6563,7 +8619,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingReactFragmentWrap {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayArrowOfThresholdOfCheckoutByLinePayReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -6574,7 +8630,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPriceOfFreeShippingArrowOfPriceOfFreeShippingIconNavigateNext {
+.DionysusErosAreaOfThresholdOfCheckoutByLinePayArrowOfThresholdOfCheckoutByLinePayIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -6585,7 +8641,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6596,7 +8652,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6607,7 +8663,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountTitleTypography {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditOptionOfThresholdOfCheckoutByCreditTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6618,7 +8674,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountOptionOfPercentageOfDiscountContentTypography {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditOptionOfThresholdOfCheckoutByCreditContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6629,7 +8685,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconButton {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditArrowOfThresholdOfCheckoutByCreditIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6640,7 +8696,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountReactFragmentWrap {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditArrowOfThresholdOfCheckoutByCreditReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -6651,7 +8707,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfPercentageOfDiscountArrowOfPercentageOfDiscountIconNavigateNext {
+.DionysusErosAreaOfThresholdOfCheckoutByCreditArrowOfThresholdOfCheckoutByCreditIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -6662,7 +8718,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6673,7 +8729,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6684,7 +8740,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerOptionOfNumOfWorkerTitleTypography {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupOptionOfThresholdOfAllowSelfPickupTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6695,7 +8751,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerOptionOfNumOfWorkerContentTypography {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupOptionOfThresholdOfAllowSelfPickupContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6706,7 +8762,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconButton {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6717,7 +8773,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerReactFragmentWrap {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -6728,7 +8784,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfNumOfWorkerArrowOfNumOfWorkerIconNavigateNext {
+.DionysusErosAreaOfThresholdOfAllowSelfPickupArrowOfThresholdOfAllowSelfPickupIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -6739,7 +8795,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfBoughtWithoutLoginInDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfWhetherPickupByBuyerSelfDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6750,7 +8806,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfBoughtWithoutLoginInDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfWhetherPickupByBuyerSelfDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6761,7 +8817,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInTitleTypography {
+.DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6772,7 +8828,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfBoughtWithoutLoginInOptionOfBoughtWithoutLoginInContentTypography {
+.DionysusErosAreaOfWhetherPickupByBuyerSelfOptionOfWhetherPickupByBuyerSelfContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6783,7 +8839,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfBoughtWithoutLoginInEnableOfBoughtWithoutLoginInSwitch {
+.DionysusErosAreaOfWhetherPickupByBuyerSelfEnableOfWhetherPickupByBuyerSelfSwitch {
     @media @mobile {
         /** empty style */
     }
@@ -6794,7 +8850,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6805,7 +8861,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6816,7 +8872,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyTitleTypography {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpOptionOfAddressTimeOfSelfPickUpTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6827,7 +8883,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyOptionOfAmountOfAllowAnonymousBuyContentTypography {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpOptionOfAddressTimeOfSelfPickUpContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6838,7 +8894,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconButton {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpArrowOfAddressTimeOfSelfPickUpIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -6849,7 +8905,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyReactFragmentWrap {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpArrowOfAddressTimeOfSelfPickUpReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -6860,7 +8916,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfAllowAnonymousBuyArrowOfAmountOfAllowAnonymousBuyIconNavigateNext {
+.DionysusErosAreaOfAddressTimeOfSelfPickUpArrowOfAddressTimeOfSelfPickUpIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -6871,7 +8927,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+.DionysusErosAreaOfEnableOfCodDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6882,7 +8938,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+.DionysusErosAreaOfEnableOfCodDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -6893,7 +8949,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyTitleTypography {
+.DionysusErosAreaOfEnableOfCodOptionOfEnableOfCodTitleTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6904,7 +8960,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyOptionOfAmountOfMaximumBuyContentTypography {
+.DionysusErosAreaOfEnableOfCodOptionOfEnableOfCodContentTypography {
     @media @mobile {
         /** empty style */
     }
@@ -6915,7 +8971,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconButton {
+.DionysusErosAreaOfEnableOfCodEnableOfEnableOfCodSwitch {
     @media @mobile {
         /** empty style */
     }
@@ -6926,7 +8982,7 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyReactFragmentWrap {
+.DionysusErosAreaOfFeeOfShipByCodDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
     @media @mobile {
         /** empty style */
     }
@@ -6937,7 +8993,843 @@
         /** empty style */
     }
 }
-.DionysusErosAreaOfAmountOfMaximumBuyArrowOfAmountOfMaximumBuyIconNavigateNext {
+.DionysusErosAreaOfFeeOfShipByCodDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfShipByCodOptionOfFeeOfShipByCodTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfShipByCodOptionOfFeeOfShipByCodContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfShipByCodArrowOfFeeOfShipByCodIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfShipByCodArrowOfFeeOfShipByCodReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfShipByCodArrowOfFeeOfShipByCodIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodOptionOfPercentageFeeOfCodTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodOptionOfPercentageFeeOfCodContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodArrowOfPercentageFeeOfCodIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodArrowOfPercentageFeeOfCodReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageFeeOfCodArrowOfPercentageFeeOfCodIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodOptionOfThresholdOfFreeShipByCodTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodOptionOfThresholdOfFreeShipByCodContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodArrowOfThresholdOfFreeShipByCodIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodArrowOfThresholdOfFreeShipByCodReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByCodArrowOfThresholdOfFreeShipByCodIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherHomeDeliveryDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherHomeDeliveryDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherHomeDeliveryOptionOfWhetherHomeDeliveryTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherHomeDeliveryOptionOfWhetherHomeDeliveryContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherHomeDeliveryEnableOfWhetherHomeDeliverySwitch {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryOptionOfFeeOfHomeDeliveryTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryOptionOfFeeOfHomeDeliveryContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryArrowOfFeeOfHomeDeliveryIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryArrowOfFeeOfHomeDeliveryReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfHomeDeliveryArrowOfFeeOfHomeDeliveryIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryOptionOfThresholdOfFreeShipByHomeDeliveryTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryOptionOfThresholdOfFreeShipByHomeDeliveryContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryArrowOfThresholdOfFreeShipByHomeDeliveryIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryArrowOfThresholdOfFreeShipByHomeDeliveryReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByHomeDeliveryArrowOfThresholdOfFreeShipByHomeDeliveryIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByRapidlyDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByRapidlyDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByRapidlyOptionOfWhetherShipByRapidlyTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByRapidlyOptionOfWhetherShipByRapidlyContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByRapidlyEnableOfWhetherShipByRapidlySwitch {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryOptionOfFeeOfRapidOnDeliveryTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryOptionOfFeeOfRapidOnDeliveryContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryArrowOfFeeOfRapidOnDeliveryIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryArrowOfFeeOfRapidOnDeliveryReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfRapidOnDeliveryArrowOfFeeOfRapidOnDeliveryIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyOptionOfThresholdOfFreeShipByRapidlyTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyOptionOfThresholdOfFreeShipByRapidlyContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyArrowOfThresholdOfFreeShipByRapidlyIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyArrowOfThresholdOfFreeShipByRapidlyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByRapidlyArrowOfThresholdOfFreeShipByRapidlyIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByStorePickupDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByStorePickupDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByStorePickupOptionOfWhetherShipByStorePickupTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByStorePickupOptionOfWhetherShipByStorePickupContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfWhetherShipByStorePickupEnableOfWhetherShipByStorePickupSwitch {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupOptionOfFeeOfInStorePickupContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfInStorePickupArrowOfFeeOfInStorePickupIconNavigateNext {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupDiv:extend(.DionysusErosAdminAreaOfBrandNameDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupDivWrap:extend(.DionysusErosAdminAreaOfBrandNameDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupOptionOfThresholdOfFreeShipByStorePickupTitleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupOptionOfThresholdOfFreeShipByStorePickupContentTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupArrowOfThresholdOfFreeShipByStorePickupIconButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupArrowOfThresholdOfFreeShipByStorePickupReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfThresholdOfFreeShipByStorePickupArrowOfThresholdOfFreeShipByStorePickupIconNavigateNext {
     @media @mobile {
         /** empty style */
     }
@@ -7505,7 +10397,7 @@
         /** empty style */
     }
 }
-.DionysusApolloFuncConfirmChip {
+.DionysusApolloFuncLoadChip {
     @media @mobile {
         /** empty style */
     }
@@ -7527,7 +10419,7 @@
         /** empty style */
     }
 }
-.DionysusApolloFuncLoadChip {
+.DionysusApolloFuncConfirmChip {
     @media @mobile {
         /** empty style */
     }
@@ -7666,7 +10558,18 @@
         /** empty style */
     }
 }
-.DionysusQuantitySetterFuncBatchUpdateChip {
+.DionysusQuantitySetterFuncCommonChip {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusQuantitySetterFuncCommonReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -7688,18 +10591,7 @@
         /** empty style */
     }
 }
-.DionysusQuantitySetterFuncCommonChip {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.DionysusQuantitySetterFuncCommonReactFragmentWrap {
+.DionysusQuantitySetterFuncBatchUpdateChip {
     @media @mobile {
         /** empty style */
     }
@@ -8146,12 +11038,9 @@
         /** empty style */
     }
 }
-.EpayMethodOfPaymentOptionImageImg {
-    object-fit: cover;
-    border-radius: 5px;
+.EpayMethodOfPaymentOptionImageImg:extend(.SquareRatioImg) {
     margin-top: 2px;
     width: 70%;
-    height: 70%;
     @media @mobile {
         /** empty style */
     }
@@ -8192,18 +11081,17 @@
     margin: auto;
     width: 100%;
     @media @mobile {
-        width: 97vw;
+        width: 98vw;
     }
     @media @tablet {
-        width: 97vw;
+        width: 98vw;
     }
     @media @desktop {
-        max-width: 660px;
+        width: 760px;
     }
 }
 .EpayFootprintOrderCard {
     width: 100%;
-    padding: 3px;
     @media @mobile {
         /** empty style */
     }
@@ -8217,6 +11105,8 @@
 .EpayFootprintOrderDivList:extend(.CenterInParentColumn) {
     gap: 10px;
     width: 100%;
+    min-height: 65vh;
+    justify-content: flex-start;
     @media @mobile {
         /** empty style */
     }
@@ -8224,7 +11114,7 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        min-height: 400px;
     }
 }
 .EpayFootprintOrderAreaOfTopDiv:extend(.CenterInParentRow) {
@@ -8405,7 +11295,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverReactFragmentWrap {
+.EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportReactFragmentWrap {
     @media @mobile {
         /** empty style */
     }
@@ -8416,7 +11306,7 @@
         /** empty style */
     }
 }
-.EpayFootprintOrderAreaOfTopSectionOfTailOptionOfDeliverIconMoreVertRounded {
+.EpayFootprintOrderAreaOfTopSectionOfTailOptionOfTransportIconMoreVertRounded {
     @media @mobile {
         /** empty style */
     }
@@ -8430,7 +11320,11 @@
 .EpayFootprintOrderBriefDiv:extend(.CenterInParentRow) {
     justify-content: flex-start;
     gap: 5px;
+    width: 100%;
+    padding-right: 1px;
     border-bottom: 1px solid #bbb;
+    max-width: 100%;
+    box-sizing: border-box;
     @media @mobile {
         /** empty style */
     }
@@ -8442,14 +11336,20 @@
     }
 }
 .EpayFootprintOrderBriefDivList {
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    display: block;
     @media @mobile {
-        /** empty style */
+        max-height: 40vh;
     }
     @media @tablet {
-        /** empty style */
+        max-height: 40vh;
     }
     @media @desktop {
-        /** empty style */
+        max-height: 500px;
     }
 }
 .EpayFootprintOrderBriefImageOfProductPhotoImg:extend(.SquareRatioImg) {
@@ -8482,7 +11382,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 270px;
+    width: 280px;
     @media @mobile {
         /** empty style */
     }
@@ -8490,7 +11390,7 @@
         /** empty style */
     }
     @media @desktop {
-        width: 430px;
+        width: 600px;
     }
 }
 .EpayFootprintOrderBriefSectionOfDescriptionNameOfProductDivWrap {
@@ -8745,6 +11645,138 @@
     }
 }
 .EpayFootprintOrderAreaOfPaymentRuleRuleLabelOfRuleTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfTransportDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfTransportTransportByTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfTransportTransportByDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfTransportTransportByLabelOfTransportByTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfCvsDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfCvsPickUpCvsTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfCvsPickUpCvsDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfCvsPickUpCvsLabelOfPickUpCvsTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfSerialDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfSerialSerialOfTransportTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfSerialSerialOfTransportDivWrap:extend(.EpayFootprintOrderAreaOfPaymentRuleRuleDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintOrderAreaOfSerialSerialOfTransportLabelOfSerialOfTransportTypography {
     @media @mobile {
         /** empty style */
     }
@@ -9059,6 +12091,50 @@
         top: 0;
     }
 }
+.EpayFootprintTransNotifyDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintTransNotifyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintPayNowDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.EpayFootprintPayNowReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 /** following for hades  component used  */
 
 .HadesDiv {
@@ -9137,29 +12213,84 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightUpperGroupLeftAreaBusinessButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
-.InfoOfCopyRightUpperGroupLeftAreaBusinessReactFragmentWrap {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
 .InfoOfCopyRightUpperGroupRightAreaDiv:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeDiv:extend(.CenterInParentRow) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeUsageRulesReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator01Typography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyButton {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegePrivacyReactFragmentWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupRightAreaPrivilegeSeparator02Typography {
     @media @mobile {
         /** empty style */
     }
@@ -9226,7 +12357,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaFbIconButton {
+.InfoOfCopyRightGroupOfSocialMediaFbOIconButton {
     width: 30px;
     height: 30px;
     @media @mobile {
@@ -9240,7 +12371,7 @@
         height: 35px;
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg {
+.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg {
     width: 25px;
     height: 25px;
     @media @mobile {
@@ -9254,7 +12385,7 @@
         height: 32px;
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+.InfoOfCopyRightGroupOfSocialMediaIgOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbOIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -9265,7 +12396,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+.InfoOfCopyRightGroupOfSocialMediaIgOImgOfIgOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
     @media @mobile {
         /** empty style */
     }
@@ -9276,7 +12407,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+.InfoOfCopyRightGroupOfSocialMediaLineOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbOIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -9287,7 +12418,153 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+.InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for infoOfCopyRightPrivacy  component used  */
+
+.InfoOfCopyRightPrivacyDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    padding: 15px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyPaperWrap {
+    margin: auto;
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainDiv:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainTitleTypography:extend(.AccountAreaSaleSummaryTitleOfSaleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainSeparatorDiv {
+    height: 1px;
+    background: #eee;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightPrivacyMainContentTypography:extend(.BeautyContent) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for infoOfCopyRightUsages  component used  */
+
+.InfoOfCopyRightUsagesDiv:extend(.InfoOfCopyRightPrivacyDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesPaperWrap:extend(.InfoOfCopyRightPrivacyPaperWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainDiv:extend(.InfoOfCopyRightPrivacyMainDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainTitleTypography:extend(.InfoOfCopyRightPrivacyMainTitleTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainSeparatorDiv:extend(.InfoOfCopyRightPrivacyMainSeparatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUsagesMainContentTypography:extend(.InfoOfCopyRightPrivacyMainContentTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -9351,9 +12628,9 @@
 .InfoOfCopyRightContactUpperAreaContactDivWrap:extend(.CenterInParentColumn) {
     width: fit-content;
     padding: 6px;
-    padding-left: 9px;
+    padding-left: 15px;
     background: #d2d2d2;
-    border-radius: 15px;
+    border-radius: 18px;
     @media @mobile {
         /** empty style */
     }
@@ -9378,7 +12655,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography {
     @media @mobile {
         font-size: 0.8rem;
     }
@@ -9389,7 +12666,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap:extend(.CenterInParentRow) {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneODivWrap:extend(.CenterInParentRow) {
     justify-content: flex-start;
     @media @mobile {
         /** empty style */
@@ -9401,7 +12678,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconButton {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOBtnOfPhoneOIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -9412,7 +12689,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneBtnOfPhoneIconPhoneOutlined {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOBtnOfPhoneOIconPhoneOutlined {
     @media @mobile {
         /** empty style */
     }
@@ -9423,7 +12700,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOLabelOfPhoneOTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -9434,7 +12711,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -9445,7 +12722,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap) {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailODivWrap:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneODivWrap) {
     @media @mobile {
         /** empty style */
     }
@@ -9456,7 +12733,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconButton {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOBtnOfEmailOIconButton {
     @media @mobile {
         /** empty style */
     }
@@ -9467,7 +12744,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailBtnOfEmailIconMailOutlined {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOBtnOfEmailOIconMailOutlined {
     @media @mobile {
         /** empty style */
     }
@@ -9478,7 +12755,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailOLabelOfEmailOTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneOTypography) {
     @media @mobile {
         /** empty style */
     }
@@ -9502,7 +12779,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbOIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -9513,7 +12790,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbOImgOfFbOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
     @media @mobile {
         /** empty style */
     }
@@ -9524,7 +12801,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgIconButton) {
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgOIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -9535,7 +12812,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgOImgOfIgOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
     @media @mobile {
         /** empty style */
     }
@@ -9546,7 +12823,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgIconButton) {
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineOIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgOIconButton) {
     @media @mobile {
         /** empty style */
     }
@@ -9557,7 +12834,7 @@
         /** empty style */
     }
 }
-.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineOImgOfLineOImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbOImgOfFbOImg) {
     @media @mobile {
         /** empty style */
     }
@@ -9603,6 +12880,51 @@
 }
 .InfoOfCopyRightContactLowerAreaDetailsTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
     margin-top: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactPortfolioTypography {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactPortfolioDivWrap:extend(.CenterInParentColumn) {
+    margin-top: 15px;
+    width: fit-content;
+    padding: 6px;
+    padding-left: 9px;
+    padding-right: 12px;
+    background: #d2d2d2;
+    border-radius: 18px;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    &:hover {
+        box-shadow:
+            0 6px 12px rgba(0, 0, 0, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+    &:active {
+        box-shadow:
+            inset 0 2px 4px rgba(0, 0, 0, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        transform: translateY(1px);
+    }
     @media @mobile {
         /** empty style */
     }
@@ -9889,6 +13211,237 @@
         /** empty style */
     }
 }
+/** following for miniWeb  component used  */
+
+.IreneMiniWebDiv {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneMiniWebDivWrap {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** following for ireneQrcode  component used  */
+
+.IreneQrcodeDiv:extend(.CenterInParentColumn) {
+    padding: 30px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodePaperWrap {
+    margin: auto;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    min-height: 60vh;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        min-height: 500px;
+        min-width: 500px;
+    }
+}
+.IreneQrcodeMainDiv:extend(.CenterInParentColumn) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainRowDiv:extend(.CenterInParentRow) {
+    gap: 3px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainRowMainTypography:extend(.BeautyTitle) {
+    font-size: 1.3rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 1.5rem;
+    }
+}
+.IreneQrcodeMainRowSubTypography:extend(.IreneQrcodeMainRowMainTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainRowSubDivWrap:extend(.CenterInParentColumn) {
+    background: white;
+    padding: 5px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 18px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanDiv:extend(.CenterInParentColumn) {
+    background: white;
+    padding: 13px;
+    border-radius: 8px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanTipTypography:extend(.BeautyContent) {
+    font-size: 0.8rem;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanHrefQrCode {
+    margin: 6px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        margin-left: 15px;
+        margin-right: 15px;
+    }
+}
+.IreneQrcodeMainScanHrefDivWrap {
+    border-radius: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainScanTitleTypography:extend(.BeautyTitle) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainContentTypography:extend(.BeautyTitle) {
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainContentDivWrap:extend(.CenterInParentRow) {
+    font-size: 1.2rem;
+    border-bottom: 1px solid #fff;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 1.3rem;
+    }
+}
+.IreneQrcodeMainContentLabelOfContentTypography:extend(.BeautyContent) {
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.IreneQrcodeMainCautionTypography:extend(.BeautyContent) {
+    font-size: 0.8rem;
+    color: white;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        font-size: 0.9rem;
+    }
+}
 /** following for textsFetch  component used  */
 
 .IreneTextsFetchPaper:extend(.CenterInParentColumn) {
@@ -10129,7 +13682,7 @@
         /** empty style */
     }
 }
-.IreneTextFetchFuncAppendChip {
+.IreneTextFetchFuncLeaveChip {
     @media @mobile {
         /** empty style */
     }
@@ -10140,7 +13693,7 @@
         /** empty style */
     }
 }
-.IreneTextFetchFuncLeaveChip {
+.IreneTextFetchFuncAppendChip {
     @media @mobile {
         /** empty style */
     }
@@ -10530,7 +14083,7 @@
         /** empty style */
     }
 }
-.IreneNumberSetterFuncConfirmChip {
+.IreneNumberSetterFuncLeaveChip {
     @media @mobile {
         /** empty style */
     }
@@ -10541,7 +14094,7 @@
         /** empty style */
     }
 }
-.IreneNumberSetterFuncLeaveChip {
+.IreneNumberSetterFuncConfirmChip {
     @media @mobile {
         /** empty style */
     }
@@ -10632,7 +14185,7 @@
     }
 }
 .NavigatorToolBarTitleDivWrap:extend(.CenterInParentColumn) {
-    padding-right: 10px;
+    padding-right: 12px;
     @media @mobile {
         /** empty style */
     }
@@ -10640,12 +14193,12 @@
         /** empty style */
     }
     @media @desktop {
-        /** empty style */
+        padding-right: 18px;
     }
 }
 .NavigatorToolBarCompleteAutocomplete {
     flex-grow: 1;
-    margin-right: 5px;
+    margin-right: 3px;
     @media @mobile {
         /** empty style */
     }
@@ -10657,17 +14210,15 @@
     }
 }
 .NavigatorToolBarCompleteInputOfCompleteTextField {
-    border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.3);
     @media @mobile {
-        width: 95%;
+        width: 97%;
     }
     @media @tablet {
-        width: 95%;
+        width: 97%;
     }
     @media @desktop {
-        width: 70%;
-        max-width: 500px;
+        width: 99%;
     }
 }
 .NavigatorToolBarCompleteInputOfCompleteFormWrap {
@@ -10714,6 +14265,18 @@
         /** empty style */
     }
 }
+.NavigatorToolBarTipOfLoadingCircularProgress {
+    margin-right: 5px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
 .NavigatorToolBarLoginIconButton:extend(.NavigatorToolBarAccountIconButton) {
     @media @mobile {
         /** empty style */
@@ -10736,9 +14299,9 @@
         /** empty style */
     }
 }
-.NavigatorToolBarAccountIconButton {
-    height: 32px;
+.NavigatorToolBarAccountIconButton:extend(.SquareRatioImg) {
     width: 32px;
+    margin-left: 5px;
     @media @mobile {
         /** empty style */
     }
@@ -10771,27 +14334,21 @@
         /** empty style */
     }
 }
-.NavigatorToolBarTipOfLoadingCircularProgress {
-    @media @mobile {
-        /** empty style */
-    }
-    @media @tablet {
-        /** empty style */
-    }
-    @media @desktop {
-        /** empty style */
-    }
-}
 .NavigatorDrawerDrawer {
-    margin-top: 60px !important;
+    margin-top: 68px !important;
+    border-radius: 23px;
     @media @mobile {
-        width: 100%;
+        width: 96%;
+        margin-left: 8px;
     }
     @media @tablet {
-        width: 100%;
+        width: 96%;
+        margin-left: 8px;
     }
     @media @desktop {
-        width: 350px;
+        width: 360px;
+        margin-top: 70px !important;
+        margin-left: 10px;
     }
 }
 .NavigatorDrawerShortcutListItem {
@@ -11306,6 +14863,530 @@
     }
 }
 .InfoOfCopyRightContentEditorProjectImageTextField:extend(.BaseEditorTextField) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+/** ======== following for homeless ========= */
+
+.DionysusSelectTabsList {
+    width: 100%;
+    position: sticky;
+    z-index: 3;
+    background: #f7f7f7;
+    opacity: 0.85;
+    @media @mobile {
+        bottom: 0;
+    }
+    @media @tablet {
+        bottom: 0;
+    }
+    @media @desktop {
+        top: 0;
+    }
+}
+.DionysusPlutusMainSummariseSixthHeadLabelOfPaymentProcedureDivWrap:extend(.DionysusPlutusMainSummariseFirstHeadLabelOfPriceDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusPlutusMainSummariseSixthProcedureOfPaymentDivWrap:extend(.DionysusPlutusMainSummariseFirstPriceDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfBrandNameDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfBrandNameDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfTabCreatorDiv:extend(.CenterInParentRow) {
+    justify-content: space-between;
+    width: 100%;
+    border-bottom: 1px solid #bbb;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfTabCreatorDivWrap:extend(.CenterInParentColumn) {
+    width: 100%;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCashOnDeliveryDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfCashOnDeliveryDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfCashOnDeliveryDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfFeeOfCashOnDeliveryDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfDirectDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfDirectDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPayOfDirectDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPayOfDirectDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPriceOfFreeShippingDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPriceOfFreeShippingDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageOfDiscountDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfPercentageOfDiscountDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfNumOfWorkerDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfNumOfWorkerDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfBoughtWithoutLoginInDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfBoughtWithoutLoginInDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfAmountOfAllowAnonymousBuyDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfAmountOfAllowAnonymousBuyDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfAmountOfMaximumBuyDiv:extend(.DionysusErosAreaOfTabCreatorDiv) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.DionysusErosAreaOfAmountOfMaximumBuyDivWrap:extend(.DionysusErosAreaOfTabCreatorDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightUpperGroupLeftAreaBusinessButton:extend(.InfoOfCopyRightUpperGroupLeftAreaContactButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightGroupOfSocialMediaFbIconButton {
+    width: 30px;
+    height: 30px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 35px;
+        height: 35px;
+    }
+}
+.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg {
+    width: 25px;
+    height: 25px;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        width: 32px;
+        height: 32px;
+    }
+}
+.InfoOfCopyRightGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography {
+    @media @mobile {
+        font-size: 0.8rem;
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap:extend(.CenterInParentRow) {
+    justify-content: flex-start;
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneLabelOfPhoneTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailDivWrap:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneDivWrap) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfDetailEmailLabelOfEmailTypography:extend(.InfoOfCopyRightContactUpperAreaGroupOfDetailPhoneTypography) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaFbIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaFbImgOfFbImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaIgImgOfIgImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineIconButton:extend(.InfoOfCopyRightGroupOfSocialMediaIgIconButton) {
+    @media @mobile {
+        /** empty style */
+    }
+    @media @tablet {
+        /** empty style */
+    }
+    @media @desktop {
+        /** empty style */
+    }
+}
+.InfoOfCopyRightContactUpperAreaGroupOfSocialMediaLineImgOfLineImg:extend(.InfoOfCopyRightGroupOfSocialMediaFbImgOfFbImg) {
     @media @mobile {
         /** empty style */
     }

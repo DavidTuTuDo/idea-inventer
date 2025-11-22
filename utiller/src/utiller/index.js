@@ -183,7 +183,7 @@ class Utiller {
 
     appendInfo(...logs) {
         if (this.isProductionEnvironment()) return;
-        console.warn(...logs);
+        console.log(...logs);
     }
 
     appendError(...logs) {
@@ -2705,7 +2705,7 @@ class Utiller {
      * 策略：1. 提取英文單字 2. 提取規格/色號詞組 3. 清理中文 4. 窮舉中文 N-gram 5. 去重和過濾
      * @param {string} sentence - 原始字串。
      * @param {number} [maxLength=50] - 允許的最大字串長度。
-     * @param {number} [maxNgramLength=3] - N-gram 的最大長度，預設為 3。
+     * @param {number} [maxNgramLength=4] - N-gram 的最大長度，預設為 4。
      * @returns {string[]} - 潛在關鍵字陣列（至少 2 個字/中文字）。
      */
     generateUniversalKeywords = (sentence, maxLength = 50, maxNgramLength = 4) => {

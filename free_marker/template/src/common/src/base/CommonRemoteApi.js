@@ -552,6 +552,8 @@ class CommonRemoteApi {
 
     /** 這是針對用desktop/mobile 選擇的檔案上傳機制 */
     async uploadStorageFile(blob, folder = "public", fileNameExtension) {
+        const uid = Util.getRandomHashV2(10);
+        Util.appendInfo(`${uid} start upload storage => folder:/${folder}`);
         return await firebase.uploadStorageFile(blob, folder, fileNameExtension);
     }
 

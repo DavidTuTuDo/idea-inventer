@@ -828,7 +828,9 @@ class FirebaseHelper extends BaseFirebase {
         return snapShot.data().count;
     };
 
-    /** 這是針對用desktop/mobile 選擇的檔案上傳機制
+    /**
+     *
+     * 這是針對用desktop/mobile 選擇的檔案上傳機制
      *  前端以blob為主，而file selected選到的資料格式如下
      * {
      *     "name": "截圖 2024-07-15 下午8.38.30.png",
@@ -837,14 +839,52 @@ class FirebaseHelper extends BaseFirebase {
      *     "url": "blob:http://localhost:8080/4f6c25b3-8d6f-4d06-a236-6f9a4b13211a"
      * }
      *
-     * */
-
+     * 執行檔案上傳至 Firebase Storage，具備檔案大小檢查、MIME 類型推斷，以及可配置的逾時機制。
+     *
+     * @param {object} file - 包含待上傳檔案資訊的物件。
+     * @param {string} file.name - 原始檔案名稱 (e.g., 'image.jpg')。
+     * @param {Blob} file.blob - 檔案的 Blob 物件，包含實際的二進制資料。
+     * @param {string} [folder="public"] - 儲存檔案的 Storage 路徑資料夾名稱。
+     * @param {string} [fileNameExtension] - 上傳後在 Storage 中使用的檔案名稱（可包含或不包含副檔名）。若提供，將覆蓋 file.name。
+     * @param {number} [timeoutMs=30000] - 上傳操作的逾時時間（毫秒）。
+     * @param {number} [maxSizeInBytes=5242880] - 允許上傳的最大檔案大小（位元組）。
+     * @returns {Promise<string>} - 成功上傳後返回檔案的下載 URL (Download URL)。
+     * @throws {Error} - 如果檔案格式無效、超過大小限制、上傳失敗或逾時，則拋出錯誤。
+     */
     uploadStorageFile = async (
         file,
         folder = "public",
         fileNameExtension = undefined,
-        maxSizeInBytes = 5 * 1024 * 1024 // 預設 5MB
+        timeoutMs = 30000,
+        maxSizeInBytes = 5 * 1024 * 1024 // 預設 5MB (5242880 bytes)
     ) => {
+        // --- 輔助函式定義 ---
+
+        // 格式化位元組數為人類可讀的 KB/MB/GB 格式
+        const formatBytes = (bytes, decimals = 2) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        };
+
+        // 根據檔案名稱判斷 ContentType
+        const getContentType = (fileName) => {
+            const extension = fileName.split(".").pop().toLowerCase();
+            // 這裡僅列舉部分常見類型，實際應用中應包含完整的列表
+            const mimeTypes = {
+                jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
+                pdf: "application/pdf", txt: "text/plain",
+                docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            };
+            return mimeTypes[extension] || "application/octet-stream";
+        };
+
+        // --- 參數檢查 ---
+
         if (!file || !file.name || !file.blob) {
             throw new Error("Invalid file format. Expecting { name, blob }.");
         }
@@ -853,55 +893,56 @@ class FirebaseHelper extends BaseFirebase {
             throw new Error("file.blob must be a Blob object.");
         }
 
+        // 檢查檔案大小並拋出格式化後的錯誤訊息
         if (file.blob.size > maxSizeInBytes) {
-            throw new Error(`File size exceeds the limit of ${maxSizeInBytes / 1024 / 1024} MB.`);
+            throw new Error(`File size (${formatBytes(file.blob.size)}) exceeds the limit of ${formatBytes(maxSizeInBytes)}.`);
         }
 
-        const getContentType = (fileName) => {
-            const extension = fileName.split(".").pop().toLowerCase();
-            const mimeTypes = {
-                jpg: "image/jpeg",
-                jpeg: "image/jpeg",
-                png: "image/png",
-                gif: "image/gif",
-                bmp: "image/bmp",
-                webp: "image/webp",
-                pdf: "application/pdf",
-                txt: "text/plain",
-                html: "text/html",
-                css: "text/css",
-                js: "application/javascript",
-                json: "application/json",
-                xml: "application/xml",
-                mp4: "video/mp4",
-                mp3: "audio/mpeg",
-                wav: "audio/wav",
-                ogg: "audio/ogg",
-                zip: "application/zip",
-                rar: "application/vnd.rar",
-                doc: "application/msword",
-                docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                ppt: "application/vnd.ms-powerpoint",
-                pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                xls: "application/vnd.ms-excel",
-                xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            };
-            return mimeTypes[extension] || "application/octet-stream";
-        };
+        // --- 準備上傳資料 ---
 
+        let timerId;
         const uid = Util.getRandomHashV2(10);
-        const fileName = fileNameExtension ?? file.name ?? `file-${uid}`;
-        const storageRef = ref(this.storage(), `${folder}/${fileName}`);
-        const contentType = getContentType(fileName);
+
+        // ContentType 應基於原始檔案名稱來推斷
+        const contentType = getContentType(file.name);
+
+        // 決定最終在 Storage 中使用的檔案名稱
+        const storageFileName = fileNameExtension ?? file.name ?? `file-${uid}`;
+
+        // 取得 Storage 參考 (假設 this.storage() 已經定義且返回 Storage 服務)
+        const storageRef = ref(this.storage(), `${folder}/${storageFileName}`);
+
+        // --- 逾時機制 ---
+        const timeoutPromise = new Promise((_, reject) => {
+            timerId = setTimeout(() => {
+                const error = new Error(`Firebase Storage: Upload operation timed out after ${timeoutMs / 1000} seconds.`);
+                error.code = "storage/timeout";
+                reject(error);
+            }, timeoutMs);
+        });
 
         try {
-            const snapshot = await uploadBytes(storageRef, file.blob, { contentType });
-            Util.appendInfo(`${uid} ${fileName} own following meta: `, contentType);
+            // 取得上傳任務的 Promise，使用 file.blob 和正確的 metadata
+            const uploadTaskPromise = uploadBytes(storageRef, file.blob, { contentType });
+
+            // 使用 Promise.race 讓上傳和逾時競爭
+            const snapshot = await Promise.race([uploadTaskPromise, timeoutPromise]);
+
+            // 成功上傳後，立即清除逾時計時器
+            if (timerId) clearTimeout(timerId);
+
+            // --- 成功後的處理 ---
+            Util.appendInfo(`${uid} ${storageFileName} own following meta: `, contentType);
             Util.appendInfo(`${uid} File uploaded successfully.`);
+
             const downloadURL = await getDownloadURL(snapshot.ref);
             Util.appendInfo(`${uid} File available at:`, downloadURL);
             return downloadURL;
+
         } catch (error) {
+            // 無論是逾時還是其他錯誤，都確保計時器被清除
+            if (timerId) clearTimeout(timerId);
+
             Util.appendError(`${uid} Upload failed: ${error.message}`, error);
             throw error;
         }

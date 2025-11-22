@@ -8,6 +8,37 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+}
+
+.BeautyContent {
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.8;
+    color: #333;
+    letter-spacing: 0.2px;
+}
+
+.BeautyTitle {
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.5px;
+    color: #5b5b5b;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+}
+
+.BeautyPrice {
+    font-weight: 700;
+    font-family: "Roboto Condensed", "Oswald", "Segoe UI", sans-serif;
+    color: #2f2f2f;
+    letter-spacing: 0.8px;
+    line-height: 1.3;
+    text-transform: uppercase;
+    background: linear-gradient(145deg, #e0e0e0, #b5b5b5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow:
+        1px 1px 0 #888,
+        -1px -1px 0 #fff;
 }
 
 .CenterInParentColumn {
@@ -15,12 +46,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
 .CenterInHorizontalColumn {
     display: flex;
     flex-direction: column;
     align-items: center;
+    box-sizing: border-box;
 }
 
 .SquareRatioImg {
@@ -163,23 +196,19 @@
 
 .ContainerOfHorizontalScroll {
     display: flex;
+    position: relative;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem;
     margin: auto;
-    position: relative;
     overflow-x: auto;
     gap: 10px;
     @media @mobile {
         /** empty style */
-        width: 95vw;
     }
     @media @tablet {
         /** empty style */
-        width: 95vw;
     }
     @media @desktop {
-        max-width: 180px;
     }
 }
 
@@ -188,9 +217,7 @@
     min-width: 150px;
     text-align: center;
     height: 100px;
-    padding-top: 1%;
-    padding-left: 1%;
-    padding-right: 1%;
+    margin: 3px;
 }
 
 .CenterInParentRelative {
@@ -294,7 +321,7 @@
     color: white;
 }
 
-.BaseImageDialogImg {
+.BaseImageDialogImg:extend(.SquareRatioImg) {
     width: 80vw;
     max-width: 650px;
 }
@@ -305,7 +332,6 @@
 /** drawer */
 
 .BaseShortcutItemView {
-    border-bottom: 1px solid rgba(187, 187, 187, 0.3);
     @media @mobile {
         height: 40px;
     }
@@ -322,16 +348,15 @@
 }
 
 .BaseShortcutItemAvatarView {
-    background-color: black;
     height: 35px;
     width: 35px;
     @media @mobile {
-        height: 30px;
-        width: 30px;
+        height: 25px;
+        width: 25px;
     }
     @media @tablet {
-        height: 30px;
-        width: 30px;
+        height: 25px;
+        width: 25px;
     }
 }
 
@@ -345,6 +370,9 @@
 
 .BaseShortcutItemIconView {
     color: black;
+}
+
+.BaseShortcutItemNavView {
 }
 
 .BaseShortcutCollapseView {

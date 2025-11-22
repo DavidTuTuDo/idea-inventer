@@ -346,6 +346,7 @@ class BaseComponent extends MuiComponent {
     }
 
     setLoadingViewVisibility(show = true) {
+        // console.trace(`setLoadingViewVisibility 呼叫追蹤: show = ${show}`);
         this.getStore().setState(show ? "loading" : "stable");
     }
 

@@ -81,6 +81,18 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         this.getStore().updateBooze4Sure().then();
     }
 
+    onDionysusGaiaUpdateChipClicked(param) {
+        this.getStore().updateBooze4Sure().then();
+    }
+
+    getInjectStyleOfDionysusGaiaUpdateChip(dionysusGaia) {
+        return Util.getVisibleOrNone(dionysusGaia.getInitCompleted());
+    }
+
+    getInjectStyleOfDionysusGaiaCreateChip(dionysusGaia) {
+        return Util.getVisibleOrNone(!dionysusGaia.getInitCompleted());
+    }
+
     onDionysusGaiaRecoverChipClicked(param) {
         this.getStore().recoverBooze4Sure().then();
     }
@@ -143,10 +155,6 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         Router.gotoDionysusPage(this);
     }
 
-    getDionysusGaiaCreate(dionysusGaia) {
-        return dionysusGaia.getInitCompleted() ? "更新" : "下一步";
-    }
-
     getDionysusGaiaLabelOfMainType(dionysusGaia) {
         return this.isClassSell(dionysusGaia) ? "日期" : "主選項（款式、型號）";
     }
@@ -155,16 +163,40 @@ class ModularizedDionysusGaiaComponent extends BaseDionysusGaiaComponent {
         return this.isClassSell(dionysusGaia) ? "時段" : "副選項（顏色、尺寸）";
     }
 
+    getStyleOfVariantSetting = (dionysusGaia) => {
+        const alert = {
+            background: "linear-gradient(145deg, #f2d6d6, #e6b8b8)", // 沉穩暗紅漸層
+            border: "1.5px dashed #b85c5c", // 深紅虛線
+            cursor: "pointer",
+            borderRadius: "10px",
+            boxShadow: "inset 0 1px 3px rgba(255, 255, 255, 0.2), 0 2px 6px rgba(184, 92, 92, 0.25)",
+            color: "inherit", // 保持文字原本顏色
+            transition: "all 0.25s ease",
+            padding: "8px" // 可依需求調整
+        };
+        const visible = Util.getVisibleOrNone(dionysusGaia.getInitCompleted(), true);
+        return this.getStore().getIsNewBie() ? { ...visible, ...alert } : visible;
+    };
+
     getWrapInjectStyleOfDionysusGaiaAreaOfPhotoSetDiv(dionysusGaia) {
-        return Util.getVisibleOrNone(dionysusGaia.getInitCompleted(), true);
+        return this.getStyleOfVariantSetting(dionysusGaia);
     }
 
     getWrapInjectStyleOfDionysusGaiaAreaOfPriceSetDiv(dionysusGaia) {
-        return Util.getVisibleOrNone(dionysusGaia.getInitCompleted(), true);
+        return this.getStyleOfVariantSetting(dionysusGaia);
     }
 
     getWrapInjectStyleOfDionysusGaiaAreaOfQuantitySetDiv(dionysusGaia) {
-        return Util.getVisibleOrNone(dionysusGaia.getInitCompleted(), true);
+        return this.getStyleOfVariantSetting(dionysusGaia);
+    }
+
+    onTypeOfPropSelectedChange(value, param) {
+        if (this.getStore().getSelectedTypeOfProp() === 2) {
+            //1：商品 2：課程
+            //選到課程的spinner
+            this.getStore().cleanBriefMains();
+            this.getStore().cleanBriefSubs();
+        }
     }
 }
 

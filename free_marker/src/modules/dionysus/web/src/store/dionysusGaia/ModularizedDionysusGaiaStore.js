@@ -186,7 +186,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
         if (_.sum([this.getLengthOfBriefPhoto(), _.size(files)]) > MAXIMUM_IMAGE_OF_BOOZE)
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
         await this.handleIdOfBooze();
+
         const pathsOfImage = await Promise.all(files.map((file) => this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
+
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
     };
@@ -240,6 +242,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     };
 
     updateBooze4Sure = async () => {
+        const alertNewbie = !this.getInitCompleted();
         await this.handleIdOfBooze();
         if (this.getLengthOfBriefPhoto() === 0) return this.showErrorMsg4UpdateVisibility(`至少需要上傳一張「商品圖片」`);
         if (_.size(this.getName()) < 2) return this.showErrorMsg4UpdateVisibility(`「商品名稱」必須超過2個字元`);
@@ -252,7 +255,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
                 ...this.getObjectOfBooze(),
                 initCompleted: true,
                 visibility: true,
-                keywords: Util.generateUniversalKeywords(this.getName())
+                keywords: Util.generateUniversalKeywords(this.getName(), undefined, 5)
             },
             this.getIdOfBooze()
         );
@@ -265,7 +268,9 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             this.getIdOfBooze()
         );
         this.invalidateBooze({ ...result.value });
-        if (this.getInitCompleted()) this.getComponent().showInfoSnackMessage(`成功更新「${this.getName()}」商品`);
+        this.setIsNewBie(alertNewbie);
+        if (alertNewbie) this.getComponent().showInfoSnackMessage(`請繼續編輯「數量」、「價格」及各項「圖片」`);
+        else this.getComponent().showInfoSnackMessage(`成功更新「${this.getName()}」商品`);
     };
 
     modifySpecificAttribute() {
