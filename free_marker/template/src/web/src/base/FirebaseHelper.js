@@ -862,12 +862,12 @@ class FirebaseHelper extends BaseFirebase {
 
         // 格式化位元組數為人類可讀的 KB/MB/GB 格式
         const formatBytes = (bytes, decimals = 2) => {
-            if (bytes === 0) return '0 Bytes';
+            if (bytes === 0) return "0 Bytes";
             const k = 1024;
             const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
         };
 
         // 根據檔案名稱判斷 ContentType
@@ -875,10 +875,13 @@ class FirebaseHelper extends BaseFirebase {
             const extension = fileName.split(".").pop().toLowerCase();
             // 這裡僅列舉部分常見類型，實際應用中應包含完整的列表
             const mimeTypes = {
-                jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png",
-                pdf: "application/pdf", txt: "text/plain",
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                png: "image/png",
+                pdf: "application/pdf",
+                txt: "text/plain",
                 docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             };
             return mimeTypes[extension] || "application/octet-stream";
         };
@@ -938,7 +941,6 @@ class FirebaseHelper extends BaseFirebase {
             const downloadURL = await getDownloadURL(snapshot.ref);
             Util.appendInfo(`${uid} File available at:`, downloadURL);
             return downloadURL;
-
         } catch (error) {
             // 無論是逾時還是其他錯誤，都確保計時器被清除
             if (timerId) clearTimeout(timerId);

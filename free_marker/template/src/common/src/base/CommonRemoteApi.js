@@ -92,6 +92,7 @@ class CommonRemoteApi {
         const size = items.length;
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} batch submit => path:${path}, size:(${_.size(items)})`);
+        Util.appendInfo('${uid} batch submit items => ',items);
         const result = await firebase.submitDocuments(path, items);
         Util.appendInfo(`${uid} batch submit path:${path}, size:${size} succeed`);
         return result;
@@ -100,6 +101,7 @@ class CommonRemoteApi {
     async updateItems(path, items) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} batch update path:${path} size:(${_.size(items)})`);
+        Util.appendInfo('${uid} batch update items => ',items);
         const result = await firebase.updateDocuments(path, items);
         Util.appendInfo(`${uid} batch update path:${path}, size:${_.size(result)} succeed`);
         return result;
@@ -554,7 +556,9 @@ class CommonRemoteApi {
     async uploadStorageFile(blob, folder = "public", fileNameExtension) {
         const uid = Util.getRandomHashV2(10);
         Util.appendInfo(`${uid} start upload storage => folder:/${folder}`);
-        return await firebase.uploadStorageFile(blob, folder, fileNameExtension);
+        const result = await firebase.uploadStorageFile(blob, folder, fileNameExtension);
+        Util.appendInfo(`${uid} finish upload storage => url(${result})`);
+        return result;
     }
 
     reference(path, id, config = { asDoc: false }) {

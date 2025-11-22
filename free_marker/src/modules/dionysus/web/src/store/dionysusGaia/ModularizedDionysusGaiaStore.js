@@ -187,7 +187,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
             return this.getComponent().showWarningSnackMessage(`已超過數量${MAXIMUM_IMAGE_OF_BOOZE}張圖片`);
         await this.handleIdOfBooze();
 
-        const pathsOfImage = await Promise.all(files.map((file) => this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
+        const pathsOfImage = await Promise.all(files.map(async (file) => await this.apiOfImage.uploadStorageOfHref(this.getComponent(), file, this.getIdOfBooze())));
 
         this.pushBriefPhotos(...pathsOfImage.map((image) => Util.getObjectOfSpecifyKey(image, "href")));
         await this.apiOfBooze.updateBoozeItem(this.getComponent(), { photos: this.getBriefPhotos() }, this.getIdOfBooze());
