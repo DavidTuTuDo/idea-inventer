@@ -12,6 +12,7 @@
   "author": "davidtu<freshingmoon0725@gmail.com>",
   "license": "ISC",
   "dependencies": {
+    "@babel/runtime": "^7.28.4",
     "configerer": "^1.0.11",
     "crypto-js": "^4.0.0",
     "databazer": "^1.0.12",
@@ -21,7 +22,7 @@
     "moment": "^2.29.1",
     "puppeteer": "^22.6.0",
     "query-string": "^7.0.1",
-    "utiller": "^1.0.419"
+    "utiller": "^1.0.447"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",

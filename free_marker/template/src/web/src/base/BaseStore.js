@@ -1,4 +1,6 @@
-import { action, observable, isObservableObject, toJS } from "mobx";
+const edit = true;
+
+import { action, observable, isObservableObject, toJS, runInAction } from "mobx"; // [新增] 引入 runInAction
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
 import ClientRemoteApi from "./ClientRemoteApi";
@@ -75,6 +77,23 @@ class BaseStore extends ClientRemoteApi {
     snackVisibility = false;
 
     hasNextPageBehavior = true;
+
+    // ==========================================
+    // [新增] Loading Timeout 相關設定
+    // ==========================================
+
+    /** 預設 60 秒超時 */
+    @observable
+    loadingTimeoutSeconds = 60;
+
+    /** 是否啟用超時自動重置機制 */
+    @observable
+    enableLoadingTimeout = true;
+
+    /** 計時器 ID，不需要 observable */
+    _loadingTimer = null;
+
+    // ==========================================
 
     constructor(props) {
         super(props);
@@ -194,15 +213,78 @@ class BaseStore extends ClientRemoteApi {
         return !!this.parentNode;
     }
 
+    // ==========================================
+    // [修改] setState 邏輯
+    // ==========================================
     @action
     setState(state) {
         if (Util.isOrEquals(state, "loading", "stable", "error")) {
             Util.appendInfo(`${this.getComponent(true)?.getComponentName() ?? "[not ready]"} state changed => '${this.state}' -> '${state}'`);
+
             this.state = state;
+
+            // 1. 無論切換成什麼狀態，先清除舊的計時器
+            this._clearLoadingTimer();
+
+            // 2. 如果切換成 loading 且機制開啟，啟動計時器
+            if (state === "loading" && this.enableLoadingTimeout) {
+                this._startLoadingTimer();
+            }
         } else {
             Util.appendError(`5028 '${this.getClassName()}', state is ${state}`);
         }
     }
+
+    /** 內部私有：清除計時器 */
+    _clearLoadingTimer() {
+        if (this._loadingTimer) {
+            clearTimeout(this._loadingTimer);
+            this._loadingTimer = null;
+        }
+    }
+
+    /** 內部私有：啟動計時器 */
+    _startLoadingTimer() {
+        const self = this;
+        const duration = this.loadingTimeoutSeconds * 1000;
+
+        this._loadingTimer = setTimeout(() => {
+            // 使用 runInAction 確保在非 action 堆疊中修改 observable
+            runInAction(() => {
+                // 再次確認狀態是否仍為 loading (避免 race condition)
+                if (this.state === "loading") {
+                    Util.appendInfo(`[Timeout] ${this.getClassName()} loading 超過 ${this.loadingTimeoutSeconds} 秒，強制重置為 stable`);
+                    self.setState("stable");
+                    // 也可以考慮在這裡觸發一個錯誤訊息
+                    // this.errorMsg = "請求逾時，請稍後再試";
+                }
+            });
+        }, duration);
+    }
+
+    /**
+     * [新增需求 3] 動態修改超時秒數
+     * @param {number} seconds
+     */
+    @action
+    setLoadingTimeoutDuration(seconds) {
+        this.loadingTimeoutSeconds = seconds;
+    }
+
+    /**
+     * [新增需求 4] 停用/啟用超時機制
+     * @param {boolean} enabled
+     */
+    @action
+    setLoadingTimeoutEnabled(enabled) {
+        this.enableLoadingTimeout = enabled;
+        // 如果當下正在 loading 且被關閉，應該清除計時器
+        if (!enabled) {
+            this._clearLoadingTimer();
+        }
+    }
+
+    // ==========================================
 
     getState() {
         return this.state;
@@ -220,6 +302,8 @@ class BaseStore extends ClientRemoteApi {
     setErrorMsg(message) {
         this.state = `error`;
         this.errorMsg = message;
+        // Error 狀態也要清除計時器 (已在 setState 中處理，但這裡因為直接改 this.state，建議也呼叫一下)
+        this._clearLoadingTimer();
     }
 
     getErrorMsg() {
@@ -287,10 +371,10 @@ class BaseStore extends ClientRemoteApi {
     }
 
     /**
-     *  當viewDidMount時 可使用三個時態的切入介面
-     *  onInitialFetchBeginning()
-     *  fetch()
-     *  onInitialFetchCompleted()
+     * 當viewDidMount時 可使用三個時態的切入介面
+     * onInitialFetchBeginning()
+     * fetch()
+     * onInitialFetchCompleted()
      * */
     async onInitialFetchBeginning() {
         /** 執行在fetch開始之前的動作 */
@@ -408,7 +492,10 @@ class BaseStore extends ClientRemoteApi {
         return {};
     }
 
-    onComponentUnmount() {}
+    onComponentUnmount() {
+        // [新增] 確保元件銷毀時，計時器也被清除
+        this._clearLoadingTimer();
+    }
 }
 
 export default BaseStore;

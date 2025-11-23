@@ -138,7 +138,7 @@ class BaseComponent extends MuiComponent {
             const unSub = this.listOfFunctionOfUnsubscribe.shift();
             unSub();
         }
-        if (this.isNotNavigatorNComponentView()) {
+        if (this.isNotNavigatorNComponentNCprtView()) {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
         }
 
@@ -177,7 +177,7 @@ class BaseComponent extends MuiComponent {
         }
         this.cleanDisposableDialogComponent();
         this.viewInitial();
-        if (this.isNotNavigatorNComponentView()) {
+        if (this.isNotNavigatorNComponentNCprtView()) {
             window.removeEventListener("scroll", this.onScrollToBottomListener, true);
             window.addEventListener("scroll", this.onScrollToBottomListener, true);
         }
@@ -202,8 +202,8 @@ class BaseComponent extends MuiComponent {
         return _.isEqual(this.propsOfMobX.isComponentView, true);
     };
 
-    isNotNavigatorNComponentView() {
-        return !this.isNavigator() && !this.isComponentView();
+    isNotNavigatorNComponentNCprtView() {
+        return !this.isNavigator() && !this.isComponentView() && !this.isCPRT();
     }
 
     viewInitial() {
@@ -713,6 +713,10 @@ class BaseComponent extends MuiComponent {
     }
 
     isNavigator() {
+        return false;
+    }
+
+    isCPRT() {
         return false;
     }
 

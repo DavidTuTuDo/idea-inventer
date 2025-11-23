@@ -5454,6 +5454,10 @@ class ComponentBuilder extends BaseBuilder {
             baseGenerator.appendFunction('isNavigator', [], [], [], 'return true');
         }
 
+        if (_.isEqual(componentNode.getName(), 'infoOfCopyRight')) {
+            baseGenerator.appendFunction('isCPRT', [], [], [], 'return true');
+        }
+
         if (componentNode.isModuleComponent()) {
             const moduleGenerator = new ClassGenerator(Util.joinRespectingDot(this.genComponentRootPath, folderName, `${moduleClassName}.js`), this.nodeOfAncestor);
             moduleGenerator.appendClass(moduleClassName, {
@@ -6749,7 +6753,7 @@ class AppBuilder extends ComponentBuilder {
         )
 
         appGenerator.appendFunction(Util.camel('set', 'latestComponent'), ['component'], [], [],
-            `if(component instanceof BaseComponent && component.isNotNavigatorNComponentView())`,
+            `if(component?.isNotNavigatorNComponentNCprtView?.() && !component?.isDialogComponent?.())`,
             `this.latestComponent = component.getComponentInstance()`
         )
         for (const component of this.getGenComponent()) {
