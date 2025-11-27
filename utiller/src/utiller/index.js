@@ -3818,6 +3818,44 @@ class Utiller {
     // }
     /** ============== 排課系統公式 結束 ============== */
 
+    /**
+     * @typedef {Array<*>} Collection - 任何元素的陣列集合。
+     * @typedef {(item: *, index: number, collection: Collection) => Promise<any>} ItemTask - 對集合中的單個項目執行的非同步任務函式。
+     */
+
+    /**
+     * 異步並行處理集合中的每個項目，並等待所有任務完成。
+     * @param {Collection} collection - 要處理的元素陣列。預設為空陣列 []。
+     * @param {ItemTask} task - 必須是一個非同步函式 (async function)。對集合中的每個元素執行一次。
+     * @returns {Promise<Array<any>>} - 一個 Promise，解析為所有並行任務的結果陣列。
+     * @throws {Error} - 如果 task 參數不是一個 async function，則拋出錯誤。
+     */
+    execute4Tasks = async (collection = [], task) => {
+        // 1. 檢查 task 是否存在且為函式
+        if (!task || typeof task !== 'function') {
+            throw new Error('Task function is required and must be a function.');
+        }
+
+        // 2. 檢查 task 是否為 async function
+        // 在 JavaScript 中，可以透過 constructor.name 屬性來判斷函式類型
+        if (task.constructor.name !== 'AsyncFunction') {
+            throw new Error('Task function must be an asynchronous function (async function) to ensure proper Promise handling.');
+        }
+
+        // 3. 處理空集合
+        if (collection.length === 0) {
+            return Promise.resolve([]);
+        }
+
+        // Promise.all 等待 collection.map 生成的所有 Promise 都完成
+        return await Promise.all(collection.map(async (child, index) => {
+            // 由於 task 已經被保證是 async 函式，我們不需要 await task()，但為了與原始碼保持一致，可以保留。
+            // return await task(child, index, collection);
+            // 更簡潔且等效的寫法：
+            return task(child, index, collection);
+        }));
+    }
+
 }
 
 if (configerer.DEBUG_MODE) {

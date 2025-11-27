@@ -88,7 +88,7 @@ class BaseStore extends ClientRemoteApi {
 
     /** 是否啟用超時自動重置機制 */
     @observable
-    enableLoadingTimeout = true;
+    enableLoadingTimeout = false;
 
     /** 計時器 ID，不需要 observable */
     _loadingTimer = null;

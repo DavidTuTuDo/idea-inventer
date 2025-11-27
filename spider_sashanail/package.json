@@ -18,7 +18,7 @@
     "moment": "^2.29.1",
     "p-limit": "^7.1.1",
     "puppeteer": "^23.5.3",
-    "utiller": "^1.0.439"
+    "utiller": "^1.0.450"
   },
   "devDependencies": {
     "@babel/cli": "^7.28.3",

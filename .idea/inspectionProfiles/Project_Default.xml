@@ -34,6 +34,7 @@
     <inspection_tool class="JSReferencingMutableVariableFromClosure" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="JSXDomNesting" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="LossyEncoding" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="NonAsciiCharacters" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SqlAddNotNullColumnInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SqlStringLengthExceededInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="SqlUnusedCteInspection" enabled="false" level="WARNING" enabled_by_default="false" />

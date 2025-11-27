@@ -239,7 +239,7 @@ class Spider {
      * @page 客端帶上來的page(puppeteer Page)
      * @returns page
      * */
-    auto = async ({ page, incognito = false, href, timeout = 0}) => {
+    auto = async ({ page, incognito = false, href, timeout = 0 }) => {
         if (this.isPuTeerPage(page)) {
             if (!Util.isUndefinedNullEmpty(href)) await page.goto(href, { waitUntil: 'networkidle2', timeout });
             await this.randomViewport(page);
@@ -261,7 +261,7 @@ class Spider {
      * @param timeout page讀取的逾時 million-seconds
      * @returns {Promise<*[]>} 所有頁面(1~20)跑完之後的[...elements]
      */
-    async fetchElementsTilPageEnd({ page = undefined, href = '', fetcher = async(page) => [], selectorOfPagingN, signOfPagingN = '»', incognito = false, timeout = 0 }) {
+    async fetchElementsTilPageEnd({ page = undefined, href = '', fetcher = async (page) => [], selectorOfPagingN, signOfPagingN = '»', incognito = false, timeout = 0 }) {
         const p = await this.auto({ page, incognito, href, timeout });
         /**
          * do...while 循環說明
@@ -297,7 +297,7 @@ class Spider {
                 // - 如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
                 // - 如果沒有下一頁，返回 false，循環停止
                 // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
-            } while (await this.clickNextPageTilEnd({ page:p, selector: selectorOfPagingN, sign: signOfPagingN }));
+            } while (await this.clickNextPageTilEnd({ page: p, selector: selectorOfPagingN, sign: signOfPagingN }));
         } catch (error) {
             console.error(`抓取失敗: ${error.message}`);
             return [];
@@ -372,17 +372,28 @@ class Spider {
         }
     };
 
+    wait4Until = async (page, { timeout = 0 } = {}) => {
+        await page.waitForNavigation({
+            waitUntil: 'networkidle2', timeout
+        }).catch(() => {
+            // 忽略超時錯誤
+        });
+    };
+
 
     /** 向下載入的情況頁面，應該要往下滑到完全都載入完畢後，一次拿elements*/
-    fetchElementsTilPageScrollEnd = async ({ page, href = '', fetcher = async(page) => {}, stringOfLoadingSelector, incognito = false,timeout }) => {
-        const p= await this.auto({page,incognito,href,timeout});
-        await this.scrollToBottomAndCheck(p,{stringOfLoadingSelector})
+    fetchElementsTilPageScrollEnd = async ({
+                                               page, href = '', fetcher = async (page) => {
+        }, stringOfLoadingSelector, incognito = false, timeout
+                                           }) => {
+        const p = await this.auto({ page, incognito, href, timeout });
+        await this.scrollToBottomAndCheck(p, { stringOfLoadingSelector });
         /** 完成載入到底部 */
         const execution = await fetcher(p);
 
         await this.close(p);
         return execution;
-    }
+    };
 
 
     /**
@@ -580,7 +591,6 @@ class Spider {
 
             for (const [key, attrName] of Object.entries(attrMap)) {
                 const value = el[attrName] !== undefined ? el[attrName] : el.getAttribute(attrName);
-
                 result[key] = value !== null ? value : undefined;
             }
 
@@ -716,6 +726,58 @@ class Spider {
         }
     };
 
+    /**
+     * 針對複雜的塊級結構 (例如 <li> 內含 H1, H2, UL) 提取其主要文本塊。
+     * 將每個直接子元素 (H1, SPAN, H2, UL) 的 textContent 視為一個獨立的行。
+     * * @param {import('puppeteer').ElementHandle} elementHandle - 指向要解析的容器元素句柄 (例如 <li>.tab-con)。
+     * @returns {Promise<Array<string>>} - 包含分塊後、已去重的純文本陣列。
+     * * @example
+     * // 假設 child 是指向上層元素，我們首先找到 .tab-con 元素
+     * const tabConHandle = await child.$('.tab-con');
+     * * if (tabConHandle) {
+     * const textsArray = await extractBlockTexts(tabConHandle);
+     * console.log(textsArray);
+     * // 輸出範例: ["旗魚鬆五入組，加送旗魚鬆隨手包1入(官網限定)", "旗魚鬆-榮獲台中十大伴手禮...", ...]
+     * }
+     */
+    extractBlockTexts = async (elementHandle) => {
+        if (!elementHandle) {
+            return [];
+        }
+
+        // 在瀏覽器環境中執行操作
+        const results = await elementHandle.evaluate((element) => {
+            const texts = [];
+            const seen = new Set(); // 用於去重
+
+            // 遍歷 element (<li>) 的所有直接子元素
+            // 選擇器 ':scope > *' 確保只選取直接子元素 (H1, SPAN, H2, UL...)
+            const children = element.querySelectorAll(':scope > *');
+
+            children.forEach(child => {
+                // 排除腳本、樣式和圖片標籤
+                if (['SCRIPT', 'STYLE', 'IMG'].includes(child.tagName)) {
+                    return;
+                }
+
+                // 提取整個子元素及其所有後代元素的 textContent
+                let text = child.textContent.trim();
+
+                if (text.length > 0) {
+
+                    // 由於文本可能包含圖片的 alt 屬性（如 "laugh"），這裡不做特殊清理，
+                    // 但如果需要，可以在此處加入正則表達式清理掉不必要的文本片段。
+
+                    if (!seen.has(text)) {
+                        texts.push(text);
+                        seen.add(text);
+                    }
+                }
+            });
+            return texts;
+        });
+        return results;
+    };
 
     /**
      * [終極版] 持續滾動頁面到底部，直到確認所有內容加載完畢。
@@ -988,7 +1050,7 @@ class Spider {
         }
     }
 
-     close = async (page) => {
+    close = async (page) => {
         if (!page) return;
 
         try {
