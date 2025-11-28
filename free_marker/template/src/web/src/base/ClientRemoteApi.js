@@ -1,12 +1,7 @@
 const edit = true;
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import _ from "lodash";
-import Moment from "moment";
-import libpath from "path";
 import CommonPoolHelper from "./CommonPoolHelper";
 import CommonRemoteApi from "./CommonRemoteApi";
-import BaseComponent from "./BaseComponent";
-import firebase from "./FirebaseHelper";
 
 class ClientRemoteApi extends CommonRemoteApi {
     constructor(props) {
@@ -217,23 +212,34 @@ class ClientRemoteApi extends CommonRemoteApi {
 
     handleApiExecute(path, type, view) {
         if (view !== undefined) {
-            if (view instanceof BaseComponent) view.setLoadingViewVisibility(true);
-            else {
-                throw new ERROR(7006);
+            // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
+            if (view && typeof view.setLoadingViewVisibility === 'function') {
+                view.setLoadingViewVisibility(true);
+            } else {
+                // 如果 view 存在但沒有 setLoadingViewVisibility 方法，則拋出錯誤
+                // 註：這假設 BaseComponent 或其 Store wrapper 是唯一具有此方法的實例。
+                throw new ERROR(7006, `ClientRemoteApi: view must be a BaseComponent instance or its wrapper.`);
             }
         }
     }
 
     handleApiException(path, type, error, view) {
-        if (view !== undefined && view instanceof BaseComponent) {
-            const errorMsg = `${type} ${[path]}, ${error.message}`;
-            view.setSnackViewVisibility(true, errorMsg, { type: `error`, duration: 5000 });
+        if (view !== undefined) {
+            // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
+            if (view && typeof view.setSnackViewVisibility === 'function') {
+                const errorMsg = `${type} ${[path]}, ${error.message}`;
+                // 假設 setSnackViewVisibility 接受這三個參數
+                view.setSnackViewVisibility(true, errorMsg, { type: `error`, duration: 5000 });
+            }
         }
     }
 
     handleApiFinally(path, type, view) {
-        if (view !== undefined && view instanceof BaseComponent) {
-            view.setLoadingViewVisibility(false);
+        if (view !== undefined) {
+            // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
+            if (view && typeof view.setLoadingViewVisibility === 'function') {
+                view.setLoadingViewVisibility(false);
+            }
         }
     }
 }

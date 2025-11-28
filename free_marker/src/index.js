@@ -6730,15 +6730,15 @@ class AppBuilder extends ComponentBuilder {
         appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendImport(`FirebaseHelper`, `./base/FirebaseHelper`);
-
+        appGenerator.appendImport(`I18n`, `./i18n`);
         appGenerator.appendClass(`BaseApp`);
-
         appGenerator.appendImport(`{createRoot}`, `react-dom/client`);
         appGenerator.appendFunction(`mount`, [], [], [],
             `const container = document.getElementById('app');`,
             `const root = createRoot(container); // createRoot(container!) if you use TypeScript`,
             `root.render(this.getRenderView())`,
-            `FirebaseHelper.startAuthListener()`)
+            `FirebaseHelper.startAuthListener()`,
+            `I18n.startApplicationReactions()`)
 
         appGenerator.appendField(`store`, `new Store()`);
         appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);

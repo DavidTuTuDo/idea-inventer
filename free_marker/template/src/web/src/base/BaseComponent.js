@@ -4,7 +4,6 @@ import _ from "lodash";
 import React from "react";
 import moment from "moment";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
-import Store from "./BaseStore";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -325,10 +324,6 @@ class BaseComponent extends MuiComponent {
         }
     };
 
-    getEmptyStore() {
-        return new Store();
-    }
-
     /** 每個Component 自己要實作 */
     renderView() {
         return <div />;
@@ -425,8 +420,21 @@ class BaseComponent extends MuiComponent {
         history.push(path);
     }
 
+    /**
+     * 抽象方法：獲取 Store 實例。
+     * 子類別必須覆寫此方法，返回一個繼承自 BaseStore 的 Store 實例。
+     */
+    getEmptyStore() {
+        throw new Error(
+            `[BaseComponent Error] 'getEmptyStore()' must be implemented by subclass. ` +
+            `Please override this method in your component (e.g., return new MyStore(this.props)).`
+        );
+    }
+
+    /** getStore() 依賴於 props.store（MobX 注入的）或 getEmptyStore() */
     getStore() {
-        return this.getEmptyStore();
+        // MobX 傳統模式下，Store 應該通過 Props 傳入。
+        return this.propsOfMobX.store || this.getEmptyStore();
     }
 
     appendStyle(style) {
