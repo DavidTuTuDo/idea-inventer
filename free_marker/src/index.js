@@ -6480,6 +6480,10 @@ class AppBuilder extends ComponentBuilder {
         Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'template.i18n.index.js'),
             Util.joinRespectingDot(this.genSourcePath, 'i18n', 'index.js'), undefined, true);
 
+        Util.copySingleFile(Util.joinRespectingDot(this.freeMarkerRootPath, 'web.eslint.config.cjs'),
+            Util.joinRespectingDot(this.genRootPath, 'eslint.config.cjs'), undefined, true);
+
+
         /** 把專案裡的i18n/index複製到當前gen/i18n/index, 不然rapid build會有bug
          for (const sourceFile of Util.findFilePathBy(this.projectPlatformPath,
          (each) => Util.has(LANGUAGES_OF_SUPPORT, each.folderName) && _.isEqual('index', each.fileName))) {
@@ -6566,7 +6570,7 @@ class AppBuilder extends ComponentBuilder {
             projectDescription: this.nodeOfAncestor.description
         });
         await this.appendMustacheFile('webpack.config.js.mustache', Util.joinRespectingDot(this.genRootPath,
-            `webpack.config.js`), {titleOfProject: this.nodeOfAncestor.getTitle()});
+            `webpack.config.js`), { titleOfProject: this.nodeOfAncestor.getTitle() });
         await this.appendMustacheFile('web.babel.config.js', Util.joinRespectingDot(this.genRootPath,
             `babel.config.js`
         ));
