@@ -4241,7 +4241,7 @@ class StoreBuilder extends BaseBuilder {
                 // `this.${store} = new ${_.upperFirst(store)}()`,
             )
         }
-        baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}()`))
+        baseGenerator.appendConstructor(...stores.map(child => `this.${child} = new ${_.upperFirst(child)}(props)`))
         baseGenerator.needIndexFile('Store');
         await baseGenerator.persist();
     }
@@ -4679,7 +4679,9 @@ class StoreBuilder extends BaseBuilder {
         generator.appendImport(`Router`, '../../router');
         generator.appendImport(`i18n`, '../../i18n');
         generator.appendImport(`Config`, '../../config');
-        generator.appendImport(`{Application}`, '../../');
+        /** generator.appendImport(`{Application}`, '../../');
+         * lint檢查-> error Dependency cycle
+         * */
     }
 
     getDecorateFetchStrings(isObject = false, ...contents) {
