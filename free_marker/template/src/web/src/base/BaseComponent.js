@@ -426,8 +426,7 @@ class BaseComponent extends MuiComponent {
      */
     getEmptyStore() {
         throw new Error(
-            `[BaseComponent Error] 'getEmptyStore()' must be implemented by subclass. ` +
-            `Please override this method in your component (e.g., return new MyStore(this.props)).`
+            `[BaseComponent Error] 'getEmptyStore()' must be implemented by subclass. ` + `Please override this method in your component (e.g., return new MyStore(this.props)).`
         );
     }
 

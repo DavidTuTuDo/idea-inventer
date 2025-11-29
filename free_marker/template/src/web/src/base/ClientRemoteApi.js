@@ -213,7 +213,7 @@ class ClientRemoteApi extends CommonRemoteApi {
     handleApiExecute(path, type, view) {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
-            if (view && typeof view.setLoadingViewVisibility === 'function') {
+            if (view && typeof view.setLoadingViewVisibility === "function") {
                 view.setLoadingViewVisibility(true);
             } else {
                 // 如果 view 存在但沒有 setLoadingViewVisibility 方法，則拋出錯誤
@@ -226,7 +226,7 @@ class ClientRemoteApi extends CommonRemoteApi {
     handleApiException(path, type, error, view) {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
-            if (view && typeof view.setSnackViewVisibility === 'function') {
+            if (view && typeof view.setSnackViewVisibility === "function") {
                 const errorMsg = `${type} ${[path]}, ${error.message}`;
                 // 假設 setSnackViewVisibility 接受這三個參數
                 view.setSnackViewVisibility(true, errorMsg, { type: `error`, duration: 5000 });
@@ -237,7 +237,7 @@ class ClientRemoteApi extends CommonRemoteApi {
     handleApiFinally(path, type, view) {
         if (view !== undefined) {
             // 替換：移除 instanceof BaseComponent 檢查，改為檢查方法是否存在
-            if (view && typeof view.setLoadingViewVisibility === 'function') {
+            if (view && typeof view.setLoadingViewVisibility === "function") {
                 view.setLoadingViewVisibility(false);
             }
         }

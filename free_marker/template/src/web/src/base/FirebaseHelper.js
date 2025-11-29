@@ -1,4 +1,5 @@
 const edit = true;
+
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
 import BaseFirebase from "./BaseFirebase";
@@ -37,12 +38,22 @@ import {
     and
 } from "firebase/firestore";
 import { connectFunctionsEmulator, httpsCallable } from "firebase/functions";
-import { getDatabase } from "firebase/database";
-import { ref, uploadBytes, getDownloadURL, getStorage, listAll, deleteObject } from "firebase/storage";
-import libpath from "path";
+// import { getDatabase } from "firebase/database";
+import { ref, getDownloadURL, uploadBytesResumable, listAll, deleteObject } from "firebase/storage";
+/**
+
+ uploadBytesResumable 是 Firebase Storage Web SDK (v9+) 提供的一個更進階的上傳方法。
+ 簡單來說，你原本使用的 uploadBytes 是一個「一次性」的指令，就像把球丟出去，只能等結果（成功或失敗）；而 uploadBytesResumable 則像是建立一條「傳輸線」，你可以隨時監控進度、暫停、繼續傳輸，或是切斷（取消）傳輸。
+ 為什麼推薦改用它？
+ 在你提供的 FirebaseHelper.js 中，你希望實作 Timeout（逾時）機制。
+ 現狀 (uploadBytes)： 你目前使用 Promise.race。當時間到時，你的程式碼雖然 reject 了錯誤，前端看起來是停止了，但瀏覽器背後其實還在繼續上傳檔案，直到檔案傳完或瀏覽器判定網路斷線。這會浪費使用者的流量和頻寬。
+ 優化 (uploadBytesResumable)： 它會回傳一個 UploadTask 物件。這個物件有一個 .cancel() 方法。當 Timeout 發生時，你可以呼叫這個方法，真正地切斷網路連線，停止上傳行為。
+ */
+
+
 import event from "../event";
 
-const MAX_COUNT_OF_FIRESTORE_BATCH = 200;
+const MAX_COUNT_OF_FIRESTORE_BATCH = 500;
 
 const RemoteDo = {
     Query: 1, // fetch
@@ -71,11 +82,8 @@ class FirebaseHelper extends BaseFirebase {
             // 已經啟動了，或者沒有 Auth 實例
             return;
         }
-        const self = this;
-        // 啟動監聽，並將取消函數儲存起來
         this.unsubscribeAuth = onAuthStateChanged(this.auth(), (user) => {
-            self.user = user;
-            // 首次載入時和狀態變化時都會觸發
+            this.user = user; // 直接用 this 即可
             event.emitAuthStateChanged(user);
         });
     };
@@ -673,7 +681,7 @@ class FirebaseHelper extends BaseFirebase {
 
             // --- 2. 驗證 (Validation) for 'update' 類型 ---
             if (operationType === "update" && !docSnap.exists) {
-                throw new ERROR(9999, `846865468 document ${libpath.join(path, id)} not exist. Cannot update a non-existent document.`);
+                throw new ERROR(9999, `846865468 document ${Util.getUrlPath(path, id)} not exist. Cannot update a non-existent document.`);
             }
 
             // --- 3. 預測寫入內容 (Prediction) ---
@@ -915,37 +923,50 @@ class FirebaseHelper extends BaseFirebase {
         // 取得 Storage 參考 (假設 this.storage() 已經定義且返回 Storage 服務)
         const storageRef = ref(this.storage(), `${folder}/${storageFileName}`);
 
-        // --- 逾時機制 ---
+        // 1. 改用 uploadBytesResumable，它會馬上回傳一個 task 物件
+        const uploadTask = uploadBytesResumable(storageRef, file.blob, { contentType });
+
+        // 2. 建立逾時 Promise
         const timeoutPromise = new Promise((_, reject) => {
             timerId = setTimeout(() => {
-                const error = new Error(`Firebase Storage: Upload operation timed out after ${timeoutMs / 1000} seconds.`);
+                // 3. 【關鍵優化】時間到，直接命令 Firebase 停止上傳
+                uploadTask.cancel();
+
+                const error = new Error(`上傳逾時 (${timeoutMs / 1000}秒)`);
                 error.code = "storage/timeout";
                 reject(error);
             }, timeoutMs);
         });
 
+        /** 讓呼叫畫面可以監測上傳進度
+        uploadTask.on('state_changed',
+            (snapshot) => {
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log('上傳進度: ' + progress + '%');
+                // 這裡可以發送事件給 UI 更新進度條
+            }
+        );
+        */
+
         try {
-            // 取得上傳任務的 Promise，使用 file.blob 和正確的 metadata
-            const uploadTaskPromise = uploadBytes(storageRef, file.blob, { contentType });
+            // 4. 等待 上傳完成 或 逾時錯誤
+            // uploadTask 本身可以當作 Promise 使用
+            const snapshot = await Promise.race([uploadTask, timeoutPromise]);
 
-            // 使用 Promise.race 讓上傳和逾時競爭
-            const snapshot = await Promise.race([uploadTaskPromise, timeoutPromise]);
+            if (timerId) clearTimeout(timerId); // 成功了，清除計時器
 
-            // 成功上傳後，立即清除逾時計時器
-            if (timerId) clearTimeout(timerId);
-
-            // --- 成功後的處理 ---
-            Util.appendInfo(`${uid} ${storageFileName} own following meta: `, contentType);
-            Util.appendInfo(`${uid} File uploaded successfully.`);
-
+            // 取得網址
             const downloadURL = await getDownloadURL(snapshot.ref);
-            Util.appendInfo(`${uid} File available at:`, downloadURL);
             return downloadURL;
-        } catch (error) {
-            // 無論是逾時還是其他錯誤，都確保計時器被清除
-            if (timerId) clearTimeout(timerId);
 
-            Util.appendError(`${uid} Upload failed: ${error.message}`, error);
+        } catch (error) {
+            if (timerId) clearTimeout(timerId); // 清除計時器
+
+            // 判斷是否是因為取消而產生的錯誤
+            if (error.code === 'storage/canceled') {
+                Util.appendInfo("上傳已被取消 (Timeout)");
+            }
+
             throw error;
         }
     };

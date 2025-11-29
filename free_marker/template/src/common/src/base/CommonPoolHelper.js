@@ -1,4 +1,5 @@
 const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 
 class CommonPoolHelper {
@@ -35,6 +36,16 @@ class CommonPoolHelper {
             this.queues[queueName].terminate();
             delete this.queues[queueName];
         }
+    }
+
+    // 在 CommonPoolHelper 中
+    disableParallelMode() {
+        for (const queueName in this.queues) {
+            this.queues[queueName].setWorker(0); // 重新關閉閘門
+            // 選擇性：是否要清空佇列中還沒發送的請求？
+            // this.queues[queueName].clearTasks();
+        }
+        this.paralledMode = false;
     }
 }
 
