@@ -99,7 +99,7 @@ import fs from "fs";
         return filteredLines.join("\n").trim();
     }
 
-    async function uploadProducts() {
+    async function uploadBoozeVariants() {
         const ids = await api.fetchDocumentIdsOfBooze();
         console.log("current ids of Booze ==> ", ids);
         /** batch delete storage : 要記得firestore/storage/甚至firebase上所有的路徑(a/b/c/d.png)都是視覺化，真正要刪除的d.png並非是在 a/b/c底下，所以要針對每個檔案regEx去做CRUD */
@@ -126,6 +126,7 @@ import fs from "fs";
                         needAddress: true,
                         selectedTypeOfProp: 1,
                         visibility: true,
+                        initCompleted: true,
                         allowedOfEdit: false,
                         idOfAuthor: "6tirrjZd2ESAPD7RA64pd2N1Bdf2",
                         allowSelfPickUp: true,
@@ -207,7 +208,7 @@ import fs from "fs";
 
     // await Util.persistJsonFilePrettier("./names.js", await getAllNames());
     // await uploadPaymentOptions();
-    // await uploadProducts();
+    // await uploadBoozeVariants();
     // await uploadCatalogs();
     // console.log(`全桌壞光光！`)
     // console.log(await testOfAdminFetchItems());
