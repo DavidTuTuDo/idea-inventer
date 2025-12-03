@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.451",
+  "version": "1.0.452",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -26,6 +26,7 @@
     "node-html-parser": "^7.0.1",
     "pdf-parse": "^1.1.1",
     "prompt": "^1.1.0",
+    "puppeteer": "^24.31.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

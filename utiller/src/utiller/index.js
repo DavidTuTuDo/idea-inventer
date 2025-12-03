@@ -3861,8 +3861,8 @@ class Utiller {
 if (configerer.DEBUG_MODE) {
     (async () => {
           const utiller = new Utiller();
-            console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
-            console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
+            // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
+            // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
           // console.log(utiller.toPercentageDecimal(30))
           // console.log(utiller.getPriceOfPercentageBehavior(60,30, false));
           // console.log(utiller.generateAllCalendarLinks(utiller.getObjectOfStartEndDateTime('2025/11/10 ｜ 13:00 - 15:00')));

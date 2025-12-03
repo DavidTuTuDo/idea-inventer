@@ -1,4 +1,6 @@
 import { utiller as Util } from '../index.js';
+import { configerer } from "configerer";
+
 
 /** author:明悅
  * create time:Sun Oct 13 2024 02:27:45 GMT+0800 (Taipei Standard Time)
@@ -146,6 +148,7 @@ class Spider {
 
     visible = true;
 
+    /** 需要puppeteer的專案要自己在package.json 加上dependencies: "puppeteer":  */
     constructor(puppeteer, { visible = false, host = '' }) {
         this.puppeteer = puppeteer;
         this.visible = visible;
@@ -297,7 +300,7 @@ class Spider {
                 // - 如果成功點擊且有下一頁，返回 true，do 區塊會重新執行
                 // - 如果沒有下一頁，返回 false，循環停止
                 // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
-            } while (await this.clickNextPageTilEnd({ page: p, selector: selectorOfPagingN, sign: signOfPagingN }));
+            } while (await this.clickNextPageTilEnd({ page: p, selector: selectorOfPagingN, sign: signOfPagingN, timeout }));
         } catch (error) {
             console.error(`抓取失敗: ${error.message}`);
             return [];
@@ -338,7 +341,7 @@ class Spider {
                 }
             }
             if (!nextPageButton) {
-                console.log(`⚠️ 找不到下一頁按鈕 (»)`);
+                console.log(`⚠️ 找不到下一頁按鈕 (${sign})`);
                 return false;
             }
 
@@ -354,14 +357,7 @@ class Spider {
 
             // ==================== 第四步：點擊下一頁按鈕 ====================
             console.log(`🖱️ 點擊下一頁按鈕...`);
-            await nextPageButton.click();
-
-            // ==================== 第五步：等待頁面導航完成 ====================
-            await page.waitForNavigation({
-                waitUntil: 'networkidle2', timeout: 0
-            }).catch(() => {
-                // 忽略超時錯誤
-            });
+            await this.clickAndWait4Page(page, nextPageButton, { selectorOfAnchor: selector });
 
             console.log(`✅ 成功翻到下一頁`);
             return true;
@@ -369,6 +365,190 @@ class Spider {
         } catch (error) {
             console.log(`❌ 點擊下一頁出錯: ${error.message}`);
             return false;
+        }
+    };
+
+    /**
+     * 獲取元素快照：獲取元素的 outerHTML 作為其通用指紋
+     * @param {import('puppeteer').Page} page
+     * @param {string} selector
+     * @returns {Promise<string|null>} 元素的 outerHTML 或 null
+     */
+    getElementSnapshot = async (page, selector) => {
+        try {
+            // 先等待元素出現，避免快照失敗
+            const element = await page.waitForSelector(selector, { timeout: 1000 });
+            return await page.evaluate(el => el.outerHTML, element);
+        } catch (e) {
+            // 元素不存在或超時，返回 null
+            return null;
+        }
+    };
+
+    /**
+     * 點擊元素並智能等待。（通用版本：同時競賽 API 響應、導航和 DOM 變化）
+     *
+     * @param {import('puppeteer').Page} page - Puppeteer Page 物件
+     * @param {import('puppeteer').ElementHandle} element - 點擊的 ElementHandle
+     * @param {object} options - 選項物件
+     * @param {string} [options.selectorOfAnchor=null] - 用於偵測內容是否變化的 DOM 錨點選擇器 (如表格的第一行或數據容器)。若為 null 或空，則不進行 DOM 變化競賽。
+     * @param {number} [options.timeoutOfApiWatcher=500] - 網路監聽的超時時間（ms）。超過此時間未偵測到 API 即停止監聽。
+     * @param {number} [options.timeoutOfNavigation=30000] - 長等待（page.waitForResponse/Navigation/Function）的超時時間（ms）。
+     * @param {boolean} [options.specificity=false] - 是否使用更廣泛的網路資源類型來偵測 API。
+     */
+    clickAndWait4Page = async (
+        page,
+        element, {
+            selectorOfAnchor = null, // 移入 options
+            timeoutOfApiWatcher = 500,
+            timeoutOfNavigation = 30000,
+            specificity = false
+        } = {}
+    ) => {
+        let apiDetected = false;
+        let detectedApiUrl = null;
+        let oldSnapshot = null; // 儲存點擊前的 DOM 快照
+        const NO_CHANGE_ERROR = '[已到最後一頁]後並未re-render頁面列表(例：...18 -> 19[current]...)';
+        const DOM_UPDATE_DELAY_MS = 365; // 快速跳出延遲時間
+
+        // API 資源類型定義
+        const API_RESOURCES = ['xhr', 'fetch'];
+        const EXPANDED_API_RESOURCES = ['xhr', 'fetch', 'websocket', 'eventsource', 'other'];
+        const API = specificity ? EXPANDED_API_RESOURCES : API_RESOURCES;
+
+        // 定義 Request 監聽函數
+        const requestListener = request => {
+            if (API.includes(request.resourceType())) {
+                if (!apiDetected) { // 只記錄第一個 API
+                    apiDetected = true;
+                    detectedApiUrl = request.url();
+                    page.off('request', requestListener);
+                    console.log(`📡 偵測到 API 請求 (${request.resourceType()}): ${detectedApiUrl}`);
+                }
+            }
+        };
+
+        console.log(`🖱️ 執行點擊...`);
+
+        // ==================== 步驟 1: 獲取快照 ====================
+        if (selectorOfAnchor) {
+            oldSnapshot = await this.getElementSnapshot(page, selectorOfAnchor);
+            if (oldSnapshot) {
+                console.log(`📸 成功獲取錨點快照 (${selectorOfAnchor}，長度: ${oldSnapshot.length})`);
+            } else {
+                console.log(`⚠️ 無法獲取錨點快照，DOM 變化偵測將被忽略。`);
+            }
+        }
+
+        await element.click();
+
+        // ==================== 步驟 2 & 3：監聽 API (由 timeoutOfApiWatcher 控制超時) ====================
+        page.on('request', requestListener);
+
+        try {
+            await Promise.race([
+                // 競賽條件：API 偵測和 timeoutOfApiWatcher
+                new Promise(resolve => {
+                    let checkInterval;
+                    const timeoutId = setTimeout(() => {
+                        clearInterval(checkInterval);
+                        if (!apiDetected) resolve('TIMEOUT_NO_API');
+                    }, timeoutOfApiWatcher);
+
+                    checkInterval = setInterval(() => {
+                        if (apiDetected) {
+                            clearTimeout(timeoutId);
+                            clearInterval(checkInterval);
+                            resolve('API_FIRED');
+                        }
+                    }, 50);
+                })
+            ]);
+
+        } catch (e) {
+            console.warn('Race 過程中發生錯誤:', e.message);
+        }
+
+        // 確保在函數結束前停止所有剩餘的 request 監聽
+        page.off('request', requestListener);
+
+        // ==================== 步驟 4：長等待邏輯 (兼容 AJAX 和 非 AJAX 導航) ====================
+
+        if (apiDetected && detectedApiUrl) {
+            // 偵測到 API 請求，切換到同時等待 Response, Navigation, 和 DOM 變化
+            console.log(`✅ 偵測到 API，切換至長等待 (兼容 AJAX/導航/DOM，${timeoutOfNavigation}ms)...`);
+
+            const raceConditions = [
+                // 條件 A: 等待特定的 API 響應完成 (處理 AJAX 更新)
+                page.waitForResponse(response =>
+                        response.url() === detectedApiUrl && response.status() >= 200 && response.status() < 300,
+                    { timeout: timeoutOfNavigation }
+                ),
+
+                // 條件 B: 等待頁面導航完成 (處理非 AJAX 導航)
+                page.waitForNavigation({
+                    waitUntil: 'networkidle2',
+                    timeout: timeoutOfNavigation
+                }).catch(() => {
+                    return 'NAVIGATION_TIMEOUT';
+                })
+            ];
+
+            // 條件 C: 只有在成功獲取快照時，才加入 DOM 變化競賽
+            if (oldSnapshot) {
+                raceConditions.push(
+                    page.waitForFunction(
+                        (selector, oldSnap) => {
+                            const el = document.querySelector(selector);
+                            // 判斷條件：元素不存在、或存在但 outerHTML 不等於舊快照
+                            return !el || el.outerHTML !== oldSnap;
+                        },
+                        // 使用與其他條件相同的長超時，讓最快的條件獲勝
+                        { timeout: timeoutOfNavigation },
+                        selectorOfAnchor,
+                        oldSnapshot
+                    ).catch(e => {
+                        // 如果 DOM 變化檢查超時，我們不拋出錯誤，讓 API/導航繼續競爭
+                        if (e.name === 'TimeoutError') return 'DOM_CHANGE_TIMEOUT';
+                        throw e; // 拋出其他非超時錯誤
+                    })
+                );
+            }
+
+            try {
+                await Promise.race(raceConditions);
+                console.log(`✅ 等待條件滿足（API 響應、頁面導航或 DOM 變化已完成）。`);
+
+            } catch (e) {
+                if (e.name === 'TimeoutError') {
+                    console.log(`⚠️ 長等待超時，API/導航可能發生錯誤或頁面載入極慢。`);
+                } else {
+                    throw e;
+                }
+            }
+
+        } else {
+            // 沒有偵測到 API (timeoutOfApiWatcher 結束)
+
+            // 只有在提供了錨點快照時，我們才進行最終檢查，並拋出 NO_CHANGE_ERROR
+            if (oldSnapshot) {
+                const newSnapshot = await this.getElementSnapshot(page, selectorOfAnchor);
+
+                if (newSnapshot === oldSnapshot) {
+                    // 如果沒有 API/導航，且快照沒有改變，則視為已是最後一頁
+                    console.log(`❌ 未偵測到 API/導航，且 DOM 錨點無變化。拋出未變化錯誤。`);
+                    throw new Error(NO_CHANGE_ERROR);
+                }
+                // 即使沒有 API，但 DOM 變了，我們給予 DOM 延遲等待
+                console.log(`✅ 未偵測到 API，但 DOM 錨點有變化，等待 DOM 穩定。`);
+
+            } else {
+                // 沒有 API，也沒有快照資訊，純粹等待延遲時間
+                console.log(`✅ ${timeoutOfApiWatcher}ms 內未偵測到 API，無快照比對，等待 DOM 穩定。`);
+            }
+
+            // 執行 DOM 延遲等待
+            await Util.syncDelay(DOM_UPDATE_DELAY_MS);
         }
     };
 
@@ -1080,7 +1260,58 @@ class Spider {
         await this.browser.close();
     };
 
-
 }
 
+if (configerer.DEBUG_MODE) {
+    (async () => {
+        const visible = true
+        const spider  = new Spider(require('puppeteer'),{visible});
+        await spider.initial();
+        async function runNextPageTilEndSample() {
+            const fetcher = async (page) => {
+                const selector = '.mainBody .rlist #songlist > tr';
+                const rows = await page.$$(selector);
+                return await Promise.all(rows.map(async (row) => {
+                    const inner = await row.$$('td');
+                    const obj = {};
+                    for(let i = 0; i < inner.length; i++) {
+                        const target = inner[i];
+                        switch (i) {
+                            case 0:
+                                obj.name = await spider.fetchAttributeOfEl(target,'a','innerText');
+                                obj.href = await spider.fetchAttributeOfEl(target,'a','href');
+                                break;
+                            case 1:
+                                obj.lyricist = await spider.fetchAttributeOfEl(target,'','innerText');
+                                break;
+                            case 2:
+                                obj.composer = await spider.fetchAttributeOfEl(target,'','innerText');
+                                break;
+                            case 3:
+                                obj.popularLevel = await spider.fetchAttributeOfEl(target,'','innerText');
+                                break;
+                            case 4:
+                                obj.createTime = await spider.fetchAttributeOfEl(target,'','innerText');
+                                break;
+                        }
+                    }
+                    return obj;
+                }));
+            }
+
+            const result = await spider.fetchElementsTilPageEnd({
+                href: 'https://www.91pu.com.tw/singer/2015/0521/23.html',
+                selectorOfPagingN: '.mainBody .rlist .page > a',
+                signOfPagingN: '下一頁 >',
+                selectorOfAnchor: '.mainBody .rlist #songlist',
+                fetcher
+            })
+            await Util.persistJsonFilePrettier('./temp/sampleOfClickNextPageEnd.json', result);
+            await spider.terminate();
+            return 0;
+        }
+        // console.log(await runNextPageTilEndSample());
+        // console.log(`dinter`)
+    })();
+}
 export default Spider;
