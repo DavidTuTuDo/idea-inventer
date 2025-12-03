@@ -112,7 +112,7 @@ import { configerer } from "configerer";
  * page.setUserAgent(userAgent),設置頁面發送的 User-Agent 字串。
  * page.setExtraHTTPHeaders(headers),設置該頁面發送的額外 HTTP 請求頭 (Headers)。
  * ======================================================================
- * 知識點：(page專用)
+ * 知識點：(puppeteer對於selector概念)
  * 例如：<div class='page sidebar' id='mainBody' /div>
  *
  * '#'  =>用在id        表示法 #mainBody
@@ -120,7 +120,7 @@ import { configerer } from "configerer";
  * ''    =>用在tag      表示法 div
  *
  * selector 的範例(string) '#main .content div'
- *
+ * 進階用法(nth-child語法) =>'table.product-list tbody tr:nth-child(1) a'
  * 想要指到某個element => await page.$('${selector}')
  * (1個$)
  * 想要拿到到某個elements(陣列) await page.$$('${selector} > *') =>['<p />','<a />']
@@ -134,11 +134,6 @@ import { configerer } from "configerer";
  * 如果是'... > *'    => selector: 'a'
  * 如果是'... > div'  => selector: '.dddd > a'
  * 注意再拿子元素做事時的小細節！
- *
-
-
- /**
-
  */
 class Spider {
 
