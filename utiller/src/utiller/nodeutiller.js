@@ -411,7 +411,7 @@ class NodeUtiller extends Utiller {
             this.insertToArray(splited, indexOfRunManager,
                 `<configuration name="${packageName}" 
         type="NodeJSConfigurationType" 
-        path-to-node="$USER_HOME$/.nvm/versions/node/v18.19.1/bin/node" 
+        path-to-node="$USER_HOME$/.nvm/versions/node/v20.19.5/bin/node" 
         node-parameters="--require @babel/register" 
         path-to-js-file="${libpath.resolve(dirPath)}/src/index.js" 
         working-dir="${libpath.resolve(dirPath)}" >`,

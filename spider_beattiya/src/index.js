@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer';
  *  create time:Fri Nov 14 2025 02:39:42 GMT+0800 (Taiwan Standard Time)
  */
 const ENABLE_OF_OPEN_BROWSER = false;
-const MAXIMUM_PAGES_OF_FETCHER = 10;
+const MAXIMUM_PAGES_OF_FETCHER = 7;
 
 class beattiya_spider extends Spider {
 

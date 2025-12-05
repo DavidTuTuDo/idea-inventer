@@ -1,6 +1,6 @@
 import { utiller as Util } from '../index.js';
 import { configerer } from "configerer";
-
+import _ from 'lodash';
 
 /** author:明悅
  * create time:Sun Oct 13 2024 02:27:45 GMT+0800 (Taipei Standard Time)
@@ -124,7 +124,7 @@ import { configerer } from "configerer";
  * 想要指到某個element => await page.$('${selector}')
  * (1個$)
  * 想要拿到到某個elements(陣列) await page.$$('${selector} > *') =>['<p />','<a />']
- * (2個$，然後 '${seletor} > *')
+ * (2個$，然後 '${selector} > *')
  *
  * 有fetchAttributesOfEl 去拿到 <tag id='123' data-name='shit' data-id='1' />innerText  </tag>
  * 也可以自己用await element.eval(el, attrMap = {id:123,data-name:shit}) => el.getAttribute()
@@ -134,6 +134,99 @@ import { configerer } from "configerer";
  * 如果是'... > *'    => selector: 'a'
  * 如果是'... > div'  => selector: '.dddd > a'
  * 注意再拿子元素做事時的小細節！
+ *
+ * selector選項裡：
+ * ======================================================================
+ * 以下是一些在 Puppeteer 中常用的、且功能強大的選擇器類型：
+ *
+ * ## ✨ 基礎選擇器 (Basic Selectors)
+ *
+ * 這些是最常見和最簡單的選擇器。
+ *
+ * * **類型 (Type) 選擇器:** 選擇所有指定 **標籤名稱** 的元素。
+ *     * 範例：`a` (選擇所有 `<a>` 標籤)
+ * * **類別 (Class) 選擇器:** 選擇具有特定 **CSS class** 的元素。
+ *     * 範例：`.button-primary` (選擇所有 class 包含 `button-primary` 的元素)
+ * * **ID 選擇器:** 選擇具有特定 **ID** 的元素 (ID 在一個頁面中應是唯一的)。
+ *     * 範例：`#login-form` (選擇 ID 為 `login-form` 的元素)
+ * * **通用 (Universal) 選擇器:** 選擇所有元素。
+ *     * 範例：`*`
+ *
+ * ---
+ *
+ * ## 🔗 組合器 (Combinators)
+ *
+ * 組合器用於描述兩個選擇器之間的**關係**，讓您能根據元素在 DOM 樹中的位置來選擇目標。
+ *
+ * * **後代 (Descendant) 選擇器 (空格):** 選擇作為另一個元素 **後代** 的所有元素 (可以隔代)。
+ *     * 範例：`#menu a` (選擇在 ID 為 `menu` 的元素內的所有 `<a>` 標籤)
+ * * **子元素 (Child) 選擇器 (`>`):** 選擇作為另一個元素 **直接子元素** 的所有元素 (不能隔代)。
+ *     * 範例：`ul > li` (選擇作為 `<ul>` 直接子元素的 `<li>` 標籤)
+ * * **相鄰同級 (Adjacent Sibling) 選擇器 (`+`):** 選擇緊接在另一個元素**後面**的同級元素。
+ *     * 範例：`h2 + p` (選擇緊接在 `<h2>` 後面的第一個 `<p>` 標籤)
+ * * **通用同級 (General Sibling) 選擇器 (`~`):** 選擇跟在另一個元素**後面**的**所有**同級元素。
+ *     * 範例：`h2 ~ p` (選擇跟在 `<h2>` 後面的所有 `<p>` 標籤)
+ *
+ * ---
+ *
+ * ## 📐 屬性選擇器 (Attribute Selectors)
+ *
+ * 根據 HTML 元素的 **屬性** 及其 **值** 來選擇元素。
+ *
+ * * **精確匹配:** 選擇具有特定屬性且其值**完全等於**指定值的元素。
+ *     * 範例：`[target="_blank"]` (選擇 `target` 屬性值為 `_blank` 的元素)
+ * * **包含子字串 (`*=`):** 選擇屬性值**包含**指定子字串的元素。
+ *     * 範例：`[class*="icon-"]` (選擇 class 中包含 `icon-` 的元素)
+ * * **開頭匹配 (`^=`):** 選擇屬性值**以**指定子字串**開頭**的元素。
+ *     * 範例：`[href^="/user/"]` (選擇 `href` 以 `/user/` 開頭的連結)
+ * * **結尾匹配 (`$=`):** 選擇屬性值**以**指定子字串**結尾**的元素。
+ *     * 範例：`[src$=".png"]` (選擇 `src` 以 `.png` 結尾的圖片)
+ * * **具有屬性:** 選擇**具有**特定屬性的元素，不論其值為何。
+ *     * 範例：`a[disabled]` (選擇具有 `disabled` 屬性的 `<a>` 標籤)
+ *
+ * ---
+ *
+ * ## 🏷️ 偽類 (Pseudo-classes)
+ *
+ * 偽類用於根據元素在頁面中的**狀態**、**位置**或**其他非結構性特徵**來選擇元素。
+ *
+ * * **表單狀態相關:**
+ *     * `:checked` (選擇被選中的複選框或單選按鈕)
+ *     * `:disabled` (選擇被禁用的表單元素)
+ *     * `:enabled` (選擇可用的表單元素)
+ * * **連結/使用者行為相關:**
+ *     * `:hover`, `:active`, `:focus` (Puppeteer 較少用於選擇，常用於模擬行為)
+ * * **結構性偽類 (類似 $`:nth-child`$ 和 $`:nth-of-type`$):**
+ *     * `:first-child` (選擇父元素的第一個子元素)
+ *     * `:last-child` (選擇父元素的最後一個子元素)
+ *     * `:first-of-type` (選擇父元素中該類型標籤的第一個)
+ *     * `:last-of-type` (選擇父元素中該類型標籤的最後一個)
+ *     * `:only-child` (選擇是父元素**唯一**子元素的元素)
+ *     * `:not(selector)` (選擇**不匹配**括號內選擇器的元素 - 非常有用!)
+ *         * 範例：`div:not(.hidden)` (選擇 class 不包含 `hidden` 的 `<div>`)
+ *
+ * ---
+ *
+ * ## 🌐 Puppeteer 專有的 XPath 選擇器
+ *
+ * 雖然 Puppeteer 主要使用 CSS 選擇器，但它也提供了專門的方法來使用 **XPath** (XML Path Language)，這在某些情況下，尤其是當您需要根據**文本內容**或更複雜的 DOM 結構關係來選擇元素時，會非常有用。
+ *
+ * * `page.waitForXPath(xpath)`
+ * * `page.$x(xpath)`
+ *
+ * **XPath 範例:**
+ * * `//button[text()='Submit']` (選擇文本內容為 `Submit` 的所有 `<button>`)
+ * * `//div[contains(@class, 'card')]` (選擇 class 中包含 `card` 的所有 `<div>`)
+ *
+ * XPath 的選擇能力比 CSS 選擇器更強大，建議在 CSS 選擇器無法滿足需求時使用。
+ *
+ * 您主要需要熟練掌握的是 **ID**、**Class**、**組合器** (空格和 $`>`$)、**屬性選擇器**和 **`:not()`** 偽類，這足以應對絕大多數的網頁抓取任務。
+ *
+ * ---
+ *
+ * **❓ 您是否有特定的元素或網頁結構想要定位，我可以幫您設計一個選擇器嗎？**
+ *
+ *
  */
 class Spider {
 
@@ -150,7 +243,9 @@ class Spider {
         this.host = host;
     }
 
-    getBrowser = async () => {
+
+
+    establishBrowserCore = async () => {
         const browser = await this.puppeteer.launch({
             headless: !this.visible
         });
@@ -158,12 +253,14 @@ class Spider {
         return browser;
     };
 
+    getCurrentBrowser = () => this.browser;
+
     /**
      * 啟動puppeteer的必備必備！
      * @returns {Promise<void>}
      */
     initial = async () => {
-        this.browser = await this.getBrowser();
+        this.browser = await this.establishBrowserCore();
     };
 
     /** 取得桌機開啟時的網頁RWD狀態
@@ -172,9 +269,10 @@ class Spider {
      * @param type=['desktop','mobile','tablet'] 為蛇設定viewport
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
+     * @param cookies=[] 開啟頁面預載入一個cookie(很多社群都把token/session auth放在cookies)
      * @returns page
      * */
-    getPuTeerPage = async ({ browser = this.browser, type = 'desktop', incognito = false, href = '', timeout = 0 }) => {
+    getPuTeerPage = async ({ browser = this.browser, type = 'desktop', incognito = false, href = '', timeout = 0, cookies }) => {
         let page = undefined;
         if (incognito) {
             const context = await browser.createBrowserContext();
@@ -182,7 +280,15 @@ class Spider {
         } else {
             page = await browser.newPage();
         }
+
         await this.randomViewport({ page, type });
+
+        /** inject cookies 到 page裡面*/
+        if (!Util.isUndefinedNullEmpty(href) && _.size(cookies) > 0) {
+            await page.goto(href, { waitUntil: 'domcontentloaded' });
+            await page.setCookie(...cookies);
+        }
+
         if (!Util.isUndefinedNullEmpty(href)) await page.goto(href, { waitUntil: 'networkidle2', timeout });
         return page;
     };
@@ -201,8 +307,8 @@ class Spider {
     /** 取得乾淨的無載入href的page
      * @returns page
      * */
-    getPageOfSilent = async ({ browser = this.browser, type = 'desktop', timeout = 0 }) => {
-        return this.getPuTeerPage({ browser, type, timeout });
+    getPageOfSilent = async ({ browser = this.browser, type = 'desktop', timeout = 0 , cookies = []}) => {
+        return this.getPuTeerPage({ browser, type, timeout, cookies });
     };
 
     /** 取得一個新的 page,context,記得要用this.close(instance)
@@ -211,9 +317,10 @@ class Spider {
      * @param type=['desktop','mobile','tablet'] 為蛇設定viewport
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
+     * @param cookies=[] 開啟頁面預載入一個cookie(很多社群都把token/session auth放在cookies)
      * @returns page */
-    activatePage4Load = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, incognito = false }) => {
-        return await this.getPuTeerPage({ browser, href, type, timeout, incognito });
+    activatePage4Load = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, incognito = false, cookies = [] }) => {
+        return this.getPuTeerPage({ browser, href, type, timeout, incognito, cookies });
     };
 
     /** 取得一個新的 {page,context} 並且執行fetcher
@@ -223,9 +330,10 @@ class Spider {
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
      * @param fetcher=async(page) 直接把task包進來頁面處理，免得每次都要newPage(),page.close()/context.close()
+     * @param cookies=[] 開啟頁面預載入一個cookie(很多社群都把token/session auth放在cookies)
      * @returns {page}|page */
-    activatePage4Task = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, fetcher = async (page) => true, incognito = false }) => {
-        const page = await this.activatePage4Load({ browser, href, type, timeout, incognito });
+    activatePage4Task = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, fetcher = async (page) => true, incognito = false, cookies = [] }) => {
+        const page = await this.activatePage4Load({ browser, href, type, timeout, incognito, cookies });
         /** 執行網頁要執行的task */
         const execution = await fetcher(page);
 
@@ -531,7 +639,7 @@ class Spider {
 
                 if (newSnapshot === oldSnapshot) {
                     // 如果沒有 API/導航，且快照沒有改變，則視為已是最後一頁
-                    console.log(`❌ 未偵測到 API/導航，且 DOM 錨點無變化。拋出未變化錯誤。`);
+                    console.log(`✅ 未偵測到 API/導航，且 DOM 錨點無變化。拋出未變化錯誤。`);
                     throw new Error(NO_CHANGE_ERROR);
                 }
                 // 即使沒有 API，但 DOM 變了，我們給予 DOM 延遲等待
@@ -556,12 +664,17 @@ class Spider {
     };
 
 
-    /** 向下載入的情況頁面，應該要往下滑到完全都載入完畢後，一次拿elements*/
+    /** 向下載入的情況頁面，應該要往下滑到完全都載入完畢後，一次拿elements
+     * @return [...object] 透過fetcher和page可以拿到的制式化捲軸資料
+     * */
     fetchElementsTilPageScrollEnd = async ({
                                                page, href = '', fetcher = async (page) => {
         }, stringOfLoadingSelector, incognito = false, timeout
                                            }) => {
+
         const p = await this.auto({ page, incognito, href, timeout });
+
+        await fetcher(p);
         await this.scrollToBottomAndCheck(p, { stringOfLoadingSelector });
         /** 完成載入到底部 */
         const execution = await fetcher(p);
@@ -957,19 +1070,21 @@ class Spider {
     /**
      * [終極版] 持續滾動頁面到底部，直到確認所有內容加載完畢。
      * 整合了「重試機制」與「Loading Bar 消失檢查」，確保動態內容完全載入。
-     *
      * @param {import('puppeteer').Page} page - Puppeteer 的 Page 實例。
      * @param {object} options - 配置參數物件。
      * @param {number} [options.minDelay=1000] - 每次滾動後的最小固定等待時間 (毫秒)。
      * @param {number} [options.maxRetries=3] - 高度未變化時的最大重試次數。
      * @param {string|null} [options.stringOfLoadingSelector=undefined] - (選填) Loading畫遍 的選擇器。如果有傳入，會額外(向下生長的元素拿取中)等待此元素消失。
      * @param {number} [options.loadingTimeout=5000] - 等待 Loading Bar 消失的最大時間。
+     * @param {promise} fetcher - 有些網站會從dom拿掉(recycle view去回收)滑過去的頁面，所以要邊滑邊用fetcher
+     *
      */
     scrollToBottomAndCheck = async (page, {
         minDelay = 2000,
         maxRetries = 3,
         stringOfLoadingSelector = undefined,
-        loadingTimeout = 6000
+        loadingTimeout = 6000,
+        fetcher
     } = {}) => {
         console.log("🚀 開始執行智能滾動檢查...");
 
@@ -987,6 +1102,7 @@ class Spider {
             if (stringOfLoadingSelector) {
                 // 我們使用剛才優化的函數，確保 Loading Bar 真的跑完了
                 await this.waitForLoadingToVanish(page, stringOfLoadingSelector, loadingTimeout);
+                if(_.isFunction(fetcher)) await fetcher(page)
             }
 
             // 4. 檢查高度變化
@@ -1090,11 +1206,6 @@ class Spider {
             // throw new Error(errorMessage);
         }
     };
-
-    async finish() {
-        // this.printSucceedFailureLog();
-        await this.browser.close();
-    }
 
     async clickSolution(page, element) {
         await page.evaluate((el) => {
@@ -1259,39 +1370,23 @@ class Spider {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        const visible = true
+        const visible = true;
         const spider  = new Spider(require('puppeteer'),{visible});
         await spider.initial();
+
+        /** 用91歌曲列表(有下一頁按鈕的機制)當作爬蟲機制 */
         async function runNextPageTilEndSample() {
             const fetcher = async (page) => {
                 const selector = '.mainBody .rlist #songlist > tr';
                 const rows = await page.$$(selector);
-                return await Promise.all(rows.map(async (row) => {
-                    const inner = await row.$$('td');
-                    const obj = {};
-                    for(let i = 0; i < inner.length; i++) {
-                        const target = inner[i];
-                        switch (i) {
-                            case 0:
-                                obj.name = await spider.fetchAttributeOfEl(target,'a','innerText');
-                                obj.href = await spider.fetchAttributeOfEl(target,'a','href');
-                                break;
-                            case 1:
-                                obj.lyricist = await spider.fetchAttributeOfEl(target,'','innerText');
-                                break;
-                            case 2:
-                                obj.composer = await spider.fetchAttributeOfEl(target,'','innerText');
-                                break;
-                            case 3:
-                                obj.popularLevel = await spider.fetchAttributeOfEl(target,'','innerText');
-                                break;
-                            case 4:
-                                obj.createTime = await spider.fetchAttributeOfEl(target,'','innerText');
-                                break;
-                        }
-                    }
-                    return obj;
-                }));
+                return await Util.execute4Tasks(rows, async (row) => ({
+                    name: await spider.fetchAttributeOfEl(row, 'td:nth-child(1) > a', 'innerText'),
+                    href: await spider.fetchAttributeOfEl(row, 'td:nth-child(1) > a', 'href'),
+                    lyricist: await spider.fetchAttributeOfEl(row, 'td:nth-child(2)', 'innerText'),
+                    composer: await spider.fetchAttributeOfEl(row, 'td:nth-child(3)', 'innerText'),
+                    popularLevel: await spider.fetchAttributeOfEl(row, 'td:nth-child(4)', 'innerText'),
+                    createTime: await spider.fetchAttributeOfEl(row, 'td:nth-child(5)', 'innerText')
+                }))
             }
 
             const result = await spider.fetchElementsTilPageEnd({
@@ -1303,10 +1398,10 @@ if (configerer.DEBUG_MODE) {
             })
             await Util.persistJsonFilePrettier('./temp/sampleOfClickNextPageEnd.json', result);
             await spider.terminate();
-            return 0;
+            return reuslt;
         }
+
         // console.log(await runNextPageTilEndSample());
-        // console.log(`dinter`)
     })();
 }
 export default Spider;

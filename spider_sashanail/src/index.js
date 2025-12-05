@@ -349,7 +349,7 @@ class sashanailgel_scraper extends Spider {
         if (browser)
             return { page: await brow.newPage(), browser: browser };
 
-        const brow = await this.getBrowser(visible);
+        const brow = await this.establishBrowserCore(visible);
         // 創建一個無痕模式的上下文
         if (incognito) {
             const context = await brow.createBrowserContext();
@@ -395,7 +395,8 @@ if (configerer.DEBUG_MODE) {
              * return;
              * */
             await handler.initial();
-            await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
+            const result= await Util.measureExecutionTime(handler.fetchProductListPageInfos.bind(handler));
+            console.log(result.zh_TW);
             await handler.finish();
         }
     )();
