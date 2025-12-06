@@ -91,6 +91,7 @@ class spider_igllm extends Spider {
         await this.verificationIGByCookie(href);
         await Util.syncDelay(500);
         const result = await this.fetchBriefsOfAccount(href);
+        /** await this.fetchBriefVariant(href); */
         await Util.persistJsonFilePrettier('./temp/sampleOfScroll2End.json', result);
     }
 
@@ -119,6 +120,43 @@ class spider_igllm extends Spider {
             fetcher
         })
         return allOfMe;
+    }
+
+    /** todo://開發中：針對detail page的fetch */
+    fetchBriefVariant = async (href) => {
+        href = 'https://www.instagram.com/p/DEiA8cuzIia'
+
+        const fetcher = async (page) => {
+            const main = await page.$('body div:nth-of-type(1) div[role="button"]');
+            const sub = await page.$('body div:nth-of-type(1) .html-div.xdj266r.x14z9mp');
+            let hasNextPresent = true;
+            const resources = [];
+            const titles = await Util.execute4Tasks(await sub.$$('span.x193iq5w'), async (each) => await this.extractBlockTexts(each));
+            const time = await this.fetchAttributesOfEl(sub, 'time', { ts: 'datetime', time: 'title', display: 'innerText' });
+            do {
+                const gallery = await main.$('div img');
+                const movie = await main.$('div video');
+
+                if (gallery) {
+                    const photo = await this.fetchAttributeOfEl(gallery, '', 'src')
+                    if (photo) resources.push(photo);
+                }
+                if (movie) {
+                    const video = await this.fetchAttributeOfEl(movie, '', 'src')
+                    if (video) resources.push(video);
+                }
+                let nextButton = await main.$('button[aria-label="下一步"]');
+                hasNextPresent = nextButton && await nextButton.asElement();
+                if (hasNextPresent) {
+                    await nextButton.click();
+                    await this.wait4Until(page);
+                }
+            } while (hasNextPresent);
+            return { time, titles, resources };
+        }
+
+        console.log(await this.activatePage4Task(
+            { fetcher, href }))
     }
 
 }

@@ -460,7 +460,7 @@ class Spider {
 
             // ==================== 第四步：點擊下一頁按鈕 ====================
             console.log(`🖱️ 點擊下一頁按鈕...`);
-            await this.clickAndWait4Page(page, nextPageButton, { selectorOfAnchor: selector });
+            await this.clickNextAndWait4Page(page, nextPageButton, { selectorOfAnchor: selector });
 
             console.log(`✅ 成功翻到下一頁`);
             return true;
@@ -499,7 +499,7 @@ class Spider {
      * @param {number} [options.timeoutOfNavigation=30000] - 長等待（page.waitForResponse/Navigation/Function）的超時時間（ms）。
      * @param {boolean} [options.specificity=false] - 是否使用更廣泛的網路資源類型來偵測 API。
      */
-    clickAndWait4Page = async (
+    clickNextAndWait4Page = async (
         page,
         element, {
             selectorOfAnchor = null, // 移入 options
