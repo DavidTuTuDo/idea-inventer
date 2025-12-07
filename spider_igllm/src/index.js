@@ -8,6 +8,8 @@ import puppeteer from 'puppeteer';
  *  create time:Sat Dec 06 2025 06:25:03 GMT+0800 (Taiwan Standard Time)
  */
 const ENABLE_OF_OPEN_BROWSER = true;
+const MAXIMUM_PAGES_OF_FETCHER = 5;
+
 class spider_igllm extends Spider {
 
 
@@ -90,13 +92,21 @@ class spider_igllm extends Spider {
     fetch = async (href) => {
         await this.verificationIGByCookie(href);
         await Util.syncDelay(500);
-        const result = await this.fetchBriefsOfAccount(href);
-        /** await this.fetchBriefVariant(href); */
-        await Util.persistJsonFilePrettier('./temp/sampleOfScroll2End.json', result);
+        const briefs = await this.fetchBriefsOfAccount(href);
+
+        const folder = Util.getTailStringSplitBy(href, '/');
+        await Util.persistJsonFilePrettier(`./temp/${folder}/briefs.json`, briefs);
+
+        const stories = []
+        const handler = new InfinitePool(MAXIMUM_PAGES_OF_FETCHER, `ig:${href}`);
+        await handler.runByParams(async (param) => {
+            stories.push(await this.fetchStoryByBrief(param));
+        }, ...briefs);
+        await Util.persistJsonFilePrettier(`./temp/${folder}/stories.json`, stories);
     }
 
     fetchBriefsOfAccount = async (href) => {
-        const allOfMe = [];//ig下滑之後會把上面的div從dom拿掉
+        const storiesOfAccount = [];//ig下滑之後會把上面的div從dom拿掉
         const fetcher = async (page) => {
             const selector = 'body div:nth-of-type(1) .xg7h5cd.x1n2onr6 .x1n2onr6 > div > div'
             const rows = await page.$$(selector);
@@ -108,10 +118,10 @@ class spider_igllm extends Spider {
                 return await Util.execute4Tasks(children, async (child) => ({
                     title: await this.fetchAttributeOfEl(child, 'img', 'alt'),
                     href: await this.fetchAttributeOfEl(child, 'a', 'href'),
-                    image: await this.fetchAttributeOfEl(child, 'img', 'src')
+                    headPhoto: await this.fetchAttributeOfEl(child, 'img', 'src')
                 }))
             })
-            allOfMe.push(...result);
+            storiesOfAccount.push(...result);
             return result;
         }
         await this.fetchElementsTilPageScrollEnd({
@@ -119,14 +129,13 @@ class spider_igllm extends Spider {
             stringOfLoadingSelector: '.html-div.x14z9mp > .x78zum5.xdt5ytf.xl56j7k',
             fetcher
         })
-        return allOfMe;
+        const storiesOfficial = Util.getArrayOfUniqBy(_.flattenDeep(storiesOfAccount), 'href');
+        console.log(`size:`, `${_.size(storiesOfficial)}\n\n`, storiesOfficial);
+        return storiesOfficial;
     }
 
-    /** todo://開發中：針對detail page的fetch */
-    fetchBriefVariant = async (href) => {
-        href = 'https://www.instagram.com/p/DEiA8cuzIia'
-
-        const fetcher = async (page) => {
+    fetchStoryByBrief = async (brief) => {
+        const task = async (page, brief) => {
             const main = await page.$('body div:nth-of-type(1) div[role="button"]');
             const sub = await page.$('body div:nth-of-type(1) .html-div.xdj266r.x14z9mp');
             let hasNextPresent = true;
@@ -152,11 +161,10 @@ class spider_igllm extends Spider {
                     await this.wait4Until(page);
                 }
             } while (hasNextPresent);
-            return { time, titles, resources };
+            return { time, titles, resources, ...brief };
         }
-
-        console.log(await this.activatePage4Task(
-            { fetcher, href }))
+        const fetcher = async (page) => task(page, brief);
+        return this.activatePage4Task({ fetcher, href: brief.href });
     }
 
 }

@@ -3775,6 +3775,61 @@ class Utiller {
         return true;
     };
 
+
+    /**
+    * 移除陣列中重複的元素，並以指定的 'key' 欄位作為唯一識別鍵 (Primary Key)。
+    * 規則：當 'key' 欄位的值重複時，只保留在陣列中出現的第一個元素。
+    *
+    * @param {Array<Object>} data - 包含物件的輸入陣列，每個物件應包含指定的 'key' 欄位。
+    * @param {string} key - 用於判斷唯一性的物件屬性名稱（例如：'href', 'id', 'email'）。
+    * @returns {Array<Object>} - 經過去重處理後的新陣列 (不會修改原始陣列)。
+    * @example
+    * // 範例輸入資料
+    * const inputData = [
+            * { href: 'avb', title: '123' },
+        * { href: 'avc', title: '321' },
+    * { href: 'avb', title: '213' } // 重複的 'avb'，會被捨棄
+    * ];
+    * // 呼叫函數
+    * const uniqueData = removeDuplicatesByKeyES11(inputData, 'href');
+    * // 輸出結果:
+    * // [
+    * //   { href: 'avb', title: '123' },
+    * //   { href: 'avc', title: '321' }
+    * // ]
+    */
+    getArrayOfUniqBy = (data, key) => {
+        if (!Array.isArray(data)) {
+            console.error("Input must be an array.");
+            return [];
+        }
+
+        if (typeof key !== 'string' || key.length === 0) {
+            console.error("Key must be a non-empty string.");
+            // 如果 key 無效，返回原陣列的副本
+            return [...data];
+        }
+
+        // 1. 使用 Array.prototype.reduce 迭代陣列
+        // 2. 使用 Map 作為累積器 (accumulator)，它的鍵 (Key) 追蹤唯一性，值 (Value) 儲存物件。
+        const uniqueMap = data.reduce((map, currentItem) => {
+            const keyValue = currentItem[key];
+
+            // Map.prototype.has() 檢查鍵是否存在
+            // 由於 reduce 是從頭到尾迭代，我們只在 Map 中沒有該鍵時才設置它。
+            // 這確保了重複鍵的情況下，只有第一個遇到的值會被保留。
+            if (!map.has(keyValue)) {
+                // Map.prototype.set() 儲存 item，同時 Map 會保持插入順序
+                map.set(keyValue, currentItem);
+            }
+            return map;
+        }, new Map());
+
+        // 3. 使用 Array.from 配合 Map.prototype.values() 提取所有值
+        // Map 的 values() 方法會按照元素插入的順序返回，從而生成最終的去重陣列。
+        return Array.from(uniqueMap.values());
+    };
+
     // testOfConflict() {
     //     // ===== 測試資料 =====
     //     const newTask = {
