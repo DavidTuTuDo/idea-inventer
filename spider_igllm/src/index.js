@@ -161,7 +161,7 @@ class spider_igllm extends Spider {
                     await this.wait4Until(page);
                 }
             } while (hasNextPresent);
-            return { time, titles, resources, ...brief };
+            return { time, titles: Util.getStringsOfFlatten(titles), resources, ...brief };
         }
         const fetcher = async (page) => task(page, brief);
         return this.activatePage4Task({ fetcher, href: brief.href });
@@ -179,7 +179,7 @@ if (configerer.DEBUG_MODE) {
              * await handler.sampleOfFetchSingleItem();
              * return;
              * */
-            const pathOfAccount = 'https://www.instagram.com/trianglenoseduo';
+            const pathOfAccount = 'https://www.instagram.com/david.tu.guitar';
             await handler.initial();
             const result= await Util.measureExecutionTime(handler.fetch.bind(handler),
                 pathOfAccount);

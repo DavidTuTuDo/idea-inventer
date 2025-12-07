@@ -67,6 +67,29 @@ class Utiller {
             .replace(/^(https?):\/(?!\/)/, '$1://');
     }
 
+
+    /**
+     * 清洗並攤平陣列 (Clean & Flatten Array)
+     * * 將嵌套陣列（Nested Array）攤平成一維純文字陣列，
+     * 並移除所有無意義的項（如：[], '', null, undefined）。
+     * @param {Array} strings - 原始輸入陣列
+     * @returns {Array} 處理後的一維字串陣列
+     * @example
+     *  輸入： [["A"], [], undefined, null, '', ["B"]]
+     * 輸出： ["A", "B"]
+     *
+     */
+    getStringsOfFlatten(strings = []) {
+        return _.chain(strings)
+            .flatten()                   // 1. 攤平：將 ["通知"] 變成 "通知"
+            .filter(item => {            // 2. 過濾：移除無意義內容
+                return item !== null &&
+                    item !== undefined &&
+                    item !== '';
+            })
+            .value();
+    }
+
     getNumberOfNormalize(value, defaultValue = 0) {
         if (_.isNumber(value))
             return value;
