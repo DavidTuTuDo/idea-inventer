@@ -35,9 +35,9 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
-let CURRENT_PROJECT = './project-davidtu-dev';
+// let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-// let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -6725,15 +6725,15 @@ class AppBuilder extends ComponentBuilder {
         const appGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `BaseApp.js`), this.nodeOfAncestor);
         appGenerator.appendImport(`{StyledEngineProvider}`, '@mui/material/styles');
         appGenerator.appendImport(`{Provider}`, `mobx-react`);
-        appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
-        appGenerator.appendImport(`{createBrowserHistory}`, `history`);
+        // appGenerator.appendImport(`{RouterStore, syncHistoryWithStore}`, `mobx-react-router`);
+        // appGenerator.appendImport(`{createBrowserHistory}`, `history`);
         appGenerator.appendImport(`React`, `react`);
         appGenerator.appendImport(`Store`, `./store`);
         appGenerator.appendImport(`Config`, `./config`);
         appGenerator.appendImport(`BaseComponent`, `./base/BaseComponent`);
         appGenerator.appendImport(`{inject,observer}`, `mobx-react`);
-        appGenerator.appendImport(`{BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
-        appGenerator.appendImport(`{Route, Routes}`, `react-router`);
+        appGenerator.appendImport(`{Route, Routes, BrowserRouter, useNavigate, useLocation, useParams, Navigate}`, `react-router-dom`);
+        // appGenerator.appendImport(`{Route, Routes}`, `react-router`);
         appGenerator.appendImport(``, `./less`);
         appGenerator.appendImport(`FirebaseHelper`, `./base/FirebaseHelper`);
         appGenerator.appendImport(`I18n`, `./i18n`);
@@ -6747,7 +6747,7 @@ class AppBuilder extends ComponentBuilder {
             `I18n.startApplicationReactions()`)
 
         appGenerator.appendField(`store`, `new Store()`);
-        appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
+        // appGenerator.appendField(`history`, `syncHistoryWithStore(createBrowserHistory(), new RouterStore())`);
         appGenerator.appendField(`extraPages`, '[]');
 
         appGenerator.appendFunction(`pushPage`, [`page`], [], [], `this.extraPages.push(page)`)

@@ -7,7 +7,6 @@ import { observer, inject } from "mobx-react";
 import BaseMainComponent from "./BaseMainComponent";
 import { Redirect } from "react-router-dom";
 import React from "react";
-import moment from "moment";
 
 @inject("main")
 @observer

@@ -30,7 +30,6 @@ import ArrowForwardIosRounded from "@mui/icons-material/ArrowForwardIosRounded";
 import AlertDialog from "./AlertDialog";
 import AlertMenu from "./AlertMenu";
 import copy from "copy-to-clipboard";
-import clipboardy from "clipboardy";
 import functions from "../functions";
 import RestartAltOutlined from "@mui/icons-material/RestartAltOutlined";
 
@@ -982,10 +981,6 @@ class BaseComponent extends MuiComponent {
     copyTextToClipboard(text, message = `已將內容新增至剪貼簿`) {
         copy(text);
         this.getComponentInstance().showInfoSnackMessage(message);
-    }
-
-    async readTextClipboard() {
-        return await clipboardy.read();
     }
 
     renderGlobalDialogView = () => {

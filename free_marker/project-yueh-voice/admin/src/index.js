@@ -7,7 +7,6 @@ import firebase from "./base/FirebaseHelper";
 import { linepayer as LinePay } from "linepayer";
 import libpath from "path";
 import config from "./config";
-import moment from "moment";
 import { configerer } from "configerer";
 import fetch from "node-fetch";
 
