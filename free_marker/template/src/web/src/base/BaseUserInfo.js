@@ -110,7 +110,7 @@ class UserInfo {
             Cookie.removeUser();
             await firebaser.logout();
         }
-        this.invalidateLoginState(current);
+        this.invalidateLoginState(current?.exist ? current : user);
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
 

@@ -80,6 +80,7 @@ class FirebaseHelper extends BaseFirebase {
     startAuthListener = () => {
         if (this.auth() === undefined || this.unsubscribeAuth !== null) {
             // 已經啟動了，或者沒有 Auth 實例
+            console.error(`this.auth() === undefined || this.unsubscribeAuth !== null`);
             return;
         }
         this.unsubscribeAuth = onAuthStateChanged(this.auth(), (user) => {
