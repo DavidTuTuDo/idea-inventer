@@ -2,7 +2,6 @@ import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from 'utiller';
 import _ from 'lodash';
 import libpath from 'path';
-import Moment from 'moment';
 
 /** author:明悅
  *  create time:Tue Nov 09 2021 23:34:19 GMT+0800 (Taipei Standard Time)

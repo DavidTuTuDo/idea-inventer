@@ -2,7 +2,6 @@ const edit = true;
 
 import _ from "lodash";
 import React from "react";
-import moment from "moment";
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";

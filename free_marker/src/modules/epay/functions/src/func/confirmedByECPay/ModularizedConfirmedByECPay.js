@@ -33,7 +33,7 @@ class ModularizedConfirmedByECPay extends BaseConfirmedByECPay {
 
     constructor(props) {
         super(props);
-        Util.setLocaleOfMoment("zh-tw");
+        Util.setLocaleOfDate("zh-tw");
     }
 
     async handleHttpOnRequest(request, response) {

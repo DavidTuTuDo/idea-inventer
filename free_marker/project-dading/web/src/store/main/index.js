@@ -1,4 +1,5 @@
 const edit = true;
+
 import BaseMainStore from "./BaseMainStore";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
@@ -6,7 +7,7 @@ import libpath from "path";
 import {Application} from "../../";
 import Order from "../mainOrder";
 import Establish from '../establish';
-import moment from "moment";
+import dayjs from "dayjs";
 
 class MainStore extends BaseMainStore {
 
@@ -89,7 +90,7 @@ class MainStore extends BaseMainStore {
         this.getFilter().setSelectedType(filter.selectedType);
         this.getFilter().setSelectedDestTo(filter.selectedDestTo)
         this.getFilter().setSelectedAgentTo(filter.selectedAgentTo)
-        this.getFilter().setBaseOn(moment(timestamp))
+        this.getFilter().setBaseOn(dayjs(timestamp))
         switch (filter.selectedType) {
             case 1:
                 /** 訂購人 */

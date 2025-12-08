@@ -3,7 +3,6 @@ import {utiller as Util, exceptioner as ERROR} from 'utiller';
 import config from '../config';
 import _ from 'lodash';
 import libpath from 'path';
-import Moment from 'moment';
 import fs from "fs";
 import path from 'path';
 import * as html2json from "himalaya";

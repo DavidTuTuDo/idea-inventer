@@ -1,8 +1,3 @@
-import {configerer} from "configerer";
-import {utiller as Util, exceptioner as ERROR} from 'utiller';
-import _ from 'lodash';
-import libpath from 'path';
-import Moment from 'moment';
 import {BuildApplication} from '../../free_marker'
 
 /** author:明悅

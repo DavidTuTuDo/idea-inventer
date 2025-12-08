@@ -1,3 +1,5 @@
+const edit = true;
+
 import Api from './api';
 import {databazer as Databaser, builder as Builder} from "databazer";
 import {utiller as Util, pooller as InfinitePool} from "utiller";
@@ -7,7 +9,7 @@ import firebase from "./base/FirebaseHelper";
 import {linepayer as LinePay} from "linepayer";
 import libpath from 'path';
 import config from './config';
-import moment from 'moment';
+import dayjs from 'dayjs';
 
 const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
 
@@ -177,7 +179,7 @@ const OFFICIAL_YEARS_OF_YEARS = _.range(90, 120, 1);
                 {value: '111-1', label: '111年'},
             ]
         })
-        await api.submitExpired({expiredTime: moment('2022-01-22').valueOf()})
+        await api.submitExpired({expiredTime: dayjs('2022-01-22').valueOf()})
 
         await api.submitPurchasePlans(
             {

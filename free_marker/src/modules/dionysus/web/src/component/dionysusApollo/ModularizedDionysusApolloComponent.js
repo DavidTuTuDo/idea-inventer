@@ -1,7 +1,11 @@
 const edit = true;
 
 import BaseDionysusApolloComponent from "./BaseDionysusApolloComponent";
-import moment from "moment";
+import dayjs from "dayjs";
+// 必須載入此插件以解析 'HH:mm' 格式
+import customParseFormat from "dayjs/plugin/customParseFormat";
+
+dayjs.extend(customParseFormat);
 
 class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
     /** -------------------- fields -------------------- **/
@@ -42,31 +46,47 @@ class ModularizedDionysusApolloComponent extends BaseDionysusApolloComponent {
         param.object.remove();
     }
 
+    /**
+     * 檢查時間區間是否重疊
+     * @param {string} inputRangeStr - 待檢查區間 (e.g. "12:00-13:00")
+     * @param {string[]} compareRangeArray - 已存在的區間陣列
+     * @returns {{success: boolean, message?: string}}
+     */
     checkTimeOverlap(inputRangeStr, compareRangeArray) {
         const format = "HH:mm";
-        // 將 "12:00-13:00" 拆解為 moment 區間
+
+        // 將 "12:00-13:00" 拆解為 dayjs 區間
         const parseRange = (rangeStr) => {
             const [startStr, endStr] = rangeStr.split("-");
             return {
-                start: moment(startStr, format),
-                end: moment(endStr, format),
+                // 使用插件解析自定義格式
+                start: dayjs(startStr, format),
+                end: dayjs(endStr, format),
                 raw: rangeStr
             };
         };
+
         const A = parseRange(inputRangeStr);
+
+        // 驗證輸入合法性：必須是有效日期且起始早於結束
         if (!A.start.isValid() || !A.end.isValid() || !A.start.isBefore(A.end)) {
             return {
-                succeed: false,
+                success: false,
                 message: `輸入時間區間 ${inputRangeStr} 格式錯誤或起始晚於結束`
             };
         }
+
         for (const bStr of compareRangeArray) {
             const B = parseRange(bStr);
 
-            if (!B.start.isValid() || !B.end.isValid() || !B.start.isBefore(B.end)) continue; // 忽略錯誤的 compare 區間
+            if (!B.start.isValid() || !B.end.isValid() || !B.start.isBefore(B.end)) continue;
 
-            // 重疊條件：A.start < B.end && A.end > B.start
+            /**
+             * 重疊判斷公式：(A.start < B.end) 且 (A.end > B.start)
+             * 此處使用的是 dayjs 核心的比較方法
+             */
             const isOverlap = A.start.isBefore(B.end) && A.end.isAfter(B.start);
+
             if (isOverlap) {
                 return {
                     success: false,

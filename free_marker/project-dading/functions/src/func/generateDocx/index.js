@@ -31,7 +31,7 @@ class GenerateDocx extends BaseGenerateDocx {
     async handleHttpOnCall(data, session) {
         const idOfOrder = data.idOfOrder;
         const order = await Api.fetchOrderItem(idOfOrder);
-        const momentOfStartTravel = this.normalizeAsMoment(order.startOfTravel);
+        const momentOfStartTravel = this.normalizeAsDayjs(order.startOfTravel);
         const yearOfAD = Util.getCustomFormatOfDatePresent(momentOfStartTravel, `YYYY`);
 
         const paramsOfTemplate = {

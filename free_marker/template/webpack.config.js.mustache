@@ -158,9 +158,8 @@ const config = {
           self_debug: !isProd,
         },
       },
-    }),
-    new webpack.ContextReplacementPlugin(/moment[/\\]locale$/, /zh-tw|en-gb/),
-  ],
+    })
+  ]
 };
 
 if (isProd) {

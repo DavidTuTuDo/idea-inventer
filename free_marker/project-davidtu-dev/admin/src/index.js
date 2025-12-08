@@ -6,10 +6,7 @@ import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "
 import _ from "lodash";
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
-import { linepayer as LinePay } from "linepayer";
-import libpath from "path";
-import config from "./config";
-import moment from "moment";
+
 
 (async () => {
     console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`);

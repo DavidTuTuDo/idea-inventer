@@ -4,7 +4,7 @@ import { action, observable, isObservableObject, toJS, runInAction } from "mobx"
 import { utiller as Util, exceptioner as ERROR } from "utiller";
 import _ from "lodash";
 import ClientRemoteApi from "./ClientRemoteApi";
-import moment from "moment";
+import dayjs from "dayjs";
 
 class BaseStore extends ClientRemoteApi {
     idOfUniqueView = Util.getUuidOfV4();
@@ -24,7 +24,7 @@ class BaseStore extends ClientRemoteApi {
         this.taskOfCompleted.push(...task);
     }
 
-    /** 因為range pick view的設計有增添兩個column start-end，在inject到store之前把 view需要用到的value還原成[moement,moment]*/
+    /** 因為range pick view的設計有增添兩個column start-end，在inject到store之前把 view需要用到的value還原成[dayjs,dayjs]*/
     decorate(result) {
         return result;
     }
@@ -338,13 +338,32 @@ class BaseStore extends ClientRemoteApi {
         this.updateTime = time;
     }
 
+    /**
+     * 將各種日期格式標準化為毫秒時間戳 (Number)。
+     * * @param {any} obj - 欲轉換的對象 (Firebase Timestamp, Day.js, Date, 或數字)
+     * @param {boolean} [force=false] - 是否強制轉換為數字
+     * @returns {number|any} 毫秒時間戳或原始對象
+     */
     normalizeTimestamp(obj, force = false) {
-        if (obj instanceof this.FirebaseTimestampClass()) return obj.toMillis();
+        // 1. 優先處理 Firebase Timestamp 對象
+        if (obj instanceof this.FirebaseTimestampClass()) {
+            return obj.toMillis();
+        }
+
         if (force) {
-            if (obj instanceof moment) return obj.valueOf();
-            if (obj instanceof Date) return obj.getTime();
+            if (dayjs.isDayjs(obj)) {
+                return obj.valueOf();
+            }
+
+            // 3. 處理原生 Date 對象
+            if (obj instanceof Date) {
+                return obj.getTime();
+            }
+
+            // 4. 其他情況嘗試轉為數字 (處理數字字串等)
             return _.toNumber(obj);
         }
+
         return obj;
     }
 

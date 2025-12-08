@@ -2,10 +2,49 @@ import _ from "lodash";
 import CryptoJS from "crypto-js";
 import { configerer } from "configerer";
 import ERROR from "../exceptioner";
-import moment from "moment-timezone";
 import { v4 } from "uuid";
 import { parse } from "node-html-parser";
 
+
+/**
+ * dayjs-config (放在檔案最上方)
+ */
+import dayjs from 'dayjs';
+
+// 1. 載入語系
+import 'dayjs/locale/zh-tw';
+import 'dayjs/locale/en';
+
+// 2. 載入插件
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+import duration from 'dayjs/plugin/duration';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import isBetween from 'dayjs/plugin/isBetween';
+
+// 3. 擴充插件
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(duration);
+dayjs.extend(customParseFormat);
+dayjs.extend(relativeTime);
+dayjs.extend(isBetween);
+
+// 4. 設定預設語系
+dayjs.locale('zh-tw');
+
+String.format = function() {
+    let param = [];
+    for (let i = 0, l = arguments.length; i < l; i++) {
+        param.push(arguments[i]);
+    }
+    let statement = param[0]; // get the first element(the original statement)
+    param.shift(); // remove the first element from array
+    return statement.replace(/\{(\d+)\}/g, function(m, n) {
+        return param[n];
+    });
+}
 
 /**
  * npm_module之後每三個月要更新Granular Token
@@ -15,19 +54,6 @@ import { parse } from "node-html-parser";
  * npm publish --dry-run
  * 如果沒報錯 → Token 已生效，可以繼續 deploy。
  */
-
-String.format = function () {
-    let param = [];
-    for (let i = 0, l = arguments.length; i < l; i++) {
-        param.push(arguments[i]);
-    }
-    let statement = param[0]; // get the first element(the original statement)
-    param.shift(); // remove the first element from array
-    return statement.replace(/\{(\d+)\}/g, function (m, n) {
-        return param[n];
-    });
-}
-
 class Utiller {
 
     mapOfIdNTimeoutId = {}/**   Key : idOfSetTimout */
@@ -133,7 +159,6 @@ class Utiller {
     }
 
 
-
     /** 1.0.1 => 1.0.2 */
     getStringOfVersionIncrement(stringOfVersion, delta = 1) {
         const numbers = stringOfVersion.split('.').map((each) => _.toNumber(each));
@@ -142,8 +167,21 @@ class Utiller {
         return numbers.join('.');
     }
 
-    setLocaleOfMoment(locale = 'en') {
-        moment.locale(locale);
+    /**
+     * 設定全域的 Day.js 語系。
+     * 注意：在使用此函式切換語系前，必須先手動 import 對應的語系檔。
+     * * @sample
+     * setLocaleOfDate('zh-tw'); // 切換為繁體中文
+     * console.log(dayjs().format('dddd')); // "星期一"
+     * * @param {string} [locale='en'] - 語系代碼，常用：'zh-tw' (繁體), 'en' (英文)。
+     * @returns {void}
+     */
+    setLocaleOfDate(locale = 'en') {
+        /**
+         * Day.js 語系代碼通常為小寫（如 zh-tw）。
+         * 此處將參數轉為小寫以確保相容性。
+         */
+        dayjs.locale(locale.toLowerCase());
     }
 
     getUuidOfV4() {
@@ -245,7 +283,7 @@ class Utiller {
             await this.syncDelay(randomValue);
             if (_.isFunction(errorSimulator) && errorSimulator(param)) throw Error('force to made error happen');
             this.appendInfo(`after executed ===> i'm symbol of ${symbol}, the task cost ${randomValue} million-seconds ${param ? `i hav params ===> ${param}` : ''}`);
-            return {randomValue, symbol, param};
+            return { randomValue, symbol, param };
         } catch (error) {
             this.appendError(new Error(`asyncUnitTask() catch error ${error.message}`))
         } finally {
@@ -429,7 +467,7 @@ class Utiller {
         /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
         const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
-        return CryptoJS.AES.encrypt(texts, keyOfCrypto, {iv: ivOfCrypto}).toString();
+        return CryptoJS.AES.encrypt(texts, keyOfCrypto, { iv: ivOfCrypto }).toString();
     }
 
     /** alwaysTheSame 就是產出的encrypt value會固定(適合用在欄位的key), 不然會產生隨機偏移量, 但皆不影響解譯 */
@@ -440,7 +478,7 @@ class Utiller {
         /** 帶入偏移量, keyOfkeyOfCrypto 需要是長度為22的字串, 太獵奇了*/
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
         const keyOfCrypto = alwaysTheSame ? CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`) : key;
-        return CryptoJS.AES.encrypt(JSON.stringify({content: texts}), keyOfCrypto, {iv: ivOfCrypto}).toString();
+        return CryptoJS.AES.encrypt(JSON.stringify({ content: texts }), keyOfCrypto, { iv: ivOfCrypto }).toString();
     }
 
     getDecryptString(ciphertext, key = configerer.ENCRYPT_KEY) {
@@ -450,13 +488,13 @@ class Utiller {
 
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
         try {
-            const value = CryptoJS.AES.decrypt(ciphertext, key, {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8)
+            const value = CryptoJS.AES.decrypt(ciphertext, key, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8)
             if (!_.isEmpty(value.trim()))
                 return value;
         } catch (e) {
             /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
         }
-        return CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
+        return CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
     }
 
     getDecryptStringV2(ciphertext, key = configerer.ENCRYPT_KEY) {
@@ -466,7 +504,7 @@ class Utiller {
 
         const ivOfCrypto = CryptoJS.enc.Base64.parse("thisIsIVWeNeedToGenerateTheSameValue");
         try {
-            const stringOfObj = CryptoJS.AES.decrypt(ciphertext, key, {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8)
+            const stringOfObj = CryptoJS.AES.decrypt(ciphertext, key, { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8)
             if (!_.isEmpty(stringOfObj.trim())) {
                 const obj = JSON.parse(stringOfObj);
                 return obj.content;
@@ -474,7 +512,7 @@ class Utiller {
         } catch (e) {
             /** 把問題給吃掉了, 也不能紀錄, 因為用了appendError*/
         }
-        const stringOfObj = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), {iv: ivOfCrypto}).toString(CryptoJS.enc.Utf8);
+        const stringOfObj = CryptoJS.AES.decrypt(ciphertext, CryptoJS.enc.Base64.parse(`${key}${_.range(0, maxLengthOfKey - key.length).join('')}`), { iv: ivOfCrypto }).toString(CryptoJS.enc.Utf8);
         const obj = JSON.parse(stringOfObj);
         return obj.content;
     }
@@ -1104,13 +1142,31 @@ class Utiller {
         return _.isEmpty(after) ? string : after;
     }
 
-    /** 取得 YYYY-MM-DD */
+    /**
+     * 取得 ISO 8601 格式的日期字串 (YYYY-MM-DD)
+     * @sample
+     * getTodayTimeFormat(1733630000000) // "2024-12-08"
+     * @param {number|string|Date} [ts] - 時間戳記、日期字串或物件，不傳則取目前時間
+     * @returns {string} 格式化後的日期 (例如：2025-12-08)
+     */
     getTodayTimeFormat(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD")
+        /**
+         * dayjs() 初始化：
+         * 若 ts 為空，自動取當前系統時間 (valueOf)
+         */
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YYYY-MM-DD");
     }
 
+    /**
+     * 根據自定義格式輸出日期字串
+     * @sample
+     * getCustomFormatOfDatePresent(1733630000000, 'YY/MM') // "24/12"
+     * @param {number|string|Date} [ts] - 時間戳記、日期字串或物件
+     * @param {string} [format='YY/MM'] - 自定義格式化代碼
+     * @returns {string} 格式化後的日期字串
+     */
     getCustomFormatOfDatePresent(ts, format = 'YY/MM') {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format(format)
+        return dayjs(ts || this.getCurrentTimeStamp()).format(format);
     }
 
     /** 西元年 轉成 民國年
@@ -1125,167 +1181,292 @@ class Utiller {
         }
     };
 
+
+    /**
+     * 將時間戳記格式化為 YY/MM/DD 字串 (例如：24/12/08)
+     * * @sample
+     * // 1. 傳入特定時間戳
+     * getSimpleDateYYMMDDFormat(1733630000000) // "24/12/08"
+     * * @sample
+     * // 2. 不傳入參數 (預設取當前時間)
+     * getSimpleDateYYMMDDFormat() // "25/12/08" (假設今天是 2025 年)
+     * * @param {number|string|Date} [ts] - 欲格式化的時間戳記、日期字串或日期物件
+     * @returns {string} 格式化後的簡短日期字串 (YY/MM/DD)
+     */
     getSimpleDateYYMMDDFormat(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YY/MM/DD")
+        /**
+         * dayjs() 初始化說明：
+         * 1. 若 ts 為空，dayjs() 會取當前系統時間。
+         * 2. dayjs 支援 Unix 毫秒戳、ISO 8601 字串及原生 Date 物件。
+         * 3. 格式化 YY 代表年份後兩位，MM 為月份補零，DD 為日期補零。
+         */
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YY/MM/DD");
     }
 
     getSimpleTimeYYMMDDHHmmFormat(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YY/MM/DD HH:mm")
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YY/MM/DD HH:mm");
     }
 
     getECPayCurrentTimeFormat(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss");
     }
 
     getCurrentTimeFormatV2(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss");
     }
 
     getCurrentTimeFormatYMDHM(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm")
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm");
     }
 
     getCurrentTimeFormatYMDHMS(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss")
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YYYY/MM/DD HH:mm:ss");
     }
 
     /** 取得 YYY-MM-DD-HH-mm-ss */
     getCurrentTimeFormat(ts) {
-        return moment(ts ? ts : this.getCurrentTimeStamp()).format("YYYY-MM-DD-HH-mm-ss")
+        return dayjs(ts || this.getCurrentTimeStamp()).format("YYYY-MM-DD-HH-mm-ss");
     }
 
     getCurrentMillionSecTimeFormat(ts) {
-        return moment(ts ? ts : undefined).format("YYYY-MM-DD-HH-mm-ss-SSS")
+        // SSS 是毫秒格式
+        return dayjs(ts || undefined).format("YYYY-MM-DD-HH-mm-ss-SSS");
     }
 
+    /**
+     * 判斷基準時間是否位於指定的起始時間與結束時間之間
+     * * @sample
+     * // 判斷今天是否在 2024 到 2026 之間
+     * isBetweenTimeStamp(1733630000000, '2024-01-01', '2026-01-01') // true
+     * * @param {number|string|Date} target - 欲檢查的基準時間
+     * @param {number|string|Date} min - 起始範圍 (包含)
+     * @param {number|string|Date} max - 結束範圍 (包含)
+     * @returns {boolean}
+     */
     isBetweenTimeStamp(target = this.getCurrentTimeStamp(), min, max) {
-        return moment(target).isBetween(min, max)
+        /**
+         * 注意：需先執行 dayjs.extend(isBetween)
+         * Day.js 預設包含 [min, max] (兩側皆包含)
+         * 如果要調整包含邏輯 (如不包含端點)，可傳入第四個參數，例如 '()' 代表排除兩端
+         */
+        return dayjs(target).isBetween(min, max);
     }
 
+    /**
+     * 判斷基準時間是否 早於 指定時間
+     * @param {number|string|Date} target - 基準時間
+     * @param {number|string|Date} time - 對比時間
+     * @returns {boolean}
+     */
     isBeforeTimeStamp(target = this.getCurrentTimeStamp(), time) {
-        return moment(target).isBefore(time);
+        // 核心功能，直接調用
+        return dayjs(target).isBefore(time);
     }
 
+    /**
+     * 判斷基準時間是否 晚於 指定時間
+     * @param {number|string|Date} target - 基準時間
+     * @param {number|string|Date} time - 對比時間
+     * @returns {boolean}
+     */
     isAfterTimeStamp(target = this.getCurrentTimeStamp(), time) {
-        return moment(target).isAfter(time);
+        // 核心功能，直接調用
+        return dayjs(target).isAfter(time);
     }
 
     /**
      * 根據地區語系與時區輸出 yyyy/MM/dd hh:mm 時間字串
      * @param {Date | number | string} ts - 時間戳記、日期物件或字串
-     * @param {string} location - 語系地區代碼（如 'zh-TW'、'en-US'）
-     * @param {string} timezone - 時區（預設為 'Asia/Taipei'）
+     * @param {string} location - 語系地區代碼（如 'zh-tw'、'en'）
+     * @param {string} timezone - 時區（如 'Asia/Taipei'）
      * @param {boolean} use24Hour - 是否使用 24 小時制（預設 true）
-     * @returns {string}
+     * @returns {string} 格式化後的日期字串
      */
-     formatTimeByLocale(ts, location = "zh-TW", timezone = "Asia/Taipei", use24Hour = true) {
-        // 設定 moment 語系
-        moment.locale(location);
+    formatTimeByLocale(ts, location = "zh-tw", timezone = "Asia/Taipei", use24Hour = true) {
+        /** * Day.js 的語系代碼通常為小寫 (例如 zh-tw)
+         * 將傳入的 location 強制轉為小寫以符合 dayjs 規範
+         */
+        const normalizedLocale = location.toLowerCase();
 
-        // 轉換時區
-        const m = moment(ts).tz(timezone);
-
-        // 格式化字串
+        /** * 定義格式化字串
+         * HH: 24 小時制 (00-23)
+         * hh: 12 小時制 (01-12)
+         * A:  顯示 AM / PM
+         */
         const formatStr = use24Hour ? "YYYY/MM/DD HH:mm" : "YYYY/MM/DD hh:mm A";
 
-        return m.format(formatStr);
+        /**
+         * 鏈式調用邏輯：
+         * 1. dayjs(ts): 初始化時間物件 (若 ts 為空則預設現在時間)
+         * 2. .tz(timezone): 根據指定的時區名稱進行轉換 (例如轉換為台北時間)
+         * 3. .locale(normalizedLocale): 設定該實例顯示的語系語言
+         * 4. .format(formatStr): 輸出最終格式化字串
+         */
+        return dayjs(ts)
+            .tz(timezone)
+            .locale(normalizedLocale)
+            .format(formatStr);
     }
 
-    /** 獲得 幾天後的timestamp 的概念 {months: 2,days:3} =>
-     * ts => 1643434497341
-     再利用 getCurrentTimeStamp(ts) => 2022-01-29
+
+    /**
+     * 根據給定條件增減時間並獲得新的時間戳記
+     * * @sample
+     * // 1. 增加 2 個月又 3 天
+     * getTimeStampWithConditions({ months: 2, days: 3 }, 1643434497341)
+     * // 2022-01-29 08:14 + 2m 3d -> 2022-04-01 08:14 (timestamp)
+     * * @sample
+     * // 2. 減少 5 小時
+     * getTimeStampWithConditions({ hours: -5 })
+     * // (目前時間) - 5小時
+     * * @sample
+     * // 3. 複雜調整：增加 1 年，減少 30 分鐘
+     * getTimeStampWithConditions({ years: 1, minutes: -30 }, "2023-01-01")
+     * * @param {Object} param - 增減的時間單位物件
+     * @param {number} [param.years=0] - 增減年份
+     * @param {number} [param.months=0] - 增減月份
+     * @param {number} [param.days=0] - 增減天數
+     * @param {number} [param.hours=0] - 增減小時
+     * @param {number} [param.minutes=0] - 增減分鐘
+     * @param {number} [param.seconds=0] - 增減秒數
+     * @param {number|string|Date} target - 基準時間，預設為當前時間 (毫秒)
+     * @returns {number} 13 位數 Unix 毫秒時間戳記 (valueOf)
      */
     getTimeStampWithConditions(param = {
-        days: 0,
-        months: 0,
-        years: 0,
-        minutes: 0,
-        seconds: 0,
-        hours: 0,
-    }, target = this.getCurrentTimeStamp()) {
-        let base = moment(target);
-        for (const each in param) {
-            const number = param[each];
-            const unit = each;
-            if (number > 0) {
-                base = base.add(number, unit);
-            }
+        days: 0, months: 0, years: 0,
+        minutes: 0, seconds: 0, hours: 0
+    }, target = dayjs().valueOf()) {
+        /**
+         * Day.js 是 Immutable (不可變) 的。
+         * 每次呼叫 .add() 都會回傳一個全新的實例，因此需要 base 接收回傳值。
+         */
+        let base = dayjs(target);
 
-            if (number < 0) {
-                base = base.subtract(Math.abs(number), unit);
+        // Day.js 的 .add 方法原生支援傳入負數 (即代表減法)
+        Object.entries(param).forEach(([unit, value]) => {
+            if (value !== 0) {
+                /** * 迭代執行時間增減
+                 * @sample base.add(2, 'months')
+                 */
+                base = base.add(value, unit);
             }
-        }
+        });
+
         return base.valueOf();
     }
 
-    /** 把 YYYY-MM-DD HH:mm:ss 轉換成 timestamp
-     * 請注意 DD HH 之間有一個空格
-     * */
+    /**
+     * 根據給定條件增減時間並獲得新的時間戳記
+     * @param {Object} param - 增減的時間單位物件 (e.g., { months: 2, days: 3 })
+     * @param {number|string|Date} target - 基準時間，預設為當前時間
+     * @returns {number} 13 位數 Unix 毫秒時間戳記
+     */
+    getTimeStampWithConditions(param = {
+        days: 0, months: 0, years: 0,
+        minutes: 0, seconds: 0, hours: 0
+    }, target = dayjs().valueOf()) {
+        let base = dayjs(target);
+        // Day.js 的 add 支持負數，且不可變 (Immutable)，需重新賦值
+        Object.entries(param).forEach(([unit, value]) => {
+            if (value !== 0) {
+                base = base.add(value, unit);
+            }
+        });
+        return base.valueOf();
+    }
+
+    /**
+     * 將 yyyy/MM/dd HH:mm:ss 字串格式轉換為時間戳記
+     * @param {string} string - 時間字串
+     * @returns {number} 毫秒時間戳記
+     */
     getTimeStampByStringFormat(string) {
-        return this.getTimeStampFromSpecificFormat(string, 'YYYY/MM/DD HH:mm:ss').valueOf();
+        return this.getTimeStampFromSpecificFormat(string, 'YYYY/MM/DD HH:mm:ss');
     }
 
+    /**
+     * 根據指定格式將字串解析為時間戳記
+     * @param {string} string - 時間字串
+     * @param {string} format - 解析格式
+     * @returns {number} 毫秒時間戳記
+     */
     getTimeStampFromSpecificFormat(string, format = 'YYYY/MM/DD HH:mm:ss') {
-        return moment(string, format).valueOf();
+        // 需要 customParseFormat 插件
+        return dayjs(string, format).valueOf();
     }
 
+    /**
+     * 針對 ECPay 格式的時間字串轉換為時間戳記
+     */
     getTimeStampFromECPayStringFormat(string) {
-        return this.getTimeStampFromSpecificFormat(string, 'YYYY/MM/DD HH:mm:ss').valueOf();
+        return this.getTimeStampFromSpecificFormat(string, 'YYYY/MM/DD HH:mm:ss');
     }
 
-    /** 要記住timestamp 可以轉換成西元時間(timestamp),或是期間(duration) 把duration time-stamp 轉成 02:13.445 */
-    getTimeFormatOfDurationToMillionSecond(duration) {
-        return moment.utc(duration).format("HH小時mm分鐘ss秒SSS");
+    /**
+     * 將持續時間 (Duration) 轉化為 HH小時mm分鐘ss秒SSS 格式
+     * @param {number} durationMs - 持續時間 (毫秒)
+     * @returns {string}
+     */
+    getTimeFormatOfDurationToMillionSecond(durationMs) {
+        // 使用 .utc() 確保基準點為 0，避免時區偏移 (台北會多 8 小時)
+        return dayjs.utc(durationMs).format("HH小時mm分鐘ss秒SSS");
     }
 
-    /** duration是兩個timestamp相減,把duration time-stamp 轉成 02:13,moment.utc 就是不會加八小時啦幹 */
-    getTimeFormatOfDurationToSecond(duration) {
-        return moment.utc(duration).format("HH小時mm分鐘ss秒");
+    /**
+     * 將持續時間 (Duration) 轉化為 HH小時mm分鐘ss秒 格式
+     */
+    getTimeFormatOfDurationToSecond(durationMs) {
+        return dayjs.utc(durationMs).format("HH小時mm分鐘ss秒");
     }
 
-    /** duration是兩個timestamp相減,把duration time-stamp 轉成 02:13,moment.utc 就是不會加八小時啦幹 , 為什麼對多1天 超怪 */
-    getTimeFormatOfDurationToDay(duration) {
-        return moment.utc(duration).format("DD天HH小時mm分鐘ss秒");
+    /**
+     * 將持續時間 (Duration) 轉化為 DD天HH小時mm分鐘ss秒
+     * 注意：Dayjs 的格式化 DD 代表日期。若超過 31 天，建議改用 duration 插件
+     */
+    getTimeFormatOfDurationToDay(durationMs) {
+        return dayjs.utc(durationMs).format("DD天HH小時mm分鐘ss秒");
     }
 
+    /**
+     * 取得中文格式的本地化時間 (例如：2022年1月29日星期六 08:00)
+     * @param {number} ts - 毫秒時間戳
+     */
     getChineseTimeFormat(ts) {
-        moment.locale('zh-TW')
-        return moment(ts).format("LLLL");
+        return dayjs(ts).format("LLLL");
     }
 
+    /** 取得持續時間對應的分鐘數 (不滿一分會有小數) */
     getMinuteFormatOfDuration(ds) {
-        return moment.duration(ds).asMinutes();
+        return dayjs.duration(ds).asMinutes();
     }
 
+    /** 取得持續時間對應的秒數 */
     getSecondFormatOfDuration(ds) {
-        return moment.duration(ds).asSeconds();
+        return dayjs.duration(ds).asSeconds();
     }
 
+    /** 取得持續時間對應的天數 */
     getDayFormatOfDuration(ds) {
-        return moment.duration(ds).asDays();
+        return dayjs.duration(ds).asDays();
     }
 
-    /** param可以是timeStamp,也可是date,或是string
-     * timestamp : 1231231279
-     * date :(new Date).now()
-     * string: '2021-11-21'
-     *
-     * getDurationOfMillionSec('2022-01-21' || 123123112312 || (new Date).now())) */;
-
+    /**
+     * 計算目標時間與當前時間之間的毫秒差 (絕對值)
+     * @param {string|number|Date} dateOrTimeStamp
+     * @returns {number} 毫秒差
+     */
     getDurationOfMillionSec(dateOrTimeStamp) {
-        const currentTimestamp = this.getCurrentTimeStamp();
-        const targetTimeStamp = moment(dateOrTimeStamp).valueOf();
-        const queue = _.sortBy([{ts: currentTimestamp}, {ts: targetTimeStamp}], (each) => each.ts).map((each) => each.ts);
+        const now = dayjs();
+        const target = dayjs(dateOrTimeStamp);
 
-        let after = moment(queue.pop());
-        let before = moment(queue.shift()); // another date
-        let duration = moment.duration(after.diff(before));
-        let ms = duration.asMilliseconds();
-        return ms;
+        // 計算差異 (diff)，回傳毫秒數
+        // .diff 預設會處理順序問題，若 target < now 則回傳負值
+        const diffMs = Math.abs(now.diff(target));
+        return diffMs;
     }
 
     getCurrentTimeStamp() {
-        return moment().valueOf()
+        return dayjs().valueOf();
     }
 
     isStringContainInLines(context, key) {
@@ -1412,123 +1593,9 @@ class Utiller {
         return Math.abs(n % 2) === 1;
     }
 
-    enrichZhTw() {
-        moment.locale('zh-tw', {
-            months: '一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月'.split('_'),
-            monthsShort: '1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月'.split('_'),
-            weekdays: '星期日_星期一_星期二_星期三_星期四_星期五_星期六'.split('_'),
-            weekdaysShort: '周日_周一_周二_周三_周四_周五_周六'.split('_'),
-            weekdaysMin: '日_一_二_三_四_五_六'.split('_'),
-            longDateFormat: {
-                LT: 'Ah點mm分',
-                LTS: 'Ah點m分s秒',
-                L: 'YYYY-MM-DD',
-                LL: 'YYYY年MMMD日',
-                LLL: 'YYYY年MMMD日Ah點mm分',
-                LLLL: 'YYYY年MMMD日ddddAh點mm分',
-                l: 'YYYY-MM-DD',
-                ll: 'YYYY年MMMD日',
-                lll: 'YYYY年MMMD日Ah點mm分',
-                llll: 'YYYY年MMMD日ddddAh點mm分'
-            },
-            meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
-            meridiemHour: function (h, meridiem) {
-                let hour = h;
-                if (hour === 12) {
-                    hour = 0;
-                }
-                if (meridiem === '凌晨' || meridiem === '早上' ||
-                    meridiem === '上午') {
-                    return hour;
-                } else if (meridiem === '下午' || meridiem === '晚上') {
-                    return hour + 12;
-                } else {
-                    // '中午'
-                    return hour >= 11 ? hour : hour + 12;
-                }
-            },
-            meridiem: function (hour, minute, isLower) {
-                const hm = hour * 100 + minute;
-                if (hm < 600) {
-                    return '凌晨';
-                } else if (hm < 900) {
-                    return '早上';
-                } else if (hm < 1130) {
-                    return '上午';
-                } else if (hm < 1230) {
-                    return '中午';
-                } else if (hm < 1800) {
-                    return '下午';
-                } else {
-                    return '晚上';
-                }
-            },
-            calendar: {
-                sameDay: function () {
-                    return this.minutes() === 0 ? '[今天]Ah[點整]' : '[今天]LT';
-                },
-                nextDay: function () {
-                    return this.minutes() === 0 ? '[明天]Ah[點整]' : '[明天]LT';
-                },
-                lastDay: function () {
-                    return this.minutes() === 0 ? '[昨天]Ah[點整]' : '[昨天]LT';
-                },
-                nextWeek: function () {
-                    let startOfWeek, prefix;
-                    startOfWeek = moment().startOf('week');
-                    prefix = this.diff(startOfWeek, 'days') >= 7 ? '[下]' : '[本]';
-                    return this.minutes() === 0 ? prefix + 'dddA點整' : prefix + 'dddAh點mm';
-                },
-                lastWeek: function () {
-                    let startOfWeek, prefix;
-                    startOfWeek = moment().startOf('week');
-                    prefix = this.unix() < startOfWeek.unix() ? '[上]' : '[本]';
-                    return this.minutes() === 0 ? prefix + 'dddAh點整' : prefix + 'dddAh點mm';
-                },
-                sameElse: 'LL'
-            },
-            ordinalParse: /\d{1,2}(日|月|周)/,
-            ordinal: function (number, period) {
-                switch (period) {
-                    case 'd':
-                    case 'D':
-                    case 'DDD':
-                        return number + '日';
-                    case 'M':
-                        return number + '月';
-                    case 'w':
-                    case 'W':
-                        return number + '周';
-                    default:
-                        return number;
-                }
-            },
-            relativeTime: {
-                future: '%s内',
-                past: '%s前',
-                s: '幾秒',
-                m: '1 分鐘',
-                mm: '%d 分鐘',
-                h: '1 小時',
-                hh: '%d 小時',
-                d: '1 天',
-                dd: '%d 天',
-                M: '1 個月',
-                MM: '%d 个月',
-                y: '1 年',
-                yy: '%d 年'
-            },
-            week: {
-                // GB/T 7408-1994《数据元和交换格式·信息交换·日期和时间表示法》与ISO 8601:1988等效
-                dow: 1, // Monday is the first day of the week.
-                doy: 4  // The week that contains Jan 4th is the first week of the year.
-            }
-        });
-    }
-
     /** react js Util */
     getVisibleOrHidden(judgement) {
-        return {visibility: judgement ? 'visible' : 'hidden'};
+        return { visibility: judgement ? 'visible' : 'hidden' };
     }
 
     /**
@@ -2083,12 +2150,24 @@ class Utiller {
     }
 
     /**
-     // 使用範例
-     const birthDate = '2005-01-01';
-     console.log(isOver18(birthDate)); // 會返回 true 或 false
+     * 判斷是否超過指定年齡
+     * * @sample
+     * // 假設今天是 2025-12-08
+     * const birthDate = '2005-01-01';
+     * isOverSpecificAge(birthDate, 18); // 返回 true
+     * * @param {string | number | Date} birthDate - 出生日期 (建議格式 'YYYY-MM-DD')
+     * @param {number} target - 目標年齡 (預設為 18)
+     * @returns {boolean} 是否大於等於目標年齡
      */
     isOverSpecificAge(birthDate, target = 18) {
-        const age = moment().diff(moment(birthDate, 'YYYY-MM-DD'), 'years');
+        /**
+         * .diff(comparedDate, unit)
+         * 第一個參數：要對比的日期物件
+         * 第二個參數：計算單位 (此處使用 'years')
+         * 預設會無條件捨去 (Floor)，非常適合計算足歲
+         */
+        const age = dayjs().diff(dayjs(birthDate), 'years');
+
         return age >= target;
     }
 
@@ -2117,187 +2196,168 @@ class Utiller {
         return sum % 10 === 0;
     }
 
+    /**
+     * 驗證個人資料輸入欄位格式（姓名、郵件、身分證、電話、生日年齡）
+     * @param {string} name - 姓名
+     * @param {string} email - 電子郵件
+     * @param {string} idNumber - 身分證字號
+     * @param {string} phoneNumber - 手機號碼
+     * @param {string|Date} birthday - 出生日期
+     * @param {number} [ageOfQualify=12] - 限制年齡 (預設 12 歲)
+     * @returns {Object} { valid: boolean, message: string }
+     */
     validatePersonalInfoInput(name, email, idNumber, phoneNumber, birthday, ageOfQualify = 12) {
         // 檢查姓名
         if (name.length < 2) {
-            return {
-                valid: false,
-                message: '姓名至少要兩個字'
-            };
+            return { valid: false, message: '姓名至少要兩個字' };
         }
 
         // 檢查電子郵件
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return {
-                valid: false,
-                message: '電子郵件格式不正確'
-            };
+            return { valid: false, message: '電子郵件格式不正確' };
         }
 
-        // 檢查身分證號碼 (這裡使用簡化的檢查，實際上還需要更詳細的驗證)
+        // 檢查身分證號碼 (簡化驗證)
         const idRegex = /^[A-Z][1-2]\d{8}$/;
         if (!idRegex.test(idNumber)) {
-            return {
-                valid: false,
-                message: '身分證號碼格式不正確'
-            };
+            return { valid: false, message: '身分證號碼格式不正確' };
         }
 
-        // 檢查手機號碼 (這裡以台灣手機號碼為例，09開頭，共10位數字)
+        // 檢查台灣手機號碼 (09開頭，10位數字)
         const phoneRegex = /^09\d{8}$/;
         if (!phoneRegex.test(phoneNumber)) {
-            return {
-                valid: false,
-                message: '手機號碼格式不正確'
-            };
+            return { valid: false, message: '手機號碼格式不正確' };
         }
 
-        // 檢查生日和年齡
-        if (this.isUndefinedNullEmpty(birthday))
-            return {
-                valid: false,
-                message: `出生日期格式不正確`
-            };
+        // 檢查生日
+        if (!birthday || birthday === "") {
+            return { valid: false, message: `出生日期格式不正確` };
+        }
 
-        const now = moment();
-        const age = now.diff(birthday, 'years');
+        // 計算年齡
+        const now = dayjs();
+        const age = now.diff(dayjs(birthday), 'years');
         if (age < ageOfQualify) {
-            return {
-                valid: false,
-                message: `年齡不得小於 ${ageOfQualify} 歲`
-            };
+            return { valid: false, message: `年齡不得小於 ${ageOfQualify} 歲` };
         }
 
-        // 所有項目都通過檢查
-        return {
-            valid: true,
-            message: '格式檢查通過'
-        };
+        return { valid: true, message: '格式檢查通過' };
     }
 
     /**
-     * // 測試範例
-     *     const startTimestamp = 1683004800000; // 2023-05-01
-     *     const endTimestamp = 1688160000000; // 2023-06-30
-     *
-     *     console.log(formatTimestampRangeWithMoment(startTimestamp, endTimestamp));
-     * // 輸出：23/05/01 - 06/30
-     *
-     *     const startTimestampCrossYear = 1609459200000; // 2021-01-01
-     *     const endTimestampCrossYear = 1640995200000; // 2022-01-01
-     *
-     *     console.log(formatTimestampRangeWithMoment(startTimestampCrossYear, endTimestampCrossYear));
-     * // 輸出：21/01/01 - 22/01/01
-     * */
-
+     * 格式化時間戳記範圍，若同年則簡化顯示
+     * @sample formatTimestampRange(1683004800000, 1688160000000) => "23/05/01 - 06/30"
+     * @param {number} startTimestamp - 開始時間戳
+     * @param {number} endTimestamp - 結束時間戳
+     * @returns {string} 格式化範圍字串
+     */
     getStringOfFormatTimestampRange(startTimestamp, endTimestamp) {
-        // 使用 moment 解析 timestamp
-        const startDate = moment(startTimestamp);
-        const endDate = moment(endTimestamp);
+        const startDate = dayjs(startTimestamp);
+        const endDate = dayjs(endTimestamp);
 
-        // 格式化日期為 YY/MM/DD 格式
         const formatDate = (date) => date.format('YY/MM/DD');
 
-        // 判斷是否跨年份
         const startYear = startDate.year();
         const endYear = endDate.year();
 
         if (startYear === endYear) {
-            // 如果沒有跨年份，顯示 YY/MM/DD - MM/DD
+            // 同年：YY/MM/DD - MM/DD
             return `${formatDate(startDate)} - ${endDate.format('MM/DD')}`;
         } else {
-            // 如果跨年份，顯示 YY/MM/DD - YY/MM/DD
+            // 跨年：YY/MM/DD - YY/MM/DD
             return `${formatDate(startDate)} - ${formatDate(endDate)}`;
         }
     }
 
     /**
-     * // 測試範例
-     *     const startTimestamp = 1683004800000; // 2023-05-01
-     *     const endTimestamp = 1688160000000; // 2023-06-30
-     *     const weeklyMinutes = 180; // 每週上課 180 分鐘 (3 小時)
-     *
-     *     console.log(calculateClassTimeWithMoment(startTimestamp, endTimestamp, weeklyMinutes));
-     * // 輸出：12小時
-     *
-     * console.log(utiller.getStringOfCalculateClassTime(utiller.convertDateToTimestamp('2024-09-15'),utiller.convertDateToTimestamp('2024-10-15'),60))
-     *
+     * 根據起訖日期與每週分鐘數，計算總上課時數
+     * @param {number} startTimestamp - 開始時間戳
+     * @param {number} endTimestamp - 結束時間戳
+     * @param {number} weeklyMinutes - 每週上課分鐘數
+     * @returns {string} (e.g., "12小時30分鐘")
      */
     getStringOfCalculateClassTime(startTimestamp, endTimestamp, weeklyMinutes) {
-        // 使用 moment 解析 timestamp
-        const startDate = moment(startTimestamp);
-        const endDate = moment(endTimestamp);
+        const startDate = dayjs(startTimestamp);
+        const endDate = dayjs(endTimestamp);
 
-        // 計算時間範圍內的天數
-        const totalDays = endDate.diff(startDate, 'days') + 1; // 包含起始日
-        const totalWeeks = Math.ceil(totalDays / 7); // 計算有幾週
+        // 計算總天數（包含起始日）
+        const totalDays = endDate.diff(startDate, 'days') + 1;
+        // 計算總週數
+        const totalWeeks = Math.ceil(totalDays / 7);
 
-        // 計算總上課時間（分鐘）
         const totalMinutes = totalWeeks * weeklyMinutes;
 
-        // 將分鐘轉換為小時和分鐘
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
 
-        // 判斷是否需要顯示分鐘
-        if (minutes === 0) {
-            return `${hours}小時`;
-        } else {
-            return `${hours}小時${minutes}分鐘`;
-        }
+        return minutes === 0 ? `${hours}小時` : `${hours}小時${minutes}分鐘`;
     }
 
-    /** // 測試範例
-     const startTimestamp = 1683004800000; // 2023-05-01 00:00
-     const endTimestamp = 1683040800000;   // 2023-05-01 10:00
-
-     const totalMinutes = getNumberOfPeriodMinute(startTimestamp, endTimestamp);
-     console.log(totalMinutes); // 輸出：600（相當於10個小時，600分鐘）
+    /**
+     * 計算單日內兩個時間點的分鐘差距 (僅比較 HH:mm)
+     * @sample getNumberOfPeriodMinute(ts1, ts2) => 600
+     * @param {number} startTimestamp - 開始時間
+     * @param {number} endTimestamp - 結束時間
+     * @returns {number} 分鐘數
      */
     getNumberOfPeriodMinute(startTimestamp, endTimestamp) {
-        // 使用 moment 解析 timestamp
-        // 使用 moment 解析 timestamp 並只取時間的 hh:mm 部分
-        const startTime = moment(startTimestamp).format('HH:mm');
-        const endTime = moment(endTimestamp).format('HH:mm');
+        // 先轉為 HH:mm 字串格式
+        const startTime = dayjs(startTimestamp).format('HH:mm');
+        const endTime = dayjs(endTimestamp).format('HH:mm');
 
-        // 使用 moment 重新將 hh:mm 轉換為完整的日期對象
-        const startDate = moment(startTime, 'HH:mm');
-        const endDate = moment(endTime, 'HH:mm');
+        /**
+         * 注意：需使用 customParseFormat 插件解析 'HH:mm'
+         * 解析後會預設為今日的該時間點
+         */
+        const startDate = dayjs(startTime, 'HH:mm');
+        const endDate = dayjs(endTime, 'HH:mm');
 
-        // 計算兩個時間之間的分鐘差距
-        const durationInMinutes = moment.duration(endDate.diff(startDate)).asMinutes();
-        return durationInMinutes;
+        // 計算分鐘差距 (使用 duration 插件)
+        return dayjs.duration(endDate.diff(startDate)).asMinutes();
     }
 
     /**
-     * // Example usage
-     * const date = '2024-07-25';
-     * console.log(convertDateToTimestamp(date)); // Outputs the timestamp for 2024-07-25*/
+     * 將日期字串或物件轉換為 13 位毫秒時間戳
+     * @param {string|Date} date - 日期
+     * @returns {number}
+     */
     convertDateToTimestamp = (date) => {
-        return moment(date).valueOf(); // valueOf() returns the timestamp in milliseconds
+        return dayjs(date).valueOf();
     };
 
-
     /**
-     * const day = 1; // 週一
-     *     const startTimestamp = 1683004800000; // 2023-05-01 00:00
-     *     const endTimestamp = 1683019200000;   // 2023-05-01 04:00
-     *     const formattedString = formatTimeRange(day, startTimestamp, endTimestamp);
-     *     console.log(formattedString); // 輸出：週一 00:00-04:00
+     * 組合星期幾與起訖時間字串
+     * @sample
+     * const result = getStringOfWeekTime(1, 1683004800000, 1683019200000);
+     * // 輸出: "週一 00:00-04:00"
+     * * @param {number} day - 星期幾 (1: 週一, 2: 週二, ..., 7: 週日)
+     * @param {number|string|Date} startTimestamp - 開始時間戳記
+     * @param {number|string|Date} endTimestamp - 結束時間戳記
+     * @returns {string} 格式化後的星期與時間範圍字串 (例如：週一 00:00-04:00)
+     * @throws {Error} 當 day 不在 1 到 7 之間時拋出錯誤
      */
     getStringOfWeekTime(day, startTimestamp, endTimestamp) {
-        // 檢查 day 是否在 1 到 7 之間
-        const daysOfWeek = {1: '週一', 2: '週二', 3: '週三', 4: '週四', 5: '週五', 6: '週六', 7: '週日'};
+        // 星期對照表
+        const daysOfWeek = {
+            1: '週一', 2: '週二', 3: '週三', 4: '週四',
+            5: '週五', 6: '週六', 7: '週日'
+        };
+
+        // 檢查參數有效性
         if (day < 1 || day > 7) {
             throw new Error('day 必須在 1 到 7 之間');
         }
 
-        // 使用 moment 將 timestamp 轉換為只保留 hh:mm 的格式
-        const startTime = moment(startTimestamp).format('HH:mm');
-        const endTime = moment(endTimestamp).format('HH:mm');
+        /**
+         * 使用 Day.js 格式化時間：
+         * HH: 24 小時制 (00-23)
+         * mm: 分鐘 (00-59)
+         */
+        const startTime = dayjs(startTimestamp).format('HH:mm');
+        const endTime = dayjs(endTimestamp).format('HH:mm');
 
-        // 組合結果並返回
+        // 返回最終組合字串
         return `${daysOfWeek[day]} ${startTime}-${endTime}`;
     }
 
@@ -2333,7 +2393,7 @@ class Utiller {
             try {
                 return await element.evaluate((el, attributes) => {
                     if (attributes.length === 1) return el[attributes.shift()];
-                    return {...attributes.map(attr => el[attr])} //或者 el.getAttribute('src') 更精確!
+                    return { ...attributes.map(attr => el[attr]) } //或者 el.getAttribute('src') 更精確!
                 }, attributes);
             } catch (error) {
                 this.appendError(`1581532 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
@@ -2362,39 +2422,53 @@ class Utiller {
         } else this.appendError(`1231232 ${stringOfTrait} fetch ${JSON.stringify(attributes)} fail, element is not found`);
     }
 
-    /** // 示例函數來測試運行時間
-     async function exampleFunction() {
-     return new Promise((resolve) => setTimeout(resolve, 3210)); // 模擬3.21秒延遲
-     }
-
-     // 測試 measureExecutionTime 函數
-     measureExecutionTime(exampleFunction).then(result => {
-     console.log(result); // 輸出：0小時 0分 3.210秒 (合計 3.210 秒)
-     });
-
+    /**
+     * 測量函數的執行時間，並將結果格式化為易讀的時分秒字串。
+     * * @sample
+     * // 示例函數：模擬 3.21 秒延遲
+     * async function exampleFunction() {
+     * return new Promise((resolve) => setTimeout(resolve, 3210));
+     * }
+     * * measureExecutionTime(exampleFunction).then(result => {
+     * console.log(result.zh_TW); // 輸出：0小時 0分 3.210秒 (合計 3.210 秒)
+     * });
+     * * @param {Function} fn - 欲測量的非同步或一般函數。
+     * @param {...*} param - 傳遞給該函數的參數。
+     * @returns {Promise<{second: string, zh_TW: string}>}
+     * second: 總秒數（字串，保留三位小數）。
+     * zh_TW: 格式化後的中文執行時間描述。
      */
     measureExecutionTime = async (fn, ...param) => {
-        // 開始計時
+        // 1️⃣ 開始計時 (Unix 毫秒時間戳)
         const startTime = Date.now();
 
-        // 執行傳入的函數
+        // 2️⃣ 執行傳入的函數
         await fn(...param);
 
-        // 結束計時
+        // 3️⃣ 結束計時並計算總毫秒差
         const endTime = Date.now();
-
-        // 計算總運行時間（毫秒）
         const durationInMilliseconds = endTime - startTime;
-        // 使用 moment.duration 格式化為 hh:mm:ss.SSS
-        const duration = moment.duration(durationInMilliseconds, 'milliseconds');
-        const hours = Math.floor(duration.asHours());
-        const minutes = duration.minutes();
-        const seconds = duration.seconds();
-        const milliseconds = duration.milliseconds();
-        // 計算總秒數（包含小數點）
+
+        /** * 4️⃣ 使用 Dayjs Duration 插件處理時間差
+         * 注意：需確保已載入 dayjs.extend(duration)
+         */
+        const dur = dayjs.duration(durationInMilliseconds);
+
+        // 取得各時間單位
+        const hours = Math.floor(dur.asHours()); // 使用 asHours 取總小時數 (整數)
+        const minutes = dur.minutes();           // 取得該小時內的剩餘分鐘數
+        const seconds = dur.seconds();           // 取得該分鐘內的剩餘秒數
+        const milliseconds = dur.milliseconds(); // 取得該秒內的剩餘毫秒數
+
+        // 計算總秒數（包含三位小數點）
         const totalSeconds = (durationInMilliseconds / 1000).toFixed(3);
-        return { second: totalSeconds, zh_TW: `${hours}小時 ${minutes}分 ${seconds}.${milliseconds.toString().padStart(3, '0')}秒 (合計 ${totalSeconds} 秒)` };
-    }
+
+        // 返回結構化結果
+        return {
+            second: totalSeconds,
+            zh_TW: `${hours}小時 ${minutes}分 ${seconds}.${milliseconds.toString().padStart(3, '0')}秒 (合計 ${totalSeconds} 秒)`
+        };
+    };
 
     formatPriceWithCurrency = (number, locale) => {
         if (typeof number !== 'number' || typeof locale !== 'string') {
@@ -3177,32 +3251,71 @@ class Utiller {
         });
     };
 
-    /** const result = convertTimeRange('2025/08/18(一)｜16:00-17:00');
-        console.log(result); // '202508181600-202508181700'*/
+    /**
+     * 將人讀的時間範圍字串轉換為緊湊的時間戳區間字串。
+     * * @sample
+     * const result = getStringOfConvertTimeRange('2025/08/18(一)｜16:00-17:00');
+     * console.log(result);
+     * // 輸出: '202508181600-202508181700'
+     * * @param {string} input - 輸入字串，格式為 "YYYY/MM/DD(週)｜HH:mm-HH:mm"
+     * @returns {string} 轉換後的字串，格式為 "YYYYMMDDHHmm-YYYYMMDDHHmm"
+     */
     getStringOfConvertTimeRange(input) {
+        /**
+         * 1️⃣ 解析輸入字串
+         * split('｜') => ["2025/08/18(一)", "16:00-17:00"]
+         */
         const [datePart, timeRange] = input.split('｜');
-        const dateStr = datePart.split('(')[0]; // 取 '2025/08/18'
+
+        /** 2️⃣ 取得日期部分: 取括號前的字串 "2025/08/18" */
+        const dateStr = datePart.split('(')[0];
+
+        /** 3️⃣ 拆分起訖時間: ["16:00", "17:00"] */
         const [start, end] = timeRange.split('-');
 
+        /** * 4️⃣ 定義內部格式化邏輯
+         * 使用 customParseFormat 插件解析 YYYY/MM/DD HH:mm
+         */
         const formatDate = (time) =>
-          moment(`${dateStr} ${time}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDHHmm');
+            dayjs(`${dateStr} ${time}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDHHmm');
 
+        // 返回最終組合結果
         return `${formatDate(start)}-${formatDate(end)}`;
     }
 
-
     /**
-     * console.log(getTSOfSpecificDate("2025/08/18(一)", { end: false })); // 20250818000000 (number)
-     * console.log(getTSOfSpecificDate("2025/08/18(一)", { end: true }));  // 20250818235959 (number)
+     * 將特定日期字串轉換為當日開始或結束的 14 位數時間戳記格式
+     * * @sample
+     * // 1. 取得當日 00:00:00 的數字格式
+     * getTSOfSpecificDate("2025/08/18(一)", { end: false });
+     * // 輸出: 20250818000000
+     * * @sample
+     * // 2. 取得當日 23:59:59 的數字格式
+     * getTSOfSpecificDate("2025/08/18(一)", { end: true });
+     * // 輸出: 20250818235959
+     * @param {string} dateStr - 輸入日期字串，格式為 "YYYY/MM/DD(週)"
+     * @param {Object} options - 配置選項
+     * @param {boolean} [options.end=false] - 是否取當日結束時間 (23:59:59)
+     * @returns {number} 14 位數的時間整數 (YYYYMMDDHHmmss)
      */
     getTSOfSpecificDate(dateStr, { end = false } = {}) {
-        return Number(
-          _(dateStr)
-            .thru(str => moment(str.split("(")[0], "YYYY/MM/DD"))
-            .thru(m => end ? m.endOf("day") : m.startOf("day"))
-            .value() // 取出 moment 物件
-            .format("YYYYMMDDHHmmss")
-        );
+        /**
+         * 1️⃣ 解析字串：取括號前的 "YYYY/MM/DD"
+         * 2️⃣ 使用 customParseFormat 解析為 dayjs 物件
+         */
+        const baseDate = dayjs(dateStr.split("(")[0], "YYYY/MM/DD");
+
+        /**
+         * 3️⃣ 根據選項切換至當日起始或結束點
+         * 注意：.startOf() 與 .endOf() 會回傳新物件，符合不可變原則
+         */
+        const resultDate = end ? baseDate.endOf("day") : baseDate.startOf("day");
+
+        /**
+         * 4️⃣ 格式化並轉為數字
+         * 格式: YYYYMMDDHHmmss (14位數)
+         */
+        return Number(resultDate.format("YYYYMMDDHHmmss"));
     }
 
     /**
@@ -3291,7 +3404,7 @@ class Utiller {
      *     console.log("4字元代碼：", generateUniqueCodeMap(arr, 4));
      *
      */
-     generateUniqueCodeMap(array, length = 3) {
+    generateUniqueCodeMap(array, length = 3) {
         if (length < 2) {
             throw new Error("代碼長度最少必須為 2。");
         }
@@ -3488,38 +3601,57 @@ class Utiller {
     }
 
     /**
-     * 根據課程資訊生成 Google Calendar 的行事曆新增連結。
-     * 若部分參數為空值，則不加入連結中。
+     * 根據行程資訊生成 Google Calendar 的「新增行程」動態連結。
+     * * @sample
+     * const link = generateGoogleCalendarLink({
+     * title: "吉他課",
+     * startDate: "2025/11/10",
+     * startTime: "14:00",
+     * endDate: "2025/11/10",
+     * endTime: "16:00",
+     * location: "台北市大安區",
+     * details: "記得帶譜"
+     * });
+     * // 回傳: https://calendar.google.com/calendar/r/eventedit?text=...
      *
      * @param {object} event - 行程物件。
-     * @param {string} event.title - 行程主題 (e.g., '吉他課')。
-     * @param {string} event.startDate - 開始日期 (e.g., '2025/11/10')。
-     * @param {string} event.startTime - 開始時間 (e.g., '14:00')。
-     * @param {string} event.endDate - 結束日期 (e.g., '2025/11/10')。
-     * @param {string} event.endTime - 結束時間 (e.g., '16:00')。
-     * @param {string} [event.location] - 地點/地址。
-     * @param {string} [event.details] - 描述/備註。
-     * @returns {string} Google Calendar 的新增連結。
+     * @param {string} event.title - 行程主題。
+     * @param {string} event.startDate - 開始日期 (YYYY/MM/DD)。
+     * @param {string} event.startTime - 開始時間 (HH:mm)。
+     * @param {string} event.endDate - 結束日期 (YYYY/MM/DD)。
+     * @param {string} event.endTime - 結束時間 (HH:mm)。
+     * @param {string} [event.location] - 地點/地址 (可選)。
+     * @param {string} [event.details] - 描述/備註 (可選)。
+     * @returns {string} Google Calendar 的新增連結 URL 字串。
      */
-     generateGoogleCalendarLink = ({
-                                            title,
-                                            startDate,
-                                            startTime,
-                                            endDate,
-                                            endTime,
-                                            location,
-                                            details,
-                                        }) => {
-        const startDateTime = moment(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHmmss');
-        const endDateTime = moment(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm').format('YYYYMMDDTHHmmss');
+    generateGoogleCalendarLink = ({
+                                      title, startDate, startTime, endDate, endTime, location, details
+                                  }) => {
+        /** Google Calendar URL 要求的時間格式 */
+        const googleFormat = 'YYYYMMDDTHHmmss';
 
+        /** * 使用 Day.js 解析自定義格式日期並轉換為字串
+         * 例如: 20251110T140000
+         */
+        const startDateTime = dayjs(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm').format(googleFormat);
+        const endDateTime = dayjs(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm').format(googleFormat);
+
+        /** 使用瀏覽器內建的 URLSearchParams 處理字串編碼 */
         const params = new URLSearchParams();
 
         if (title) params.append('text', title);
-        if (startDateTime && endDateTime) params.append('dates', `${startDateTime}/${endDateTime}`);
+
+        /** 組合日期範圍: [起始時間]/[結束時間] */
+        if (startDateTime && endDateTime) {
+            params.append('dates', `${startDateTime}/${endDateTime}`);
+        }
+
         if (details) params.append('details', details);
         if (location) params.append('location', location);
 
+        /** * ctz: 設定時區 (台北)
+         * trp: 設定為忙碌狀態 (true)
+         */
         params.append('ctz', 'Asia/Taipei');
         params.append('trp', 'true');
 
@@ -3563,57 +3695,85 @@ class Utiller {
     };
 
     /**
-     * 根據課程資訊生成 iCalendar (.ics) 檔案內容。
-     * 若部分欄位為空值，則不寫入該欄位。
+     * 根據行程資訊生成符合 RFC 5545 規範的 iCalendar (.ics) 檔案內容。
+     * * @sample
+     * const icsData = generateIcsContent({
+     * title: "鋼琴課程",
+     * startDate: "2024/12/25",
+     * startTime: "14:00",
+     * endDate: "2024/12/25",
+     * endTime: "15:00",
+     * location: "台北市大安區",
+     * details: "記得帶樂譜"
+     * });
      *
      * @param {object} event - 行程物件。
      * @param {string} event.title - 行程主題。
      * @param {string} event.startDate - 開始日期 (YYYY/MM/DD)。
-     * @param {string} event.startTime - 開始時間 (HH:MM)。
+     * @param {string} event.startTime - 開始時間 (HH:mm)。
      * @param {string} event.endDate - 結束日期 (YYYY/MM/DD)。
-     * @param {string} event.endTime - 結束時間 (HH:MM)。
-     * @param {string} [event.location] - 地點/地址。
-     * @param {string} [event.details] - 描述/備註。
-     * @returns {string} 遵循 iCalendar 規範的字串內容。
+     * @param {string} event.endTime - 結束時間 (HH:mm)。
+     * @param {string} [event.location] - 地點/地址 (可選)。
+     * @param {string} [event.details] - 描述/備註 (可選)。
+     * @returns {string} 遵循 iCalendar 規範的 \r\n 換行字串內容。
      */
-     generateIcsContent = ({
-                                    title,
-                                    startDate,
-                                    startTime,
-                                    endDate,
-                                    endTime,
-                                    location,
-                                    details,
-                                }) => {
-        const startDateTime = moment.tz(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHmmss');
-        const endDateTime = moment.tz(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm', 'Asia/Taipei').format('YYYYMMDDTHHmmss');
-        const stamp = moment().utc().format('YYYYMMDDTHHmmss') + 'Z';
+    generateIcsContent = ({
+                              title,
+                              startDate,
+                              startTime,
+                              endDate,
+                              endTime,
+                              location,
+                              details
+                          }) => {
+        // 設定目標時區
+        const tzid = 'Asia/Taipei';
+        const icsFormat = 'YYYYMMDDTHHmmss';
+
+        /** * 使用 dayjs.tz 解析特定時區的時間字串並格式化。
+         * 注意：輸入字串格式需符合 YYYY/MM/DD HH:mm
+         */
+        const startDateTime = dayjs.tz(`${startDate} ${startTime}`, 'YYYY/MM/DD HH:mm', tzid).format(icsFormat);
+        const endDateTime = dayjs.tz(`${endDate} ${endTime}`, 'YYYY/MM/DD HH:mm', tzid).format(icsFormat);
+
+        /** DTSTAMP 通常要求 UTC 時間並以 Z 結尾 */
+        const stamp = dayjs().utc().format(icsFormat) + 'Z';
+
+        /** 產生唯一辨識碼 UID */
         const uid = Date.now().toString(36) + Math.random().toString(36).substring(2, 5) + '@gemini-app.com';
 
+        /**
+         * 根據 ICS 規範進行特殊字元跳脫 (Escape)
+         * 避免標點符號與換行符號破壞文件結構
+         */
         const escapeIcs = (text) =>
-            text
+            (text || "")
                 .replace(/\\/g, '\\\\')
                 .replace(/,/g, '\\,')
                 .replace(/;/g, '\\;')
                 .replace(/\n/g, '\\n');
 
+        // 開始構建文件行
         const lines = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
             'PRODID:-//Gemini AI//NONSGML v1.0//EN',
             'BEGIN:VEVENT',
             `UID:${uid}`,
-            `DTSTAMP:${stamp}`,
+            `DTSTAMP:${stamp}`
         ];
 
-        if (startDateTime) lines.push(`DTSTART;TZID=Asia/Taipei:${startDateTime}`);
-        if (endDateTime) lines.push(`DTEND;TZID=Asia/Taipei:${endDateTime}`);
+        /** 寫入帶有時區標籤的時間欄位 */
+        if (startDateTime) lines.push(`DTSTART;TZID=${tzid}:${startDateTime}`);
+        if (endDateTime) lines.push(`DTEND;TZID=${tzid}:${endDateTime}`);
+
         if (title) lines.push(`SUMMARY:${escapeIcs(title)}`);
         if (location) lines.push(`LOCATION:${escapeIcs(location)}`);
         if (details) lines.push(`DESCRIPTION:${escapeIcs(details)}`);
 
         lines.push('END:VEVENT', 'END:VCALENDAR');
 
+        // iCalendar 要求使用 CRLF (\r\n) 作為換行符
         return lines.join('\r\n');
     };
 
@@ -3630,7 +3790,7 @@ class Utiller {
      * @param {string} event.details - 描述/備註。
      * @returns {{google: string, timeTree: string, ics: string}} 包含所有連結的物件。
      */
-     generateAllCalendarLinks = (event) => {
+    generateAllCalendarLinks = (event) => {
         // 1. Google Calendar Link
         const googleLink = this.generateGoogleCalendarLink(event);
 
@@ -3650,26 +3810,6 @@ class Utiller {
         };
     };
 
-// 範例用法 (請確保 moment.js 已載入)
-    /*
-    const myEvent = {
-        title: '吉他課 (Moment.js)',
-        startDate: '2026/01/15', // 使用新的 YYYY/MM/DD 格式
-        startTime: '10:30',
-        endDate: '2026/01/15',
-        endTime: '12:00',
-        location: '新北市板橋區縣民大道一段 1 號',
-        details: 'Moment.js 測試：請記得帶譜架。'
-    };
-
-    if (typeof moment !== 'undefined') {
-        const links = generateAllCalendarLinks(myEvent);
-        console.log('--- 使用 Moment.js 生成的連結 ---');
-        console.log(links);
-    } else {
-        console.warn('moment.js 函式庫未載入，無法執行。');
-    }
-    */
 
     /** ============== 排課系統公式 開始 ============== */
 
@@ -3690,51 +3830,69 @@ class Utiller {
      * */
     getFilteredHeraPeriods(arr, idOfCurrentBooze) {
         return _.chain(arr)
-          // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
-          .filter(item => item.idOfBooze !== idOfCurrentBooze)
-          // 2️⃣ 根據 idOfBooze+idOfVariant 組成唯一鍵 僅保留一組
-          .uniqBy(item => `${item.idOfBooze}_${item.idOfVariant}`)
-          // 3️⃣ 只保留 period 欄位
-          // .map('period')
-          // 4️⃣ 過濾掉沒有 period 的項目（避免 undefined）
-          // .filter(Boolean)
-          // 5️⃣ 轉回陣列
-          .value();
+            // 1️⃣ 刪掉 idOfBooze 等於目標值的項目
+            .filter(item => item.idOfBooze !== idOfCurrentBooze)
+            // 2️⃣ 根據 idOfBooze+idOfVariant 組成唯一鍵 僅保留一組
+            .uniqBy(item => `${item.idOfBooze}_${item.idOfVariant}`)
+            // 3️⃣ 只保留 period 欄位
+            // .map('period')
+            // 4️⃣ 過濾掉沒有 period 的項目（避免 undefined）
+            // .filter(Boolean)
+            // 5️⃣ 轉回陣列
+            .value();
     }
 
     /**
-     * 檢查新任務與既有任務是否有時間衝突
-     * @param {Object} newTask - 新任務物件，需包含 timeSlot 屬性 (格式: YYYY/MM/DD (週)｜HH:mm-HH:mm)
-     * @param {Array} existingTasks - 已安排的任務陣列，每個物件需包含 period 屬性 (格式: yyyymmddHHmm-yyyymmddHHmm)
-     * @param {number} resourceCount - 可同時處理任務的人員/資源數量
-     * @returns {Object} { conflict: boolean, items: Array }
+     * 檢查新任務與既有任務是否有時間衝突。
+     * * @sample
+     * const newTask = { content: "2025/08/15 (週五)｜14:00-16:00" };
+     * const existingTasks = [
+     * { period: "202508151530-202508151700" }, // 🔁 與新任務重疊 15:30-16:00
+     * { period: "202508151600-202508151800" }  // ✅ 剛好接續，不構成衝突
+     * ];
+     * checkPeriodConflict(newTask, existingTasks, 1);
+     * // 回傳: { conflict: true, items: [{ period: "202508151530-202508151700" }] }
+     * @param {Object} newTask - 新任務物件，content 格式: "YYYY/MM/DD (週)｜HH:mm-HH:mm"
+     * @param {Array} existingTasks - 既有任務陣列，每個元素需有 period 屬性: "yyyymmddHHmm-yyyymmddHHmm"
+     * @param {number} [resourceCount=1] - 可同時承載的最大任務數量 (資源量)
+     * @returns {Object} { conflict: boolean, items: Array } - 是否衝突及衝突清單
      */
     checkPeriodConflict(newTask, existingTasks, resourceCount = 1) {
-        // 1️⃣ 解析 timeSlot 拆成日期與時間
+        // 1️⃣ 解析 timeSlot 拆成日期與時間範例
+        // 分割 content: "2024/09/15 (週日)｜14:00-16:00"
         const [datePart, timePart] = newTask.content.split('｜');
-        const date = moment(datePart.split(' ')[0], 'YYYY/MM/DD');
+        // 取得日期字串: "2024/09/15"
+        const dateStr = datePart.split(' ')[0];
         const [startTimeStr, endTimeStr] = timePart.split('-');
 
-        const start = moment(`${date.format('YYYY/MM/DD')} ${startTimeStr}`, 'YYYY/MM/DD HH:mm');
-        const end = moment(`${date.format('YYYY/MM/DD')} ${endTimeStr}`, 'YYYY/MM/DD HH:mm');
+        /** * 解析新任務的起訖點。
+         * dayjs 預設不支援 YYYY/MM/DD，需搭配 customParseFormat 插件。
+         */
+        const start = dayjs(`${dateStr} ${startTimeStr}`, 'YYYY/MM/DD HH:mm');
+        const end = dayjs(`${dateStr} ${endTimeStr}`, 'YYYY/MM/DD HH:mm');
 
-        // 2️⃣ 篩選出有真實時間重疊的任務
+        // 2️⃣ 篩選出時間重疊的任務
         const conflictItems = _.filter(existingTasks, task => {
             const [pStartStr, pEndStr] = task.period.split('-');
-            const pStart = moment(pStartStr, 'YYYYMMDDHHmm');
-            const pEnd = moment(pEndStr, 'YYYYMMDDHHmm');
 
-            // 判斷條件：有交集才算衝突
+            // 解析既有任務的時間戳字串: "202508151530"
+            const pStart = dayjs(pStartStr, 'YYYYMMDDHHmm');
+            const pEnd = dayjs(pEndStr, 'YYYYMMDDHHmm');
+
+            /**
+             * 衝突判斷演算法 (Overlap Detection):
+             * (StartA < EndB) 且 (EndA > StartB) 代表有交集。
+             * 若 A 的結束點等於 B 的開始點，此公式結果為 false (不衝突)。
+             */
             return start.isBefore(pEnd) && end.isAfter(pStart);
         });
 
-        // 3️⃣ 根據資源數量判斷是否真的構成衝突
+        // 3️⃣ 判斷衝突數量是否超過資源上限
         const conflict = conflictItems.length >= resourceCount;
 
-        // 4️⃣ 回傳結果
         return {
-            conflict,       // true: 超過資源負荷
-            items: conflictItems // 衝突的任務列表
+            conflict,
+            items: conflictItems // 回傳具體的衝突項目以便前端提示或反查
         };
     }
 
@@ -3800,27 +3958,27 @@ class Utiller {
 
 
     /**
-    * 移除陣列中重複的元素，並以指定的 'key' 欄位作為唯一識別鍵 (Primary Key)。
-    * 規則：當 'key' 欄位的值重複時，只保留在陣列中出現的第一個元素。
-    *
-    * @param {Array<Object>} data - 包含物件的輸入陣列，每個物件應包含指定的 'key' 欄位。
-    * @param {string} key - 用於判斷唯一性的物件屬性名稱（例如：'href', 'id', 'email'）。
-    * @returns {Array<Object>} - 經過去重處理後的新陣列 (不會修改原始陣列)。
-    * @example
-    * // 範例輸入資料
-    * const inputData = [
-            * { href: 'avb', title: '123' },
-        * { href: 'avc', title: '321' },
-    * { href: 'avb', title: '213' } // 重複的 'avb'，會被捨棄
-    * ];
-    * // 呼叫函數
-    * const uniqueData = removeDuplicatesByKeyES11(inputData, 'href');
-    * // 輸出結果:
-    * // [
-    * //   { href: 'avb', title: '123' },
-    * //   { href: 'avc', title: '321' }
-    * // ]
-    */
+     * 移除陣列中重複的元素，並以指定的 'key' 欄位作為唯一識別鍵 (Primary Key)。
+     * 規則：當 'key' 欄位的值重複時，只保留在陣列中出現的第一個元素。
+     *
+     * @param {Array<Object>} data - 包含物件的輸入陣列，每個物件應包含指定的 'key' 欄位。
+     * @param {string} key - 用於判斷唯一性的物件屬性名稱（例如：'href', 'id', 'email'）。
+     * @returns {Array<Object>} - 經過去重處理後的新陣列 (不會修改原始陣列)。
+     * @example
+     * // 範例輸入資料
+     * const inputData = [
+     * { href: 'avb', title: '123' },
+     * { href: 'avc', title: '321' },
+     * { href: 'avb', title: '213' } // 重複的 'avb'，會被捨棄
+     * ];
+     * // 呼叫函數
+     * const uniqueData = removeDuplicatesByKeyES11(inputData, 'href');
+     * // 輸出結果:
+     * // [
+     * //   { href: 'avb', title: '123' },
+     * //   { href: 'avc', title: '321' }
+     * // ]
+     */
     getArrayOfUniqBy = (data, key) => {
         if (!Array.isArray(data)) {
             console.error("Input must be an array.");

@@ -2,7 +2,7 @@ const edit = true;
 
 import { exceptioner as ERROR, utiller as Util } from "utiller";
 import _ from "lodash";
-import moment from "moment";
+import dayjs from "dayjs";
 import firebase from "./FirebaseHelper";
 import FingerprintJS from "@fingerprintjs/fingerprintjs";
 
@@ -20,17 +20,36 @@ class CommonRemoteApi {
         else return obj;
     }
 
-    /** null是讓mui picker沒有預設值(顯示出label)，所以特別保留 */
-    normalizeAsMoment(param) {
+    /**
+     * 將 Firebase Timestamp 或其他日期格式標準化為 Day.js 物件。
+     * 支援單一物件或陣列輸入，並保留 null 以供 MUI Picker 顯示 label。
+     * * @param {any|any[]} param - Firebase Timestamp, Date, string, number 或其陣列
+     * @returns {dayjs.Dayjs|null|(dayjs.Dayjs|null)[]} 標準化後的結果
+     */
+    normalizeAsDayjs(param) {
         const self = this;
 
+        /**
+         * 內部輔助函式：處理單一參數
+         * @param {any} pram
+         */
         function getSpecificExpress(pram) {
+            // 1. 保留 null 值，確保 MUI Picker 顯示 label 而非預設日期
             if (_.isNull(pram)) return pram;
-            else if (pram instanceof self.FirebaseTimestampClass()) return moment(pram.toMillis());
-            else return moment(pram);
+
+            // 2. 處理 Firebase Timestamp (偵測是否存在 toMillis 方法)
+            if (pram instanceof self.FirebaseTimestampClass()) {
+                return dayjs(pram.toMillis());
+            }
+
+            // 3. 處理一般格式 (Date, string, timestamp number)
+            return dayjs(pram);
         }
 
-        return _.isArray(param) ? param.map((each) => getSpecificExpress(each)) : getSpecificExpress(param);
+        // 判斷輸入是否為陣列，若是則使用 map 批量處理
+        return _.isArray(param)
+            ? param.map((each) => getSpecificExpress(each))
+            : getSpecificExpress(param);
     }
 
     getFieldNameOfDocumentId() {
@@ -56,7 +75,7 @@ class CommonRemoteApi {
             return obj;
         } else {
             try {
-                return this.getFirebaseTimestampObject(moment(obj).valueOf());
+                return this.getFirebaseTimestampObject(dayjs(obj).valueOf());
             } catch (error) {
                 Util.appendError(`441513135 ${error.message}`);
                 return this.getObjectOfCurrentTimeStamp();

@@ -1,8 +1,6 @@
 import {configerer} from "configerer";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from 'utiller';
 import _ from 'lodash';
-import libpath from 'path';
-import Moment from 'moment';
 import * as fs from 'fs';
 
 /** author:明悅

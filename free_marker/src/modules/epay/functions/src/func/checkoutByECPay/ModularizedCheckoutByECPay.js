@@ -12,7 +12,7 @@ class ModularizedCheckoutByECPay extends BaseCheckoutByECPay {
     constructor(props) {
         super(props);
         this.handlerOfECPay = new ECPay(Config.ecpay);
-        Util.setLocaleOfMoment("zh-tw");
+        Util.setLocaleOfDate("zh-tw");
     }
 
     async handleHttpOnCall(data, session) {

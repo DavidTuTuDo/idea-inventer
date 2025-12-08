@@ -34,10 +34,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-// let CURRENT_PROJECT = './project-yueh-pu';
+let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
-let CURRENT_PROJECT = './project-sashanailgel';
+// let CURRENT_PROJECT = './project-sashanailgel';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -97,7 +97,7 @@ const VIEW_IMPORTS =
         },
         {
             from: `@mui/x-date-pickers`,
-            views: ['LocalizationProvider', 'AdapterMoment'],
+            views: ['LocalizationProvider', 'AdapterDayjs'],
             object: true,
         },
         {
@@ -2205,7 +2205,7 @@ class CodegenNode {
     }
 
     /**
-     * onChange(event) 裡面的event = moment
+     * onChange(event) 裡面的event = dayjs
      * 再透過這些方式取得表列 const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
      * */
     isTimeDatePickerView(type = 'default', node = this) {
@@ -2954,8 +2954,8 @@ class CodegenNode {
         if (this.type === 'boolean') return false;
 
         if (this.type === 'timestamp') {
-            if (this.isTimeDateRangePickerView()) return this.getDefaultValue() ?? `[null, null]` /** 如果要有初始時間 [moment(),moment()]*/
-            else if (this.isTimeDatePickerView()) return this.getDefaultValue() ?? `null` /** 如果要有初始時間 moment() */
+            if (this.isTimeDateRangePickerView()) return this.getDefaultValue() ?? `[null, null]` /** 如果要有初始時間 [dayjs(),dayjs()]*/
+            else if (this.isTimeDatePickerView()) return this.getDefaultValue() ?? `null` /** 如果要有初始時間 dayjs() */
             else if (this.isBelong2TimeDatePicker()) return this.getDefaultValue() ?? `null`
             else if (_.isNull(this.getDefaultValue())) return `null` /** timestamp可以給初始時間 */
             else return `this.getObjectOfCurrentTimeStamp()`;
@@ -4332,7 +4332,7 @@ class StoreBuilder extends BaseBuilder {
             propsStmt.push(...propStmt);
 
             if (child.isTimeStamp()) {
-                generator.appendImport('moment', `moment`)
+                generator.appendImport('dayjs', `dayjs`)
             }
 
         }
@@ -4533,7 +4533,7 @@ class StoreBuilder extends BaseBuilder {
             }
 
             if (child.isTimeDateRangePickerView()) {
-                stmtsOfRangeNormalize.push(`result.${child.getFieldName()} = [this.normalizeAsMoment(result.${child.getFieldNameOfStart()}),this.normalizeAsMoment(result.${child.getFieldNameOfEnd()})];`)
+                stmtsOfRangeNormalize.push(`result.${child.getFieldName()} = [this.normalizeAsDayjs(result.${child.getFieldNameOfStart()}),this.normalizeAsDayjs(result.${child.getFieldNameOfEnd()})];`)
             }
 
             if (child.isAutoCompleteView()) {
@@ -5945,7 +5945,7 @@ class ComponentBuilder extends BaseBuilder {
             origin = this.getJSXStrings({
                 tag: `LocalizationProvider`,
                 generator,
-                props: {dateAdapter: `###AdapterMoment`},
+                props: {dateAdapter: `###AdapterDayjs`},
                 typeOfClass: 'component',
                 contents: [...origin],
             })
@@ -6820,7 +6820,7 @@ class AppBuilder extends ComponentBuilder {
         const routerStmt = this.getJSXStrings({
             tag: 'Routes',
             generator: appGenerator,
-            props: {history: `###this.history`},
+            // props: {history: `###this.history`},
             contents: [...childrenStmt, `{this.getExtraPages()}`]
         })
 
@@ -8081,7 +8081,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
             }
 
             if (node.isTimeDatePickerView() || node.isTimeDateRangePickerView()) {
-                node.appendImportStmt({part: '{AdapterMoment}', from: '@mui/x-date-pickers/AdapterMoment'});
+                node.appendImportStmt({part: '{AdapterDayjs}', from: '@mui/x-date-pickers/AdapterDayjs'});
             }
 
             if (node.isSimpleSwitch()) {
@@ -8644,16 +8644,16 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
                  * const YMDHM = Util.getCurrentTimeFormatYMDHM(event.valueOf())`);
                  */
                 stmts.length = 0;
-                stmts.push(`const moment = event`);
-                stmts.push(`objectOfParam.value = moment`)
-                paramStmt = `moment`;
+                stmts.push(`const dayjs = event`);
+                stmts.push(`objectOfParam.value = dayjs`)
+                paramStmt = `dayjs`;
             } else if (node.isTimeDateRangePickerView()) {
                 stmts.length = 0;
-                stmts.push(`const moments = event`);
-                stmts.push(`objectOfParam.value = moments`);
-                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(moments)`)
-                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(moments))`);
-                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(moments))`);
+                stmts.push(`const dayjses = event`);
+                stmts.push(`objectOfParam.value = dayjses`);
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldName())}(dayjses)`)
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfStart())}(_.head(dayjses))`);
+                stmts.push(`${node.getPreciseAttributeParentName()}.${Util.camel('set', node.getFieldNameOfEnd())}(_.last(dayjses))`);
             } else {
                 /** throw new ERROR(9999, `8787465452 還沒支援的元件 'name:${node.getName()} view:${node.getView()}' `) */
             }

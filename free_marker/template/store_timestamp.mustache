@@ -18,7 +18,7 @@ set{{functionName}}(param) {
 if(param !== undefined) {
 {{#isTimePickerView}}
     {{{這裡就是放if暨isTimePickerView的邏輯}}}
-    this.{{fieldName}} = this.normalizeAsMoment(param);
+    this.{{fieldName}} = this.normalizeAsDayjs(param);
 {{/isTimePickerView}}
 {{^isTimePickerView}}
     {{{這裡就是放else暨不等於isTimePickerView的邏輯}}}

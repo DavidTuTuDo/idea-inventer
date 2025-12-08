@@ -17,7 +17,6 @@
     "easy-template-x": "^3.2.1",
     "linepayer": "^1.0.4",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
     "utiller": "^1.0.232"
   },
   "devDependencies": {

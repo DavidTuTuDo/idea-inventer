@@ -14,7 +14,6 @@
     "@babel/runtime": "^7.16.5",
     "configerer": "^1.0.11",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
     "query-string": "^7.0.1",
     "utiller": "^1.0.374"
   },

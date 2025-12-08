@@ -16,7 +16,6 @@
     "download-file": "^0.1.5",
     "downloadjs": "^1.4.7",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
     "puppeteer": "^5.4.1",
     "scraper": "file:../scraper",
     "utiller": "^1.0.162"

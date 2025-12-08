@@ -6,11 +6,7 @@ import { utiller as Util, pooller as InfinitePool, exceptioner as ERROR } from "
 import _ from "lodash";
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
-import { linepayer as LinePay } from "linepayer";
 import libpath from "path";
-import config from "./config";
-import moment from "moment";
-import { configerer } from "configerer";
 
 /** 超過這個數量就用最浪費資源的方式 */
 const THRESHOLD_OF_BATCH_MODE = 100;

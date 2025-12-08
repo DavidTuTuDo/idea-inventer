@@ -1,6 +1,6 @@
 {
   "name": "utiller",
-  "version": "1.0.456",
+  "version": "1.0.457",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -18,11 +18,10 @@
     "bl": "^6.1.4",
     "configerer": "^1.0.11",
     "crypto-js": "^4.2.0",
+    "dayjs": "^1.11.19",
     "del": "^6.0.0",
     "fs-extra": "^9.1.0",
     "lodash": "^4.17.20",
-    "moment": "^2.29.1",
-    "moment-timezone": "^0.5.48",
     "node-html-parser": "^7.0.1",
     "pdf-parse": "^1.1.1",
     "prompt": "^1.1.0",
@@ -30,14 +29,13 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "@babel/cli": "^7.28.3",
-    "@babel/core": "^7.24.9",
-    "@babel/plugin-proposal-decorators": "^7.24.1",
-    "@babel/plugin-transform-class-properties": "^7.24.1",
-    "@babel/plugin-transform-runtime": "^7.24.3",
-    "@babel/preset-env": "^7.24.4",
-    "@babel/preset-react": "^7.24.1",
-    "@babel/register": "^7.23.7",
+    "@babel/core": "^7.28.5",
+    "@babel/plugin-proposal-decorators": "^7.28.0",
+    "@babel/plugin-transform-class-properties": "^7.27.1",
+    "@babel/plugin-transform-runtime": "^7.28.5",
+    "@babel/preset-env": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@babel/register": "^7.25.9",
     "@babel/runtime": "^7.24.8",
     "terser": "^5.44.1"
   }
