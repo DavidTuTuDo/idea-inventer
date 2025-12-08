@@ -34,10 +34,11 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = undefined;
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
-let CURRENT_PROJECT = './project-yueh-pu';
+// let CURRENT_PROJECT = './project-yueh-pu';
 // let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
+let CURRENT_PROJECT = './project-kx-bio';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -120,7 +121,14 @@ const VIEW_IMPORTS =
 
 class CodegenNode {
 
+    /** firebase firestore 設定的伺服器位置 */
+    locationOfFirestore= "asia-east1";
 
+    /** firebase functions 設定的伺服器位置 */
+    locationOfFunctions= "asia-east1";
+
+    /** storage(圖片/檔案/音訊) 存放的位置，firebase有提供免費site*/
+    locationOfStorage= "us-central1";
 
     /**
      * google all Oauth頁面都要認證，要到這個網站拿token
