@@ -7,7 +7,7 @@ import puppeteer from 'puppeteer';
 /** author:明悅
  *  create time:Sat Dec 06 2025 06:25:03 GMT+0800 (Taiwan Standard Time)
  */
-const ENABLE_OF_OPEN_BROWSER = true;
+const ENABLE_OF_OPEN_BROWSER = false;
 const MAXIMUM_PAGES_OF_FETCHER = 5;
 
 class spider_igllm extends Spider {

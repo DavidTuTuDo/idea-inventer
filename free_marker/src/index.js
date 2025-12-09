@@ -125,7 +125,7 @@ class CodegenNode {
     locationOfFirestore= "asia-east1";
 
     /** firebase functions 設定的伺服器位置 */
-    locationOfFunctions= "asia-east1";
+    locationOfFunctions= "us-central1";
 
     /** storage(圖片/檔案/音訊) 存放的位置，firebase有提供免費site*/
     locationOfStorage= "us-central1";
@@ -303,8 +303,6 @@ class CodegenNode {
      * 若為false, 回傳 method();
      * */
 
-    localeOfServer = 'us-central1';
-    /** firebase 的 firestore storage function,都可以選擇server的locale, default value就是'us-central1' */
 
     modulesOfIgnore = [];
     /** 要忽略的 componentModule(...epay,navigator,account) */
@@ -1093,7 +1091,7 @@ class CodegenNode {
 
     getHostOfCloudFunction() {
         const node = this.getNodeOfSource();
-        return `https://${node.localeOfServer}-${node.getIdOfProject()}.cloudfunctions.net`;
+        return `https://${node.locationOfFunctions}-${node.getIdOfProject()}.cloudfunctions.net`;
         /** dev:  http://localhost:5001/${node.getName()}/${node.localeOfServer}; */
     }
 
@@ -3083,6 +3081,7 @@ class CodegenNode {
     getCloudFunctions() { return this.cloudFunctions ?? []; }
 
     getCloudFunctionInfo() {
+        const location = this.getNodeOfSource().locationOfFunctions
         const functionName = this.getName();
         const fieldName = _.upperFirst(functionName);
         let params = [];
@@ -3104,7 +3103,7 @@ class CodegenNode {
             default:
                 throw new ERROR(9999, '6181, unknown cloud function type ')
         }
-        return {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params}
+        return { functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params, location }
     }
 
     static find(node, predicate) {
@@ -3402,11 +3401,10 @@ class ClassGenerator {
             return _stmts;
         }
 
-        const {functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params} = func.getCloudFunctionInfo()
+        const { functionName, fieldName, functionNameOfHandleBy, typeOfFunction, params, location } = func.getCloudFunctionInfo()
         let stmts = [];
-
         stmts.push(`\n/** payload:${JSON.stringify(func.payload ?? 'needless payload')} */\n`)
-        stmts.push(`exports.${functionName} = functions.${typeOfFunction}(async (${params.join(',')}) => {`)
+        stmts.push(`exports.${functionName} = functions.region('${location}').${typeOfFunction}(async (${params.join(',')}) => {`)
         stmts.push(...getStmtsByType(params));
         stmts.push(`})`);
         this.appendInClassTail(this.context, ...['Util.disableLogMessagePersistent();'], ...stmts, ...extra)
@@ -9614,7 +9612,7 @@ destFolder => '${destFolder}' || sourceFile => '${from}'`);
     async deployFunctionsToProd() {
         const clouds = this.getAllCloudFunctions();
         const command = _.filter(clouds, (cloud) => cloud.deployToRemote).map(cloud => `functions:${cloud.getName()}`).join(',');
-        await this.executeCommandToFirebaseRemote(`firebase deploy --only "${command}"`)
+        await this.executeCommandToFirebaseRemote(`firebase deploy --only "${command}" --force`)
     }
 
     async cleanGenDirectory() {
