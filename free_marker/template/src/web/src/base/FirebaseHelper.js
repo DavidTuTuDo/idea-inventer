@@ -50,7 +50,6 @@ import { ref, getDownloadURL, uploadBytesResumable, listAll, deleteObject } from
  優化 (uploadBytesResumable)： 它會回傳一個 UploadTask 物件。這個物件有一個 .cancel() 方法。當 Timeout 發生時，你可以呼叫這個方法，真正地切斷網路連線，停止上傳行為。
  */
 
-
 import event from "../event";
 
 const MAX_COUNT_OF_FIRESTORE_BATCH = 500;
@@ -959,12 +958,11 @@ class FirebaseHelper extends BaseFirebase {
             // 取得網址
             const downloadURL = await getDownloadURL(snapshot.ref);
             return downloadURL;
-
         } catch (error) {
             if (timerId) clearTimeout(timerId); // 清除計時器
 
             // 判斷是否是因為取消而產生的錯誤
-            if (error.code === 'storage/canceled') {
+            if (error.code === "storage/canceled") {
                 Util.appendInfo("上傳已被取消 (Timeout)");
             }
 

@@ -53,8 +53,7 @@ class ModularizedHadesComponent extends BaseHadesComponent {
      */
     normalize = (each) => {
         /** 使用 Store 的適配器將 Firebase TS 轉為毫秒數字後格式化 */
-        const format = (firebaseTS) =>
-            dayjs(this.getStore().normalizeTimestamp(firebaseTS)).format("YYYYMMDDHHmmss");
+        const format = (firebaseTS) => dayjs(this.getStore().normalizeTimestamp(firebaseTS)).format("YYYYMMDDHHmmss");
 
         // 組合出 period 格式: "起始-結束" (例如 20250101000000-20250101235959)
         const period = `${format(each.timeOfCreate)}-${format(each.timeOfPayment)}`;
@@ -70,8 +69,7 @@ class ModularizedHadesComponent extends BaseHadesComponent {
      */
     fetchHadesOfCompound = async (start, end) => {
         /** 輔助函式：將 YYYYMMDDHHmmss 字串轉為 Firebase Timestamp 對象 */
-        const ts = (stringOfTS) =>
-            this.getStore().toFireBaseTimestampObject(dayjs(stringOfTS, "YYYYMMDDHHmmss"));
+        const ts = (stringOfTS) => this.getStore().toFireBaseTimestampObject(dayjs(stringOfTS, "YYYYMMDDHHmmss"));
 
         /** 精確到秒的開始與結束點 */
         const startOfPrecisely = `${start}000000`;

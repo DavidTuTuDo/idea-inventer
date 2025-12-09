@@ -108,7 +108,7 @@ class beattiya_spider extends Spider {
                 };
                 const description = await fetchOfDescription();
                 const photos = await fetchOfPhotos();
-                return { name, brief, slogan, description, photos, category: booze.category };
+                return { name, brief, slogan, description, photos, category: booze.category, belonging: booze.belonging, id: booze.id, href: booze.href };
             }
 
             await Util.syncDelay(5);

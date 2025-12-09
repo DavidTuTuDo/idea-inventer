@@ -124,7 +124,8 @@ class JobCalendar extends React.Component {
                                 key={i}
                                 className="JobCalendarMonthCell"
                                 sx={{
-                                    p: 1, minHeight: 100,
+                                    p: 1,
+                                    minHeight: 100,
                                     bgcolor: d.month() === this.baseDate.month() ? "white" : "#f0f0f0",
                                     border: "1px solid #eee"
                                 }}
@@ -169,7 +170,9 @@ class JobCalendar extends React.Component {
             <Box display="flex" overflow="auto" onTouchStart={this.onTouchStart} onTouchEnd={this.onTouchEnd}>
                 <Box width={50} sx={{ position: "sticky", left: 0, bgcolor: "white", zIndex: 1 }}>
                     {hours.map((h) => (
-                        <Box key={h} height={50} fontSize={12}>{h}:00</Box>
+                        <Box key={h} height={50} fontSize={12}>
+                            {h}:00
+                        </Box>
                     ))}
                 </Box>
                 {days.map((day, i) => {
@@ -182,7 +185,9 @@ class JobCalendar extends React.Component {
                     return (
                         <Box key={i} flex={1} borderLeft="1px solid #ccc" position="relative" minWidth={150}>
                             <Box
-                                textAlign="center" fontWeight="bold" fontSize={12}
+                                textAlign="center"
+                                fontWeight="bold"
+                                fontSize={12}
                                 className="JobCalendarStickyDateLabel"
                                 sx={{ position: "sticky", top: 0, zIndex: 2, backgroundColor: "white", borderBottom: "1px solid #ccc", py: 0.5 }}>
                                 {`${day.format("M/D")}(${["日", "一", "二", "三", "四", "五", "六"][day.day()]})`}
@@ -201,9 +206,19 @@ class JobCalendar extends React.Component {
                                         <Box
                                             key={idx}
                                             className="JobCalendarEventBlock"
-                                            position="absolute" top={top} height={height} width={`${widthPercent}%`} left={`${leftPercent}%`}
-                                            bgcolor="#e3f2fd" borderLeft="4px solid" borderColor={`${e.color || "primary"}.main`}
-                                            borderRadius={1} fontSize={11} px={1} py={0.5} overflow="hidden"
+                                            position="absolute"
+                                            top={top}
+                                            height={height}
+                                            width={`${widthPercent}%`}
+                                            left={`${leftPercent}%`}
+                                            bgcolor="#e3f2fd"
+                                            borderLeft="4px solid"
+                                            borderColor={`${e.color || "primary"}.main`}
+                                            borderRadius={1}
+                                            fontSize={11}
+                                            px={1}
+                                            py={0.5}
+                                            overflow="hidden"
                                             onClick={() => console.log(e.id)}>
                                             {e.name}
                                         </Box>
@@ -252,16 +267,26 @@ class JobCalendar extends React.Component {
         return (
             <Box className="JobCalendarFooterControlArea" sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
                 <Box className="JobCalendarModeToggleButtonGroup" sx={{ display: "flex" }}>
-                    <IconButton onClick={() => this.handleModeChange(null, "month")} color={this.mode === "month" ? "primary" : "default"}><ViewModuleIcon /></IconButton>
-                    <IconButton onClick={() => this.handleModeChange(null, "week")} color={this.mode === "week" ? "primary" : "default"}><ViewWeekIcon /></IconButton>
-                    <IconButton onClick={() => this.handleModeChange(null, "day")} color={this.mode === "day" ? "primary" : "default"}><ViewDayIcon /></IconButton>
+                    <IconButton onClick={() => this.handleModeChange(null, "month")} color={this.mode === "month" ? "primary" : "default"}>
+                        <ViewModuleIcon />
+                    </IconButton>
+                    <IconButton onClick={() => this.handleModeChange(null, "week")} color={this.mode === "week" ? "primary" : "default"}>
+                        <ViewWeekIcon />
+                    </IconButton>
+                    <IconButton onClick={() => this.handleModeChange(null, "day")} color={this.mode === "day" ? "primary" : "default"}>
+                        <ViewDayIcon />
+                    </IconButton>
                 </Box>
                 <Box className="JobCalendarHeaderControlGroup" sx={{ display: "flex", alignItems: "center", gap: 1, mr: 1 }}>
-                    <IconButton onClick={this.handlePrev}><ArrowBackIosNewIcon fontSize="small" /></IconButton>
+                    <IconButton onClick={this.handlePrev}>
+                        <ArrowBackIosNewIcon fontSize="small" />
+                    </IconButton>
                     <Typography variant="body1" className="JobCalendarHeaderText" sx={{ fontWeight: "bold", mx: 1 }}>
                         {this.baseDate.format(this.mode === "day" ? "YYYY年 M月 D日" : "YYYY年 M月")}
                     </Typography>
-                    <IconButton onClick={this.handleNext}><ArrowForwardIosIcon fontSize="small" /></IconButton>
+                    <IconButton onClick={this.handleNext}>
+                        <ArrowForwardIosIcon fontSize="small" />
+                    </IconButton>
                 </Box>
             </Box>
         );

@@ -6,8 +6,8 @@ import BaseDionysusApolloStore from "./BaseDionysusApolloStore";
 
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
-import isoWeek from 'dayjs/plugin/isoWeek';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isoWeek from "dayjs/plugin/isoWeek";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isoWeek);
@@ -38,9 +38,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
         const now = dayjs();
         const endOfThisMonth = now.endOf("month");
         const diffDays = endOfThisMonth.diff(now, "days");
-        return diffDays < 5
-            ? now.add(1, "month").endOf("month")
-            : endOfThisMonth;
+        return diffDays < 5 ? now.add(1, "month").endOf("month") : endOfThisMonth;
     };
 
     /**
@@ -51,9 +49,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
         const endOfThisMonth = now.endOf("month");
         const daysLeft = endOfThisMonth.diff(now, "days");
 
-        return daysLeft < 5
-            ? now.add(1, "month").startOf("month")
-            : now.add(1, "day");
+        return daysLeft < 5 ? now.add(1, "month").startOf("month") : now.add(1, "day");
     }
 
     async onInitialFetchCompleted(collection) {
@@ -109,7 +105,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
         const end = parseROC(endStr);
 
         if (start.isAfter(end)) throw new Error("起始日期不能晚於結束日期");
-        if (start.isBefore(dayjs().startOf('day'))) throw new Error("起始日期不能是過去日期");
+        if (start.isBefore(dayjs().startOf("day"))) throw new Error("起始日期不能是過去日期");
 
         const [workStartStr, workEndStr] = timeRange.split("-");
         const workStart = dayjs(workStartStr, "HH:mm");
@@ -132,9 +128,7 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
                 const showFullYear = cursor.year() !== lastYear;
 
                 // 邏輯需求：第一次跨年顯示完整年份
-                const dateStr = showFullYear
-                    ? `${cursor.format("YYYY/MM/DD")} ${weekday}`
-                    : `${cursor.format("YYYY/MM/DD")} ${weekday}`;
+                const dateStr = showFullYear ? `${cursor.format("YYYY/MM/DD")} ${weekday}` : `${cursor.format("YYYY/MM/DD")} ${weekday}`;
 
                 dateList.push(dateStr);
                 lastYear = cursor.year();
@@ -182,9 +176,12 @@ class ModularizedDionysusApolloStore extends BaseDionysusApolloStore {
     fetchTextsOfIndexSetter = async () => {
         const indexOfSelected = [6, 7];
         const tabs = [
-            { label: "星期一", value: 1 }, { label: "星期二", value: 2 },
-            { label: "星期三", value: 3 }, { label: "星期四", value: 4 },
-            { label: "星期五", value: 5 }, { label: "星期六", value: 6 },
+            { label: "星期一", value: 1 },
+            { label: "星期二", value: 2 },
+            { label: "星期三", value: 3 },
+            { label: "星期四", value: 4 },
+            { label: "星期五", value: 5 },
+            { label: "星期六", value: 6 },
             { label: "星期日", value: 7 }
         ];
         return Util.getItemsOfMarkMatching(tabs, indexOfSelected);

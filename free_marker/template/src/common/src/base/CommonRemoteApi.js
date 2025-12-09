@@ -47,9 +47,7 @@ class CommonRemoteApi {
         }
 
         // 判斷輸入是否為陣列，若是則使用 map 批量處理
-        return _.isArray(param)
-            ? param.map((each) => getSpecificExpress(each))
-            : getSpecificExpress(param);
+        return _.isArray(param) ? param.map((each) => getSpecificExpress(each)) : getSpecificExpress(param);
     }
 
     getFieldNameOfDocumentId() {
