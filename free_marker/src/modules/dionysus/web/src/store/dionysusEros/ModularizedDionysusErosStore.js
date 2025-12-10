@@ -54,6 +54,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfAllowAnonymousBuy(UserInfo.getGlobalPerspectiveAttr(`amountOfAllowAnonymousBuy`));
         this.setDialogInputValueOfDionysusErosArrowOfAmountOfMaximumBuy(UserInfo.getGlobalPerspectiveAttr(`amountOfMaximumBuy`));
         this.setEnableOfBoughtWithoutLoginIn(UserInfo.getGlobalPerspectiveAttr(`enableOfBoughtWithoutLoginIn`));
+        this.setEnableOfWhetherDisplaySpecific(UserInfo.getGlobalPerspectiveAttr(`whetherDisplaySpecific`));
 
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfHomeDelivery(pub.getFeeOfHomeDelivery());
         this.setDialogInputValueOfDionysusErosArrowOfFeeOfInStorePickup(pub.getFeeOfInStorePickup());
@@ -414,6 +415,12 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         if (!_.isBoolean(this.getEnableOfBoughtWithoutLoginIn())) return this.getComponent().showErrorSnackMessage(`是否同意免登入下單功能的必須賦予布林值`);
         UserInfo.setGlobalPerspectiveAttr({ enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
         await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { enableOfBoughtWithoutLoginIn: this.getEnableOfBoughtWithoutLoginIn() });
+    };
+
+    submitWhetherDisplaySpecific = async () => {
+        if (!_.isBoolean(this.getEnableOfWhetherDisplaySpecific())) return this.getComponent().showErrorSnackMessage(`是否在底部顯示公司資訊必須賦予布林值`);
+        UserInfo.setGlobalPerspectiveAttr({ whetherDisplaySpecific: this.getEnableOfWhetherDisplaySpecific() });
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { whetherDisplaySpecific: this.getEnableOfWhetherDisplaySpecific() });
     };
 
     /** fetch */

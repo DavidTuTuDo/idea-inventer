@@ -47,7 +47,7 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         crpt.setAddressO(this.getGlobalPerspective().getAddressO());
         crpt.setPhoneO(this.getGlobalPerspective().getPhoneO());
         crpt.setUnifiedB(this.getGlobalPerspective().getUnifiedB());
-        crpt.setReady(true);
+        crpt.setReady(this.getGlobalPerspective().getWhetherDisplaySpecific());
     };
 
     fetchKeywordInBackgroundBehavior = async (self) => {

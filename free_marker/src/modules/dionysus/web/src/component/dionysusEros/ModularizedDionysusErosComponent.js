@@ -123,6 +123,10 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
         this.getStore().submitWhetherBoughtWithoutLogin().then();
     }
 
+    onDionysusErosEnableOfWhetherDisplaySpecificSwitchChange(param) {
+        this.getStore().submitWhetherDisplaySpecific().then();
+    }
+
     onDionysusErosEnableOfLinepaySwitchChange(param) {
         this.getStore().submitWhetherEnableOfLinePay().then();
     }
