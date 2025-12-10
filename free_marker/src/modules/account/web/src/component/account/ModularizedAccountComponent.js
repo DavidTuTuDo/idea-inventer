@@ -1,4 +1,5 @@
 const edit = true;
+
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
 import libpath from "path";
@@ -52,10 +53,10 @@ class ModularizedAccountComponent extends BaseAccountComponent {
     onAccountArrowOfAppendAuthorIconButtonClicked(param) {
         const object = param.object;
         const hash = object.getDialogInputValueOfAccountArrowOfAppendAuthor();
-        if (_.size(hash) > 8)
-            this.api.updateUserItem(this.getComponentInstance(), { isAuthor: true }, hash).then((result) => {
-                this.showInfoSnackMessage(`升級 ${hash} 為「賣家」成功`);
-            });
+        if (_.size(hash) > 8) console.log(`user id =>`, hash);
+        this.api.updateUserItem(this.getComponentInstance(), { isAuthor: true }, hash).then((result) => {
+            this.showInfoSnackMessage(`升級 ${hash} 為「賣家」成功`);
+        });
     }
 
     onAccountArrowOfAppendAdminIconButtonClicked(param) {

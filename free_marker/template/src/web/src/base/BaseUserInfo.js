@@ -110,13 +110,13 @@ class UserInfo {
             Cookie.removeUser();
             await firebaser.logout();
         }
-        this.invalidateLoginState(current?.exist ? current : user);
+        this.invalidateLoginState(current?.exists ? current : user);
         Util.appendInfo(`Navigator收到登入狀態改變的事件,login狀態:${this.isLoginWithSucceed()} `);
     }
 
     @action
     invalidateLoginState = (user) => {
-        Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`);
+        Util.appendInfo(`112132132 不論有沒有有登入，都要記得enableParallelMode`, user);
         CommonPoolHelper.enableParallelMode();
         this.isLoginSucceed = !Util.isUndefinedNullEmpty(firebaser.getCurrentUser());
         this.adminUser = this.isLoginWithSucceed() && _.isEqual(this.getUid(true), Configer.superUserUid);
