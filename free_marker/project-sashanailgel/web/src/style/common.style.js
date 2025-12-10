@@ -5,6 +5,8 @@ import libpath from "path";
 class CommonStyle {
     /** -------------------- fields -------------------- **/
 
+    /** following for homeless */
+
     /** => following for infoOfCopyRightContent editor component  */
 
     InfoOfCopyRightContentEditorProjectImageTextField = {};
@@ -668,6 +670,28 @@ class CommonStyle {
     InfoOfCopyRightPrivacyDiv = {};
 
     /** => following for infoOfCopyRight  component  */
+
+    InfoOfCopyRightColUnifiedBLabelOfUnifiedBTypography = {};
+
+    InfoOfCopyRightColUnifiedBDivWrap = {};
+
+    InfoOfCopyRightColUnifiedBTypography = {};
+
+    InfoOfCopyRightColPhoneOLabelOfPhoneOTypography = {};
+
+    InfoOfCopyRightColPhoneODivWrap = {};
+
+    InfoOfCopyRightColPhoneOTypography = {};
+
+    InfoOfCopyRightColAddressOLabelOfAddressOTypography = {};
+
+    InfoOfCopyRightColAddressODivWrap = {};
+
+    InfoOfCopyRightColAddressOTypography = {};
+
+    InfoOfCopyRightColCompanyOTypography = {};
+
+    InfoOfCopyRightColDiv = {};
 
     InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg = {};
 
@@ -1707,19 +1731,29 @@ class CommonStyle {
 
     DionysusErosAdminAreaOfUnifiedBDiv = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyIconNavigateNext = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOIconNavigateNext = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyReactFragmentWrap = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOReactFragmentWrap = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyIconButton = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOIconButton = {};
 
-    DionysusErosAdminAreaOfCompanyOptionOfCompanyContentTypography = {};
+    DionysusErosAdminAreaOfCompanyOOptionOfCompanyOContentTypography = {};
 
-    DionysusErosAdminAreaOfCompanyOptionOfCompanyTitleTypography = {};
+    DionysusErosAdminAreaOfCompanyOOptionOfCompanyOTitleTypography = {};
 
-    DionysusErosAdminAreaOfCompanyDivWrap = {};
+    DionysusErosAdminAreaOfCompanyODivWrap = {};
 
-    DionysusErosAdminAreaOfCompanyDiv = {};
+    DionysusErosAdminAreaOfCompanyODiv = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificEnableOfWhetherDisplaySpecificSwitch = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificOptionOfWhetherDisplaySpecificContentTypography = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificOptionOfWhetherDisplaySpecificTitleTypography = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificDivWrap = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificDiv = {};
 
     DionysusErosAdminDividerTopDiv = {};
 

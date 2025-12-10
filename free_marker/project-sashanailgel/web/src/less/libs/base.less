@@ -276,11 +276,14 @@
     flex-direction: column;
 }
 
-.BaseListEmptyDiv:extend(.CenterInParentColumn all) {
+.BaseListEmptyDiv:extend(.CenterInParentColumn) {
     width: 50vw;
-    margin-top: 20px;
     padding: 20px;
     border-radius: 10px;
+    position: absolute;
+    top: 50%; /*將元素推到父容器的中間點 (上/左 50%) */
+    left: 50%;
+    transform: translate(-50%, -50%); /*使用 transform 往回移動自身寬高的一半，完成置中 */
 }
 
 .BaseListEmptyTypography {
