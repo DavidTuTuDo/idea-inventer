@@ -403,27 +403,27 @@ class AppStyle {
 
     /** => following for infoOfCopyRight  component  */
 
-    InfoOfCopyRightBriefUnifiedBLabelOfUnifiedBTypography = {};
+    InfoOfCopyRightColUnifiedBLabelOfUnifiedBTypography = {};
 
-    InfoOfCopyRightBriefUnifiedBDivWrap = {};
+    InfoOfCopyRightColUnifiedBDivWrap = {};
 
-    InfoOfCopyRightBriefUnifiedBTypography = {};
+    InfoOfCopyRightColUnifiedBTypography = {};
 
-    InfoOfCopyRightBriefPhoneOLabelOfPhoneOTypography = {};
+    InfoOfCopyRightColPhoneOLabelOfPhoneOTypography = {};
 
-    InfoOfCopyRightBriefPhoneODivWrap = {};
+    InfoOfCopyRightColPhoneODivWrap = {};
 
-    InfoOfCopyRightBriefPhoneOTypography = {};
+    InfoOfCopyRightColPhoneOTypography = {};
 
-    InfoOfCopyRightBriefAddressOLabelOfAddressOTypography = {};
+    InfoOfCopyRightColAddressOLabelOfAddressOTypography = {};
 
-    InfoOfCopyRightBriefAddressODivWrap = {};
+    InfoOfCopyRightColAddressODivWrap = {};
 
-    InfoOfCopyRightBriefAddressOTypography = {};
+    InfoOfCopyRightColAddressOTypography = {};
 
-    InfoOfCopyRightBriefCompanyTypography = {};
+    InfoOfCopyRightColCompanyOTypography = {};
 
-    InfoOfCopyRightBriefDiv = {};
+    InfoOfCopyRightColDiv = {};
 
     InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg = {};
 
@@ -1463,19 +1463,29 @@ class AppStyle {
 
     DionysusErosAdminAreaOfUnifiedBDiv = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyIconNavigateNext = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOIconNavigateNext = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyReactFragmentWrap = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOReactFragmentWrap = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyIconButton = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOIconButton = {};
 
-    DionysusErosAdminAreaOfCompanyOptionOfCompanyContentTypography = {};
+    DionysusErosAdminAreaOfCompanyOOptionOfCompanyOContentTypography = {};
 
-    DionysusErosAdminAreaOfCompanyOptionOfCompanyTitleTypography = {};
+    DionysusErosAdminAreaOfCompanyOOptionOfCompanyOTitleTypography = {};
 
-    DionysusErosAdminAreaOfCompanyDivWrap = {};
+    DionysusErosAdminAreaOfCompanyODivWrap = {};
 
-    DionysusErosAdminAreaOfCompanyDiv = {};
+    DionysusErosAdminAreaOfCompanyODiv = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificEnableOfWhetherDisplaySpecificSwitch = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificOptionOfWhetherDisplaySpecificContentTypography = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificOptionOfWhetherDisplaySpecificTitleTypography = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificDivWrap = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificDiv = {};
 
     DionysusErosAdminDividerTopDiv = {};
 
@@ -1881,25 +1891,21 @@ class AppStyle {
 
     DionysusPlutusMainDiv = {};
 
-    DionysusPlutusBriefUnifiedBLabelOfUnifiedBTypography = {};
+    DionysusPlutusBriefSectionOfDescriptionPriceTypography = {};
 
-    DionysusPlutusBriefUnifiedBDivWrap = {};
+    DionysusPlutusBriefSectionOfDescriptionQuantityTypography = {};
 
-    DionysusPlutusBriefUnifiedBTypography = {};
+    DionysusPlutusBriefSectionOfDescriptionSpecificOfProductTypography = {};
 
-    DionysusPlutusBriefPhoneOLabelOfPhoneOTypography = {};
+    DionysusPlutusBriefSectionOfDescriptionNameOfProductDivWrap = {};
 
-    DionysusPlutusBriefPhoneODivWrap = {};
+    DionysusPlutusBriefSectionOfDescriptionNameOfProductTypography = {};
 
-    DionysusPlutusBriefPhoneOTypography = {};
+    DionysusPlutusBriefSectionOfDescriptionDiv = {};
 
-    DionysusPlutusBriefAddressOLabelOfAddressOTypography = {};
+    DionysusPlutusBriefImageOfProductPhotoImg = {};
 
-    DionysusPlutusBriefAddressODivWrap = {};
-
-    DionysusPlutusBriefAddressOTypography = {};
-
-    DionysusPlutusBriefCompanyTypography = {};
+    DionysusPlutusBriefDivList = {};
 
     DionysusPlutusBriefDiv = {};
 

@@ -220,6 +220,7 @@ class ModularizedDionysusGaiaStore extends BaseDionysusGaiaStore {
     getObjectOfBooze = () => {
         return {
             id: this.getIdOfBooze(),
+            buildBySelf: true,
             name: this.getName(),
             statement: this.getStatement(),
             photos: this.getBriefPhotos(),

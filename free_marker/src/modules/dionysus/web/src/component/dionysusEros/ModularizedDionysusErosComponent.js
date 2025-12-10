@@ -256,11 +256,11 @@ class ModularizedDionysusErosComponent extends BaseDionysusErosComponent {
     }
 
     // 公司名稱
-    onDionysusErosArrowOfCompanyIconButtonClicked(param) {
+    onDionysusErosArrowOfCompanyOIconButtonClicked(param) {
         const object = param.object;
-        this.getStore().setSelected("company");
-        const value = object.getDialogInputValueOfDionysusErosArrowOfCompany();
-        this.getStore().submitCompany(value).then();
+        this.getStore().setSelected("companyO");
+        const value = object.getDialogInputValueOfDionysusErosArrowOfCompanyO();
+        this.getStore().submitCompanyO(value).then();
     }
 
     onDionysusErosArrowOfAddressOIconButtonClicked(param) {

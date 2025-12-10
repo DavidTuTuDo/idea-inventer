@@ -42,7 +42,12 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());
 
         const { Application } = require("../../");
-        Application.getInfoOfCopyRightStore();
+        const crpt = Application.getInfoOfCopyRightStore();
+        crpt.setCompanyO(this.getGlobalPerspective().getCompanyO());
+        crpt.setAddressO(this.getGlobalPerspective().getAddressO());
+        crpt.setPhoneO(this.getGlobalPerspective().getPhoneO());
+        crpt.setUnifiedB(this.getGlobalPerspective().getUnifiedB());
+        crpt.setReady(true);
     };
 
     fetchKeywordInBackgroundBehavior = async (self) => {

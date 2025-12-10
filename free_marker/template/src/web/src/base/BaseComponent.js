@@ -168,7 +168,7 @@ class BaseComponent extends MuiComponent {
 
     componentDidMount() {
         if (!this.isDialogComponent() && !this.isComponentView()) {
-            const { Application } = require('../');
+            const { Application } = require("../");
             Router.setCurrentComponent(this);
             Application.setLatestComponent(this);
         }
@@ -483,8 +483,8 @@ class BaseComponent extends MuiComponent {
     };
 
     App = () => {
-        return require('../').Application;
-    }
+        return require("../").Application;
+    };
 
     ListEmptyView = observer(({ hasPath, component, isGlobalLoading, size }) => {
         if (isGlobalLoading || size > 0) {
@@ -1022,7 +1022,7 @@ class BaseComponent extends MuiComponent {
     invokeLoginBehavior = async () => {
         await Util.syncDelay(10);
         if (!UserInfo.isLoginWithSucceed()) this.App().getNavigatorRef().onNavigatorLoginIconButtonClicked();
-    }
+    };
 
     openLineChatAccountWithMessage(id = "", message = "") {
         if (!isMobile) {
@@ -1034,7 +1034,7 @@ class BaseComponent extends MuiComponent {
 
     getKeywordSuggests = () => {
         return this.App().getNavigatorStore().getCompleteSuggests();
-    }
+    };
 
     onInitialErrorHappened(error) {
         Util.appendError(error.message);
@@ -1093,7 +1093,7 @@ class BaseComponent extends MuiComponent {
                 ref={ref}
             />
         );
-    }
+    };
 
     isWrapByDialog() {
         const dialog = this.propsOfMobX.dialog;

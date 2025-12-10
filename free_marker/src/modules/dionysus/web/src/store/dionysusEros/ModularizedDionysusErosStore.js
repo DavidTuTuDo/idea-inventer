@@ -76,7 +76,7 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         this.setDialogInputValueOfDionysusErosArrowOfYtO(UserInfo.getGlobalPerspectiveAttr(`ytO`));
         this.setDialogInputValueOfDionysusErosArrowOfTiktokO(UserInfo.getGlobalPerspectiveAttr(`tiktokO`));
         this.setDialogInputValueOfDionysusErosArrowOfIgO(UserInfo.getGlobalPerspectiveAttr(`igO`));
-        this.setDialogInputValueOfDionysusErosArrowOfCompany(UserInfo.getGlobalPerspectiveAttr(`company`));
+        this.setDialogInputValueOfDionysusErosArrowOfCompanyO(UserInfo.getGlobalPerspectiveAttr(`companyO`));
         this.setDialogInputValueOfDionysusErosArrowOfPhoneO(UserInfo.getGlobalPerspectiveAttr(`phoneO`));
         this.setDialogInputValueOfDionysusErosArrowOfUnifiedB(UserInfo.getGlobalPerspectiveAttr(`unifiedB`));
         this.setDialogInputValueOfDionysusErosArrowOfAddressO(UserInfo.getGlobalPerspectiveAttr(`addressO`));
@@ -293,10 +293,10 @@ class ModularizedDionysusErosStore extends BaseDionysusErosStore {
         UserInfo.setNameOfBrand(name);
     };
 
-    submitCompany = async (company) => {
-        if (!this.isValidText(company)) return this.getComponent().showErrorSnackMessage(`公司登記名稱格式錯誤`);
-        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { company });
-        UserInfo.setGlobalPerspectiveAttr({ company });
+    submitCompanyO = async (companyO) => {
+        if (!this.isValidText(companyO)) return this.getComponent().showErrorSnackMessage(`公司登記名稱格式錯誤`);
+        await this.apiOfInfo.upsertGlobalPerspective(this.getComponent(), { companyO });
+        UserInfo.setGlobalPerspectiveAttr({ companyO });
     };
 
     submitYTQ = async (ytO) => {

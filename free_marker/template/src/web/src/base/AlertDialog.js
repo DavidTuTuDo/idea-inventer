@@ -185,7 +185,7 @@ class AlertDialog extends MuiComponent {
                         </div>
                     </DialogContent>
                 );
-            const { Application } = require('../');
+            const { Application } = require("../");
             const ObservedCustomView = Application.safeObserver(CustomView);
             const CustomViewWrapper = inject(storeX)((props) => {
                 const all = { ...props, ...self.getStore().getPropsOfCustomView() };
