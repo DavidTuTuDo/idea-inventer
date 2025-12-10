@@ -7,7 +7,6 @@ import _ from "lodash";
 import Listener from "./listener";
 import firebase from "./base/FirebaseHelper";
 
-
 (async () => {
     console.log(`注意注意, 五秒後要部署到admin server了,動到prod的資料就爆炸了.`);
 

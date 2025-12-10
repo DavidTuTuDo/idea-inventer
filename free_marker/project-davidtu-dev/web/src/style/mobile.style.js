@@ -439,6 +439,28 @@ class MobileStyle {
 
     /** => following for infoOfCopyRight  component  */
 
+    InfoOfCopyRightColUnifiedBLabelOfUnifiedBTypography = {};
+
+    InfoOfCopyRightColUnifiedBDivWrap = {};
+
+    InfoOfCopyRightColUnifiedBTypography = {};
+
+    InfoOfCopyRightColPhoneOLabelOfPhoneOTypography = {};
+
+    InfoOfCopyRightColPhoneODivWrap = {};
+
+    InfoOfCopyRightColPhoneOTypography = {};
+
+    InfoOfCopyRightColAddressOLabelOfAddressOTypography = {};
+
+    InfoOfCopyRightColAddressODivWrap = {};
+
+    InfoOfCopyRightColAddressOTypography = {};
+
+    InfoOfCopyRightColCompanyOTypography = {};
+
+    InfoOfCopyRightColDiv = {};
+
     InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg = {};
 
     InfoOfCopyRightGroupOfSocialMediaLineOIconButton = {};
@@ -1477,19 +1499,29 @@ class MobileStyle {
 
     DionysusErosAdminAreaOfUnifiedBDiv = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyIconNavigateNext = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOIconNavigateNext = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyReactFragmentWrap = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOReactFragmentWrap = {};
 
-    DionysusErosAdminAreaOfCompanyArrowOfCompanyIconButton = {};
+    DionysusErosAdminAreaOfCompanyOArrowOfCompanyOIconButton = {};
 
-    DionysusErosAdminAreaOfCompanyOptionOfCompanyContentTypography = {};
+    DionysusErosAdminAreaOfCompanyOOptionOfCompanyOContentTypography = {};
 
-    DionysusErosAdminAreaOfCompanyOptionOfCompanyTitleTypography = {};
+    DionysusErosAdminAreaOfCompanyOOptionOfCompanyOTitleTypography = {};
 
-    DionysusErosAdminAreaOfCompanyDivWrap = {};
+    DionysusErosAdminAreaOfCompanyODivWrap = {};
 
-    DionysusErosAdminAreaOfCompanyDiv = {};
+    DionysusErosAdminAreaOfCompanyODiv = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificEnableOfWhetherDisplaySpecificSwitch = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificOptionOfWhetherDisplaySpecificContentTypography = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificOptionOfWhetherDisplaySpecificTitleTypography = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificDivWrap = {};
+
+    DionysusErosAdminAreaOfWhetherDisplaySpecificDiv = {};
 
     DionysusErosAdminDividerTopDiv = {};
 
@@ -2567,7 +2599,7 @@ class MobileStyle {
 
     AccountPaper = {};
 
-    /** => following for epayTest  component  */
+    /** => following for mEpayTest  component  */
 
     EpayTestFindLinePayPageByIdButton = {};
 
