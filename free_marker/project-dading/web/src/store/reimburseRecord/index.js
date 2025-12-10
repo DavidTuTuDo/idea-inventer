@@ -1,5 +1,4 @@
 const edit = true;
-import {Application} from "../../index";
 import BaseReimburseRecordStore from "./BaseReimburseRecordStore";
 import _ from "lodash";
 import {computed} from "mobx";
@@ -16,14 +15,14 @@ class ReimburseRecordStore extends BaseReimburseRecordStore {
   }
 
 
-  async joinRecord2Order(obj = this) {
-    Application.getEstablishStore().pushSingleRecord(this.columnData());
+   joinRecord2Order = async (obj = this) => {
+    this.App().getEstablishStore().pushSingleRecord(this.columnData());
     this.getStoreOfComponent().getComponent().showInfoSnackMessage(`新增款項$${this.getFeeOfPaid()}成功`);
     this.getStoreOfComponent().getComponent(true).dismiss();
   }
 
-  async updateRecord2Order(obj = this) {
-    Application.getEstablishStore().updateSingleRecord(this.columnData());
+  updateRecord2Order = async (obj = this) => {
+    this.App().getEstablishStore().updateSingleRecord(this.columnData());
     this.getStoreOfComponent().getComponent().showInfoSnackMessage(`更新款項$${this.getFeeOfPaid()}成功`);
     this.getStoreOfComponent().getComponent(true).dismiss();
 

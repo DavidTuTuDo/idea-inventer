@@ -14,7 +14,6 @@ import Card from "@mui/material/Card";
 import Snackbar from "@mui/material/Snackbar";
 import Chip from "@mui/material/Chip";
 import MuiAlert from "@mui/material/Alert";
-import { Application } from "../";
 import Config from "../config";
 import { observer } from "mobx-react";
 import Countdown from "react-countdown";
@@ -169,6 +168,7 @@ class BaseComponent extends MuiComponent {
 
     componentDidMount() {
         if (!this.isDialogComponent() && !this.isComponentView()) {
+            const { Application } = require('../');
             Router.setCurrentComponent(this);
             Application.setLatestComponent(this);
         }
@@ -482,6 +482,10 @@ class BaseComponent extends MuiComponent {
         return <ListEmptyView size={_.size(items)} isGlobalLoading={this.getStore().isGlobalLoading()} component={this} hasPath={hasPath} />;
     };
 
+    App = () => {
+        return require('../').Application;
+    }
+
     ListEmptyView = observer(({ hasPath, component, isGlobalLoading, size }) => {
         if (isGlobalLoading || size > 0) {
             return null;
@@ -712,10 +716,6 @@ class BaseComponent extends MuiComponent {
             </Slide>
         );
     };
-
-    getApplication() {
-        return Application;
-    }
 
     isNavigator() {
         return false;
@@ -1019,9 +1019,9 @@ class BaseComponent extends MuiComponent {
         Util.performActionWithoutTimingIssue(() => self.getLoginDialogRef().open());
     };
 
-    async invokeLoginBehavior() {
+    invokeLoginBehavior = async () => {
         await Util.syncDelay(10);
-        if (!UserInfo.isLoginWithSucceed()) Application.getNavigatorRef().onNavigatorLoginIconButtonClicked();
+        if (!UserInfo.isLoginWithSucceed()) this.App().getNavigatorRef().onNavigatorLoginIconButtonClicked();
     }
 
     openLineChatAccountWithMessage(id = "", message = "") {
@@ -1032,8 +1032,8 @@ class BaseComponent extends MuiComponent {
         this.gotoUrlWithNewTabDirectly(`https://line.me/R/oaMessage/${id}/?${message}`);
     }
 
-    getKeywordSuggests() {
-        return Application.getNavigatorStore().getCompleteSuggests();
+    getKeywordSuggests = () => {
+        return this.App().getNavigatorStore().getCompleteSuggests();
     }
 
     onInitialErrorHappened(error) {
@@ -1050,7 +1050,7 @@ class BaseComponent extends MuiComponent {
         return isValid;
     }
 
-    renderAlertDialog({
+    renderAlertDialog = ({
         ref,
         title,
         content,
@@ -1067,10 +1067,10 @@ class BaseComponent extends MuiComponent {
         disposablePage = false,
         fullWidth = false,
         strict = false
-    }) {
-        if (disposablePage && Application.getStoreObject()) {
+    }) => {
+        if (disposablePage && this.App().getStoreObject()) {
             const nameOfComponent = customView.nameOfComponent;
-            const store = Application.getStoreObject()[`${nameOfComponent}`];
+            const store = this.App().getStoreObject()[`${nameOfComponent}`];
             if (store) store.clean();
         }
 

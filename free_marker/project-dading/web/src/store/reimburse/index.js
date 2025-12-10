@@ -1,9 +1,5 @@
 const edit = true;
 import BaseReimburseStore from "./BaseReimburseStore";
-import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
-import _ from "lodash";
-import {Application} from "../../index";
-import {makeAutoObservable, makeObservable, action, observable, comparer, computed, autorun, runInAction, toJS, override} from "mobx";
 
 
 class ReimburseStore extends BaseReimburseStore {
@@ -16,8 +12,8 @@ class ReimburseStore extends BaseReimburseStore {
   }
 
 
-  async batchUpdateRecord2Order(obj = this) {
-    Application.getEstablishStore().setBatchRecord(...this.getRecords().map(record=> record.columnData()));
+  batchUpdateRecord2Order = async (obj = this) => {
+    this.App().getEstablishStore().setBatchRecord(...this.getRecords().map(record=> record.columnData()));
     this.getStoreOfComponent().getComponent().showInfoSnackMessage(`批次更新款項成功`);
     this.getStoreOfComponent().getComponent(true).dismiss();
   }

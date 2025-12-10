@@ -40,6 +40,9 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         const nameOfBrand = this.getGlobalPerspective().getNameOfBrand();
         if (!_.isEmpty(nameOfBrand)) UserInfo.setNameOfBrand(nameOfBrand);
         UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());
+
+        const { Application } = require("../../");
+        Application.getInfoOfCopyRightStore();
     };
 
     fetchKeywordInBackgroundBehavior = async (self) => {

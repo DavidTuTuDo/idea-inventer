@@ -2,7 +2,6 @@ const edit = true;
 import BaseEstablishStore from "./BaseEstablishStore";
 import {utiller as Util} from "utiller";
 import _ from "lodash";
-import {Application} from "../../";
 import Config from "../../config";
 import UserInfoRef from "../../base/BaseUserInfo";
 import OrderStore from '../mainOrder';
@@ -196,17 +195,17 @@ class EstablishStore extends BaseEstablishStore {
         return submit;
     }
 
-    async submitOrder() {
+    submitOrder = async () => {
         const result = await this.apiOfOrder.submitOrderItem(this.getComponent(), this.result());
-        Application.getMainStore().pushOrdersByIndex(-1, result.value);
+        this.App().getMainStore().pushOrdersByIndex(-1, result.value);
         this.setId(result.value.id);
         this.getDesktop().getInfo().setId(result.value.id)
     }
 
-    async updateOrder() {
+    updateOrder = async () => {
         const bean = this.result();
         await this.apiOfOrder.updateOrderItem(this.getComponent(), bean, bean.id);
-        Application.getMainStore().updateOrder(bean);
+        this.App().getMainStore().updateOrder(bean);
     }
 
     sync(order) {

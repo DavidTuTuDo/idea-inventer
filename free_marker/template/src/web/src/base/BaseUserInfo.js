@@ -9,7 +9,6 @@ import { makeObservable, action, observable, when } from "mobx";
 import BaseComponent from "./BaseComponent";
 import EventBus from "./CommonEventBus";
 import AccountUser from "../store/accountUser";
-import { Application } from "../";
 import CommonPoolHelper from "./CommonPoolHelper";
 
 class UserInfo {
@@ -97,6 +96,7 @@ class UserInfo {
             Util.appendInfo(`firebase-auth取得authorized user(${user.uid})，執行enableParallelMode，讓firebase api依據權限拿資料`);
             CommonPoolHelper.enableParallelMode();
             Util.appendInfo(`7381271928 => 會員在firebase-authentication存在裡了`, user);
+            const { Application } = require('../');
             current = await this.apiOfUser.fetchUserItem(Application.getLatestComponent(), user.uid);
 
             //TODO:改成MergeSubmit
@@ -222,6 +222,7 @@ class UserInfo {
     }
 
     async logout(view) {
+        const { Application } = require('../');
         const func = async () => {
             await this.executeAsyncTask(async () => {
                 Util.appendInfo("45d4741, logout executed");
@@ -329,6 +330,7 @@ class UserInfo {
     }
 
     invalidateCartie = (cartie) => {
+        const { Application } = require('../');
         Application.getNavigatorStore().setBadgeOfCartie(this.getCountOfBadge(cartie));
     };
 

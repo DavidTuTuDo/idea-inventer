@@ -5,7 +5,6 @@ import _ from "lodash";
 import UserInfo from "../../base/BaseUserInfo";
 import { computed, toJS } from "mobx";
 import BaseDionysusHermesStore from "./BaseDionysusHermesStore";
-import { Application } from "../../index";
 import Config from "../../config";
 
 class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
@@ -30,7 +29,7 @@ class ModularizedDionysusHermesStore extends BaseDionysusHermesStore {
         const priceOfWithoutTransport = this.getPriceB4Transport();
         this.setHasPhysical(_.some(this.getItemsOfChecked(), { isTaskJob: false }));
         if (idOfAuthor) {
-            this.eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
+            this.eros = await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
             Util.appendInfo(`hermes拿到了 eros => `, this.eros);
         } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
 

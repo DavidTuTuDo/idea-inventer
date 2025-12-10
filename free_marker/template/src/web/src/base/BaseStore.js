@@ -399,6 +399,10 @@ class BaseStore extends ClientRemoteApi {
         /** 執行在fetch開始之前的動作 */
     }
 
+    App = () => {
+        return require('../').Application;
+    }
+
     async onInitialFetchCompleted(collection) {
         if (this.isInitialFetchCompleted()) return await Util.syncDelay(1);
 

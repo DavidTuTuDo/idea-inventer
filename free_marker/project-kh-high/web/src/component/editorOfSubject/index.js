@@ -2,25 +2,7 @@ import { inject } from "mobx-react";
 import BaseEditorOfSubjectComponent from "./BaseEditorOfSubjectComponent";
 import { utiller as Util, exceptioner as ERROR, pooller as InfinitePool } from "utiller";
 import _ from "lodash";
-import libpath from "path";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Skeleton from "@mui/material/Skeleton";
-import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
-import MenuItem from "@mui/material/MenuItem";
 import { observer } from "mobx-react";
-import Style from "../../style";
-import React from "react";
-import UserInfoRef from "../../base/BaseUserInfo";
-import { Application } from "../../";
-import Config from "../../config";
-import Router from "../../router";
-import Cookie from "../../cookie";
-import BaseComponent from "../../base/BaseComponent";
 import Question from "../../store/examQuestion";
 @inject("editorOfSubject")
 @observer

@@ -403,6 +403,28 @@ class CommonStyle {
 
     /** => following for infoOfCopyRight  component  */
 
+    InfoOfCopyRightBriefUnifiedBLabelOfUnifiedBTypography = {};
+
+    InfoOfCopyRightBriefUnifiedBDivWrap = {};
+
+    InfoOfCopyRightBriefUnifiedBTypography = {};
+
+    InfoOfCopyRightBriefPhoneOLabelOfPhoneOTypography = {};
+
+    InfoOfCopyRightBriefPhoneODivWrap = {};
+
+    InfoOfCopyRightBriefPhoneOTypography = {};
+
+    InfoOfCopyRightBriefAddressOLabelOfAddressOTypography = {};
+
+    InfoOfCopyRightBriefAddressODivWrap = {};
+
+    InfoOfCopyRightBriefAddressOTypography = {};
+
+    InfoOfCopyRightBriefCompanyTypography = {};
+
+    InfoOfCopyRightBriefDiv = {};
+
     InfoOfCopyRightGroupOfSocialMediaLineOImgOfLineOImg = {};
 
     InfoOfCopyRightGroupOfSocialMediaLineOIconButton = {};
@@ -1859,21 +1881,25 @@ class CommonStyle {
 
     DionysusPlutusMainDiv = {};
 
-    DionysusPlutusBriefSectionOfDescriptionPriceTypography = {};
+    DionysusPlutusBriefUnifiedBLabelOfUnifiedBTypography = {};
 
-    DionysusPlutusBriefSectionOfDescriptionQuantityTypography = {};
+    DionysusPlutusBriefUnifiedBDivWrap = {};
 
-    DionysusPlutusBriefSectionOfDescriptionSpecificOfProductTypography = {};
+    DionysusPlutusBriefUnifiedBTypography = {};
 
-    DionysusPlutusBriefSectionOfDescriptionNameOfProductDivWrap = {};
+    DionysusPlutusBriefPhoneOLabelOfPhoneOTypography = {};
 
-    DionysusPlutusBriefSectionOfDescriptionNameOfProductTypography = {};
+    DionysusPlutusBriefPhoneODivWrap = {};
 
-    DionysusPlutusBriefSectionOfDescriptionDiv = {};
+    DionysusPlutusBriefPhoneOTypography = {};
 
-    DionysusPlutusBriefImageOfProductPhotoImg = {};
+    DionysusPlutusBriefAddressOLabelOfAddressOTypography = {};
 
-    DionysusPlutusBriefDivList = {};
+    DionysusPlutusBriefAddressODivWrap = {};
+
+    DionysusPlutusBriefAddressOTypography = {};
+
+    DionysusPlutusBriefCompanyTypography = {};
 
     DionysusPlutusBriefDiv = {};
 

@@ -4,7 +4,6 @@ import BaseMainComponent from "./BaseMainComponent";
 import {utiller as Util, exceptioner as ERROR, pooller as InfinitePool} from "utiller";
 import _ from "lodash";
 import {observer} from "mobx-react";
-import {Application} from "../../";
 import functions from '../../functions';
 import Router from "../../router";
 
@@ -118,9 +117,9 @@ class MainComponent extends BaseMainComponent {
 
     activateOrderDetailDialog = (order) => {
         if (Util.isUndefinedNullEmpty(order)) return;
-        Application.getEstablishStore().clean();
+        this.App().getEstablishStore().clean();
         this.refOfCreateOfOrder.current.click();
-        Application.getEstablishStore().pushTaskOfCompleted(async (store) => {
+        this.App().getEstablishStore().pushTaskOfCompleted(async (store) => {
             store.sync(order);
         })
     }

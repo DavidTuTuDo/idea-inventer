@@ -5270,7 +5270,7 @@ class ComponentBuilder extends BaseBuilder {
         generator.appendImport(`Cookie`, '../../cookie');
         generator.appendImport(`Router`, '../../router');
         generator.appendImport(`Config`, '../../config');
-        generator.appendImport(`{Application}`, '../../');
+        // generator.appendImport(`{Application}`, '../../');
         generator.appendImport('UserInfoRef', '../../base/BaseUserInfo');
         generator.appendImport(`React`, 'react');
         generator.appendImport(`i18n`, '../../i18n');
@@ -6633,13 +6633,13 @@ class AppBuilder extends ComponentBuilder {
                 nodeOfComponent.getStruct().getOriginalName() : nodeOfComponent.getStruct().getName();
             if (nodeOfComponent.disposablePage) {
                 stmts.push(`if(!this.isGotoSameRoute(route))`)
-                stmts.push(`Application.getStore().${Util.camel('renew', nameOfStore)}()`);
+                stmts.push(`this.App().getStore().${Util.camel('renew', nameOfStore)}()`);
             }
 
             for (const attr of attrs)
-                stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
+                stmts.push(`this.App().get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().${attr.getFunctionNameOfSetter()}(${attr.getFieldName()})`);
 
-            stmts.push(`Application.get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
+            stmts.push(`this.App().get${_.upperFirst(nodeOfComponent.getStruct().getName())}Store().initial(presetObj)`)
             return stmts;
         }
 
@@ -6700,7 +6700,7 @@ class AppBuilder extends ComponentBuilder {
         );
         baseRouterGenerator.appendImport('UserInfoRef', '../base/BaseUserInfo');
         baseRouterGenerator.appendImport('Config', '../config');
-        baseRouterGenerator.appendImport('{ Application }', '../');
+        // baseRouterGenerator.appendImport('{ Application }', '../');
 
         for (const component of this.nodeOfAncestor.components) {
             if (!component.hasPath()) continue;

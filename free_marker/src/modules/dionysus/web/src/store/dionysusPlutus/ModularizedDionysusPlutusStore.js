@@ -7,7 +7,6 @@ import UserInfoRef from "../../base/BaseUserInfo";
 import { computed } from "mobx";
 import BaseDionysusPlutusStore from "./BaseDionysusPlutusStore";
 import Variant from "../dionysusBoozeVariant";
-import { Application } from "../../index";
 import SelectorOfCvs from "../epaySelectorOfCvs";
 
 class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
@@ -44,8 +43,8 @@ class ModularizedDionysusPlutusStore extends BaseDionysusPlutusStore {
         const idOfAuthor = itemsOfChecked?.[0]?.idOfAuthor;
 
         if (idOfAuthor) {
-            await Application.getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
-            eros = Application.getDionysusCartieStore().getErosOfPublic();
+            await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor(idOfAuthor);
+            eros = this.App().getDionysusCartieStore().getErosOfPublic();
             Util.appendInfo(`hermes拿到了 eros => `, eros);
         } else return this.getComponent().showErrorSnackMessage(`發生異常，無法獲得賣家資訊`);
 

@@ -15,7 +15,6 @@ import MuiComponent from "./MUIComponent";
 import BaseComponent from "./BaseComponent";
 import Chip from "@mui/material/Chip";
 import { inject, observer } from "mobx-react";
-import { Application } from "../index";
 
 class DialogStore {
     @observable
@@ -186,7 +185,7 @@ class AlertDialog extends MuiComponent {
                         </div>
                     </DialogContent>
                 );
-
+            const { Application } = require('../');
             const ObservedCustomView = Application.safeObserver(CustomView);
             const CustomViewWrapper = inject(storeX)((props) => {
                 const all = { ...props, ...self.getStore().getPropsOfCustomView() };

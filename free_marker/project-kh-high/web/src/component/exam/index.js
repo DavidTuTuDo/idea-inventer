@@ -5,15 +5,9 @@
  */
 import { observer, inject } from "mobx-react";
 import BaseExamComponent from "./BaseExamComponent";
-import React from "react";
-import { Application } from "../../index.js";
 import { utiller as Util } from "utiller";
 import _ from "lodash";
 import Router from "../../router";
-import Cookie from "../../cookie";
-import UserInfo from "../../base/BaseUserInfo";
-import Config from "../../config";
-import libpath from "path";
 
 @inject("exam")
 @observer

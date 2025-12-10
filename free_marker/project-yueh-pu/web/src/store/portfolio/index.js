@@ -1,8 +1,8 @@
 const edit = true;
+
 import BasePortfolioStore from "./BasePortfolioStore";
 import { utiller as Util } from "utiller";
 import _ from "lodash";
-import { Application } from "../../";
 import Rhythm from "../portfolioRhythm";
 import Fuse from "fuse.js";
 
@@ -24,7 +24,7 @@ class PortfolioStore extends BasePortfolioStore {
                 return await super.fetch(this.getComponent());
             case "search":
                 const keywords =
-                    Application.getNavigatorStore()
+                    this.App().getNavigatorStore()
                         .getKeywords()
                         .map((each) => each.data()) ?? [];
                 const fuse = new Fuse(keywords, { includeScore: true, keys: ["label", "value"] });

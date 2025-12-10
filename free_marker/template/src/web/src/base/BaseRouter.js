@@ -21,6 +21,10 @@ class BaseRouter {
         return this.currentRoute;
     }
 
+    App = () => {
+        return require('../').Application;
+    }
+
     isGotoSameRoute(route) {
         return _.isEqual(this.currentRoute, route);
     }

@@ -8,7 +8,6 @@ import BaseDionysusPlutusComponent from "./BaseDionysusPlutusComponent";
 import Functions from "../../functions";
 import Config from "../../config";
 import { toJS } from "mobx";
-import { Application } from "../../index";
 
 class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
     constructor(props) {
@@ -68,7 +67,7 @@ class ModularizedDionysusPlutusComponent extends BaseDionysusPlutusComponent {
 
     execute = async () => {
         const self = this;
-        const eros = await Application.getDionysusCartieStore().modifyErosInfoOfAuthor();
+        const eros = await this.App().getDionysusCartieStore().modifyErosInfoOfAuthor();
 
         const selectedOfTransport = this.getStore().getTypeOfTransport();
         const selectedOfTransaction = this.getStore().getTypeOfTransaction();
