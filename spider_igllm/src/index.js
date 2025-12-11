@@ -7,9 +7,6 @@ import puppeteer from 'puppeteer';
 /** author:明悅
  *  create time:Sat Dec 06 2025 06:25:03 GMT+0800 (Taiwan Standard Time)
  */
-const ENABLE_OF_OPEN_BROWSER = false;
-const MAXIMUM_PAGES_OF_FETCHER = 5;
-
 class spider_igllm extends Spider {
 
 
@@ -89,20 +86,27 @@ class spider_igllm extends Spider {
         await this.activatePage4Load({ href, cookies: cookies4MetaAuth })
     }
 
-    fetch = async (href) => {
+    fetch = async (href,useCache = true) => {
         await this.verificationIGByCookie(href);
         await Util.syncDelay(500);
-        const briefs = await this.fetchBriefsOfAccount(href);
+        const nameOfUser = Util.getTailStringSplitBy(href, '/');
+        let bunchOfCache;
+        if(useCache) bunchOfCache = JSON.parse(Util.getFileContextInRaw(`./temp/${nameOfUser}/briefs.json`));
+        const judgement = _.size(bunchOfCache) > 1 && useCache
+        if(judgement) console.log(`!!!`);
 
-        const folder = Util.getTailStringSplitBy(href, '/');
-        await Util.persistJsonFilePrettier(`./temp/${folder}/briefs.json`, briefs);
+        const briefs = judgement ? bunchOfCache : await this.fetchBriefsOfAccount(href);
+        if (!judgement) await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/briefs.json`, briefs);
 
-        const stories = []
+        const stories = [];
+        const fails = [];
         const handler = new InfinitePool(MAXIMUM_PAGES_OF_FETCHER, `ig:${href}`);
         await handler.runByParams(async (param) => {
-            stories.push(await this.fetchStoryByBrief(param));
+            const result = await this.fetchStoryByBrief(param)
+            result ? stories.push(result) : fails.push(param);
         }, ...briefs);
-        await Util.persistJsonFilePrettier(`./temp/${folder}/stories.json`, stories);
+        await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/stories.json`, stories);
+        await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/stories-fail.json`, stories);
     }
 
     fetchBriefsOfAccount = async (href) => {
@@ -122,6 +126,8 @@ class spider_igllm extends Spider {
                 }))
             })
             storiesOfAccount.push(...result);
+            console.log(`這一頁拿回：${_.size(result)} 個brief`)
+            console.log(`現在storiesOfAccount：${_.size(storiesOfAccount)} 個`)
             return result;
         }
         await this.fetchElementsTilPageScrollEnd({
@@ -130,17 +136,18 @@ class spider_igllm extends Spider {
             fetcher
         })
         const storiesOfficial = Util.getArrayOfUniqBy(_.flattenDeep(storiesOfAccount), 'href');
-        console.log(`size:`, `${_.size(storiesOfficial)}\n\n`, storiesOfficial);
+        console.log(`storiesOfficial size:`, `${_.size(storiesOfficial)}`);
         return storiesOfficial;
     }
 
     fetchStoryByBrief = async (brief) => {
+        console.log(`fetchStoryByBrief（開啟了分頁）:`, brief.href);
         const task = async (page, brief) => {
             const main = await page.$('body div:nth-of-type(1) div[role="button"]');
             const sub = await page.$('body div:nth-of-type(1) .html-div.xdj266r.x14z9mp');
             let hasNextPresent = true;
             const resources = [];
-            const titles = await Util.execute4Tasks(await sub.$$('span.x193iq5w'), async (each) => await this.extractBlockTexts(each));
+            /** const titles = await Util.execute4Tasks(await sub.$$('span.x193iq5w'), async (each) => await this.extractBlockTexts(each)); 太多資訊用不到 */
             const time = await this.fetchAttributesOfEl(sub, 'time', { ts: 'datetime', time: 'title', display: 'innerText' });
             do {
                 const gallery = await main.$('div img');
@@ -156,12 +163,18 @@ class spider_igllm extends Spider {
                 }
                 let nextButton = await main.$('button[aria-label="下一步"]');
                 hasNextPresent = nextButton && await nextButton.asElement();
+                let announce = false
                 if (hasNextPresent) {
+                    if(!announce) {
+                        console.log(`${brief.href} 有列表(->)`)
+                        announce = false;
+                    }
                     await nextButton.click();
                     await this.wait4Until(page);
                 }
             } while (hasNextPresent);
-            return { time, titles: Util.getStringsOfFlatten(titles), resources, ...brief };
+            /** return { time, titles: Util.getStringsOfFlatten(titles), resources, ...brief }; */
+            return { time, resources, ...brief };
         }
         const fetcher = async (page) => task(page, brief);
         return this.activatePage4Task({ fetcher, href: brief.href });
@@ -171,18 +184,16 @@ class spider_igllm extends Spider {
 
 export { spider_igllm as spider_igllm }
 
+const ENABLE_OF_OPEN_BROWSER = false;
+const MAXIMUM_PAGES_OF_FETCHER = 5;
+const USE_BRIEF_CACHE = true; /** 整個Accounts下滑完的所有資料們 */
+const SPIDER_USER = `https://www.instagram.com/beccayh`;
 if (configerer.DEBUG_MODE) {
     (async () => {
             const handler = new spider_igllm(puppeteer, { visible: ENABLE_OF_OPEN_BROWSER, host: 'https://www.instagram.com/' });
-            /**
-             * 測試單一品項抓取detail的function
-             * await handler.sampleOfFetchSingleItem();
-             * return;
-             * */
-            const pathOfAccount = 'https://www.instagram.com/david.tu.guitar';
             await handler.initial();
-            const result= await Util.measureExecutionTime(handler.fetch.bind(handler),
-                pathOfAccount);
+            const result = await Util.measureExecutionTime(handler.fetch.bind(handler),
+                SPIDER_USER, USE_BRIEF_CACHE);
             console.log(result.zh_TW);
             await handler.terminate();
         }

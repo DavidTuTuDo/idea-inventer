@@ -335,9 +335,14 @@ class Spider {
     activatePage4Task = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, fetcher = async (page) => true, incognito = false, cookies = [] }) => {
         const page = await this.activatePage4Load({ browser, href, type, timeout, incognito, cookies });
         /** 執行網頁要執行的task */
-        const execution = await fetcher(page);
-
-        await this.close(page);
+        let execution = undefined;
+        try {
+            execution = await fetcher(page);
+        } catch (error) {
+            console.error(`${href} 4T抓取失敗: ${error.message}`);
+        } finally {
+            await this.close(page);
+        }
         return execution;
     };
 
@@ -351,7 +356,7 @@ class Spider {
             await this.randomViewport(page);
             return page;
         }
-        return await this.activatePage4Load({ incognito, timeout, href });
+        return this.activatePage4Load({ incognito, timeout, href });
     };
 
     isPuTeerPage = (page) => page?.focus;
@@ -405,7 +410,7 @@ class Spider {
                 // - Util.syncDelay(10) 延遲 10ms，讓頁面有時間加載
             } while (await this.clickNextPageTilEnd({ page: p, selector: selectorOfPagingN, sign: signOfPagingN, timeout }));
         } catch (error) {
-            console.error(`抓取失敗: ${error.message}`);
+            console.error(`${href} tilPE抓取失敗: ${error.message}`);
             return [];
         } finally {
             // ✅ 關鍵：確保頁面被關閉
@@ -673,13 +678,17 @@ class Spider {
                                            }) => {
 
         const p = await this.auto({ page, incognito, href, timeout });
-
-        await fetcher(p);
-        await this.scrollToBottomAndCheck(p, { stringOfLoadingSelector });
-        /** 完成載入到底部 */
-        const execution = await fetcher(p);
-
-        await this.close(p);
+        let execution = undefined;
+        try {
+            await fetcher(p);
+            await this.scrollToBottomAndCheck(p, { stringOfLoadingSelector, fetcher });
+            /** 完成載入到底部 */
+            execution = await fetcher(p);
+        } catch (error) {
+            console.error(`${href} tilSE抓取失敗: ${error.message}`);
+        } finally {
+            await this.close(p);
+        }
         return execution;
     };
 
@@ -1370,12 +1379,13 @@ class Spider {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-        const visible = true;
-        const spider  = new Spider(require('puppeteer'),{visible});
-        await spider.initial();
 
         /** 用91歌曲列表(有下一頁按鈕的機制)當作爬蟲機制 */
         async function runNextPageTilEndSample() {
+            const visible = true;
+            const spider  = new Spider(require('puppeteer'),{visible});
+            await spider.initial();
+
             const fetcher = async (page) => {
                 const selector = '.mainBody .rlist #songlist > tr';
                 const rows = await page.$$(selector);

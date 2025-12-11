@@ -35,10 +35,10 @@ const LANGUAGES_OF_SUPPORT = ['zh_TW', 'zh_CN', 'en_US']
 // let CURRENT_PROJECT = './project-yueh-voice';
 // let CURRENT_PROJECT = './project-kh-high';
 // let CURRENT_PROJECT = './project-yueh-pu';
-let CURRENT_PROJECT = './project-davidtu-dev';
+// let CURRENT_PROJECT = './project-davidtu-dev';
 // let CURRENT_PROJECT = './project-dading';
 // let CURRENT_PROJECT = './project-sashanailgel';
-// let CURRENT_PROJECT = './project-kx-bio';
+let CURRENT_PROJECT = './project-kx-bio';
 
 const STRING_OF_INJECT_PARAM = 'paramsOfProxy';
 const FIELD_NAME_OF_MAX_SIZE_OF_REQUEST = 'sizeOfPerRequest';
@@ -987,7 +987,7 @@ class CodegenNode {
 
     getCheckedIcon() { return this.checkedIcon ?? ''; }
 
-    getHelperVisual() { return Util.mergeObject(this.defaultOfHelperVisual, this.helperVisual); }
+    getHelperVisual() { return Util.merO(this.defaultOfHelperVisual, this.helperVisual); }
 
     hasHelperVisualSupportAlertMenu() {
         const helper = this.getHelperVisual();
@@ -1820,7 +1820,7 @@ class CodegenNode {
         return conditionA;
     }
 
-    getAlertDialog() { return Util.mergeObject(this.defaultAlertDialog, this.alertDialog); }
+    getAlertDialog() { return Util.merO(this.defaultAlertDialog, this.alertDialog); }
 
     hasLoginRequiredDialog() { return !!this.loginRequiredAlert; }
 
@@ -4866,7 +4866,7 @@ class RemoteFunctionHandler extends BaseBuilder {
             const updateStmt = `updateTime : this._firebase().getServerTimeSymbol()`;
             if (!node.isCheapArray()) contents.push(`${updateStmt},`);
 
-            const content = self.isWebPlatform() ? `...Util.mergeObject({${updateStmt}},this.columnData(obj))` : `${contents.map(each => each).join('\n')}`;
+            const content = self.isWebPlatform() ? `...Util.merO({${updateStmt}},this.columnData(obj))` : `${contents.map(each => each).join('\n')}`;
             const stmts = `const commitment = \{ ${content}`;
 
             if (node.hasPath()) {
@@ -5165,6 +5165,9 @@ class RemoteFunctionHandler extends BaseBuilder {
                         }
                     }
                 } else if (node.isObject()) {
+                    const web = `Util.merO(self.columnData(), object) : self.columnData()`
+                    const admin = `Util.merO(self.${functionNameOfNormalize}({}), object) : self.${functionNameOfNormalize}({})`
+
                     generateApiFunction(
                         node,
                         Util.camel('get', node.getName(), 'doc', 'ref'),
@@ -5187,7 +5190,7 @@ class RemoteFunctionHandler extends BaseBuilder {
                             `const object = await self.fetchObject(path)`,
                             `${this.isWebPlatform() ? 'this.clean()' : ''}`,
                             `${this.isWebPlatform() ? 'this.initial(object)' : ''}`,
-                            `return object.exists ? object : ${this.isWebPlatform() ? `self.columnData()`: `self.${functionNameOfNormalize}({})`}`
+                            `return object.exists ? ${this.isWebPlatform() ? web : admin}`
                         ],
                         `fetch object`)
 
@@ -7038,7 +7041,7 @@ class AppBuilder extends ComponentBuilder {
             blocks.shift();
 
             /** split 第一個會是沒意義的值 */
-            const styles = _.zip(classNames, blocks).map((each) => Util.mergeObject(...each));
+            const styles = _.zip(classNames, blocks).map((each) => Util.merO(...each));
 
             for (const style of styles) {
                 const attributeObj = rawToAttributeObj(style.raw);
@@ -7087,7 +7090,7 @@ class AppBuilder extends ComponentBuilder {
         }
         generator.appendInClassHead(this.getAnnouncementsOfLessDevice().join('\n'))
         const filesOfLess = [this.projectPlatformSourcePath, ...this.nodeOfAncestor.getLessFilesOfModuleComponent().map((file) => file.absolute)];
-        const existedLessAttributeObj = Util.mergeObject(...filesOfLess.map((each) => this.getObjectOfExistedLessAttribute(each)));
+        const existedLessAttributeObj = Util.merO(...filesOfLess.map((each) => this.getObjectOfExistedLessAttribute(each)));
 
         /**
          * classNameInfos: [ {component:componentNode, classNames:['List','Wrap'] }...]
@@ -7365,7 +7368,7 @@ class ProjectFileHandler extends PathBase {
                     const targetWriteIntoModuleI18n = filterOfBase;
                     const filterOfModule = _.find(filtersOfModule, (each) => _.isEqual(each.name, filterOfBase.name));
                     if (filterOfModule)
-                        targetWriteIntoModuleI18n.i18n = Util.mergeObject(filterOfBase.i18n, filterOfModule.i18n);
+                        targetWriteIntoModuleI18n.i18n = Util.merO(filterOfBase.i18n, filterOfModule.i18n);
                     /** Util.appendInfo(`\n語言:${lang}`, `\n模組:${nameOfComponent}`, `\ncontent:`, targetWriteIntoModuleI18n); */
                     /** write into module i18n */
                     Util.appendFile(destination, getStringOfModularizedStatement(targetWriteIntoModuleI18n), false, false);
@@ -7380,7 +7383,7 @@ class ProjectFileHandler extends PathBase {
         const sourceObj = this.nodeOfAncestor;
         const baseConfigGenerator = new ClassGenerator(Util.joinRespectingDot(this.genSourcePath, `config`, `BaseConfig.js`), this.nodeOfAncestor);
         baseConfigGenerator.appendClass(`BaseConfig`,{name: 'CommonConfig', from: '../base/CommonConfig'});
-        const watermarkObj = Util.mergeObject({
+        const watermarkObj = Util.merO({
             type: 'string',
             src: 'defaultTexts',
             alpha: 0.35,

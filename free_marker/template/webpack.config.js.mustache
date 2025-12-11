@@ -164,9 +164,33 @@ const config = {
 
 if (isProd) {
   config.mode = "production";
+  config.devtool = false; // 再次確認關閉 SourceMap
   Object.assign(config.optimization, {
-    minimize: true,
-    minimizer: [new TerserPlugin()],
+      minimize: true,
+      minimizer: [
+          new TerserPlugin({
+              // ⚠️ 關鍵：確保 Terser 插件的配置是針對應用程式程式碼
+              terserOptions: {
+                  // ... (其他設置保留)
+                  compress: {
+                      // ... (其他 compress 設置保留)
+                      // 由於您說 console 已經移除，我們保留 drop_debugger
+                      drop_debugger: true,
+                  },
+
+                  // ✨ 核心混淆設定：強制重新命名函式和類別名稱
+                  // 這將把所有具名函式和類別名替換為 'a', 'b', 'c' 等單字母。
+                  keep_classnames: false, // <-- 移除 Class 名稱 (解決 class A {})
+                  keep_fnames: false,     // <-- 移除 Function 名稱 (解決 function funcA {})
+
+                  output: {
+                      // 需求 1: 減少體積 (移除所有註釋)
+                      comments: false,
+                  },
+              },
+              extractComments: false,
+          }),
+    ],
     sideEffects: true,
     usedExports: true, // 保持現有配置
 
@@ -176,7 +200,7 @@ if (isProd) {
     splitChunks: {
         chunks: 'all', // 對所有 chunk 進行優化 (async 和 initial)
         minSize: 20000, // 模組超過 20kb 才拆分
-        maxInitialRequests: 25, // 初始載入時最多允許 25 個請求
+        maxInitialRequests: 20, // 初始載入時最多允許 20 個請求
         maxAsyncRequests: 25, // 非同步載入時最多允許 25 個請求
         cacheGroups: {
             // 1. 核心框架 (Core Frameworks): 穩定且變動少

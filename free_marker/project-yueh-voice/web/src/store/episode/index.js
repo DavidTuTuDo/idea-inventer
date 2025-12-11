@@ -74,7 +74,7 @@ class EpisodeStore extends BaseEpisodeStore {
             this.setEnableAll("全閉");
         }
         const next = this.getVoices().map((voice) => {
-            return Util.mergeObject(voice, { enable: enableAll });
+            return Util.merO(voice, { enable: enableAll });
         });
         this.setVoices(...next);
     }

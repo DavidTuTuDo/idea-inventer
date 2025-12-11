@@ -447,13 +447,13 @@ class BaseStore extends ClientRemoteApi {
 
     @action
     setSelectorParam(params) {
-        const mixer = Util.mergeObject(this.getDefaultSelectorParam(), params);
+        const mixer = Util.merO(this.getDefaultSelectorParam(), params);
         this.selectorParams = mixer;
     }
 
     @action
     setImageDialogParam(params) {
-        const mixer = Util.mergeObject(this.getDefaultImageDialogParam(), params);
+        const mixer = Util.merO(this.getDefaultImageDialogParam(), params);
         this.imageDialogParams = mixer;
     }
 

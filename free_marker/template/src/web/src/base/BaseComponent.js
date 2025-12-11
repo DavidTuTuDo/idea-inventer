@@ -864,7 +864,7 @@ class BaseComponent extends MuiComponent {
         }
 
         async function sync() {
-            extra = Util.mergeObject(self.defaultSnackExtra(), extra);
+            extra = Util.merO(self.defaultSnackExtra(), extra);
             self.durationOfSnackVisible = extra.duration;
             self.snackExtraTaskFunction = extra.func;
             self.snackMessage = message;

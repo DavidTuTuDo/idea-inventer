@@ -10,4 +10,4 @@ if (isMobile) {
     device = require('./app.style.js').default;
 }
 
-export default Util.mergeObject(common, device)
+export default Util.merO(common, device)

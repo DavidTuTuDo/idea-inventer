@@ -183,7 +183,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
             eros
         };
 
-        const latest = Util.mergeObject(order, xxx);
+        const latest = Util.merO(order, xxx);
         FirebaseHelper.firestore()
             .collection("mail")
             .add({

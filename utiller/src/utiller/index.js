@@ -1522,9 +1522,77 @@ class Utiller {
         return _.isEqual(_.trim(string), '');
     }
 
-    /** 放在後面的priority 越大 */
-    mergeObject(...obj) {
-        return _.merge(...obj);
+    /**
+     * * 合併邏輯：如同 Lodash 的 _.merge，後面的參數會覆蓋或合併前面的參數，優先級越高。
+     *
+     * @sample
+     * const a = { x: 1, y: { z: 10 } };
+     * const b = { x: 2, y: { w: 20 } };
+     * const c = { x: 3, y: { z: 30 } };
+     * * merO(a, b, c)
+     * // 返回一個新的物件：
+     * // {
+     * //   x: 3, // 被最後的 c 取代
+     * //   y: {
+     * //     z: 30, // 被最後的 c 取代
+     * //     w: 20  // 被 b 新增
+     * //   }
+     * // }
+     * // 且 a、b、c 保持不變。
+     *
+     * @returns {Object} - 一個包含合併結果的全新物件。
+     */
+     merO = (...objs) => {
+         return _.merge(...objs)
+    };
+
+    /**
+     * 執行不可變 (Immutable) 的深層物件合併。
+     * * 此函式旨在：
+     * 1. 確保第一個傳入的物件 (baseObject) 不被修改 (不動性)。
+     * 2. 利用 Lodash 的深層合併特性，遞迴地合併巢狀物件。
+     *
+     * * 合併邏輯：如同 Lodash 的 _.merge，後面的參數會覆蓋或合併前面的參數，優先級越高。
+     *
+     * @sample
+     * const a = { x: 1, y: { z: 10 } };
+     * const b = { x: 2, y: { w: 20 } };
+     * const c = { x: 3, y: { z: 30 } };
+     * * merO(a, b, c)
+     * // 返回一個新的物件：
+     * // {
+     * //   x: 3, // 被最後的 c 取代
+     * //   y: {
+     * //     z: 30, // 被最後的 c 取代
+     * //     w: 20  // 被 b 新增
+     * //   }
+     * // }
+     * // 且 a、b、c 保持不變。
+     *
+     * @param {...Object} objs - 任意數量的物件，第一個物件作為基礎，後續物件為覆蓋來源。
+     * @returns {Object} - 一個包含合併結果的全新物件。
+     */
+     merO4 = (...objs) =>{
+         // 檢查參數，如果沒有物件，則返回空物件
+         if (objs.length === 0) {
+             return {};
+         }
+
+         // 取得作為基礎（Target）的第一個物件
+         const baseObject = objs[0];
+
+         // 取得所有用於覆蓋的來源物件 (Source)，使用 slice(1) 排除第一個物件
+         const sources = objs.slice(1);
+
+         // --- 確保不動性 (Immutability) 的關鍵步驟 ---
+
+         // 1. 對基礎物件進行深層複製 (Deep Clone)
+         // 這是確保原始的 baseObject 及其所有巢狀屬性都不會被修改的關鍵。
+         const clonedTarget = _.cloneDeep(baseObject);
+
+         // 2. 執行深層合併 (Deep Merge)
+         // 將所有來源物件 (sources) 依序合併到這個新的複製體 (clonedTarget) 中。
+         return _.merge(clonedTarget, ...sources);
     }
 
     syncSetTimeout(func, ms, callback = () => {
@@ -4096,7 +4164,7 @@ class Utiller {
 
 if (configerer.DEBUG_MODE) {
     (async () => {
-          const utiller = new Utiller();
+          // const utiller = new Utiller();
             // console.log(utiller.getUrlPath('https://a','123','/123ko/','/gfd'));
             // console.log(utiller.getUrlPath('123','/123ko/','/gfd'));
           // console.log(utiller.toPercentageDecimal(30))
