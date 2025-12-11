@@ -31,6 +31,10 @@ class ModularizedNavigatorComponent extends BaseNavigatorComponent {
         super.componentDidMount();
     }
 
+    getInjectStyleOfNavigatorMenuIconButton() {
+        return Util.getVisibleOrNone(_.size(this.getStore().getShortcuts()) > 0, true);
+    }
+
     onNavigatorTitleTypographyClicked(param) {
         Router.gotoHomePage(this);
     }

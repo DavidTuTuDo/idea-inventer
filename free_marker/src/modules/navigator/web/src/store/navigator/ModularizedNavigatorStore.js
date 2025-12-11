@@ -42,12 +42,16 @@ class ModularizedNavigatorStore extends BaseNavigatorStore {
         UserInfo.setGlobalPerspective(this.getGlobalPerspective().columnData());
 
         const { Application } = require("../../");
-        const crpt = Application.getInfoOfCopyRightStore();
-        crpt.setCompanyO(this.getGlobalPerspective().getCompanyO());
-        crpt.setAddressO(this.getGlobalPerspective().getAddressO());
-        crpt.setPhoneO(this.getGlobalPerspective().getPhoneO());
-        crpt.setUnifiedB(this.getGlobalPerspective().getUnifiedB());
-        crpt.setReady(this.getGlobalPerspective().getWhetherDisplaySpecific());
+        const cprt = Application.getInfoOfCopyRightStore();
+        cprt.setCompanyO(this.getGlobalPerspective().getCompanyO());
+        cprt.setAddressO(this.getGlobalPerspective().getAddressO());
+        cprt.setPhoneO(this.getGlobalPerspective().getPhoneO());
+        cprt.setUnifiedB(this.getGlobalPerspective().getUnifiedB());
+        cprt.setReady(this.getGlobalPerspective().getWhetherDisplaySpecific());
+        cprt.setIg(this.getGlobalPerspective().getIgO());
+        cprt.setFb(this.getGlobalPerspective().getFbO());
+        cprt.setLine(this.getGlobalPerspective().getLineO());
+        cprt.setTiktok(this.getGlobalPerspective().getTiktokO());
     };
 
     fetchKeywordInBackgroundBehavior = async (self) => {

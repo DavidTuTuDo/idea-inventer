@@ -16,6 +16,10 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
         Router.gotoHomePage(this);
     }
 
+    getInjectStyleOfInfoOfCopyRightContactButton(infoOfCopyRight) {
+        return Util.getVisibleOrNone(false);
+    }
+
     onInfoOfCopyRightFbOIconButtonClicked(param) {
         this.invokeFacebookApp(this.getStore().getFb());
     }
@@ -33,15 +37,15 @@ class ModularizedInfoOfCopyRightComponent extends BaseInfoOfCopyRightComponent {
     }
 
     getInjectStyleOfInfoOfCopyRightFbOIconButton(infoOfCopyRight) {
-        super.getInjectStyleOfInfoOfCopyRightFbOIconButton(infoOfCopyRight);
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(infoOfCopyRight.getFb()));
     }
 
     getInjectStyleOfInfoOfCopyRightIgOIconButton(infoOfCopyRight) {
-        super.getInjectStyleOfInfoOfCopyRightIgOIconButton(infoOfCopyRight);
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(infoOfCopyRight.getIg()));
     }
 
     getInjectStyleOfInfoOfCopyRightLineOIconButton(infoOfCopyRight) {
-        super.getInjectStyleOfInfoOfCopyRightLineOIconButton(infoOfCopyRight);
+        return Util.getVisibleOrNone(!Util.isUndefinedNullEmpty(infoOfCopyRight.getLine()));
     }
 
     getInjectStyleOfInfoOfCopyRightColDiv(infoOfCopyRight) {
