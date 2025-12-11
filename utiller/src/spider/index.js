@@ -323,6 +323,43 @@ class Spider {
         return this.getPuTeerPage({ browser, href, type, timeout, incognito, cookies });
     };
 
+    /**
+     * 啟動一個定時器，週期性地讓 Puppeteer 頁面 (page) 取得焦點。
+     * @param {import('puppeteer').Page} page - 要操作的 Puppeteer 頁面物件。
+     * @param {number} interval - 獲取焦點的時間間隔（毫秒）。
+     * @param {string} href - 頁面網址 (用於日誌記錄)。
+     * @returns {NodeJS.Timeout|null} - 返回定時器的 ID，如果未啟用則返回 null。
+     */
+    startPageFocusTimer = (page, interval, href) => {
+        if (!page || interval <= 0) {
+            return null;
+        }
+
+        const focusTimer = setInterval(() => {
+            // 檢查頁面是否仍然開啟 (防止操作已關閉的頁面)
+            if (!page.isClosed()) {
+                page.bringToFront().catch(error => {
+                    // 如果在 bringToFront 時出錯，通常表示頁面正在關閉或連線中斷
+                    if (!page.isClosed()) {
+                        console.error(`[Focus Error]: 無法將 ${href} 帶到前景: ${error.message}`);
+                    }
+                    // 出錯後主動停止定時器，避免記憶體洩漏
+                    if (focusTimer) {
+                        clearInterval(focusTimer);
+                        console.log(`[Focus]: ${href} 發生錯誤，定時器已停止。`);
+                    }
+                });
+            } else {
+                // 如果頁面已經關閉，清除定時器 (避免記憶體洩漏)
+                clearInterval(focusTimer);
+                console.log(`[Focus]: ${href} 已關閉，定時器已清除。`);
+            }
+        }, interval);
+
+        console.log(`[Focus]: ${href} 已啟動每 ${interval}ms 獲取焦點定時器。`);
+        return focusTimer;
+    };
+
     /** 取得一個新的 {page,context} 並且執行fetcher
      * @param browser 原則上使用puppeteer.lunch() 出來的預設瀏覽器，除非有特殊需求
      * @param href 就是page預設打開網址 例如：'https://google.com'
@@ -330,20 +367,87 @@ class Spider {
      * @param timeout page讀取頁面的timeout時間，太久就會報錯
      * @param incognito 是否啟用無痕模式
      * @param fetcher=async(page) 直接把task包進來頁面處理，免得每次都要newPage(),page.close()/context.close()
-     * @param cookies=[] 開啟頁面預載入一個cookie(很多社群都把token/session auth放在cookies)
+     * @param cookies=[] 開啟頁面預載入一個cookie
+     * @param taskTimeoutMs=300000 (新增) 任務最大執行時間（毫秒）。預設 5 分鐘 (300000ms)。
+     * @param enableTaskTimeout=false (新增) 是否啟用任務執行時間限制。
      * @returns {page}|page */
-    activatePage4Task = async ({ browser = this.browser, href = '', type = 'desktop', timeout = 0, fetcher = async (page) => true, incognito = false, cookies = [] }) => {
+    activatePage4Task = async ({
+                                   browser = this.browser,
+                                   href = '',
+                                   type = 'desktop',
+                                   timeout = 0,
+                                   fetcher = async (page) => true,
+                                   incognito = false,
+                                   cookies = [],
+                                   taskTimeoutMs = 300000, // 5 分鐘
+                                   enableTaskTimeout = false // 預設關閉
+                               }) => {
         const page = await this.activatePage4Load({ browser, href, type, timeout, incognito, cookies });
-        /** 執行網頁要執行的task */
+
         let execution = undefined;
+        let focusTimer = null;
+        let timeoutTimer = null;
+
+        // 啟動定時獲取焦點功能 (保留原有邏輯)
+        focusTimer = this.startPageFocusTimer(page, Util.getRandomValue(5000, 10000), href);
+
+        // 啟動任務逾時定時器 (新邏輯)
+        let timeoutPromise = null;
+        if (enableTaskTimeout && taskTimeoutMs > 0) {
+            const timeoutResult = this.startTaskTimeoutTimer(taskTimeoutMs, href);
+            timeoutPromise = timeoutResult.timeoutPromise;
+            timeoutTimer = timeoutResult.timerId;
+        }
+
         try {
-            execution = await fetcher(page);
+            /** 執行網頁要執行的task */
+            const fetcherPromise = fetcher(page);
+
+            if (timeoutPromise) {
+                // 使用 Promise.race 讓 fetcher 任務與逾時 Promise 競賽
+                execution = await Promise.race([fetcherPromise, timeoutPromise]);
+            } else {
+                // 未啟用逾時，直接等待 fetcher 任務完成
+                execution = await fetcherPromise;
+            }
+
         } catch (error) {
+            // 如果是 fetcher 拋出錯誤，或 timeoutPromise 逾時拒絕，都會進入此處
             console.error(`${href} 4T抓取失敗: ${error.message}`);
+
         } finally {
+            // 確保所有定時器被清除 (避免記憶體洩漏)
+            if (focusTimer) {
+                clearInterval(focusTimer);
+            }
+            if (timeoutTimer) {
+                clearTimeout(timeoutTimer);
+                console.log(`[Timeout]: ${href} 的任務逾時定時器已清除。`);
+            }
+
             await this.close(page);
         }
         return execution;
+    };
+
+    /**
+     * 啟動一個定時器，用於限制任務的總執行時間。
+     * 當時間超過 ms 後，會拒絕 (Reject) 返回的 Promise，中斷 Promise.race。
+     * @param {number} ms - 任務逾時時間（毫秒）。
+     * @param {string} href - 頁面網址 (用於日誌記錄)。
+     * @returns {{timeoutPromise: Promise<never>, timerId: NodeJS.Timeout}} - 包含逾時 Promise 和定時器 ID。
+     */
+    startTaskTimeoutTimer = (ms, href) => {
+        let timerId;
+        const timeoutPromise = new Promise((_, reject) => {
+            timerId = setTimeout(() => {
+                console.error(`[Timeout]: ${href} 任務執行時間超過 ${ms}ms，強制中斷。`);
+                // 拋出錯誤，讓 Promise.race 進入 catch 區塊
+                reject(new Error(`Task execution timed out after ${ms}ms.`));
+            }, ms);
+        });
+
+        return { timeoutPromise, timerId };
     };
 
     /** 呼叫多可能自行帶入page，延續使用page的行為，若沒有則建立一組context page

@@ -106,7 +106,7 @@ class spider_igllm extends Spider {
             result ? stories.push(result) : fails.push(param);
         }, ...briefs);
         await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/stories.json`, stories);
-        await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/stories-fail.json`, stories);
+        await Util.persistJsonFilePrettier(`./temp/${nameOfUser}/stories-fail.json`, fails);
     }
 
     fetchBriefsOfAccount = async (href) => {
@@ -177,7 +177,7 @@ class spider_igllm extends Spider {
             return { time, resources, ...brief };
         }
         const fetcher = async (page) => task(page, brief);
-        return this.activatePage4Task({ fetcher, href: brief.href });
+        return this.activatePage4Task({ fetcher, href: brief.href, enableTaskTimeout: true,taskTimeoutMs:120000 });
     }
 
 }
