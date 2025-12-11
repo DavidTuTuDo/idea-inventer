@@ -33,7 +33,7 @@ class ModularizedDionysusBacchusStore extends BaseDionysusBacchusStore {
             await Util.syncDelay(1);
             this.getComponent().scrollToTop();
         }
-        this.getComponent().invalidatePageTitle(`${this.getName() ?? "特選商品"}`);
+        this.getComponent().invalidatePageTitle(`[${UserInfo.getNameOfBrand()}]${booze?.name ?? "特選商品"}`);
     }
 }
 

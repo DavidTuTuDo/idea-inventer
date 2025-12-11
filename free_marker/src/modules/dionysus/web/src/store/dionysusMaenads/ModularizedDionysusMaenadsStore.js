@@ -5,6 +5,7 @@ import _ from "lodash";
 import BaseDionysusMaenadsStore from "./BaseDionysusMaenadsStore";
 import ApiOfVariant from "../dionysusBoozeVariant";
 import ApiOfHera from "../dionysusHera";
+import UserInfo from "../../base/BaseUserInfo";
 
 class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
     objectOfVariant = {};
@@ -14,6 +15,12 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
         this.apiOfVariant = new ApiOfVariant();
         this.apiOfHera = new ApiOfHera();
     }
+
+    isSingleItemOfBooze = () => {
+        const conditionA = _.size(this.getVariants()) === 1;
+        const conditionB = _.size(this.getVariants()[0]?.getOptions()) === 1;
+        return conditionA && conditionB;
+    };
 
     async onInitialFetchCompleted(collection) {
         const self = this;
@@ -61,8 +68,8 @@ class ModularizedDionysusMaenadsStore extends BaseDionysusMaenadsStore {
 
         if (booze.isTaskJob && booze.useMainTrunk) await handleConflictIssue();
 
-        this.getComponent().invalidatePageTitle(`${booze?.name ?? "特選商品"}`);
-
+        this.getComponent().invalidatePageTitle(`[${UserInfo.getNameOfBrand()}]${booze?.name ?? "特選商品"}`);
+        if (this.isSingleItemOfBooze()) await self.setSelectedOption(this.getVariants()[0].getOptions()[0]);
         return await super.onInitialFetchCompleted(collection);
     }
 
