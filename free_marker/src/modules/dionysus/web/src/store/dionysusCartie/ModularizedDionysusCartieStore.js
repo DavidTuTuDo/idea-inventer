@@ -43,6 +43,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             const cartie = self.getBriefOfHead();
             if (!_.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
         });
+        this.getComponent().scrollToTop();
     };
 
     isCheckedVariantValid = async () => {
@@ -51,7 +52,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         if (_.size(variantsOfSelected) < 1) throw new Error(`沒有選取的商品`);
 
         if (!Util.areAllValuesTheSameOnKeys(variantsOfSelected, "idOfAuthor")) throw new Error(`勾選的商品來自不同賣家，無法進行交易`);
-        await this.modifyErosInfoOfAuthor(variantsOfSelected[0].idOfAuthor, true);
+        await this.modifyErosInfoOfAuthor(variantsOfSelected?.[0]?.idOfAuthor, true);
 
         /** 未登入檢查是否超過金額 */
         const amountOfAllowAnonymousBuy = UserInfoRef.getGlobalPerspectiveAttr("amountOfAllowAnonymousBuy");
@@ -62,7 +63,7 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
         if (amountOfMaximumBuy < this.getPriceOfTotal()) throw new Error(`「購物金額限制」不得超過 ${amountOfMaximumBuy} 元`);
 
         const enableOfBoughtWithoutLoginIn = UserInfoRef.getGlobalPerspectiveAttr("enableOfBoughtWithoutLoginIn");
-        if (!enableOfBoughtWithoutLoginIn) throw new Error(`必須先完成「右上角」快速登入才能結帳`);
+        if (!UserInfoRef.isLoginWithSucceed() && !enableOfBoughtWithoutLoginIn) throw new Error(`必須先完成「右上角」快速登入才能結帳`);
 
         this.updateInfosOfCartieCookie();
         return variantsOfSelected.map((v) => ({ ...v, countOfSubmit: v.getCountOfSubmit() }));
