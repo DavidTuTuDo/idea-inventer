@@ -48,7 +48,7 @@ class ModularizedForcePaidByAuthor extends BaseForcePaidByAuthor {
             detailOfPreciseOrder.idOfAuthor
         );
 
-        await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
+        sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session).then();
         return { message: `confirmed by ${Config.EPayType.LinePay} succeed` };
     }
 

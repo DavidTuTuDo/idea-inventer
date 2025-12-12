@@ -8,6 +8,7 @@ import { makeAutoObservable, makeObservable, action, observable, comparer, compu
 import BaseDionysusCartieStore from "./BaseDionysusCartieStore";
 import VariantApi from "../dionysusBoozeVariant";
 import ErosPublic from "../dionysusErosCupidPublic";
+import Router from "../../router";
 
 class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
     @observable
@@ -44,6 +45,11 @@ class ModularizedDionysusCartieStore extends BaseDionysusCartieStore {
             if (!_.isEmpty(cartie?.idOfAuthor)) await self.modifyErosInfoOfAuthor(cartie.idOfAuthor);
         });
         this.getComponent().scrollToTop();
+        if (_.size(this.getBriefs()) === 0) {
+            this.getComponent().showErrorSnackMessage(`購物車已經清空，將回到主畫面！`);
+            await Util.syncDelay(2000);
+            Router.gotoHomePage(this.getComponent());
+        }
     };
 
     isCheckedVariantValid = async () => {

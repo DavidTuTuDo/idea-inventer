@@ -33,7 +33,7 @@ class ModularizedInformTransportingByAuthor extends BaseInformTransportingByAuth
                 timeOfTransport: this.toFireBaseTimestampObject(Util.getCurrentTimeStamp())
             };
         }, detailOfPreciseOrder.id);
-        await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder, isTransportCompleted: true }, session);
+        sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder, isTransportCompleted: true }, session).then();
     }
 }
 

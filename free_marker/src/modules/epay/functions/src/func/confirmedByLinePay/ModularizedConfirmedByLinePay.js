@@ -95,8 +95,8 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
                 itemOfPreciseOrder.idOfAuthor
             );
             this.customizeBehaviorOfSucceedTrade();
-            Util.appendInfo(`LINE-PAY完成付款項目,更新了訂單(${contentOfSucceed.MerchantTradeNo})狀態`);
-            await sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session);
+            Util.appendInfo(`LINE-PAY完成付款項目,更新了訂單(${data.idOfPreciseOrder})狀態`);
+            sendEmail.handleHttpOnCall({ idOfPreciseOrder: data.idOfPreciseOrder }, session).then();
             return { message: `confirmed by ${Config.EPayType.LinePay}|succeed` };
         } else {
             await Api.updatePreciseOrderItemAtomically(async (item, transaction) => {
@@ -114,7 +114,7 @@ class ModularizedConfirmedByLinePay extends BaseConfirmedByLinePay {
     }
 
     customizeBehaviorOfSucceedTrade() {
-        this.appendErrorLog(9999, `47498412486 ${Config.EPayType.LinePay}succeed之後，每個專案應該實作各自的record，insert(例專案:月薪) 應該要增加 工作行事曆到甲方`);
+        /** this.appendErrorLog(9999, `47498412486 ${Config.EPayType.LinePay}succeed之後，每個專案應該實作各自的record，insert(例專案:月薪) 應該要增加 工作行事曆到甲方`); */
     }
 }
 

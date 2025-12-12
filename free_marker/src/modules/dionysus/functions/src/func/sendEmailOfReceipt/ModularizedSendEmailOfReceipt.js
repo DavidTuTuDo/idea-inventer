@@ -120,7 +120,7 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
 
         const confirmButton = !anonymous
             ? `<div style="text-align:right;margin-bottom:10px;">
-           <a href="http://www.seller/${id}" 
+           <a href="https://google.com/search?q=${id}"
               style="background:#1976d2;color:white;padding:6px 14px;border-radius:16px;font-size:13px;text-decoration:none;">前往確認</a>
          </div>`
             : "";
@@ -187,13 +187,18 @@ class ModularizedSendEmailOfReceipt extends BaseSendEmailOfReceipt {
         FirebaseHelper.firestore()
             .collection("mail")
             .add({
-                to: recipient,
+                to: [recipient, ...this.listOfCC()],
                 message: {
                     subject,
                     html: this.generateOrderEmailHTML(latest)
                 }
             })
             .then(() => this.appendLog("Queued email for delivery!"));
+    }
+
+    /** 轉寄給相關人['s4360349@ntut.edu.tw'] */
+    listOfCC() {
+        return [];
     }
 }
 
